@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { MeteorError } from '@rocket.chat/core-services';
 import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
@@ -209,10 +209,10 @@ export class Authorization extends ServiceClass implements IAuthorization {
         const user = await Users.findOneById(uid, { projection: { 'services.totp': 1 } });
 
         if (!user) {
-            throw new Meteor.Error('error-invalid-user', 'Invalid user');
+            throw new MeteorError('error-invalid-user', 'Invalid user');
         }
 
-        if (!user.services?.totp?.enabled) {
+        if (!user.services?.totp?.enabled || !user.services?.totp?.secret) {
             return false;
         }
 
@@ -224,7 +224,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
         });
 
         if (!verified) {
-            throw new Meteor.Error('invalid-totp');
+            throw new MeteorError('invalid-totp');
         }
 
         const { modifiedCount } = await Users.disable2FAByUserId(uid);
