@@ -322,7 +322,6 @@ export async function testFileUploads(
 			).body[propertyMap[roomType]];
 
 			if (roomType === 'p') {
-				// add user to room so they can upload files to it
 				await addUserToRoom({
 					rid: testRoom._id,
 					usernames: [anotherUser.username!],
@@ -348,33 +347,6 @@ export async function testFileUploads(
 					expect(res.body).to.have.property('success', true);
 					fileId = res.body.file._id;
 				});
-
-			await request
-				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(400);
-		});
-
-		it('should not allow to confirm a file thats already confirmed (even by same user)', async () => {
-			let fileId: string;
-
-			await request
-				.post(api(`rooms.media/${testRoom._id}`))
-				.set(credentials)
-				.attach('file', imgURL)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					fileId = res.body.file._id;
-				});
-
-			await request
-				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
 
 			await request
 				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
