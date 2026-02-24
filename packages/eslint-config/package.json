@@ -14,14 +14,7 @@
 		"/style",
 		"/variables",
 		"react.js",
-		"best-practices.mjs",
-		"errors.mjs",
-		"es6.mjs",
-		"flat.mjs",
-		"imports.mjs",
-		"node.mjs",
-		"style.mjs",
-		"variables.mjs"
+		"flat.mjs"
 	],
 	"scripts": {
 		"lint": "eslint .",

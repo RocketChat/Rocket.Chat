@@ -129,6 +129,20 @@ export default [
 					additionalHooks: '(useComponentDidUpdate)',
 				},
 			],
+			'new-cap': [
+				'error',
+				{
+					capIsNewExceptions: [
+						'Match.Optional',
+						'Match.Maybe',
+						'Match.OneOf',
+						'Match.Where',
+						'Match.ObjectIncluding',
+						'Push.Configure',
+						'SHA256',
+					],
+				},
+			],
 			'prefer-arrow-callback': [
 				'error',
 				{
@@ -139,7 +153,7 @@ export default [
 	},
 	{
 		files: ['apps/meteor/**/*.ts', 'apps/meteor/**/*.tsx'],
-		ignores: ['apps/meteor/.scripts/*.ts'],
+		ignores: ['apps/meteor/.scripts/*.ts', 'apps/meteor/**/*.d.ts'],
 		rules: {
 			'@typescript-eslint/naming-convention': [
 				'error',
@@ -250,12 +264,6 @@ export default [
 		rules: {
 			'@typescript-eslint/no-misused-promises': 'off',
 			'@typescript-eslint/no-floating-promises': 'off',
-		},
-	},
-	{
-		files: ['apps/meteor/**/*.d.ts'],
-		rules: {
-			'@typescript-eslint/naming-convention': 'off',
 		},
 	},
 	{
@@ -625,7 +633,6 @@ export default [
 			'react-hooks/rules-of-hooks': 'error',
 			'react-hooks/exhaustive-deps': 'warn',
 			'no-sequences': 'off',
-			'no-extra-parens': 'off',
 		},
 	},
 	{
@@ -720,6 +727,17 @@ export default [
 		files: ['packages/web-ui-registration/**/*.ts', 'packages/web-ui-registration/**/*.tsx'],
 		rules: {
 			'@typescript-eslint/no-misused-promises': 'off',
+		},
+	},
+	{
+		files: ['packages/sha256/**/*', 'packages/models/**/*'],
+		rules: {
+			'new-cap': [
+				'error',
+				{
+					capIsNewExceptions: ['SHA256'],
+				},
+			],
 		},
 	},
 ];
