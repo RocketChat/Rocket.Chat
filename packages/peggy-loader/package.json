@@ -33,7 +33,6 @@
 		"lint": "eslint ."
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/prettier-config": "~0.31.25",
 		"@types/node": "~22.16.5",
 		"eslint": "~8.57.1",

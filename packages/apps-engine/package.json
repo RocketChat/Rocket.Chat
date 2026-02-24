@@ -91,7 +91,6 @@
 		"uuid": "~11.0.5"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"@seald-io/nedb": "^4.1.2",
 		"@types/adm-zip": "^0.5.7",

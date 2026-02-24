@@ -39,7 +39,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/ddp-client": "workspace:^",
-		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/emojione": "^2.2.9",
 		"@types/node": "~22.16.5",
 		"@types/sanitize-html": "~2.16.0",

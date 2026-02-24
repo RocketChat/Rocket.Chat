@@ -23,7 +23,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
-		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@types/node": "~22.16.5",
 		"eslint": "~8.57.1",

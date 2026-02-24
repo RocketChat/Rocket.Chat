@@ -49,7 +49,6 @@
 		"prometheus-gc-stats": "^1.1.0"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/i18next-sprintf-postprocessor": "^0.2.3",
 		"@types/polka": "^0.5.8",

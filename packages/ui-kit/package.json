@@ -34,7 +34,6 @@
 		"typia": "~9.7.2"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",

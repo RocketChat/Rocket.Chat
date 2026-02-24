@@ -38,7 +38,6 @@
 		"uuid": "~11.0.5"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/identity-obj-proxy": "^3.0.2",
 		"@types/jest": "~30.0.0",
 		"@types/uuid": "^10.0.0",

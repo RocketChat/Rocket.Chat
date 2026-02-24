@@ -27,7 +27,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
-		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/express": "^4.17.25",
 		"eslint": "~8.57.1",
 		"mongodb": "6.16.0",

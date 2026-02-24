@@ -36,7 +36,6 @@
 		"p-limit": "3.1.0"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
 		"@types/node": "~22.16.5",
