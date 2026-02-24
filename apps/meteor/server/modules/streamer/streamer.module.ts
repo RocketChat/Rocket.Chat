@@ -305,7 +305,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 						}
 					}
 				} catch (err) {
-					SystemLogger.debug({
+					SystemLogger.error({
 						msg: 'Error while delivering streamer event',
 						eventName,
 						streamName: this.name,
