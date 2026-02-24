@@ -59,28 +59,19 @@ describe('Authorization Service - disable2FA', () => {
         expect((Users.disable2FAByUserId as sinon.SinonStub).called).to.be.false;
     });
 
-    it('should execute actual behavior: call DB update and notify listener with exact parameters on success', async () => {
+    it('should execute actual behavior: call DB update with exact parameters on success', async () => {
         const testUid = 'valid_uid';
-        (Users.findOneById as sinon.SinonStub).resolves({
-            services: { totp: { enabled: true, secret: 'secret', hashedBackup: [] } }
+        (Users.findOneById as sinon.SinonStub).resolves({ 
+            services: { totp: { enabled: true, secret: 'secret', hashedBackup: [] } } 
         });
         (TOTP.verify as sinon.SinonStub).resolves(true);
         (Users.disable2FAByUserId as sinon.SinonStub).resolves({ modifiedCount: 1 });
-
+        
         const result = await service.disable2FA(testUid, 'correct_code');
-
+        
         expect(result).to.be.true;
-
+        
+        // Verify DB update was called with the EXACT userId
         expect((Users.disable2FAByUserId as sinon.SinonStub).calledOnceWithExactly(testUid)).to.be.true;
-
-        expect((notifyListener.notifyOnUserChange as sinon.SinonStub).calledOnceWithExactly({
-            clientAction: 'updated',
-            id: testUid,
-            diff: {
-                'services.totp.enabled': false,
-                'services.totp.secret': undefined,
-                'services.totp.hashedBackup': undefined,
-            }
-        })).to.be.true;
     });
 });

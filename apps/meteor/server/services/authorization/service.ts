@@ -12,8 +12,6 @@ import { AuthorizationUtils } from '../../../app/authorization/lib/Authorization
 import './canAccessRoomLivechat';
 import { TOTP } from '../../../app/2fa/server/lib/totp';
 
-import { notifyOnUserChange } from '../../../app/lib/server/lib/notifyListener';
-
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
 	protected name = 'authorization';
@@ -208,42 +206,29 @@ export class Authorization extends ServiceClass implements IAuthorization {
 	}
 
 	async disable2FA(uid: string, code: string): Promise<boolean> {
-		const user = await Users.findOneById(uid, { projection: { 'services.totp': 1 } });
+        const user = await Users.findOneById(uid, { projection: { 'services.totp': 1 } });
 
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
-		}
+        if (!user) {
+            throw new Meteor.Error('error-invalid-user', 'Invalid user');
+        }
 
-		if (!user.services?.totp?.enabled) {
-			return false;
-		}
+        if (!user.services?.totp?.enabled) {
+            return false;
+        }
 
-		const verified = await TOTP.verify({
-			secret: user.services.totp.secret,
-			token: code,
-			userId: uid,
-			backupTokens: user.services.totp.hashedBackup,
-		});
+        const verified = await TOTP.verify({
+            secret: user.services.totp.secret,
+            token: code,
+            userId: uid,
+            backupTokens: user.services.totp.hashedBackup,
+        });
 
-		if (!verified) {
-			throw new Meteor.Error('invalid-totp');
-		}
+        if (!verified) {
+            throw new Meteor.Error('invalid-totp');
+        }
 
-		const { modifiedCount } = await Users.disable2FAByUserId(uid);
-
-		if (modifiedCount > 0) {
-			void notifyOnUserChange({
-				clientAction: 'updated',
-				id: uid,
-				diff: {
-					'services.totp.enabled': false,
-					'services.totp.secret': undefined,
-					'services.totp.hashedBackup': undefined,
-				}
-			});
-			return true;
-		}
-
-		return false;
-	}
+        const { modifiedCount } = await Users.disable2FAByUserId(uid);
+        
+        return modifiedCount > 0;
+    }
 }

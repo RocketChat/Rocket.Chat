@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Authorization } from '@rocket.chat/core-services';
+import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
     interface ServerMethods {
@@ -15,6 +16,20 @@ Meteor.methods({
             throw new Meteor.Error('not-authorized');
         }
 
-        return Authorization.disable2FA(userId, code);
+        const result = await Authorization.disable2FA(userId, code);
+
+        if (result) {
+            void notifyOnUserChange({ 
+                clientAction: 'updated', 
+                id: userId, 
+                diff: { 
+                    'services.totp.enabled': false,
+                    'services.totp.secret': undefined,
+                    'services.totp.hashedBackup': undefined,
+                } 
+            });
+        }
+
+        return result;
     },
 });
