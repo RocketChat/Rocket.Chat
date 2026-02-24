@@ -58,6 +58,6 @@ API.v1.post(
 	async function action() {
 		await Presence.toggleBroadcast(true);
 
-		return API.v1.success();
+		return API.v1.success({});
 	},
 );
