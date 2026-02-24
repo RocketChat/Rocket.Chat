@@ -176,22 +176,26 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			const publicTeams = await Team.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TeamType.PUBLIC, {
 				projection: { _id: 1 },
 			}).toArray();
-			const publicTeamIds = publicTeams.map(({ _id }) => _id);
-			const privateTeamIds = unfilteredTeamIds.filter((teamId) => !publicTeamIds.includes(teamId));
+			// Use Set for O(1) lookup instead of Array.includes() which is O(n)
+			const publicTeamIdSet = new Set(publicTeams.map(({ _id }) => _id));
+			const privateTeamIds = unfilteredTeamIds.filter((teamId) => !publicTeamIdSet.has(teamId));
 
 			const privateTeams = await TeamMember.findByUserIdAndTeamIds(callerId, privateTeamIds, {
 				projection: { teamId: 1 },
 			}).toArray();
-			const visibleTeamIds = privateTeams.map(({ teamId }) => teamId).concat(publicTeamIds);
-			teamIds = unfilteredTeamIds.filter((teamId) => visibleTeamIds.includes(teamId));
+			// Use Set for O(1) lookup instead of Array.includes() which is O(n)
+			const visibleTeamIdSet = new Set([...privateTeams.map(({ teamId }) => teamId), ...publicTeamIdSet]);
+			teamIds = unfilteredTeamIds.filter((teamId) => visibleTeamIdSet.has(teamId));
 		}
 
-		const ownedTeams = unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId);
+		// Use Set for O(1) lookup instead of Array.includes() which is O(n)
+		const ownedTeamIds = unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId);
+		const ownedTeamSet = new Set(ownedTeamIds);
 
 		const results = await Team.findByIds(teamIds).toArray();
 		return results.map((team) => ({
 			...team,
-			isOwner: ownedTeams.includes(team._id),
+			isOwner: ownedTeamSet.has(team._id),
 		}));
 	}
 
@@ -609,10 +613,12 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		const roomData = await getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
+		// Use Map for O(1) lookup instead of Array.find() which is O(n)
+		const roomDataMap = new Map(roomData.map((data) => [data.rid, data]));
 		const records = [];
 
 		for (const room of rooms) {
-			const roomInfo = roomData.find((data) => data.rid === room._id);
+			const roomInfo = roomDataMap.get(room._id);
 			if (!roomInfo) {
 				continue;
 			}
@@ -666,13 +672,15 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const users = await Users.findActive({ ...query }).toArray();
 		const userIds = users.map((m) => m._id);
+		// Use Map for O(1) lookup instead of Array.find() which is O(n)
+		const userMap = new Map(users.map((u) => [u._id, u]));
 		const { cursor, totalCount } = TeamMember.findPaginatedMembersInfoByTeamId(teamId, count, offset, {
 			userId: { $in: userIds },
 		});
 
 		const results: ITeamMemberInfo[] = [];
 		for await (const record of cursor) {
-			const user = users.find((u) => u._id === record.userId);
+			const user = userMap.get(record.userId);
 			if (!user) {
 				continue;
 			}
