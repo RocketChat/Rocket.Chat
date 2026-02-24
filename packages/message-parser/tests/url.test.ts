@@ -183,6 +183,10 @@ describe('autoLink with underscore-prefixed patterns', () => {
 		['_example.com_', [paragraph([italic([plain('example.com')])])]],
 		['_rocket.chat_', [paragraph([italic([plain('rocket.chat')])])]],
 		['_example.com', [paragraph([plain('_example.com')])]],
+		// Decimal numbers wrapped in underscores also fall through to the italic parser
+		// because the leading '_DIGIT' pattern is excluded from DomainName.
+		['_9797.76_', [paragraph([italic([plain('9797.76')])])]],
+		['_3.14_', [paragraph([italic([plain('3.14')])])]],
 	])('parses %p', (input, output) => {
 		expect(parse(input)).toMatchObject(output);
 	});
