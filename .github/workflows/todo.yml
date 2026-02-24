@@ -1,0 +1,32 @@
+name: Create issues from TODOs
+
+on:
+  workflow_dispatch:
+    inputs:
+      importAll:
+        default: false
+        required: false
+        type: boolean
+        description: Enable, if you want to import all TODOs. Runs on checked out branch! Only use if you're sure what you are doing.
+  push:
+    branches: # do not set multiple branches, todos might be added and then get referenced by themselves in case of a merge
+      - develop
+
+permissions:
+  issues: write
+  repository-projects: read
+  contents: read
+
+jobs:
+  todos:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Run Issue Bot
+        uses: juulsn/todo-issue@v1.1.4
+        with:
+          excludePattern: '(^|/)node_modules/'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
