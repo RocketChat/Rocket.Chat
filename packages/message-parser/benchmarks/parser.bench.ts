@@ -77,13 +77,11 @@ const fixtures = {
 	katexBlock: '$$\\sum_{i=1}^{n} x_i = x_1 + x_2 + ... + x_n$$',
 
 	// Category 10: Adversarial / stress test
-	adversarialEmphasis:
-		'**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__',
+	adversarialEmphasis: '**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__**_**__',
 	adversarialMixed:
 		'This a message designed to stress test !!@#$%^&*()_+, overloading the symbols {}:"|<>?, some more text ,./;\'\\[], numbers too 1234567890-= let it call s o s ok~',
 	repeatedSpecials: '****____~~~~||||````####>>>>',
-	longWithFormatting:
-		'**bold** _italic_ ~~strike~~ `code` @user #channel :smile: https://example.com '.repeat(10).trim(),
+	longWithFormatting: '**bold** _italic_ ~~strike~~ `code` @user #channel :smile: https://example.com '.repeat(10).trim(),
 
 	// Category 11: Real-world mixed messages
 	realWorldSimple: 'Hey team, the deploy is done ✅',
@@ -226,8 +224,11 @@ async function runBenchmarks() {
 		{ name: 'Timestamps', bench: timestampBench },
 	];
 
+	// Benchmarks must run sequentially to avoid interference
+	// eslint-disable-next-line no-await-in-loop
 	for (const { name, bench } of groups) {
 		console.log(`── ${name} ${'─'.repeat(Math.max(0, 56 - name.length))}`);
+		// eslint-disable-next-line no-await-in-loop
 		await bench.run();
 		console.table(
 			bench.tasks.map((task: Task) => ({
@@ -265,10 +266,6 @@ async function runBenchmarks() {
 	console.log();
 }
 
-it(
-	'benchmark: message-parser performance',
-	async () => {
-		await runBenchmarks();
-	},
-	120_000,
-);
+it('benchmark: message-parser performance', async () => {
+	await runBenchmarks();
+}, 120_000);
