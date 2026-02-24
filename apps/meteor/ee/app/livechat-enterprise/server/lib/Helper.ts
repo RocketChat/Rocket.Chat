@@ -24,7 +24,7 @@ import { logger } from './logger';
 import { getOmniChatSortQuery } from '../../../../../app/livechat/lib/inquiries';
 import { getInquirySortMechanismSetting } from '../../../../../app/livechat/server/lib/settings';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 type QueueInfo = {
 	message: {

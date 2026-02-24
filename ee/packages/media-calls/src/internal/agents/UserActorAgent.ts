@@ -1,10 +1,12 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
-import { isBusyState, type ClientMediaSignal, type ServerMediaSignal, type ServerMediaSignalNewCall } from '@rocket.chat/media-signaling';
+import { isBusyState } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignal, ServerMediaSignal, CallFeature } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
+import { buildNewCallSignal } from '../../server/buildNewCallSignal';
 import { getMediaCallServer } from '../../server/injection';
 
 export class UserActorAgent extends BaseMediaCallAgent {
@@ -19,14 +21,12 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		getMediaCallServer().sendSignal(this.actorId, signal);
 	}
 
-	public async onCallAccepted(callId: string, signedContractId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallAccepted', callId });
-
+	public async onCallAccepted(callId: string, data: { signedContractId: string; features: CallFeature[] }): Promise<void> {
 		await this.sendSignal({
 			callId,
 			type: 'notification',
 			notification: 'accepted',
-			signedContractId,
+			...data,
 		});
 
 		if (this.role !== 'callee') {
@@ -41,16 +41,15 @@ export class UserActorAgent extends BaseMediaCallAgent {
 
 		await this.sendSignal({
 			callId,
-			toContractId: signedContractId,
+			toContractId: data.signedContractId,
 			type: 'remote-sdp',
 			sdp: negotiation.offer,
 			negotiationId: negotiation._id,
+			streams: negotiation.offerStreams,
 		});
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallEnded', callId });
-
 		return this.sendSignal({
 			callId,
 			type: 'notification',
@@ -59,8 +58,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallActive(callId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallActive', callId });
-
 		return this.sendSignal({
 			callId,
 			type: 'notification',
@@ -69,19 +66,15 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallCreated', call });
-
 		if (this.role === 'caller' && call.caller.contractId) {
 			// Pre-create the channel for the contractId that requested the call
 			await this.getOrCreateChannel(call, call.caller.contractId);
 		}
 
-		await this.sendSignal(this.buildNewCallSignal(call));
+		await this.sendSignal(buildNewCallSignal(call, this.role));
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onRemoteDescriptionChanged', callId, negotiationId });
-
 		const call = await MediaCalls.findOneById(callId);
 		if (!call || !isBusyState(call.state)) {
 			return;
@@ -121,6 +114,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 				type: 'remote-sdp',
 				sdp: negotiation.answer,
 				negotiationId,
+				streams: negotiation.answerStreams,
 			});
 			return;
 		}
@@ -135,12 +129,11 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			type: 'remote-sdp',
 			sdp: negotiation.offer,
 			negotiationId,
+			streams: negotiation.offerStreams,
 		});
 	}
 
 	public async onCallTransferred(callId: string): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onCallTransferred', callId });
-
 		const call = await MediaCalls.findOneById(callId);
 		if (!call?.transferredBy || !call?.transferredTo) {
 			return;
@@ -162,21 +155,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
-		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration });
+		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration, role: this.role });
 		// internal calls have nothing to do with DTMFs
-	}
-
-	protected buildNewCallSignal(call: IMediaCall): ServerMediaSignalNewCall {
-		return {
-			callId: call._id,
-			type: 'new',
-			service: call.service,
-			kind: call.kind,
-			role: this.role,
-			self: this.getMyCallActor(call),
-			contact: this.getOtherCallActor(call),
-			...(call.parentCallId && { replacingCallId: call.parentCallId }),
-			...(call.callerRequestedId && this.role === 'caller' && { requestedCallId: call.callerRequestedId }),
-		};
 	}
 }

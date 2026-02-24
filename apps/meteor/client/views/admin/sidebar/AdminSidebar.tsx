@@ -16,7 +16,7 @@ const AdminSidebar = () => {
 	// TODO: uplift this provider
 	return (
 		<SettingsProvider>
-			<Sidebar>
+			<Sidebar aria-label={t('Administration')}>
 				<Sidebar.Header
 					onClose={sidebar.close}
 					title={

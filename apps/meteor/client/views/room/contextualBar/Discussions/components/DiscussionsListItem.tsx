@@ -1,5 +1,19 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
-import { Box, Message } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Message,
+	MessageLeftContainer,
+	MessageContainer,
+	MessageHeader,
+	MessageName,
+	MessageTimestamp,
+	MessageBody,
+	MessageBlock,
+	MessageMetrics,
+	MessageMetricsItem,
+	MessageMetricsItemLabel,
+	MessageMetricsItemIcon,
+} from '@rocket.chat/fuselage';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import type { ComponentProps, ReactElement, ReactNode } from 'react';
 import { memo } from 'react';
@@ -36,37 +50,37 @@ const DiscussionListItem = ({
 	const { t } = useTranslation();
 	return (
 		<Box is={Message} {...props} className={className} pbs={16} pbe={8}>
-			<Message.LeftContainer>
+			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
-			</Message.LeftContainer>
-			<Message.Container>
-				<Message.Header>
-					<Message.Name title={username}>{name}</Message.Name>
-					<Message.Timestamp>{formatDate(ts)}</Message.Timestamp>
-				</Message.Header>
-				<Message.Body clamp={2}>{msg}</Message.Body>
-				<Message.Block>
-					<Message.Metrics>
+			</MessageLeftContainer>
+			<MessageContainer>
+				<MessageHeader>
+					<MessageName title={username}>{name}</MessageName>
+					<MessageTimestamp>{formatDate(ts)}</MessageTimestamp>
+				</MessageHeader>
+				<MessageBody clamp={2}>{msg}</MessageBody>
+				<MessageBlock>
+					<MessageMetrics>
 						{!dcount && (
-							<Message.Metrics.Item>
-								<Message.Metrics.Item.Label>{t('No_messages_yet')}</Message.Metrics.Item.Label>
-							</Message.Metrics.Item>
+							<MessageMetricsItem>
+								<MessageMetricsItemLabel>{t('No_messages_yet')}</MessageMetricsItemLabel>
+							</MessageMetricsItem>
 						)}
 						{!!dcount && (
-							<Message.Metrics.Item>
-								<Message.Metrics.Item.Icon name='discussion' />
-								<Message.Metrics.Item.Label>{dcount}</Message.Metrics.Item.Label>
-							</Message.Metrics.Item>
+							<MessageMetricsItem>
+								<MessageMetricsItemIcon name='discussion' />
+								<MessageMetricsItemLabel>{dcount}</MessageMetricsItemLabel>
+							</MessageMetricsItem>
 						)}
 						{!!dcount && (
-							<Message.Metrics.Item>
-								<Message.Metrics.Item.Icon name='clock' />
-								<Message.Metrics.Item.Label>{dlm ? formatDate(dlm) : undefined}</Message.Metrics.Item.Label>
-							</Message.Metrics.Item>
+							<MessageMetricsItem>
+								<MessageMetricsItemIcon name='clock' />
+								<MessageMetricsItemLabel>{dlm ? formatDate(dlm) : undefined}</MessageMetricsItemLabel>
+							</MessageMetricsItem>
 						)}
-					</Message.Metrics>
-				</Message.Block>
-			</Message.Container>
+					</MessageMetrics>
+				</MessageBlock>
+			</MessageContainer>
 		</Box>
 	);
 };

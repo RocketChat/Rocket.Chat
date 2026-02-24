@@ -1,7 +1,7 @@
 import os from 'os';
 
 import type { AppStatusReport } from '@rocket.chat/core-services';
-import { Apps, License, ServiceClassInternal } from '@rocket.chat/core-services';
+import { Apps, License, ServiceClassInternal, Settings } from '@rocket.chat/core-services';
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
@@ -21,11 +21,11 @@ const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() 
 const { Base } = Serializers;
 
 class EJSONSerializer extends Base {
-	serialize(obj: any): Buffer {
+	override serialize(obj: any): Buffer {
 		return Buffer.from(EJSON.stringify(obj));
 	}
 
-	deserialize(buf: Buffer): any {
+	override deserialize(buf: Buffer): any {
 		return EJSON.parse(buf.toString());
 	}
 }
@@ -50,15 +50,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			}
 		});
 
-		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
-
-			const { _id, value } = setting;
-			if (_id !== 'Troubleshoot_Disable_Instance_Broadcast') {
-				return;
-			}
+		this.onSettingChanged('Troubleshoot_Disable_Instance_Broadcast', async ({ setting }): Promise<void> => {
+			const { value } = setting;
 
 			if (typeof value !== 'boolean') {
 				return;
@@ -72,7 +65,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		});
 	}
 
-	async created() {
+	override async created() {
 		const transporter = getTransporter({
 			transporter: process.env.TRANSPORTER,
 			port: process.env.TCP_PORT,
@@ -162,7 +155,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		(this.broker.transit?.tx as any).nodes.nodes.delete(nodeId);
 	}
 
-	async started() {
+	override async started() {
 		await this.broker.start();
 
 		const instance = {
@@ -190,6 +183,8 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 			if (!hasLicense) {
 				return;
 			}
+
+			this.troubleshootDisableInstanceBroadcast = await Settings.get<boolean>('Troubleshoot_Disable_Instance_Broadcast');
 
 			await this.startBroadcast();
 		} catch (error) {

@@ -1,19 +1,19 @@
 import { faker } from '@faker-js/faker';
 
-import { Utils, Registration } from './page-objects';
+import { Authenticated, Registration } from './page-objects';
 import { request } from '../data/api-data';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('register', () => {
 	let poRegistration: Registration;
-	let poUtils: Utils;
+	let poAuth: Authenticated;
+
+	test.beforeEach(({ page }) => {
+		poRegistration = new Registration(page);
+		poAuth = new Authenticated(page);
+	});
 
 	test.describe('Registration default flow', async () => {
-		test.beforeEach(async ({ page }) => {
-			poRegistration = new Registration(page);
-			poUtils = new Utils(page);
-		});
-
 		test('should complete the registration flow', async ({ page }) => {
 			await test.step('expect trigger a validation error if no data is provided on register', async () => {
 				await page.goto('/home');
@@ -31,17 +31,17 @@ test.describe.parallel('register', () => {
 				await poRegistration.inputName.fill(faker.person.firstName());
 				await poRegistration.inputEmail.fill(faker.internet.email());
 				await poRegistration.username.fill(faker.internet.userName());
-				await poRegistration.inputPassword.fill('any_password');
-				await poRegistration.inputPasswordConfirm.fill('any_password_2');
+				await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
+				await poRegistration.inputPasswordConfirm.fill('Password1235.!');
 				await poRegistration.btnRegister.click();
 
 				await expect(poRegistration.inputPasswordConfirm).toBeInvalid();
 			});
 
 			await test.step('expect successfully register a new user', async () => {
-				await poRegistration.inputPasswordConfirm.fill('any_password');
+				await poRegistration.inputPasswordConfirm.fill('P@ssw0rd1234.!');
 				await poRegistration.btnRegister.click();
-				await expect(poUtils.mainContent).toBeVisible();
+				await poAuth.waitForDisplay();
 			});
 		});
 
@@ -74,10 +74,10 @@ test.describe.parallel('register', () => {
 					await poRegistration.inputName.fill(faker.person.firstName());
 					await poRegistration.inputEmail.fill(faker.internet.email());
 					await poRegistration.username.fill(faker.internet.userName());
-					await poRegistration.inputPassword.fill('any_password');
+					await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
 
 					await poRegistration.btnRegister.click();
-					await expect(poUtils.mainContent).toBeVisible();
+					await poAuth.waitForDisplay();
 				});
 			});
 		});
@@ -143,18 +143,13 @@ test.describe.parallel('register', () => {
 	});
 
 	test.describe('Registration form validation', async () => {
-		test.beforeEach(async ({ page }) => {
-			poRegistration = new Registration(page);
-			poUtils = new Utils(page);
-		});
-
 		test('should not allow registration with an already registered email', async ({ page }) => {
 			const email = faker.internet.email();
 			await request.post('/api/v1/users.register').set('Content-Type', 'application/json').send({
 				name: faker.person.firstName(),
 				email,
 				username: faker.internet.userName(),
-				pass: 'any_password',
+				pass: 'P@ssw0rd1234.!',
 			});
 
 			await test.step('Attempt registration with the same email', async () => {
@@ -163,8 +158,8 @@ test.describe.parallel('register', () => {
 				await poRegistration.inputName.fill(faker.person.firstName());
 				await poRegistration.inputEmail.fill(email);
 				await poRegistration.username.fill(faker.internet.userName());
-				await poRegistration.inputPassword.fill('any_password');
-				await poRegistration.inputPasswordConfirm.fill('any_password');
+				await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
+				await poRegistration.inputPasswordConfirm.fill('P@ssw0rd1234.!');
 				await poRegistration.btnRegister.click();
 
 				await expect(page.getByRole('alert').filter({ hasText: 'Email already exists' })).toBeVisible();
@@ -173,9 +168,7 @@ test.describe.parallel('register', () => {
 	});
 
 	test.describe('Registration for secret password', async () => {
-		test.beforeEach(async ({ api, page }) => {
-			poRegistration = new Registration(page);
-			poUtils = new Utils(page);
+		test.beforeEach(async ({ api }) => {
 			const result = await api.post('/settings/Accounts_RegistrationForm', { value: 'Secret URL' });
 			await api.post('/settings/Accounts_RegistrationForm_SecretURL', { value: 'secret' });
 			await expect(result.ok()).toBeTruthy();
@@ -210,10 +203,10 @@ test.describe.parallel('register', () => {
 			await poRegistration.inputName.fill(faker.person.firstName());
 			await poRegistration.inputEmail.fill(faker.internet.email());
 			await poRegistration.username.fill(faker.internet.userName());
-			await poRegistration.inputPassword.fill('any_password');
-			await poRegistration.inputPasswordConfirm.fill('any_password');
+			await poRegistration.inputPassword.fill('P@ssw0rd1234.!');
+			await poRegistration.inputPasswordConfirm.fill('P@ssw0rd1234.!');
 			await poRegistration.btnRegister.click();
-			await expect(poUtils.mainContent).toBeVisible();
+			await poAuth.waitForDisplay();
 		});
 	});
 

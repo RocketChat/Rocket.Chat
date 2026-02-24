@@ -4,5 +4,5 @@
 	"env": {
 		"jest/globals": true
 	},
-	"ignorePatterns": ["**/dist"]
+	"ignorePatterns": ["dist"]
 }

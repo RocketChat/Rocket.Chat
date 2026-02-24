@@ -1,6 +1,7 @@
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { AtLeast, ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import moment from 'moment';
 
 import { openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
@@ -15,7 +16,6 @@ import {
 } from '../../../../../app/livechat/server/business-hour/Helper';
 import { closeBusinessHour } from '../../../../../app/livechat/server/business-hour/closeBusinessHour';
 import { settings } from '../../../../../app/settings/server';
-import { isTruthy } from '../../../../../lib/isTruthy';
 import { bhLogger } from '../lib/logger';
 
 interface IBusinessHoursExtraProperties extends ILivechatBusinessHour {
@@ -35,29 +35,35 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async onStartBusinessHours(): Promise<void> {
-		await this.UsersRepository.removeBusinessHoursFromAllUsers();
+		try {
+			await this.UsersRepository.removeBusinessHoursFromAllUsers();
 
-		// TODO is this required? since we're calling `this.openBusinessHour(businessHour)` later on, which will call this again (kinda)
-		await makeAgentsUnavailableBasedOnBusinessHour();
+			// TODO is this required? since we're calling `this.openBusinessHour(businessHour)` later on, which will call this again (kinda)
+			await makeAgentsUnavailableBasedOnBusinessHour();
 
-		const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
-		const day = currentTime.format('dddd');
-		const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
-			projection: {
-				workHours: 1,
-				timezone: 1,
-				type: 1,
-				active: 1,
-			},
-		});
-		const businessHoursToOpen = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
-		bhLogger.info({
-			msg: 'Starting Multiple Business Hours',
-			totalBusinessHoursToOpen: businessHoursToOpen.length,
-			top10BusinessHoursToOpen: businessHoursToOpen.slice(0, 10),
-		});
-		for (const businessHour of businessHoursToOpen) {
-			void this.openBusinessHour(businessHour);
+			const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
+			const day = currentTime.format('dddd');
+			const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
+				projection: {
+					workHours: 1,
+					timezone: 1,
+					type: 1,
+					active: 1,
+				},
+			});
+			const businessHoursToOpen = await filterBusinessHoursThatMustBeOpened(activeBusinessHours);
+			bhLogger.info({
+				msg: 'Starting Multiple Business Hours',
+				totalBusinessHoursToOpen: businessHoursToOpen.length,
+				top10BusinessHoursToOpen: businessHoursToOpen.slice(0, 10),
+			});
+			for (const businessHour of businessHoursToOpen) {
+				void this.openBusinessHour(businessHour).catch((err) => {
+					bhLogger.error({ msg: 'Error while opening business hour during start', businessHourId: businessHour._id, err });
+				});
+			}
+		} catch (err) {
+			bhLogger.error({ msg: 'Error while starting business hours', err });
 		}
 	}
 
@@ -225,11 +231,11 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	async onDepartmentArchived(department: Pick<ILivechatDepartment, '_id' | 'businessHourId'>): Promise<void> {
-		bhLogger.debug('Processing department archived event on multiple business hours', department);
+		bhLogger.debug({ msg: 'Processing department archived event on multiple business hours', department });
 		return this.onDepartmentDisabled(department);
 	}
 
-	allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
+	override allowAgentChangeServiceStatus(agentId: string): Promise<boolean> {
 		return this.UsersRepository.isAgentWithinBusinessHours(agentId);
 	}
 

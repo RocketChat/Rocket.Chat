@@ -8,7 +8,6 @@ exports[`renders Default without crashing 1`] = `
     >
       <input
         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-1ltvj5u"
-        data-qa="PermissionTable-PermissionsTableFilter"
         placeholder="Search"
         size="1"
         type="text"
@@ -18,7 +17,7 @@ exports[`renders Default without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-h9m6k6"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div
@@ -38,7 +37,7 @@ exports[`renders Default without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-table__wrapper"
             >
               <table
-                class="rcx-box rcx-box--full rcx-table--sticky rcx-table rcx-css-1l69a2k"
+                class="rcx-box rcx-box--full rcx-table--sticky rcx-table rcx-css-x1oxcc"
               >
                 <thead
                   class="rcx-box rcx-box--full rcx-table__head"
@@ -270,7 +269,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
                       title="0_description"
                     >
-                      admin &gt; General &gt; general_settings
+                      0
                     </td>
                     <td
                       class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
@@ -279,6 +278,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="0 - Owner of the workspace"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -288,7 +288,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Owner of the workspace
                       </div>
@@ -300,6 +300,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="0 - Administrator"
                           checked=""
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
@@ -310,7 +311,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Administrator
                       </div>
@@ -322,6 +323,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="0 - Leader"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -331,7 +333,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Leader
                       </div>
@@ -343,6 +345,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="0 - Moderator"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -352,7 +355,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Moderator
                       </div>
@@ -364,6 +367,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="0 - User"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -373,7 +377,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         User
                       </div>
@@ -385,6 +389,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="0 - Guest"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -394,7 +399,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Guest
                       </div>
@@ -406,6 +411,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="0 - Bot"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -415,7 +421,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Bot
                       </div>
@@ -427,6 +433,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="0 - App"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -436,7 +443,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         App
                       </div>
@@ -451,7 +458,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
                       title="1_description"
                     >
-                      admin &gt; General &gt; general_settings
+                      1
                     </td>
                     <td
                       class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
@@ -460,6 +467,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="1 - Owner of the workspace"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -469,7 +477,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Owner of the workspace
                       </div>
@@ -481,6 +489,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="1 - Administrator"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -490,7 +499,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Administrator
                       </div>
@@ -502,6 +511,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="1 - Leader"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -511,7 +521,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Leader
                       </div>
@@ -523,6 +533,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="1 - Moderator"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -532,7 +543,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Moderator
                       </div>
@@ -544,6 +555,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="1 - User"
                           checked=""
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
@@ -554,7 +566,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         User
                       </div>
@@ -566,6 +578,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="1 - Guest"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -575,7 +588,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Guest
                       </div>
@@ -587,6 +600,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="1 - Bot"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -596,7 +610,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Bot
                       </div>
@@ -608,6 +622,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="1 - App"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -617,7 +632,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         App
                       </div>
@@ -632,7 +647,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
                       title="2_description"
                     >
-                      admin &gt; General &gt; general_settings
+                      2
                     </td>
                     <td
                       class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
@@ -641,6 +656,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="2 - Owner of the workspace"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -650,7 +666,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Owner of the workspace
                       </div>
@@ -662,6 +678,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="2 - Administrator"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -671,7 +688,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Administrator
                       </div>
@@ -683,6 +700,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="2 - Leader"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -692,7 +710,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Leader
                       </div>
@@ -704,6 +722,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="2 - Moderator"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -713,7 +732,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Moderator
                       </div>
@@ -725,6 +744,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="2 - User"
                           checked=""
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
@@ -735,7 +755,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         User
                       </div>
@@ -747,6 +767,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="2 - Guest"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -756,7 +777,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Guest
                       </div>
@@ -768,6 +789,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="2 - Bot"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -777,7 +799,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Bot
                       </div>
@@ -789,6 +811,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="2 - App"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -798,7 +821,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         App
                       </div>
@@ -813,7 +836,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-table__cell rcx-css-117bfyn"
                       title="3_description"
                     >
-                      admin &gt; General &gt; general_settings
+                      3
                     </td>
                     <td
                       class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
@@ -822,6 +845,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="3 - Owner of the workspace"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -831,7 +855,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Owner of the workspace
                       </div>
@@ -843,6 +867,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="3 - Administrator"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -852,7 +877,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Administrator
                       </div>
@@ -864,6 +889,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="3 - Leader"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -873,7 +899,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Leader
                       </div>
@@ -885,6 +911,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="3 - Moderator"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -894,7 +921,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Moderator
                       </div>
@@ -906,6 +933,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="3 - User"
                           checked=""
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
@@ -916,7 +944,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         User
                       </div>
@@ -928,6 +956,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="3 - Guest"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -937,7 +966,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Guest
                       </div>
@@ -949,6 +978,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="3 - Bot"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -958,7 +988,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         Bot
                       </div>
@@ -970,6 +1000,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-check-box rcx-css-17ztjgq rcx-css-wcp0mp"
                       >
                         <input
+                          aria-label="3 - App"
                           class="rcx-box rcx-box--full rcx-check-box__input"
                           type="checkbox"
                         />
@@ -979,7 +1010,7 @@ exports[`renders Default without crashing 1`] = `
                         />
                       </label>
                       <div
-                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1oi6sut"
+                        class="rcx-box rcx-box--full rcx-css-17ztjgq rcx-css-1iebw2h"
                       >
                         App
                       </div>
@@ -1068,7 +1099,7 @@ exports[`renders Default without crashing 1`] = `
           <span
             class="rcx-box rcx-box--full rcx-pagination__label"
           >
-            Showing results 1 - 4 of 4
+            Showing results 1 - 4 of 10
           </span>
           <ol
             class="rcx-box rcx-box--full rcx-pagination__list"
@@ -1137,7 +1168,6 @@ exports[`renders Empty without crashing 1`] = `
     >
       <input
         class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box rcx-css-1ltvj5u"
-        data-qa="PermissionTable-PermissionsTableFilter"
         placeholder="Search"
         size="1"
         type="text"

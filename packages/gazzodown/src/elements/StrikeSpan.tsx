@@ -58,10 +58,10 @@ const renderBlockComponent = (block: MessageBlock, index: number): ReactElement 
 			return <LinkSpan key={index} href={block.value.src.value} label={block.value.label} />;
 
 		case 'ITALIC':
-			return <ItalicSpan key={index} children={block.value} />;
+			return <ItalicSpan key={index}>{block.value}</ItalicSpan>;
 
 		case 'BOLD':
-			return <BoldSpan key={index} children={block.value} />;
+			return <BoldSpan key={index}>{block.value}</BoldSpan>;
 
 		case 'INLINE_CODE':
 			return <CodeElement key={index} code={block.value.value} />;

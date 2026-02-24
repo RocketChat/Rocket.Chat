@@ -14,7 +14,7 @@ const SidePanelOnHold = () => {
 	const rooms = useSidePanelRoomsListTab('onHold');
 	const [unreadOnly, toggleUnreadOnly] = useUnreadOnlyToggle();
 
-	const hasEEModule = useHasLicenseModule('livechat-enterprise');
+	const { data: hasEEModule = false } = useHasLicenseModule('livechat-enterprise');
 	useRedirectToDefaultTab(!hasEEModule);
 
 	if (!hasEEModule) {

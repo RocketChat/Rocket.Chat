@@ -2,15 +2,6 @@ import { License } from '@rocket.chat/license';
 import { patchOmniCore } from '@rocket.chat/omni-core-ee';
 import { Meteor } from 'meteor/meteor';
 
-import './methods/addMonitor';
-import './methods/getUnitsFromUserRoles';
-import './methods/removeMonitor';
-import './methods/removeTag';
-import './methods/saveTag';
-import './methods/removeUnit';
-import './methods/saveUnit';
-import './methods/removeBusinessHour';
-import './methods/resumeOnHold';
 import './hooks/afterTakeInquiry';
 import './hooks/beforeNewInquiry';
 import './hooks/beforeNewRoom';

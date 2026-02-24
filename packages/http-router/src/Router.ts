@@ -5,10 +5,10 @@ import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
-import qs from 'qs'; // Using qs specifically to keep express compatibility
 
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
+import { parseQueryParams } from './parseQueryParams';
 
 const logger = new Logger('HttpRouter');
 
@@ -78,6 +78,14 @@ export abstract class AbstractRouter<TActionCallback = (c: Context) => Promise<R
 	protected abstract convertActionToHandler(action: TActionCallback): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
 }
 
+type InnerRouter = Hono<{
+	Variables: {
+		remoteAddress: string;
+		bodyParams: Record<string, unknown>;
+		queryParams: Record<string, unknown>;
+	};
+}>;
+
 export class Router<
 	TBasePath extends string,
 	TOperations extends {
@@ -85,11 +93,7 @@ export class Router<
 	} = NonNullable<unknown>,
 	TActionCallback = (c: Context) => Promise<ResponseSchema<TypedOptions>>,
 > extends AbstractRouter<TActionCallback> {
-	protected innerRouter: Hono<{
-		Variables: {
-			remoteAddress: string;
-		};
-	}>;
+	protected innerRouter: InnerRouter;
 
 	constructor(readonly base: TBasePath) {
 		super();
@@ -105,7 +109,7 @@ export class Router<
 	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.base}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
+		this.typedRoutes[path] = this.typedRoutes[path] || {};
 		const { query, response = {}, authRequired, body, tags, ...rest } = options;
 		this.typedRoutes[path][method.toLowerCase()] = {
 			responses: Object.fromEntries(
@@ -150,39 +154,28 @@ export class Router<
 		};
 	}
 
-	protected async parseBodyParams<T extends Record<string, any>>({ request }: { request: HonoRequest; extra?: T }) {
+	protected async parseBodyParams({ request }: { request: HonoRequest }): Promise<NonNullable<unknown>> {
 		try {
-			let parsedBody = {};
-			const contentType = request.header('content-type');
+			const contentType = request.header('content-type') || '';
 
-			if (contentType?.includes('application/json')) {
-				parsedBody = await request.raw.clone().json();
-			} else if (contentType?.includes('multipart/form-data')) {
-				parsedBody = await request.raw.clone().formData();
-			} else if (contentType?.includes('application/x-www-form-urlencoded')) {
+			if (contentType.includes('application/json')) {
+				return await request.raw.clone().json();
+			}
+
+			if (contentType.includes('application/x-www-form-urlencoded')) {
 				const req = await request.raw.clone().formData();
-				parsedBody = Object.fromEntries(req.entries());
-			} else {
-				parsedBody = await request.raw.clone().text();
-			}
-			// This is necessary to keep the compatibility with the previous version, otherwise the bodyParams will be an empty string when no content-type is sent
-			if (parsedBody === '') {
-				return {};
+				return Object.fromEntries(req.entries());
 			}
 
-			if (Array.isArray(parsedBody)) {
-				return parsedBody;
-			}
-
-			return { ...parsedBody };
-			// eslint-disable-next-line no-empty
-		} catch {}
-
-		return {};
+			return {};
+		} catch {
+			// No problem if there is error, just means the endpoint is going to have to parse the body itself if necessary
+			return {};
+		}
 	}
 
 	protected parseQueryParams(request: HonoRequest) {
-		return qs.parse(request.raw.url.split('?')?.[1] || '');
+		return parseQueryParams(request.raw.url.split('?')?.[1] || '');
 	}
 
 	protected method<TSubPathPattern extends string, TOptions extends TypedOptions>(
@@ -194,10 +187,24 @@ export class Router<
 		const [middlewares, action] = splitArray<MiddlewareHandler, TActionCallback>(actions);
 		const convertedAction = this.convertActionToHandler(action);
 
-		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
+		const path = `/${subpath}`.replace('//', '/');
+		(
+			this.innerRouter[method.toLowerCase() as Lowercase<Method>] as (
+				path: string,
+				...handlers: Array<MiddlewareHandler | ((c: Context) => Promise<ResponseSchema<TypedOptions>>)>
+			) => InnerRouter
+		)(path, ...middlewares, async (c: Context) => {
 			const { req, res } = c;
 
-			const queryParams = this.parseQueryParams(req);
+			let queryParams: Record<string, any>;
+			try {
+				queryParams = this.parseQueryParams(req);
+				c.set('queryParams', queryParams);
+			} catch (e) {
+				logger.warn({ msg: 'Error parsing query params for request', path: req.path, err: e });
+
+				return c.json({ success: false, error: 'Invalid query parameters' }, 400);
+			}
 
 			if (options.query) {
 				const validatorFn = options.query;
@@ -207,6 +214,8 @@ export class Router<
 						method: req.method,
 						path: req.url,
 						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						bodyParams: undefined,
+						queryParams,
 					});
 					return c.json(
 						{
@@ -220,6 +229,7 @@ export class Router<
 			}
 
 			const bodyParams = await this.parseBodyParams({ request: req });
+			c.set('bodyParams', bodyParams);
 
 			if (options.body) {
 				const validatorFn = options.body;
@@ -229,6 +239,8 @@ export class Router<
 						method: req.method,
 						path: req.url,
 						error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+						bodyParams,
+						queryParams: undefined,
 					});
 					return c.json(
 						{
@@ -260,6 +272,7 @@ export class Router<
 						method: req.method,
 						path: req.url,
 						error: responseValidatorFn.errors?.map((error: any) => error.message).join('\n '),
+						originalResponse: body,
 					});
 					return c.json(
 						{
@@ -423,11 +436,7 @@ export class Router<
 		return router;
 	}
 
-	getHonoRouter(): Hono<{
-		Variables: {
-			remoteAddress: string;
-		};
-	}> {
+	getHonoRouter(): InnerRouter {
 		return this.innerRouter;
 	}
 }

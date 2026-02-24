@@ -1,11 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type ShieldSvg = {
 	type?: string;
@@ -181,16 +177,6 @@ const FingerprintSchema = {
 export const isFingerprintProps = ajv.compile<Fingerprint>(FingerprintSchema);
 
 export type MiscEndpoints = {
-	'/v1/stdout.queue': {
-		GET: () => {
-			queue: {
-				id: string;
-				string: string;
-				ts: Date;
-			}[];
-		};
-	};
-
 	'/v1/shield.svg': {
 		GET: (params: ShieldSvg) => {
 			svg: string;

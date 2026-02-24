@@ -5,6 +5,7 @@ import { lazy } from 'react';
 
 import type { LoginCallback } from './overrideLoginMethod';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
+import { getUser } from '../user';
 
 const TwoFactorModal = lazy(() => import('../../components/TwoFactorModal'));
 
@@ -46,7 +47,7 @@ const getProps = (
 		case 'email':
 			return {
 				method,
-				emailOrUsername: typeof emailOrUsername === 'string' ? emailOrUsername : Meteor.user()?.username,
+				emailOrUsername: typeof emailOrUsername === 'string' ? emailOrUsername : getUser()?.username,
 			};
 		case 'password':
 			return { method };
@@ -109,7 +110,7 @@ export async function process2faAsyncReturn<TResult>({
 
 	const props = {
 		method: error.details.method,
-		emailOrUsername: emailOrUsername || error.details.emailOrUsername || Meteor.user()?.username,
+		emailOrUsername: emailOrUsername || error.details.emailOrUsername || getUser()?.username,
 		// eslint-disable-next-line no-nested-ternary
 		invalidAttempt: isTotpInvalidError(error),
 	};

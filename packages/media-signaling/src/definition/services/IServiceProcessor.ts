@@ -13,12 +13,14 @@ export type ServiceStateValue<ServiceStateMap extends DefaultServiceStateMap, K 
 
 export type ServiceProcessorEvents<ServiceStateMap extends DefaultServiceStateMap> = {
 	internalStateChange: keyof ServiceStateMap;
-	internalError: { critical: boolean; error: string | Error };
-	negotiationNeeded: void;
+	internalError: { critical: boolean; error: string | Error; errorDetails?: string };
 };
 
-export interface IServiceProcessor<ServiceStateMap extends DefaultServiceStateMap = DefaultServiceStateMap> {
-	emitter: Emitter<ServiceProcessorEvents<ServiceStateMap>>;
+export interface IServiceProcessor<
+	ServiceStateMap extends DefaultServiceStateMap = DefaultServiceStateMap,
+	ServiceUniqueEvents = Record<never, never>,
+> {
+	emitter: Emitter<ServiceProcessorEvents<ServiceStateMap> & ServiceUniqueEvents>;
 
 	getInternalState<K extends keyof ServiceStateMap>(stateName: K): ServiceStateValue<ServiceStateMap, K>;
 }

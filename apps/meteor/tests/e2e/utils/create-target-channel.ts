@@ -116,3 +116,11 @@ export async function createArchivedChannel(api: BaseTest['api']): Promise<strin
 
 	return channel.name;
 }
+
+export async function createTargetGroupAndReturnFullRoom(
+	api: BaseTest['api'],
+	options?: Omit<GroupsCreateProps, 'name'>,
+): Promise<{ group: IRoom }> {
+	const name = faker.string.uuid();
+	return (await api.post('/groups.create', { name, ...options })).json();
+}
