@@ -148,6 +148,7 @@ export class OmnichannelContactCenterChats extends OmnichannelContactCenter {
 	}
 
 	async openChat(name: string) {
+		await this.inputSearch.fill(name);
 		await this.table.findRowByName(name).click();
 		await this.conversation.openChat();
 		await this.page.locator('#main-content').waitFor();

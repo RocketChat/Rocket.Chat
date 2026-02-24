@@ -34,7 +34,6 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
 
@@ -380,7 +379,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await eraseRoom(findResult.rid, this.userId);
+			await eraseRoom(findResult.rid, this.user);
 
 			return API.v1.success();
 		},
@@ -839,12 +838,7 @@ API.v1.addRoute(
 				return API.v1.failure('Group does not exists');
 			}
 
-			const user = await getLoggedInUser(this.request);
-			if (!user) {
-				return API.v1.failure('User does not exists');
-			}
-
-			if (!(await canAccessRoomAsync(room, user))) {
+			if (!(await canAccessRoomAsync(room, this.user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 

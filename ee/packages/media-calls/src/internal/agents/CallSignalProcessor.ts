@@ -2,19 +2,21 @@ import type {
 	IMediaCall,
 	IMediaCallChannel,
 	MediaCallActorType,
+	MediaCallNegotiationStream,
 	MediaCallSignedActor,
 	MediaCallSignedContact,
 } from '@rocket.chat/core-typings';
 import { isPendingState, isBusyState } from '@rocket.chat/media-signaling';
 import type {
 	ClientMediaSignalTransfer,
-	CallAnswer,
 	CallHangupReason,
 	CallRole,
 	ClientMediaSignal,
 	ClientMediaSignalError,
 	ClientMediaSignalLocalState,
 	ServerMediaSignal,
+	ClientMediaSignalAnswer,
+	CallFeature,
 } from '@rocket.chat/media-signaling';
 import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
@@ -96,9 +98,9 @@ export class UserActorSignalProcessor {
 		// 4. It's a hangup request with reason = 'another-client' and the request came from any valid client of either user
 		switch (signal.type) {
 			case 'local-sdp':
-				return this.saveLocalDescription(signal.sdp, signal.negotiationId);
+				return this.saveLocalDescription(signal.sdp, signal.negotiationId, signal.streams);
 			case 'answer':
-				return this.processAnswer(signal.answer);
+				return this.processAnswer(signal);
 			case 'hangup':
 				return this.hangup(signal.reason);
 			case 'local-state':
@@ -118,20 +120,24 @@ export class UserActorSignalProcessor {
 		return mediaCallDirector.hangup(this.call, this.agent, reason);
 	}
 
-	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit, negotiationId: string): Promise<void> {
+	protected async saveLocalDescription(
+		sdp: RTCSessionDescriptionInit,
+		negotiationId: string,
+		streams?: MediaCallNegotiationStream[],
+	): Promise<void> {
 		if (!this.signed) {
 			return;
 		}
 
-		await mediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId }, this.contractId);
+		await mediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId, streams }, this.contractId);
 	}
 
-	private async processAnswer(answer: CallAnswer): Promise<void> {
-		switch (answer) {
+	private async processAnswer(signal: ClientMediaSignalAnswer): Promise<void> {
+		switch (signal.answer) {
 			case 'ack':
 				return this.clientIsReachable();
 			case 'accept':
-				return this.clientHasAccepted();
+				return this.clientHasAccepted(signal.supportedFeatures || ['audio']);
 			case 'unavailable':
 				return this.clientIsUnavailable();
 			case 'reject':
@@ -266,7 +272,7 @@ export class UserActorSignalProcessor {
 	private async processDTMF(dtmf: string, duration?: number): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.processDTMF', dtmf, duration });
 
-		this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
+		void this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
 	}
 
 	protected async clientIsReachable(): Promise<void> {
@@ -307,13 +313,13 @@ export class UserActorSignalProcessor {
 		await mediaCallDirector.hangup(this.call, this.agent, 'unavailable');
 	}
 
-	protected async clientHasAccepted(): Promise<void> {
+	protected async clientHasAccepted(supportedFeatures: CallFeature[]): Promise<void> {
 		if (!this.isCallPending()) {
 			return;
 		}
 
 		if (this.role === 'callee') {
-			await mediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId });
+			await mediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId, supportedFeatures });
 		}
 	}
 

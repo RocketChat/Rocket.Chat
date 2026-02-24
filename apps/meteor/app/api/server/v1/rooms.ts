@@ -148,7 +148,7 @@ API.v1.addRoute(
 				});
 			}
 
-			await eraseRoom(room, this.userId);
+			await eraseRoom(room, this.user);
 
 			return API.v1.success();
 		},
@@ -271,7 +271,7 @@ API.v1.addRoute(
 			delete this.bodyParams.description;
 
 			await applyAirGappedRestrictionsValidation(() =>
-				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }, { parseAttachmentsForE2EE: false }),
+				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
 			);
 
 			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
@@ -305,26 +305,6 @@ API.v1.addRoute(
 					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
 				),
 			);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.favorite',
-	{ authRequired: true },
-	{
-		async post() {
-			const { favorite } = this.bodyParams;
-
-			if (!this.bodyParams.hasOwnProperty('favorite')) {
-				return API.v1.failure("The 'favorite' param is required");
-			}
-
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-
-			await toggleFavoriteMethod(this.userId, room._id, favorite);
 
 			return API.v1.success();
 		},
@@ -945,6 +925,16 @@ API.v1.addRoute(
 	},
 );
 
+type RoomsFavorite =
+	| {
+			roomId: string;
+			favorite: boolean;
+	  }
+	| {
+			roomName: string;
+			favorite: boolean;
+	  };
+
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
 	properties: {
@@ -953,6 +943,32 @@ const isRoomGetRolesPropsSchema = {
 	additionalProperties: false,
 	required: ['rid'],
 };
+
+const RoomsFavoriteSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomName: { type: 'string' },
+			},
+			required: ['roomName', 'favorite'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomId: { type: 'string' },
+			},
+			required: ['roomId', 'favorite'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+
 export const roomEndpoints = API.v1
 	.get(
 		'rooms.roles',
@@ -1066,39 +1082,70 @@ export const roomEndpoints = API.v1
 				total,
 			});
 		},
+	)
+	.post(
+		'rooms.invite',
+		{
+			authRequired: true,
+			body: isRoomsInviteProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { roomId, action } = this.bodyParams;
+
+			try {
+				await FederationMatrix.handleInvite(roomId, this.userId, action);
+				return API.v1.success();
+			} catch (error) {
+				return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
+			}
+		},
+	)
+	.post(
+		'rooms.favorite',
+		{
+			authRequired: true,
+			body: isRoomsFavoriteProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { favorite } = this.bodyParams;
+
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+			await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+			return API.v1.success();
+		},
 	);
 
-const roomInviteEndpoints = API.v1.post(
-	'rooms.invite',
-	{
-		authRequired: true,
-		body: isRoomsInviteProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-		},
-	},
-	async function action() {
-		const { roomId, action } = this.bodyParams;
-
-		try {
-			await FederationMatrix.handleInvite(roomId, this.userId, action);
-			return API.v1.success();
-		} catch (error) {
-			return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
-		}
-	},
-);
-
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> & ExtractRoutesFromAPI<typeof roomInviteEndpoints>;
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

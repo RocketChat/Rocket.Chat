@@ -465,7 +465,7 @@ API.v1.addRoute(
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
+				executeSendMessage(this.user, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
@@ -835,7 +835,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await followMessage(this.userId, { mid });
+			await followMessage(this.user, { mid });
 
 			return API.v1.success();
 		},
@@ -853,7 +853,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await unfollowMessage(this.userId, { mid });
+			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
 		},
