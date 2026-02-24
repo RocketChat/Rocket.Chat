@@ -12,7 +12,15 @@ export const translateMessage = async (targetLanguage?: string, message?: IMessa
 	}
 
 	const room = await Rooms.findOneById(message?.rid);
+	let translatedMessage;
+	
 	if (message && room) {
-		await TranslationProviderRegistry.translateMessage(message, room, targetLanguage);
+		translatedMessage = await TranslationProviderRegistry.translateMessage(message, room, targetLanguage);
 	}
+
+	if (!translatedMessage) {
+		return;
+	}
+
+	return translatedMessage;
 };

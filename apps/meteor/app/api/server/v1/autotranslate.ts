@@ -1,7 +1,10 @@
 import { Messages } from '@rocket.chat/models';
+import { IMessage } from '@rocket.chat/core-typings';
 import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
 	isAutotranslateSaveSettingsParamsPOST,
-	isAutotranslateTranslateMessageParamsPOST,
 	isAutotranslateGetSupportedLanguagesParamsGET,
 } from '@rocket.chat/rest-typings';
 
@@ -9,6 +12,7 @@ import { getSupportedLanguages } from '../../../autotranslate/server/functions/g
 import { saveAutoTranslateSettings } from '../../../autotranslate/server/functions/saveSettings';
 import { translateMessage } from '../../../autotranslate/server/functions/translateMessage';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -69,29 +73,79 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+type AutotranslateTranslateMessageParamsPOST = {
+	messageId: string;
+	targetLanguage?: string;
+};
+
+const AutotranslateTranslateMessageParamsPostSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+		},
+		targetLanguage: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const isAutotranslateTranslateMessageParamsPOST = ajv.compile<AutotranslateTranslateMessageParamsPOST>(
+	AutotranslateTranslateMessageParamsPostSchema,
+);
+
+const autotranslateEndpoints = API.v1.post(
 	'autotranslate.translateMessage',
 	{
 		authRequired: true,
-		validateParams: isAutotranslateTranslateMessageParamsPOST,
-	},
-	{
-		async post() {
-			const { messageId, targetLanguage } = this.bodyParams;
-			if (!settings.get('AutoTranslate_Enabled')) {
-				return API.v1.failure('AutoTranslate is disabled.');
-			}
-			if (!messageId) {
-				return API.v1.failure('The bodyParam "messageId" is required.');
-			}
-			const message = await Messages.findOneById(messageId);
-			if (!message) {
-				return API.v1.failure('Message not found.');
-			}
-
-			const translatedMessage = await translateMessage(targetLanguage, message);
-
-			return API.v1.success({ message: translatedMessage });
+		body: isAutotranslateTranslateMessageParamsPOST,
+		response: {
+			200: ajv.compile<{ message: IMessage; }>({
+				allOf: [
+					{ $ref: '#/components/schemas/IMessage' },
+					{
+						type: 'object',
+						properties: {
+							message: { $ref: '#/components/schemas/IMessage' },
+							success: { type: 'boolean', enum: [true] },
+						},
+						required: ['message', 'success'],
+					},
+				],
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
 	},
+	async function action() {
+		const { messageId, targetLanguage } = this.bodyParams;
+		if (!settings.get('AutoTranslate_Enabled')) {
+			return API.v1.failure('AutoTranslate is disabled.');
+		}
+		if (!messageId) {
+			return API.v1.failure('The bodyParam "messageId" is required.');
+		}
+		const message = await Messages.findOneById(messageId);
+		if (!message) {
+			return API.v1.failure('Message not found.');
+		}
+
+		const translatedMessage = await translateMessage(targetLanguage, message);
+
+		if (!translatedMessage) {
+			return API.v1.failure('Failed to translate message.');
+		}
+
+		return API.v1.success({ message: translatedMessage });
+	},
 );
+
+type AutotranslateEndpoints = ExtractRoutesFromAPI<typeof autotranslateEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends AutotranslateEndpoints { }
+}
