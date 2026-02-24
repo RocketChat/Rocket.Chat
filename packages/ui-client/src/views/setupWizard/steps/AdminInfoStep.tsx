@@ -17,7 +17,7 @@ const AdminInfoStep = (): ReactElement => {
 	const regexpForUsernameValidation = useSetting('UTF8_User_Names_Validation');
 	const usernameRegExp = new RegExp(`^${regexpForUsernameValidation}$`);
 
-	const { currentStep, validateEmail, registerAdminUser, maxSteps } = useSetupWizardContext();
+	const { currentStep, validateEmail, registerAdminUser, maxSteps, checkUsernameAvailability } = useSetupWizardContext();
 
 	const passwordPolicyOptions = usePasswordPolicyOptions();
 	const validatePasswordPolicy = usePasswordPolicy(passwordPolicyOptions);
@@ -39,10 +39,14 @@ const AdminInfoStep = (): ReactElement => {
 			.join(', ');
 	}, [passwordPolicyValidations.validations, t]);
 
-	// TODO: check if username exists
-	const validateUsername = (username: string): boolean | string => {
+	const validateUsername = async (username: string): Promise<boolean | string> => {
 		if (!usernameRegExp.test(username) || hasBlockedName(username)) {
 			return t('Invalid_username');
+		}
+
+		const isAvailable = await checkUsernameAvailability(username);
+		if (!isAvailable) {
+			return t('Username_already_exist');
 		}
 
 		return true;
