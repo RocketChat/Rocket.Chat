@@ -6,6 +6,7 @@ import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { updateSetting } from '../../data/permissions.helper';
 
 async function insertOrUpdateSound(fileName: string, fileId?: string): Promise<string> {
 	fileId = fileId ?? '';
@@ -44,17 +45,33 @@ async function uploadCustomSound(binary: string, fileName: string, fileId: strin
 		.expect(200);
 }
 
+async function deleteCustomSound(_id: string) {
+	await request
+		.post(api('method.call/deleteCustomSound'))
+		.set(credentials)
+		.send({
+			message: JSON.stringify({
+				msg: 'method',
+				id: '1',
+				method: 'deleteCustomSound',
+				params: [_id],
+			}),
+		})
+		.expect(200);
+}
+
 describe('[CustomSounds]', () => {
 	const fileName = `test-file-${randomUUID()}`;
 	let fileId: string;
 	let fileId2: string;
 	let uploadDate: string | undefined;
+	let binary: string;
 
 	before((done) => getCredentials(done));
 
 	before(async () => {
 		const data = readFileSync(path.resolve(__dirname, '../../mocks/files/audio_mock.wav'));
-		const binary = data.toString('binary');
+		binary = data.toString('binary');
 
 		fileId = await insertOrUpdateSound(fileName);
 		fileId2 = await insertOrUpdateSound(`${fileName}-2`);
@@ -235,6 +252,43 @@ describe('[CustomSounds]', () => {
 					_id: '{"$regex":".*"}',
 				})
 				.expect(404); // valid string, but it doesn't exist
+		});
+	});
+
+	describe('Storage settings reactivity', () => {
+		let fsFileId: string;
+		let gridFsFileId: string;
+
+		before(async () => {
+			await updateSetting('CustomSounds_Storage_Type', 'FileSystem', true);
+			fsFileId = await insertOrUpdateSound(`${fileName}-3`);
+			await uploadCustomSound(binary, `${fileName}-3`, fsFileId);
+
+			await updateSetting('CustomSounds_Storage_Type', 'GridFS', true);
+			gridFsFileId = await insertOrUpdateSound(`${fileName}-4`);
+			await uploadCustomSound(binary, `${fileName}-4`, gridFsFileId);
+		});
+
+		it('should respect CustomSounds_Storage_Type changes when resolving files', async () => {
+			await updateSetting('CustomSounds_Storage_Type', 'FileSystem', true);
+			await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(404);
+			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
+			await updateSetting('CustomSounds_Storage_Type', 'GridFS', true);
+			await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(200);
+			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
+		});
+
+		it('should respect CustomSounds_FileSystemPath changes when resolving files', async () => {
+			await updateSetting('CustomSounds_Storage_Type', 'FileSystem', true);
+			await updateSetting('CustomSounds_FileSystemPath', '~/sounds', true);
+			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
+			await updateSetting('CustomSounds_FileSystemPath', '', true);
+			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
+		});
+
+		after(async () => {
+			await deleteCustomSound(fsFileId);
+			await deleteCustomSound(gridFsFileId);
 		});
 	});
 });
