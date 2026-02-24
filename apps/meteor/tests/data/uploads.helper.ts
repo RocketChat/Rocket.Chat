@@ -1,4 +1,5 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { Credentials } from '@rocket.chat/api-client';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, it } from 'mocha';
 import type { Response } from 'supertest';
@@ -6,8 +7,9 @@ import type { Response } from 'supertest';
 import { api, request, credentials } from './api-data';
 import { imgURL, soundURL } from './interactions';
 import { updateSetting } from './permissions.helper';
-import { createRoom, deleteRoom } from './rooms.helper';
-import { createUser, deleteUser } from './users.helper';
+import { addUserToRoom, createRoom, deleteRoom } from './rooms.helper';
+import { password } from './user';
+import { createUser, deleteUser, login } from './users.helper';
 
 export async function testFileUploads(
 	filesEndpoint: 'channels.files' | 'groups.files' | 'im.files',
@@ -300,5 +302,106 @@ export async function testFileUploads(
 			});
 
 		await Promise.all([nameFilterTest, typeGroupFilterTest]);
+	});
+
+	describe('with another user', () => {
+		let anotherUserCreds: Credentials;
+		let anotherUser: IUser;
+		let extraRoom: IRoom;
+
+		before(async () => {
+			anotherUser = await createUser();
+			anotherUserCreds = await login(anotherUser.username, password);
+
+			extraRoom = (
+				await createRoom({
+					type: roomType,
+					...(roomType === 'd' ? { username: user.username } : { name: `channel-files-${Date.now()}` }),
+					credentials: anotherUserCreds,
+				} as any)
+			).body[propertyMap[roomType]];
+
+			if (roomType === 'p') {
+				// add user to room so they can upload files to it
+				await addUserToRoom({
+					rid: testRoom._id,
+					usernames: [anotherUser.username!],
+				});
+			}
+		});
+
+		after(() => Promise.all([deleteUser(anotherUser), deleteRoom({ type: roomType, roomId: extraRoom._id })]));
+
+		it('should not allow to confirm a file from another user', async function () {
+			if (roomType === 'd') {
+				this.skip();
+			}
+
+			let fileId: string;
+			await request
+				.post(api(`rooms.media/${testRoom._id}`))
+				.set(anotherUserCreds)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should not allow to confirm a file thats already confirmed (even by same user)', async () => {
+			let fileId: string;
+
+			await request
+				.post(api(`rooms.media/${testRoom._id}`))
+				.set(credentials)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should not allow to confirm a file that was not uploaded to the same room', async () => {
+			let fileId: string;
+
+			await request
+				.post(api(`rooms.media/${extraRoom._id}`))
+				.set(anotherUserCreds)
+				.attach('file', imgURL)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					fileId = res.body.file._id;
+				});
+
+			await request
+				.post(api(`rooms.mediaConfirm/${testRoom._id}/${fileId!}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
 	});
 }
