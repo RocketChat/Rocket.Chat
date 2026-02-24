@@ -43,23 +43,19 @@ const makeSubscription = (connectionId: string): TestSubscription => {
 };
 
 describe('Streamer.sendToManySubscriptions', () => {
-	const createdStreamers: string[] = [];
+	let streamer: TestStreamer;
+	let streamerNameSeed = 0;
 
-	const createStreamer = (): TestStreamer => {
-		const name = `streamer-test-${Date.now()}-${Math.random()}`;
-		createdStreamers.push(name);
-		return new TestStreamer(name);
-	};
+	beforeEach(() => {
+		streamer = new TestStreamer(`streamer-test-${streamerNameSeed++}`);
+	});
 
 	afterEach(() => {
 		sinon.restore();
-		for (const name of createdStreamers.splice(0)) {
-			delete StreamerCentral.instances[name];
-		}
+		delete StreamerCentral.instances[streamer.name];
 	});
 
 	it('waits for async permission checks before resolving', async () => {
-		const streamer = createStreamer();
 		const sub = makeSubscription('conn-1');
 
 		const isEmitAllowed = sinon.stub(streamer, 'isEmitAllowed').resolves(true);
@@ -75,8 +71,6 @@ describe('Streamer.sendToManySubscriptions', () => {
 	});
 
 	it('skips origin subscription and sends only to allowed subscriptions', async () => {
-		const streamer = createStreamer();
-
 		const originSub = makeSubscription('origin');
 		const allowedSub = makeSubscription('allowed');
 		const deniedSub = makeSubscription('denied');
@@ -99,8 +93,6 @@ describe('Streamer.sendToManySubscriptions', () => {
 	});
 
 	it('continues dispatching to other subscribers when a permission check rejects', async () => {
-		const streamer = createStreamer();
-
 		const failingSub = makeSubscription('failing');
 		const successSub = makeSubscription('success');
 		const error = new Error('boom');
