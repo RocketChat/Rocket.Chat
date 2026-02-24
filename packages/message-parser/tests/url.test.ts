@@ -176,13 +176,13 @@ describe('autoLink helper function', () => {
 });
 
 describe('autoLink with underscore-prefixed patterns', () => {
-	// When a domain-like string is preceded by '_' (italic marker) and followed by '_',
-	// the trailing '_' makes the TLD invalid so the whole thing is returned as plain text.
-	// This behaviour is unaffected by the numeric-italic fix (which only targets _DIGIT.xxx patterns).
+	// When a domain-like string is wrapped in '_' italic markers, the trailing '_' is no longer
+	// consumed as part of the domain label or URL body, so the domain auto-links correctly
+	// and the trailing '_' is emitted as a separate plain-text character.
 	test.each([
-		['_example.com_', [paragraph([plain('_example.com_')])]],
-		['_rocket.chat_', [paragraph([plain('_rocket.chat_')])]],
-		// Without a closing '_', the domain (including the leading '_') is still auto-linked.
+		['_example.com_', [paragraph([autoLink('_example.com'), plain('_')])]],
+		['_rocket.chat_', [paragraph([autoLink('_rocket.chat'), plain('_')])]],
+		// Without a closing '_', the domain (including the leading '_') is auto-linked as before.
 		['_example.com', [paragraph([autoLink('_example.com')])]],
 	])('parses %p', (input, output) => {
 		expect(parse(input)).toMatchObject(output);

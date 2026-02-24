@@ -349,7 +349,7 @@ URLScheme = $([A-Za-z0-9+-] |1..32| ":")
 
 URLBody
   = (
-    !(Extra+ (Whitespace / EndOfLine) / Whitespace)
+    !(Extra+ (Whitespace / EndOfLine) / [\x5F]+ (Whitespace / EndOfLine / !.) / Whitespace)
     (AnyText / [*\[\/\]\^_`{}~(])
   )+
 
@@ -374,7 +374,7 @@ DomainName
   = "localhost"
   / $(!([\x5F][0-9]) DomainNameLabel ("." DomainChar DomainNameLabel*)+)
 
-DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
+DomainNameLabel = $((!([\x5F]) DomainChar / [\x5F] DomainChar)+)
 
 DomainChar = !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`\[\]] .
 
@@ -433,7 +433,7 @@ AutoLinkURL
   = $(URLScheme URLAuthority AutoLinkURLBody*)
   / $(URLAuthorityHost AutoLinkURLBody*)
 
-AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine)) .
+AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine) / [\x5F]+ (Whitespace / EndOfLine / !.)) .
 
 /**
  *
