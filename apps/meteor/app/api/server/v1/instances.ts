@@ -30,6 +30,7 @@ API.v1.get(
 					instanceRecord: object;
 					broadcastAuth: boolean;
 				}[];
+				success: true;
 			}>({
 				type: 'object',
 				properties: {
@@ -38,20 +39,20 @@ API.v1.get(
 						items: {
 							type: 'object',
 							properties: {
-								address: { type: 'string', nullable: true },
+								address: { type: 'string' },
 								currentStatus: {
 									type: 'object',
 									properties: {
 										connected: { type: 'boolean' },
-										lastHeartbeatTime: { type: 'number', nullable: true },
-										local: { type: 'boolean', nullable: true },
+										lastHeartbeatTime: { type: 'number' },
+										local: { type: 'boolean' },
 									},
 									required: ['connected'],
 								},
 								instanceRecord: { type: 'object' },
 								broadcastAuth: { type: 'boolean' },
 							},
-							required: ['currentStatus', 'broadcastAuth'],
+							required: ['currentStatus', 'instanceRecord', 'broadcastAuth'],
 						},
 					},
 					success: {
