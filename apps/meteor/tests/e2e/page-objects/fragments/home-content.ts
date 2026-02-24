@@ -53,6 +53,10 @@ export class HomeContent {
 		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="message"]');
 	}
 
+	get systemMessageListItems(): Locator {
+		return this.mainMessageList.locator('[role="listitem"][aria-roledescription="system message"]');
+	}
+
 	get threadMessageListItems(): Locator {
 		return this.threadMessageList.locator('[role="listitem"][aria-roledescription="thread message"]');
 	}
@@ -199,7 +203,10 @@ export class HomeContent {
 	// -----------------------------------------
 
 	getLastMessageByFileName(filename: string): Locator {
-		return this.messageListItems.last().getByRole('link', { name: filename });
+		return this.messageListItems
+			.filter({ has: this.page.getByRole('link', { name: filename }) })
+			.last()
+			.getByRole('link', { name: filename });
 	}
 
 	get lastMessageTextAttachment(): Locator {

@@ -16,7 +16,7 @@ export class EncryptedRoomPage extends HomeContent {
 	}
 
 	lastNthMessage(index: number) {
-		return new Message(this.nthMessage(index - 1));
+		return new Message(this.nthMessage(-index - 1));
 	}
 
 	async enableEncryption() {

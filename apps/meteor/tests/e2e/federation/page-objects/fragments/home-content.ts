@@ -191,8 +191,8 @@ export class FederationHomeContent {
 
 	async openLastMessageMenu(): Promise<void> {
 		await this.lastUserMessage.hover();
-		await this.lastThreadMessageText.getByRole('button', { name: 'More', exact: true }).waitFor();
-		await this.lastThreadMessageText.getByRole('button', { name: 'More', exact: true }).click();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	threadSendToChannelAlso(): Locator {
