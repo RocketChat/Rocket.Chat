@@ -3,7 +3,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { VirtualizedScrollbars, ContextualbarEmptyContent } from '@rocket.chat/ui-client';
 import { useSetting, useTranslation, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { Fragment, memo, useState, useMemo } from 'react';
+import { Fragment, memo, useState } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import RoomMessage from '../../../../../components/message/variants/RoomMessage';
@@ -31,9 +31,9 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 	const subscription = useRoomSubscription();
 	const messageSearchQuery = useMessageSearchQuery({ searchText, limit, globalSearch });
 
-	const tunreadSet = useMemo(() => new Set(subscription?.tunread || []), [subscription?.tunread]);
-	const tunreadUserSet = useMemo(() => new Set(subscription?.tunreadUser || []), [subscription?.tunreadUser]);
-	const tunreadGroupSet = useMemo(() => new Set(subscription?.tunreadGroup || []), [subscription?.tunreadGroup]);
+	const tunreadSet = new Set(subscription?.tunread || []);
+	const tunreadUserSet = new Set(subscription?.tunreadUser || []);
+	const tunreadGroupSet = new Set(subscription?.tunreadGroup || []);
 
 	return (
 		<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
