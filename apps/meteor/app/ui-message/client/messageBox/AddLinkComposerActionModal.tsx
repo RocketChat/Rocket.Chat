@@ -4,6 +4,8 @@ import { useEffect, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { isValidLink } from '../../../../client/views/room/MessageList/lib/isValidLink';
+
 type AddLinkComposerActionModalProps = {
 	selectedText?: string;
 	onConfirm: (url: string, text: string) => void;
@@ -57,10 +59,7 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 							control={control}
 							name='url'
 							rules={{
-								pattern: {
-									value: /^https?:\/\/.+$/,
-									message: t("URL_must_start_with_'http://'_or_'https://'"),
-								},
+								validate: (value) => isValidLink(value) || t('Invalid_URL'),
 								required: {
 									value: true,
 									message: t(`URL_is_required`),
