@@ -184,4 +184,57 @@ describe('[CustomSounds]', () => {
 				.end(done);
 		});
 	});
+
+	describe('[/custom-sounds.getOne]', () => {
+		it('should return unauthorized if not authenticated', async () => {
+			await request.get(api('custom-sounds.getOne')).query({ _id: fileId }).expect(401);
+		});
+
+		it('should return not found if custom sound does not exist', async () => {
+			await request.get(api('custom-sounds.getOne')).set(credentials).query({ _id: 'invalid-id' }).expect(404);
+		});
+
+		it('should return bad request if the _id length is not more than one', async () => {
+			await request.get(api('custom-sounds.getOne')).set(credentials).query({ _id: '' }).expect(400);
+		});
+
+		it('should return the custom sound successfully', async () => {
+			await request
+				.get(api('custom-sounds.getOne'))
+				.set(credentials)
+				.query({ _id: fileId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('sound').and.to.be.an('object');
+					expect(res.body.sound).to.have.property('_id', fileId);
+					expect(res.body.sound).to.have.property('name').and.to.be.a('string');
+					expect(res.body.sound).to.have.property('extension').and.to.be.a('string');
+				});
+		});
+
+		it('should reject regex injection via query object', async () => {
+			await request
+				.get(api('custom-sounds.getOne'))
+				.set(credentials)
+				.query({
+					_id: { $regex: '.*' },
+				})
+				.expect(400);
+		});
+
+		it('should reject regex injection via bracket syntax', async () => {
+			await request.get(api('custom-sounds.getOne')).set(credentials).query('_id[$regex]=.*').expect(400);
+		});
+
+		it('should reject encoded regex injection attempt', async () => {
+			await request
+				.get(api('custom-sounds.getOne'))
+				.set(credentials)
+				.query({
+					_id: '{"$regex":".*"}',
+				})
+				.expect(404); // valid string, but it doesn't exist
+		});
+	});
 });
