@@ -24,6 +24,7 @@ export const supportedLocales = [
 	'gl',
 	'gu',
 	'he',
+	'hi', // kept for backwards compatibility so locale resolver can still match incoming "hi"
 	'hi-IN',
 	'hr',
 	'hu',
