@@ -104,17 +104,13 @@ const autotranslateEndpoints = API.v1.post(
 		body: isAutotranslateTranslateMessageParamsPOST,
 		response: {
 			200: ajv.compile<{ message: IMessage; }>({
-				allOf: [
-					{ $ref: '#/components/schemas/IMessage' },
-					{
-						type: 'object',
-						properties: {
-							message: { $ref: '#/components/schemas/IMessage' },
-							success: { type: 'boolean', enum: [true] },
-						},
-						required: ['message', 'success'],
-					},
-				],
+				type: 'object',
+				properties: {
+					message: { $ref: '#/components/schemas/IMessage' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['message', 'success'],
+				additionalProperties: false,
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
