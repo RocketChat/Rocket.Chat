@@ -63,10 +63,10 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const { data: workspaceHasInstalledAddon = false } = useHasLicenseModule(app.installedAddon);
 
 	const [isLoading, setLoading] = useState(false);
-	const [requestedEndUser, setRequestedEndUser] = useState(app.requestedEndUser);
+	const [hasEndUserRequest, setHasEndUserRequest] = useState(app.requestedEndUser);
 	const [isAppPurchased, setPurchased] = useState(app?.isPurchased);
 
-	const button = appButtonProps({ ...app, isAdminUser, endUserRequested: false });
+	const button = appButtonProps({ ...app, isAdminUser, hasEndUserRequest });
 	const buttonLabel = button?.label.replace(' ', '_') as
 		| 'Update'
 		| 'Install'
@@ -98,7 +98,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		async (action: Actions | '', permissionsGranted?: AppPermission[]) => {
 			if (action) {
 				if (action === 'request') {
-					setRequestedEndUser(true);
+					setHasEndUserRequest(true);
 				} else {
 					await marketplaceActions[action]({ ...app, permissionsGranted });
 				}
@@ -355,7 +355,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 				!!button && {
 					id: 'acquire',
 					section: 0,
-					disabled: requestedEndUser,
+					disabled: hasEndUserRequest,
 					content: (
 						<>
 							{isAdminUser && <Icon name={incompatibleIconName(app, 'install')} size='x16' mie={4} />}
@@ -470,7 +470,7 @@ export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 		t,
 		handleSubscription,
 		button,
-		requestedEndUser,
+		hasEndUserRequest,
 		buttonLabel,
 		handleAcquireApp,
 		isEnterpriseLicense,
