@@ -2,7 +2,7 @@ import * as core from '@actions/core';
 import * as github from '@actions/github';
 import semver from 'semver';
 
-import { checkoutBranch, commitChanges, createBranch, pushNewBranch } from './gitUtils';
+import { checkoutBranch, commitChanges, createBranch, doesBranchExist, pushNewBranch } from './gitUtils';
 import { setupOctokit } from './setupOctokit';
 import { createBumpFile, readPackageJson } from './utils';
 
@@ -31,7 +31,11 @@ export async function startPatchRelease({
 
 	const newBranch = `release-${newVersion}`;
 
-	// TODO check if branch exists
+	const branchExists = await doesBranchExist(newBranch);
+	if (branchExists) {
+		throw new Error(`Branch ${newBranch} already exists. A release for version ${newVersion} may already be in progress.`);
+	}
+
 	await createBranch(newBranch);
 
 	// by creating a changeset we make sure we'll always bump the version

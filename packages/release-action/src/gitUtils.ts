@@ -50,3 +50,13 @@ export async function pushNewBranch(newBranch: string, force = false) {
 
 	await exec('git', params);
 }
+
+export async function doesBranchExist(branchName: string) {
+	const { exitCode } = await getExecOutput(
+		'git',
+		['ls-remote', '--exit-code', '--heads', 'origin', branchName],
+		{ ignoreReturnCode: true }, // prevents throwing on non-zero exit code
+	);
+
+	return exitCode === 0;
+}
