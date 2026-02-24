@@ -64,8 +64,7 @@ export class RestClient implements RestClientInterface {
 	private credentials: Credentials | undefined;
 
 	constructor({ baseUrl, credentials, headers = {} }: { baseUrl: string; credentials?: Credentials; headers?: Record<string, string> }) {
-		const url = new URL(baseUrl);
-		this.baseUrl = `${url.origin}/api`;
+		this.baseUrl = `${baseUrl}/api`;
 		this.setCredentials(credentials);
 		this.headers = headers;
 	}
