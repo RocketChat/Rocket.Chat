@@ -108,7 +108,7 @@ export class CachedSettings
 	 */
 	public override has(_id: ISetting['_id']): boolean {
 		if (!this.ready && warn) {
-			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
+			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 		return this.store.has(_id);
 	}
@@ -120,7 +120,7 @@ export class CachedSettings
 	 */
 	public getSetting(_id: ISetting['_id']): ISetting | undefined {
 		if (!this.ready && warn) {
-			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
+			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 		return this.store.get(_id);
 	}
@@ -134,7 +134,7 @@ export class CachedSettings
 	 */
 	public get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T {
 		if (!this.ready && warn) {
-			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
+			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 		return this.store.get(_id)?.value as T;
 	}
@@ -148,7 +148,7 @@ export class CachedSettings
 	 */
 	public getByRegexp<T extends SettingValue = SettingValue>(_id: RegExp): [string, T][] {
 		if (!this.ready && warn) {
-			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
+			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 
 		return [...this.store.entries()].filter(([key]) => _id.test(key)).map(([key, setting]) => [key, setting.value]) as [string, T][];

@@ -3,7 +3,6 @@ import { api } from '@rocket.chat/core-services';
 import { isUserFederated, type IUser } from '@rocket.chat/core-typings';
 import {
 	Integrations,
-	FederationServers,
 	LivechatVisitors,
 	LivechatDepartmentAgents,
 	Messages,
@@ -73,11 +72,17 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				const store = FileUpload.getStore('Uploads');
 				const cursor = Messages.findFilesByUserId(userId);
 
-				for await (const { file } of cursor) {
-					if (!file) {
-						continue;
+				for await (const { file, files } of cursor) {
+					const fileIds = files?.map(({ _id }) => _id) || [];
+					for await (const fileId of fileIds) {
+						if (fileId) {
+							await store.deleteById(fileId);
+						}
 					}
-					await store.deleteById(file._id);
+
+					if (file?._id && !fileIds.includes(file._id)) {
+						await store.deleteById(file._id);
+					}
 				}
 
 				await Messages.removeByUserId(userId);
@@ -170,9 +175,6 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 
 	// update name and fname of group direct messages
 	await updateGroupDMsName(user);
-
-	// Refresh the servers list
-	await FederationServers.refreshServers();
 
 	void notifyOnUserChange({ clientAction: 'removed', id: user._id });
 

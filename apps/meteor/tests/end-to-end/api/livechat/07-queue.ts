@@ -19,6 +19,7 @@ import {
 	getLivechatRoomInfo,
 	makeAgentAvailable,
 	updateDepartment,
+	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
 import { createAnOnlineAgent, updateLivechatSettingsForUser } from '../../../data/livechat/users';
 import { sleep } from '../../../data/livechat/utils';
@@ -28,7 +29,12 @@ import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 const cleanupRooms = async () => {
-	const response = await request.get(api('livechat/queue')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+	const response = await request
+		.get(api('livechat/queue'))
+		.set(credentials)
+		.query({ count: 100 })
+		.expect('Content-Type', 'application/json')
+		.expect(200);
 
 	const { queue } = response.body;
 
@@ -101,6 +107,20 @@ describe('LIVECHAT - Queue', () => {
 					expect(res.body).to.have.property('offset');
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
+				});
+		});
+		it('should have an empty queue (cause we removed everything above)', async () => {
+			await request
+				.get(api('livechat/queue'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.queue).to.be.an('array').that.is.empty;
+					expect(res.body).to.have.property('offset', 0);
+					expect(res.body).to.have.property('total', 0);
+					expect(res.body).to.have.property('count', 0);
 				});
 		});
 	});
@@ -390,6 +410,8 @@ describe('LIVECHAT - Queue', () => {
 	let testUser: { user: IUser; credentials: Credentials };
 	let testDepartment: ILivechatDepartment;
 	let testDepartment2: ILivechatDepartment;
+	const roomsToClose: IOmnichannelRoom[] = [];
+	const visitorsToDelete: ILivechatVisitor[] = [];
 
 	before((done) => getCredentials(done));
 
@@ -427,6 +449,8 @@ describe('LIVECHAT - Queue', () => {
 	});
 
 	after(async () => {
+		await Promise.all(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+		await Promise.all(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
 		await Promise.all([
 			deleteUser(testUser.user),
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
@@ -441,6 +465,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should allow a user to take a chat on a department since agent limit is set to 1 and department limit is set to 2 (agent has 0 chats)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -454,6 +480,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow a user to take a chat on a department since agent limit is set to 1 and department limit is set to 2 (agent has 1 chat)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -475,6 +503,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take chat on department B when agent limit is 2 and already has 2 chats', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -498,6 +528,8 @@ describe('LIVECHAT - Queue', () => {
 		await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 0 }, [testDepartment._id, testDepartment2._id]);
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -509,6 +541,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take a chat on department B when is on the limit (user has 4 chats, 2 chats on department B)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -537,6 +571,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should allow user to take a chat on department B (user has 5 chats, global limit is 6, department limit is 0)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -548,6 +584,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take a chat on department B (user has 6 chats, global limit is 6, department limit is 0)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -569,6 +607,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take chat on department A (as limit for it hasnt changed)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -592,6 +632,8 @@ describe('LIVECHAT - Queue', () => {
 
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -620,6 +662,8 @@ describe('LIVECHAT - Queue', () => {
 	let testDepartment: ILivechatDepartment;
 	let testDepartment2: ILivechatDepartment;
 	let testDepartment3: ILivechatDepartment;
+	const roomsToClose: IOmnichannelRoom[] = [];
+	const visitorsToDelete: ILivechatVisitor[] = [];
 
 	before((done) => getCredentials(done));
 
@@ -643,6 +687,8 @@ describe('LIVECHAT - Queue', () => {
 		const credentials4 = await login(user2.username, password);
 		await makeAgentAvailable(credentials3);
 		await makeAgentAvailable(credentials4);
+
+		await updatePermission('transfer-livechat-guest', ['livechat-agent']);
 
 		testUser = {
 			user,
@@ -679,8 +725,11 @@ describe('LIVECHAT - Queue', () => {
 	});
 
 	after(async () => {
+		await Promise.all(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+		await Promise.all(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
 		await Promise.all([
 			deleteUser(testUser.user),
+			deleteUser(testUser2.user),
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
 			updateEESetting('Livechat_waiting_queue', false),
 			updateSetting('Livechat_Routing_Method', 'Auto_Selection'),
@@ -695,6 +744,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should allow a user to take a chat on a department since agent limit is set to 1 and department limit is set to 2 (agent has 0 chats)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -708,6 +759,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow a user to take a chat on a department since agent limit is set to 1 and department limit is set to 2 (agent has 1 chat)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -729,6 +782,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take chat on department B when agent limit is 2 and already has 2 chats', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -752,6 +807,8 @@ describe('LIVECHAT - Queue', () => {
 		await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 0 }, [testDepartment._id, testDepartment2._id]);
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -763,6 +820,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take a chat on department B when is on the limit (user has 4 chats, 2 chats on department B)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -791,6 +850,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should allow user to take a chat on department B (user has 5 chats, global limit is 6, department limit is 0)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -802,6 +863,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take a chat on department B (user has 6 chats, global limit is 6, department limit is 0)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -823,6 +886,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take chat on department A (as limit for it hasnt changed)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -846,6 +911,8 @@ describe('LIVECHAT - Queue', () => {
 
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -874,11 +941,131 @@ describe('LIVECHAT - Queue', () => {
 
 		const visitor = await createVisitor(testDepartment3._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
 
 		expect(roomInfo.servedBy).to.be.an('object');
 		expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
+	});
+
+	describe('when forwarding a chat to an agent already at their limit', () => {
+		let forwardingRoom: { _id: string };
+		let otherRoom: { _id: string };
+		let visitor1: ILivechatVisitor;
+		let visitor2: ILivechatVisitor;
+		let forwardingDept: ILivechatDepartment;
+		let forwardUserA: { user: IUser; credentials: Credentials };
+		let forwardUserB: { user: IUser; credentials: Credentials };
+
+		before(async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+
+			const userA = await createUser();
+			const userB = await createUser();
+
+			await createAgent(userA.username);
+			await createAgent(userB.username);
+
+			const credA = await login(userA.username, password);
+			const credB = await login(userB.username, password);
+
+			await makeAgentAvailable(credA);
+			await makeAgentAvailable(credB);
+
+			forwardUserA = { user: userA, credentials: credA };
+			forwardUserB = { user: userB, credentials: credB };
+
+			forwardingDept = await createDepartment(
+				[{ agentId: forwardUserA.user._id }, { agentId: forwardUserB.user._id }],
+				`${new Date().toISOString()}-forward-limit`,
+				true,
+				{
+					maxNumberSimultaneousChat: 1,
+				},
+			);
+
+			await updateLivechatSettingsForUser(forwardUserA.user._id, { maxNumberSimultaneousChat: 1 }, [forwardingDept._id]);
+			await updateLivechatSettingsForUser(forwardUserB.user._id, { maxNumberSimultaneousChat: 1 }, [forwardingDept._id]);
+
+			// Force agent A to take a room on the dedicated department
+			const { room: room1, visitor } = await startANewLivechatRoomAndTakeIt({
+				departmentId: forwardingDept._id,
+				agent: forwardUserA.credentials,
+			});
+			visitor1 = visitor;
+
+			const roomInfo1 = await getLivechatRoomInfo(room1._id);
+			expect(roomInfo1.servedBy).to.be.an('object');
+			expect(roomInfo1.servedBy?._id).to.be.equal(forwardUserA.user._id);
+			otherRoom = room1;
+		});
+
+		before(async () => {
+			// Force agent B to take another room on the same department
+			const { room: room2, visitor } = await startANewLivechatRoomAndTakeIt({
+				departmentId: forwardingDept!._id,
+				agent: forwardUserB.credentials,
+			});
+			visitor2 = visitor;
+
+			const roomInfo2 = await getLivechatRoomInfo(room2._id);
+			expect(roomInfo2.servedBy).to.be.an('object');
+			expect(roomInfo2.servedBy?._id).to.be.equal(forwardUserB.user._id);
+
+			forwardingRoom = room2;
+		});
+
+		after(async () => {
+			await closeOmnichannelRoom(forwardingRoom._id);
+			await closeOmnichannelRoom(otherRoom._id);
+			await deleteDepartment(forwardingDept._id);
+			await deleteVisitor(visitor1._id);
+			await deleteVisitor(visitor2._id);
+			await deleteUser(forwardUserA.user);
+			await deleteUser(forwardUserB.user);
+		});
+
+		it('should not allow forwarding and should not add system messages to the room', async () => {
+			const res = await request.post(api('livechat/room.forward')).set(forwardUserB.credentials).send({
+				roomId: forwardingRoom._id,
+				userId: forwardUserA.user._id,
+				clientAction: true,
+				comment: 'forward to agent at limit',
+			});
+
+			expect(res.status).to.equal(400);
+			expect(res.body).to.have.property('success', false);
+
+			const messagesResponse = await request.get(api('channels.messages')).set(credentials).query({ roomId: forwardingRoom._id });
+
+			expect(messagesResponse.status).to.equal(200);
+			expect(messagesResponse.body).to.have.property('messages');
+			const systemMessages = messagesResponse.body.messages.filter((msg: any) => msg.t === 'livechat_transfer_history');
+			expect(systemMessages).to.have.length(0);
+		});
+
+		it('should allow forwarding with the waiting queue disabled', async () => {
+			await updateEESetting('Livechat_waiting_queue', false);
+
+			const res = await request.post(api('livechat/room.forward')).set(forwardUserB.credentials).send({
+				roomId: forwardingRoom._id,
+				userId: forwardUserA.user._id,
+				clientAction: true,
+				comment: 'forward to agent at limit with waiting queue disabled',
+			});
+
+			expect(res.status).to.equal(200);
+			expect(res.body).to.have.property('success', true);
+
+			const messagesResponse = await request.get(api('channels.messages')).set(credentials).query({ roomId: forwardingRoom._id });
+
+			expect(messagesResponse.status).to.equal(200);
+			expect(messagesResponse.body).to.have.property('messages');
+			const systemMessages = messagesResponse.body.messages.filter((msg: any) => msg.t === 'livechat_transfer_history');
+			expect(systemMessages).to.have.length.greaterThan(0);
+		});
 	});
 });

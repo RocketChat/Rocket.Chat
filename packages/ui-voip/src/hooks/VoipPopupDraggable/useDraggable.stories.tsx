@@ -55,7 +55,10 @@ const DraggableElement = ({
 			backgroundColor={backgroundColor ?? 'blue'}
 			data-testid='draggable-box'
 		>
-			<Box ref={handleRef} id='drag-handle' width='100%' height={40} backgroundColor='red' data-testid='drag-handle' />
+			{/* This text inside the handle is necessary so that the text selection test doesn't fail due to having no text nodes */}
+			<Box ref={handleRef} id='drag-handle' width='100%' height={40} backgroundColor='red' data-testid='drag-handle'>
+				Handle
+			</Box>
 			{!!onClick && (
 				<Button data-testid='change-view' onClick={onClick}>
 					Change view
@@ -234,10 +237,10 @@ export const DraggingBehavior: Story = {
 
 			await moveHelper(handle, { x: 100, y: 100 });
 
-			await waitFor(() => {
+			await waitFor(async () => {
 				const finalRect = draggable.getBoundingClientRect();
-				expect(finalRect.x).toBeCloseTo(initialRect.x + 100, 0);
-				expect(finalRect.y).toBeCloseTo(initialRect.y + 100, 0);
+				await expect(finalRect.x).toBeCloseTo(initialRect.x + 100, 0);
+				await expect(finalRect.y).toBeCloseTo(initialRect.y + 100, 0);
 			});
 		});
 
@@ -248,10 +251,10 @@ export const DraggingBehavior: Story = {
 
 			await moveHelper(draggable, { x: 100, y: 100 });
 
-			await waitFor(() => {
+			await waitFor(async () => {
 				const finalRect = draggable.getBoundingClientRect();
-				expect(finalRect.x).toBeCloseTo(initialRect.x, 0);
-				expect(finalRect.y).toBeCloseTo(initialRect.y, 0);
+				await expect(finalRect.x).toBeCloseTo(initialRect.x, 0);
+				await expect(finalRect.y).toBeCloseTo(initialRect.y, 0);
 			});
 		});
 
@@ -278,10 +281,10 @@ export const DraggingBehavior: Story = {
 
 			await fireEvent.pointerUp(document.documentElement);
 
-			await waitFor(() => {
+			await waitFor(async () => {
 				const finalRect = draggable.getBoundingClientRect();
-				expect(finalRect.x).toBeCloseTo(initialRect.x, 0);
-				expect(finalRect.y).toBeCloseTo(initialRect.y, 0);
+				await expect(finalRect.x).toBeCloseTo(initialRect.x, 0);
+				await expect(finalRect.y).toBeCloseTo(initialRect.y, 0);
 			});
 		});
 	},
@@ -299,11 +302,11 @@ export const BoundingBehavior: Story = {
 
 			await moveHelper(handle, { x: -500, y: -500 });
 
-			await waitFor(() => {
+			await waitFor(async () => {
 				const finalRect = draggable.getBoundingClientRect();
 				const boundingBoxRect = boundingBox.getBoundingClientRect();
-				expect(finalRect.left).toBeGreaterThanOrEqual(boundingBoxRect.left);
-				expect(finalRect.top).toBeGreaterThanOrEqual(boundingBoxRect.top);
+				await expect(finalRect.left).toBeGreaterThanOrEqual(boundingBoxRect.left);
+				await expect(finalRect.top).toBeGreaterThanOrEqual(boundingBoxRect.top);
 			});
 		});
 
@@ -314,11 +317,11 @@ export const BoundingBehavior: Story = {
 
 			await moveHelper(handle, { x: BOUNDING_SIZE + 500, y: BOUNDING_SIZE + 500 });
 
-			await waitFor(() => {
+			await waitFor(async () => {
 				const finalRect = draggable.getBoundingClientRect();
 				const currentBoundingBoxRect = boundingBox.getBoundingClientRect();
-				expect(finalRect.right).toBeLessThanOrEqual(currentBoundingBoxRect.right + 1);
-				expect(finalRect.bottom).toBeLessThanOrEqual(currentBoundingBoxRect.bottom + 1);
+				await expect(finalRect.right).toBeLessThanOrEqual(currentBoundingBoxRect.right + 1);
+				await expect(finalRect.bottom).toBeLessThanOrEqual(currentBoundingBoxRect.bottom + 1);
 			});
 		});
 
@@ -331,23 +334,23 @@ export const BoundingBehavior: Story = {
 
 			await moveHelper(handle, { x: BOUNDING_SIZE - initialRect.width, y: BOUNDING_SIZE - initialRect.height });
 
-			await waitFor(() => {
+			await waitFor(async () => {
 				const rect = draggable.getBoundingClientRect();
-				expect(rect.right).toBeCloseTo(initialRect.right, 0);
-				expect(rect.bottom).toBeCloseTo(initialRect.bottom, 0);
+				await expect(rect.right).toBeCloseTo(initialRect.right, 0);
+				await expect(rect.bottom).toBeCloseTo(initialRect.bottom, 0);
 			});
 
 			window.dispatchEvent(new BoundingBoxResizeEvent(500, 500));
 
-			await waitFor(() => {
+			await waitFor(async () => {
 				const finalRect = draggable.getBoundingClientRect();
 				const newBoundingBoxRect = boundingBox.getBoundingClientRect();
 
-				expect(newBoundingBoxRect.width).toBeCloseTo(500, 0);
-				expect(newBoundingBoxRect.height).toBeCloseTo(500, 0);
+				await expect(newBoundingBoxRect.width).toBeCloseTo(500, 0);
+				await expect(newBoundingBoxRect.height).toBeCloseTo(500, 0);
 
-				expect(finalRect.right).toBeCloseTo(newBoundingBoxRect.right, 0);
-				expect(finalRect.bottom).toBeCloseTo(newBoundingBoxRect.bottom, 0);
+				await expect(finalRect.right).toBeCloseTo(newBoundingBoxRect.right, 0);
+				await expect(finalRect.bottom).toBeCloseTo(newBoundingBoxRect.bottom, 0);
 			});
 		});
 	},
@@ -367,10 +370,10 @@ export const ElementUpdates: Story = {
 			await moveHelper(handle, { x: 50, y: 50 });
 
 			let positionBeforeRerender: DOMRect = new DOMRect(0, 0, 0, 0);
-			await waitFor(() => {
+			await waitFor(async () => {
 				positionBeforeRerender = draggable.getBoundingClientRect();
-				expect(positionBeforeRerender.x).toBeCloseTo(initialRect.x + 50, 0);
-				expect(positionBeforeRerender.y).toBeCloseTo(initialRect.y + 50, 0);
+				await expect(positionBeforeRerender.x).toBeCloseTo(initialRect.x + 50, 0);
+				await expect(positionBeforeRerender.y).toBeCloseTo(initialRect.y + 50, 0);
 			});
 
 			await fireEvent.click(await canvas.findByTestId('change-view'));
@@ -378,8 +381,8 @@ export const ElementUpdates: Story = {
 			const currentDraggable = await canvas.findByTestId('draggable-box');
 			const positionAfterDrag = currentDraggable.getBoundingClientRect();
 
-			expect(positionAfterDrag.x).toBeCloseTo(positionBeforeRerender.x, 0);
-			expect(positionAfterDrag.y).toBeCloseTo(positionBeforeRerender.y, 0);
+			await expect(positionAfterDrag.x).toBeCloseTo(positionBeforeRerender.x, 0);
+			await expect(positionAfterDrag.y).toBeCloseTo(positionBeforeRerender.y, 0);
 		});
 
 		await step("should maintain position but keep element within bounds if it's size changes", async () => {
@@ -394,19 +397,19 @@ export const ElementUpdates: Story = {
 			await moveHelper(handle, { x: BOUNDING_SIZE - initialRect.width, y: BOUNDING_SIZE - initialRect.height });
 
 			let positionBeforeRerender: DOMRect = new DOMRect(0, 0, 0, 0);
-			await waitFor(() => {
+			await waitFor(async () => {
 				positionBeforeRerender = draggable.getBoundingClientRect();
-				expect(positionBeforeRerender.x).toBeCloseTo(BOUNDING_SIZE - initialRect.width, 0);
-				expect(positionBeforeRerender.y).toBeCloseTo(BOUNDING_SIZE - initialRect.height, 0);
+				await expect(positionBeforeRerender.x).toBeCloseTo(BOUNDING_SIZE - initialRect.width, 0);
+				await expect(positionBeforeRerender.y).toBeCloseTo(BOUNDING_SIZE - initialRect.height, 0);
 			});
 
 			await fireEvent.click(await canvas.findByTestId('resize-box'));
 
 			const currentDraggable = await canvas.findByTestId('draggable-box');
-			await waitFor(() => {
+			await waitFor(async () => {
 				const positionAfterDrag = currentDraggable.getBoundingClientRect();
-				expect(positionAfterDrag.x).toBeCloseTo(BOUNDING_SIZE - SECONDARY_DRAGGABLE_BOX_SIZE, 0);
-				expect(positionAfterDrag.y).toBeCloseTo(BOUNDING_SIZE - SECONDARY_DRAGGABLE_BOX_SIZE, 0);
+				await expect(positionAfterDrag.x).toBeCloseTo(BOUNDING_SIZE - SECONDARY_DRAGGABLE_BOX_SIZE, 0);
+				await expect(positionAfterDrag.y).toBeCloseTo(BOUNDING_SIZE - SECONDARY_DRAGGABLE_BOX_SIZE, 0);
 			});
 		});
 	},
@@ -494,6 +497,13 @@ export const ScrollablePage: Story = {
 			const startX = handleRect.left + handleRect.width / 2;
 			const startY = handleRect.top + handleRect.height / 2;
 
+			// Caveat: We use "user-select: none" to prevent text selection behind the widget
+			// but when simulating mouse events with `userEvent`, the text selection is triggered
+			// regardless of the "user-select: none" property
+			// This most likely happens because the events are simulated and not a real mouse interaction
+			// This means we cannot test the text behind the widget, but we can test if the text inside the handle was selected
+			// During manual tests, either both texts (inside and behind the widget) are selected or neither is selected
+			// So this test should cover the issue even though it's not a perfect solution
 			await user.pointer([
 				{
 					target: handle,
@@ -504,10 +514,9 @@ export const ScrollablePage: Story = {
 					},
 				},
 				{
-					// we need to set offset and target to trigger text selection
-					// if target or offset is not set, the issue doesn't happen
-					// I believe this is due to events being simulated and not exact mouse interaction
-					target: document.documentElement,
+					// we need to set offset to trigger text selection
+					// this is what makes testing difficult, as setting the offset and target to "document.documentElement"
+					// always triggers text selection, regardless of the css styles
 					offset: 0,
 					pointerName: 'mouse',
 					coords: {
@@ -520,7 +529,7 @@ export const ScrollablePage: Story = {
 				},
 			]);
 
-			expect(document.getSelection()?.toString()).toBe('');
+			await expect(document.getSelection()?.toString()).toBe('');
 		});
 	},
 };

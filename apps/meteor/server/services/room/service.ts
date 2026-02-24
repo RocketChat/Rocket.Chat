@@ -1,4 +1,4 @@
-import { ServiceClassInternal, Authorization, Message, MeteorError } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Authorization, Message, MeteorError, FederationMatrix } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
 import {
 	type AtLeast,
@@ -9,6 +9,7 @@ import {
 	isOmnichannelRoom,
 	isRoomWithJoinCode,
 } from '@rocket.chat/core-typings';
+import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { getNameForDMs } from './getNameForDMs';
@@ -148,7 +149,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	/**
 	 * Method called by users to join a room.
 	 */
-	async join({ room, user, joinCode }: { room: IRoom; user: Pick<IUser, '_id'>; joinCode?: string }) {
+	async join({ room, user, joinCode }: { room: IRoom; user: IUser; joinCode?: string }) {
 		if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.JOIN, user._id))) {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
@@ -161,7 +162,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
-		if (FederationActions.shouldPerformFederationAction(room) && !(await Authorization.hasPermission(user._id, 'access-federation'))) {
+		if (
+			FederationActions.shouldPerformFederationAction(room) &&
+			!isUserNativeFederated(user) &&
+			!(await FederationMatrix.canUserAccessFederation(user))
+		) {
 			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
 		}
 

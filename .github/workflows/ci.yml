@@ -7,6 +7,7 @@ on:
     branches: '**'
     paths-ignore:
       - '**.md'
+  merge_group:
   push:
     branches:
       - develop
@@ -116,6 +117,8 @@ jobs:
           else
             DOCKER_TAG=$GITHUB_REF_NAME
           fi
+          # Docker tags cannot contain '/'; merge queue refs do (e.g. gh-readonly-queue/develop/pr-123-sha)
+          DOCKER_TAG="${DOCKER_TAG//\//-}"
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
@@ -158,7 +161,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\",\"compatibleMongoVersions\": [\"8.2\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\",\"compatibleMongoVersions\": [\"8.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"draft\", \"draftAs\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
   packages-build:
@@ -250,12 +253,6 @@ jobs:
           - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
 
     steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
-        with:
-          theme: dark
-          job_summary: true
-          comment_on_pr: false
 
       - uses: actions/checkout@v6
 
@@ -456,7 +453,7 @@ jobs:
 
       - name: Track Docker image sizes
         uses: ./.github/actions/docker-image-size-tracker
-        if: github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.full_name == github.repository
+        if: github.actor != 'dependabot[bot]' && (github.ref == 'refs/heads/develop' || github.event.pull_request.head.repo.full_name == github.repository)
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ci-pat: ${{ secrets.CI_PAT }}
@@ -464,6 +461,7 @@ jobs:
           repository: ${{ needs.release-versions.outputs.lowercase-repo }}
           tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           baseline-tag: develop
+          size-thresholds: '{"rocketchat":{"mb":11}}'
 
   checks:
     needs: [release-versions, packages-build]
@@ -548,8 +546,8 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['8.2']"
-      coverage: '8.2'
+      mongodb-version: "['8.0']"
+      coverage: '8.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -570,8 +568,8 @@ jobs:
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
       shard: '[1, 2, 3, 4, 5]'
       total-shard: 5
-      mongodb-version: "['8.2']"
-      coverage: '8.2'
+      mongodb-version: "['8.0']"
+      coverage: '8.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -655,24 +653,26 @@ jobs:
           # List loaded images
           docker images
 
-      - name: Run federation integration tests with pre-built image
+      - name: Start federation services
         working-directory: ./ee/packages/federation-matrix
         env:
           ROCKETCHAT_IMAGE: ghcr.io/${{ needs.release-versions.outputs.lowercase-repo }}/rocket.chat:${{ needs.release-versions.outputs.gh-docker-tag }}-amd64
-          ENTERPRISE_LICENSE_RC1: ZEuDWcAxkdBZ0iOzn+JIi7Ri0GKPR43hTueeqEEeTjJhzhp1jM7+fA9LiT3aCzU/oJwudwWLFAwqjrtR13axza+Us6lHuAMdfut/1Z6upRWdSgose1LfDP9Nzce6xOVbO3InQonwTQVQJotlYEGRjiry7jn68TSIKhmjMgC6SVYt6v+syEKRgj+r2oT0xNkurQYGGG1AIYHDqGWa1cX0FVd1ddOKU/DNuCJQxH8Rz5aJC2grIKMIzmRVHfBDJAipeTDl6VI28VM5ExEl3w8zDlUk8wCxXawXGCht0A7jZGCd4IQLDNZs/3Zv+nHC4lcDVzjDu+o17vUIEad4m+nhZgGTNlHqkrH3cqEEEPa3bSh8GKBzLmKHB+i0H3dweT9iqGwz56Nue7twyt5yuGq6qYdtrEx0pEKjystU15DUiQxDPqkBL8yRkp5WScsvJIlhiY+4tU6yKI/GAYtU0g+fCYzjzwxXc7tLg5NeY9kiRMdQ+jRytl3ztHGiv5ERhjQKT9ZpUWiCSCmdr8L3njfLLW1e5/AKmXpg00D6HfJvI30xDcoJwmWnCzFvd7KlSbVwNVBlD6KE9+0j6GV1h0JEml1YrpXUxbpEBz5ALdLn2iVPQ3MT5RODRI5yffSX9ikFkwcH360ewU6Zp63WKRkHyfnzE+tsYe96XdaMZowe7Lw=
+          ENTERPRISE_LICENSE_RC1: ZAikY+LLaal7mT6RNYxpyWEmMQyucrl50/7pYBXqHczc90j+RLwF+T0xuCT2pIpKMC5DxcZ1TtkV6MYJk5whrwmap+mQ0FV+VpILJlL0i4T21K4vMfzZXTWm/pzcAy2fMTUNH+mUA9HTBD6lYYh40KnbGXPAd80VbZk0MO/WbWBm2dOT0YCwfvlRyurRqkDAQrftLaffzCNUsMKk0fh+MKs73UDHZQDp1yvs7WoGpPu5ZVi5mTBOt3ZKVz5KjGfClLwJptFPmW1w6nKelAiJBDPpjcX1ylfjxpnBoixko7uN52zlyaeoAYwfRcdDLnZ8k0Ou6tui/vTQUXjGIjHw2AhMaKwonn4E9LYpuA1KEXt08qJL5J3ZtjSCV1T+A9Z3zFhhLgp5dxP/PPUbxDn/P8XKp7nXM9duIfcCMlnea7V8ixEyCHwwvKQaXVVidcsUGtB8CwS0GlsAEBLOzqMehuQUK2rdQ4WgEz3AYveikeVvSzgBHvyXsxssWAThc0Mht0eEJqdDhUB2QeZ2WmPsaSSD639Z4WgjSUoR0zh8bfqepH+2XRcUryXe2yN+iU+3POzi9wfg0k65MxXT8pBg3PD5RHnR8oflEP0tpZts33JiBhYRxX3MKplAFm4dMuphTsDJTh+e534pT7IPuZF79QSVaLEWZfVVVb7nGFtmMwA=
           QASE_TESTOPS_JEST_API_TOKEN: ${{ secrets.QASE_TESTOPS_JEST_API_TOKEN }}
           PR_NUMBER: ${{ github.event.number }}
-        run: yarn test:integration --image "${ROCKETCHAT_IMAGE}"
+        run: yarn test:integration --start-containers-only --image "${ROCKETCHAT_IMAGE}"
 
-      - name: Show rc server logs if tests failed
+      - name: Run federation integration tests
+        working-directory: ./ee/packages/federation-matrix
+        env:
+          QASE_TESTOPS_JEST_API_TOKEN: ${{ secrets.QASE_TESTOPS_JEST_API_TOKEN }}
+          PR_NUMBER: ${{ github.event.number }}
+        run: yarn test:integration --ci
+
+      - name: Show federation integration tests logs
         if: failure()
         working-directory: ./ee/packages/federation-matrix
-        run: docker compose -f docker-compose.test.yml logs rc1-prebuilt
-
-      - name: Show hs server logs if tests failed
-        if: failure()
-        working-directory: ./ee/packages/federation-matrix
-        run: docker compose -f docker-compose.test.yml logs hs1
+        run: yarn test:integration --logs
 
       - name: Show mongo logs if tests failed
         if: failure()
@@ -872,6 +872,7 @@ jobs:
 
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
+          DOCKER_TAG="${DOCKER_TAG//\//-}"
 
           declare -a TAGS=()
 
@@ -979,7 +980,7 @@ jobs:
           fi;
 
           curl -H "Content-Type: application/json" -H "X-Update-Token: $UPDATE_TOKEN" -d \
-              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"8.2\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
+              "{\"nodeVersion\": \"${{ needs.release-versions.outputs.node-version }}\", \"denoVersion\": \"${{ needs.release-versions.outputs.deno-version }}\", \"compatibleMongoVersions\": [\"8.0\"], \"commit\": \"$GITHUB_SHA\", \"tag\": \"$RC_VERSION\", \"branch\": \"$GIT_BRANCH\", \"artifactName\": \"$ARTIFACT_NAME\", \"releaseType\": \"$RC_RELEASE\"}" \
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there

@@ -12,8 +12,6 @@ type DateRangePickerProps = {
 
 const formatToDateInput = (date: Moment) => date.locale('en').format('YYYY-MM-DD');
 
-const todayDate = formatToDateInput(moment());
-
 const getMonthRange = (monthsToSubtractFromToday: number) => ({
 	start: formatToDateInput(moment().subtract(monthsToSubtractFromToday, 'month').date(1)),
 	end: formatToDateInput(monthsToSubtractFromToday === 0 ? moment() : moment().subtract(monthsToSubtractFromToday).date(0)),
@@ -61,8 +59,8 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRang
 				break;
 			case 'alldates':
 				handleRange({
-					start: formatToDateInput(moment(0)),
-					end: todayDate,
+					start: '',
+					end: '',
 				});
 				break;
 			default:

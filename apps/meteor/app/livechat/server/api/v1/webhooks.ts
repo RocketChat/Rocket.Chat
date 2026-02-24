@@ -1,4 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
+import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { API } from '../../../../api/server';
@@ -63,7 +64,9 @@ API.v1.addRoute(
 					'Accept': 'application/json',
 				},
 				body: sampleData,
-			};
+				// SECURITY: Webhooks can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
+			} as ExtendedFetchOptions;
 
 			const webhookUrl = settings.get<string>('Livechat_webhookUrl');
 
@@ -72,18 +75,18 @@ API.v1.addRoute(
 			}
 
 			try {
-				logger.debug(`Testing webhook ${webhookUrl}`);
+				logger.debug({ msg: 'Testing webhook', webhookUrl });
 				const request = await fetch(webhookUrl, options);
 				const response = await request.text();
 
-				logger.debug({ response });
+				logger.debug({ msg: 'Webhook response', response });
 				if (request.status === 200) {
 					return API.v1.success();
 				}
 
 				throw new Error('Invalid status code');
 			} catch (error) {
-				logger.error(`Error testing webhook: ${error}`);
+				logger.error({ msg: 'Error testing webhook', err: error });
 				throw new Error('error-invalid-webhook-response');
 			}
 		},

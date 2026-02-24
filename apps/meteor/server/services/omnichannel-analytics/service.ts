@@ -55,7 +55,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		}
 
 		if (!this.agentOverview.isActionAllowed(name)) {
-			serviceLogger.error(`AgentOverview.${name} is not a valid action`);
+			serviceLogger.error({ msg: 'AgentOverview action is not valid', name });
 			return;
 		}
 
@@ -74,7 +74,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 
 		// Check if function exists, prevent server error in case property altered
 		if (!this.chart.isActionAllowed(chartLabel)) {
-			serviceLogger.error(`ChartData.${chartLabel} is not a valid action`);
+			serviceLogger.error({ msg: 'ChartData action is not valid', chartLabel });
 			return;
 		}
 
@@ -164,7 +164,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		}
 
 		if (!this.overview.isActionAllowed(name)) {
-			serviceLogger.error(`OverviewData.${name} is not a valid action`);
+			serviceLogger.error({ msg: 'OverviewData action is not valid', name });
 			return;
 		}
 

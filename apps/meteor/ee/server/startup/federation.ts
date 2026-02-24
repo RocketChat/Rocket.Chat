@@ -31,8 +31,8 @@ const configureFederation = async () => {
 			processEDUTyping: settings.get('Federation_Service_EDU_Process_Typing'),
 			processEDUPresence: settings.get('Federation_Service_EDU_Process_Presence'),
 		});
-	} catch (error) {
-		logger.error('Failed to start federation-matrix service:', error);
+	} catch (err) {
+		logger.error({ msg: 'Failed to start federation-matrix service', err });
 	}
 };
 

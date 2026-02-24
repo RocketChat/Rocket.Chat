@@ -1,5 +1,5 @@
+import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
 import { useCallback, useRef } from 'react';
 
 const getRemoteStream = (instance?: MediaSignalingSession) => {
@@ -29,19 +29,14 @@ const useMediaStream = (
 	return [
 		useSafeRefCallback(
 			useCallback(
-				(node) => {
-					// TODO remove node check when useSafeRefCallback is updated from fuselage.
-					if (!node) {
-						return;
-					}
-
+				(node: HTMLAudioElement) => {
 					actualRef.current = node;
 
 					if (!remoteStream) {
 						return;
 					}
 
-					node.srcObject = remoteStream;
+					node.srcObject = remoteStream.stream;
 					node.play().catch((error) => {
 						console.error('MediaCall: useMediaStream - Error playing media stream', error);
 					});

@@ -65,6 +65,7 @@ slashCommands.add({
 		});
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg,
+			...(message.tmid && { tmid: message.tmid }),
 		});
 	},
 	options: {

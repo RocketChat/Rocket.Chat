@@ -3,7 +3,6 @@ import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isIntegrationsHooksAddSchema, isIntegrationsHooksRemoveSchema } from '@rocket.chat/rest-typings';
 import type express from 'express';
-import type { Context, Next } from 'hono';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
@@ -14,11 +13,15 @@ import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
 import { API, defaultRateLimiterOptions } from '../../../api/server/api';
 import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from '../../../api/server/definition';
+import { loggerMiddleware } from '../../../api/server/middlewares/logger';
+import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
+import { tracerSpanMiddleware } from '../../../api/server/middlewares/tracer';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
-import { incomingLogger } from '../logger';
+import { incomingLogger, integrationLogger } from '../logger';
 import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
@@ -114,6 +117,42 @@ async function removeIntegration(options: { target_url: string }, user: IUser): 
 	return API.v1.success();
 }
 
+/**
+ * Slack/GitHub-style webhooks send JSON wrapped in a `payload` field
+ * with Content-Type: application/x-www-form-urlencoded (e.g. `payload={"text":"hello"}`).
+ * This function unwraps it so integrations receive the parsed JSON directly.
+ */
+function getBodyParams(bodyParams: unknown, request: Request): Record<string, unknown> {
+	if (!isPlainObject(bodyParams)) {
+		return {};
+	}
+
+	if (
+		request.headers.get('content-type')?.startsWith('application/x-www-form-urlencoded') &&
+		Object.keys(bodyParams).length === 1 &&
+		typeof bodyParams.payload === 'string'
+	) {
+		try {
+			const parsed = JSON.parse(bodyParams.payload);
+
+			// Valid JSON must be an object, not an array or primitive
+			if (!isPlainObject(parsed)) {
+				throw new Error('Integration payload must be a JSON object, not an array or primitive');
+			}
+
+			return parsed;
+		} catch (err) {
+			// Invalid JSON -> return original bodyParams (backward compatibility)
+			if (err instanceof SyntaxError) {
+				return bodyParams;
+			}
+			throw err;
+		}
+	}
+
+	return bodyParams;
+}
+
 async function executeIntegrationRest(
 	this: IntegrationThis,
 ): Promise<
@@ -138,7 +177,13 @@ async function executeIntegrationRest(
 
 	const scriptEngine = getEngine(this.request.integration);
 
-	let bodyParams = isPlainObject(this.bodyParams) ? this.bodyParams : {};
+	let bodyParams: Record<string, unknown>;
+	try {
+		bodyParams = getBodyParams(this.bodyParams, this.request);
+	} catch (err) {
+		return API.v1.failure(err instanceof Error ? err.message : String(err));
+	}
+
 	const separateResponse = bodyParams.separateResponse === true;
 	let scriptResponse: Record<string, any> | undefined;
 
@@ -247,8 +292,9 @@ async function executeIntegrationRest(
 			return API.v1.success({ responses: messageResponse });
 		}
 		return API.v1.success();
-	} catch ({ error, message }: any) {
-		return API.v1.failure(error || message);
+	} catch (err: any) {
+		incomingLogger.error({ msg: 'Error processing webhook message', err });
+		return API.v1.failure(err?.error || err?.message || 'Unknown error');
 	}
 }
 
@@ -323,6 +369,8 @@ class WebHookAPI extends APIClass<'/hooks'> {
 			throw new Error('Invalid integration id or token provided.');
 		}
 
+		routeContext.request.headers.set('x-auth-token', token);
+
 		routeContext.request.integration = integration;
 
 		return Users.findOneById(routeContext.request.integration.userId);
@@ -378,37 +426,10 @@ const Api = new WebHookAPI({
 	prettyJson: process.env.NODE_ENV === 'development',
 });
 
-const middleware = async (c: Context, next: Next): Promise<void> => {
-	const { req } = c;
-	if (req.raw.headers.get('content-type') !== 'application/x-www-form-urlencoded') {
-		return next();
-	}
-
-	try {
-		const content = await req.raw.clone().text();
-		const body = Object.fromEntries(new URLSearchParams(content));
-		if (!body || typeof body !== 'object' || Object.keys(body).length !== 1) {
-			return next();
-		}
-
-		if (body.payload) {
-			// need to compose the full payload in this weird way because body-parser thought it was a form
-			c.set('bodyParams-override', JSON.parse(body.payload));
-			return next();
-		}
-		incomingLogger.debug({
-			msg: 'Body received as application/x-www-form-urlencoded without the "payload" key, parsed as string',
-			content,
-		});
-		c.set('bodyParams-override', JSON.parse(content));
-	} catch (e: any) {
-		c.body(JSON.stringify({ success: false, error: e.message }), 400);
-	}
-
-	return next();
-};
-
-Api.router.use(middleware);
+Api.router
+	.use(loggerMiddleware(integrationLogger))
+	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi }))
+	.use(tracerSpanMiddleware);
 
 Api.addRoute(
 	':integrationId/:userId/:token',

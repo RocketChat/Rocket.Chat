@@ -7,7 +7,7 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-	decorators: [(storyFn) => <div children={storyFn()} style={{ width: '100vw', maxWidth: 500 }} />],
+	decorators: [(storyFn) => <div style={{ width: '100vw', maxWidth: 500 }}>{storyFn()}</div>],
 } satisfies Meta;
 
 export const Default = () =>
