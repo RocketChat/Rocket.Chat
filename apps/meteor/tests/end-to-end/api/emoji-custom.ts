@@ -4,6 +4,7 @@ import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
+import { updateSetting } from '../../data/permissions.helper';
 
 describe('[EmojiCustom]', () => {
 	const customEmojiName = `my-custom-emoji-${Date.now()}`;
@@ -479,6 +480,62 @@ describe('[EmojiCustom]', () => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+	});
+
+	describe('Emoji storage settings reactivity', () => {
+		const fsEmojiName = 'emoji-fs';
+		const gridFsEmojiName = 'emoji-gridfs';
+
+		before(async () => {
+			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', true);
+			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: fsEmojiName }).expect(200);
+			await updateSetting('EmojiUpload_Storage_Type', 'GridFS', true);
+			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: gridFsEmojiName }).expect(200);
+		});
+
+		it('should resolve emojis correctly when switching EmojiUpload_Storage_Type', async () => {
+			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', true);
+			// If content-type = image/png, it means the file was found. Otherwise, a SVG fallback is returned, as the custom 'Not Found' behavior.
+			await request
+				.get(`/emoji-custom/${fsEmojiName}.png`)
+				.set(credentials)
+				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/png'));
+			await request
+				.get(`/emoji-custom/${gridFsEmojiName}.png`)
+				.set(credentials)
+				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/svg+xml'));
+			await updateSetting('EmojiUpload_Storage_Type', 'GridFS', true);
+			await request
+				.get(`/emoji-custom/${fsEmojiName}.png`)
+				.set(credentials)
+				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/svg+xml'));
+			await request
+				.get(`/emoji-custom/${gridFsEmojiName}.png`)
+				.set(credentials)
+				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/png'));
+		});
+
+		it('should respect EmojiUpload_FileSystemPath changes', async () => {
+			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', false);
+			await updateSetting('EmojiUpload_FileSystemPath', '~/emoji-test', true);
+			await request
+				.get(`/emoji-custom/${fsEmojiName}.png`)
+				.set(credentials)
+				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/svg+xml'));
+			await updateSetting('EmojiUpload_FileSystemPath', '', true);
+			await request
+				.get(`/emoji-custom/${fsEmojiName}.png`)
+				.set(credentials)
+				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/png'));
+		});
+
+		after(async () => {
+			const list = await request.get(api('emoji-custom.all')).set(credentials);
+			const fsEmoji = list.body.emojis.find((e: IEmojiCustom) => e.name === fsEmojiName);
+			const gridEmoji = list.body.emojis.find((e: IEmojiCustom) => e.name === gridFsEmojiName);
+			await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: fsEmoji._id });
+			await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: gridEmoji._id });
 		});
 	});
 });
