@@ -12,6 +12,7 @@
 		"stack-trace": "npm:stack-trace@0.0.10",
 		"uuid": "npm:uuid@8.3.2"
 	},
+	"unstable": ["detect-cjs"],
 	"tasks": {
 		"test": "deno test --no-check --allow-read=../../../,/tmp --allow-write=/tmp"
 	},
