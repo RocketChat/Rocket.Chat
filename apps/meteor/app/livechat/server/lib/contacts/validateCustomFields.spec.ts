@@ -55,7 +55,7 @@ describe('validateCustomFields', () => {
 		const allowedCustomFields = [{ _id: 'field1', label: 'Field 1', required: false }];
 		const customFields = { field2: 'value' };
 
-		expect(() => validateCustomFields(allowedCustomFields, customFields, { ignoreValidationErrors: true }))
+		expect(() => validateCustomFields(allowedCustomFields, customFields, { ignoreAdditionalFields: true }))
 			.not.to.throw()
 			.and.to.equal({});
 	});

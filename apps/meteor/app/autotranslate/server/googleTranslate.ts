@@ -2,14 +2,7 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import type {
-	IMessage,
-	IProviderMetadata,
-	ISupportedLanguage,
-	ITranslationResult,
-	IGoogleTranslation,
-	MessageAttachment,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IProviderMetadata, ISupportedLanguage, ITranslationResult, MessageAttachment } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import _ from 'underscore';
 
@@ -17,6 +10,10 @@ import { AutoTranslate, TranslationProviderRegistry } from './autotranslate';
 import { i18n } from '../../../server/lib/i18n';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import { settings } from '../../settings/server';
+
+interface IGoogleTranslation {
+	translatedText: string;
+}
 
 /**
  * Represents google translate class
@@ -91,7 +88,11 @@ class GoogleAutoTranslate extends AutoTranslate {
 		};
 
 		try {
-			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, {
+				ignoreSsrfValidation: true,
+				params,
+			});
 			if (!request.ok && request.status === 400 && request.statusText === 'INVALID_ARGUMENT') {
 				throw new Error('Failed to fetch supported languages');
 			}
@@ -103,7 +104,11 @@ class GoogleAutoTranslate extends AutoTranslate {
 				params.target = 'en';
 				target = 'en';
 				if (!this.supportedLanguages[target]) {
-					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
+					// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, {
+						ignoreSsrfValidation: true,
+						params,
+					});
 					result = (await request.json()) as typeof result;
 				}
 			}
@@ -135,7 +140,9 @@ class GoogleAutoTranslate extends AutoTranslate {
 			}
 
 			try {
+				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 				const result = await fetch(this.apiEndPointUrl, {
+					ignoreSsrfValidation: true,
 					params: {
 						key: this.apiKey,
 						target: language,
@@ -182,7 +189,9 @@ class GoogleAutoTranslate extends AutoTranslate {
 			}
 
 			try {
+				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 				const result = await fetch(this.apiEndPointUrl, {
+					ignoreSsrfValidation: true,
 					params: {
 						key: this.apiKey,
 						target: language,

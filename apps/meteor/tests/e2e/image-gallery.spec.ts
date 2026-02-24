@@ -24,10 +24,10 @@ test.describe.serial('Image Gallery', async () => {
 		poHomeChannel = new HomeChannel(page);
 
 		await poHomeChannel.navbar.openChat(targetChannelLargeImage);
-		await poHomeChannel.content.btnJoinRoom.click();
+		await poHomeChannel.composer.btnJoinRoom.click();
 
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.content.btnJoinRoom.click();
+		await poHomeChannel.composer.btnJoinRoom.click();
 	});
 
 	test.afterAll(async ({ api }) => {

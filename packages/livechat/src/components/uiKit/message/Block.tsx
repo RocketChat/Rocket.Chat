@@ -16,12 +16,13 @@ type BlockProps = {
 
 const Block = ({ appId, blockId, children }: BlockProps) => (
 	<BlockContext.Provider
-		children={children}
 		value={{
 			appId,
 			blockId,
 		}}
-	/>
+	>
+		{children}
+	</BlockContext.Provider>
 );
 
 export const usePerformAction = (actionId: string) => {

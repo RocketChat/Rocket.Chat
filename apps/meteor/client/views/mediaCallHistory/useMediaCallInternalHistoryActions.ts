@@ -1,9 +1,8 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useGoToDirectMessage } from '@rocket.chat/ui-client';
 import { useRouter, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useMediaCallContext } from '@rocket.chat/ui-voip';
 import { useMemo } from 'react';
-
-import { useDirectMessageAction } from '../room/hooks/useUserInfoActions/actions/useDirectMessageAction';
 
 export type InternalCallHistoryContact = {
 	_id: string;
@@ -29,13 +28,13 @@ export const useMediaCallInternalHistoryActions = ({
 	messageRoomId,
 	openUserInfo,
 }: UseMediaCallInternalHistoryActionsBaseOptions) => {
-	const { onToggleWidget } = useMediaCallContext();
+	const { onToggleWidget, state } = useMediaCallContext();
 	const router = useRouter();
 
 	const getAvatarUrl = useUserAvatarPath();
 
 	const voiceCall = useEffectEvent(() => {
-		if (!onToggleWidget) {
+		if (state === 'unauthorized' || state === 'unlicensed' || !onToggleWidget) {
 			return;
 		}
 
@@ -48,21 +47,7 @@ export const useMediaCallInternalHistoryActions = ({
 		});
 	});
 
-	const directMessage = useDirectMessageAction(contact, openRoomId ?? '');
-
-	const goToDirectMessage = useMemo(() => {
-		if (directMessage?.onClick) {
-			return directMessage.onClick;
-		}
-		if (!messageRoomId || openRoomId) {
-			return;
-		}
-		return () =>
-			router.navigate({
-				name: 'direct',
-				params: { rid: messageRoomId },
-			});
-	}, [directMessage?.onClick, messageRoomId, openRoomId, router]);
+	const goToDirectMessage = useGoToDirectMessage({ username: contact.username }, openRoomId ?? '');
 
 	const jumpToMessage = useEffectEvent(() => {
 		const rid = messageRoomId || openRoomId;

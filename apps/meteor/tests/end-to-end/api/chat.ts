@@ -5,6 +5,8 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
+import { retry } from './helpers/retry';
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -860,6 +862,37 @@ describe('[Chat]', () => {
 					.end(done);
 			});
 		});
+
+		describe('Archived rooms', () => {
+			let archivedChannel: IRoom;
+
+			before(async () => {
+				archivedChannel = (await createRoom({ type: 'c', name: `chat.api-archived-post-test-${Date.now()}` })).body.channel;
+				await request.post(api('channels.archive')).set(credentials).send({ roomId: archivedChannel._id });
+			});
+
+			after(async () => {
+				await request.post(api('channels.unarchive')).set(credentials).send({ roomId: archivedChannel._id });
+				await deleteRoom({ type: 'c', roomId: archivedChannel._id });
+			});
+
+			it('should fail to post a message to an archived room', (done) => {
+				void request
+					.post(api('chat.postMessage'))
+					.set(credentials)
+					.send({
+						roomId: archivedChannel._id,
+						text: 'This message should not be posted',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'room_is_archived');
+					})
+					.end(done);
+			});
+		});
 	});
 
 	describe('/chat.getMessage', () => {
@@ -1148,16 +1181,56 @@ describe('[Chat]', () => {
 			});
 		});
 
+		describe('Archived rooms', () => {
+			let archivedChannel: IRoom;
+
+			before(async () => {
+				archivedChannel = (await createRoom({ type: 'c', name: `chat.api-archived-test-${Date.now()}` })).body.channel;
+				await request.post(api('channels.archive')).set(credentials).send({ roomId: archivedChannel._id });
+			});
+
+			after(async () => {
+				await request.post(api('channels.unarchive')).set(credentials).send({ roomId: archivedChannel._id });
+				await deleteRoom({ type: 'c', roomId: archivedChannel._id });
+			});
+
+			it('should fail to send a message to an archived room', (done) => {
+				void request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: archivedChannel._id,
+							msg: 'This message should not be sent',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'room_is_archived');
+					})
+					.end(done);
+			});
+		});
+
 		describe('oembed', () => {
 			let ytEmbedMsgId: IMessage['_id'];
 			let imgUrlMsgId: IMessage['_id'];
 
-			before(() => Promise.all([updateSetting('API_EmbedIgnoredHosts', ''), updateSetting('API_EmbedSafePorts', '80, 443, 3000')]));
+			before(() =>
+				Promise.all([
+					updateSetting('API_EmbedIgnoredHosts', ''),
+					updateSetting('API_EmbedSafePorts', '80, 443, 3000'),
+					updateSetting('SSRF_Allowlist', '127.0.0.1:3000'),
+				]),
+			);
 
 			after(() =>
 				Promise.all([
 					updateSetting('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'),
 					updateSetting('API_EmbedSafePorts', '80, 443'),
+					updateSetting('SSRF_Allowlist', ''),
 				]),
 			);
 
@@ -1176,7 +1249,7 @@ describe('[Chat]', () => {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
 					rid: testChannel._id,
-					msg: 'http://localhost:3000/images/logo/logo.png',
+					msg: 'http://127.0.0.1:3000/images/logo/logo.png',
 					emoji: ':smirk:',
 				};
 
@@ -1185,26 +1258,32 @@ describe('[Chat]', () => {
 				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
-			it('should have an iframe oembed with style max-width', (done) => {
-				setTimeout(() => {
-					void request
-						.get(api('chat.getMessage'))
-						.set(credentials)
-						.query({
-							msgId: ytEmbedMsgId,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+			it('should have an iframe oembed with style max-width', async () => {
+				await retry(
+					'Oembed is generated async thats why the retry is required',
+					async () => {
+						await request
+							.get(api('chat.getMessage'))
+							.set(credentials)
+							.query({
+								msgId: ytEmbedMsgId,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
-							expect(res.body.message.urls[0])
-								.to.have.property('meta')
-								.to.have.property('oembedHtml')
-								.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
-						})
-						.end(done);
-				}, 1000);
+								expect(res.body.message.urls[0])
+									.to.have.property('meta')
+									.to.have.property('oembedHtml')
+									.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
+							});
+					},
+					{
+						delayMs: 100,
+						retries: 5,
+					},
+				);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
@@ -1283,6 +1362,9 @@ describe('[Chat]', () => {
 						expect(res.body.message.urls[1]).to.not.have.property('ignoreParse');
 						msgId = res.body.message._id;
 					});
+
+				// process is async now so wait for a sec
+				await sleep(1000);
 
 				await request
 					.get(api('chat.getMessage'))
@@ -2231,6 +2313,142 @@ describe('[Chat]', () => {
 				const userWhoWasFollowingTheThreadSubscription = await getSubscriptionByRoomId(testChannel._id, otherUserCredentials);
 
 				expectNoUnreadThreadMessages(userWhoWasFollowingTheThreadSubscription);
+			});
+		});
+
+		describe('in read-only rooms with unmuted users', () => {
+			let readOnlyChannel: IRoom;
+			let unmutedUser: TestUser<IUser>;
+			let unmutedUserCredentials: Credentials;
+			let notUnmutedUser: TestUser<IUser>;
+			let notUnmutedUserCredentials: Credentials;
+
+			before(async () => {
+				unmutedUser = await createUser();
+				unmutedUserCredentials = await login(unmutedUser.username, password);
+
+				notUnmutedUser = await createUser();
+				notUnmutedUserCredentials = await login(notUnmutedUser.username, password);
+
+				const channelResult = await request
+					.post(api('channels.create'))
+					.set(credentials)
+					.send({
+						name: `readonly-delete-test-${Date.now()}`,
+						readOnly: true,
+					});
+				readOnlyChannel = channelResult.body.channel;
+
+				await request.post(api('channels.invite')).set(credentials).send({
+					roomId: readOnlyChannel._id,
+					userId: unmutedUser._id,
+				});
+				await request.post(api('channels.invite')).set(credentials).send({
+					roomId: readOnlyChannel._id,
+					userId: notUnmutedUser._id,
+				});
+
+				await request.post(api('rooms.unmuteUser')).set(credentials).send({
+					roomId: readOnlyChannel._id,
+					username: unmutedUser.username,
+				});
+
+				await updatePermission('delete-message', ['user']);
+			});
+
+			after(async () => {
+				await Promise.all([
+					readOnlyChannel && deleteRoom({ type: 'c', roomId: readOnlyChannel._id }),
+					unmutedUser && deleteUser(unmutedUser),
+					notUnmutedUser && deleteUser(notUnmutedUser),
+					updatePermission('delete-message', ['admin', 'owner', 'moderator']),
+				]);
+			});
+
+			it('should allow unmuted user to delete message from another user in read-only room', async () => {
+				const messageResult = await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Message to be deleted by unmuted user',
+						},
+					});
+
+				const deleteMsgId = messageResult.body.message._id;
+
+				await request
+					.post(api('chat.delete'))
+					.set(unmutedUserCredentials)
+					.send({
+						roomId: readOnlyChannel._id,
+						msgId: deleteMsgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			it('should NOT allow non-unmuted user to delete message in read-only room (regression test)', async () => {
+				const messageResult = await request
+					.post(api('chat.sendMessage'))
+					.set(unmutedUserCredentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Message from unmuted user',
+						},
+					});
+
+				const deleteMsgId = messageResult.body.message._id;
+
+				await request
+					.post(api('chat.delete'))
+					.set(notUnmutedUserCredentials)
+					.send({
+						roomId: readOnlyChannel._id,
+						msgId: deleteMsgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', "You can't delete messages because the room is readonly.");
+					});
+			});
+
+			it('should NOT allow unmuted user without delete-message permission to delete message', async () => {
+				await updatePermission('delete-message', []);
+
+				const messageResult = await request
+					.post(api('chat.sendMessage'))
+					.set(credentials)
+					.send({
+						message: {
+							rid: readOnlyChannel._id,
+							msg: 'Message that unmuted user without permission cannot delete',
+						},
+					});
+
+				const deleteMsgId = messageResult.body.message._id;
+
+				await request
+					.post(api('chat.delete'))
+					.set(unmutedUserCredentials)
+					.send({
+						roomId: readOnlyChannel._id,
+						msgId: deleteMsgId,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+
+				await updatePermission('delete-message', ['user']);
 			});
 		});
 	});

@@ -58,7 +58,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button"
             type="button"
           >
             <span
@@ -68,7 +68,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button"
             type="button"
           >
             <span
@@ -142,7 +142,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--loading rcx-button--secondary-danger rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--loading rcx-button--secondary-danger rcx-button"
             disabled=""
             type="button"
           >
@@ -159,7 +159,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--loading rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--loading rcx-button"
             disabled=""
             type="button"
           >
@@ -240,7 +240,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--secondary-danger rcx-button"
             type="button"
           >
             <span
@@ -250,7 +250,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button"
             type="button"
           >
             <span

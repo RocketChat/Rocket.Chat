@@ -53,7 +53,7 @@ export async function updatePriority(_id: string, data: Pick<ILivechatPriority, 
 	const createdResult = await LivechatPriority.updatePriority(_id, data.reset || false, data.name);
 
 	if (!createdResult) {
-		logger.error(`Error updating priority: ${_id}. Unsuccessful result from mongodb. Result`, createdResult);
+		logger.error({ msg: 'Error updating priority: unsuccessful result from MongoDB', priorityId: _id, result: createdResult });
 		throw Error('error-unable-to-update-priority');
 	}
 

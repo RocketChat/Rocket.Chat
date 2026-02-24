@@ -1,5 +1,135 @@
 # @rocket.chat/ui-client
 
+## 27.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@23.0.1
+  - @rocket.chat/ui-contexts@27.0.1
+  </details>
+
+## 27.0.0
+
+### Minor Changes
+
+- ([#38032](https://github.com/RocketChat/Rocket.Chat/pull/38032)) Enables the password policy by default to ensure security by default and alters SetupWizard to handle errors
+
+### Patch Changes
+
+- ([#38169](https://github.com/RocketChat/Rocket.Chat/pull/38169)) Introduces in the call widget a quick link that redirects to the participant's direct message
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@27.0.0
+  - @rocket.chat/ui-avatar@23.0.0
+  </details>
+
+## 27.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@23.0.0-rc.2
+  - @rocket.chat/ui-contexts@27.0.0-rc.2
+  </details>
+
+## 27.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@27.0.0-rc.1
+  - @rocket.chat/ui-avatar@23.0.0-rc.1
+  </details>
+
+## 27.0.0-rc.0
+
+### Minor Changes
+
+- ([#38032](https://github.com/RocketChat/Rocket.Chat/pull/38032)) Enables the password policy by default to ensure security by default and alters SetupWizard to handle errors
+
+### Patch Changes
+
+- ([#38169](https://github.com/RocketChat/Rocket.Chat/pull/38169)) Introduces in the call widget a quick link that redirects to the participant's direct message
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@27.0.0-rc.0
+  - @rocket.chat/ui-avatar@23.0.0-rc.0
+
+## 26.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@22.0.1
+  - @rocket.chat/ui-contexts@26.0.1
+  </details>
+
+## 26.0.0
+
+### Major Changes
+
+- ([#36976](https://github.com/RocketChat/Rocket.Chat/pull/36976)) Promotes Timestamp Parser from preview state to stable
+
+- ([#37022](https://github.com/RocketChat/Rocket.Chat/pull/37022)) Promotes Resizable Contextualbars from preview state to stable.
+
+- ([#36966](https://github.com/RocketChat/Rocket.Chat/pull/36966)) Promotes quick reactions from preview state to stable
+
+- ([#37285](https://github.com/RocketChat/Rocket.Chat/pull/37285)) Promotes Enhanced Navigation from preview state to stable.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [ac11ea05ffadeca978c794ff38d5199d9acb2c29]:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.0
+  - @rocket.chat/ui-avatar@22.0.0
+  </details>
+
+## 26.0.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@22.0.0-rc.5
+  - @rocket.chat/ui-contexts@26.0.0-rc.5
+  </details>
+
+## 26.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@22.0.0-rc.4
+  - @rocket.chat/ui-contexts@26.0.0-rc.4
+  </details>
+
+## 26.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.0-rc.3
+  - @rocket.chat/ui-avatar@22.0.0-rc.3
+  </details>
+
+## 26.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@22.0.0-rc.2
+  - @rocket.chat/ui-contexts@26.0.0-rc.2
+  </details>
+
 ## 26.0.0-rc.1
 
 ### Patch Changes

@@ -1,3 +1,4 @@
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
@@ -36,7 +37,7 @@ export class MatrixMediaService {
 		try {
 			const file = await Uploads.findOneById(fileId);
 			if (!file) {
-				logger.error(`File ${fileId} not found in database`);
+				logger.error({ msg: 'File not found in database', fileId });
 				throw new Error(`File ${fileId} not found`);
 			}
 
@@ -54,9 +55,9 @@ export class MatrixMediaService {
 			});
 
 			return mxcUri;
-		} catch (error) {
-			logger.error(error, 'Error preparing file for Matrix');
-			throw error;
+		} catch (err) {
+			logger.error({ msg: 'Error preparing file for Matrix', err });
+			throw err;
 		}
 	}
 
@@ -73,24 +74,13 @@ export class MatrixMediaService {
 			}
 
 			return file;
-		} catch (error) {
-			logger.error(error, 'Error retrieving local file');
+		} catch (err) {
+			logger.error({ msg: 'Error retrieving local file', err });
 			return null;
 		}
 	}
 
-	static async downloadAndStoreRemoteFile(
-		mxcUri: string,
-		matrixRoomId: string,
-		metadata: {
-			name: string;
-			size?: number;
-			type?: string;
-			messageId?: string;
-			roomId?: string;
-			userId?: string;
-		},
-	): Promise<string> {
+	static async downloadAndStoreRemoteFile(mxcUri: string, matrixRoomId: string, metadata: IUploadDetails): Promise<string> {
 		try {
 			const parts = this.parseMXCUri(mxcUri);
 			if (!parts) {
@@ -113,11 +103,8 @@ export class MatrixMediaService {
 				userId: metadata.userId || 'federation',
 				buffer,
 				details: {
-					name: metadata.name || 'unnamed',
+					...metadata,
 					size: buffer.length,
-					type: metadata.type || 'application/octet-stream',
-					rid: metadata.roomId,
-					userId: metadata.userId || 'federation',
 				},
 			});
 
@@ -129,9 +116,9 @@ export class MatrixMediaService {
 			});
 
 			return uploadedFile._id;
-		} catch (error) {
-			logger.error(error, 'Error downloading and storing remote file');
-			throw error;
+		} catch (err) {
+			logger.error({ msg: 'Error downloading and storing remote file', err });
+			throw err;
 		}
 	}
 

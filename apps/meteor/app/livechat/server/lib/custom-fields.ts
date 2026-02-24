@@ -59,7 +59,7 @@ export async function setCustomFields({
 	overwrite: boolean;
 	token: string;
 }): Promise<number> {
-	livechatLogger.debug(`Setting custom fields data for visitor with token ${token}`);
+	livechatLogger.debug({ msg: 'Setting custom fields data for visitor with token', token });
 
 	const customField = await LivechatCustomField.findOneById(key);
 	if (!customField) {
@@ -169,7 +169,7 @@ export async function setMultipleCustomFields({
 		overwrite: boolean;
 	}[]
 > {
-	livechatLogger.debug(`Setting custom fields data for visitor with token ${visitor.token}`);
+	livechatLogger.debug({ msg: 'Setting custom fields data for visitor with token', token: visitor.token });
 
 	const keys = customFields.map((customField) => customField.key);
 	const dbFields = await LivechatCustomField.find(

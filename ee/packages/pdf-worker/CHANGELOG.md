@@ -1,5 +1,106 @@
 # @rocket.chat/pdf-worker
 
+## 0.3.29
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.1.1
+  </details>
+
+## 0.3.28
+
+### Patch Changes
+
+- ([#38064](https://github.com/RocketChat/Rocket.Chat/pull/38064)) Fixes broken chat transcript when there are more than one file per message
+
+- <details><summary>Updated dependencies [6654c5b481f91bdcb03d68ee0f3a12d58201137e]:</summary>
+
+  - @rocket.chat/core-typings@8.1.0
+  </details>
+
+## 0.3.28-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.1.0-rc.2
+  </details>
+
+## 0.3.28-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.1.0-rc.1
+  </details>
+
+## 0.3.28-rc.0
+
+### Patch Changes
+
+- ([#38064](https://github.com/RocketChat/Rocket.Chat/pull/38064)) Fixes broken chat transcript when there are more than one file per message
+
+- <details><summary>Updated dependencies [6654c5b481f91bdcb03d68ee0f3a12d58201137e]:</summary>
+
+  - @rocket.chat/core-typings@8.1.0-rc.0
+  </details>
+
+## 0.3.27
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.0.1
+  </details>
+
+## 0.3.26
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, 73d9eb2783176954f42aa2cbeda8abf1d49ac260]:</summary>
+
+  - @rocket.chat/core-typings@8.0.0
+  </details>
+
+## 0.3.26-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.5
+  </details>
+
+## 0.3.26-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.4
+  </details>
+
+## 0.3.26-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.3
+  </details>
+
+## 0.3.26-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.0-rc.2
+  </details>
+
 ## 0.3.26-rc.1
 
 ### Patch Changes
