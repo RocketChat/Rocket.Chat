@@ -49,18 +49,18 @@ const MockedMediaCallProvider = ({
 		setHeldState(false);
 	};
 
-	const onDeviceChange = (device: any) => {
-		console.log('device', device);
+	const onDeviceChange = (_device: any) => {
+		// Device change handled by mocked provider - no logging needed
 	};
 
 	const onForward = () => {
-		console.log('forward');
+		// Forward call handled by mocked provider
 		clearState();
 		setWidgetState('closed');
 	};
 
-	const onTone = (tone: string) => {
-		console.log('tone', tone);
+	const onTone = (_tone: string) => {
+		// Tone input handled by mocked provider
 	};
 
 	const onEndCall = () => {

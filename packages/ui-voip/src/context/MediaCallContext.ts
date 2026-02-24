@@ -116,7 +116,8 @@ type MediaCallUnauthorizedContextType = {
 
 type MediaCallUnlicensedContextType = {
 	state: 'unlicensed';
-	onToggleWidget: (peerInfo?: any) => void;
+	// Use proper PeerInfo type instead of any for better type safety
+	onToggleWidget: (peerInfo?: PeerInfo) => void;
 	onEndCall: undefined;
 	peerInfo: undefined;
 	setOpenRoomId: undefined;

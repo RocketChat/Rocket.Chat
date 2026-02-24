@@ -67,6 +67,16 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			{ key: { rid: 1, ls: 1 } },
 			{ key: { 'u._id': 1, 'autotranslate': 1 } },
 			{ key: { 'v._id': 1, 'open': 1 } },
+			// Compound indexes for common query patterns - performance optimization
+			{
+				key: { 'u._id': 1, archived: 1 },
+				background: true,
+			}, // For unread count aggregations and user subscription queries
+			{
+				key: { 'u._id': 1, roles: 1 },
+				sparse: true,
+				background: true,
+			}, // For role-based subscription queries
 		];
 	}
 
@@ -1628,54 +1638,51 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	}
 
 	async setBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]> {
-		const query = {
-			rid,
-			'u._id': blocked,
-		};
-
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				blocked: true,
+		// Batch both updates in a single bulkWrite for better performance
+		const result = await this.col.bulkWrite([
+			{
+				updateOne: {
+					filter: { rid, 'u._id': blocked },
+					update: { $set: { blocked: true } },
+				},
 			},
-		};
-
-		const query2 = {
-			rid,
-			'u._id': blocker,
-		};
-
-		const update2: UpdateFilter<ISubscription> = {
-			$set: {
-				blocker: true,
+			{
+				updateOne: {
+					filter: { rid, 'u._id': blocker },
+					update: { $set: { blocker: true } },
+				},
 			},
-		};
+		]);
 
-		return Promise.all([this.updateOne(query, update), this.updateOne(query2, update2)]);
+		// Return format compatible with previous Promise.all implementation
+		return [
+			{ acknowledged: result.ok === 1, matchedCount: result.matchedCount, modifiedCount: result.modifiedCount, upsertedCount: 0, upsertedId: null },
+			{ acknowledged: result.ok === 1, matchedCount: result.matchedCount, modifiedCount: result.modifiedCount, upsertedCount: 0, upsertedId: null },
+		] as UpdateResult[];
 	}
 
 	async unsetBlockedByRoomId(rid: string, blocked: string, blocker: string): Promise<UpdateResult[]> {
-		const query = {
-			rid,
-			'u._id': blocked,
-		};
-
-		const update: UpdateFilter<ISubscription> = {
-			$unset: {
-				blocked: 1,
+		// Batch both updates in a single bulkWrite for better performance
+		const result = await this.col.bulkWrite([
+			{
+				updateOne: {
+					filter: { rid, 'u._id': blocked },
+					update: { $unset: { blocked: 1 } },
+				},
 			},
-		};
-
-		const query2 = {
-			rid,
-			'u._id': blocker,
-		};
-
-		const update2: UpdateFilter<ISubscription> = {
-			$unset: {
-				blocker: 1,
+			{
+				updateOne: {
+					filter: { rid, 'u._id': blocker },
+					update: { $unset: { blocker: 1 } },
+				},
 			},
-		};
-		return Promise.all([this.updateOne(query, update), this.updateOne(query2, update2)]);
+		]);
+
+		// Return format compatible with previous Promise.all implementation
+		return [
+			{ acknowledged: result.ok === 1, matchedCount: result.nMatched, modifiedCount: result.nModified, upsertedCount: 0, upsertedId: null },
+			{ acknowledged: result.ok === 1, matchedCount: result.nMatched, modifiedCount: result.nModified, upsertedCount: 0, upsertedId: null },
+		] as UpdateResult[];
 	}
 
 	updateCustomFieldsByRoomId(rid: string, cfields: Record<string, any>): Promise<UpdateResult | Document> {

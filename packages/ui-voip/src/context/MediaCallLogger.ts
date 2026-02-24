@@ -8,19 +8,20 @@ export class MediaCallLogger implements IMediaSignalLogger {
 		this.isDebug = Boolean(searchParams.get('debug') || searchParams.get('debug-voip'));
 	}
 
-	log(...what: any[]): void {
+	// Replace any[] with unknown[] for better type safety - allows any value but forces type checking
+	log(...what: unknown[]): void {
 		this.isDebug && console.log(...what);
 	}
 
-	debug(...what: any[]): void {
+	debug(...what: unknown[]): void {
 		this.isDebug && console.debug(...what);
 	}
 
-	error(...what: any[]): void {
+	error(...what: unknown[]): void {
 		console.error(...what);
 	}
 
-	warn(...what: any[]): void {
+	warn(...what: unknown[]): void {
 		console.warn(...what);
 	}
 }

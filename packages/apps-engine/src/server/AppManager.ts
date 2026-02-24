@@ -681,7 +681,10 @@ export class AppManager {
 		await this.removeLocal(id);
 
 		// Then let everyone know that the App has been removed
-		await this.bridges.getAppActivationBridge().doAppRemoved(app).catch();
+		// Non-critical notification - log error but don't fail removal
+		await this.bridges.getAppActivationBridge().doAppRemoved(app).catch((error) => {
+			console.error('Failed to notify app removal', { appId: id, error: error.message });
+		});
 
 		return app;
 	}
