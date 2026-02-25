@@ -54,7 +54,6 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
 
@@ -1147,9 +1146,7 @@ API.v1.addRoute(
 				return API.v1.failure('Channel does not exists');
 			}
 
-			const user = await getLoggedInUser(this.request);
-
-			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+			if (!(await canAccessRoomAsync(room, this.user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 
