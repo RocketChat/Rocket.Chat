@@ -113,7 +113,6 @@ WebAppInternals.staticFilesMiddleware = function (
 	res: http.ServerResponse & { cookie: (cookie: string, value: string) => void },
 	next: NextFunction,
 ) {
-	// Restrict CORS for sensitive runtime configuration file
 	const origin = req.headers.origin as string | undefined;
 	const host = req.headers.host;
 
@@ -121,8 +120,14 @@ WebAppInternals.staticFilesMiddleware = function (
 
 	if (!isRuntimeConfig) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
-	} else if (origin && host && origin.includes(host)) {
-		res.setHeader('Access-Control-Allow-Origin', origin);
+	} else if (origin && host) {
+		try {
+			const originHost = new URL(origin).host;
+
+			if (originHost === host) {
+				res.setHeader('Access-Control-Allow-Origin', origin);
+			}
+		} catch {}
 	}
 	const { arch, path, url } = WebApp.categorizeRequest(req);
 
