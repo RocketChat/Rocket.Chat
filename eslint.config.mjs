@@ -19,11 +19,6 @@ export default [
 			'apps/meteor/**/public',
 			'apps/meteor/**/private/moment-locales',
 			'apps/meteor/**/imports',
-			'!apps/meteor/**/.mocharc.js',
-			'!apps/meteor/**/.mocharc.*.js',
-			'!apps/meteor/**/.scripts',
-			'!apps/meteor/**/.storybook',
-			'apps/meteor/**/storybook-static',
 			'apps/meteor/**/packages',
 			'apps/meteor/.meteor/**',
 		],
@@ -32,7 +27,6 @@ export default [
 		files: ['apps/meteor/**/*'],
 		languageOptions: {
 			globals: {
-				__meteor_bootstrap__: 'readonly',
 				__meteor_runtime_config__: 'readonly',
 				Assets: 'readonly',
 				chrome: 'readonly',
@@ -50,16 +44,9 @@ export default [
 				{
 					commonjs: true,
 					caseSensitive: true,
-					amd: true,
-					ignore: ['^meteor/.+$'],
 				},
 			],
-			'react-hooks/exhaustive-deps': [
-				'warn',
-				{
-					additionalHooks: '(useComponentDidUpdate)',
-				},
-			],
+			'react-hooks/exhaustive-deps': 'warn',
 			'you-dont-need-lodash-underscore/concat': 'error',
 			'you-dont-need-lodash-underscore/drop': 'error',
 			'you-dont-need-lodash-underscore/drop-right': 'error',
@@ -266,7 +253,6 @@ export default [
 	{
 		files: ['apps/meteor/client/**/*.ts', 'apps/meteor/client/**/*.tsx', 'apps/meteor/ee/client/**/*.ts', 'apps/meteor/ee/client/**/*.tsx'],
 		rules: {
-			'@typescript-eslint/no-misused-promises': 'off',
 			'@typescript-eslint/no-floating-promises': 'off',
 		},
 	},
@@ -349,9 +335,6 @@ export default [
 	{
 		ignores: [
 			'apps/uikit-playground/build',
-			'apps/uikit-playground/storybook-static',
-			'!apps/uikit-playground/.jest',
-			'!apps/uikit-playground/.storybook',
 			'apps/uikit-playground/.storybook/jest-results.json',
 			'apps/uikit-playground/.DS_Store',
 			'apps/uikit-playground/.env.local',
@@ -397,9 +380,6 @@ export default [
 	},
 	{
 		ignores: ['ee/packages/federation-matrix/src/api/.well-known/server.ts'],
-	},
-	{
-		ignores: ['!ee/packages/pdf-worker/.storybook'],
 	},
 	{
 		files: ['packages/apps-engine/**/*.ts'],
@@ -518,18 +498,6 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/fuselage-ui-kit/storybook-static', '!packages/fuselage-ui-kit/.storybook'],
-	},
-	{
-		files: ['packages/fuselage-ui-kit/**/*.ts', 'packages/fuselage-ui-kit/**/*.tsx'],
-		rules: {
-			'@typescript-eslint/no-misused-promises': 'off',
-		},
-	},
-	{
-		ignores: ['packages/gazzodown/storybook-static', '!packages/gazzodown/.storybook'],
-	},
-	{
 		files: ['packages/instance-status/**/*.spec.js', 'packages/instance-status/**/*.spec.jsx'],
 		languageOptions: {
 			globals: {
@@ -542,7 +510,6 @@ export default [
 	},
 	{
 		files: ['packages/livechat/**/*'],
-		ignores: ['packages/livechat/storybook-static', '!packages/livechat/.storybook'],
 		languageOptions: {
 			globals: {
 				...globals.browser,
@@ -641,7 +608,6 @@ export default [
 					leadingUnderscore: 'require',
 				},
 			],
-			'@typescript-eslint/no-misused-promises': 'off',
 		},
 	},
 	{
@@ -670,44 +636,24 @@ export default [
 		ignores: ['packages/storybook-config/*.d.ts', 'packages/storybook-config/*.js'],
 	},
 	{
-		ignores: ['packages/ui-avatar/storybook-static', '!packages/ui-avatar/.storybook'],
-	},
-	{
-		ignores: ['packages/ui-client/storybook-static', '!packages/ui-client/.storybook'],
-	},
-	{
-		files: ['packages/ui-client/**/*.ts', 'packages/ui-client/**/*.tsx'],
-		rules: {
-			'@typescript-eslint/no-misused-promises': 'off',
-		},
-	},
-	{
-		ignores: ['packages/ui-composer/storybook-static', '!packages/ui-composer/.storybook'],
-	},
-	{
-		files: ['packages/ui-contexts/**/*.ts', 'packages/ui-contexts/**/*.tsx'],
-		rules: {
-			'@typescript-eslint/no-misused-promises': 'off',
-		},
-	},
-	{
-		ignores: ['packages/ui-video-conf/storybook-static', '!packages/ui-video-conf/.storybook'],
-	},
-	{
-		ignores: ['packages/ui-voip/storybook-static', '!packages/ui-voip/.storybook'],
-	},
-	{
-		files: ['packages/ui-voip/**/*.ts', 'packages/ui-voip/**/*.tsx'],
-		rules: {
-			'@typescript-eslint/no-misused-promises': 'off',
-		},
-	},
-	{
-		files: ['packages/web-ui-registration/**/*'],
-		ignores: ['packages/web-ui-registration/storybook-static', '!packages/web-ui-registration/.storybook'],
-	},
-	{
-		files: ['packages/web-ui-registration/**/*.ts', 'packages/web-ui-registration/**/*.tsx'],
+		files: [
+			'apps/meteor/client/**/*.ts',
+			'apps/meteor/client/**/*.tsx',
+			'apps/meteor/ee/client/**/*.ts',
+			'apps/meteor/ee/client/**/*.tsx',
+			'packages/fuselage-ui-kit/**/*.ts',
+			'packages/fuselage-ui-kit/**/*.tsx',
+			'packages/livechat/**/*.ts',
+			'packages/livechat/**/*.tsx',
+			'packages/ui-client/**/*.ts',
+			'packages/ui-client/**/*.tsx',
+			'packages/ui-contexts/**/*.ts',
+			'packages/ui-contexts/**/*.tsx',
+			'packages/ui-voip/**/*.ts',
+			'packages/ui-voip/**/*.tsx',
+			'packages/web-ui-registration/**/*.ts',
+			'packages/web-ui-registration/**/*.tsx',
+		],
 		rules: {
 			'@typescript-eslint/no-misused-promises': 'off',
 		},

@@ -19,7 +19,7 @@ export default [
 	},
 	// ignored directories
 	{
-		ignores: ['**/dist', '**/coverage'],
+		ignores: ['**/dist', '**/coverage', '**/storybook-static'],
 	},
 	importPlugin.flatConfigs.recommended,
 	importPlugin.flatConfigs.typescript,
