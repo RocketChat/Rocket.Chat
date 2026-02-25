@@ -800,7 +800,6 @@ export type RoomsEndpoints = {
 		}) => { message: IMessage | null };
 	};
 
-
 	'/v1/rooms.nameExists': {
 		GET: (params: { roomName: string }) => {
 			exists: boolean;
