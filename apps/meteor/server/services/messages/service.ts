@@ -5,8 +5,6 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
-import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
-import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 import { OEmbed } from './hooks/AfterSaveOEmbed';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { parseUrlsInMessage } from '../../../app/lib/server/functions/parseUrlsInMessage';
@@ -28,6 +26,8 @@ import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
+import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
+import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 
 const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 
