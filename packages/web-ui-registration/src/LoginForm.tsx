@@ -103,7 +103,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		onError: (error: any) => {
 			if (error.error === 'user-not-found' || error.error === 401 || error.reason === 'User not found') {
 				setError('password', {
-					type: 'manual',
+					type: 'user-not-found',
 					message: t('registration.page.login.errors.wrongCredentials'),
 				});
 				return;
@@ -158,6 +158,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		return <EmailConfirmationForm onBackToLogin={() => clearErrors('usernameOrEmail')} email={getValues('usernameOrEmail')} />;
 	}
 
+	const hasAuthError = errors.password?.type === 'user-not-found';
+
 	return (
 		<Form
 			tabIndex={-1}
@@ -183,8 +185,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
 										})}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-										error={errors.usernameOrEmail?.message}
-										aria-invalid={errors.usernameOrEmail || errorOnSubmit ? 'true' : 'false'}
+										error={errors.usernameOrEmail?.message || hasAuthError ? errors.password?.message : undefined}
+										aria-invalid={errors.usernameOrEmail || hasAuthError || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										id={usernameId}
 									/>
