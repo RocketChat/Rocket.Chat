@@ -77,12 +77,12 @@ const categories: BenchCategory[] = [
 	{
 		name: 'Emoji',
 		fixtures: [
-			{ name: 'single shortcode', input: ':smile:' },
-			{ name: 'triple shortcode (BigEmoji)', input: ':smile::heart::rocket:' },
-			{ name: 'single unicode', input: '😀' },
-			{ name: 'triple unicode (BigEmoji)', input: '😀🚀🌈' },
-			{ name: 'in text', input: 'Hello :smile: world :heart: test :rocket: done' },
-			{ name: 'mixed', input: 'Great job :thumbsup: 🎉 keep going :rocket:' },
+			{ name: 'single shortcode', input: ':smile:', options: fullOptions },
+			{ name: 'triple shortcode (BigEmoji)', input: ':smile::heart::rocket:', options: fullOptions },
+			{ name: 'single unicode', input: '😀', options: fullOptions },
+			{ name: 'triple unicode (BigEmoji)', input: '😀🚀🌈', options: fullOptions },
+			{ name: 'in text', input: 'Hello :smile: world :heart: test :rocket: done', options: fullOptions },
+			{ name: 'mixed', input: 'Great job :thumbsup: 🎉 keep going :rocket:', options: fullOptions },
 		],
 	},
 	{
