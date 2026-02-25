@@ -2590,6 +2590,7 @@
   "registration.component.form.divider": "ili",
   "registration.component.form.invalidConfirmPass": "Potvrda lozinke se ne slaže sa lozinkom",
   "registration.component.form.invalidEmail": "Uneseni e-mail nije valjan",
+  "registration.component.form.invalidEmailDomain":"Unesena e-mail adresa ima nevažeću domenu",
   "registration.component.form.name": "Ime",
   "registration.component.form.password": "Lozinka",
   "registration.component.form.reasonToJoin": "Razlog pridruživanja",

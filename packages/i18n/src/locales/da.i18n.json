@@ -3866,6 +3866,7 @@
   "registration.component.form.email": "E-mail",
   "registration.component.form.invalidConfirmPass": "Adgangskodebekræftelsen stemmer ikke overens med adgangskoden",
   "registration.component.form.invalidEmail": "Den indtastede e-mail er ugyldig",
+  "registration.component.form.invalidEmailDomain":"Den indtastede e-mailadresse har et ugyldigt domæne",
   "registration.component.form.name": "Navn",
   "registration.component.form.password": "Adgangskode",
   "registration.component.form.reasonToJoin": "Årsag til at deltage",

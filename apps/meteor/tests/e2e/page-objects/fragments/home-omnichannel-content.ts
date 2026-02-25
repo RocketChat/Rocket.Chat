@@ -38,10 +38,7 @@ export class HomeOmnichannelContent extends HomeContent {
 		return this.page.locator('.rcx-room-header').getByRole('heading');
 	}
 
-	/**
-	 * FIXME: useX naming convention should be exclusively for react hooks
-	 **/
-	async useCannedResponse(cannedResponseName: string): Promise<void> {
+	async selectCannedResponse(cannedResponseName: string): Promise<void> {
 		await this.composer.inputMessage.pressSequentially('!');
 		await this.page.locator('[role="menu"][name="ComposerBoxPopup"]').waitFor({ state: 'visible' });
 		await this.composer.inputMessage.pressSequentially(cannedResponseName);

@@ -3762,6 +3762,7 @@
   "registration.component.form.email": "E-mail",
   "registration.component.form.invalidConfirmPass": "Hesla nesouhlasí",
   "registration.component.form.invalidEmail": "Zadaný e-mail je neplatný",
+  "registration.component.form.invalidEmailDomain":"Zadaná e-mailová adresa má neplatnou doménu",
   "registration.component.form.name": "Jméno",
   "registration.component.form.password": "Heslo",
   "registration.component.form.reasonToJoin": "Důvod připojení",

@@ -2598,6 +2598,7 @@
   "registration.component.form.email": "E-Mail",
   "registration.component.form.invalidConfirmPass": "Die Passwörter stimmen nicht überein.",
   "registration.component.form.invalidEmail": "Die eingegebene E-Mail-Adresse ist ungültig.",
+  "registration.component.form.invalidEmailDomain": "Die eingegebene E-Mail-Adresse hat eine ungültige Domain.",
   "registration.component.form.name": "Name",
   "registration.component.form.password": "Passwort",
   "registration.component.form.reasonToJoin": "Grund zu Join",

@@ -2592,6 +2592,7 @@
   "registration.component.form.email": "E-bost",
   "registration.component.form.invalidConfirmPass": "Nid yw'r cadarnhad cyfrinair yn cyfateb i'r cyfrinair",
   "registration.component.form.invalidEmail": "Mae'r e-bost a roddwyd yn annilys",
+  "registration.component.form.invalidEmailDomain":"Mae gan y cyfeiriad e-bost a roddwyd barth annilys",
   "registration.component.form.name": "Enw",
   "registration.component.form.password": "Cyfrinair",
   "registration.component.form.reasonToJoin": "Rheswm i Ymuno",
