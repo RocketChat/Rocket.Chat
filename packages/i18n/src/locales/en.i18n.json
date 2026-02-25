@@ -1887,6 +1887,8 @@
   "E2E_Encryption_enabled_for_room": "End-to-end encryption enabled for #{{roomName}}",
   "E2E_Invalid_Key": "No E2E encryption key found for this room",
   "E2E_Key_Error": "This message is end-to-end encrypted and cannot be decrypted due to incorrect encryption key",
+  "E2E_failed_to_decode_imported_key_title": "Wasn't possible to decode your encryption key to be imported.",
+  "E2E_failed_to_decode_imported_key_message": "Your encryption password seems wrong. Click here to try again.",
   "E2E_Reset_Email_Content": "You've been automatically logged out. When you log in again, a new key will be generated and access will be restored to any encrypted room with at least one member online. If no members are online, access will be restored as soon as a member comes online.",
   "E2E_Reset_Other_Key_Warning": "Resetting the E2EE key will log out the user. When the user logs in again, a new key will be generated and access will be restored to any encrypted room with at least one member online. If no members are online, access will be restored as soon as a member comes online.",
   "E2E_disable_encryption": "Disable encryption",
