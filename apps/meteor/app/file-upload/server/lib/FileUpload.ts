@@ -32,7 +32,7 @@ import type { Store, StoreOptions } from '../../../../server/ufs/ufs-store';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { settings } from '../../../settings/server';
 import { mime } from '../../../utils/lib/mimeTypes';
-import { isValidJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
+import { validateAndDecodeJWT, generateJWT } from '../../../utils/server/lib/JWTHelper';
 import { fileUploadIsValidContentType } from '../../../utils/server/restrictions';
 
 const cookie = new Cookies();
@@ -458,12 +458,36 @@ export const FileUpload = {
 				.getRoomDirectives(rc_room_type)
 				.canAccessUploadedFile({ rc_uid: rc_uid || '', rc_rid: rc_rid || '', rc_token: rc_token || '' });
 
-		const isAuthorizedByJWT = () =>
-			settings.get('FileUpload_Enable_json_web_token_for_files') &&
-			token &&
-			isValidJWT(token as string, settings.get('FileUpload_json_web_token_secret_for_files'));
+		const isAuthorizedByJWT: () => boolean = () => {
+			if (!token || typeof token !== 'string' || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
+				return false;
+			}
 
-		if ((await isAuthorizedByRoom()) || isAuthorizedByJWT()) {
+			if (!settings.get('FileUpload_json_web_token_secret_for_files')) {
+				SystemLogger.error('FileUpload_json_web_token_secret_for_files is not configured. Cannot validate JWT for file access.');
+				return false;
+			}
+
+			const payload = validateAndDecodeJWT(token, settings.get('FileUpload_json_web_token_secret_for_files'));
+
+			if (!payload) {
+				return false;
+			}
+
+			const { fileId, rid } = payload as { fileId: string; rid: string };
+
+			if (!fileId || !rid) {
+				return false;
+			}
+
+			if (fileId !== file?._id || rid !== file?.rid) {
+				return false;
+			}
+
+			return true;
+		};
+
+		if (isAuthorizedByJWT() || (await isAuthorizedByRoom())) {
 			return true;
 		}
 
@@ -641,7 +665,11 @@ export const FileUpload = {
 	},
 
 	generateJWTToFileUrls({ rid, userId, fileId }: { rid: string; userId: string; fileId: string }) {
-		if (!settings.get('FileUpload_ProtectFiles') || !settings.get('FileUpload_Enable_json_web_token_for_files')) {
+		if (
+			!settings.get('FileUpload_ProtectFiles') ||
+			!settings.get('FileUpload_Enable_json_web_token_for_files') ||
+			!settings.get('FileUpload_json_web_token_secret_for_files')
+		) {
 			return;
 		}
 		return generateJWT(
