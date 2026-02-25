@@ -1,14 +1,13 @@
-import babelParser from '@babel/eslint-parser';
 import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
 import importPlugin from 'eslint-plugin-import';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import prettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import storybookPlugin from 'eslint-plugin-storybook';
 import globals from 'globals';
-// import tseslint from 'typescript-eslint';
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
@@ -18,18 +17,83 @@ export default [
 			reportUnusedDisableDirectives: true,
 		},
 	},
+	// ignored directories
+	{
+		ignores: ['**/dist', '**/coverage'],
+	},
+	importPlugin.flatConfigs.recommended,
+	importPlugin.flatConfigs.typescript,
+	jsxA11yPlugin.flatConfigs.recommended,
+	{
+		rules: {
+			'jsx-a11y/no-autofocus': ['error', { ignoreNonDOM: true }],
+		},
+	},
+	{
+		plugins: {
+			react: reactPlugin,
+		},
+		settings: {
+			react: {
+				version: 'detect',
+			},
+		},
+		rules: {
+			'react/display-name': 'error',
+			'react/jsx-curly-brace-presence': 'error',
+			'react/jsx-fragments': ['error', 'syntax'],
+			'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
+			'react/jsx-no-undef': 'error',
+			'react/jsx-uses-react': 'error',
+			'react/jsx-uses-vars': 'error',
+			'react/no-children-prop': 'error',
+			'react/no-multi-comp': 'error',
+		},
+	},
+	{
+		plugins: {
+			'react-hooks': reactHooksPlugin,
+		},
+		rules: {
+			'react-hooks/exhaustive-deps': 'error',
+			'react-hooks/rules-of-hooks': 'error',
+		},
+	},
+	...storybookPlugin.configs['flat/recommended'],
+	{
+		plugins: {
+			'anti-trojan-source': antiTrojanSourcePlugin,
+		},
+		rules: {
+			'anti-trojan-source/no-bidi': 'error',
+		},
+	},
+	prettierPluginRecommended,
 	// javascript files
 	{
 		languageOptions: {
 			ecmaVersion: 2024,
 			sourceType: 'module',
+			parserOptions: {
+				ecmaFeatures: {
+					jsx: true,
+				},
+			},
 		},
 	},
-	// ignored directories
+	// typescript files
 	{
-		ignores: ['**/dist', '**/coverage'],
+		files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
+		languageOptions: {
+			parser: typescriptParser,
+			parserOptions: {
+				warnOnUnsupportedTypeScriptVersion: false,
+			},
+		},
+		plugins: {
+			'@typescript-eslint': typescriptPlugin,
+		},
 	},
-	eslintPluginPrettierRecommended,
 	// best practices
 	{
 		rules: {
@@ -225,16 +289,12 @@ export default [
 	},
 	// import related rules
 	{
-		plugins: { import: importPlugin },
 		settings: {
 			'import/resolver': {
-				node: {
-					extensions: ['.mjs', '.js', '.json'],
-				},
+				node: true,
+				typescript: true,
 			},
-			'import/extensions': ['.js', '.mjs', '.jsx'],
-			'import/core-modules': [],
-			'import/ignore': ['node_modules', '\\.(coffee|scss|css|less|hbs|svg|json)$'],
+			'import/ignore': ['meteor/.+'],
 		},
 		rules: {
 			'import/no-unresolved': [
@@ -242,8 +302,6 @@ export default [
 				{
 					commonjs: true,
 					caseSensitive: true,
-					amd: true,
-					ignore: ['^meteor/.+$'],
 				},
 			],
 			'import/named': 'off',
@@ -272,32 +330,6 @@ export default [
 			'import/no-useless-path-segments': 'error',
 		},
 	},
-	jsxA11yPlugin.flatConfigs.recommended,
-	{
-		plugins: {
-			'react': reactPlugin,
-			'react-hooks': reactHooksPlugin,
-		},
-		settings: {
-			react: {
-				version: 'detect',
-			},
-		},
-		rules: {
-			'react-hooks/exhaustive-deps': 'error',
-			'react-hooks/rules-of-hooks': 'error',
-			'react/display-name': 'error',
-			'react/jsx-curly-brace-presence': 'error',
-			'react/jsx-fragments': ['error', 'syntax'],
-			'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
-			'react/jsx-no-undef': 'error',
-			'react/jsx-uses-react': 'error',
-			'react/jsx-uses-vars': 'error',
-			'react/no-children-prop': 'error',
-			'react/no-multi-comp': 'error',
-			'jsx-a11y/no-autofocus': [2, { ignoreNonDOM: true }],
-		},
-	},
 	{
 		files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx'],
 		rules: {
@@ -305,54 +337,9 @@ export default [
 			'react/no-multi-comp': 'off',
 		},
 	},
-	importPlugin.flatConfigs.typescript,
-	{
-		languageOptions: {
-			parser: babelParser,
-			parserOptions: {
-				requireConfigFile: false,
-			},
-		},
-		settings: {
-			'import/resolver': {
-				node: {
-					extensions: ['.js', '.ts', '.tsx', '.cts', '.mts'],
-				},
-			},
-		},
-		rules: {
-			'jsx-quotes': ['error', 'prefer-single'],
-		},
-	},
-	// ...tseslint.configs.recommended,
-	// tseslint.configs.eslintRecommended,
 	{
 		files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
-		languageOptions: {
-			parser: typescriptParser,
-			parserOptions: {
-				sourceType: 'module',
-				ecmaVersion: 2018,
-				warnOnUnsupportedTypeScriptVersion: false,
-				ecmaFeatures: {
-					experimentalObjectRestSpread: true,
-					legacyDecorators: true,
-				},
-			},
-			globals: {
-				...globals.browser,
-				...globals.commonjs,
-				...globals.es6,
-				...globals.node,
-			},
-		},
-		plugins: {
-			'anti-trojan-source': antiTrojanSourcePlugin,
-			'@typescript-eslint': typescriptPlugin,
-		},
 		rules: {
-			// '@typescript-eslint/no-empty-object-type': 'warn',
-			// '@typescript-eslint/no-restricted-types': [
 			'@typescript-eslint/ban-types': [
 				'warn',
 				{
@@ -405,9 +392,13 @@ export default [
 				},
 			],
 			'@typescript-eslint/no-dupe-class-members': 'error',
+			'@typescript-eslint/no-empty-function': 'error',
+			'@typescript-eslint/no-empty-interface': 'warn',
 			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/no-non-null-assertion': 'warn',
 			'@typescript-eslint/no-redeclare': 'error',
 			'@typescript-eslint/no-redundant-type-constituents': 'off',
+			'@typescript-eslint/no-this-alias': 'error',
 			'@typescript-eslint/no-unused-vars': [
 				'error',
 				{
@@ -420,29 +411,17 @@ export default [
 			'@typescript-eslint/no-unsafe-member-access': 'off',
 			'@typescript-eslint/prefer-optional-chain': 'warn',
 			'@typescript-eslint/require-await': 'off',
-			'anti-trojan-source/no-bidi': 'error',
-			'func-call-spacing': 'off',
-			'jsx-quotes': ['error', 'prefer-single'],
 			'no-dupe-class-members': 'off',
 			'no-empty-function': 'off',
 			'no-redeclare': 'off',
-			'no-spaced-func': 'off',
 			'no-undef': 'off',
 			'no-unused-vars': 'off',
 			'no-use-before-define': 'off',
 			'no-useless-constructor': 'off',
 		},
-		settings: {
-			'import/resolver': {
-				node: {
-					extensions: ['.js', '.ts', '.tsx', '.cts', '.mts'],
-				},
-				typescript: {},
-			},
-		},
 	},
 	{
-		files: ['**/*.ts', '**/*.tsx'],
+		files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
 		ignores: [
 			'**/*.d.ts',
 			'**/__tests__/**',

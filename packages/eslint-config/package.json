@@ -13,8 +13,8 @@
 		"/node",
 		"/style",
 		"/variables",
-		"react.js",
-		"flat.mjs"
+		"/react.js",
+		"/flat.mjs"
 	],
 	"scripts": {
 		"lint": "eslint .",

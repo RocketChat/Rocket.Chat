@@ -1,12 +1,7 @@
 import rocketChatConfig from '@rocket.chat/eslint-config/flat.mjs';
-import typescriptPlugin from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
-import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
 import jestPlugin from 'eslint-plugin-jest';
 import noFloatingPromisePlugin from 'eslint-plugin-no-floating-promise';
-import prettierPlugin from 'eslint-plugin-prettier';
 import reactRefreshPlugin from 'eslint-plugin-react-refresh';
-import storybookPlugin from 'eslint-plugin-storybook';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import youDontNeedLodashUnderscorePlugin from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
@@ -18,7 +13,6 @@ function getAbsolutePath(path) {
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
 	...rocketChatConfig,
-	...storybookPlugin.configs['flat/recommended'],
 	{
 		ignores: [
 			'apps/meteor/app/emoji-emojione/generateEmojiIndex.js',
@@ -31,6 +25,7 @@ export default [
 			'!apps/meteor/**/.storybook',
 			'apps/meteor/**/storybook-static',
 			'apps/meteor/**/packages',
+			'apps/meteor/.meteor/**',
 		],
 	},
 	{
@@ -49,6 +44,22 @@ export default [
 			'you-dont-need-lodash-underscore': youDontNeedLodashUnderscorePlugin,
 		},
 		rules: {
+			'import/named': 'error',
+			'import/no-unresolved': [
+				'error',
+				{
+					commonjs: true,
+					caseSensitive: true,
+					amd: true,
+					ignore: ['^meteor/.+$'],
+				},
+			],
+			'react-hooks/exhaustive-deps': [
+				'warn',
+				{
+					additionalHooks: '(useComponentDidUpdate)',
+				},
+			],
 			'you-dont-need-lodash-underscore/concat': 'error',
 			'you-dont-need-lodash-underscore/drop': 'error',
 			'you-dont-need-lodash-underscore/drop-right': 'error',
@@ -122,13 +133,6 @@ export default [
 			'you-dont-need-lodash-underscore/get': 'warn',
 			'you-dont-need-lodash-underscore/union-by': 'warn',
 			'you-dont-need-lodash-underscore/is-array-buffer': 'warn',
-			'import/named': 'error',
-			'react-hooks/exhaustive-deps': [
-				'warn',
-				{
-					additionalHooks: '(useComponentDidUpdate)',
-				},
-			],
 			'new-cap': [
 				'error',
 				{
@@ -269,15 +273,12 @@ export default [
 	{
 		files: ['apps/meteor/tests/e2e/**/*'],
 		languageOptions: {
-			parser: typescriptParser,
 			parserOptions: {
 				project: getAbsolutePath('./apps/meteor/tsconfig.json'),
 			},
 		},
 		plugins: {
-			'prettier': prettierPlugin,
 			'testing-library': testingLibraryPlugin,
-			'anti-trojan-source': antiTrojanSourcePlugin,
 			'no-floating-promise': noFloatingPromisePlugin,
 		},
 		rules: {
@@ -301,13 +302,6 @@ export default [
 				},
 			],
 		},
-		settings: {
-			'import/resolver': {
-				node: {
-					extensions: ['.js', '.ts', '.tsx'],
-				},
-			},
-		},
 	},
 	{
 		files: ['apps/meteor/packages/**/*'],
@@ -321,8 +315,6 @@ export default [
 	{
 		files: ['apps/uikit-playground/**/*'],
 		languageOptions: {
-			parser: typescriptParser,
-			parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
 			globals: {
 				...globals.browser,
 				...globals.es2020,
@@ -410,12 +402,8 @@ export default [
 		ignores: ['!ee/packages/pdf-worker/.storybook'],
 	},
 	{
-		files: ['packages/apps-engine/**/*'],
-		plugins: {
-			'@typescript-eslint': typescriptPlugin,
-		},
+		files: ['packages/apps-engine/**/*.ts'],
 		languageOptions: {
-			parser: typescriptParser,
 			parserOptions: {
 				project: getAbsolutePath('./packages/apps-engine/tsconfig-lint.json'),
 			},
@@ -561,12 +549,7 @@ export default [
 			},
 		},
 		settings: {
-			'import/resolver': {
-				node: {
-					extensions: ['.js', '.ts', '.tsx'],
-				},
-			},
-			'react': {
+			react: {
 				pragma: 'h',
 				pragmaFrag: 'Fragment',
 				version: 'detect',
