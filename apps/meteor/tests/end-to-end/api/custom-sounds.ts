@@ -260,29 +260,29 @@ describe('[CustomSounds]', () => {
 		let gridFsFileId: string;
 
 		before(async () => {
-			await updateSetting('CustomSounds_Storage_Type', 'FileSystem', true);
+			await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
 			fsFileId = await insertOrUpdateSound(`${fileName}-3`);
 			await uploadCustomSound(binary, `${fileName}-3`, fsFileId);
 
-			await updateSetting('CustomSounds_Storage_Type', 'GridFS', true);
+			await updateSetting('CustomSounds_Storage_Type', 'GridFS');
 			gridFsFileId = await insertOrUpdateSound(`${fileName}-4`);
 			await uploadCustomSound(binary, `${fileName}-4`, gridFsFileId);
 		});
 
 		it('should respect CustomSounds_Storage_Type changes when resolving files', async () => {
-			await updateSetting('CustomSounds_Storage_Type', 'FileSystem', true);
+			await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
 			await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(404);
 			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
-			await updateSetting('CustomSounds_Storage_Type', 'GridFS', true);
+			await updateSetting('CustomSounds_Storage_Type', 'GridFS');
 			await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(200);
 			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
 		});
 
 		it('should respect CustomSounds_FileSystemPath changes when resolving files', async () => {
-			await updateSetting('CustomSounds_Storage_Type', 'FileSystem', true);
-			await updateSetting('CustomSounds_FileSystemPath', '~/sounds', true);
+			await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
+			await updateSetting('CustomSounds_FileSystemPath', '~/sounds');
 			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
-			await updateSetting('CustomSounds_FileSystemPath', '', true);
+			await updateSetting('CustomSounds_FileSystemPath', '');
 			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
 		});
 

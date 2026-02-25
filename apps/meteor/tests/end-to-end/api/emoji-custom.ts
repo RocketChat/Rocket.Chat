@@ -484,26 +484,27 @@ describe('[EmojiCustom]', () => {
 	});
 
 	describe('Emoji storage settings reactivity', () => {
-		const fsEmojiName = 'emoji-fs';
-		const gridFsEmojiName = 'emoji-gridfs';
-		const svgFallback = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+		const normalizeSvg = (svg: string) => svg.replace(/\r\n/g, '\n').trim();
+
+		const now = Date.now();
+		const fsEmojiName = `emoji-fs-${now}`;
+		const gridFsEmojiName = `emoji-gridfs-${now}`;
+		const svgFallback = normalizeSvg(`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg xmlns="http://www.w3.org/2000/svg" pointer-events="none" width="50" height="50" style="width: 50px; height: 50px; background-color: #000;">
 	<text text-anchor="middle" y="50%" x="50%" dy="0.36em" pointer-events="auto" fill="#ffffff" font-family="Helvetica, Arial, Lucida Grande, sans-serif" style="font-weight: 400; font-size: 28px;">
 		?
 	</text>
-</svg>`;
-
-		const normalizeSvg = (svg: string) => svg.replace(/\r\n/g, '\n').trim();
+</svg>`);
 
 		before(async () => {
-			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', true);
+			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
 			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: fsEmojiName }).expect(200);
-			await updateSetting('EmojiUpload_Storage_Type', 'GridFS', true);
+			await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
 			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: gridFsEmojiName }).expect(200);
 		});
 
 		it('should resolve emojis correctly when switching EmojiUpload_Storage_Type', async () => {
-			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', true);
+			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
@@ -515,18 +516,16 @@ describe('[EmojiCustom]', () => {
 				.expect(200)
 				.expect((res) => {
 					const received = normalizeSvg(res.body.toString());
-					const expected = normalizeSvg(svgFallback);
-					expect(received).to.equal(expected);
+					expect(received).to.equal(svgFallback);
 				});
-			await updateSetting('EmojiUpload_Storage_Type', 'GridFS', true);
+			await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
 					const received = normalizeSvg(res.body.toString());
-					const expected = normalizeSvg(svgFallback);
-					expect(received).to.equal(expected);
+					expect(received).to.equal(svgFallback);
 				});
 			await request
 				.get(`/emoji-custom/${gridFsEmojiName}.png`)
@@ -536,18 +535,17 @@ describe('[EmojiCustom]', () => {
 		});
 
 		it('should respect EmojiUpload_FileSystemPath changes', async () => {
-			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', true);
-			await updateSetting('EmojiUpload_FileSystemPath', '~/emoji-test', true);
+			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
+			await updateSetting('EmojiUpload_FileSystemPath', '~/emoji-test');
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
 					const received = normalizeSvg(res.body.toString());
-					const expected = normalizeSvg(svgFallback);
-					expect(received).to.equal(expected);
+					expect(received).to.equal(svgFallback);
 				});
-			await updateSetting('EmojiUpload_FileSystemPath', '', true);
+			await updateSetting('EmojiUpload_FileSystemPath', '');
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
