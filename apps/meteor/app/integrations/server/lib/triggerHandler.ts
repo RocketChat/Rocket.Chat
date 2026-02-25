@@ -181,7 +181,7 @@ class RocketChatIntegrationHandler {
 			channel: tmpRoom.t === 'd' ? `@${tmpRoom._id}` : `#${tmpRoom._id}`,
 		};
 
-		return processWebhookMessage(message, user as IUser & { username: RequiredField<IUser, 'username'> }, defaultValues);
+		return processWebhookMessage(message, user as RequiredField<IUser, 'username'>, defaultValues);
 	}
 
 	eventNameArgumentsToObject(...args: unknown[]) {
