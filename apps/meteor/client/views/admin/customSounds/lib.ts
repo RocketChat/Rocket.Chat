@@ -2,7 +2,7 @@ import type { ICustomSoundData } from '../../../../app/custom-sounds/server/meth
 
 type ICustomSoundFile = {
 	name: string;
-	type: string;
+	type?: string;
 	extension?: string;
 };
 
@@ -20,7 +20,7 @@ export function validate(soundData: ICustomSoundData, soundFile?: ICustomSoundFi
 
 	if (soundFile) {
 		if (!soundData.previousSound || soundData.previousSound !== soundFile) {
-			if (!/audio\/mp3/.test(soundFile.type) && !/audio\/mpeg/.test(soundFile.type) && !/audio\/x-mpeg/.test(soundFile.type)) {
+			if (soundFile.type && !/audio\/mp3/.test(soundFile.type) && !/audio\/mpeg/.test(soundFile.type) && !/audio\/x-mpeg/.test(soundFile.type)) {
 				errors.push('FileType');
 			}
 		}
