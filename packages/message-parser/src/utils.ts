@@ -275,5 +275,5 @@ export const extractFirstResult = (value: Types[keyof Types]['value']): Types[ke
 		return value;
 	}
 
-	return value.filter((item) => item).shift() as Types[keyof Types]['value'];
+	return value.find(Boolean) as Types[keyof Types]['value'];
 };
