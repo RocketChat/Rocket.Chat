@@ -52,22 +52,6 @@ jest.mock('../../../lib/server/lib/notifyListener', () => ({
 	notifyOnSettingChangedById: jest.fn(),
 }));
 
-function createAsyncIterableFromArray(items: unknown[]) {
-	let index = 0;
-	return {
-		[Symbol.asyncIterator]() {
-			return {
-				async next() {
-					if (index < items.length) {
-						return { value: items[index++], done: false };
-					}
-					return { value: undefined, done: true };
-				},
-			};
-		},
-	};
-}
-
 describe('buildVersionUpdateMessage', () => {
 	// Delete the TEST_MODE environment variable so buildVersionUpdateMessage()
 	// doesn't return early (see line 40 in buildVersionUpdateMessage.ts)
@@ -88,7 +72,7 @@ describe('buildVersionUpdateMessage', () => {
 	describe('cleanupOutdatedVersionUpdateBanners', () => {
 		it('should remove outdated version banners (<= current installed)', async () => {
 			const admin = { _id: 'admin1', banners: { 'versionUpdate-6_2_0': { id: 'versionUpdate-6_2_0' } } };
-			mockFindUsersInRolesWithQuery.mockReturnValue(createAsyncIterableFromArray([admin]));
+			mockFindUsersInRolesWithQuery.mockReturnValue([admin]);
 
 			await buildVersionUpdateMessage([]);
 
@@ -97,7 +81,7 @@ describe('buildVersionUpdateMessage', () => {
 
 		it('should keep version banners > current installed', async () => {
 			const admin = { _id: 'admin1', banners: { 'versionUpdate-8_0_0': { id: 'versionUpdate-8_0_0' } } };
-			mockFindUsersInRolesWithQuery.mockReturnValue(createAsyncIterableFromArray([admin]));
+			mockFindUsersInRolesWithQuery.mockReturnValue([admin]);
 
 			await buildVersionUpdateMessage([]);
 
@@ -106,7 +90,7 @@ describe('buildVersionUpdateMessage', () => {
 
 		it('should remove banners with invalid semver version IDs', async () => {
 			const admin = { _id: 'admin1', banners: { 'versionUpdate-invalid_version': { id: 'versionUpdate-invalid_version' } } };
-			mockFindUsersInRolesWithQuery.mockReturnValue(createAsyncIterableFromArray([admin]));
+			mockFindUsersInRolesWithQuery.mockReturnValue([admin]);
 
 			await buildVersionUpdateMessage([]);
 
@@ -116,7 +100,7 @@ describe('buildVersionUpdateMessage', () => {
 
 	describe('version sorting', () => {
 		it('should process versions in descending order (highest first)', async () => {
-			mockFindUsersInRolesWithQuery.mockReturnValue(createAsyncIterableFromArray([]));
+			mockFindUsersInRolesWithQuery.mockReturnValue([]);
 
 			await buildVersionUpdateMessage([
 				{ version: '7.6.0', security: false, infoUrl: 'https://example.com/7.6.0' },
