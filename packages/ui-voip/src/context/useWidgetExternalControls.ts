@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 
 import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
 import type { PeerInfo } from './definitions';
-import { getEndCall } from './useMediaSessionControls';
+import { getEndCall } from '../utils/instanceControlsGetters';
 
 export const useWidgetExternalControls = () => {
 	const { signalEmitter, instance } = useMediaCallInstanceContext();

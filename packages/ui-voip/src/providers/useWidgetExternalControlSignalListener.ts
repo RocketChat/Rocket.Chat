@@ -1,7 +1,7 @@
 import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { useEffect } from 'react';
 
-import { useMediaCallInstanceContext, type Signals } from './MediaCallInstanceContext';
+import { useMediaCallInstanceContext, type Signals } from '../context/MediaCallInstanceContext';
 
 export const useWidgetExternalControlSignalListener = <T extends keyof Signals>(signal: T, callback: EventHandlerOf<Signals, T>) => {
 	const { signalEmitter } = useMediaCallInstanceContext();

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
 import type { PeerInfo } from './definitions';
-import { derivePeerInfoFromInstanceContact } from './useMediaSession';
+import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromInstanceContact';
 
 export const usePeekMediaSessionPeerInfo = (): PeerInfo | undefined => {
 	const { instance } = useMediaCallInstanceContext();

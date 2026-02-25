@@ -11,16 +11,16 @@ import type { ReactNode } from 'react';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
-import MediaCallViewContext from './MediaCallViewContext';
-import type { PeerInfo } from './definitions';
 import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
-import { isValidTone, useTonePlayer } from './useTonePlayer';
 import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
+import { useMediaCallInstanceContext } from '../context/MediaCallInstanceContext';
+import MediaCallViewContext from '../context/MediaCallViewContext';
+import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
+import { isValidTone, useTonePlayer } from '../hooks/useTonePlayer';
 import { MediaCallWidget } from '../views';
 import TransferModal from '../views/TransferModal';
 

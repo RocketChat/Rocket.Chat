@@ -3,10 +3,11 @@ import { useUser } from '@rocket.chat/ui-contexts';
 import { useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
-import { MediaCallInstanceContext, type Signals } from './MediaCallInstanceContext';
 import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
 import useMediaStream from './useMediaStream';
+import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
+import type { Signals } from '../context/MediaCallInstanceContext';
 
 type MediaCallInstanceProviderProps = {
 	children: ReactNode;

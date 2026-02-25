@@ -1,6 +1,8 @@
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { useMemo } from 'react';
 
+import { getEndCall } from '../utils/instanceControlsGetters';
+
 export type MediaSessionControls = {
 	toggleMute: () => void;
 	toggleHold: () => void;
@@ -10,22 +12,6 @@ export type MediaSessionControls = {
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
-};
-
-export const getEndCall = (instance?: MediaSignalingSession) => () => {
-	if (!instance) {
-		return;
-	}
-	const mainCall = instance.getMainCall();
-	if (!mainCall) {
-		return;
-	}
-	const { role } = mainCall;
-	if (role === 'caller' || mainCall.state !== 'ringing') {
-		mainCall.hangup();
-		return;
-	}
-	mainCall.reject();
 };
 
 export const useMediaSessionControls = (instance?: MediaSignalingSession): MediaSessionControls => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
-import { deriveWidgetStateFromCallState } from './useMediaSession';
+import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState';
 
 export type PeekMediaSessionStateReturn = 'unavailable' | 'available' | 'ongoing' | 'ringing' | 'calling';
 

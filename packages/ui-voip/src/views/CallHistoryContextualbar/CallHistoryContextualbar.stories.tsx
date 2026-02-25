@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactElement } from 'react';
 
 import CallHistoryContextualbar from './CallHistoryContextualbar';
-import { MockedMediaCallProvider } from '../../context';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const noop = () => undefined;
 

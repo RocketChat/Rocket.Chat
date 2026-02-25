@@ -3,7 +3,8 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn, StoryObj } from '@storybook/react';
 
 import MediaCallWidget from './MediaCallWidget';
-import { useMediaCallViewContext, MockedMediaCallProvider, useWidgetExternalControls } from '../../context';
+import { useMediaCallViewContext, useWidgetExternalControls } from '../../context';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {

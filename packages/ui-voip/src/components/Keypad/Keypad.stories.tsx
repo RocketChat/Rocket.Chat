@@ -1,7 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/react';
 
 import Keypad from './Keypad';
-import { useTonePlayer } from '../../context/useTonePlayer';
+import { useTonePlayer } from '../../hooks/useTonePlayer';
 
 export default {
 	title: 'V2/Components/Keypad',
