@@ -132,7 +132,7 @@ export const unorderedList = generate('UNORDERED_LIST');
 export const listItem = (text: Inlines[], number?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
-	...(number && { number }),
+	...(number !== undefined && { number }),
 });
 
 export const mentionUser = (() => {
