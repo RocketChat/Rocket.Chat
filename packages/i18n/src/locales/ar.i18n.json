@@ -4588,6 +4588,7 @@
   "registration.component.form.emailOrUsername": "البريد الإلكتروني أو اسم المستخدم",
   "registration.component.form.invalidConfirmPass": "تأكيد كلمة السر لا تطابق كلمة السر",
   "registration.component.form.invalidEmail": "البريد الإلكتروني الذي تم إدخاله غير صالح",
+  "registration.component.form.invalidEmailDomain": "البريد الإلكتروني المُدخل يحتوي على نطاق غير صالح",
   "registration.component.form.name": "الاسم",
   "registration.component.form.password": "كلمة المرور",
   "registration.component.form.reasonToJoin": "سبب الانضمام",

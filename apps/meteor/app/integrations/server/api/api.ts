@@ -47,7 +47,7 @@ type IntegrationThis = GenericRouteExecutionContext & {
 	request: Request & {
 		integration: IIncomingIntegration;
 	};
-	user: IUser & { username: RequiredField<IUser, 'username'> };
+	user: RequiredField<IUser, 'username'>;
 };
 
 async function createIntegration(options: IntegrationOptions, user: IUser): Promise<IOutgoingIntegration | undefined> {
@@ -368,6 +368,8 @@ class WebHookAPI extends APIClass<'/hooks'> {
 
 			throw new Error('Invalid integration id or token provided.');
 		}
+
+		routeContext.request.headers.set('x-auth-token', token);
 
 		routeContext.request.integration = integration;
 
