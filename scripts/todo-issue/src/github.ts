@@ -196,12 +196,24 @@ export async function createIssue(todo: TodoItem, config: Config, sha: string): 
 
 	console.log(`[CREATE] "${todo.title}" (${todo.filename}#L${todo.line})`);
 
-	await githubRequest(`/repos/${config.owner}/${config.repo}/issues`, config.token, 'POST', {
+	const payload: Record<string, unknown> = {
 		title: todo.title,
 		body,
 		labels: todo.labels,
 		...(todo.assignees.length && { assignees: todo.assignees }),
-	});
+	};
+
+	try {
+		await githubRequest(`/repos/${config.owner}/${config.repo}/issues`, config.token, 'POST', payload);
+	} catch (err) {
+		if (todo.assignees.length && String(err).includes('422')) {
+			console.log(`[WARN] Assignees ${todo.assignees.join(', ')} may be invalid, retrying without them`);
+			delete payload.assignees;
+			await githubRequest(`/repos/${config.owner}/${config.repo}/issues`, config.token, 'POST', payload);
+		} else {
+			throw err;
+		}
+	}
 }
 
 export async function closeIssue(todo: TodoItem, config: Config, sha: string): Promise<void> {
