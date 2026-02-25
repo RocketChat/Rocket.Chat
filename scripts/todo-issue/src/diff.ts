@@ -86,6 +86,7 @@ export function extractTodos(diffText: string): TodoItem[] {
 				const { cleaned: labelCleaned, labels } = extractLabels(title);
 				const { cleaned: mentionCleaned, mentions: titleMentions } = extractMentions(labelCleaned);
 				title = mentionCleaned;
+				if (!title) continue;
 
 				const assignees = [...titleMentions];
 				if (body) {
