@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': patch
+'@rocket.chat/meteor': minor
 ---
 
-refactor: Migrate `instances.get` API endpoint to new chained pattern with response schemas
+ adds `instances.get` API endpoint to new chained pattern with response schemas
