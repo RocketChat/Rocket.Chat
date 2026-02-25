@@ -22,7 +22,7 @@ describe('authentication login hooks', () => {
 
 		settingsGet.callsFake((key: string) => key === 'Block_Multiple_Failed_Logins_Enabled');
 
-		proxyquire.noCallThru().load('../../../../../app/authentication/server/hooks/login', {
+		proxyquire.noPreserveCache().noCallThru().load('../../../../../app/authentication/server/hooks/login', {
 			'meteor/accounts-base': {
 				Accounts: {
 					onLoginFailure: (callback: (login: any) => Promise<void>) => {

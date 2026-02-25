@@ -4,6 +4,7 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 describe('restrictLoginAttempts', () => {
+	let clock: sinon.SinonFakeTimers;
 	const settingsGet = sinon.stub();
 	const findLastFailedAttemptByIp = sinon.stub();
 	const findLastSuccessfulAttemptByIp = sinon.stub();
@@ -44,6 +45,7 @@ describe('restrictLoginAttempts', () => {
 		});
 
 	beforeEach(() => {
+		clock = sinon.useFakeTimers(new Date('2026-02-25T10:02:00.000Z'));
 		settingsGet.reset();
 		findLastFailedAttemptByIp.reset();
 		findLastSuccessfulAttemptByIp.reset();
@@ -79,6 +81,10 @@ describe('restrictLoginAttempts', () => {
 		findOneByNameOrFname.resolves({ _id: 'room-id' });
 		findOneById.resolves({ _id: 'rocket.cat' });
 		sendMessage.resolves(undefined);
+	});
+
+	afterEach(() => {
+		clock.restore();
 	});
 
 	it('should notify only once for the same IP block window', async () => {

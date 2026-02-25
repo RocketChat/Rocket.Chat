@@ -12,15 +12,18 @@ import type { ILoginAttempt } from '../ILoginAttempt';
 const logger = new Logger('LoginProtection');
 const notifiedBlockUntilByIdentifier = new Map<string, number>();
 
+const pruneExpiredNotificationWindows = (currentTime: number): void => {
+	for (const [identifier, blockedUntilTime] of notifiedBlockUntilByIdentifier.entries()) {
+		if (blockedUntilTime < currentTime) {
+			notifiedBlockUntilByIdentifier.delete(identifier);
+		}
+	}
+};
+
 const shouldNotifyForBlockWindow = (identifier: string, blockedUntil: Date): boolean => {
 	const blockedUntilTime = blockedUntil.getTime();
 	const currentTime = Date.now();
-	const lastNotifiedBlockedUntil = notifiedBlockUntilByIdentifier.get(identifier);
-
-	// Clear stale notification windows so the map does not grow forever.
-	if (lastNotifiedBlockedUntil && lastNotifiedBlockedUntil < currentTime) {
-		notifiedBlockUntilByIdentifier.delete(identifier);
-	}
+	pruneExpiredNotificationWindows(currentTime);
 
 	if (notifiedBlockUntilByIdentifier.get(identifier) === blockedUntilTime) {
 		return false;
