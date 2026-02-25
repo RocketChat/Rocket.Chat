@@ -27,11 +27,7 @@ const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> =
 	return accumulator;
 };
 
-const filterOutdatedVersionUpdateBanners = (banners: IUser['banners']): IUser['banners'] => {
-	if (!banners) {
-		return banners;
-	}
-
+const filterOutdatedVersionUpdateBanners = (banners: NonNullable<IUser['banners']>): IUser['banners'] => {
 	return Object.fromEntries(
 		Object.entries(banners).filter(([id]) => {
 			if (!id.startsWith('versionUpdate-')) {
@@ -103,7 +99,7 @@ export async function getUserInfo(
 
 	return {
 		...me,
-		banners: filterOutdatedVersionUpdateBanners(me.banners),
+		...(me.banners && { banners: filterOutdatedVersionUpdateBanners(me.banners) }),
 		email: verifiedEmail ? verifiedEmail.address : undefined,
 		settings: {
 			profile: {},
