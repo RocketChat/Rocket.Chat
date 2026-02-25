@@ -1,5 +1,14 @@
 # @rocket.chat/omni-core
 
+## 0.0.16-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@2.1.0-rc.2
+  </details>
+
 ## 0.0.16-rc.1
 
 ### Patch Changes
