@@ -126,6 +126,11 @@ test.each([
 	['*bold ending with colon :*and some more text', [paragraph([bold([plain('bold ending with colon :')]), plain('and some more text')])]],
 	['*bold with a kissing emoji :* *', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' *')])]],
 	['*bold with a kissing emoji :* ', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' ')])]],
+	['_9797.76_', [paragraph([italic([plain('9797.76')])])]],
+	['_3.14_', [paragraph([italic([plain('3.14')])])]],
+	['_example.com_', [paragraph([italic([plain('example.com')])])]],
+	['_rocket.chat_', [paragraph([italic([plain('rocket.chat')])])]],
+	['_example.com', [paragraph([plain('_example.com')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input, { emoticons: false })).toMatchObject(output);
 });

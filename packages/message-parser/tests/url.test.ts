@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { lineBreak, autoLink, paragraph, plain, link, italic } from '../src/utils';
+import { lineBreak, autoLink, paragraph, plain, link } from '../src/utils';
 
 test.each([
 	[
@@ -172,22 +172,5 @@ describe('autoLink helper function', () => {
 
 	it("should return an plain text url due to invalid TLD that's validate with the external library TLDTS", () => {
 		expect(autoLink('rocket.chattt/url_path')).toMatchObject(plain('rocket.chattt/url_path'));
-	});
-});
-
-describe('autoLink with underscore-prefixed patterns', () => {
-	// Domain names starting with '_' are not auto-linked: the leading '_' prevents DomainName from
-	// matching, so '_x.y_' falls through to the italic parser, and '_x.y' (no closing '_') is
-	// returned as plain text via the Any fallback rule.
-	test.each([
-		['_example.com_', [paragraph([italic([plain('example.com')])])]],
-		['_rocket.chat_', [paragraph([italic([plain('rocket.chat')])])]],
-		['_example.com', [paragraph([plain('_example.com')])]],
-		// Decimal numbers wrapped in underscores also fall through to the italic parser
-		// because the leading '_DIGIT' pattern is excluded from DomainName.
-		['_9797.76_', [paragraph([italic([plain('9797.76')])])]],
-		['_3.14_', [paragraph([italic([plain('3.14')])])]],
-	])('parses %p', (input, output) => {
-		expect(parse(input)).toMatchObject(output);
 	});
 });
