@@ -2,10 +2,10 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
+import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
-import { closeUnclosedCodeBlock } from './closeUnclosedCodeBlock';
 import { processMessageEditing } from './processMessageEditing';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';

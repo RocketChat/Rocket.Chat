@@ -1,4 +1,4 @@
-import { closeUnclosedCodeBlock } from './closeUnclosedCodeBlock';
+import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
 
 describe('closeUnclosedCodeBlock', () => {
 	it('should return the text unchanged if there are no backticks', () => {

@@ -5,6 +5,8 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
+import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
+import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 import { OEmbed } from './hooks/AfterSaveOEmbed';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
 import { parseUrlsInMessage } from '../../../app/lib/server/functions/parseUrlsInMessage';
@@ -236,6 +238,11 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
+		// TODO: Auto-close unclosed markdown code blocks for server versions below 9.0.0
+		// In 9.0.0, this behavior is handled on the client side, so this block should be removed.
+		if (!shouldBreakInVersion('9.0.0') && message.msg) {
+			message = { ...message, msg: closeUnclosedCodeBlock(message.msg) };
+		}
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await mentionServer.execute(message);
 		if (parseUrls) {
