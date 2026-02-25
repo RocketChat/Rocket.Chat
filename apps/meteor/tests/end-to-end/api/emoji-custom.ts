@@ -507,10 +507,12 @@ describe('[EmojiCustom]', () => {
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
+				.expect(200)
 				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/png'));
 			await request
 				.get(`/emoji-custom/${gridFsEmojiName}.png`)
 				.set(credentials)
+				.expect(200)
 				.expect((res) => {
 					const received = normalizeSvg(res.body.toString());
 					const expected = normalizeSvg(svgFallback);
@@ -520,6 +522,7 @@ describe('[EmojiCustom]', () => {
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
+				.expect(200)
 				.expect((res) => {
 					const received = normalizeSvg(res.body.toString());
 					const expected = normalizeSvg(svgFallback);
@@ -528,6 +531,7 @@ describe('[EmojiCustom]', () => {
 			await request
 				.get(`/emoji-custom/${gridFsEmojiName}.png`)
 				.set(credentials)
+				.expect(200)
 				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/png'));
 		});
 
@@ -537,6 +541,7 @@ describe('[EmojiCustom]', () => {
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
+				.expect(200)
 				.expect((res) => {
 					const received = normalizeSvg(res.body.toString());
 					const expected = normalizeSvg(svgFallback);
@@ -546,6 +551,7 @@ describe('[EmojiCustom]', () => {
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)
 				.set(credentials)
+				.expect(200)
 				.expect((res) => expect(res.headers).to.have.property('content-type', 'image/png'));
 		});
 
