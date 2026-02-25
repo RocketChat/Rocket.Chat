@@ -39,12 +39,16 @@ export class OmnichannelContactInfo extends FlexTab {
 		return this.root.getByRole('button', { name: 'See conflicts' });
 	}
 
-	get dialogContactInfo(): Locator {
-		return this.root;
+	private get customFieldsGroup() {
+		return this.root.getByRole('group', { name: 'Custom Fields' });
+	}
+
+	getInfoByValue(value: string): Locator {
+		return this.root.getByText(value, { exact: true });
 	}
 
 	getVisitorCustomField(label: string): Locator {
-		return this.root.getByRole('group', { name: 'Custom Fields' }).getByLabel(label);
+		return this.customFieldsGroup.getByLabel(label);
 	}
 
 	async solveConflict(field: string, value: string) {

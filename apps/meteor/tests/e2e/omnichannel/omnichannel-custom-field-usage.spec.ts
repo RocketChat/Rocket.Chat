@@ -121,11 +121,11 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 
 		await test.step('Agent opens Contact Information', async () => {
 			await poHomeChannel.roomToolbar.openContactInfo();
-			await expect(poHomeChannel.contacts.contactInfo.dialogContactInfo).toBeVisible();
+			await poHomeChannel.contacts.contactInfo.waitForDisplay();
 		});
 
 		await test.step('Assert custom field is set successfully', async () => {
-			await expect(poHomeChannel.contacts.contactInfo.dialogContactInfo).toContainText(visitorCustomFieldValue);
+			await expect(poHomeChannel.contacts.contactInfo.getInfoByValue(visitorCustomFieldValue)).toBeVisible();
 		});
 	});
 
@@ -138,7 +138,7 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 
 		await test.step('Agent opens Contact Information', async () => {
 			await poHomeChannel.roomToolbar.openContactInfo();
-			await expect(poHomeChannel.contacts.contactInfo.dialogContactInfo).toBeVisible();
+			await poHomeChannel.contacts.contactInfo.waitForDisplay();
 		});
 
 		await test.step('Agent clicks edit and updates visitor custom field', async () => {
@@ -148,7 +148,7 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 		});
 
 		await test.step('Assert custom field is updated successfully', async () => {
-			await expect(poHomeChannel.contacts.contactInfo.dialogContactInfo).toContainText(updatedVisitorCustomFieldValue);
+			await expect(poHomeChannel.contacts.contactInfo.getInfoByValue(updatedVisitorCustomFieldValue)).toBeVisible();
 		});
 	});
 });
