@@ -11,9 +11,11 @@ import {
 	Button,
 	TextAreaInput,
 	Callout,
+	Box,
+	Icon,
 } from '@rocket.chat/fuselage';
 import { Form, ActionLink } from '@rocket.chat/layout';
-import { CustomFieldsForm, PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
+import { CustomFieldsForm } from '@rocket.chat/ui-client';
 import { useAccountsCustomFields, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
@@ -71,8 +73,42 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		formState: { errors },
 	} = useForm<LoginRegisterPayload>({ mode: 'onBlur' });
 
-	const { password } = watch();
-	const passwordIsValid = useValidatePassword(password);
+	const { password = '' } = watch();
+
+	const passwordValidations = [
+		{
+			id: 'length',
+			isValid: password.length >= 14,
+			text: 'At least 14 characters',
+		},
+		{
+			id: 'uppercase',
+			isValid: /[A-Z]/.test(password),
+			text: /[A-Z]/.test(password) ? 'Contains uppercase' : 'Missing uppercase letter',
+		},
+		{
+			id: 'lowercase',
+			isValid: /[a-z]/.test(password),
+			text: /[a-z]/.test(password) ? 'Contains lowercase' : 'Missing lowercase letter',
+		},
+		{
+			id: 'number',
+			isValid: /[0-9]/.test(password),
+			text: /[0-9]/.test(password) ? 'Contains number' : 'Missing number',
+		},
+		{
+			id: 'symbol',
+			isValid: /[^A-Za-z0-9]/.test(password),
+			text: /[^A-Za-z0-9]/.test(password) ? 'Contains symbol' : 'Missing symbol',
+		},
+		{
+			id: 'repeating',
+			isValid: !/(.)\1{3,}/.test(password),
+			text: !/(.)\1{3,}/.test(password) ? 'No excessive repeating characters' : 'Excessive repeating characters',
+		},
+	];
+
+	const passwordIsValid = password.length > 0 && passwordValidations.every((v) => v.isValid);
 
 	const registerFormRef = useRef<HTMLElement>(null);
 
@@ -220,23 +256,36 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 						<FieldRow>
 							<PasswordInput
 								{...register('password', {
-									required: t('Required_field', { field: t('registration.component.form.password') }),
-									validate: () => (!passwordIsValid ? t('Password_must_meet_the_complexity_requirements') : true),
+									required: true,
+									validate: () => passwordIsValid,
 								})}
-								error={errors.password?.message}
 								aria-required='true'
-								aria-invalid={errors.password ? 'true' : undefined}
+								aria-invalid={!passwordIsValid ? 'true' : 'false'}
 								id={passwordId}
 								placeholder={passwordPlaceholder || t('Create_a_password')}
-								aria-describedby={`${passwordVerifierId} ${passwordId}-error`}
+								aria-describedby={passwordVerifierId}
 							/>
 						</FieldRow>
-						{errors?.password && (
-							<FieldError role='alert' id={`${passwordId}-error`}>
-								{errors.password.message}
-							</FieldError>
-						)}
-						<PasswordVerifier password={password} id={passwordVerifierId} />
+						<Box display='flex' flexDirection='column' mbs={8} role='list' aria-live='polite' id={passwordVerifierId}>
+							{passwordValidations.map((validation) => (
+								<Box
+									key={validation.id}
+									display='flex'
+									alignItems='center'
+									mbe={8}
+									fontScale='c1'
+									color={validation.isValid ? 'status-font-on-success' : 'status-font-on-danger'}
+									role='listitem'
+								>
+									<Icon
+										name={validation.isValid ? 'success-circle' : 'error-circle'}
+										size='x16'
+										mie={4}
+									/>
+									<span>{validation.text}</span>
+								</Box>
+							))}
+						</Box>
 					</Field>
 					{requiresPasswordConfirmation && (
 						<Field>
