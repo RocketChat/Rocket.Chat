@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { buildVersionUpdateMessage } from './buildVersionUpdateMessage';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 
@@ -70,6 +69,8 @@ function createAsyncIterableFromArray(items: unknown[]) {
 }
 
 describe('buildVersionUpdateMessage', () => {
+	// Delete the TEST_MODE environment variable so buildVersionUpdateMessage()
+	// doesn't return early (see line 40 in buildVersionUpdateMessage.ts)
 	beforeAll(() => {
 		delete process.env.TEST_MODE;
 	});
