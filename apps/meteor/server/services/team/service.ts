@@ -176,19 +176,19 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			const publicTeams = await Team.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TeamType.PUBLIC, {
 				projection: { _id: 1 },
 			}).toArray();
-			// Use Set for O(1) lookup instead of Array.includes() which is O(n)
+	
 			const publicTeamIdSet = new Set(publicTeams.map(({ _id }) => _id));
 			const privateTeamIds = unfilteredTeamIds.filter((teamId) => !publicTeamIdSet.has(teamId));
 
 			const privateTeams = await TeamMember.findByUserIdAndTeamIds(callerId, privateTeamIds, {
 				projection: { teamId: 1 },
 			}).toArray();
-			// Use Set for O(1) lookup instead of Array.includes() which is O(n)
+	
 			const visibleTeamIdSet = new Set([...privateTeams.map(({ teamId }) => teamId), ...publicTeamIdSet]);
 			teamIds = unfilteredTeamIds.filter((teamId) => visibleTeamIdSet.has(teamId));
 		}
 
-		// Use Set for O(1) lookup instead of Array.includes() which is O(n)
+
 		const ownedTeamIds = unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId);
 		const ownedTeamSet = new Set(ownedTeamIds);
 
@@ -613,7 +613,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		const roomData = await getSubscribedRoomsForUserWithDetails(userId, false, teamRoomIds);
-		// Use Map for O(1) lookup instead of Array.find() which is O(n)
+
 		const roomDataMap = new Map(roomData.map((data) => [data.rid, data]));
 		const records = [];
 
@@ -672,7 +672,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		const users = await Users.findActive({ ...query }).toArray();
 		const userIds = users.map((m) => m._id);
-		// Use Map for O(1) lookup instead of Array.find() which is O(n)
+
 		const userMap = new Map(users.map((u) => [u._id, u]));
 		const { cursor, totalCount } = TeamMember.findPaginatedMembersInfoByTeamId(teamId, count, offset, {
 			userId: { $in: userIds },
