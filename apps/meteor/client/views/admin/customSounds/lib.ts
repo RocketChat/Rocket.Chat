@@ -20,7 +20,7 @@ export function validate(soundData: ICustomSoundData, soundFile?: ICustomSoundFi
 
 	if (soundFile) {
 		if (!soundData.previousSound || soundData.previousSound !== soundFile) {
-			if (soundFile.type && !/audio\/mp3/.test(soundFile.type) && !/audio\/mpeg/.test(soundFile.type) && !/audio\/x-mpeg/.test(soundFile.type)) {
+			if ('type' in soundFile && !/audio\/mp3/.test(soundFile.type ?? '') && !/audio\/mpeg/.test(soundFile.type ?? '') && !/audio\/x-mpeg/.test(soundFile.type ?? '')) {
 				errors.push('FileType');
 			}
 		}
