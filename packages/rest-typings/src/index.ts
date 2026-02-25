@@ -210,6 +210,7 @@ export * from './v1/teams';
 export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/channels';
+export * from './v1/customSounds';
 export * from './v1/customUserStatus';
 export * from './v1/subscriptionsEndpoints';
 export * from './v1/mailer';
@@ -242,8 +243,6 @@ export * from './v1/server-events';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
-export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
-export * from './v1/e2e/e2eGetUsersOfRoomWithoutKeyParamsGET';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/e2e';

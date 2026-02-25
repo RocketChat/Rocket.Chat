@@ -78,6 +78,7 @@ const defaultOptions = {
 
 const options = {
 	...defaultOptions,
+	breaks: true,
 	renderer: documentRenderer,
 };
 

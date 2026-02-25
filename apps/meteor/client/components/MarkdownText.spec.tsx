@@ -434,6 +434,38 @@ describe('code handling', () => {
 	});
 });
 
+describe('line breaks handling', () => {
+	it('should convert newlines to <br> in document variant', () => {
+		const content = 'First Line\nSecond Line\nThird Line';
+		const { container } = render(<MarkdownText content={content} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const html = container.innerHTML;
+		expect(html).toContain('First Line<br>Second Line<br>Third Line');
+	});
+
+	it('should convert newlines to <br> in inline variant', () => {
+		const content = 'First Line\nSecond Line\nThird Line';
+		const { container } = render(<MarkdownText content={content} variant='inline' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const html = container.innerHTML;
+		expect(html).not.toContain('<br>');
+	});
+
+	it('should not convert newlines to <br> in inlineWithoutBreaks variant', () => {
+		const content = 'First Line\nSecond Line\nThird Line';
+		const { container } = render(<MarkdownText content={content} variant='inlineWithoutBreaks' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const html = container.innerHTML;
+		expect(html).not.toContain('<br>');
+	});
+});
+
 describe('DOMPurify hook registration', () => {
 	it('should register hook only once at module level', () => {
 		// Import the module to trigger hook registration
