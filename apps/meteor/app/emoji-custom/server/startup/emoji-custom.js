@@ -67,7 +67,10 @@ const initializeEmojiCustomStorage = () => {
 		name: 'custom_emoji',
 		absolutePath: path,
 	});
+};
 
+Meteor.startup(() => {
+	initializeEmojiCustomStorage();
 	return WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
 		const params = { emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
@@ -117,8 +120,6 @@ const initializeEmojiCustomStorage = () => {
 
 		file.readStream.pipe(res);
 	});
-};
-
-Meteor.startup(initializeEmojiCustomStorage);
+});
 
 settings.watchMultiple(['EmojiUpload_Storage_Type', 'EmojiUpload_FileSystemPath'], initializeEmojiCustomStorage);

@@ -37,7 +37,10 @@ const initializeCustomSoundsStorage = () => {
 		name: 'custom_sounds',
 		absolutePath: path,
 	});
+};
 
+Meteor.startup(() => {
+	initializeCustomSoundsStorage();
 	return WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
 		const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
 
@@ -96,8 +99,6 @@ const initializeCustomSoundsStorage = () => {
 
 		file.readStream.pipe(res);
 	});
-};
-
-Meteor.startup(initializeCustomSoundsStorage);
+});
 
 settings.watchMultiple(['CustomSounds_Storage_Type', 'CustomSounds_FileSystemPath'], initializeCustomSoundsStorage);
