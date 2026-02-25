@@ -20,13 +20,13 @@ type ExtendedProps = {
 	avatar?: ReactNode;
 	actions?: ReactNode;
 	href?: string;
-	time?: any;
+	time?: Date;
 	menu?: () => ReactNode;
 	subtitle?: ReactNode;
 	badges?: ReactNode;
 	unread?: boolean;
 	selected?: boolean;
-	menuOptions?: any;
+	menuOptions?: Record<string, { label: { label: string; icon: string }; action: () => void }>;
 	titleIcon?: ReactNode;
 	threadUnread?: boolean;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
