@@ -1,4 +1,5 @@
 import { api } from '@rocket.chat/core-services';
+import type { EmojiCustomName } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
@@ -97,7 +98,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 	if (!emojiData._id) {
 		// insert emoji
 		const createEmoji = {
-			name: emojiData.name,
+			name: emojiData.name as EmojiCustomName,
 			aliases,
 			extension: emojiData.extension,
 		};
@@ -136,7 +137,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 	}
 
 	if (emojiData.name !== emojiData.previousName) {
-		await EmojiCustom.setName(emojiData._id, emojiData.name);
+		await EmojiCustom.setName(emojiData._id, emojiData.name as EmojiCustomName);
 	}
 
 	if (emojiData.aliases) {

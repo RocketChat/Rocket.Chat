@@ -1,4 +1,4 @@
-import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IEmojiCustom, EmojiCustomName, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IEmojiCustomModel, InsertionModel } from '@rocket.chat/model-typings';
 import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
 
@@ -38,7 +38,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 	}
 
 	// update
-	setName(_id: string, name: string): Promise<UpdateResult> {
+	setName(_id: string, name: EmojiCustomName): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				name,
@@ -68,7 +68,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		return this.updateOne({ _id }, update);
 	}
 
-	setETagByName(name: string, etag: string): Promise<UpdateResult> {
+	setETagByName(name: EmojiCustomName, etag: string): Promise<UpdateResult> {
 		const update = {
 			$set: {
 				etag,
@@ -91,8 +91,7 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 		return this.countDocuments(query);
 	}
 
-	// TODO: convert name: string to branded type using to enforce validation also replace this type cross the models/apis
-	findOneByName(name: string, options?: FindOptions<IEmojiCustom>): Promise<IEmojiCustom | null> {
+	findOneByName(name: EmojiCustomName, options?: FindOptions<IEmojiCustom>): Promise<IEmojiCustom | null> {
 		return this.findOne({ name }, options);
 	}
 }
