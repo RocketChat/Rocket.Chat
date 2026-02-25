@@ -1,7 +1,10 @@
-import type { IRocketChatRecord } from './IRocketChatRecord';
-import type { Branded } from './utils';
+import * as z from 'zod';
 
-export type EmojiCustomName = Branded<string, 'EmojiCustomName'>;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export const EmojiCustomNameSchema = z.string().brand<'EmojiCustomName'>();
+
+export type EmojiCustomName = z.infer<typeof EmojiCustomNameSchema>;
 
 export interface IEmojiCustom extends IRocketChatRecord {
 	name: EmojiCustomName;
