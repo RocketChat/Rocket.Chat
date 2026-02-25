@@ -185,7 +185,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
 										})}
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
-										error={errors.usernameOrEmail?.message || hasAuthError ? errors.password?.message : undefined}
+										error={errors.usernameOrEmail?.message || (hasAuthError ? errors.password?.message : undefined)}
 										aria-invalid={errors.usernameOrEmail || hasAuthError || errorOnSubmit ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										id={usernameId}
