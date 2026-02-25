@@ -71,7 +71,7 @@ class TonePlayer {
 	}
 
 	public destroy() {
-		this.audioContext.close();
+		void this.audioContext.close();
 		this.audioElement.pause();
 		this.audioElement.srcObject = null;
 	}
@@ -106,7 +106,7 @@ export const useTonePlayer = (sinkId?: string) => {
 
 	useEffect(() => {
 		if (tonePlayer.current && sinkId) {
-			tonePlayer.current.setSinkId(sinkId);
+			void tonePlayer.current.setSinkId(sinkId);
 		}
 	}, [sinkId]);
 
