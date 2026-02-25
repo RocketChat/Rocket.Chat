@@ -3,46 +3,32 @@ import type { GETLivechatRoomsParams, OperationResult } from '@rocket.chat/rest-
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 
-/**
- * Subscribes to Omnichannel room change streams to enable real-time updates.
- * This replaces the polling mechanism with event-driven cache invalidation.
- *
- * Listens to:
- * - notify-logged: omnichannel.priority-changed (priority updates)
- * - livechat-inquiry-queue-observer: public (inquiry status changes)
- */
 const useCurrentChatsStreamUpdates = (): void => {
 	const queryClient = useQueryClient();
 	const userId = useUserId();
 	const subscribeToNotifyLogged = useStream('notify-logged');
 	const subscribeToInquiryQueue = useStream('livechat-inquiry-queue-observer');
 
-	const invalidateCurrentChats = useCallback(() => {
-		queryClient.invalidateQueries({ queryKey: ['current-chats'] });
-	}, [queryClient]);
-
 	useEffect(() => {
 		if (!userId) {
 			return;
 		}
 
-		// Subscribe to priority changes via notify-logged stream
 		const unsubscribePriority = subscribeToNotifyLogged('omnichannel.priority-changed', () => {
-			invalidateCurrentChats();
+			queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 		});
 
-		// Subscribe to inquiry queue changes (added/removed/changed inquiries)
 		const unsubscribeInquiry = subscribeToInquiryQueue('public', () => {
-			invalidateCurrentChats();
+			queryClient.invalidateQueries({ queryKey: ['current-chats'] });
 		});
 
 		return () => {
 			unsubscribePriority();
 			unsubscribeInquiry();
 		};
-	}, [userId, subscribeToNotifyLogged, subscribeToInquiryQueue, invalidateCurrentChats]);
+	}, [userId, subscribeToNotifyLogged, subscribeToInquiryQueue, queryClient]);
 };
 
 export const useCurrentChats = (query: GETLivechatRoomsParams): UseQueryResult<OperationResult<'GET', '/v1/livechat/rooms'>> => {
@@ -50,14 +36,13 @@ export const useCurrentChats = (query: GETLivechatRoomsParams): UseQueryResult<O
 
 	const debouncedQuery = useDebouncedValue(query, 500);
 
-	// Enable real-time updates via stream subscriptions
 	useCurrentChatsStreamUpdates();
 
 	return useQuery({
 		queryKey: ['current-chats', debouncedQuery],
 		queryFn: () => currentChats(debouncedQuery),
-		// Stream subscriptions now handle real-time updates, reducing need for refetch on focus
 		refetchOnWindowFocus: false,
 		gcTime: 0,
 	});
 };
+
