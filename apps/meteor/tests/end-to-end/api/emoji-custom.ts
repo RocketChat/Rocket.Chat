@@ -532,7 +532,7 @@ describe('[EmojiCustom]', () => {
 		});
 
 		it('should respect EmojiUpload_FileSystemPath changes', async () => {
-			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', false);
+			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', true);
 			await updateSetting('EmojiUpload_FileSystemPath', '~/emoji-test', true);
 			await request
 				.get(`/emoji-custom/${fsEmojiName}.png`)

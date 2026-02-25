@@ -279,7 +279,7 @@ describe('[CustomSounds]', () => {
 		});
 
 		it('should respect CustomSounds_FileSystemPath changes when resolving files', async () => {
-			await updateSetting('CustomSounds_Storage_Type', 'FileSystem', false);
+			await updateSetting('CustomSounds_Storage_Type', 'FileSystem', true);
 			await updateSetting('CustomSounds_FileSystemPath', '~/sounds', true);
 			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
 			await updateSetting('CustomSounds_FileSystemPath', '', true);
