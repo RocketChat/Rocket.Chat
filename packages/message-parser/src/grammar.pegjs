@@ -76,7 +76,9 @@ Blocks
  */
 Blockquote = b:BlockquoteLine+ { return quote(b); }
 
-BlockquoteLine = ">" [ \t]* @Paragraph
+BlockquoteLine
+  = ">" [ \t]* EndOfLine { return paragraph([plain('')]); }
+  / ">" [ \t]* @Paragraph
 
 /**
  * Block Spoiler
