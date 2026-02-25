@@ -286,53 +286,53 @@ API.v1.addRoute(
 );
 
 const saveNotificationBodySchema = ajv.compile<{
-    roomId: string;
-    notifications: Record<string, string>;
+	roomId: string;
+	notifications: Record<string, string>;
 }>({
-    type: 'object',
-    properties: {
-        roomId: { type: 'string' },
-        notifications: {
-            type: 'object',
-            minProperties: 1,
-            additionalProperties: { type: 'string' },
-        },
-    },
-    required: ['roomId', 'notifications'],
-    additionalProperties: false,
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		notifications: {
+			type: 'object',
+			minProperties: 1,
+			additionalProperties: { type: 'string' },
+		},
+	},
+	required: ['roomId', 'notifications'],
+	additionalProperties: false,
 });
 
 const saveNotificationResponseSchema = ajv.compile({
-    type: 'object',
-    properties: {
-        success: { type: 'boolean', enum: [true] },
-    },
-    required: ['success'],
-    additionalProperties: false,
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
 });
 
 export const roomsSaveNotificationEndpoint = API.v1.post(
-    'rooms.saveNotification',
-    {
-        authRequired: true,
-        body: saveNotificationBodySchema,
-        response: {
-            200: saveNotificationResponseSchema,
-            400: validateBadRequestErrorResponse,
-            401: validateUnauthorizedErrorResponse,
-        },
-    },
-    async function action() {
-        const { roomId, notifications } = this.bodyParams;
+	'rooms.saveNotification',
+	{
+		authRequired: true,
+		body: saveNotificationBodySchema,
+		response: {
+			200: saveNotificationResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { roomId, notifications } = this.bodyParams;
 
-        await Promise.all(
-            Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
-                saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
-            ),
-        );
+		await Promise.all(
+			Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+				saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
+			),
+		);
 
-        return API.v1.success();
-    },
+		return API.v1.success();
+	},
 );
 
 API.v1.addRoute(
