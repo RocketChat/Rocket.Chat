@@ -110,7 +110,7 @@ export async function fetchExistingIssues(config: Config): Promise<GitHubIssue[]
 	const query = `
 		query($owner: String!, $repo: String!, $cursor: String) {
 			repository(owner: $owner, name: $repo) {
-				issues(first: 100, after: $cursor, orderBy: { field: CREATED_AT, direction: DESC }) {
+				issues(first: 100, after: $cursor, labels: ["todo"], orderBy: { field: CREATED_AT, direction: DESC }) {
 					pageInfo { hasNextPage endCursor }
 					nodes {
 						number
@@ -200,6 +200,7 @@ export async function createIssue(todo: TodoItem, config: Config, sha: string): 
 		title: todo.title,
 		body,
 		labels: todo.labels,
+		...(todo.assignees.length && { assignees: todo.assignees }),
 	});
 }
 

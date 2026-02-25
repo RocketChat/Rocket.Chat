@@ -23,6 +23,7 @@ export interface TodoItem {
 	filename: string;
 	line: number;
 	labels: string[];
+	assignees: string[];
 	issueId?: number;
 	similarIssueId?: number;
 }

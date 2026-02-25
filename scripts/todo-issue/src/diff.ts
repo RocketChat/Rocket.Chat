@@ -6,6 +6,24 @@ const KEYWORD = 'TODO';
 const EXCLUDE_PATTERN = /(^|\/)node_modules\//;
 const DEFAULT_LABEL = 'todo';
 
+const MENTION_REGEX = /\B@([a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38})/g;
+
+function extractMentions(text: string): { cleaned: string; mentions: string[] } {
+	const mentions: string[] = [];
+	let match;
+
+	while ((match = MENTION_REGEX.exec(text)) !== null) {
+		const username = match[1];
+		if (!mentions.includes(username)) {
+			mentions.push(username);
+		}
+	}
+	MENTION_REGEX.lastIndex = 0;
+
+	const cleaned = text.replace(MENTION_REGEX, '').replace(/\s{2,}/g, ' ').trim();
+	return { cleaned, mentions };
+}
+
 function extractLabels(title: string): { cleaned: string; labels: string[] } {
 	const labels: string[] = [];
 	const tagRegex = /\[([^\]]+)\]$/;
@@ -65,8 +83,17 @@ export function extractTodos(diffText: string): TodoItem[] {
 				const prefix = match.groups.prefix;
 				const body = extractBody(chunk.changes, i, prefix);
 
-				const { cleaned, labels } = extractLabels(title);
-				title = cleaned;
+				const { cleaned: labelCleaned, labels } = extractLabels(title);
+				const { cleaned: mentionCleaned, mentions: titleMentions } = extractMentions(labelCleaned);
+				title = mentionCleaned;
+
+				const assignees = [...titleMentions];
+				if (body) {
+					const { mentions: bodyMentions } = extractMentions(body);
+					for (const m of bodyMentions) {
+						if (!assignees.includes(m)) assignees.push(m);
+					}
+				}
 
 				if (title.length > 256) {
 					title = title.slice(0, 100) + '...';
@@ -74,13 +101,16 @@ export function extractTodos(diffText: string): TodoItem[] {
 
 				const line = change.type === 'add' ? (change as { ln: number }).ln : (change as { ln: number }).ln;
 
+				const allLabels = labels.includes(DEFAULT_LABEL) ? labels : [DEFAULT_LABEL, ...labels];
+
 				todos.push({
 					type: change.type === 'add' ? 'add' : 'del',
 					title,
 					body,
 					filename,
 					line,
-					labels: labels.length ? labels : [DEFAULT_LABEL],
+					labels: allLabels,
+					assignees,
 				});
 			}
 		}
