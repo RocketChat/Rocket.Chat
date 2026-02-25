@@ -1,3 +1,4 @@
+import child_process from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
@@ -31,6 +32,7 @@ Meteor.startup(async () => {
 	const { mongoVersion, mongoStorageEngine } = await getMongoInfo();
 
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
+	const denoVersion = child_process.execSync('deno --version').toString();
 	const parsedSemVer = semver.parse(desiredNodeVersion);
 	if (!parsedSemVer) {
 		console.error('Failed to parse desired Node.js version from .node_version.txt');
@@ -43,6 +45,7 @@ Meteor.startup(async () => {
 		let msg: string | string[] = [
 			`Rocket.Chat Version: ${Info.version}`,
 			`     NodeJS Version: ${process.versions.node} - ${process.arch}`,
+			`       Deno Version: ${denoVersion}`,
 			`    MongoDB Version: ${mongoVersion}`,
 			`     MongoDB Engine: ${mongoStorageEngine}`,
 			`           Platform: ${process.platform}`,
