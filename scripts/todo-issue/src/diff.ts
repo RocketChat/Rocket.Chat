@@ -53,10 +53,10 @@ function extractBody(changes: Change[], startIndex: number, prefix: string): str
 
 		if (TODO_LINE_REGEX.test(content)) break;
 
-		const prefixIdx = content.indexOf(trimmedPrefix);
-		if (prefixIdx === -1) break;
+		const prefixMatch = content.match(new RegExp(`^\\s*${trimmedPrefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+		if (!prefixMatch) break;
 
-		const lineText = content.slice(prefixIdx + trimmedPrefix.length).trim();
+		const lineText = content.slice(prefixMatch[0].length).trim();
 		if (!lineText) break;
 
 		bodyLines.push(lineText);
