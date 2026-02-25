@@ -2,19 +2,13 @@
 	"name": "@rocket.chat/eslint-config",
 	"version": "0.7.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
-	"main": "./standard/index.js",
+	"type": "module",
+	"main": "./index.js",
+	"exports": {
+		".": "./index.js"
+	},
 	"files": [
-		"/standard",
-		"/original",
-		"/best-practices",
-		"/errors",
-		"/es6",
-		"/imports",
-		"/node",
-		"/style",
-		"/variables",
-		"/react.js",
-		"/flat.mjs"
+		"/index.js"
 	],
 	"scripts": {
 		"lint": "eslint .",

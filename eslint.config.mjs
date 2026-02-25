@@ -1,4 +1,4 @@
-import rocketChatConfig from '@rocket.chat/eslint-config/flat.mjs';
+import rocketChatConfig from '@rocket.chat/eslint-config';
 import jestPlugin from 'eslint-plugin-jest';
 import noFloatingPromisePlugin from 'eslint-plugin-no-floating-promise';
 import reactRefreshPlugin from 'eslint-plugin-react-refresh';
