@@ -126,6 +126,7 @@ WebAppInternals.staticFilesMiddleware = function (
 
 			if (originHost === host) {
 				res.setHeader('Access-Control-Allow-Origin', origin);
+				res.setHeader('Vary', 'Origin');
 			}
 		} catch {}
 	}
