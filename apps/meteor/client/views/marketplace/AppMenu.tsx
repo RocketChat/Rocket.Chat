@@ -1,7 +1,7 @@
 import type { App } from '@rocket.chat/core-typings';
 import { Box, MenuItem, MenuItemContent, MenuSection, MenuV2, Skeleton } from '@rocket.chat/fuselage';
 import { useHandleMenuAction } from '@rocket.chat/ui-client';
-import React, { memo, useRef } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AppMenuOption } from './hooks/useAppMenu';
@@ -14,8 +14,6 @@ type AppMenuProps = {
 
 const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
     const { t } = useTranslation();
-
-    const menuWrapperRef = useRef<HTMLDivElement>(null);
 
     const { isLoading, isAdminUser, sections } = useAppMenu(app, isAppDetailsPage);
 
@@ -34,7 +32,7 @@ const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
 
     return (
 
-        <Box ref={menuWrapperRef} display='inline-block'>
+        <Box display='inline-block'>
             <MenuV2
                 title={t('More_options')}
                 onAction={onAction}
