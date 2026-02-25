@@ -390,23 +390,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.leave',
-	{ authRequired: true },
-	{
-		async post() {
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.failure('Invalid user');
-			}
-			await leaveRoomMethod(user, room._id);
-
-			return API.v1.success();
-		},
-	},
-);
-
 /*
 TO-DO: 8.0.0 should use the ajv validation
 which will change this endpoint's
@@ -935,6 +918,14 @@ type RoomsFavorite =
 			favorite: boolean;
 	  };
 
+type RoomsLeave =
+	| {
+			roomId: string;
+	  }
+	| {
+			roomName: string;
+	  };
+
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
 	properties: {
@@ -967,7 +958,29 @@ const RoomsFavoriteSchema = {
 	],
 };
 
+const isRoomsLeavePropsSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: { type: 'string' },
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+};
+
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
 
 export const roomEndpoints = API.v1
 	.get(
@@ -1140,6 +1153,38 @@ export const roomEndpoints = API.v1
 			const room = await findRoomByIdOrName({ params: this.bodyParams });
 
 			await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.leave',
+		{
+			authRequired: true,
+			body: isRoomsLeaveProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+			const user = await Users.findOneById(this.userId);
+
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
+			}
+
+			await leaveRoomMethod(user, room._id);
 
 			return API.v1.success();
 		},
