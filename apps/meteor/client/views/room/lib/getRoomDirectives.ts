@@ -7,6 +7,7 @@ type getRoomDirectiesType = {
 	roomCanSetOwner: boolean;
 	roomCanSetLeader: boolean;
 	roomCanSetModerator: boolean;
+	roomCanSetImportantMessageMarker: boolean;
 	roomCanIgnore: boolean;
 	roomCanBlock: boolean;
 	roomCanMute: boolean;
@@ -25,11 +26,22 @@ export const getRoomDirectives = ({
 }): getRoomDirectiesType => {
 	const roomDirectives = room?.t && roomCoordinator.getRoomDirectives(room.t);
 
-	const [roomCanSetOwner, roomCanSetLeader, roomCanSetModerator, roomCanIgnore, roomCanBlock, roomCanMute, roomCanRemove, roomCanInvite] = [
+	const [
+		roomCanSetOwner,
+		roomCanSetLeader,
+		roomCanSetModerator,
+		roomCanSetImportantMessageMarker,
+		roomCanIgnore,
+		roomCanBlock,
+		roomCanMute,
+		roomCanRemove,
+		roomCanInvite,
+	] = [
 		...((roomDirectives && [
 			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_OWNER, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_LEADER, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_MODERATOR, showingUserId, userSubscription),
+			roomDirectives.allowMemberAction(room, RoomMemberActions.SET_AS_IMPORTANT_MESSAGE_MARKER, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.IGNORE, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.BLOCK, showingUserId, userSubscription),
 			roomDirectives.allowMemberAction(room, RoomMemberActions.MUTE, showingUserId, userSubscription),
@@ -39,5 +51,15 @@ export const getRoomDirectives = ({
 			[]),
 	];
 
-	return { roomCanSetOwner, roomCanSetLeader, roomCanSetModerator, roomCanIgnore, roomCanBlock, roomCanMute, roomCanRemove, roomCanInvite };
+	return {
+		roomCanSetOwner,
+		roomCanSetLeader,
+		roomCanSetModerator,
+		roomCanSetImportantMessageMarker,
+		roomCanIgnore,
+		roomCanBlock,
+		roomCanMute,
+		roomCanRemove,
+		roomCanInvite,
+	};
 };
