@@ -86,6 +86,20 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return result?.total || 0;
 	}
 
+	countReadersByRoomIdAndMessageTs(rid: string, messageTs: Date, excludeUserId?: string): Promise<number> {
+		const query: Filter<ISubscription> = {
+			rid,
+			archived: { $ne: true },
+			ls: { $gte: messageTs },
+			'u._id': {
+				...(excludeUserId ? { $ne: excludeUserId } : {}),
+				$exists: true,
+			},
+		};
+
+		return this.countDocuments(query);
+	}
+
 	findOneByRoomIdAndUserId(rid: string, uid: string, options: FindOptions<ISubscription> = {}): Promise<ISubscription | null> {
 		const query = {
 			rid,

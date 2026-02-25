@@ -22,6 +22,8 @@ import type { DocumentWithProjection } from '../types/DocumentWithProjection';
 export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getBadgeCount(uid: string): Promise<number>;
 
+	countReadersByRoomIdAndMessageTs(rid: string, messageTs: Date, excludeUserId?: string): Promise<number>;
+
 	findOneByRoomIdAndUserId(rid: string, uid: string, options?: FindOptions<ISubscription>): Promise<ISubscription | null>;
 
 	findByUserIdAndRoomIds(userId: string, roomIds: Array<string>, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
