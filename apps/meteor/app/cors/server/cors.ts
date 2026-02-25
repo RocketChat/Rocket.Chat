@@ -113,7 +113,17 @@ WebAppInternals.staticFilesMiddleware = function (
 	res: http.ServerResponse & { cookie: (cookie: string, value: string) => void },
 	next: NextFunction,
 ) {
-	res.setHeader('Access-Control-Allow-Origin', '*');
+	// Restrict CORS for sensitive runtime configuration file
+	const origin = req.headers.origin as string | undefined;
+	const host = req.headers.host;
+
+	const isRuntimeConfig = req.url?.startsWith('/meteor_runtime_config.js');
+
+	if (!isRuntimeConfig) {
+		res.setHeader('Access-Control-Allow-Origin', '*');
+	} else if (origin && host && origin.includes(host)) {
+		res.setHeader('Access-Control-Allow-Origin', origin);
+	}
 	const { arch, path, url } = WebApp.categorizeRequest(req);
 
 	if (cachingVersion && req.cookies.cache_version !== cachingVersion) {
