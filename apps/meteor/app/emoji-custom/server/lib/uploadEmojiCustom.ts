@@ -1,5 +1,5 @@
 import { api, Media } from '@rocket.chat/core-services';
-import type { EmojiCustomName } from '@rocket.chat/core-typings';
+import { EmojiCustomNameSchema } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import limax from 'limax';
@@ -73,7 +73,7 @@ export async function uploadEmojiCustomWithBuffer(
 		);
 		ws.on('end', async () => {
 			const etag = Random.hexString(6);
-			await EmojiCustom.setETagByName(emojiData.name as EmojiCustomName, etag);
+			await EmojiCustom.setETagByName(EmojiCustomNameSchema.parse(emojiData.name), etag);
 			setTimeout(() => api.broadcast('emoji.updateCustom', { ...emojiData, etag }), 500);
 			resolve();
 		});
