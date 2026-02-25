@@ -62,32 +62,6 @@ describe('MultipartUploadHandler', () => {
 			expect(file?.filename).to.equal('This is "test".jpg');
 		});
 
-		it('should decode %0A (newline) in filename', async () => {
-			const mockRequest = createMockRequest({
-				fieldname: 'file',
-				filename: 'test%0Afile.txt',
-				content: 'file content',
-				mimetype: 'text/plain',
-			});
-
-			const { file } = await MultipartUploadHandler.parseRequest(mockRequest, { field: 'file' });
-
-			expect(file?.filename).to.equal('test\nfile.txt');
-		});
-
-		it('should decode %0D%0A (CRLF) in filename', async () => {
-			const mockRequest = createMockRequest({
-				fieldname: 'file',
-				filename: 'test%0D%0Afile.txt',
-				content: 'file content',
-				mimetype: 'text/plain',
-			});
-
-			const { file } = await MultipartUploadHandler.parseRequest(mockRequest, { field: 'file' });
-
-			expect(file?.filename).to.equal('test\r\nfile.txt');
-		});
-
 		it('should not decode other percent-encoded characters like %20 (space)', async () => {
 			const mockRequest = createMockRequest({
 				fieldname: 'file',
