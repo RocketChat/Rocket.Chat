@@ -1,3 +1,4 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Settings, Users } from '@rocket.chat/models';
 import semver from 'semver';
 
@@ -10,6 +11,8 @@ import { Info } from '../../../utils/rocketchat.info';
 
 const cleanupOutdatedVersionUpdateBanners = async (): Promise<void> => {
 	const admins = Users.findUsersInRolesWithQuery('admin', { banners: { $exists: true } }, { projection: { _id: 1, banners: 1 } });
+
+	const updates: { userId: IUser['_id']; banners: IUser['banners'] }[] = [];
 
 	for await (const admin of admins) {
 		if (!admin.banners) {
@@ -30,9 +33,11 @@ const cleanupOutdatedVersionUpdateBanners = async (): Promise<void> => {
 		);
 
 		if (Object.keys(filteredBanners).length !== Object.keys(admin.banners).length) {
-			await Users.setBanners(admin._id, filteredBanners);
+			updates.push({ userId: admin._id, banners: filteredBanners });
 		}
 	}
+
+	await Users.setBannersInBulk(updates);
 };
 
 export const buildVersionUpdateMessage = async (

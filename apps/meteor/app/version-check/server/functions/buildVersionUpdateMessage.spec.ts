@@ -13,7 +13,7 @@ jest.mock('../../../utils/rocketchat.info', () => ({
 	},
 }));
 
-const mockSetBanners = jest.fn();
+const mockSetBannersInBulk = jest.fn();
 const mockFindUsersInRolesWithQuery = jest.fn();
 
 jest.mock('@rocket.chat/models', () => ({
@@ -22,7 +22,7 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 	Users: {
 		findUsersInRolesWithQuery: () => mockFindUsersInRolesWithQuery(),
-		setBanners: (id: string, banners: unknown) => mockSetBanners(id, banners),
+		setBannersInBulk: (updates: unknown) => mockSetBannersInBulk(updates),
 	},
 }));
 
@@ -92,7 +92,7 @@ describe('buildVersionUpdateMessage', () => {
 
 			await buildVersionUpdateMessage([]);
 
-			expect(mockSetBanners).toHaveBeenCalledWith('admin1', {});
+			expect(mockSetBannersInBulk).toHaveBeenCalledWith([{ userId: 'admin1', banners: {} }]);
 		});
 
 		it('should keep version banners > current installed', async () => {
@@ -101,7 +101,7 @@ describe('buildVersionUpdateMessage', () => {
 
 			await buildVersionUpdateMessage([]);
 
-			expect(mockSetBanners).not.toHaveBeenCalled();
+			expect(mockSetBannersInBulk).toHaveBeenCalledWith([]);
 		});
 
 		it('should remove banners with invalid semver version IDs', async () => {
@@ -110,7 +110,7 @@ describe('buildVersionUpdateMessage', () => {
 
 			await buildVersionUpdateMessage([]);
 
-			expect(mockSetBanners).toHaveBeenCalledWith('admin1', {});
+			expect(mockSetBannersInBulk).toHaveBeenCalledWith([{ userId: 'admin1', banners: {} }]);
 		});
 	});
 

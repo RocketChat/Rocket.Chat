@@ -26,6 +26,7 @@ import type {
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,
+	AnyBulkWriteOperation,
 } from 'mongodb';
 
 import { Rooms, Subscriptions } from '../index';
@@ -3155,8 +3156,19 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
-	setBanners(_id: IUser['_id'], banners: IUser['banners']) {
-		return this.updateOne({ _id }, { $set: { banners } });
+	async setBannersInBulk(updates: { userId: IUser['_id']; banners: IUser['banners'] }[]) {
+		if (updates.length === 0) {
+			return;
+		}
+
+		const ops: AnyBulkWriteOperation<IUser>[] = updates.map(({ userId, banners }) => ({
+			updateOne: {
+				filter: { _id: userId },
+				update: { $set: { banners } },
+			},
+		}));
+
+		return this.col.bulkWrite(ops);
 	}
 
 	removeSamlServiceSession(_id: IUser['_id']) {
