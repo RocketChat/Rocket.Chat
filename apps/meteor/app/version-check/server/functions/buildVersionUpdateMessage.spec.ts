@@ -101,7 +101,7 @@ describe('buildVersionUpdateMessage', () => {
 
 			await buildVersionUpdateMessage([]);
 
-			expect(mockSetBannersInBulk).toHaveBeenCalledWith([]);
+			expect(mockSetBannersInBulk).not.toHaveBeenCalled();
 		});
 
 		it('should remove banners with invalid semver version IDs', async () => {

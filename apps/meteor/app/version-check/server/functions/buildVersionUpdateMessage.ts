@@ -37,7 +37,9 @@ const cleanupOutdatedVersionUpdateBanners = async (): Promise<void> => {
 		}
 	}
 
-	await Users.setBannersInBulk(updates);
+	if (updates.length > 0) {
+		await Users.setBannersInBulk(updates);
+	}
 };
 
 export const buildVersionUpdateMessage = async (
