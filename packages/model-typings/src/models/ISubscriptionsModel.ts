@@ -246,6 +246,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document>;
 	setFavoriteByRoomIdAndUserId(roomId: string, userId: string, favorite?: boolean): Promise<UpdateResult>;
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
+	snoozeByRoomIdAndUserId(roomId: string, userId: string, snoozedUntil: Date): Promise<UpdateResult>;
+	unsnoozeRooms(currentDate: Date): Promise<UpdateResult | Document>;
 	findByRoomIdWhenUserIdExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	updateNameAndFnameById(_id: string, name: string, fname: string, options?: { session?: ClientSession }): Promise<UpdateResult | Document>;
 	setUserUsernameByUserId(userId: string, username: string): Promise<UpdateResult | Document>;

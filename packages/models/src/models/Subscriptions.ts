@@ -958,15 +958,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		const update: UpdateFilter<ISubscription> =
 			hideMentionStatus === true
 				? {
-						$set: {
-							hideMentionStatus,
-						},
-					}
+					$set: {
+						hideMentionStatus,
+					},
+				}
 				: {
-						$unset: {
-							hideMentionStatus: 1,
-						},
-					};
+					$unset: {
+						hideMentionStatus: 1,
+					},
+				};
 
 		return this.updateOne(query, update);
 	}
@@ -1339,6 +1339,40 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	snoozeByRoomIdAndUserId(roomId: string, userId: string, snoozedUntil: Date): Promise<UpdateResult> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				alert: false,
+				open: false,
+				snoozedUntil,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	unsnoozeRooms(currentDate: Date): Promise<UpdateResult | Document> {
+		const query = {
+			snoozedUntil: { $lte: currentDate },
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				open: true,
+			},
+			$unset: {
+				snoozedUntil: 1,
+			},
+		};
+
+		return this.updateMany(query, update);
 	}
 
 	setAsUnreadByRoomIdAndUserId(roomId: string, userId: string, firstMessageUnreadTimestamp: Date): Promise<UpdateResult> {
@@ -2056,6 +2090,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			$set: {
 				open: true,
 			},
+			$unset: {
+				snoozedUntil: 1,
+			}
 		};
 
 		return this.updateOne(query, update);
