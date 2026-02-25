@@ -1,4 +1,4 @@
-import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { Box, PasswordInput, TextInput, FieldGroup, Field, FieldRow, FieldError, FieldLabel } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -12,7 +12,6 @@ type ActionConfirmModalProps = {
 
 const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmModalProps) => {
 	const { t } = useTranslation();
-	const actionTextId = useId();
 	const credentialFieldId = useId();
 	const credentialFieldError = `${credentialFieldId}-error`;
 
@@ -44,11 +43,11 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 			title={t('Delete_account?')}
 			confirmText={t('Delete_account')}
 		>
-			<Box mb={8} id={actionTextId}>
-				{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}
-			</Box>
 			<FieldGroup w='full'>
 				<Field>
+					<FieldLabel required htmlFor={credentialFieldId}>
+						{isPassword ? t('Enter_your_password_to_delete_your_account') : t('Enter_your_username_to_delete_your_account')}
+					</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='credential'
@@ -59,9 +58,9 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 									<PasswordInput
 										{...field}
 										id={credentialFieldId}
-										aria-labelledby={actionTextId}
+										error={errors.credential?.message}
+										aria-invalid={errors.credential ? 'true' : 'false'}
 										aria-describedby={errors.credential ? credentialFieldError : undefined}
-										aria-invalid={Boolean(errors.credential)}
 										aria-required='true'
 									/>
 								) : (
@@ -69,9 +68,9 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 										{...field}
 										id={credentialFieldId}
 										placeholder={t('Username')}
-										aria-labelledby={actionTextId}
+										error={errors.credential?.message}
+										aria-invalid={errors.credential ? 'true' : 'false'}
 										aria-describedby={errors.credential ? credentialFieldError : undefined}
-										aria-invalid={Boolean(errors.credential)}
 										aria-required='true'
 									/>
 								)
