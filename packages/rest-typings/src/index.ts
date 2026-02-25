@@ -53,7 +53,6 @@ export interface Endpoints
 		ChatEndpoints,
 		CommandsEndpoints,
 		CloudEndpoints,
-		CommandsEndpoints,
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DirectoryEndpoint,
@@ -88,7 +87,6 @@ export interface Endpoints
 		FederationEndpoints,
 		CalendarEndpoints,
 		AuthEndpoints,
-		ImportEndpoints,
 		ServerEventsEndpoints,
 		DefaultEndpoints {}
 
