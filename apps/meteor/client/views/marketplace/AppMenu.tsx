@@ -14,7 +14,7 @@ type AppMenuProps = {
 
 const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
     const { t } = useTranslation();
-    // 1. We keep the ref, but we will target a div/box instead
+
     const menuWrapperRef = useRef<HTMLDivElement>(null);
 
     const { isLoading, isAdminUser, sections } = useAppMenu(app, isAppDetailsPage);
@@ -33,13 +33,12 @@ const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
     }
 
     return (
-        // 2. Wrap the MenuV2 in a Box and put the ref here
-        // This anchors the menu area in the DOM even if the menu component doesn't support ref
+
         <Box ref={menuWrapperRef} display='inline-block'>
-            <MenuV2 
-                title={t('More_options')} 
-                onAction={onAction} 
-                disabledKeys={disabledKeys} 
+            <MenuV2
+                title={t('More_options')}
+                onAction={onAction}
+                disabledKeys={disabledKeys}
                 detached
             >
                 {sections.map(({ items }, idx) => (
