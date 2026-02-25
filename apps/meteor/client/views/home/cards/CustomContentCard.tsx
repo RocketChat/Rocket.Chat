@@ -1,11 +1,12 @@
-import { Box, Button, Card, CardBody, CardControls, CardHeader, Icon, Tag } from '@rocket.chat/fuselage';
-import { useRole, useSettingSetValue, useSetting, useToastMessageDispatch, useRouter } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
+
 import { useTranslation } from 'react-i18next';
+
+import { Box, Button, Card, CardBody, CardControls, CardHeader, Icon, Tag } from '@rocket.chat/fuselage';
+import { useLayout, useRole, useRouter, useSetting, useSettingSetValue, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';
-import { useLayout } from '@rocket.chat/ui-contexts';
 
 const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement | null => {
 	const { t } = useTranslation();
