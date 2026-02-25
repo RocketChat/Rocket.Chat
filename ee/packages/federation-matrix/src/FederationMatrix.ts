@@ -1,4 +1,4 @@
-import { Authorization, type IFederationMatrixService, Room, ServiceClass } from '@rocket.chat/core-services';
+import { Authorization, type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
 	isMessageFromMatrixFederation,
@@ -11,7 +11,7 @@ import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederat
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
 import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
+import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
@@ -108,11 +108,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
+	}
 
-		this.serverName = (await Settings.getValueById<string>('Federation_Service_Domain')) || '';
-		this.processEDUTyping = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Typing')) || false;
-		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
-		this.validateUserDomain = (await Settings.getValueById<boolean>('Federation_Service_Validate_User_Domain')) || false;
+	override async started(): Promise<void> {
+		this.serverName = (await Settings.get<string>('Federation_Service_Domain')) || '';
+		this.processEDUTyping = (await Settings.get<boolean>('Federation_Service_EDU_Process_Typing')) || false;
+		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
+		this.validateUserDomain = (await Settings.get<boolean>('Federation_Service_Validate_User_Domain')) || false;
 	}
 
 	async createRoom(room: IRoom, owner: IUser): Promise<{ room_id: string; event_id: string }> {

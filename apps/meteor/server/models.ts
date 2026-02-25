@@ -20,7 +20,6 @@ import {
 	ExportOperationsRaw,
 	FederationKeysRaw,
 	FederationRoomEventsRaw,
-	FederationServersRaw,
 	ImportDataRaw,
 	ImportsModel,
 	InstanceStatusRaw,
@@ -103,7 +102,6 @@ registerModel('IEmojiCustomModel', new EmojiCustomRaw(db, trashCollection));
 registerModel('IExportOperationsModel', new ExportOperationsRaw(db));
 registerModel('IFederationKeysModel', new FederationKeysRaw(db));
 registerModel('IFederationRoomEventsModel', new FederationRoomEventsRaw(db));
-registerModel('IFederationServersModel', new FederationServersRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));
 registerModel('IImportsModel', new ImportsModel(db));
 registerModel('IInstanceStatusModel', new InstanceStatusRaw(db));
