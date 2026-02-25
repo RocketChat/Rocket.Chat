@@ -182,8 +182,8 @@ async function ensureLabelExists(owner: string, repo: string, label: string, tok
 			name: label,
 			color: DEFAULT_LABEL_COLOR,
 		});
-	} catch {
-		// label already exists
+	} catch (err) {
+		if (!String(err).includes('422')) throw err;
 	}
 }
 

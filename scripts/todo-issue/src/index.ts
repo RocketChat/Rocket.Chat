@@ -22,13 +22,20 @@ function loadConfig(): Config {
 	};
 }
 
-async function getDiff(config: Config): Promise<{ diffText: string; resolvedHeadSha: string }> {
-	const { execSync } = await import('child_process');
+function execGitDiff(args: string[]): string {
+	const { spawnSync } = require('child_process');
+	const result = spawnSync('git', ['diff', '--no-index', ...args], {
+		encoding: 'utf-8',
+		maxBuffer: 50 * 1024 * 1024,
+	});
+	return result.stdout ?? '';
+}
 
+async function getDiff(config: Config): Promise<{ diffText: string; resolvedHeadSha: string }> {
 	if (config.importAll) {
 		console.log('[INFO] Import-all mode: scanning entire codebase');
 		return {
-			diffText: execSync('git diff --no-index /dev/null . || true', { encoding: 'utf-8', maxBuffer: 50 * 1024 * 1024 }),
+			diffText: execGitDiff(['/dev/null', '.']),
 			resolvedHeadSha: config.headSha || 'HEAD',
 		};
 	}
@@ -36,10 +43,7 @@ async function getDiff(config: Config): Promise<{ diffText: string; resolvedHead
 	if (config.pathFilter) {
 		console.log(`[INFO] Path mode: scanning "${config.pathFilter}"`);
 		return {
-			diffText: execSync(`git diff --no-index /dev/null -- ${config.pathFilter} || true`, {
-				encoding: 'utf-8',
-				maxBuffer: 50 * 1024 * 1024,
-			}),
+			diffText: execGitDiff(['/dev/null', '--', config.pathFilter]),
 			resolvedHeadSha: config.headSha || 'HEAD',
 		};
 	}

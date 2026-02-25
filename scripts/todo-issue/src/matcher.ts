@@ -22,17 +22,21 @@ export function matchTodos(found: TodoItem[], existing: GitHubIssue[]): MatchRes
 		}
 	}
 
+	const consumedDels = new Set<TodoItem>();
+
 	for (const add of addTodos) {
-		const movedDel = delTodos.find((d) => d.title === add.title);
+		const movedDel = delTodos.find((d) => !consumedDels.has(d) && d.title === add.title);
 		if (movedDel) {
 			movedDel.issueId = undefined;
+			consumedDels.add(movedDel);
 			continue;
 		}
 
-		const updatedDel = delTodos.find((d) => d.issueId && isSimilar(d.title, add.title));
+		const updatedDel = delTodos.find((d) => !consumedDels.has(d) && d.issueId && isSimilar(d.title, add.title));
 		if (updatedDel) {
 			add.issueId = updatedDel.issueId;
 			updatedDel.issueId = undefined;
+			consumedDels.add(updatedDel);
 			toUpdate.push(add);
 			continue;
 		}
@@ -54,8 +58,10 @@ export function matchTodos(found: TodoItem[], existing: GitHubIssue[]): MatchRes
 		toCreate.push(add);
 	}
 
+	const closedIssueIds = new Set<number>();
 	for (const del of delTodos) {
-		if (del.issueId) {
+		if (del.issueId && !closedIssueIds.has(del.issueId)) {
+			closedIssueIds.add(del.issueId);
 			toClose.push(del);
 		}
 	}

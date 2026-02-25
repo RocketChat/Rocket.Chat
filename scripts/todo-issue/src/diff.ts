@@ -38,9 +38,11 @@ function extractLabels(title: string): { cleaned: string; labels: string[] } {
 	return { cleaned: title, labels };
 }
 
+const TODO_LINE_REGEX = new RegExp(`^\\s*\\W+\\s*${KEYWORD}\\b`, 'i');
+
 function extractBody(changes: Change[], startIndex: number, prefix: string): string | false {
 	const bodyLines: string[] = [];
-	const normalizedPrefix = prefix.replace(/\s+$/, '');
+	const trimmedPrefix = prefix.replace(/\s+$/, '').trim();
 	const startType = changes[startIndex].type;
 
 	for (let j = startIndex + 1; j < changes.length; j++) {
@@ -48,9 +50,13 @@ function extractBody(changes: Change[], startIndex: number, prefix: string): str
 		if (next.type !== startType) break;
 
 		const content = next.content.slice(1);
-		if (!content.startsWith(normalizedPrefix) && !content.trimStart().startsWith(normalizedPrefix.trim())) break;
 
-		const lineText = content.slice(normalizedPrefix.length).trim();
+		if (TODO_LINE_REGEX.test(content)) break;
+
+		const prefixIdx = content.indexOf(trimmedPrefix);
+		if (prefixIdx === -1) break;
+
+		const lineText = content.slice(prefixIdx + trimmedPrefix.length).trim();
 		if (!lineText) break;
 
 		bodyLines.push(lineText);
@@ -97,7 +103,7 @@ export function extractTodos(diffText: string): TodoItem[] {
 				}
 
 				if (title.length > 256) {
-					title = title.slice(0, 100) + '...';
+					title = title.slice(0, 253) + '...';
 				}
 
 				const line = change.type === 'add' ? (change as { ln: number }).ln : (change as { ln: number }).ln;
