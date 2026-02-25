@@ -16,7 +16,7 @@
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"devDependencies": {
-		"eslint": "~8.57.1",
+		"eslint": "~9.39.3",
 		"rimraf": "~6.0.1",
 		"typescript": "~5.9.3"
 	},

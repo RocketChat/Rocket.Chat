@@ -340,7 +340,10 @@ export default [
 	{
 		files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
 		rules: {
-			'@typescript-eslint/ban-types': [
+			'@typescript-eslint/no-empty-object-type': 'warn',
+			'@typescript-eslint/no-unsafe-function-type': 'warn',
+			'@typescript-eslint/no-wrapper-object-types': 'warn',
+			'@typescript-eslint/no-restricted-types': [
 				'warn',
 				{
 					types: {
@@ -453,6 +456,7 @@ export default [
 				{
 					checksVoidReturn: {
 						arguments: false,
+						inheritedMethods: false,
 					},
 				},
 			],

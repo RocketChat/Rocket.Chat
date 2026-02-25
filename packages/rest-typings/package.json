@@ -23,7 +23,7 @@
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@types/jest": "~30.0.0",
-		"eslint": "~8.57.1",
+		"eslint": "~9.39.3",
 		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
 	},

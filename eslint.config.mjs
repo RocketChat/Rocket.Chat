@@ -251,7 +251,18 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/client/**/*.ts', 'apps/meteor/client/**/*.tsx', 'apps/meteor/ee/client/**/*.ts', 'apps/meteor/ee/client/**/*.tsx'],
+		files: [
+			'apps/meteor/client/**/*.ts',
+			'apps/meteor/client/**/*.tsx',
+			'apps/meteor/server/**/*.ts',
+			'apps/meteor/ee/app/**/*.ts',
+			'apps/meteor/ee/client/**/*.ts',
+			'apps/meteor/ee/client/**/*.tsx',
+			'apps/meteor/ee/server/**/*.ts',
+			'packages/ui-contexts/**/*.ts',
+			'packages/ui-contexts/**/*.tsx',
+			'packages/i18n/src/scripts/common.mts',
+		],
 		rules: {
 			'@typescript-eslint/no-floating-promises': 'off',
 		},
@@ -389,14 +400,9 @@ export default [
 			},
 		},
 		rules: {
-			'@typescript-eslint/ban-types': [
-				'error',
-				{
-					types: {
-						'{}': false,
-					},
-				},
-			],
+			'@typescript-eslint/no-empty-object-type': 'off',
+			'@typescript-eslint/no-unsafe-function-type': 'error',
+			'@typescript-eslint/no-wrapper-object-types': 'error',
 			'@typescript-eslint/naming-convention': [
 				'error',
 				{
@@ -639,8 +645,12 @@ export default [
 		files: [
 			'apps/meteor/client/**/*.ts',
 			'apps/meteor/client/**/*.tsx',
+			'apps/meteor/app/lib/**/*.ts',
+			'apps/meteor/app/livechat/**/*.ts',
 			'apps/meteor/ee/client/**/*.ts',
 			'apps/meteor/ee/client/**/*.tsx',
+			'apps/meteor/ee/server/**/*.ts',
+			'apps/meteor/server/**/*.ts',
 			'packages/fuselage-ui-kit/**/*.ts',
 			'packages/fuselage-ui-kit/**/*.tsx',
 			'packages/livechat/**/*.ts',
@@ -655,7 +665,7 @@ export default [
 			'packages/web-ui-registration/**/*.tsx',
 		],
 		rules: {
-			'@typescript-eslint/no-misused-promises': 'off',
+			'@typescript-eslint/no-misused-promises': 'warn',
 		},
 	},
 	{
@@ -667,6 +677,87 @@ export default [
 					capIsNewExceptions: ['SHA256'],
 				},
 			],
+		},
+	},
+	// FIXME: React 19 useEffectEvent conflicts with fuselage-hooks
+	{
+		files: ['**/*.ts', '**/*.tsx'],
+		rules: {
+			'react-hooks/exhaustive-deps': 'warn',
+			'react-hooks/rules-of-hooks': 'warn',
+		},
+	},
+	// FIXME: these rules require type information and the files are not included in the main tsconfig.json
+	{
+		files: [
+			'**/*.d.ts',
+			'**/__tests__/**',
+			'**/*.spec.ts',
+			'**/*.spec.tsx',
+			'**/*.test.ts',
+			'**/*.test.tsx',
+			'**/tests/**',
+			'**/.storybook/**',
+			'**/jest.config.ts',
+			'**/jest.config.js',
+			'**/jest.config.*.ts',
+			'**/jest.config.*.js',
+			'**/webpack.config.ts',
+			'**/webpack.config.js',
+			'**/vite.config.ts',
+			'**/vite.config.js',
+			'**/rollup.config.ts',
+			'**/rollup.config.js',
+
+			'apps/meteor/.storybook/logo.svg.d.ts',
+			'packages/fuselage-ui-kit/.storybook/logo.svg.d.ts',
+			'packages/storybook-config/src/logo.svg.d.ts',
+
+			'ee/packages/*/jest.config.ts',
+			'packages/*/jest.config.ts',
+
+			'ee/packages/pdf-worker/.storybook/*.ts',
+			'ee/packages/pdf-worker/.storybook/*.tsx',
+			'packages/gazzodown/.storybook/*.ts',
+			'packages/gazzodown/.storybook/*.tsx',
+			'packages/ui-client/.storybook/*.ts',
+			'packages/ui-client/.storybook/*.tsx',
+			'packages/ui-composer/.storybook/*.ts',
+			'packages/ui-composer/.storybook/*.tsx',
+			'packages/ui-voip/.storybook/*.ts',
+			'packages/ui-voip/.storybook/*.tsx',
+			'packages/web-ui-registration/.storybook/*.ts',
+			'packages/web-ui-registration/.storybook/*.tsx',
+		],
+		rules: {
+			'@typescript-eslint/prefer-optional-chain': 'off',
+			'@typescript-eslint/no-misused-promises': 'off',
+		},
+	},
+	// FIXME: catch clause with unused error variable
+	{
+		files: ['**/*.ts', '**/*.tsx'],
+		rules: {
+			'@typescript-eslint/no-unused-vars': 'warn',
+		},
+	},
+	{
+		files: [
+			'apps/meteor/.scripts/version.js',
+			'apps/meteor/app/lib/server/functions/validateCustomFields.js',
+			'apps/meteor/app/lib/server/lib/validateEmailDomain.js',
+			'apps/meteor/app/markdown/lib/parser/original/markdown.js',
+			'packages/apps-engine/scripts/deno-cache.js',
+		],
+		rules: {
+			'no-unused-vars': 'warn',
+		},
+	},
+	// FIXME: these storybook rules cannot be enabled until Storybook is upgraded to >=9
+	{
+		files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)'],
+		rules: {
+			'storybook/no-renderer-packages': 'off',
 		},
 	},
 ];

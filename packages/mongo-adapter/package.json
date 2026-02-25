@@ -17,7 +17,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
-		"eslint": "~8.57.1",
+		"eslint": "~9.39.3",
 		"jest": "~30.2.0",
 		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
