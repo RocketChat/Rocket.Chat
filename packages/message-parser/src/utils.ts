@@ -132,7 +132,7 @@ export const unorderedList = generate('UNORDERED_LIST');
 export const listItem = (text: Inlines[], number?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
-	...(number && { number }),
+	...(number !== undefined && { number }),
 });
 
 export const mentionUser = (() => {
@@ -182,23 +182,24 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 	return current;
 };
 
-export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] =>
-	values.flat().reduce(
-		(result, item, index, values) => {
-			const next = values[index + 1];
-			const current = joinEmoji(item, values[index - 1], next);
-			const previous: Inlines = result[result.length - 1];
+export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] => {
+	const flattenedValues = values.flat();
+	const result: Paragraph['value'] = [];
 
-			if (previous) {
-				if (current.type === 'PLAIN_TEXT' && current.type === previous.type) {
-					previous.value += current.value;
-					return result;
-				}
-			}
-			return [...result, current];
-		},
-		[] as Paragraph['value'],
-	);
+	for (let index = 0; index < flattenedValues.length; index++) {
+		const current = joinEmoji(flattenedValues[index], flattenedValues[index - 1], flattenedValues[index + 1]);
+		const previous = result[result.length - 1];
+
+		if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
+			previous.value += current.value;
+			continue;
+		}
+
+		result.push(current);
+	}
+
+	return result;
+};
 export const lineBreak = (): LineBreak => ({
 	type: 'LINE_BREAK',
 	value: undefined,
