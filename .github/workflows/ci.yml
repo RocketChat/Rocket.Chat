@@ -7,6 +7,7 @@ on:
     branches: '**'
     paths-ignore:
       - '**.md'
+  merge_group:
   push:
     branches:
       - develop
@@ -116,6 +117,8 @@ jobs:
           else
             DOCKER_TAG=$GITHUB_REF_NAME
           fi
+          # Docker tags cannot contain '/'; merge queue refs do (e.g. gh-readonly-queue/develop/pr-123-sha)
+          DOCKER_TAG="${DOCKER_TAG//\//-}"
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
@@ -458,6 +461,7 @@ jobs:
           repository: ${{ needs.release-versions.outputs.lowercase-repo }}
           tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
           baseline-tag: develop
+          size-thresholds: '{"rocketchat":{"mb":11}}'
 
   checks:
     needs: [release-versions, packages-build]
@@ -868,6 +872,7 @@ jobs:
 
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
+          DOCKER_TAG="${DOCKER_TAG//\//-}"
 
           declare -a TAGS=()
 

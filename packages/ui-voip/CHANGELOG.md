@@ -1,5 +1,17 @@
 # @rocket.chat/ui-voip
 
+## 17.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@27.0.1
+  - @rocket.chat/ui-avatar@23.0.1
+  - @rocket.chat/ui-client@27.0.1
+  - @rocket.chat/ui-contexts@27.0.1
+  </details>
+
 ## 17.0.0
 
 ### Minor Changes
