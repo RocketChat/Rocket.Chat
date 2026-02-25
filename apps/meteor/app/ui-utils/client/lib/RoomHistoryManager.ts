@@ -309,7 +309,7 @@ class RoomHistoryManagerClass extends Emitter {
 		const room = this.getRoom(message.rid);
 
 		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
-		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
+		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit, false);
 
 		this.clear(message.rid);
 

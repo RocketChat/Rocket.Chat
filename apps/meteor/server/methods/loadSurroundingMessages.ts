@@ -14,6 +14,7 @@ declare module '@rocket.chat/ddp-client' {
 		loadSurroundingMessages(
 			message: Pick<IMessage, '_id' | 'rid'> & { ts?: Date },
 			limit?: number,
+			showThreadMessages?: boolean,
 		):
 			| {
 					messages: IMessage[];
@@ -25,7 +26,7 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
-	async loadSurroundingMessages(message, limit = 50) {
+	async loadSurroundingMessages(message, limit = 50, showThreadMessages = true) {
 		check(message, Object);
 		check(limit, Number);
 
@@ -60,7 +61,12 @@ Meteor.methods<ServerMethods>({
 			limit: Math.ceil(limit / 2),
 		};
 
-		const messages = await Messages.findVisibleByRoomIdBeforeTimestamp(mainMessage.rid, mainMessage.ts, options).toArray();
+		const messages = await Messages.findVisibleByRoomIdBeforeTimestamp(
+			mainMessage.rid,
+			mainMessage.ts,
+			options,
+			showThreadMessages,
+		).toArray();
 
 		const moreBefore = messages.length === options.limit;
 
@@ -72,7 +78,12 @@ Meteor.methods<ServerMethods>({
 
 		options.limit = Math.floor(limit / 2);
 
-		const afterMessages = await Messages.findVisibleByRoomIdAfterTimestamp(mainMessage.rid, mainMessage.ts, options).toArray();
+		const afterMessages = await Messages.findVisibleByRoomIdAfterTimestamp(
+			mainMessage.rid,
+			mainMessage.ts,
+			options,
+			showThreadMessages,
+		).toArray();
 
 		const moreAfter = afterMessages.length === options.limit;
 
