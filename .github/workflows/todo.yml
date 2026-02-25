@@ -1,0 +1,58 @@
+name: Create issues from TODOs
+
+on:
+  workflow_dispatch:
+    inputs:
+      importAll:
+        default: false
+        required: false
+        type: boolean
+        description: Enable, if you want to import all TODOs. Runs on checked out branch! Only use if you're sure what you are doing.
+      sha:
+        default: ''
+        required: false
+        type: string
+        description: 'A commit SHA or range (e.g. "abc123" or "abc123...def456"). Single SHA compares against its parent.'
+      path:
+        default: ''
+        required: false
+        type: string
+        description: 'Import TODOs from a specific path (e.g. "apps/meteor/client" or "packages/core-typings/src/IMessage.ts").'
+  push:
+    branches: # do not set multiple branches, todos might be added and then get referenced by themselves in case of a merge
+      - develop
+
+permissions:
+  issues: write
+  repository-projects: read
+  contents: read
+
+jobs:
+  todos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+        working-directory: scripts/todo-issue
+
+      - name: Create issues from TODOs
+        run: bun run src/index.ts
+        working-directory: scripts/todo-issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPOSITORY_NAME: ${{ github.event.repository.name }}
+          GITHUB_SHA: ${{ github.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          IMPORT_ALL: ${{ inputs.importAll || 'false' }}
+          SHA_INPUT: ${{ inputs.sha || '' }}
+          PATH_FILTER: ${{ inputs.path || '' }}

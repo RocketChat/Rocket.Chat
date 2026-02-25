@@ -117,6 +117,8 @@ jobs:
           else
             DOCKER_TAG=$GITHUB_REF_NAME
           fi
+          # Docker tags cannot contain '/'; merge queue refs do (e.g. gh-readonly-queue/develop/pr-123-sha)
+          DOCKER_TAG="${DOCKER_TAG//\//-}"
           echo "DOCKER_TAG: ${DOCKER_TAG}"
           echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
 
@@ -870,6 +872,7 @@ jobs:
 
           # 'develop' or 'tag'
           DOCKER_TAG=$GITHUB_REF_NAME
+          DOCKER_TAG="${DOCKER_TAG//\//-}"
 
           declare -a TAGS=()
 
