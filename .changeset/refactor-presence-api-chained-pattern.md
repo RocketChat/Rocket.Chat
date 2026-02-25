@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/meteor': patch
+'@rocket.chat/meteor': minor
 ---
 
-Migrated `presence.getConnections` and `presence.enableBroadcast` REST API endpoints from legacy `addRoute` pattern to the new chained `.get()`/`.post()` API pattern with typed response schemas.
+Migrates `presence.getConnections` and `presence.enableBroadcast` REST API endpoints from legacy `addRoute` pattern to the new chained `.get()`/`.post()` API pattern with typed response schemas.
