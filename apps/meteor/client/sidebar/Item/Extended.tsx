@@ -26,7 +26,7 @@ type ExtendedProps = {
 	badges?: ReactNode;
 	unread?: boolean;
 	selected?: boolean;
-	menuOptions?: Record<string, { label: { label: string; icon: string }; action: () => void }>;
+	menuOptions?: any;
 	titleIcon?: ReactNode;
 	threadUnread?: boolean;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
