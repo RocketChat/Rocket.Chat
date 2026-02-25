@@ -45,6 +45,7 @@ const AppsFilters = ({
 
 	const isPrivateAppsPage = context === 'private';
 	const breakpoints = useBreakpoints();
+	const isLg = breakpoints.includes('lg');
 
 	const appsSearchPlaceholders: { [key: string]: string } = {
 		explore: t('Search_Apps'),
@@ -54,20 +55,29 @@ const AppsFilters = ({
 		private: t('Search_Private_apps'),
 	};
 
-	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
+	const filterBoxProps = isLg ? { maxWidth: 'x200', minWidth: 'x200' } : { minWidth: 'x0' };
 
 	return (
-		<Box pi={24}>
-			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]}>
+		<Box pi={24} display='flex' flexDirection='column' style={{ rowGap: '8px' }}>
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]} />
+			<Box display='flex' flexDirection='row' flexWrap='wrap' alignItems='center' mbs={-16} style={{ gap: '8px' }}>
 				{!isPrivateAppsPage && (
-					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+					<Box position='relative' flexGrow={1} flexShrink={1} flexBasis='x0' {...filterBoxProps}>
+						<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} width='100%' />
+					</Box>
 				)}
-				<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+				<Box position='relative' flexGrow={1} flexShrink={1} flexBasis='x0' {...filterBoxProps}>
+					<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} width='100%' />
+				</Box>
 				{!isPrivateAppsPage && (
-					<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} flexGrow={1} />
+					<Box position='relative' flexGrow={1} flexShrink={1} flexBasis='x0' {...filterBoxProps}>
+						<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} width='100%' />
+					</Box>
 				)}
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
-			</FilterByText>
+				<Box position='relative' flexGrow={1} flexShrink={1} flexBasis='x0' {...filterBoxProps}>
+					<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} width='100%' />
+				</Box>
+			</Box>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</Box>
 	);
