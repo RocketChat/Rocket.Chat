@@ -33,16 +33,16 @@ Accounts.registerLoginHandler('saml', async (loginRequest) => {
 		SAMLUtils.events.emit('updateCustomFields', loginResult, updatedUser);
 
 		return updatedUser;
-	} catch (error: any) {
-		SystemLogger.error(error);
+	} catch (err: any) {
+		SystemLogger.error({ err });
 
-		let message = error.toString();
+		let message = err.toString();
 		let errorCode = '';
 
-		if (error instanceof Meteor.Error) {
-			errorCode = (error.error || error.message) as string;
-		} else if (error instanceof Error) {
-			errorCode = error.message;
+		if (err instanceof Meteor.Error) {
+			errorCode = (err.error || err.message) as string;
+		} else if (err instanceof Error) {
+			errorCode = err.message;
 		}
 
 		if (errorCode) {

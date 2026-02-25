@@ -2,11 +2,11 @@ import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -34,7 +34,6 @@ import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMes
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
 
@@ -380,7 +379,7 @@ API.v1.addRoute(
 				checkedArchived: false,
 			});
 
-			await eraseRoom(findResult.rid, this.userId);
+			await eraseRoom(findResult.rid, this.user);
 
 			return API.v1.success();
 		},
@@ -510,7 +509,7 @@ API.v1.addRoute(
 				oldestDate = new Date(this.queryParams.oldest);
 			}
 
-			const inclusive = this.queryParams.inclusive || false;
+			const inclusive = this.queryParams.inclusive === 'true';
 
 			let count = 20;
 			if (this.queryParams.count) {
@@ -522,7 +521,7 @@ API.v1.addRoute(
 				offset = parseInt(String(this.queryParams.offset));
 			}
 
-			const unreads = this.queryParams.unreads || false;
+			const unreads = this.queryParams.unreads === 'true';
 
 			const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
 
@@ -839,12 +838,7 @@ API.v1.addRoute(
 				return API.v1.failure('Group does not exists');
 			}
 
-			const user = await getLoggedInUser(this.request);
-			if (!user) {
-				return API.v1.failure('User does not exists');
-			}
-
-			if (!(await canAccessRoomAsync(room, user))) {
+			if (!(await canAccessRoomAsync(room, this.user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
 

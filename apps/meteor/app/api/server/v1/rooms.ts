@@ -1,4 +1,4 @@
-import { FederationMatrix, Media, MeteorError, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
@@ -19,9 +19,9 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { omit } from '../../../../lib/utils/omit';
 import * as dataExport from '../../../../server/lib/dataExport';
@@ -55,7 +55,7 @@ import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
-import { getUploadFormData } from '../lib/getUploadFormData';
+import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -148,7 +148,7 @@ API.v1.addRoute(
 				});
 			}
 
-			await eraseRoom(room, this.userId);
+			await eraseRoom(room, this.user);
 
 			return API.v1.success();
 		},
@@ -197,23 +197,17 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const file = await getUploadFormData(
-				{
-					request: this.request,
-				},
-				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
-			);
+			const { file, fields } = await MultipartUploadHandler.parseRequest(this.incoming, {
+				field: 'file',
+				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+			});
 
 			if (!file) {
-				throw new Meteor.Error('invalid-field');
+				throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
 			}
-
-			let { fileBuffer } = file;
 
 			const expiresAt = new Date();
 			expiresAt.setHours(expiresAt.getHours() + 24);
-
-			const { fields } = file;
 
 			let content;
 
@@ -228,7 +222,7 @@ API.v1.addRoute(
 
 			const details = {
 				name: file.filename,
-				size: fileBuffer.length,
+				size: file.size,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
@@ -236,15 +230,9 @@ API.v1.addRoute(
 				expiresAt,
 			};
 
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
-				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-				details.size = fileBuffer.length;
-			}
-
+			// TODO: In the future, we should isolate file receival from storage and post-processing.
 			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, fileBuffer);
+			const uploadedFile = await fileStore.insert(details, file.tempFilePath);
 
 			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
 
@@ -283,7 +271,7 @@ API.v1.addRoute(
 			delete this.bodyParams.description;
 
 			await applyAirGappedRestrictionsValidation(() =>
-				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }, { parseAttachmentsForE2EE: false }),
+				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
 			);
 
 			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
@@ -317,26 +305,6 @@ API.v1.addRoute(
 					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
 				),
 			);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.favorite',
-	{ authRequired: true },
-	{
-		async post() {
-			const { favorite } = this.bodyParams;
-
-			if (!this.bodyParams.hasOwnProperty('favorite')) {
-				return API.v1.failure("The 'favorite' param is required");
-			}
-
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-
-			await toggleFavoriteMethod(this.userId, room._id, favorite);
 
 			return API.v1.success();
 		},
@@ -418,23 +386,6 @@ API.v1.addRoute(
 				...(team && { team }),
 				...(parent && { parent }),
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.leave',
-	{ authRequired: true },
-	{
-		async post() {
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.failure('Invalid user');
-			}
-			await leaveRoomMethod(user, room._id);
-
-			return API.v1.success();
 		},
 	},
 );
@@ -957,6 +908,24 @@ API.v1.addRoute(
 	},
 );
 
+type RoomsFavorite =
+	| {
+			roomId: string;
+			favorite: boolean;
+	  }
+	| {
+			roomName: string;
+			favorite: boolean;
+	  };
+
+type RoomsLeave =
+	| {
+			roomId: string;
+	  }
+	| {
+			roomName: string;
+	  };
+
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
 	properties: {
@@ -965,6 +934,54 @@ const isRoomGetRolesPropsSchema = {
 	additionalProperties: false,
 	required: ['rid'],
 };
+
+const RoomsFavoriteSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomName: { type: 'string' },
+			},
+			required: ['roomName', 'favorite'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomId: { type: 'string' },
+			},
+			required: ['roomId', 'favorite'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isRoomsLeavePropsSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: { type: 'string' },
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+
 export const roomEndpoints = API.v1
 	.get(
 		'rooms.roles',
@@ -1078,39 +1095,102 @@ export const roomEndpoints = API.v1
 				total,
 			});
 		},
+	)
+	.post(
+		'rooms.invite',
+		{
+			authRequired: true,
+			body: isRoomsInviteProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { roomId, action } = this.bodyParams;
+
+			try {
+				await FederationMatrix.handleInvite(roomId, this.userId, action);
+				return API.v1.success();
+			} catch (error) {
+				return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
+			}
+		},
+	)
+	.post(
+		'rooms.favorite',
+		{
+			authRequired: true,
+			body: isRoomsFavoriteProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { favorite } = this.bodyParams;
+
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+			await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.leave',
+		{
+			authRequired: true,
+			body: isRoomsLeaveProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+			const user = await Users.findOneById(this.userId);
+
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
+			}
+
+			await leaveRoomMethod(user, room._id);
+
+			return API.v1.success();
+		},
 	);
 
-const roomInviteEndpoints = API.v1.post(
-	'rooms.invite',
-	{
-		authRequired: true,
-		body: isRoomsInviteProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-		},
-	},
-	async function action() {
-		const { roomId, action } = this.bodyParams;
-
-		try {
-			await FederationMatrix.handleInvite(roomId, this.userId, action);
-			return API.v1.success();
-		} catch (error) {
-			return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
-		}
-	},
-);
-
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> & ExtractRoutesFromAPI<typeof roomInviteEndpoints>;
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

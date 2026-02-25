@@ -28,7 +28,7 @@ it('should invalidate any subscription queries', async () => {
 	const { result } = renderHook(() => useToggleFavoriteMutation(), {
 		wrapper: mockAppRoot()
 			.withEndpoint('POST', '/v1/rooms.favorite', async () => null)
-			.wrap((children) => <QueryClientProvider client={queryClient} children={children} />)
+			.wrap((children) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>)
 			.build(),
 	});
 

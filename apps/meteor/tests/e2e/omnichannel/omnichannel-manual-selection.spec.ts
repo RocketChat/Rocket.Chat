@@ -68,14 +68,14 @@ test.describe('OC - Manual Selection', () => {
 
 		await test.step('expect to be able join chat in read mode', async () => {
 			await poOmnichannel.sidebar.getSidebarItemByName(room.fname).click();
-			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).toBeVisible();
 		});
 
 		await test.step('expect to be able take chat', async () => {
 			await poOmnichannel.content.btnTakeChat.click();
 			await expect(poOmnichannel.content.lastSystemMessageBody).toHaveText('joined the channel');
-			await expect(poOmnichannel.content.inputMessage).toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).not.toBeVisible();
 			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 		});
@@ -87,7 +87,7 @@ test.describe('OC - Manual Selection', () => {
 
 		await test.step('expect to be able return to queue', async () => {
 			await poOmnichannel.content.btnReturnToQueue.click();
-			await poOmnichannel.content.btnReturnToQueueConfirm.click();
+			await poOmnichannel.content.returnToQueueModal.confirm();
 			await expect(page).toHaveURL('/home');
 		});
 
@@ -96,7 +96,7 @@ test.describe('OC - Manual Selection', () => {
 			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 
 			await poOmnichannel.sidebar.getSidebarItemByName(room.fname).click();
-			await expect(poOmnichannel.content.inputMessage).not.toBeVisible();
+			await expect(poOmnichannel.composer.inputMessage).not.toBeVisible();
 			await expect(poOmnichannel.content.btnTakeChat).toBeVisible();
 		});
 	});

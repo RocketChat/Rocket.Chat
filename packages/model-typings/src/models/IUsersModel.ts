@@ -104,8 +104,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<Pick<IUser, 'roles' | '_id'> | null>;
 
-	getDistinctFederationDomains(): Promise<string[]>;
-
 	getNextLeastBusyAgent(
 		department?: string,
 		ignoreAgentId?: string,
@@ -137,6 +135,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		lastRoutingTime?: Date;
 		queueInfo: { chats: number; chatsForDepartment?: number };
 	}>;
+
+	acquireAgentLock(agentId: IUser['_id'], lockTime: Date, lockTimeoutMs?: number): Promise<boolean>;
+	releaseAgentLock(agentId: IUser['_id'], lockTime: Date): Promise<boolean>;
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]>;
 

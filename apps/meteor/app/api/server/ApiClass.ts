@@ -37,6 +37,7 @@ import type {
 	RedirectResult,
 	UnavailableResult,
 	GenericRouteExecutionContext,
+	TooManyRequestsResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
@@ -383,7 +384,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public tooManyRequests(msg?: string): { statusCode: number; body: Record<string, any> & { success?: boolean } } {
+	public tooManyRequests<T>(msg?: T): TooManyRequestsResult<T> {
 		return {
 			statusCode: 429,
 			body: {
@@ -495,18 +496,16 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	public async processTwoFactor({
 		userId,
 		request,
-		invocation,
 		options,
 		connection,
 	}: {
 		userId: string;
 		request: Request;
-		invocation: { twoFactorChecked?: boolean };
 		options?: Options;
 		connection: IMethodConnection;
-	}): Promise<void> {
+	}): Promise<boolean> {
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
-			return;
+			return false;
 		}
 		const code = request.headers.get('x-2fa-code') ? String(request.headers.get('x-2fa-code')) : undefined;
 		const method = request.headers.get('x-2fa-method') ? String(request.headers.get('x-2fa-method')) : undefined;
@@ -519,7 +518,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			connection,
 		});
 
-		invocation.twoFactorChecked = true;
+		return true;
 	}
 
 	public getFullRouteName(route: string, method: string): string {
@@ -583,7 +582,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	>(method: MinimalRoute['method'], subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
+		this.typedRoutes[path] = this.typedRoutes[path] || {};
 		const { query, authRequired, response, body, tags, ...rest } = options;
 		this.typedRoutes[path][method.toLowerCase()] = {
 			...(response && {
@@ -826,18 +825,17 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						this.queryFields = options.queryFields;
 						this.logger = logger;
 
-						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute(this);
-							this.user = user!;
-							this.userId = this.user?._id;
-							const authToken = this.request.headers.get('x-auth-token');
-							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
-						}
+						const user = await api.authenticatedRoute(this);
+						this.user = user!;
+						this.userId = this.user?._id;
+						const authToken = this.request.headers.get('x-auth-token');
+						this.token = Accounts._hashLoginToken(String(authToken))!;
 
 						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
 						const shouldPreventUserRead = !this.user && options.authRequired;
 
 						if (shouldPreventAnonymousRead || shouldPreventUserRead) {
+							console.log('shouldPreventAnonymousRead', shouldPreventAnonymousRead);
 							const result = api.unauthorized('You must be logged in to do this.');
 							// compatibility with the old API
 							// TODO: MAJOR
@@ -901,30 +899,28 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 								}
 							}
 
-							const invocation = new DDPCommon.MethodInvocation({
-								connection,
-								isSimulation: false,
-								userId: this.userId,
-							});
-
-							Accounts._accountData[connection.id] = {
-								connection,
-							};
-
-							Accounts._setAccountData(connection.id, 'loginToken', this.token!);
-
-							this.userId &&
+							if (
+								this.userId &&
 								(await api.processTwoFactor({
 									userId: this.userId,
 									request: this.request,
-									invocation: invocation as unknown as Record<string, any>,
 									options: _options,
 									connection: connection as unknown as IMethodConnection,
-								}));
+								}))
+							) {
+								this.twoFactorChecked = true;
+							}
 
 							this.parseJsonQuery = () => api.parseJsonQuery(this);
 
-							result = (await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || api.success();
+							if (options.applyMeteorContext) {
+								const invocation = APIClass.createMeteorInvocation(connection, this.userId, this.token);
+								result = await invocation
+									.applyInvocation(() => originalAction.apply(this))
+									.finally(() => invocation[Symbol.asyncDispose]());
+							} else {
+								result = await originalAction.apply(this);
+							}
 						} catch (e: any) {
 							result = ((e: any) => {
 								switch (e.error) {
@@ -1092,7 +1088,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 					try {
 						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
-						this.user = await Users.findOne(
+						const user = await Users.findOne(
 							{
 								_id: auth.id,
 							},
@@ -1101,18 +1097,16 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							},
 						);
 
-						if (!this.user) {
+						if (!user) {
 							return self.unauthorized();
 						}
-
-						this.userId = this.user._id;
 
 						return self.success({
 							status: 'success',
 							data: {
-								userId: this.userId,
+								userId: user._id,
 								authToken: auth.token,
-								me: await getUserInfo(this.user || ({} as IUser)),
+								me: await getUserInfo(user || ({} as IUser)),
 							},
 						});
 					} catch (error) {
@@ -1207,5 +1201,39 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			},
 		);
+	}
+
+	static createMeteorInvocation(
+		connection: {
+			id: string;
+			close: () => void;
+			clientAddress: string;
+			httpHeaders: Record<string, any>;
+		},
+		userId?: string,
+		token?: string,
+	) {
+		const invocation = new DDPCommon.MethodInvocation({
+			connection,
+			isSimulation: false,
+			userId,
+		});
+
+		Accounts._accountData[connection.id] = {
+			connection,
+		};
+		if (token) {
+			Accounts._setAccountData(connection.id, 'loginToken', token);
+		}
+
+		return {
+			invocation,
+			applyInvocation: <F extends () => Promise<any>>(action: F): ReturnType<F> => {
+				return DDP._CurrentInvocation.withValue(invocation as any, async () => action()) as ReturnType<F>;
+			},
+			[Symbol.asyncDispose]() {
+				return Promise.resolve();
+			},
+		};
 	}
 }

@@ -1,4 +1,17 @@
-import { MessageDivider, Message, Avatar, Box } from '@rocket.chat/fuselage';
+import {
+	MessageDivider,
+	Message,
+	MessageLeftContainer,
+	MessageContainer,
+	MessageHeader,
+	MessageName,
+	MessageUsername,
+	MessageRole,
+	MessageTimestamp,
+	MessageBody,
+	Avatar,
+	Box,
+} from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
@@ -19,22 +32,22 @@ export default {
 			<Box>
 				<MessageDivider>May, 24, 2020</MessageDivider>
 				<Message className='customclass'>
-					<Message.LeftContainer>
+					<MessageLeftContainer>
 						<Avatar alt='' url={avatarUrl} size='x36' />
-					</Message.LeftContainer>
-					<Message.Container>
-						<Message.Header>
-							<Message.Name>Haylie George</Message.Name>
-							<Message.Username>@haylie.george</Message.Username>
-							<Message.Role>Admin</Message.Role>
-							<Message.Role>User</Message.Role>
-							<Message.Role>Owner</Message.Role>
-							<Message.Timestamp>12:00 PM</Message.Timestamp>
-						</Message.Header>
-						<Message.Body>
+					</MessageLeftContainer>
+					<MessageContainer>
+						<MessageHeader>
+							<MessageName>Haylie George</MessageName>
+							<MessageUsername>@haylie.george</MessageUsername>
+							<MessageRole>Admin</MessageRole>
+							<MessageRole>User</MessageRole>
+							<MessageRole>Owner</MessageRole>
+							<MessageTimestamp>12:00 PM</MessageTimestamp>
+						</MessageHeader>
+						<MessageBody>
 							<Story />
-						</Message.Body>
-					</Message.Container>
+						</MessageBody>
+					</MessageContainer>
 				</Message>
 			</Box>
 		),

@@ -345,7 +345,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await poHomeChannel.content.openLastMessageMenu();
 		await poHomeChannel.content.btnOptionEditMessage.click();
-		await poHomeChannel.content.inputMessage.fill(editedMessage);
+		await poHomeChannel.composer.inputMessage.fill(editedMessage);
 
 		await page.keyboard.press('Enter');
 
@@ -369,7 +369,7 @@ test.describe('E2EE Encrypted Channels', () => {
 
 		await poHomeChannel.content.openLastMessageMenu();
 		await poHomeChannel.content.btnOptionEditMessage.click();
-		await poHomeChannel.content.inputMessage.fill(editedMessage);
+		await poHomeChannel.composer.inputMessage.fill(editedMessage);
 
 		await page.keyboard.press('Enter');
 

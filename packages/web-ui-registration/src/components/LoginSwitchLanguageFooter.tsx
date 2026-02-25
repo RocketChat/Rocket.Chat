@@ -29,7 +29,7 @@ const useSuggestedLanguages = ({
 	const { i18n } = useTranslation();
 
 	useEffect(() => {
-		i18n.loadLanguages(suggestions.map((suggestion) => suggestion.key));
+		void i18n.loadLanguages(suggestions.map((suggestion) => suggestion.key));
 	}, [i18n, suggestions]);
 
 	return { suggestions };

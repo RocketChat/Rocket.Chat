@@ -128,7 +128,7 @@ class AmazonS3Store extends UploadFS.Store {
 			try {
 				return s3.deleteObject(params).promise();
 			} catch (err: any) {
-				SystemLogger.error(err);
+				SystemLogger.error({ err });
 			}
 		};
 
@@ -184,9 +184,9 @@ class AmazonS3Store extends UploadFS.Store {
 					ContentType: file.type,
 					Bucket: classOptions.connection.params.Bucket,
 				},
-				(error) => {
-					if (error) {
-						SystemLogger.error(error);
+				(err) => {
+					if (err) {
+						SystemLogger.error({ err });
 					}
 
 					writeStream.emit('real_finish');

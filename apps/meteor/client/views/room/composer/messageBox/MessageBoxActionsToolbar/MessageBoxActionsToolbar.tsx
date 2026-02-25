@@ -1,5 +1,6 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { Icon } from '@rocket.chat/fuselage';
+import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -15,7 +16,6 @@ import { useTimestampAction } from './hooks/useTimestampAction';
 import { useVideoMessageAction } from './hooks/useVideoMessageAction';
 import { useWebdavActions } from './hooks/useWebdavActions';
 import { messageBox } from '../../../../../../app/ui-utils/client';
-import { isTruthy } from '../../../../../../lib/isTruthy';
 import { useMessageboxAppsActionButtons } from '../../../../../hooks/useMessageboxAppsActionButtons';
 import { useChat } from '../../../contexts/ChatContext';
 import { useRoom } from '../../../contexts/RoomContext';
