@@ -119,6 +119,16 @@ class RoomHistoryManagerClass extends Emitter {
 		this.run(() => this.emit(requestId));
 	}
 
+	private async saveRoomScroll(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+		const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
+
+		room.scroll = {
+			scrollHeight: wrapper.scrollHeight,
+			scrollTop: wrapper.scrollTop,
+		};
+	}
+
 	public async getMore(rid: IRoom['_id'], { limit = defaultLimit }: { limit?: number } = {}): Promise<void> {
 		const room = this.getRoom(rid);
 
@@ -162,12 +172,7 @@ class RoomHistoryManagerClass extends Emitter {
 				room.oldestTs = messages[messages.length - 1].ts;
 			}
 
-			const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-
-			room.scroll = {
-				scrollHeight: wrapper.scrollHeight,
-				scrollTop: wrapper.scrollTop,
-			};
+			await this.saveRoomScroll(rid);
 
 			await upsertMessageBulk({
 				msgs: messages.filter((msg) => msg.t !== 'command'),
@@ -321,6 +326,8 @@ class RoomHistoryManagerClass extends Emitter {
 		if (messages.length > 0) {
 			room.oldestTs = messages[messages.length - 1].ts;
 		}
+
+		await this.saveRoomScroll(message.rid);
 
 		await upsertMessageBulk({ msgs: Array.from(result.messages).filter((msg) => msg.t !== 'command'), subscription });
 

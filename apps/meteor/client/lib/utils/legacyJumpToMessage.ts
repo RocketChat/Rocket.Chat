@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
+import { flushSync } from 'react-dom';
 
 import { goToRoomById } from './goToRoomById';
 import { RoomHistoryManager } from '../../../app/ui-utils/client';
@@ -19,7 +20,12 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 			routeParamsOverrides: { tab: 'thread', context: message.tmid || message._id },
 			replace: RoomManager.opened === message.rid,
 		});
+
 		await RoomHistoryManager.getSurroundingMessages(message);
+
+		flushSync(() => {
+			RoomHistoryManager.restoreScroll(message.rid);
+		});
 		return;
 	}
 
