@@ -16,15 +16,21 @@ const cleanupOutdatedVersionUpdateBanners = async (): Promise<void> => {
 			continue;
 		}
 
-		for await (const bannerId of Object.keys(admin.banners)) {
-			if (!bannerId.startsWith('versionUpdate-')) {
-				continue;
-			}
+		const filteredBanners = Object.fromEntries(
+			Object.entries(admin.banners).filter(([bannerId]) => {
+				if (!bannerId.startsWith('versionUpdate-')) {
+					return true;
+				}
+				const version = bannerId.replace('versionUpdate-', '').replace(/_/g, '.');
+				if (!semver.valid(version) || semver.lte(version, Info.version)) {
+					return false;
+				}
+				return true;
+			}),
+		);
 
-			const version = bannerId.replace('versionUpdate-', '').replace(/_/g, '.');
-			if (!semver.valid(version) || semver.lte(version, Info.version)) {
-				await Users.removeBannerById(admin._id, bannerId);
-			}
+		if (Object.keys(filteredBanners).length !== Object.keys(admin.banners).length) {
+			await Users.setBanners(admin._id, filteredBanners);
 		}
 	}
 };

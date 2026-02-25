@@ -3155,6 +3155,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
+	setBanners(_id: IUser['_id'], banners: IUser['banners']) {
+		return this.updateOne({ _id }, { $set: { banners } });
+	}
+
 	removeSamlServiceSession(_id: IUser['_id']) {
 		const update = {
 			$unset: {

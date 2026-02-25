@@ -397,6 +397,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	bannerExistsById(userId: string, bannerId: string): Promise<boolean>;
 	setBannerReadById(userId: string, bannerId: string): Promise<UpdateResult>;
 	removeBannerById(userId: string, bannerId: string): Promise<UpdateResult>;
+	setBanners(userId: IUser['_id'], banners: IUser['banners']): Promise<UpdateResult>;
 	removeSamlServiceSession(userId: string): Promise<UpdateResult>;
 	updateDefaultStatus(userId: string, status: string): Promise<UpdateResult>;
 	setSamlInResponseTo(userId: string, inResponseTo: string): Promise<UpdateResult>;
