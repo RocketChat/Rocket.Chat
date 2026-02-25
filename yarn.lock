@@ -8916,8 +8916,10 @@ __metadata:
     peggy: "npm:4.1.1"
     prettier-plugin-pegjs: "npm:~0.5.4"
     rimraf: "npm:^6.0.1"
+    tinybench: "npm:^3.0.5"
     tldts: "npm:~6.1.86"
     ts-loader: "npm:~9.5.4"
+    ts-node: "npm:~10.9.2"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.99.9"
     webpack-cli: "npm:~5.1.4"
@@ -34822,6 +34824,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tinybench@npm:^3.0.5":
+  version: 3.1.1
+  resolution: "tinybench@npm:3.1.1"
+  checksum: 10/1d97035722dd91fc8a496cb2a97c375a06ce2ec03e57586ee5bf4b861bbc8a3ab52839d285ca5948c094ac61c1529fbdf7f47c9cb7e8dce11daafd4239eb47b0
+  languageName: node
+  linkType: hard
+
 "tinyglobby@npm:^0.2.14":
   version: 0.2.15
   resolution: "tinyglobby@npm:0.2.15"
@@ -35131,7 +35140,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.9.2":
+"ts-node@npm:^10.9.2, ts-node@npm:~10.9.2":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:
