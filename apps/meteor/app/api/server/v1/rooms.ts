@@ -1212,7 +1212,7 @@ export const roomEndpoints = API.v1
 	);
 
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomInviteEndpoints> &
+	ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
