@@ -5,11 +5,13 @@ import { useTranslation } from 'react-i18next';
 
 import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import CustomHomepageContent from '../CustomHomePageContent';
+import { useLayout } from '@rocket.chat/ui-contexts';
 
 const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement | null => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const router = useRouter();
+	const { isMobile } = useLayout();
 
 	const { data } = useIsEnterprise();
 	const isAdmin = useRole('admin');
@@ -59,43 +61,40 @@ const CustomContentCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 					</Tag>
 				</CardHeader>
 				<CardBody>{isCustomContentBodyEmpty ? t('Homepage_Custom_Content_Default_Message') : <CustomHomepageContent />}</CardBody>
-				<CardControls
-					display='flex'
-					flexWrap='wrap'
-					justifyContent='flex-start'
-					alignItems='stretch'
-					gap={8}
-				>
-					<Button
-						flexGrow={1}
-						minWidth='x140'
-						onClick={() => router.navigate('/admin/settings/Layout')}
-						title={t('Layout_Home_Page_Content')}
-					>
-						{t('Customize_Content')}
-					</Button>
+				<CardControls>
+					<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} flexWrap='wrap' width='full'>
+						<Box width={isMobile ? 'full' : 'auto'} mbe={isMobile ? 8 : 0} mie={!isMobile ? 8 : 0}>
+							<Button medium width='full' onClick={() => router.navigate('/admin/settings/Layout')} title={t('Layout_Home_Page_Content')}>
+								{t('Customize_Content')}
+							</Button>
+						</Box>
 
-					<Button
-						flexGrow={1}
-						minWidth='x140'
-						icon={willNotShowCustomContent ? 'eye' : 'eye-off'}
-						disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
-						title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
-						onClick={handleChangeCustomContentVisibility}
-					>
-						{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
-					</Button>
+						<Box width={isMobile ? 'full' : 'auto'} mbe={isMobile ? 8 : 0} mie={!isMobile ? 8 : 0}>
+							<Button
+								medium
+								width='full'
+								icon={willNotShowCustomContent ? 'eye' : 'eye-off'}
+								disabled={isCustomContentBodyEmpty || (isCustomContentVisible && isCustomContentOnly)}
+								title={isCustomContentBodyEmpty ? t('Action_Available_After_Custom_Content_Added') : userVisibilityTooltipText}
+								onClick={handleChangeCustomContentVisibility}
+							>
+								{willNotShowCustomContent ? t('Show_To_Workspace') : t('Hide_On_Workspace')}
+							</Button>
+						</Box>
 
-					<Button
-						flexGrow={1}
-						minWidth='x140'
-						icon='lightning'
-						disabled={willNotShowCustomContent || !isEnterprise}
-						title={!isEnterprise ? t('Premium_only') : customContentOnlyTooltipText}
-						onClick={handleOnlyShowCustomContent}
-					>
-						{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
-					</Button>
+						<Box width={isMobile ? 'full' : 'auto'}>
+							<Button
+								medium
+								width='full'
+								icon='lightning'
+								disabled={willNotShowCustomContent || !isEnterprise}
+								title={!isEnterprise ? t('Premium_only') : customContentOnlyTooltipText}
+								onClick={handleOnlyShowCustomContent}
+							>
+								{!isCustomContentOnly ? t('Show_Only_This_Content') : t('Show_default_content')}
+							</Button>
+						</Box>
+					</Box>
 				</CardControls>
 			</Card>
 		);
