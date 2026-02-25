@@ -38,11 +38,8 @@ WebApp.rawHandlers.use('/health', (_req: IncomingMessage, res: ServerResponse) =
  * Defines tunable thresholds for readiness checks.
  */
 
-const eventLoopHistogramLiveness = monitorEventLoopDelay();
-eventLoopHistogramLiveness.enable();
-
-const eventLoopHistogramReadiness = monitorEventLoopDelay();
-eventLoopHistogramReadiness.enable();
+const eventLoopHistogram = monitorEventLoopDelay();
+eventLoopHistogram.enable();
 
 const READINESS_THRESHOLDS = {
 	EVENT_LOOP_LAG_MS: Number.parseFloat(process.env.EVENT_LOOP_LAG_MS ?? '') || 70,
@@ -93,13 +90,13 @@ async function checkMongo() {
 }
 
 /**
- * Performs the core health checks (memory, event loop) and returns the result.
- * @param shouldResetHistogram - Controls whether the event loop histogram is reset.
+ * Performs readiness health checks (memory, event loop, and MongoDB).
+ * Used by the /readyz endpoint to determine if the application can process requests.
  */
-async function performHealthChecks(histogram: ReturnType<typeof monitorEventLoopDelay>) {
+async function performReadinessChecks() {
 	const checks = {
 		memory: checkMemoryUsage(),
-		eventLoop: checkEventLoopLag(histogram),
+		eventLoop: checkEventLoopLag(eventLoopHistogram),
 		mongo: await checkMongo(),
 	};
 
@@ -116,29 +113,25 @@ async function performHealthChecks(histogram: ReturnType<typeof monitorEventLoop
 
 /**
  * Liveness Probe (`/livez`)
- * Performs a non-destructive health check. A failure here indicates a pod is
- * unrecoverable and should be restarted.
+ * Simple liveness check that only verifies the Node.js process can respond to requests.
+ * If the process is truly deadlocked, it won't be able to respond and K8s will timeout and restart it.
+ * Does NOT check memory, event loop, or external dependencies.
  */
-WebApp.rawHandlers.use('/livez', async (_req: IncomingMessage, res: ServerResponse) => {
-	const { statusCode, body, isHealthy } = await performHealthChecks(eventLoopHistogramLiveness);
-
-	if (!isHealthy) {
-		SystemLogger.error({ msg: 'Liveness check failed', details: body });
-	}
-
+WebApp.rawHandlers.use('/livez', (_req: IncomingMessage, res: ServerResponse) => {
 	setDefaultHeaders(res);
 
-	res.writeHead(statusCode);
-	res.end(JSON.stringify(body));
+	res.writeHead(200);
+	res.end(JSON.stringify({ status: 'ok' }));
 });
 
 /**
  * Readiness Probe Endpoint (`/readyz`)
- * Performs a destructive health check, resetting the histogram for the next interval.
+ * Checks if the application is capable of successfully processing user requests.
+ * Includes checks for memory usage, event loop lag, and external dependencies like MongoDB.
  * A failure tells the orchestrator to stop sending traffic to this instance.
  */
 WebApp.rawHandlers.use('/readyz', async (_req: IncomingMessage, res: ServerResponse) => {
-	const { statusCode, body, isHealthy } = await performHealthChecks(eventLoopHistogramReadiness);
+	const { statusCode, body, isHealthy } = await performReadinessChecks();
 
 	if (!isHealthy) {
 		SystemLogger.warn({ msg: 'Readiness check failed', details: body });
