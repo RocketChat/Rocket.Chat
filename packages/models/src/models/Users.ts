@@ -3156,7 +3156,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.updateOne({ _id }, update);
 	}
 
-	async setBannersInBulk(updates: { userId: IUser['_id']; banners: IUser['banners'] }[]) {
+	async setBannersInBulk(updates: { userId: IUser['_id']; banners: NonNullable<IUser['banners']> }[]) {
 		const ops: AnyBulkWriteOperation<IUser>[] = updates.map(({ userId, banners }) => ({
 			updateOne: {
 				filter: { _id: userId },

@@ -12,7 +12,7 @@ import { Info } from '../../../utils/rocketchat.info';
 const cleanupOutdatedVersionUpdateBanners = async (): Promise<void> => {
 	const admins = Users.findUsersInRolesWithQuery('admin', { banners: { $exists: true } }, { projection: { _id: 1, banners: 1 } });
 
-	const updates: { userId: IUser['_id']; banners: IUser['banners'] }[] = [];
+	const updates: { userId: IUser['_id']; banners: NonNullable<IUser['banners']> }[] = [];
 
 	for await (const admin of admins) {
 		if (!admin.banners) {
