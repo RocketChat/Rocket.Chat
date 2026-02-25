@@ -267,30 +267,66 @@ describe('[CustomSounds]', () => {
 			await updateSetting('CustomSounds_Storage_Type', 'GridFS');
 			gridFsFileId = await insertOrUpdateSound(`${fileName}-4`);
 			await uploadCustomSound(binary, `${fileName}-4`, gridFsFileId);
-		});
 
-		it('should respect CustomSounds_Storage_Type changes when resolving files', async () => {
-			await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
-			await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(404);
-			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
-			await updateSetting('CustomSounds_Storage_Type', 'GridFS');
-			await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(200);
-			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
-		});
-
-		it('should respect CustomSounds_FileSystemPath changes when resolving files', async () => {
-			await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
-			await updateSetting('CustomSounds_FileSystemPath', '~/sounds');
-			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
 			await updateSetting('CustomSounds_FileSystemPath', '');
-			await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
 		});
 
 		after(async () => {
+			await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
 			await deleteCustomSound(fsFileId);
-			await deleteCustomSound(gridFsFileId);
-			await updateSetting('CustomSounds_Storage_Type', 'GridFS', false);
 			await updateSetting('CustomSounds_FileSystemPath', '', false);
+			await updateSetting('CustomSounds_Storage_Type', 'GridFS');
+			await deleteCustomSound(gridFsFileId);
+		});
+
+		describe('CustomSounds_Storage_Type', () => {
+			describe('when storage is GridFS', () => {
+				before(async () => {
+					await updateSetting('CustomSounds_Storage_Type', 'GridFS');
+				});
+
+				it('should resolve GridFS files only', async () => {
+					await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(200);
+					await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
+				});
+			});
+
+			describe('when storage is FileSystem', () => {
+				before(async () => {
+					await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
+				});
+
+				it('should resolve FileSystem files only', async () => {
+					await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(404);
+					await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
+				});
+			});
+		});
+
+		describe('CustomSounds_FileSystemPath', () => {
+			before(async () => {
+				await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
+			});
+
+			describe('when file system path is the default one', () => {
+				it('should resolve files', async () => {
+					await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
+				});
+			});
+
+			describe('when file system path is NOT the default one', () => {
+				before(async () => {
+					await updateSetting('CustomSounds_FileSystemPath', '~/sounds');
+				});
+
+				after(async () => {
+					await updateSetting('CustomSounds_FileSystemPath', '');
+				});
+
+				it('should NOT resolve files', async () => {
+					await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
+				});
+			});
 		});
 	});
 });
