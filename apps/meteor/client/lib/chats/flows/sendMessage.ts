@@ -6,6 +6,7 @@ import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
 import { t } from '../../../../app/utils/lib/i18n';
+import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
 import { Messages } from '../../../stores';
 import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
 import { dispatchToastMessage } from '../../toast';
@@ -66,6 +67,7 @@ export const sendMessage = async (
 	chat.readStateManager.clearUnreadMark();
 
 	text = text.trim();
+	text = closeUnclosedCodeBlock(text);
 	const mid = chat.currentEditingMessage.getMID();
 	if (!text && !mid) {
 		// Nothing to do
