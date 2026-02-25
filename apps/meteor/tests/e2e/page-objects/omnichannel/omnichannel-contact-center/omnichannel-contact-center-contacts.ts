@@ -3,7 +3,7 @@ import type { Locator, Page } from '@playwright/test';
 import { OmnichannelContactInfo } from '../omnichannel-info';
 import { OmnichannelContactCenter } from './omnichannel-contact-center';
 import { MenuMoreActions } from '../../fragments';
-import { OmnichannelEditContactFlexTab } from '../../fragments/edit-contact-flaxtab';
+import { OmnichannelEditContactFlexTab } from '../../fragments/flextabs';
 import { OmnichannelDeleteContactModal } from '../../fragments/modals';
 import { Table } from '../../fragments/table';
 

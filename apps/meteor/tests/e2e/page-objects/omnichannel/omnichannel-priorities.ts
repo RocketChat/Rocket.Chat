@@ -2,7 +2,7 @@ import type { Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
 import { ToastMessages } from '../fragments';
-import { FlexTab } from '../fragments/flextab';
+import { FlexTab } from '../fragments/flextabs/flextab';
 import { OmnichannelResetPrioritiesModal } from '../fragments/modals';
 import { Table } from '../fragments/table';
 

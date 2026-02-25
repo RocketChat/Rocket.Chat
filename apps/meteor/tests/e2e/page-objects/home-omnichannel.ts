@@ -1,8 +1,8 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { HomeOmnichannelContent, OmnichannelQuickActionsRoomToolbar, OmnichannelRoomToolbar, OmnichannelSidebar } from './fragments';
-import { OmnichannelEditRoomFlexTab } from './fragments/edit-room-flextab';
-import { OmnichannelRoomInfoFlexTab } from './fragments/room-info-flextab';
+import { OmnichannelEditRoomFlexTab } from './fragments/flextabs';
+import { OmnichannelRoomInfoFlexTab } from './fragments/flextabs/room-info-flextab';
 import { HomeChannel } from './home-channel';
 import {
 	OmnichannelCannedResponses,
@@ -39,7 +39,7 @@ export class HomeOmnichannel extends HomeChannel {
 		this.cannedResponses = new OmnichannelCannedResponses(page);
 		this.contacts = new OmnichannelContactCenterContacts(page);
 		this.chats = new OmnichannelContactCenterChats(page);
-		this.roomInfo = new OmnichannelRoomInfoFlexTab(page);
+		this.roomInfo = new OmnichannelRoomInfoFlexTab(page.getByRole('dialog', { name: 'Room Information' }), page);
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
 		this.content = new HomeOmnichannelContent(page);
 		this.roomToolbar = new OmnichannelRoomToolbar(page);

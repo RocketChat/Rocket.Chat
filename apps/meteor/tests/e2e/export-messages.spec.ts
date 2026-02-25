@@ -2,7 +2,6 @@ import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { ExportMessagesTab } from './page-objects/fragments';
 import { createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
 
@@ -31,61 +30,56 @@ test.describe('export-messages', () => {
 		]);
 	});
 
-	test('should all export methods be available in targetChannel', async ({ page }) => {
-		const exportMessagesTab = new ExportMessagesTab(page);
-
+	test('should all export methods be available in targetChannel', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
-		await exportMessagesTab.exposeMethods();
-		await expect(exportMessagesTab.getMethodOptionByName('Send email')).toBeVisible();
-		await expect(exportMessagesTab.getMethodOptionByName('Send file via email')).toBeVisible();
-		await expect(exportMessagesTab.getMethodOptionByName('Download file')).toBeVisible();
+		await poHomeChannel.tabs.exportMessages.exposeMethods();
+		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send email')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send file via email')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Download file')).toBeVisible();
 	});
 
-	test('should display export output format correctly depending on the selected method', async ({ page }) => {
-		const exportMessagesTab = new ExportMessagesTab(page);
-
+	test('should display export output format correctly depending on the selected method', async () => {
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
 		// TODO: Fix the base component to have a disabled statement and not only a class attribute
 		// Here we are checking for a button because the internal select element is not accessible
 		// and the higher component that is a button doesn't appear as disabled.
-		await expect(exportMessagesTab.outputFormat).toContainClass('disabled');
+		await expect(poHomeChannel.tabs.exportMessages.outputFormat).toContainClass('disabled');
 
-		await exportMessagesTab.setMethod('Send file via email');
+		await poHomeChannel.tabs.exportMessages.setMethod('Send file via email');
 
-		await exportMessagesTab.exposeOutputFormats();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('html')).toBeVisible();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('json')).toBeVisible();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('pdf')).not.toBeVisible();
+		await poHomeChannel.tabs.exportMessages.exposeOutputFormats();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('json')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).not.toBeVisible();
 
-		await exportMessagesTab.setOutputFormat('html');
+		await poHomeChannel.tabs.exportMessages.setOutputFormat('html');
 
-		await exportMessagesTab.setMethod('Download file');
+		await poHomeChannel.tabs.exportMessages.setMethod('Download file');
 
-		await exportMessagesTab.exposeOutputFormats();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('html')).not.toBeVisible();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('json')).toBeVisible();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('pdf')).toBeVisible();
+		await poHomeChannel.tabs.exportMessages.exposeOutputFormats();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html')).not.toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('json')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).toBeVisible();
 	});
 
 	test('should display an error when trying to send email without filling to users or to additional emails', async ({ page }) => {
-		const exportMessagesTab = new ExportMessagesTab(page);
 		const testMessage = uniqueMessage();
 
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(testMessage);
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
 		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
 
 		await poHomeChannel.content.getMessageByText(testMessage).click();
-		await exportMessagesTab.send();
+		await poHomeChannel.tabs.exportMessages.send();
 
 		await expect(
 			page.locator('[role="alert"]', {
@@ -95,14 +89,12 @@ test.describe('export-messages', () => {
 	});
 
 	test('should display an error when trying to send email without selecting any message', async ({ page }) => {
-		const exportMessagesTab = new ExportMessagesTab(page);
-
 		await poHomeChannel.navbar.openChat(targetChannel);
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
-		await exportMessagesTab.setAdditionalEmail('mail@mail.com');
-		await exportMessagesTab.send();
+		await poHomeChannel.tabs.exportMessages.setAdditionalEmail('mail@mail.com');
+		await poHomeChannel.tabs.exportMessages.send();
 
 		await expect(
 			page.locator('[role="alert"]', {
@@ -117,8 +109,8 @@ test.describe('export-messages', () => {
 
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(message1);
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
 		await poHomeChannel.content.getMessageByText(message1).click();
 		await poHomeChannel.btnContextualbarClose.click();
@@ -127,8 +119,7 @@ test.describe('export-messages', () => {
 		await expect(poHomeChannel.content.getMessageByText(message2)).toBeVisible();
 	});
 
-	test('should be able to select a single message to export', async ({ page }) => {
-		const exportMessagesTab = new ExportMessagesTab(page);
+	test('should be able to select a single message to export', async () => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
@@ -136,20 +127,20 @@ test.describe('export-messages', () => {
 		await poHomeChannel.content.sendMessage(message1);
 		await poHomeChannel.content.sendMessage(message2);
 
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
-		await exportMessagesTab.waitForDisplay();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
+		await poHomeChannel.tabs.exportMessages.waitForDisplay();
 
 		await poHomeChannel.content.getMessageByText(message1).click();
 
-		await expect(exportMessagesTab.getMessageCheckbox(message1)).toBeChecked();
-		await expect(exportMessagesTab.getMessageCheckbox(message2)).not.toBeChecked();
-		await expect(exportMessagesTab.clearSelectionButton).toBeEnabled();
+		await expect(poHomeChannel.tabs.exportMessages.getMessageCheckbox(message1)).toBeChecked();
+		await expect(poHomeChannel.tabs.exportMessages.getMessageCheckbox(message2)).not.toBeChecked();
+		await expect(poHomeChannel.tabs.exportMessages.clearSelectionButton).toBeEnabled();
 
-		await expect(exportMessagesTab.sendButton).toBeEnabled();
+		await expect(poHomeChannel.tabs.exportMessages.sendButton).toBeEnabled();
 	});
 
-	test('should be able to select a single message to export with hide contextual bar preference enabled', async ({ page, api }) => {
+	test('should be able to select a single message to export with hide contextual bar preference enabled', async ({ api }) => {
 		await api.post('/users.setPreferences', {
 			userId: 'rocketchat.internal.admin.test',
 			data: { hideFlexTab: true },
@@ -157,21 +148,19 @@ test.describe('export-messages', () => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
-		const exportMessagesTab = new ExportMessagesTab(page);
-
 		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(message1);
 		await poHomeChannel.content.sendMessage(message2);
 
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
-		await exportMessagesTab.waitForDisplay();
+		await poHomeChannel.tabs.exportMessages.waitForDisplay();
 		await poHomeChannel.content.getMessageByText(message1).click();
 
-		await expect(exportMessagesTab.getMessageCheckbox(message1)).toBeChecked();
-		await expect(exportMessagesTab.clearSelectionButton).toBeEnabled();
+		await expect(poHomeChannel.tabs.exportMessages.getMessageCheckbox(message1)).toBeChecked();
+		await expect(poHomeChannel.tabs.exportMessages.clearSelectionButton).toBeEnabled();
 
-		await expect(exportMessagesTab.sendButton).toBeEnabled();
+		await expect(poHomeChannel.tabs.exportMessages.sendButton).toBeEnabled();
 	});
 });

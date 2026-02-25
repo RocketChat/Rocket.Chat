@@ -91,7 +91,7 @@ test.describe('avatar-settings', () => {
 
 			test('expect user card avatar to have provider prefix', async () => {
 				await poHomeChannel.content.lastUserMessage.locator('.rcx-message-header__name-container').click();
-				expect(poHomeChannel.content.userCard.locator('img').getAttribute('src')).toBe(avatarUrl);
+				expect(poHomeChannel.userCard.imgUserCard.getAttribute('src')).toBe(avatarUrl);
 			});
 		});
 	});

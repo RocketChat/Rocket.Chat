@@ -1,8 +1,11 @@
 import type { Locator } from '@playwright/test';
 
-import { expect } from '../../utils/test';
+import { expect } from '../../../utils/test';
 
 export abstract class FlexTab {
+	/**
+	 * @param root should be protected, but for now there are a lot of tests relying on accessing it directly, * so we need to keep it public until we can refactor those tests
+	 */
 	constructor(public root: Locator) {}
 
 	waitForDisplay() {

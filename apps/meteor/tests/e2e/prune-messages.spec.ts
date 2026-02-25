@@ -56,35 +56,34 @@ test.describe('prune-messages', () => {
 			});
 
 			await test.step('prune files only not pinned', async () => {
-				await pruneMessages.doNotPrunePinned.check({ force: true });
-				await pruneMessages.filesOnly.check({ force: true });
+				await pruneMessages.labelDoNotPrunePinned.click();
+				await pruneMessages.labelFilesOnly.click();
 				await pruneMessages.prune();
 				await toastMessage.waitForDisplay({ type: 'success', message: '1 file pruned' });
 				await toastMessage.dismissToast();
-				await expect(pruneMessages.filesOnly, 'Checkbox is reset after success').not.toBeChecked();
-				await expect(pruneMessages.doNotPrunePinned, 'Checkbox is reset after success').not.toBeChecked();
+				await expect(pruneMessages.labelFilesOnly, 'Checkbox is reset after success').not.toBeChecked();
+				await expect(pruneMessages.labelDoNotPrunePinned, 'Checkbox is reset after success').not.toBeChecked();
 			});
 
 			await test.step('prune files only again', async () => {
-				await pruneMessages.doNotPrunePinned.check({ force: true });
-				await pruneMessages.filesOnly.check({ force: true });
+				await pruneMessages.labelDoNotPrunePinned.click();
+				await pruneMessages.labelFilesOnly.click();
 				await pruneMessages.prune();
 				await toastMessage.waitForDisplay({ type: 'error', message: 'No files found to prune' });
 				await toastMessage.dismissToast('error');
-				await expect(pruneMessages.filesOnly, 'Checkbox retains value after error').toBeChecked();
-				await expect(pruneMessages.doNotPrunePinned, 'Checkbox retains value after error').toBeChecked();
+				await expect(pruneMessages.labelFilesOnly, 'Checkbox retains value after error').toBeChecked();
+				await expect(pruneMessages.labelDoNotPrunePinned, 'Checkbox retains value after error').toBeChecked();
 			});
 
 			await test.step('uncheck files only', async () => {
-				await pruneMessages.filesOnly.uncheck({ force: true });
+				await pruneMessages.labelFilesOnly.click();
 				await pruneMessages.prune();
 				await toastMessage.waitForDisplay({ type: 'success', message: '2 messages pruned' });
 				await toastMessage.dismissToast();
-				await expect(pruneMessages.filesOnly, 'Checkbox is reset after success').not.toBeChecked();
+				await expect(pruneMessages.labelFilesOnly, 'Checkbox is reset after success').not.toBeChecked();
 			});
 
-			await test.step('uncheck do not prune pinned', async () => {
-				await pruneMessages.doNotPrunePinned.uncheck({ force: true });
+			await test.step('prune remained pinned message', async () => {
 				await pruneMessages.prune();
 				await toastMessage.waitForDisplay({ type: 'success', message: '1 message pruned' });
 				await toastMessage.dismissToast();
@@ -115,12 +114,12 @@ test.describe('prune-messages', () => {
 			await expect(content.lastMessageFileName).toHaveText('any_file.txt');
 
 			await test.step('prune files only', async () => {
-				await pruneMessages.filesOnly.check({ force: true });
+				await pruneMessages.labelFilesOnly.click();
 				await pruneMessages.prune();
 				await toastMessage.waitForDisplay({ type: 'success', message: '1 file pruned' });
 				await toastMessage.dismissToast();
-				await expect(pruneMessages.filesOnly, 'Checkbox is reset after success').not.toBeChecked();
-				await expect(pruneMessages.doNotPrunePinned, 'Checkbox is reset after success').not.toBeChecked();
+				await expect(pruneMessages.labelFilesOnly, 'Checkbox is reset after success').not.toBeChecked();
+				await expect(pruneMessages.labelDoNotPrunePinned, 'Checkbox is reset after success').not.toBeChecked();
 			});
 
 			await test.step('check message list for prune message-attachment', async () => {
