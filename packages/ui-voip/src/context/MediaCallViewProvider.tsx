@@ -12,7 +12,7 @@ import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
-import MediaCallWidgetContext from './MediaCallWidgetContext';
+import MediaCallViewContext from './MediaCallViewContext';
 import type { PeerInfo } from './definitions';
 import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
@@ -24,11 +24,11 @@ import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallR
 import { MediaCallWidget } from '../views';
 import TransferModal from '../views/TransferModal';
 
-type MediaCallWidgetProviderProps = {
+type MediaCallViewProviderProps = {
 	children?: ReactNode;
 };
 
-const MediaCallWidgetProvider = ({ children }: MediaCallWidgetProviderProps) => {
+const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -224,13 +224,13 @@ const MediaCallWidgetProvider = ({ children }: MediaCallWidgetProviderProps) => 
 	};
 
 	return (
-		<MediaCallWidgetContext.Provider value={contextValue}>
+		<MediaCallViewContext.Provider value={contextValue}>
 			<AnchorPortal id='rcx-media-call-widget-portal'>
 				<MediaCallWidget />
 			</AnchorPortal>
 			{children}
-		</MediaCallWidgetContext.Provider>
+		</MediaCallViewContext.Provider>
 	);
 };
 
-export default MediaCallWidgetProvider;
+export default MediaCallViewProvider;

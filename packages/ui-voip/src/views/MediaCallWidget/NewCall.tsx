@@ -13,13 +13,13 @@ import {
 	ActionButton,
 } from '../../components';
 import { usePeerAutocomplete } from '../../context';
-import { useMediaCallWidgetContext } from '../../context/MediaCallWidgetContext';
+import { useMediaCallViewContext } from '../../context/MediaCallViewContext';
 import { useWidgetExternalControls } from '../../context/useWidgetExternalControls';
 
 const NewCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onCall, onSelectPeer } = useMediaCallWidgetContext();
+	const { sessionState, onCall, onSelectPeer } = useMediaCallViewContext();
 	const { peerInfo } = sessionState;
 	const { toggleWidget } = useWidgetExternalControls();
 

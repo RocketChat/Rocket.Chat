@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import MediaCallInstanceProvider from './MediaCallInstanceProvider';
-import MediaCallWidgetProvider from './MediaCallWidgetProvider';
+import MediaCallViewProvider from './MediaCallViewProvider';
 
 type MediaCallProviderProps = {
 	children: ReactNode;
@@ -10,7 +10,7 @@ type MediaCallProviderProps = {
 const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 	return (
 		<MediaCallInstanceProvider>
-			<MediaCallWidgetProvider />
+			<MediaCallViewProvider />
 			{children}
 		</MediaCallInstanceProvider>
 	);

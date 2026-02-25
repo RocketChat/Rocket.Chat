@@ -2,12 +2,12 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { DevicePicker, PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent } from '../../components';
-import { useMediaCallWidgetContext } from '../../context/MediaCallWidgetContext';
+import { useMediaCallViewContext } from '../../context/MediaCallViewContext';
 
 const IncomingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onEndCall, onAccept } = useMediaCallWidgetContext();
+	const { sessionState, onEndCall, onAccept } = useMediaCallViewContext();
 	const { peerInfo } = sessionState;
 
 	// TODO: Figure out how to ensure this always exist before rendering the component

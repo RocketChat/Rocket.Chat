@@ -2,12 +2,12 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { DevicePicker, PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, WidgetInfo } from '../../components';
-import { useMediaCallWidgetContext } from '../../context/MediaCallWidgetContext';
+import { useMediaCallViewContext } from '../../context/MediaCallViewContext';
 
 const IncomingCallTransfer = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onEndCall, onAccept } = useMediaCallWidgetContext();
+	const { sessionState, onEndCall, onAccept } = useMediaCallViewContext();
 	const { peerInfo, transferredBy } = sessionState;
 
 	if (!peerInfo) {

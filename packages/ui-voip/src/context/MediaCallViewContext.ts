@@ -3,7 +3,7 @@ import { createContext, useContext } from 'react';
 
 import type { SessionState, PeerInfo } from './definitions';
 
-type MediaCallContextType = {
+type MediaCallViewContextValue = {
 	sessionState: SessionState;
 	onClickDirectMessage?: () => void;
 	onMute: () => void;
@@ -30,7 +30,7 @@ const defaultSessionState: SessionState = {
 	callId: undefined,
 };
 
-export const defaultMediaCallContextValue: MediaCallContextType = {
+export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	sessionState: defaultSessionState,
 	onMute: () => undefined,
 	onHold: () => undefined,
@@ -43,10 +43,8 @@ export const defaultMediaCallContextValue: MediaCallContextType = {
 	onSelectPeer: () => undefined,
 };
 
-type MediaCallWidgetContextValue = MediaCallContextType;
+const MediaCallViewContext = createContext<MediaCallViewContextValue>(defaultMediaCallContextValue);
 
-const MediaCallContext = createContext<MediaCallWidgetContextValue>(defaultMediaCallContextValue);
+export const useMediaCallViewContext = (): MediaCallViewContextValue => useContext(MediaCallViewContext);
 
-export const useMediaCallWidgetContext = (): MediaCallContextType => useContext(MediaCallContext);
-
-export default MediaCallContext;
+export default MediaCallViewContext;
