@@ -47,24 +47,17 @@ test.describe('Delete Own Account', () => {
 			await page.goto('/account/profile');
 			await poAccountProfile.profileTitle.waitFor({ state: 'visible' });
 			await poAccountProfile.btnDeleteMyAccount.click();
-			await expect(poAccountProfile.deleteAccountDialog).toBeVisible();
-		});
-
-		await test.step('verify delete confirmation dialog appears', async () => {
-			await expect(poAccountProfile.deleteAccountDialogMessageWithPassword).toBeVisible();
-			await expect(poAccountProfile.inputDeleteAccountPassword).toBeVisible();
-			await expect(poAccountProfile.btnDeleteAccountConfirm).toBeVisible();
-			await expect(poAccountProfile.btnDeleteAccountCancel).toBeVisible();
+			await poAccountProfile.deleteAccountModal.waitForDisplay();
 		});
 
 		await test.step('enter invalid password in the confirmation field and click delete account', async () => {
-			await poAccountProfile.inputDeleteAccountPassword.fill('invalid-password');
-			await expect(poAccountProfile.inputDeleteAccountPassword).toHaveValue('invalid-password');
-			await poAccountProfile.btnDeleteAccountConfirm.click();
+			await poAccountProfile.deleteAccountModal.inputPassword.fill('invalid-password');
+			await expect(poAccountProfile.deleteAccountModal.inputPassword).toHaveValue('invalid-password');
+			await poAccountProfile.deleteAccountModal.confirmDelete({ waitForDismissal: false });
 		});
 
 		await test.step('verify error message appears', async () => {
-			await poAccountProfile.toastMessage.waitForDisplay({ type: 'error', message: 'Invalid password [error-invalid-password]' });
+			await expect(poAccountProfile.deleteAccountModal.inputErrorMessage).toBeVisible();
 		});
 
 		await test.step('verify user is still on the profile page', async () => {
@@ -84,20 +77,13 @@ test.describe('Delete Own Account', () => {
 			await page.goto('/account/profile');
 			await poAccountProfile.profileTitle.waitFor({ state: 'visible' });
 			await poAccountProfile.btnDeleteMyAccount.click();
-			await expect(poAccountProfile.deleteAccountDialog).toBeVisible();
-		});
-
-		await test.step('verify delete confirmation dialog appears', async () => {
-			await expect(poAccountProfile.deleteAccountDialogMessageWithPassword).toBeVisible();
-			await expect(poAccountProfile.inputDeleteAccountPassword).toBeVisible();
-			await expect(poAccountProfile.btnDeleteAccountConfirm).toBeVisible();
-			await expect(poAccountProfile.btnDeleteAccountCancel).toBeVisible();
+			await poAccountProfile.deleteAccountModal.waitForDisplay();
 		});
 
 		await test.step('enter password in the confirmation field and click delete account', async () => {
-			await poAccountProfile.inputDeleteAccountPassword.fill(DEFAULT_USER_CREDENTIALS.password);
-			await expect(poAccountProfile.inputDeleteAccountPassword).toHaveValue(DEFAULT_USER_CREDENTIALS.password);
-			await poAccountProfile.btnDeleteAccountConfirm.click();
+			await poAccountProfile.deleteAccountModal.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
+			await expect(poAccountProfile.deleteAccountModal.inputPassword).toHaveValue(DEFAULT_USER_CREDENTIALS.password);
+			await poAccountProfile.deleteAccountModal.confirmDelete();
 		});
 
 		await test.step('verify user is redirected to login page', async () => {
