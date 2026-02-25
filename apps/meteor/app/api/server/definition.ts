@@ -315,7 +315,6 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	request: Request;
 	requestIp?: string;
 	route: string;
-	request: Request;
 	response: Response;
 } & (TOptions['authRequired'] extends true
 	? {
