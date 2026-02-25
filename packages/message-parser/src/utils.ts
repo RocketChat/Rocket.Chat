@@ -132,7 +132,7 @@ export const unorderedList = generate('UNORDERED_LIST');
 export const listItem = (text: Inlines[], number?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
-	...(number && { number }),
+	...(number !== undefined && { number }),
 });
 
 export const mentionUser = (() => {
@@ -275,5 +275,5 @@ export const extractFirstResult = (value: Types[keyof Types]['value']): Types[ke
 		return value;
 	}
 
-	return value.filter((item) => item).shift() as Types[keyof Types]['value'];
+	return value.find(Boolean) as Types[keyof Types]['value'];
 };
