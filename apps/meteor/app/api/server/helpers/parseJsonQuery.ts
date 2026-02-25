@@ -24,9 +24,13 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 	 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
 	 */
 	query: Record<string, unknown>;
-}> {
+}> 
+	{
 	const { userId = '', response, route, logger } = api;
-
+	const isUsersRoute = route.includes('/v1/users.');
+	const canViewFullOtherUserInfo =
+		isUsersRoute &&
+		(await hasPermissionAsync(userId, 'view-full-other-user-info'));
 	const params = isPlainObject(api.queryParams) ? api.queryParams : {};
 	const queryFields = Array.isArray(api.queryFields) ? (api.queryFields as string[]) : [];
 	const queryOperations = Array.isArray(api.queryOperations) ? (api.queryOperations as string[]) : [];
@@ -85,10 +89,10 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 	// Verify the user's selected fields only contains ones which their role allows
 	if (typeof fields === 'object') {
 		let nonSelectableFields = Object.keys(API.v1.defaultFieldsToExclude);
-		if (route.includes('/v1/users.')) {
+		if (isUsersRoute) {
 			nonSelectableFields = nonSelectableFields.concat(
 				Object.keys(
-					(await hasPermissionAsync(userId, 'view-full-other-user-info'))
+					(canViewFullOtherUserInfo)
 						? API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser
 						: API.v1.limitedUserFieldsToExclude,
 				),
@@ -104,8 +108,8 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 
 	// Limit the fields by default
 	fields = Object.assign({}, fields, API.v1.defaultFieldsToExclude);
-	if (route.includes('/v1/users.')) {
-		if (await hasPermissionAsync(userId, 'view-full-other-user-info')) {
+	if (isUsersRoute) {
+		if (canViewFullOtherUserInfo) {
 			fields = Object.assign(fields, API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser);
 		} else {
 			fields = Object.assign(fields, API.v1.limitedUserFieldsToExclude);
@@ -134,8 +138,8 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 	if (typeof query === 'object') {
 		let nonQueryableFields = Object.keys(API.v1.defaultFieldsToExclude);
 
-		if (route.includes('/v1/users.')) {
-			if (await hasPermissionAsync(userId, 'view-full-other-user-info')) {
+		if (isUsersRoute) {
+			if (canViewFullOtherUserInfo) {
 				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser));
 			} else {
 				nonQueryableFields = nonQueryableFields.concat(Object.keys(API.v1.limitedUserFieldsToExclude));
