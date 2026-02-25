@@ -2594,6 +2594,7 @@
   "registration.component.form.emailAlreadyExists": "Електроната поща вече съсществува",
   "registration.component.form.invalidConfirmPass": "Потвърждението на паролата не съвпада с паролата",
   "registration.component.form.invalidEmail": "Въведеният имейл адрес е невалиден",
+  "registration.component.form.invalidEmailDomain":"Въведеният имейл адрес има невалиден домейн",
   "registration.component.form.name": "Име",
   "registration.component.form.password": "Парола",
   "registration.component.form.reasonToJoin": "Причина за присъединяване",
