@@ -522,6 +522,9 @@ export default [
 		ignores: ['packages/node-poplib/**', 'packages/storybook-config/*.@(d.ts|js)', 'scripts/**', '.github/**', '.houston/**'],
 	},
 	{
+		ignores: ['scripts/**'],
+	},
+	{
 		files: [
 			'apps/meteor/client/**/*.@(ts|tsx)',
 			'apps/meteor/app/**/*.ts',
