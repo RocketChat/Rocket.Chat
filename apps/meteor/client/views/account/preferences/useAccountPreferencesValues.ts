@@ -26,6 +26,7 @@ export type AccountPreferencesData = {
 	newRoomNotification?: string;
 	newMessageNotification?: string;
 	muteFocusedConversations?: boolean;
+	askConfirmMentionAll?: boolean;
 
 	enableNewMessageTemplate?: boolean;
 	displayAvatars?: boolean;
@@ -73,6 +74,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 	const newRoomNotification = useUserPreference<string>('newRoomNotification');
 	const newMessageNotification = useUserPreference<string>('newMessageNotification');
 	const muteFocusedConversations = useUserPreference<boolean>('muteFocusedConversations');
+	const askConfirmMentionAll = useUserPreference<boolean>('askConfirmMentionAll', true);
 
 	const masterVolume = useUserPreference<number>('masterVolume', 100);
 	const notificationsSoundVolume = useUserPreference<number>('notificationsSoundVolume', 100);
@@ -107,6 +109,7 @@ export const useAccountPreferencesValues = (): AccountPreferencesData => {
 		newRoomNotification,
 		newMessageNotification,
 		muteFocusedConversations,
+		askConfirmMentionAll,
 		masterVolume,
 		notificationsSoundVolume,
 		voipRingerVolume,
