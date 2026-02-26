@@ -331,12 +331,12 @@ export default [
 			'import/export': 'off',
 			'jsx-quotes': 'off',
 			'import/newline-after-import': 'off',
-			'react/jsx-curly-brace-presence': 'off',
+			'react/jsx-curly-brace-presence': 'warn',
 			'prefer-destructuring': 'off',
 			'object-shorthand': 'off',
 			'import/no-duplicates': 'off',
 			'@typescript-eslint/naming-convention': 'off',
-			'react/jsx-key': 'off',
+			'react/jsx-key': 'warn',
 			'jsx-a11y/click-events-have-key-events': 'off',
 			'jsx-a11y/no-static-element-interactions': 'off',
 			'no-nested-ternary': 'off',
@@ -578,10 +578,12 @@ export default [
 			'react/no-deprecated': 'error',
 			'react/no-did-mount-set-state': 'error',
 			'react/no-did-update-set-state': 'error',
+			'react/no-direct-mutation-state': 'warn',
 			'react/no-find-dom-node': 'error',
 			'react/no-is-mounted': 'error',
 			'react/no-multi-comp': 'off',
 			'react/no-string-refs': 'error',
+			'react/no-unknown-property': ['error', { ignore: ['class'] }],
 			'react/prefer-es6-class': 'error',
 			'react/prefer-stateless-function': 'warn',
 			'react/require-render-return': 'error',
@@ -758,6 +760,13 @@ export default [
 		files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)'],
 		rules: {
 			'storybook/no-renderer-packages': 'off',
+		},
+	},
+	// FIXME
+	{
+		files: ['apps/meteor/client/views/root/MainLayout/LayoutWithSidebar.spec.tsx'],
+		rules: {
+			'@typescript-eslint/consistent-type-imports': 'off',
 		},
 	},
 ];

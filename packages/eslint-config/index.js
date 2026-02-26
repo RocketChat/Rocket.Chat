@@ -29,37 +29,56 @@ export default [
 			'jsx-a11y/no-autofocus': ['error', { ignoreNonDOM: true }],
 		},
 	},
+	reactPlugin.configs.flat.recommended,
+	reactPlugin.configs.flat['jsx-runtime'],
 	{
-		plugins: {
-			react: reactPlugin,
-		},
 		settings: {
 			react: {
 				version: 'detect',
 			},
 		},
 		rules: {
-			'react/display-name': 'error',
 			'react/jsx-curly-brace-presence': 'error',
 			'react/jsx-fragments': ['error', 'syntax'],
 			'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
-			'react/jsx-no-undef': 'error',
-			'react/jsx-uses-react': 'error',
-			'react/jsx-uses-vars': 'error',
-			'react/no-children-prop': 'error',
+			'react/jsx-no-target-blank': 'warn',
 			'react/no-multi-comp': 'error',
+			'react/no-unescaped-entities': 'warn',
+			'react/prop-types': 'warn',
 		},
 	},
+	reactHooksPlugin.configs.flat.recommended,
 	{
-		plugins: {
-			'react-hooks': reactHooksPlugin,
-		},
 		rules: {
+			// Core hooks rules
 			'react-hooks/exhaustive-deps': 'error',
-			'react-hooks/rules-of-hooks': 'error',
+
+			// React Compiler rules (currently not in use)
+			'react-hooks/component-hook-factories': 'off',
+			'react-hooks/config': 'off',
+			'react-hooks/error-boundaries': 'off',
+			'react-hooks/gating': 'off',
+			'react-hooks/globals': 'off',
+			'react-hooks/immutability': 'off',
+			'react-hooks/incompatible-library': 'off',
+			'react-hooks/preserve-manual-memoization': 'off',
+			'react-hooks/purity': 'off',
+			'react-hooks/refs': 'off',
+			'react-hooks/set-state-in-effect': 'off',
+			'react-hooks/set-state-in-render': 'off',
+			'react-hooks/static-components': 'off',
+			'react-hooks/unsupported-syntax': 'off',
+			'react-hooks/use-memo': 'off',
 		},
 	},
 	...storybookPlugin.configs['flat/recommended'],
+	{
+		files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)'],
+		rules: {
+			'react/display-name': 'off',
+			'react/no-multi-comp': 'off',
+		},
+	},
 	{
 		plugins: {
 			'anti-trojan-source': antiTrojanSourcePlugin,
@@ -74,11 +93,6 @@ export default [
 		languageOptions: {
 			ecmaVersion: 2024,
 			sourceType: 'module',
-			parserOptions: {
-				ecmaFeatures: {
-					jsx: true,
-				},
-			},
 		},
 	},
 	// typescript files
@@ -331,13 +345,6 @@ export default [
 		},
 	},
 	{
-		files: ['**/*.stories.js', '**/*.stories.jsx', '**/*.stories.ts', '**/*.stories.tsx', '**/*.spec.tsx'],
-		rules: {
-			'react/display-name': 'off',
-			'react/no-multi-comp': 'off',
-		},
-	},
-	{
 		files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
 		rules: {
 			'@typescript-eslint/no-empty-object-type': 'warn',
@@ -467,6 +474,13 @@ export default [
 		files: ['**/*.d.ts'],
 		rules: {
 			'@typescript-eslint/naming-convention': 'off',
+		},
+	},
+	{
+		files: ['**/*.spec.@(ts|tsx|js|jsx|mjs|cjs)'],
+		rules: {
+			'react/display-name': 'off',
+			'react/no-multi-comp': 'off',
 		},
 	},
 ];
