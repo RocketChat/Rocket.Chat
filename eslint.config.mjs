@@ -1,10 +1,12 @@
+import { fileURLToPath } from 'node:url';
+
 import rocketChatConfig from '@rocket.chat/eslint-config';
 import reactRefreshPlugin from 'eslint-plugin-react-refresh';
 import youDontNeedLodashUnderscorePlugin from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
 
 function getAbsolutePath(path) {
-	return new URL(path, import.meta.url).pathname;
+	return fileURLToPath(new URL(path, import.meta.url));
 }
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
