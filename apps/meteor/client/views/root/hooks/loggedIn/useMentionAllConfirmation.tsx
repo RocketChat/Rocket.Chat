@@ -28,7 +28,7 @@ export const useMentionAllConfirmation = () => {
 				}
 
 				// Check for @all or @here mention
-				const hasMentionAll = /(?:^|\s)@(all|here)(?:\s|$)/i.test(message.msg);
+				const hasMentionAll = /(?:^|\s|>)@(all|here)/i.test(message.msg);
 				if (!hasMentionAll) {
 					return message;
 				}
@@ -67,6 +67,8 @@ export const useMentionAllConfirmation = () => {
 					) as ReactElement;
 
 					setModal(modal);
+				});
+			},
 		);
 
 		return () => {
