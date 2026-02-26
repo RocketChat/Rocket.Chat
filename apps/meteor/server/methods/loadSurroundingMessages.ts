@@ -29,6 +29,7 @@ Meteor.methods<ServerMethods>({
 	async loadSurroundingMessages(message, limit = 50, showThreadMessages = true) {
 		check(message, Object);
 		check(limit, Number);
+		check(showThreadMessages, Boolean);
 
 		if (!Meteor.userId()) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
