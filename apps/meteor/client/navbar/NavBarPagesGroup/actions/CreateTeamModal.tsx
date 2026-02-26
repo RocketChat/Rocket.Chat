@@ -149,7 +149,7 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
-		} 
+		}
 	};
 
 	const createTeamFormId = useId();
