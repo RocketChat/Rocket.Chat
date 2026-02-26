@@ -35,8 +35,16 @@ export class HomeFlextabRoom {
 		return this.page.getByRole('dialog', { name: 'Delete team', exact: true });
 	}
 
+	get confirmDeleteDiscussionModal(): Locator {
+		return this.page.getByRole('dialog', { name: 'Delete discussion', exact: true });
+	}
+
 	async confirmDeleteTeam() {
 		return this.confirmDeleteTeamModal.getByRole('button', { name: 'Yes, delete', exact: true }).click();
+	}
+
+	async confirmDeleteDiscussion() {
+		return this.confirmDeleteDiscussionModal.getByRole('button', { name: 'Yes, delete', exact: true }).click();
 	}
 
 	get confirmConvertModal(): Locator {
@@ -69,10 +77,6 @@ export class HomeFlextabRoom {
 
 	get checkboxReadOnly(): Locator {
 		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Read-only' }) });
-	}
-
-	get checkboxEncrypted(): Locator {
-		return this.page.locator('label', { has: this.page.getByRole('checkbox', { name: 'Encrypted' }) });
 	}
 
 	get btnSave(): Locator {

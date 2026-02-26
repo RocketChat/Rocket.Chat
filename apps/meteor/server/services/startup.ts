@@ -13,13 +13,13 @@ import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
 import { ImportService } from './import/service';
 import { LDAPService } from './ldap/service';
+import { MediaCallService } from './media-call/service';
 import { MessageService } from './messages/service';
 import { MeteorService } from './meteor/service';
 import { NPSService } from './nps/service';
 import { OmnichannelService } from './omnichannel/service';
 import { OmnichannelAnalyticsService } from './omnichannel-analytics/service';
 import { OmnichannelIntegrationService } from './omnichannel-integrations/service';
-import { OmnichannelVoipService } from './omnichannel-voip/service';
 import { PushService } from './push/service';
 import { RoomService } from './room/service';
 import { SAUMonitorService } from './sauMonitor/service';
@@ -29,7 +29,6 @@ import { UiKitCoreAppService } from './uikit-core-app/service';
 import { UploadService } from './upload/service';
 import { UserService } from './user/service';
 import { VideoConfService } from './video-conference/service';
-import { VoipAsteriskService } from './voip-asterisk/service';
 import { i18n } from '../lib/i18n';
 
 export const registerServices = async (): Promise<void> => {
@@ -46,9 +45,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new NPSService());
 	api.registerService(new RoomService());
 	api.registerService(new SAUMonitorService());
-	api.registerService(new VoipAsteriskService(db));
 	api.registerService(new OmnichannelService());
-	api.registerService(new OmnichannelVoipService());
 	api.registerService(new TeamService());
 	api.registerService(new UiKitCoreAppService());
 	api.registerService(new PushService());
@@ -61,6 +58,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new ImportService());
 	api.registerService(new OmnichannelAnalyticsService());
 	api.registerService(new UserService());
+	api.registerService(new MediaCallService());
 
 	// if the process is running in micro services mode we don't need to register services that will run separately
 	if (!isRunningMs()) {

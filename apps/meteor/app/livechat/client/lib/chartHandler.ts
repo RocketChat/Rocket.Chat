@@ -209,3 +209,12 @@ export const updateChart = async <TChartType extends chartjs.ChartType>(
 
 	chart.update();
 };
+
+export const resetChart = <TChartType extends chartjs.ChartType>(chart: chartjs.Chart<TChartType>): void => {
+	chart.data.labels = [];
+	chart.data.datasets.forEach((dataset) => {
+		dataset.data = [];
+	});
+
+	chart.update();
+};

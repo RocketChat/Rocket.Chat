@@ -101,12 +101,7 @@ export const Screen = ({ title, color, agent, children, className, unread, trigg
 		>
 			<CssVar theme={{ ...theme, color: color || theme.color }} />
 			{triggered && (
-				<Button
-					onClick={onMinimize}
-					data-qa-id='chat-close-button'
-					className={createClassName(styles, 'screen__chat-close-button')}
-					icon={<CloseIcon />}
-				>
+				<Button onClick={onMinimize} className={createClassName(styles, 'screen__chat-close-button')} icon={<CloseIcon />}>
 					Close
 				</Button>
 			)}

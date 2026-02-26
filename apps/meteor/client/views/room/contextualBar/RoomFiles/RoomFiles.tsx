@@ -1,6 +1,16 @@
 import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
+import {
+	VirtualizedScrollbars,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarContent,
+	ContextualbarEmptyContent,
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
 import type { ChangeEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,23 +19,13 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
-import {
-	ContextualbarHeader,
-	ContextualbarIcon,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarContent,
-	ContextualbarEmptyContent,
-	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
 
 type RoomFilesProps = {
 	loading: boolean;
 	type: string;
 	text: string;
 	filesItems: IUploadWithUser[];
-	loadMoreItems: (start: number, end: number) => void;
+	loadMoreItems: () => void;
 	setType: (value: any) => void;
 	setText: (e: ChangeEvent<HTMLInputElement>) => void;
 	total: number;
@@ -94,7 +94,7 @@ const RoomFiles = ({
 									width: '100%',
 								}}
 								totalCount={total}
-								endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
+								endReached={loadMoreItems}
 								overscan={100}
 								data={filesItems}
 								itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}

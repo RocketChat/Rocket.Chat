@@ -5,7 +5,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import { AppInfoField } from './AppInfoField';
 
 export default {
-	title: 'views/Audit/AppInfoField',
 	component: AppInfoField,
 	args: {
 		appId: 'app-id',

@@ -3,7 +3,10 @@ import { ajv } from '@rocket.chat/rest-typings';
 import type { AppsRestApi } from '../rest';
 
 // This might be a good candidate for a default validator function exported by @rocket.chat/rest-typings
-const errorResponse = ajv.compile<unknown>({
+const errorResponse = ajv.compile<{
+	success: false;
+	error: string;
+}>({
 	additionalProperties: false,
 	type: 'object',
 	properties: {

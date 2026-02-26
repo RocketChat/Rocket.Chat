@@ -34,7 +34,7 @@ export const useResetE2EEKeyAction = (userId: IUser['_id']): AdminUserAction | u
 	return canResetE2EEKey
 		? {
 				icon: 'key',
-				content: t('Reset_E2E_Key'),
+				content: t('Reset_E2EE_password'),
 				onClick: confirmResetE2EEKey,
 			}
 		: undefined;

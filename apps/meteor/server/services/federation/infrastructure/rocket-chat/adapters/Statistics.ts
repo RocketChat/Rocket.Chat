@@ -1,5 +1,5 @@
 import type { IMatrixFederationStatistics } from '@rocket.chat/core-typings';
-import { MatrixBridgedRoom, Rooms, Users } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { settings } from '../../../../../../app/settings/server';
 
@@ -45,9 +45,7 @@ class RocketChatStatisticsAdapter {
 	}
 
 	async getAmountOfConnectedExternalServers(): Promise<{ quantity: number; servers: string[] }> {
-		const externalServers = await MatrixBridgedRoom.getExternalServerConnectedExcluding(
-			settings.get('Federation_Matrix_homeserver_domain'),
-		);
+		const externalServers = await Rooms.countDistinctFederationRoomsExcluding(settings.get('Federation_Matrix_homeserver_domain'));
 
 		return {
 			quantity: externalServers.length,

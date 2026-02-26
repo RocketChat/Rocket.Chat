@@ -62,7 +62,7 @@ export const decorators: Decorator[] = [
 			</>
 		);
 	},
-	(fn) => <QueryClientProvider client={queryClient} children={fn()} />,
+	(fn) => <QueryClientProvider client={queryClient}>{fn()}</QueryClientProvider>,
 ];
 
 export const tags = ['autodocs'];

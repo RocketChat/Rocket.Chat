@@ -497,6 +497,7 @@ describe('LIVECHAT - Agents', () => {
 		});
 		after(async () => {
 			await closeOmnichannelRoom(room._id);
+			await deleteVisitor(visitor.token);
 		});
 		it('should fail when token in url params is not valid', async () => {
 			await request.get(api(`livechat/agent.info/soemthing/invalid-token`)).expect(400);
@@ -504,6 +505,7 @@ describe('LIVECHAT - Agents', () => {
 		it('should fail when token is valid but rid isnt', async () => {
 			const visitor = await createVisitor();
 			await request.get(api(`livechat/agent.info/invalid-rid/${visitor.token}`)).expect(400);
+			await deleteVisitor(visitor.token);
 		});
 		/* it('should fail when room is not being served by any agent', async () => {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
@@ -530,8 +532,8 @@ describe('LIVECHAT - Agents', () => {
 			room = await createLivechatRoom(visitor.token);
 		});
 		after(async () => {
-			await deleteVisitor(visitor.token);
 			await closeOmnichannelRoom(room._id);
+			await deleteVisitor(visitor.token);
 		});
 		it('should fail when token in url params is not valid', async () => {
 			await request.get(api(`livechat/agent.next/invalid-token`)).expect(400);
@@ -539,21 +541,24 @@ describe('LIVECHAT - Agents', () => {
 		it('should return success when visitor with token has an open room', async () => {
 			await request.get(api(`livechat/agent.next/${visitor.token}`)).expect(200);
 		});
-		describe('with manual selection', () => {
-			before(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
-			});
-			after(async () => {
-				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
-			});
-			it('should fail if theres no open room for visitor and algo is manual selection', async () => {
-				const visitor = await createVisitor();
-
-				await request.get(api(`livechat/agent.next/${visitor.token}`)).expect(400);
-			});
-		});
 
 		// TODO: test cases when algo is Auto_Selection
+	});
+
+	describe('livechat/agent.next/:token - with manual selection', () => {
+		before(async () => {
+			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		});
+		after(async () => {
+			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
+		});
+		it('should fail if theres no open room for visitor and algo is manual selection', async () => {
+			const visitor = await createVisitor();
+
+			await request.get(api(`livechat/agent.next/${visitor.token}`)).expect(400);
+
+			await deleteVisitor(visitor.token);
+		});
 	});
 
 	describe('livechat/agent.status', () => {
@@ -570,8 +575,12 @@ describe('LIVECHAT - Agents', () => {
 		});
 		describe('with no manage-agent permission', () => {
 			before(async () => {
+				await request
+					.post(api('livechat/agent.status'))
+					.set(credentials)
+					.send({ status: 'not-available', agentId: agent2.user._id })
+					.expect(200);
 				await removePermissionFromAllRoles('manage-livechat-agents');
-				console.log('Permissions removed');
 			});
 			after(async () => {
 				await restorePermissionToRoles('manage-livechat-agents');
@@ -624,69 +633,80 @@ describe('LIVECHAT - Agents', () => {
 					expect(res.body).to.have.property('error', 'Agent not found');
 				});
 		});
-		it('should change logged in users status', async () => {
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
-			const currentStatus = currentUser.statusLivechat;
-			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
 
-			await request
-				.post(api('livechat/agent.status'))
-				.set(agent2.credentials)
-				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('status', newStatus);
-				});
-		});
-		it('should allow managers to change other agents status', async () => {
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
-			const currentStatus = currentUser.statusLivechat;
-			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
+		describe('cases for valid agents', () => {
+			let currentUser: ILivechatAgent;
+			before(async () => {
+				currentUser = await getMe(agent2.credentials);
+			});
 
-			await request
-				.post(api('livechat/agent.status'))
-				.set(credentials)
-				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('status', newStatus);
-				});
-		});
-		it('should throw an error if agent tries to make themselves available outside of Business hour', async () => {
-			await makeDefaultBusinessHourActiveAndClosed();
+			afterEach(async () => {
+				await request
+					.post(api('livechat/agent.status'))
+					.set(agent2.credentials)
+					.send({ status: 'not-available', agentId: currentUser._id })
+					.expect(200);
+			});
 
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
-			const currentStatus = currentUser.statusLivechat;
-			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
+			it('should be able to set a logged in users status to available', async () => {
+				await request
+					.post(api('livechat/agent.status'))
+					.set(agent2.credentials)
+					.send({ status: 'available', agentId: currentUser._id })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('status', 'available');
+					});
+			});
+			it('should allow managers to set other agents status to available', async () => {
+				await request
+					.post(api('livechat/agent.status'))
+					.set(credentials)
+					.send({ status: 'available', agentId: currentUser._id })
+					.expect(200)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('status', 'available');
+					});
+			});
+			describe('outside of business hours', () => {
+				before(async () => {
+					await makeDefaultBusinessHourActiveAndClosed();
 
-			await request
-				.post(api('livechat/agent.status'))
-				.set(agent2.credentials)
-				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(400)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
-				});
-		});
-		it('should not allow managers to make other agents available outside business hour', async () => {
-			const currentUser: ILivechatAgent = await getMe(agent2.credentials);
-			const currentStatus = currentUser.statusLivechat;
-			const newStatus = currentStatus === 'available' ? 'not-available' : 'available';
-
-			await request
-				.post(api('livechat/agent.status'))
-				.set(credentials)
-				.send({ status: newStatus, agentId: currentUser._id })
-				.expect(200)
-				.expect((res: Response) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('status', currentStatus);
+					await request
+						.post(api('livechat/agent.status'))
+						.set(agent2.credentials)
+						.send({ status: 'not-available', agentId: currentUser._id })
+						.expect(200);
 				});
 
-			await disableDefaultBusinessHour();
+				after(async () => {
+					await disableDefaultBusinessHour();
+				});
+				it('should throw an error if agent tries to make themselves available outside of Business hour', async () => {
+					await request
+						.post(api('livechat/agent.status'))
+						.set(agent2.credentials)
+						.send({ status: 'available', agentId: currentUser._id })
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'error-business-hours-are-closed');
+						});
+				});
+				it('should return success but not change the agent  when admin make try other agents available outside business hour', async () => {
+					await request
+						.post(api('livechat/agent.status'))
+						.set(credentials)
+						.send({ status: 'available', agentId: currentUser._id })
+						.expect(200)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('status', 'not-available');
+						});
+				});
+			});
 		});
 	});
 
@@ -716,14 +736,17 @@ describe('LIVECHAT - Agents', () => {
 
 		describe('with a room', () => {
 			let room: IOmnichannelRoom;
+			let visitor: ILivechatVisitor;
 
 			before(async () => {
-				const { room: r } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
+				const { room: r, visitor: v } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
 				room = r;
+				visitor = v;
 			});
 
 			after(async () => {
 				await closeOmnichannelRoom(room._id);
+				await deleteVisitor(visitor.token);
 			});
 
 			it('should have a new room in his sidebar after taking a conversation from the queue', async () => {
@@ -751,13 +774,15 @@ describe('LIVECHAT - Agents', () => {
 		});
 
 		it('should not have the room if the user closes the room', async () => {
-			const { room } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
+			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: testUser.credentials });
 
 			await closeOmnichannelRoom(room._id);
 
 			const { body } = await request.get(api('rooms.get')).set(testUser.credentials).expect(200);
 
 			expect(body.update.find((r: { _id: string }) => r._id === room._id)).to.be.undefined;
+
+			await deleteVisitor(visitor.token);
 		});
 	});
 });

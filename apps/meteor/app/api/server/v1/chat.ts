@@ -1,5 +1,6 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
@@ -14,14 +15,12 @@ import {
 	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatStarMessageProps,
-	isChatUnpinMessageProps,
 	isChatUnstarMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
 	isChatFollowMessageProps,
 	isChatUnfollowMessageProps,
 	isChatGetMentionedMessagesProps,
-	isChatOTRProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
@@ -41,7 +40,6 @@ import { messageSearch } from '../../../../server/methods/messageSearch';
 import { getMessageHistory } from '../../../../server/publications/messages';
 import { roomAccessAttributes } from '../../../authorization/server';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { deleteMessageValidatingPermission } from '../../../lib/server/functions/deleteMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
@@ -51,12 +49,10 @@ import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage'
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { pinMessage, unpinMessage } from '../../../message-pin/server/pinMessage';
 import { starMessage } from '../../../message-star/server/starMessage';
-import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
-import { MessageTypes } from '../../../ui-utils/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
@@ -179,7 +175,23 @@ type ChatPinMessage = {
 	messageId: IMessage['_id'];
 };
 
+type ChatUnpinMessage = {
+	messageId: IMessage['_id'];
+};
+
 const ChatPinMessageSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnpinMessageSchema = {
 	type: 'object',
 	properties: {
 		messageId: {
@@ -193,44 +205,152 @@ const ChatPinMessageSchema = {
 
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
-const chatPinMessageEndpoints = API.v1.post(
-	'chat.pinMessage',
-	{
-		authRequired: true,
-		body: isChatPinMessageProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{ message: IMessage }>({
-				type: 'object',
-				properties: {
-					message: { $ref: '#/components/schemas/IMessage' },
-					success: {
-						type: 'boolean',
-						enum: [true],
+const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+const chatEndpoints = API.v1
+	.post(
+		'chat.pinMessage',
+		{
+			authRequired: true,
+			body: isChatPinMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
 					},
-				},
-				required: ['message', 'success'],
-				additionalProperties: false,
-			}),
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
 		},
-	},
-	async function action() {
-		const msg = await Messages.findOneById(this.bodyParams.messageId);
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
-		if (!msg) {
-			throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-		}
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
 
-		const pinnedMessage = await pinMessage(msg, this.userId);
+			const pinnedMessage = await pinMessage(msg, this.userId);
 
-		const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
+			const [message] = await normalizeMessagesForUser([pinnedMessage], this.userId);
 
-		return API.v1.success({
-			message,
-		});
-	},
-);
+			return API.v1.success({
+				message,
+			});
+		},
+	)
+	.post(
+		'chat.unPinMessage',
+		{
+			authRequired: true,
+			body: isChatUnpinMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await unpinMessage(this.userId, msg);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.update',
+		{
+			authRequired: true,
+			body: isChatUpdateProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { type: 'object' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { bodyParams } = this;
+
+			const msg = await Messages.findOneById(bodyParams.msgId);
+
+			// Ensure the message exists
+			if (!msg) {
+				return API.v1.failure(`No message found with the id of "${bodyParams.msgId}".`);
+			}
+
+			if (bodyParams.roomId !== msg.rid) {
+				return API.v1.failure('The room id provided does not match where the message is from.');
+			}
+
+			const hasContent = 'content' in bodyParams;
+
+			if (hasContent && msg.t !== 'e2e') {
+				return API.v1.failure('Only encrypted messages can have content updated.');
+			}
+
+			const updateData: Parameters<typeof executeUpdateMessage> = [
+				this.userId,
+				hasContent
+					? {
+							_id: msg._id,
+							rid: msg.rid,
+							content: bodyParams.content,
+							...(bodyParams.e2eMentions && { e2eMentions: bodyParams.e2eMentions }),
+						}
+					: {
+							_id: msg._id,
+							rid: msg.rid,
+							msg: bodyParams.text,
+							...(bodyParams.customFields && { customFields: bodyParams.customFields }),
+						},
+				'previewUrls' in bodyParams ? bodyParams.previewUrls : undefined,
+			];
+
+			// Permission checks are already done in the updateMessage method, so no need to duplicate them
+			await applyAirGappedRestrictionsValidation(() => executeUpdateMessage(...updateData));
+
+			const updatedMessage = await Messages.findOneById(msg._id);
+			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
+	);
 
 API.v1.addRoute(
 	'chat.postMessage',
@@ -314,7 +434,7 @@ API.v1.addRoute(
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls),
+				executeSendMessage(this.user, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
@@ -336,29 +456,11 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await starMessage(this.userId, {
+			await starMessage(this.user, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: true,
 			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unPinMessage',
-	{ authRequired: true, validateParams: isChatUnpinMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			await unpinMessage(this.userId, msg);
 
 			return API.v1.success();
 		},
@@ -376,55 +478,13 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
-			await starMessage(this.userId, {
+			await starMessage(this.user, {
 				_id: msg._id,
 				rid: msg.rid,
 				starred: false,
 			});
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.update',
-	{ authRequired: true, validateParams: isChatUpdateProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId);
-
-			// Ensure the message exists
-			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
-			}
-
-			if (this.bodyParams.roomId !== msg.rid) {
-				return API.v1.failure('The room id provided does not match where the message is from.');
-			}
-
-			const msgFromBody = this.bodyParams.text;
-
-			// Permission checks are already done in the updateMessage method, so no need to duplicate them
-			await applyAirGappedRestrictionsValidation(() =>
-				executeUpdateMessage(
-					this.userId,
-					{
-						_id: msg._id,
-						msg: msgFromBody,
-						rid: msg.rid,
-						...(this.bodyParams.customFields && { customFields: this.bodyParams.customFields }),
-					},
-					this.bodyParams.previewUrls,
-				),
-			);
-
-			const updatedMessage = await Messages.findOneById(msg._id);
-			const [message] = await normalizeMessagesForUser(updatedMessage ? [updatedMessage] : [], this.userId);
-
-			return API.v1.success({
-				message,
-			});
 		},
 	},
 );
@@ -744,7 +804,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await followMessage(this.userId, { mid });
+			await followMessage(this.user, { mid });
 
 			return API.v1.success();
 		},
@@ -762,7 +822,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
 
-			await unfollowMessage(this.userId, { mid });
+			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
 		},
@@ -844,28 +904,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'chat.otr',
-	{ authRequired: true, validateParams: isChatOTRProps },
-	{
-		async post() {
-			const { roomId, type: otrType } = this.bodyParams;
-
-			const { username, type } = this.user;
-
-			if (!username) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user');
-			}
-
-			await canSendMessageAsync(roomId, { uid: this.userId, username, type });
-
-			await Message.saveSystemMessage(otrType, roomId, username, { _id: this.userId, username });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
 	'chat.getURLPreview',
 	{ authRequired: true, validateParams: isChatGetURLPreviewProps },
 	{
@@ -876,7 +914,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { urlPreview } = await OEmbed.parseUrl(url);
+			const { urlPreview } = await Message.parseOEmbedUrl(url);
 			urlPreview.ignoreParse = true;
 
 			return API.v1.success({ urlPreview });
@@ -884,11 +922,9 @@ API.v1.addRoute(
 	},
 );
 
-type ChatPinMessageEndpoints = ExtractRoutesFromAPI<typeof chatPinMessageEndpoints>;
-
-export type ChatEndpoints = ChatPinMessageEndpoints;
+export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChatPinMessageEndpoints {}
+	interface Endpoints extends ChatEndpoints {}
 }

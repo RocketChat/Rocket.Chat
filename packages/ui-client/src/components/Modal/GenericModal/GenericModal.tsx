@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ComponentProps, ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
+import type { ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import { useId, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,7 @@ import type { RequiredModalProps } from './withDoNotAskAgain';
 import { withDoNotAskAgain } from './withDoNotAskAgain';
 import { modalStore } from '../../../providers/ModalProvider/ModalStore';
 
-type VariantType = 'danger' | 'warning' | 'info' | 'success' | 'upsell';
+type VariantType = 'danger' | 'secondary-danger' | 'warning' | 'info' | 'success' | 'upsell';
 
 type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
@@ -32,6 +32,7 @@ type GenericModalProps = RequiredModalProps & {
 	title?: string | ReactElement;
 	icon?: IconName | ReactElement | null;
 	confirmDisabled?: boolean;
+	confirmLoading?: boolean;
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
@@ -46,10 +47,12 @@ const iconMap: Record<string, IconName> = {
 	success: 'check',
 };
 
-const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => {
+const getButtonProps = (variant: VariantType): ComponentPropsWithoutRef<typeof Button> => {
 	switch (variant) {
 		case 'danger':
 			return { danger: true };
+		case 'secondary-danger':
+			return { secondary: true, danger: true };
 		case 'warning':
 		case 'upsell':
 			return { primary: true };
@@ -59,7 +62,7 @@ const getButtonProps = (variant: VariantType): ComponentProps<typeof Button> => 
 };
 
 const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): ReactNode => {
-	if (icon === null) {
+	if (icon === null || iconMap[variant] === undefined) {
 		return null;
 	}
 
@@ -87,6 +90,7 @@ const GenericModal = ({
 	onConfirm,
 	dontAskAgain,
 	confirmDisabled,
+	confirmLoading,
 	tagline,
 	wrapperFunction,
 	annotation,
@@ -101,22 +105,22 @@ const GenericModal = ({
 
 	const handleConfirm = useEffectEvent(() => {
 		dismissedRef.current = false;
-		onConfirm?.();
+		void onConfirm?.();
 	});
 
 	const handleCancel = useEffectEvent(() => {
 		dismissedRef.current = false;
-		onCancel?.();
+		void onCancel?.();
 	});
 
 	const handleCloseButtonClick = useEffectEvent(() => {
 		dismissedRef.current = true;
-		onClose?.();
+		void onClose?.();
 	});
 
 	const handleDismiss = useEffectEvent(() => {
 		dismissedRef.current = true;
-		onDismiss?.();
+		void onDismiss?.();
 	});
 
 	useEffect(() => {
@@ -137,7 +141,7 @@ const GenericModal = ({
 					{tagline && <ModalTagline color={taglineColor}>{tagline}</ModalTagline>}
 					<ModalTitle id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</ModalTitle>
 				</ModalHeaderText>
-				{onClose && <ModalClose aria-label={t('Close')} onClick={handleCloseButtonClick} />}
+				{onClose && <ModalClose tabIndex={-1} aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</ModalHeader>
 			<ModalContent fontScale='p2'>{children}</ModalContent>
 			<ModalFooter justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
@@ -150,12 +154,12 @@ const GenericModal = ({
 						</Button>
 					)}
 					{wrapperFunction && (
-						<Button {...getButtonProps(variant)} type='submit' disabled={confirmDisabled}>
+						<Button {...getButtonProps(variant)} type='submit' disabled={confirmDisabled} loading={confirmLoading}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}
 					{!wrapperFunction && onConfirm && (
-						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled}>
+						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled} loading={confirmLoading}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}

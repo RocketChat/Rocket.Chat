@@ -1,7 +1,7 @@
 import type {
 	IOutboundEmailMessageProvider,
 	IOutboundPhoneMessageProvider,
-} from '@rocket.chat/apps-engine/definition/outboundComunication';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication';
 
 export interface IOutboundProviderTemplate {
 	id: string;
@@ -30,8 +30,6 @@ export interface IOutboundProviderTemplate {
 	rejectedReason: string | undefined;
 }
 
-type Component = IHeaderComponent | IBodyComponent | IFooterComponent;
-
 // If we happen to have a different structure for this (since this could be a link or idk) we are gonna update this component type
 interface IHeaderComponent {
 	type: 'header';
@@ -56,11 +54,15 @@ interface IFooterComponent {
 	text: string;
 }
 
+type Component = IHeaderComponent | IBodyComponent | IFooterComponent;
+
 // Template from RC to App
 export interface IOutboundMessage {
 	to: string;
 	type: 'template';
 	templateProviderPhoneNumber: string;
+	departmentId?: string;
+	agentId?: string;
 	template: {
 		name: string;
 		language: {
@@ -107,6 +109,26 @@ export type TemplateParameter =
 	| {
 			type: 'media';
 			link: string;
+			format: 'image' | 'document' | 'video';
+	  }
+	| {
+			type: 'document';
+			document: {
+				link: string;
+				filename: string;
+			};
+	  }
+	| {
+			type: 'video';
+			video: {
+				link: string;
+			};
+	  }
+	| {
+			type: 'image';
+			image: {
+				link: string;
+			};
 	  };
 
 export type IOutboundProvider = {

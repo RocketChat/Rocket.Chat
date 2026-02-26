@@ -1,14 +1,9 @@
 import type { ILivechatContactVisitorAssociation } from '@rocket.chat/core-typings';
-import { ContactVisitorAssociationSchema } from '@rocket.chat/rest-typings';
-import Ajv from 'ajv';
+import { ContactVisitorAssociationSchema, ajv } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
 import { logger } from '../lib/logger';
 import { changeContactBlockStatus, closeBlockedRoom, ensureSingleContactLicense } from './lib/contacts';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type blockContactProps = {
 	visitor: ILivechatContactVisitorAssociation;
@@ -55,7 +50,11 @@ API.v1.addRoute(
 				visitor,
 				block: true,
 			});
-			logger.info(`Visitor with id ${visitor.visitorId} blocked by user with id ${user._id}`);
+			logger.info({
+				msg: 'Visitor blocked',
+				visitorId: visitor.visitorId,
+				userId: user._id,
+			});
 
 			await closeBlockedRoom(visitor, user);
 
@@ -82,7 +81,11 @@ API.v1.addRoute(
 				visitor,
 				block: false,
 			});
-			logger.info(`Visitor with id ${visitor.visitorId} unblocked by user with id ${user._id}`);
+			logger.info({
+				msg: 'Visitor unblocked',
+				visitorId: visitor.visitorId,
+				userId: user._id,
+			});
 
 			return API.v1.success();
 		},

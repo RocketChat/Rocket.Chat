@@ -1,62 +1,86 @@
 import { LDAP } from '@rocket.chat/core-services';
-import { Match, check } from 'meteor/check';
+import { ajv, isLdapTestSearch, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 
-API.v1.addRoute(
-	'ldap.testConnection',
-	{ authRequired: true, permissionsRequired: ['test-admin-options'] },
-	{
-		async post() {
-			if (!this.userId) {
-				throw new Error('error-invalid-user');
-			}
-
-			if (settings.get<boolean>('LDAP_Enable') !== true) {
-				throw new Error('LDAP_disabled');
-			}
-
-			try {
-				await LDAP.testConnection();
-			} catch (error) {
-				SystemLogger.error(error);
-				throw new Error('Connection_failed');
-			}
-
-			return API.v1.success({
-				message: 'LDAP_Connection_successful' as const,
-			});
+const messageResponseSchema = {
+	type: 'object' as const,
+	properties: {
+		message: { type: 'string' as const },
+		success: {
+			type: 'boolean' as const,
+			enum: [true] as const,
 		},
+	},
+	required: ['message', 'success'] as const,
+	additionalProperties: false,
+};
+
+API.v1.post(
+	'ldap.testConnection',
+	{
+		authRequired: true,
+		permissionsRequired: ['test-admin-options'],
+		response: {
+			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		if (!this.userId) {
+			throw new Error('error-invalid-user');
+		}
+
+		if (settings.get<boolean>('LDAP_Enable') !== true) {
+			throw new Error('LDAP_disabled');
+		}
+
+		try {
+			await LDAP.testConnection();
+		} catch (err) {
+			SystemLogger.error({ err });
+			throw new Error('Connection_failed');
+		}
+
+		return API.v1.success({
+			message: 'LDAP_Connection_successful' as const,
+		});
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'ldap.testSearch',
-	{ authRequired: true, permissionsRequired: ['test-admin-options'] },
 	{
-		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					username: String,
-				}),
-			);
-
-			if (!this.userId) {
-				throw new Error('error-invalid-user');
-			}
-
-			if (settings.get('LDAP_Enable') !== true) {
-				throw new Error('LDAP_disabled');
-			}
-
-			await LDAP.testSearch(this.bodyParams.username);
-
-			return API.v1.success({
-				message: 'LDAP_User_Found' as const,
-			});
+		authRequired: true,
+		permissionsRequired: ['test-admin-options'],
+		body: isLdapTestSearch,
+		response: {
+			200: ajv.compile<{ message: string; success: true }>(messageResponseSchema),
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		if (!this.userId) {
+			throw new Error('error-invalid-user');
+		}
+
+		if (settings.get<boolean>('LDAP_Enable') !== true) {
+			throw new Error('LDAP_disabled');
+		}
+
+		try {
+			await LDAP.testSearch(this.bodyParams.username);
+		} catch (err) {
+			SystemLogger.error({ err });
+			throw new Error('LDAP_search_failed');
+		}
+
+		return API.v1.success({
+			message: 'LDAP_User_Found' as const,
+		});
 	},
 );

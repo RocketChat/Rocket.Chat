@@ -1,7 +1,7 @@
 import type {
 	IOutboundEmailMessageProvider,
 	IOutboundPhoneMessageProvider,
-} from '@rocket.chat/apps-engine/definition/outboundComunication';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication';
 import { expect } from 'chai';
 import { describe, it, beforeEach } from 'mocha';
 import sinon from 'sinon';

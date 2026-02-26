@@ -1,12 +1,12 @@
-import type { UiKitCoreAppPayload } from '@rocket.chat/core-services';
+import type { UiKitCoreAppViewClosedPayload } from '@rocket.chat/core-services';
 import type * as UiKit from '@rocket.chat/ui-kit';
 
 import { CloudAnnouncementsModule } from './cloudAnnouncements.module';
 
 export class CloudSubscriptionCommunication extends CloudAnnouncementsModule {
-	appId = 'cloud-communication-core';
+	override appId = 'cloud-communication-core';
 
-	async viewClosed(payload: UiKitCoreAppPayload): Promise<UiKit.ServerInteraction> {
+	override async viewClosed(payload: UiKitCoreAppViewClosedPayload): Promise<UiKit.ServerInteraction> {
 		const {
 			payload: { view: { viewId } = {} },
 			user: { _id: userId } = {},

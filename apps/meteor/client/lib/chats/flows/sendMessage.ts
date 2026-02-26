@@ -1,16 +1,20 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
-import { sdk } from '../../../../app/utils/client/lib/SDKClient';
-import { t } from '../../../../app/utils/lib/i18n';
-import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
-import { dispatchToastMessage } from '../../toast';
-import type { ChatAPI } from '../ChatAPI';
 import { processMessageEditing } from './processMessageEditing';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
+import { sdk } from '../../../../app/utils/client/lib/SDKClient';
+import { t } from '../../../../app/utils/lib/i18n';
+import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
+import { Messages } from '../../../stores';
+import { onClientBeforeSendMessage } from '../../onClientBeforeSendMessage';
+import { dispatchToastMessage } from '../../toast';
+import type { ChatAPI } from '../ChatAPI';
 
 const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
+	const mid = chat.currentEditingMessage.getMID();
+
 	if (await processSetReaction(chat, message)) {
 		return;
 	}
@@ -23,7 +27,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 		return;
 	}
 
-	message = (await onClientBeforeSendMessage({ ...message, isEditing: !!chat.currentEditing })) as IMessage & { isEditing?: boolean };
+	message = (await onClientBeforeSendMessage({ ...message, isEditing: !!mid })) as IMessage & { isEditing?: boolean };
 
 	// e2e should be a client property only
 	delete message.e2e;
@@ -34,6 +38,12 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	}
 
 	await sdk.call('sendMessage', message, previewUrls);
+
+	// after the request is complete we can go ahead and mark as sent
+	Messages.state.update(
+		(record) => record._id === message._id && record.temp === true,
+		({ temp: _, ...record }) => record,
+	);
 };
 
 export const sendMessage = async (
@@ -57,8 +67,9 @@ export const sendMessage = async (
 	chat.readStateManager.clearUnreadMark();
 
 	text = text.trim();
-
-	if (!text && !chat.currentEditing) {
+	text = closeUnclosedCodeBlock(text);
+	const mid = chat.currentEditingMessage.getMID();
+	if (!text && !mid) {
 		// Nothing to do
 		return false;
 	}
@@ -67,11 +78,11 @@ export const sendMessage = async (
 		const message = await chat.data.composeMessage(text, {
 			sendToChannel: tshow,
 			quotedMessages: chat.composer?.quotedMessages.get() ?? [],
-			originalMessage: chat.currentEditing ? await chat.data.findMessageByID(chat.currentEditing.mid) : null,
+			originalMessage: mid ? await chat.data.findMessageByID(mid) : null,
 		});
 
-		if (chat.currentEditing) {
-			const originalMessage = await chat.data.findMessageByID(chat.currentEditing.mid);
+		if (mid) {
+			const originalMessage = await chat.data.findMessageByID(mid);
 
 			if (
 				originalMessage?.t === 'e2e' &&
@@ -94,8 +105,8 @@ export const sendMessage = async (
 		return true;
 	}
 
-	if (chat.currentEditing) {
-		const originalMessage = await chat.data.findMessageByID(chat.currentEditing.mid);
+	if (mid) {
+		const originalMessage = await chat.data.findMessageByID(mid);
 
 		if (!originalMessage) {
 			dispatchToastMessage({ type: 'warning', message: t('Message_not_found') });
@@ -104,11 +115,11 @@ export const sendMessage = async (
 
 		try {
 			if (await chat.flows.processMessageEditing({ ...originalMessage, msg: '' }, previewUrls)) {
-				chat.currentEditing.stop();
+				chat.currentEditingMessage.stop();
 				return false;
 			}
 
-			await chat.currentEditing?.reset();
+			await chat.currentEditingMessage.reset();
 			await chat.flows.requestMessageDeletion(originalMessage);
 			return false;
 		} catch (error) {

@@ -1,3 +1,5 @@
+import type { IncomingMessage } from 'http';
+
 import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
@@ -53,6 +55,14 @@ export type ForbiddenResult<T> = {
 		success: false;
 		// TODO: MAJOR remove 'unauthorized'
 		error: T | 'forbidden' | 'unauthorized';
+	};
+};
+
+export type TooManyRequestsResult<T> = {
+	statusCode: 429;
+	body: {
+		success: false;
+		error: T | 'Too many requests';
 	};
 };
 
@@ -140,23 +150,19 @@ export type SharedOptions<TMethod extends string> = (
 		version: DeprecationLoggerNextPlannedVersion;
 		alternatives?: PathPattern[];
 	};
+	applyMeteorContext?: boolean;
 };
 
-export type PartialThis = {
-	user(bodyParams: Record<string, unknown>, user: any): Promise<any>;
-	readonly request: Request & { query: Record<string, string> };
-	readonly response: Response;
-	readonly userId: string;
-	readonly bodyParams: Record<string, unknown>;
-	readonly path: string;
-	readonly queryParams: Record<string, string>;
-	readonly queryOperations?: string[];
-	readonly queryFields?: string[];
-	readonly logger: Logger;
-	readonly route: string;
-};
+export type GenericRouteExecutionContext = ActionThis<any, any, any>;
+
+export type RouteExecutionContext<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = ActionThis<
+	TMethod,
+	TPathPattern,
+	TOptions
+>;
 
 export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+	readonly logger: Logger;
 	route: string;
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
@@ -181,8 +187,13 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 				: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
 					Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+	readonly incoming: IncomingMessage;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
+	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
+
+	readonly twoFactorChecked: boolean;
+
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		/**
@@ -215,8 +226,8 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 				readonly token?: string;
 			}
 		: {
-				user?: IUser | null;
-				userId?: string | undefined;
+				user?: IUser;
+				userId?: string;
 				readonly token?: string;
 			});
 
@@ -284,8 +295,8 @@ export type TypedOptions = {
 } & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
+	readonly logger: Logger;
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
-	user: TOptions['authRequired'] extends true ? IUser : IUser | null;
 	token: TOptions['authRequired'] extends true ? string : string | undefined;
 	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
 	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
@@ -301,29 +312,43 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 		query: Record<string, unknown>;
 	}>;
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
-
+	request: Request;
 	requestIp?: string;
 	route: string;
 	response: Response;
-};
+} & (TOptions['authRequired'] extends true
+	? {
+			user: IUser;
+		}
+	: {
+			user?: IUser;
+		});
 
 type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
 
+type InferNon200Result<T> =
+	InferResult<T> extends {
+		success: false;
+		error?: infer TError;
+	}
+		? TError
+		: never;
+
 type Results<TResponse extends TypedOptions['response']> = {
 	[K in keyof TResponse]: K extends SuccessStatusCodes
 		? SuccessResult<InferResult<TResponse[200]>, K>
 		: K extends RedirectStatusCodes
-			? RedirectResult<InferResult<TResponse[300]>, K>
+			? RedirectResult<InferNon200Result<TResponse[300]>, K>
 			: K extends 400
 				? FailureResult<InferResult<TResponse[400]>>
 				: K extends 401
-					? UnauthorizedResult<InferResult<TResponse[401]>>
+					? UnauthorizedResult<InferNon200Result<TResponse[401]>>
 					: K extends 403
-						? ForbiddenResult<InferResult<TResponse[403]>>
+						? ForbiddenResult<InferNon200Result<TResponse[403]>>
 						: K extends 404
-							? NotFoundResult<InferResult<TResponse[404]>>
+							? NotFoundResult<InferNon200Result<TResponse[404]>>
 							: K extends ErrorStatusCodes
 								? InternalError<InferResult<TResponse[500]>, K>
 								: never;
