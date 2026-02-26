@@ -78,39 +78,59 @@ describe('useFeaturePreview', () => {
 
 		expect(result.current).toBe(true);
 	});
-    it('should return false if dependency feature is disabled (even if value matches)', () => {
-			mockUsePreferenceFeaturePreviewList.mockReturnValue({
-				features: [
-					{
-						name: 'secondarySidebar',
-						value: true,
-						enableQuery: { name: 'newNavigation', value: true },
-					},
-					{
-						name: 'newNavigation',
-						value: true,
-						disabled: true,
-					},
-				],
-			});
 
-			const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
-
-			expect(result.current).toBe(false);
+	it('should return false if dependency feature is disabled (even if value matches)', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [
+				{
+					name: 'secondarySidebar',
+					value: true,
+					enableQuery: { name: 'newNavigation', value: true },
+				},
+				{
+					name: 'newNavigation',
+					value: true,
+					disabled: true,
+				},
+			],
 		});
-        it('should return false if the dependency feature is completely missing from the list', () => {
-					mockUsePreferenceFeaturePreviewList.mockReturnValue({
-						features: [
-							{
-								name: 'secondarySidebar',
-								value: true,
-								enableQuery: { name: 'newNavigation', value: true },
-							},
-						],
-					});
 
-					const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
 
-					expect(result.current).toBe(false);
-				});
+		expect(result.current).toBe(false);
+	});
+
+	it('should return false if the dependency feature is completely missing from the list', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [
+				{
+					name: 'secondarySidebar',
+					value: true,
+					enableQuery: { name: 'newNavigation', value: true },
+				},
+			],
+		});
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
+	});
+
+	it('should return false if feature exists but value is false', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({
+			features: [{ name: 'secondarySidebar', value: false }],
+		});
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
+	});
+
+	it('should return false if features list is undefined', () => {
+		mockUsePreferenceFeaturePreviewList.mockReturnValue({ features: undefined });
+
+		const { result } = renderHook(() => useFeaturePreview('secondarySidebar'));
+
+		expect(result.current).toBe(false);
+	});
 });
