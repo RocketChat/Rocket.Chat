@@ -31,7 +31,7 @@ ENV LANG=C.UTF-8
 # """
 RUN apk add --no-cache shadow deno ttf-dejavu \
     # Update OpenSSL
-    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
+    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.23
     && apk upgrade --no-cache openssl \
     && groupmod -n rocketchat nogroup \
     && useradd -u 65533 -r -g rocketchat rocketchat
