@@ -125,6 +125,10 @@ test.each([
 			]),
 		],
 	],
+	['go to https://www.google.com.', [paragraph([plain('go to '), link('https://www.google.com'), plain('.')])]],
+	['https://www.google.com.', [paragraph([link('https://www.google.com'), plain('.')])]],
+	['https://www.google.com!', [paragraph([link('https://www.google.com'), plain('!')])]],
+	['visit www.google.com.', [paragraph([plain('visit '), link('//www.google.com', [plain('www.google.com')]), plain('.')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });
