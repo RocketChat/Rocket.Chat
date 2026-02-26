@@ -20,6 +20,7 @@ import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
+import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
@@ -69,7 +70,20 @@ const RoomMessage = ({
 			aria-roledescription={t('message')}
 			tabIndex={0}
 			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
-			onClick={selecting ? toggleSelected : undefined}
+			onClick={(e) => {
+				if (selecting) {
+					toggleSelected(e);
+					return;
+				}
+				if (context) {
+					const target = e.target as HTMLElement;
+					if (target.closest('button, a, .rcx-checkbox, .rcx-message-toolbar')) {
+						return;
+					}
+					setMessageJumpQueryStringParameter(message._id);
+				}
+			}}
+			style={{ cursor: selecting || context ? 'pointer' : undefined }}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
