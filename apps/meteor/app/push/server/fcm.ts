@@ -188,7 +188,13 @@ export const sendFCM = function ({ userTokens, notification, _removeToken, optio
 			token && _removeToken({ gcm: token });
 		};
 
-		const response = fetchWithRetry(url, removeToken, { method: 'POST', headers, body: JSON.stringify(fcmRequest) });
+		const response = fetchWithRetry(url, removeToken, {
+			method: 'POST',
+			headers,
+			body: JSON.stringify(fcmRequest),
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+		});
 
 		response.catch((err) => {
 			logger.error({ msg: 'sendFCM error', err });

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "2.0.0",
+	"version": "2.0.3",
 	"homepage": "https://rocket.chat",
 	"repository": {
 		"type": "git",
@@ -28,7 +28,7 @@
 		"Firefox ESR"
 	],
 	"dependencies": {
-		"@rocket.chat/emitter": "~0.31.25",
+		"@rocket.chat/emitter": "^0.32.0",
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/random": "workspace:~",
@@ -37,7 +37,7 @@
 		"ajv-formats": "^3.0.1",
 		"css-vars-ponyfill": "^2.4.9",
 		"date-fns": "~4.1.0",
-		"dompurify": "~3.2.7",
+		"dompurify": "~3.3.1",
 		"emoji-mart": "^3.0.1",
 		"history": "~5.3.0",
 		"i18next": "~23.4.9",
@@ -60,9 +60,9 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/eslint-config": "workspace:^",
-		"@rocket.chat/fuselage-hooks": "~0.38.1",
+		"@rocket.chat/fuselage-hooks": "^0.39.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"@rocket.chat/logo": "~0.32.3",
+		"@rocket.chat/logo": "^0.32.4",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/addon-essentials": "^8.6.15",
 		"@storybook/addon-styling-webpack": "^1.0.1",
