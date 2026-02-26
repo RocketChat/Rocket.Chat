@@ -21,7 +21,10 @@ export const useReconnectCountdown = (
 			reconnectionTimerRef.current = setInterval(() => {
 				retryTime && setReconnectCountdown(getReconnectCountdown(retryTime));
 			}, 500);
-			return;
+			return () => {
+				reconnectionTimerRef.current && clearInterval(reconnectionTimerRef.current);
+				reconnectionTimerRef.current = undefined;
+			};
 		}
 
 		reconnectionTimerRef.current && clearInterval(reconnectionTimerRef.current);

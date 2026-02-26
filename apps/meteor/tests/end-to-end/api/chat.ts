@@ -5,6 +5,7 @@ import { expect } from 'chai';
 import { after, before, beforeEach, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
+import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
@@ -1217,12 +1218,19 @@ describe('[Chat]', () => {
 			let ytEmbedMsgId: IMessage['_id'];
 			let imgUrlMsgId: IMessage['_id'];
 
-			before(() => Promise.all([updateSetting('API_EmbedIgnoredHosts', ''), updateSetting('API_EmbedSafePorts', '80, 443, 3000')]));
+			before(() =>
+				Promise.all([
+					updateSetting('API_EmbedIgnoredHosts', ''),
+					updateSetting('API_EmbedSafePorts', '80, 443, 3000'),
+					updateSetting('SSRF_Allowlist', '127.0.0.1:3000'),
+				]),
+			);
 
 			after(() =>
 				Promise.all([
 					updateSetting('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16'),
 					updateSetting('API_EmbedSafePorts', '80, 443'),
+					updateSetting('SSRF_Allowlist', ''),
 				]),
 			);
 
@@ -1241,7 +1249,7 @@ describe('[Chat]', () => {
 				const imgUrlMsgPayload = {
 					_id: `id-${Date.now()}1`,
 					rid: testChannel._id,
-					msg: 'http://localhost:3000/images/logo/logo.png',
+					msg: 'http://127.0.0.1:3000/images/logo/logo.png',
 					emoji: ':smirk:',
 				};
 
@@ -1250,26 +1258,32 @@ describe('[Chat]', () => {
 				imgUrlMsgId = imgUrlResponse.body.message._id;
 			});
 
-			it('should have an iframe oembed with style max-width', (done) => {
-				setTimeout(() => {
-					void request
-						.get(api('chat.getMessage'))
-						.set(credentials)
-						.query({
-							msgId: ytEmbedMsgId,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
+			it('should have an iframe oembed with style max-width', async () => {
+				await retry(
+					'Oembed is generated async thats why the retry is required',
+					async () => {
+						await request
+							.get(api('chat.getMessage'))
+							.set(credentials)
+							.query({
+								msgId: ytEmbedMsgId,
+							})
+							.expect('Content-Type', 'application/json')
+							.expect(200)
+							.expect((res) => {
+								expect(res.body).to.have.property('message').to.have.property('urls').to.be.an('array').that.is.not.empty;
 
-							expect(res.body.message.urls[0])
-								.to.have.property('meta')
-								.to.have.property('oembedHtml')
-								.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
-						})
-						.end(done);
-				}, 1000);
+								expect(res.body.message.urls[0])
+									.to.have.property('meta')
+									.to.have.property('oembedHtml')
+									.to.have.string('<iframe style="max-width: 100%;width:400px;height:225px"');
+							});
+					},
+					{
+						delayMs: 100,
+						retries: 5,
+					},
+				);
 			});
 
 			it('should embed an image preview if message has an image url', (done) => {
@@ -1810,6 +1824,28 @@ describe('[Chat]', () => {
 						});
 				});
 			});
+		});
+
+		// TODO: Auto-close unclosed markdown code blocks on backend - Remove in 9.0.0
+		// In 9.0.0, this behavior is handled entirely on the client side and should no longer be done on the backend.
+		it('should auto-close an unclosed code block when sending a message', async () => {
+			const unclosedMsg = '```\nsome code';
+			const expectedMsg = '```\nsome code\n```';
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: testChannel._id,
+						msg: unclosedMsg,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', expectedMsg);
+				});
 		});
 	});
 
