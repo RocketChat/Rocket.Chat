@@ -182,30 +182,25 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 	return current;
 };
 
-const appendJoinedInline = (
-	result: Paragraph['value'],
-	inline: Inlines,
-	previousInline: Inlines | undefined,
-	nextInline: Inlines | undefined,
-): Inlines => {
-	const current = joinEmoji(inline, previousInline, nextInline);
-	const previous = result[result.length - 1];
-
-	if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
-		previous.value += current.value;
-	} else {
-		result.push(current);
-	}
-
-	return inline;
-};
-
 export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] => {
 	const result: Paragraph['value'] = [];
 	const flattenableValues = values as Array<Inlines | Inlines[]>;
 
 	let previousInline = undefined as Inlines | undefined;
 	let pendingInline = undefined as Inlines | undefined;
+
+	const appendJoinedInline = (inline: Inlines, nextInline: Inlines | undefined): void => {
+		const current = joinEmoji(inline, previousInline, nextInline);
+		const previous = result[result.length - 1];
+
+		if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
+			previous.value += current.value;
+		} else {
+			result.push(current);
+		}
+
+		previousInline = inline;
+	};
 
 	for (let index = 0; index < flattenableValues.length; index++) {
 		const entry = flattenableValues[index];
@@ -219,7 +214,7 @@ export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value']
 					continue;
 				}
 
-				previousInline = appendJoinedInline(result, pendingInline, previousInline, currentInline);
+				appendJoinedInline(pendingInline, currentInline);
 				pendingInline = currentInline;
 			}
 
@@ -231,12 +226,12 @@ export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value']
 			continue;
 		}
 
-		previousInline = appendJoinedInline(result, pendingInline, previousInline, entry);
+		appendJoinedInline(pendingInline, entry);
 		pendingInline = entry;
 	}
 
 	if (pendingInline !== undefined) {
-		appendJoinedInline(result, pendingInline, previousInline, undefined);
+		appendJoinedInline(pendingInline, undefined);
 	}
 
 	return result;
@@ -316,11 +311,5 @@ export const extractFirstResult = (value: Types[keyof Types]['value']): Types[ke
 		return value;
 	}
 
-	for (let index = 0; index < value.length; index++) {
-		if (value[index]) {
-			return value[index] as Types[keyof Types]['value'];
-		}
-	}
-
-	return undefined as Types[keyof Types]['value'];
+	return value.find(Boolean) as Types[keyof Types]['value'];
 };
