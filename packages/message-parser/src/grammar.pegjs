@@ -351,7 +351,7 @@ URLScheme = $([A-Za-z0-9+-] |1..32| ":")
 
 URLBody
   = (
-    !(Extra+ (Whitespace / EndOfLine) / Whitespace)
+    !(Extra+ (Whitespace / EndOfLine / !.) / Whitespace)
     (AnyText / [*\[\/\]\^_`{}~(])
   )+
 
@@ -435,7 +435,7 @@ AutoLinkURL
   = $(URLScheme URLAuthority AutoLinkURLBody*)
   / $(URLAuthorityHost AutoLinkURLBody*)
 
-AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine)) .
+AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine / !.)) .
 
 /**
  *
