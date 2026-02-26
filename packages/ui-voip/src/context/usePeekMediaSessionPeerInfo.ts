@@ -1,11 +1,16 @@
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback, useRef, useSyncExternalStore } from 'react';
 
 import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
 import type { PeerInfo } from './definitions';
 import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromInstanceContact';
 
+const areEqual = (a: PeerInfo, b: PeerInfo) => {
+	return Object.keys(a).every((key) => a[key as keyof PeerInfo] === b[key as keyof PeerInfo]);
+};
+
 export const usePeekMediaSessionPeerInfo = (): PeerInfo | undefined => {
 	const { instance } = useMediaCallInstanceContext();
+	const cache = useRef<PeerInfo | undefined>(undefined);
 
 	const subscribe = useCallback(
 		(onStoreChange: () => void): (() => void) => {
@@ -26,7 +31,13 @@ export const usePeekMediaSessionPeerInfo = (): PeerInfo | undefined => {
 			return undefined;
 		}
 		const { contact } = mainCall;
-		return derivePeerInfoFromInstanceContact(contact);
+		const peerInfo = derivePeerInfoFromInstanceContact(contact);
+
+		if (!cache.current || !areEqual(peerInfo, cache.current)) {
+			cache.current = peerInfo;
+			return peerInfo;
+		}
+		return cache.current;
 	}, [instance]);
 
 	return useSyncExternalStore(subscribe, getSnapshot);
