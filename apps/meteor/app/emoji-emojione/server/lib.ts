@@ -7,7 +7,7 @@ import { isSetNotNull } from '../lib/isSetNotNull';
 
 const config = getEmojiConfig();
 
-emoji.packages.emojione = config.emojione as any;
+emoji.packages.emojione = config.joypixels as any;
 if (emoji.packages.emojione) {
 	emoji.packages.emojione.sprites = config.sprites;
 	emoji.packages.emojione.emojisByCategory = config.emojisByCategory;
@@ -18,10 +18,12 @@ if (emoji.packages.emojione) {
 	emoji.packages.emojione.renderPicker = config.renderPicker;
 	// TODO: check types
 	// RocketChat.emoji.list is the collection of emojis from all emoji packages
-	for (const key in config.emojione.emojioneList) {
-		if (config.emojione.emojioneList.hasOwnProperty(key)) {
-			const currentEmoji = config.emojione.emojioneList[key];
-			currentEmoji.emojiPackage = 'emojione';
+	for (const key in config.joypixels.emojiList) {
+		if (config.joypixels.emojiList.hasOwnProperty(key)) {
+			const currentEmoji = {
+              ...config.joypixels.emojiList[key],
+              emojiPackage: 'emojione',
+            };
 			emoji.list[key] = currentEmoji;
 
 			if (currentEmoji.shortnames) {

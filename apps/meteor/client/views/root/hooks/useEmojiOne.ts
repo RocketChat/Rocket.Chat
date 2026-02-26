@@ -11,7 +11,7 @@ export const useEmojiOne = () => {
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
 
 	useLayoutEffect(() => {
-		emoji.packages.emojione = config.emojione as any;
+		emoji.packages.emojione = config.joypixels as any;
 		if (emoji.packages.emojione) {
 			emoji.packages.emojione.sprites = config.sprites;
 			emoji.packages.emojione.emojisByCategory = config.emojisByCategory;
@@ -22,7 +22,7 @@ export const useEmojiOne = () => {
 			emoji.packages.emojione.renderPicker = config.renderPicker;
 
 			// RocketChat.emoji.list is the collection of emojis from all emoji packages
-			for (const [key, currentEmoji] of Object.entries(config.emojione.emojioneList)) {
+			for (const [key, currentEmoji] of Object.entries(config.joypixels.emojiList)) {
 				currentEmoji.emojiPackage = 'emojione';
 				emoji.list[key] = currentEmoji;
 
