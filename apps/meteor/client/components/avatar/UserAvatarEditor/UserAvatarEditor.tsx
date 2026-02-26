@@ -40,9 +40,10 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 				if (await isValidImageFormat(dataURL)) {
 					setImageToCrop(dataURL);
 				}
-				resetUpload();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+			} finally {
+				resetUpload();
 			}
 		},
 		[t, dispatchToastMessage],
