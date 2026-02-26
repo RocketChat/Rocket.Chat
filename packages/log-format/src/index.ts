@@ -1,6 +1,8 @@
 // Copied from meteor/logging package
 import chalk from 'chalk';
-import { stringify } from 'ejson';
+import ejson from 'ejson';
+
+const { stringify } = ejson;
 
 type Color = typeof chalk.Color;
 type NonGrayColors = Exclude<Color, 'gray' | 'grey'>;

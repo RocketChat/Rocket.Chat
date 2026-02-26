@@ -2,12 +2,23 @@
 	"name": "@rocket.chat/base64",
 	"version": "1.0.13",
 	"private": true,
+	"type": "module",
 	"description": "Base64 encoding and decoding; Fork of Meteor's Base64 package",
-	"main": "./dist/base64.js",
-	"types": "./dist/base64.d.ts",
+	"main": "./dist/cjs/base64.js",
+	"module": "./dist/esm/base64.js",
+	"types": "./dist/esm/base64.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/esm/base64.d.ts",
+			"import": "./dist/esm/base64.js",
+			"require": "./dist/cjs/base64.js"
+		}
+	},
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"build": "rm -rf dist && yarn build:esm && yarn build:cjs",
+		"build:esm": "tsc -p tsconfig.esm.json",
+		"build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+		"dev": "tsc -p tsconfig.esm.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"test": "jest",

@@ -1,4 +1,4 @@
-import { Random } from './main.client';
+import { Random } from './main.client.js';
 
 it('which should generate the same sequence in all environments', () => {
 	const random = Random.createWithSeeds(0);

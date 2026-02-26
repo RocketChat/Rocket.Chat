@@ -2,12 +2,23 @@
 	"name": "@rocket.chat/sha256",
 	"version": "1.0.12",
 	"private": true,
+	"type": "module",
 	"description": "SHA256 implementation; Fork of Meteor's SHA256 package",
-	"main": "./dist/sha256.js",
-	"types": "./dist/sha256.d.ts",
+	"main": "./dist/cjs/sha256.js",
+	"module": "./dist/esm/sha256.js",
+	"types": "./dist/esm/sha256.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/esm/sha256.d.ts",
+			"import": "./dist/esm/sha256.js",
+			"require": "./dist/cjs/sha256.js"
+		}
+	},
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"build": "rm -rf dist && yarn build:esm && yarn build:cjs",
+		"build:esm": "tsc -p tsconfig.esm.json",
+		"build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+		"dev": "tsc -p tsconfig.esm.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"test": "jest",
