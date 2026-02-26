@@ -131,13 +131,13 @@ const buildMessage = (messageObj: Payload, defaultValues: DefaultValues) => {
 
 export function processWebhookMessage(
 	messageObj: Payload & { separateResponse: true },
-	user: IUser & { username: RequiredField<IUser, 'username'> },
+	user: RequiredField<IUser, 'username'>,
 	defaultValues?: DefaultValues,
 ): Promise<WebhookResponseItem[]>;
 
 export function processWebhookMessage(
 	messageObj: Payload & { separateResponse?: false | undefined },
-	user: IUser & { username: RequiredField<IUser, 'username'> },
+	user: RequiredField<IUser, 'username'>,
 	defaultValues?: DefaultValues,
 ): Promise<WebhookSuccessItem[]>;
 
@@ -148,7 +148,7 @@ export async function processWebhookMessage(
 		 */
 		separateResponse?: boolean;
 	},
-	user: IUser & { username: RequiredField<IUser, 'username'> },
+	user: RequiredField<IUser, 'username'>,
 	defaultValues: DefaultValues = { channel: '', alias: '', avatar: '', emoji: '' },
 ) {
 	const rooms: ({ channel: string } & ({ room: IRoom } | { room: IRoom | null; error?: any }))[] = [];

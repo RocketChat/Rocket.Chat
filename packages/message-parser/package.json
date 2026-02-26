@@ -35,6 +35,8 @@
 		".:build:bundle": "webpack-cli",
 		".:build:clean": "rimraf dist",
 		"build": "run-s .:build:clean .:build:bundle",
+		"bench": "ts-node --compiler-options '{\"module\":\"commonjs\"}' -r ./loaders/pegjs-register.js benchmarks/parser.bench.ts",
+		"bench:size": "node -e \"const fs=require('fs'),zlib=require('zlib'),p='dist/messageParser.js';try{const s=fs.statSync(p),c=fs.readFileSync(p),g=zlib.gzipSync(c);console.log('Bundle:',p);console.log('Raw:',s.size,'bytes ('+(s.size/1024).toFixed(1),'KB)');console.log('Gzip:',g.length,'bytes ('+(g.length/1024).toFixed(1),'KB)')}catch(e){console.error('Build first: yarn build');process.exit(1)}\"",
 		"lint": "eslint .",
 		"test": "jest",
 		"testunit": "jest",
@@ -57,7 +59,9 @@
 		"peggy": "4.1.1",
 		"prettier-plugin-pegjs": "~0.5.4",
 		"rimraf": "^6.0.1",
+		"tinybench": "^3.0.5",
 		"ts-loader": "~9.5.4",
+		"ts-node": "~10.9.2",
 		"typescript": "~5.9.3",
 		"webpack": "~5.99.9",
 		"webpack-cli": "~5.1.4"
