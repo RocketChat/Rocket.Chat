@@ -26,11 +26,11 @@ const AvatarCropModal = ({ imageSrc, onApply, onCancel }: AvatarCropModalProps):
 	const { t } = useTranslation();
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const dragStart = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
-	const imageRef = useRef<HTMLImageElement | null>(null);
 
 	const [zoom, setZoom] = useState(100);
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
 	const [isDragging, setIsDragging] = useState(false);
+	const [loadedImage, setLoadedImage] = useState<HTMLImageElement | null>(null);
 
 	const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
 		setIsDragging(true);
@@ -53,35 +53,35 @@ const AvatarCropModal = ({ imageSrc, onApply, onCancel }: AvatarCropModalProps):
 	useEffect(() => {
 		setZoom(100);
 		setOffset({ x: 0, y: 0 });
+		setLoadedImage(null);
 
 		const img = new Image();
 		img.src = imageSrc;
 		img.onload = () => {
-			imageRef.current = img;
+			setLoadedImage(img);
 		};
 	}, [imageSrc]);
 
 	useEffect(() => {
 		const canvas = canvasRef.current;
-		const img = imageRef.current;
-		if (!canvas || !img) return;
+		if (!canvas || !loadedImage) return;
 
 		const ctx = canvas.getContext('2d');
 		if (!ctx) return;
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		const baseScale = 300 / Math.min(img.width, img.height);
+		const baseScale = 300 / Math.min(loadedImage.width, loadedImage.height);
 		const actualZoom = zoom / 100;
 
-		const scaledWidth = img.width * baseScale * actualZoom;
-		const scaledHeight = img.height * baseScale * actualZoom;
+		const scaledWidth = loadedImage.width * baseScale * actualZoom;
+		const scaledHeight = loadedImage.height * baseScale * actualZoom;
 
 		const centerX = (canvas.width - scaledWidth) / 2 + offset.x;
 		const centerY = (canvas.height - scaledHeight) / 2 + offset.y;
 
-		ctx.drawImage(img, centerX, centerY, scaledWidth, scaledHeight);
-	}, [imageSrc, zoom, offset]);
+		ctx.drawImage(loadedImage, centerX, centerY, scaledWidth, scaledHeight);
+	}, [loadedImage, zoom, offset]);
 
 	const handleApply = () => {
 		const canvas = canvasRef.current;
