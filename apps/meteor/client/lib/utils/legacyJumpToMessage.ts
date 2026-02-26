@@ -21,7 +21,7 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 		});
 
 		if (message.tcount) {
-			await RoomHistoryManager.getSurroundingMessages(message);
+			await RoomHistoryManager.getSurroundingMessages(message, false);
 		} else if (!RoomHistoryManager.isLoaded(message.rid)) {
 			// Load room history if room is not loaded
 			await RoomHistoryManager.getMore(message.rid);
@@ -31,11 +31,11 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 	}
 
 	if (RoomManager.opened === message.rid) {
-		await RoomHistoryManager.getSurroundingMessages(message);
+		await RoomHistoryManager.getSurroundingMessages(message, false);
 		return;
 	}
 
 	await goToRoomById(message.rid);
 
-	await RoomHistoryManager.getSurroundingMessages(message);
+	await RoomHistoryManager.getSurroundingMessages(message, false);
 };
