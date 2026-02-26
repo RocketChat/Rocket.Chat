@@ -1,255 +1,100 @@
-import emojione from 'emojione';
 import mem from 'mem';
+import joypixels from 'emoji-toolkit';
 
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
 
-// TODO remove fix below when issue is solved: https://github.com/joypixels/emojione/issues/617
-
-// add missing emojis not provided by JS object, but included on emoji.json
-emojione.shortnames +=
-	'|:tm:|:copyright:|:registered:|:digit_zero:|:digit_one:|:digit_two:|:digit_three:|:digit_four:|:digit_five:|:digit_six:|:digit_seven:|:digit_eight:|:digit_nine:|:pound_symbol:|:asterisk_symbol:';
-emojione.regShortNames = new RegExp(
-	`<object[^>]*>.*?<\/object>|<span[^>]*>.*?<\/span>|<(?:object|embed|svg|img|div|span|p|a)[^>]*>|(${emojione.shortnames})`,
-	'gi',
-);
-
-emojione.emojioneList[':tm:'] = {
-	uc_base: '2122',
-	uc_output: '2122-fe0f',
-	uc_match: '2122-fe0f',
-	uc_greedy: '2122-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':copyright:'] = {
-	uc_base: '00a9',
-	uc_output: '00a9-f0ef',
-	uc_match: '00a9-fe0f',
-	uc_greedy: '00a9-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':registered:'] = {
-	uc_base: '00ae',
-	uc_output: '00ae-fe0f',
-	uc_match: '00ae-fe0f',
-	uc_greedy: '00ae-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_zero:'] = {
-	uc_base: '0030',
-	uc_output: '0030-fe0f',
-	uc_match: '0030-fe0f',
-	uc_greedy: '0030-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_one:'] = {
-	uc_base: '0031',
-	uc_output: '0031-fe0f',
-	uc_match: '0031-fe0f',
-	uc_greedy: '0031-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_two:'] = {
-	uc_base: '0032',
-	uc_output: '0032-fe0f',
-	uc_match: '0032-fe0f',
-	uc_greedy: '0032-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_three:'] = {
-	uc_base: '0033',
-	uc_output: '0033-fe0f',
-	uc_match: '0033-fe0f',
-	uc_greedy: '0033-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_four:'] = {
-	uc_base: '0034',
-	uc_output: '0034-fe0f',
-	uc_match: '0034-fe0f',
-	uc_greedy: '0034-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_five:'] = {
-	uc_base: '0035',
-	uc_output: '0035-fe0f',
-	uc_match: '0035-fe0f',
-	uc_greedy: '0035-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_six:'] = {
-	uc_base: '0036',
-	uc_output: '0036-fe0f',
-	uc_match: '0036-fe0f',
-	uc_greedy: '0036-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_seven:'] = {
-	uc_base: '0037',
-	uc_output: '0037-fe0f',
-	uc_match: '0037-fe0f',
-	uc_greedy: '0037-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_eight:'] = {
-	uc_base: '0038',
-	uc_output: '0038-fe0f',
-	uc_match: '0038-fe0f',
-	uc_greedy: '0038-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':digit_nine:'] = {
-	uc_base: '0039',
-	uc_output: '0039-fe0f',
-	uc_match: '0039-fe0f',
-	uc_greedy: '0039-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':pound_symbol:'] = {
-	uc_base: '0023',
-	uc_output: '0023-fe0f',
-	uc_match: '0023-fe0f',
-	uc_greedy: '0023-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-
-emojione.emojioneList[':asterisk_symbol:'] = {
-	uc_base: '002a',
-	uc_output: '002a-fe0f',
-	uc_match: '002a-fe0f',
-	uc_greedy: '002a-fe0f',
-	shortnames: [],
-	category: 'symbols',
-	emojiPackage: 'emojione',
-};
-// end fix
-
-// fix for :+1: - had to replace all function that does its conversion: https://github.com/joypixels/emojione/blob/4.5.0/lib/js/emojione.js#L249
-
-emojione.shortnameConversionMap = mem(emojione.shortnameConversionMap, { maxAge: 1000 });
-
-emojione.unicodeCharRegex = mem(emojione.unicodeCharRegex, { maxAge: 1000 });
+// Memoize conversion functions for performance
+joypixels.unicodeCharRegex = mem(joypixels.unicodeCharRegex, { maxAge: 1000 });
 
 const convertShortName = mem(
-	(shortname) => {
-		// the fix is basically adding this .replace(/[+]/g, '\\$&')
-		if (typeof shortname === 'undefined' || shortname === '' || emojione.shortnames.indexOf(shortname.replace(/[+]/g, '\\$&')) === -1) {
-			// if the shortname doesnt exist just return the entire match
+	(shortname: string) => {
+		// Validate shortname exists
+		if (typeof shortname === 'undefined' || shortname === '' || joypixels.shortnames.indexOf(shortname.replace(/[+]/g, '\\$&')) === -1) {
 			return shortname;
 		}
 
-		// map shortname to parent
-		if (!emojione.emojioneList[shortname]) {
-			for (const emoji in emojione.emojioneList) {
-				if (!emojione.emojioneList.hasOwnProperty(emoji) || emoji === '') {
+		// Map shortname to parent emoji in emojiList
+		let lookupShortname = shortname;
+		if (!joypixels.emojiList[lookupShortname]) {
+			for (const emoji in joypixels.emojiList) {
+				if (!joypixels.emojiList.hasOwnProperty(emoji) || emoji === '') {
 					continue;
 				}
-				if (emojione.emojioneList[emoji].shortnames.indexOf(shortname) === -1) {
+				if (joypixels.emojiList[emoji].shortnames && joypixels.emojiList[emoji].shortnames.indexOf(lookupShortname) === -1) {
 					continue;
 				}
-				shortname = emoji;
+				lookupShortname = emoji;
 				break;
 			}
 		}
 
-		const unicode = emojione.emojioneList[shortname].uc_output;
-		const fname = emojione.emojioneList[shortname].uc_base;
-		const category = fname.indexOf('-1f3f') >= 0 ? 'diversity' : emojione.emojioneList[shortname].category;
-		const title = emojione.imageTitleTag ? `title="${shortname}"` : '';
-		// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
-		// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
+		const emojiData = joypixels.emojiList[lookupShortname];
+		if (!emojiData) return shortname;
+
+		const unicode = emojiData.uc_full;
+		const fname = emojiData.uc_base;
+
+		// Safety check: fname is required for sprite/image rendering
+		if (!fname) return shortname;
+
+		const category = fname.indexOf('-1f3f') >= 0 ? 'diversity' : emojiData.category;
+		const title = joypixels.imageTitleTag ? `title="${shortname}"` : '';
 		const ePath =
-			emojione.defaultPathPNG !== emojione.imagePathPNG ? emojione.imagePathPNG : `${emojione.defaultPathPNG + emojione.emojiSize}/`;
+			joypixels.defaultPathPNG !== joypixels.imagePathPNG ? joypixels.imagePathPNG : `${joypixels.defaultPathPNG + joypixels.emojiSize}/`;
 
-		// depending on the settings, we'll either add the native unicode as the alt tag, otherwise the shortname
-		const alt = emojione.unicodeAlt ? emojione.convert(unicode.toUpperCase()) : shortname;
+		// Use unicode for alt text if available, otherwise use shortname
+		const alt = joypixels.unicodeAlt && unicode ? joypixels.convert(unicode.toUpperCase()) : shortname;
 
-		if (emojione.sprites) {
-			return `<span class="emojione emojione-${category} _${fname}" ${title}>${alt}</span>`;
-		}
-		return `<img class="emojione" alt="${alt}" ${title} src="${ePath}${fname}${emojione.fileExtension}"/>`;
+        if (joypixels.sprites) {
+        	const size = joypixels.spriteSize || '32';
+        
+        	return `<span class="joypixels joypixels-${size}-${category} _${fname}" ${title}></span>`;
+        }
+        
+        return `<img class="joypixels" alt="${alt}" ${title} src="${ePath}${fname}${joypixels.fileExtension}"/>`;
 	},
 	{ maxAge: 1000 },
 );
 
 const convertUnicode = mem(
-	(entire, _m1, m2, m3) => {
-		const mappedUnicode = emojione.mapUnicodeToShort();
+	(entire: string, _m1: string, m2: string, m3: string) => {
+		const mappedUnicode = joypixels.mapUnicodeToShort();
 
-		if (typeof m3 === 'undefined' || m3 === '' || !(emojione.unescapeHTML(m3) in emojione.asciiList)) {
-			// if the ascii doesnt exist just return the entire match
+		if (typeof m3 === 'undefined' || m3 === '' || !(joypixels.unescapeHTML(m3) in joypixels.asciiList)) {
 			return entire;
 		}
 
-		m3 = emojione.unescapeHTML(m3);
-		const unicode = emojione.asciiList[m3];
+		const unescaped = joypixels.unescapeHTML(m3);
+		const unicode = joypixels.asciiList[unescaped];
 		const shortname = mappedUnicode[unicode];
-		const category = unicode.indexOf('-1f3f') >= 0 ? 'diversity' : emojione.emojioneList[shortname].category;
-		const title = emojione.imageTitleTag ? `title="${emojione.escapeHTML(m3)}"` : '';
-		// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
-		// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
+
+		if (!shortname || !unicode || !joypixels.emojiList[shortname]) return entire;
+
+		const emojiData = joypixels.emojiList[shortname];
+		const category = unicode.indexOf('-1f3f') >= 0 ? 'diversity' : emojiData.category;
+		const title = joypixels.imageTitleTag ? `title="${joypixels.escapeHTML(m3)}"` : '';
 		const ePath =
-			emojione.defaultPathPNG !== emojione.imagePathPNG ? emojione.imagePathPNG : `${emojione.defaultPathPNG + emojione.emojiSize}/`;
+			joypixels.defaultPathPNG !== joypixels.imagePathPNG ? joypixels.imagePathPNG : `${joypixels.defaultPathPNG + joypixels.emojiSize}/`;
 
-		// depending on the settings, we'll either add the native unicode as the alt tag, otherwise the shortname
-		const alt = emojione.unicodeAlt ? emojione.convert(unicode.toUpperCase()) : emojione.escapeHTML(m3);
-
-		if (emojione.sprites) {
-			return `${m2}<span class="emojione emojione-${category} _${unicode}"  ${title}>${alt}</span>`;
-		}
-		return `${m2}<img class="emojione" alt="${alt}" ${title} src="${ePath}${unicode}${emojione.fileExtension}"/>`;
+		const alt = joypixels.unicodeAlt ? joypixels.convert(unicode.toUpperCase()) : joypixels.escapeHTML(m3);
+        if (joypixels.sprites) {
+        	const size = joypixels.spriteSize || '32';
+        
+        	return `${m2}<span class="joypixels joypixels-${size}-${category} _${unicode}" ${title}></span>`;
+        }
+        
+        return `${m2}<img class="joypixels" alt="${alt}" ${title} src="${ePath}${unicode}${joypixels.fileExtension}"/>`;
 	},
 	{ maxAge: 1000, cacheKey: JSON.stringify },
 );
 
-emojione.shortnameToImage = (str) => {
-	// replace regular shortnames first
-	str = str.replace(emojione.regShortNames, convertShortName);
+const shortnameToImageCustom = (str: string) => {
+	// Replace regular shortnames first
+	str = str.replace(joypixels.regShortNames, convertShortName);
 
-	// if ascii smileys are turned on, then we'll replace them!
-	if (emojione.ascii) {
-		const asciiRX = emojione.riskyMatchAscii ? emojione.regAsciiRisky : emojione.regAscii;
-
+	// If ascii smileys are enabled, replace them
+	if (joypixels.ascii) {
+		const asciiRX = joypixels.riskyMatchAscii ? joypixels.regAsciiRisky : joypixels.regAscii;
 		return str.replace(asciiRX, convertUnicode);
 	}
 
@@ -257,25 +102,18 @@ emojione.shortnameToImage = (str) => {
 };
 
 const isEmojiSupported = (str: string) => {
-	str = str.replace(emojione.regShortNames, convertShortName);
-
-	// if ascii smileys are turned on, then we'll replace them!
-	if (emojione.ascii) {
-		const asciiRX = emojione.riskyMatchAscii ? emojione.regAsciiRisky : emojione.regAscii;
-
-		return str.replace(asciiRX, convertUnicode);
-	}
-
-	return str;
+	const converted = joypixels.toShort(str);
+	return converted !== str; // If string changed, emoji was found and recognized
 };
 
+
 export const getEmojiConfig = () => ({
-	emojione,
+	joypixels,
 	emojisByCategory,
 	emojiCategories,
 	toneList,
-	render: emojione.toImage,
-	renderPicker: emojione.shortnameToImage,
+	render: joypixels.toImage,
+	renderPicker: shortnameToImageCustom,
 	sprites: true,
-	isEmojiSupported,
+	isEmojiSupported
 });

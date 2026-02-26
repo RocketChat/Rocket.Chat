@@ -8,8 +8,10 @@ import nsg from 'node-sprite-generator';
 import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]
 
-const assetFolder = '../../../node_modules/emojione-assets';
-const emojiJsonFile = `${assetFolder}/emoji.json`;
+const assetFolder = '../../../node_modules/emoji-assets';
+const emoji_package = '../../../node_modules/emoji-toolkit'; //emoji-toolkit is used instead of emojione.
+const emojiJsonFile = `${emoji_package}/emoji.json`;
+
 
 if (!fs.existsSync(emojiJsonFile)) {
 	console.error(`${emojiJsonFile} doesn't exist.`);
@@ -59,7 +61,7 @@ function generateEmojiPicker(data) {
 		{ key: 'travel', i18n: 'Travel_and_Places' },
 		{ key: 'objects', i18n: 'Objects' },
 		{ key: 'symbols', i18n: 'Symbols' },
-		{ key: 'flags', i18n: 'Flags' },
+		{ key: 'flags', i18n: 'Flags' }
 	];
 
 	// emojiCategories
@@ -115,7 +117,7 @@ function generateEmojiPicker(data) {
 		let srcList = [];
 		let diversityList = [];
 		const emojis = _.filter(emojiList, (x) => x.category === category);
-		const spritePath = `../../../public/packages/emojione/${category}-sprites.png`;
+		const spritePath = `../../../public/packages/emoji-toolkit/${category}-sprites.png`;
 
 		_.each(emojis, function (emoji) {
 			srcList.push(`${assetFolder}/png/64/${emoji.code_points.base}.png`);
@@ -130,7 +132,7 @@ function generateEmojiPicker(data) {
 				src: srcList,
 				spritePath: spritePath,
 				layout: 'packed',
-				stylesheet: 'emojione.tpl',
+				stylesheet: 'emoji-toolkit.tpl',
 				stylesheetPath: `../client/${category}-sprites.css`,
 				compositor: 'gm',
 				layoutOptions: {
@@ -140,7 +142,7 @@ function generateEmojiPicker(data) {
 					prefix: '',
 					diversityList: diversityList,
 					category: category,
-					spritePath: `/packages/emojione/${category}-sprites.png`,
+					spritePath: `/packages/emoji-toolkit/${category}-sprites.png`,
 					pixelRatio: 1,
 				},
 			},
@@ -155,7 +157,7 @@ function generateEmojiPicker(data) {
 	}
 
 	spriteCss += `
-.emojione {
+.joypixels {
 	position: relative;
 
 	display: inline-block;
