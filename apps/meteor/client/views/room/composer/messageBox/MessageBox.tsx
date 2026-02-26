@@ -15,7 +15,7 @@ import {
 import { useTranslation, useUserPreference, useLayout, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import type { ReactElement, FormEvent, MouseEvent, ClipboardEvent } from 'react';
-import { memo, useRef, useReducer, useCallback, useSyncExternalStore } from 'react';
+import { memo, useRef, useReducer, useCallback, useSyncExternalStore, useState } from 'react';
 
 import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
@@ -115,6 +115,7 @@ const MessageBox = ({
 	const composerPlaceholder = useMessageBoxPlaceholder(t('Message'), room);
 	const quoteChainLimit = useSetting('Message_QuoteChainLimit', 2);
 	const [typing, setTyping] = useReducer(reducer, false);
+	const [isBlur, setIsBlur] = useState(false);
 
 	const { isMobile } = useLayout();
 	const sendOnEnterBehavior = useUserPreference<'normal' | 'alternative' | 'desktop'>('sendOnEnter') || isMobile;
@@ -126,6 +127,7 @@ const MessageBox = ({
 
 	const textareaRef = useRef(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
+
 
 	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
 
@@ -161,7 +163,27 @@ const MessageBox = ({
 
 	const handleSendMessage = useEffectEvent(() => {
 		const text = chat.composer?.text ?? '';
+		const hasContent = Boolean(text.trim());
+
 		chat.composer?.clear();
+		/*
+		 * We intentionally keep the DOM textarea focused so the user can start
+		 * typing another message immediately. However, once a message has been
+		 * sent we want the focus ring to be less prominent.
+		 *
+		 * We use an inline style on the textarea element directly so that the
+		 * change is guaranteed to win over any Fuselage / CSS-in-js styles.
+		 */
+		const el = textareaRef.current as HTMLTextAreaElement | null;
+		if (el) {
+			el.style.outline = '1px solid var(--rcx-color-stroke-light, #e4e7ea)';
+		}
+
+		// After sending a non-empty message, keep focus but soften the composer border.
+		if (hasContent) {
+			setIsBlur(true);
+		}
+
 		popup.clear();
 
 		onSend?.({
@@ -186,6 +208,20 @@ const MessageBox = ({
 			});
 		}
 	};
+
+	const handleChange = useCallback(
+		(event: React.ChangeEvent<HTMLTextAreaElement>) => {
+			setTyping(event as unknown as FormEvent<HTMLInputElement>);
+			// Restore the default focus ring as soon as the user starts typing again.
+			const el = event.target as HTMLTextAreaElement;
+			if (el.style.outline) {
+				el.style.outline = '';
+			}
+			// As soon as the user types again, restore the prominent composer border.
+			setIsBlur(false);
+		},
+		[],
+	);
 
 	const keyboardEventHandler = useEffectEvent((event: KeyboardEvent) => {
 		const { which: keyCode } = event;
@@ -421,7 +457,18 @@ const MessageBox = ({
 				isMobile={isMobile}
 			/>
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
-			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
+			<MessageComposer
+				isBlur={isBlur}
+				ref={messageComposerRef}
+				variant={isEditing ? 'editing' : undefined}
+				onClick={() => {
+					const el = textareaRef.current as HTMLTextAreaElement | null;
+					if (el) {
+						el.focus();
+					}
+					setIsBlur(false);
+				}}
+			>
 				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInputExpandable
 					dimensions={sizes}
@@ -429,7 +476,7 @@ const MessageBox = ({
 					aria-label={composerPlaceholder}
 					name='msg'
 					disabled={isRecording || !canSend}
-					onChange={setTyping}
+					onChange={handleChange}
 					style={textAreaStyle}
 					placeholder={composerPlaceholder}
 					onPaste={handlePaste}
