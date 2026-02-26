@@ -41,8 +41,6 @@ test.each([
 
 test.each([
 	['<t:2025-07-22T10:00:00.000+00:00:R>', [paragraph([timestampNode('1753178400', 'R')])]],
-	['<t:2025-07-22T10:00:00.000+00:00:R>', [paragraph([timestampNode('1753178400', 'R')])]],
-	['<t:2025-07-22T10:00:00.000+00:00:R>', [paragraph([timestampNode('1753178400', 'R')])]],
 	['<t:2025-07-22T10:00:00+00:00:R>', [paragraph([timestampNode('1753178400', 'R')])]],
 
 	['<t:2025-07-24T20:19:58.154+00:00:R>', [paragraph([timestampNode('1753388398', 'R')])]],
