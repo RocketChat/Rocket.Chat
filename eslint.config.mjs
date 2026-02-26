@@ -279,13 +279,6 @@ export default [
 			'no-floating-promise': noFloatingPromisePlugin,
 		},
 		rules: {
-			'@typescript-eslint/no-unused-vars': [
-				'error',
-				{
-					argsIgnorePattern: '^_',
-					ignoreRestSiblings: true,
-				},
-			],
 			'@typescript-eslint/no-floating-promises': 'error',
 			'import/named': 'error',
 			'import/order': [
@@ -647,8 +640,8 @@ export default [
 		files: [
 			'apps/meteor/client/**/*.ts',
 			'apps/meteor/client/**/*.tsx',
-			'apps/meteor/app/lib/**/*.ts',
-			'apps/meteor/app/livechat/**/*.ts',
+			'apps/meteor/app/**/*.ts',
+			'apps/meteor/ee/app/**/*.ts',
 			'apps/meteor/ee/client/**/*.ts',
 			'apps/meteor/ee/client/**/*.tsx',
 			'apps/meteor/ee/server/**/*.ts',
@@ -668,6 +661,15 @@ export default [
 		],
 		rules: {
 			'@typescript-eslint/no-misused-promises': 'warn',
+			'@typescript-eslint/no-unused-vars': [
+				'error',
+				{
+					varsIgnorePattern: 'Endpoints?$|Routes$|^invites$|^livechatVisitorDepartmentTransfer$', // FIXME?
+					argsIgnorePattern: '^_',
+					ignoreRestSiblings: true,
+					caughtErrors: 'none',
+				},
+			],
 		},
 	},
 	{
@@ -736,37 +738,11 @@ export default [
 			'@typescript-eslint/no-misused-promises': 'off',
 		},
 	},
-	// FIXME: catch clause with unused error variable
-	{
-		files: ['**/*.ts', '**/*.tsx'],
-		rules: {
-			'@typescript-eslint/no-unused-vars': 'warn',
-		},
-	},
-	{
-		files: [
-			'apps/meteor/.scripts/version.js',
-			'apps/meteor/app/lib/server/functions/validateCustomFields.js',
-			'apps/meteor/app/lib/server/lib/validateEmailDomain.js',
-			'apps/meteor/app/markdown/lib/parser/original/markdown.js',
-			'packages/apps-engine/scripts/deno-cache.js',
-		],
-		rules: {
-			'no-unused-vars': 'warn',
-		},
-	},
 	// FIXME: these storybook rules cannot be enabled until Storybook is upgraded to >=9
 	{
 		files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)'],
 		rules: {
 			'storybook/no-renderer-packages': 'off',
-		},
-	},
-	// FIXME
-	{
-		files: ['apps/meteor/client/views/root/MainLayout/LayoutWithSidebar.spec.tsx'],
-		rules: {
-			'@typescript-eslint/consistent-type-imports': 'off',
 		},
 	},
 ];

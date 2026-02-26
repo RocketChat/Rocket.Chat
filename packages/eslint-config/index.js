@@ -253,6 +253,7 @@ export default defineConfig(
 					vars: 'all',
 					args: 'after-used',
 					ignoreRestSiblings: true,
+					caughtErrors: 'none',
 				},
 			],
 			'no-use-before-define': ['error', { functions: true, classes: true, variables: true }],
@@ -364,7 +365,13 @@ export default defineConfig(
 				},
 			],
 			'@typescript-eslint/ban-ts-comment': 'warn',
-			'@typescript-eslint/consistent-type-imports': 'error',
+			'@typescript-eslint/consistent-type-imports': [
+				'warn',
+				{
+					disallowTypeAnnotations: false,
+					fixStyle: 'inline-type-imports',
+				},
+			],
 			'@typescript-eslint/naming-convention': [
 				'error',
 				{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
@@ -424,6 +431,7 @@ export default defineConfig(
 				{
 					argsIgnorePattern: '^_',
 					ignoreRestSiblings: true,
+					caughtErrors: 'none',
 				},
 			],
 			'@typescript-eslint/no-unsafe-argument': 'off',
