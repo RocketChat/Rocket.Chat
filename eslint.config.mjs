@@ -533,6 +533,9 @@ export default [
 		ignores: ['packages/storybook-config/*.d.ts', 'packages/storybook-config/*.js'],
 	},
 	{
+		ignores: ['scripts/**'],
+	},
+	{
 		files: [
 			'apps/meteor/client/**/*.ts',
 			'apps/meteor/client/**/*.tsx',
