@@ -79,7 +79,12 @@ export class CreateNewDMModal extends CreateNewModal {
 	async inviteUserToDM(username: string) {
 		await this.autocompleteUser.click();
 		await this.autocompleteUser.fill(username);
-		await this.dmListbox.selectOption(username);
+		const positionContainer = this.page!.locator('#position-container');
+		const option = positionContainer.getByRole('option', { name: username, exact: true });
+		await option.waitFor();
+		await option.click();
+		await this.page!.keyboard.press('Escape');
+		await positionContainer.waitFor({ state: 'hidden' });
 	}
 }
 
