@@ -845,18 +845,10 @@ export type RoomsEndpoints = {
 		}>;
 	};
 
-	'/v1/rooms.open': {
-		POST: (params: RoomsOpenProps) => void;
-	};
-
 	'/v1/rooms.membersOrderedByRole': {
 		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
 			members: (IUser & { subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'> })[];
 		}>;
-	};
-
-	'/v1/rooms.hide': {
-		POST: (params: RoomsHideProps) => void;
 	};
 
 	'/v1/rooms.invite': {

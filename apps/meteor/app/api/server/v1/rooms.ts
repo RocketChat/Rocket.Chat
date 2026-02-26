@@ -866,48 +866,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.open',
-	{ authRequired: true, validateParams: isRoomsOpenProps },
-	{
-		async post() {
-			const { roomId } = this.bodyParams;
-
-			await openRoom(this.userId, roomId);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.hide',
-	{ authRequired: true, validateParams: isRoomsHideProps },
-	{
-		async post() {
-			const { roomId } = this.bodyParams;
-
-			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-				return API.v1.unauthorized();
-			}
-
-			const user = await Users.findOneById(this.userId, { projections: { _id: 1 } });
-
-			if (!user) {
-				return API.v1.failure('error-invalid-user');
-			}
-
-			const modCount = await hideRoomMethod(this.userId, roomId);
-
-			if (!modCount) {
-				return API.v1.failure('error-room-already-hidden');
-			}
-
-			return API.v1.success();
-		},
-	},
-);
-
 type RoomsFavorite =
 	| {
 			roomId: string;
@@ -1185,6 +1143,72 @@ export const roomEndpoints = API.v1
 			}
 
 			await leaveRoomMethod(user, room._id);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.hide',
+		{
+			authRequired: true,
+			body: isRoomsHideProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.bodyParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized('Unauthorized');
+			}
+
+			const user = await Users.findOneById(this.userId, { projections: { _id: 1 } });
+
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
+			}
+
+			const modCount = await hideRoomMethod(this.userId, roomId);
+
+			if (!modCount) {
+				return API.v1.failure('error-room-already-hidden');
+			}
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.open',
+		{
+			authRequired: true,
+			body: isRoomsOpenProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.bodyParams;
+
+			await openRoom(this.userId, roomId);
 
 			return API.v1.success();
 		},
