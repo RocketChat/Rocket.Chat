@@ -6,7 +6,12 @@ export { CustomSoundContext, type CustomSoundContextValue } from './CustomSoundC
 export { LayoutContext, type LayoutContextValue } from './LayoutContext';
 export { ModalContext, type ModalContextValue } from './ModalContext';
 export * from './RouterContext';
-export { RoomToolboxContext, type RoomToolboxContextValue, type RoomToolboxActionConfig, type RenderToolboxItemParams } from './RoomToolboxContext';
+export {
+	RoomToolboxContext,
+	type RoomToolboxContextValue,
+	type RoomToolboxActionConfig,
+	type RenderToolboxItemParams,
+} from './RoomToolboxContext';
 export { ServerContext, type ServerContextValue } from './ServerContext';
 export { SessionContext, type SessionContextValue } from './SessionContext';
 export { SettingsContext, type SettingsContextValue, type SettingsContextQuery } from './SettingsContext';
