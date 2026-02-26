@@ -1,637 +1,1682 @@
 /* stylelint-disable */
 
-.emojione-food {
-  background-image: url('/packages/emojione/food-sprites.png');
 
-  &._1f35d {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 0%;
-  }
 
-  &._2615 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 0%;
-  }
-
-  &._1f34e {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 11.11111111111111%;
-  }
-
-  &._1f350 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 11.11111111111111%;
-  }
-
-  &._1f34a {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 0%;
-  }
-
-  &._1f34b {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 11.11111111111111%;
-  }
-
-  &._1f34c {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 22.22222222222222%;
-  }
-
-  &._1f349 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 22.22222222222222%;
-  }
-
-  &._1f347 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 22.22222222222222%;
-  }
-
-  &._1f353 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 0%;
-  }
-
-  &._1f348 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 11.11111111111111%;
-  }
-
-  &._1f352 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 22.22222222222222%;
-  }
-
-  &._1f351 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 33.333333333333336%;
-  }
-
-  &._1f96d {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 33.333333333333336%;
-  }
-
-  &._1f34d {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 33.333333333333336%;
-  }
-
-  &._1f965 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 33.333333333333336%;
-  }
-
-  &._1f95d {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 0%;
-  }
-
-  &._1f345 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 11.11111111111111%;
-  }
-
-  &._1f346 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 22.22222222222222%;
-  }
-
-  &._1f951 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 33.333333333333336%;
-  }
-
-  &._1f966 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 44.44444444444444%;
-  }
-
-  &._1f96c {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 44.44444444444444%;
-  }
-
-  &._1f952 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 44.44444444444444%;
-  }
-
-  &._1f336 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 44.44444444444444%;
-  }
-
-  &._1f33d {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 44.44444444444444%;
-  }
-
-  &._1f955 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 0%;
-  }
-
-  &._1f954 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 11.11111111111111%;
-  }
-
-  &._1f360 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 22.22222222222222%;
-  }
-
-  &._1f950 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 33.333333333333336%;
-  }
-
-  &._1f35e {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 44.44444444444444%;
-  }
-
-  &._1f956 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 55.55555555555556%;
-  }
-
-  &._1f968 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 55.55555555555556%;
-  }
-
-  &._1f96f {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 55.55555555555556%;
-  }
-
-  &._1f9c0 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 55.55555555555556%;
-  }
-
-  &._1f95a {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 55.55555555555556%;
-  }
-
-  &._1f373 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 55.55555555555556%;
-  }
-
-  &._1f95e {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 0%;
-  }
-
-  &._1f953 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 11.11111111111111%;
-  }
-
-  &._1f969 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 22.22222222222222%;
-  }
-
-  &._1f357 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 33.333333333333336%;
-  }
-
-  &._1f356 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 44.44444444444444%;
-  }
-
-  &._1f32d {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 55.55555555555556%;
-  }
-
-  &._1f354 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 66.66666666666667%;
-  }
-
-  &._1f35f {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 66.66666666666667%;
-  }
-
-  &._1f355 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 66.66666666666667%;
-  }
-
-  &._1f96a {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 66.66666666666667%;
-  }
-
-  &._1f959 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 66.66666666666667%;
-  }
-
-  &._1f32e {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 66.66666666666667%;
-  }
-
-  &._1f32f {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 66.66666666666667%;
-  }
-
-  &._1f957 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 0%;
-  }
-
-  &._1f958 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 11.11111111111111%;
-  }
-
-  &._1f96b {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 22.22222222222222%;
-  }
-
-  &._1f34f {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 33.333333333333336%;
-  }
-
-  &._1f35c {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 44.44444444444444%;
-  }
-
-  &._1f372 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 55.55555555555556%;
-  }
-
-  &._1f35b {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 66.66666666666667%;
-  }
-
-  &._1f363 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 77.77777777777777%;
-  }
-
-  &._1f371 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 77.77777777777777%;
-  }
-
-  &._1f364 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 77.77777777777777%;
-  }
-
-  &._1f359 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 77.77777777777777%;
-  }
-
-  &._1f35a {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 77.77777777777777%;
-  }
-
-  &._1f358 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 77.77777777777777%;
-  }
-
-  &._1f365 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 77.77777777777777%;
-  }
-
-  &._1f960 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 77.77777777777777%;
-  }
-
-  &._1f362 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 0%;
-  }
-
-  &._1f361 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 11.11111111111111%;
-  }
-
-  &._1f367 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 22.22222222222222%;
-  }
-
-  &._1f368 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 33.333333333333336%;
-  }
-
-  &._1f366 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 44.44444444444444%;
-  }
-
-  &._1f967 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 55.55555555555556%;
-  }
-
-  &._1f370 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 66.66666666666667%;
-  }
-
-  &._1f382 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 77.77777777777777%;
-  }
-
-  &._1f96e {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 88.88888888888889%;
-  }
-
-  &._1f9c1 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 88.88888888888889%;
-  }
-
-  &._1f36e {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 88.88888888888889%;
-  }
-
-  &._1f36d {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 88.88888888888889%;
-  }
-
-  &._1f36c {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 88.88888888888889%;
-  }
-
-  &._1f36b {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 88.88888888888889%;
-  }
-
-  &._1f37f {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 88.88888888888889%;
-  }
-
-  &._1f9c2 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 88.88888888888889%;
-  }
-
-  &._1f369 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 88.88888888888889%;
-  }
-
-  &._1f95f {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 0%;
-  }
-
-  &._1f36a {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 11.11111111111111%;
-  }
-
-  &._1f330 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 22.22222222222222%;
-  }
-
-  &._1f95c {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 33.333333333333336%;
-  }
-
-  &._1f36f {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 44.44444444444444%;
-  }
-
-  &._1f95b {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 55.55555555555556%;
-  }
-
-  &._1f37c {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 66.66666666666667%;
-  }
-
-  &._1f375 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 77.77777777777777%;
-  }
-
-  &._1f964 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 88.88888888888889%;
-  }
-
-  &._1f376 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 0% 100%;
-  }
-
-  &._1f37a {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 10% 100%;
-  }
-
-  &._1f37b {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 20% 100%;
-  }
-
-  &._1f942 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 30% 100%;
-  }
-
-  &._1f377 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 40% 100%;
-  }
-
-  &._1f943 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 50% 100%;
-  }
-
-  &._1f378 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 60% 100%;
-  }
-
-  &._1f379 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 70% 100%;
-  }
-
-  &._1f37e {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 80% 100%;
-  }
-
-  &._1f944 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 90% 100%;
-  }
-
-  &._1f374 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 100% 0%;
-  }
-
-  &._1f37d {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 100% 11.11111111111111%;
-  }
-
-  &._1f963 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 100% 22.22222222222222%;
-  }
-
-  &._1f961 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 100% 33.333333333333336%;
-  }
-
-  &._1f962 {
-    background-repeat: no-repeat;
-    background-size: 1100% 1000%;
-    background-position: 100% 44.44444444444444%;
-  }
-
+.joypixels-32-food._2615 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    0%;
 }
+
+
+
+.joypixels-32-food._1f34f {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    0%;
+}
+
+
+
+.joypixels-32-food._1f34e {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f350 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f34a {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    0%;
+}
+
+
+
+.joypixels-32-food._1f34b {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f34b-1f7e9 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f34c {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f349 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f347 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    0%;
+}
+
+
+
+.joypixels-32-food._1f353 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    10%;
+}
+
+
+
+.joypixels-32-food._1fad0 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f348 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f352 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f351 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f96d {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f34d {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    0%;
+}
+
+
+
+.joypixels-32-food._1f965 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f95d {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f345 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f346 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f951 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    40%;
+}
+
+
+
+.joypixels-32-food._1fadb {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f966 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f96c {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f952 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    0%;
+}
+
+
+
+.joypixels-32-food._1f336 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    10%;
+}
+
+
+
+.joypixels-32-food._1fad1 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f33d {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f955 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    40%;
+}
+
+
+
+.joypixels-32-food._1fad2 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f9c4 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f9c5 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f954 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f360 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    50%;
+}
+
+
+
+.joypixels-32-food._1fada {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f950 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    0%;
+}
+
+
+
+.joypixels-32-food._1f96f {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f35e {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f956 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f968 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f9c0 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f95a {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f373 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f9c8 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f95e {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f9c7 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f953 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f969 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f357 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    0%;
+}
+
+
+
+.joypixels-32-food._1f356 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f9b4 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f32d {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f354 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f35f {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f355 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    60%;
+}
+
+
+
+.joypixels-32-food._1fad3 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f96a {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f959 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f9c6 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f32e {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f32f {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    70%;
+}
+
+
+
+.joypixels-32-food._1fad4 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f957 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f958 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    0%;
+}
+
+
+
+.joypixels-32-food._1fad5 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f96b {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    20%;
+}
+
+
+
+.joypixels-32-food._1fad9 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f35d {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f35c {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f372 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f35b {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f363 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f371 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f95f {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f9aa {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f364 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f359 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f35a {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f358 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f365 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f960 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    0%;
+}
+
+
+
+.joypixels-32-food._1f96e {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f362 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f361 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f367 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f368 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f366 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f967 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f9c1 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f370 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f382 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f36e {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f36d {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f36c {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f36b {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f37f {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f369 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f36a {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f330 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f95c {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    0%;
+}
+
+
+
+.joypixels-32-food._1fad8 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f36f {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f95b {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    30%;
+}
+
+
+
+.joypixels-32-food._1fad7 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f37c {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    50%;
+}
+
+
+
+.joypixels-32-food._1fad6 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f375 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    70%;
+}
+
+
+
+.joypixels-32-food._1f9c9 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    80%;
+}
+
+
+
+.joypixels-32-food._1f9c3 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    90%;
+}
+
+
+
+.joypixels-32-food._1f964 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    0%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f9cb {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    9.090909090909092%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f376 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    18.181818181818183%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f37a {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    27.272727272727273%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f37b {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    36.36363636363637%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f942 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    45.45454545454545%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f377 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    54.54545454545455%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f943 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    63.63636363636363%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f378 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    72.72727272727273%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f379 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    81.81818181818181%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f37e {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    90.9090909090909%
+    100%;
+}
+
+
+
+.joypixels-32-food._1f9ca {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    100%
+    0%;
+}
+
+
+
+.joypixels-32-food._1f944 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    100%
+    10%;
+}
+
+
+
+.joypixels-32-food._1f374 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    100%
+    20%;
+}
+
+
+
+.joypixels-32-food._1f37d {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    100%
+    30%;
+}
+
+
+
+.joypixels-32-food._1f963 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    100%
+    40%;
+}
+
+
+
+.joypixels-32-food._1f961 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    100%
+    50%;
+}
+
+
+
+.joypixels-32-food._1f962 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    100%
+    60%;
+}
+
+
+
+.joypixels-32-food._1f9c2 {
+  background-image: url('/packages/emoji-toolkit/food-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1200%
+    1100%;
+  background-position:
+    100%
+    70%;
+}
+
+
+
 

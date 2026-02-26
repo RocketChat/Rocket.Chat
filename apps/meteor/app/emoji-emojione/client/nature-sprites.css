@@ -1,1069 +1,2774 @@
 /* stylelint-disable */
 
-.emojione-nature {
-  background-image: url('/packages/emojione/nature-sprites.png');
 
-  &._1f42b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 0%;
-  }
 
-  &._2600 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 0%;
-  }
-
-  &._2602 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 8.333333333333334%;
-  }
-
-  &._2603 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 8.333333333333334%;
-  }
-
-  &._2604 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 0%;
-  }
-
-  &._2614 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 8.333333333333334%;
-  }
-
-  &._2618 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 16.666666666666668%;
-  }
-
-  &._2728 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 16.666666666666668%;
-  }
-
-  &._2744 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 16.666666666666668%;
-  }
-
-  &._1f436 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 0%;
-  }
-
-  &._1f431 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 8.333333333333334%;
-  }
-
-  &._1f42d {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 16.666666666666668%;
-  }
-
-  &._1f439 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 25%;
-  }
-
-  &._1f430 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 25%;
-  }
-
-  &._1f98a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 25%;
-  }
-
-  &._1f99d {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 25%;
-  }
-
-  &._1f43b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 0%;
-  }
-
-  &._1f43c {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 8.333333333333334%;
-  }
-
-  &._1f998 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 16.666666666666668%;
-  }
-
-  &._1f9a1 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 25%;
-  }
-
-  &._1f428 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 33.333333333333336%;
-  }
-
-  &._1f42f {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 33.333333333333336%;
-  }
-
-  &._1f981 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 33.333333333333336%;
-  }
-
-  &._1f42e {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 33.333333333333336%;
-  }
-
-  &._1f437 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 33.333333333333336%;
-  }
-
-  &._1f43d {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 0%;
-  }
-
-  &._1f438 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 8.333333333333334%;
-  }
-
-  &._1f435 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 16.666666666666668%;
-  }
-
-  &._1f648 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 25%;
-  }
-
-  &._1f649 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 33.333333333333336%;
-  }
-
-  &._1f64a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 41.666666666666664%;
-  }
-
-  &._1f412 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 41.666666666666664%;
-  }
-
-  &._1f414 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 41.666666666666664%;
-  }
-
-  &._1f427 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 41.666666666666664%;
-  }
-
-  &._1f426 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 41.666666666666664%;
-  }
-
-  &._1f424 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 41.666666666666664%;
-  }
-
-  &._1f423 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 0%;
-  }
-
-  &._1f425 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 8.333333333333334%;
-  }
-
-  &._1f986 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 16.666666666666668%;
-  }
-
-  &._1f9a2 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 25%;
-  }
-
-  &._1f985 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 33.333333333333336%;
-  }
-
-  &._1f989 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 41.666666666666664%;
-  }
-
-  &._1f99c {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 50%;
-  }
-
-  &._1f99a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 50%;
-  }
-
-  &._1f987 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 50%;
-  }
-
-  &._1f43a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 50%;
-  }
-
-  &._1f417 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 50%;
-  }
-
-  &._1f434 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 50%;
-  }
-
-  &._1f984 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 50%;
-  }
-
-  &._1f41d {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 0%;
-  }
-
-  &._1f41b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 8.333333333333334%;
-  }
-
-  &._1f98b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 16.666666666666668%;
-  }
-
-  &._1f40c {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 25%;
-  }
-
-  &._1f41a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 33.333333333333336%;
-  }
-
-  &._1f41e {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 41.666666666666664%;
-  }
-
-  &._1f41c {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 50%;
-  }
-
-  &._1f997 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 58.333333333333336%;
-  }
-
-  &._1f577 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 58.333333333333336%;
-  }
-
-  &._1f578 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 58.333333333333336%;
-  }
-
-  &._1f982 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 58.333333333333336%;
-  }
-
-  &._1f99f {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 58.333333333333336%;
-  }
-
-  &._1f9a0 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 58.333333333333336%;
-  }
-
-  &._1f422 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 58.333333333333336%;
-  }
-
-  &._1f40d {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 58.333333333333336%;
-  }
-
-  &._1f98e {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 0%;
-  }
-
-  &._1f996 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 8.333333333333334%;
-  }
-
-  &._1f995 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 16.666666666666668%;
-  }
-
-  &._1f419 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 25%;
-  }
-
-  &._1f991 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 33.333333333333336%;
-  }
-
-  &._1f990 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 41.666666666666664%;
-  }
-
-  &._1f980 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 50%;
-  }
-
-  &._1f99e {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 58.333333333333336%;
-  }
-
-  &._1f421 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 66.66666666666667%;
-  }
-
-  &._1f420 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 66.66666666666667%;
-  }
-
-  &._1f41f {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 66.66666666666667%;
-  }
-
-  &._1f42c {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 66.66666666666667%;
-  }
-
-  &._1f433 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 66.66666666666667%;
-  }
-
-  &._1f40b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 66.66666666666667%;
-  }
-
-  &._1f988 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 66.66666666666667%;
-  }
-
-  &._1f40a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 66.66666666666667%;
-  }
-
-  &._1f405 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 66.66666666666667%;
-  }
-
-  &._1f406 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 0%;
-  }
-
-  &._1f993 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 8.333333333333334%;
-  }
-
-  &._1f98d {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 16.666666666666668%;
-  }
-
-  &._1f418 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 25%;
-  }
-
-  &._1f98f {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 33.333333333333336%;
-  }
-
-  &._1f99b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 41.666666666666664%;
-  }
-
-  &._1f42a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 50%;
-  }
-
-  &._2601 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 58.333333333333336%;
-  }
-
-  &._1f992 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 66.66666666666667%;
-  }
-
-  &._1f999 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 75%;
-  }
-
-  &._1f403 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 75%;
-  }
-
-  &._1f402 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 75%;
-  }
-
-  &._1f404 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 75%;
-  }
-
-  &._1f40e {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 75%;
-  }
-
-  &._1f416 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 75%;
-  }
-
-  &._1f40f {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 75%;
-  }
-
-  &._1f411 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 75%;
-  }
-
-  &._1f410 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 75%;
-  }
-
-  &._1f98c {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 75%;
-  }
-
-  &._1f415 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 0%;
-  }
-
-  &._1f429 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 8.333333333333334%;
-  }
-
-  &._1f408 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 16.666666666666668%;
-  }
-
-  &._1f413 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 25%;
-  }
-
-  &._1f983 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 33.333333333333336%;
-  }
-
-  &._1f54a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 41.666666666666664%;
-  }
-
-  &._1f407 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 50%;
-  }
-
-  &._1f401 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 58.333333333333336%;
-  }
-
-  &._1f400 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 66.66666666666667%;
-  }
-
-  &._1f43f {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 75%;
-  }
-
-  &._1f994 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 83.33333333333333%;
-  }
-
-  &._1f43e {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 83.33333333333333%;
-  }
-
-  &._1f409 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 83.33333333333333%;
-  }
-
-  &._1f432 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 83.33333333333333%;
-  }
-
-  &._1f335 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 83.33333333333333%;
-  }
-
-  &._1f384 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 83.33333333333333%;
-  }
-
-  &._1f332 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 83.33333333333333%;
-  }
-
-  &._1f333 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 83.33333333333333%;
-  }
-
-  &._1f334 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 83.33333333333333%;
-  }
-
-  &._1f331 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 83.33333333333333%;
-  }
-
-  &._1f33f {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 83.33333333333333%;
-  }
-
-  &._1f340 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 0%;
-  }
-
-  &._1f38d {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 8.333333333333334%;
-  }
-
-  &._1f38b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 16.666666666666668%;
-  }
-
-  &._1f343 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 25%;
-  }
-
-  &._1f342 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 33.333333333333336%;
-  }
-
-  &._1f341 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 41.666666666666664%;
-  }
-
-  &._1f344 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 50%;
-  }
-
-  &._1f33e {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 58.333333333333336%;
-  }
-
-  &._1f490 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 66.66666666666667%;
-  }
-
-  &._1f337 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 75%;
-  }
-
-  &._1f339 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 83.33333333333333%;
-  }
-
-  &._1f940 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 91.66666666666667%;
-  }
-
-  &._1f33a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 91.66666666666667%;
-  }
-
-  &._1f338 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 91.66666666666667%;
-  }
-
-  &._1f33c {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 91.66666666666667%;
-  }
-
-  &._1f33b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 91.66666666666667%;
-  }
-
-  &._1f31e {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 91.66666666666667%;
-  }
-
-  &._1f31d {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 91.66666666666667%;
-  }
-
-  &._1f31b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 91.66666666666667%;
-  }
-
-  &._1f31c {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 91.66666666666667%;
-  }
-
-  &._1f31a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 91.66666666666667%;
-  }
-
-  &._1f315 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 91.66666666666667%;
-  }
-
-  &._1f316 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 91.66666666666667%;
-  }
-
-  &._1f317 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 0%;
-  }
-
-  &._1f318 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 8.333333333333334%;
-  }
-
-  &._1f311 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 16.666666666666668%;
-  }
-
-  &._1f312 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 25%;
-  }
-
-  &._1f313 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 33.333333333333336%;
-  }
-
-  &._1f314 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 41.666666666666664%;
-  }
-
-  &._1f319 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 50%;
-  }
-
-  &._1f30e {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 58.333333333333336%;
-  }
-
-  &._1f30d {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 66.66666666666667%;
-  }
-
-  &._1f30f {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 75%;
-  }
-
-  &._1f4ab {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 83.33333333333333%;
-  }
-
-  &._2b50 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 91.66666666666667%;
-  }
-
-  &._1f31f {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 0% 100%;
-  }
-
-  &._26a1 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 7.6923076923076925% 100%;
-  }
-
-  &._1f4a5 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 15.384615384615385% 100%;
-  }
-
-  &._1f525 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 23.076923076923077% 100%;
-  }
-
-  &._1f32a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 30.76923076923077% 100%;
-  }
-
-  &._1f308 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 38.46153846153846% 100%;
-  }
-
-  &._1f324 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 46.15384615384615% 100%;
-  }
-
-  &._26c5 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 53.84615384615385% 100%;
-  }
-
-  &._1f325 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 61.53846153846154% 100%;
-  }
-
-  &._1f326 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 69.23076923076923% 100%;
-  }
-
-  &._1f327 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 76.92307692307692% 100%;
-  }
-
-  &._26c8 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 84.61538461538461% 100%;
-  }
-
-  &._1f329 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 92.3076923076923% 100%;
-  }
-
-  &._1f328 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 100% 0%;
-  }
-
-  &._26c4 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 100% 8.333333333333334%;
-  }
-
-  &._1f32c {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 100% 16.666666666666668%;
-  }
-
-  &._1f4a8 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 100% 25%;
-  }
-
-  &._1f4a7 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 100% 33.333333333333336%;
-  }
-
-  &._1f4a6 {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 100% 41.666666666666664%;
-  }
-
-  &._1f30a {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 100% 50%;
-  }
-
-  &._1f32b {
-    background-repeat: no-repeat;
-    background-size: 1400% 1300%;
-    background-position: 100% 58.333333333333336%;
-  }
-
+.joypixels-32-nature._2600 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    0%;
 }
+
+
+
+.joypixels-32-nature._2601 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    0%;
+}
+
+
+
+.joypixels-32-nature._2602 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._2603 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._2604 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    0%;
+}
+
+
+
+.joypixels-32-nature._2614 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._2618 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._2728 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._2744 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f436 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f431 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f42d {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f439 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f430 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f98a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f43b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f43c {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f43b-2744 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f428 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f42f {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f981 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f42e {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f437 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f43d {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f438 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f435 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f648 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f649 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f64a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f412 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f414 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f427 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f426 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f424 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f423 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f425 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1fabf {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f986 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f426-2b1b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f985 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f989 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f987 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f43a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f417 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f434 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f984 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1face {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f41d {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1fab1 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f41b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f98b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f40c {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f41e {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f41c {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1fab0 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1fab2 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1fab3 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f99f {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f997 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f577 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f578 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f982 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f422 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f40d {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f98e {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f996 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f995 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f419 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f991 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1fabc {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f990 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f99e {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f980 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f421 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f420 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f41f {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f42c {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f433 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f40b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f988 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f9ad {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f40a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f405 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f406 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f993 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f98d {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f9a7 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f9a3 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f418 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f99b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f98f {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f42a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f42b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f992 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f998 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f9ac {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f403 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f402 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f404 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1facf {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f40e {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f416 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f40f {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f411 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f999 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f410 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f98c {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f415 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f429 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f9ae {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f415-1f9ba {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f408 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f408-2b1b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1fab6 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1fabd {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f413 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f983 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f9a4 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f99a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f99c {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f9a2 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f9a9 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f54a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f407 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f99d {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f9a8 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f9a1 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f9ab {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f9a6 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f9a5 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f401 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f400 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f43f {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f994 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f43e {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f409 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f432 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f426-1f525 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f335 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f384 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f332 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f333 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f334 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1fab5 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f331 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f33f {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f340 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f38d {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1fab4 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f38b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f343 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f342 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f341 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1faba {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1fab9 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f344 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f344-1f7eb {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f41a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1fab8 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1faa8 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f33e {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f490 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f337 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f339 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f940 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1fabb {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1fab7 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f33a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f338 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f33c {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f33b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f31e {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f31d {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f31b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f31c {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._1f31a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f315 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f316 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._1f317 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f318 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f311 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f312 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f313 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f314 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f319 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f30e {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    21.428571428571427%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f30d {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    28.571428571428573%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f30f {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    35.714285714285715%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1fa90 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    42.857142857142854%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f4ab {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    50%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._2b50 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    57.142857142857146%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f31f {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    64.28571428571429%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._26a1 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    71.42857142857143%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f4a5 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    78.57142857142857%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f525 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    85.71428571428571%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f32a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    92.85714285714286%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f308 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    0%;
+}
+
+
+
+.joypixels-32-nature._1f324 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    7.142857142857143%;
+}
+
+
+
+.joypixels-32-nature._26c5 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    14.285714285714286%;
+}
+
+
+
+.joypixels-32-nature._1f325 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    21.428571428571427%;
+}
+
+
+
+.joypixels-32-nature._1f326 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    28.571428571428573%;
+}
+
+
+
+.joypixels-32-nature._1f327 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    35.714285714285715%;
+}
+
+
+
+.joypixels-32-nature._26c8 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    42.857142857142854%;
+}
+
+
+
+.joypixels-32-nature._1f329 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    50%;
+}
+
+
+
+.joypixels-32-nature._1f328 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    57.142857142857146%;
+}
+
+
+
+.joypixels-32-nature._26c4 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    64.28571428571429%;
+}
+
+
+
+.joypixels-32-nature._1f32c {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    71.42857142857143%;
+}
+
+
+
+.joypixels-32-nature._1f4a8 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    78.57142857142857%;
+}
+
+
+
+.joypixels-32-nature._1f4a7 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    85.71428571428571%;
+}
+
+
+
+.joypixels-32-nature._1f4a6 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    100%
+    92.85714285714286%;
+}
+
+
+
+.joypixels-32-nature._1fae7 {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    0%
+    100%;
+}
+
+
+
+.joypixels-32-nature._1f30a {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    7.142857142857143%
+    100%;
+}
+
+
+
+.joypixels-32-nature._1f32b {
+  background-image: url('/packages/emoji-toolkit/nature-sprites.png');
+  background-repeat: no-repeat;
+  background-size:
+    1500%
+    1500%;
+  background-position:
+    14.285714285714286%
+    100%;
+}
+
+
+
 
