@@ -16,7 +16,6 @@ import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
-import { v4 as uuidv4 } from 'uuid';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -30,7 +29,6 @@ import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFi
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
@@ -245,7 +243,7 @@ API.v1.addRoute(
 					text = `#${channel}`;
 					break;
 				case 'user':
-					if (settings.get('API_Shield_user_require_auth') && !(await getLoggedInUser(this.request))) {
+					if (settings.get('API_Shield_user_require_auth') && !this.user) {
 						return API.v1.failure('You must be logged in to do this.');
 					}
 					const user = await getUserFromParams(this.queryParams);
@@ -476,6 +474,7 @@ API.v1.addRoute(
 		authRequired: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -515,8 +514,7 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
 					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
@@ -531,12 +529,14 @@ API.v1.addRoute(
 		},
 	},
 );
+
 API.v1.addRoute(
 	'method.callAnon/:method',
 	{
 		authRequired: false,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
+		applyMeteorContext: true,
 	},
 	{
 		async post() {
@@ -572,8 +572,7 @@ API.v1.addRoute(
 					});
 				}
 
-				const result = await Meteor.callAsync(method, ...params);
-				return API.v1.success(mountResult({ id, result }));
+				return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 			} catch (err) {
 				if (!(err as any).isClientSafe && !(err as any).meteorError) {
 					SystemLogger.error({ msg: 'Exception while invoking method', err, method });
@@ -673,7 +672,7 @@ API.v1.addRoute(
 
 			const promises = settingsIds.map((settingId) => {
 				if (settingId === 'uniqueID') {
-					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || uuidv4());
+					return auditSettingOperation(Settings.resetValueById, 'uniqueID', process.env.DEPLOYMENT_ID || crypto.randomUUID());
 				}
 
 				if (settingId === 'Cloud_Workspace_Access_Token_Expires_At') {

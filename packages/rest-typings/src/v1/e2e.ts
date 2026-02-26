@@ -1,9 +1,6 @@
 import type { IRoom, IUser, ISubscription } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from './Ajv';
 
 type E2eSetUserPublicAndPrivateKeysProps = {
 	public_key: string;
@@ -151,11 +148,6 @@ export const isE2EResetRoomKeyProps = ajv.compile<E2EResetRoomKeyProps>(E2EReset
 export type E2eEndpoints = {
 	'/v1/e2e.setUserPublicAndPrivateKeys': {
 		POST: (params: E2eSetUserPublicAndPrivateKeysProps) => void;
-	};
-	'/v1/e2e.getUsersOfRoomWithoutKey': {
-		GET: (params: E2eGetUsersOfRoomWithoutKeyProps) => {
-			users: Pick<IUser, '_id' | 'e2e'>[];
-		};
 	};
 	'/v1/e2e.updateGroupKey': {
 		POST: (params: E2eUpdateGroupKeyProps) => void;

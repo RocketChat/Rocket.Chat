@@ -1,6 +1,6 @@
 import { api } from '@rocket.chat/core-services';
-import type { IUiKitCoreApp } from '@rocket.chat/core-services';
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IUiKitCoreApp, UiKitCoreAppBlockActionPayload } from '@rocket.chat/core-services';
+import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -24,13 +24,16 @@ const retrieveMentionsFromPayload = (stringifiedMentions: string): Exclude<IMess
 export class MentionModule implements IUiKitCoreApp {
 	appId = 'mention-core';
 
-	async blockAction(payload: any): Promise<any> {
+	async blockAction(payload: UiKitCoreAppBlockActionPayload): Promise<undefined> {
 		const {
 			actionId,
 			payload: { value: stringifiedMentions, blockId: referenceMessageId },
 		} = payload;
 
-		const mentions = retrieveMentionsFromPayload(stringifiedMentions);
+		const user = payload.user!;
+		const room = payload.room!;
+
+		const mentions = retrieveMentionsFromPayload(stringifiedMentions as string);
 
 		const usernames = mentions.map(({ username }) => username);
 
@@ -43,34 +46,34 @@ export class MentionModule implements IUiKitCoreApp {
 		const joinedUsernames = `@${usernames.join(', @')}`;
 
 		if (actionId === 'dismiss') {
-			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
+			void api.broadcast('notify.ephemeralMessage', user._id, room, {
 				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room', {
 					mentions: joinedUsernames,
-					lng: payload.user.language,
+					lng: user.language,
 				}),
 				_id: payload.message,
 				tmid: message.tmid,
 				mentions,
 			});
-			return;
+			return undefined;
 		}
 
 		if (actionId === 'add-users') {
-			void addUsersToRoomMethod(payload.user._id, { rid: payload.room, users: usernames as string[] }, payload.user);
-			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
+			void addUsersToRoomMethod(user._id, { rid: room, users: usernames as string[] }, user);
+			void api.broadcast('notify.ephemeralMessage', user._id, room, {
 				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room', {
 					mentions: joinedUsernames,
-					lng: payload.user.language,
+					lng: user.language,
 				}),
 				tmid: message.tmid,
 				_id: payload.message,
 				mentions,
 			});
-			return;
+			return undefined;
 		}
 
 		if (actionId === 'share-message') {
-			const sub = await Subscriptions.findOneByRoomIdAndUserId(payload.room, payload.user._id, { projection: { t: 1, rid: 1, name: 1 } });
+			const sub = await Subscriptions.findOneByRoomIdAndUserId(room, user._id, { projection: { t: 1, rid: 1, name: 1 } });
 			// this should exist since the event is fired from withing the room (e.g the user sent a message)
 			if (!sub) {
 				throw new Error('Mention bot - Failed to retrieve room information');
@@ -83,7 +86,7 @@ export class MentionModule implements IUiKitCoreApp {
 
 			const messageText = i18n.t('Youre_not_a_part_of__channel__and_I_mentioned_you_there', {
 				channel: `#${sub.name}`,
-				lng: payload.user.language,
+				lng: user.language,
 			});
 
 			const link = new URL(Meteor.absoluteUrl(roomPath));
@@ -97,18 +100,19 @@ export class MentionModule implements IUiKitCoreApp {
 					text,
 					separateResponse: true, // so that messages are sent to other DMs even if one or more fails
 				},
-				payload.user,
+				user as IUser & { username: string },
 			);
 
-			void api.broadcast('notify.ephemeralMessage', payload.user._id, payload.room, {
+			void api.broadcast('notify.ephemeralMessage', user._id, room, {
 				msg: i18n.t('You_mentioned___mentions__but_theyre_not_in_this_room_You_let_them_know_via_dm', {
 					mentions: joinedUsernames,
-					lng: payload.user.language,
+					lng: user.language,
 				}),
 				tmid: message.tmid,
 				_id: payload.message,
 				mentions,
 			});
+			return undefined;
 		}
 	}
 }

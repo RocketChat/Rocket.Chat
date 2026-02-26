@@ -33,6 +33,10 @@ export abstract class Composer {
 		return this.root.getByRole('button', { name: 'Send' });
 	}
 
+	get btnCancel(): Locator {
+		return this.root.getByRole('button', { name: 'Cancel', exact: true });
+	}
+
 	get btnOptionFileUpload(): Locator {
 		return this.toolbarPrimaryActions.getByRole('button', { name: 'Upload file' });
 	}
@@ -63,6 +67,10 @@ export abstract class Composer {
 
 	get readOnlyFooter(): Locator {
 		return this.root.getByText('This room is read only');
+	}
+
+	get typingIndicator(): Locator {
+		return this.root.getByRole('status').getByText(/typing/i);
 	}
 }
 
