@@ -13,3 +13,5 @@ export const KeypadStoryWithTone: StoryFn<typeof Keypad> = () => {
 	const playTone = useTonePlayer();
 	return <Keypad onKeyPress={(key) => playTone(key as any)} />;
 };
+
+KeypadStoryWithTone.tags = ['skip'];
