@@ -149,6 +149,7 @@ function _call(httpMethod: string, url: string, options: HttpCallOptions, callba
 		referrer: options.referrer,
 		integrity: options.integrity,
 		headers,
+		ignoreSsrfValidation: true,
 	} as const;
 
 	fetch(newUrl, requestOptions)

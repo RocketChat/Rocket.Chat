@@ -223,11 +223,21 @@ export class BusinessHourManager {
 	}
 
 	private async openWorkHoursCallback(day: string, hour: string): Promise<void> {
-		return this.behavior.openBusinessHoursByDayAndHour(day, hour);
+		try {
+			return await this.behavior.openBusinessHoursByDayAndHour(day, hour);
+		} catch (err) {
+			businessHourLogger.error({ msg: 'Error while opening business hours', err });
+			throw err;
+		}
 	}
 
 	private async closeWorkHoursCallback(day: string, hour: string): Promise<void> {
-		return this.behavior.closeBusinessHoursByDayAndHour(day, hour);
+		try {
+			return await this.behavior.closeBusinessHoursByDayAndHour(day, hour);
+		} catch (err) {
+			businessHourLogger.error({ msg: 'Error while closing business hours', err });
+			throw err;
+		}
 	}
 
 	private getBusinessHourType(type: string): IBusinessHourType | undefined {

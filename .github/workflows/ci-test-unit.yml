@@ -28,12 +28,6 @@ jobs:
     name: Unit Tests
 
     steps:
-      - name: Collect Workflow Telemetry
-        uses: catchpoint/workflow-telemetry-action@v2
-        with:
-          theme: dark
-          job_summary: true
-          comment_on_pr: false
       - uses: actions/checkout@v6
 
       - name: Setup NodeJS
@@ -59,7 +53,7 @@ jobs:
           tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       - name: Unit Test
-        run: yarn testunit
+        run: yarn testunit --concurrency=1
 
       - uses: codecov/codecov-action@v5
         with:
