@@ -31,12 +31,13 @@ const AvatarCropModal = ({ imageSrc, onApply, onCancel }: AvatarCropModalProps):
 	const [offset, setOffset] = useState({ x: 0, y: 0 });
 	const [isDragging, setIsDragging] = useState(false);
 
-	const onMouseDown = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+	const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
 		setIsDragging(true);
+		e.currentTarget.setPointerCapture(e.pointerId);
 		dragStart.current = { x: e.clientX - offset.x, y: e.clientY - offset.y };
 	};
 
-	const onMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+	const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
 		if (!isDragging) return;
 		setOffset({
 			x: e.clientX - dragStart.current.x,
@@ -44,7 +45,7 @@ const AvatarCropModal = ({ imageSrc, onApply, onCancel }: AvatarCropModalProps):
 		});
 	};
 
-	const onMouseUp = () => {
+	const onPointerUp = () => {
 		setIsDragging(false);
 	};
 
@@ -113,10 +114,10 @@ const AvatarCropModal = ({ imageSrc, onApply, onCancel }: AvatarCropModalProps):
 							position='relative'
 							borderRadius='50%'
 							style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
-							onMouseDown={onMouseDown}
-							onMouseMove={onMouseMove}
-							onMouseUp={onMouseUp}
-							onMouseLeave={onMouseUp}
+							onPointerDown={onPointerDown}
+							onPointerMove={onPointerMove}
+							onPointerUp={onPointerUp}
+							onPointerCancel={onPointerUp}
 						>
 							<canvas
 								ref={canvasRef}
