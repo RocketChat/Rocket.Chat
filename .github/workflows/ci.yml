@@ -253,7 +253,6 @@ jobs:
           - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
 
     steps:
-
       - uses: actions/checkout@v6
 
       - uses: ./.github/actions/meteor-build
@@ -527,26 +526,6 @@ jobs:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
 
-  test-api-livechat-ee:
-    name: 🔨 Test API Livechat (EE)
-    needs: [checks, build-gh-docker-publish, release-versions]
-
-    uses: ./.github/workflows/ci-test-e2e.yml
-    with:
-      type: api-livechat
-      release: ee
-      transporter: 'nats://nats:4222'
-      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      mongodb-version: "['8.0']"
-      coverage: '8.0'
-      node-version: ${{ needs.release-versions.outputs.node-version }}
-      deno-version: ${{ needs.release-versions.outputs.deno-version }}
-      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
-      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
-    secrets:
-      CR_USER: ${{ secrets.CR_USER }}
-      CR_PAT: ${{ secrets.CR_PAT }}
-
   test-ui:
     name: 🔨 Test UI (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
@@ -557,8 +536,8 @@ jobs:
       release: ce
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      shard: '[1, 2, 3, 4]'
-      total-shard: 4
+      shard: '[1, 2, 3, 4, 5]'
+      total-shard: 5
       node-version: ${{ needs.release-versions.outputs.node-version }}
       deno-version: ${{ needs.release-versions.outputs.deno-version }}
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
@@ -592,6 +571,26 @@ jobs:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
 
+  test-api-livechat-ee:
+    name: 🔨 Test API Livechat (EE)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api-livechat
+      release: ee
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      mongodb-version: "['8.0']"
+      coverage: '8.0'
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+
   test-ui-ee:
     name: 🔨 Test UI (EE)
     needs: [checks, build-gh-docker-publish, release-versions]
@@ -602,8 +601,8 @@ jobs:
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
-      shard: '[1, 2, 3, 4, 5]'
-      total-shard: 5
+      shard: '[1, 2, 3, 4, 5, 6]'
+      total-shard: 6
       mongodb-version: "['8.0']"
       coverage: '8.0'
       node-version: ${{ needs.release-versions.outputs.node-version }}
