@@ -12,7 +12,7 @@ import history from '../../history';
 import Connection from '../../lib/connection';
 import CustomFields from '../../lib/customFields';
 import Hooks from '../../lib/hooks';
-import { parentCall } from '../../lib/parentCall';
+import { parentCall } from '../../lib/iframe';
 import Triggers from '../../lib/triggers';
 import userPresence from '../../lib/userPresence';
 import { ChatConnector } from '../../routes/Chat';

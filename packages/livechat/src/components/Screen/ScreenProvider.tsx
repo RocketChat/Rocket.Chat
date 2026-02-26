@@ -4,8 +4,8 @@ import { useContext, useEffect, useState } from 'preact/hooks';
 import { parse } from 'query-string';
 
 import { isActiveSession } from '../../helpers/isActiveSession';
+import { parentCall } from '../../lib/iframe';
 import { loadConfig } from '../../lib/main';
-import { parentCall } from '../../lib/parentCall';
 import { loadMessages } from '../../lib/room';
 import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
