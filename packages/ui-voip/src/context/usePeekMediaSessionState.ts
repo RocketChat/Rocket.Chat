@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
 import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState';
@@ -7,36 +7,35 @@ export type PeekMediaSessionStateReturn = 'unavailable' | 'available' | 'ongoing
 
 export const usePeekMediaSessionState = (): PeekMediaSessionStateReturn => {
 	const { instance } = useMediaCallInstanceContext();
-	const [state, setState] = useState<PeekMediaSessionStateReturn>(() => 'unavailable');
 
-	// TODO useSyncExternalStore
-	useEffect(() => {
+	const subscribe = useCallback(
+		(onStoreChange: () => void): (() => void) => {
+			if (!instance) {
+				return () => undefined;
+			}
+			return instance?.on('sessionStateChange', onStoreChange);
+		},
+		[instance],
+	);
+
+	const getSnapshot = useCallback(() => {
 		if (!instance) {
-			setState('unavailable');
-			return;
+			return 'unavailable';
 		}
 
-		const updateState = () => {
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
-				setState('available');
-				return;
-			}
+		const mainCall = instance.getMainCall();
+		if (!mainCall) {
+			return 'available';
+		}
 
-			const { state: callState, role } = mainCall;
-			const state = deriveWidgetStateFromCallState(callState, role);
-			if (!state) {
-				setState('available');
-				return;
-			}
+		const { state: callState, role } = mainCall;
+		const state = deriveWidgetStateFromCallState(callState, role);
+		if (!state) {
+			return 'available';
+		}
 
-			setState(state);
-		};
-
-		updateState();
-
-		return instance.on('sessionStateChange', updateState);
+		return state;
 	}, [instance]);
 
-	return state;
+	return useSyncExternalStore(subscribe, getSnapshot);
 };

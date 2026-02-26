@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
 import type { PeerInfo } from './definitions';
@@ -6,24 +6,28 @@ import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromIn
 
 export const usePeekMediaSessionPeerInfo = (): PeerInfo | undefined => {
 	const { instance } = useMediaCallInstanceContext();
-	const [peerInfo, setPeerInfo] = useState<PeerInfo | undefined>(undefined);
 
-	useEffect(() => {
-		if (!instance) {
-			setPeerInfo(undefined);
-			return;
-		}
-		const updatePeerInfo = () => {
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
-				return;
+	const subscribe = useCallback(
+		(onStoreChange: () => void): (() => void) => {
+			if (!instance) {
+				return () => undefined;
 			}
-			const { contact } = mainCall;
-			setPeerInfo(derivePeerInfoFromInstanceContact(contact));
-		};
-		updatePeerInfo();
-		return instance.on('sessionStateChange', updatePeerInfo);
+			return instance?.on('sessionStateChange', onStoreChange);
+		},
+		[instance],
+	);
+
+	const getSnapshot = useCallback(() => {
+		if (!instance) {
+			return undefined;
+		}
+		const mainCall = instance.getMainCall();
+		if (!mainCall) {
+			return undefined;
+		}
+		const { contact } = mainCall;
+		return derivePeerInfoFromInstanceContact(contact);
 	}, [instance]);
 
-	return peerInfo;
+	return useSyncExternalStore(subscribe, getSnapshot);
 };
