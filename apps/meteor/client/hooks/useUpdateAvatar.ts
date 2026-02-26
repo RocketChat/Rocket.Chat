@@ -61,13 +61,17 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) =
 
 		if (isAvatarUrl(avatarObj)) {
 			if (avatarUrl.startsWith('data:')) {
-				const file = dataUriToFile(avatarUrl);
+				try {
+					const file = dataUriToFile(avatarUrl);
 
-				const formData = new FormData();
-				formData.append('image', file, 'avatar.png');
-				formData.set('userId', userId);
+					const formData = new FormData();
+					formData.append('image', file, 'avatar.png');
+					formData.set('userId', userId);
 
-				await saveAvatarAction(formData);
+					await saveAvatarAction(formData);
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
 				return;
 			}
 
