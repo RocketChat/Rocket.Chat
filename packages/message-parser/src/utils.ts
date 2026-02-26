@@ -132,7 +132,7 @@ export const unorderedList = generate('UNORDERED_LIST');
 export const listItem = (text: Inlines[], number?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
-	...(number && { number }),
+	...(number !== undefined && { number }),
 });
 
 export const mentionUser = (() => {
@@ -201,6 +201,12 @@ export const reducePlainTexts = (values: Array<Inlines | Inlines[]>): Paragraph[
 	for (let i = 0; i < flattened.length; i++) {
 		const item = flattened[i];
 		const current = joinEmoji(item, flattened[i - 1], flattened[i + 1]);
+export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] => {
+	const flattenedValues = values.flat();
+	const result: Paragraph['value'] = [];
+
+	for (let index = 0; index < flattenedValues.length; index++) {
+		const current = joinEmoji(flattenedValues[index], flattenedValues[index - 1], flattenedValues[index + 1]);
 		const previous = result[result.length - 1];
 
 		if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
@@ -297,4 +303,5 @@ export const extractFirstResult = (value: Types[keyof Types]['value']): Types[ke
 	}
 
 	return undefined as Types[keyof Types]['value'];
+	return value.find(Boolean) as Types[keyof Types]['value'];
 };

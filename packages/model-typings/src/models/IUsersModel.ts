@@ -21,6 +21,7 @@ import type {
 	WithId,
 	UpdateOptions,
 	UpdateFilter,
+	BulkWriteResult,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -397,6 +398,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	bannerExistsById(userId: string, bannerId: string): Promise<boolean>;
 	setBannerReadById(userId: string, bannerId: string): Promise<UpdateResult>;
 	removeBannerById(userId: string, bannerId: string): Promise<UpdateResult>;
+	setBannersInBulk(updates: { userId: IUser['_id']; banners: NonNullable<IUser['banners']> }[]): Promise<BulkWriteResult>;
 	removeSamlServiceSession(userId: string): Promise<UpdateResult>;
 	updateDefaultStatus(userId: string, status: string): Promise<UpdateResult>;
 	setSamlInResponseTo(userId: string, inResponseTo: string): Promise<UpdateResult>;
