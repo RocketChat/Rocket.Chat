@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/meteor",
-	"version": "8.1.0-develop",
+	"version": "8.3.0-develop",
 	"private": true,
 	"description": "The Ultimate Open Source WebChat Platform",
 	"keywords": [
@@ -188,7 +188,7 @@
 		"date-fns": "~4.1.0",
 		"date.js": "~0.3.3",
 		"debug": "~4.3.7",
-		"dompurify": "~3.2.7",
+		"dompurify": "~3.3.1",
 		"drachtio-srf": "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch",
 		"ejson": "^2.2.3",
 		"emailreplyparser": "^0.0.5",
@@ -210,7 +210,7 @@
 		"gravatar": "^1.8.2",
 		"he": "^1.2.0",
 		"highlight.js": "11.8.0",
-		"hono": "^4.10.6",
+		"hono": "^4.11.9",
 		"http-proxy-agent": "^7.0.2",
 		"human-interval": "^2.0.1",
 		"i18next-http-backend": "^1.4.5",

@@ -1320,7 +1320,7 @@ export default class SlackAdapter {
 				msg._id = details.message_id;
 			}
 
-			void sendMessage(rocketUser, msg, rocketChannel, true);
+			void sendMessage(rocketUser, msg, rocketChannel, { upsert: true });
 		});
 	}
 
