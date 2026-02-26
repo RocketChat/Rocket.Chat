@@ -169,7 +169,7 @@ jobs:
         run: echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
 
       - name: Start httpbin container and wait for it to be ready
-        if: inputs.type == 'api'
+        if: inputs.type == 'api' || inputs.type == 'api-livechat'
         run: |
           docker compose -f docker-compose-ci.yml up -d httpbin
 
@@ -221,6 +221,22 @@ jobs:
           set -o xtrace
 
           npm run testapi
+
+          docker compose -f ../../docker-compose-ci.yml stop
+
+          ls -la $COVERAGE_DIR
+          exit $s
+
+      - name: E2E Test API (Livechat)
+        if: inputs.type == 'api-livechat'
+        working-directory: ./apps/meteor
+        env:
+          WEBHOOK_TEST_URL: 'http://httpbin'
+          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+        run: |
+          set -o xtrace
+
+          npm run testapi:livechat
 
           docker compose -f ../../docker-compose-ci.yml stop
 
