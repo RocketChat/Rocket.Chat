@@ -4,8 +4,8 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import AutoCompleteTagsMultiple from '../tags/AutoCompleteTagsMultiple';
 
 type CurrentChatTagsProps = Pick<ComponentProps<typeof AutoCompleteTagsMultiple>, 'id' | 'aria-labelledby'> & {
-	value: Array<{ value: string; label: string }>;
-	handler: (value: { label: string; value: string }[]) => void;
+	value: NonNullable<ComponentProps<typeof AutoCompleteTagsMultiple>['value']>;
+	handler: NonNullable<ComponentProps<typeof AutoCompleteTagsMultiple>['onChange']>;
 	department?: string;
 	viewAll?: boolean;
 	error?: string;
@@ -18,16 +18,7 @@ const CurrentChatTags = ({ value, handler, department, viewAll, error, ...props 
 		return null;
 	}
 
-	return (
-		<AutoCompleteTagsMultiple
-			{...props}
-			onChange={handler as any} // FIXME: any
-			value={value}
-			department={department}
-			viewAll={viewAll}
-			error={!!error}
-		/>
-	);
+	return <AutoCompleteTagsMultiple {...props} onChange={handler} value={value} department={department} viewAll={viewAll} />;
 };
 
 export default CurrentChatTags;

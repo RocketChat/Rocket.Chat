@@ -1,5 +1,5 @@
 import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';https://github.com/RocketChat/Rocket.Chat/pull/38723/conflict?name=apps%252Fmeteor%252Fclient%252Fviews%252Fomnichannel%252FadditionalForms%252FCurrentChatTags.tsx&ancestor_oid=e298f3cb3dbc49d0e2bdcd928013aee0d2e22440&base_oid=d7bc69afc620395b2bddd53c4da0accc5750597f&head_oid=0df8f5d14a2ec04cd58afc296f8c9cde98a6b6f4
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, ReactElement } from 'react';
 import { useId, useMemo, useState } from 'react';
@@ -77,7 +77,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 						id={tagsFieldId}
 						value={paginatedTagValue}
 						error={error}
-						handler={(tags: { label: string; value: string }[]): void => {
+						handler={(tags): void => {
 							handler(tags.map((tag) => tag.label));
 						}}
 						department={department}
