@@ -1,5 +1,7 @@
+import eslint from '@eslint/js';
 import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
+import { defineConfig } from 'eslint/config';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
 import importPlugin from 'eslint-plugin-import';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
@@ -10,21 +12,23 @@ import storybookPlugin from 'eslint-plugin-storybook';
 import globals from 'globals';
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
-export default [
-	// linting options
+export default defineConfig(
 	{
+		name: 'rocket.chat/linter',
 		linterOptions: {
 			reportUnusedDisableDirectives: true,
 		},
 	},
-	// ignored directories
 	{
+		name: 'rocket.chat/ignored',
 		ignores: ['**/dist', '**/coverage', '**/storybook-static'],
 	},
+	eslint.configs.recommended,
 	importPlugin.flatConfigs.recommended,
 	importPlugin.flatConfigs.typescript,
 	jsxA11yPlugin.flatConfigs.recommended,
 	{
+		name: 'rocket.chat/jsx-a11y',
 		rules: {
 			'jsx-a11y/no-autofocus': ['error', { ignoreNonDOM: true }],
 		},
@@ -32,6 +36,7 @@ export default [
 	reactPlugin.configs.flat.recommended,
 	reactPlugin.configs.flat['jsx-runtime'],
 	{
+		name: 'rocket.chat/react',
 		settings: {
 			react: {
 				version: 'detect',
@@ -49,6 +54,7 @@ export default [
 	},
 	reactHooksPlugin.configs.flat.recommended,
 	{
+		name: 'rocket.chat/react-hooks',
 		rules: {
 			// Core hooks rules
 			'react-hooks/exhaustive-deps': 'error',
@@ -73,13 +79,15 @@ export default [
 	},
 	...storybookPlugin.configs['flat/recommended'],
 	{
-		files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)'],
+		name: 'rocket.chat/storybook',
+		files: ['**/*.stories.@(ts|tsx|mts|cts|js|jsx|mjs|cjs)'],
 		rules: {
 			'react/display-name': 'off',
 			'react/no-multi-comp': 'off',
 		},
 	},
 	{
+		name: 'rocket.chat/anti-trojan',
 		plugins: {
 			'anti-trojan-source': antiTrojanSourcePlugin,
 		},
@@ -88,8 +96,8 @@ export default [
 		},
 	},
 	prettierPluginRecommended,
-	// javascript files
 	{
+		name: 'rocket.chat/javascript-syntax',
 		languageOptions: {
 			ecmaVersion: 2024,
 			sourceType: 'module',
@@ -97,7 +105,7 @@ export default [
 	},
 	// typescript files
 	{
-		files: ['**/*.ts', '**/*.tsx', '**/*.cts', '**/*.mts'],
+		files: ['**/*.@(ts|tsx|cts|mts)'],
 		languageOptions: {
 			parser: typescriptParser,
 			parserOptions: {
@@ -126,12 +134,10 @@ export default [
 					allow: ['arrowFunctions', 'functions', 'methods'],
 				},
 			],
-			'no-empty-pattern': 'error',
 			'no-eval': 'error',
 			'no-extend-native': 'error',
 			'no-extra-bind': 'error',
 			'no-extra-label': 'error',
-			'no-fallthrough': 'error',
 			'no-implied-eval': 'error',
 			'no-invalid-this': 'off',
 			'no-iterator': 'error',
@@ -139,9 +145,7 @@ export default [
 			'no-loop-func': 'error',
 			'no-multi-str': 'error',
 			'no-new-wrappers': 'error',
-			'no-octal': 'error',
 			'no-proto': 'error',
-			'no-redeclare': 'error',
 			'no-restricted-properties': [
 				'error',
 				{
@@ -162,47 +166,30 @@ export default [
 			'no-self-compare': 'error',
 			'no-sequences': 'error',
 			'no-throw-literal': 'error',
-			'no-unused-labels': 'error',
 			'no-useless-call': 'off',
+			'no-useless-catch': 'warn',
 			'no-useless-concat': 'error',
 			'no-useless-return': 'error',
 			'no-void': 'off',
+			'preserve-caught-error': 'warn',
 			'yoda': 'error',
 		},
 	},
 	// prevent common mistakes
 	{
 		rules: {
-			'for-direction': 'error',
 			'getter-return': ['error', { allowImplicit: true }],
-			// TODO: enable, semver-major
-			'no-async-promise-executor': 'off',
+			'no-async-promise-executor': 'warn',
 			'no-await-in-loop': 'error',
-			'no-compare-neg-zero': 'error',
-			'no-cond-assign': 'error',
-			'no-constant-condition': 'error',
-			'no-control-regex': 'error',
+			'no-case-declarations': 'warn',
+			'no-constant-binary-expression': 'warn',
 			'no-debugger': 'error',
-			'no-dupe-args': 'error',
-			'no-dupe-keys': 'error',
-			'no-duplicate-case': 'error',
-			'no-empty': 'error',
-			'no-empty-character-class': 'error',
-			'no-ex-assign': 'error',
-			'no-extra-boolean-cast': 'error',
-			'no-func-assign': 'error',
 			'no-inner-declarations': ['error', 'functions'],
-			'no-invalid-regexp': 'error',
-			'no-irregular-whitespace': 'error',
-			'no-obj-calls': 'error',
-			'no-regex-spaces': 'error',
-			'no-sparse-arrays': 'error',
-			'no-unreachable': 'error',
-			'no-unsafe-finally': 'error',
-			'no-unsafe-negation': 'error',
 			'no-negated-in-lhs': 'error',
+			'no-prototype-builtins': 'warn',
+			'no-unsafe-optional-chaining': 'warn',
+			'no-useless-assignment': 'warn',
 			'require-atomic-updates': 'off',
-			'use-isnan': 'error',
 			'valid-typeof': ['error', { requireStringLiterals: true }],
 		},
 	},
@@ -233,6 +220,7 @@ export default [
 			'no-multi-assign': 'error',
 			'no-nested-ternary': 'error',
 			'no-unneeded-ternary': ['error', { defaultAssignment: false }],
+			'no-useless-escape': 'warn',
 			'one-var': ['error', 'never'],
 			'operator-assignment': ['error', 'always'],
 			'prefer-object-spread': 'off',
@@ -242,8 +230,6 @@ export default [
 	// variables related rules
 	{
 		rules: {
-			'no-delete-var': 'error',
-			'no-undef': 'error',
 			'no-unused-vars': [
 				'error',
 				{
@@ -258,10 +244,7 @@ export default [
 	// ES2015 related rules
 	{
 		rules: {
-			'no-const-assign': 'error',
-			'no-dupe-class-members': 'error',
 			'no-duplicate-imports': 'off',
-			'no-this-before-super': 'error',
 			'no-useless-computed-key': 'error',
 			'no-useless-constructor': 'error',
 			'no-useless-rename': [
@@ -483,4 +466,4 @@ export default [
 			'react/no-multi-comp': 'off',
 		},
 	},
-];
+);

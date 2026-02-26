@@ -3376,7 +3376,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.39.3":
+"@eslint/js@npm:9.39.3, @eslint/js@npm:~9.39.3":
   version: 9.39.3
   resolution: "@eslint/js@npm:9.39.3"
   checksum: 10/91a1a1822cfeb2eb8a89aae86be5dfabad0b66b0915946516690a8485ddd80b91f43eee346789313fea1acbb7390a4958119ca7dc9a684a5c4014f12fcb3aaf3
@@ -8429,6 +8429,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:~7.28.6"
     "@babel/eslint-parser": "npm:~7.28.6"
+    "@eslint/js": "npm:~9.39.3"
     "@types/eslint": "npm:~8.44.9"
     "@types/prettier": "npm:^2.7.3"
     "@typescript-eslint/eslint-plugin": "npm:~8.56.1"
