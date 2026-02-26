@@ -8443,6 +8443,7 @@ __metadata:
     eslint-plugin-react: "npm:~7.37.5"
     eslint-plugin-react-hooks: "npm:~7.0.1"
     eslint-plugin-storybook: "npm:~10.2.12"
+    eslint-plugin-testing-library: "npm:~7.16.0"
     globals: "npm:~17.3.0"
     prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.3"
@@ -20609,15 +20610,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-no-floating-promise@npm:~2.0.0":
-  version: 2.0.0
-  resolution: "eslint-plugin-no-floating-promise@npm:2.0.0"
-  dependencies:
-    requireindex: "npm:1.2.0"
-  checksum: 10/4f56c5acfc7ba3189b6a5428cdc97aa1004f7ba69784949d193a9a88ef9766e2b2070463eedbb26f17e3852ea7362c4205eaa026ea2e0af5471a9daa1469096e
-  languageName: node
-  linkType: hard
-
 "eslint-plugin-prettier@npm:~5.5.5":
   version: 5.5.5
   resolution: "eslint-plugin-prettier@npm:5.5.5"
@@ -32136,13 +32128,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"requireindex@npm:1.2.0":
-  version: 1.2.0
-  resolution: "requireindex@npm:1.2.0"
-  checksum: 10/266d1cb31f6cbc4b6cf2e898f5bbc45581f7919bcf61bba5c45d0adb69b722b9ff5a13727be3350cde4520d7cd37f39df45d58a29854baaa4552cd6b05ae4a1a
-  languageName: node
-  linkType: hard
-
 "requires-port@npm:^1.0.0":
   version: 1.0.0
   resolution: "requires-port@npm:1.0.0"
@@ -32429,9 +32414,7 @@ __metadata:
     "@types/node": "npm:~22.16.5"
     "@types/stream-buffers": "npm:^3.0.8"
     eslint: "npm:~9.39.3"
-    eslint-plugin-no-floating-promise: "npm:~2.0.0"
     eslint-plugin-react-refresh: "npm:~0.5.2"
-    eslint-plugin-testing-library: "npm:~7.16.0"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"

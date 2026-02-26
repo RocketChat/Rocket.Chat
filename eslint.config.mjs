@@ -1,8 +1,5 @@
 import rocketChatConfig from '@rocket.chat/eslint-config';
-import jestPlugin from 'eslint-plugin-jest';
-import noFloatingPromisePlugin from 'eslint-plugin-no-floating-promise';
 import reactRefreshPlugin from 'eslint-plugin-react-refresh';
-import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import youDontNeedLodashUnderscorePlugin from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
 
@@ -201,14 +198,9 @@ export default [
 			],
 			'no-unreachable-loop': 'error',
 		},
-		languageOptions: {
-			parserOptions: {
-				project: getAbsolutePath('./apps/meteor/tsconfig.json'),
-			},
-		},
 	},
 	{
-		files: ['apps/meteor/**/*.tests.js', 'apps/meteor/**/*.tests.ts', 'apps/meteor/**/*.spec.ts'],
+		files: ['apps/meteor/**/*.tests.js'],
 		languageOptions: {
 			globals: {
 				...globals.mocha,
@@ -216,38 +208,25 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/**/*.spec.ts', 'apps/meteor/**/*.spec.tsx'],
-		...testingLibraryPlugin.configs['flat/react'],
+		files: ['apps/meteor/tests/end-to-end/**/*.spec.ts', 'apps/meteor/tests/unit/**/*.spec.ts'],
 		rules: {
-			'testing-library/no-await-sync-events': 'warn',
-			'testing-library/no-manual-cleanup': 'warn',
-			'testing-library/prefer-explicit-assert': 'warn',
-			'testing-library/prefer-user-event': 'warn',
-		},
-		languageOptions: {
-			globals: {
-				...globals.mocha,
-			},
-		},
-	},
-	{
-		files: [
-			'apps/meteor/**/*.stories.js',
-			'apps/meteor/**/*.stories.jsx',
-			'apps/meteor/**/*.stories.ts',
-			'apps/meteor/**/*.stories.tsx',
-			'apps/meteor/**/*.spec.tsx',
-		],
-		rules: {
-			'react/display-name': 'off',
-			'react/no-multi-comp': 'off',
+			'jest/expect-expect': 'off',
+			'jest/no-conditional-expect': 'off',
+			'jest/no-done-callback': 'off',
+			'jest/no-export': 'off',
+			'jest/no-identical-title': 'off',
+			'jest/no-standalone-expect': 'off',
+			'jest/no-test-prefixes': 'off',
+			'jest/valid-describe-callback': 'off',
+			'jest/valid-expect-in-promise': 'off',
+			'jest/valid-expect': 'off',
+			'jest/valid-title': 'off',
 		},
 	},
 	{
-		files: ['apps/meteor/**/*.stories.ts', 'apps/meteor/**/*.stories.tsx'],
+		files: ['apps/meteor/tests/end-to-end/**/*.ts', 'apps/meteor/tests/unit/**/*.ts'],
 		rules: {
-			'@typescript-eslint/explicit-function-return-type': 'off',
-			'@typescript-eslint/explicit-module-boundary-types': 'off',
+			'@typescript-eslint/no-unused-expressions': 'off',
 		},
 	},
 	{
@@ -271,12 +250,8 @@ export default [
 		files: ['apps/meteor/tests/e2e/**/*'],
 		languageOptions: {
 			parserOptions: {
-				project: getAbsolutePath('./apps/meteor/tsconfig.json'),
+				projectService: true,
 			},
-		},
-		plugins: {
-			'testing-library': testingLibraryPlugin,
-			'no-floating-promise': noFloatingPromisePlugin,
 		},
 		rules: {
 			'@typescript-eslint/no-floating-promises': 'error',
@@ -351,41 +326,6 @@ export default [
 		],
 	},
 	{
-		files: ['ee/apps/account-service/**/*.spec.js', 'ee/apps/account-service/**/*.spec.jsx'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
-		files: ['ee/apps/authorization-service/**/*.spec.js', 'ee/apps/authorization-service/**/*.spec.jsx'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
-		files: ['ee/apps/ddp-streamer/**/*.spec.js', 'ee/apps/ddp-streamer/**/*.spec.jsx'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
-		files: ['ee/apps/presence-service/**/*.spec.js', 'ee/apps/presence-service/**/*.spec.jsx'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
-		ignores: ['ee/packages/federation-matrix/src/api/.well-known/server.ts'],
-	},
-	{
 		files: ['packages/apps-engine/**/*.ts'],
 		languageOptions: {
 			parserOptions: {
@@ -458,14 +398,6 @@ export default [
 		},
 	},
 	{
-		files: ['packages/core-typings/**/*.spec.js', 'packages/core-typings/**/*.spec.jsx'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
 		files: ['packages/ddp-client/**/*'],
 		rules: {
 			'@typescript-eslint/naming-convention': [
@@ -488,20 +420,6 @@ export default [
 					leadingUnderscore: 'require',
 				},
 			],
-		},
-	},
-	{
-		files: ['packages/favicon/**/*'],
-		rules: {
-			'@typescript-eslint/explicit-function-return-type': 'off',
-		},
-	},
-	{
-		files: ['packages/instance-status/**/*.spec.js', 'packages/instance-status/**/*.spec.jsx'],
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
 		},
 	},
 	{
@@ -609,28 +527,6 @@ export default [
 					leadingUnderscore: 'require',
 				},
 			],
-		},
-	},
-	{
-		files: ['packages/password-policies/**/*'],
-		plugins: {
-			jest: jestPlugin,
-		},
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
-		},
-	},
-	{
-		files: ['packages/release-changelog/**/*'],
-		plugins: {
-			jest: jestPlugin,
-		},
-		languageOptions: {
-			globals: {
-				...globals.jest,
-			},
 		},
 	},
 	{
@@ -743,6 +639,13 @@ export default [
 		files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)'],
 		rules: {
 			'storybook/no-renderer-packages': 'off',
+		},
+	},
+	// FIXME
+	{
+		files: ['ee/packages/federation-matrix/src/api/.well-known/server.ts'],
+		rules: {
+			'import/order': 'warn',
 		},
 	},
 ];

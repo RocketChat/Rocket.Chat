@@ -2,11 +2,13 @@ import eslint from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
 import importPlugin from 'eslint-plugin-import';
+import jestPlugin from 'eslint-plugin-jest';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import prettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import storybookPlugin from 'eslint-plugin-storybook';
+import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
@@ -23,6 +25,13 @@ export default defineConfig(
 	},
 	eslint.configs.recommended,
 	tseslint.configs.recommendedTypeChecked,
+	{
+		languageOptions: {
+			parserOptions: {
+				projectService: true,
+			},
+		},
+	},
 	importPlugin.flatConfigs.recommended,
 	importPlugin.flatConfigs.typescript,
 	jsxA11yPlugin.flatConfigs.recommended,
@@ -76,15 +85,40 @@ export default defineConfig(
 			'react-hooks/use-memo': 'off',
 		},
 	},
-	...storybookPlugin.configs['flat/recommended'],
 	{
-		name: 'rocket.chat/storybook',
-		files: ['**/*.stories.@(ts|tsx|mts|cts|js|jsx|mjs|cjs)'],
+		files: ['**/*.@(spec|test).@(ts|tsx|js|jsx|mjs|cjs)'],
+		...jestPlugin.configs['flat/recommended'],
+		...testingLibraryPlugin.configs['flat/react'],
+		plugins: {
+			...jestPlugin.configs['flat/recommended'].plugins,
+			...testingLibraryPlugin.configs['flat/react'].plugins,
+		},
 		rules: {
-			'react/display-name': 'off',
-			'react/no-multi-comp': 'off',
+			...jestPlugin.configs['flat/recommended'].rules,
+			...testingLibraryPlugin.configs['flat/react'].rules,
+			'jest/no-conditional-expect': 'warn',
+			'jest/no-done-callback': 'warn',
+			'jest/no-export': 'warn',
+			'jest/no-identical-title': 'warn',
+			'jest/no-standalone-expect': 'warn',
+			'jest/no-test-prefixes': 'warn',
+			'jest/valid-describe-callback': 'warn',
+			'jest/valid-expect-in-promise': 'warn',
+			'jest/valid-expect': 'warn',
+			'jest/valid-title': 'warn',
+			'testing-library/no-await-sync-events': 'warn',
+			'testing-library/no-container': 'warn',
+			'testing-library/no-manual-cleanup': 'warn',
+			'testing-library/no-node-access': 'warn',
+			'testing-library/no-render-in-lifecycle': 'warn',
+			'testing-library/prefer-explicit-assert': 'warn',
+			'testing-library/prefer-find-by': 'warn',
+			'testing-library/prefer-screen-queries': 'warn',
+			'testing-library/prefer-user-event': 'warn',
+			'testing-library/render-result-naming-convention': 'warn',
 		},
 	},
+	...storybookPlugin.configs['flat/recommended'],
 	{
 		name: 'rocket.chat/anti-trojan',
 		plugins: {
@@ -502,11 +536,6 @@ export default defineConfig(
 			'**/rollup.config.ts',
 			'**/rollup.config.js',
 		],
-		languageOptions: {
-			parserOptions: {
-				project: true,
-			},
-		},
 		rules: {
 			'@typescript-eslint/no-misused-promises': [
 				'error',
@@ -527,7 +556,8 @@ export default defineConfig(
 		},
 	},
 	{
-		files: ['**/*.spec.@(ts|tsx|js|jsx|mjs|cjs)'],
+		name: 'rocket.chat/react-testing',
+		files: ['**/*.stories.@(ts|tsx|mts|cts|js|jsx|mjs|cjs)', '**/*.spec.@(ts|tsx|js|jsx|mjs|cjs)'],
 		rules: {
 			'react/display-name': 'off',
 			'react/no-multi-comp': 'off',

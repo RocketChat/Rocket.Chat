@@ -31,6 +31,7 @@
 		"eslint-plugin-react": "~7.37.5",
 		"eslint-plugin-react-hooks": "~7.0.1",
 		"eslint-plugin-storybook": "~10.2.12",
+		"eslint-plugin-testing-library": "~7.16.0",
 		"globals": "~17.3.0",
 		"prettier": "~3.3.3",
 		"typescript-eslint": "~8.56.1"
