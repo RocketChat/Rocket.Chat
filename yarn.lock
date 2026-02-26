@@ -8432,8 +8432,6 @@ __metadata:
     "@eslint/js": "npm:~9.39.3"
     "@types/eslint": "npm:~8.44.9"
     "@types/prettier": "npm:^2.7.3"
-    "@typescript-eslint/eslint-plugin": "npm:~8.56.1"
-    "@typescript-eslint/parser": "npm:~8.56.1"
     eslint: "npm:~9.39.3"
     eslint-config-prettier: "npm:~10.1.8"
     eslint-import-resolver-typescript: "npm:~4.4.4"
@@ -8448,6 +8446,7 @@ __metadata:
     globals: "npm:~17.3.0"
     prettier: "npm:~3.3.3"
     typescript: "npm:~5.9.3"
+    typescript-eslint: "npm:~8.56.1"
   languageName: unknown
   linkType: soft
 
@@ -13948,7 +13947,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:~8.56.1":
+"@typescript-eslint/eslint-plugin@npm:8.56.1":
   version: 8.56.1
   resolution: "@typescript-eslint/eslint-plugin@npm:8.56.1"
   dependencies:
@@ -13968,7 +13967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:~8.56.1":
+"@typescript-eslint/parser@npm:8.56.1":
   version: 8.56.1
   resolution: "@typescript-eslint/parser@npm:8.56.1"
   dependencies:
@@ -35793,6 +35792,21 @@ __metadata:
   bin:
     typedoc: bin/typedoc
   checksum: 10/657afd087d88a14cf77ad941de8913041a6a025e87c78833a5ee58a52b8252b685730394ab7920781b0b2faa0507b1c9d87fcf82dd86d1b788420716fc17ded3
+  languageName: node
+  linkType: hard
+
+"typescript-eslint@npm:~8.56.1":
+  version: 8.56.1
+  resolution: "typescript-eslint@npm:8.56.1"
+  dependencies:
+    "@typescript-eslint/eslint-plugin": "npm:8.56.1"
+    "@typescript-eslint/parser": "npm:8.56.1"
+    "@typescript-eslint/typescript-estree": "npm:8.56.1"
+    "@typescript-eslint/utils": "npm:8.56.1"
+  peerDependencies:
+    eslint: ^8.57.0 || ^9.0.0 || ^10.0.0
+    typescript: ">=4.8.4 <6.0.0"
+  checksum: 10/e18cd347ddce0f0e5b28121346f27736a418adf68e73d613690ea3a1d0adfe03bc393f77a8872c2cef77ca74bcc0974212d1775c360de33a9987a94cda11a05b
   languageName: node
   linkType: hard
 
