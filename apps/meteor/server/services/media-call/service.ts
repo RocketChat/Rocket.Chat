@@ -43,10 +43,12 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	public async answerCall(uid: IUser['_id'], params: Omit<ClientMediaSignalAnswer, 'type'>): Promise<IMediaCall> {
 		const { callId } = params;
 
-		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'callee'>>(callId, {
-			projection: { callee: 1 },
-		});
-		if (!call || call.callee.type !== 'user' || call.callee.id !== uid) {
+		const call = await MediaCalls.findOneByIdAndCallee<Pick<IMediaCall, '_id'>>(
+			callId,
+			{ type: 'user', id: uid },
+			{ projection: { _id: 1 } },
+		);
+		if (!call) {
 			throw new Error('not-found');
 		}
 
