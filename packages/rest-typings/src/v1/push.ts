@@ -68,9 +68,4 @@ export type PushEndpoints = {
 			defaultPushGateway: boolean;
 		};
 	};
-	'/v1/push.test': {
-		POST: () => {
-			tokensCount: boolean;
-		};
-	};
 };
