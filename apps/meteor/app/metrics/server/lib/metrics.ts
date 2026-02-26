@@ -1,3 +1,5 @@
+import { performance } from 'node:perf_hooks';
+
 import client from 'prom-client';
 
 const percentiles = [0.01, 0.1, 0.5, 0.9, 0.95, 0.99, 1];
@@ -233,3 +235,13 @@ export const metrics = {
 };
 
 // Metrics
+let eluBase = performance.eventLoopUtilization();
+
+new client.Gauge({
+	name: 'nodejs_event_loop_utilization',
+	help: 'Event Loop Utilization (ELU) as reported by Node',
+	collect() {
+		this.set(performance.eventLoopUtilization(eluBase).utilization);
+		eluBase = performance.eventLoopUtilization();
+	},
+});
