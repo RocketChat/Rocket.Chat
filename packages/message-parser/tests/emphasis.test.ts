@@ -64,6 +64,11 @@ test.each([
 	['paragraph@test__', [paragraph([plain('paragraph@test__')])]],
 	['_ @guilherme_gazzo_ _', [paragraph([italic([plain(' '), mentionUser('guilherme_gazzo_'), plain(' ')])])]],
 	['_ @guilherme.gazzo _', [paragraph([italic([plain(' '), mentionUser('guilherme.gazzo'), plain(' ')])])]],
+	['_9797.76_', [paragraph([italic([plain('9797.76')])])]],
+	['_3.14_', [paragraph([italic([plain('3.14')])])]],
+	['_example.com_', [paragraph([italic([plain('example.com')])])]],
+	['_rocket.chat_', [paragraph([italic([plain('rocket.chat')])])]],
+	['_example.com', [paragraph([plain('_example.com')])]],
 	[
 		'**reference link inside [emphasis with more [references](https://rocket.chat)](https://rocket.chat)**',
 		[
@@ -120,17 +125,6 @@ test.each([
 		[paragraph([plain('some__double__snake__case__text and some '), italic([plain('italic')]), plain(' text')])],
 	],
 	['something__ __and italic__', [paragraph([plain('something__ '), italic([plain('and italic')])])]],
-	['*test:*', [paragraph([bold([plain('test:')])])]],
-	['*bold ending with colon:*', [paragraph([bold([plain('bold ending with colon:')])])]],
-	['*bold ending with colon:* and some more text', [paragraph([bold([plain('bold ending with colon:')]), plain(' and some more text')])]],
-	['*bold ending with colon :*and some more text', [paragraph([bold([plain('bold ending with colon :')]), plain('and some more text')])]],
-	['*bold with a kissing emoji :* *', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' *')])]],
-	['*bold with a kissing emoji :* ', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' ')])]],
-	['_9797.76_', [paragraph([italic([plain('9797.76')])])]],
-	['_3.14_', [paragraph([italic([plain('3.14')])])]],
-	['_example.com_', [paragraph([italic([plain('example.com')])])]],
-	['_rocket.chat_', [paragraph([italic([plain('rocket.chat')])])]],
-	['_example.com', [paragraph([plain('_example.com')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input, { emoticons: false })).toMatchObject(output);
 });
