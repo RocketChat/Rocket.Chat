@@ -34,6 +34,9 @@ export default [
 		plugins: {
 			'you-dont-need-lodash-underscore': youDontNeedLodashUnderscorePlugin,
 		},
+		settings: {
+			'import/ignore': ['meteor/.+'],
+		},
 		rules: {
 			'import/named': 'error',
 			'import/no-unresolved': [
@@ -41,6 +44,7 @@ export default [
 				{
 					commonjs: true,
 					caseSensitive: true,
+					ignore: ['meteor/.+'],
 				},
 			],
 			'react-hooks/exhaustive-deps': 'warn',
@@ -513,10 +517,7 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/node-poplib/**/*'],
-	},
-	{
-		ignores: ['packages/storybook-config/*.@(d.ts|js)', 'scripts/**'],
+		ignores: ['packages/node-poplib/**', 'packages/storybook-config/*.@(d.ts|js)', 'scripts/**', '.github/**', '.houston/**'],
 	},
 	{
 		files: [

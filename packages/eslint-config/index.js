@@ -343,7 +343,6 @@ export default defineConfig(
 				node: true,
 				typescript: true,
 			},
-			'import/ignore': ['meteor/.+'],
 		},
 		rules: {
 			'import/no-unresolved': [
