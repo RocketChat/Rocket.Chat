@@ -26,6 +26,22 @@ As Rocket Cat said:
 `.trim(),
 		[paragraph([plain('As Rocket Cat said:')]), quote([paragraph([plain('meowww')]), paragraph([plain('grr.')])])],
 	],
+	[
+		`
+> meowww
+>
+> grr.
+`.trim(),
+		[quote([paragraph([plain('meowww')]), paragraph([plain('')]), paragraph([plain('grr.')])])],
+	],
+	[
+		`
+> meowww
+> 
+> grr.
+`.trim(),
+		[quote([paragraph([plain('meowww')]), paragraph([plain('')]), paragraph([plain('grr.')])])],
+	],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });
