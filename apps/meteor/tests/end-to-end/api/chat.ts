@@ -1825,6 +1825,28 @@ describe('[Chat]', () => {
 				});
 			});
 		});
+
+		// TODO: Auto-close unclosed markdown code blocks on backend - Remove in 9.0.0
+		// In 9.0.0, this behavior is handled entirely on the client side and should no longer be done on the backend.
+		it('should auto-close an unclosed code block when sending a message', async () => {
+			const unclosedMsg = '```\nsome code';
+			const expectedMsg = '```\nsome code\n```';
+			await request
+				.post(api('chat.sendMessage'))
+				.set(credentials)
+				.send({
+					message: {
+						rid: testChannel._id,
+						msg: unclosedMsg,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('message.msg', expectedMsg);
+				});
+		});
 	});
 
 	describe('/chat.update', () => {

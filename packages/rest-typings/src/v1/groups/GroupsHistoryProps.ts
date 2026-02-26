@@ -4,7 +4,13 @@ import { withGroupBaseProperties } from './BaseProps';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
 export type GroupsHistoryProps = PaginatedRequest<
-	GroupsBaseProps & { latest?: string; oldest?: string; inclusive?: boolean; unreads?: boolean; showThreadMessages?: string }
+	GroupsBaseProps & {
+		latest?: string;
+		oldest?: string;
+		inclusive?: 'true' | 'false';
+		unreads?: 'true' | 'false';
+		showThreadMessages?: string;
+	}
 >;
 const groupsHistoryPropsSchema = withGroupBaseProperties({
 	latest: {
