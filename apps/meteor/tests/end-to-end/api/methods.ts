@@ -3390,6 +3390,7 @@ describe('Meteor.methods', () => {
 
 		before(async () => {
 			await updateSetting('Livechat_enabled', true);
+			await createAgent();
 			await makeAgentAvailable();
 
 			const visitor = await createVisitor();
