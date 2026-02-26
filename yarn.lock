@@ -9182,8 +9182,6 @@ __metadata:
     ejson: "npm:^2.2.3"
     emailreplyparser: "npm:^0.0.5"
     emoji-toolkit: "npm:^7.0.1"
-    emojione: "npm:^4.5.0"
-    emojione-assets: "npm:^4.5.0"
     esl: "npm:^11.2.1"
     eslint: "npm:~8.45.0"
     eslint-config-prettier: "npm:~9.1.2"
@@ -19683,13 +19681,6 @@ __metadata:
   version: 7.0.1
   resolution: "emoji-toolkit@npm:7.0.1"
   checksum: 10/5b8c84718d0efa4b00a877ac5c6cf3844a9e33f52d5d50b6d02563be781df311390b524a9989289f8a0e80104054dae4517a5e26ee1b40dc901051f80aa7f1af
-  languageName: node
-  linkType: hard
-
-"emojione-assets@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "emojione-assets@npm:4.5.0"
-  checksum: 10/c20fa0e4805e70da47c683712e4ae53229dcee437f891c85dfd906d89813deca9d049f0d34599b88dd28067631a2b744e3d1abe07e5431916b1c503bc1acedaf
   languageName: node
   linkType: hard
 
