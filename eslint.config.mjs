@@ -140,7 +140,7 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/**/*.ts', 'apps/meteor/**/*.tsx'],
+		files: ['apps/meteor/**/*.@(ts|tsx)'],
 		ignores: ['apps/meteor/.scripts/*.ts', 'apps/meteor/**/*.d.ts'],
 		rules: {
 			'@typescript-eslint/naming-convention': [
@@ -208,7 +208,7 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/tests/end-to-end/**/*.spec.ts', 'apps/meteor/tests/unit/**/*.spec.ts'],
+		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.spec.ts'],
 		rules: {
 			'jest/expect-expect': 'off',
 			'jest/no-conditional-expect': 'off',
@@ -224,22 +224,19 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/tests/end-to-end/**/*.ts', 'apps/meteor/tests/unit/**/*.ts'],
+		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.ts'],
 		rules: {
 			'@typescript-eslint/no-unused-expressions': 'off',
 		},
 	},
 	{
 		files: [
-			'apps/meteor/client/**/*.ts',
-			'apps/meteor/client/**/*.tsx',
+			'apps/meteor/client/**/*.@(ts|tsx)',
 			'apps/meteor/server/**/*.ts',
 			'apps/meteor/ee/app/**/*.ts',
-			'apps/meteor/ee/client/**/*.ts',
-			'apps/meteor/ee/client/**/*.tsx',
+			'apps/meteor/ee/client/**/*.@(ts|tsx)',
 			'apps/meteor/ee/server/**/*.ts',
-			'packages/ui-contexts/**/*.ts',
-			'packages/ui-contexts/**/*.tsx',
+			'packages/ui-contexts/**/*.@(ts|tsx)',
 			'packages/i18n/src/scripts/common.mts',
 		],
 		rules: {
@@ -316,13 +313,8 @@ export default [
 			'apps/uikit-playground/build',
 			'apps/uikit-playground/.storybook/jest-results.json',
 			'apps/uikit-playground/.DS_Store',
-			'apps/uikit-playground/.env.local',
-			'apps/uikit-playground/.env.development.local',
-			'apps/uikit-playground/.env.test.local',
-			'apps/uikit-playground/.env.production.local',
-			'apps/uikit-playground/npm-debug.log*',
-			'apps/uikit-playground/yarn-debug.log*',
-			'apps/uikit-playground/yarn-error.log*',
+			'apps/uikit-playground/.env*.local',
+			'apps/uikit-playground/@(npm-debug|yarn-debug|yarn-error).log*',
 		],
 	},
 	{
@@ -380,16 +372,7 @@ export default [
 		},
 	},
 	{
-		ignores: [
-			'packages/apps-engine/**/client/**/*',
-			'packages/apps-engine/**/definition/**/*',
-			'packages/apps-engine/**/docs/**/*',
-			'packages/apps-engine/**/server/**/*',
-			'packages/apps-engine/**/lib/**/*',
-			'packages/apps-engine/**/deno-runtime/**/*',
-			'packages/apps-engine/**/.deno/**/*',
-			'packages/apps-engine/**/.deno-cache/**/*',
-		],
+		ignores: ['packages/apps-engine/**/@(client|definition|docs|server|lib|deno-runtime|.deno|.deno-cache)/**'],
 	},
 	{
 		files: ['packages/core-typings/**/*'],
@@ -423,7 +406,7 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/jest-presets/client/**', 'packages/jest-presets/server/**'],
+		ignores: ['packages/jest-presets/@(client|server)/**'],
 	},
 	{
 		files: ['packages/livechat/**/*'],
@@ -505,7 +488,7 @@ export default [
 		},
 	},
 	{
-		files: ['packages/livechat/**/*.ts', 'packages/livechat/**/*.tsx'],
+		files: ['packages/livechat/**/*.@(ts|tsx)'],
 		rules: {
 			'@typescript-eslint/naming-convention': [
 				'error',
@@ -530,33 +513,25 @@ export default [
 		},
 	},
 	{
-		ignores: ['packages/storybook-config/*.d.ts', 'packages/storybook-config/*.js'],
+		ignores: ['packages/node-poplib/**/*'],
 	},
 	{
-		ignores: ['scripts/**'],
+		ignores: ['packages/storybook-config/*.@(d.ts|js)', 'scripts/**'],
 	},
 	{
 		files: [
-			'apps/meteor/client/**/*.ts',
-			'apps/meteor/client/**/*.tsx',
+			'apps/meteor/client/**/*.@(ts|tsx)',
 			'apps/meteor/app/**/*.ts',
 			'apps/meteor/ee/app/**/*.ts',
-			'apps/meteor/ee/client/**/*.ts',
-			'apps/meteor/ee/client/**/*.tsx',
+			'apps/meteor/ee/client/**/*.@(ts|tsx)',
 			'apps/meteor/ee/server/**/*.ts',
 			'apps/meteor/server/**/*.ts',
-			'packages/fuselage-ui-kit/**/*.ts',
-			'packages/fuselage-ui-kit/**/*.tsx',
-			'packages/livechat/**/*.ts',
-			'packages/livechat/**/*.tsx',
-			'packages/ui-client/**/*.ts',
-			'packages/ui-client/**/*.tsx',
-			'packages/ui-contexts/**/*.ts',
-			'packages/ui-contexts/**/*.tsx',
-			'packages/ui-voip/**/*.ts',
-			'packages/ui-voip/**/*.tsx',
-			'packages/web-ui-registration/**/*.ts',
-			'packages/web-ui-registration/**/*.tsx',
+			'packages/fuselage-ui-kit/**/*.@(ts|tsx)',
+			'packages/livechat/**/*.@(ts|tsx)',
+			'packages/ui-client/**/*.@(ts|tsx)',
+			'packages/ui-contexts/**/*.@(ts|tsx)',
+			'packages/ui-voip/**/*.@(ts|tsx)',
+			'packages/web-ui-registration/**/*.@(ts|tsx)',
 		],
 		rules: {
 			'@typescript-eslint/no-misused-promises': 'warn',
@@ -572,7 +547,7 @@ export default [
 		},
 	},
 	{
-		files: ['packages/sha256/**/*', 'packages/models/**/*'],
+		files: ['packages/@(sha256|models)/**/*'],
 		rules: {
 			'new-cap': [
 				'error',
@@ -584,7 +559,7 @@ export default [
 	},
 	// FIXME: React 19 useEffectEvent conflicts with fuselage-hooks
 	{
-		files: ['**/*.ts', '**/*.tsx'],
+		files: ['**/*.@(ts|tsx)'],
 		rules: {
 			'react-hooks/exhaustive-deps': 'warn',
 			'react-hooks/rules-of-hooks': 'warn',
@@ -595,42 +570,23 @@ export default [
 		files: [
 			'**/*.d.ts',
 			'**/__tests__/**',
-			'**/*.spec.ts',
-			'**/*.spec.tsx',
-			'**/*.test.ts',
-			'**/*.test.tsx',
+			'**/*.@(spec|test).@(ts|tsx)',
 			'**/tests/**',
 			'**/.storybook/**',
-			'**/jest.config.ts',
-			'**/jest.config.js',
-			'**/jest.config.*.ts',
-			'**/jest.config.*.js',
-			'**/webpack.config.ts',
-			'**/webpack.config.js',
-			'**/vite.config.ts',
-			'**/vite.config.js',
-			'**/rollup.config.ts',
-			'**/rollup.config.js',
+			'**/jest.config.@(ts|js)',
+			'**/jest.config.*.@(ts|js)',
+			'**/webpack.config.@(ts|js)',
+			'**/vite.config.@(ts|js)',
+			'**/rollup.config.@(ts|js)',
 
 			'apps/meteor/.storybook/logo.svg.d.ts',
 			'packages/fuselage-ui-kit/.storybook/logo.svg.d.ts',
 			'packages/storybook-config/src/logo.svg.d.ts',
 
-			'ee/packages/*/jest.config.ts',
-			'packages/*/jest.config.ts',
+			'@(ee/packages|packages)/*/jest.config.ts',
 
-			'ee/packages/pdf-worker/.storybook/*.ts',
-			'ee/packages/pdf-worker/.storybook/*.tsx',
-			'packages/gazzodown/.storybook/*.ts',
-			'packages/gazzodown/.storybook/*.tsx',
-			'packages/ui-client/.storybook/*.ts',
-			'packages/ui-client/.storybook/*.tsx',
-			'packages/ui-composer/.storybook/*.ts',
-			'packages/ui-composer/.storybook/*.tsx',
-			'packages/ui-voip/.storybook/*.ts',
-			'packages/ui-voip/.storybook/*.tsx',
-			'packages/web-ui-registration/.storybook/*.ts',
-			'packages/web-ui-registration/.storybook/*.tsx',
+			'ee/packages/pdf-worker/.storybook/*.@(ts|tsx)',
+			'packages/@(gazzodown|ui-client|ui-composer|ui-voip|web-ui-registration)/.storybook/*.@(ts|tsx)',
 		],
 		rules: {
 			'@typescript-eslint/prefer-optional-chain': 'off',
