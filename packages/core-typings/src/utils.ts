@@ -1,3 +1,4 @@
+import type { tags } from 'typia';
 import * as z from 'zod';
 
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>;
@@ -42,9 +43,31 @@ export type DeepPartial<T> = {
 
 export const isNotUndefined = <T>(value: T | undefined): value is T => value !== undefined;
 
-declare const __brand: unique symbol;
-type Brand<B> = { [__brand]: B };
-export type Branded<T, B> = T & Brand<B>;
+/**
+ * A Typia-compatible branded type for nominal typing.
+ *
+ * This creates a branded/nominal type that Typia can understand and process
+ * in JSON schema generation, unlike Zod's BRAND which causes "nonsensible intersection" errors.
+ *
+ * @example
+ * ```ts
+ * type UserId = string & Brand<'user-id'>;
+ * type RoomId = string & Brand<'room-id'>;
+ *
+ * // These are now incompatible at the type level
+ * const userId: UserId = 'abc' as UserId;
+ * const roomId: RoomId = userId; // Type error!
+ * ```
+ */
+export type Brand<TIdentifier extends string> = tags.TagBase<{
+	target: 'string';
+	kind: `brand.${TIdentifier}`;
+	value: TIdentifier;
+	validate: undefined;
+	schema: {
+		'x-brand': TIdentifier;
+	};
+}>;
 
 type SerializablePrimitive = boolean | number | string | null;
 
@@ -65,10 +88,10 @@ export type Serialized<T> =
 			? { [K in keyof T]: T[K] extends UnserializablePrimitive ? null : Serialized<T[K]> }
 			: T extends any[]
 				? Serialized<T[number]>[]
-				: T extends object
-					? { [K in keyof T]: Serialized<T[K]> }
-					: T extends SerializablePrimitive
-						? T
+				: T extends SerializablePrimitive // Check primitives (including branded types) before object
+					? T
+					: T extends object
+						? { [K in keyof T]: Serialized<T[K]> }
 						: T extends UnserializablePrimitive
 							? undefined
 							: null;

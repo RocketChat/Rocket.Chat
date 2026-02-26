@@ -18,7 +18,7 @@ export const useWebDAVAccountIntegrationsQuery = ({ enabled = true, ...options }
 
 	const integrationsQuery = useQuery({
 		queryKey,
-		queryFn: async (): Promise<IWebdavAccountIntegration[]> => {
+		queryFn: async () => {
 			const { accounts } = await getMyAccounts();
 			return accounts;
 		},

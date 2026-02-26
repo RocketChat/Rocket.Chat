@@ -1,5 +1,6 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
+import type { Brand } from './utils';
 
 export enum NPSStatus {
 	OPEN = 'open',
@@ -23,7 +24,7 @@ export enum INpsVoteStatus {
 }
 
 export interface INpsVote extends IRocketChatRecord {
-	_id: string;
+	_id: string & Brand<'nps-vote-id'>;
 	npsId: INps['_id'];
 	ts: Date;
 	identifier: string; // voter identifier

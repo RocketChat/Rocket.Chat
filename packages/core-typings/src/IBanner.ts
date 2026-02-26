@@ -3,7 +3,7 @@ import * as z from 'zod';
 
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IUser } from './IUser';
-import { TimestampSchema } from './utils';
+import { TimestampSchema, type Brand } from './utils';
 
 export enum BannerPlatform {
 	Web = 'web',
@@ -44,6 +44,7 @@ export type InactiveBanner = IBanner & {
 export const isInactiveBanner = (banner: IBanner): banner is InactiveBanner => banner.active === false;
 
 export interface IBannerDismiss extends IRocketChatRecord {
+	_id: string & Brand<'banner-dismiss-id'>;
 	userId: IUser['_id']; // user receiving the banner dismissed
 	bannerId: IBanner['_id']; // banner dismissed
 	dismissedAt: Date; // when is was dismissed
