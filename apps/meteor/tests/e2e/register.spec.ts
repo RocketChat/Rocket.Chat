@@ -162,7 +162,7 @@ test.describe.parallel('register', () => {
 				await poRegistration.inputPasswordConfirm.fill('P@ssw0rd1234.!');
 				await poRegistration.btnRegister.click();
 
-				await expect(page.getByRole('alert').filter({ hasText: 'Email already exists' })).toBeVisible();
+				await expect(page.getByRole('alert').filter({ hasText: 'Email already in use' })).toBeVisible();
 			});
 		});
 	});
