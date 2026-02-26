@@ -76,7 +76,9 @@ Blocks
  */
 Blockquote = b:BlockquoteLine+ { return quote(b); }
 
-BlockquoteLine = ">" [ \t]* @Paragraph
+BlockquoteLine
+  = ">" [ \t]* EndOfLine { return paragraph([plain('')]); }
+  / ">" [ \t]* @Paragraph
 
 /**
  * Block Spoiler
@@ -349,7 +351,7 @@ URLScheme = $([A-Za-z0-9+-] |1..32| ":")
 
 URLBody
   = (
-    !(Extra+ (Whitespace / EndOfLine) / Whitespace)
+    !(Extra+ (Whitespace / EndOfLine / !.) / Whitespace)
     (AnyText / [*\[\/\]\^_`{}~(])
   )+
 
@@ -372,7 +374,7 @@ URLAuthorityPort
 
 DomainName
   = "localhost"
-  / $(DomainNameLabel ("." DomainChar DomainNameLabel*)+)
+  / $(![\x5F] DomainNameLabel ("." DomainChar DomainNameLabel*)+)
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
@@ -433,7 +435,7 @@ AutoLinkURL
   = $(URLScheme URLAuthority AutoLinkURLBody*)
   / $(URLAuthorityHost AutoLinkURLBody*)
 
-AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine)) .
+AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine / !.)) .
 
 /**
  *
