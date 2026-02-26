@@ -70,7 +70,6 @@ export * from './models/IAppsModel';
 export * from './models/IAppsPersistenceModel';
 export * from './models/IImportsModel';
 export * from './models/IFederationRoomEventsModel';
-export * from './models/IAppsTokensModel';
 export * from './models/IAuditLogModel';
 export * from './models/ICronHistoryModel';
 export * from './models/IMigrationsModel';
