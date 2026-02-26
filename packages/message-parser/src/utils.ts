@@ -182,37 +182,38 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 	return current;
 };
 
-export const reducePlainTexts = (values: Array<Inlines | Inlines[]>): Paragraph['value'] =>
-	(() => {
-		const flattened: Inlines[] = [];
-		for (let i = 0; i < values.length; i++) {
-			const chunk = values[i];
-			if (Array.isArray(chunk)) {
-				for (let j = 0; j < chunk.length; j++) {
-					flattened.push(chunk[j]);
-				}
-			} else {
-				flattened.push(chunk);
+export const reducePlainTexts = (values: Array<Inlines | Inlines[]>): Paragraph['value'] => {
+	const flattened: Inlines[] = [];
+
+	for (let i = 0; i < values.length; i++) {
+		const chunk = values[i];
+		if (Array.isArray(chunk)) {
+			for (let j = 0; j < chunk.length; j++) {
+				flattened.push(chunk[j]);
 			}
+		} else {
+			flattened.push(chunk);
+		}
+	}
+
+	const result: Paragraph['value'] = [];
+
+	for (let i = 0; i < flattened.length; i++) {
+		const item = flattened[i];
+		const current = joinEmoji(item, flattened[i - 1], flattened[i + 1]);
+		const previous = result[result.length - 1];
+
+		if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
+			previous.value += current.value;
+			continue;
 		}
 
-		const result: Paragraph['value'] = [];
-		for (let i = 0; i < flattened.length; i++) {
-			const item = flattened[i];
-			const current = joinEmoji(item, flattened[i - 1], flattened[i + 1]);
-			const previous: Inlines | undefined = result[result.length - 1];
+		result.push(current);
+	}
 
-			if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
-				previous.value += current.value;
-				continue;
-			}
+	return result;
+};
 
-			// Mutate in-place to avoid spread-based array copies in this hot path.
-			result.push(current);
-		}
-
-		return result;
-	})();
 export const lineBreak = (): LineBreak => ({
 	type: 'LINE_BREAK',
 	value: undefined,
@@ -288,7 +289,6 @@ export const extractFirstResult = (value: Types[keyof Types]['value']): Types[ke
 		return value;
 	}
 
-	// Single pass with early exit avoids filter() temporary array allocation.
 	for (let i = 0; i < value.length; i++) {
 		const item = value[i];
 		if (item) {
