@@ -182,31 +182,16 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 	return current;
 };
 
-// `values` is not always a flat list of `Inlines` – the grammar
-// occasionally builds nested arrays (see usages such as
-// `reducePlainTexts([plain('__'), ...i, plain('__'), plain(t)])`).
-//
-// Historically this function was typed as `Paragraph['value']` which
-// is simply `Inlines[]`, but that produced two type errors when we
-// tried to index into elements that could in fact be arrays.  The
-// runtime code already assumed the possibility of nesting, so update the
-// typing and add a small runtime check while keeping the allocation
-// behaviour optimized for the hot path.
 export const reducePlainTexts = (values: Array<Inlines | Inlines[]>): Paragraph['value'] =>
 	(() => {
-		// NOTE: This function is part of the message parsing hot path.
-		// Avoid intermediate array allocations to reduce GC pressure.
 		const flattened: Inlines[] = [];
 		for (let i = 0; i < values.length; i++) {
 			const chunk = values[i];
 			if (Array.isArray(chunk)) {
-				// common case in practice – the grammar returns arrays when
-				// it has already reduced a subgroup of inlines.
 				for (let j = 0; j < chunk.length; j++) {
 					flattened.push(chunk[j]);
 				}
 			} else {
-				// single inline element, just push directly
 				flattened.push(chunk);
 			}
 		}
