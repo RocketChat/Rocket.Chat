@@ -30,9 +30,9 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { Trans } from 'react-i18next';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
@@ -275,18 +275,24 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									/>
 								</FieldRow>
 								{isVerificationNeeded && !isSmtpEnabled && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												a: <a href='/admin/settings/Email'>{/* content injected by <Trans> */}</a>,
+											}}
+										/>
+									</FieldHint>
 								)}
 								{!isVerificationNeeded && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{
-											__html: DOMPurify.sanitize(t('Email_verification_isnt_required', { url: 'admin/settings/Accounts' })),
-										}}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Email_verification_isnt_required'
+											components={{
+												a: <a href='/admin/settings/Accounts'>{/* content injected by <Trans> */}</a>,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}
@@ -448,11 +454,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									</FieldRow>
 								</Box>
 								{!isSmtpEnabled && (
-									<FieldHint
-										id={`${sendWelcomeEmailId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-										mbs={0}
-									/>
+									<FieldHint id={`${sendWelcomeEmailId}-hint`} mbs={0}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												a: <a href='/admin/settings/Email'>{/* content injected by <Trans> */}</a>,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}
