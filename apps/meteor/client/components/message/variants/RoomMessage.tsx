@@ -77,7 +77,7 @@ const RoomMessage = ({
 				}
 				if (context) {
 					const target = e.target as HTMLElement;
-					if (target.closest('button, a, .rcx-checkbox, .rcx-message-toolbar')) {
+					if (target.closest('button, a, [role="button"], .rcx-checkbox, .rcx-message-toolbar')) {
 						return;
 					}
 					setMessageJumpQueryStringParameter(message._id);
