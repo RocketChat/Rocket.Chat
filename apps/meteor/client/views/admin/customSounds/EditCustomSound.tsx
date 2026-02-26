@@ -1,3 +1,4 @@
+import { ContextualbarEmptyContent } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
@@ -13,36 +14,33 @@ type EditCustomSoundProps = {
 };
 
 function EditCustomSound({ _id, onChange, close, ...props }: EditCustomSoundProps): ReactElement | null {
+	const getSound = useEndpoint('GET', '/v1/custom-sounds.getOne');
 	const { t } = useTranslation();
-	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 
-	const { data, isPending } = useQuery({
-		queryKey: ['custom-sounds', _id],
-
-		queryFn: async () => {
-			const { sounds } = await getSounds({ _id });
-
-			if (sounds.length === 0) {
-				throw new Error(t('No_results_found'));
+	const { data, isLoading } = useQuery({
+		queryKey: ['custom-sound', _id],
+		queryFn: () => {
+			if (!_id) {
+				throw new Error('Cannot fetch custom sound: missing _id in query.');
 			}
-			return sounds[0];
+			return getSound({ _id });
 		},
-		meta: { apiErrorToastMessage: true },
+		enabled: !!_id,
 	});
 
-	if (isPending) {
+	if (isLoading) {
 		return <FormSkeleton pi={20} />;
 	}
 
 	if (!data) {
-		return null;
+		return <ContextualbarEmptyContent icon='warning' title={t('No_results_found')} />;
 	}
 
 	const handleChange: () => void = () => {
 		onChange?.();
 	};
 
-	return <EditSound data={data} close={close} onChange={handleChange} {...props} />;
+	return <EditSound data={data.sound} close={close} onChange={handleChange} {...props} />;
 }
 
 export default EditCustomSound;
