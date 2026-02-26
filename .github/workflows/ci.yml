@@ -718,7 +718,7 @@ jobs:
   report-coverage:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
-    needs: [release-versions, test-api-ee, test-ui-ee]
+    needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
 
     steps:
       - uses: actions/checkout@v6
