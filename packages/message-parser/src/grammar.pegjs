@@ -374,7 +374,7 @@ URLAuthorityPort
 
 DomainName
   = "localhost"
-  / $(DomainNameLabel ("." DomainChar DomainNameLabel*)+)
+  / $(![\x5F] DomainNameLabel ("." DomainChar DomainNameLabel*)+)
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
