@@ -15,12 +15,12 @@ import {
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
+import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
-import { setMessageJumpQueryStringParameter } from '../../../lib/utils/setMessageJumpQueryStringParameter';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
