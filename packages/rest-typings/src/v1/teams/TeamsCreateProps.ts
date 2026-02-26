@@ -66,7 +66,7 @@ const teamsCreatePropsSchema = {
 				extraData: {
 					type: 'object',
 					additionalProperties: {
-						oneOf: [{ type: 'string' }, { type: 'boolean' }],
+						anyOf: [{ type: 'string' }, { type: 'boolean' }],
 					},
 				},
 				options: {
@@ -78,7 +78,7 @@ const teamsCreatePropsSchema = {
 							type: 'object',
 							properties: {
 								open: { type: 'boolean' },
-								ls: { oneOf: [{ type: 'string' }, { type: 'object' }] },
+								ls: { anyOf: [{ type: 'string' }, { type: 'object' }] },
 								prid: { type: 'string' },
 								roles: { type: 'array', items: { type: 'string' } },
 							},

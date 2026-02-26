@@ -1,6 +1,7 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
+import type { TeamsCreateProps } from '@rocket.chat/rest-typings';
 import {
 	isTeamsConvertToChannelProps,
 	isTeamsRemoveRoomProps,
@@ -12,7 +13,6 @@ import {
 	isTeamsUpdateProps,
 	isTeamsListChildrenProps,
 	isTeamsCreateProps,
-	TeamsCreateProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -72,12 +72,26 @@ API.v1.addRoute(
 		async post() {
 			const { name, type, members, room, owner } = this.bodyParams as TeamsCreateProps;
 
+			const sanitizedRoom = room
+				? {
+						...room,
+						options: room.options
+							? {
+									...room.options,
+									subscriptionExtra: room.options.subscriptionExtra
+										? {
+												...room.options.subscriptionExtra,
+												ls: room.options.subscriptionExtra.ls ? new Date(room.options.subscriptionExtra.ls) : undefined,
+											}
+										: undefined,
+								}
+							: undefined,
+					}
+				: undefined;
+
 			const team = await Team.create(this.userId, {
-				team: {
-					name,
-					type,
-				},
-				room,
+				team: { name, type },
+				room: sanitizedRoom,
 				members,
 				owner,
 			});

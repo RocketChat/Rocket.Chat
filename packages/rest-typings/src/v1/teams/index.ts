@@ -1,8 +1,8 @@
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 
 import type { TeamsAddMembersProps } from './TeamsAddMembersProps';
-import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsConvertToChannelProps } from './TeamsConvertToChannelProps';
+import type { TeamsCreateProps } from './TeamsCreateProps';
 import type { TeamsDeleteProps } from './TeamsDeleteProps';
 import type { TeamsLeaveProps } from './TeamsLeaveProps';
 import type { TeamsListChildrenProps } from './TeamsListChildren';
@@ -14,8 +14,8 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../../helpers/PaginatedResult';
 
 export * from './TeamsAddMembersProps';
-export { TeamsCreateProps, isTeamsCreateProps } from './TeamsCreateProps';
 export * from './TeamsConvertToChannelProps';
+export { TeamsCreateProps, isTeamsCreateProps } from './TeamsCreateProps';
 export * from './TeamsDeleteProps';
 export * from './TeamsLeaveProps';
 export * from './TeamsRemoveMemberProps';
