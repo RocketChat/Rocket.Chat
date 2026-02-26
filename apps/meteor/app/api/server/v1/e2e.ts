@@ -104,7 +104,7 @@ const e2eEndpoints = API.v1
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile<{ public_key: string; private_key: string }>({
+				200: ajv.compile<{ public_key?: string; private_key?: string }>({
 					type: 'object',
 					properties: {
 						public_key: { type: 'string' },
@@ -117,10 +117,6 @@ const e2eEndpoints = API.v1
 		},
 		async function action() {
 			const result = await Users.fetchKeysByUserId(this.userId);
-
-			if (!('public_key' in result) || !('private_key' in result)) {
-				return API.v1.failure('E2E keys not found for user');
-			}
 
 			return API.v1.success(result);
 		},
