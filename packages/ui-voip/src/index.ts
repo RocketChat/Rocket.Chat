@@ -1,6 +1,7 @@
 export { default as MediaCallProvider } from './providers/MediaCallProvider';
 
-export { MediaCallInstanceContext, useWidgetExternalControls, usePeekMediaSessionState, PeekMediaSessionStateReturn } from './context';
+export { MediaCallInstanceContext, useWidgetExternalControls, usePeekMediaSessionState } from './context';
+export type { PeekMediaSessionStateReturn } from './context';
 export type { PeerInfo } from './context';
 export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks';
 
