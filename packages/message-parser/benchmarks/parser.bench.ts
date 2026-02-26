@@ -5,6 +5,14 @@
  * Measures parsing performance (ops/sec) across various message categories.
  * Run with: `yarn bench` from packages/message-parser/
  *
+ * Flags:
+ *   --skip <category1,category2,...>   Skip specific categories (comma-separated, case-insensitive)
+ *   --only <category1,category2,...>   Run only specific categories (comma-separated, case-insensitive)
+ *
+ * Examples:
+ *   yarn bench --skip "KaTeX (Math),Adversarial / Stress"
+ *   yarn bench --only "Plain Text,Emoji"
+ *
  * Uses a custom loader (pegjs-register.js) to compile .pegjs at runtime — no build needed.
  */
 
@@ -166,6 +174,64 @@ const categories: BenchCategory[] = [
 	},
 ];
 
+// ── CLI argument parsing ───────────────────────────────────────────────────
+
+function parseCLIFlags(): { skip: Set<string>; only: Set<string> } {
+	const args = process.argv.slice(2);
+	const result: { skip: Set<string>; only: Set<string> } = {
+		skip: new Set(),
+		only: new Set(),
+	};
+
+	for (let i = 0; i < args.length; i++) {
+		const flag = args[i];
+		const value = args[i + 1];
+
+		if ((flag === '--skip' || flag === '--only') && value && !value.startsWith('--')) {
+			const names = value
+				.split(',')
+				.map((s) => s.trim().toLowerCase())
+				.filter(Boolean);
+
+			names.forEach((n) => result[flag === '--skip' ? 'skip' : 'only'].add(n));
+			i++; // consume the value token
+		}
+	}
+
+	return result;
+}
+
+function filterCategories(all: BenchCategory[]): BenchCategory[] {
+	const { skip, only } = parseCLIFlags();
+	const allNames = all.map((c) => c.name.toLowerCase());
+
+	if (only.size > 0 && skip.size > 0) {
+		console.warn('⚠  Both --only and --skip were provided. --skip will be ignored.\n');
+	}
+
+	// Warn about unrecognised names
+	const checkUnknown = (flags: Set<string>, flagName: string) => {
+		flags.forEach((f) => {
+			if (!allNames.includes(f)) {
+				console.warn(`⚠  Unknown category in ${flagName}: "${f}"`);
+				console.warn(`   Available categories: ${all.map((c) => `"${c.name}"`).join(', ')}\n`);
+			}
+		});
+	};
+
+	if (only.size > 0) {
+		checkUnknown(only, '--only');
+		return all.filter((c) => only.has(c.name.toLowerCase()));
+	}
+
+	if (skip.size > 0) {
+		checkUnknown(skip, '--skip');
+		return all.filter((c) => !skip.has(c.name.toLowerCase()));
+	}
+
+	return all;
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 function formatResults(tasks: Task[]) {
@@ -183,14 +249,28 @@ function formatResults(tasks: Task[]) {
 // ── Runner ─────────────────────────────────────────────────────────────────
 
 async function run() {
+	const selected = filterCategories(categories);
+
+	if (selected.length === 0) {
+		console.error('No categories matched the provided flags. Nothing to run.');
+		process.exit(1);
+	}
+
+	const skipped = categories.length - selected.length;
+
 	console.log('='.repeat(72));
 	console.log('  @rocket.chat/message-parser — Performance Benchmark Suite');
 	console.log('='.repeat(72));
+
+	if (skipped > 0) {
+		console.log(`  Running ${selected.length} of ${categories.length} categories (${skipped} skipped)`);
+	}
+
 	console.log();
 
 	// Benchmarks must run sequentially to avoid interference
 	// eslint-disable-next-line no-restricted-syntax
-	for (const category of categories) {
+	for (const category of selected) {
 		const bench = new Bench({
 			time: category.time ?? 1000,
 			warmupTime: category.warmupTime ?? 200,
