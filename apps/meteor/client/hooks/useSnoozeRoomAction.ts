@@ -32,7 +32,7 @@ export const useSnoozeRoomAction = ({ rid }: SnoozeRoomActionProps): GenericMenu
                 dispatchToastMessage({ type: 'success', message: t('Room_snoozed') });
                 queryClient.removeQueries({ queryKey: roomsQueryKeys.all });
             } catch (error) {
-                dispatchToastMessage({ type: 'error', message: error });
+                dispatchToastMessage({ type: 'error', message: error instanceof Error ? error : String(error) });
             }
         };
 
@@ -40,25 +40,25 @@ export const useSnoozeRoomAction = ({ rid }: SnoozeRoomActionProps): GenericMenu
             {
                 id: 'snooze-1h',
                 icon: 'clock',
-                content: t('1 hour'),
+                content: t('Snooze_1_hour'),
                 onClick: handleSnooze(60),
             },
             {
                 id: 'snooze-8h',
                 icon: 'clock',
-                content: t('8 hours'),
+                content: t('Snooze_8_hours'),
                 onClick: handleSnooze(8 * 60),
             },
             {
                 id: 'snooze-24h',
                 icon: 'clock',
-                content: t('24 hours'),
+                content: t('Snooze_24_hours'),
                 onClick: handleSnooze(24 * 60),
             },
             {
                 id: 'snooze-1w',
                 icon: 'clock',
-                content: t('1 week'),
+                content: t('Snooze_1_week'),
                 onClick: handleSnooze(7 * 24 * 60),
             },
         ];

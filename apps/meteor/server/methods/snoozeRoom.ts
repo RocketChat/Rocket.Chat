@@ -1,6 +1,6 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions } from '@rocket.chat/models';
-import { check } from 'meteor/check';
+import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../app/lib/server/lib/notifyListener';
@@ -14,7 +14,7 @@ declare module '@rocket.chat/ddp-client' {
 
 export const snoozeRoomMethod = async (userId: string, rid: string, durationMinutes: number): Promise<number> => {
     check(rid, String);
-    check(durationMinutes, Number);
+    check(durationMinutes, Match.Where((n: number) => Number.isFinite(n) && n > 0 && n <= 10_080));
 
     if (!userId) {
         throw new Meteor.Error('error-invalid-user', 'Invalid user', {
@@ -26,9 +26,11 @@ export const snoozeRoomMethod = async (userId: string, rid: string, durationMinu
 
     const { modifiedCount } = await Subscriptions.snoozeByRoomIdAndUserId(rid, userId, until);
 
-    if (modifiedCount) {
-        void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId);
+    if (!modifiedCount) {
+        throw new Meteor.Error('error-subscription-not-found', 'Subscription not found', { method: 'snoozeRoom' });
     }
+
+    void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId);
 
     return modifiedCount;
 };
