@@ -32,9 +32,9 @@ const UserAvatar = ({ username, userId, etag, ...rest }: UserAvatarProps) => {
 		const { url = getUserAvatarPath({ username, etag }), ...props } = rest;
 		return <BaseAvatar url={url} data-username={username} title={username} alt={t('Avatar')} {...props} />;
 	}
+	
+	return <BaseAvatar url='' alt={t('Avatar')} {...rest} />;
 
-	// Fallback rendering when no identifier is provided
-    return <BaseAvatar url='' alt={t('Avatar')} size={rest.size} />;
 
 
 };
