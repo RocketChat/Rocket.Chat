@@ -52,31 +52,26 @@ export const useDraftRoomIds = (enabled = true): Set<string> => {
 		return cacheRef.current;
 	}, [enabled]);
 
-	const subscribe = useCallback((callback: () => void) => {
-		if (!enabled) {
-			return () => {};
-		}
-
-		const handleStorageChange = (e: StorageEvent) => {
-			if (e.key?.startsWith(MESSAGEBOX_PREFIX) || e.key === null) {
-				callback();
+	const subscribe = useCallback(
+		(callback: () => void) => {
+			if (!enabled) {
+				return () => undefined;
 			}
-		};
 
-		window.addEventListener('storage', handleStorageChange);
+			const handleStorageChange = (e: StorageEvent) => {
+				if (e.key?.startsWith(MESSAGEBOX_PREFIX) || e.key === null) {
+					callback();
+				}
+			};
 
-		const handleLocalUpdate = (e: Event) => {
-			if (e instanceof CustomEvent && e.detail?.key?.startsWith(MESSAGEBOX_PREFIX)) {
-				callback();
-			}
-		};
-		window.addEventListener('localStorageUpdated', handleLocalUpdate);
+			window.addEventListener('storage', handleStorageChange);
 
-		return () => {
-			window.removeEventListener('storage', handleStorageChange);
-			window.removeEventListener('localStorageUpdated', handleLocalUpdate);
-		};
-	}, [enabled]);
+			return () => {
+				window.removeEventListener('storage', handleStorageChange);
+			};
+		},
+		[enabled],
+	);
 
 	return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 };

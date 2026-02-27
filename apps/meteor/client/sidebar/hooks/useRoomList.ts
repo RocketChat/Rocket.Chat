@@ -1,9 +1,9 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useFeaturePreview } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
 import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.chat/ui-contexts';
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
-import { useFeaturePreview } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 
 import { useDraftRoomIds } from './useDraftRoomIds';
@@ -44,7 +44,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 	const sidebarGroupByType = useUserPreference('sidebarGroupByType');
 	const favoritesEnabled = useUserPreference('sidebarShowFavorites');
 	const sidebarDrafts = useFeaturePreview('sidebarDrafts');
-	const sidebarOrder =  useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
+	const sidebarOrder = useUserPreference<typeof order>('sidebarSectionsOrder') ?? order;
 	const isDiscussionEnabled = useSetting('Discussion_enabled');
 	const sidebarShowUnread = useUserPreference('sidebarShowUnread');
 
