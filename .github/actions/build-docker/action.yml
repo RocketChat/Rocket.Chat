@@ -108,6 +108,7 @@ runs:
           --allow=fs.read=/tmp/build \
           --set "*.tags+=${IMAGE}-gha-run-${{ github.run_id }}" \
           --set "*.labels.org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+          --set "*.labels.org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" \
           --set *.platform=linux/${{ inputs.arch }} \
           --set *.cache-from=type=gha \
           --set *.cache-to=type=gha,mode=max \
