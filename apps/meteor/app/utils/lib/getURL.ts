@@ -45,7 +45,9 @@ export const _getURL = (
 		return path;
 	}
 
-	const [_path, _query] = path.split('?');
+	const qIndex = path.indexOf('?');
+	const _path = qIndex === -1 ? path : path.slice(0, qIndex);
+	const _query = qIndex === -1 ? '' : path.slice(qIndex + 1);
 	path = _path;
 	const query = _query ? `?${_query}` : '';
 
