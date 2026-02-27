@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import type { Extension } from '@codemirror/state';
 import { Box } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useEffect, useContext } from 'react';
+import { useEffect, useContext, useCallback } from 'react';
 
 import { updatePayloadAction, context } from '../../Context';
 import useCodeMirror from '../../hooks/useCodeMirror';
@@ -26,7 +25,12 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
   );
   const debounceValue = useDebouncedValue(changes, 1500);
 
-  useFormatCodeMirrorValue(
+  const activeScreenData = screens[activeScreen];
+  const payloadBlocks = activeScreenData?.payload.blocks;
+  const payloadSurface = activeScreenData?.payload.surface;
+  const changedByEditor = activeScreenData?.changedByEditor;
+
+  const handleFormatCode = useCallback(
     (
       parsedCode: IPayload,
       prettifiedCode: { formatted: string; cursorOffset: number }
@@ -41,22 +45,22 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
         cursor: prettifiedCode.cursorOffset,
       });
     },
-    debounceValue
+    [dispatch, setValue]
   );
 
-  useEffect(() => {
-    if (!screens[activeScreen]?.changedByEditor) {
-      setValue(intendCode(screens[activeScreen]?.payload), {});
-    }
-  }, [
-    screens[activeScreen]?.payload.blocks,
-    screens[activeScreen]?.payload.surface,
-    activeScreen,
-  ]);
+  useFormatCodeMirrorValue(handleFormatCode, debounceValue);
 
   useEffect(() => {
-    setValue(intendCode(screens[activeScreen]?.payload), {});
-  }, [activeScreen]);
+    if (!changedByEditor) {
+      const payload = { blocks: payloadBlocks, surface: payloadSurface };
+      setValue(intendCode(payload), {});
+    }
+  }, [payloadBlocks, payloadSurface, changedByEditor, activeScreen, setValue]);
+
+  useEffect(() => {
+    const payload = { blocks: payloadBlocks, surface: payloadSurface };
+    setValue(intendCode(payload), {});
+  }, [activeScreen, payloadBlocks, payloadSurface, setValue]);
 
   return (
     <>
