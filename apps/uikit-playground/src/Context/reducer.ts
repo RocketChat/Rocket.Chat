@@ -202,16 +202,6 @@ const reducer = (state: initialStateType, action: IAction) => {
           (id) => id !== action.payload
         ),
       ];
-      if (state.projects[activeProject].screens.length > 0) {
-        state.activeScreen = state.projects[activeProject].screens[0];
-      } else if (state.projects[activeProject].screens.length === 0) {
-        if (Object.keys(state.projects).length > 0) {
-          delete state.projects[activeProject];
-          state.activeProject = '';
-          state.activeScreen = '';
-        }
-      }
-
       state.projects[activeProject].flowEdges = state.projects[
         activeProject
       ].flowEdges.filter(
@@ -222,6 +212,14 @@ const reducer = (state: initialStateType, action: IAction) => {
       state.projects[activeProject].flowNodes = state.projects[
         activeProject
       ].flowNodes.filter((node) => node.id !== action.payload);
+
+      if (state.projects[activeProject].screens.length > 0) {
+        state.activeScreen = state.projects[activeProject].screens[0];
+      } else {
+        delete state.projects[activeProject];
+        state.activeProject = '';
+        state.activeScreen = '';
+      }
 
       return { ...state };
     }
