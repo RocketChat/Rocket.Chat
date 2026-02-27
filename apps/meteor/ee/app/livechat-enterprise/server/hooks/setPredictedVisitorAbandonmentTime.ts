@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isMessageFromVisitor } from '@rocket.chat/core-typings';
-import moment from 'moment';
 
 import { markRoomResponded } from '../../../../../app/livechat/server/hooks/markRoomResponded';
 import { settings } from '../../../../../app/settings/server';
@@ -37,7 +36,7 @@ callbacks.add(
 			return;
 		}
 
-		if (moment(responseBy.firstResponseTs).isSame(moment(message.ts))) {
+		if (new Date(responseBy.firstResponseTs).getTime() === new Date(message.ts).getTime()) {
 			await setPredictedVisitorAbandonmentTime({ ...room, responseBy }, roomUpdater);
 		}
 	},

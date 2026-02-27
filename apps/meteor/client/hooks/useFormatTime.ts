@@ -1,7 +1,7 @@
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
-import type { MomentInput } from 'moment';
-import moment from 'moment';
 import { useCallback } from 'react';
+
+import { formatDate } from '../lib/utils/dateFormat';
 
 const dayFormat = ['h:mm A', 'H:mm'] as const;
 
@@ -11,14 +11,14 @@ export const useFormatTime = () => {
 	const sameDay = clockMode !== undefined ? dayFormat[clockMode - 1] : format;
 
 	return useCallback(
-		(time: MomentInput) => {
+		(time: string | Date | number) => {
 			switch (clockMode) {
 				case 1:
 				case 2:
-					return moment(time).format(sameDay);
+					return formatDate(time, sameDay);
 
 				default:
-					return moment(time).format(format);
+					return formatDate(time, format);
 			}
 		},
 		[clockMode, format, sameDay],

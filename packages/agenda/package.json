@@ -18,7 +18,6 @@
 		"date.js": "~0.3.3",
 		"debug": "~4.3.7",
 		"human-interval": "^2.0.1",
-		"moment-timezone": "~0.5.48",
 		"mongodb": "6.16.0"
 	},
 	"devDependencies": {

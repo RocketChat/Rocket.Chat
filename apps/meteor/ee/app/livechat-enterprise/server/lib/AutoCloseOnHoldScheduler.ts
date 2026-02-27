@@ -4,7 +4,7 @@ import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import moment from 'moment';
+import { addSeconds } from 'date-fns';
 
 import { schedulerLogger } from './logger';
 import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';
@@ -50,7 +50,7 @@ export class AutoCloseOnHoldSchedulerClass {
 		await this.unscheduleRoom(roomId);
 
 		const jobName = `${SCHEDULER_NAME}-${roomId}`;
-		const when = moment(new Date()).add(timeout, 's').toDate();
+		const when = addSeconds(new Date(), timeout);
 
 		this.scheduler.define(jobName, this.executeJob.bind(this));
 		await this.scheduler.schedule(when, jobName, { roomId, comment });

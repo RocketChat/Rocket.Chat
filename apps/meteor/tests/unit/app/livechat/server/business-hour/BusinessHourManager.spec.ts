@@ -3,25 +3,12 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-const formatStub = sinon.stub().returns('00:00');
-const isSameStub = sinon.stub().returns(true);
-const isDSTStub = sinon.stub().returns(true);
-
-const momentStub = sinon.stub().returns({
-	utc: () => ({
-		tz: () => ({
-			format: formatStub,
-			isSame: isSameStub,
-			isDST: isDSTStub,
-		}),
-	}),
-});
+const tzOffsetStub = sinon.stub();
 
 const findActiveBusinessHoursStub = sinon.stub().returns([]);
 const LivechatBusinessHoursStub = {
 	findActiveBusinessHours: findActiveBusinessHoursStub,
 };
-const saveBusinessHourStub = sinon.stub();
 const loggerStub = sinon.stub();
 
 const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../app/livechat/server/business-hour/BusinessHourManager', {
@@ -29,7 +16,9 @@ const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../
 	'../../../../server/lib/callbacks': {},
 	'../../../../ee/app/livechat-enterprise/server/business-hour/Helper': {},
 	'./AbstractBusinessHour': {},
-	'moment-timezone': momentStub,
+	'@date-fns/tz': {
+		tzOffset: tzOffsetStub,
+	},
 	'@rocket.chat/models': {
 		LivechatBusinessHours: LivechatBusinessHoursStub,
 	},
@@ -49,36 +38,23 @@ describe('[OC] BusinessHourManager', () => {
 		const manager = new BusinessHourManager({} as any);
 
 		it('should return false if the provided timezone is equal to the current one (No changes in the timezone)', () => {
-			formatStub.returns('00:00');
-			expect(manager.hasDaylightSavingTimeChanged({ name: 'test', utc: '00:00' })).to.be.false;
+			tzOffsetStub.returns(0); // +00:00
+			expect(manager.hasDaylightSavingTimeChanged({ name: 'test', utc: '+00:00' })).to.be.false;
 		});
 
-		it('should return false if the provided timezone is different to the current one, the current time is in DST but there is no difference between times (current, stored)', () => {
-			isDSTStub.returns(true);
-			formatStub.returns('01:00');
-			isSameStub.returns(true);
-			expect(manager.hasDaylightSavingTimeChanged({ name: 'test', utc: '00:00' })).to.be.false;
+		it('should return false if the provided timezone offset matches stored utc', () => {
+			tzOffsetStub.returns(60); // +01:00
+			expect(manager.hasDaylightSavingTimeChanged({ name: 'test', utc: '+01:00' })).to.be.false;
 		});
 
-		it('should return false if the provided timezone is different to the current one, the current time is NOT in DST but there is no difference between times (current, stored)', () => {
-			isDSTStub.returns(false);
-			formatStub.returns('01:00');
-			isSameStub.returns(true);
-			expect(manager.hasDaylightSavingTimeChanged({ name: 'test', utc: '00:00' })).to.be.false;
+		it('should return true if the provided timezone is different to the current one (DST or offset change)', () => {
+			tzOffsetStub.returns(60); // +01:00
+			expect(manager.hasDaylightSavingTimeChanged({ name: 'test', utc: '+00:00' })).to.be.true;
 		});
 
-		it('should return true if the provided timezone is different to the current one, the current time is in DST and the current time is different than the stored one', () => {
-			isDSTStub.returns(true);
-			formatStub.returns('01:00');
-			isSameStub.returns(false);
-			expect(manager.hasDaylightSavingTimeChanged({ name: 'test', utc: '00:00' })).to.be.true;
-		});
-
-		it('should return true if the provided timezone is different to the current one, the current time is NOT in DST and the current time is different than the stored one', () => {
-			isDSTStub.returns(false);
-			formatStub.returns('01:00');
-			isSameStub.returns(false);
-			expect(manager.hasDaylightSavingTimeChanged({ name: 'test', utc: '00:00' })).to.be.true;
+		it('should return true when current offset differs from stored (e.g. -05:00 vs -04:00)', () => {
+			tzOffsetStub.returns(-300); // -05:00
+			expect(manager.hasDaylightSavingTimeChanged({ name: 'test', utc: '-04:00' })).to.be.true;
 		});
 	});
 

@@ -1,6 +1,5 @@
 import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
-import moment from 'moment';
 import Queue from 'queue-fifo';
 
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
@@ -60,7 +59,7 @@ class Bridge {
 
 		const lastPing = await Settings.findOneById('IRC_Bridge_Last_Ping');
 		if (lastPing) {
-			if (Math.abs(moment(lastPing.value).diff()) < 1000 * 30) {
+			if (Math.abs(new Date(lastPing.value).getTime() - Date.now()) < 1000 * 30) {
 				this.log('Not trying to connect.');
 				this.remove();
 				return;

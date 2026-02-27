@@ -1,5 +1,5 @@
 import mem from 'mem';
-import moment from 'moment';
+import { format, parse, differenceInDays } from 'date-fns';
 
 export const isDateISOString = mem(
 	(input: string): input is string => {
@@ -17,10 +17,10 @@ export const mapDateForAPI = (input: string): Date => {
 	return new Date(Date.parse(input));
 };
 
-export const convertDateToInt = (date: Date): number => parseInt(moment(date).clone().format('YYYYMMDD'), 10);
-export const convertIntToDate = (intValue: number): Date => moment(intValue, 'YYYYMMDD').clone().toDate();
+export const convertDateToInt = (date: Date): number => parseInt(format(date, 'yyyyMMdd'), 10);
+export const convertIntToDate = (intValue: number): Date => parse(String(intValue), 'yyyyMMdd', new Date());
 const diffBetweenDays = (start: string | number | Date, end: string | number | Date): number =>
-	moment(new Date(start)).clone().diff(new Date(end), 'days');
+	differenceInDays(new Date(end), new Date(start));
 export const diffBetweenDaysInclusive = (start: string | number | Date, end: string | number | Date): number =>
 	diffBetweenDays(start, end) + 1;
 

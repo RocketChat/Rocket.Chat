@@ -2,7 +2,7 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IOmnichannelService } from '@rocket.chat/core-services';
 import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import { OmnichannelQueue } from './queue';
 import { RoutingManager } from '../../../app/livechat/server/lib/RoutingManager';
@@ -53,7 +53,7 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 	}
 
 	async isWithinMACLimit(room: AtLeast<IOmnichannelRoom, 'v'>): Promise<boolean> {
-		const currentMonth = moment.utc().format('YYYY-MM');
+		const currentMonth = format(new Date(), 'yyyy-MM');
 		return room.v?.activity?.includes(currentMonth) || !(await License.shouldPreventAction('monthlyActiveContacts'));
 	}
 }

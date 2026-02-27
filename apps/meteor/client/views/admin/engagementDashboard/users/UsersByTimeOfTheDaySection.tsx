@@ -2,7 +2,7 @@ import type { ComputedCell, DefaultHeatMapDatum } from '@nivo/heatmap';
 import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
 import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import moment from 'moment';
+import { differenceInDays, addDays, endOfDay, format, isSameDay } from 'date-fns';
 import type { ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,10 @@ import { useUsersByTimeOfTheDay } from './useUsersByTimeOfTheDay';
 type UsersByTimeOfTheDaySectionProps = {
 	timezone: 'utc' | 'local';
 };
+
+function endOfDayUTC(d: Date): Date {
+	return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999));
+}
 
 const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProps): ReactElement => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
@@ -31,46 +35,54 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			return [];
 		}
 
-		const length = utc ? moment(data.end).diff(data.start, 'days') + 1 : moment(data.end).diff(data.start, 'days') - 1;
-		const start = utc ? moment.utc(data.start).endOf('day') : moment(data.start).endOf('day').add(1, 'days');
+		const startDate = new Date(data.start);
+		const endDate = new Date(data.end);
+		const length = utc ? differenceInDays(endDate, startDate) + 1 : differenceInDays(endDate, startDate) - 1;
+		const start = utc ? endOfDayUTC(startDate) : addDays(endOfDay(startDate), 1);
 
-		const dates = new Array(length);
+		const datesArray = new Array(length);
 		for (let i = 0; i < length; i++) {
-			dates[i] = start.clone().add(i, 'days').toISOString();
+			datesArray[i] = addDays(start, i).toISOString();
 		}
 
-		const values = new Array(24);
+		const valuesArray = new Array(24);
 		for (let hour = 0; hour < 24; hour++) {
-			values[hour] = {
+			valuesArray[hour] = {
 				id: hour.toString(),
-				data: dates.map((x) => ({ x, y: 0 })),
+				data: datesArray.map((x) => ({ x, y: 0 })),
 			};
 		}
 
-		const timezoneOffset = moment().utcOffset() / 60;
+		const timezoneOffsetHours = -new Date().getTimezoneOffset() / 60;
 
 		for (const { users, hour, day, month, year } of data.week) {
-			const date = utc ? moment.utc([year, month - 1, day, hour]) : moment([year, month - 1, day, hour]).add(timezoneOffset, 'hours');
+			const d = utc
+				? new Date(Date.UTC(year, month - 1, day, hour, 0, 0, 0))
+				: new Date(year, month - 1, day, hour, 0, 0, 0);
+			if (!utc) {
+				d.setHours(d.getHours() + timezoneOffsetHours);
+			}
 
-			if (utc || (!date.isSame(data.end) && !date.clone().startOf('day').isSame(data.start))) {
-				const dataPoint = values[date.hour()].data.find((point: { x: string }) => point.x === date.endOf('day').toISOString());
+			const include = utc || (!isSameDay(d, endDate) && !isSameDay(new Date(d.getFullYear(), d.getMonth(), d.getDate()), startDate));
+			if (include) {
+				const dateEnd = endOfDay(d);
+				const dateKey = dateEnd.toISOString();
+				const hourIdx = d.getHours();
+				const dataPoint = valuesArray[hourIdx].data.find((point: { x: string }) => point.x === dateKey);
 				if (dataPoint) {
 					dataPoint.y += users;
 				}
 			}
 		}
 
-		return [dates, values];
+		return [datesArray, valuesArray];
 	}, [data, isPending, utc]);
 
 	const tooltip = useCallback(
 		({ cell }: { cell: ComputedCell<DefaultHeatMapDatum> }) => {
 			return (
 				<Tooltip>
-					{moment(cell.data.x).format('ddd')}{' '}
-					{moment()
-						.set({ hour: parseInt(cell.serieId, 10), minute: 0, second: 0 })
-						.format('LT')}
+					{format(new Date(cell.data.x), 'EEE')} {format(new Date(2000, 0, 1, parseInt(cell.serieId, 10), 0, 0), 'p')}
 					<br />
 					{t('Value_users', { value: cell.data.y })}
 				</Tooltip>
@@ -90,10 +102,10 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 					dataExtractor={(): unknown[][] | undefined =>
 						data?.week
 							?.map(({ users, hour, day, month, year }) => ({
-								date: moment([year, month - 1, day, hour, 0, 0, 0]),
+								date: new Date(year, month - 1, day, hour, 0, 0, 0),
 								users,
 							}))
-							?.sort((a, b) => a.date.diff(b.date))
+							?.sort((a, b) => a.date.getTime() - b.date.getTime())
 							?.map(({ date, users }) => [date.toISOString(), users])
 					}
 				/>
@@ -141,17 +153,14 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 										tickSize: 0,
 										tickPadding: 8,
 										tickRotation: 0,
-										format: (isoString): string => (dates?.length === 8 ? moment(isoString).format('ddd') : ''),
+										format: (isoString): string => (dates?.length === 8 ? format(new Date(isoString), 'EEE') : ''),
 									}}
 									axisLeft={{
 										// TODO: Get it from theme
 										tickSize: 0,
 										tickPadding: 8,
 										tickRotation: 0,
-										format: (hour): string =>
-											moment()
-												.set({ hour: parseInt(hour, 10), minute: 0, second: 0 })
-												.format('LT'),
+										format: (hour): string => format(new Date(2000, 0, 1, parseInt(hour, 10), 0, 0), 'p'),
 									}}
 									hoverTarget='cell'
 									animate={dates && dates.length <= 7}

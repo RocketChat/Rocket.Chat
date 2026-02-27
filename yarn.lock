@@ -2724,6 +2724,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@date-fns/tz@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@date-fns/tz@npm:1.4.1"
+  checksum: 10/062097590005cce3da4c7d9880f9c77d386cff5b4dd58fa3dde3c346a8b2e4f4a8025a613306351a7cad8eb71178a0f67b4840d5884f73aa4c759085fac92063
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -8113,7 +8120,6 @@ __metadata:
     debug: "npm:~4.3.7"
     eslint: "npm:~9.39.3"
     human-interval: "npm:^2.0.1"
-    moment-timezone: "npm:~0.5.48"
     mongodb: "npm:6.16.0"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -9047,11 +9053,9 @@ __metadata:
     eslint: "npm:~9.39.3"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
-    moment: "npm:^2.30.1"
     typescript: "npm:~5.9.3"
   peerDependencies:
     date-fns: ~4.1.0
-    moment: ^2.30.1
   languageName: unknown
   linkType: soft
 
@@ -9068,6 +9072,7 @@ __metadata:
     "@bugsnag/js": "npm:~7.20.2"
     "@bugsnag/plugin-react": "npm:~7.19.0"
     "@datastructures-js/priority-queue": "npm:^6.3.5"
+    "@date-fns/tz": "npm:^1.4.1"
     "@faker-js/faker": "npm:~8.0.2"
     "@google-cloud/storage": "npm:^7.15.0"
     "@kaciras/deasync": "npm:^1.1.0"
@@ -9346,8 +9351,6 @@ __metadata:
     mkdirp: "npm:^1.0.4"
     mocha: "npm:^9.2.2"
     moleculer: "npm:^0.14.35"
-    moment: "npm:^2.30.1"
-    moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
@@ -9615,7 +9618,6 @@ __metadata:
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
     mem: "npm:^8.1.1"
-    moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
     pino: "npm:^8.21.0"
@@ -9654,7 +9656,6 @@ __metadata:
     i18next-sprintf-postprocessor: "npm:^0.2.2"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
-    moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
@@ -9717,6 +9718,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/pdf-worker@workspace:ee/packages/pdf-worker"
   dependencies:
+    "@date-fns/tz": "npm:^1.4.1"
     "@react-pdf/renderer": "npm:^3.4.5"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
@@ -9734,12 +9736,11 @@ __metadata:
     "@types/react": "npm:~18.3.27"
     "@types/react-dom": "npm:~18.3.7"
     buffer: "npm:~6.0.3"
+    date-fns: "npm:~4.1.0"
     emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~9.39.3"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
-    moment: "npm:^2.30.1"
-    moment-timezone: "npm:^0.5.48"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
@@ -9857,7 +9858,6 @@ __metadata:
     eventemitter3: "npm:^5.0.4"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
-    moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
@@ -10044,7 +10044,6 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
-    moment-timezone: "npm:^0.5.48"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10424,9 +10423,9 @@ __metadata:
     "@types/react-dom": "npm:~18.3.7"
     "@vitejs/plugin-react": "npm:~4.5.2"
     codemirror: "npm:^6.0.2"
+    date-fns: "npm:~4.1.0"
     eslint: "npm:~9.39.3"
     eslint4b-prebuilt: "npm:^6.7.2"
-    moment: "npm:^2.30.1"
     prettier: "npm:~3.3.3"
     rc-scrollbars: "npm:^1.1.6"
     react: "npm:~18.3.1"
@@ -27761,7 +27760,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.48, moment-timezone@npm:^0.5.x, moment-timezone@npm:~0.5.48":
+"moment-timezone@npm:^0.5.x":
   version: 0.5.48
   resolution: "moment-timezone@npm:0.5.48"
   dependencies:
@@ -27770,7 +27769,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.10.2, moment@npm:^2.29.4, moment@npm:^2.30.1":
+"moment@npm:^2.10.2, moment@npm:^2.29.4":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 10/ae42d876d4ec831ef66110bdc302c0657c664991e45cf2afffc4b0f6cd6d251dde11375c982a5c0564ccc0fa593fc564576ddceb8c8845e87c15f58aa6baca69

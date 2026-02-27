@@ -2,7 +2,7 @@ import { OmnichannelAnalytics } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
 import mem from 'mem';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
 import { settings } from '../../../../settings/server';
@@ -91,7 +91,7 @@ const getAgentsProductivityMetricsAsync = async ({
 	// TODO: check type of date
 	const averageOfAvailableServiceTime = (
 		await LivechatAgentActivity.findAllAverageAvailableServiceTime({
-			date: parseInt(moment(start).format('YYYYMMDD')) as any,
+			date: parseInt(format(new Date(start), 'yyyyMMdd'), 10) as any,
 			departmentId,
 		})
 	)[0];
