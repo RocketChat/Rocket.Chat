@@ -72,7 +72,7 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 				{!collapsed && (
 					<>
 						{attachment.text && (
-							<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text, 'document')}</AttachmentText>
+							<AttachmentText attachment={attachment}>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text, 'document')}</AttachmentText>
 						)}
 						{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
 						{attachment.fields && (
