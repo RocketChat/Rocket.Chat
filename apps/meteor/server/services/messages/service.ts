@@ -26,6 +26,8 @@ import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
+import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
+import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 
 const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 
@@ -236,6 +238,11 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
+		// TODO: Auto-close unclosed markdown code blocks for server versions below 9.0.0
+		// In 9.0.0, this behavior is handled on the client side, so this block should be removed.
+		if (!shouldBreakInVersion('9.0.0') && message.msg) {
+			message = { ...message, msg: closeUnclosedCodeBlock(message.msg) };
+		}
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
 		message = await mentionServer.execute(message);
 		if (parseUrls) {
