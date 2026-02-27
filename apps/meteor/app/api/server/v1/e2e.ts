@@ -97,6 +97,31 @@ const e2eEndpoints = API.v1
 		},
 	)
 	.get(
+		'e2e.fetchMyKeys',
+		{
+			authRequired: true,
+			query: undefined,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ public_key?: string; private_key?: string }>({
+					type: 'object',
+					properties: {
+						public_key: { type: 'string' },
+						private_key: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+			},
+		},
+		async function action() {
+			const result = await Users.fetchKeysByUserId(this.userId);
+
+			return API.v1.success(result);
+		},
+	)
+	.get(
 		'e2e.getUsersOfRoomWithoutKey',
 		{
 			authRequired: true,
@@ -141,20 +166,6 @@ const e2eEndpoints = API.v1
 			return API.v1.success(result);
 		},
 	);
-
-API.v1.addRoute(
-	'e2e.fetchMyKeys',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
-			const result = await Users.fetchKeysByUserId(this.userId);
-
-			return API.v1.success(result);
-		},
-	},
-);
 
 /**
  * @openapi
