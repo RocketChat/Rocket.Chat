@@ -287,6 +287,7 @@ InlineItemPattern = Whitespace
   / ChannelMention
   / AutolinkedEmail
   / AutolinkedPhone
+  / PlainUnderscoreThenDomain
   / AutolinkedURL
   / EmphasisWithWhitespace
   / Emphasis
@@ -449,6 +450,9 @@ AutolinkedEmail = e:Email { return autoEmail(e); }
  * with customDomains options as intranet: protocol://internaltool.intranet
  *
  */
+// _example.com (underscore + domain without closing _) → plain
+PlainUnderscoreThenDomain = "_" d:DomainName &(EndOfLine / !. / [^\x5F]) { return plain('_' + d); }
+
 AutolinkedURL = u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
