@@ -56,7 +56,7 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 
 	async refreshTokenById(
 		id: IPushToken['_id'],
-		data: Pick<IPushToken, 'token' | 'appName' | 'authToken' | 'userId'>,
+		data: Pick<IPushToken, 'token' | 'appName' | 'authToken' | 'userId' | 'voipToken'>,
 	): Promise<UpdateResult<IPushToken>> {
 		return this.updateOne(
 			{ _id: id },
@@ -66,9 +66,14 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 					authToken: data.authToken,
 					appName: data.appName,
 					userId: data.userId,
+					...(data.voipToken && { voipToken: data.voipToken }),
 				},
 			},
 		);
+	}
+
+	async setVoipTokenById(id: IPushToken['_id'], voipToken: string): Promise<UpdateResult<IPushToken>> {
+		return this.updateOne({ _id: id }, { $set: { voipToken } });
 	}
 
 	findOneByTokenAndAppName(token: IPushToken['token'], appName: IPushToken['appName']): Promise<IPushToken | null> {
@@ -85,15 +90,18 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		});
 	}
 
-	removeByTokenAndAppNameExceptId(
-		token: IPushToken['token'],
-		appName: IPushToken['appName'],
-		id: IPushToken['_id'],
-	): Promise<DeleteResult> {
+	removeDuplicateTokens(tokenData: Pick<IPushToken, '_id' | 'token' | 'appName' | 'authToken'>): Promise<DeleteResult> {
 		return this.deleteMany({
-			token,
-			appName,
-			_id: { $ne: id },
+			_id: { $ne: tokenData._id },
+			$or: [
+				{
+					token: tokenData.token,
+					appName: tokenData.appName,
+				},
+				{
+					authToken: tokenData.authToken,
+				},
+			],
 		});
 	}
 

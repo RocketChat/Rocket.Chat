@@ -13,11 +13,12 @@ export interface IPushTokenModel extends IBaseModel<IPushToken> {
 	insertToken(data: AtLeast<IPushToken, 'token' | 'authToken' | 'appName' | 'userId'>): Promise<InsertOneResult<IPushToken>>;
 	refreshTokenById(
 		id: IPushToken['_id'],
-		data: Pick<IPushToken, 'token' | 'appName' | 'authToken' | 'userId'>,
+		data: Pick<IPushToken, 'token' | 'appName' | 'authToken' | 'userId' | 'voipToken'>,
 	): Promise<UpdateResult<IPushToken>>;
+	setVoipTokenById(id: IPushToken['_id'], voipToken: string): Promise<UpdateResult<IPushToken>>;
 
 	removeByUserIdExceptTokens(userId: string, tokens: IPushToken['authToken'][]): Promise<DeleteResult>;
-	removeByTokenAndAppNameExceptId(token: IPushToken['token'], appName: IPushToken['appName'], id: IPushToken['_id']): Promise<DeleteResult>;
+	removeDuplicateTokens(tokenData: Pick<IPushToken, '_id' | 'token' | 'appName' | 'authToken'>): Promise<DeleteResult>;
 
 	removeAllByUserId(userId: string): Promise<DeleteResult>;
 	removeAllByTokenStringAndUserId(token: string, userId: string): Promise<DeleteResult>;

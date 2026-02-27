@@ -1,5 +1,6 @@
 import { Push } from '@rocket.chat/core-services';
-import type { IPushToken } from '@rocket.chat/core-typings';
+import { pushTokenTypes } from '@rocket.chat/core-typings';
+import type { IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
 	ajv,
@@ -22,7 +23,7 @@ import type { SuccessResult } from '../definition';
 
 type PushTokenPOST = {
 	id?: string;
-	type: 'apn' | 'gcm';
+	type: IPushTokenTypes;
 	value: string;
 	appName: string;
 };
@@ -36,7 +37,7 @@ const PushTokenPOSTSchema: JSONSchemaType<PushTokenPOST> = {
 		},
 		type: {
 			type: 'string',
-			enum: ['apn', 'gcm'],
+			enum: pushTokenTypes,
 		},
 		value: {
 			type: 'string',
@@ -71,13 +72,13 @@ const PushTokenDELETESchema: JSONSchemaType<PushTokenDELETE> = {
 
 export const isPushTokenDELETEProps = ajv.compile<PushTokenDELETE>(PushTokenDELETESchema);
 
-type PushTokenResult = Pick<IPushToken, '_id' | 'token' | 'appName' | 'userId' | 'enabled' | 'createdAt' | '_updatedAt'>;
+type PushTokenResult = Pick<IPushToken, '_id' | 'token' | 'appName' | 'userId' | 'enabled' | 'createdAt' | '_updatedAt' | 'voipToken'>;
 
 /**
  * Pick only the attributes we actually want to return on the endpoint, ensuring nothing from older schemas get mixed in
  */
 function cleanTokenResult(result: Omit<IPushToken, 'authToken'>): PushTokenResult {
-	const { _id, token, appName, userId, enabled, createdAt, _updatedAt } = result;
+	const { _id, token, appName, userId, enabled, createdAt, _updatedAt, voipToken } = result;
 
 	return {
 		_id,
@@ -87,6 +88,7 @@ function cleanTokenResult(result: Omit<IPushToken, 'authToken'>): PushTokenResul
 		enabled,
 		createdAt,
 		_updatedAt,
+		voipToken,
 	};
 }
 
@@ -113,10 +115,13 @@ const pushTokenEndpoints = API.v1
 								token: {
 									type: 'object',
 									properties: {
-										apn: {
+										'apn': {
 											type: 'string',
 										},
-										gcm: {
+										'gcm': {
+											type: 'string',
+										},
+										'apn.voip': {
 											type: 'string',
 										},
 									},
@@ -139,6 +144,9 @@ const pushTokenEndpoints = API.v1
 								_updatedAt: {
 									type: 'string',
 								},
+								voipToken: {
+									type: 'string',
+								},
 							},
 							additionalProperties: false,
 						},
@@ -155,6 +163,10 @@ const pushTokenEndpoints = API.v1
 		async function action() {
 			const { id, type, value, appName } = this.bodyParams;
 
+			if (type === 'apn.voip' && !id) {
+				throw new Error('voip-tokens-must-specify-device-id');
+			}
+
 			const rawToken = this.request.headers.get('x-auth-token');
 			if (!rawToken) {
 				throw new Meteor.Error('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
@@ -167,6 +179,7 @@ const pushTokenEndpoints = API.v1
 				authToken,
 				appName,
 				userId: this.userId,
+				...(type === 'apn.voip' && { voipToken: value }),
 			});
 
 			return API.v1.success({ result: cleanTokenResult(result) });
