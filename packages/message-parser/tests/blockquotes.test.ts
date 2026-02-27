@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { paragraph, plain, quote, bold } from '../src/utils';
+import { paragraph, plain, quote, bold } from './helpers';
 
 test.each([
 	[
