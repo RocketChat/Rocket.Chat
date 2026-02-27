@@ -40,7 +40,6 @@ const QuoteMessageAction = ({ message, subscription }: QuoteMessageActionProps) 
 			id='quote-message'
 			icon='quote'
 			title={t('Quote')}
-			qa='Quote'
 			onClick={() => {
 				if (message && autoTranslateOptions?.autoTranslateEnabled && autoTranslateOptions.showAutoTranslate(message)) {
 					message.msg =
