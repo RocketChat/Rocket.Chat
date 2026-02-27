@@ -20645,15 +20645,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react-refresh@npm:~0.5.2":
-  version: 0.5.2
-  resolution: "eslint-plugin-react-refresh@npm:0.5.2"
-  peerDependencies:
-    eslint: ^9 || ^10
-  checksum: 10/155a2e66d74866352f023b2a2d9b0daf1fb3033638851321caafa48fe9c9984830acc089d3832348ff2df2848791db96d17bd43639860b045b9f7ee4e5f86dcc
-  languageName: node
-  linkType: hard
-
 "eslint-plugin-react@npm:~7.37.5":
   version: 7.37.5
   resolution: "eslint-plugin-react@npm:7.37.5"
@@ -32414,7 +32405,6 @@ __metadata:
     "@types/node": "npm:~22.16.5"
     "@types/stream-buffers": "npm:^3.0.8"
     eslint: "npm:~9.39.3"
-    eslint-plugin-react-refresh: "npm:~0.5.2"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
