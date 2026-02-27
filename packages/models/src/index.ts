@@ -70,7 +70,6 @@ import type {
 	IAppLogsModel,
 	IImportsModel,
 	IFederationRoomEventsModel,
-	IAppsTokensModel,
 	IAuditLogModel,
 	ICronHistoryModel,
 	IMigrationsModel,
@@ -123,7 +122,6 @@ export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
-export const AppsTokens = proxify<IAppsTokensModel>('IAppsTokensModel');
 export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
 export const AppLogs = proxify<IAppLogsModel>('IAppLogsModel');
 export const Analytics = proxify<IAnalyticsModel>('IAnalyticsModel');

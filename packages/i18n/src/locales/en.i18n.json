@@ -7108,5 +7108,8 @@
   "Message_composer": "Message composer",
   "Thread_composer": "Thread composer",
   "Room_composer": "Room composer",
-  "Date_range_presets": "Date range presets"
+  "Date_range_presets": "Date range presets",
+  "message_body": "message body",
+  "message_attachment": "message attachment",
+  "system_message_body": "system message body"
 }
