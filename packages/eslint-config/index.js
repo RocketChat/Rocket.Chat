@@ -414,7 +414,7 @@ export default defineConfig(
 					leadingUnderscore: 'allowSingleOrDouble',
 				},
 				{
-					selector: ['function'],
+					selector: 'function',
 					format: ['camelCase', 'PascalCase'],
 					leadingUnderscore: 'allowSingleOrDouble',
 				},
@@ -423,6 +423,14 @@ export default defineConfig(
 					format: null,
 					filter: {
 						regex: '^Story$',
+						match: true,
+					},
+				},
+				{
+					selector: 'parameter',
+					format: ['PascalCase'],
+					filter: {
+						regex: 'Component$',
 						match: true,
 					},
 				},
