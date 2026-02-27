@@ -4,6 +4,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { useSetting, useToastMessageDispatch, useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
@@ -70,14 +71,15 @@ export const useExportMessagesAsPDFMutation = () => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const absoluteUrl = useAbsoluteUrl();
 
-	for (const font of NOTO_SANS_FONTS) {
-		Font.register({
-			family: font.name,
-			fonts: [{ src: absoluteUrl(font.fontSrc) }],
-		});
-	}
-
-	Font.registerHyphenationCallback((word) => [word]);
+	useEffect(() => {
+		for (const font of NOTO_SANS_FONTS) {
+			Font.register({
+				family: font.name,
+				fonts: [{ src: absoluteUrl(font.fontSrc) }],
+			});
+		}
+		Font.registerHyphenationCallback((word) => [word]);
+	}, []);
 
 	return useMutation({
 		mutationFn: async (messageIds: IMessage['_id'][]) => {
