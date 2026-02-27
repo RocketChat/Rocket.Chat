@@ -4,6 +4,7 @@ import type { AnySchema } from 'ajv';
 import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
+import { createMiddleware } from 'hono/factory';
 import type { StatusCode } from 'hono/utils/http-status';
 
 import type { ResponseSchema, TypedOptions } from './definition';
@@ -187,13 +188,20 @@ export class Router<
 		const [middlewares, action] = splitArray<MiddlewareHandler, TActionCallback>(actions);
 		const convertedAction = this.convertActionToHandler(action);
 
+		const bodyParserMiddleware = createMiddleware(async (c: Context, next) => {
+			const bodyParams = await this.parseBodyParams({ request: c.req });
+			c.set('bodyParams', bodyParams);
+
+			return next();
+		});
+
 		const path = `/${subpath}`.replace('//', '/');
 		(
 			this.innerRouter[method.toLowerCase() as Lowercase<Method>] as (
 				path: string,
 				...handlers: Array<MiddlewareHandler | ((c: Context) => Promise<ResponseSchema<TypedOptions>>)>
 			) => InnerRouter
-		)(path, ...middlewares, async (c: Context) => {
+		)(path, bodyParserMiddleware, ...middlewares, async (c: Context) => {
 			const { req, res } = c;
 
 			let queryParams: Record<string, any>;
@@ -228,12 +236,11 @@ export class Router<
 				}
 			}
 
-			const bodyParams = await this.parseBodyParams({ request: req });
-			c.set('bodyParams', bodyParams);
+			const bodyParams = c.get('bodyParams') || {};
 
 			if (options.body) {
 				const validatorFn = options.body;
-				if (typeof options.body === 'function' && !validatorFn((req as any).bodyParams || bodyParams)) {
+				if (typeof options.body === 'function' && !validatorFn(bodyParams)) {
 					logger.warn({
 						msg: 'Request body validation failed - route spec does not match request payload',
 						method: req.method,
