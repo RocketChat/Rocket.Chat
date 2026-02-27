@@ -11,6 +11,6 @@ type ImageAttachmentProps = {
 
 export const ImageAttachment = memo(({ url, className, ...messageBubbleProps }: ImageAttachmentProps) => (
 	<MessageBubble nude className={createClassName(styles, 'image-attachment', {}, [className])} {...messageBubbleProps}>
-		<img src={url} className={createClassName(styles, 'image-attachment__inner')} />
+		<img src={url} className={createClassName(styles, 'image-attachment__inner')} alt={url} />
 	</MessageBubble>
 ));

@@ -19,7 +19,7 @@ export default {
 					fontColor: '',
 					iconColor: '',
 				}}
-				title={'Title'}
+				title='Title'
 				notificationsEnabled={true}
 				minimized={false}
 				expanded={false}
