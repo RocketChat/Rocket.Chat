@@ -1,8 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import { RocketChatLogo } from '@rocket.chat/logo';
-import type { FC } from 'react';
 
-const Logo: FC = () => (
+const Logo = () => (
   <Box
     display="flex"
     justifyContent="center"

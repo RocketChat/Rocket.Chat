@@ -1,10 +1,9 @@
 import { Box, Scrollable } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 
 import { actionPreviewExtensions } from '../../CodeEditor/Extensions/Extensions';
 import PreviewEditor from '../../CodeEditor/PreviewEditor';
 
-const ActionPreviewEditor: FC = () => (
+const ActionPreviewEditor = () => (
   <Scrollable vertical>
     <Box
       position="relative"

@@ -15,16 +15,16 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 
   const itemClickHandler = () => {
     toggleItemOpen(!isOpen);
-    payload &&
-      dispatch(
-        updatePayloadAction({
-          blocks: [
-            ...state.screens[state.activeScreen].payload.blocks,
-            { actionId: getUniqueId(), ...payload[0] },
-          ],
-          changedByEditor: false,
-        }),
-      );
+    if (!payload) return;
+    dispatch(
+      updatePayloadAction({
+        blocks: [
+          ...state.screens[state.activeScreen].payload.blocks,
+          { actionId: getUniqueId(), ...payload[0] },
+        ],
+        changedByEditor: false,
+      }),
+    );
   };
 
   return (

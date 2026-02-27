@@ -8,7 +8,6 @@ import {
   Icon,
 } from '@rocket.chat/fuselage';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
-import type { FC } from 'react';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,7 +16,7 @@ import { context, updatePayloadAction } from '../../Context';
 import { openCreateNewScreenAction } from '../../Context/action/openCreateNewScreenAction';
 import routes from '../../Routes/Routes';
 
-const NabBar: FC = () => {
+const NabBar = () => {
   const {
     state: { isMobile, screens, activeScreen },
     dispatch,

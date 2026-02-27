@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
-import { useContext, type FC } from 'react';
+import { useContext } from 'react';
 
 import MenuItem from './MenuItem';
 import Wrapper from './Wrapper';
@@ -12,7 +12,7 @@ import {
 } from '../../../Context';
 import SurfaceSelect from '../../SurfaceSelect';
 
-const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
+const Menu = ({ isOpen }: { isOpen: boolean }) => {
   const {
     state: { screens, activeScreen },
     dispatch,

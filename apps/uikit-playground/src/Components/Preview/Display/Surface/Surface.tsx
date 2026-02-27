@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
-import type { FC } from 'react';
 import { useContext, useState, useEffect } from 'react';
 import type { DropResult } from 'react-beautiful-dnd';
 
@@ -16,7 +15,7 @@ import generateActionPreview from '../../../../Payload/actionPreview/generateAct
 import type { Block } from '../../../Draggable/DraggableList';
 import DraggableList from '../../../Draggable/DraggableList';
 
-const Surface: FC = () => {
+const Surface = () => {
   const {
     state: { screens, activeScreen, user },
     dispatch,

@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useContext, type FC } from 'react';
+import { useContext } from 'react';
 
 import ComponentSideBar from '../Components/ComponentSideBar';
 import CreateNewScreenContainer from '../Components/CreateNewScreen/CreateNewScreenContainer';
@@ -9,7 +9,7 @@ import Templates from '../Components/Templates';
 import NavMenu from '../Components/navMenu/NavMenu';
 import { context } from '../Context';
 
-const Playground: FC = () => {
+const Playground = () => {
   const {
     state: { navMenuToggle },
   } = useContext(context);

@@ -1,11 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Label } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC } from 'react';
+import type { ComponentProps } from 'react';
 
-const MenuItem: FC<{ name: string } & ComponentProps<typeof Box>> = ({
-  name,
-  ...props
-}) => {
+type MenuItemProps = {
+  name: string;
+} & ComponentProps<typeof Box>;
+
+const MenuItem = ({ name, ...props }: MenuItemProps) => {
   const pointer = css`
     cursor: pointer;
   `;

@@ -1,13 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 
 import ScrollableSideBar from './ScrollableSideBar';
 import SliderBtn from './SliderBtn';
 import { context, sidebarToggleAction } from '../../Context';
 
-const SideBar: FC = () => {
+const SideBar = () => {
   const { state, dispatch } = useContext(context);
 
   useEffect(() => {

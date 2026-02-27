@@ -1,11 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Label } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import { useContext, useMemo } from 'react';
 
 import { context, sidebarToggleAction } from '../../Context';
 
-const SliderBtn: FC = () => {
+const SliderBtn = () => {
   const {
     state: { sideBarToggle, isMobile },
     dispatch,

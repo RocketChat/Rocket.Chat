@@ -15,9 +15,9 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import ConnectionLine from './ConnectionLine';
 import ControlButton from './ControlButtons';
-import { context } from '../../Context';
 import UIKitWrapper from './UIKitWrapper/UIKitWrapper';
 import { FlowParams } from './utils';
+import { context } from '../../Context';
 import { updateNodesAndViewPortAction } from '../../Context/action/updateNodesAndViewPortAction';
 import { useNodesAndEdges } from '../../hooks/useNodesAndEdges';
 
@@ -87,7 +87,7 @@ const FlowContainer = () => {
 
   const onInit = (instance: ReactFlowInstance) => {
     setRfInstance(instance);
-    Viewport && setViewport(Viewport);
+    if (Viewport) setViewport(Viewport);
   };
 
   return (

@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import { Fragment, useContext } from 'react';
 
 import ActionBlockEditor from './ActionBlockEditor';
@@ -33,7 +32,7 @@ const tabsItem = {
   [TabsItem.Prototype]: { name: 'Prototype', Container: PrototypeContainer },
 } as const;
 
-const EditorPanel: FC = () => {
+const EditorPanel = () => {
   const {
     state: { editorTabsToggle },
     dispatch,

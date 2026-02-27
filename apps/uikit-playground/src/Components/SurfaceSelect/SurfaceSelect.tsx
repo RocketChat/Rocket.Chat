@@ -1,11 +1,10 @@
 import { Select } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import { useContext } from 'react';
 
 import options from './options';
 import { context, surfaceAction } from '../../Context';
 
-const SurfaceSelect: FC = () => {
+const SurfaceSelect = () => {
   const {
     state: { screens, activeScreen },
     dispatch,

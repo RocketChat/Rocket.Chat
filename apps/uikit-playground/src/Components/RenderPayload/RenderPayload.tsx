@@ -14,14 +14,24 @@ const RenderPayload = ({
 }: {
   index?: number;
   blocks: ILayoutBlock[];
-  surface?: number;
-}) => (
-  <>
-    {SurfaceOptions.Message === surface && uiKitMessage(blocks)}
-    {SurfaceOptions.Banner === surface && uiKitBanner(blocks)}
-    {SurfaceOptions.Modal === surface && uiKitModal(blocks)}
-    {SurfaceOptions.ContextualBar === surface && uiKitContextualBar(blocks)}
-  </>
-);
+  surface?: SurfaceOptions;
+}) => {
+  switch (surface) {
+    case SurfaceOptions.Message:
+      return uiKitMessage(blocks);
+
+    case SurfaceOptions.Banner:
+      return uiKitBanner(blocks);
+
+    case SurfaceOptions.Modal:
+      return uiKitModal(blocks);
+
+    case SurfaceOptions.ContextualBar:
+      return uiKitContextualBar(blocks);
+
+    default:
+      return null;
+  }
+};
 
 export default RenderPayload;

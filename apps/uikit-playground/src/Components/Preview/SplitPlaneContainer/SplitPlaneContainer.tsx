@@ -1,5 +1,4 @@
 import './splitPlane.css';
-import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 import SplitPane from 'react-split-pane';
 
@@ -11,9 +10,12 @@ type PreviewSizeType = {
   blockSize: number;
   inlineSize: number;
 };
-const SplitPlaneContainer: FC<{ previewSize: Partial<PreviewSizeType> }> = ({
-  previewSize,
-}) => {
+
+type SplitPlaneContainerProps = {
+  previewSize: Partial<PreviewSizeType>;
+};
+
+const SplitPlaneContainer = ({ previewSize }: SplitPlaneContainerProps) => {
   const {
     state: { isTablet },
     dispatch,

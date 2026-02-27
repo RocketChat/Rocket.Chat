@@ -1,6 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import { useContext } from 'react';
 
 import {
@@ -11,7 +10,7 @@ import {
 import SurfaceSelect from '../../SurfaceSelect';
 import ToggleTabs from '../../ToggleTabs';
 
-const NavPanel: FC = () => {
+const NavPanel = () => {
   const {
     state: { isMobile, isTablet, previewTabsToggle },
     dispatch,

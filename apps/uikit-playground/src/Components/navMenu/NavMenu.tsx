@@ -1,12 +1,11 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import type { FC } from 'react';
 import { useEffect, useState, useContext } from 'react';
 
 import Menu from './Menu';
 import { context, navMenuToggleAction } from '../../Context';
 
-const NavMenu: FC = () => {
+const NavMenu = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const {
