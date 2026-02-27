@@ -146,7 +146,7 @@ export const getMatrixInviteRoutes = () => {
 		isAuthenticatedMiddleware(),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
+			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = c.get('bodyParams');
 
 			const userToCheck = event.state_key as string;
 

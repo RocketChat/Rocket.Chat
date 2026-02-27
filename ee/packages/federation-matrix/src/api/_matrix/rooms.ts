@@ -168,7 +168,7 @@ export const getMatrixRoomsRoutes = () => {
 				license: ['federation'],
 			},
 			async (c) => {
-				const body = await c.req.json();
+				const body = c.get('bodyParams');
 
 				const defaultObj = {
 					join_rule: 'public',

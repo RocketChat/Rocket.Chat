@@ -396,7 +396,7 @@ export const getMatrixProfilesRoutes = () => {
 				license: ['federation'],
 			},
 			async (c) => {
-				const body = await c.req.json();
+				const body = c.get('bodyParams');
 
 				const response = await federationSDK.queryKeys(body.device_keys);
 
@@ -473,7 +473,7 @@ export const getMatrixProfilesRoutes = () => {
 			canAccessResourceMiddleware('room'),
 			async (c) => {
 				const { roomId } = c.req.param();
-				const body = await c.req.json();
+				const body = c.get('bodyParams');
 
 				const response = await federationSDK.getMissingEvents(
 					roomIdSchema.parse(roomId),
