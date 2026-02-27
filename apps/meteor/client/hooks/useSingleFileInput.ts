@@ -5,6 +5,8 @@ export const useSingleFileInput = (
 	onSetFile: (file: File, formData: FormData) => void,
 	fileType = 'image/*',
 	fileField = 'image',
+	maxSize?: number, // In bytes
+	onError?: () => void,
 ): [onClick: () => void, reset: () => void] => {
 	const ref = useRef<HTMLInputElement>();
 
@@ -40,9 +42,18 @@ export const useSingleFileInput = (
 			if (!fileInput?.files?.length) {
 				return;
 			}
+
+			const file = fileInput.files[0];
+
+			if (maxSize !== undefined && file.size > maxSize) {
+				onError?.();
+				fileInput.value = '';
+				return;
+			}
+
 			const formData = new FormData();
-			formData.append(fileField, fileInput.files[0]);
-			onSetFile(fileInput.files[0], formData);
+			formData.append(fileField, file);
+			onSetFile(file, formData);
 		};
 
 		fileInput.addEventListener('change', handleFiles, false);
@@ -50,7 +61,7 @@ export const useSingleFileInput = (
 		return (): void => {
 			fileInput.removeEventListener('change', handleFiles, false);
 		};
-	}, [fileField, fileType, onSetFile]);
+	}, [fileField, fileType, onSetFile, maxSize, onError]);
 
 	const onClick = useEffectEvent(() => ref?.current?.click());
 	const reset = useEffectEvent(() => {
