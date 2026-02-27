@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/web-ui-registration",
-	"version": "27.0.0",
+	"version": "27.0.1",
 	"private": true,
 	"homepage": "https://rocket.chat",
 	"main": "./dist/index.js",
@@ -11,13 +11,13 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
 		"storybook": "storybook dev -p 6006 --no-version-updates",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"dompurify": "~3.2.7"
+		"dompurify": "~3.3.1"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
@@ -44,11 +44,9 @@
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.2",
-		"@types/dompurify": "~3.2.0",
 		"@types/react": "~18.3.27",
 		"@types/react-dom": "~18.3.7",
-		"eslint": "~8.45.0",
-		"eslint-plugin-storybook": "~0.11.6",
+		"eslint": "~9.39.3",
 		"i18next": "~23.4.9",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
@@ -62,7 +60,7 @@
 	"peerDependencies": {
 		"@rocket.chat/layout": "*",
 		"@rocket.chat/tools": "0.2.4",
-		"@rocket.chat/ui-contexts": "27.0.0",
+		"@rocket.chat/ui-contexts": "27.0.1",
 		"@tanstack/react-query": "*",
 		"react": "*",
 		"react-hook-form": "*",

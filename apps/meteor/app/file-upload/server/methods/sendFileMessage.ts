@@ -13,6 +13,7 @@ import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { isImagePreviewSupported } from './isImagePreviewSupported';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
 import { omit } from '../../../../lib/utils/omit';
 import { callbacks } from '../../../../server/lib/callbacks';
@@ -37,6 +38,13 @@ export const parseFileIntoMessageAttachments = async (
 ): Promise<FilesAndAttachments> => {
 	validateFileRequiredFields(file);
 
+	const upload = await Uploads.findOneByIdAndUserIdAndRoomId(file._id, user._id, roomId, { projection: { _id: 1 } });
+	if (!upload) {
+		throw new Meteor.Error('error-invalid-file', 'Invalid file', {
+			method: 'sendFileMessage',
+		});
+	}
+
 	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
 
 	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);
@@ -54,7 +62,7 @@ export const parseFileIntoMessageAttachments = async (
 		},
 	];
 
-	if (/^image\/.+/.test(file.type as string)) {
+	if (isImagePreviewSupported(file.type as string)) {
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',

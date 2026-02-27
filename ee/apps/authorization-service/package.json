@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/authorization-service",
-	"version": "0.5.2",
+	"version": "0.5.3",
 	"private": true,
 	"description": "Rocket.Chat Authorization service",
 	"keywords": [
@@ -13,7 +13,7 @@
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
-		"lint": "eslint src",
+		"lint": "eslint .",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
@@ -42,11 +42,10 @@
 		"prometheus-gc-stats": "^1.1.0"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"
 	},

@@ -90,7 +90,6 @@ export const isRoomsAutocompleteAdminRoomsPayload = ajv.compile<RoomsAutocomplet
 
 type BaseRoomsProps = { roomId: string } | { roomName: string };
 type RoomsInfoProps = BaseRoomsProps;
-type RoomsLeaveProps = BaseRoomsProps;
 
 const RoomsInfoSchema = {
 	oneOf: [
@@ -805,28 +804,10 @@ export type RoomsEndpoints = {
 		POST: (params: { roomId: string; notifications: Notifications }) => void;
 	};
 
-	'/v1/rooms.favorite': {
-		POST: (
-			params:
-				| {
-						roomId: string;
-						favorite: boolean;
-				  }
-				| {
-						roomName: string;
-						favorite: boolean;
-				  },
-		) => void;
-	};
-
 	'/v1/rooms.nameExists': {
 		GET: (params: { roomName: string }) => {
 			exists: boolean;
 		};
-	};
-
-	'/v1/rooms.delete': {
-		POST: (params: { roomId: string }) => void;
 	};
 
 	'/v1/rooms.get': {
@@ -834,10 +815,6 @@ export type RoomsEndpoints = {
 			update: IRoom[];
 			remove: IRoom[];
 		};
-	};
-
-	'/v1/rooms.leave': {
-		POST: (params: RoomsLeaveProps) => void;
 	};
 
 	'/v1/rooms.getDiscussions': {
