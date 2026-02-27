@@ -172,7 +172,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 	}
 
-	public async getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<UiKit.LayoutBlock[]> {
+	public async getInfo(callId: VideoConference['_id'], uid: IUser['_id'] | undefined): Promise<UiKit.ModalSurfaceLayout> {
 		const call = await VideoConferenceModel.findOneById(callId);
 		if (!call) {
 			throw new Error('invalid-call');
@@ -202,7 +202,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		});
 
 		if (blocks?.length) {
-			return blocks as UiKit.LayoutBlock[];
+			return blocks as UiKit.ModalSurfaceLayout;
 		}
 
 		return [

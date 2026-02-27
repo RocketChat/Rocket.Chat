@@ -126,7 +126,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore packages build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: packages-build
           path: /tmp
@@ -138,7 +138,7 @@ jobs:
 
       # Download Docker images from build artifacts
       - name: Download Docker images
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
           pattern: ${{ inputs.release == 'ce' &&  'docker-image-rocketchat-amd64-coverage' || 'docker-image-*-amd64-coverage' }}
@@ -263,7 +263,7 @@ jobs:
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
           path: ./apps/meteor/tests/e2e/.playwright*
@@ -279,7 +279,7 @@ jobs:
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-${{ inputs.type }}-${{ matrix.shard }}
           path: /tmp/coverage
