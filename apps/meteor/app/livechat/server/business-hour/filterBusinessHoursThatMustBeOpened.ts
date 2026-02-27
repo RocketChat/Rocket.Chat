@@ -1,10 +1,37 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
-import moment from 'moment';
+
+const DAYS: Record<string, number> = {
+	Sunday: 0,
+	Monday: 1,
+	Tuesday: 2,
+	Wednesday: 3,
+	Thursday: 4,
+	Friday: 5,
+	Saturday: 6,
+};
+
+const MINUTES_PER_WEEK = 7 * 24 * 60;
+
+/** Convert day name + "HH:mm:ss" to minutes since Sunday 00:00:00 */
+function toMinutesSinceSunday(day: string, timeStr: string): number {
+	const [h = 0, m = 0, s = 0] = timeStr.split(':').map(Number);
+	return (DAYS[day] ?? 0) * 24 * 60 + h * 60 + m + s / 60;
+}
+
+function getCurrentDayAndTime(): { day: string; minutes: number } {
+	const now = new Date();
+	const day = now.toLocaleString('en-US', { weekday: 'long' });
+	const h = now.getHours();
+	const m = now.getMinutes();
+	const s = now.getSeconds();
+	const minutes = (DAYS[day] ?? 0) * 24 * 60 + h * 60 + m + s / 60;
+	return { day, minutes };
+}
 
 export const filterBusinessHoursThatMustBeOpened = async (
 	businessHours: ILivechatBusinessHour[],
 ): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
-	const currentTime = moment(moment().format('dddd:HH:mm:ss'), 'dddd:HH:mm:ss');
+	const { day: currentDay, minutes: currentMinutes } = getCurrentDayAndTime();
 
 	return businessHours
 		.filter(
@@ -13,36 +40,26 @@ export const filterBusinessHoursThatMustBeOpened = async (
 				businessHour.workHours
 					.filter((hour) => hour.open)
 					.some((hour) => {
-						const localTimeStart = moment(`${hour.start.cron.dayOfWeek}:${hour.start.cron.time}:00`, 'dddd:HH:mm:ss');
-						const localTimeFinish = moment(`${hour.finish.cron.dayOfWeek}:${hour.finish.cron.time}:00`, 'dddd:HH:mm:ss');
+						let startMinutes = toMinutesSinceSunday(hour.start.cron.dayOfWeek, `${hour.start.cron.time}:00`);
+						let finishMinutes = toMinutesSinceSunday(hour.finish.cron.dayOfWeek, `${hour.finish.cron.time}:00`);
 
-						/** because we use `dayOfWeek` moment decides if saturday/sunday belongs to the current week or the next one, this is a bit
-						 * confusing and for that reason we need this workaround
-						 */
-
-						const currentDay = currentTime.format('dddd');
-						const localTimeStartDay = localTimeStart.format('dddd');
-
-						// This only works for sundays (where we can test if sunday is before saturday = something is wrong)
-
-						if (localTimeStart.isAfter(localTimeFinish)) {
-							localTimeStart.subtract(1, 'week');
-						}
-						if (localTimeFinish.isBefore(localTimeStart)) {
-							localTimeFinish.add(1, 'week');
+						// Overnight range (e.g. Saturday 22:00 to Sunday 02:00)
+						if (startMinutes > finishMinutes) {
+							return (
+								currentMinutes >= startMinutes ||
+								currentMinutes < finishMinutes
+							);
 						}
 
-						// During Saturday, if current weekday is the same but the start time is after the current time, we need to subtract a week
-						if (currentDay === localTimeStartDay && localTimeStart.diff(currentTime, 'days') > 0) {
-							localTimeStart.subtract(1, 'week');
+						// Same-day range: normalize for "current day is start day but start time is after current" (use previous week's start)
+						if (currentDay === hour.start.cron.dayOfWeek && startMinutes > currentMinutes) {
+							startMinutes -= MINUTES_PER_WEEK;
+						}
+						if (currentDay === hour.finish.cron.dayOfWeek && finishMinutes < currentMinutes) {
+							finishMinutes += MINUTES_PER_WEEK;
 						}
 
-						// During Saturday, if current weekday is the same but the finish time is before the current time, we need to add a week
-						if (currentDay === localTimeStartDay && localTimeFinish.diff(currentTime, 'days') < 0) {
-							localTimeFinish.add(1, 'week');
-						}
-
-						return currentTime.isSameOrAfter(localTimeStart) && currentTime.isBefore(localTimeFinish);
+						return currentMinutes >= startMinutes && currentMinutes < finishMinutes;
 					}),
 		)
 		.map((businessHour) => ({

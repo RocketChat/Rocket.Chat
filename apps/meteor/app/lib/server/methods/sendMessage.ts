@@ -7,7 +7,6 @@ import { Messages, Users } from '@rocket.chat/models';
 import type { TOptions } from 'i18next';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -50,7 +49,7 @@ export async function executeSendMessage(
 	const now = new Date();
 	message.ts = extraInfo?.ts ?? message.ts ?? now;
 	if (isTimestampFromClient) {
-		const tsDiff = Math.abs(moment(message.ts).diff(Date.now()));
+		const tsDiff = Math.abs(new Date(message.ts).getTime() - Date.now());
 		if (tsDiff > 60000) {
 			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
 				method: 'sendMessage',

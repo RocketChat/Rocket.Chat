@@ -1,15 +1,24 @@
 import type { IOmnichannelRoom, IMessage, IBusinessHourWorkHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment, Messages, LivechatRooms } from '@rocket.chat/models';
-import moment from 'moment';
-
+import {
+	addDays,
+	startOfDay,
+	differenceInDays,
+	differenceInSeconds,
+	setHours,
+	setMinutes,
+	format,
+	isBefore,
+	isAfter,
+} from 'date-fns';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
 import type { CloseRoomParams } from '../lib/localTypes';
 
 export const getSecondsWhenOfficeHoursIsDisabled = (room: IOmnichannelRoom, agentLastMessage: IMessage) =>
-	moment(new Date(room.closedAt || new Date())).diff(moment(new Date(agentLastMessage.ts)), 'seconds');
+	differenceInSeconds(new Date(room.closedAt || new Date()), new Date(agentLastMessage.ts));
 
 export const parseDays = (
 	acc: Record<string, { start: { day: string; time: string }; finish: { day: string; time: string }; open: boolean }>,
@@ -50,59 +59,52 @@ export const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, a
 	}
 
 	let totalSeconds = 0;
-	const endOfConversation = moment.utc(new Date(room.closedAt || new Date()));
-	const startOfInactivity = moment.utc(new Date(agentLastMessage.ts));
-	const daysOfInactivity = endOfConversation.clone().startOf('day').diff(startOfInactivity.clone().startOf('day'), 'days');
-	const inactivityDay = moment.utc(new Date(agentLastMessage.ts));
+	const endOfConversation = new Date(room.closedAt || new Date());
+	const startOfInactivity = new Date(agentLastMessage.ts);
+	const daysOfInactivity = differenceInDays(startOfDay(endOfConversation), startOfDay(startOfInactivity));
+	let inactivityDay = startOfDay(startOfInactivity);
 
 	for (let index = 0; index <= daysOfInactivity; index++) {
-		const today = inactivityDay.clone().format('dddd');
+		const dayDate = index === 0 ? inactivityDay : addDays(inactivityDay, index);
+		const today = format(dayDate, 'EEEE');
 		const officeDay = officeDays[today];
 
 		if (!officeDay) {
-			inactivityDay.add(1, 'days');
 			continue;
 		}
 
 		if (!officeDay.open) {
-			inactivityDay.add(1, 'days');
 			continue;
 		}
 
 		if (!officeDay?.start?.time || !officeDay?.finish?.time) {
-			inactivityDay.add(1, 'days');
 			continue;
 		}
 
 		const [officeStartHour, officeStartMinute] = officeDay.start.time.split(':');
 		const [officeCloseHour, officeCloseMinute] = officeDay.finish.time.split(':');
-		// We should only take in consideration the time where the office is open and the conversation was inactive
-		const todayStartOfficeHours = inactivityDay
-			.clone()
-			.set({ hour: parseInt(officeStartHour, 10), minute: parseInt(officeStartMinute, 10) });
-		const todayEndOfficeHours = inactivityDay.clone().set({ hour: parseInt(officeCloseHour, 10), minute: parseInt(officeCloseMinute, 10) });
+		const todayStartOfficeHours = setMinutes(setHours(dayDate, parseInt(officeStartHour, 10)), parseInt(officeStartMinute, 10));
+		const todayEndOfficeHours = setMinutes(setHours(dayDate, parseInt(officeCloseHour, 10)), parseInt(officeCloseMinute, 10));
 
 		// 1: Room was inactive the whole day, we add the whole time BH is inactive
-		if (startOfInactivity.isBefore(todayStartOfficeHours) && endOfConversation.isAfter(todayEndOfficeHours)) {
-			totalSeconds += todayEndOfficeHours.diff(todayStartOfficeHours, 'seconds');
+		if (isBefore(startOfInactivity, todayStartOfficeHours) && isAfter(endOfConversation, todayEndOfficeHours)) {
+			totalSeconds += differenceInSeconds(todayEndOfficeHours, todayStartOfficeHours);
 		}
 
 		// 2: Room was inactive before start but was closed before end of BH, we add the inactive time
-		if (startOfInactivity.isBefore(todayStartOfficeHours) && endOfConversation.isBefore(todayEndOfficeHours)) {
-			totalSeconds += endOfConversation.diff(todayStartOfficeHours, 'seconds');
+		if (isBefore(startOfInactivity, todayStartOfficeHours) && isBefore(endOfConversation, todayEndOfficeHours)) {
+			totalSeconds += differenceInSeconds(endOfConversation, todayStartOfficeHours);
 		}
 
 		// 3: Room was inactive after start and ended after end of BH, we add the inactive time
-		if (startOfInactivity.isAfter(todayStartOfficeHours) && endOfConversation.isAfter(todayEndOfficeHours)) {
-			totalSeconds += todayEndOfficeHours.diff(startOfInactivity, 'seconds');
+		if (isAfter(startOfInactivity, todayStartOfficeHours) && isAfter(endOfConversation, todayEndOfficeHours)) {
+			totalSeconds += differenceInSeconds(todayEndOfficeHours, startOfInactivity);
 		}
 
 		// 4: Room was inactive after start and before end of BH, we add the inactive time
-		if (startOfInactivity.isAfter(todayStartOfficeHours) && endOfConversation.isBefore(todayEndOfficeHours)) {
-			totalSeconds += endOfConversation.diff(startOfInactivity, 'seconds');
+		if (isAfter(startOfInactivity, todayStartOfficeHours) && isBefore(endOfConversation, todayEndOfficeHours)) {
+			totalSeconds += differenceInSeconds(endOfConversation, startOfInactivity);
 		}
-
-		inactivityDay.add(1, 'days');
 	}
 	return totalSeconds;
 };

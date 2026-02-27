@@ -2,7 +2,8 @@ import type { ILivechatBusinessHour, IBusinessHourTimezone } from '@rocket.chat/
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { LivechatBusinessHours, LivechatDepartment, Users } from '@rocket.chat/models';
-import moment from 'moment-timezone';
+
+import { tzOffset } from '@date-fns/tz';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { closeBusinessHour } from './closeBusinessHour';
@@ -211,11 +212,13 @@ export class BusinessHourManager {
 		type: 'open' | 'close',
 		job: (day: string, hour: string) => void,
 	): Promise<void> {
+		const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		const dayNum = dayNames.indexOf(day);
 		await Promise.all(
 			items.map((hour) => {
-				const time = moment(hour, 'HH:mm').day(day);
-				const jobName = `${time.format('dddd')}/${time.format('HH:mm')}/${type}`;
-				const scheduleAt = `${time.minutes()} ${time.hours()} * * ${time.day()}`;
+				const [h, m] = hour.split(':').map(Number);
+				const jobName = `${day}/${hour}/${type}`;
+				const scheduleAt = `${m ?? 0} ${h ?? 0} * * ${dayNum}`;
 				this.addToCache(jobName);
 				return this.cronJobs.add(jobName, scheduleAt, () => job(day, hour));
 			}),
@@ -257,12 +260,11 @@ export class BusinessHourManager {
 	}
 
 	hasDaylightSavingTimeChanged(timezone: IBusinessHourTimezone): boolean {
-		const now = moment().utc().tz(timezone.name);
-		const currentUTC = now.format('Z');
-		const existingTimezoneUTC = moment(timezone.utc, 'Z').utc().tz(timezone.name);
-		const DSTHasChanged = !moment(currentUTC, 'Z').utc().tz(timezone.name).isSame(existingTimezoneUTC);
-
-		return currentUTC !== timezone.utc && DSTHasChanged;
+		const now = new Date();
+		const currentOffsetMin = tzOffset(timezone.name, now);
+		const currentSign = currentOffsetMin >= 0 ? '+' : '-';
+		const currentStr = `${currentSign}${String(Math.floor(Math.abs(currentOffsetMin) / 60)).padStart(2, '0')}:${String(Math.abs(currentOffsetMin) % 60).padStart(2, '0')}`;
+		return currentStr !== timezone.utc;
 	}
 
 	async registerDaylightSavingTimeCronJob(): Promise<void> {

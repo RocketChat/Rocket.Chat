@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
-import moment from 'moment';
+import { addMinutes } from 'date-fns';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -65,9 +65,9 @@ describe('hooks/afterInquiryQueued', () => {
 		settingStub.get.returns(1);
 		await afterInquiryQueued(inquiry);
 
-		const newQueueTime = moment(inquiry._updatedAt).add(1, 'minutes');
+		const expectedTime = addMinutes(inquiry._updatedAt, 1);
 
-		expect(queueMonitorStub.scheduleInquiry.calledWith(inquiry._id, new Date(newQueueTime.format()))).to.be.true;
+		expect(queueMonitorStub.scheduleInquiry.calledWith(inquiry._id, expectedTime)).to.be.true;
 	});
 
 	it('should call .scheduleInquiry with proper data when more than 1 min is passed as param', async () => {
@@ -79,8 +79,8 @@ describe('hooks/afterInquiryQueued', () => {
 		settingStub.get.returns(3);
 		await afterInquiryQueued(inquiry);
 
-		const newQueueTime = moment(inquiry._updatedAt).add(3, 'minutes');
+		const expectedTime = addMinutes(inquiry._updatedAt, 3);
 
-		expect(queueMonitorStub.scheduleInquiry.calledWith(inquiry._id, new Date(newQueueTime.format()))).to.be.true;
+		expect(queueMonitorStub.scheduleInquiry.calledWith(inquiry._id, expectedTime)).to.be.true;
 	});
 });

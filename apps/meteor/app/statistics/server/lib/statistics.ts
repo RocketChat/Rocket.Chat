@@ -29,7 +29,7 @@ import {
 	AbacAttributes,
 } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
-import moment from 'moment';
+import { format, subDays, subMonths } from 'date-fns';
 
 import { getAppsStatistics } from './getAppsStatistics';
 import { getContactVerificationStatistics } from './getContactVerificationStatistics';
@@ -246,29 +246,29 @@ export const statistics = {
 		);
 
 		const defaultValue = { contactsCount: 0, conversationsCount: 0, sources: [] };
-		const billablePeriod = moment.utc().format('YYYY-MM');
+		const billablePeriod = format(new Date(), 'yyyy-MM');
 		statsPms.push(
 			LivechatRooms.getMACStatisticsForPeriod(billablePeriod).then(([result]) => {
 				statistics.omnichannelContactsBySource = result || defaultValue;
 			}),
 		);
 
-		const monthAgo = moment.utc().subtract(30, 'days').toDate();
-		const today = moment.utc().toDate();
+		const today = new Date();
+		const monthAgo = subDays(today, 30);
 		statsPms.push(
 			LivechatRooms.getMACStatisticsBetweenDates(monthAgo, today).then(([result]) => {
 				statistics.uniqueContactsOfLastMonth = result || defaultValue;
 			}),
 		);
 
-		const weekAgo = moment.utc().subtract(7, 'days').toDate();
+		const weekAgo = subDays(today, 7);
 		statsPms.push(
 			LivechatRooms.getMACStatisticsBetweenDates(weekAgo, today).then(([result]) => {
 				statistics.uniqueContactsOfLastWeek = result || defaultValue;
 			}),
 		);
 
-		const yesterday = moment.utc().subtract(1, 'days').toDate();
+		const yesterday = subDays(today, 1);
 		statsPms.push(
 			LivechatRooms.getMACStatisticsBetweenDates(yesterday, today).then(([result]) => {
 				statistics.uniqueContactsOfYesterday = result || defaultValue;

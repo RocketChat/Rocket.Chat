@@ -1,7 +1,7 @@
 import { ResponsiveLine } from '@nivo/line';
 import { Box, Flex, Skeleton, Tile } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import moment from 'moment';
+import { addDays, startOfDay, differenceInDays, endOfDay, subDays, format } from 'date-fns';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,13 +36,15 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 			return [];
 		}
 
+		const startDate = new Date(data.start);
 		const createPoint = (i: number): { x: Date; y: number } => ({
-			x: moment(data.start).add(i, 'days').startOf('day').toDate(),
+			x: startOfDay(addDays(startDate, i)),
 			y: 0,
 		});
 
+		const daysCount = differenceInDays(new Date(data.end), startDate);
 		const createPoints = (): { x: Date; y: number }[] =>
-			Array.from({ length: moment(data.end).diff(data.start, 'days') }, (_, i) => createPoint(i));
+			Array.from({ length: daysCount }, (_, i) => createPoint(i));
 
 		const dauValuesLocal = createPoints();
 		const prevDauValue = createPoint(-1);
@@ -52,10 +54,9 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		const prevMauValue = createPoint(-1);
 
 		const usersListsMap = data.month.reduce<{ [x: number]: string[] }>((map, dayData) => {
-			const date = utc
-				? moment.utc({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day')
-				: moment({ year: dayData.year, month: dayData.month - 1, day: dayData.day }).endOf('day');
-			const dateOffset = date.diff(data.start, 'days');
+			const d = new Date(dayData.year, dayData.month - 1, dayData.day);
+			const date = endOfDay(d);
+			const dateOffset = differenceInDays(date, startDate);
 			if (dateOffset >= 0 && dauValuesLocal[dateOffset]) {
 				map[dateOffset] = dayData.usersList;
 				dauValuesLocal[dateOffset].y = dayData.users;
@@ -107,7 +108,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		<>
 			<EngagementDashboardCardFilter>
 				<DownloadDataButton
-					attachmentName={`ActiveUsersSection_start_${data?.start}_end_${moment(data?.end).subtract(1, 'day')}`}
+					attachmentName={`ActiveUsersSection_start_${data?.start}_end_${data?.end ? subDays(new Date(data.end), 1).toISOString() : ''}`}
 					headers={['Date', 'DAU', 'WAU', 'MAU']}
 					dataAvailable={!!data}
 					dataExtractor={(): unknown[][] | undefined => {
@@ -218,7 +219,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 											tickPadding: 4,
 											tickRotation: 0,
 											tickValues: 'every 3 days',
-											format: (date): string => moment(date).format('DD/MM'),
+											format: (date): string => format(new Date(date), 'dd/MM'),
 										}}
 										animate={true}
 										motionConfig='stiff'

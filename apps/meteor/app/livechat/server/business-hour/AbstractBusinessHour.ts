@@ -3,10 +3,27 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import type { IWorkHoursCronJobsWrapper } from '@rocket.chat/models';
-import moment from 'moment-timezone';
+import { TZDate, tzOffset } from '@date-fns/tz';
+import { format, addHours, isBefore, isSameSecond } from 'date-fns';
 import type { UpdateFilter } from 'mongodb';
 
 import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
+
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+export function parseDayTimeInZone(day: string, timeStr: string, timezone: string): Date {
+	const [h = 0, m = 0] = timeStr.split(':').map(Number);
+	const dayIndex = DAY_NAMES.indexOf(day);
+	const refDate = 5 + dayIndex; // 2025-01-05 is Sunday
+	const tzDate = new TZDate(2025, 0, refDate, h, m, 0, timezone);
+	return new Date(tzDate.getTime());
+}
+
+export function formatUtcDayTime(d: Date): { ddd: string; time: string } {
+	const day = DAY_NAMES[d.getUTCDay()];
+	const time = `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
+	return { ddd: day, time };
+}
 
 export interface IBusinessHourBehavior {
 	findHoursToCreateJobs(): Promise<IWorkHoursCronJobsWrapper[]>;
@@ -91,24 +108,24 @@ export abstract class AbstractBusinessHourType {
 	}
 
 	private convertWorkHours(businessHourData: ILivechatBusinessHour): ILivechatBusinessHour {
+		const tzName = businessHourData.timezone.name;
 		businessHourData.workHours.forEach((hour: any) => {
-			const startUtc = moment.tz(`${hour.day}:${hour.start}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
-			const finishUtc = moment.tz(`${hour.day}:${hour.finish}`, 'dddd:HH:mm', businessHourData.timezone.name).utc();
+			const startUtc = parseDayTimeInZone(hour.day, hour.start, tzName);
+			const finishUtc = parseDayTimeInZone(hour.day, hour.finish, tzName);
 
-			if (hour.open && finishUtc.isBefore(startUtc)) {
+			if (hour.open && isBefore(finishUtc, startUtc)) {
 				throw new Error('error-business-hour-finish-time-before-start-time');
 			}
 
-			if (hour.open && startUtc.isSame(finishUtc)) {
+			if (hour.open && isSameSecond(startUtc, finishUtc)) {
 				throw new Error('error-business-hour-finish-time-equals-start-time');
 			}
 
+			const startFmt = formatUtcDayTime(startUtc);
+			const finishFmt = formatUtcDayTime(finishUtc);
 			hour.start = {
 				time: hour.start,
-				utc: {
-					dayOfWeek: startUtc.clone().format('dddd'),
-					time: startUtc.clone().format('HH:mm'),
-				},
+				utc: { dayOfWeek: startFmt.ddd, time: startFmt.time },
 				cron: {
 					dayOfWeek: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(startUtc, 'dddd'),
 					time: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(startUtc, 'HH:mm'),
@@ -116,10 +133,7 @@ export abstract class AbstractBusinessHourType {
 			};
 			hour.finish = {
 				time: hour.finish,
-				utc: {
-					dayOfWeek: finishUtc.clone().format('dddd'),
-					time: finishUtc.clone().format('HH:mm'),
-				},
+				utc: { dayOfWeek: finishFmt.ddd, time: finishFmt.time },
 				cron: {
 					dayOfWeek: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(finishUtc, 'dddd'),
 					time: this.formatDayOfTheWeekFromServerTimezoneAndUtcHour(finishUtc, 'HH:mm'),
@@ -130,15 +144,17 @@ export abstract class AbstractBusinessHourType {
 	}
 
 	protected getUTCFromTimezone(timezone?: string): string {
-		if (!timezone) {
-			return String(moment().utcOffset() / 60);
-		}
-		return moment.tz(timezone).format('Z');
+		const d = new Date();
+		const offsetMinutes = timezone ? tzOffset(timezone, d) : -d.getTimezoneOffset();
+		const sign = offsetMinutes >= 0 ? '+' : '-';
+		const h = Math.floor(Math.abs(offsetMinutes) / 60);
+		const m = Math.abs(offsetMinutes) % 60;
+		return `${sign}${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 	}
 
-	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: any, format: string): string {
-		return moment(utc.format('dddd:HH:mm'), 'dddd:HH:mm')
-			.add(moment().utcOffset() / 60, 'hours')
-			.format(format);
+	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: Date, fmt: 'dddd' | 'HH:mm'): string {
+		const serverOffsetMinutes = new Date().getTimezoneOffset();
+		const local = addHours(utc, -serverOffsetMinutes / 60);
+		return fmt === 'dddd' ? format(local, 'EEEE') : format(local, 'HH:mm');
 	}
 }

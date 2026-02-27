@@ -9,7 +9,6 @@ import {
 } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import emojione from 'emojione';
-import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
 import { getMentions } from './notifyUsersOnMessage';
@@ -397,7 +396,7 @@ export async function sendAllNotifications(message: IMessage, room: IRoom) {
 		return message;
 	}
 
-	if (message.ts && Math.abs(moment(message.ts).diff(new Date())) > 60000) {
+	if (message.ts && Math.abs(new Date(message.ts).getTime() - Date.now()) > 60000) {
 		return message;
 	}
 

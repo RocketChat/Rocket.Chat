@@ -1,14 +1,34 @@
 import type { i18n } from 'i18next';
-import moment from 'moment-timezone';
+import { TZDate } from '@date-fns/tz';
+import { format } from 'date-fns';
 
 import exportChatTranscript from '../templates/ChatTranscript';
 import type { ChatTranscriptData, PDFMessage } from '../types/ChatTranscriptData';
 import type { IStrategy } from '../types/IStrategy';
 import type { MessageData, WorkerData } from '../types/WorkerData';
 
+function formatInTimezone(ts: Date | number, timezone: string, fmt: string): string {
+	const d = new TZDate(new Date(ts).getTime(), timezone);
+	const y = d.getFullYear();
+	const m = d.getMonth();
+	const day = d.getDate();
+	const h = d.getHours();
+	const min = d.getMinutes();
+	const s = d.getSeconds();
+	const date = new Date(y, m, day, h, min, s);
+	if (fmt === 'H:mm:ss') return format(date, 'H:mm:ss');
+	return format(date, fmt.replace(/YYYY/g, 'yyyy').replace(/DD/g, 'dd').replace(/D/g, 'd').replace(/MM/g, 'MM').replace(/M/g, 'M'));
+}
+
+function isSameDayInTimezone(ts1: Date | number, ts2: Date | number, timezone: string): boolean {
+	const d1 = new TZDate(new Date(ts1).getTime(), timezone);
+	const d2 = new TZDate(new Date(ts2).getTime(), timezone);
+	return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+}
+
 export class ChatTranscript implements IStrategy {
 	private isNewDay(current: MessageData, previous: MessageData | undefined, timezone: string): boolean {
-		return !previous || !moment(current.ts).tz(timezone).isSame(previous.ts, 'day');
+		return !previous || !isSameDayInTimezone(current.ts, previous.ts, timezone);
 	}
 
 	private parserMessages(messages: MessageData[], dateFormat: string, timeAndDateFormat: string, timezone: string): PDFMessage[] {
@@ -17,10 +37,10 @@ export class ChatTranscript implements IStrategy {
 			const { ts, quotes, requestData, webRtcCallEndTs, ...rest } = message;
 			const isDivider = this.isNewDay(message, previousMessage, timezone);
 
-			const formattedTs = moment(ts).tz(timezone).format(timeAndDateFormat);
+			const formattedTs = formatInTimezone(ts, timezone, timeAndDateFormat);
 			const formattedQuotes = quotes?.map((quote) => ({
 				...quote,
-				ts: moment(quote.ts).tz(timezone).format(timeAndDateFormat),
+				ts: formatInTimezone(quote.ts, timezone, timeAndDateFormat),
 			}));
 			const formattedRequestData = requestData
 				? {
@@ -28,30 +48,30 @@ export class ChatTranscript implements IStrategy {
 						visitor: requestData.visitor
 							? {
 									...requestData.visitor,
-									ts: moment(requestData.visitor.ts).tz(timezone).format(timeAndDateFormat),
+									ts: formatInTimezone(requestData.visitor.ts, timezone, timeAndDateFormat),
 									lastChat: requestData.visitor.lastChat
 										? {
 												...requestData.visitor.lastChat,
-												ts: moment(requestData.visitor.lastChat.ts).tz(timezone).format(timeAndDateFormat),
+												ts: formatInTimezone(requestData.visitor.lastChat.ts, timezone, timeAndDateFormat),
 											}
 										: undefined,
 									lastAgent: requestData.visitor.lastAgent
 										? {
 												...requestData.visitor.lastAgent,
-												ts: moment(requestData.visitor.lastAgent.ts).tz(timezone).format(timeAndDateFormat),
+												ts: formatInTimezone(requestData.visitor.lastAgent.ts, timezone, timeAndDateFormat),
 											}
 										: undefined,
 									livechatData: requestData.visitor.livechatData
 										? Object.fromEntries(Object.entries(requestData.visitor.livechatData).map(([key]) => [key, null]))
 										: undefined,
 									_updatedAt: requestData.visitor._updatedAt
-										? moment(requestData.visitor._updatedAt).tz(timezone).format(timeAndDateFormat)
+										? formatInTimezone(requestData.visitor._updatedAt, timezone, timeAndDateFormat)
 										: '',
 								}
 							: undefined,
 					}
 				: undefined;
-			const formattedWebRtcCallEndTs = webRtcCallEndTs ? moment(webRtcCallEndTs).tz(timezone).format(timeAndDateFormat) : undefined;
+			const formattedWebRtcCallEndTs = webRtcCallEndTs ? formatInTimezone(webRtcCallEndTs, timezone, timeAndDateFormat) : undefined;
 
 			return {
 				...rest,
@@ -59,7 +79,7 @@ export class ChatTranscript implements IStrategy {
 				quotes: formattedQuotes,
 				requestData: formattedRequestData,
 				webRtcCallEndTs: formattedWebRtcCallEndTs,
-				...(isDivider && { divider: moment(ts).tz(timezone).format(dateFormat) }),
+				...(isDivider && { divider: formatInTimezone(ts, timezone, dateFormat) }),
 			};
 		});
 	}
@@ -94,8 +114,8 @@ export class ChatTranscript implements IStrategy {
 				visitor: data.visitor,
 				agent: data.agent,
 				siteName: data.siteName,
-				date: `${moment(data.closedAt).tz(data.timezone).format(String(data.dateFormat))}`,
-				time: `${moment(data.closedAt).tz(data.timezone).format('H:mm:ss')} ${data.timezone}`,
+				date: formatInTimezone(data.closedAt, data.timezone, String(data.dateFormat)),
+				time: `${formatInTimezone(data.closedAt, data.timezone, 'H:mm:ss')} ${data.timezone}`,
 			},
 			messages: this.parserMessages(data.messages, data.dateFormat, data.timeAndDateFormat, data.timezone),
 			i18n,

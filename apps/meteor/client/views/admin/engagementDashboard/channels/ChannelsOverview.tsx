@@ -1,5 +1,5 @@
 import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
-import moment from 'moment';
+import { format } from 'date-fns';
 import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -86,8 +86,8 @@ const ChannelsOverview = (): ReactElement => {
 										</Margins>
 										{name}
 									</TableCell>
-									<TableCell>{moment(createdAt).format('L')}</TableCell>
-									<TableCell>{moment(updatedAt).format('L')}</TableCell>
+									<TableCell>{format(new Date(createdAt), 'P')}</TableCell>
+									<TableCell>{format(new Date(updatedAt), 'P')}</TableCell>
 									<TableCell>
 										{messagesCount} <Growth>{messagesVariation}</Growth>
 									</TableCell>

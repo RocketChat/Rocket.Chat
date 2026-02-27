@@ -1,23 +1,23 @@
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
-import moment from 'moment';
+import { formatDistance } from 'date-fns';
 
 export const formatQueuedAt = (room: Serialized<IOmnichannelRoom> | undefined) => {
 	const { servedBy, closedAt, open, queuedAt, ts } = room || {};
 	const queueStartedAt = queuedAt || ts;
 
-	// Room served
+	// Room served: time from queueStartedAt to servedBy.ts
 	if (servedBy) {
-		return moment(servedBy.ts).from(moment(queueStartedAt), true);
+		return formatDistance(new Date(servedBy.ts), new Date(queueStartedAt), { addSuffix: false });
 	}
 
-	// Room open and not served
+	// Room open and not served: time from queueStartedAt to now
 	if (open) {
-		return moment(queueStartedAt).fromNow(true);
+		return formatDistance(new Date(), new Date(queueStartedAt), { addSuffix: false });
 	}
 
-	// Room closed and not served
+	// Room closed and not served: time from queueStartedAt to closedAt
 	if (closedAt && queueStartedAt) {
-		return moment(closedAt).from(moment(queueStartedAt), true);
+		return formatDistance(new Date(closedAt), new Date(queueStartedAt), { addSuffix: false });
 	}
 
 	return '';
