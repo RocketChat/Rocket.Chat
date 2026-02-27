@@ -9,7 +9,7 @@ type MessageToolbarItemProps = {
 	title: string;
 	disabled?: boolean;
 	qa: string;
-	onClick: MouseEventHandler;
+	onClick: MouseEventHandler<HTMLElement>;
 };
 
 const MessageToolbarItem = ({ id, icon, title, disabled, qa, onClick }: MessageToolbarItemProps) => {
