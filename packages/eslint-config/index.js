@@ -275,7 +275,6 @@ export default defineConfig(
 			'one-var': ['error', 'never'],
 			'operator-assignment': ['error', 'always'],
 			'prefer-object-spread': 'off',
-			'spaced-comment': 'error',
 		},
 	},
 	{
