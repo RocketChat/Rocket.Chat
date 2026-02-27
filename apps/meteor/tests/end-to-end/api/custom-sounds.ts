@@ -38,13 +38,13 @@ async function uploadCustomSound(binary: string, fileName: string, fileId: strin
 				msg: 'method',
 				id: '2',
 				method: 'uploadCustomSound',
-				params: [binary, 'audio/wav', { name: fileName, extension: 'wav', newFile: true, _id: fileId }],
+				params: [binary, 'audio/mpeg', { name: fileName, extension: 'mp3', newFile: true, _id: fileId }],
 			}),
 		})
 		.expect(200);
 }
 
-describe('[CustomSounds]', () => {
+describe.only('[CustomSounds]', () => {
 	const fileName = `test-file-${randomUUID()}`;
 	let fileId: string;
 	let fileId2: string;
@@ -53,7 +53,7 @@ describe('[CustomSounds]', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
-		const data = readFileSync(path.resolve(__dirname, '../../mocks/files/audio_mock.wav'));
+		const data = readFileSync(path.resolve(__dirname, '../../mocks/files/audio_mock.mp3'));
 		const binary = data.toString('binary');
 
 		fileId = await insertOrUpdateSound(fileName);
@@ -154,12 +154,12 @@ describe('[CustomSounds]', () => {
 
 		it('should return success if the the requested exists', (done) => {
 			void request
-				.get(`/custom-sounds/${fileId}.wav`)
+				.get(`/custom-sounds/${fileId}.mp3`)
 				.set(credentials)
 				.expect(200)
 				.expect((res) => {
 					expect(res.headers).to.have.property('last-modified');
-					expect(res.headers).to.have.property('content-type', 'audio/wav');
+					expect(res.headers).to.have.property('content-type', 'audio/mpeg');
 					expect(res.headers).to.have.property('cache-control', 'public, max-age=0');
 					expect(res.headers).to.have.property('expires', '-1');
 					uploadDate = res.headers['last-modified'];
@@ -169,7 +169,7 @@ describe('[CustomSounds]', () => {
 
 		it('should return not modified if the the requested file contains a valid-since equal to the upload date', (done) => {
 			void request
-				.get(`/custom-sounds/${fileId}.wav`)
+				.get(`/custom-sounds/${fileId}.mp3`)
 				.set(credentials)
 				.set({
 					'if-modified-since': uploadDate,
