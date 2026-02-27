@@ -425,7 +425,8 @@ export class SAML {
 			return;
 		}
 
-		if (configuredURL.pathname !== requestURL.pathname) {
+		const normalizePath = (p: string): string => p.replace(/\/+$/, '') || '/';
+		if (normalizePath(configuredURL.pathname) !== normalizePath(requestURL.pathname)) {
 			res.writeHead(403);
 			res.end('Unauthorized redirect path');
 			return;
