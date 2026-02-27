@@ -53,7 +53,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 	const saveAction = useCallback(
 		async (sound: { _id: string; name: string; extension?: string } | File) => {
-			const extension = 'extension' in sound ? sound.extension ?? '' : '';
+			const extension = 'extension' in sound ? (sound.extension ?? '') : '';
 			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension });
 			const validation = validate(soundData, sound);
 			if (validation.length === 0) {
