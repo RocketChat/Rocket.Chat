@@ -135,7 +135,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 		[setAliases, name],
 	);
 
-	const [clickUpload] = useSingleFileInput(setEmojiFile, 'emoji');
+	const [clickUpload] = useSingleFileInput(setEmojiFile, 'image/*', 'emoji');
 
 	const handleChangeName = (e: ChangeEvent<HTMLInputElement>): void => {
 		if (e.currentTarget.value !== '') {
