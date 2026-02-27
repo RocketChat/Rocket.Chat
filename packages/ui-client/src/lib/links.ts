@@ -20,7 +20,7 @@ export const links = {
 		homepage: `${GO_ROCKET_CHAT_PREFIX}/home`,
 		invite: `${GO_ROCKET_CHAT_PREFIX}/invite?host=open.rocket.chat&path=invite%2F5sBs3a`,
 		ldapDocs: `${GO_ROCKET_CHAT_PREFIX}/i/ldap-docs`,
-		matrixFederation: `${GO_ROCKET_CHAT_PREFIX}/i/matrix-federation`,
+		matrixFederation: 'https://docs.rocket.chat/docs/federation-architecture-and-capabilities',
 		mobileAppGoogle: `${GO_ROCKET_CHAT_PREFIX}/i/hp-mobile-app-google`,
 		mobileAppApple: `${GO_ROCKET_CHAT_PREFIX}/i/hp-mobile-app-apple`,
 		omnichannelDocs: `${GO_ROCKET_CHAT_PREFIX}/i/omnichannel-docs`,
