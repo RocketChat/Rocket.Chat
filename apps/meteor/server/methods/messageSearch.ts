@@ -28,7 +28,7 @@ export const messageSearch = async function (
 	check(rid, Match.Maybe(String));
 	check(limit, Match.Optional(Number));
 	check(offset, Match.Optional(Number));
-	limit = Math.min(limit ?? 20, 100);
+	limit = Math.max(0, Math.min(limit ?? 20, 100));
     offset = Math.max(offset ?? 0, 0);
 
 	// Don't process anything else if the user can't access the room
