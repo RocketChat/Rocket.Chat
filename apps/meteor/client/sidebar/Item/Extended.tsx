@@ -55,14 +55,12 @@ const Extended = ({
 	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item href={href} selected={selected} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
+		<SidebarV2Item title={title} href={href} selected={selected} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
 					{icon}
-					<SidebarV2ItemTitle unread={unread} title={title}>
-						{title}
-					</SidebarV2ItemTitle>
+					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
 					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>

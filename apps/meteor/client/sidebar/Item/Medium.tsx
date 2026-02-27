@@ -23,12 +23,10 @@ const Medium = ({ icon, title, avatar, actions, badges, unread, menu, ...props }
 	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
+		<SidebarV2Item title={title} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
 			<SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>
 			{icon}
-			<SidebarV2ItemTitle unread={unread} title={title}>
-				{title}
-			</SidebarV2ItemTitle>
+			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
 			{badges}
 			{actions}
 			{menu && (
