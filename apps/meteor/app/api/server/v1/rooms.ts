@@ -121,37 +121,58 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const roomDeleteEndpoint = API.v1.post(
 	'rooms.delete',
 	{
 		authRequired: true,
-	},
-	{
-		async post() {
-			const { roomId } = this.bodyParams;
-
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
-
-			const room = await Rooms.findOneById(roomId);
-
-			if (!room) {
-				throw new MeteorError('error-invalid-room', 'Invalid room', {
-					method: 'eraseRoom',
-				});
-			}
-
-			if (room.teamMain) {
-				throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
-					method: 'eraseRoom',
-				});
-			}
-
-			await eraseRoom(room, this.user);
-
-			return API.v1.success();
+		body: ajv.compile<{ roomId: string }>({
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+					description: 'The ID of the room to delete.',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId } = this.bodyParams;
+
+		const room = await Rooms.findOneById(roomId);
+
+		if (!room) {
+			throw new MeteorError('error-invalid-room', 'Invalid room', {
+				method: 'eraseRoom',
+			});
+		}
+
+		if (room.teamMain) {
+			throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
+				method: 'eraseRoom',
+			});
+		}
+
+		await eraseRoom(room, this.user);
+
+		return API.v1.success();
 	},
 );
 
@@ -257,7 +278,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const file = await Uploads.findOneById(this.urlParams.fileId);
+			const file = await Uploads.findOneByIdAndUserIdAndRoomId(this.urlParams.fileId, this.userId, this.urlParams.rid);
 
 			if (!file) {
 				throw new Meteor.Error('invalid-file');
@@ -386,23 +407,6 @@ API.v1.addRoute(
 				...(team && { team }),
 				...(parent && { parent }),
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.leave',
-	{ authRequired: true },
-	{
-		async post() {
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.failure('Invalid user');
-			}
-			await leaveRoomMethod(user, room._id);
-
-			return API.v1.success();
 		},
 	},
 );
@@ -935,6 +939,14 @@ type RoomsFavorite =
 			favorite: boolean;
 	  };
 
+type RoomsLeave =
+	| {
+			roomId: string;
+	  }
+	| {
+			roomName: string;
+	  };
+
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
 	properties: {
@@ -967,7 +979,29 @@ const RoomsFavoriteSchema = {
 	],
 };
 
+const isRoomsLeavePropsSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: { type: 'string' },
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+};
+
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
 
 export const roomEndpoints = API.v1
 	.get(
@@ -1143,9 +1177,43 @@ export const roomEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.post(
+		'rooms.leave',
+		{
+			authRequired: true,
+			body: isRoomsLeaveProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+			const user = await Users.findOneById(this.userId);
+
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
+			}
+
+			await leaveRoomMethod(user, room._id);
+
+			return API.v1.success();
+		},
 	);
 
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
+	ExtractRoutesFromAPI<typeof roomEndpoints> &
+	ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
