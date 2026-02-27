@@ -97,13 +97,13 @@ export function pad(_str: unknown, _length: number, padStr?: string, type: 'righ
 
 	switch (type) {
 		case 'right':
-			padlen = length - str.length;
+			padlen = Math.max(0, length - str.length);
 			return str + padStr.repeat(padlen);
 		case 'both':
-			padlen = length - str.length;
+			padlen = Math.max(0, length - str.length);
 			return padStr.repeat(Math.ceil(padlen / 2)) + str + padStr.repeat(Math.floor(padlen / 2));
 		default: // 'left'
-			padlen = length - str.length;
+			padlen = Math.max(0, length - str.length);
 			return padStr.repeat(padlen) + str;
 	}
 }
