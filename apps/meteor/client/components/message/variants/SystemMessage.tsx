@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
 	MessageSystem,
 	MessageSystemBody,
@@ -35,6 +36,10 @@ import {
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from '../list/MessageListContext';
+
+const messageBodyWrapStyle = css`
+	white-space: pre-wrap !important;
+`;
 
 type SystemMessageProps = {
 	message: IMessage;
@@ -88,7 +93,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							</>
 						)}
 					</MessageNameContainer>
-					{messageType && <MessageSystemBody data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
+					{messageType && (
+						<MessageSystemBody className={messageBodyWrapStyle} data-qa-type='system-message-body'>
+							{messageType.text(t, message)}
+						</MessageSystemBody>
+					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (
