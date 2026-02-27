@@ -46,7 +46,11 @@ const ThreadMessageContent = ({ message }: ThreadMessageContentProps): ReactElem
 
 	return (
 		<>
-			{isMessageEncrypted && <MessageBody data-qa-type='message-body'>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
+			{isMessageEncrypted && (
+				<MessageBody role='document' aria-roledescription={t('message_body')}>
+					{t('E2E_message_encrypted_placeholder')}
+				</MessageBody>
+			)}
 
 			{!!quotes?.length && <Attachments attachments={quotes} />}
 

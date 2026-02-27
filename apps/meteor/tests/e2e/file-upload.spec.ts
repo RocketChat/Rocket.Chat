@@ -48,7 +48,7 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.content.btnModalConfirm.click();
 
 		await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-		await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+		await expect(poHomeChannel.content.getLastMessageByFileName('any_file1.txt')).toBeVisible();
 	});
 
 	test('should send lst file successfully', async () => {
@@ -57,7 +57,7 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.content.btnModalConfirm.click();
 
 		await expect(poHomeChannel.content.getFileDescription).toHaveText('lst_description');
-		await expect(poHomeChannel.content.lastMessageFileName).toContainText('lst-test.lst');
+		await expect(poHomeChannel.content.getLastMessageByFileName('lst-test.lst')).toBeVisible();
 	});
 
 	test('should send drawio (unknown media type) file successfully', async ({ page }) => {
@@ -67,7 +67,7 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.content.btnModalConfirm.click();
 
 		await expect(poHomeChannel.content.getFileDescription).toHaveText('drawio_description');
-		await expect(poHomeChannel.content.lastMessageFileName).toContainText('diagram.drawio');
+		await expect(poHomeChannel.content.getLastMessageByFileName('diagram.drawio')).toBeVisible();
 	});
 
 	test('should not to send drawio file (unknown media type) when the default media type is blocked', async ({ api, page }) => {
