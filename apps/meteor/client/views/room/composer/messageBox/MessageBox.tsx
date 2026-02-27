@@ -166,20 +166,7 @@ const MessageBox = ({
 		const hasContent = Boolean(text.trim());
 
 		chat.composer?.clear();
-		/*
-		 * We intentionally keep the DOM textarea focused so the user can start
-		 * typing another message immediately. However, once a message has been
-		 * sent we want the focus ring to be less prominent.
-		 *
-		 * We use an inline style on the textarea element directly so that the
-		 * change is guaranteed to win over any Fuselage / CSS-in-js styles.
-		 */
-		const el = textareaRef.current as HTMLTextAreaElement | null;
-		if (el) {
-			el.style.outline = '1px solid var(--rcx-color-stroke-light, #e4e7ea)';
-		}
 
-		// After sending a non-empty message, keep focus but soften the composer border.
 		if (hasContent) {
 			setIsBlur(true);
 		}
@@ -212,12 +199,12 @@ const MessageBox = ({
 	const handleChange = useCallback(
 		(event: React.ChangeEvent<HTMLTextAreaElement>) => {
 			setTyping(event as unknown as FormEvent<HTMLInputElement>);
-			// Restore the default focus ring as soon as the user starts typing again.
+			
 			const el = event.target as HTMLTextAreaElement;
 			if (el.style.outline) {
 				el.style.outline = '';
 			}
-			// As soon as the user types again, restore the prominent composer border.
+			
 			setIsBlur(false);
 		},
 		[],
