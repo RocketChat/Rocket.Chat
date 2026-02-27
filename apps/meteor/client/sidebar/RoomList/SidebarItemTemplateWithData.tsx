@@ -27,7 +27,7 @@ type RoomListRowProps = {
 			actions: ReactNode;
 			href: string;
 			time?: Date;
-			menu?: () => ReactNode;
+			menu?: (props?: { onOpenChange?: (isOpen: boolean) => void }) => ReactNode;
 			menuOptions?: unknown;
 			subtitle?: ReactNode;
 			titleIcon?: ReactNode;
@@ -123,7 +123,7 @@ const SidebarItemTemplateWithData = ({
 			actions={actions}
 			menu={
 				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
-					? (): ReactElement => (
+					? ({ onOpenChange } = {}): ReactElement => (
 							<RoomMenu
 								alert={alert}
 								threadUnread={unreadCount.threads > 0}
@@ -134,6 +134,7 @@ const SidebarItemTemplateWithData = ({
 								cl={cl}
 								name={title}
 								hideDefaultOptions={isQueued}
+								onOpenChange={onOpenChange}
 							/>
 						)
 					: undefined

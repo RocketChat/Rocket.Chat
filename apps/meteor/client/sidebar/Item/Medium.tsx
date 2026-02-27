@@ -2,6 +2,10 @@ import { IconButton, SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemMen
 import type { HTMLAttributes, ReactNode } from 'react';
 import { memo, useState } from 'react';
 
+type MenuProps = {
+	onOpenChange?: (isOpen: boolean) => void;
+};
+
 type MediumProps = {
 	title: ReactNode;
 	titleIcon?: ReactNode;
@@ -10,20 +14,26 @@ type MediumProps = {
 	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
-	menu?: () => ReactNode;
+	menu?: (props?: MenuProps) => ReactNode;
 	badges?: ReactNode;
 	selected?: boolean;
 	menuOptions?: any;
 } & Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
-const Medium = ({ icon, title, avatar, actions, badges, unread, menu, ...props }: MediumProps) => {
+const Medium = ({ icon, title, avatar, actions, badges, unread, menu, className, ...props }: MediumProps) => {
 	const [menuVisibility, setMenuVisibility] = useState(!!window.DISABLE_ANIMATION);
+	const [menuOpen, setMenuOpen] = useState(false);
 
 	const handleFocus = () => setMenuVisibility(true);
 	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
+		<SidebarV2Item
+			{...props}
+			className={[className, menuOpen && 'is-hovered'].filter(Boolean).join(' ')}
+			onFocus={handleFocus}
+			onPointerEnter={handlePointerEnter}
+		>
 			<SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>
 			{icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
@@ -31,7 +41,7 @@ const Medium = ({ icon, title, avatar, actions, badges, unread, menu, ...props }
 			{actions}
 			{menu && (
 				<SidebarV2ItemMenu>
-					{menuVisibility ? menu() : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
+					{menuVisibility ? menu({ onOpenChange: setMenuOpen }) : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-v2-item__menu icon='kebab' />}
 				</SidebarV2ItemMenu>
 			)}
 		</SidebarV2Item>
