@@ -48,7 +48,7 @@ const convertShortName = mem(
         if (joypixels.sprites) {
         	const size = joypixels.spriteSize || '32';
         
-        	return `<span class="joypixels joypixels-${size}-${category} _${fname}" ${title}></span>`;
+        	return `<span class="joypixels joypixels-${size}-${category} _${fname}" ${title}>${alt}</span>`;
         }
         
         return `<img class="joypixels" alt="${alt}" ${title} src="${ePath}${fname}${joypixels.fileExtension}"/>`;

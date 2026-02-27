@@ -107,7 +107,7 @@ function generateEmojiPicker(data) {
 		encoding: 'utf8',
 		flag: 'w',
 	});
-	console.log('Generated emojiPicker.js!');
+	console.log('Generated emojiPicker.ts!');
 
 	console.log('Generating sprite sheets....');
 
@@ -177,7 +177,7 @@ function generateEmojiPicker(data) {
 	image-rendering: optimizeQuality;
 }
 `;
-	fs.writeFileSync('../client/emojione-sprites.css', spriteCss, {
+	fs.writeFileSync('../client/emojitoolkit-sprites.css', spriteCss, {
 		encoding: 'utf8',
 		flag: 'w',
 	});
