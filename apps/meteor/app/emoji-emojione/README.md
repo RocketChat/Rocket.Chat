@@ -8,7 +8,7 @@ node --experimental-modules generateEmojiIndex.mjs
 
 ## Generate new percentage sprite
 Clone the repository https://github.com/Ranks/emojione/ and replace the file `assets/sprites/emojione.sprites.mustache` with the content 
-of [emojione.sprites.mustache](emojione.sprites.mustache), then run at `emojione` folder:
+of [emojione.tpl](lib/emojione.tpl), then run at `emojione` folder:
 
 ```
 grunt sprite
