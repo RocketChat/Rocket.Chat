@@ -126,7 +126,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore packages build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: packages-build
           path: /tmp
@@ -138,7 +138,7 @@ jobs:
 
       # Download Docker images from build artifacts
       - name: Download Docker images
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
           pattern: ${{ inputs.release == 'ce' &&  'docker-image-rocketchat-amd64-coverage' || 'docker-image-*-amd64-coverage' }}
