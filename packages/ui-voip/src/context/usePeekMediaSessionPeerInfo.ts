@@ -5,6 +5,9 @@ import type { PeerInfo } from './definitions';
 import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromInstanceContact';
 
 const areEqual = (a: PeerInfo, b: PeerInfo) => {
+	if (Object.keys(a).length !== Object.keys(b).length) {
+		return false;
+	}
 	return Object.keys(a).every((key) => a[key as keyof PeerInfo] === b[key as keyof PeerInfo]);
 };
 

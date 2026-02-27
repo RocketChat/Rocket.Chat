@@ -129,7 +129,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			return;
 		}
 
-		void controls.acceptCall();
+		controls.acceptCall();
 	};
 
 	const onDeviceChange = (device: Device) => {
@@ -151,10 +151,14 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		}
 
 		if (device.type === 'audioinput') {
-			void requestDevice(parameters).then(async (stream) => {
-				stopTracks(stream);
-				setInputMediaDevice(device);
-			});
+			void requestDevice(parameters)
+				.then(async (stream) => {
+					stopTracks(stream);
+					setInputMediaDevice(device);
+				})
+				.catch((error) => {
+					console.error('Error changing device', error);
+				});
 
 			return;
 		}

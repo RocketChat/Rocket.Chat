@@ -8,7 +8,7 @@ export type MediaSessionControls = {
 	toggleHold: () => void;
 	endCall: () => void;
 	startCall: (id: string, kind: 'user' | 'sip') => Promise<void>;
-	acceptCall: () => Promise<void>;
+	acceptCall: () => void;
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
@@ -34,7 +34,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 
 		const endCall = getEndCall(instance);
 
-		const acceptCall = async () => {
+		const acceptCall = () => {
 			if (!instance) {
 				return;
 			}

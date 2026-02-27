@@ -28,19 +28,24 @@ const useMediaStream = (
 
 	useEffect(() => {
 		if (!instance) {
+			setRemoteStream(null);
 			return;
 		}
-		return instance.on('sessionStateChange', () => {
-			const remoteStream = getRemoteStream(instance);
-			if (!remoteStream) {
-				return;
-			}
+
+		const syncRemoteStream = () => {
+			const nextStream = getRemoteStream(instance);
 			setRemoteStream((oldStream) => {
-				if (oldStream === remoteStream) {
-					return oldStream;
+				if (!nextStream) {
+					return null;
 				}
-				return remoteStream;
+				return oldStream === nextStream ? oldStream : nextStream;
 			});
+		};
+
+		syncRemoteStream();
+
+		return instance.on('sessionStateChange', () => {
+			syncRemoteStream();
 		});
 	}, [instance]);
 
