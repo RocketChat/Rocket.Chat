@@ -174,7 +174,10 @@ function expandInline(msg: string, node: CInline): Inlines {
 	}
 }
 
-function expandBlock(msg: string, block: CBlock): Paragraph | Heading | Code | Blockquote | Quote | SpoilerBlock | OrderedList | UnorderedList | Tasks | KaTeX | LineBreak {
+function expandBlock(
+	msg: string,
+	block: CBlock,
+): Paragraph | Heading | Code | Blockquote | Quote | SpoilerBlock | OrderedList | UnorderedList | Tasks | KaTeX | LineBreak {
 	switch (block.t) {
 		case 'p':
 			return { type: 'PARAGRAPH', value: block.c.map((c) => expandInline(msg, c)) } as Paragraph;
@@ -237,8 +240,9 @@ function expandBlock(msg: string, block: CBlock): Paragraph | Heading | Code | B
 
 export function expand(root: CRoot, msg: string): Root {
 	if (root.length === 1 && 't' in root[0] && root[0].t === 'E') {
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- narrow CRoot[0] to CBigEmoji
 		const bigE = root[0] as CBigEmoji;
-		return [{ type: 'BIG_EMOJI', value: bigE.c.map((c) => expandInline(msg, c)) } as BigEmoji] as Root;
+		return [{ type: 'BIG_EMOJI', value: bigE.c.map((c) => expandInline(msg, c)) } as BigEmoji];
 	}
 	return (root as CBlock[]).map((b) => expandBlock(msg, b)) as Root;
 }
@@ -247,6 +251,7 @@ export function expand(root: CRoot, msg: string): Root {
 // compactify(oldMd, msg) → compact CRoot
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// eslint-disable-next-line @typescript-eslint/naming-convention -- Ctx is a local context type, not a public API
 interface Ctx {
 	msg: string;
 	pos: number;
@@ -284,7 +289,8 @@ function spanFor(ctx: Ctx, text: string): Span {
 
 function textOf(node: Plain | Markup | Inlines): string {
 	if ((node as Plain).type === 'PLAIN_TEXT') return (node as Plain).value;
-	if ((node as any).value?.type === 'PLAIN_TEXT') return (node as any).value.value;
+	const { value } = node as { value?: Plain };
+	if (value?.type === 'PLAIN_TEXT') return value.value;
 	return '';
 }
 
