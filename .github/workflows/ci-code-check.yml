@@ -56,7 +56,6 @@ jobs:
 
       - name: Cache TypeCheck
         uses: actions/cache@v5
-        if: matrix.check == 'ts'
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
@@ -66,7 +65,6 @@ jobs:
             typecheck-cache
 
       - name: Install Meteor
-        if: matrix.check == 'ts'
         shell: bash
         run: |
           # Restore bin from cache
