@@ -24,13 +24,10 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 	 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
 	 */
 	query: Record<string, unknown>;
-}> 
-	{
+}> {
 	const { userId = '', response, route, logger } = api;
 	const isUsersRoute = route.includes('/v1/users.');
-	const canViewFullOtherUserInfo =
-		isUsersRoute &&
-		(await hasPermissionAsync(userId, 'view-full-other-user-info'));
+	const canViewFullOtherUserInfo = isUsersRoute && (await hasPermissionAsync(userId, 'view-full-other-user-info'));
 	const params = isPlainObject(api.queryParams) ? api.queryParams : {};
 	const queryFields = Array.isArray(api.queryFields) ? (api.queryFields as string[]) : [];
 	const queryOperations = Array.isArray(api.queryOperations) ? (api.queryOperations as string[]) : [];
@@ -91,11 +88,7 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 		let nonSelectableFields = Object.keys(API.v1.defaultFieldsToExclude);
 		if (isUsersRoute) {
 			nonSelectableFields = nonSelectableFields.concat(
-				Object.keys(
-					(canViewFullOtherUserInfo)
-						? API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser
-						: API.v1.limitedUserFieldsToExclude,
-				),
+				Object.keys(canViewFullOtherUserInfo ? API.v1.limitedUserFieldsToExcludeIfIsPrivilegedUser : API.v1.limitedUserFieldsToExclude),
 			);
 		}
 
