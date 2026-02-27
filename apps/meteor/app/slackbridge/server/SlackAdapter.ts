@@ -1347,7 +1347,7 @@ export default class SlackAdapter {
 		if (channel) {
 			const members = await this.slackAPI.getMembers(channelMap.id);
 			if (members && Array.isArray(members) && members.length) {
-				for await (const member of members) {
+				for (const member of members) {
 					const user = (await this.rocket.findUser(member)) || (await this.rocket.addUser(member));
 					if (user) {
 						slackLogger.debug({ msg: 'Adding user to room', username: user.username, rid });
@@ -1388,7 +1388,7 @@ export default class SlackAdapter {
 	async copyPins(rid, channelMap) {
 		const items = await this.slackAPI.getPins(channelMap.id);
 		if (items && Array.isArray(items) && items.length) {
-			for await (const pin of items) {
+			for (const pin of items) {
 				if (pin.message) {
 					const user = await this.rocket.findUser(pin.message.user);
 					// TODO: send this system message to the room as well (using the service)

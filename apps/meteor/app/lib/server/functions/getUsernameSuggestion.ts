@@ -60,7 +60,7 @@ export async function generateUsernameSuggestion(user: Pick<IUser, 'name' | 'ema
 
 	usernames = usernames.filter((e) => e);
 
-	for await (const item of usernames) {
+	for (const item of usernames) {
 		if (await usernameIsAvailable(item)) {
 			return item;
 		}
