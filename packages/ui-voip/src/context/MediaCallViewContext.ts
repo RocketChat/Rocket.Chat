@@ -45,6 +45,6 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 
 const MediaCallViewContext = createContext<MediaCallViewContextValue>(defaultMediaCallContextValue);
 
-export const useMediaCallViewContext = (): MediaCallViewContextValue => useContext(MediaCallViewContext);
+export const useMediaCallView = (): MediaCallViewContextValue => useContext(MediaCallViewContext);
 
 export default MediaCallViewContext;

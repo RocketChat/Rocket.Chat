@@ -1,8 +1,8 @@
 import { OngoingCall, NewCall, IncomingCall, OutgoingCall, IncomingCallTransfer, OutgoingCallTransfer } from '..';
-import { useMediaCallViewContext } from '../../context/MediaCallViewContext';
+import { useMediaCallView } from '../../context/MediaCallViewContext';
 
 const MediaCallWidget = () => {
-	const { sessionState } = useMediaCallViewContext();
+	const { sessionState } = useMediaCallView();
 	const { state, hidden, transferredBy } = sessionState;
 
 	if (hidden) {

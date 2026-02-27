@@ -1,6 +1,6 @@
 export type * from './definitions';
 export { MediaCallInstanceContext, useMediaCallInstanceContext } from './MediaCallInstanceContext';
-export { useMediaCallViewContext } from './MediaCallViewContext';
+export { useMediaCallView } from './MediaCallViewContext';
 export { usePeerAutocomplete, isFirstPeerAutocompleteOption } from './usePeerAutocomplete';
 export { useWidgetExternalControls } from './useWidgetExternalControls';
 export { usePeekMediaSessionState } from './usePeekMediaSessionState';
