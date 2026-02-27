@@ -33,8 +33,8 @@ const UserAvatar = ({ username, userId, etag, ...rest }: UserAvatarProps) => {
 		return <BaseAvatar url={url} data-username={username} title={username} alt={t('Avatar')} {...props} />;
 	}
 
-	// TODO: We should throw an Error after fixing the issue in Composer passing the username undefined
-	return null;
+	// Fallback rendering to avoid returning null when no identifier is provided
+	return <BaseAvatar alt={t('Avatar')} {...rest} />;
 };
 
 export default memo(UserAvatar);
