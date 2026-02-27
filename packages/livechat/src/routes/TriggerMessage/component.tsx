@@ -45,7 +45,14 @@ class TriggerMessage extends Component<TriggerMessageProps> {
 		return (
 			<Screen title={title || defaultTitle} triggered ref={this.ref}>
 				<Screen.Content triggered={true}>
-					{messages?.map((message) => message.msg && <p className={createClassName(styles, 'trigger-message__message')}>{message.msg}</p>)}
+					{messages?.map(
+						(message, i) =>
+							message.msg && (
+								<p key={i} className={createClassName(styles, 'trigger-message__message')}>
+									{message.msg}
+								</p>
+							),
+					)}
 				</Screen.Content>
 				<footer className={createClassName(styles, 'trigger-message__footer')}>
 					<hr className={createClassName(styles, 'trigger-message__separator')} />

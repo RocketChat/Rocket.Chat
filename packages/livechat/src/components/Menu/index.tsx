@@ -96,7 +96,6 @@ class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuW
 
 		const placement = `${menuWidth < rightSpace ? 'right' : 'left'}-${menuHeight < bottomSpace ? 'bottom' : 'top'}`;
 
-		// eslint-disable-next-line react/no-did-mount-set-state
 		this.setState({
 			position: { left, right, top, bottom },
 			placement,

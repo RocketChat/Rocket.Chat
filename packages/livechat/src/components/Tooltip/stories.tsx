@@ -32,7 +32,7 @@ Inline.storyName = 'inline';
 export const Placements: StoryFn<ComponentProps<typeof Tooltip>> = (args) => (
 	<div style={{ display: 'flex', flexDirection: 'column' }}>
 		{placements.map((placement, i) => (
-			<Tooltip {...args} key={i} placement={placement} />
+			<Tooltip key={i} {...args} placement={placement} />
 		))}
 	</div>
 );
