@@ -9,8 +9,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -22,9 +22,8 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
-		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/jest": "~30.0.0",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"mongodb": "6.16.0",
 		"typescript": "~5.9.3"
 	},
