@@ -55,7 +55,16 @@ const AdminInfoStep = (): ReactElement => {
 
 		const passwordValidation = validatePasswordPolicy(password);
 		if (!passwordValidation.valid) {
-			return t('Password_must_meet_the_complexity_requirements');
+			return passwordValidation.validations
+				.filter((validation) => !validation.isValid)
+				.map((validation) => {
+					const labelKey = `${validation.name}-label` as const;
+					if ('limit' in validation) {
+						return t(labelKey, { limit: validation.limit });
+					}
+					return t(labelKey);
+				})
+				.join(', ');
 		}
 
 		return true;
