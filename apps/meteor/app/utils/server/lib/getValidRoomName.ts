@@ -8,6 +8,7 @@ import { settings } from '../../../settings/server';
 
 export const getValidRoomName = async (displayName: string, rid = '', options: { allowDuplicates?: boolean } = {}) => {
 	let slugifiedName = displayName;
+	slugifiedName = slugifiedName.toLowerCase();
 
 	if (settings.get('UI_Allow_room_names_with_special_chars')) {
 		const cleanName = limax(displayName, { maintainCase: true });
@@ -27,7 +28,7 @@ export const getValidRoomName = async (displayName: string, rid = '', options: {
 				}
 			}
 		}
-		slugifiedName = cleanName;
+		slugifiedName = cleanName.toLowerCase();
 	}
 
 	let nameValidation;
@@ -46,14 +47,14 @@ export const getValidRoomName = async (displayName: string, rid = '', options: {
 	}
 
 	if (options.allowDuplicates !== true) {
-		const room = await Rooms.findOneByName(slugifiedName);
+		const room = await Rooms.findOneByName(slugifiedName.toLowerCase());
 		if (room && room._id !== rid) {
 			if (settings.get('UI_Allow_room_names_with_special_chars')) {
 				let tmpName = slugifiedName;
 				let next = 0;
 				// eslint-disable-next-line no-await-in-loop
 				while (await Rooms.findOneByNameAndNotId(tmpName, rid)) {
-					tmpName = `${slugifiedName}-${++next}`;
+					tmpName = `${slugifiedName.toLowerCase()}-${++next}`;
 				}
 				slugifiedName = tmpName;
 			} else if (room.archived) {
