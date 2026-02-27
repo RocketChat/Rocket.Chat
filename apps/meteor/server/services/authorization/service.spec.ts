@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { Users } from '@rocket.chat/models';
 import { TOTP } from '../../../app/2fa/server/lib/totp';
-import * as notifyListener from '../../../app/lib/server/lib/notifyListener';
 import { Authorization } from './service';
 
 describe('Authorization Service - disable2FA', () => {
@@ -14,7 +13,6 @@ describe('Authorization Service - disable2FA', () => {
         sinon.stub(Users, 'findOneById');
         sinon.stub(TOTP, 'verify');
         sinon.stub(Users, 'disable2FAByUserId');
-        sinon.stub(notifyListener, 'notifyOnUserChange');
     });
 
     afterEach(() => {
@@ -59,6 +57,19 @@ describe('Authorization Service - disable2FA', () => {
         expect((Users.disable2FAByUserId as sinon.SinonStub).called).to.be.false;
     });
 
+    it('should return false if DB update fails to modify any document (modifiedCount: 0)', async () => {
+        const testUid = 'valid_uid';
+        (Users.findOneById as sinon.SinonStub).resolves({ 
+            services: { totp: { enabled: true, secret: 'secret' } } 
+        });
+        (TOTP.verify as sinon.SinonStub).resolves(true);
+        (Users.disable2FAByUserId as sinon.SinonStub).resolves({ modifiedCount: 0 });
+        
+        const result = await service.disable2FA(testUid, 'correct_code');
+        
+        expect(result).to.be.false;
+    });
+
     it('should execute actual behavior: call DB update with exact parameters on success', async () => {
         const testUid = 'valid_uid';
         (Users.findOneById as sinon.SinonStub).resolves({ 
@@ -71,7 +82,6 @@ describe('Authorization Service - disable2FA', () => {
         
         expect(result).to.be.true;
         
-        // Verify DB update was called with the EXACT userId
         expect((Users.disable2FAByUserId as sinon.SinonStub).calledOnceWithExactly(testUid)).to.be.true;
     });
 });
