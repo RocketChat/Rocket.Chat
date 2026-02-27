@@ -1,6 +1,6 @@
-import { formatWithCursor } from 'prettier/standalone';
 import * as pluginBabel from 'prettier/plugins/babel';
 import * as pluginEstree from 'prettier/plugins/estree';
+import { formatWithCursor } from 'prettier/standalone';
 
 const codePrettier = (code: string, cursor: number) =>
   formatWithCursor(code, {

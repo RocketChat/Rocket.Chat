@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Edge, MarkerType, useEdgesState, useNodesState } from 'reactflow';
 import { useContext, useEffect } from 'react';
+import { type Edge, MarkerType, useEdgesState, useNodesState } from 'reactflow';
+
 import { context, updateFlowEdgesAction } from '../Context';
+
 export function useNodesAndEdges() {
   const {
     state: { screens, projects, activeProject },
@@ -21,9 +23,9 @@ export function useNodesAndEdges() {
     const prevNodes = projects[activeProject].flowNodes;
     const center = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     const activeScreens = projects[activeProject].screens.map(
-      (id) => screens[id]
+      (id) => screens[id],
     );
-    activeScreens.map((screen, i) => {
+    activeScreens.forEach((screen, i) => {
       if (prevNodes.map((node) => node.id).includes(screen.id)) return;
 
       const degrees = i * (360 / 8);

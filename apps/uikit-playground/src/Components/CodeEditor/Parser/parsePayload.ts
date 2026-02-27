@@ -4,10 +4,10 @@ import type { EditorView } from 'codemirror';
 const parsePayload = (
   head: { from: number; to: number },
   // Diagnostic: Diagnostic[],
-  view: EditorView
+  view: EditorView,
 ) => {
   const payload = JSON.parse(
-    view.state.doc.toString().slice(head.from, head.to)
+    view.state.doc.toString().slice(head.from, head.to),
   );
   payload && 1;
 };

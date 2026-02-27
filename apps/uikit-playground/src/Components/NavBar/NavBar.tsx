@@ -12,10 +12,10 @@ import type { FC } from 'react';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import RightNavBtn from './RightNavBtn';
 import { context, updatePayloadAction } from '../../Context';
 import { openCreateNewScreenAction } from '../../Context/action/openCreateNewScreenAction';
 import routes from '../../Routes/Routes';
-import RightNavBtn from './RightNavBtn';
 
 const NabBar: FC = () => {
   const {
@@ -29,12 +29,12 @@ const NabBar: FC = () => {
     <Flex.Container alignItems="center">
       <Box
         position="relative"
-        width={'100%'}
-        height={'var(--navbar-height)'}
+        width="100%"
+        height="var(--navbar-height)"
         is={Tile}
         padding={0}
         zIndex={3}
-        elevation={'2'}
+        elevation="2"
         className={css`
           user-select: none;
         `}
@@ -63,8 +63,8 @@ const NabBar: FC = () => {
         <Box
           flexGrow={1}
           minWidth="15px"
-          display={'flex'}
-          justifyContent={'flex-end'}
+          display="flex"
+          justifyContent="flex-end"
         >
           <Box display="flex" height="100%">
             {!isMobile && (
@@ -73,9 +73,9 @@ const NabBar: FC = () => {
                   secondary
                   success
                   small
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      JSON.stringify(screens[activeScreen]?.payload)
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(
+                      JSON.stringify(screens[activeScreen]?.payload),
                     );
                     toast({
                       type: 'success',
@@ -93,7 +93,7 @@ const NabBar: FC = () => {
                       updatePayloadAction({
                         blocks: [],
                         changedByEditor: false,
-                      })
+                      }),
                     );
                     toast({
                       type: 'success',

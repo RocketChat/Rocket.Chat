@@ -1,4 +1,5 @@
-import { Edge } from 'reactflow';
+import { type Edge } from 'reactflow';
+
 import { ActionTypes } from '../reducer';
 
 export type UpdateFlowEdgesAction = {
@@ -7,7 +8,7 @@ export type UpdateFlowEdgesAction = {
 };
 
 export const updateFlowEdgesAction = (
-  payload: Edge[]
+  payload: Edge[],
 ): UpdateFlowEdgesAction => ({
   type: ActionTypes.UpdateFlowEdges,
   payload,

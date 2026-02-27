@@ -13,7 +13,7 @@ const ScreenThumbnailWrapper = ({
   onClick?: ComponentProps<typeof Box>['onClick'];
   children: ReactNode;
 } & ComponentProps<typeof Box>) => (
-  <Box w={width} h={height} className={'screen-thumbnail-wrapper'}>
+  <Box w={width} h={height} className="screen-thumbnail-wrapper">
     <Box
       w={width}
       h={height}

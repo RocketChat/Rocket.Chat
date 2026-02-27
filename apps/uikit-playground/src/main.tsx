@@ -4,8 +4,8 @@ import '@rocket.chat/icons/dist/rocketchat.css';
 import '@rocket.chat/fuselage/dist/fuselage.css';
 
 import App from './App';
-import { Provider } from './Context';
 import PersistStore from './Components/PersistStore/PersistStore';
+import { Provider } from './Context';
 import './index.css';
 
 const rootDiv = document.getElementById('root');

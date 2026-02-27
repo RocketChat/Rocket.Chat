@@ -1,8 +1,8 @@
+import { useContext, useEffect } from 'react';
 import { useNavigate, useOutlet, useParams } from 'react-router-dom';
 
-import routes from '../../Routes/Routes';
-import { useContext, useEffect } from 'react';
 import { activeProjectAction, context } from '../../Context';
+import routes from '../../Routes/Routes';
 
 export const ProjectSpecificLayout = () => {
   const {

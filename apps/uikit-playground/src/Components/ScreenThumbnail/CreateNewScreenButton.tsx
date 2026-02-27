@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Icon, Box } from '@rocket.chat/fuselage';
-import { ComponentProps } from 'react';
+import { type ComponentProps } from 'react';
 
 const CreateNewScreenButton = ({
   size = '60px',

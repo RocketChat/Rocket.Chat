@@ -11,8 +11,8 @@ type PreviewSizeType = {
   blockSize: number;
   inlineSize: number;
 };
-const SplitPlaneContainer: FC<{ PreviewSize: Partial<PreviewSizeType> }> = ({
-  PreviewSize,
+const SplitPlaneContainer: FC<{ previewSize: Partial<PreviewSizeType> }> = ({
+  previewSize,
 }) => {
   const {
     state: { isTablet },
@@ -24,9 +24,9 @@ const SplitPlaneContainer: FC<{ PreviewSize: Partial<PreviewSizeType> }> = ({
   }, [isTablet, dispatch]);
 
   const splitPaneProps = {
-    defaultSize: (PreviewSize.inlineSize || 1) * 0.5,
+    defaultSize: (previewSize.inlineSize || 1) * 0.5,
     minSize: 300,
-    maxSize: (PreviewSize.inlineSize || 1) - 350,
+    maxSize: (previewSize.inlineSize || 1) - 350,
     allowResize: !isTablet,
   };
 

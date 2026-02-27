@@ -1,8 +1,8 @@
-import { ActionTypes } from "../reducer";
+import { ActionTypes } from '../reducer';
 
 export type SurfaceAction = {
-  type: ActionTypes.Surface,
-  payload: number,
+  type: ActionTypes.Surface;
+  payload: number;
 };
 
 export const surfaceAction = (payload: number): SurfaceAction => ({

@@ -3,11 +3,11 @@ import { useContext, type FC } from 'react';
 
 import ComponentSideBar from '../Components/ComponentSideBar';
 import CreateNewScreenContainer from '../Components/CreateNewScreen/CreateNewScreenContainer';
+import NavBar from '../Components/NavBar';
 import Preview from '../Components/Preview';
 import Templates from '../Components/Templates';
-import { context } from '../Context';
 import NavMenu from '../Components/navMenu/NavMenu';
-import NavBar from '../Components/NavBar';
+import { context } from '../Context';
 
 const Playground: FC = () => {
   const {
@@ -18,18 +18,18 @@ const Playground: FC = () => {
     <>
       <NavBar />
       {navMenuToggle && <NavMenu />}
-      <Box position="relative" width={'100%'} flexGrow={1}>
+      <Box position="relative" width="100%" flexGrow={1}>
         <CreateNewScreenContainer />
         <Templates />
         <Box
-          display={'flex'}
-          width={'100%'}
-          height={'100%'}
-          flexDirection={'column'}
+          display="flex"
+          width="100%"
+          height="100%"
+          flexDirection="column"
           overflow="hidden"
-          bg={'var(--primaryBackgroundColor)'}
+          bg="var(--primaryBackgroundColor)"
         >
-          <Box width={'100%'} flexGrow={1} position={'relative'} zIndex={0}>
+          <Box width="100%" flexGrow={1} position="relative" zIndex={0}>
             <ComponentSideBar />
             <Preview />
           </Box>

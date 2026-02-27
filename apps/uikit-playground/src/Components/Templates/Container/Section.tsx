@@ -1,7 +1,7 @@
 import { Box, Label } from '@rocket.chat/fuselage';
 
-import type { templateType } from '../../../utils/templates';
 import Payload from './Payload';
+import type { templateType } from '../../../utils/templates';
 
 const Section = ({
   template,

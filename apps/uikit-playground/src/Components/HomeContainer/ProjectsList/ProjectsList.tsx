@@ -1,8 +1,9 @@
-import { Box } from '@rocket.chat/fuselage';
-import { context } from '../../../Context';
-import { useContext } from 'react';
-import ProjectsThumbnail from './ProjectsThumbnail';
 import { css } from '@rocket.chat/css-in-js';
+import { Box } from '@rocket.chat/fuselage';
+import { useContext } from 'react';
+
+import ProjectsThumbnail from './ProjectsThumbnail';
+import { context } from '../../../Context';
 
 const ProjectsList = () => {
   const {

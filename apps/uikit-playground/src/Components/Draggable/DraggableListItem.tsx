@@ -1,9 +1,9 @@
 import { Draggable } from '@hello-pangea/dnd';
 
+import type { Block } from './DraggableList';
 import DeleteElementBtn from '../Preview/Display/UiKitElementWrapper/DeleteElementBtn';
 import UiKitElementWrapper from '../Preview/Display/UiKitElementWrapper/UiKitElementWrapper';
 import RenderPayload from '../RenderPayload/RenderPayload';
-import type { Block } from './DraggableList';
 
 export type DraggableListItemProps = {
   block: Block;

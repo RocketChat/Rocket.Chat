@@ -5,10 +5,10 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useContext } from 'react';
 
 import { updatePayloadAction, context } from '../../Context';
+import { type IPayload } from '../../Context/initialState';
 import useCodeMirror from '../../hooks/useCodeMirror';
-import intendCode from '../../utils/intendCode';
-import { IPayload } from '../../Context/initialState';
 import useFormatCodeMirrorValue from '../../hooks/useFormatCodeMirrorValue';
+import intendCode from '../../utils/intendCode';
 
 type CodeMirrorProps = {
   extensions?: Extension[];
@@ -22,26 +22,26 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
 
   const { editor, changes, setValue } = useCodeMirror(
     extensions,
-    intendCode(screens[activeScreen]?.payload)
+    intendCode(screens[activeScreen]?.payload),
   );
   const debounceValue = useDebouncedValue(changes, 1500);
 
   useFormatCodeMirrorValue(
     (
       parsedCode: IPayload,
-      prettifiedCode: { formatted: string; cursorOffset: number }
+      prettifiedCode: { formatted: string; cursorOffset: number },
     ) => {
       dispatch(
         updatePayloadAction({
           blocks: parsedCode.blocks,
           surface: parsedCode.surface,
-        })
+        }),
       );
       setValue(prettifiedCode.formatted, {
         cursor: prettifiedCode.cursorOffset,
       });
     },
-    debounceValue
+    debounceValue,
   );
 
   useEffect(() => {
@@ -60,7 +60,7 @@ const BlockEditor = ({ extensions }: CodeMirrorProps) => {
 
   return (
     <>
-      <Box display="grid" height="100%" width={'100%'} ref={editor} />
+      <Box display="grid" height="100%" width="100%" ref={editor} />
     </>
   );
 };

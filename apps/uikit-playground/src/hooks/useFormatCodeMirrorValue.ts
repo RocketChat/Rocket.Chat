@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
-import codePrettier from '../utils/codePrettier';
-import { IPayload } from '../Context/initialState';
 import json5 from 'json5';
-import { ICodeMirrorChanges } from './useCodeMirror';
+import { useEffect } from 'react';
+
+import { type ICodeMirrorChanges } from './useCodeMirror';
+import { type IPayload } from '../Context/initialState';
+import codePrettier from '../utils/codePrettier';
 
 // Todo: needs to make it more strict
 function isILayoutblock(obj: object): obj is IPayload {
@@ -23,9 +24,11 @@ const useFormatCodeMirrorValue = (
       const parsedCode = json5.parse(changes.value);
       if (!isILayoutblock(parsedCode))
         throw new Error('Please enter a valid LayoutBlock');
-      codePrettier(changes.value, changes.cursor || 0).then((prettierCode) => {
-        callback(parsedCode, prettierCode);
-      });
+      void codePrettier(changes.value, changes.cursor || 0).then(
+        (prettierCode) => {
+          callback(parsedCode, prettierCode);
+        },
+      );
     } catch (e) {
       // do nothing
     }

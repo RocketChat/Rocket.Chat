@@ -1,7 +1,11 @@
 import './Editablelabel.scss';
 import { Box, Icon, Input } from '@rocket.chat/fuselage';
-import { MouseEventHandler } from 'react';
-import { ComponentProps, useRef, useState } from 'react';
+import {
+  type MouseEventHandler,
+  type ComponentProps,
+  useRef,
+  useState,
+} from 'react';
 
 const EditableLabel = (props: ComponentProps<typeof Input>) => {
   const [hover, setHover] = useState<boolean>(false);
@@ -27,7 +31,7 @@ const EditableLabel = (props: ComponentProps<typeof Input>) => {
       <Input ref={inputRef} {...props} />
       <Icon
         invisible={!hover}
-        className={'editableLabel-icon'}
+        className="editableLabel-icon"
         name="pencil"
         onClick={iconClickHandler}
       />

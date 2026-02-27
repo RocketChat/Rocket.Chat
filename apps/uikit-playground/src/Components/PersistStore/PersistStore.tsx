@@ -1,10 +1,11 @@
 import {
-  ComponentProps,
+  type ComponentProps,
   Fragment,
   useCallback,
   useContext,
   useEffect,
 } from 'react';
+
 import { context } from '../../Context';
 import persistStore from '../../utils/persistStore';
 

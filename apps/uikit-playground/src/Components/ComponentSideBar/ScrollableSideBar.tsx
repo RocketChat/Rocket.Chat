@@ -8,15 +8,15 @@ import DropDown from '../DropDown';
 const ScrollableSideBar: FC = () => (
   <Scrollable vertical>
     <Box
-      width={'100%'}
-      mbs='39px'
-      borderBlockStart='var(--default-border)'
-      bg={'var(--primaryBackgroundColor)'}
+      width="100%"
+      mbs="39px"
+      borderBlockStart="var(--default-border)"
+      bg="var(--primaryBackgroundColor)"
       className={css`
         box-shadow: var(--dropdown-box-shadow);
       `}
     >
-      <DropDown BlocksTree={BlocksTree} />
+      <DropDown blocksTree={BlocksTree} />
     </Box>
   </Scrollable>
 );

@@ -1,9 +1,10 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box, Label } from '@rocket.chat/fuselage';
-import ProjectsList from './ProjectsList/ProjectsList';
 import { useContext } from 'react';
+
+import ProjectsList from './ProjectsList/ProjectsList';
 import { context, createNewProjectAction } from '../../Context';
 import CreateNewScreenButton from '../ScreenThumbnail/CreateNewScreenButton';
-import { css } from '@rocket.chat/css-in-js';
 
 const HomeContainer = () => {
   const { dispatch } = useContext(context);
@@ -13,11 +14,11 @@ const HomeContainer = () => {
       display="flex"
       justifyContent="center"
       h="var(--content-height)"
-      pbs={'30px'}
+      pbs="30px"
     >
       <Box
-        width={'max-content'}
-        minWidth={'70%'}
+        width="max-content"
+        minWidth="70%"
         display="flex"
         flexDirection="column"
         className={css`

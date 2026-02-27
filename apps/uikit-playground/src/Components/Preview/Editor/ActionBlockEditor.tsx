@@ -8,13 +8,13 @@ const ActionBlockEditor: FC = () => (
   <Scrollable vertical>
     <Box
       position="relative"
-      height={'100%'}
-      width={'100%'}
+      height="100%"
+      width="100%"
       zIndex={1}
-      bg={'#f6f9fc'}
-      display={'flex'}
-      borderInlineStart={'var(--default-border)'}
-      overflow={'auto'}
+      bg="#f6f9fc"
+      display="flex"
+      borderInlineStart="var(--default-border)"
+      overflow="auto"
     >
       <BlockEditor extensions={actionBlockExtensions} />
     </Box>

@@ -1,22 +1,23 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import ScreenThumbnailWrapper from '../../ScreenThumbnail/ScreenThumbnailWrapper';
-import Thumbnail from '../../ScreenThumbnail/Thumbnail';
-import RenderPayload from '../../RenderPayload/RenderPayload';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
+import { type ChangeEvent, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import {
   activeProjectAction,
   context,
   renameProjectAction,
 } from '../../../Context';
-import { ChangeEvent, useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { deleteProjectAction } from '../../../Context/action/deleteProjectAction';
+import { type ILayoutBlock } from '../../../Context/initialState';
+import routes from '../../../Routes/Routes';
 import { formatDate } from '../../../utils/formatDate';
+import RenderPayload from '../../RenderPayload/RenderPayload';
 import EditMenu from '../../ScreenThumbnail/EditMenu';
 import EditableLabel from '../../ScreenThumbnail/EditableLabel/EditableLabel';
-import { css } from '@rocket.chat/css-in-js';
-import { deleteProjectAction } from '../../../Context/action/deleteProjectAction';
-import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
-import routes from '../../../Routes/Routes';
-import { ILayoutBlock } from '../../../Context/initialState';
+import ScreenThumbnailWrapper from '../../ScreenThumbnail/ScreenThumbnailWrapper';
+import Thumbnail from '../../ScreenThumbnail/Thumbnail';
 
 const ProjectsThumbnail = ({
   id,
@@ -76,11 +77,11 @@ const ProjectsThumbnail = ({
       />
       <ScreenThumbnailWrapper
         onClick={activeProjectHandler}
-        width={'200px'}
+        width="200px"
         height="260px"
         padding="30px"
       >
-        <Thumbnail of={RenderPayload({ blocks })} />
+        <Thumbnail of={<RenderPayload blocks={blocks} />} />
         <Box onClick={(e) => e.stopPropagation()}></Box>
       </ScreenThumbnailWrapper>
       <EditableLabel

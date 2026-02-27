@@ -3,8 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useEffect, useState, useContext } from 'react';
 
-import { context, navMenuToggleAction } from '../../Context';
 import Menu from './Menu';
+import { context, navMenuToggleAction } from '../../Context';
 
 const NavMenu: FC = () => {
   const [isOpen, setIsOpen] = useState(false);

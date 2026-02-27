@@ -23,6 +23,7 @@ import {
 } from './context';
 import { divider } from './divider';
 import { imageWithTitle, imageWithoutTitle } from './image';
+import { infoCardPlain, infoCardMultipleRows } from './infoCard';
 import {
   inputWithSingleLineInput,
   inputWithMultiLineInput,
@@ -52,12 +53,11 @@ import {
   sectionWithMenu,
   sectionWithdatePicker,
 } from './section';
-import { infoCardPlain, infoCardMultipleRows } from './infoCard';
-import { disabled, plain, selected } from '../tabNavigation';
-import { actionWithToggleSwitch } from '../action/toggleSwitch';
-import { actionWithTimePicker } from '../action/timePicker';
-import { actionWithRadioButton } from '../action/radioButton';
 import { actionWithCheckbox } from '../action/checkbox';
+import { actionWithRadioButton } from '../action/radioButton';
+import { actionWithTimePicker } from '../action/timePicker';
+import { actionWithToggleSwitch } from '../action/toggleSwitch';
+import { disabled, plain, selected } from '../tabNavigation';
 
 const BlocksTree: Item = [
   {

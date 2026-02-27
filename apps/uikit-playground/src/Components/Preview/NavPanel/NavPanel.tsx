@@ -24,14 +24,14 @@ const NavPanel: FC = () => {
   const tabsItem: string[] = ['Preview', 'Editor'];
   return (
     <Box
-      width={'100%'}
-      height={'40px'}
-      borderBlockEnd={'var(--default-border)'}
-      display={'flex'}
-      alignItems={'center'}
+      width="100%"
+      height="40px"
+      borderBlockEnd="var(--default-border)"
+      display="flex"
+      alignItems="center"
       zIndex={1}
       justifyContent={isMobile ? 'flex-end' : 'space-between'}
-      bg={'alternative'}
+      bg="alternative"
       className={css`
         user-select: none;
       `}
@@ -43,7 +43,7 @@ const NavPanel: FC = () => {
             mis="10px"
             small
             warning
-            height={'max-content'}
+            height="max-content"
             onClick={() => dispatch(templatesToggleAction(true))}
           >
             Templates

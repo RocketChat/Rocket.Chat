@@ -1,7 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Label } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 
 import { context, sidebarToggleAction } from '../../Context';
 
@@ -48,31 +48,37 @@ const SliderBtn: FC = () => {
         transition: var(--animation-default);
       `;
 
-  const toggleStyle = !isMobile
-    ? css`
+  const toggleStyle = useMemo(() => {
+    if (!isMobile) {
+      return css`
         left: 0px;
-      `
-    : sideBarToggle
-    ? css`
+      `;
+    }
+
+    if (sideBarToggle) {
+      return css`
         right: 0;
-        transition: var(--animation-default);
-      `
-    : css`
-        right: 0;
-        transform: translateX(100%);
-        cursor: pointer;
         transition: var(--animation-default);
       `;
+    }
+
+    return css`
+      right: 0;
+      transform: translateX(100%);
+      cursor: pointer;
+      transition: var(--animation-default);
+    `;
+  }, [isMobile, sideBarToggle]);
 
   return (
     <Box
-      position={'absolute'}
+      position="absolute"
       width={sideBarToggle ? '100%' : '130px'}
-      paddingInlineStart={'20px'}
-      height={'40px'}
+      paddingInlineStart="20px"
+      height="40px"
       display="flex"
       alignItems="center"
-      justifyContent={'space-between'}
+      justifyContent="space-between"
       onClick={() =>
         !sideBarToggle && dispatch(sidebarToggleAction(!sideBarToggle))
       }

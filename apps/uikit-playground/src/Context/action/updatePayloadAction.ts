@@ -1,5 +1,5 @@
-import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
-import { ILayoutBlock } from '../initialState';
+import { type SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
+import { type ILayoutBlock } from '../initialState';
 import { ActionTypes } from '../reducer';
 
 type PayloadType = {
@@ -14,7 +14,7 @@ export type UpdatePayloadAction = {
 };
 
 export const updatePayloadAction = (
-  payload: PayloadType
+  payload: PayloadType,
 ): UpdatePayloadAction => ({
   type: ActionTypes.UpdatePayload,
   payload,

@@ -10,13 +10,13 @@ import {
   ContextualbarTitle,
 } from '@rocket.chat/fuselage';
 import { Scrollbars } from 'rc-scrollbars';
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 
 const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
   <Contextualbar>
     <ContextualbarHeader>
       <Avatar url="data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" />
-      <ContextualbarTitle>{'Contextual Bar'}</ContextualbarTitle>
+      <ContextualbarTitle>Contextual Bar</ContextualbarTitle>
       <ContextualbarAction
         data-qa="ContextualbarActionClose"
         title="Close"

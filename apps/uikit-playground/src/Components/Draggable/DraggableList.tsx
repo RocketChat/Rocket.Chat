@@ -1,10 +1,10 @@
-import { memo } from 'react';
 import type { OnDragEndResponder } from '@hello-pangea/dnd';
 import { DragDropContext, Droppable } from '@hello-pangea/dnd';
+import { memo } from 'react';
 
 import DraggableListItem from './DraggableListItem';
+import { type ILayoutBlock } from '../../Context/initialState';
 import { SurfaceOptions } from '../Preview/Display/Surface/constant';
-import { ILayoutBlock } from '../../Context/initialState';
 
 export type Block = {
   id: string;

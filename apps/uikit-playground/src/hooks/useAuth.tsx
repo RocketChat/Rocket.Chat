@@ -1,10 +1,9 @@
-/* eslint-disable react-refresh/only-export-components */
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { createContext, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { userType } from '../Context/initialState';
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { type userType } from '../Context/initialState';
 
 const AuthContext = createContext<{
   user?: userType;
@@ -33,7 +32,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       logout,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [user]
+    [user],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

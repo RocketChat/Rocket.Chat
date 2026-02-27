@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 
 import BannerSurface from './BannerSurface';
+import ContextualBarSurface from './ContextualBarSurface';
 import MessageSurface from './MessageSurface';
 import ModalSurface from './ModalSurface';
 import { SurfaceOptions } from './constant';
-import ContextualBarSurface from './ContextualBarSurface';
 
 const SurfaceRender = ({
   type = SurfaceOptions.Message,

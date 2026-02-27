@@ -1,9 +1,9 @@
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
+import { type Edge, type Node, type Viewport } from 'reactflow';
 
 import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
-import getUniqueId from '../utils/getUniqueId';
 import getDate from '../utils/getDate';
-import { Edge, Node, Viewport } from 'reactflow';
+import getUniqueId from '../utils/getUniqueId';
 
 export type idType = string;
 

@@ -9,7 +9,7 @@ const payloadLinter = linter((view: EditorView) => {
   const diagnostics: Diagnostic[] = [];
   const tree = syntaxTree(view.state);
   let head = tree.topNode.firstChild;
-  if (!head || !head.matchContext(['Script'])) {
+  if (!head?.matchContext(['Script'])) {
     diagnostics.push({
       from: 0,
       to: 0,
@@ -19,7 +19,7 @@ const payloadLinter = linter((view: EditorView) => {
     return diagnostics;
   }
   head = head.firstChild;
-  if (!head || !head.matchContext(['ExpressionStatement'])) {
+  if (!head?.matchContext(['ExpressionStatement'])) {
     diagnostics.push({
       from: 0,
       to: 0,
@@ -29,7 +29,7 @@ const payloadLinter = linter((view: EditorView) => {
     return diagnostics;
   }
   head = head.firstChild;
-  if (!head || !head.matchContext(['ArrayExpression'])) {
+  if (!head?.matchContext(['ArrayExpression'])) {
     diagnostics.push({
       from: 0,
       to: 0,

@@ -2,10 +2,10 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Label, Chevron } from '@rocket.chat/fuselage';
 import { useState, useContext } from 'react';
 
-import { context, updatePayloadAction } from '../../Context';
 import ItemsIcon from './ItemsIcon';
 import { itemStyle, labelStyle } from './itemsStyle';
 import type { ItemProps } from './types';
+import { context, updatePayloadAction } from '../../Context';
 import getUniqueId from '../../utils/getUniqueId';
 
 const Items = ({ label, children, layer, payload }: ItemProps) => {
@@ -23,7 +23,7 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
             { actionId: getUniqueId(), ...payload[0] },
           ],
           changedByEditor: false,
-        })
+        }),
       );
   };
 
@@ -41,8 +41,8 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
           {children && children.length > 0 && (
             <Box
               size="x16"
-              display={'flex'}
-              alignItems={'center'}
+              display="flex"
+              alignItems="center"
               className={css`
                 transform: rotate(${!isOpen ? '-90deg' : '0deg'});
                 transition: var(--animation-very-fast);

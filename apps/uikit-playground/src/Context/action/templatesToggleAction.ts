@@ -1,11 +1,13 @@
-import { ActionTypes } from "../reducer";
+import { ActionTypes } from '../reducer';
 
 export type TemplatesToggleAction = {
-  type: ActionTypes.TemplatesToggle,
-  payload: boolean,
+  type: ActionTypes.TemplatesToggle;
+  payload: boolean;
 };
 
-export const templatesToggleAction = (payload: boolean): TemplatesToggleAction => ({
+export const templatesToggleAction = (
+  payload: boolean,
+): TemplatesToggleAction => ({
   type: ActionTypes.TemplatesToggle,
   payload,
 });

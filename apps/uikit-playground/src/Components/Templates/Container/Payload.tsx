@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
-import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { Box, Button } from '@rocket.chat/fuselage';
+import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { useContext, useMemo } from 'react';
 
 import {
@@ -8,11 +8,11 @@ import {
   templatesToggleAction,
   updatePayloadAction,
 } from '../../../Context';
-import RenderPayload from '../../RenderPayload/RenderPayload';
+import { type ILayoutBlock } from '../../../Context/initialState';
 import getUniqueId from '../../../utils/getUniqueId';
 import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
-import { ILayoutBlock } from '../../../Context/initialState';
-import { SurfaceOptions } from '../../Preview/Display/Surface/constant';
+import { type SurfaceOptions } from '../../Preview/Display/Surface/constant';
+import RenderPayload from '../../RenderPayload/RenderPayload';
 
 const Payload = ({
   blocks,
@@ -27,7 +27,7 @@ const Payload = ({
       blocks.map((block) => {
         return { ...block, actionId: getUniqueId() };
       }),
-    [blocks]
+    [blocks],
   );
   const clickHandler = () => {
     dispatch(templatesToggleAction(false));
@@ -35,7 +35,7 @@ const Payload = ({
       updatePayloadAction({
         blocks: blocksWithUniqueIds,
         changedByEditor: false,
-      })
+      }),
     );
   };
   return (
@@ -62,7 +62,7 @@ const Payload = ({
           </SurfaceRender>
         </Box>
       </Box>
-      <Button onClick={clickHandler} primary mbs={'15px'} mbe={'25px'}>
+      <Button onClick={clickHandler} primary mbs="15px" mbe="25px">
         Use This Template
       </Button>
     </>

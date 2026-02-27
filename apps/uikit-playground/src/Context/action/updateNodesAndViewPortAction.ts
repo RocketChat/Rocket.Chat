@@ -1,4 +1,5 @@
-import { Node, Viewport } from 'reactflow';
+import { type Node, type Viewport } from 'reactflow';
+
 import { ActionTypes } from '../reducer';
 
 type PayloadType = {
@@ -12,7 +13,7 @@ export type UpdateNodesAndViewPortAction = {
 };
 
 export const updateNodesAndViewPortAction = (
-  payload: PayloadType
+  payload: PayloadType,
 ): UpdateNodesAndViewPortAction => ({
   type: ActionTypes.UpdateNodesAndViewPort,
   payload,

@@ -1,4 +1,5 @@
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
+
 import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 
 type payload = {

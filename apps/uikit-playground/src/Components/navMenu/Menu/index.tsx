@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
+import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { useContext, type FC } from 'react';
 
-import SurfaceSelect from '../../SurfaceSelect';
 import MenuItem from './MenuItem';
 import Wrapper from './Wrapper';
 import {
@@ -10,7 +10,7 @@ import {
   templatesToggleAction,
   updatePayloadAction,
 } from '../../../Context';
-import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
+import SurfaceSelect from '../../SurfaceSelect';
 
 const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
   const {
@@ -46,21 +46,21 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
       }}
     >
       <Wrapper>
-        <Box alignSelf={'flex-start'}>
+        <Box alignSelf="flex-start">
           <SurfaceSelect />
         </Box>
         <MenuItem
-          name={'Templates'}
+          name="Templates"
           onClick={() => dispatch(templatesToggleAction(true))}
         />
         <MenuItem
-          name={'Clear Blocks'}
+          name="Clear Blocks"
           onClick={() => {
             dispatch(
               updatePayloadAction({
                 blocks: [],
                 changedByEditor: false,
-              })
+              }),
             );
             toast({
               type: 'success',
@@ -69,10 +69,10 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
           }}
         />
         <MenuItem
-          name={'Copy Payload'}
-          onClick={() => {
-            navigator.clipboard.writeText(
-              JSON.stringify(screens[activeScreen]?.payload)
+          name="Copy Payload"
+          onClick={async () => {
+            await navigator.clipboard.writeText(
+              JSON.stringify(screens[activeScreen]?.payload),
             );
             toast({
               type: 'success',
@@ -80,7 +80,7 @@ const Menu: FC<{ isOpen: boolean }> = ({ isOpen }) => {
             });
           }}
         />
-        <MenuItem name={'Send to RocketChat'} />
+        <MenuItem name="Send to RocketChat" />
       </Wrapper>
     </Box>
   );

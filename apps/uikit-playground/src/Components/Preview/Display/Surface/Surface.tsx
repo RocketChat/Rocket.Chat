@@ -4,6 +4,9 @@ import type { FC } from 'react';
 import { useContext, useState, useEffect } from 'react';
 import type { DropResult } from 'react-beautiful-dnd';
 
+import { reorder } from './Reorder';
+import SurfaceRender from './SurfaceRender';
+import { SurfaceOptions } from './constant';
 import {
   context,
   updatePayloadAction,
@@ -12,9 +15,6 @@ import {
 import generateActionPreview from '../../../../Payload/actionPreview/generateActionPreview';
 import type { Block } from '../../../Draggable/DraggableList';
 import DraggableList from '../../../Draggable/DraggableList';
-import { reorder } from './Reorder';
-import SurfaceRender from './SurfaceRender';
-import { SurfaceOptions } from './constant';
 
 const Surface: FC = () => {
   const {
@@ -36,7 +36,7 @@ const Surface: FC = () => {
     data: {},
     surface: screens[activeScreen]?.payload.surface,
     blocks: screens[activeScreen]?.payload.blocks,
-    user: user,
+    user,
   });
   useEffect(() => {
     setUniqueBlocks({
@@ -55,7 +55,7 @@ const Surface: FC = () => {
         updatePayloadAction({
           blocks: uniqueBlocks.block.map((block) => block.payload),
           changedByEditor: false,
-        })
+        }),
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -67,7 +67,7 @@ const Surface: FC = () => {
     const newBlocks = reorder(
       uniqueBlocks.block,
       source.index,
-      destination.index
+      destination.index,
     );
 
     setUniqueBlocks({ block: newBlocks, isChangeByDnd: true });
@@ -91,7 +91,9 @@ const Surface: FC = () => {
       >
         <SurfaceRender type={screens[activeScreen]?.payload.surface}>
           <DraggableList
-            surface={screens[activeScreen]?.payload.surface || SurfaceOptions.Message}
+            surface={
+              screens[activeScreen]?.payload.surface || SurfaceOptions.Message
+            }
             blocks={uniqueBlocks.block || []}
             onDragEnd={onDragEnd}
           />

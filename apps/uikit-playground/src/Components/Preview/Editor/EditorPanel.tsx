@@ -1,14 +1,14 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
-import { useContext } from 'react';
+import { Fragment, useContext } from 'react';
 
-import { context, editorTabsToggleAction } from '../../../Context';
-import ToggleTabs from '../../ToggleTabs';
 import ActionBlockEditor from './ActionBlockEditor';
 import ActionPreviewEditor from './ActionPreviewEditor';
+import { context, editorTabsToggleAction } from '../../../Context';
 import FlowDiagram from '../../../Pages/FlowDiagram';
 import PrototypeContainer from '../../PtototypeContainer/PrototypeContainer';
+import ToggleTabs from '../../ToggleTabs';
 
 enum TabsItem {
   ActionBlock,
@@ -51,11 +51,11 @@ const EditorPanel: FC = () => {
   };
 
   return (
-    <Box width={'100%'} height={'100%'}>
+    <Box width="100%" height="100%">
       <Box
         position="relative"
-        width={'100%'}
-        height={'100%'}
+        width="100%"
+        height="100%"
         overflow="hidden"
         className={[
           css`
@@ -70,27 +70,29 @@ const EditorPanel: FC = () => {
         />
         <Box
           position="relative"
-          width={'100%'}
+          width="100%"
           height="calc(100% - 40px)"
           flexDirection="column"
         >
           <Box
             position="absolute"
             width={`calc(100% * ${Object.values(tabsItem).length})`}
-            height={'100%'}
-            display={'flex'}
+            height="100%"
+            display="flex"
             borderBlockStart="var(--default-border)"
             className={tabChangeStyle(editorTabsToggle)}
           >
-            {Object.values(tabsItem).map(({ Container }, index) => (
-              <>
-                {index === editorTabsToggle ? (
-                  <Container />
-                ) : (
-                  <Box w="100%" h="100%" />
-                )}
-              </>
-            ))}
+            {Object.values(tabsItem).map(
+              ({ Container: ContainerComponent }, index) => (
+                <Fragment key={index}>
+                  {index === editorTabsToggle ? (
+                    <ContainerComponent />
+                  ) : (
+                    <Box w="100%" h="100%" />
+                  )}
+                </Fragment>
+              ),
+            )}
           </Box>
         </Box>
       </Box>

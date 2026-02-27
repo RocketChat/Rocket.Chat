@@ -1,8 +1,8 @@
-import { ActionTypes } from "../reducer";
+import { ActionTypes } from '../reducer';
 
 export type DeleteScreenAction = {
-  type: ActionTypes.DeleteScreen,
-  payload: string,
+  type: ActionTypes.DeleteScreen;
+  payload: string;
 };
 
 export const deleteScreenAction = (payload: string): DeleteScreenAction => ({

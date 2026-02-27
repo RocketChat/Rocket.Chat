@@ -3,14 +3,11 @@ import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode, ComponentProps } from 'react';
 import { useRef, useState, useEffect } from 'react';
 
-interface ThumbnailProps extends ComponentProps<typeof Box> {
+type ThumbnailProps = ComponentProps<typeof Box> & {
   of: ReactNode;
-}
+};
 
-const Thumbnail = ({
-  of,
-  ...props
-}: ThumbnailProps) => {
+const Thumbnail = ({ of, ...props }: ThumbnailProps) => {
   const parentRef = useRef<HTMLDivElement | null>(null);
   const elementRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(1);
@@ -26,7 +23,7 @@ const Thumbnail = ({
   return (
     <Box overflow="hidden" position="relative" ref={parentRef} {...props}>
       <Box
-        w={'max-content'}
+        w="max-content"
         className={css`
           transform: scale(${scale});
           transform-origin: 0% 0%;

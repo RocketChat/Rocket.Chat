@@ -3,9 +3,9 @@ import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 
-import { context, previewTabsToggleAction } from '../../Context';
 import NavPanel from './NavPanel';
 import Wrapper from './Wrapper';
+import { context, previewTabsToggleAction } from '../../Context';
 
 const Preview: FC = () => {
   const {
@@ -19,12 +19,12 @@ const Preview: FC = () => {
 
   return (
     <Box
-      display={'flex'}
+      display="flex"
       flexGrow={1}
       bg="#fff"
       zIndex={3}
-      height={'100%'}
-      flexDirection={'column'}
+      height="100%"
+      flexDirection="column"
       pis={isMobile ? '' : 'var(--sidebar-width)'}
       className={css`
         transition: 0.5s ease;

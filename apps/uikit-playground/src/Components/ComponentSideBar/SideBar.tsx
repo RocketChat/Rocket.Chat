@@ -3,9 +3,9 @@ import { Box } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useEffect, useContext } from 'react';
 
-import { context, sidebarToggleAction } from '../../Context';
 import ScrollableSideBar from './ScrollableSideBar';
 import SliderBtn from './SliderBtn';
+import { context, sidebarToggleAction } from '../../Context';
 
 const SideBar: FC = () => {
   const { state, dispatch } = useContext(context);
@@ -29,9 +29,9 @@ const SideBar: FC = () => {
 
   return (
     <Box
-      position={'absolute'}
-      height={'100%'}
-      display={'flex'}
+      position="absolute"
+      height="100%"
+      display="flex"
       zIndex={4}
       bg="#fff"
       className={[slide]}

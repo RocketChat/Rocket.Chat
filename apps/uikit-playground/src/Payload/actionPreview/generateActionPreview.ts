@@ -1,10 +1,10 @@
+import container from './container';
 import { SurfaceOptions } from '../../Components/Preview/Display/Surface/constant';
 import type {
   ILayoutBlock,
   actionPreviewType,
   initialStateType,
 } from '../../Context/initialState';
-import container from './container';
 
 const generateActionPreview = ({
   type,

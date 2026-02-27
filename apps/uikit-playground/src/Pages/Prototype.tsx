@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+
 import PrototypeContainer from '../Components/PtototypeContainer/PrototypeContainer';
 
 const Prototype = () => {

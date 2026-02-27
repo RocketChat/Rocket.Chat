@@ -1,9 +1,9 @@
 import { Box, Icon, Button, Divider, Option } from '@rocket.chat/fuselage';
-import EditableLabel from '../EditableLabel/EditableLabel';
-import { ComponentProps, useRef, useState } from 'react';
-import { ChangeEvent } from 'react';
 import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { type ComponentProps, useRef, useState, type ChangeEvent } from 'react';
+
 import { formatDate } from '../../../utils/formatDate';
+import EditableLabel from '../EditableLabel/EditableLabel';
 
 const EditMenu = ({
   name,
@@ -33,13 +33,13 @@ const EditMenu = ({
   const duplicatehandler = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     setIsOpen(false);
-    onDuplicate && onDuplicate();
+    onDuplicate?.();
   };
 
   const deleteHandler = (e: { stopPropagation: () => void }) => {
     e.stopPropagation();
     setIsOpen(false);
-    onDelete && onDelete();
+    onDelete?.();
   };
   return (
     <Box

@@ -3,9 +3,9 @@ import { Box, Button, Icon, Scrollable } from '@rocket.chat/fuselage';
 import type { FC } from 'react';
 import { useContext } from 'react';
 
+import Container from './Container';
 import { context, templatesToggleAction } from '../../Context';
 import { templates } from '../../utils/templates';
-import Container from './Container';
 
 const Templates: FC = () => {
   const {
@@ -18,8 +18,8 @@ const Templates: FC = () => {
         <Scrollable vertical>
           <Box
             position="absolute"
-            width={'100%'}
-            height={'100%'}
+            width="100%"
+            height="100%"
             display="flex"
             justifyContent="center"
             alignItems="flex-start"

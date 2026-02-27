@@ -3,10 +3,10 @@ import { useContext } from 'react';
 import { Handle, Position } from 'reactflow';
 import './UIKitWrapper.scss';
 
-import RenderPayload from '../../RenderPayload/RenderPayload';
-import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
-import { idType } from '../../../Context/initialState';
 import { context } from '../../../Context';
+import { type idType } from '../../../Context/initialState';
+import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
+import RenderPayload from '../../RenderPayload/RenderPayload';
 
 const UIKitWrapper = ({ id, data }: { id: string; data: idType }) => {
   const {
@@ -19,11 +19,11 @@ const UIKitWrapper = ({ id, data }: { id: string; data: idType }) => {
       padding="10px"
       border="var(--default-border)"
       bg="white"
-      borderRadius={'10px'}
+      borderRadius="10px"
     >
       <Handle
         type="target"
-        className={'react-flow-targetHandle'}
+        className="react-flow-targetHandle"
         position={Position.Left}
         id={`${id}`}
       />

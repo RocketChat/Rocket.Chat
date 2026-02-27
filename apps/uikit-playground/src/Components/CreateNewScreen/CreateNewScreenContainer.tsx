@@ -3,13 +3,13 @@ import { Box, Button, Icon, Scrollable } from '@rocket.chat/fuselage';
 import { useOutsideClick, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useContext, useRef } from 'react';
 
+import ScreenThumbnail from './ScreenThumbnail';
 import { context } from '../../Context';
 import {
   openCreateNewScreenAction,
   createNewScreenAction,
 } from '../../Context/action';
 import { useHorizontalScroll } from '../../hooks/useHorizontalScroll';
-import ScreenThumbnail from './ScreenThumbnail';
 
 const CreateNewScreenContainer = () => {
   const {
@@ -88,8 +88,8 @@ const CreateNewScreenContainer = () => {
             <Icon
               onClick={createNewScreenhandler}
               size="60px"
-              height={'60px'}
-              name={'plus'}
+              height="60px"
+              name="plus"
               className={css`
                 cursor: pointer;
                 transition: var(--animation-default);

@@ -5,11 +5,7 @@ import Surface from './Surface/Surface';
 
 const Display: FC = () => (
   <Scrollable vertical>
-    <Box
-      height={'100%'}
-      width={'100%'}
-      borderInlineStart='var(--default-border)'
-    >
+    <Box height="100%" width="100%" borderInlineStart="var(--default-border)">
       <Surface />
     </Box>
   </Scrollable>

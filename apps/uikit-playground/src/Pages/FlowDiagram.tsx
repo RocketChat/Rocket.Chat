@@ -1,8 +1,8 @@
 import { Box } from '@rocket.chat/fuselage';
+import { type FC } from 'react';
+import { ReactFlowProvider } from 'reactflow';
 
 import FlowContainer from '../Components/FlowContainer/FlowContainer';
-import { ReactFlowProvider } from 'reactflow';
-import { FC } from 'react';
 
 const FlowDiagram: FC = () => (
   <Box w="100%" h="100%" position="relative">

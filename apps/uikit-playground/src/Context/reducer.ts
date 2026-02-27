@@ -1,36 +1,36 @@
 import _ from 'lodash';
 
-import getUniqueId from '../utils/getUniqueId';
-import type { initialStateType } from './initialState';
 import {
-  IsMobileAction,
-  IsTabletAction,
-  SidebarToggleAction,
-  PreviewTabsToggleAction,
-  TemplatesToggleAction,
-  NavMenuToggleAction,
-  SurfaceAction,
-  UpdatePayloadAction,
-  ActionPreviewAction,
-  UserAction,
-  OpenCreateNewScreenAction,
-  ActiveScreenAction,
-  CreateNewScreenAction,
-  DuplicateScreenAction,
-  DeleteScreenAction,
-  RenameScreenAction,
-  EditorTabsToggleAction,
-  CreateNewProjectAction,
-  ActiveProjectAction,
-  DuplicateProjectAction,
-  DeleteProjectAction,
-  RenameProjectAction,
-  UpdateFlowEdgesAction,
-  UpdateNodesAndViewPortAction,
+  type IsMobileAction,
+  type IsTabletAction,
+  type SidebarToggleAction,
+  type PreviewTabsToggleAction,
+  type TemplatesToggleAction,
+  type NavMenuToggleAction,
+  type SurfaceAction,
+  type UpdatePayloadAction,
+  type ActionPreviewAction,
+  type UserAction,
+  type OpenCreateNewScreenAction,
+  type ActiveScreenAction,
+  type CreateNewScreenAction,
+  type DuplicateScreenAction,
+  type DeleteScreenAction,
+  type RenameScreenAction,
+  type EditorTabsToggleAction,
+  type CreateNewProjectAction,
+  type ActiveProjectAction,
+  type DuplicateProjectAction,
+  type DeleteProjectAction,
+  type RenameProjectAction,
+  type UpdateFlowEdgesAction,
+  type UpdateNodesAndViewPortAction,
 } from './action';
-import getDate from '../utils/getDate';
+import type { initialStateType } from './initialState';
 import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 import { filterEdges } from '../utils/filterEdges';
+import getDate from '../utils/getDate';
+import getUniqueId from '../utils/getUniqueId';
 
 type IAction =
   | IsMobileAction
@@ -117,7 +117,7 @@ const reducer = (state: initialStateType, action: IAction) => {
       state.projects[activeProject].flowEdges = filterEdges(
         state.projects[activeProject].flowEdges,
         action?.payload?.blocks.map((node) => node.actionId),
-        activeScreen
+        activeScreen,
       );
       return { ...state };
     }
@@ -165,7 +165,7 @@ const reducer = (state: initialStateType, action: IAction) => {
     }
     case ActionTypes.DuplicateScreen: {
       const id = getUniqueId();
-      const screens = state.projects[activeProject].screens;
+      const { screens } = state.projects[activeProject];
       screens.splice(screens.indexOf(action.payload.id), 0, id);
       return {
         ...state,
@@ -199,7 +199,7 @@ const reducer = (state: initialStateType, action: IAction) => {
       delete state.screens[action.payload];
       state.projects[activeProject].screens = [
         ...state.projects[activeProject].screens.filter(
-          (id) => id !== action.payload
+          (id) => id !== action.payload,
         ),
       ];
       if (state.projects[activeProject].screens.length > 0) {
@@ -216,7 +216,7 @@ const reducer = (state: initialStateType, action: IAction) => {
         activeProject
       ].flowEdges.filter(
         (edge) =>
-          edge.source !== action.payload && edge.target !== action.payload
+          edge.source !== action.payload && edge.target !== action.payload,
       );
 
       state.projects[activeProject].flowNodes = state.projects[
@@ -291,7 +291,7 @@ const reducer = (state: initialStateType, action: IAction) => {
           },
         },
         activeProject: activeProjectId,
-        screens: screens,
+        screens,
       };
     }
 

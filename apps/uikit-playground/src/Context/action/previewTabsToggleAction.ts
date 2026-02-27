@@ -1,11 +1,13 @@
-import { ActionTypes } from "../reducer";
+import { ActionTypes } from '../reducer';
 
 export type PreviewTabsToggleAction = {
-  type: ActionTypes.PreviewToggle,
-  payload: number,
+  type: ActionTypes.PreviewToggle;
+  payload: number;
 };
 
-export const previewTabsToggleAction = (payload: number): PreviewTabsToggleAction => ({
+export const previewTabsToggleAction = (
+  payload: number,
+): PreviewTabsToggleAction => ({
   type: ActionTypes.PreviewToggle,
   payload,
 });

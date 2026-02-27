@@ -12,13 +12,13 @@ const Display = ({ elementIndex }: { elementIndex: number }) => {
     const blocks = [...screens[activeScreen].payload.blocks];
     blocks.splice(elementIndex, 1);
     dispatch(
-      updatePayloadAction({ blocks: [...blocks], changedByEditor: false })
+      updatePayloadAction({ blocks: [...blocks], changedByEditor: false }),
     );
   };
   return (
-    <div className={'uikit-element-delete-btn'} onClick={deleteElement}>
+    <button className="uikit-element-delete-btn" onClick={deleteElement}>
       <Icon name="cross" size="x20" />
-    </div>
+    </button>
   );
 };
 export default Display;
