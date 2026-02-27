@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
 
-import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
+import { useMediaCallInstance } from './MediaCallInstanceContext';
 import type { PeerInfo } from './definitions';
 import { getEndCall } from '../utils/instanceControlsGetters';
 
 export const useWidgetExternalControls = () => {
-	const { signalEmitter, instance } = useMediaCallInstanceContext();
+	const { signalEmitter, instance } = useMediaCallInstance();
 
 	const toggleWidget = useCallback(
 		(peerInfo?: PeerInfo) => {

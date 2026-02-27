@@ -1,6 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from 'react';
 
-import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
+import { useMediaCallInstance } from './MediaCallInstanceContext';
 import type { PeerInfo } from './definitions';
 import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromInstanceContact';
 
@@ -12,7 +12,7 @@ const areEqual = (a: PeerInfo, b: PeerInfo) => {
 };
 
 export const usePeekMediaSessionPeerInfo = (): PeerInfo | undefined => {
-	const { instance } = useMediaCallInstanceContext();
+	const { instance } = useMediaCallInstance();
 	const cache = useRef<PeerInfo | undefined>(undefined);
 
 	const subscribe = useCallback(

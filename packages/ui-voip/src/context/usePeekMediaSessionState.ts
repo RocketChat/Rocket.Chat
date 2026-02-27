@@ -1,12 +1,12 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
-import { useMediaCallInstanceContext } from './MediaCallInstanceContext';
+import { useMediaCallInstance } from './MediaCallInstanceContext';
 import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState';
 
 export type PeekMediaSessionStateReturn = 'unavailable' | 'available' | 'ongoing' | 'ringing' | 'calling';
 
 export const usePeekMediaSessionState = (): PeekMediaSessionStateReturn => {
-	const { instance } = useMediaCallInstanceContext();
+	const { instance } = useMediaCallInstance();
 
 	const subscribe = useCallback(
 		(onStoreChange: () => void): (() => void) => {

@@ -28,4 +28,4 @@ export const MediaCallInstanceContext = createContext<MediaCallInstanceContextVa
 	getAutocompleteOptions: () => Promise.resolve([]),
 });
 
-export const useMediaCallInstanceContext = (): MediaCallInstanceContextValue => useContext(MediaCallInstanceContext);
+export const useMediaCallInstance = (): MediaCallInstanceContextValue => useContext(MediaCallInstanceContext);

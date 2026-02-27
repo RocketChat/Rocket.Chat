@@ -16,7 +16,7 @@ import { useDesktopNotifications } from './useDesktopNotifications';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
 import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
-import { useMediaCallInstanceContext } from '../context/MediaCallInstanceContext';
+import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
 import { stopTracks, useDevicePermissionPrompt2, PermissionRequestCancelledCallRejectedError } from '../hooks/useDevicePermissionPrompt';
@@ -34,7 +34,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 
 	const setModal = useSetModal();
 
-	const { instance, audioElement, openRoomId } = useMediaCallInstanceContext();
+	const { instance, audioElement, openRoomId } = useMediaCallInstance();
 
 	const { sessionState, toggleWidget, selectPeer } = useMediaSession(instance);
 	const controls = useMediaSessionControls(instance);
