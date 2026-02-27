@@ -20,12 +20,13 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 	}
 
 	const emojiSmallClass = css`
-		> .emoji,
-		.emojione {
-			width: 1.125rem;
-			height: 1.125rem;
-		}
-	`;
+      > .emoji,
+      .joypixels {
+        width: 1.125rem;
+        height: 1.125rem;
+      }
+    `;
+
 
 	const emojiElement = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} />;
 
