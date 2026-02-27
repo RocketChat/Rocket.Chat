@@ -1,1 +1,1 @@
-import './emojione-sprites.css';
+import './emojitoolkit-sprites.css';
