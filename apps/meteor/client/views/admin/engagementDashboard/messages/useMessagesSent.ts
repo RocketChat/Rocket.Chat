@@ -1,13 +1,17 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { Period } from '../../../../components/dashboards/periods';
 import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseMessagesSentOptions = { period: Period['key']; utc: boolean };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useMessagesSent = ({ period, utc }: UseMessagesSentOptions) => {
+type UseMessagesSentData = Awaited<ReturnType<ReturnType<typeof useEndpoint<'GET', '/v1/engagement-dashboard/messages/messages-sent'>>>> & {
+	start: Date;
+	end: Date;
+};
+
+export const useMessagesSent = ({ period, utc }: UseMessagesSentOptions): UseQueryResult<UseMessagesSentData | undefined, Error> => {
 	const getMessagesSent = useEndpoint('GET', '/v1/engagement-dashboard/messages/messages-sent');
 
 	return useQuery({
@@ -23,10 +27,10 @@ export const useMessagesSent = ({ period, utc }: UseMessagesSentOptions) => {
 
 			return response
 				? {
-						...response,
-						start,
-						end,
-					}
+					...response,
+					start,
+					end,
+				}
 				: undefined;
 		},
 

@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { Period } from '../../../../components/dashboards/periods';
 import { getPeriodRange } from '../../../../components/dashboards/periods';
@@ -10,8 +10,12 @@ type UseChannelsListOptions = {
 	count: number;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useChannelsList = ({ period, offset, count }: UseChannelsListOptions) => {
+type UseChannelsListData = Awaited<ReturnType<ReturnType<typeof useEndpoint<'GET', '/v1/engagement-dashboard/channels/list'>>>> & {
+	start: Date;
+	end: Date;
+};
+
+export const useChannelsList = ({ period, offset, count }: UseChannelsListOptions): UseQueryResult<UseChannelsListData | undefined, Error> => {
 	const getChannelsList = useEndpoint('GET', '/v1/engagement-dashboard/channels/list');
 
 	return useQuery({
@@ -29,10 +33,10 @@ export const useChannelsList = ({ period, offset, count }: UseChannelsListOption
 
 			return response
 				? {
-						...response,
-						start,
-						end,
-					}
+					...response,
+					start,
+					end,
+				}
 				: undefined;
 		},
 
