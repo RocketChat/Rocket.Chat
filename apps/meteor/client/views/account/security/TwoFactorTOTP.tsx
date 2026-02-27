@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import qrcode from 'yaqrcode';
 
 import BackupCodesModal from './BackupCodesModal';
-
 import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
 
 type TwoFactorTOTPFormData = {
@@ -155,7 +154,11 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 					<>
 						<Box>{t('Scan_QR_code')}</Box>
 						<Box>{t('Scan_QR_code_alternative_s')}</Box>
-						<CodeSnippet buttonText={hasCopied ? t('Copied') : t('Copy')} buttonDisabled={hasCopied || !totpSecret} onClick={() => totpSecret && copy()}>
+						<CodeSnippet
+							buttonText={hasCopied ? t('Copied') : t('Copy')}
+							buttonDisabled={hasCopied || !totpSecret}
+							onClick={() => totpSecret && copy()}
+						>
 							{totpSecret || ''}
 						</CodeSnippet>
 						<Box mis='-16px' mb='-16px' is='img' size='x200' src={qrCode} aria-hidden='true' />
