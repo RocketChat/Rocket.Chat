@@ -54,6 +54,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const displayName = useUserDisplayName(user);
 
 	const messageType = MessageTypes.getType(message);
+	const shouldWrapSystemBody =
+		message.t === 'livechat_transfer_history' || message.t === 'livechat_transfer_history_fallback';
+	const systemBodyStyle = shouldWrapSystemBody
+		? ({ whiteSpace: 'normal', overflowWrap: 'anywhere', wordBreak: 'break-word' } as const)
+		: undefined;
 
 	const isSelecting = useIsSelecting();
 	const toggleSelected = useToggleSelect(message._id);
@@ -88,7 +93,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							</>
 						)}
 					</MessageNameContainer>
-					{messageType && <MessageSystemBody data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
+					{messageType && (
+						<MessageSystemBody data-qa-type='system-message-body' style={systemBodyStyle}>
+							{messageType.text(t, message)}
+						</MessageSystemBody>
+					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (
