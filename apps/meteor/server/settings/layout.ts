@@ -2,6 +2,17 @@ import { settingsRegistry } from '../../app/settings/server';
 
 export const createLayoutSettings = () =>
 	settingsRegistry.addGroup('Layout', async function () {
+		// --- GSOC PROJECT: Configurable Layout Engine Section ---
+		await this.section('Room_Header', async function () {
+			await this.add('Room_Header_Toolbox_Action_Order', 'rocket-search, thread, calls, members-list', {
+				type: 'string',
+				public: true,
+				i18nLabel: 'Room_Header_Toolbox_Action_Order',
+				// Updated description to act as a "Tooltip" hint for Admins
+				i18nDescription: 'Enter_comma_separated_IDs_to_reorder_header_icons_e_g_rocket_search_thread_calls_members_list',
+			});
+		});
+
 		await this.section('Login', async function () {
 			await this.add('Layout_Login_Hide_Logo', false, {
 				type: 'boolean',
@@ -46,6 +57,7 @@ export const createLayoutSettings = () =>
 				public: true,
 			});
 		});
+
 		await this.section('Layout_Home_Page_Content_Title', async function () {
 			await this.add('Layout_Home_Title', 'Home', {
 				type: 'string',
@@ -144,6 +156,7 @@ export const createLayoutSettings = () =>
 				i18nDescription: 'Layout_Sidenav_Footer_description',
 			});
 		});
+
 		await this.section('Custom_Scripts', async function () {
 			await this.add('Custom_Script_On_Logout', '//Add your script', {
 				type: 'code',
@@ -161,6 +174,7 @@ export const createLayoutSettings = () =>
 				public: true,
 			});
 		});
+
 		await this.section('User_Interface', async function () {
 			await this.add('UI_DisplayRoles', true, {
 				type: 'boolean',
@@ -207,6 +221,7 @@ export const createLayoutSettings = () =>
 				public: true,
 			});
 		});
+
 		await this.section('Custom CSS', async function () {
 			await this.add('theme-custom-css', '', {
 				type: 'code',
