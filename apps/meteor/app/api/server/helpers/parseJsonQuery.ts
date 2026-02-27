@@ -34,7 +34,7 @@ export async function parseJsonQuery(api: GenericRouteExecutionContext): Promise
 	const params = isPlainObject(api.queryParams) ? api.queryParams : {};
 	const queryFields = Array.isArray(api.queryFields) ? (api.queryFields as string[]) : [];
 	const queryOperations = Array.isArray(api.queryOperations) ? (api.queryOperations as string[]) : [];
-
+	
 	let sort;
 	if (typeof params?.sort === 'string') {
 		try {
