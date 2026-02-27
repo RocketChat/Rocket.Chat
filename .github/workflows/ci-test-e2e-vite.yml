@@ -338,7 +338,7 @@ jobs:
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-test-trace-vite-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
@@ -358,7 +358,7 @@ jobs:
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version && always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: coverage-vite-${{ inputs.type }}-${{ matrix.shard }}
           path: /tmp/coverage
