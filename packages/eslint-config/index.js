@@ -549,6 +549,7 @@ export default defineConfig(
 				{
 					checksVoidReturn: {
 						arguments: false,
+						attributes: false,
 						inheritedMethods: false,
 					},
 				},
