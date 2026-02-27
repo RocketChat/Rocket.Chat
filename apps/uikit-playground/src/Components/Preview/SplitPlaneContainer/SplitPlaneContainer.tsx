@@ -7,42 +7,42 @@ import Display from '../Display';
 import EditorPanel from '../Editor';
 
 type PreviewSizeType = {
-  blockSize: number;
-  inlineSize: number;
+	blockSize: number;
+	inlineSize: number;
 };
 
 type SplitPlaneContainerProps = {
-  previewSize: Partial<PreviewSizeType>;
+	previewSize: Partial<PreviewSizeType>;
 };
 
 const SplitPlaneContainer = ({ previewSize }: SplitPlaneContainerProps) => {
-  const {
-    state: { isTablet },
-    dispatch,
-  } = useContext(context);
+	const {
+		state: { isTablet },
+		dispatch,
+	} = useContext(context);
 
-  useEffect(() => {
-    dispatch(previewTabsToggleAction(0));
-  }, [isTablet, dispatch]);
+	useEffect(() => {
+		dispatch(previewTabsToggleAction(0));
+	}, [isTablet, dispatch]);
 
-  const splitPaneProps = {
-    defaultSize: (previewSize.inlineSize || 1) * 0.5,
-    minSize: 300,
-    maxSize: (previewSize.inlineSize || 1) - 350,
-    allowResize: !isTablet,
-  };
+	const splitPaneProps = {
+		defaultSize: (previewSize.inlineSize || 1) * 0.5,
+		minSize: 300,
+		maxSize: (previewSize.inlineSize || 1) - 350,
+		allowResize: !isTablet,
+	};
 
-  return isTablet ? (
-    <>
-      <Display />
-      <EditorPanel />
-    </>
-  ) : (
-    <SplitPane {...splitPaneProps}>
-      <Display />
-      <EditorPanel />
-    </SplitPane>
-  );
+	return isTablet ? (
+		<>
+			<Display />
+			<EditorPanel />
+		</>
+	) : (
+		<SplitPane {...splitPaneProps}>
+			<Display />
+			<EditorPanel />
+		</SplitPane>
+	);
 };
 
 export default SplitPlaneContainer;

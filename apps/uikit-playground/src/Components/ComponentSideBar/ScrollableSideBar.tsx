@@ -5,19 +5,19 @@ import BlocksTree from '../../Payload/actionBlock/BlocksTree';
 import DropDown from '../DropDown';
 
 const ScrollableSideBar = () => (
-  <Scrollable vertical>
-    <Box
-      width="100%"
-      mbs="39px"
-      borderBlockStart="var(--default-border)"
-      bg="var(--primaryBackgroundColor)"
-      className={css`
-        box-shadow: var(--dropdown-box-shadow);
-      `}
-    >
-      <DropDown blocksTree={BlocksTree} />
-    </Box>
-  </Scrollable>
+	<Scrollable vertical>
+		<Box
+			width='100%'
+			mbs='39px'
+			borderBlockStart='var(--default-border)'
+			bg='var(--primaryBackgroundColor)'
+			className={css`
+				box-shadow: var(--dropdown-box-shadow);
+			`}
+		>
+			<DropDown blocksTree={BlocksTree} />
+		</Box>
+	</Scrollable>
 );
 
 export default ScrollableSideBar;

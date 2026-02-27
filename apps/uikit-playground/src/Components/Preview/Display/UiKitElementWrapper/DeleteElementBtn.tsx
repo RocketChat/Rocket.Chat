@@ -5,20 +5,18 @@ import { useContext } from 'react';
 import { context, updatePayloadAction } from '../../../../Context';
 
 const Display = ({ elementIndex }: { elementIndex: number }) => {
-  const { state, dispatch } = useContext(context);
+	const { state, dispatch } = useContext(context);
 
-  const deleteElement = () => {
-    const { screens, activeScreen } = state;
-    const blocks = [...screens[activeScreen].payload.blocks];
-    blocks.splice(elementIndex, 1);
-    dispatch(
-      updatePayloadAction({ blocks: [...blocks], changedByEditor: false }),
-    );
-  };
-  return (
-    <button className="uikit-element-delete-btn" onClick={deleteElement}>
-      <Icon name="cross" size="x20" />
-    </button>
-  );
+	const deleteElement = () => {
+		const { screens, activeScreen } = state;
+		const blocks = [...screens[activeScreen].payload.blocks];
+		blocks.splice(elementIndex, 1);
+		dispatch(updatePayloadAction({ blocks: [...blocks], changedByEditor: false }));
+	};
+	return (
+		<button className='uikit-element-delete-btn' onClick={deleteElement}>
+			<Icon name='cross' size='x20' />
+		</button>
+	);
 };
 export default Display;

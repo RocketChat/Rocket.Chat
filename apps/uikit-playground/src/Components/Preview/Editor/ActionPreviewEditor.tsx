@@ -4,20 +4,20 @@ import { actionPreviewExtensions } from '../../CodeEditor/Extensions/Extensions'
 import PreviewEditor from '../../CodeEditor/PreviewEditor';
 
 const ActionPreviewEditor = () => (
-  <Scrollable vertical>
-    <Box
-      position="relative"
-      height="100%"
-      width="100%"
-      zIndex={1}
-      bg="#f6f9fc"
-      display="flex"
-      borderInlineStart="var(--default-border)"
-      overflow="auto"
-    >
-      <PreviewEditor extensions={actionPreviewExtensions} />
-    </Box>
-  </Scrollable>
+	<Scrollable vertical>
+		<Box
+			position='relative'
+			height='100%'
+			width='100%'
+			zIndex={1}
+			bg='#f6f9fc'
+			display='flex'
+			borderInlineStart='var(--default-border)'
+			overflow='auto'
+		>
+			<PreviewEditor extensions={actionPreviewExtensions} />
+		</Box>
+	</Scrollable>
 );
 
 export default ActionPreviewEditor;

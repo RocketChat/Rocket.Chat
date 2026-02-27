@@ -10,33 +10,26 @@ import NavMenu from '../Components/navMenu/NavMenu';
 import { context } from '../Context';
 
 const Playground = () => {
-  const {
-    state: { navMenuToggle },
-  } = useContext(context);
+	const {
+		state: { navMenuToggle },
+	} = useContext(context);
 
-  return (
-    <>
-      <NavBar />
-      {navMenuToggle && <NavMenu />}
-      <Box position="relative" width="100%" flexGrow={1}>
-        <CreateNewScreenContainer />
-        <Templates />
-        <Box
-          display="flex"
-          width="100%"
-          height="100%"
-          flexDirection="column"
-          overflow="hidden"
-          bg="var(--primaryBackgroundColor)"
-        >
-          <Box width="100%" flexGrow={1} position="relative" zIndex={0}>
-            <ComponentSideBar />
-            <Preview />
-          </Box>
-        </Box>
-      </Box>
-    </>
-  );
+	return (
+		<>
+			<NavBar />
+			{navMenuToggle && <NavMenu />}
+			<Box position='relative' width='100%' flexGrow={1}>
+				<CreateNewScreenContainer />
+				<Templates />
+				<Box display='flex' width='100%' height='100%' flexDirection='column' overflow='hidden' bg='var(--primaryBackgroundColor)'>
+					<Box width='100%' flexGrow={1} position='relative' zIndex={0}>
+						<ComponentSideBar />
+						<Preview />
+					</Box>
+				</Box>
+			</Box>
+		</>
+	);
 };
 
 export default Playground;

@@ -11,17 +11,17 @@ import './index.css';
 const rootDiv = document.getElementById('root');
 
 if (!rootDiv) {
-  throw new Error('Root div not found');
+	throw new Error('Root div not found');
 }
 
 const root = createRoot(rootDiv);
 
 root.render(
-  <StrictMode>
-    <Provider>
-      <PersistStore>
-        <App />
-      </PersistStore>
-    </Provider>
-  </StrictMode>,
+	<StrictMode>
+		<Provider>
+			<PersistStore>
+				<App />
+			</PersistStore>
+		</Provider>
+	</StrictMode>,
 );

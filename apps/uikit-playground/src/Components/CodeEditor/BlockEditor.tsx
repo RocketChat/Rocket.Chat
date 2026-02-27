@@ -11,58 +11,45 @@ import useFormatCodeMirrorValue from '../../hooks/useFormatCodeMirrorValue';
 import intendCode from '../../utils/intendCode';
 
 type CodeMirrorProps = {
-  extensions?: Extension[];
+	extensions?: Extension[];
 };
 
 const BlockEditor = ({ extensions }: CodeMirrorProps) => {
-  const {
-    state: { screens, activeScreen },
-    dispatch,
-  } = useContext(context);
+	const {
+		state: { screens, activeScreen },
+		dispatch,
+	} = useContext(context);
 
-  const { editor, changes, setValue } = useCodeMirror(
-    extensions,
-    intendCode(screens[activeScreen]?.payload),
-  );
-  const debounceValue = useDebouncedValue(changes, 1500);
+	const { editor, changes, setValue } = useCodeMirror(extensions, intendCode(screens[activeScreen]?.payload));
+	const debounceValue = useDebouncedValue(changes, 1500);
 
-  useFormatCodeMirrorValue(
-    (
-      parsedCode: IPayload,
-      prettifiedCode: { formatted: string; cursorOffset: number },
-    ) => {
-      dispatch(
-        updatePayloadAction({
-          blocks: parsedCode.blocks,
-          surface: parsedCode.surface,
-        }),
-      );
-      setValue(prettifiedCode.formatted, {
-        cursor: prettifiedCode.cursorOffset,
-      });
-    },
-    debounceValue,
-  );
+	useFormatCodeMirrorValue((parsedCode: IPayload, prettifiedCode: { formatted: string; cursorOffset: number }) => {
+		dispatch(
+			updatePayloadAction({
+				blocks: parsedCode.blocks,
+				surface: parsedCode.surface,
+			}),
+		);
+		setValue(prettifiedCode.formatted, {
+			cursor: prettifiedCode.cursorOffset,
+		});
+	}, debounceValue);
 
-  useEffect(() => {
-    if (!screens[activeScreen]?.changedByEditor) {
-      setValue(intendCode(screens[activeScreen]?.payload), {});
-    }
-  }, [
-    screens[activeScreen]?.payload.blocks,
-    screens[activeScreen]?.payload.surface,
-    activeScreen,
-  ]);
+	useEffect(() => {
+		if (!screens[activeScreen]?.changedByEditor) {
+			setValue(intendCode(screens[activeScreen]?.payload), {});
+		}
+	}, [screens[activeScreen]?.payload.blocks, screens[activeScreen]?.payload.surface, activeScreen]);
 
-  useEffect(() => {
-    setValue(intendCode(screens[activeScreen]?.payload), {});
-  }, [activeScreen]);
+	useEffect(() => {
+		setValue(intendCode(screens[activeScreen]?.payload), {});
+	}, [activeScreen]);
 
-  return (
-    <>
-      <Box display="grid" height="100%" width="100%" ref={editor} />
-    </>
-  );
+	return (
+		<>
+			<Box display='grid' height='100%' width='100%' ref={editor} />
+		</>
+	);
 };
 
 export default BlockEditor;
