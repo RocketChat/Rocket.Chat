@@ -59,6 +59,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 	const toggleSelected = useToggleSelect(message._id);
 	const isSelected = useIsSelectedMessage(message._id);
 	useCountSelected();
+
 	const buttonProps = useButtonPattern((e) => openUserCard(e, user.username));
 
 	return (
@@ -77,6 +78,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 				{!isSelecting && showUserAvatar && <UserAvatar username={message.u.username} size='x18' />}
 				{isSelecting && <CheckBox checked={isSelected} onChange={toggleSelected} />}
 			</MessageSystemLeftContainer>
+
 			<MessageSystemContainer>
 				<MessageSystemBlock>
 					<MessageNameContainer style={{ cursor: 'pointer' }} {...buttonProps} {...triggerProps}>
@@ -88,15 +90,32 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							</>
 						)}
 					</MessageNameContainer>
-					{messageType && <MessageSystemBody data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
-					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
+
+					{messageType && (
+						<MessageSystemBody
+							data-qa-type='system-message-body'
+							style={{
+								whiteSpace: 'normal',
+								overflowWrap: 'anywhere',
+								wordBreak: 'break-word',
+							}}
+						>
+							{messageType.text(t, message)}
+						</MessageSystemBody>
+					)}
+
+					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>
+						{formatTime(message.ts)}
+					</MessageSystemTimestamp>
 				</MessageSystemBlock>
+
 				{message.attachments && (
 					<MessageSystemBlock>
 						<Attachments attachments={message.attachments} />
 					</MessageSystemBlock>
 				)}
-				{message.actionLinks?.length && (
+
+				{!!message.actionLinks?.length && (
 					<MessageActions
 						message={message}
 						actions={message.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
@@ -112,3 +131,4 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 };
 
 export default memo(SystemMessage);
+
