@@ -50,10 +50,10 @@ export class DDPStreamer extends ServiceClass {
 			}
 		});
 
-		this.onEvent('user.forceLogout', (uid: string) => {
+		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
 			this.wss?.clients.forEach((ws) => {
 				const client = clientMap.get(ws);
-				if (client?.userId === uid) {
+				if (client?.userId === uid && (!sessionId || client.session === sessionId)) {
 					ws.terminate();
 				}
 			});
