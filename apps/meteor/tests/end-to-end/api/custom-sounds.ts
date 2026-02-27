@@ -5,6 +5,7 @@ import path from 'path';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updateSetting } from '../../data/permissions.helper';
 
@@ -258,24 +259,28 @@ describe('[CustomSounds]', () => {
 	describe('Sounds storage settings reactivity', () => {
 		let fsFileId: string;
 		let gridFsFileId: string;
+		const sleepTime = 100;
 
 		before(async () => {
+			await updateSetting('CustomSounds_FileSystemPath', '', false);
 			await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
+			await sleep(sleepTime);
 			fsFileId = await insertOrUpdateSound(`${fileName}-3`);
 			await uploadCustomSound(binary, `${fileName}-3`, fsFileId);
 
 			await updateSetting('CustomSounds_Storage_Type', 'GridFS');
+			await sleep(sleepTime);
 			gridFsFileId = await insertOrUpdateSound(`${fileName}-4`);
 			await uploadCustomSound(binary, `${fileName}-4`, gridFsFileId);
-
-			await updateSetting('CustomSounds_FileSystemPath', '');
 		});
 
 		after(async () => {
 			await updateSetting('CustomSounds_Storage_Type', 'FileSystem', false);
 			await updateSetting('CustomSounds_FileSystemPath', '');
+			await sleep(sleepTime);
 			await deleteCustomSound(fsFileId);
 			await updateSetting('CustomSounds_Storage_Type', 'GridFS');
+			await sleep(sleepTime);
 			await deleteCustomSound(gridFsFileId);
 		});
 
@@ -283,6 +288,7 @@ describe('[CustomSounds]', () => {
 			describe('when storage is GridFS', () => {
 				before(async () => {
 					await updateSetting('CustomSounds_Storage_Type', 'GridFS');
+					await sleep(sleepTime);
 				});
 
 				it('should resolve GridFS files only', async () => {
@@ -294,6 +300,7 @@ describe('[CustomSounds]', () => {
 			describe('when storage is FileSystem', () => {
 				before(async () => {
 					await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
+					await sleep(sleepTime);
 				});
 
 				it('should resolve FileSystem files only', async () => {
@@ -306,6 +313,7 @@ describe('[CustomSounds]', () => {
 		describe('CustomSounds_FileSystemPath', () => {
 			before(async () => {
 				await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
+				await sleep(sleepTime);
 			});
 
 			describe('when file system path is the default one', () => {
@@ -317,10 +325,12 @@ describe('[CustomSounds]', () => {
 			describe('when file system path is NOT the default one', () => {
 				before(async () => {
 					await updateSetting('CustomSounds_FileSystemPath', '~/sounds');
+					await sleep(sleepTime);
 				});
 
 				after(async () => {
 					await updateSetting('CustomSounds_FileSystemPath', '');
+					await sleep(sleepTime);
 				});
 
 				it('should NOT resolve files', async () => {

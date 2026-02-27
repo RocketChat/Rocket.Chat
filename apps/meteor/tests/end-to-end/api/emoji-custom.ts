@@ -2,6 +2,7 @@ import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
 import { updateSetting } from '../../data/permissions.helper';
@@ -495,15 +496,17 @@ describe('[EmojiCustom]', () => {
 		?
 	</text>
 </svg>`);
+		const sleepTime = 100;
 
 		before(async () => {
+			await updateSetting('EmojiUpload_FileSystemPath', '', false);
 			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
+			await sleep(sleepTime);
 			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: fsEmojiName }).expect(200);
 
 			await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
 			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: gridFsEmojiName }).expect(200);
-
-			await updateSetting('EmojiUpload_FileSystemPath', '');
+			await sleep(sleepTime);
 		});
 
 		after(async () => {
@@ -513,11 +516,13 @@ describe('[EmojiCustom]', () => {
 
 			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', false);
 			await updateSetting('EmojiUpload_FileSystemPath', '');
+			await sleep(sleepTime);
 			if (fsEmoji) {
 				await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: fsEmoji._id });
 			}
 
 			await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
+			await sleep(sleepTime);
 			if (gridEmoji) {
 				await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: gridEmoji._id });
 			}
@@ -527,6 +532,7 @@ describe('[EmojiCustom]', () => {
 			describe('when storage is GridFs', () => {
 				before(async () => {
 					await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
+					await sleep(sleepTime);
 				});
 
 				it('should resolve GridFS files only', async () => {
@@ -549,6 +555,7 @@ describe('[EmojiCustom]', () => {
 			describe('when storage is FileSystem', () => {
 				before(async () => {
 					await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
+					await sleep(sleepTime);
 				});
 
 				it('should resolve FileSystem files only', async () => {
@@ -572,11 +579,13 @@ describe('[EmojiCustom]', () => {
 		describe('EmojiUpload_FileSystemPath', () => {
 			before(async () => {
 				await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
+				await sleep(sleepTime);
 			});
 
 			describe('when file system path is the default one', () => {
 				before(async () => {
 					await updateSetting('EmojiUpload_FileSystemPath', '');
+					await sleep(sleepTime);
 				});
 
 				it('should resolve files', async () => {
@@ -591,10 +600,12 @@ describe('[EmojiCustom]', () => {
 			describe('when file system path is NOT the default one', () => {
 				before(async () => {
 					await updateSetting('EmojiUpload_FileSystemPath', '~/emoji-test');
+					await sleep(sleepTime);
 				});
 
 				after(async () => {
 					await updateSetting('CustomSounds_FileSystemPath', '');
+					await sleep(sleepTime);
 				});
 
 				it('should NOT resolve files', async () => {
