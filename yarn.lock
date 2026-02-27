@@ -8911,6 +8911,7 @@ __metadata:
     "@types/node": "npm:~22.16.5"
     "@typescript-eslint/parser": "npm:~5.60.1"
     eslint: "npm:~8.45.0"
+    fast-check: "npm:^4.5.3"
     jest: "npm:~30.2.0"
     npm-run-all: "npm:^4.1.5"
     peggy: "npm:4.1.1"
@@ -21176,6 +21177,15 @@ __metadata:
   version: 1.4.1
   resolution: "extsprintf@npm:1.4.1"
   checksum: 10/bfd6d55f3c0c04d826fe0213264b383c03f32825af6b1ff777f3f2dc49467e599361993568d75b7b19a8ea1bb08c8e7cd8c3d87d179ced91bb0dcf81ca6938e0
+  languageName: node
+  linkType: hard
+
+"fast-check@npm:^4.5.3":
+  version: 4.5.3
+  resolution: "fast-check@npm:4.5.3"
+  dependencies:
+    pure-rand: "npm:^7.0.0"
+  checksum: 10/005117cc3fbaf8f5bbe153f8f989337d36b85953cefae1973ab0c51e9e259a7a0456155e742716f8609ab74c4e18ee9fb9dcd618c52a9014cd4bd3952a296188
   languageName: node
   linkType: hard
 
