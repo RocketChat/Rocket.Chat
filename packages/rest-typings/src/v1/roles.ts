@@ -118,11 +118,6 @@ type RoleSyncProps = {
 };
 
 export type RolesEndpoints = {
-	'/v1/roles.list': {
-		GET: () => {
-			roles: IRole[];
-		};
-	};
 	'/v1/roles.sync': {
 		GET: (params: RoleSyncProps) => {
 			roles: {
