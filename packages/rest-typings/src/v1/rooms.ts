@@ -806,10 +806,6 @@ export type RoomsEndpoints = {
 		};
 	};
 
-	'/v1/rooms.delete': {
-		POST: (params: { roomId: string }) => void;
-	};
-
 	'/v1/rooms.get': {
 		GET: (params: { updatedSince: string }) => {
 			update: IRoom[];
