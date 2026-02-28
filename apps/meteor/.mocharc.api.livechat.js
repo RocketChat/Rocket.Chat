@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- * Mocha configuration for REST API integration tests.
+ * Mocha configuration for Livechat REST API integration tests.
  */
 
 module.exports = /** @satisfies {import('mocha').MochaOptions} */ ({
@@ -10,5 +10,5 @@ module.exports = /** @satisfies {import('mocha').MochaOptions} */ ({
 	bail: true,
 	retries: 0,
 	file: 'tests/end-to-end/teardown.ts',
-	spec: ['tests/end-to-end/api/*.ts', 'tests/end-to-end/api/helpers/**/*', 'tests/end-to-end/api/methods/**/*', 'tests/end-to-end/apps/*'],
+	spec: ['tests/end-to-end/api/livechat/**/*'],
 });
