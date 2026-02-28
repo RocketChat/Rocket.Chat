@@ -61,6 +61,9 @@ export class JobProcessingQueue {
 	returnNextConcurrencyFreeJob(agendaDefinitions: Record<string, JobDefinition>): Job | undefined {
 		for (let next = this._queue.length - 1; next >= 0; next -= 1) {
 			const def = agendaDefinitions[this._queue[next].attrs.name];
+			if (!def) {
+				continue;
+			}
 			if (def.concurrency > def.running) {
 				return this._queue[next];
 			}
