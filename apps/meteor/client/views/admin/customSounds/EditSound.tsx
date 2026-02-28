@@ -33,7 +33,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 	useEffect(() => {
 		setName(previousName || '');
-		setSound(previousSound || '');
+		setSound(previousSound);
 	}, [previousName, previousSound, _id]);
 
 	const deleteCustomSound = useMethod('deleteCustomSound');
@@ -47,10 +47,10 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
 	const saveAction = useCallback(
-		async (sound: SoundData | File) => {
-			const isFile = sound instanceof File;
-			const extension = isFile ? undefined : sound.extension;
-			const soundFile = isFile ? sound : undefined;
+		async (currentSound: SoundData | File) => {
+			const isFile = currentSound instanceof File;
+			const extension = isFile ? undefined : currentSound.extension;
+			const soundFile = isFile ? currentSound : undefined;
 			const soundData = createSoundData(soundFile, name, { previousName, previousSound, _id, extension });
 			const validation = validate(soundData, soundFile);
 			if (validation.length === 0) {
@@ -65,7 +65,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				soundData._id = soundId;
 				soundData.random = Math.round(Math.random() * 1000);
 
-				if (soundFile && sound !== previousSound) {
+				if (soundFile) {
 					dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 					const reader = new FileReader();
