@@ -170,19 +170,23 @@ const invites = API.v1
 
 			return API.v1.success((await findOrCreateInvite(this.userId, { rid, days, maxUses })) as IInvite);
 		},
-	);
-
-API.v1.addRoute(
-	'removeInvite/:_id',
-	{ authRequired: true },
-	{
-		async delete() {
+	)
+	.delete(
+		'removeInvite/:_id',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<boolean>({
+					type: 'boolean',
+				}),
+			},
+		},
+		async function () {
 			const { _id } = this.urlParams;
 
 			return API.v1.success(await removeInvite(this.userId, { _id }));
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'useInviteToken',
@@ -239,5 +243,5 @@ type InvitesEndpoints = ExtractRoutesFromAPI<typeof invites>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends InvitesEndpoints {}
+	interface Endpoints extends InvitesEndpoints { }
 }
