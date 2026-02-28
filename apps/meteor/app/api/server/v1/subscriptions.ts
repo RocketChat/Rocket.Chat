@@ -55,7 +55,7 @@ const subscriptionsGetEndpoints = API.v1.get(
 		let updatedSinceDate: Date | undefined;
 		if (updatedSince) {
 			if (isNaN(Date.parse(updatedSince as string))) {
-				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			}
 			updatedSinceDate = new Date(updatedSince as string);
 		}
