@@ -40,7 +40,7 @@ export class ChatTranscript implements IStrategy {
 			const formattedTs = formatInTimezone(ts, timezone, timeAndDateFormat);
 			const formattedQuotes = quotes?.map((quote) => ({
 				...quote,
-				ts: formatInTimezone(quote.ts, timezone, timeAndDateFormat),
+				ts: quote.ts != null ? formatInTimezone(quote.ts, timezone, timeAndDateFormat) : '',
 			}));
 			const formattedRequestData = requestData
 				? {
@@ -52,13 +52,19 @@ export class ChatTranscript implements IStrategy {
 									lastChat: requestData.visitor.lastChat
 										? {
 												...requestData.visitor.lastChat,
-												ts: formatInTimezone(requestData.visitor.lastChat.ts, timezone, timeAndDateFormat),
+												ts:
+													requestData.visitor.lastChat.ts != null
+														? formatInTimezone(requestData.visitor.lastChat.ts, timezone, timeAndDateFormat)
+														: '',
 											}
 										: undefined,
 									lastAgent: requestData.visitor.lastAgent
 										? {
 												...requestData.visitor.lastAgent,
-												ts: formatInTimezone(requestData.visitor.lastAgent.ts, timezone, timeAndDateFormat),
+												ts:
+													requestData.visitor.lastAgent.ts != null
+														? formatInTimezone(requestData.visitor.lastAgent.ts, timezone, timeAndDateFormat)
+														: '',
 											}
 										: undefined,
 									livechatData: requestData.visitor.livechatData
@@ -109,13 +115,14 @@ export class ChatTranscript implements IStrategy {
 	}
 
 	parseTemplateData(data: WorkerData, i18n: i18n): ChatTranscriptData {
+		const closedAt = data.closedAt ?? new Date();
 		return {
 			header: {
 				visitor: data.visitor,
 				agent: data.agent,
 				siteName: data.siteName,
-				date: formatInTimezone(data.closedAt, data.timezone, String(data.dateFormat)),
-				time: `${formatInTimezone(data.closedAt, data.timezone, 'H:mm:ss')} ${data.timezone}`,
+				date: formatInTimezone(closedAt, data.timezone, String(data.dateFormat)),
+				time: `${formatInTimezone(closedAt, data.timezone, 'H:mm:ss')} ${data.timezone}`,
 			},
 			messages: this.parserMessages(data.messages, data.dateFormat, data.timeAndDateFormat, data.timezone),
 			i18n,
