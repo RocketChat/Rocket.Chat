@@ -25,7 +25,7 @@ When changing rendering logic, keep these aligned:
 
 ## Regenerate emoji picker index and sprite CSS
 
-before using below command make sure to run: npm i --no-save node-sprite-generator
+before using below command make sure to add node-sprite-generator as a DevDependency and remove it after your work with it is done
 
 From `apps/meteor/app/emoji-emojione/lib` run:
 

@@ -34,7 +34,7 @@
 		"@rocket.chat/tracing": "workspace:^",
 		"@types/node": "~22.16.5",
 		"ejson": "^2.2.3",
-		"emoji-toolkit": "^7.0.1",
+		"emoji-toolkit": "9.0.0",
 		"eventemitter3": "^5.0.4",
 		"i18next": "~23.4.9",
 		"i18next-sprintf-postprocessor": "^0.2.2",
