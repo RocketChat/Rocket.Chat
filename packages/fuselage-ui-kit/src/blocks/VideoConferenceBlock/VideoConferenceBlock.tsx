@@ -28,6 +28,8 @@ type VideoConferenceBlockProps = BlockProps<UiKit.VideoConferenceBlock>;
 
 const MAX_USERS = 3;
 
+const getErrorMessage = (error: unknown): string | undefined => (error instanceof Error ? error.message : undefined);
+
 const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElement => {
 	const t = useTranslation();
 	const { callId, appId = 'videoconf-core' } = block;
@@ -115,6 +117,8 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 	}
 
 	if (result.isError) {
+		const errorMessage = getErrorMessage(result.error);
+
 		return (
 			<VideoConfMessage>
 				<VideoConfMessageRow>
@@ -123,7 +127,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 							<States>
 								<StatesIcon name='warning' variation='danger' />
 								<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
-								<StatesSubtitle>{result.error?.message ?? t('Unable_to_retrieve_data')}</StatesSubtitle>
+								<StatesSubtitle>{errorMessage ?? t('Unable_to_retrieve_data')}</StatesSubtitle>
 								<StatesActions>
 									<StatesAction onClick={() => result.refetch()}>{t('Retry')}</StatesAction>
 								</StatesActions>
