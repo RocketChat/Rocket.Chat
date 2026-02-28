@@ -88,14 +88,11 @@ const RoomMessage = ({
 			isEditing={editing}
 			isPending={message.temp}
 			sequential={sequential}
-			data-qa-editing={editing}
-			data-qa-selected={selected}
 			data-id={message._id}
 			data-mid={message._id}
 			data-unread={unread}
 			data-sequential={sequential}
 			data-own={message.u._id === uid}
-			data-qa-type='message'
 			aria-busy={message.temp}
 			{...props}
 		>
