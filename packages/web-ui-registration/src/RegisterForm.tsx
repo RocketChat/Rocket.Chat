@@ -90,7 +90,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if ([error.error, error.errorType].includes('error-invalid-email')) {
 						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
 					}
-					if (error.errorType === 'error-blocked-username') {
+					if ([error.error, error.errorType].includes('error-blocked-username')) {
 						setError('username', {
 							type: 'error-blocked-username',
 							message: t('error-blocked-username', { field: getValues('username') }),
