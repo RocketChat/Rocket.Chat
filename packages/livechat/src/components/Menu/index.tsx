@@ -1,5 +1,6 @@
-import type { ComponentChildren, Ref } from 'preact';
+import type { ComponentChildren } from 'preact';
 import { Component } from 'preact';
+import { forwardRef } from 'preact/compat';
 import type { HTMLAttributes, TargetedEvent } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
@@ -10,14 +11,13 @@ import styles from './styles.scss';
 type MenuProps = {
 	hidden?: boolean;
 	placement?: string;
-	ref?: Ref<HTMLDivElement>;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'ref'>;
+} & HTMLAttributes<HTMLDivElement>;
 
-export const Menu = ({ children, hidden, placement = '', ...props }: MenuProps) => (
-	<div className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
+export const Menu = forwardRef<HTMLDivElement, MenuProps>(({ children, hidden, placement = '', ...props }, ref) => (
+	<div ref={ref} className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
 		{children}
 	</div>
-);
+));
 
 type GroupProps = {
 	title?: string;
