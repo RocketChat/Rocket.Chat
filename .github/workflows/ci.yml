@@ -253,7 +253,6 @@ jobs:
           - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
 
     steps:
-
       - uses: actions/checkout@v6
 
       - uses: ./.github/actions/meteor-build
@@ -511,6 +510,22 @@ jobs:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
 
+  test-api-livechat:
+    name: 🔨 Test API Livechat (CE)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api-livechat
+      release: ce
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+
   test-ui:
     name: 🔨 Test UI (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
@@ -543,6 +558,26 @@ jobs:
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: api
+      release: ee
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      mongodb-version: "['8.0']"
+      coverage: '8.0'
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+
+  test-api-livechat-ee:
+    name: 🔨 Test API Livechat (EE)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api-livechat
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
@@ -682,7 +717,7 @@ jobs:
   report-coverage:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
-    needs: [release-versions, test-api-ee, test-ui-ee]
+    needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
 
     steps:
       - uses: actions/checkout@v6
@@ -734,7 +769,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-federation-matrix]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-federation-matrix]
     if: always()
     steps:
       - name: Test finish aggregation
@@ -760,6 +795,14 @@ jobs:
           fi
 
           if [[ '${{ needs.test-ui-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-livechat.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-livechat-ee.result }}' != 'success' ]]; then
             exit 1
           fi
 

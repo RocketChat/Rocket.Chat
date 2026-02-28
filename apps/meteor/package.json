@@ -55,6 +55,7 @@
 		"test:e2e:federation": "playwright test --config=playwright-federation.config.ts",
 		"test:e2e:nyc": "nyc report --reporter=lcovonly",
 		"testapi": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.js",
+		"testapi:livechat": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --config ./.mocharc.api.livechat.js",
 		"testunit": "yarn .testunit:definition && yarn .testunit:jest && yarn .testunit:server:cov",
 		"testunit-watch": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha --watch --config ./.mocharc.js",
 		"typecheck": "meteor lint && cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsc --noEmit --skipLibCheck",
