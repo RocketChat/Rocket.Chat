@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/media-calls",
-	"version": "0.2.2",
+	"version": "0.2.3",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -11,8 +11,8 @@
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/media-calls",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -26,7 +26,7 @@
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"typescript": "~5.9.3"
 	}
 }

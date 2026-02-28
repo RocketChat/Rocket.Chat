@@ -1,11 +1,10 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
-	ise2eGetUsersOfRoomWithoutKeyParamsGET,
 	ise2eSetUserPublicAndPrivateKeysParamsPOST,
-	ise2eUpdateGroupKeyParamsPOST,
 	isE2EProvideUsersGroupKeyProps,
 	isE2EFetchUsersWaitingForGroupKeyProps,
 	isE2EResetRoomKeyProps,
@@ -34,6 +33,16 @@ type E2eSetRoomKeyIdProps = {
 	keyID: string;
 };
 
+type e2eGetUsersOfRoomWithoutKeyParamsGET = {
+	rid: string;
+};
+
+type e2eUpdateGroupKeyParamsPOST = {
+	uid: string;
+	rid: string;
+	key: string;
+};
+
 const E2eSetRoomKeyIdSchema = {
 	type: 'object',
 	properties: {
@@ -48,65 +57,164 @@ const E2eSetRoomKeyIdSchema = {
 	additionalProperties: false,
 };
 
-const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
-
-const e2eEndpoints = API.v1.post(
-	'e2e.setRoomKeyID',
-	{
-		authRequired: true,
-		body: isE2eSetRoomKeyIdProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['success'],
-			}),
+const e2eGetUsersOfRoomWithoutKeyParamsGETSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
 		},
 	},
+	additionalProperties: false,
+	required: ['rid'],
+};
 
-	async function action() {
-		const { rid, keyID } = this.bodyParams;
-
-		await setRoomKeyIDMethod(this.userId, rid, keyID);
-
-		return API.v1.success();
+const e2eUpdateGroupKeyParamsPOSTSchema = {
+	type: 'object',
+	properties: {
+		uid: {
+			type: 'string',
+		},
+		rid: {
+			type: 'string',
+		},
+		key: {
+			type: 'string',
+		},
 	},
+	additionalProperties: false,
+	required: ['uid', 'rid', 'key'],
+};
+
+const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
+
+const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile<e2eGetUsersOfRoomWithoutKeyParamsGET>(
+	e2eGetUsersOfRoomWithoutKeyParamsGETSchema,
 );
 
-API.v1.addRoute(
-	'e2e.fetchMyKeys',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
+const ise2eUpdateGroupKeyParamsPOST = ajv.compile<e2eUpdateGroupKeyParamsPOST>(e2eUpdateGroupKeyParamsPOSTSchema);
+
+const e2eEndpoints = API.v1
+	.post(
+		'e2e.setRoomKeyID',
+		{
+			authRequired: true,
+			body: isE2eSetRoomKeyIdProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+			},
+		},
+
+		async function action() {
+			const { rid, keyID } = this.bodyParams;
+
+			await setRoomKeyIDMethod(this.userId, rid, keyID);
+
+			return API.v1.success();
+		},
+	)
+	.get(
+		'e2e.fetchMyKeys',
+		{
+			authRequired: true,
+			query: undefined,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ public_key?: string; private_key?: string }>({
+					type: 'object',
+					properties: {
+						public_key: { type: 'string' },
+						private_key: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+			},
+		},
+		async function action() {
 			const result = await Users.fetchKeysByUserId(this.userId);
 
 			return API.v1.success(result);
 		},
-	},
-);
+	)
+	.get(
+		'e2e.getUsersOfRoomWithoutKey',
+		{
+			authRequired: true,
+			query: ise2eGetUsersOfRoomWithoutKeyParamsGET,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					users: Pick<IUser, '_id' | 'e2e'>[];
+				}>({
+					type: 'object',
+					properties: {
+						users: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									e2e: {
+										type: 'object',
+										properties: {
+											private_key: { type: 'string' },
+											public_key: { type: 'string' },
+										},
+									},
+								},
+								required: ['_id'],
+							},
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['users', 'success'],
+				}),
+			},
+		},
 
-API.v1.addRoute(
-	'e2e.getUsersOfRoomWithoutKey',
-	{
-		authRequired: true,
-		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	},
-	{
-		async get() {
+		async function action() {
 			const { rid } = this.queryParams;
 
 			const result = await getUsersOfRoomWithoutKeyMethod(this.userId, rid);
 
 			return API.v1.success(result);
 		},
-	},
-);
+	)
+	.post(
+		'e2e.updateGroupKey',
+		{
+			authRequired: true,
+			body: ise2eUpdateGroupKeyParamsPOST,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+			},
+		},
+		async function action() {
+			const { uid, rid, key } = this.bodyParams;
+
+			await updateGroupKey(rid, uid, key, this.userId);
+
+			return API.v1.success();
+		},
+	);
 
 /**
  * @openapi
@@ -157,56 +265,6 @@ API.v1.addRoute(
 				private_key,
 				force,
 			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-/**
- * @openapi
- *  /api/v1/e2e.updateGroupKey:
- *    post:
- *      description: Updates the end-to-end encryption key for a user on a room
- *      security:
- *        - autenticated: {}
- *      requestBody:
- *        description: A tuple containing the user ID, the room ID, and the key
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                uid:
- *                  type: string
- *                rid:
- *                  type: string
- *                key:
- *                  type: string
- *      responses:
- *        200:
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiSuccessV1'
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
-API.v1.addRoute(
-	'e2e.updateGroupKey',
-	{
-		authRequired: true,
-		validateParams: ise2eUpdateGroupKeyParamsPOST,
-	},
-	{
-		async post() {
-			const { uid, rid, key } = this.bodyParams;
-
-			await updateGroupKey(rid, uid, key, this.userId);
 
 			return API.v1.success();
 		},

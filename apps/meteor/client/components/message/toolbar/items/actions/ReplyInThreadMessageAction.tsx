@@ -37,7 +37,6 @@ const ReplyInThreadMessageAction = ({ message, room, subscription }: ReplyInThre
 			id='reply-in-thread'
 			icon='thread'
 			title={t('Reply_in_thread')}
-			qa='Reply_in_thread'
 			onClick={(event) => {
 				event.stopPropagation();
 				const routeName = router.getRouteName();
