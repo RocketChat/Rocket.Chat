@@ -2,7 +2,6 @@ import { api, Authorization } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 import { ajv, isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
-import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
@@ -29,29 +28,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'roles.sync',
-	{ authRequired: true },
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					updatedSince: Match.Where((value: unknown): value is string => typeof value === 'string' && !Number.isNaN(Date.parse(value))),
-				}),
-			);
-
-			const { updatedSince } = this.queryParams;
-
-			return API.v1.success({
-				roles: {
-					update: await Roles.findByUpdatedDate(new Date(updatedSince)).toArray(),
-					remove: await Roles.trashFindDeletedAfter(new Date(updatedSince)).toArray(),
-				},
-			});
-		},
-	},
-);
 
 API.v1.addRoute(
 	'roles.addUserToRole',
@@ -225,42 +201,89 @@ API.v1.addRoute(
 	},
 );
 
-const rolesRoutes = API.v1.get(
-	'roles.getUsersInPublicRoles',
-	{
-		authRequired: true,
-		response: {
-			200: ajv.compile<{
-				users: {
-					_id: string;
-					username: string;
-					roles: string[];
-				}[];
-			}>({
-				type: 'object',
-				properties: {
+const rolesRoutes = API.v1
+	.get(
+		'roles.getUsersInPublicRoles',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{
 					users: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+						_id: string;
+						username: string;
+						roles: string[];
+					}[];
+				}>({
+					type: 'object',
+					properties: {
+						users: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+							},
 						},
 					},
-				},
-			}),
+				}),
+			},
 		},
-	},
+		async () => {
+			return API.v1.success({
+				users: await Authorization.getUsersFromPublicRoles(),
+			});
+		},
+	)
+	.get(
+		'roles.sync',
+		{
+			authRequired: true,
+			query: ajv.compile<{ updatedSince: string }>({
+				type: 'object',
+				properties: {
+					updatedSince: {
+						type: 'string',
+					},
+				},
+				required: ['updatedSince'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{
+					roles: {
+						update: IRole[];
+						remove: object[];
+					};
+				}>({
+					type: 'object',
+					properties: {
+						roles: {
+							type: 'object',
+							properties: {
+								update: { type: 'array', items: { type: 'object' } },
+								remove: { type: 'array', items: { type: 'object' } },
+							},
+							required: ['update', 'remove'],
+						},
+					},
+					required: ['roles'],
+				}),
+			},
+		},
+		async function () {
+			const { updatedSince } = this.queryParams;
 
-	async () => {
-		return API.v1.success({
-			users: await Authorization.getUsersFromPublicRoles(),
-		});
-	},
-);
+			return API.v1.success({
+				roles: {
+					update: await Roles.findByUpdatedDate(new Date(updatedSince)).toArray(),
+					remove: await Roles.trashFindDeletedAfter(new Date(updatedSince)).toArray(),
+				},
+			});
+		},
+	);
 
 type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RolesEndpoints {}
+	interface Endpoints extends RolesEndpoints { }
 }
