@@ -60,7 +60,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 		await saveAction(formData);
 	}, [emojiFile, name, aliases, saveAction]);
 
-	const [clickUpload] = useSingleFileInput(setEmojiPreview, 'image/*', 'emoji');
+	const [clickUpload] = useSingleFileInput(setEmojiPreview, 'emoji');
 
 	const handleChangeName = (e: ChangeEvent<HTMLInputElement>): void => {
 		if (e.currentTarget.value !== '') {

@@ -28,7 +28,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 		setSound(soundFile);
 	}, []);
 
-	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'sound', { fileType: 'audio/mp3' });
 
 	const saveAction = useCallback(
 		// FIXME
