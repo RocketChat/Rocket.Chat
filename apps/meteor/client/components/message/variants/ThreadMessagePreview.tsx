@@ -77,7 +77,6 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			onClick={handleThreadClick}
 			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
 			isSelected={isSelected}
-			data-qa-selected={isSelected}
 			{...props}
 		>
 			{!sequential && (

@@ -121,37 +121,58 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const roomDeleteEndpoint = API.v1.post(
 	'rooms.delete',
 	{
 		authRequired: true,
-	},
-	{
-		async post() {
-			const { roomId } = this.bodyParams;
-
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
-
-			const room = await Rooms.findOneById(roomId);
-
-			if (!room) {
-				throw new MeteorError('error-invalid-room', 'Invalid room', {
-					method: 'eraseRoom',
-				});
-			}
-
-			if (room.teamMain) {
-				throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
-					method: 'eraseRoom',
-				});
-			}
-
-			await eraseRoom(room, this.user);
-
-			return API.v1.success();
+		body: ajv.compile<{ roomId: string }>({
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+					description: 'The ID of the room to delete.',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId } = this.bodyParams;
+
+		const room = await Rooms.findOneById(roomId);
+
+		if (!room) {
+			throw new MeteorError('error-invalid-room', 'Invalid room', {
+				method: 'eraseRoom',
+			});
+		}
+
+		if (room.teamMain) {
+			throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
+				method: 'eraseRoom',
+			});
+		}
+
+		await eraseRoom(room, this.user);
+
+		return API.v1.success();
 	},
 );
 
@@ -1190,7 +1211,9 @@ export const roomEndpoints = API.v1
 		},
 	);
 
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
+	ExtractRoutesFromAPI<typeof roomEndpoints> &
+	ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
