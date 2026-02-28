@@ -272,10 +272,16 @@ const rolesRoutes = API.v1
 		async function () {
 			const { updatedSince } = this.queryParams;
 
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			}
+
+			const updatedSinceDate = new Date(updatedSince);
+
 			return API.v1.success({
 				roles: {
-					update: await Roles.findByUpdatedDate(new Date(updatedSince)).toArray(),
-					remove: await Roles.trashFindDeletedAfter(new Date(updatedSince)).toArray(),
+					update: await Roles.findByUpdatedDate(updatedSinceDate).toArray(),
+					remove: await Roles.trashFindDeletedAfter(updatedSinceDate).toArray(),
 				},
 			});
 		},
