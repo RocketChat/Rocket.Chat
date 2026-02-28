@@ -189,8 +189,9 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 
-		const ownedTeamIds = unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId);
-		const ownedTeamSet = new Set(ownedTeamIds);
+		const ownedTeamSet = new Set(
+			unfilteredTeams.filter(({ roles = [] }) => roles.includes('owner')).map(({ teamId }) => teamId),
+		);
 
 		const results = await Team.findByIds(teamIds).toArray();
 		return results.map((team) => ({
