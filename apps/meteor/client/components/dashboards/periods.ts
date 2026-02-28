@@ -20,11 +20,10 @@ function endOfDayUTC(d: Date): Date {
 }
 
 function startOfWeekUTC(d: Date): Date {
-	const day = d.getUTCDay();
-	const diff = (day + 6) % 7;
-	const monday = new Date(d);
-	monday.setUTCDate(d.getUTCDate() - diff);
-	return startOfDayUTC(monday);
+	const day = d.getUTCDay(); // 0 = Sunday
+	const sunday = new Date(d);
+	sunday.setUTCDate(d.getUTCDate() - day);
+	return startOfDayUTC(sunday);
 }
 
 function startOfMonthUTC(d: Date): Date {

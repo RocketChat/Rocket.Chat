@@ -72,7 +72,7 @@ export class AgentOverviewData {
 		}
 	}
 
-	async Total_conversations(from: moment.Moment, to: moment.Moment, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	async Total_conversations(from: Date, to: Date, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		let total = 0;
 		const agentConversations = new Map(); // stores total conversations for each agent
 		const date = {
@@ -124,7 +124,7 @@ export class AgentOverviewData {
 		return data;
 	}
 
-	async Avg_chat_duration(from: moment.Moment, to: moment.Moment, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	async Avg_chat_duration(from: Date, to: Date, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const agentChatDurations = new Map(); // stores total conversations for each agent
 		const date = {
 			gte: from,
@@ -174,7 +174,7 @@ export class AgentOverviewData {
 		return data;
 	}
 
-	async Total_messages(from: moment.Moment, to: moment.Moment, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	async Total_messages(from: Date, to: Date, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const agentMessages = new Map(); // stores total conversations for each agent
 		const date = {
 			gte: from,
@@ -216,7 +216,7 @@ export class AgentOverviewData {
 		return data;
 	}
 
-	async Avg_first_response_time(from: moment.Moment, to: moment.Moment, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	async Avg_first_response_time(from: Date, to: Date, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const agentAvgRespTime = new Map(); // stores avg response time for each agent
 		const date = {
 			gte: from,
@@ -266,7 +266,7 @@ export class AgentOverviewData {
 		return data;
 	}
 
-	async Best_first_response_time(from: moment.Moment, to: moment.Moment, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	async Best_first_response_time(from: Date, to: Date, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const agentFirstRespTime = new Map(); // stores best response time for each agent
 		const date = {
 			gte: from,
@@ -308,7 +308,7 @@ export class AgentOverviewData {
 		return data;
 	}
 
-	async Avg_response_time(from: moment.Moment, to: moment.Moment, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	async Avg_response_time(from: Date, to: Date, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const agentAvgRespTime = new Map(); // stores avg response time for each agent
 		const date = {
 			gte: from,
@@ -358,7 +358,7 @@ export class AgentOverviewData {
 		return data;
 	}
 
-	async Avg_reaction_time(from: moment.Moment, to: moment.Moment, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
+	async Avg_reaction_time(from: Date, to: Date, departmentId?: string, extraQuery: Filter<IOmnichannelRoom> = {}) {
 		const agentAvgReactionTime = new Map(); // stores avg reaction time for each agent
 		const date = {
 			gte: from,

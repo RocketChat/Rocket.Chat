@@ -55,9 +55,6 @@ export const filterBusinessHoursThatMustBeOpened = async (
 						if (currentDay === hour.start.cron.dayOfWeek && startMinutes > currentMinutes) {
 							startMinutes -= MINUTES_PER_WEEK;
 						}
-						if (currentDay === hour.finish.cron.dayOfWeek && finishMinutes < currentMinutes) {
-							finishMinutes += MINUTES_PER_WEEK;
-						}
 
 						return currentMinutes >= startMinutes && currentMinutes < finishMinutes;
 					}),
