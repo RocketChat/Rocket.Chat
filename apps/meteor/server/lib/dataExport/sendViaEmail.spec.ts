@@ -5,18 +5,21 @@ import Sinon from 'sinon';
 const modelsMock = {
     Users: {
         findUsersByUsernames: (usernames: string[]) => ({
-            toArray: async () => usernames.map(username => {
-                if (username === 'user_valid') {
-                    return { _id: '1', username: 'user_valid', emails: [{ address: 'valid@example.com' }] };
-                }
-                if (username === 'user_empty_emails') {
-                    return { _id: '2', username: 'user_empty_emails', emails: [] };
-                }
-                if (username === 'user_no_emails') {
-                    return { _id: '3', username: 'user_no_emails' }; // undefined emails array
-                }
-                return null;
-            }).filter(Boolean),
+            toArray: async () =>
+                usernames
+                    .map((username) => {
+                        if (username === 'user_valid') {
+                            return { _id: '1', username: 'user_valid', emails: [{ address: 'valid@example.com' }] };
+                        }
+                        if (username === 'user_empty_emails') {
+                            return { _id: '2', username: 'user_empty_emails', emails: [] };
+                        }
+                        if (username === 'user_no_emails') {
+                            return { _id: '3', username: 'user_no_emails' }; // undefined emails array
+                        }
+                        return null;
+                    })
+                    .filter(Boolean),
         }),
     },
     Messages: {
@@ -31,9 +34,15 @@ const mailerMock = {
     checkAddressFormat: () => true,
 };
 
-const { sendViaEmail } = proxyquire.noCallThru().load('./sendViaEmail.ts', {
+const mockMoment = function () {
+    return {
+        locale: () => ({ format: () => '12:00' }),
+    };
+};
+
+const { sendViaEmail } = proxyquire.load('./sendViaEmail.ts', {
     '@rocket.chat/models': modelsMock,
-    '../../../app/mailer/server/api': mailerMock,
+    '../../../app/mailer/server/api': { Mailer: mailerMock },
     '../../../app/settings/server': {
         settings: {
             get: () => 'noreply@rocketchat.test',
