@@ -12,36 +12,16 @@ import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
 import { syncRoomRolePriorityForUserAndRoom } from '../../lib/roles/syncRoomRolePriority';
 import { isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../../services/federation/utils';
 
-/**
- * Supported room roles that can be assigned via this helper
- */
 export type RoomRole = 'moderator' | 'owner' | 'leader';
 
-/**
- * Configuration for a specific room role operation
- */
 interface IRoleConfig {
-	/** The role being assigned */
 	role: RoomRole;
-	/** The permission required to assign this role */
 	permission: `set-${RoomRole}`;
-	/** Error code when user already has this role */
 	errorAlreadyHas: `error-user-already-${RoomRole}`;
-	/** Human-readable error message */
 	errorAlreadyHasMessage: string;
-	/**
-	 * Whether this role supports federation features.
-	 * When true:
-	 * - Validates federation configuration for federated rooms
-	 * - Allows assignment in federated rooms even without local permission
-	 * - Broadcasts federation.userRoleChanged event
-	 */
 	supportsFederation: boolean;
 }
 
-/**
- * Role configurations for each supported room role
- */
 const ROLE_CONFIGS: Record<RoomRole, IRoleConfig> = {
 	moderator: {
 		role: 'moderator',
@@ -95,7 +75,6 @@ export async function addRoomRole(
 	let room: IRoom | null = null;
 	let isFederated = false;
 
-	// For roles that support federation, we need to fetch and check room federation status
 	if (config.supportsFederation) {
 		room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1, federation: 1 } });
 		if (!room) {
@@ -104,65 +83,52 @@ export async function addRoomRole(
 		isFederated = isRoomFederated(room);
 	}
 
-	// Check permission - federated rooms may bypass local permission check
 	const hasPermission = await hasPermissionAsync(fromUserId, config.permission, rid);
 	if (!hasPermission && !(config.supportsFederation && isFederated)) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: methodName });
 	}
 
-	// Validate federation configuration for federated rooms
 	if (config.supportsFederation && isFederated && !isFederationEnabled()) {
 		throw new FederationMatrixInvalidConfigurationError('unable to change room roles');
 	}
 
-	// Fetch target user
 	const user = await Users.findOneById(userId);
 	if (!user?.username) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: methodName });
 	}
 
-	// Verify user is in the room
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 	if (!subscription) {
 		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', { method: methodName });
 	}
 
-	// Check if user already has this role
 	if (subscription.roles && Array.isArray(subscription.roles) && subscription.roles.includes(role)) {
 		throw new Meteor.Error(config.errorAlreadyHas, config.errorAlreadyHasMessage, { method: methodName });
 	}
 
-	// Run before-change callback for roles that support federation (need room object)
-	// The callback supports all roles including 'leader', so we run it for all roles when we have the room
 	if (room) {
 		await beforeChangeRoomRole.run({ fromUserId, userId, room, role });
 	}
 
-	// Add the role to the subscription
-	const addRoleResponse = await Subscriptions.addRoleById(subscription._id, role);
-	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.concat([role]) || [role]);
-
-	// Notify subscription change
-	if (addRoleResponse.modifiedCount) {
-		void notifyOnSubscriptionChangedById(subscription._id);
-	}
-
-	// Fetch the user who is granting the role (for system message)
 	const fromUser = await Users.findOneById(fromUserId);
 	if (!fromUser) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: methodName });
 	}
 
-	// Save system message
+	const addRoleResponse = await Subscriptions.addRoleById(subscription._id, role);
+	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.concat([role]) || [role]);
+
+	if (addRoleResponse.modifiedCount) {
+		void notifyOnSubscriptionChangedById(subscription._id);
+	}
+
 	await Message.saveSystemMessage('subscription-role-added', rid, user.username, fromUser, { role });
 
-	// Add role to team if this room is a team's main room
 	const team = await Team.getOneByMainRoomId(rid);
 	if (team) {
 		await Team.addRolesToMember(team._id, userId, [role]);
 	}
 
-	// Broadcast role update event
 	const event = {
 		type: 'added',
 		_id: role,
@@ -178,7 +144,6 @@ export async function addRoomRole(
 		void api.broadcast('user.roleUpdate', event);
 	}
 
-	// Broadcast federation event for federation-enabled roles
 	if (config.supportsFederation) {
 		void api.broadcast('federation.userRoleChanged', { ...event, givenByUserId: fromUserId });
 	}
