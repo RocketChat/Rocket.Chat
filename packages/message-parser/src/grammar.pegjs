@@ -144,11 +144,11 @@ CodeChunk = text:$(!EndOfLine !"```" .)+ { return plain(text); }
  * #### Heading 4
  *
 */
-Heading = count:HeadingStart [ \t]+ text:HeadingChunk { return heading(text.map(v => Array.isArray(v) ? v[1] : v), count); }
+Heading = count:HeadingStart [ \t]+ text:HeadingChunk { return heading(text, count); }
 
 HeadingStart = value:"#" |1..4| { return value.length; }
 
-HeadingChunk = text:(!EndOfLine Inline)+ { return text; }
+HeadingChunk = text:Inline { return text; }
 
 
 /**
