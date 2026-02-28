@@ -37,7 +37,7 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 
 	return (
 		<GenericModal
-			variant='warning'
+			variant='primary'
 			icon={null}
 			confirmText={t('Add')}
 			onCancel={onClose}
