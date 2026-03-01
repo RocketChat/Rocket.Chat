@@ -289,6 +289,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			try {
 				await instance.startCall(kind, id);
 			} catch (error) {
+				// eslint-disable-next-line no-console
 				console.error('Error starting call', error);
 			}
 		};
@@ -327,6 +328,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSession 
 			try {
 				mainCall.sendDTMF(tone);
 			} catch (error) {
+				// eslint-disable-next-line no-console
 				console.error('Error sending tone', error);
 			}
 		};

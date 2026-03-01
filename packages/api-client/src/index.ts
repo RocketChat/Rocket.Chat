@@ -96,6 +96,7 @@ export class RestClient implements RestClientInterface {
 	): Promise<Serialized<OperationResult<'GET', TPathPattern>>> {
 		if (/\?/.test(endpoint)) {
 			// throw new Error('Endpoint cannot contain query string');
+			// eslint-disable-next-line no-console
 			console.warn('Endpoint cannot contain query string', endpoint);
 		}
 		const queryParams = this.getParams(params);

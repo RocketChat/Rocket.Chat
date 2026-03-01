@@ -107,6 +107,7 @@ export class AppVideoConfProvider {
 			}
 
 			// @TODO add error handling
+			// eslint-disable-next-line no-console
 			console.log(e);
 		}
 	}

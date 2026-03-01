@@ -5,12 +5,15 @@ import { Readable } from 'stream';
 import { pipeline } from 'stream/promises';
 
 import { MeteorError } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import { Random } from '@rocket.chat/random';
 import busboy, { type BusboyConfig } from 'busboy';
 import ExifTransformer from 'exif-be-gone';
 
 import { UploadFS } from '../../../../server/ufs';
 import { getMimeType } from '../../../utils/lib/mimeTypes';
+
+const logger = new Logger('Api:MultipartUploadHandler');
 
 export type ParsedUpload = {
 	tempFilePath: string;
@@ -39,7 +42,7 @@ export class MultipartUploadHandler {
 		try {
 			await fs.promises.unlink(tempFilePath);
 		} catch (error: any) {
-			console.warn(`[UploadService] Failed to cleanup temp file: ${tempFilePath}`, error);
+			logger.warn(`[UploadService] Failed to cleanup temp file: ${tempFilePath}`, error);
 		}
 	}
 

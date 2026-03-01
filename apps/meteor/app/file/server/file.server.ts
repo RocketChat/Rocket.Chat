@@ -1,3 +1,4 @@
+import { Logger } from '@rocket.chat/logger';
 import type { ReadStream } from 'fs';
 import fs from 'fs';
 import fsp from 'fs/promises';
@@ -11,6 +12,8 @@ import mime from 'mime-type/with-db';
 import mkdirp from 'mkdirp';
 
 import { sanitizeFileName } from './functions/sanitizeFileName';
+
+const logger = new Logger('File:FileServer');
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
@@ -174,7 +177,7 @@ class FileSystem implements IRocketChatFileStore {
 				length: stat.size,
 			};
 		} catch (error1) {
-			console.error(error1);
+			logger.error(error1);
 		}
 	}
 
@@ -204,7 +207,7 @@ class FileSystem implements IRocketChatFileStore {
 		try {
 			return await this.remove(fileName);
 		} catch (error1) {
-			console.error(error1);
+			logger.error(error1);
 		}
 	}
 }

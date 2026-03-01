@@ -14,6 +14,7 @@ const promptTranscript = async () => {
 	} = store.state;
 
 	if (!room || !user) {
+		// eslint-disable-next-line no-console
 		console.warn('Only call promptTranscript when there is a room and a user');
 		return;
 	}

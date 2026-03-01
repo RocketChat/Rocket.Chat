@@ -1,5 +1,6 @@
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { isTruthy } from '@rocket.chat/tools';
@@ -12,6 +13,8 @@ import { hasPermissionAsync } from '../../../../app/authorization/server/functio
 import { updateCounter } from '../../../../app/statistics/server';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
+
+const logger = new Logger('EE:Lib:Audit:Methods');
 
 const getValue = (room: IRoom | null) => room && { rids: [room._id], name: room.name };
 
@@ -46,7 +49,7 @@ const getRoomInfoByAuditParams = async ({
 	}
 
 	if (type === 'l') {
-		console.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
+		logger.warn('Deprecation Warning! This method will be removed in the next version (4.0.0)');
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
 		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(
 			visitor,

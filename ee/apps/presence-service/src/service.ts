@@ -1,8 +1,11 @@
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { Logger } from '@rocket.chat/logger';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
+
+const logger = new Logger('PresenceService');
 
 const PORT = process.env.PORT || 3031;
 
@@ -28,7 +31,7 @@ void (async () => {
 				await api.nodeList();
 				res.end('ok');
 			} catch (err) {
-				console.error('Service not healthy', err);
+				logger.error('Service not healthy', err);
 
 				res.writeHead(500);
 				res.end('not healthy');

@@ -1,5 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { StreamNames } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import WebSocket from 'ws';
 
 import { server } from './configureServer';
@@ -7,6 +8,8 @@ import { DDP_EVENTS } from './constants';
 import { isEmpty } from './lib/utils';
 import { Streamer, StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
 import type { DDPSubscription, Connection, TransformMessage } from '../../../../apps/meteor/server/modules/streamer/types';
+
+const logger = new Logger('DdpStreamer:Streamer');
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
 	void api.broadcast('stream', [name, eventName, args]);
@@ -87,7 +90,7 @@ export class Stream<N extends StreamNames> extends Streamer<N> {
 				});
 			} catch (error: any) {
 				if (error.code === 'ERR_STREAM_DESTROYED') {
-					console.warn('Trying to send data to destroyed stream, closing connection.');
+					logger.warn('Trying to send data to destroyed stream, closing connection.');
 
 					// if we still tried to send data to a destroyed stream, we'll try again to close the connection
 					if (subscription.client.ws.readyState !== WebSocket.OPEN) {
@@ -95,7 +98,7 @@ export class Stream<N extends StreamNames> extends Streamer<N> {
 						subscription.client.ws.close();
 					}
 				}
-				console.error('Error trying to send data to stream.', error);
+				logger.error('Error trying to send data to stream.', error);
 			}
 		}
 	}

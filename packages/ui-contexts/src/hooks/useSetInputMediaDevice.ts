@@ -9,6 +9,7 @@ export const useSetInputMediaDevice = (): setInputMediaDevice => {
 	const context = useContext(DeviceContext);
 
 	if (!isDeviceContextEnabled(context)) {
+		// eslint-disable-next-line no-console
 		console.warn(
 			'Device Management is disabled on unsecure contexts, see https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts/features_restricted_to_secure_contexts',
 		);

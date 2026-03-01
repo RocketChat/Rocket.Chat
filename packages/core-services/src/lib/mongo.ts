@@ -14,6 +14,7 @@ function connectDb(options?: MongoClientOptions): Promise<MongoClient> {
 
 	return client.connect().catch((error) => {
 		// exits the process in case of any error
+		// eslint-disable-next-line no-console
 		console.error(error);
 		process.exit(1);
 	});

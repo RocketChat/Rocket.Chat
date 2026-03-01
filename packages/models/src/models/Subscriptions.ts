@@ -280,6 +280,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][], rid?: IRoom['_id']): Promise<UpdateResult> {
 		if (!Array.isArray(roles)) {
 			roles = [roles];
+			// eslint-disable-next-line no-console
 			process.env.NODE_ENV === 'development' && console.warn('[WARN] Subscriptions.addRolesByUserId: roles should be an array');
 		}
 

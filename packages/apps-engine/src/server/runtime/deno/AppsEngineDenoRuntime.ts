@@ -64,6 +64,7 @@ export function getRuntimeTimeout() {
 		: defaultTimeout;
 
 	if (envValue < 0) {
+		// eslint-disable-next-line no-console
 		console.log('Environment variable APPS_ENGINE_RUNTIME_TIMEOUT has a negative value, ignoring...');
 		return defaultTimeout;
 	}
@@ -197,6 +198,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			this.setupListeners();
 		} catch (e) {
 			this.state = 'invalid';
+			// eslint-disable-next-line no-console
 			console.error(`Failed to start Deno subprocess for app ${this.getAppId()}`, e);
 		}
 	}
@@ -427,6 +429,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		this.deno.stderr.on('data', this.parseError.bind(this));
 		this.deno.on('error', (err) => {
 			this.state = 'invalid';
+			// eslint-disable-next-line no-console
 			console.error(`Failed to startup Deno subprocess for app ${this.getAppId()}`, err);
 		});
 
@@ -608,6 +611,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				this.emit('ready');
 				break;
 			case 'log':
+				// eslint-disable-next-line no-console
 				console.log('SUBPROCESS LOG', message);
 				break;
 			case 'unhandledRejection':
@@ -615,6 +619,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				await this.logUnhandledError(`runtime:${method}`, message);
 				break;
 			default:
+				// eslint-disable-next-line no-console
 				console.warn('Unrecognized method from sub process');
 				break;
 		}
@@ -677,6 +682,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 					if (JSONRPCMessage.type === 'request' || JSONRPCMessage.type === 'notification') {
 						this.handleIncomingMessage(JSONRPCMessage).catch((reason) =>
+							// eslint-disable-next-line no-console
 							console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
 						);
 						continue;
@@ -684,23 +690,28 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 					if (JSONRPCMessage.type === 'success' || JSONRPCMessage.type === 'error') {
 						this.handleResultMessage(JSONRPCMessage).catch((reason) =>
+							// eslint-disable-next-line no-console
 							console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
 						);
 						continue;
 					}
 
+					// eslint-disable-next-line no-console
 					console.error('Unrecognized message type', JSONRPCMessage);
 				} catch (e) {
 					// SyntaxError is thrown when the message is not a valid JSON
 					if (e instanceof SyntaxError) {
+						// eslint-disable-next-line no-console
 						console.error(`[${this.getAppId()}] Failed to parse message`);
 						continue;
 					}
 
+					// eslint-disable-next-line no-console
 					console.error(`[${this.getAppId()}] Error executing handler`, e, message);
 				}
 			}
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.error(`[${this.getAppId()}]`, e);
 			this.emit('error', new Error('DECODE_ERROR'));
 		}
@@ -712,6 +723,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			this.debug('Metrics received from subprocess (via stderr): %s', inspect(data));
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.error('Subprocess stderr', chunk.toString());
 		}
 	}

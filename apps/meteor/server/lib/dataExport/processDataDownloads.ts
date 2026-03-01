@@ -2,6 +2,7 @@ import { createWriteStream } from 'fs';
 import { access, mkdir, rm, writeFile } from 'fs/promises';
 
 import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,6 +19,8 @@ import { getRoomData } from './getRoomData';
 import { makeZipFile } from './makeZipFile';
 import { sendEmail } from './sendEmail';
 import { uploadZipFile } from './uploadZipFile';
+
+const logger = new Logger('Lib:ProcessDataDownloads');
 
 const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
 	const roomList: (
@@ -241,7 +244,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 
 		await ExportOperations.updateOperation(exportOperation);
 	} catch (e) {
-		console.error(e);
+		logger.error(e);
 	}
 };
 

@@ -110,6 +110,7 @@ export const AutoTranslate = {
 				]);
 			} catch (e: unknown) {
 				// Avoid unwanted error message on UI when autotranslate is disabled while fetching data
+				// eslint-disable-next-line no-console
 				console.error((e as Error).message);
 			}
 		});

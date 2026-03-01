@@ -97,6 +97,7 @@ const categories: BenchCategory[] = [
 	{
 		name: 'Code',
 		fixtures: [
+			// eslint-disable-next-line no-console
 			{ name: 'inline', input: 'Use `console.log()` for debugging' },
 			{ name: 'block', input: '```javascript\nconst x = 1;\nconsole.log(x);\n```' },
 			{ name: 'multi inline', input: 'Use `Array.map()` and `Array.filter()` and `Array.reduce()`' },
@@ -183,9 +184,13 @@ function formatResults(tasks: Task[]) {
 // ── Runner ─────────────────────────────────────────────────────────────────
 
 async function run() {
+	// eslint-disable-next-line no-console
 	console.log('='.repeat(72));
+	// eslint-disable-next-line no-console
 	console.log('  @rocket.chat/message-parser — Performance Benchmark Suite');
+	// eslint-disable-next-line no-console
 	console.log('='.repeat(72));
+	// eslint-disable-next-line no-console
 	console.log();
 
 	// Benchmarks must run sequentially to avoid interference
@@ -203,17 +208,23 @@ async function run() {
 		// eslint-disable-next-line no-await-in-loop
 		await bench.run();
 
+		// eslint-disable-next-line no-console
 		console.log(`── ${category.name} ${'─'.repeat(Math.max(0, 56 - category.name.length))}`);
 		console.table(formatResults(bench.tasks));
+		// eslint-disable-next-line no-console
 		console.log();
 	}
 
+	// eslint-disable-next-line no-console
 	console.log('='.repeat(72));
+	// eslint-disable-next-line no-console
 	console.log('  Done.');
+	// eslint-disable-next-line no-console
 	console.log('='.repeat(72));
 }
 
 run().catch((err) => {
+	// eslint-disable-next-line no-console
 	console.error(err);
 	process.exit(1);
 });

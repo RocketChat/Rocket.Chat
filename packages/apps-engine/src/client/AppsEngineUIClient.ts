@@ -12,6 +12,7 @@ export class AppsEngineUIClient {
 	private callbacks: Map<string, (response: any) => any>;
 
 	constructor() {
+		// eslint-disable-next-line no-console
 		this.listener = () => console.log('init');
 		this.callbacks = new Map();
 	}

@@ -1,12 +1,14 @@
 import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
 import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
 import type { IStreamer, IStreamerConstructor, IPublication } from '../streamer/types';
+
+const logger = new Logger('Modules:NotificationsModule');
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -334,7 +336,7 @@ export class NotificationsModule {
 			});
 
 			if (!room) {
-				console.warn(`Invalid eventName: "${roomId}"`);
+				logger.warn(`Invalid eventName: "${roomId}"`);
 				return false;
 			}
 

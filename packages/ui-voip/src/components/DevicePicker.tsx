@@ -147,6 +147,7 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 					return;
 				}
 
+				// eslint-disable-next-line no-console
 				console.warn('Device Picker - Failed to select device: Invalid deviceId', deviceId);
 			}}
 			button={<DevicePickerButton secondary={secondary} tiny={!secondary} />}

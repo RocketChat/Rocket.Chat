@@ -3,6 +3,7 @@ import type { IncomingMessage } from 'http';
 
 import { Presence } from '@rocket.chat/core-services';
 import type { ISocketConnection } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { throttle } from 'underscore';
 import { v1 as uuidv1 } from 'uuid';
 import type WebSocket from 'ws';
@@ -11,6 +12,8 @@ import { SERVER_ID } from './Server';
 import { server } from './configureServer';
 import { DDP_EVENTS, WS_ERRORS, WS_ERRORS_MESSAGES, TIMEOUT } from './constants';
 import type { IPacket } from './types/IPacket';
+
+const logger = new Logger('DdpStreamer:Client');
 
 // TODO why localhost not as 127.0.0.1?
 // based on Meteor's implementation (link)
@@ -79,7 +82,7 @@ export class Client extends EventEmitter {
 		() => {
 			if (this.userId) {
 				void Presence.updateConnection(this.userId, this.connection.id).catch((err) => {
-					console.error('Error updating connection presence:', err);
+					logger.error('Error updating connection presence:', err);
 				});
 			}
 		},
@@ -114,7 +117,7 @@ export class Client extends EventEmitter {
 		});
 
 		this.ws.on('error', (err) => {
-			console.error('Unexpected error:', err);
+			logger.error('Unexpected error:', err);
 			this.ws.close(WS_ERRORS.CLOSE_PROTOCOL_ERROR, WS_ERRORS_MESSAGES.CLOSE_PROTOCOL_ERROR);
 		});
 
@@ -221,7 +224,7 @@ export class Client extends EventEmitter {
 			}
 			this.process(packet.msg, packet);
 		} catch (err) {
-			console.error(err);
+			logger.error(err);
 			return this.ws.close(WS_ERRORS.UNSUPPORTED_DATA, WS_ERRORS_MESSAGES.UNSUPPORTED_DATA);
 		}
 	};

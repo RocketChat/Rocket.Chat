@@ -1,6 +1,8 @@
+import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms } from '@rocket.chat/models';
-
 import { addMigration } from '../../lib/migrations';
+
+const logger = new Logger('Startup:V319');
 
 addMigration({
 	version: 319,
@@ -9,7 +11,7 @@ addMigration({
 		try {
 			await LivechatRooms.col.dropIndex('pdfTranscriptRequested_1');
 		} catch {
-			console.error('Error dropping index');
+			logger.error('Error dropping index');
 		}
 	},
 });

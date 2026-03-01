@@ -71,6 +71,7 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 			return true;
 		} catch (error: unknown) {
 			const errorMessage = (error as { error: string })?.error;
+			// eslint-disable-next-line no-console
 			console.error(errorMessage);
 			const alert = { id: createToken(), children: errorMessage, error: true, timeout: 5000 };
 			await dispatch({ alerts: (alerts.push(alert), alerts) });

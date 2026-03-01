@@ -72,6 +72,7 @@ export class AppApi {
 
 			return result as IApiResponse;
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.error(e);
 			throw e;
 		}

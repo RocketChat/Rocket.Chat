@@ -30,6 +30,7 @@ const Connection = {
 			await Livechat.connection.connect();
 			void this.clearAlerts();
 		} catch (e) {
+			// eslint-disable-next-line no-console
 			console.error('Connecting error: ', e);
 		}
 	},
@@ -45,6 +46,7 @@ const Connection = {
 	// 			await this.connect();
 	// 			await loadMessages();
 	// 		} catch (e) {
+	// eslint-disable-next-line no-console
 	// 			console.error('Reconecting error: ', e);
 	// 			this.reconnect();
 	// 		}

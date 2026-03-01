@@ -294,7 +294,9 @@ export class AppManager {
 
 				this.apps.set(item.id, app);
 			} catch (e) {
+				// eslint-disable-next-line no-console
 				console.warn(`Error while compiling the App "${item.info.name} (${item.id})":`);
+				// eslint-disable-next-line no-console
 				console.error(e);
 
 				const prl = new ProxiedApp(this, item, new EmptyRuntime(item.id));
@@ -493,6 +495,7 @@ export class AppManager {
 		}
 
 		if (AppStatusUtils.isEnabled(await app.getStatus())) {
+			// eslint-disable-next-line no-console
 			await app.call(AppMethod.ONDISABLE).catch((e) => console.warn('Error while disabling:', e));
 		}
 
@@ -519,6 +522,7 @@ export class AppManager {
 			throw new Error(`No App by the id "${id}" exists.`);
 		}
 
+		// eslint-disable-next-line no-console
 		await app.call(AppMethod.ONUPDATE).catch((e) => console.warn('Error while migrating:', e));
 
 		await this.purgeAppConfig(app, { keepScheduledJobs: true });
@@ -944,6 +948,7 @@ export class AppManager {
 					})
 					.catch(async (error) => {
 						if (!(error instanceof InvalidLicenseError)) {
+							// eslint-disable-next-line no-console
 							console.error(error);
 							return;
 						}
@@ -1141,6 +1146,7 @@ export class AppManager {
 				status = AppStatus.MANUALLY_ENABLED;
 			} else {
 				status = AppStatus.DISABLED;
+				// eslint-disable-next-line no-console
 				console.warn(`The App (${app.getID()}) disabled itself when being enabled. \nCheck the "onEnable" implementation for details.`);
 			}
 		} catch (e) {
@@ -1154,6 +1160,7 @@ export class AppManager {
 				status = AppStatus.INVALID_INSTALLATION_DISABLED;
 			}
 
+			// eslint-disable-next-line no-console
 			console.error(e);
 		}
 
@@ -1233,6 +1240,7 @@ export class AppManager {
 
 export const getPermissionsByAppId = (appId: string) => {
 	if (!AppManager.Instance) {
+		// eslint-disable-next-line no-console
 		console.error('AppManager should be instantiated first');
 		return [];
 	}

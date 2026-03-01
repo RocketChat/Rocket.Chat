@@ -3,6 +3,7 @@ import type * as http from 'http';
 import type stream from 'stream';
 
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import type createServer from 'connect';
 import { check } from 'meteor/check';
@@ -11,6 +12,8 @@ import type { ClientSession, OptionalId } from 'mongodb';
 
 import { UploadFS } from '.';
 import { Filter } from './ufs-filter';
+
+const logger = new Logger('Ufs:UfsStore');
 
 export type StoreOptions = {
 	collection?: IBaseUploadsModel<IUpload>;
@@ -228,7 +231,7 @@ export class Store {
 
 		// Delete the temp file
 		await fs.promises.unlink(tmpFile).catch((err) => {
-			err?.code !== 'ENOENT' && console.error(`ufs: cannot delete temp file at ${tmpFile} (${err.message})`);
+			err?.code !== 'ENOENT' && logger.error(`ufs: cannot delete temp file at ${tmpFile} (${err.message})`);
 		});
 
 		await this.getCollection().removeById(fileId, { session: options?.session });
@@ -303,7 +306,7 @@ export class Store {
 	}
 
 	onCopyError(err: Error, fileId: string, _file: IUpload) {
-		console.error(`ufs: cannot copy file "${fileId}" (${err.message})`, err);
+		logger.error(`ufs: cannot copy file "${fileId}" (${err.message})`, err);
 	}
 
 	async onFinishUpload(_file: IUpload) {
@@ -315,7 +318,7 @@ export class Store {
 	}
 
 	onReadError(err: Error, fileId: string, _file: IUpload) {
-		console.error(`ufs: cannot read file "${fileId}" (${err.message})`, err);
+		logger.error(`ufs: cannot read file "${fileId}" (${err.message})`, err);
 	}
 
 	async onValidate(_file: IUpload, _options?: { session?: ClientSession }) {
@@ -323,7 +326,7 @@ export class Store {
 	}
 
 	onWriteError(err: Error, fileId: string, _file: IUpload) {
-		console.error(`ufs: cannot write file "${fileId}" (${err.message})`, err);
+		logger.error(`ufs: cannot write file "${fileId}" (${err.message})`, err);
 	}
 
 	transformRead(

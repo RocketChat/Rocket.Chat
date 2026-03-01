@@ -1,4 +1,5 @@
 import { UserStatus, type IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Settings, Rooms, Users, Roles } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
 import colors from 'colors/safe';
@@ -13,6 +14,8 @@ import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListe
 import { settings } from '../../app/settings/server';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
 
+const logger = new Logger('Startup:InitialData');
+
 export async function insertAdminUserFromEnv() {
 	if (process.env.ADMIN_PASS) {
 		if ((await Roles.countUsersInRole('admin')) === 0) {
@@ -26,7 +29,7 @@ export async function insertAdminUserFromEnv() {
 				type: 'user',
 			};
 
-			console.log(colors.green(`Name: ${adminUser.name}`));
+			logger.info(colors.green(`Name: ${adminUser.name}`));
 
 			if (process.env.ADMIN_EMAIL) {
 				if (validateEmail(process.env.ADMIN_EMAIL)) {
@@ -38,12 +41,12 @@ export async function insertAdminUserFromEnv() {
 							},
 						];
 
-						console.log(colors.green(`Email: ${process.env.ADMIN_EMAIL}`));
+						logger.info(colors.green(`Email: ${process.env.ADMIN_EMAIL}`));
 					} else {
-						console.log(colors.red('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'));
+						logger.info(colors.red('Email provided already exists; Ignoring environment variables ADMIN_EMAIL'));
 					}
 				} else {
-					console.log(colors.red('Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'));
+					logger.info(colors.red('Email provided is invalid; Ignoring environment variables ADMIN_EMAIL'));
 				}
 			}
 
@@ -61,16 +64,16 @@ export async function insertAdminUserFromEnv() {
 						await checkUsernameAvailability(process.env.ADMIN_USERNAME);
 						adminUser.username = process.env.ADMIN_USERNAME;
 					} catch (error) {
-						console.log(
+						logger.info(
 							colors.red('Username provided already exists or is blocked from usage; Ignoring environment variables ADMIN_USERNAME'),
 						);
 					}
 				} else {
-					console.log(colors.red('Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'));
+					logger.info(colors.red('Username provided is invalid; Ignoring environment variables ADMIN_USERNAME'));
 				}
 			}
 
-			console.log(colors.green(`Username: ${adminUser.username}`));
+			logger.info(colors.green(`Username: ${adminUser.username}`));
 
 			const { insertedId: userId } = await Users.create(adminUser);
 
@@ -78,7 +81,7 @@ export async function insertAdminUserFromEnv() {
 
 			await addUserRolesAsync(userId, ['admin']);
 		} else {
-			console.log(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));
+			logger.info(colors.red('Users with admin role already exist; Ignoring environment variables ADMIN_PASS'));
 		}
 	}
 }
@@ -159,7 +162,7 @@ Meteor.startup(async () => {
 			}
 		}
 	} catch (error) {
-		console.log(
+		logger.info(
 			'Error creating default `rocket.cat` user, if you created a user with this username please remove it and restart the server',
 		);
 		throw error;
@@ -172,16 +175,16 @@ Meteor.startup(async () => {
 			const initialUser = JSON.parse(process.env.INITIAL_USER);
 
 			if (!initialUser._id) {
-				console.log(colors.red('No _id provided; Ignoring environment variable INITIAL_USER'));
+				logger.info(colors.red('No _id provided; Ignoring environment variable INITIAL_USER'));
 			} else if (!(await Users.findOneById(initialUser._id))) {
-				console.log(colors.green('Inserting initial user:'));
-				console.log(colors.green(JSON.stringify(initialUser, null, 2)));
+				logger.info(colors.green('Inserting initial user:'));
+				logger.info(colors.green(JSON.stringify(initialUser, null, 2)));
 				await Users.create(initialUser);
 
 				await addUserToDefaultChannels(initialUser, true);
 			}
 		} catch (e) {
-			console.log(colors.red('Error processing environment variable INITIAL_USER'), e);
+			logger.info(colors.red('Error processing environment variable INITIAL_USER'), e);
 		}
 	}
 
@@ -190,13 +193,13 @@ Meteor.startup(async () => {
 
 		if (oldestUser) {
 			await addUserRolesAsync(oldestUser._id, ['admin']);
-			console.log(`No admins are found. Set ${oldestUser.username || oldestUser.name} as admin for being the oldest user`);
+			logger.info(`No admins are found. Set ${oldestUser.username || oldestUser.name} as admin for being the oldest user`);
 		}
 	}
 
 	if ((await Roles.countUsersInRole('admin')) !== 0) {
 		if (settings.get('Show_Setup_Wizard') === 'pending') {
-			console.log('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
+			logger.info('Setting Setup Wizard to "in_progress" because, at least, one admin was found');
 
 			(await Settings.updateValueById('Show_Setup_Wizard', 'in_progress')).modifiedCount &&
 				void notifyOnSettingChangedById('Show_Setup_Wizard');
@@ -206,7 +209,7 @@ Meteor.startup(async () => {
 	await Users.removeById('rocketchat.internal.admin.test');
 
 	if (process.env.TEST_MODE === 'true') {
-		console.log(colors.green('Inserting admin test user:'));
+		logger.info(colors.green('Inserting admin test user:'));
 
 		const adminUser: Omit<IUser, 'createdAt' | 'roles' | '_updatedAt'> = {
 			_id: 'rocketchat.internal.admin.test',
@@ -225,10 +228,10 @@ Meteor.startup(async () => {
 			type: 'user',
 		};
 
-		console.log(colors.green(`Name: ${adminUser.name}`));
-		console.log(colors.green(`Email: ${adminUser.emails![0].address}`));
-		console.log(colors.green(`Username: ${adminUser.username}`));
-		console.log(colors.green(`Password: ${adminUser._id}`));
+		logger.info(colors.green(`Name: ${adminUser.name}`));
+		logger.info(colors.green(`Email: ${adminUser.emails![0].address}`));
+		logger.info(colors.green(`Username: ${adminUser.username}`));
+		logger.info(colors.green(`Password: ${adminUser._id}`));
 
 		if (await Users.findOneByEmailAddress(adminUser.emails![0].address)) {
 			throw new Meteor.Error(`Email ${adminUser.emails![0].address} already exists`, "Rocket.Chat can't run in test mode");

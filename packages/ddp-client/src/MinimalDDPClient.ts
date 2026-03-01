@@ -57,6 +57,7 @@ interface MinimalDDPClientEvents {
  * const socket = new WebSocket('ws://localhost:3000/websocket');
  * const ddp = new MinimalDDPClient(socket.send.bind(socket));
  * ddp.on('message', (data) => {
+ // eslint-disable-next-line no-console
  *  console.log('Received message', data);
  * });
  * socket.onmessage = ({ data }) => {

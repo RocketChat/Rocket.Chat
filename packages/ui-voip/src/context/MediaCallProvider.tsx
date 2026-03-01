@@ -97,6 +97,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	const onCall = async () => {
 		if (session.state !== 'new') {
+			// eslint-disable-next-line no-console
 			console.error('Cannot start call in state', session.state);
 			return;
 		}
@@ -111,6 +112,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 			const stream = await requestDevice({ actionType: 'outgoing' });
 			stopTracks(stream);
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.error('Media Call - Error requesting device', error);
 			return;
 		}
@@ -130,6 +132,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 
 	const onAccept = async () => {
 		if (session.state !== 'ringing') {
+			// eslint-disable-next-line no-console
 			console.error('Cannot accept call in state', session.state);
 			return;
 		}
@@ -174,6 +177,7 @@ const MediaCallProvider = ({ children }: MediaCallProviderProps) => {
 			return;
 		}
 
+		// eslint-disable-next-line no-console
 		console.error('Invalid device type', device.type);
 	};
 

@@ -15,6 +15,7 @@ export async function getMongoVersion(cwd: string) {
 
 		return mongoMatch[1].replace(/["'\\ ]/g, '').split(',');
 	} catch (e) {
+		// eslint-disable-next-line no-console
 		console.error(e);
 	}
 	return [];
@@ -32,6 +33,7 @@ export async function getAppsEngineVersion(cwd: string) {
 
 		return result.version ?? 'Not Available';
 	} catch (e) {
+		// eslint-disable-next-line no-console
 		console.error(e);
 	}
 }
@@ -49,6 +51,7 @@ export async function getDenoVersion(cwd: string) {
 
 		return 'Not available';
 	} catch (e) {
+		// eslint-disable-next-line no-console
 		console.error(e);
 	}
 }

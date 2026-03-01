@@ -2,9 +2,11 @@ import { Authorization, License, Abac, Settings } from '@rocket.chat/core-servic
 import type { RoomAccessValidator } from '@rocket.chat/core-services';
 import { TeamType, AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import type { IUser, ITeam, IRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Subscriptions, Rooms, TeamMember, Team, Users } from '@rocket.chat/models';
-
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
+
+const logger = new Logger('Services:CanAccessRoom');
 
 async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
@@ -115,7 +117,7 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 		}
 
 		if (process.env.NODE_ENV === 'development') {
-			console.log('User converted to full IUser object');
+			logger.info('User converted to full IUser object');
 		}
 	}
 

@@ -173,6 +173,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 		);
 
 		if (!response) {
+			// eslint-disable-next-line no-console
 			console.log('Role not found', _id, name);
 			throw new Error('Role not found');
 		}

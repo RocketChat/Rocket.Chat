@@ -1,8 +1,11 @@
 import { Presence } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import { Logger } from '@rocket.chat/logger';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
+
+const logger = new Logger('EE:Startup:Presence');
 
 // update connections count every 30 seconds
 const updateConns = throttle(function _updateConns() {
@@ -44,7 +47,7 @@ Meteor.startup(() => {
 		session.heartbeat.messageReceived = function messageReceived() {
 			if (this._seenPacket === false) {
 				void Presence.updateConnection(login.user._id, login.connection.id).catch((err) => {
-					console.error('Error updating connection presence on heartbeat:', err);
+					logger.error('Error updating connection presence on heartbeat:', err);
 				});
 			}
 			return _messageReceived();

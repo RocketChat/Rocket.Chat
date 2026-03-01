@@ -16,6 +16,7 @@ export class LivechatRead implements ILivechatRead {
 	 * In the next major, this method will be `async`
 	 */
 	public isOnline(departmentId?: string): boolean {
+		// eslint-disable-next-line no-console
 		console.warn(
 			"The `LivechatRead.isOnline` method is deprecated and won't behave as intended. Please use `LivechatRead.isOnlineAsync` instead",
 		);

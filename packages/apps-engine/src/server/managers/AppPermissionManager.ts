@@ -25,8 +25,10 @@ export class AppPermissionManager {
 		if (err instanceof PermissionDeniedError) {
 			const { name, message } = err;
 
+			// eslint-disable-next-line no-console
 			console.error(`${name}: ${message}\n${this.getCallStack()}`);
 		} else {
+			// eslint-disable-next-line no-console
 			console.error(err);
 		}
 	}

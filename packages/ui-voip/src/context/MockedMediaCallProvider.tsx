@@ -50,16 +50,19 @@ const MockedMediaCallProvider = ({
 	};
 
 	const onDeviceChange = (device: any) => {
+		// eslint-disable-next-line no-console
 		console.log('device', device);
 	};
 
 	const onForward = () => {
+		// eslint-disable-next-line no-console
 		console.log('forward');
 		clearState();
 		setWidgetState('closed');
 	};
 
 	const onTone = (tone: string) => {
+		// eslint-disable-next-line no-console
 		console.log('tone', tone);
 	};
 

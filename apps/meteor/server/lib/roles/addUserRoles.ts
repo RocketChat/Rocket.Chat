@@ -1,10 +1,12 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IRole, IUser, IRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
-
 import { syncRoomRolePriorityForUserAndRoom } from './syncRoomRolePriority';
 import { validateRoleList } from './validateRoleList';
 import { notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
+
+const logger = new Logger('Lib:AddUserRoles');
 
 export const addUserRolesAsync = async (userId: IUser['_id'], roles: IRole['_id'][], scope?: IRoom['_id']): Promise<boolean> => {
 	if (!userId || !roles?.length) {
@@ -21,14 +23,14 @@ export const addUserRolesAsync = async (userId: IUser['_id'], roles: IRole['_id'
 
 	if (!Array.isArray(roles)) {
 		roles = [roles];
-		process.env.NODE_ENV === 'development' && console.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');
+		process.env.NODE_ENV === 'development' && logger.warn('[WARN] RolesRaw.addUserRoles: roles should be an array');
 	}
 
 	for await (const roleId of roles) {
 		const role = await Roles.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 
 		if (!role) {
-			process.env.NODE_ENV === 'development' && console.warn(`[WARN] RolesRaw.addUserRoles: role: ${roleId} not found`);
+			process.env.NODE_ENV === 'development' && logger.warn(`[WARN] RolesRaw.addUserRoles: role: ${roleId} not found`);
 			continue;
 		}
 

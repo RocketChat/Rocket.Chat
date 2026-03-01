@@ -168,6 +168,7 @@ const api = {
 		const department = departments.find((dep) => dep._id === value || dep.name === value)?._id || '';
 
 		if (!department) {
+			// eslint-disable-next-line no-console
 			console.warn(
 				'The selected department is invalid. Check departments configuration to ensure the department exists, is enabled and has at least 1 agent',
 			);
@@ -213,6 +214,7 @@ const api = {
 		const { _id, username, ...props } = agent;
 
 		if (!_id || !username) {
+			// eslint-disable-next-line no-console
 			return console.warn('The fields _id and username are mandatory.');
 		}
 

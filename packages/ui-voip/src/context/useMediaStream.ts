@@ -15,6 +15,7 @@ const getRemoteStream = (instance?: MediaSignalingSession) => {
 
 		return mainCall.getRemoteMediaStream();
 	} catch (error) {
+		// eslint-disable-next-line no-console
 		console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
 		return null;
 	}
@@ -38,6 +39,7 @@ const useMediaStream = (
 
 					node.srcObject = remoteStream.stream;
 					node.play().catch((error) => {
+						// eslint-disable-next-line no-console
 						console.error('MediaCall: useMediaStream - Error playing media stream', error);
 					});
 

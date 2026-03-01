@@ -98,6 +98,7 @@ export const manageFavicon = () => {
 			try {
 				renderAndUpdate({ badge, canvas, favicons, context, img });
 			} catch (error) {
+				// eslint-disable-next-line no-console
 				console.error('Error rendering favicon:', error);
 			}
 		};
@@ -109,6 +110,7 @@ export const manageFavicon = () => {
 	};
 
 	init().catch((error) => {
+		// eslint-disable-next-line no-console
 		console.error('Error initializing favicon manager:', error);
 	});
 

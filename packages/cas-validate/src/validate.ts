@@ -287,6 +287,7 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 
 				// The response was not in any expected format, error
 				callback(new Error('Bad response format.'));
+				// eslint-disable-next-line no-console
 				console.error(response);
 			});
 		},

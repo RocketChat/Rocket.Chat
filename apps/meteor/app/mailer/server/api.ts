@@ -1,5 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { ISetting } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import { validateEmail } from '@rocket.chat/tools';
@@ -14,6 +15,8 @@ import { strLeft, strRightBack } from '../../../lib/utils/stringUtils';
 import { i18n } from '../../../server/lib/i18n';
 import { notifyOnSettingChanged } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
+
+const logger = new Logger('Mailer:Api');
 
 let contentHeader: string | undefined;
 let contentFooter: string | undefined;
@@ -176,7 +179,7 @@ export const sendNoWrap = async ({
 
 	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
 
-	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
+	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => logger.error(e)));
 };
 
 export const send = async ({

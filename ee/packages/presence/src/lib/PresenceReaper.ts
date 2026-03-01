@@ -48,6 +48,7 @@ export class PresenceReaper {
 
 		// Run every 1 minute
 		this.intervalId = setInterval(() => {
+			// eslint-disable-next-line no-console
 			this.run().catch((err) => console.error('[PresenceReaper] Error:', err));
 		}, 60 * 1000);
 	}

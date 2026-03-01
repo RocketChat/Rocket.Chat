@@ -1,6 +1,9 @@
 import type { ISetting, SettingValueMultiSelect, SettingValueRoomPick } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 
 import { convertValue } from './convertValue';
+
+const logger = new Logger('Settings:OverrideGenerator');
 
 const compareSettingsValue = (a: ISetting['value'], b: ISetting['value'], type?: ISetting['type']): boolean => {
 	if (Array.isArray(a) && Array.isArray(b)) {
@@ -51,7 +54,7 @@ export const overrideGenerator =
 				valueSource: 'processEnvValue',
 			};
 		} catch (error) {
-			console.error(`Error converting value for setting ${setting._id} expected "${setting.type}" type`);
+			logger.error(`Error converting value for setting ${setting._id} expected "${setting.type}" type`);
 			return setting;
 		}
 	};

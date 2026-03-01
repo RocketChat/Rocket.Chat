@@ -449,7 +449,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						endpoints: Object.keys(route.endpoints).filter((endpoint) => endpoint !== 'options'),
 					}),
 				).catch((error) => {
-					console.error(error.message);
+					logger.error(error.message);
 				});
 			}
 		});
@@ -835,7 +835,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						const shouldPreventUserRead = !this.user && options.authRequired;
 
 						if (shouldPreventAnonymousRead || shouldPreventUserRead) {
-							console.log('shouldPreventAnonymousRead', shouldPreventAnonymousRead);
+							logger.info('shouldPreventAnonymousRead', shouldPreventAnonymousRead);
 							const result = api.unauthorized('You must be logged in to do this.');
 							// compatibility with the old API
 							// TODO: MAJOR
@@ -1192,8 +1192,8 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			},
 			{
 				async get() {
-					console.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
-					console.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
+					logger.warn('Warning: Default logout via GET will be removed in Restivus v1.0. Use POST instead.');
+					logger.warn('    See https://github.com/kahmali/meteor-restivus/issues/100');
 					return logout.call(this as any) as any;
 				},
 				async post() {

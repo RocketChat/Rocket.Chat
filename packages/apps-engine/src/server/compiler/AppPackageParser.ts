@@ -32,6 +32,7 @@ export class AppPackageParser {
 
 				if (!AppPackageParser.uuid4Regex.test(info.id)) {
 					info.id = uuidv4();
+					// eslint-disable-next-line no-console
 					console.warn(
 						'WARNING: We automatically generated a uuid v4 id for',
 						info.name,

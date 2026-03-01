@@ -97,6 +97,7 @@ export function tracerActiveSpan<F extends (span?: Span) => ReturnType<F>>(
 	const currentSpan = trace.getSpan(context.active());
 
 	if (process.env.LOG_UNTRACED_METHODS) {
+		// eslint-disable-next-line no-console
 		console.log(`No active span for ${name}`, new Error().stack);
 	}
 

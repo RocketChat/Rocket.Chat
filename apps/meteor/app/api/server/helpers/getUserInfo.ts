@@ -1,10 +1,13 @@
 import { isOAuthUser, type IUser, type IUserEmail, type IUserCalendar } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import semver from 'semver';
 
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { getURL } from '../../../utils/server/getURL';
 import { getUserPreference } from '../../../utils/server/lib/getUserPreference';
+
+const logger = new Logger('Api:GetUserInfo');
 
 const isVerifiedEmail = (me: IUser): false | IUserEmail | undefined => {
 	if (!me || !Array.isArray(me.emails)) {
@@ -73,7 +76,7 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 				outlook.Outlook_Url = mappedSettings.Outlook_Url ?? outlook.Outlook_Url;
 			}
 		} catch (error) {
-			console.error('Invalid Outlook Calendar URL Mapping JSON:', error);
+			logger.error('Invalid Outlook Calendar URL Mapping JSON:', error);
 		}
 	}
 

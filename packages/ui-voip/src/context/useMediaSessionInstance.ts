@@ -79,6 +79,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			return this.sendSignalFn(signal);
 		}
 
+		// eslint-disable-next-line no-console
 		console.warn('Media Call - Tried to send signal, but no sendSignalFn was set');
 		return Promise.resolve();
 	}

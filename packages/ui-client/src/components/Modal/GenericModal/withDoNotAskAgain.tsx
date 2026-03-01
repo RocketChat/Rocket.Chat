@@ -39,6 +39,7 @@ function withDoNotAskAgain<T extends RequiredModalProps>(
 				}
 				await onConfirm();
 			} catch (e) {
+				// eslint-disable-next-line no-console
 				console.error(e);
 			}
 		};

@@ -37,6 +37,7 @@ class TonePlayer {
 		if (this.audioElement.setSinkId) {
 			return this.audioElement.setSinkId(sinkId);
 		}
+		// eslint-disable-next-line no-console
 		console.warn('setSinkId not supported on this browser');
 	}
 
@@ -62,6 +63,7 @@ class TonePlayer {
 		// Ensure audio element is playing
 		if (this.audioElement.paused) {
 			this.audioElement.play().catch((error) => {
+				// eslint-disable-next-line no-console
 				console.warn('Failed to play audio element:', error);
 			});
 		}

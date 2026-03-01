@@ -90,6 +90,7 @@ const SwitchDepartment = (_: SwitchDepartmentProps) => {
 
 			route('/');
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.error(error);
 			await dispatch({
 				alerts: (alerts.push({ id: createToken(), children: t('no_available_agents_to_transfer'), warning: true }), alerts),

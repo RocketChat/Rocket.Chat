@@ -2,6 +2,7 @@ import crypto from 'crypto';
 
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import polka from 'polka';
 import { throttle } from 'underscore';
@@ -15,6 +16,8 @@ import { proxy } from './proxy';
 import { ListenersModule } from '../../../../apps/meteor/server/modules/listeners/listeners.module';
 import type { NotificationsModule } from '../../../../apps/meteor/server/modules/notifications/notifications.module';
 import { StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
+
+const logger = new Logger('DdpStreamer:DDPStreamer');
 
 const { PORT = 4000 } = process.env;
 
@@ -236,7 +239,7 @@ export class DDPStreamer extends ServiceClass {
 						await this.api.nodeList();
 						res.end('ok');
 					} catch (err) {
-						console.error('Service not healthy', err);
+						logger.error('Service not healthy', err);
 
 						res.writeHead(500);
 						res.end('not healthy');
@@ -260,7 +263,7 @@ export class DDPStreamer extends ServiceClass {
 
 			void InstanceStatus.registerInstance('ddp-streamer', {});
 		} catch (err) {
-			console.error('DDPStreamer did not start correctly', err);
+			logger.error('DDPStreamer did not start correctly', err);
 		}
 	}
 

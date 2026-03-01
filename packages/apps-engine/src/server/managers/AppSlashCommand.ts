@@ -73,6 +73,7 @@ export class AppSlashCommand {
 			return result as void | ISlashCommandPreview;
 		} catch (e) {
 			// @TODO this needs to be revisited
+			// eslint-disable-next-line no-console
 			console.error(e);
 			throw e;
 		}

@@ -94,6 +94,7 @@ export class AppConsole implements ILogger {
 		});
 
 		// This should be a setting? :thinking:
+		// eslint-disable-next-line no-console
 		// console.log(`${ severity.toUpperCase() }:`, i);
 	}
 

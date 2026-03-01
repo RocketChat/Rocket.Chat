@@ -2,6 +2,7 @@ import type { ServerResponse } from 'http';
 
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IIncomingMessage, IUpload } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
 import { Cookies } from 'meteor/ostrio:cookies';
@@ -12,6 +13,8 @@ import { throttle } from 'underscore';
 import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
 import { getAvatarColor } from '../../../app/utils/lib/getAvatarColor';
+
+const logger = new Logger('Routes:Utils');
 
 const FALLBACK_LAST_MODIFIED = 'Thu, 01 Jan 2015 00:00:00 GMT';
 
@@ -107,7 +110,7 @@ async function isUserAuthenticated({ headers, query }: Pick<IIncomingMessage, 'h
 }
 
 const warnUnauthenticatedAccess = throttle(() => {
-	console.warn('The server detected an unauthenticated access to an user avatar. This type of request will soon be blocked by default.');
+	logger.warn('The server detected an unauthenticated access to an user avatar. This type of request will soon be blocked by default.');
 }, 60000 * 30); // 30 minutes
 
 export async function userCanAccessAvatar({ headers = {}, query = {} }: IIncomingMessage) {

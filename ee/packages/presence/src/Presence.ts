@@ -105,10 +105,12 @@ export class Presence extends ServiceClass implements IPresence {
 		const rejected = results.filter((result) => result.status === 'rejected');
 
 		if (fulfilled.length > 0) {
+			// eslint-disable-next-line no-console
 			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
 		}
 
 		if (rejected.length > 0) {
+			// eslint-disable-next-line no-console
 			console.error(
 				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
 				rejected.map(({ reason }) => reason),

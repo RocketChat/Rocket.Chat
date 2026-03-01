@@ -1,3 +1,4 @@
+import { Logger } from '@rocket.chat/logger';
 import fs from 'fs';
 import path from 'path';
 
@@ -12,6 +13,8 @@ import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
 // import { isRunningMs } from '../lib/isRunningMs';
 // import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
 import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
+
+const logger = new Logger('Startup:ServerRunning');
 
 const exitIfNotBypassed = (ignore: string | undefined, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -33,7 +36,7 @@ Meteor.startup(async () => {
 	const desiredNodeVersion = semver.clean(fs.readFileSync(path.join(process.cwd(), '../../.node_version.txt')).toString());
 	const parsedSemVer = semver.parse(desiredNodeVersion);
 	if (!parsedSemVer) {
-		console.error('Failed to parse desired Node.js version from .node_version.txt');
+		logger.error('Failed to parse desired Node.js version from .node_version.txt');
 		process.exit(1);
 	}
 

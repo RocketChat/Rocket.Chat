@@ -466,6 +466,7 @@ export class AppListenerManager {
 			case AppInterface.IPostUserStatusChanged:
 				return this.executePostUserStatusChanged(data as IUserStatusContext);
 			default:
+				// eslint-disable-next-line no-console
 				console.warn('An invalid listener was called');
 		}
 	}
@@ -941,12 +942,14 @@ export class AppListenerManager {
 		const handleError = (method: string) => (error: unknown) => {
 			if ((error as Record<string, number>)?.code === JSONRPC_METHOD_NOT_FOUND) {
 				if (this.defaultHandlers.has(method)) {
+					// eslint-disable-next-line no-console
 					console.warn(
 						`App ${appId} triggered an interaction but it doesn't exist or doesn't have method ${method}. Falling back to default handler.`,
 					);
 					return this.defaultHandlers.get(method);
 				}
 
+				// eslint-disable-next-line no-console
 				console.warn(
 					`App ${appId} triggered an interaction but it doesn't exist or doesn't have method ${method} and there is no default handler for it.`,
 				);

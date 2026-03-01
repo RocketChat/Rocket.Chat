@@ -2,8 +2,8 @@ import { FederationMatrix, MeteorError, Room } from '@rocket.chat/core-services'
 import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
+import { Logger } from '@rocket.chat/logger';
 import { Rooms } from '@rocket.chat/models';
-
 import { callbacks } from '../../../../server/lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
@@ -11,6 +11,8 @@ import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/li
 import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
 import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
 import { FederationActions } from '../../../../server/services/room/hooks/BeforeFederationActions';
+
+const logger = new Logger('EE:Hooks:Federation:Index');
 
 // callbacks.add('federation-event-example', async () => FederationMatrix.handleExample(), callbacks.priority.MEDIUM, 'federation-event-example-handler');
 
@@ -66,7 +68,7 @@ callbacks.add(
 			}
 		} catch (error) {
 			// Log the error but don't prevent the message from being sent locally
-			console.error('[sendMessage] Failed to send message to Native Federation:', error);
+			logger.error('[sendMessage] Failed to send message to Native Federation:', error);
 		}
 	},
 	callbacks.priority.HIGH,

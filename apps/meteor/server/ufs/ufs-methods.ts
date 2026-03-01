@@ -1,11 +1,14 @@
 import fs from 'fs';
 
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { UploadFS } from './ufs';
+
+const logger = new Logger('Ufs:UfsMethods');
 
 export async function ufsComplete(fileId: string, storeName: string, options?: { session?: ClientSession }): Promise<IUpload> {
 	check(fileId, String);
@@ -21,7 +24,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 
 	const removeTempFile = () =>
 		fs.promises.unlink(tmpFile).catch(() => {
-			console.warn(`[ufsComplete] Failed to remove temp file: ${tmpFile}`);
+			logger.warn(`[ufsComplete] Failed to remove temp file: ${tmpFile}`);
 		});
 
 	return new Promise(async (resolve, reject) => {
@@ -47,7 +50,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 
 			// Clean upload if error occurs
 			rs.on('error', (err) => {
-				console.error(err);
+				logger.error(err);
 				void store.removeById(fileId, { session: options?.session });
 				reject(err);
 			});

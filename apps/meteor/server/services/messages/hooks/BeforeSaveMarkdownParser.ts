@@ -1,6 +1,8 @@
 import { isE2EEMessage } from '@rocket.chat/core-typings';
 import type { IMessage } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { parse } from '@rocket.chat/message-parser';
+const logger = new Logger('Services:BeforeSaveMarkdownParser');
 
 type ParserConfig = {
 	colors?: boolean;
@@ -35,7 +37,7 @@ export class BeforeSaveMarkdownParser {
 				message.attachments[0].descriptionMd = parse(message.attachments[0].description, config);
 			}
 		} catch (e) {
-			console.error(e); // errors logged while the parser is at experimental stage
+			logger.error(e); // errors logged while the parser is at experimental stage
 		}
 
 		return message;

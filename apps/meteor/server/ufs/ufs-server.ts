@@ -1,3 +1,4 @@
+import { Logger } from '@rocket.chat/logger';
 import domain from 'domain';
 import fs from 'fs';
 import stream from 'stream';
@@ -10,6 +11,8 @@ import mkdirp from 'mkdirp';
 
 import { UploadFS } from './ufs';
 
+const logger = new Logger('Ufs:UfsServer');
+
 Meteor.startup(() => {
 	const path = UploadFS.config.tmpDir;
 	const mode = UploadFS.config.tmpDirPermissions;
@@ -19,15 +22,15 @@ Meteor.startup(() => {
 			// Create the temp directory
 			mkdirp(path, { mode })
 				.then(() => {
-					console.log(`ufs: temp directory created at "${path}"`);
+					logger.info(`ufs: temp directory created at "${path}"`);
 				})
 				.catch((err) => {
-					console.error(`ufs: cannot create temp directory at "${path}" (${err.message})`);
+					logger.error(`ufs: cannot create temp directory at "${path}" (${err.message})`);
 				});
 		} else {
 			// Set directory permissions
 			fs.chmod(path, mode, (err) => {
-				err && console.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);
+				err && logger.error(`ufs: cannot set temp directory permissions ${mode} (${err.message})`);
 			});
 		}
 	});
@@ -38,7 +41,7 @@ Meteor.startup(() => {
 const d = domain.create();
 
 d.on('error', (err) => {
-	console.error(`ufs: ${err.message}`);
+	logger.error(`ufs: ${err.message}`);
 });
 
 // Listen HTTP requests to serve files
@@ -114,7 +117,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 		}
 
 		if (store.onRead !== null && store.onRead !== undefined && typeof store.onRead !== 'function') {
-			console.error(`ufs: Store.onRead is not a function in store "${storeName}"`);
+			logger.error(`ufs: Store.onRead is not a function in store "${storeName}"`);
 			res.writeHead(500);
 			res.end();
 			return;

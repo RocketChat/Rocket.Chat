@@ -7,6 +7,8 @@ import polka from 'polka';
 
 import { i18n } from './i18n';
 
+const logger = new Logger('OmnichannelTranscript');
+
 const PORT = process.env.PORT || 3036;
 
 void (async () => {
@@ -31,7 +33,7 @@ void (async () => {
 				await api.nodeList();
 				res.end('ok');
 			} catch (err) {
-				console.error('Service not healthy', err);
+				logger.error('Service not healthy', err);
 
 				res.writeHead(500);
 				res.end('not healthy');

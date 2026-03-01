@@ -106,6 +106,7 @@ let federationConfig: IFederationConfig;
 try {
 	federationConfig = getFederationConfig();
 } catch (error) {
+	// eslint-disable-next-line no-console
 	console.error('Federation environment configuration error:', error);
 	process.exit(1);
 }

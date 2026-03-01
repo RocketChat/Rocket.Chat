@@ -15,6 +15,7 @@ export const useAccountsCustomFields = (): CustomFieldMetadata[] => {
 				return { ...(fieldData as any), name: fieldName };
 			});
 		} catch {
+			// eslint-disable-next-line no-console
 			console.error('Invalid JSON for Accounts_CustomFields');
 		}
 		return [];

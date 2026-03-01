@@ -1,6 +1,7 @@
 import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUpload } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
@@ -64,6 +65,8 @@ import {
 	findChannelAndPrivateAutocompleteWithPagination,
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
+
+const logger = new Logger('Api:Rooms');
 
 export async function findRoomByIdOrName({
 	params,
@@ -236,7 +239,7 @@ API.v1.addRoute(
 				try {
 					content = JSON.parse(fields.content);
 				} catch (e) {
-					console.error(e);
+					logger.error(e);
 					throw new Meteor.Error('invalid-field-content');
 				}
 			}

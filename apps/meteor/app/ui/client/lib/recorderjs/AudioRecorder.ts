@@ -71,6 +71,7 @@ export class AudioRecorder {
 			await this.createEncoder();
 			cb?.call(this, true);
 		} catch (error) {
+			// eslint-disable-next-line no-console
 			console.error(error);
 			this.destroyEncoder();
 			this.destroyStream();

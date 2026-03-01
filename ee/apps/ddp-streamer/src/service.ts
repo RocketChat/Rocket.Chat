@@ -2,9 +2,11 @@ import os from 'os';
 
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
 import { InstanceStatus } from '@rocket.chat/instance-status';
+import { Logger } from '@rocket.chat/logger';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
+const logger = new Logger('DdpStreamer');
 
 void (async () => {
 	const { db, client } = await getConnection();
@@ -43,14 +45,14 @@ void (async () => {
  */
 
 process.on('unhandledRejection', (error) => {
-	console.error('=== UnHandledPromiseRejection ===');
-	console.error(error);
-	console.error('---------------------------------');
-	console.error(
+	logger.error('=== UnHandledPromiseRejection ===');
+	logger.error(error);
+	logger.error('---------------------------------');
+	logger.error(
 		'Setting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process',
 	);
-	console.error('Future node.js versions will automatically exit the process');
-	console.error('=================================');
+	logger.error('Future node.js versions will automatically exit the process');
+	logger.error('=================================');
 
 	if (process.env.TEST_MODE || process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
 		process.exit(1);
@@ -58,11 +60,11 @@ process.on('unhandledRejection', (error) => {
 });
 
 process.on('uncaughtException', async (error) => {
-	console.error('=== UnCaughtException ===');
-	console.error(error);
-	console.error('-------------------------');
-	console.error('Errors like this can cause oplog processing errors.');
-	console.error('===========================');
+	logger.error('=== UnCaughtException ===');
+	logger.error(error);
+	logger.error('-------------------------');
+	logger.error('Errors like this can cause oplog processing errors.');
+	logger.error('===========================');
 
 	if (process.env.TEST_MODE || process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
 		process.exit(1);

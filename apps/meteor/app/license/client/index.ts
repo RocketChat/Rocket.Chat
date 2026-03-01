@@ -9,6 +9,7 @@ export async function hasLicense(feature: string): Promise<boolean> {
 		});
 		return features.includes(feature);
 	} catch (e) {
+		// eslint-disable-next-line no-console
 		console.error('Error getting modules', e);
 		return false;
 	}

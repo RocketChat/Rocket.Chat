@@ -289,6 +289,7 @@ function setCustomField(key: string, value = '', overwrite = true) {
 
 function setCustomFields(fields: [key: string, value: string, overwrite?: boolean][]) {
 	if (!Array.isArray(fields)) {
+		// eslint-disable-next-line no-console
 		console.log('Error: Invalid parameters. Value must be an array of objects');
 		return;
 	}
@@ -301,6 +302,7 @@ function setCustomFields(fields: [key: string, value: string, overwrite?: boolea
 function setTheme(theme: StoreState['iframe']['theme']) {
 	if (theme?.position !== 'left' && theme?.position !== 'right') {
 		if (theme?.position) {
+			// eslint-disable-next-line no-console
 			console.warn(`Error: Position "${theme?.position}" is invalid. It must be "left" or "right"`);
 		}
 
@@ -396,6 +398,7 @@ function setHiddenSystemMessages(hidden: StoreState['iframe']['hiddenSystemMessa
 			return true;
 		}
 
+		// eslint-disable-next-line no-console
 		console.warn(`Error: Invalid system message "${h}"`);
 		return false;
 	});
@@ -712,6 +715,7 @@ const init = (url: string) => {
 };
 
 if (typeof window.initRocket !== 'undefined') {
+	// eslint-disable-next-line no-console
 	console.warn('initRocket is now deprecated. Please update the livechat code.');
 	init(window.initRocket[0]);
 }

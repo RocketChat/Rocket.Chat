@@ -3,11 +3,14 @@ import { unlink } from 'fs/promises';
 import { isNativeError } from 'util/types';
 
 import type { IUpload } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import mkdirp from 'mkdirp';
 
 import { UploadFS } from './ufs';
 import type { StoreOptions } from './ufs-store';
 import { Store } from './ufs-store';
+
+const logger = new Logger('Ufs:UfsLocal');
 
 type LocalStoreOptions = StoreOptions & {
 	mode?: string;
@@ -50,15 +53,15 @@ export class LocalStore extends Store {
 				// Create the directory
 				mkdirp(path, { mode })
 					.then(() => {
-						console.info(`LocalStore: store created at ${path}`);
+						logger.info(`LocalStore: store created at ${path}`);
 					})
 					.catch((err) => {
-						console.error(`LocalStore: cannot create store at ${path} (${err.message})`);
+						logger.error(`LocalStore: cannot create store at ${path} (${err.message})`);
 					});
 			} else {
 				// Set directory permissions
 				fs.chmod(path, mode, (err) => {
-					err && console.error(`LocalStore: cannot set store permissions ${mode} (${err.message})`);
+					err && logger.error(`LocalStore: cannot set store permissions ${mode} (${err.message})`);
 				});
 			}
 		});

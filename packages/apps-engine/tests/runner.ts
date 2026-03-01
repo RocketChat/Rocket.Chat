@@ -15,6 +15,7 @@ import { TapBark } from 'tap-bark';
 
 	await testRunner.run(testSet);
 })().catch((e) => {
+	// eslint-disable-next-line no-console
 	console.error(e);
 	process.exit(1);
 });

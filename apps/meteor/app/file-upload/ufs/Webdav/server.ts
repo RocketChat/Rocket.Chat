@@ -41,6 +41,7 @@ class WebdavStore extends UploadFS.Store {
 			if (err.message.toLowerCase() === 'not found') {
 				void client.createDirectory(options.uploadFolderPath);
 			} else if (err.message.toLowerCase() === 'unauthorized') {
+				// eslint-disable-next-line no-console
 				console.warn('File upload is unauthorized to connect on Webdav, please verify your credentials');
 			}
 		});

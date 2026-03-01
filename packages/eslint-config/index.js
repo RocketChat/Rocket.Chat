@@ -233,6 +233,7 @@ export default defineConfig(
 			'no-async-promise-executor': 'warn',
 			'no-await-in-loop': 'error',
 			'no-case-declarations': 'warn',
+			'no-console': 'warn',
 			'no-constant-binary-expression': 'warn',
 			'no-debugger': 'error',
 			'no-inner-declarations': ['error', 'functions'],

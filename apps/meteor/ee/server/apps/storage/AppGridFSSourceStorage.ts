@@ -1,9 +1,12 @@
 import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import { AppSourceStorage } from '@rocket.chat/apps-engine/server/storage';
+import { Logger } from '@rocket.chat/logger';
 import { streamToBuffer } from '@rocket.chat/tools';
 import { MongoInternals } from 'meteor/mongo';
 import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import { ObjectId } from 'mongodb';
+
+const logger = new Logger('EE:Apps:Storage:AppGridFSSourceStorage');
 
 export class AppGridFSSourceStorage extends AppSourceStorage {
 	private pathPrefix = 'GridFS:/';
@@ -62,7 +65,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 			await this.bucket.delete(this.itemToObjectId(item));
 		} catch (error: any) {
 			if (error.message.includes('File not found for id')) {
-				console.warn(
+				logger.warn(
 					`This instance could not remove the ${item.info.name} app package. If you are running Rocket.Chat in a cluster with multiple instances, possibly other instance removed the package. If this is not the case, it is possible that the file in the database got renamed or removed manually.`,
 				);
 				return;

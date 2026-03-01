@@ -80,6 +80,7 @@ export class ProxiedApp {
 			// Range of JSON-RPC error codes: https://www.jsonrpc.org/specification#error_object
 			if (e.code >= -32999 || e.code <= -32000) {
 				// we really need to receive a logger from rocket.chat
+				// eslint-disable-next-line no-console
 				console.error('JSON-RPC error received: ', inspect(e, { depth: 10 }));
 			}
 		}

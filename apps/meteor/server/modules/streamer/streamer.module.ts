@@ -1,9 +1,12 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { StreamerEvents } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { EventEmitter } from 'eventemitter3';
 
 import type { IPublication, Rule, Connection, DDPSubscription, IStreamer, IRules, TransformMessage } from './types';
 import { SystemLogger } from '../../lib/logger/system';
+
+const logger = new Logger('Modules:StreamerModule');
 
 class StreamerCentralClass<N extends keyof StreamerEvents> extends EventEmitter {
 	public instances: Record<string, Streamer<N>> = {};
@@ -39,7 +42,7 @@ export abstract class Streamer<N extends keyof StreamerEvents> extends EventEmit
 		super();
 
 		if (StreamerCentral.instances[name]) {
-			console.warn('Streamer instance already exists:', name);
+			logger.warn('Streamer instance already exists:', name);
 			return StreamerCentral.instances[name];
 		}
 

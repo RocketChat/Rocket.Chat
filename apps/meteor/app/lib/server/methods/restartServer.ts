@@ -1,7 +1,10 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+
+const logger = new Logger('Lib:RestartServer');
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -27,7 +30,7 @@ Meteor.methods<ServerMethods>({
 
 		setTimeout(() => {
 			setTimeout(() => {
-				console.warn('Call to process.exit() timed out, aborting.');
+				logger.warn('Call to process.exit() timed out, aborting.');
 				process.abort();
 			}, 1000);
 			process.exit(1);

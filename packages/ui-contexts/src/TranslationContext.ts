@@ -42,6 +42,7 @@ export const TranslationContext = createContext<TranslationContextValue>({
 		},
 	],
 	language: '',
+	// eslint-disable-next-line no-console
 	loadLanguage: async () => console.warn('TranslationContext: loadLanguage not implemented'),
 	translate: Object.assign((key: string) => key, {
 		has: (key: string): key is TranslationKey => Boolean(key),

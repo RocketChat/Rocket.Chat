@@ -43,6 +43,7 @@ class VideoRecorder {
 		};
 
 		const handleError = (error: any) => {
+			// eslint-disable-next-line no-console
 			console.error(error);
 			cb?.call(this, false);
 		};

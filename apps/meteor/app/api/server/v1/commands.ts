@@ -1,5 +1,6 @@
 import { Apps } from '@rocket.chat/apps';
 import type { SlashCommand } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
@@ -12,6 +13,8 @@ import { slashCommands } from '../../../utils/server/slashCommand';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+
+const logger = new Logger('Api:Commands');
 
 type CommandsGetParams = { command: string };
 
@@ -173,7 +176,7 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 	};
 
 	if (fieldsToRemove.length > 0 && fieldsToGet.length > 0) {
-		console.warn("Can't mix remove and get fields");
+		logger.warn("Can't mix remove and get fields");
 		fieldsToRemove.splice(0, fieldsToRemove.length);
 	}
 

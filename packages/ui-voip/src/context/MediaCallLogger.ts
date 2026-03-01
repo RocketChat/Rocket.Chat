@@ -9,18 +9,22 @@ export class MediaCallLogger implements IMediaSignalLogger {
 	}
 
 	log(...what: any[]): void {
+		// eslint-disable-next-line no-console
 		this.isDebug && console.log(...what);
 	}
 
 	debug(...what: any[]): void {
+		// eslint-disable-next-line no-console
 		this.isDebug && console.debug(...what);
 	}
 
 	error(...what: any[]): void {
+		// eslint-disable-next-line no-console
 		console.error(...what);
 	}
 
 	warn(...what: any[]): void {
+		// eslint-disable-next-line no-console
 		console.warn(...what);
 	}
 }

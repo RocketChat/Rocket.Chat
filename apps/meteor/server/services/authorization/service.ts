@@ -1,6 +1,7 @@
 import type { IAuthorization, RoomAccessValidator } from '@rocket.chat/core-services';
 import { License, ServiceClass } from '@rocket.chat/core-services';
 import type { IUser, IRole, IRoom, ISubscription } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Subscriptions, Rooms, Users, Roles, Permissions } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -9,6 +10,8 @@ import { canReadRoom } from './canReadRoom';
 import { AuthorizationUtils } from '../../../app/authorization/lib/AuthorizationUtils';
 
 import './canAccessRoomLivechat';
+
+const logger = new Logger('Services:Service');
 
 // Register as class
 export class Authorization extends ServiceClass implements IAuthorization {
@@ -52,7 +55,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 			AuthorizationUtils.addRolePermissionWhiteList('guest', permissions);
 		} catch (error) {
-			console.error('Authorization Service did not start correctly', error);
+			logger.error('Authorization Service did not start correctly', error);
 		}
 	}
 

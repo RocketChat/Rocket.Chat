@@ -1,4 +1,5 @@
 import { License } from '@rocket.chat/license';
+import { Logger } from '@rocket.chat/logger';
 import { Settings, Users } from '@rocket.chat/models';
 import { isLicensesInfoProps } from '@rocket.chat/rest-typings';
 import { check } from 'meteor/check';
@@ -8,6 +9,8 @@ import { hasPermissionAsync } from '../../../app/authorization/server/functions/
 import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server';
 import { updateAuditedByUser } from '../../../server/settings/lib/auditedSettingUpdates';
+
+const logger = new Logger('EE:Api:Licenses');
 
 API.v1.addRoute(
 	'licenses.info',
@@ -32,7 +35,7 @@ API.v1.addRoute(
 					...(canManageCloud && cloudSyncAnnouncement && { cloudSyncAnnouncement }),
 				});
 			} catch (error) {
-				console.error('Unable to parse Cloud_Sync_Announcement_Payload');
+				logger.error('Unable to parse Cloud_Sync_Announcement_Payload');
 			}
 
 			return API.v1.success({

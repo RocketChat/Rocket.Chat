@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { LicenseLimitKind } from '@rocket.chat/core-typings';
 import { applyLicense, applyLicenseOrRemove, License } from '@rocket.chat/license';
+import { Logger } from '@rocket.chat/logger';
 import { Subscriptions, Users, Settings, LivechatContacts } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import moment from 'moment';
@@ -10,6 +11,8 @@ import { syncWorkspace } from '../../../../app/cloud/server/functions/syncWorksp
 import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { callbacks } from '../../../../server/lib/callbacks';
+
+const logger = new Logger('EE:License:Server:Startup');
 
 export const startLicense = async () => {
 	settings.watch<string>('Site_Url', (value) => {
@@ -101,7 +104,7 @@ export const startLicense = async () => {
 		try {
 			await syncWorkspace();
 		} catch (error) {
-			console.error(error);
+			logger.error(error);
 		}
 	};
 

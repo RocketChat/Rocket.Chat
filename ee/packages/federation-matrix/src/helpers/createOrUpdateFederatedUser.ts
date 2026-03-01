@@ -11,6 +11,7 @@ import { Users } from '@rocket.chat/models';
 export async function createOrUpdateFederatedUser(options: { username: string; name?: string; origin: string }): Promise<IUser> {
 	const { username, name = username, origin } = options;
 
+	// eslint-disable-next-line no-console
 	console.log('createOrUpdateFederatedUser ->', options);
 
 	// TODO: Have a specific method to handle this upsert

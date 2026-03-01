@@ -301,6 +301,7 @@ export class SynapseClient {
 					await wait(delay);
 				}
 			} catch (error) {
+				// eslint-disable-next-line no-console
 				console.warn(`Attempt ${attempt} to find room member failed:`, error);
 
 				if (attempt < maxRetries) {
@@ -437,6 +438,7 @@ export class SynapseClient {
 					await wait(delay);
 				}
 			} catch (error) {
+				// eslint-disable-next-line no-console
 				console.warn(`Attempt ${attempt} to find message in room failed:`, error);
 
 				if (attempt < maxRetries) {
@@ -619,6 +621,7 @@ export class SynapseClient {
 					await wait(delay);
 				}
 			} catch (error) {
+				// eslint-disable-next-line no-console
 				console.warn(`Attempt ${attempt} to find file message in room failed:`, error);
 
 				if (attempt < maxRetries) {

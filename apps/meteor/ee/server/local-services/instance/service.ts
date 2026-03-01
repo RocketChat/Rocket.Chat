@@ -4,6 +4,7 @@ import type { AppStatusReport } from '@rocket.chat/core-services';
 import { Apps, License, ServiceClassInternal, Settings } from '@rocket.chat/core-services';
 import type { IInstanceStatus } from '@rocket.chat/core-typings';
 import { InstanceStatus, defaultPingInterval, indexExpire } from '@rocket.chat/instance-status';
+import { Logger } from '@rocket.chat/logger';
 import { InstanceStatus as InstanceStatusRaw } from '@rocket.chat/models';
 import EJSON from 'ejson';
 import type { BrokerNode } from 'moleculer';
@@ -15,6 +16,8 @@ import { SystemLogger } from '../../../../server/lib/logger/system';
 import { StreamerCentral } from '../../../../server/modules/streamer/streamer.module';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import type { IInstanceService } from '../../sdk/types/IInstanceService';
+
+const logger = new Logger('EE:LocalServices:Instance:Service');
 
 const hostIP = process.env.INSTANCE_IP ? String(process.env.INSTANCE_IP).trim() : 'localhost';
 
@@ -188,7 +191,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 
 			await this.startBroadcast();
 		} catch (error) {
-			console.error('Instance service did not start correctly', error);
+			logger.error('Instance service did not start correctly', error);
 		}
 	}
 

@@ -36,6 +36,7 @@ import { setUpdatedAt } from './setUpdatedAt';
 const warnFields =
 	process.env.NODE_ENV !== 'production' || process.env.SHOW_WARNINGS === 'true'
 		? (...rest: any): void => {
+				// eslint-disable-next-line no-console
 				console.warn(...rest, new Error().stack);
 			}
 		: new Function();
@@ -97,6 +98,7 @@ export abstract class BaseRaw<
 			}
 
 			this.pendingIndexes = this.col.createIndexes(indexes).catch((e) => {
+				// eslint-disable-next-line no-console
 				console.warn(`Some indexes for collection '${this.collectionName}' could not be created:\n\t${e.message}`);
 			}) as unknown as Promise<void>;
 
@@ -123,6 +125,7 @@ export abstract class BaseRaw<
 	public updateFromUpdater(query: Filter<T>, updater: Updater<T>, options: UpdateOptions = {}): Promise<UpdateResult> {
 		const updateFilter = updater.getUpdateFilter();
 		return this.updateOne(query, updateFilter, options).catch((e) => {
+			// eslint-disable-next-line no-console
 			console.warn(e, updateFilter);
 			return Promise.reject(e);
 		});

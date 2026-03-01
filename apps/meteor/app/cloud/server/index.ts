@@ -1,4 +1,5 @@
 import { cronJobs } from '@rocket.chat/cron';
+import { Logger } from '@rocket.chat/logger';
 import { Meteor } from 'meteor/meteor';
 
 import { connectWorkspace } from './functions/connectWorkspace';
@@ -8,6 +9,8 @@ import { retrieveRegistrationStatus } from './functions/retrieveRegistrationStat
 import { syncWorkspace } from './functions/syncWorkspace';
 import { SystemLogger } from '../../../server/lib/logger/system';
 import './methods';
+
+const logger = new Logger('Cloud:Index');
 
 const licenseCronName = 'Cloud Workspace Sync';
 
@@ -22,7 +25,7 @@ Meteor.startup(async () => {
 				throw new Error("Couldn't register with token.  Please make sure token is valid or hasn't already been used");
 			}
 
-			console.log('Successfully registered with token provided by REG_TOKEN!');
+			logger.info('Successfully registered with token provided by REG_TOKEN!');
 		} catch (err: any) {
 			SystemLogger.error({ msg: 'An error occurred registering with token.', err });
 		}

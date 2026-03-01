@@ -51,6 +51,7 @@ export const addSprinfToI18n = function (t: any) {
  *
  * const result = extractTranslationNamespaces(source);
  *
+ // eslint-disable-next-line no-console
  * console.log(result);
  *
  * // {

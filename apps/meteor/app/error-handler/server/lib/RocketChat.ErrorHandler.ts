@@ -1,9 +1,12 @@
+import { Logger } from '@rocket.chat/logger';
 import { Settings, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { throttledCounter } from '../../../../lib/utils/throttledCounter';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
+
+const logger = new Logger('ErrorHandler:RocketChatErrorHandler');
 
 const incException = throttledCounter((counter) => {
 	Settings.incrementValueById('Uncaught_Exceptions_Count', counter, { returnDocument: 'after' })
@@ -100,15 +103,15 @@ process.on('unhandledRejection', (error) => {
 		void errorHandler.trackError(error.message, error.stack);
 	}
 
-	console.error('=== UnHandledPromiseRejection ===');
-	console.error(error);
-	console.error('---------------------------------');
-	console.error('Errors like this can cause oplog processing errors.');
-	console.error(
+	logger.error('=== UnHandledPromiseRejection ===');
+	logger.error(error);
+	logger.error('---------------------------------');
+	logger.error('Errors like this can cause oplog processing errors.');
+	logger.error(
 		'Setting EXIT_UNHANDLEDPROMISEREJECTION will cause the process to exit allowing your service to automatically restart the process',
 	);
-	console.error('Future node.js versions will automatically exit the process');
-	console.error('=================================');
+	logger.error('Future node.js versions will automatically exit the process');
+	logger.error('=================================');
 
 	if (process.env.TEST_MODE || process.env.NODE_ENV === 'development' || process.env.EXIT_UNHANDLEDPROMISEREJECTION) {
 		process.exit(1);
@@ -118,11 +121,11 @@ process.on('unhandledRejection', (error) => {
 process.on('uncaughtException', async (error) => {
 	incException();
 
-	console.error('=== UnCaughtException ===');
-	console.error(error);
-	console.error('-------------------------');
-	console.error('Errors like this can cause oplog processing errors.');
-	console.error('===========================');
+	logger.error('=== UnCaughtException ===');
+	logger.error(error);
+	logger.error('-------------------------');
+	logger.error('Errors like this can cause oplog processing errors.');
+	logger.error('===========================');
 
 	void errorHandler.trackError(error.message, error.stack);
 

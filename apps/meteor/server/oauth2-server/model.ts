@@ -8,7 +8,9 @@ import type {
 	Token,
 	User,
 } from '@node-oauth/oauth2-server';
+import { Logger } from '@rocket.chat/logger';
 import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens } from '@rocket.chat/models';
+const logger = new Logger('Oauth2Server:Model');
 
 export type ModelConfig = {
 	debug?: boolean;
@@ -25,7 +27,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async verifyScope(token: Token, scope: string | string[]): Promise<boolean> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', 'in grantTypeAllowed (clientId:', token.client.id, ', grantType:', `${scope})`);
+			logger.info('[OAuth2Server]', 'in grantTypeAllowed (clientId:', token.client.id, ', grantType:', `${scope})`);
 		}
 
 		if (!Array.isArray(scope)) {
@@ -38,7 +40,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async getAccessToken(accessToken: string): Promise<Token | Falsey> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', 'in getAccessToken (bearerToken:', accessToken, ')');
+			logger.info('[OAuth2Server]', 'in getAccessToken (bearerToken:', accessToken, ')');
 		}
 
 		const token = await OAuthAccessTokens.findOneByAccessToken(accessToken);
@@ -66,7 +68,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async getClient(clientId: string, clientSecret?: string): Promise<Client | Falsey> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', 'in getClient (clientId:', clientId, ', clientSecret:', clientSecret, ')');
+			logger.info('[OAuth2Server]', 'in getClient (clientId:', clientId, ', clientSecret:', clientSecret, ')');
 		}
 
 		let client;
@@ -91,7 +93,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async getAuthorizationCode(authorizationCode: string): Promise<AuthorizationCode | Falsey> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', `in getAuthorizationCode (authCode: ${authorizationCode})`);
+			logger.info('[OAuth2Server]', `in getAuthorizationCode (authCode: ${authorizationCode})`);
 		}
 
 		const code = await OAuthAuthCodes.findOneByAuthCode(authorizationCode);
@@ -127,7 +129,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 		user: User,
 	): Promise<AuthorizationCode | Falsey> {
 		if (this.debug === true) {
-			console.log(
+			logger.info(
 				'[OAuth2Server]',
 				'in saveAuthCode (code:',
 				code.authorizationCode,
@@ -166,7 +168,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async saveToken(token: Token, client: Client, user: User): Promise<Token | Falsey> {
 		if (this.debug === true) {
-			console.log(
+			logger.info(
 				'[OAuth2Server]',
 				'in saveToken (token:',
 				token.accessToken,
@@ -210,7 +212,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async getRefreshToken(refreshToken: string): Promise<RefreshToken | Falsey> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', `in getRefreshToken (refreshToken: ${refreshToken})`);
+			logger.info('[OAuth2Server]', `in getRefreshToken (refreshToken: ${refreshToken})`);
 		}
 
 		// Keep compatibility with old collection
@@ -248,7 +250,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async revokeToken(token: RefreshToken | Token): Promise<boolean> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', `in revokeToken (token: ${token.accessToken})`);
+			logger.info('[OAuth2Server]', `in revokeToken (token: ${token.accessToken})`);
 		}
 
 		if (token.refreshToken) {
@@ -267,7 +269,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 
 	async revokeAuthorizationCode(code: AuthorizationCode): Promise<boolean> {
 		if (this.debug === true) {
-			console.log('[OAuth2Server]', `in revokeAuthorizationCode (code: ${code.authorizationCode})`);
+			logger.info('[OAuth2Server]', `in revokeAuthorizationCode (code: ${code.authorizationCode})`);
 		}
 		await OAuthAuthCodes.deleteOne({ authCode: code.authorizationCode });
 		return true;

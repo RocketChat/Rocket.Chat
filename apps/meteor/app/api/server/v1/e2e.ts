@@ -1,4 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -23,6 +24,8 @@ import { updateGroupKey } from '../../../e2e/server/methods/updateGroupKey';
 import { settings } from '../../../settings/server';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
+
+const logger = new Logger('Api:E2e');
 
 // After 10s the room lock will expire, meaning that if for some reason the process never completed
 // The next reset will be available 10s after
@@ -372,7 +375,7 @@ API.v1.addRoute(
 				await resetRoomKey(rid, this.userId, e2eKey, e2eKeyId);
 				return API.v1.success();
 			} catch (e) {
-				console.error(e);
+				logger.error(e);
 				return API.v1.failure('error-e2e-key-reset-failed');
 			} finally {
 				LockMap.delete(rid);

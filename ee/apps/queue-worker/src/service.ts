@@ -5,6 +5,8 @@ import { startBroker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
 import polka from 'polka';
 
+const logger = new Logger('QueueWorker');
+
 const PORT = process.env.PORT || 3038;
 
 void (async () => {
@@ -29,7 +31,7 @@ void (async () => {
 				await api.nodeList();
 				res.end('ok');
 			} catch (err) {
-				console.error('Service not healthy', err);
+				logger.error('Service not healthy', err);
 
 				res.writeHead(500);
 				res.end('not healthy');

@@ -100,6 +100,7 @@ export interface ClientStream extends Emitter {
 	 * @example
 	 * ```ts
 	 * const stop = ddp.onCollection('users', (data) => {
+	 // eslint-disable-next-line no-console
 	 * 	console.log(data);
 	 * });
 	 * ```
@@ -112,6 +113,7 @@ export interface ClientStream extends Emitter {
 	 * @example
 	 * ```ts
 	 * const subscription = ddp.subscribe('my-subscription');
+	 // eslint-disable-next-line no-console
 	 * console.log(ddp.subscriptions.get(subscription.id));
 	 * // prints:
 	 * // {

@@ -6,9 +6,9 @@ import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
 import type { ILivechatDepartment, IOmnichannelRoom, SelectedAgent, IMessage, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
-
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { closeRoom } from '../../../livechat/server/lib/closeRoom';
@@ -20,6 +20,8 @@ import { createRoom } from '../../../livechat/server/lib/rooms';
 import { online } from '../../../livechat/server/lib/service-status';
 import { transfer } from '../../../livechat/server/lib/transfer';
 import { settings } from '../../../settings/server';
+
+const logger = new Logger('Apps:Livechat');
 
 declare module '@rocket.chat/apps/dist/converters/IAppMessagesConverter' {
 	export interface IAppMessagesConverter {
@@ -292,7 +294,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		this.orch.debugLog(`The App ${appId} is looking for livechat visitors.`);
 
 		if (this.orch.isDebugging()) {
-			console.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');
+			logger.warn('The method AppLivechatBridge.findVisitors is deprecated. Please consider using its alternatives');
 		}
 
 		return Promise.all(

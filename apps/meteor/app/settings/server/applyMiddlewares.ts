@@ -1,6 +1,10 @@
+import { Logger } from '@rocket.chat/logger';
+
 /* eslint-disable react-hooks/rules-of-hooks */
 import { use } from './Middleware';
 import { settings } from './cached';
+
+const logger = new Logger('Settings:ApplyMiddlewares');
 
 const getProcessingTimeInMS = (time: [number, number]): number => time[0] * 1000 + time[1] / 1e6;
 
@@ -18,7 +22,7 @@ if (process.env.DEBUG_SETTINGS === 'true') {
 				const start = process.hrtime();
 				callback(...args);
 				const elapsed = process.hrtime(start);
-				console.log(`settings.watch: ${_id} ${getProcessingTimeInMS(elapsed)}ms`);
+				logger.info(`settings.watch: ${_id} ${getProcessingTimeInMS(elapsed)}ms`);
 			},
 			options,
 		);

@@ -1,6 +1,8 @@
+import { Logger } from '@rocket.chat/logger';
 import { LivechatRooms, Rooms, Subscriptions, Users } from '@rocket.chat/models';
-
 import { addMigration } from '../../lib/migrations';
+
+const logger = new Logger('Startup:V312');
 
 addMigration({
 	version: 312,
@@ -13,8 +15,8 @@ addMigration({
 				Users.col.dropIndex('active_1'),
 			]);
 		} catch (error: unknown) {
-			console.warn('Error dropping redundant indexes, continuing...');
-			console.warn(error);
+			logger.warn('Error dropping redundant indexes, continuing...');
+			logger.warn(error);
 		}
 	},
 });

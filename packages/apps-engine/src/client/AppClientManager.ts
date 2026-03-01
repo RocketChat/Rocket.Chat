@@ -22,6 +22,7 @@ export class AppClientManager {
 
 	public async load(): Promise<void> {
 		this.apps = await this.communicator.getEnabledApps();
+		// eslint-disable-next-line no-console
 		console.log('Enabled apps:', this.apps);
 	}
 

@@ -146,6 +146,7 @@ export function startBroker(options: Moleculer.BrokerOptions = {}): NetworkBroke
 
 		errorRegenerator: new CustomRegenerator(),
 		started(): void {
+			// eslint-disable-next-line no-console
 			console.log('NetworkBroker started successfully.');
 		},
 		...options,

@@ -184,6 +184,7 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 
 						// Log warning if delay is significant (>2 seconds)
 						if (receiveDelay > 2000) {
+							// eslint-disable-next-line no-console
 							console.warn(`[Message Delivery] High delay detected: ${receiveDelay}ms. Possible network or backend issue.`);
 						}
 					}
