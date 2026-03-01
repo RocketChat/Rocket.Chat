@@ -1,13 +1,14 @@
 {
-	"extends": "@rocket.chat/tsconfig/client.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"rootDir": "./src",
+
+		"declaration": true,
+		"declarationMap": true,
 		"outDir": "./dist",
+
 		"target": "es6",
-		"module": "commonjs",
-		"esModuleInterop": true,
-		"sourceMap": true
 	},
-	"include": ["./src/**/*"],
+	"include": ["./src"],
 	"exclude": ["**/*.spec.ts", "**/*.test.ts"]
 }

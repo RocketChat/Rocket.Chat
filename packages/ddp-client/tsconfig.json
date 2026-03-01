@@ -1,9 +1,7 @@
 {
-	"extends": "@rocket.chat/tsconfig/client.json",
+	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"module": "commonjs",
-		"esModuleInterop": true,
-		"sourceMap": true,
+		"rootDir": "."
 	},
-	"include": ["./src/**/*", "__examples__/**/*", "__mocks__/**/*"],
+	"include": ["./src", "__examples__/**/*", "__mocks__/**/*"]
 }
