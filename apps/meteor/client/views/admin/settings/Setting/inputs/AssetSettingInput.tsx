@@ -30,7 +30,7 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 			}
 		}
 
-		const filesArray = Array.from(files ?? [])
+		const filesArray = Array.from(files ?? []);
 
 		if (fileConstraints?.extensions) {
 			const isValid = filesArray.every((file) => {
