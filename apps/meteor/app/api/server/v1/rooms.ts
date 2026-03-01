@@ -332,7 +332,7 @@ const saveNotificationResponseSchema = ajv.compile({
 	additionalProperties: false,
 });
 
-export const roomsSaveNotificationEndpoint = API.v1.post(
+const roomsSaveNotificationEndpoint = API.v1.post(
 	'rooms.saveNotification',
 	{
 		authRequired: true,
@@ -1237,7 +1237,8 @@ export const roomEndpoints = API.v1
 
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
+	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
