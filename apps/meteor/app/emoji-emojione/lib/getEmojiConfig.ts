@@ -74,7 +74,7 @@ const convertUnicode = mem(
 		if (joypixels.sprites) {
 			return `${m2}<span class="emojione emojione-${category} _${unicode}"  ${title}>${alt}</span>`;
 		}
-		return `${m2}<img class="emojione" alt="${alt}" ${title} src="${ePath}${unicode}${emojione.fileExtension}"/>`;
+		return `${m2}<img class="emojione" alt="${alt}" ${title} src="${ePath}${unicode}${joypixels.fileExtension}"/>`;
 	},
 	{ maxAge: 1000, cacheKey: JSON.stringify },
 );
