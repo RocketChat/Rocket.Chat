@@ -30,7 +30,23 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 			}
 		}
 
-		Object.values(files ?? []).forEach(async (blob) => {
+		const filesArray = Array.from(files ?? [])
+
+		if (fileConstraints?.extensions) {
+			const isValid = filesArray.every((file) => {
+				const extension = file.name.split('.').pop()?.toLowerCase();
+				return extension && fileConstraints.extensions.includes(extension);
+			});
+
+			if (!isValid) {
+				return dispatchToastMessage({
+					type: 'error',
+					message: t('error-invalid-file-type'),
+				});
+			}
+		}
+
+		filesArray.forEach(async (blob) => {
 			dispatchToastMessage({ type: 'info', message: t('Uploading_file') });
 
 			const fileData = new FormData();
