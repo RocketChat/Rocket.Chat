@@ -1,5 +1,5 @@
 import * as fc from 'fast-check';
-import { parse } from '../src';
+import { parse } from '../src/index';
 
 describe('Message Parser Property-Based Fuzz Testing', () => {
     it('should return a valid array of ASTNodes for any arbitrary string', () => {
@@ -18,6 +18,7 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
                     if (!(error instanceof Error && error.name === 'SyntaxError')) {
                         throw error;
                     }
+                    // Intentionally ignore SyntaxError during fuzzing
                 }
             }),
             { numRuns: 1000 } // Execute 1000 random string checks
@@ -53,6 +54,7 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
                         if (!(e instanceof Error && e.name === 'SyntaxError')) {
                             throw e;
                         }
+                        // Intentionally ignore SyntaxError during fuzzing
                     }
                 }
             ),
