@@ -27,7 +27,6 @@ import type { IntegrationHooksEndpoints } from './v1/integrations/hooks';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
-import type { MailerEndpoints } from './v1/mailer';
 import type { MeEndpoints } from './v1/me';
 import type { MiscEndpoints } from './v1/misc';
 import type { ModerationEndpoints } from './v1/moderation';
@@ -81,7 +80,6 @@ export interface Endpoints
 		E2eEndpoints,
 		AssetsEndpoints,
 		EmailInboxEndpoints,
-		MailerEndpoints,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
 		ImportEndpoints,
@@ -213,9 +211,6 @@ export * from './v1/channels';
 export * from './v1/customSounds';
 export * from './v1/customUserStatus';
 export * from './v1/subscriptionsEndpoints';
-export * from './v1/mailer';
-export * from './v1/mailer/MailerParamsPOST';
-export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
 export * from './v1/invites';
 export * from './v1/dm';
