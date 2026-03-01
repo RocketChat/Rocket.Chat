@@ -26,6 +26,10 @@ const groupsListPropsSchema = {
             type: 'string',
             nullable: true,
         },
+        name: {
+            type: 'string',
+            nullable: true,
+        },
     },
     required: [],
     additionalProperties: false,
