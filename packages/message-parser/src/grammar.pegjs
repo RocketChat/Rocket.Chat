@@ -148,7 +148,7 @@ Heading = count:HeadingStart [ \t]+ text:Inline+ { return heading(text, count); 
 
 HeadingStart = value:"#" |1..4| { return value.length; }
 
-HeadingChunk = text:$(!EndOfLine .)+ { return plain(text); }
+
 
 /**
  *
