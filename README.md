@@ -120,3 +120,5 @@ We're hiring developers, technical support, and product managers all the time. C
 # 🗒️ Credits
 
 - Emoji provided graciously by [JoyPixels](https://www.joypixels.com).
+
+<!-- Contribution practice by Nitish -->
