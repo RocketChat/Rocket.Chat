@@ -979,9 +979,6 @@ export type ChatEndpoints = {
 	'/v1/chat.unStarMessage': {
 		POST: (params: ChatUnstarMessage) => void;
 	};
-	'/v1/chat.reportMessage': {
-		POST: (params: ChatReportMessage) => void;
-	};
 	'/v1/chat.getDiscussions': {
 		GET: (params: ChatGetDiscussions) => {
 			messages: IMessage[];

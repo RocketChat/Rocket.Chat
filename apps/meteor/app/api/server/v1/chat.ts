@@ -4,7 +4,6 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
-	isChatReportMessageProps,
 	isChatGetURLPreviewProps,
 	isChatUpdateProps,
 	isChatGetThreadsListProps,
@@ -207,6 +206,23 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+type ChatReportMessage = {
+	messageId: string;
+	description: string;
+};
+
+const ChatReportMessageSchema = {
+	type: 'object',
+	properties: {
+		messageId: { type: 'string' },
+		description: { type: 'string' },
+	},
+	required: ['messageId', 'description'],
+	additionalProperties: false,
+};
+
+const isChatReportMessageLocalProps = ajv.compile<ChatReportMessage>(ChatReportMessageSchema);
+
 const chatEndpoints = API.v1
 	.post(
 		'chat.pinMessage',
@@ -349,6 +365,30 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				message,
 			});
+		},
+	)
+	.post(
+		'chat.reportMessage',
+		{
+			authRequired: true,
+			body: isChatReportMessageLocalProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] }
+					},
+					required: ['success'],
+					additionalProperties: false
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { messageId, description } = this.bodyParams;
+			await reportMessage(messageId, description, this.userId);
+			return API.v1.success();
 		},
 	);
 
@@ -507,27 +547,6 @@ API.v1.addRoute(
 			}
 
 			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.reportMessage',
-	{ authRequired: true, validateParams: isChatReportMessageProps },
-	{
-		async post() {
-			const { messageId, description } = this.bodyParams;
-			if (!messageId) {
-				return API.v1.failure('The required "messageId" param is missing.');
-			}
-
-			if (!description) {
-				return API.v1.failure('The required "description" param is missing.');
-			}
-
-			await reportMessage(messageId, description, this.userId);
 
 			return API.v1.success();
 		},
