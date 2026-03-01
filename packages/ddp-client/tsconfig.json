@@ -1,12 +1,9 @@
 {
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
-		"rootDir": "./src",
-		"outDir": "./dist",
-		"target": "ES2023",
 		"module": "commonjs",
 		"esModuleInterop": true,
 		"sourceMap": true,
 	},
-	"include": ["./src/**/*", "__examples__/test.ts"],
+	"include": ["./src/**/*", "__examples__/**/*", "__mocks__/**/*"],
 }
