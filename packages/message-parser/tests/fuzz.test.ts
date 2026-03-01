@@ -3,6 +3,7 @@ import { parse } from '../src/index';
 
 describe('Message Parser Property-Based Fuzz Testing', () => {
     it('should return a valid array of ASTNodes for any arbitrary string', () => {
+        let hasSuccessfulParse = false;
         fc.assert(
             fc.property(fc.string({ maxLength: 500 }), (text) => {
                 try {
@@ -12,6 +13,7 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
                     ast.forEach((val: unknown) => {
                         expect(val).toMatchObject({ type: expect.any(String) });
                     });
+                    hasSuccessfulParse = true;
                 } catch (error) {
                     if (!(error instanceof Error && error.name === 'SyntaxError')) {
                         throw error;
@@ -21,9 +23,11 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
             }),
             { numRuns: 1000 } // Execute 1000 random string checks
         );
+        expect(hasSuccessfulParse).toBe(true);
     });
 
     it('should guarantee structural integrity for deeply nested markdown', () => {
+        let hasSuccessfulParse = false;
         // Valid sequences that generate various inline tokens
         const sequences = ['*', '_', '~', '`', '# ', '## ', '> ', 'http://', 'https://', ' [', '](', ':', '!)', '\n'];
 
@@ -47,6 +51,7 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
                                 expect(val).toMatchObject({ value: expect.any(Array) });
                             }
                         });
+                        hasSuccessfulParse = true;
                     } catch (e) {
                         if (!(e instanceof Error && e.name === 'SyntaxError')) {
                             throw e;
@@ -57,6 +62,7 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
             ),
             { numRuns: 1000 }
         );
+        expect(hasSuccessfulParse).toBe(true);
     });
 });
 
