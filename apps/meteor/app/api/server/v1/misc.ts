@@ -195,7 +195,7 @@ const meEndpoints = API.v1.get(
 
 		return API.v1.success(await getUserInfo(user));
 	}
-};
+);
 
 export type MeEndpoints = ExtractRoutesFromAPI<typeof meEndpoints>;
 
