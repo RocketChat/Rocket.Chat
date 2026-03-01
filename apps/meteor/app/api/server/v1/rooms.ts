@@ -312,7 +312,7 @@ const saveNotificationBodySchema = ajv.compile<{
 }>({
 	type: 'object',
 	properties: {
-		roomId: { type: 'string' },
+		roomId: { type: 'string', minLength: 1 },
 		notifications: {
 			type: 'object',
 			minProperties: 1,
