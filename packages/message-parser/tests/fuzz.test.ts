@@ -1,4 +1,4 @@
-import fc from 'fast-check';
+import * as fc from 'fast-check';
 import { parse } from '../src';
 
 describe('Message Parser Property-Based Fuzz Testing', () => {
