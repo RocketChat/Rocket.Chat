@@ -52,6 +52,7 @@
 		"@types/jest": "~30.0.0",
 		"@types/node": "~22.16.5",
 		"eslint": "~9.39.3",
+		"fast-check": "^4.5.3",
 		"jest": "~30.2.0",
 		"npm-run-all": "^4.1.5",
 		"peggy": "4.1.1",
