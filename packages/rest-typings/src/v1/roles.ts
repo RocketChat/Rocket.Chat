@@ -117,6 +117,20 @@ type RoleSyncProps = {
 	updatedSince?: string;
 };
 
+const RoleSyncPropsSchema = {
+	type: 'object',
+	properties: {
+		updatedSince: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isRoleSyncProps = ajv.compile<RoleSyncProps>(RoleSyncPropsSchema);
+
 export type RolesEndpoints = {
 	'/v1/roles.list': {
 		GET: () => {
