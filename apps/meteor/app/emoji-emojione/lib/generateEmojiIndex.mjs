@@ -6,31 +6,47 @@
 import fs from 'fs';
 import nsg from 'node-sprite-generator';
 import _ from 'underscore';
-import gm from 'gm'; // lgtm[js/unused-local-variable]
+import path from 'path';
 
-const assetFolder = '../../../node_modules/emojione-assets';
-const emojiJsonFile = `${assetFolder}/emoji.json`;
+// helper to resolve paths relative to this script file
+const scriptDir = path.dirname(new URL(import.meta.url).pathname);
 
-if (!fs.existsSync(emojiJsonFile)) {
-	console.error(`${emojiJsonFile} doesn't exist.`);
-	console.error("Maybe you need to run 'meteor npm install emojione-assets' or 'meteor npm install'?");
-} else {
-	const emojiJson = fs.readFileSync(emojiJsonFile);
-	generateEmojiPicker(emojiJson);
-}
+// Node 18+ has global fetch; if not available uncomment next line
+// import fetch from 'node-fetch';
 
-function generateEmojiPicker(data) {
-	const emojiList = JSON.parse(data);
-	console.log(`${Object.keys(emojiList).length} emojis found.`);
+// Resolve the path to emoji-json using Node's module resolution so the
+// script can be run from any working directory. Using createRequire avoids
+// experimental JSON import assertions and works reliably in ESM.
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const emojiJsonFile = require.resolve('emoji-toolkit/emoji.json');
 
-	let toneList = [];
-	let emojisByCategory = {};
+// directory where we'll temporarily store downloaded PNGs when using CDN
+// keep cache scoped to the script directory so that generated files don't
+// clutter the workspace root when the script is invoked from elsewhere.
+const tmpFolder = path.join(scriptDir, '.emoji-cache');
 
-	_.sortBy(Object.entries(emojiList), (a) => a[1].order).forEach(([code, emoji]) => {
-		if (emoji && emoji.shortname) {
-			const toneIndex = emoji.shortname.indexOf('_tone');
-			if (toneIndex !== -1) {
-				const tone = emoji.shortname.substr(1, toneIndex - 1);
+// ensure cache directory exists (for CDN downloads)
+fs.mkdirSync(tmpFolder, { recursive: true });
+
+const emojiJson = fs.readFileSync(emojiJsonFile, 'utf8');
+
+generateEmojiPicker(emojiJson);
+
+
+async function generateEmojiPicker(data) {
+    const emojiList = JSON.parse(data);
+    console.log(`${Object.keys(emojiList).length} emojis found.`);
+
+    let toneList = [];
+    let emojisByCategory = {};
+
+    // iterate in order field to keep categories sorted
+    _.sortBy(Object.entries(emojiList), (a) => a[1].order).forEach(([code, emoji]) => {
+        if (emoji && emoji.shortname) {
+            const toneIndex = emoji.shortname.indexOf('_tone');
+            if (toneIndex !== -1) {
+                const tone = emoji.shortname.replace(/:/g, '').split('_tone')[0];
 				if (!toneList.includes(tone)) {
 					toneList.push(tone);
 				}
@@ -90,11 +106,12 @@ function generateEmojiPicker(data) {
 
 	// emojisByCategory
 	output += `export const emojisByCategory = {\n`;
-	for (let category in emojisByCategory) {
+	for (const category of Object.keys(emojisByCategory)) {
 		output += `\t${category}: [\n`;
 
-		for (let emoji in emojisByCategory[category]) {
-			output += `\t\t'${emojiList[emojisByCategory[category][emoji]].shortname.replace(/:/g, '')}',\n`;
+		for (const code of emojisByCategory[category]) {
+			const short = emojiList[code].shortname.replace(/:/g, '');
+			output += `\t\t'${short}',\n`;
 		}
 
 		output += `\t],\n`;
@@ -113,25 +130,44 @@ function generateEmojiPicker(data) {
 
 	for (let category in emojisByCategory) {
 		let srcList = [];
-		let diversityList = [];
+		let diversityList = {};
 		const emojis = _.filter(emojiList, (x) => x.category === category);
-		const spritePath = `../../../public/packages/emojione/${category}-sprites.png`;
+		// derive output paths relative to this script, not the cwd
+		const spritePath = path.resolve(scriptDir, '../../../public/packages/emojione', `${category}-sprites.png`);
+		const cssOutputPath = path.resolve(scriptDir, '../client', `${category}-sprites.css`);
 
-		_.each(emojis, function (emoji) {
-			srcList.push(`${assetFolder}/png/64/${emoji.code_points.base}.png`);
-			if (emoji.diversity) {
-				diversityList[emoji.code_points.base] = true;
+		for (const emoji of emojis) {
+			const code = emoji.code_points.base;
+			const localPath = `${tmpFolder}/${code}.png`;
+			if (!fs.existsSync(localPath)) {
+				const url = `https://cdn.jsdelivr.net/npm/emoji-toolkit@latest/assets/64/${code}.png`;
+				console.log(`fetching ${url}`);
+				const res = await fetch(url);
+				if (res.ok) {
+					const buf = await res.arrayBuffer();
+					fs.writeFileSync(localPath, Buffer.from(buf));
+				} else {
+					console.warn(`failed to download ${code} (${res.status})`);
+				}
 			}
-		});
+			srcList.push(localPath);
+			if (emoji.diversity) {
+				diversityList[code] = true;
+			}
+		}
 		spriteCss += `@import './${category}-sprites.css';\n`;
+
+		// filter out any images that failed to download
+		srcList = srcList.filter((p) => fs.existsSync(p));
+		const templateFile = path.join(scriptDir, 'emojione.tpl');
 
 		nsg(
 			{
 				src: srcList,
 				spritePath: spritePath,
 				layout: 'packed',
-				stylesheet: 'emojione.tpl',
-				stylesheetPath: `../client/${category}-sprites.css`,
+				stylesheet: templateFile,
+				stylesheetPath: cssOutputPath,
 				compositor: 'gm',
 				layoutOptions: {
 					scaling: 1,
@@ -175,7 +211,8 @@ function generateEmojiPicker(data) {
 	image-rendering: optimizeQuality;
 }
 `;
-	fs.writeFileSync('../client/emojione-sprites.css', spriteCss, {
+	const emojioneCssPath = path.resolve(scriptDir, '../client/emojione-sprites.css');
+	fs.writeFileSync(emojioneCssPath, spriteCss, {
 		encoding: 'utf8',
 		flag: 'w',
 	});
