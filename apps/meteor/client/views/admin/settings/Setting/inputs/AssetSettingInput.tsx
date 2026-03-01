@@ -39,10 +39,11 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 			});
 
 			if (!isValid) {
-				return dispatchToastMessage({
+				dispatchToastMessage({
 					type: 'error',
 					message: t('error-invalid-file-type'),
 				});
+				return;
 			}
 		}
 
