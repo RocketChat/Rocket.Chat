@@ -4,7 +4,6 @@ import type { AnySchema } from 'ajv';
 import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
-
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
 import { parseQueryParams } from './parseQueryParams';
