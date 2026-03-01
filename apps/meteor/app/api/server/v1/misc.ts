@@ -17,6 +17,9 @@ import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
+import { ajv } from '../../../lib/ajv';
+import { validateUnauthorizedErrorResponse } from '../../../lib/rest/validators';
+import { ExtractRoutesFromAPI } from '../../../lib/rest/typings';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { browseChannelsMethod } from '../../../../server/methods/browseChannels';
@@ -169,18 +172,36 @@ import { getUserInfo } from '../helpers/getUserInfo';
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
+const meEndpoints = API.v1.get(
 	'me',
-	{ authRequired: true },
 	{
-		async get() {
-			const userFields = { ...getBaseUserFields(), services: 1 };
-			const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
-
-			return API.v1.success(await getUserInfo(user));
-		},
+		authRequired: true,
+		query: undefined,
+		response: {
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] }
+				},
+				required: ['success'],
+				additionalProperties: true
+			})
+		}
 	},
-);
+	async function action() {
+		const userFields = { ...getBaseUserFields(), services: 1 };
+		const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
+
+		return API.v1.success(await getUserInfo(user));
+	}
+};
+
+export type MeEndpoints = ExtractRoutesFromAPI<typeof meEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	interface Endpoints extends MeEndpoints {}
+}
 
 let onlineCache = 0;
 let onlineCacheDate = 0;
