@@ -4,7 +4,6 @@ import type { AnySchema } from 'ajv';
 import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
-import type { StatusCode } from 'hono/utils/http-status';
 
 import type { ResponseSchema, TypedOptions } from './definition';
 import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
@@ -118,7 +117,7 @@ export class Router<
 					{
 						description: '',
 						content: {
-							'application/json': { schema: ('schema' in schema ? schema.schema : schema) as AnySchema },
+							'application/json': { schema: 'schema' in schema ? schema.schema : schema },
 						},
 					},
 				]),
@@ -307,14 +306,14 @@ export class Router<
 				}).map(([key, value]) => [key.toLowerCase(), value]),
 			);
 
-			const contentType = (responseHeaders['content-type'] || 'application/json') as string;
+			const contentType = responseHeaders['content-type'] || 'application/json';
 
 			const isContentLess = (statusCode: number): statusCode is 101 | 204 | 205 | 304 => {
 				return [101, 204, 205, 304].includes(statusCode);
 			};
 
 			if (isContentLess(statusCode)) {
-				return c.status(statusCode as 101 | 204 | 205 | 304);
+				return c.status(statusCode);
 			}
 			Object.entries(responseHeaders).forEach(([key, value]) => {
 				if (value) {
@@ -322,7 +321,7 @@ export class Router<
 				}
 			});
 
-			return c.body((contentType?.match(/json|javascript/) ? JSON.stringify(body) : body) as any, statusCode as StatusCode);
+			return c.body(contentType?.match(/json|javascript/) ? JSON.stringify(body) : body, statusCode);
 		});
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
