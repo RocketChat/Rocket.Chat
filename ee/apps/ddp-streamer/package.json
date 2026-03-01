@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-streamer",
-	"version": "0.3.49",
+	"version": "0.3.50",
 	"private": true,
 	"description": "Rocket.Chat DDP-Streamer service",
 	"keywords": [
@@ -13,7 +13,7 @@
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
-		"lint": "eslint src",
+		"lint": "eslint .",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
@@ -49,7 +49,6 @@
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
-		"@rocket.chat/eslint-config": "workspace:^",
 		"@types/ejson": "^2.2.2",
 		"@types/node": "~22.16.5",
 		"@types/polka": "^0.5.8",
@@ -57,7 +56,7 @@
 		"@types/underscore": "^1.13.0",
 		"@types/uuid": "^10.0.0",
 		"@types/ws": "^8.5.13",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"

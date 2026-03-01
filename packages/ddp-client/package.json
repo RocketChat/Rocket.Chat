@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ddp-client",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -9,8 +9,8 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
@@ -26,7 +26,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/jest": "~30.0.0",
 		"@types/ws": "^8.5.13",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"jest": "~30.2.0",
 		"jest-websocket-mock": "~2.5.0",
 		"typescript": "~5.9.3",
