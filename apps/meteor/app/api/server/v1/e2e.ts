@@ -214,6 +214,29 @@ const e2eEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.post(
+		'e2e.rejectSuggestedGroupKey',
+		{
+			authRequired: true,
+			body: ise2eGetUsersOfRoomWithoutKeyParamsGET,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+			},
+		},
+		async function action() {
+			const { rid } = this.bodyParams;
+
+			await handleSuggestedGroupKey('reject', rid, this.userId, 'e2e.rejectSuggestedGroupKey');
+
+			return API.v1.success();
+		},
 	);
 
 /**
@@ -282,23 +305,6 @@ API.v1.addRoute(
 			const { rid } = this.bodyParams;
 
 			await handleSuggestedGroupKey('accept', rid, this.userId, 'e2e.acceptSuggestedGroupKey');
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'e2e.rejectSuggestedGroupKey',
-	{
-		authRequired: true,
-		validateParams: ise2eGetUsersOfRoomWithoutKeyParamsGET,
-	},
-	{
-		async post() {
-			const { rid } = this.bodyParams;
-
-			await handleSuggestedGroupKey('reject', rid, this.userId, 'e2e.rejectSuggestedGroupKey');
 
 			return API.v1.success();
 		},
@@ -385,5 +391,5 @@ export type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends E2eEndpoints {}
+	interface Endpoints extends E2eEndpoints { }
 }
