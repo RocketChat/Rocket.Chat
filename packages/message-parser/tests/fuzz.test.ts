@@ -3,32 +3,29 @@ import { parse } from '../src/index';
 
 describe('Message Parser Property-Based Fuzz Testing', () => {
     it('should return a valid array of ASTNodes for any arbitrary string', () => {
-        let hasSuccessfulParse = false;
+        let successfulParses = 0;
         fc.assert(
             fc.property(fc.string({ maxLength: 500 }), (text) => {
                 try {
                     const ast = parse(text);
                     expect(Array.isArray(ast)).toBe(true);
-                    // For any payload, if it's an array, it should be an array of nodes containing a "type"
                     ast.forEach((val: unknown) => {
                         expect(val).toMatchObject({ type: expect.any(String) });
                     });
-                    hasSuccessfulParse = true;
+                    successfulParses++;
                 } catch (error) {
                     if (!(error instanceof Error && error.name === 'SyntaxError')) {
                         throw error;
                     }
-                    // Intentionally ignore SyntaxError during fuzzing
                 }
             }),
-            { numRuns: 1000 } // Execute 1000 random string checks
+            { numRuns: 1000 }
         );
-        expect(hasSuccessfulParse).toBe(true);
+        expect(successfulParses).toBeGreaterThan(0);
     });
 
     it('should guarantee structural integrity for deeply nested markdown', () => {
-        let hasSuccessfulParse = false;
-        // Valid sequences that generate various inline tokens
+        let successfulParses = 0;
         const sequences = ['*', '_', '~', '`', '# ', '## ', '> ', 'http://', 'https://', ' [', '](', ':', '!)', '\n'];
 
         fc.assert(
@@ -45,24 +42,21 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
                     try {
                         const ast = parse(text);
 
-                        // Verify that any Paragraph node contains valid Elements
                         ast.forEach((val: unknown) => {
                             if (typeof val === 'object' && val !== null && 'type' in val && val.type === 'PARAGRAPH') {
                                 expect(val).toMatchObject({ value: expect.any(Array) });
                             }
                         });
-                        hasSuccessfulParse = true;
+                        successfulParses++;
                     } catch (e) {
                         if (!(e instanceof Error && e.name === 'SyntaxError')) {
                             throw e;
                         }
-                        // Intentionally ignore SyntaxError during fuzzing
                     }
                 }
             ),
             { numRuns: 1000 }
         );
-        expect(hasSuccessfulParse).toBe(true);
+        expect(successfulParses).toBeGreaterThan(0);
     });
 });
-
