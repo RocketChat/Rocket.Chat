@@ -14,7 +14,9 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
                         expect(typeof node.type).toBe('string');
                     });
                 } catch (error) {
-                    // Discard known syntax errors, we are validating successful structural outputs
+                    if (!(error instanceof Error && error.name === 'SyntaxError')) {
+                        throw error;
+                    }
                 }
             }),
             { numRuns: 1000 } // Execute 1000 random string checks
@@ -46,7 +48,9 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
                             }
                         });
                     } catch (e) {
-                        // Ignored
+                        if (!(e instanceof Error && e.name === 'SyntaxError')) {
+                            throw e;
+                        }
                     }
                 }
             ),
