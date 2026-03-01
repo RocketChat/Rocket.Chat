@@ -17,6 +17,39 @@ import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEm
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
+import type { UsersGetAvatarParamsGET } from './users/UsersGetAvatarParamsGET';
+import type { UsersDeleteOwnAccountParamsPOST } from './users/UsersDeleteOwnAccountParamsPOST';
+import type { UsersForgotPasswordParamsPOST } from './users/UsersForgotPasswordParamsPOST';
+
+export const isUsersGetAvatarProps = ajv.compile<UsersGetAvatarParamsGET>({
+	type: 'object',
+	properties: {
+		userId: { type: 'string', nullable: true },
+		username: { type: 'string', nullable: true },
+		user: { type: 'string', nullable: true },
+	},
+	required: [],
+	additionalProperties: false,
+});
+
+export const isUsersDeleteOwnAccountProps = ajv.compile<UsersDeleteOwnAccountParamsPOST>({
+	type: 'object',
+	properties: {
+		password: { type: 'string' },
+		confirmRelinquish: { type: 'boolean', nullable: true },
+	},
+	required: ['password'],
+	additionalProperties: false,
+});
+
+export const isUsersForgotPasswordProps = ajv.compile<UsersForgotPasswordParamsPOST>({
+	type: 'object',
+	properties: {
+		email: { type: 'string' },
+	},
+	required: ['email'],
+	additionalProperties: false,
+});
 
 type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
 
@@ -197,14 +230,14 @@ export type UsersEndpoints = {
 		POST: (
 			params:
 				| {
-						userId: string;
-				  }
+					userId: string;
+				}
 				| {
-						username: string;
-				  }
+					username: string;
+				}
 				| {
-						user: string;
-				  },
+					user: string;
+				},
 		) => void;
 	};
 
@@ -212,14 +245,14 @@ export type UsersEndpoints = {
 		POST: (
 			params:
 				| {
-						userId: string;
-				  }
+					userId: string;
+				}
 				| {
-						username: string;
-				  }
+					username: string;
+				}
 				| {
-						user: string;
-				  },
+					user: string;
+				},
 		) => void;
 	};
 
@@ -299,14 +332,14 @@ export type UsersEndpoints = {
 		GET: (
 			params:
 				| {
-						userId: string;
-				  }
+					userId: string;
+				}
 				| {
-						username: string;
-				  }
+					username: string;
+				}
 				| {
-						user: string;
-				  },
+					user: string;
+				},
 		) => {
 			presence: UserStatus;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
@@ -380,3 +413,6 @@ export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';
 export * from './users/UsersAutocompleteParamsGET';
+export * from './users/UsersGetAvatarParamsGET';
+export * from './users/UsersDeleteOwnAccountParamsPOST';
+export * from './users/UsersForgotPasswordParamsPOST';
