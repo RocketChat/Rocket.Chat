@@ -176,15 +176,16 @@ const meEndpoints = API.v1.get(
 	'me',
 	{
 		authRequired: true,
-		query: undefined,
 		response: {
 			401: validateUnauthorizedErrorResponse,
 			200: ajv.compile({
 				type: 'object',
 				properties: {
-					success: { type: 'boolean', enum: [true] }
+					success: { type: 'boolean', enum: [true] },
+					_id: { type: 'string' },
+					username: {type: 'string' }
 				},
-				required: ['success'],
+				required: ['success', '_id', 'username'],
 				additionalProperties: true
 			})
 		}
