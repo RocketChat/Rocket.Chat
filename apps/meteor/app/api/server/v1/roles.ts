@@ -86,7 +86,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.getUsersInRole',
-	{ authRequired: true, permissionsRequired: ['access-permissions'] },
+	{ authRequired: true, permissionsRequired: ['access-permissions'], validateParams: isRolesGetUsersInRoleProps },
 	{
 		async get() {
 			const { roomId, role } = this.queryParams;
