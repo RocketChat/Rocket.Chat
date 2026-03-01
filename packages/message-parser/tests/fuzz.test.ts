@@ -9,7 +9,8 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
                     const ast = parse(text);
                     expect(Array.isArray(ast)).toBe(true);
                     // For any payload, if it's an array, it should be an array of nodes containing a "type"
-                    ast.forEach((node: any) => {
+                    ast.forEach((val: unknown) => {
+                        const node = val as Record<string, unknown>;
                         expect(node).toHaveProperty('type');
                         expect(typeof node.type).toBe('string');
                     });
@@ -42,7 +43,8 @@ describe('Message Parser Property-Based Fuzz Testing', () => {
                         const ast = parse(text);
 
                         // Verify that any Paragraph node contains valid Elements
-                        ast.forEach((node: any) => {
+                        ast.forEach((val: unknown) => {
+                            const node = val as Record<string, unknown>;
                             if (node.type === 'PARAGRAPH') {
                                 expect(Array.isArray(node.value)).toBe(true);
                             }
