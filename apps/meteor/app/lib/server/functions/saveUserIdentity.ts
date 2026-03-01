@@ -40,8 +40,10 @@ export async function saveUserIdentity({
 		return false;
 	}
 
-	const name = String(rawName).trim();
-	const username = String(rawUsername).trim();
+	const hasNameInput = typeof rawName === 'string';
+	const hasUsernameInput = typeof rawUsername === 'string';
+	const name = hasNameInput ? rawName.trim() : undefined;
+	const username = hasUsernameInput ? rawUsername.trim() : undefined;
 
 	const user = await Users.findOneById(_id, { session });
 	if (!user) {
@@ -50,22 +52,26 @@ export async function saveUserIdentity({
 
 	const previousUsername = user.username;
 	const previousName = user.name;
-	const nameChanged = previousName !== name;
-	const usernameChanged = previousUsername !== username;
+	const nameChanged = hasNameInput && previousName !== name;
+	const usernameChanged = hasUsernameInput && previousUsername !== username;
 
-	if (typeof rawUsername !== 'undefined' && usernameChanged) {
-		if (!validateName(username)) {
+	if (hasUsernameInput && usernameChanged) {
+		const currentUsername = username as string;
+
+		if (!validateName(currentUsername)) {
 			return false;
 		}
 
-		if (!(await _setUsername(_id, username, user, updater, session))) {
+		if (!(await _setUsername(_id, currentUsername, user, updater, session))) {
 			return false;
 		}
-		user.username = username;
+		user.username = currentUsername;
 	}
 
-	if (typeof rawName !== 'undefined' && nameChanged) {
-		if (!(await setRealName(_id, name, user, updater, session))) {
+	if (hasNameInput && nameChanged) {
+		const currentName = name as string;
+
+		if (!(await setRealName(_id, currentName, user, updater, session))) {
 			return false;
 		}
 	}
@@ -75,12 +81,12 @@ export async function saveUserIdentity({
 			const handleUpdateParams = {
 				username,
 				previousUsername,
-				rawUsername,
+				hasUsernameInput,
 				usernameChanged,
 				user,
 				name,
 				previousName,
-				rawName,
+				hasNameInput,
 				nameChanged,
 			};
 			if (updateUsernameInBackground) {
@@ -105,50 +111,51 @@ export async function saveUserIdentity({
 async function updateUsernameReferences({
 	username,
 	previousUsername,
-	rawUsername,
+	hasUsernameInput,
 	usernameChanged,
 	user,
 	name,
 	previousName,
-	rawName,
+	hasNameInput,
 	nameChanged,
 }: {
-	username: string;
+	username?: string;
 	previousUsername: string;
-	rawUsername?: string;
+	hasUsernameInput: boolean;
 	usernameChanged: boolean;
 	user: IUser;
-	name: string;
+	name?: string;
 	previousName: string | undefined;
-	rawName?: string;
+	hasNameInput: boolean;
 	nameChanged: boolean;
 }): Promise<void> {
-	if (usernameChanged && typeof rawUsername !== 'undefined') {
+	if (usernameChanged && hasUsernameInput) {
+		const currentUsername = username ?? previousUsername;
 		const fileStore = FileUpload.getStore('Avatars');
 		const previousFile = await fileStore.model.findOneByName(previousUsername);
-		const file = await fileStore.model.findOneByName(username);
+		const file = await fileStore.model.findOneByName(currentUsername);
 		if (file) {
 			await fileStore.model.deleteFile(file._id);
 		}
 		if (previousFile) {
-			await fileStore.model.updateFileNameById(previousFile._id, username);
+			await fileStore.model.updateFileNameById(previousFile._id, currentUsername);
 		}
 
-		await Messages.updateAllUsernamesByUserId(user._id, username);
-		await Messages.updateUsernameOfEditByUserId(user._id, username);
+		await Messages.updateAllUsernamesByUserId(user._id, currentUsername);
+		await Messages.updateUsernameOfEditByUserId(user._id, currentUsername);
 
 		const cursor = Messages.findByMention(previousUsername);
 		for await (const msg of cursor) {
-			const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${username}`);
-			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, username, updatedMsg);
+			const updatedMsg = msg.msg.replace(new RegExp(`@${previousUsername}`, 'ig'), `@${currentUsername}`);
+			await Messages.updateUsernameAndMessageOfMentionByIdAndOldUsername(msg._id, previousUsername, currentUsername, updatedMsg);
 		}
 
 		const responses = await Promise.all([
-			Rooms.replaceUsername(previousUsername, username),
-			Rooms.replaceMutedUsername(previousUsername, username),
-			Rooms.replaceUsernameOfUserByUserId(user._id, username),
-			Subscriptions.setUserUsernameByUserId(user._id, username),
-			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, username),
+			Rooms.replaceUsername(previousUsername, currentUsername),
+			Rooms.replaceMutedUsername(previousUsername, currentUsername),
+			Rooms.replaceUsernameOfUserByUserId(user._id, currentUsername),
+			Subscriptions.setUserUsernameByUserId(user._id, currentUsername),
+			LivechatDepartmentAgents.replaceUsernameOfAgentByUserId(user._id, currentUsername),
 		]);
 
 		if (responses[3]?.modifiedCount) {
@@ -156,23 +163,22 @@ async function updateUsernameReferences({
 		}
 
 		if (responses[0]?.modifiedCount || responses[1]?.modifiedCount || responses[2]?.modifiedCount) {
-			void notifyOnRoomChangedByUsernamesOrUids([user._id], [previousUsername, username]);
+			void notifyOnRoomChangedByUsernamesOrUids([user._id], [previousUsername, currentUsername]);
 		}
 	}
 
 	// update other references if either the name or username has changed
 	if (usernameChanged || nameChanged) {
+		const currentUsername = hasUsernameInput ? username : undefined;
+		const currentName = hasNameInput ? name : undefined;
+
 		// update name and fname of 1-on-1 direct messages
-		const updateDirectNameResponse = await Subscriptions.updateDirectNameAndFnameByName(
-			previousUsername,
-			rawUsername && username,
-			rawName && name,
-		);
+		const updateDirectNameResponse = await Subscriptions.updateDirectNameAndFnameByName(previousUsername, currentUsername, currentName);
 
 		if (updateDirectNameResponse?.modifiedCount) {
 			void notifyOnSubscriptionChangedByNameAndRoomType({
 				t: 'd',
-				name: username,
+				name: currentUsername ?? previousUsername,
 			});
 		}
 
@@ -180,9 +186,9 @@ async function updateUsernameReferences({
 		await updateGroupDMsName(user);
 
 		// update name and username of users on video conferences
-		await VideoConference.updateUserReferences(user._id, username || previousUsername, name || previousName);
+		await VideoConference.updateUserReferences(user._id, currentUsername ?? previousUsername, currentName ?? previousName);
 
 		// update name and username of users on call history
-		await CallHistory.updateUserReferences(user._id, username || previousUsername, name || previousName);
+		await CallHistory.updateUserReferences(user._id, currentUsername ?? previousUsername, currentName ?? previousName);
 	}
 }

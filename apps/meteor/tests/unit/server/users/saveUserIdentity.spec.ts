@@ -117,17 +117,29 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateHistoryReferences.called).to.be.false;
 	});
 
-	it('should update Subscriptions, VideoConference and Call History if name changes', async () => {
-		stubs.findOneUserById.returns({ name: 'oldName', username: 'oldUsername' });
+	it('should update Subscriptions, VideoConference and Call History if only name changes', async () => {
+		stubs.findOneUserById.returns({ _id: 'valid_id', name: 'oldName', username: 'oldUsername' });
 		stubs.setRealName.returns(true);
-		const result = await saveUserIdentity({ _id: 'valid_id', name: 'name', username: 'oldUsername' });
+		const result = await saveUserIdentity({ _id: 'valid_id', name: 'name' });
 
 		expect(stubs.setUsername.called).to.be.false;
 		expect(stubs.setRealName.called).to.be.true;
 		expect(stubs.updateUsernameOfEditByUserId.called).to.be.false;
-		expect(stubs.updateDirectNameAndFnameByName.called).to.be.true;
-		expect(stubs.updateUserReferences.called).to.be.true;
-		expect(stubs.updateHistoryReferences.called).to.be.true;
+		expect(stubs.updateDirectNameAndFnameByName.calledWith('oldUsername', undefined, 'name')).to.be.true;
+		expect(stubs.updateUserReferences.calledWith('valid_id', 'oldUsername', 'name')).to.be.true;
+		expect(stubs.updateHistoryReferences.calledWith('valid_id', 'oldUsername', 'name')).to.be.true;
+		expect(result).to.be.true;
+	});
+
+	it('should not treat missing name as changed on username-only payloads', async () => {
+		stubs.findOneUserById.returns({ _id: 'valid_id', name: 'oldName', username: 'oldUsername' });
+		const result = await saveUserIdentity({ _id: 'valid_id', username: 'oldUsername' });
+
+		expect(stubs.setUsername.called).to.be.false;
+		expect(stubs.setRealName.called).to.be.false;
+		expect(stubs.updateDirectNameAndFnameByName.called).to.be.false;
+		expect(stubs.updateUserReferences.called).to.be.false;
+		expect(stubs.updateHistoryReferences.called).to.be.false;
 		expect(result).to.be.true;
 	});
 });
