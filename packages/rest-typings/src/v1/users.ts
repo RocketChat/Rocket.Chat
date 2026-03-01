@@ -24,9 +24,9 @@ import type { UsersForgotPasswordParamsPOST } from './users/UsersForgotPasswordP
 export const isUsersGetAvatarProps = ajv.compile<UsersGetAvatarParamsGET>({
 	type: 'object',
 	properties: {
-		userId: { type: 'string', nullable: true },
-		username: { type: 'string', nullable: true },
-		user: { type: 'string', nullable: true },
+		userId: { type: 'string' },
+		username: { type: 'string' },
+		user: { type: 'string' },
 	},
 	required: [],
 	additionalProperties: false,
@@ -35,8 +35,8 @@ export const isUsersGetAvatarProps = ajv.compile<UsersGetAvatarParamsGET>({
 export const isUsersDeleteOwnAccountProps = ajv.compile<UsersDeleteOwnAccountParamsPOST>({
 	type: 'object',
 	properties: {
-		password: { type: 'string' },
-		confirmRelinquish: { type: 'boolean', nullable: true },
+		password: { type: 'string', minLength: 1 },
+		confirmRelinquish: { type: 'boolean' },
 	},
 	required: ['password'],
 	additionalProperties: false,
@@ -45,7 +45,7 @@ export const isUsersDeleteOwnAccountProps = ajv.compile<UsersDeleteOwnAccountPar
 export const isUsersForgotPasswordProps = ajv.compile<UsersForgotPasswordParamsPOST>({
 	type: 'object',
 	properties: {
-		email: { type: 'string' },
+		email: { type: 'string', minLength: 1 },
 	},
 	required: ['email'],
 	additionalProperties: false,
