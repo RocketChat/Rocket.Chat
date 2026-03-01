@@ -1,23 +1,26 @@
 {
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"compilerOptions": {
-		"target": "es2022",
-		"module": "commonjs",
-
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"moduleResolution": "node",
-		"resolveJsonModule": true,
-
-		"strict": true,
 		"allowUnreachableCode": false,
 		"allowUnusedLabels": false,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitOverride": true,
 		"noImplicitReturns": true,
 		"noUnusedLocals": true,
-		"noUnusedParameters": true
+		"noUnusedParameters": true,
+		"strict": true,
+
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"resolveJsonModule": true,
+
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+
+		"lib": ["ES2024"],
+		"target": "es2024",
+
+		"skipLibCheck": true,
 	},
-	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"]
+	"exclude": ["${configDir}/dist"]
 }

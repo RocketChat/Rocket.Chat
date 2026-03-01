@@ -1,5 +1,8 @@
 {
 	"extends": "../../../tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "../../../../.."
+	},
 	"include": ["./**/*", "../../../../../ee/apps/account-service/src/lib"],
 	"exclude": ["./dist", "./ecosystem.config.js", "../../../definition/methods"]
 }

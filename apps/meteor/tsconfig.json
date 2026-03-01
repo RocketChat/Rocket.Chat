@@ -1,9 +1,10 @@
 {
 	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
-		"target": "ES2022",
+		"rootDir": ".",
+
 		"module": "ESNext",
-		"lib": ["esnext", "dom"],
+		"lib": ["ESNext", "DOM"],
 
 		"allowJs": true,
 		"checkJs": false,
@@ -25,12 +26,6 @@
 			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"],
 		},
 		"preserveSymlinks": true,
-
-		// "sourceMap": true,
-		// "declaration": true,
-		// "removeComments": false,
-		// "emitDecoratorMetadata": true,
-		// "experimentalDecorators": true,
 	},
 	"include": ["./**/*", "./.storybook/**/*", "./jest.config.ts", "./.scripts/**/*"],
 	"exclude": [
@@ -39,7 +34,8 @@
 		"./imports/client/**",
 		"**/dist/**",
 		"./public/**",
-		// "./ee/server/services/**"
+		// "./ee/server/services/**",
+		// "./**/*.spec.ts"
 	],
 	"ts-node": {
 		"files": false,
