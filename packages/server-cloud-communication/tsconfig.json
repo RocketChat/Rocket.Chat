@@ -1,8 +1,9 @@
 {
-	"extends": "@rocket.chat/tsconfig/client.json",
+	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
 		"rootDir": "./src",
+
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src"]
 }

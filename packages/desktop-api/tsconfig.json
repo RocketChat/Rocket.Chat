@@ -1,13 +1,14 @@
 {
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
-		"target": "es2024",
 		"module": "node20",
 		"moduleResolution": "node16",
 		"rootDir": "./src",
-		"outDir": "./dist",
+
 		"declarationMap": false,
-		"sourceMap": false
+		"outDir": "./dist",
+		"sourceMap": false,
+
 	},
-	"include": ["src"]
+	"include": ["./src"]
 }

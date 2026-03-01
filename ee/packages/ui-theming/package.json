@@ -8,8 +8,8 @@
 		"/src"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig-build.json",
-		"dev": "tsc -p tsconfig-build.json --watch --preserveWatchOutput",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix ."
 	},
