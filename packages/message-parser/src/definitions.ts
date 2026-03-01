@@ -51,15 +51,15 @@ export type BigEmoji = {
 
 export type Emoji =
 	| {
-			type: 'EMOJI';
-			value: Plain;
-			shortCode: string;
-	  }
+		type: 'EMOJI';
+		value: Plain;
+		shortCode: string;
+	}
 	| {
-			type: 'EMOJI';
-			value: undefined;
-			unicode: string;
-	  };
+		type: 'EMOJI';
+		value: undefined;
+		unicode: string;
+	};
 
 export type Code = {
 	type: 'CODE';
@@ -199,28 +199,13 @@ export type Types = {
 	IMAGE: Image;
 	LINE_BREAK: LineBreak;
 	SPOILER_BLOCK: SpoilerBlock;
+	TIMESTAMP: Timestamp;
+	BLOCKQUOTE: Blockquote;
+	KATEX: KaTeX;
+	INLINE_KATEX: InlineKaTeX;
 };
 
-export type ASTNode =
-	| BigEmoji
-	| Bold
-	| Spoiler
-	| Paragraph
-	| Plain
-	| Italic
-	| Strike
-	| Code
-	| CodeLine
-	| InlineCode
-	| Heading
-	| Quote
-	| SpoilerBlock
-	| Link
-	| UserMention
-	| ChannelMention
-	| Emoji
-	| Color
-	| Tasks;
+export type ASTNode = Types[keyof Types];
 
 export type TypesKeys = keyof Types;
 
