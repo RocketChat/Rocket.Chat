@@ -1,6 +1,8 @@
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/core-services';
 import { Users, Subscriptions as SubscriptionsRaw, Rooms } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import type { Filter, FindOptions, ReadPreferenceLike } from 'mongodb';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../app/authorization/server';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
@@ -9,19 +11,58 @@ import { trim } from '../../lib/utils/stringUtils';
 import { readSecondaryPreferred } from '../database/readSecondaryPreferred';
 import { roomCoordinator } from './rooms/roomCoordinator';
 
+type SpotlightUserResult = Pick<IUser, '_id' | 'username' | 'nickname' | 'name' | 'status' | 'statusText' | 'avatarETag'> & {
+	outside?: boolean;
+	isTeam?: boolean;
+};
+
+type SpotlightRoomResult = Pick<IRoom, '_id' | 't' | 'name' | 'fname' | 'teamMain' | 'lastMessage' | 'prid'> & {
+	joinCodeRequired?: boolean;
+	federated?: boolean;
+};
+
+type MatchOptions = {
+	startsWith: boolean;
+	endsWith: boolean;
+};
+
+type SpotlightSearchOptions = {
+	limit: number;
+	projection: Record<string, number>;
+	sort: Record<string, number>;
+	readPreference?: ReadPreferenceLike;
+};
+
+type UserSearchParams = {
+	rid?: string;
+	text: string;
+	usernames: string[];
+	options: SpotlightSearchOptions;
+	users: SpotlightUserResult[];
+	canListOutsiders?: boolean;
+	insiderExtraQuery?: Filter<IUser>[];
+	mentions?: boolean;
+	match?: MatchOptions;
+};
+
 export class Spotlight {
-	async fetchRooms(userId, rooms) {
+	async fetchRooms(userId: string | null, rooms: SpotlightRoomResult[]): Promise<SpotlightRoomResult[]> {
 		if (!settings.get('Store_Last_Message') || (await hasPermissionAsync(userId, 'preview-c-room'))) {
 			return rooms;
 		}
 
-		return rooms.map((room) => {
-			delete room.lastMessage;
-			return room;
-		});
+		return rooms.map(({ lastMessage, ...rest }) => rest);
 	}
 
-	async searchRooms({ userId, text, includeFederatedRooms = false }) {
+	async searchRooms({
+		userId,
+		text,
+		includeFederatedRooms = false,
+	}: {
+		userId: string | null;
+		text: string;
+		includeFederatedRooms?: boolean;
+	}): Promise<SpotlightRoomResult[]> {
 		const regex = new RegExp(trim(escapeRegExp(text)), 'i');
 
 		const roomOptions = {
@@ -71,12 +112,15 @@ export class Spotlight {
 		);
 	}
 
-	mapOutsiders(u) {
-		u.outside = true;
-		return u;
+	mapOutsiders(u: SpotlightUserResult): SpotlightUserResult {
+		return { ...u, outside: true };
 	}
 
-	processLimitAndUsernames(options, usernames, users) {
+	processLimitAndUsernames(
+		options: SpotlightSearchOptions,
+		usernames: string[],
+		users: SpotlightUserResult[],
+	): SpotlightUserResult[] | undefined {
 		// Reduce the results from the limit for the next query
 		options.limit -= users.length;
 
@@ -86,13 +130,21 @@ export class Spotlight {
 		}
 
 		// Prevent the next query to get the same users
-		usernames.push(...users.map((u) => u.username).filter((u) => !usernames.includes(u)));
+		usernames.push(...users.map((u) => u.username).filter((u): u is string => u !== undefined && !usernames.includes(u)));
 	}
 
-	async _searchInsiderUsers({ rid, text, usernames, options, users, insiderExtraQuery, match = { startsWith: false, endsWith: false } }) {
+	async _searchInsiderUsers({
+		rid,
+		text,
+		usernames,
+		options,
+		users,
+		insiderExtraQuery,
+		match = { startsWith: false, endsWith: false },
+	}: UserSearchParams): Promise<SpotlightUserResult[] | undefined> {
 		// Get insiders first
 		if (rid) {
-			const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
+			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
 			users.push(...(await Users.findByActiveUsersExcept(text, usernames, options, searchFields, insiderExtraQuery, match).toArray()));
 
@@ -103,15 +155,19 @@ export class Spotlight {
 		}
 	}
 
-	async _searchConnectedUsers(userId, { text, usernames, options, users, match = { startsWith: false, endsWith: false } }, roomType) {
-		const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
+	async _searchConnectedUsers(
+		userId: string,
+		{ text, usernames, options, users, match = { startsWith: false, endsWith: false } }: UserSearchParams,
+		roomType: string,
+	): Promise<SpotlightUserResult[] | undefined> {
+		const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 
 		users.push(
 			...(
 				await SubscriptionsRaw.findConnectedUsersExcept(userId, text, usernames, searchFields, {}, options.limit || 5, roomType, match, {
 					readPreference: options.readPreference,
 				})
-			).map(this.mapOutsiders),
+			).map((u) => this.mapOutsiders(u)),
 		);
 
 		// If the limit was reached, return
@@ -120,12 +176,21 @@ export class Spotlight {
 		}
 	}
 
-	async _searchOutsiderUsers({ text, usernames, options, users, canListOutsiders, match = { startsWith: false, endsWith: false } }) {
+	async _searchOutsiderUsers({
+		text,
+		usernames,
+		options,
+		users,
+		canListOutsiders,
+		match = { startsWith: false, endsWith: false },
+	}: UserSearchParams): Promise<SpotlightUserResult[] | undefined> {
 		// Then get the outsiders if allowed
 		if (canListOutsiders) {
-			const searchFields = settings.get('Accounts_SearchFields').trim().split(',');
+			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
 			users.push(
-				...(await Users.findByActiveUsersExcept(text, usernames, options, searchFields, undefined, match).toArray()).map(this.mapOutsiders),
+				...(await Users.findByActiveUsersExcept(text, usernames, options, searchFields, undefined, match).toArray()).map((u) =>
+					this.mapOutsiders(u),
+				),
 			);
 
 			// If the limit was reached, return
@@ -135,16 +200,20 @@ export class Spotlight {
 		}
 	}
 
-	mapTeams(teams) {
-		return teams.map((t) => {
-			t.isTeam = true;
-			t.username = t.name;
-			t.status = 'online';
-			return t;
-		});
+	mapTeams(teams: { name: string; type: number }[]): SpotlightUserResult[] {
+		return teams.map((t) => ({
+			...t,
+			_id: t.name,
+			isTeam: true,
+			username: t.name,
+			status: 'online' as const,
+		}));
 	}
 
-	async _searchTeams(userId, { text, options, users, mentions }) {
+	async _searchTeams(
+		userId: string,
+		{ text, options, users, mentions }: UserSearchParams,
+	): Promise<SpotlightUserResult[] | undefined> {
 		if (!mentions || settings.get('Troubleshoot_Disable_Teams_Mention')) {
 			return users;
 		}
@@ -162,11 +231,23 @@ export class Spotlight {
 		return users;
 	}
 
-	async searchUsers({ userId, rid, text, usernames, mentions }) {
-		const users = [];
+	async searchUsers({
+		userId,
+		rid,
+		text,
+		usernames,
+		mentions,
+	}: {
+		userId?: string | null;
+		rid?: string;
+		text: string;
+		usernames: string[];
+		mentions?: boolean;
+	}): Promise<SpotlightUserResult[]> {
+		const users: SpotlightUserResult[] = [];
 
-		const options = {
-			limit: settings.get('Number_of_users_autocomplete_suggestions'),
+		const options: SpotlightSearchOptions = {
+			limit: settings.get<number>('Number_of_users_autocomplete_suggestions'),
 			projection: {
 				username: 1,
 				nickname: 1,
@@ -190,13 +271,13 @@ export class Spotlight {
 		const canListOutsiders = await hasAllPermissionAsync(userId, ['view-outside-room', 'view-d-room']);
 		const canListInsiders = canListOutsiders || (rid && (await canAccessRoomAsync(room, { _id: userId })));
 
-		const insiderExtraQuery = [];
+		const insiderExtraQuery: Filter<IUser>[] = [];
 
 		if (rid) {
 			switch (room.t) {
 				case 'd':
 					insiderExtraQuery.push({
-						_id: { $in: room.uids.filter((id) => id !== userId) },
+						_id: { $in: room.uids.filter((id: string) => id !== userId) },
 					});
 					break;
 				case 'l':
@@ -209,12 +290,12 @@ export class Spotlight {
 				default:
 					insiderExtraQuery.push({
 						__rooms: rid,
-					});
+					} as Filter<IUser>);
 					break;
 			}
 		}
 
-		const searchParams = {
+		const searchParams: UserSearchParams = {
 			rid,
 			text,
 			usernames,
