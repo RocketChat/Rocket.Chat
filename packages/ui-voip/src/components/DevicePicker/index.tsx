@@ -3,39 +3,15 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useAvailableDevices, useSelectedDevices } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MouseEvent } from 'react';
-import { forwardRef, useCallback, useState } from 'react';
+import type { MouseEvent } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ActionButton } from '.';
-import { useMediaCallContext } from '../context';
-import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermissionPrompt';
+import DevicePickerButton from './DevicePickerButton';
+import { getDefaultDeviceItem } from './getDefaultDeviceItem';
+import { useMediaCallContext } from '../../context';
+import { useDevicePermissionPrompt2, stopTracks } from '../../hooks/useDevicePermissionPrompt';
 
-type DevicePickerButtonProps = {
-	secondary?: boolean;
-	small?: boolean;
-} & Omit<ComponentProps<typeof ActionButton>, 'label' | 'icon'>;
-
-// GenericMenu for some reason passes `small: true` when the button is disabled (??).
-// so this is just a wrapper to stop that from happening.
-const DevicePickerButton = forwardRef<HTMLButtonElement, DevicePickerButtonProps>(function DevicePickerButton(
-	{ secondary = false, small: _small, ...props },
-	ref,
-) {
-	return <ActionButton secondary={secondary} {...props} label='customize' icon='customize' ref={ref} />;
-});
-
-const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
-	content: (
-		<Box is='span' title={label} fontSize={14}>
-			{label}
-		</Box>
-	),
-	addon: <RadioButton onChange={() => undefined} checked={true} disabled />,
-	id: `default-${type}`,
-});
-
-// eslint-disable-next-line react/no-multi-comp
 const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 	const { t } = useTranslation();
 
@@ -46,15 +22,16 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 
 	const availableInputDevice =
 		availableDevices?.audioInput?.map<GenericMenuItemProps>((device) => {
-			if (!device.id || !device.label) {
+			// Only use default item when device.id is actually missing
+			if (!device.id) {
 				return getDefaultDeviceItem(t('Default'), 'input');
 			}
 
 			return {
 				id: `${device.id}-input`,
 				content: (
-					<Box is='span' title={device.label} fontSize={14}>
-						{device.label}
+					<Box is='span' title={device.label || t('Default')} fontSize={14}>
+						{device.label || t('Default')}
 					</Box>
 				),
 				addon: <RadioButton checked={device.id === selectedAudioDevices?.audioInput?.id} />,
@@ -63,15 +40,16 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 
 	const availableOutputDevice =
 		availableDevices?.audioOutput?.map<GenericMenuItemProps>((device) => {
-			if (!device.id || !device.label) {
+			// Only use default item when device.id is actually missing
+			if (!device.id) {
 				return getDefaultDeviceItem(t('Default'), 'output');
 			}
 
 			return {
 				id: `${device.id}-output`,
 				content: (
-					<Box is='span' title={device.label} fontSize={14}>
-						{device.label}
+					<Box is='span' title={device.label || t('Default')} fontSize={14}>
+						{device.label || t('Default')}
 					</Box>
 				),
 				addon: <RadioButton checked={device.id === selectedAudioDevices?.audioOutput?.id} />,
@@ -107,10 +85,16 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 
 			void requestPermission({
 				actionType: 'device-change',
-			}).then((stream) => {
-				stopTracks(stream);
-				setIsOpen(true);
-			});
+			})
+				.then((stream: MediaStream) => {
+					stopTracks(stream);
+					setIsOpen(true);
+				})
+				.catch((error: unknown) => {
+					// Permission denied or error occurred, keep menu closed
+					console.warn('DevicePicker: Failed to request device permissions', error);
+					setIsOpen(false);
+				});
 		},
 		[requestPermission, setIsOpen],
 	);
@@ -129,8 +113,9 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 					return;
 				}
 
-				if (deviceId.includes('-input')) {
-					const id = deviceId.replace('-input', '');
+				// Use endsWith to check suffix and slice to remove it
+				if (deviceId.endsWith('-input')) {
+					const id = deviceId.slice(0, -6); // Remove '-input' suffix
 					const device = availableDevices?.audioInput?.find((device) => device.id === id);
 					if (device) {
 						onDeviceChange(device);
@@ -138,8 +123,8 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 					return;
 				}
 
-				if (deviceId.includes('-output')) {
-					const id = deviceId.replace('-output', '');
+				if (deviceId.endsWith('-output')) {
+					const id = deviceId.slice(0, -7); // Remove '-output' suffix
 					const device = availableDevices?.audioOutput?.find((device) => device.id === id);
 					if (device) {
 						onDeviceChange(device);
