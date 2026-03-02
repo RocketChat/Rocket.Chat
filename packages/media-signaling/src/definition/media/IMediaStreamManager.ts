@@ -11,7 +11,11 @@ export interface IMediaStreamManager {
 
 	readonly mainLocal: IMediaStreamWrapper;
 
+	readonly screenShareLocal: IMediaStreamWrapper;
+
 	readonly mainRemote: IMediaStreamWrapper;
+
+	readonly screenShareRemote: IMediaStreamWrapper;
 
 	getStreams(): IMediaStreamWrapper[];
 	getLocalStreams(): IMediaStreamWrapper[];

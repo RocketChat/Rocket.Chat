@@ -27,4 +27,5 @@ export type NegotiationData = {
 
 export interface INegotiationCompatibleMediaCall extends IClientMediaCall {
 	hasInputTrack(): boolean;
+	hasVideoTrack(): boolean;
 }

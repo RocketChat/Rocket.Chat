@@ -19,7 +19,7 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
-export const callFeatureList = ['audio'] as const;
+export const callFeatureList = ['audio', 'screen-share'] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
 
@@ -96,11 +96,15 @@ export interface IClientMediaCall {
 
 	contact: CallContact;
 	transferredBy: CallContact | null;
+	audioLevel: number;
+	localAudioLevel: number;
 
 	/** if the call was requested by this session, then this will have the ID used to request the call, otherwise it will be the same as callId */
 	readonly tempCallId: string;
 	/** confirmed indicates if the call exists on the server */
 	readonly confirmed: boolean;
+
+	readonly screenShareRequested: boolean;
 
 	emitter: Emitter<CallEvents>;
 
@@ -112,6 +116,7 @@ export interface IClientMediaCall {
 	hangup(): void;
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
+	setScreenShareRequested(requested: boolean): void;
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;
