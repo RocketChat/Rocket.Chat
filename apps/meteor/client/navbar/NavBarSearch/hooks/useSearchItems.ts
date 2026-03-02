@@ -38,6 +38,10 @@ export type SearchRenderableItem = {
 	ts?: Date;
 	status?: string;
 	inviter?: ISubscription['inviter'];
+	// Explicit discriminator: true only for spotlight user results.
+	// Replaces the old `!room.u` guard in NavBarSearchRow which broke when
+	// we started populating `u` for spotlight users in userMap.
+	isUserResult?: boolean;
 };
 
 export const useSearchItems = (filterText: string): UseQueryResult<SearchRenderableItem[], Error> => {
@@ -109,6 +113,7 @@ export const useSearchItems = (filterText: string): UseQueryResult<SearchRendera
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,
+				isUserResult: true,
 			});
 
 			const roomMap = (room: {

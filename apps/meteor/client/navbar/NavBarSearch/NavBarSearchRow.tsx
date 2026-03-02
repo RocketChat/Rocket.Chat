@@ -14,7 +14,7 @@ type NavBarSearchRowProps = {
 const NavBarSearchRow = ({ room, onClick }: NavBarSearchRowProps): ReactElement => {
 	const Avatar = <RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />;
 
-	if (room.t === 'd' && !room.u) {
+	if (room.t === 'd' && room.isUserResult) {
 		return <NavBarSearchUserRow id={`search-${room._id}`} room={room} AvatarTemplate={Avatar} onClick={onClick} />;
 	}
 
