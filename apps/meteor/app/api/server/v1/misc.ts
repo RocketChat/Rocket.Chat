@@ -10,9 +10,7 @@ import {
 	isMethodCallAnonProps,
 	isFingerprintProps,
 	isMeteorCall,
-	ajv,
 	validateUnauthorizedErrorResponse,
-	ExtractRoutesFromAPI
 } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
@@ -37,91 +35,6 @@ import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
 
 /**
- * -------------------------
- * /api/v1/me endpoint schema
- * -------------------------
- */
-export interface IMeResponse {
-  success: true;
-  _id: string;
-  name: string;
-  username: string;
-  nickname: string;
-  emails: Array<{ address: string; verified: boolean }>;
-  email?: string; // made optional
-  status: string;
-  statusDefault: string;
-  statusText: string;
-  statusConnection: string;
-  bio: string;
-  avatarOrigin: 'none' | 'local' | 'upload' | 'url';
-  utcOffset: number;
-  language: string;
-  settings: { preferences?: Record<string, unknown> };
-  enableAutoAway: boolean;
-  idleTimeLimit: number;
-  roles: string[];
-  active: boolean;
-  defaultRoom: string;
-  customFields: Record<string, unknown>; // fixed from array
-  requirePasswordChange: boolean;
-  requirePasswordChangeReason: string;
-  services: Record<string, unknown>;
-  statusLivechat: 'available' | 'not-available';
-  banners: Array<Record<string, unknown>>;
-  oauth: { authorizedClients?: string[] };
-  _updatedAt: string;
-  avatarETag: string;
-}
-
-export const meResponseSchema = {
-  type: 'object',
-  properties: {
-    success: { type: 'boolean', enum: [true] },
-    _id: { type: 'string' },
-    name: { type: 'string' },
-    username: { type: 'string' },
-    nickname: { type: 'string' },
-    emails: {
-      type: 'array',
-      items: { type: 'object', properties: { address: { type: 'string' }, verified: { type: 'boolean' } }, required: ['address', 'verified'], additionalProperties: false },
-    },
-    email: { type: 'string', nullable: true }, // optional
-    status: { type: 'string' },
-    statusDefault: { type: 'string' },
-    statusText: { type: 'string' },
-    statusConnection: { type: 'string' },
-    bio: { type: 'string' },
-    avatarOrigin: { type: 'string', enum: ['none', 'local', 'upload', 'url'] },
-    utcOffset: { type: 'number' },
-    language: { type: 'string' },
-    settings: { type: 'object', additionalProperties: true },
-    enableAutoAway: { type: 'boolean' },
-    idleTimeLimit: { type: 'number' },
-    roles: { type: 'array', items: { type: 'string' } },
-    active: { type: 'boolean' },
-    defaultRoom: { type: 'string' },
-    customFields: { type: 'object', additionalProperties: true }, // fixed
-    requirePasswordChange: { type: 'boolean' },
-    requirePasswordChangeReason: { type: 'string' },
-    services: { type: 'object', additionalProperties: true },
-    statusLivechat: { type: 'string', enum: ['available', 'not-available'] },
-    banners: { type: 'array', items: { type: 'object', additionalProperties: true } },
-    oauth: { type: 'object', additionalProperties: true },
-    _updatedAt: { type: 'string', format: 'date-time' },
-    avatarETag: { type: 'string' },
-  },
-  required: [
-    'success', '_id', 'name', 'username', 'nickname', 'emails',
-    'status', 'statusDefault', 'statusText', 'statusConnection', 'bio',
-    'avatarOrigin', 'utcOffset', 'language', 'settings', 'enableAutoAway',
-    'idleTimeLimit', 'roles', 'active', 'defaultRoom',
-    'requirePasswordChange', 'requirePasswordChangeReason', 'services',
-    'statusLivechat', 'banners', 'oauth', '_updatedAt', 'avatarETag',
-  ],
-  additionalProperties: true,
-} as const;
-/**
  * --------------------------------
  * /api/v1/me endpoint
  * --------------------------------
@@ -132,22 +45,22 @@ const meEndpoints = API.v1.get(
     authRequired: true,
     response: {
       401: validateUnauthorizedErrorResponse,
-      200: ajv.compile<IMeResponse>(meResponseSchema),
+      200: {
+        $ref: '#/components/schemas/IUser',
+      },
     },
   },
-async function action() {
+  async function action() {
     const userFields = { ...getBaseUserFields(), services: 1 };
-    const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
+    const user = await Users.findOneById(this.userId, { projection: userFields });
+
+	if (!user) {
+      throw new Meteor.Error('error-invalid-user', 'User not found');
+    }
 
     return API.v1.success(await getUserInfo(user));
   },
 );
-
-export type MeEndpoints = ExtractRoutesFromAPI<typeof meEndpoints>;
-
-declare module '@rocket.chat/rest-typings' {
-  interface Endpoints extends MeEndpoints {}
-}
 
 let onlineCache = 0;
 let onlineCacheDate = 0;
