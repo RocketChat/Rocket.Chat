@@ -60,7 +60,7 @@ async function deleteCustomSound(_id: string) {
 		.expect(200);
 }
 
-describe('[CustomSounds]', () => {
+describe.only('[CustomSounds]', () => {
 	const fileName = `test-file-${randomUUID()}`;
 	let fileId: string;
 	let fileId2: string;
@@ -286,8 +286,8 @@ describe('[CustomSounds]', () => {
 				});
 
 				it('should resolve GridFS files only', async () => {
-					await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(200);
-					await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
+					await request.get(`/custom-sounds/${gridFsFileId}.mp3`).set(credentials).expect(200);
+					await request.get(`/custom-sounds/${fsFileId}.mp3`).set(credentials).expect(404);
 				});
 			});
 
@@ -297,8 +297,8 @@ describe('[CustomSounds]', () => {
 				});
 
 				it('should resolve FileSystem files only', async () => {
-					await request.get(`/custom-sounds/${gridFsFileId}.wav`).set(credentials).expect(404);
-					await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
+					await request.get(`/custom-sounds/${gridFsFileId}.mp3`).set(credentials).expect(404);
+					await request.get(`/custom-sounds/${fsFileId}.mp3`).set(credentials).expect(200);
 				});
 			});
 		});
@@ -310,7 +310,7 @@ describe('[CustomSounds]', () => {
 
 			describe('when file system path is the default one', () => {
 				it('should resolve files', async () => {
-					await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(200);
+					await request.get(`/custom-sounds/${fsFileId}.mp3`).set(credentials).expect(200);
 				});
 			});
 
@@ -324,7 +324,7 @@ describe('[CustomSounds]', () => {
 				});
 
 				it('should NOT resolve files', async () => {
-					await request.get(`/custom-sounds/${fsFileId}.wav`).set(credentials).expect(404);
+					await request.get(`/custom-sounds/${fsFileId}.mp3`).set(credentials).expect(404);
 				});
 			});
 		});
