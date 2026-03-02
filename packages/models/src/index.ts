@@ -120,7 +120,6 @@ export * from './dummy/ReadReceipts';
 
 export * from './helpers';
 
-export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');

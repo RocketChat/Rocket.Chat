@@ -79,8 +79,6 @@ export abstract class BaseRaw<
 
 		this.col = this.db.collection(this.collectionName, options?.collection || {});
 
-		void this.createIndexes();
-
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
 
 		return traceInstanceMethods(this);
