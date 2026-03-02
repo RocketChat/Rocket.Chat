@@ -10,6 +10,9 @@ import {
 	isMethodCallAnonProps,
 	isFingerprintProps,
 	isMeteorCall,
+	ajv,
+	validateUnauthorizedErrorResponse,
+	ExtractRoutesFromAPI
 } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
@@ -17,9 +20,6 @@ import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { ajv } from '../../../lib/ajv';
-import { validateUnauthorizedErrorResponse } from '../../../lib/rest/validators';
-import { ExtractRoutesFromAPI } from '../../../lib/rest/typings';
 import { i18n } from '../../../../server/lib/i18n';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { browseChannelsMethod } from '../../../../server/methods/browseChannels';
@@ -37,171 +37,117 @@ import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
 
 /**
- * @openapi
- *  /api/v1/me:
- *    get:
- *      description: Gets user data of the authenticated user
- *      security:
- *        - authenticated: []
- *      responses:
- *        200:
- *          description: The user data of the authenticated user
- *          content:
- *            application/json:
- *              schema:
- *                allOf:
- *                  - $ref: '#/components/schemas/ApiSuccessV1'
- *                  - type: object
- *                    properties:
- *                      name:
- *                        type: string
- *                      username:
- *                        type: string
- *                      nickname:
- *                        type: string
- *                      emails:
- *                        type: array
- *                        items:
- *                          type: object
- *                          properties:
- *                            address:
- *                              type: string
- *                            verified:
- *                              type: boolean
- *                      email:
- *                        type: string
- *                      status:
- *                        $ref: '#/components/schemas/UserStatus'
- *                      statusDefault:
- *                        $ref: '#/components/schemas/UserStatus'
- *                      statusText:
- *                        $ref: '#/components/schemas/UserStatus'
- *                      statusConnection:
- *                        $ref: '#/components/schemas/UserStatus'
- *                      bio:
- *                        type: string
- *                      avatarOrigin:
- *                        type: string
- *                        enum: [none, local, upload, url]
- *                      utcOffset:
- *                        type: number
- *                      language:
- *                        type: string
- *                      settings:
- *                        type: object
- *                        properties:
- *                          preferences:
- *                            type: object
- *                      enableAutoAway:
- *                        type: boolean
- *                      idleTimeLimit:
- *                        type: number
- *                      roles:
- *                        type: array
- *                      active:
- *                        type: boolean
- *                      defaultRoom:
- *                        type: string
- *                      customFields:
- *                        type: array
- *                      requirePasswordChange:
- *                        type: boolean
- *                      requirePasswordChangeReason:
- *                        type: string
- *                      services:
- *                        type: object
- *                        properties:
- *                          github:
- *                            type: object
- *                          gitlab:
- *                            type: object
- *                          password:
- *                            type: object
- *                            properties:
- *                              exists:
- *                                type: boolean
- *                          totp:
- *                            type: object
- *                            properties:
- *                              enabled:
- *                                type: boolean
- *                          email2fa:
- *                            type: object
- *                            properties:
- *                              enabled:
- *                                type: boolean
- *                      statusLivechat:
- *                        type: string
- *                        enum: [available, 'not-available']
- *                      banners:
- *                        type: array
- *                        items:
- *                          type: object
- *                          properties:
- *                            id:
- *                              type: string
- *                            title:
- *                              type: string
- *                            text:
- *                              type: string
- *                            textArguments:
- *                              type: array
- *                              items: {}
- *                            modifiers:
- *                              type: array
- *                              items:
- *                                type: string
- *                            infoUrl:
- *                              type: string
- *                      oauth:
- *                        type: object
- *                        properties:
- *                          authorizedClients:
- *                            type: array
- *                            items:
- *                              type: string
- *                      _updatedAt:
- *                        type: string
- *                        format: date-time
- *                      avatarETag:
- *                        type: string
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
+ * -------------------------
+ * /api/v1/me endpoint schema
+ * -------------------------
+ */
+export interface IMeResponse {
+  success: true;
+  _id: string;
+  name: string;
+  username: string;
+  nickname: string;
+  emails: Array<{ address: string; verified: boolean }>;
+  email: string;
+  status: string;
+  statusDefault: string;
+  statusText: string;
+  statusConnection: string;
+  bio: string;
+  avatarOrigin: 'none' | 'local' | 'upload' | 'url';
+  utcOffset: number;
+  language: string;
+  settings: { preferences?: Record<string, unknown> };
+  enableAutoAway: boolean;
+  idleTimeLimit: number;
+  roles: string[];
+  active: boolean;
+  defaultRoom: string;
+  customFields: unknown[];
+  requirePasswordChange: boolean;
+  requirePasswordChangeReason: string;
+  services: Record<string, unknown>;
+  statusLivechat: 'available' | 'not-available';
+  banners: Array<Record<string, unknown>>;
+  oauth: { authorizedClients?: string[] };
+  _updatedAt: string;
+  avatarETag: string;
+}
+
+export const meResponseSchema = {
+  type: 'object',
+  properties: {
+    success: { type: 'boolean', enum: [true] },
+    _id: { type: 'string' },
+    name: { type: 'string' },
+    username: { type: 'string' },
+    nickname: { type: 'string' },
+    emails: {
+      type: 'array',
+      items: { type: 'object', properties: { address: { type: 'string' }, verified: { type: 'boolean' } }, required: ['address', 'verified'], additionalProperties: false },
+    },
+    email: { type: 'string' },
+    status: { type: 'string' },
+    statusDefault: { type: 'string' },
+    statusText: { type: 'string' },
+    statusConnection: { type: 'string' },
+    bio: { type: 'string' },
+    avatarOrigin: { type: 'string', enum: ['none', 'local', 'upload', 'url'] },
+    utcOffset: { type: 'number' },
+    language: { type: 'string' },
+    settings: { type: 'object', additionalProperties: true },
+    enableAutoAway: { type: 'boolean' },
+    idleTimeLimit: { type: 'number' },
+    roles: { type: 'array', items: { type: 'string' } },
+    active: { type: 'boolean' },
+	defaultRoom: { type: 'string' },
+    customFields: { type: 'array', items: {} },
+    requirePasswordChange: { type: 'boolean' },
+    requirePasswordChangeReason: { type: 'string' },
+    services: { type: 'object', additionalProperties: true },
+    statusLivechat: { type: 'string', enum: ['available', 'not-available'] },
+    banners: { type: 'array', items: { type: 'object', additionalProperties: true } },
+    oauth: { type: 'object', additionalProperties: true },
+    _updatedAt: { type: 'string', format: 'date-time' },
+    avatarETag: { type: 'string' },
+  },
+  required: [
+    'success', '_id', 'name', 'username', 'nickname', 'emails', 'email',
+    'status', 'statusDefault', 'statusText', 'statusConnection', 'bio',
+    'avatarOrigin', 'utcOffset', 'language', 'settings', 'enableAutoAway',
+    'idleTimeLimit', 'roles', 'active', 'defaultRoom', 'customFields',
+    'requirePasswordChange', 'requirePasswordChangeReason', 'services',
+    'statusLivechat', 'banners', 'oauth', '_updatedAt', 'avatarETag',
+  ],
+   additionalProperties: true,
+} as const;
+
+/**
+ * --------------------------------
+ * /api/v1/me endpoint
+ * --------------------------------
  */
 const meEndpoints = API.v1.get(
-	'me',
-	{
-		authRequired: true,
-		response: {
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [true] },
-					_id: { type: 'string' },
-					username: {type: 'string' }
-				},
-				required: ['success', '_id', 'username'],
-				additionalProperties: true
-			})
-		}
-	},
-	async function action() {
-		const userFields = { ...getBaseUserFields(), services: 1 };
-		const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
+  'me',
+  {
+    authRequired: true,
+    response: {
+      401: validateUnauthorizedErrorResponse,
+      200: ajv.compile<IMeResponse>(meResponseSchema),
+    },
+  },
+async function action() {
+    const userFields = { ...getBaseUserFields(), services: 1 };
+    const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
 
-		return API.v1.success(await getUserInfo(user));
-	}
+    return API.v1.success(await getUserInfo(user));
+  },
 );
 
 export type MeEndpoints = ExtractRoutesFromAPI<typeof meEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	interface Endpoints extends MeEndpoints {}
+  interface Endpoints extends MeEndpoints {}
 }
 
 let onlineCache = 0;
