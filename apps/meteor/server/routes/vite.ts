@@ -20,7 +20,7 @@ if (ENABLED) {
 	const viteDistPath = await resolveViteDistPath();
 
 	if (!viteDistPath) {
-		SystemLogger.warn('SERVE_VITE_FROM_METEOR is enabled, but no Vite dist directory was found. Skipping Vite static handler.');
+		SystemLogger.warn('FRONTEND_DELIVERY_MODE is meteor, but no Vite dist directory was found. Skipping Vite static handler.');
 	} else {
 		SystemLogger.info(`Serving Vite frontend from Meteor: ${viteDistPath}`);
 		WebApp.connectHandlers.use(async (req, res, next) => {
@@ -106,13 +106,18 @@ function looksLikeAsset(pathname: string): boolean {
 async function resolveViteDistPath(): Promise<string | undefined> {
 	const envPath = process.env.VITE_DIST_PATH;
 
-	const candidates = [
+	const paths = [
 		envPath,
 		path.resolve(process.cwd(), 'vite'),
 		path.resolve(process.cwd(), '../vite'),
 		path.resolve(process.cwd(), 'dist'),
 		path.resolve(process.cwd(), '../dist'),
-	].filter((candidate): candidate is string => Boolean(candidate));
+		path.resolve(process.cwd(), '../../../../../dist'),
+	];
+
+	console.debug('Checking for Vite dist directory in the following locations:', paths);
+
+	const candidates = paths.filter((candidate): candidate is string => Boolean(candidate));
 
 	const checks = await Promise.all(
 		candidates.map(async (candidate) => {

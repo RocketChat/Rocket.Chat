@@ -496,9 +496,10 @@ jobs:
 
   test-api:
     name: 🔨 Test API (CE)
-    needs: [build-gh-docker-publish, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ always() && needs.build-gh-docker-publish.result == 'success' && needs.release-versions.result == 'success' }}
 
-    uses: ./.github/workflows/ci-test-e2e-vite.yml
+    uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: api
       release: ce
@@ -513,6 +514,7 @@ jobs:
   test-api-livechat:
     name: 🔨 Test API Livechat (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ always() && needs.build-gh-docker-publish.result == 'success' && needs.release-versions.result == 'success' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -528,9 +530,10 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [build-gh-docker-publish, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ always() && needs.build-gh-docker-publish.result == 'success' && needs.release-versions.result == 'success' }}
 
-    uses: ./.github/workflows/ci-test-e2e-vite.yml
+    uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: ui
       release: ce
@@ -553,9 +556,10 @@ jobs:
 
   test-api-ee:
     name: 🔨 Test API (EE)
-    needs: [build-gh-docker-publish, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ always() && needs.build-gh-docker-publish.result == 'success' && needs.release-versions.result == 'success' }}
 
-    uses: ./.github/workflows/ci-test-e2e-vite.yml
+    uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: api
       release: ee
@@ -574,6 +578,7 @@ jobs:
   test-api-livechat-ee:
     name: 🔨 Test API Livechat (EE)
     needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ always() && needs.build-gh-docker-publish.result == 'success' && needs.release-versions.result == 'success' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -593,9 +598,10 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [build-gh-docker-publish, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ always() && needs.build-gh-docker-publish.result == 'success' && needs.release-versions.result == 'success' }}
 
-    uses: ./.github/workflows/ci-test-e2e-vite.yml
+    uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: ui
       release: ee
@@ -622,6 +628,7 @@ jobs:
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
+    if: ${{ always() && needs.build-gh-docker-publish.result == 'success' && needs.packages-build.result == 'success' && needs.release-versions.result == 'success' }}
     runs-on: ubuntu-24.04
 
     steps:
@@ -718,7 +725,6 @@ jobs:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
     needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
-    if: ${{ !cancelled() }}
 
     steps:
       - uses: actions/checkout@v6
@@ -739,23 +745,8 @@ jobs:
         run: |
           set -o xtrace
 
-          mkdir -p /tmp/coverage/api /tmp/coverage/ui
-          mkdir -p /tmp/coverage_report/api /tmp/coverage_report/ui
-
-          # Only run nyc report if there are actually files in the directory
-          if [ "$(ls -A /tmp/coverage/api)" ]; then
-            npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/api --temp-dir=/tmp/coverage/api
-          else
-            echo "No API coverage files found, creating empty lcov.info to prevent Codecov upload errors"
-            touch /tmp/coverage_report/api/lcov.info
-          fi
-
-          if [ "$(ls -A /tmp/coverage/ui)" ]; then
-            npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
-          else
-            echo "No UI coverage files found, creating empty lcov.info"
-            touch /tmp/coverage_report/ui/lcov.info
-          fi
+          npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/api --temp-dir=/tmp/coverage/api
+          npx nyc report --reporter=lcovonly --report-dir=/tmp/coverage_report/ui --temp-dir=/tmp/coverage/ui
 
       - name: Store coverage-reports
         uses: actions/upload-artifact@v7

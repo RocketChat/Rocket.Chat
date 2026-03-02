@@ -28,6 +28,7 @@ services:
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
       - HEAP_USAGE_PERCENT=99
+      - FRONTEND_DELIVERY_MODE=${FRONTEND_DELIVERY_MODE:-separate}
     depends_on:
       - traefik
       - mongo
