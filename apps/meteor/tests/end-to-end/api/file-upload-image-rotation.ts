@@ -47,12 +47,12 @@ describe('[File Upload - Image Rotation]', () => {
 	});
 
 	after(async () => {
-		await Promise.all([
+		await Promise.allSettled([
 			updateSetting('FileUpload_RotateImages', rotateImagesSetting),
 			updateSetting('Message_Attachments_Strip_Exif', stripExifSetting),
 			updateSetting('Message_Attachments_Thumbnails_Enabled', thumbnailsEnabledSetting),
-			deleteRoom({ type: 'p', roomId: testRoom._id }),
-			deleteUser(user),
+			testRoom ? deleteRoom({ type: 'p', roomId: testRoom._id }) : Promise.resolve(),
+			user ? deleteUser(user) : Promise.resolve(),
 		]);
 	});
 
