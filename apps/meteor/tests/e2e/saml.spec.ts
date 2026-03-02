@@ -12,6 +12,7 @@ import { Users } from './fixtures/userStates';
 import { Registration } from './page-objects';
 import { convertHexToRGB } from './utils/convertHexToRGB';
 import { createCustomRole, deleteCustomRole } from './utils/custom-role';
+import { getSettingValueById } from './utils/getSettingValueById';
 import { getUserInfo } from './utils/getUserInfo';
 import { parseMeteorResponse } from './utils/parseMeteorResponse';
 import { setSettingValueById } from './utils/setSettingValueById';
@@ -41,6 +42,14 @@ const waitForSamlSettingsReload = async (page: Page) => {
 	if (elapsed < minimumWait) {
 		await page.waitForTimeout(minimumWait - elapsed);
 	}
+};
+
+const setSettingValueWithVerification = async (api: BaseTest['api'], settingId: string, value: unknown, retries = 20) => {
+	const response = await setSettingValueById(api, settingId, value);
+
+	await expect.poll(async () => getSettingValueById(api, settingId), { timeout: retries * 200 }).toBe(value);
+
+	return response;
 };
 
 const resetTestData = async ({ api, cleanupOnly = false }: { api?: any; cleanupOnly?: boolean } = {}) => {
@@ -134,7 +143,7 @@ test.describe('SAML', () => {
 		await resetTestData({ api });
 
 		// Only one setting updated through the API to avoid refreshing the service configurations several times
-		await expect((await setSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
+		await expect((await setSamlSettingValueById(api, 'SAML_Custom_Default', true)).status()).toBe(200);
 
 		// Create a new custom role
 		if (constants.IS_EE) {
@@ -205,6 +214,8 @@ test.describe('SAML', () => {
 		poRegistration = new Registration(page);
 
 		await page.goto('/home');
+		await waitForSamlSettingsReload(page);
+		await page.reload();
 	});
 
 	test('Login', async ({ page, api }) => {
@@ -241,9 +252,11 @@ test.describe('SAML', () => {
 		});
 	});
 
-	test('Allow password change for OAuth users', async ({ api }) => {
+	test('Allow password change for OAuth users', async ({ api, page }) => {
+		await doLoginStep(page, 'samluser1');
+
 		await test.step("should not send password reset mail if 'Allow Password Change for OAuth Users' setting is disabled", async () => {
-			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', false)).status()).toBe(200);
+			expect((await setSettingValueWithVerification(api, 'Accounts_AllowPasswordChangeForOAuthUsers', false)).status()).toBe(200);
 
 			const response = await api.post('/method.call/sendForgotPasswordEmail', {
 				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
@@ -254,7 +267,7 @@ test.describe('SAML', () => {
 		});
 
 		await test.step("should send password reset mail if 'Allow Password Change for OAuth Users' setting is enabled", async () => {
-			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', true)).status()).toBe(200);
+			expect((await setSettingValueWithVerification(api, 'Accounts_AllowPasswordChangeForOAuthUsers', true)).status()).toBe(200);
 
 			const response = await api.post('/method.call/sendForgotPasswordEmail', {
 				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
