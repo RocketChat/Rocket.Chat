@@ -512,7 +512,7 @@ jobs:
 
   test-api-livechat:
     name: 🔨 Test API Livechat (CE)
-    needs: [checks, build-gh-docker-publish, release-versions]
+    needs: [build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -573,7 +573,7 @@ jobs:
 
   test-api-livechat-ee:
     name: 🔨 Test API Livechat (EE)
-    needs: [checks, build-gh-docker-publish, release-versions]
+    needs: [build-gh-docker-publish, release-versions]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
