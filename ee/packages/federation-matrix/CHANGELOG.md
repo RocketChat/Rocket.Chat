@@ -1,5 +1,22 @@
 # @rocket.chat/federation-matrix
 
+## 0.0.13
+
+### Patch Changes
+
+- ([#38596](https://github.com/RocketChat/Rocket.Chat/pull/38596)) Adjusts the minimum supported MongoDB version from 8.2 (Rapid Release with short support lifecycle) to 8, ensuring stable and long-term compatibility
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 11e1c51f0867a35c69ce9b6eeca25dbbe2c71872, 88da141f3c2af6f91980c7ca8b8777161f99a068, 1c474580b768358b49c93002b1277e7065df02fe, 75d089ca40248af963d7cd2a8034c3c6de6b971e, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 87faec13b3c0efc3e85627f9b70c4561b7231416, 508b4a17d76dc1cd7d3a55bdba826216f51432e2, 123aebec2caa74b17d2b5dcbd2a2db2e687cf3ac]:</summary>
+
+  - @rocket.chat/core-typings@8.2.0
+  - @rocket.chat/models@2.1.0
+  - @rocket.chat/core-services@0.13.0
+  - @rocket.chat/rest-typings@8.2.0
+  - @rocket.chat/http-router@7.9.18
+  - @rocket.chat/license@1.1.11
+  - @rocket.chat/network-broker@0.2.30
+  </details>
+
 ## 0.0.13-rc.2
 
 ### Patch Changes

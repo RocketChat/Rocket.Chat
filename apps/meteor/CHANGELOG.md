@@ -1,5 +1,116 @@
 # @rocket.chat/meteor
 
+## 8.2.0
+
+### Minor Changes
+
+- ([#38099](https://github.com/RocketChat/Rocket.Chat/pull/38099)) Adds file metadata to the Apps.Engine for messages with multiple files
+
+- ([#38173](https://github.com/RocketChat/Rocket.Chat/pull/38173)) Adds a new endpoint to delete uploaded files individually
+
+- ([#38356](https://github.com/RocketChat/Rocket.Chat/pull/38356)) Creates a new setting with an extra layer of validation to restrict the usage of federation to only users with a validated email address that matches the configured federation domain.
+
+- ([#38044](https://github.com/RocketChat/Rocket.Chat/pull/38044)) Adds configurable SSRF validation for HTTP calls made from server
+
+- ([#38532](https://github.com/RocketChat/Rocket.Chat/pull/38532)) Standardizes the display of username with `@` before
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#38374](https://github.com/RocketChat/Rocket.Chat/pull/38374)) Fixes an issue where apps logs were being lost in nested requests
+
+- ([#38283](https://github.com/RocketChat/Rocket.Chat/pull/38283)) Fixes an issue with encrypted room's message previews on the sidebar not always being properly decrypted
+
+- ([#37776](https://github.com/RocketChat/Rocket.Chat/pull/37776)) Prevents over-assignment of omnichannel agents beyond their max chats limit in microservices deployments by serializing agent assignment with explicit user-level locking.
+
+- ([#35971](https://github.com/RocketChat/Rocket.Chat/pull/35971) by [@JASIM0021](https://github.com/JASIM0021)) Fixes an issue where the Resend Verification Email could be abused to spam mail servers
+
+- ([#38653](https://github.com/RocketChat/Rocket.Chat/pull/38653) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixes an issue where messages could be sent to archived rooms via the API
+
+- ([#38794](https://github.com/RocketChat/Rocket.Chat/pull/38794) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixes preview generation for vendor-specific image formats like `.dwg` (AutoCAD) files. Files with MIME types such as `image/vnd.dwg` and `image/vnd.microsoft.icon` are now excluded from preview generation as they cannot be processed by the Sharp image library, preventing failed preview attempts.
+
+- ([#38796](https://github.com/RocketChat/Rocket.Chat/pull/38796) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixes an issue where regular users could start video conference calls in read-only channels bypassing message restrictions
+
+- ([#38379](https://github.com/RocketChat/Rocket.Chat/pull/38379)) Fixes association of encrypted messages and encrypted files, so that if one of them is removed, the other gets removed as well.
+
+- ([#38616](https://github.com/RocketChat/Rocket.Chat/pull/38616)) Fixes device management logout not redirecting to login page.
+
+- ([#37356](https://github.com/RocketChat/Rocket.Chat/pull/37356) by [@MrKalyanKing](https://github.com/MrKalyanKing)) Fixes issue that caused Outgoing Webhook Retry Count to not be a number
+
+- ([#38491](https://github.com/RocketChat/Rocket.Chat/pull/38491)) Fixes an issue where the camera could stay on after closing the video recording modal.
+
+- ([#38267](https://github.com/RocketChat/Rocket.Chat/pull/38267)) Fixes an issue where web clients could remain with a stale slashcommand list during a rolling workspace update
+
+- ([#38319](https://github.com/RocketChat/Rocket.Chat/pull/38319)) Fixes incoming webhook integrations not receiving parsed JSON from x-www-form-urlencoded payload field.
+
+- ([#38579](https://github.com/RocketChat/Rocket.Chat/pull/38579) by [@ScriptShah](https://github.com/ScriptShah)) Fixes an issue where managers table loading skeleton column mismatch with headers
+
+- ([#38318](https://github.com/RocketChat/Rocket.Chat/pull/38318)) Fixes room header toolbar different spacing on Options menu
+
+- ([#38366](https://github.com/RocketChat/Rocket.Chat/pull/38366)) Fixes the `sort` parameter validation on `/api/v1/audit.settings` endpoint to accept string format.
+
+- ([#38279](https://github.com/RocketChat/Rocket.Chat/pull/38279)) Fixes issue when trying to create an unencrypted discussion when a parent channel is encrypted
+
+- ([#38262](https://github.com/RocketChat/Rocket.Chat/pull/38262)) Fixes an issue with the sidebar message preview (extended layout) showing `undefined` when the message has no previewable content
+
+- ([#38282](https://github.com/RocketChat/Rocket.Chat/pull/38282)) Fixes dismissed banner popups reappearing after server restart.
+
+- ([#38292](https://github.com/RocketChat/Rocket.Chat/pull/38292)) Fixes room message export to correctly handle messages with multiple files.
+
+- ([#38376](https://github.com/RocketChat/Rocket.Chat/pull/38376)) Fix a validation issue in the `livechat/custom-fields.save` endpoint
+
+- ([#38415](https://github.com/RocketChat/Rocket.Chat/pull/38415)) Fixes delete message permission check in read-only rooms to validate the deleting user's unmuted status instead of the message sender's
+
+- ([#38265](https://github.com/RocketChat/Rocket.Chat/pull/38265)) Fixes endpoints `omnichannel/contacts.update` and `omnichannel/contacts.conflicts` where the contact manager field could not be cleared.
+
+- ([#38596](https://github.com/RocketChat/Rocket.Chat/pull/38596)) Adjusts the minimum supported MongoDB version from 8.2 (Rapid Release with short support lifecycle) to 8, ensuring stable and long-term compatibility
+
+- ([#38568](https://github.com/RocketChat/Rocket.Chat/pull/38568)) Adds automatic cleanup of statistics collection with 1-year retention via TTL index.
+
+- <details><summary>Updated dependencies [bbc14893f10baa6d548274485d1a2470efccfd55, 11821455ea6a8c1cac2a43c433254864b8b2c5f8, d3758a7d57ab602745369ef9d2ccdbf9271cf305, 398fca05554d860a1202c7afd78912f1254257f5, 098f0a7467332f10a7bea5d435ae2ca3b5431fc9, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 11e1c51f0867a35c69ce9b6eeca25dbbe2c71872, 88da141f3c2af6f91980c7ca8b8777161f99a068, 1c474580b768358b49c93002b1277e7065df02fe, 75d089ca40248af963d7cd2a8034c3c6de6b971e, a75e1f168050bd49880e0d3e1b02e36a4f53b6f8, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 87faec13b3c0efc3e85627f9b70c4561b7231416, d6ef0db96a60e3ad27b980af6df2e80fad1467be, 508b4a17d76dc1cd7d3a55bdba826216f51432e2, 379c2b22f54911ebf17c0872c9ca8e2baaac3609, 562d5ce6ad8afc67bef61e91939f8c21c4501610, 123aebec2caa74b17d2b5dcbd2a2db2e687cf3ac]:</summary>
+
+  - @rocket.chat/apps-engine@1.60.0
+  - @rocket.chat/model-typings@2.1.0
+  - @rocket.chat/core-typings@8.2.0
+  - @rocket.chat/models@2.1.0
+  - @rocket.chat/message-parser@0.31.34
+  - @rocket.chat/core-services@0.13.0
+  - @rocket.chat/i18n@2.1.0
+  - @rocket.chat/rest-typings@8.2.0
+  - @rocket.chat/http-router@7.9.18
+  - @rocket.chat/ui-voip@18.0.0
+  - @rocket.chat/server-fetch@0.1.0
+  - @rocket.chat/federation-matrix@0.0.13
+  - @rocket.chat/presence@0.2.51
+  - @rocket.chat/apps@0.6.4
+  - @rocket.chat/fuselage-ui-kit@28.0.0
+  - @rocket.chat/omnichannel-services@0.3.48
+  - @rocket.chat/abac@0.1.4
+  - @rocket.chat/license@1.1.11
+  - @rocket.chat/media-calls@0.2.4
+  - @rocket.chat/pdf-worker@0.3.30
+  - @rocket.chat/api-client@0.2.51
+  - @rocket.chat/cron@0.1.51
+  - @rocket.chat/gazzodown@28.0.0
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/ui-avatar@24.0.0
+  - @rocket.chat/ui-client@28.0.0
+  - @rocket.chat/ui-contexts@28.0.0
+  - @rocket.chat/web-ui-registration@28.0.0
+  - @rocket.chat/omni-core-ee@0.0.16
+  - @rocket.chat/instance-status@0.1.51
+  - @rocket.chat/omni-core@0.0.16
+  - @rocket.chat/network-broker@0.2.30
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@28.0.0
+  </details>
+
 ## 8.2.0-rc.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @rocket.chat/ui-voip
 
+## 18.0.0
+
+### Patch Changes
+
+- ([#38417](https://github.com/RocketChat/Rocket.Chat/pull/38417)) Fixes select not closing when dragging the new call widget
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@28.0.0
+  - @rocket.chat/ui-avatar@24.0.0
+  - @rocket.chat/ui-client@28.0.0
+  - @rocket.chat/ui-contexts@28.0.0
+  </details>
+
 ## 18.0.0-rc.2
 
 ### Patch Changes
