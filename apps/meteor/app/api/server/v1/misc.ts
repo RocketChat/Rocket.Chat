@@ -46,7 +46,10 @@ const meEndpoints = API.v1.get(
     response: {
       401: validateUnauthorizedErrorResponse,
       200: {
-        $ref: '#/components/schemas/IUser',
+        allOf: [
+    		{ $ref: '#/components/schemas/ApiSuccessV1' },
+    		{ $ref: '#/components/schemas/IUser' },
+  		],
       },
     },
   },
