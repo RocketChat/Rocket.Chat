@@ -729,11 +729,13 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const msgId = urlObj.searchParams.getAll('msg').at(0);
+				const msgIds = urlObj.searchParams.getAll('msg');
 
-				if (!msgId) {
+				if (msgIds.length !== 1 || !msgIds[0]) {
 					return;
 				}
+
+				const msgId = msgIds[0];
 
 				let quotedMessage: Serialized<IMessage>;
 				try {
