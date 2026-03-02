@@ -47,8 +47,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 		onForward,
 		onEndCall,
 		onToggleScreenSharing,
-		// getRemoteVideoStream, TODO: Implement
-		// getLocalVideoStream,
+		streams: { remoteScreen, localScreen },
 	} = useMediaCallView();
 
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState } = sessionState;
@@ -58,11 +57,8 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const remoteVideoStreamWrapper = getRemoteVideoStream();
-	const localVideoStreamWrapper = getLocalVideoStream();
-
-	const [remoteStreamRefCallback] = usePlayMediaStream(remoteVideoStreamWrapper?.stream ?? null);
-	const [localStreamRefCallback] = usePlayMediaStream(localVideoStreamWrapper?.stream ?? null);
+	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
+	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
 
 	useRoomView();
 
@@ -76,15 +72,15 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 
 	useEffect(() => {
 		setFocusedCard((focusedCard) => {
-			if (focusedCard === 'remote' && !remoteVideoStreamWrapper?.active) {
+			if (focusedCard === 'remote' && !remoteScreen?.active) {
 				return null;
 			}
-			if (focusedCard === 'local' && !localVideoStreamWrapper?.active) {
+			if (focusedCard === 'local' && !localScreen?.active) {
 				return null;
 			}
 			return focusedCard;
 		});
-	}, [remoteVideoStreamWrapper?.active, localVideoStreamWrapper?.active]);
+	}, [remoteScreen?.active, localScreen?.active]);
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	// TODO flter out external peer info
@@ -141,17 +137,17 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 						avatarUrl={user.avatarUrl}
 						muted={muted}
 						held={held}
-						sharing={localVideoStreamWrapper?.active ?? false}
+						sharing={localScreen?.active ?? false}
 					/>
 					<PeerCard
 						displayName={peerInfo.displayName}
 						avatarUrl={peerInfo.avatarUrl}
 						muted={remoteMuted}
 						held={remoteHeld}
-						sharing={remoteVideoStreamWrapper?.active ?? false}
+						sharing={remoteScreen?.active ?? false}
 					/>
-					{remoteVideoStreamWrapper?.active && focusedCard !== 'remote' && remoteStreamCard}
-					{localVideoStreamWrapper?.active && focusedCard !== 'local' && localStreamCard}
+					{remoteScreen?.active && focusedCard !== 'remote' && remoteStreamCard}
+					{localScreen?.active && focusedCard !== 'local' && localStreamCard}
 				</CardListContainerWrapper>
 			</CardListSection>
 			<ActionStrip
@@ -166,7 +162,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 					label={t('Screen_sharing')}
 					icons={['computer', 'computer']}
 					titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
-					pressed={localVideoStreamWrapper?.active ?? false}
+					pressed={localScreen?.active ?? false}
 					onToggle={onToggleScreenSharing}
 				/>
 				<DevicePicker secondary />

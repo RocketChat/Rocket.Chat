@@ -1,7 +1,13 @@
+import { type IMediaStreamWrapper } from '@rocket.chat/media-signaling';
 import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 
 import type { SessionState, PeerInfo } from './definitions';
+
+export type MediaCallStreams = {
+	remoteScreen?: IMediaStreamWrapper;
+	localScreen?: IMediaStreamWrapper;
+};
 
 type MediaCallViewContextValue = {
 	sessionState: SessionState;
@@ -16,6 +22,7 @@ type MediaCallViewContextValue = {
 	onAccept: () => Promise<void>;
 	onSelectPeer: (peerInfo: PeerInfo) => void;
 	onToggleScreenSharing: () => void;
+	streams: MediaCallStreams;
 };
 
 const defaultSessionState: SessionState = {
@@ -43,6 +50,7 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	onAccept: () => Promise.resolve(undefined),
 	onSelectPeer: () => undefined,
 	onToggleScreenSharing: () => undefined,
+	streams: {},
 };
 
 const MediaCallViewContext = createContext<MediaCallViewContextValue>(defaultMediaCallContextValue);

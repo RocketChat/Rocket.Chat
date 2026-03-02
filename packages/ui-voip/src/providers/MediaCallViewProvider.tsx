@@ -15,6 +15,7 @@ import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
+import { useScreenShareStreams } from './useScreenShareStreams';
 import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
@@ -207,6 +208,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		controls.toggleScreenSharing();
 	};
 
+	const streams = useScreenShareStreams(instance);
+
 	useWidgetExternalControlSignalListener(
 		'toggleWidget',
 		useCallback(
@@ -229,7 +232,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onCall,
 		onAccept,
 		onSelectPeer,
-		onToggleScreenSharing
+		onToggleScreenSharing,
+		streams,
 	};
 
 	return (
