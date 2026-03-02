@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { useMemo, useState } from 'react';
 
 import MediaCallRoomSection from './MediaCallRoomSection';
+import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
 
 const MediaCallRoom = ({ body }: { body: ReactNode }) => {
 	const [showChat, setShowChat] = useState(true);
@@ -28,12 +29,14 @@ const MediaCallRoom = ({ body }: { body: ReactNode }) => {
 	};
 	return (
 		<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
-			<MediaCallRoomSection
-				showChat={showChat}
-				onToggleChat={onClickToggleChat}
-				user={ownUser}
-				containerHeight={borderBoxSize?.blockSize || 0}
-			/>
+			<MediaCallViewProvider>
+				<MediaCallRoomSection
+					showChat={showChat}
+					onToggleChat={onClickToggleChat}
+					user={ownUser}
+					containerHeight={borderBoxSize?.blockSize || 0}
+				/>
+			</MediaCallViewProvider>
 
 			{showChat && (
 				<Box w='full' flexGrow={2} flexShrink={0}>
