@@ -143,7 +143,7 @@ class AmazonS3Store extends UploadFS.Store {
 				Bucket: classOptions.params.Bucket,
 			};
 
-			if (options.start && options.end) {
+			if (options.start != null && options.end != null) {
 				params.Range = `bytes=${options.start}-${options.end}`;
 			}
 
