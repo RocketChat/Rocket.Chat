@@ -7,4 +7,3 @@ declare module '@rocket.chat/rest-typings' {
 }
 
 export {};
-};
