@@ -3,6 +3,7 @@ import typia from 'typia';
 import type { CallHistoryItem } from './ICallHistoryItem';
 import type { ICustomSound } from './ICustomSound';
 import type { ICustomUserStatus } from './ICustomUserStatus';
+import type { IEmailInbox } from './IEmailInbox';
 import type { IInvite } from './IInvite';
 import type { IMessage } from './IMessage';
 import type { IOAuthApps } from './IOAuthApps';
@@ -13,7 +14,7 @@ import type { IMediaCall } from './mediaCalls/IMediaCall';
 
 export const schemas = typia.json.schemas<
 	[
-		ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall,
+		ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall | IEmailInbox,
 		CallHistoryItem,
 		ICustomUserStatus,
 		SlashCommand,
