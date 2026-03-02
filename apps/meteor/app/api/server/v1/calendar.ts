@@ -30,7 +30,7 @@ API.v1.addRoute(
 	'calendar-events.search',
 	{
 		authRequired: true,
-		validateParams: isCalendarEventSearchProps, // 👈 yaha use hoga
+		validateParams: isCalendarEventSearchProps, 
 		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 },
 	},
 	{
