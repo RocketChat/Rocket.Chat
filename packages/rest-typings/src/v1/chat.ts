@@ -115,24 +115,6 @@ const chatUnfollowMessageSchema = {
 
 export const isChatUnfollowMessageProps = ajv.compile<ChatUnfollowMessage>(chatUnfollowMessageSchema);
 
-type ChatGetMessage = {
-	msgId: IMessage['_id'];
-};
-
-const ChatGetMessageSchema = {
-	type: 'object',
-	properties: {
-		msgId: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['msgId'],
-	additionalProperties: false,
-};
-
-export const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
-
 type ChatStarMessage = {
 	messageId: IMessage['_id'];
 };
@@ -959,11 +941,6 @@ export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetUR
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
 		POST: (params: ChatSendMessage) => {
-			message: IMessage;
-		};
-	};
-	'/v1/chat.getMessage': {
-		GET: (params: ChatGetMessage) => {
 			message: IMessage;
 		};
 	};
