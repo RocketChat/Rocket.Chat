@@ -833,28 +833,14 @@ jobs:
           path: /tmp/build
 
       - name: Publish assets
-        if: github.repository == 'RocketChat/Rocket.Chat' && (github.ref_type == 'tag' || github.ref == 'refs/heads/develop')
+        if: github.repository == 'RocketChat/Rocket.Chat'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: us-east-1
-          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
-        run: |
-          FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz"
+    GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+  run: |
 
-          aws s3 cp s3://rocketchat/sign.key.gpg .github/sign.key.gpg
-
-          mkdir -p $ROCKET_DEPLOY_DIR
-
-          cp .github/sign.key.gpg /tmp
-          gpg --yes --batch --passphrase=$GPG_PASSWORD /tmp/sign.key.gpg
-          gpg --allow-secret-key-import --import /tmp/sign.key
-          rm /tmp/sign.key
-
-          ln -s /tmp/build/Rocket.Chat.tar.gz "$FILENAME"
-          gpg --armor --detach-sign "$FILENAME"
-
-          aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
   docker-image-publish:
     name: 🚀 Publish Docker Images (DockerHub)
