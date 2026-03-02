@@ -166,7 +166,10 @@ runs:
         yarn build:ci
 
         # Build Vite frontend and package it with the standard Meteor artifact.
-        ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true npx vite build --outDir /tmp/dist/vite
+        (
+          cd apps/meteor
+          ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true npx vite build --outDir /tmp/dist/vite
+        )
 
         declare -a meter_modules_to_remove=(
             "meteor/babel-compiler/node_modules/@meteorjs/swc-core/.swc/node_modules/@swc/core-darwin-arm64" # Removes 35M
