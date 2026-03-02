@@ -46,8 +46,8 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 		onHold,
 		onForward,
 		onEndCall,
+		onToggleScreenSharing,
 		// getRemoteVideoStream, TODO: Implement
-		// toggleScreenSharing,
 		// getLocalVideoStream,
 	} = useMediaCallView();
 
@@ -65,10 +65,6 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 	const [localStreamRefCallback] = useMediaStream(localVideoStreamWrapper?.stream ?? null);
 
 	useRoomView();
-
-	const onClickShareScreen = () => {
-		toggleScreenSharing();
-	};
 
 	const onClickFocusRemoteCard = () => {
 		setFocusedCard((prev) => (prev === 'remote' ? null : 'remote'));
@@ -171,7 +167,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 					icons={['computer', 'computer']}
 					titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
 					pressed={localVideoStreamWrapper?.active ?? false}
-					onToggle={onClickShareScreen}
+					onToggle={onToggleScreenSharing}
 				/>
 				<DevicePicker secondary />
 				<ToggleButton

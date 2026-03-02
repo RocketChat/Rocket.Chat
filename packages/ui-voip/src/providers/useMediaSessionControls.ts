@@ -12,6 +12,7 @@ export type MediaSessionControls = {
 	changeDevice: (deviceId: string) => Promise<void>;
 	forwardCall: (type: 'user' | 'sip', id: string) => void;
 	sendTone: (tone: string) => void;
+	toggleScreenSharing: () => void;
 };
 
 export const useMediaSessionControls = (instance?: MediaSignalingSession): MediaSessionControls => {
@@ -89,9 +90,27 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			}
 		};
 
+		const toggleScreenSharing = () => {
+			if (!instance) {
+				return;
+			}
+
+			const mainCall = instance.getMainCall();
+			if (!mainCall) {
+				return;
+			}
+
+			try {
+				mainCall.setScreenShareRequested(!mainCall.screenShareRequested);
+			} catch (error) {
+				console.error('Error toggling screen share', error);
+			}
+		};
+
 		return {
 			toggleMute,
 			toggleHold,
+			toggleScreenSharing,
 			endCall,
 			startCall,
 			acceptCall,

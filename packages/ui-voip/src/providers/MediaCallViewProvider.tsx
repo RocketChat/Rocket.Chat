@@ -203,6 +203,10 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		selectPeer(peerInfo);
 	};
 
+	const onToggleScreenSharing = () => {
+		controls.toggleScreenSharing();
+	};
+
 	useWidgetExternalControlSignalListener(
 		'toggleWidget',
 		useCallback(
@@ -225,6 +229,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onCall,
 		onAccept,
 		onSelectPeer,
+		onToggleScreenSharing
 	};
 
 	return (
