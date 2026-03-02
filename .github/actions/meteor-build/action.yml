@@ -59,7 +59,7 @@ runs:
         deno-version: ${{ inputs.deno-version }}
         cache-modules: true
         install: true
-        type: 'production'
+        type: 'development'
         NPM_TOKEN: ${{ inputs.NPM_TOKEN }}
 
     # - name: Free disk space
