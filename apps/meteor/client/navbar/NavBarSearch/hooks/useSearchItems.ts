@@ -38,9 +38,6 @@ export type SearchRenderableItem = {
 	ts?: Date;
 	status?: string;
 	inviter?: ISubscription['inviter'];
-	// Explicit discriminator: true only for spotlight user results.
-	// Replaces the old `!room.u` guard in NavBarSearchRow which broke when
-	// we started populating `u` for spotlight users in userMap.
 	isUserResult?: boolean;
 };
 
