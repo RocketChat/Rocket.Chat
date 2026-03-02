@@ -9,6 +9,7 @@ import type { ICustomUserStatus } from './ICustomUserStatus';
 import type { IEmailInbox } from './IEmailInbox';
 import type { IInvite } from './IInvite';
 import type { IMessage } from './IMessage';
+import type { IModerationAudit, IModerationReport } from './IModerationReport';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
 import type { IRole } from './IRole';
@@ -43,6 +44,8 @@ export const schemas = typia.json.schemas<
 			| CloudConfirmationPollData
 			| CloudRegistrationIntentData
 			| CloudRegistrationStatus
+			| IModerationAudit
+			| IModerationReport
 			| IBanner
 		),
 		CallHistoryItem,
