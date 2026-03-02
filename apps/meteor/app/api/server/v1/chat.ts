@@ -214,8 +214,8 @@ type ChatReportMessage = {
 const ChatReportMessageSchema = {
 	type: 'object',
 	properties: {
-		messageId: { type: 'string' },
-		description: { type: 'string' },
+		messageId: { type: 'string', minLength: 1 },
+		description: { type: 'string', minLength: 1 },
 	},
 	required: ['messageId', 'description'],
 	additionalProperties: false,
