@@ -110,6 +110,7 @@ export type SharedOptions<TMethod extends string> = (
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired?: boolean;
+			userWithoutUsername?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 			rateLimiterOptions?:
 				| {
@@ -128,6 +129,7 @@ export type SharedOptions<TMethod extends string> = (
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired: true;
+			userWithoutUsername?: boolean;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
 			rateLimiterOptions?:
@@ -215,18 +217,18 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	};
 } & (TOptions extends { authRequired: true }
 	? {
-			user: IUser;
+			user: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
 			userId: string;
 			readonly token: string;
 		}
 	: TOptions extends { authOrAnonRequired: true }
 		? {
-				user?: IUser;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
 				userId?: string;
 				readonly token?: string;
 			}
 		: {
-				user?: IUser;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
 				userId?: string;
 				readonly token?: string;
 			});
@@ -318,10 +320,10 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	response: Response;
 } & (TOptions['authRequired'] extends true
 	? {
-			user: IUser;
+			user: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
 		}
 	: {
-			user?: IUser;
+			user?: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
 		});
 
 type PromiseOrValue<T> = T | Promise<T>;
