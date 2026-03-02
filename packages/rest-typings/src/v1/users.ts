@@ -401,7 +401,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.getAvatar': {
-		GET: (params: { userId?: string; username?: string; user?: string }) => void;
+		GET: (params: UsersGetAvatarParamsGET) => void;
 	};
 
 	'/v1/users.updateOwnBasicInfo': {
