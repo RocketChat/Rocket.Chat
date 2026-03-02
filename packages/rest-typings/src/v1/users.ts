@@ -9,6 +9,9 @@ import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
 import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
+import type { UsersDeleteOwnAccountParamsPOST } from './users/UsersDeleteOwnAccountParamsPOST';
+import type { UsersForgotPasswordParamsPOST } from './users/UsersForgotPasswordParamsPOST';
+import type { UsersGetAvatarParamsGET } from './users/UsersGetAvatarParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
@@ -17,9 +20,6 @@ import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEm
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
-import type { UsersGetAvatarParamsGET } from './users/UsersGetAvatarParamsGET';
-import type { UsersDeleteOwnAccountParamsPOST } from './users/UsersDeleteOwnAccountParamsPOST';
-import type { UsersForgotPasswordParamsPOST } from './users/UsersForgotPasswordParamsPOST';
 
 export const isUsersGetAvatarProps = ajv.compile<UsersGetAvatarParamsGET>({
 	oneOf: [
