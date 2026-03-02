@@ -19,6 +19,7 @@ import type { IUser, IDirectoryUserResult } from './IUser';
 import type { VideoConference, VideoConferenceInstructions } from './IVideoConference';
 import type { SlashCommand } from './SlashCommands';
 import type { VideoConferenceCapabilities } from './VideoConferenceCapabilities';
+import type { IImport } from './import/IImport';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
 
 export const schemas = typia.json.schemas<
@@ -32,6 +33,7 @@ export const schemas = typia.json.schemas<
 			| IPermission
 			| IMediaCall
 			| IEmailInbox
+			| IImport
 			| ICalendarEvent
 			| IRole
 			| IRoom
