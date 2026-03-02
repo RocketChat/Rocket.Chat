@@ -180,7 +180,7 @@ class AmazonS3Store extends UploadFS.Store {
 				Body: writeStream,
 				Bucket: classOptions.params.Bucket,
 				...(file.type && { ContentType: file.type }),
-				...(file.size && { ContentLength: file.size }),
+				...(file.size != null && { ContentLength: file.size }),
 				...(classOptions.params.ACL && { ACL: classOptions.params.ACL as PutObjectCommandInput['ACL'] }),
 			};
 
