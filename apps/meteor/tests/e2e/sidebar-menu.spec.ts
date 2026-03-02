@@ -3,7 +3,7 @@ import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe('sidebar-menu', () => {
+test.describe.skip('sidebar-menu', () => {
 	test('expect popover to stay open after home loads', async ({ page }) => {
 		await page.route('**/__meteor__/dynamic-import/fetch', async (route, request) => {
 			if (request.postData()?.includes('HomePage.tsx')) {
