@@ -10,6 +10,7 @@ import type { IPermission } from './IPermission';
 import type { ISubscription } from './ISubscription';
 import type { SlashCommand } from './SlashCommands';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
+import type { IUser } from "./IUser";
 
 export const schemas = typia.json.schemas<
 	[
@@ -17,6 +18,7 @@ export const schemas = typia.json.schemas<
 		CallHistoryItem,
 		ICustomUserStatus,
 		SlashCommand,
+		IUser
 	],
 	'3.0'
 >();
