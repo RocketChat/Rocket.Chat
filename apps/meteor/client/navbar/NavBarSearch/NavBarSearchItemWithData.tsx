@@ -22,14 +22,8 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	// SearchRenderableItem is structurally compatible with UnreadData:
-	// all required numeric fields (unread, userMentions, groupMentions) are present.
-	// Local subscriptions carry real unread data; spotlight results default to 0 → no badge shown.
 	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room as SubscriptionWithRoom);
 
-	// SearchRenderableItem satisfies Pick<IRoom, 't'|'prid'|'teamMain'|'uids'|'u'>:
-	// - For spotlight rooms (t='c'): u stub is safe, isDirectMessageRoom is never true.
-	// - For spotlight users (t='d'): u is populated from real server user data.
 	const icon = <SidebarV2ItemIcon highlighted={highlighted} icon={<RoomIcon room={room as SubscriptionWithRoom} placement='sidebar' size='x20' />} />;
 
 	return (

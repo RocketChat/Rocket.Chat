@@ -16,17 +16,6 @@ const options = {
 	limit: LIMIT,
 } as const;
 
-/**
- * A normalized item shape that covers both local subscriptions (SubscriptionWithRoom)
- * and spotlight results from the server. All subscription-specific badge fields are
- * present (required numerics default to 0 for spotlight results) so that downstream
- * components like SidebarItemBadges and useUnreadDisplay receive a structurally
- * compatible object without needing any changes.
- *
- * Spotlight users  → t: 'd', real u/name/fname from server user object, unread/mentions = 0
- * Spotlight rooms  → t: 'c' only (server guarantees this via includeInRoomSearch), stub u, unread/mentions = 0
- * Local rooms      → full SubscriptionWithRoom, always satisfies this shape
- */
 export type SearchRenderableItem = {
 	_id: string;
 	t: string;
@@ -37,11 +26,9 @@ export type SearchRenderableItem = {
 	teamMain?: boolean;
 	uids?: string[];
 	prid?: string;
-	// Required on ISubscription — use 0 for spotlight results so badge shows nothing
 	unread: number;
 	userMentions: number;
 	groupMentions: number;
-	// Optional subscription fields — undefined for spotlight results
 	u: ISubscription['u'];
 	alert?: boolean;
 	tunread?: string[];
@@ -118,9 +105,7 @@ export const useSearchItems = (filterText: string): UseQueryResult<SearchRendera
 				name: user.username,
 				fname: user.name,
 				avatarETag: user.avatarETag,
-				// Spotlight users: populated from server data
 				u: { _id: user._id, username: user.username, name: user.name },
-				// No subscription data — badge shows nothing
 				unread: 0,
 				userMentions: 0,
 				groupMentions: 0,
@@ -136,9 +121,6 @@ export const useSearchItems = (filterText: string): UseQueryResult<SearchRendera
 				uids?: string[];
 			}): SearchRenderableItem => ({
 				...room,
-				// Spotlight rooms are always public channels (t='c') — server guarantees this
-				// via includeInRoomSearch() which only returns true for public room type.
-				// isDirectMessageRoom(room) will never be true for these, so u._id stub is safe.
 				u: { _id: '', username: '' as const, name: '' },
 				unread: 0,
 				userMentions: 0,
