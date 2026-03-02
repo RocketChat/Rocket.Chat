@@ -72,6 +72,11 @@ test.describe('OC - Tags Visibility', () => {
 	});
 
 	test('Verify agent should see correct tags based on department association', async () => {
+		const openTagsDropdown = async () => {
+			await poOmnichannel.editRoomInfo.inputTags.click();
+			await expect(poOmnichannel.page.getByRole('listbox').last()).toBeVisible();
+		};
+
 		await test.step('Agent opens room', async () => {
 			await poOmnichannel.sidebar.getSidebarItemByName(visitorA.name).click();
 		});
@@ -83,22 +88,26 @@ test.describe('OC - Tags Visibility', () => {
 		await test.step('check available tags', async () => {
 			await poOmnichannel.roomInfo.btnEdit.click();
 			await expect(poOmnichannel.editRoomInfo.root).toBeVisible();
-			await poOmnichannel.editRoomInfo.inputTags.click();
+			await openTagsDropdown();
 		});
 
 		await test.step('Should see TagA (department A specific)', async () => {
+			await openTagsDropdown();
 			await expect(poOmnichannel.editRoomInfo.optionTag(tagA.data.name)).toBeVisible();
 		});
 
 		await test.step('Should see SharedTag (both departments)', async () => {
+			await openTagsDropdown();
 			await expect(poOmnichannel.editRoomInfo.optionTag(sharedTag.data.name)).toBeVisible();
 		});
 
 		await test.step('Should see Public Tags for all chats (no department restriction)', async () => {
+			await openTagsDropdown();
 			await expect(poOmnichannel.editRoomInfo.optionTag(globalTag.data.name)).toBeVisible();
 		});
 
 		await test.step('Should not see TagB (department B specific)', async () => {
+			await openTagsDropdown();
 			await expect(poOmnichannel.editRoomInfo.optionTag(tagB.data.name)).not.toBeVisible();
 		});
 
@@ -116,18 +125,25 @@ test.describe('OC - Tags Visibility', () => {
 	});
 
 	test('Verify tags visibility for agent associated with multiple departments', async () => {
+		const openTagsDropdown = async () => {
+			await poOmnichannel.editRoomInfo.inputTags.click();
+			await expect(poOmnichannel.page.getByRole('listbox').last()).toBeVisible();
+		};
+
 		await test.step('Open room info', async () => {
 			await poOmnichannel.sidebar.getSidebarItemByName(visitorB.name).click();
 			await poOmnichannel.roomInfo.btnEdit.click();
 			await expect(poOmnichannel.editRoomInfo.root).toBeVisible();
-			await poOmnichannel.editRoomInfo.inputTags.click();
+			await openTagsDropdown();
 		});
 
 		await test.step('Agent associated with DepartmentB should be able to see tags for Department B', async () => {
+			await openTagsDropdown();
 			await expect(poOmnichannel.editRoomInfo.optionTag(tagB.data.name)).toBeVisible();
 		});
 
 		await test.step('Agent associated with DepartmentB should not be able to see tags for DepartmentA', async () => {
+			await openTagsDropdown();
 			await expect(poOmnichannel.editRoomInfo.optionTag(tagA.data.name)).not.toBeVisible();
 		});
 	});
