@@ -33,6 +33,10 @@ export abstract class Composer {
 		return this.root.getByRole('button', { name: 'Send' });
 	}
 
+	get btnCancel(): Locator {
+		return this.root.getByRole('button', { name: 'Cancel', exact: true });
+	}
+
 	get btnOptionFileUpload(): Locator {
 		return this.toolbarPrimaryActions.getByRole('button', { name: 'Upload file' });
 	}
