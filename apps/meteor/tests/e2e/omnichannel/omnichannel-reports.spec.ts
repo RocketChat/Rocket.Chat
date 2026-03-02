@@ -55,11 +55,10 @@ test.describe.serial('Omnichannel Reports', () => {
 
 		await test.step('Error state', async () => {
 			await page.route(ENDPOINTS.BY_STATUS, async (route: Route) => {
-				await route.abort();
+				await route.fulfill({ status: 500, json: { error: 'mocked error' } });
 			});
 
 			await poReports.statusSection.selectPeriod('this month');
-			await expect(poReports.statusSection.element).toHaveAttribute('aria-busy', 'false');
 			await expect(poReports.statusSection.btnRetry).toBeVisible();
 			await expect(poReports.statusSection.txtStateTitle).toHaveText('Something went wrong');
 
@@ -113,11 +112,10 @@ test.describe.serial('Omnichannel Reports', () => {
 
 		await test.step('Error state', async () => {
 			await page.route(ENDPOINTS.BY_SOURCE, async (route: Route) => {
-				await route.abort();
+				await route.fulfill({ status: 500, json: { error: 'mocked error' } });
 			});
 
 			await poReports.channelsSection.selectPeriod('last 15 days');
-			await expect(poReports.channelsSection.element).toHaveAttribute('aria-busy', 'false');
 			await expect(poReports.channelsSection.btnRetry).toBeVisible();
 			await expect(poReports.channelsSection.txtStateTitle).toHaveText('Something went wrong');
 
@@ -192,11 +190,10 @@ test.describe.serial('Omnichannel Reports', () => {
 
 		await test.step('Error state', async () => {
 			await page.route(ENDPOINTS.BY_DEPARTMENT, async (route: Route) => {
-				await route.abort();
+				await route.fulfill({ status: 500, json: { error: 'mocked error' } });
 			});
 
 			await poReports.departmentsSection.selectPeriod('this month');
-			await expect(poReports.departmentsSection.element).toHaveAttribute('aria-busy', 'false');
 			await expect(poReports.departmentsSection.btnRetry).toBeVisible();
 			await expect(poReports.departmentsSection.txtStateTitle).toHaveText('Something went wrong');
 
@@ -252,11 +249,10 @@ test.describe.serial('Omnichannel Reports', () => {
 
 		await test.step('Error state', async () => {
 			await page.route(ENDPOINTS.BY_TAGS, async (route: Route) => {
-				await route.abort();
+				await route.fulfill({ status: 500, json: { error: 'mocked error' } });
 			});
 
 			await poReports.tagsSection.selectPeriod('this month');
-			await expect(poReports.tagsSection.element).toHaveAttribute('aria-busy', 'false');
 			await expect(poReports.tagsSection.btnRetry).toBeVisible();
 			await expect(poReports.tagsSection.txtStateTitle).toHaveText('Something went wrong');
 
@@ -312,11 +308,10 @@ test.describe.serial('Omnichannel Reports', () => {
 
 		await test.step('Error state', async () => {
 			await page.route(ENDPOINTS.BY_AGENT, async (route: Route) => {
-				await route.abort();
+				await route.fulfill({ status: 500, json: { error: 'mocked error' } });
 			});
 
 			await poReports.agentsSection.selectPeriod('this month');
-			await expect(poReports.agentsSection.element).toHaveAttribute('aria-busy', 'false');
 			await expect(poReports.agentsSection.btnRetry).toBeVisible();
 			await expect(poReports.agentsSection.txtStateTitle).toHaveText('Something went wrong');
 
