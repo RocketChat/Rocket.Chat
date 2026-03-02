@@ -2,6 +2,7 @@ import type { IRole, IUser } from '@rocket.chat/core-typings';
 import type { FindPaginated } from '@rocket.chat/model-typings';
 import { Roles, Subscriptions, Users } from '@rocket.chat/models';
 import { compact } from 'lodash';
+import { Meteor } from 'meteor/meteor';
 import type { Document, FindCursor, FindOptions } from 'mongodb';
 
 export function getUsersInRole(roleId: IRole['_id'], scope?: string): Promise<FindCursor<IUser>>;
@@ -29,12 +30,16 @@ export async function getUsersInRolePaginated(
 	options?: any | undefined,
 ): Promise<FindPaginated<FindCursor<IUser>>> {
 	if (process.env.NODE_ENV === 'development' && (scope === 'Users' || scope === 'Subscriptions')) {
-		throw new Error('Roles.findUsersInRole method received a role scope instead of a scope value.');
+		throw new Meteor.Error('error-invalid-scope', 'Roles.findUsersInRole received a role scope instead of a room scope', {
+			method: 'authorization:getUsersInRolePaginated',
+		});
 	}
 
 	const role = await Roles.findOneById<Pick<IRole, '_id' | 'scope'>>(roleId, { projection: { scope: 1 } });
 	if (!role) {
-		throw new Error('role not found');
+		throw new Meteor.Error('error-role-not-found', 'Role not found', {
+			method: 'authorization:getUsersInRolePaginated',
+		});
 	}
 
 	switch (role.scope) {
