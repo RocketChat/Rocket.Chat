@@ -5,16 +5,23 @@ import sinon from 'sinon';
 // Create stubs for dependencies
 const stubs = {
 	findOneUserById: sinon.stub(),
+	findByMention: sinon.stub(),
 	updateUsernameAndMessageOfMentionByIdAndOldUsername: sinon.stub(),
 	updateUsernameOfEditByUserId: sinon.stub(),
 	updateAllUsernamesByUserId: sinon.stub(),
+	replaceUsername: sinon.stub(),
+	replaceMutedUsername: sinon.stub(),
+	replaceUsernameOfUserByUserId: sinon.stub(),
 	updateDirectNameAndFnameByName: sinon.stub(),
+	setUserUsernameByUserId: sinon.stub(),
+	replaceUsernameOfAgentByUserId: sinon.stub(),
 	updateUserReferences: sinon.stub(),
 	updateHistoryReferences: sinon.stub(),
 	setUsername: sinon.stub(),
 	setRealName: sinon.stub(),
+	updateGroupDMsName: sinon.stub(),
 	validateName: sinon.stub(),
-	FileUpload: sinon.stub(),
+	getStore: sinon.stub(),
 };
 
 const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/server/functions/saveUserIdentity', {
@@ -23,12 +30,22 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/s
 			findOneById: stubs.findOneUserById,
 		},
 		Messages: {
+			findByMention: stubs.findByMention,
 			updateUsernameAndMessageOfMentionByIdAndOldUsername: stubs.updateUsernameAndMessageOfMentionByIdAndOldUsername,
 			updateUsernameOfEditByUserId: stubs.updateUsernameOfEditByUserId,
 			updateAllUsernamesByUserId: stubs.updateAllUsernamesByUserId,
 		},
+		Rooms: {
+			replaceUsername: stubs.replaceUsername,
+			replaceMutedUsername: stubs.replaceMutedUsername,
+			replaceUsernameOfUserByUserId: stubs.replaceUsernameOfUserByUserId,
+		},
 		Subscriptions: {
 			updateDirectNameAndFnameByName: stubs.updateDirectNameAndFnameByName,
+			setUserUsernameByUserId: stubs.setUserUsernameByUserId,
+		},
+		LivechatDepartmentAgents: {
+			replaceUsernameOfAgentByUserId: stubs.replaceUsernameOfAgentByUserId,
 		},
 		VideoConference: {
 			updateUserReferences: stubs.updateUserReferences,
@@ -43,7 +60,7 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/s
 	},
 	'../../../../server/database/utils': { onceTransactionCommitedSuccessfully: async (cb: any, _sess: any) => cb() },
 	'../../../../app/file-upload/server': {
-		FileUpload: stubs.FileUpload,
+		FileUpload: { getStore: stubs.getStore },
 	},
 	'../../../../app/lib/server/functions/setUsername': {
 		_setUsername: stubs.setUsername,
@@ -53,7 +70,7 @@ const { saveUserIdentity } = proxyquire.noCallThru().load('../../../../app/lib/s
 		setRealName: stubs.setRealName,
 	},
 	'../../../../app/lib/server/functions/updateGroupDMsName': {
-		updateGroupDMsName: sinon.stub(),
+		updateGroupDMsName: stubs.updateGroupDMsName,
 	},
 	'../../../../app/lib/server/functions/validateName': {
 		validateName: stubs.validateName,
@@ -140,6 +157,28 @@ describe('Users - saveUserIdentity', () => {
 		expect(stubs.updateDirectNameAndFnameByName.called).to.be.false;
 		expect(stubs.updateUserReferences.called).to.be.false;
 		expect(stubs.updateHistoryReferences.called).to.be.false;
+		expect(result).to.be.true;
+	});
+
+	it('should update username and preserve name when only username changes', async () => {
+		stubs.findOneUserById.returns({ _id: 'valid_id', name: 'oldName', username: 'oldUsername' });
+		stubs.validateName.returns(true);
+		stubs.setUsername.returns(true);
+		stubs.findByMention.returns([]);
+		stubs.getStore.returns({
+			model: {
+				findOneByName: sinon.stub().resolves(undefined),
+				deleteFile: sinon.stub().resolves(undefined),
+				updateFileNameById: sinon.stub().resolves(undefined),
+			},
+		});
+
+		const result = await saveUserIdentity({ _id: 'valid_id', username: 'newUsername' });
+
+		expect(stubs.setUsername.calledWith('valid_id', 'newUsername')).to.be.true;
+		expect(stubs.setRealName.called).to.be.false;
+		expect(stubs.updateUserReferences.calledWith('valid_id', 'newUsername', 'oldName')).to.be.true;
+		expect(stubs.updateHistoryReferences.calledWith('valid_id', 'newUsername', 'oldName')).to.be.true;
 		expect(result).to.be.true;
 	});
 });

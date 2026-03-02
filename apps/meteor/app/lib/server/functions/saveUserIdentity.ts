@@ -17,10 +17,9 @@ import {
 } from '../lib/notifyListener';
 
 /**
- *
- * @param {object} changes changes to the user
+ * Persists name/username updates for a user and synchronizes dependent references.
+ * Only fields explicitly provided in the payload are treated as candidates for change.
  */
-
 export async function saveUserIdentity({
 	_id,
 	name: rawName,
@@ -108,6 +107,9 @@ export async function saveUserIdentity({
 	return true;
 }
 
+/**
+ * Updates username/name references across collections after identity changes are persisted.
+ */
 async function updateUsernameReferences({
 	username,
 	previousUsername,
@@ -129,8 +131,8 @@ async function updateUsernameReferences({
 	hasNameInput: boolean;
 	nameChanged: boolean;
 }): Promise<void> {
-	if (usernameChanged && hasUsernameInput) {
-		const currentUsername = username ?? previousUsername;
+	if (usernameChanged) {
+		const currentUsername = username as string;
 		const fileStore = FileUpload.getStore('Avatars');
 		const previousFile = await fileStore.model.findOneByName(previousUsername);
 		const file = await fileStore.model.findOneByName(currentUsername);
