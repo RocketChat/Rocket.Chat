@@ -22,14 +22,26 @@ import type { UsersDeleteOwnAccountParamsPOST } from './users/UsersDeleteOwnAcco
 import type { UsersForgotPasswordParamsPOST } from './users/UsersForgotPasswordParamsPOST';
 
 export const isUsersGetAvatarProps = ajv.compile<UsersGetAvatarParamsGET>({
-	type: 'object',
-	properties: {
-		userId: { type: 'string' },
-		username: { type: 'string' },
-		user: { type: 'string' },
-	},
-	required: [],
-	additionalProperties: false,
+	oneOf: [
+		{
+			type: 'object',
+			properties: { userId: { type: 'string' } },
+			required: ['userId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: { username: { type: 'string' } },
+			required: ['username'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: { user: { type: 'string' } },
+			required: ['user'],
+			additionalProperties: false,
+		},
+	],
 });
 
 export const isUsersDeleteOwnAccountProps = ajv.compile<UsersDeleteOwnAccountParamsPOST>({
