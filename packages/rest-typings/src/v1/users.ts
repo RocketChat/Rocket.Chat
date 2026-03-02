@@ -242,14 +242,14 @@ export type UsersEndpoints = {
 		POST: (
 			params:
 				| {
-					userId: string;
-				}
+						userId: string;
+				  }
 				| {
-					username: string;
-				}
+						username: string;
+				  }
 				| {
-					user: string;
-				},
+						user: string;
+				  },
 		) => void;
 	};
 
@@ -257,14 +257,14 @@ export type UsersEndpoints = {
 		POST: (
 			params:
 				| {
-					userId: string;
-				}
+						userId: string;
+				  }
 				| {
-					username: string;
-				}
+						username: string;
+				  }
 				| {
-					user: string;
-				},
+						user: string;
+				  },
 		) => void;
 	};
 
@@ -344,14 +344,14 @@ export type UsersEndpoints = {
 		GET: (
 			params:
 				| {
-					userId: string;
-				}
+						userId: string;
+				  }
 				| {
-					username: string;
-				}
+						username: string;
+				  }
 				| {
-					user: string;
-				},
+						user: string;
+				  },
 		) => {
 			presence: UserStatus;
 			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
