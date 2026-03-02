@@ -1,5 +1,5 @@
-import moment from "moment";
+import moment from 'moment';
 
-export const formatDate = (date: string, type='ll') => {
-    return moment(date).format(type);
-}
+export const formatDate = (date: string, type = 'll') => {
+	return moment(date).format(type);
+};
