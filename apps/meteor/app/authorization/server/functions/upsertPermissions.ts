@@ -107,6 +107,8 @@ export const upsertPermissions = async (): Promise<void> => {
 			delete previousSettingPermissions[permissionId];
 		}
 
+		// Batches run sequentially so E11000 retry applies per batch
+		/* eslint-disable no-await-in-loop */
 		for (let i = 0; i < updateOps.length; i += BULK_WRITE_BATCH_SIZE) {
 			const batch = updateOps.slice(i, i + BULK_WRITE_BATCH_SIZE);
 			try {
@@ -120,6 +122,7 @@ export const upsertPermissions = async (): Promise<void> => {
 				}
 			}
 		}
+		/* eslint-enable no-await-in-loop */
 
 		const settings = await Settings.findNotHidden().toArray();
 		for (const setting of settings) {
