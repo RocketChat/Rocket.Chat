@@ -104,11 +104,13 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return [];
 		}
 
-		return CalendarEvent.findBySubject(uid, text).toArray();
+		return CalendarEvent.findBySubject(uid, text, {
+			limit: 50,
+		}).toArray();
 	}
 
 
-	
+
 	public async get(eventId: ICalendarEvent['_id']): Promise<ICalendarEvent | null> {
 		return CalendarEvent.findOne({ _id: eventId });
 	}
