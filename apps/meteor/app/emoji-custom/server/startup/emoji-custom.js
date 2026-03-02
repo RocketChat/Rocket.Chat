@@ -38,7 +38,7 @@ const writeSvgFallback = (res, req) => {
 	res.end();
 };
 
-Meteor.startup(() => {
+const initializeEmojiCustomStorage = () => {
 	let storeType = 'GridFS';
 
 	if (settings.get('EmojiUpload_Storage_Type')) {
@@ -67,7 +67,10 @@ Meteor.startup(() => {
 		name: 'custom_emoji',
 		absolutePath: path,
 	});
+};
 
+Meteor.startup(() => {
+	initializeEmojiCustomStorage();
 	return WebApp.connectHandlers.use('/emoji-custom/', async (req, res /* , next*/) => {
 		const params = { emoji: decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, '')) };
 
@@ -118,3 +121,5 @@ Meteor.startup(() => {
 		file.readStream.pipe(res);
 	});
 });
+
+settings.watchMultiple(['EmojiUpload_Storage_Type', 'EmojiUpload_FileSystemPath'], initializeEmojiCustomStorage);

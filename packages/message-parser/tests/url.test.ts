@@ -1,23 +1,24 @@
 import { parse } from '../src';
-import { lineBreak, autoLink, paragraph, plain, link } from '../src/utils';
+import { lineBreak, paragraph, plain, link } from './helpers';
+import { autoLink } from '../src/utils';
 
 test.each([
 	[
 		'https://pt.wikipedia.org/wiki/Condi%C3%A7%C3%A3o_de_corrida#:~:text=Uma%20condi%C3%A7%C3%A3o%20de%20corrida%20%C3%A9,sequ%C3%AAncia%20ou%20sincronia%20doutros%20eventos',
 		[
 			paragraph([
-				autoLink(
+				link(
 					'https://pt.wikipedia.org/wiki/Condi%C3%A7%C3%A3o_de_corrida#:~:text=Uma%20condi%C3%A7%C3%A3o%20de%20corrida%20%C3%A9,sequ%C3%AAncia%20ou%20sincronia%20doutros%20eventos',
 				),
 			]),
 		],
 	],
-	['https://pt.wikipedia.org/', [paragraph([autoLink('https://pt.wikipedia.org/')])]],
-	['https://pt.wikipedia.org/with-hyphen', [paragraph([autoLink('https://pt.wikipedia.org/with-hyphen')])]],
-	['https://pt.wikipedia.org/with_underscore', [paragraph([autoLink('https://pt.wikipedia.org/with_underscore')])]],
+	['https://pt.wikipedia.org/', [paragraph([link('https://pt.wikipedia.org/')])]],
+	['https://pt.wikipedia.org/with-hyphen', [paragraph([link('https://pt.wikipedia.org/with-hyphen')])]],
+	['https://pt.wikipedia.org/with_underscore', [paragraph([link('https://pt.wikipedia.org/with_underscore')])]],
 	[
 		'https://www.npmjs.com/package/@rocket.chat/message-parser',
-		[paragraph([autoLink('https://www.npmjs.com/package/@rocket.chat/message-parser')])],
+		[paragraph([link('https://www.npmjs.com/package/@rocket.chat/message-parser')])],
 	],
 	['http:/rocket.chat/teste', [paragraph([plain('http:/rocket.chat/teste')])]],
 	['https:/rocket.chat/', [paragraph([plain('https:/rocket.chat/')])]],
@@ -125,15 +126,19 @@ test.each([
 			]),
 		],
 	],
+	['go to https://www.google.com.', [paragraph([plain('go to '), link('https://www.google.com'), plain('.')])]],
+	['https://www.google.com.', [paragraph([link('https://www.google.com'), plain('.')])]],
+	['https://www.google.com!', [paragraph([link('https://www.google.com'), plain('!')])]],
+	['visit www.google.com.', [paragraph([plain('visit '), link('//www.google.com', [plain('www.google.com')]), plain('.')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });
 
 describe('autoLink with custom hosts settings comming from Rocket.Chat', () => {
 	test.each([
-		['http://gitlab.local', [paragraph([autoLink('http://gitlab.local', ['local'])])]],
-		['gitlab.local', [paragraph([autoLink('gitlab.local', ['local'])])]],
-		['internaltool.intranet', [paragraph([autoLink('internaltool.intranet', ['local', 'intranet'])])]],
+		['http://gitlab.local', [paragraph([link('http://gitlab.local', [plain('http://gitlab.local')])])]],
+		['gitlab.local', [paragraph([link('//gitlab.local', [plain('gitlab.local')])])]],
+		['internaltool.intranet', [paragraph([link('//internaltool.intranet', [plain('internaltool.intranet')])])]],
 	])('parses %p', (input, output) => {
 		expect(parse(input, { customDomains: ['local', 'intranet'] })).toMatchObject(output);
 	});
