@@ -12,8 +12,10 @@ import type { IMessage } from './IMessage';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
 import type { IRole } from './IRole';
+import type { IRoom } from './IRoom';
 import type { ISubscription } from './ISubscription';
 import type { VideoConference, VideoConferenceInstructions } from './IVideoConference';
+import type { IUser } from './IUser';
 import type { SlashCommand } from './SlashCommands';
 import type { VideoConferenceCapabilities } from './VideoConferenceCapabilities';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
@@ -31,6 +33,8 @@ export const schemas = typia.json.schemas<
 			| IEmailInbox
 			| ICalendarEvent
 			| IRole
+			| IRoom
+			| IUser
 			| VideoConference
 			| VideoConferenceCapabilities
 			| VideoConferenceInstructions
