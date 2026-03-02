@@ -28,7 +28,6 @@ import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
 import type { LicensesEndpoints } from './v1/licenses';
 import type { MailerEndpoints } from './v1/mailer';
-import type { MeEndpoints } from './v1/me';
 import type { MiscEndpoints } from './v1/misc';
 import type { ModerationEndpoints } from './v1/moderation';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
@@ -47,7 +46,6 @@ import type { VideoConferenceEndpoints } from './v1/videoConference';
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
 	extends ChannelsEndpoints,
-		MeEndpoints,
 		ModerationEndpoints,
 		BannersEndpoints,
 		ChatEndpoints,
