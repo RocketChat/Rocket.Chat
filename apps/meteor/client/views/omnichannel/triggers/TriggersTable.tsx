@@ -71,7 +71,7 @@ const TriggersTable = () => {
 			)}
 			{isSuccess && data.triggers.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable aria-label={t('Livechat_Triggers')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.triggers.map(({ _id, name, description, enabled }) => (

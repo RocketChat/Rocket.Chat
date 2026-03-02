@@ -175,7 +175,7 @@ services:
     image: nats:2.6-alpine
 
   mongo:
-    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.2}-ubi8
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
     container_name: mongo
     restart: on-failure
     ports:

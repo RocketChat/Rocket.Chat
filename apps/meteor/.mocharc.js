@@ -10,7 +10,7 @@ module.exports = {
 	...base, // see https://github.com/mochajs/mocha/issues/3916
 	exit: true,
 	spec: [
-		'lib/callbacks.spec.ts',
+		'server/lib/callbacks.spec.ts',
 		'server/lib/ldap/*.spec.ts',
 		'server/lib/ldap/**/*.spec.ts',
 		'server/lib/dataExport/**/*.spec.ts',

@@ -64,9 +64,9 @@ export async function configureEmailInboxes(): Promise<void> {
 				try {
 					await EmailMessageHistory.create({ _id: email.messageId, email: emailInboxRecord.email });
 					void onEmailReceived(email, emailInboxRecord.email, emailInboxRecord.department);
-				} catch (e: any) {
+				} catch (err: any) {
 					// In case the email message history has been received by other instance..
-					logger.error(e);
+					logger.error({ err });
 				}
 			});
 

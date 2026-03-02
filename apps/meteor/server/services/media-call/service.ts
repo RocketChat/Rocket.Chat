@@ -201,7 +201,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const record = getHistoryMessagePayload(state, duration, call._id);
 
 		try {
-			const message = await sendMessage(user, record, room, false);
+			const message = await sendMessage(user, record, room);
 
 			if ('_id' in message) {
 				await CallHistory.updateMany({ callId: call._id }, { $set: { messageId: message._id } });

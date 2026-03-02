@@ -36,8 +36,8 @@ export class LDAPManager {
 			try {
 				await ldap.connect();
 				ldapUser = await this.findUser(ldap, username, password);
-			} catch (error) {
-				logger.error(error);
+			} catch (err) {
+				logger.error({ err });
 			}
 
 			if (ldapUser === undefined) {
@@ -78,8 +78,8 @@ export class LDAPManager {
 			try {
 				await ldap.connect();
 				ldapUser = await this.findAuthenticatedUser(ldap, username);
-			} catch (error) {
-				logger.error(error);
+			} catch (err) {
+				logger.error({ err });
 			}
 
 			if (ldapUser === undefined) {
@@ -108,9 +108,9 @@ export class LDAPManager {
 		try {
 			const ldap = new LDAPConnection();
 			await ldap.testConnection();
-		} catch (error) {
-			connLogger.error(error);
-			throw error;
+		} catch (err) {
+			connLogger.error({ err });
+			throw err;
 		}
 	}
 
@@ -126,9 +126,9 @@ export class LDAPManager {
 				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				throw new Error('User not found');
 			}
-		} catch (error) {
-			logger.error(error);
-			throw error;
+		} catch (err) {
+			logger.error({ err });
+			throw err;
 		}
 	}
 
@@ -241,12 +241,12 @@ export class LDAPManager {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
 				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
-					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
 			}
 			return ldapUser;
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -267,7 +267,7 @@ export class LDAPManager {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
 				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
-					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
 			}
 
@@ -276,8 +276,8 @@ export class LDAPManager {
 			}
 
 			return ldapUser;
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 

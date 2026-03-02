@@ -14,7 +14,7 @@ function validateDomain(domain: string): boolean {
 	}
 
 	if (value.toLowerCase() !== value) {
-		logger.error(`The Federation domain "${value}" cannot have uppercase letters`);
+		logger.error({ msg: 'The Federation domain cannot have uppercase letters', domain: value });
 		return false;
 	}
 
@@ -25,7 +25,7 @@ function validateDomain(domain: string): boolean {
 			throw new Error();
 		}
 	} catch {
-		logger.error(`The configured Federation domain "${value}" is not valid`);
+		logger.error({ msg: 'The configured Federation domain is not valid', domain: value });
 		return false;
 	}
 

@@ -9,6 +9,7 @@ import { processMessageEditing } from './processMessageEditing';
 import { processSetReaction } from './processSetReaction';
 import { processSlashCommand } from './processSlashCommand';
 import { processTooLongMessage } from './processTooLongMessage';
+import { closeUnclosedCodeBlock } from '../../../../lib/utils/closeUnclosedCodeBlock';
 
 const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[], isSlashCommandAllowed?: boolean): Promise<void> => {
 	const mid = chat.currentEditingMessage.getMID();
@@ -59,6 +60,7 @@ export const sendMessage = async (
 	chat.readStateManager.clearUnreadMark();
 
 	text = text.trim();
+	text = closeUnclosedCodeBlock(text);
 	const mid = chat.currentEditingMessage.getMID();
 	if (!text && !mid) {
 		// Nothing to do

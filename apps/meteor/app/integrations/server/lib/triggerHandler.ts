@@ -158,9 +158,10 @@ class RocketChatIntegrationHandler {
 
 		// If no room could be found, we won't be sending any messages but we'll warn in the logs
 		if (!tmpRoom) {
-			outgoingLogger.warn(
-				`The Integration "${trigger.name}" doesn't have a room configured nor did it provide a room to send the message to.`,
-			);
+			outgoingLogger.warn({
+				msg: 'The Integration doesnt have a room configured nor did it provide a room to send the message to.',
+				integrationName: trigger.name,
+			});
 			return;
 		}
 
@@ -618,6 +619,8 @@ class RocketChatIntegrationHandler {
 				headers: opts.headers,
 				...(opts.timeout && { timeout: opts.timeout }),
 				...(opts.data && { body: opts.data }),
+				// SECURITY: Integrations can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),
 		)
@@ -781,12 +784,12 @@ class RocketChatIntegrationHandler {
 					}
 				}
 			})
-			.catch(async (error) => {
-				outgoingLogger.error(error);
+			.catch(async (err) => {
+				outgoingLogger.error({ err });
 				await updateHistory({
 					historyId,
 					step: 'after-http-call',
-					httpError: error,
+					httpError: err,
 					httpResult: null,
 				});
 			});
