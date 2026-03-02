@@ -5,7 +5,6 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
-	ise2eSetUserPublicAndPrivateKeysParamsPOST,
 } from '@rocket.chat/rest-typings';
 import ExpiryMap from 'expiry-map';
 
@@ -51,6 +50,12 @@ type E2EResetRoomKeyProps = {
 	rid: string;
 	e2eKey: string;
 	e2eKeyId: string;
+};
+
+type e2eSetUserPublicAndPrivateKeysParamsPOST = {
+	public_key: string;
+	private_key: string;
+	force?: boolean;
 };
 
 const E2eSetRoomKeyIdSchema = {
@@ -156,6 +161,23 @@ const E2EResetRoomKeySchema = {
 	additionalProperties: false,
 };
 
+const e2eSetUserPublicAndPrivateKeysParamsPOSTSchema = {
+	type: 'object',
+	properties: {
+		public_key: {
+			type: 'string',
+		},
+		private_key: {
+			type: 'string',
+		},
+		force: {
+			type: 'boolean',
+		},
+	},
+	additionalProperties: false,
+	required: ['public_key', 'private_key'],
+};
+
 const isE2eSetRoomKeyIdProps = ajv.compile<E2eSetRoomKeyIdProps>(E2eSetRoomKeyIdSchema);
 
 const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile<e2eGetUsersOfRoomWithoutKeyParamsGET>(
@@ -169,6 +191,10 @@ const isE2EFetchUsersWaitingForGroupKeyProps = ajv.compile<E2EFetchUsersWaitingF
 const isE2EProvideUsersGroupKeyProps = ajv.compile<E2EProvideUsersGroupKeyProps>(E2EProvideUsersGroupKeySchema);
 
 const isE2EResetRoomKeyProps = ajv.compile<E2EResetRoomKeyProps>(E2EResetRoomKeySchema);
+
+const ise2eSetUserPublicAndPrivateKeysParamsPOST = ajv.compile<e2eSetUserPublicAndPrivateKeysParamsPOST>(
+	e2eSetUserPublicAndPrivateKeysParamsPOSTSchema,
+);
 
 const e2eEndpoints = API.v1
 	.post(
@@ -289,6 +315,37 @@ const e2eEndpoints = API.v1
 			const { rid } = this.bodyParams;
 
 			await handleSuggestedGroupKey('reject', rid, this.userId, 'e2e.rejectSuggestedGroupKey');
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'e2e.setUserPublicAndPrivateKeys',
+		{
+			authRequired: true,
+			body: ise2eSetUserPublicAndPrivateKeysParamsPOST,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+			},
+		},
+
+		async function action() {
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			const { public_key, private_key, force } = this.bodyParams;
+
+			await setUserPublicAndPrivateKeysMethod(this.userId, {
+				public_key,
+				private_key,
+				force,
+			});
 
 			return API.v1.success();
 		},
@@ -468,61 +525,6 @@ const e2eEndpoints = API.v1
 			}
 		},
 	);
-
-/**
- * @openapi
- *  /api/v1/e2e.setUserPublicAndPrivateKeys:
- *    post:
- *      description: Sets the end-to-end encryption keys for the authenticated user
- *      security:
- *        - autenticated: {}
- *      requestBody:
- *        description: A tuple containing the public and the private keys
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                public_key:
- *                  type: string
- *                private_key:
- *                  type: string
- *                force:
- *                  type: boolean
- *      responses:
- *        200:
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiSuccessV1'
- *        default:
- *          description: Unexpected error
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
-API.v1.addRoute(
-	'e2e.setUserPublicAndPrivateKeys',
-	{
-		authRequired: true,
-		validateParams: ise2eSetUserPublicAndPrivateKeysParamsPOST,
-	},
-	{
-		async post() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const { public_key, private_key, force } = this.bodyParams;
-
-			await setUserPublicAndPrivateKeysMethod(this.userId, {
-				public_key,
-				private_key,
-				force,
-			});
-
-			return API.v1.success();
-		},
-	},
-);
 
 type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
 
