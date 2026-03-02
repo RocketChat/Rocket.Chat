@@ -33,26 +33,16 @@ export DOCKER_TAG="${DOCKER_TAG:-local-test}"
 export MONGODB_VERSION="${MONGODB_VERSION:-8.0}"
 export COVERAGE_DIR="${COVERAGE_DIR:-/tmp/coverage}"
 BUILD_DIR="${BUILD_DIR:-/tmp/build}"
-MARKER="$BUILD_DIR/.meteor-build-marker"
 
 # Flags
 ENABLE_COVERAGE=false
-
-# Check if rebuild is needed based on source file changes
-needs_rebuild() {
-  [ ! -f "$MARKER" ] && return 0
-  find apps/meteor/server apps/meteor/packages apps/meteor/ee apps/meteor/lib apps/meteor/imports \
-       packages ee/packages \
-    -newer "$MARKER" -type f \( -name '*.ts' -o -name '*.js' -o -name '*.json' \) \
-    2>/dev/null | grep -q .
-}
 
 # Wait for a service to be healthy
 wait_for_healthy() {
   local service=$1
   local timeout=${2:-120}
   local elapsed=0
-  
+
   while [ $elapsed -lt $timeout ]; do
     if docker compose -f $COMPOSE_FILE ps "$service" --format json 2>/dev/null | grep -q '"Health":"healthy"'; then
       return 0
@@ -98,17 +88,12 @@ cmd_start() {
     cd ../..
   fi
 
-  # Step 3: Build Meteor backend (with caching)
-  if [ "${FORCE_REBUILD:-}" = "1" ] || needs_rebuild; then
+  # Step 3: Build Meteor backend
     log_info "Building Meteor backend (this may take a while)..."
     cd apps/meteor
     meteor build --server-only --directory "$BUILD_DIR"
     cd ../..
-    touch "$MARKER"
     log_info "Meteor build complete"
-  else
-    log_info "Meteor build cache is fresh, skipping rebuild (use FORCE_REBUILD=1 to override)"
-  fi
 
   # Verify build outputs exist
   if [ ! -d "$BUILD_DIR/bundle" ]; then
@@ -149,7 +134,7 @@ cmd_start() {
   echo "  Application:    http://localhost:3000"
   [ "$ENABLE_COVERAGE" = true ] && echo "  Coverage:       Enabled (output in $COVERAGE_DIR)"
   echo ""
-  
+
   log_info "Waiting for services to be healthy..."
   docker compose -f $COMPOSE_FILE logs -f rocketchat frontend &
   LOG_PID=$!
@@ -228,7 +213,7 @@ cmd_reset() {
 # ============================================================================
 cmd_rebuild() {
   local target="${1:-frontend}"
-  
+
   case "$target" in
     frontend)
       if [ "$ENABLE_COVERAGE" = true ]; then
@@ -242,13 +227,13 @@ cmd_rebuild() {
         ROOT_URL=http://localhost:3000/ VITE_TEST_MODE=true npx vite build --outDir /tmp/build/dist
         cd ../..
       fi
-      
+
       log_info "Rebuilding frontend Docker image..."
       docker compose -f $COMPOSE_FILE build frontend
-      
+
       log_info "Recreating frontend container..."
       docker compose -f $COMPOSE_FILE up -d --no-deps --force-recreate frontend
-      
+
       log_info "Waiting for frontend to be healthy..."
       if ! wait_for_healthy frontend 60; then
         log_warn "Timeout waiting for frontend"
@@ -261,14 +246,13 @@ cmd_rebuild() {
       cd apps/meteor
       meteor build --server-only --directory "$BUILD_DIR"
       cd ../..
-      touch "$MARKER"
-      
+
       log_info "Rebuilding backend Docker image..."
       docker compose -f $COMPOSE_FILE build rocketchat
-      
+
       log_info "Recreating rocketchat container..."
       docker compose -f $COMPOSE_FILE up -d --no-deps --force-recreate rocketchat
-      
+
       log_info "Waiting for rocketchat to be healthy..."
       if ! wait_for_healthy rocketchat 120; then
         log_warn "Timeout waiting for rocketchat"
@@ -326,7 +310,6 @@ cmd_help() {
   echo ""
   echo "Environment variables:"
   echo "  COVERAGE_DIR          Coverage output directory (default: /tmp/coverage)"
-  echo "  FORCE_REBUILD=1       Force Meteor backend rebuild even if cache is fresh"
   echo "  BUILD_DIR             Build output directory (default: /tmp/build)"
   echo "  MONGODB_VERSION       MongoDB version (default: 8.0)"
   echo ""
@@ -335,7 +318,6 @@ cmd_help() {
   echo "  $0 start --coverage           # Build with coverage instrumentation"
   echo "  $0 reset                      # Reset database for fresh test run"
   echo "  $0 rebuild frontend           # Rebuild only the frontend"
-  echo "  FORCE_REBUILD=1 $0 start      # Force full rebuild"
 }
 
 # ============================================================================

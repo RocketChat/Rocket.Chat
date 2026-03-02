@@ -62,34 +62,19 @@ export MONGO_URL='mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConn
 export COVERAGE_DIR='/tmp/coverage/ui'
 export IS_EE=''
 
-# Clean previous data
-if [ "$ENABLE_COVERAGE" = true ]; then
-  log_info "Cleaning previous coverage data..."
-  rm -rf /tmp/coverage
-  rm -rf apps/meteor/.nyc_output
-  mkdir -p "$COVERAGE_DIR"
-  
-  # Build environment with coverage enabled
-  log_info "Building environment with coverage instrumentation..."
-  ./docker-vite-ci.sh start --coverage
-  export E2E_COVERAGE=true
-else
-  log_info "Building environment without coverage..."
-  ./docker-vite-ci.sh start
-fi
 
 # Run each shard
 for shard in $(seq 1 $TOTAL_SHARDS); do
   log_info "========================================"
   log_info "Running shard $shard/$TOTAL_SHARDS"
   log_info "========================================"
-  
+
   # Reset between shards (fresh database)
   if [ $shard -gt 1 ]; then
     log_info "Resetting environment for shard $shard..."
     ./docker-vite-ci.sh reset
   fi
-  
+
   # Run tests for this shard
   cd apps/meteor
   yarn prepare
@@ -103,7 +88,7 @@ for shard in $(seq 1 $TOTAL_SHARDS); do
     }
   fi
   cd ../..
-  
+
   # Merge coverage for this shard (mimics CI workflow)
   if [ "$ENABLE_COVERAGE" = true ]; then
     if [ -d "apps/meteor/.nyc_output" ] && [ "$(ls -A apps/meteor/.nyc_output)" ]; then
@@ -125,30 +110,30 @@ log_info "========================================"
 if [ "$ENABLE_COVERAGE" = true ] && [ -d "$COVERAGE_DIR" ] && [ "$(ls -A $COVERAGE_DIR/*.json 2>/dev/null)" ]; then
   log_info "Merging all shard coverage files..."
   cd apps/meteor
-  
+
   # Create temporary directory for merged coverage
   rm -rf .nyc_output
   mkdir -p .nyc_output
-  
+
   # Copy all shard files to .nyc_output
   cp "${COVERAGE_DIR}"/*.json .nyc_output/
-  
+
   # Generate reports
   log_info "Generating coverage reports..."
   npx nyc report --reporter=html --reporter=text-summary --reporter=lcov
-  
+
   log_info "========================================"
   log_info "Coverage Summary:"
   log_info "========================================"
   npx nyc report --reporter=text-summary
-  
+
   log_info ""
   log_info "Coverage reports generated:"
   log_info "  HTML: apps/meteor/coverage/index.html"
   log_info "  LCOV: apps/meteor/coverage/lcov.info"
   log_info ""
   log_info "Open coverage report with: open apps/meteor/coverage/index.html"
-  
+
   cd ../..
 elif [ "$ENABLE_COVERAGE" = true ]; then
   log_warn "No coverage data found in any shard"
