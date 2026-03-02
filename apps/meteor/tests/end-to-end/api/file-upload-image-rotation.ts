@@ -47,7 +47,7 @@ describe('[File Upload - Image Rotation]', () => {
 	});
 
 	after(async () => {
-		await Promise.allSettled([
+		await Promise.all([
 			updateSetting('FileUpload_RotateImages', rotateImagesSetting),
 			updateSetting('Message_Attachments_Strip_Exif', stripExifSetting),
 			updateSetting('Message_Attachments_Thumbnails_Enabled', thumbnailsEnabledSetting),
