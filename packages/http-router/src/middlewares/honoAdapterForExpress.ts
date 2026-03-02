@@ -16,7 +16,7 @@ export const honoAdapterForExpress = (hono: Hono) => async (expressReq: Request,
 		expressReq.originalUrl,
 		{
 			...req,
-			...(['POST', 'PUT', 'DELETE'].includes(expressReq.method) && { body: expressReq as unknown as ReadableStream }),
+			...(['POST', 'PUT', 'DELETE'].includes(expressReq.method) && { body: Readable.toWeb(expressReq) as ReadableStream }),
 			headers: new Headers(Object.fromEntries(Object.entries(expressReq.headers)) as Record<string, string>),
 		},
 		{
