@@ -5,7 +5,6 @@ import {
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
-	isUsersInfoParamsGetProps,
 	isUsersListStatusProps,
 	isUsersSendWelcomeEmailProps,
 	isUserRegisterParamsPOST,
@@ -426,52 +425,89 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const usersInfoEndpoint = API.v1.get(
 	'users.info',
-	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
-		async get() {
-			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
-				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
-				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
-				('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']);
-
-			if (!searchTerms) {
-				return API.v1.failure('Invalid search query.');
-			}
-
-			const user = await getFullUserDataByIdOrUsernameOrImportId(this.userId, ...searchTerms);
-
-			if (!user) {
-				return API.v1.failure('User not found.');
-			}
-			const myself = user._id === this.userId;
-			if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
-				return API.v1.success({
-					user: {
-						...user,
-						rooms: await Subscriptions.findByUserId(user._id, {
-							projection: {
-								rid: 1,
-								name: 1,
-								t: 1,
-								roles: 1,
-								unread: 1,
-								federated: 1,
-							},
-							sort: {
-								t: 1,
-								name: 1,
-							},
-						}).toArray(),
+		authRequired: true,
+		query: ajv.compile<
+			| { userId: string; username?: never; importId?: never; includeUserRooms?: string }
+			| { username: string; userId?: never; importId?: never; includeUserRooms?: string }
+			| { importId: string; userId?: never; username?: never; includeUserRooms?: string }
+		>({
+			anyOf: [
+				{
+					type: 'object',
+					properties: {
+						userId: { type: 'string' },
+						includeUserRooms: { type: 'string' },
 					},
-				});
-			}
-
-			return API.v1.success({
-				user,
-			});
+					required: ['userId'],
+					additionalProperties: false,
+				},
+				{
+					type: 'object',
+					properties: {
+						username: { type: 'string' },
+						includeUserRooms: { type: 'string' },
+					},
+					required: ['username'],
+					additionalProperties: false,
+				},
+				{
+					type: 'object',
+					properties: {
+						importId: { type: 'string' },
+						includeUserRooms: { type: 'string' },
+					},
+					required: ['importId'],
+					additionalProperties: false,
+				},
+			],
+		}),
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<{ user: IUser; success: true }>({
+				type: 'object',
+				properties: {
+					user: { type: 'object' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['user', 'success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+	async function action() {
+		const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
+			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
+			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
+			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']);
+
+		if (!searchTerms) {
+			return API.v1.failure('Invalid search query.');
+		}
+
+		const user = await getFullUserDataByIdOrUsernameOrImportId(this.userId, ...searchTerms);
+
+		if (!user) {
+			return API.v1.failure('User not found.');
+		}
+
+		const myself = user._id === this.userId;
+		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+			return API.v1.success({
+				user: {
+					...user,
+					rooms: await Subscriptions.findByUserId(user._id, {
+						projection: { rid: 1, name: 1, t: 1, roles: 1, unread: 1, federated: 1 },
+						sort: { t: 1, name: 1 },
+					}).toArray(),
+				},
+			});
+		}
+
+		return API.v1.success({ user });
 	},
 );
 
@@ -1555,8 +1591,8 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 });
 
 type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
-
+type UsersInfoEndpoint = ExtractRoutesFromAPI<typeof usersInfoEndpoint>;
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends UsersEndpoints {}
+	interface Endpoints extends UsersEndpoints, UsersInfoEndpoint {}
 }
