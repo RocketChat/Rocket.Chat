@@ -179,15 +179,10 @@ class AmazonS3Store extends UploadFS.Store {
 				Key: this.getPath(file),
 				Body: writeStream,
 				Bucket: classOptions.params.Bucket,
+				...(file.type && { ContentType: file.type }),
+				...(file.size && { ContentLength: file.size }),
+				...(classOptions.params.ACL && { ACL: classOptions.params.ACL as PutObjectCommandInput['ACL'] }),
 			};
-
-			if (file.type) {
-				uploadParams.ContentType = file.type;
-			}
-
-			if (file.size) {
-				uploadParams.ContentLength = file.size;
-			}
 
 			const upload = new Upload({
 				client: s3,
