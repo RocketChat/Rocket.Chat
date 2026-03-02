@@ -80,11 +80,19 @@ export const upsertPermissions = async (): Promise<void> => {
 
 	const BULK_WRITE_BATCH_SIZE = 500;
 
+	type SettingPermissionUpdateOp = {
+		updateOne: {
+			filter: { _id: string };
+			update: { $set: Omit<IPermission, '_id'> };
+			upsert: true;
+		};
+	};
+
 	const createPermissionsForExistingSettings = async function (): Promise<void> {
 		const previousSettingPermissions = await getPreviousPermissions();
 		const settingsList = await Settings.findNotHidden().toArray();
 
-		const updateOps: Array<{ updateOne: { filter: { _id: string }; update: { $set: Omit<IPermission, '_id'> }; upsert: true } } = [];
+		const updateOps: SettingPermissionUpdateOp[] = [];
 		for (const setting of settingsList) {
 			const { _id: permissionId, doc } = buildSettingPermissionDoc(setting, previousSettingPermissions);
 			updateOps.push({
