@@ -85,32 +85,45 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		const channels = data.channels && (await this.convertMessageChannels(data));
 
 		return {
-			rid,
-			u: {
-				_id: creator._id,
-				username: creator.username,
-			},
-			msg: data.msg,
-			ts: data.ts,
-			t: data.t || undefined,
-			groupable: data.groupable,
-			tmid: data.tmid,
-			tlm: data.tlm,
-			tcount: data.tcount,
-			replies: data.replies && (await this.convertMessageReplies(data.replies)),
-			editedAt: data.editedAt,
-			editedBy: data.editedBy && ((await this._cache.findImportedUser(data.editedBy)) || undefined),
-			mentions,
-			channels,
-			_importFile: data._importFile,
-			url: data.url,
-			attachments: data.attachments,
-			bot: data.bot,
-			emoji: data.emoji,
-			alias: data.alias,
-			...(data._id ? { _id: data._id } : {}),
-			...(data.reactions ? { reactions: await this.convertMessageReactions(data.reactions) } : {}),
-		};
+        	rid,
+        	u: {
+        		_id: creator._id,
+        		username: creator.username,
+        	},
+        	msg: data.msg,
+        	ts: data.ts,
+        
+        	...(data.t !== undefined ? { t: data.t } : {}),
+        	...(data.groupable !== undefined ? { groupable: data.groupable } : {}),
+        	...(data.tmid ? { tmid: data.tmid } : {}),
+        	...(data.tlm ? { tlm: data.tlm } : {}),
+        	...(data.tcount !== undefined ? { tcount: data.tcount } : {}),
+        	...(data.replies?.length
+        		? { replies: await this.convertMessageReplies(data.replies) }
+        		: {}),
+        
+        	...(data.editedAt ? { editedAt: data.editedAt } : {}),
+        	...(data.editedBy
+        		? {
+        				editedBy:
+        					(await this._cache.findImportedUser(data.editedBy)) ||
+        					undefined,
+        		  }
+        		: {}),
+        
+        	...(mentions?.length ? { mentions } : {}),
+        	...(channels?.length ? { channels } : {}),
+        	...(data._importFile ? { _importFile: data._importFile } : {}),
+        	...(data.url ? { url: data.url } : {}),
+        	...(data.attachments?.length ? { attachments: data.attachments } : {}),
+        	...(data.bot ? { bot: data.bot } : {}),
+        	...(data.emoji ? { emoji: data.emoji } : {}),
+        	...(data.alias ? { alias: data.alias } : {}),
+        	...(data._id ? { _id: data._id } : {}),
+        	...(data.reactions
+        		? { reactions: await this.convertMessageReactions(data.reactions) }
+        		: {}),
+        };
 	}
 
 	protected async convertMessageChannels(message: IImportMessage): Promise<MentionedChannel[] | undefined> {
