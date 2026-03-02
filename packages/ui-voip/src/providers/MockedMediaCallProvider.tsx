@@ -72,6 +72,7 @@ const MockedMediaCallProvider = ({
 	};
 
 	const getAutocompleteOptions = (filter: string) =>
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		Promise.resolve(myData.filter((item) => item.label.toLowerCase().includes(filter.toLowerCase())));
 
 	const getPeerInfo = (id: string) => {
@@ -154,6 +155,8 @@ const MockedMediaCallProvider = ({
 		onAccept: onCall,
 		onToggleWidget,
 		onSelectPeer,
+		streams: {},
+		onToggleScreenSharing: () => undefined,
 	};
 
 	const instanceContextValue = {
@@ -174,6 +177,8 @@ const MockedMediaCallProvider = ({
 		openRoomId: undefined,
 		setOpenRoomId: () => undefined,
 		getAutocompleteOptions,
+		inRoomView: false,
+		setInRoomView: () => undefined,
 	};
 
 	return (
