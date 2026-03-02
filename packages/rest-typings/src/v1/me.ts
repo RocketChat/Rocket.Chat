@@ -1,46 +1,10 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IMeResponse } from '@rocket.chat/rest-api/server/misc';
+import { ExtractRoutesFromAPI } from '@rocket.chat/rest-typings';
+import type { MeEndpoints as MiscMeEndpoints } from '@rocket.chat/rest-api/server/misc';
 
-type Keys =
-	| 'name'
-	| 'username'
-	| 'nickname'
-	| 'emails'
-	| 'status'
-	| 'statusDefault'
-	| 'statusText'
-	| 'statusConnection'
-	| 'bio'
-	| 'avatarOrigin'
-	| 'utcOffset'
-	| 'language'
-	| 'settings'
-	| 'idleTimeLimit'
-	| 'roles'
-	| 'active'
-	| 'defaultRoom'
-	| 'customFields'
-	| 'requirePasswordChange'
-	| 'requirePasswordChangeReason'
-	| 'services.github'
-	| 'services.gitlab'
-	| 'services.password.bcrypt'
-	| 'services.totp.enabled'
-	| 'services.email2fa.enabled'
-	| 'statusLivechat'
-	| 'banners'
-	| 'oauth.authorizedClients'
-	| '_updatedAt'
-	| 'avatarETag';
+declare module '@rocket.chat/rest-typings' {
+  interface Endpoints extends ExtractRoutesFromAPI<MiscMeEndpoints> {}
+}
 
-export type MeEndpoints = {
-	'/v1/me': {
-		GET: (params?: { fields: Record<Keys, 0> | Record<Keys, 1>; user: IUser }) => IUser & {
-			email?: string;
-			settings?: {
-				profile: Record<string, unknown>;
-				preferences: unknown;
-			};
-			avatarUrl: string;
-		};
-	};
+export {};
 };
