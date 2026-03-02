@@ -133,40 +133,6 @@ const ChatGetMessageSchema = {
 
 export const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
 
-type ChatStarMessage = {
-	messageId: IMessage['_id'];
-};
-
-const ChatStarMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-export const isChatStarMessageProps = ajv.compile<ChatStarMessage>(ChatStarMessageSchema);
-
-type ChatUnstarMessage = {
-	messageId: IMessage['_id'];
-};
-
-const ChatUnstarMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-export const isChatUnstarMessageProps = ajv.compile<ChatUnstarMessage>(ChatUnstarMessageSchema);
-
 type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	text?: string;
@@ -972,12 +938,6 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.unfollowMessage': {
 		POST: (params: ChatUnfollowMessage) => void;
-	};
-	'/v1/chat.starMessage': {
-		POST: (params: ChatStarMessage) => void;
-	};
-	'/v1/chat.unStarMessage': {
-		POST: (params: ChatUnstarMessage) => void;
 	};
 	'/v1/chat.reportMessage': {
 		POST: (params: ChatReportMessage) => void;

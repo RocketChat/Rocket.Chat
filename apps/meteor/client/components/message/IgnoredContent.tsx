@@ -17,7 +17,7 @@ const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactEle
 	};
 
 	return (
-		<MessageBody data-qa-type='message-body' dir='auto'>
+		<MessageBody role='document' aria-roledescription={t('message_body')} dir='auto'>
 			<Box display='flex' alignItems='center' fontSize='c2' color='hint'>
 				<span
 					tabIndex={0}
