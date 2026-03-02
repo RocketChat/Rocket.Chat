@@ -3,6 +3,14 @@ import { Readable } from 'stream';
 import type { Request, Response } from 'express';
 import type { Hono } from 'hono';
 
+async function readStreamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
+	const chunks: Buffer[] = [];
+	for await (const chunk of stream as AsyncIterable<Buffer>) {
+		chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+	}
+	return Buffer.concat(chunks);
+}
+
 export const honoAdapterForExpress = (hono: Hono) => async (expressReq: Request, res: Response) => {
 	(expressReq as unknown as any).duplex = 'half';
 
@@ -12,11 +20,16 @@ export const honoAdapterForExpress = (hono: Hono) => async (expressReq: Request,
 
 	const { body, ...req } = expressReq;
 
+	const bodyStream: ReadableStream | undefined =
+		['POST', 'PUT', 'DELETE'].includes(expressReq.method)
+			? new Blob([new Uint8Array(await readStreamToBuffer(expressReq))]).stream()
+			: undefined;
+
 	const honoRes = await hono.request(
 		expressReq.originalUrl,
 		{
 			...req,
-			...(['POST', 'PUT', 'DELETE'].includes(expressReq.method) && { body: Readable.toWeb(expressReq) as ReadableStream }),
+			...(bodyStream !== undefined && { body: bodyStream }),
 			headers: new Headers(Object.fromEntries(Object.entries(expressReq.headers)) as Record<string, string>),
 		},
 		{
