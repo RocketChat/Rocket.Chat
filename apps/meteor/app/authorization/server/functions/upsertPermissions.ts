@@ -105,6 +105,8 @@ export const upsertPermissions = async (): Promise<void> => {
 			delete previousSettingPermissions[permissionId];
 		}
 
+		// Batches run sequentially so E11000 retry applies per batch
+		/* eslint-disable no-await-in-loop */
 		for (let i = 0; i < updateOps.length; i += BULK_WRITE_BATCH_SIZE) {
 			const batch = updateOps.slice(i, i + BULK_WRITE_BATCH_SIZE);
 			try {
@@ -112,16 +114,13 @@ export const upsertPermissions = async (): Promise<void> => {
 			} catch (e) {
 				if ((e as Error).message.includes('E11000')) {
 					// E11000 duplicate key: retry without upsert for this batch (doc already exists)
-					await Promise.all(
-						batch.map((op) =>
-							Permissions.updateOne(op.updateOne.filter, op.updateOne.update),
-						),
-					);
+					await Promise.all(batch.map((op) => Permissions.updateOne(op.updateOne.filter, op.updateOne.update)));
 				} else {
 					throw e;
 				}
 			}
 		}
+		/* eslint-enable no-await-in-loop */
 
 		const obsoleteIds = Object.keys(previousSettingPermissions);
 		if (obsoleteIds.length > 0) {
