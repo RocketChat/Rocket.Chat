@@ -200,6 +200,7 @@ export class AppServerOrchestrator {
 		const CONCURRENCY_LIMIT = 4;
 		for (let i = 0; i < apps.length; i += CONCURRENCY_LIMIT) {
 			const chunk = apps.slice(i, i + CONCURRENCY_LIMIT);
+			// eslint-disable-next-line no-await-in-loop
 			await Promise.all(
 				chunk.map(async (app) => {
 					try {
