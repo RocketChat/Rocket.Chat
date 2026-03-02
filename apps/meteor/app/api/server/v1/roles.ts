@@ -272,7 +272,7 @@ const rolesRoutes = API.v1
 		async function () {
 			const { updatedSince } = this.queryParams;
 
-			if (isNaN(Date.parse(updatedSince))) {
+			if (Number.isNaN(Date.parse(updatedSince))) {
 				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			}
 
@@ -291,5 +291,5 @@ type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RolesEndpoints { }
+	interface Endpoints extends RolesEndpoints {}
 }
