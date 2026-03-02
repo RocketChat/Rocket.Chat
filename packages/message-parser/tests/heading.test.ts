@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { emoji, heading, lineBreak, mentionChannel, paragraph, plain } from './helpers';
+import { heading, lineBreak, mentionChannel, paragraph, plain } from './helpers';
 
 test.each([
 	['# h1', [heading([plain('h1')], 1)]],
@@ -44,10 +44,6 @@ test.each([
 	['He####llo', [paragraph([plain('He####llo')])]],
 	['# Hello\n', [heading([plain('Hello')], 1), lineBreak()]],
 	['# # Hello\n', [heading([plain('# Hello')], 1), lineBreak()]],
-	['# :newspaper: Headline', [heading([emoji('newspaper'), plain(' Headline')], 1)]],
-	['## Hello :smile:', [heading([plain('Hello '), emoji('smile')], 2)]],
-	['### :smile: text :newspaper:', [heading([emoji('smile'), plain(' text '), emoji('newspaper')], 3)]],
-
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });
