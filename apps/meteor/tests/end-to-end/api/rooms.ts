@@ -4213,6 +4213,7 @@ describe('[Rooms]', () => {
 		it('should return 401 if user is not logged in', async () => {
 			await request
 				.post(api('rooms.hide'))
+				.send({ roomId: roomA._id })
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
