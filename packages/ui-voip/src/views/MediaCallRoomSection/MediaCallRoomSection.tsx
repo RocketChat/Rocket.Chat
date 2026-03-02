@@ -10,8 +10,8 @@ import PeerCard from '../../components/Cards/PeerCard';
 import StreamCard from '../../components/Cards/StreamCard';
 import { useShouldWrapCards } from '../../components/Cards/useShouldWrapCards';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import useMediaStream from '../../providers/useMediaStream';
 import useRoomView from '../../context/useRoomView';
+import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
 type RoomCallSectionProps = {
 	showChat: boolean;
@@ -61,8 +61,8 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 	const remoteVideoStreamWrapper = getRemoteVideoStream();
 	const localVideoStreamWrapper = getLocalVideoStream();
 
-	const [remoteStreamRefCallback] = useMediaStream(remoteVideoStreamWrapper?.stream ?? null);
-	const [localStreamRefCallback] = useMediaStream(localVideoStreamWrapper?.stream ?? null);
+	const [remoteStreamRefCallback] = usePlayMediaStream(remoteVideoStreamWrapper?.stream ?? null);
+	const [localStreamRefCallback] = usePlayMediaStream(localVideoStreamWrapper?.stream ?? null);
 
 	useRoomView();
 
