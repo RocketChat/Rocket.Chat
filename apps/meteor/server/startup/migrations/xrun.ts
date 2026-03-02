@@ -1,4 +1,4 @@
-import { Settings } from '@rocket.chat/models';
+import { ensureAllIndexes, Settings } from '@rocket.chat/models';
 import type { UpdateResult } from 'mongodb';
 
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
@@ -59,6 +59,7 @@ export const performMigrationProcedure = async (): Promise<void> => {
 	await migrateDatabase(version === 'latest' ? version : parseInt(version), subcommands);
 	// perform operations when the server is starting with a different version
 	await onServerVersionChange(async () => {
+		await ensureAllIndexes();
 		await upsertPermissions();
 		await ensureCloudWorkspaceRegistered();
 		await moveRetentionSetting();

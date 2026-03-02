@@ -57,3 +57,24 @@ export function registerModel<TModel extends IBaseModel<any, any, any>>(
 export function proxify<T>(namespace: string): T {
 	return new Proxy({}, handler(namespace)) as unknown as T;
 }
+
+/**
+ * Runs createIndexes() on all registered models. Intended to be called from
+ * onServerVersionChange so index creation happens once per version change
+ * instead of on every model instantiation.
+ */
+export async function ensureAllIndexes(): Promise<void> {
+	const names = new Set([...lazyModels.keys(), ...models.keys()]);
+	await Promise.all(
+		Array.from(names).map(async (name) => {
+			try {
+				const model = proxify(name) as IBaseModel<any, any, any> & { createIndexes?: () => Promise<void> };
+				if (typeof model.createIndexes === 'function') {
+					await model.createIndexes();
+				}
+			} catch (err) {
+				console.warn(`ensureAllIndexes: failed for model ${name}`, err);
+			}
+		}),
+	);
+}

@@ -107,7 +107,7 @@ import {
 	AbacAttributesRaw,
 	ServerEventsRaw,
 } from './modelClasses';
-import { proxify, registerModel } from './proxify';
+import { ensureAllIndexes, proxify, registerModel } from './proxify';
 
 const prefix = 'rocketchat_';
 export function getCollectionName(name: string): string {
@@ -118,7 +118,7 @@ export * from './modelClasses';
 
 export * from './dummy/ReadReceipts';
 
-export { registerModel } from './proxify';
+export { ensureAllIndexes, registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
