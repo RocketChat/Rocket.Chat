@@ -125,7 +125,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		);
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
-	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3', 'audio', MAX_CUSTOM_SOUND_SIZE_BYTES, () => {
+	const [clickUpload] = useSingleFileInput(handleChangeFile, '.mp3,audio/mpeg', 'audio', MAX_CUSTOM_SOUND_SIZE_BYTES, () => {
 		dispatchToastMessage({
 			type: 'error',
 			message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(MAX_CUSTOM_SOUND_SIZE_BYTES, { base: 2, standard: 'jedec' }) }),
