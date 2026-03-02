@@ -191,24 +191,29 @@ export class AppServerOrchestrator {
 			return;
 		}
 
+		const loadStart = Date.now();
 		await this.getManager().load();
 
 		// Before enabling each app we verify if there is still room for it
 		const apps = await this.getManager().get();
 
-		// This needs to happen sequentially to keep track of app limits
-		for await (const app of apps) {
-			try {
-				await canEnableApp(app.getStorageItem());
-
-				await this.getManager().loadOne(app.getID(), true);
-			} catch (error) {
-				this._rocketchatLogger.warn({
-					msg: 'App could not be enabled',
-					appName: app.getInfo().name,
-					err: error,
-				});
-			}
+		const CONCURRENCY_LIMIT = 4;
+		for (let i = 0; i < apps.length; i += CONCURRENCY_LIMIT) {
+			const chunk = apps.slice(i, i + CONCURRENCY_LIMIT);
+			await Promise.all(
+				chunk.map(async (app) => {
+					try {
+						await canEnableApp(app.getStorageItem());
+						await this.getManager().loadOne(app.getID(), true);
+					} catch (error) {
+						this._rocketchatLogger.warn({
+							msg: 'App could not be enabled',
+							appName: app.getInfo().name,
+							err: error,
+						});
+					}
+				}),
+			);
 		}
 
 		await this.getBridges().getSchedulerBridge().startScheduler();
@@ -218,6 +223,7 @@ export class AppServerOrchestrator {
 		this._rocketchatLogger.info({
 			msg: 'Loaded the Apps Framework and apps',
 			appCount,
+			durationMs: Date.now() - loadStart,
 		});
 	}
 
