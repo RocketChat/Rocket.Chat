@@ -15,6 +15,7 @@ type MediaCallInstanceProviderProps = {
 
 const MediaCallInstanceProvider = ({ children }: MediaCallInstanceProviderProps) => {
 	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
+	const [inRoomView, setInRoomView] = useState(false);
 	const user = useUser();
 	const instance = useMediaSessionInstance(user?._id);
 	const [signalEmitter] = useState(() => new Emitter<Signals>());
@@ -24,7 +25,7 @@ const MediaCallInstanceProvider = ({ children }: MediaCallInstanceProviderProps)
 	const getAutocompleteOptions = useGetAutocompleteOptions(instance);
 
 	const value = useMemo(
-		() => ({ instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions }),
+		() => ({ instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions, inRoomView, setInRoomView }),
 		[instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions],
 	);
 
