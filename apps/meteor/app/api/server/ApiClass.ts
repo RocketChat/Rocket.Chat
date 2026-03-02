@@ -835,7 +835,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						const shouldPreventUserRead = !this.user && options.authRequired;
 
 						if (shouldPreventAnonymousRead || shouldPreventUserRead) {
-							console.log('shouldPreventAnonymousRead', shouldPreventAnonymousRead);
 							const result = api.unauthorized('You must be logged in to do this.');
 							// compatibility with the old API
 							// TODO: MAJOR
