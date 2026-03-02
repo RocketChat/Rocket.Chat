@@ -1,1 +1,1 @@
-export {default} from './PrototypeContainer';
+export { default } from './PrototypeContainer';
