@@ -132,6 +132,14 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 			throw e;
 		}
 
+		// Register imported room ids in cache (required for message import)
+        for (const importId of roomData.importIds) {
+                this._cache.addRoom(importId, roomData._id as string);
+                if (roomData.name) {
+                        this._cache.addRoomName(importId, roomData.name);
+                }
+        }
+
 		await this.updateRoomId(roomData._id as 'string', roomData);
 	}
 
