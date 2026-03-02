@@ -36,7 +36,7 @@
 		"webpack": "~5.99.9"
 	},
 	"devDependencies": {
-		"@rocket.chat/fuselage": "^0.72.0",
+		"@rocket.chat/fuselage": "^0.72.1",
 		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "^8.6.17",
