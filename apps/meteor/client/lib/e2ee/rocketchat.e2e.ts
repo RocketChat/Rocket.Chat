@@ -718,17 +718,23 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const urlObj = new URL(url);
+				let urlObj: URL;
+				try {
+					urlObj = new URL(url);
+				} catch {
+					return;
+				}
 				// if the URL doesn't have query params (doesn't reference message) skip
-				if (!urlObj?.searchParams) {
+				if (!urlObj.search) {
 					return;
 				}
 
-				const { msg: msgId } = Object.fromEntries(urlObj.searchParams.entries());
+				const msgIds = urlObj.searchParams.getAll('msg');
 
-				if (!msgId || Array.isArray(msgId)) {
+				if (msgIds.length !== 1) {
 					return;
 				}
+				const msgId = msgIds[0];
 
 				let quotedMessage: Serialized<IMessage>;
 				try {
