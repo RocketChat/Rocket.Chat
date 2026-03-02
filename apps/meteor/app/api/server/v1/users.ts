@@ -548,7 +548,12 @@ API.v1.addRoute(
 					]
 					: [];
 
-			const result = await Users.col
+			const [
+				{
+					sortedResults: users,
+					totalCount: [{ total } = { total: 0 }],
+				} = { sortedResults: [], totalCount: [] },
+			] = await Users.col
 				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
 					{
 						$match: nonEmptyQuery,
@@ -579,11 +584,6 @@ API.v1.addRoute(
 					},
 				])
 				.toArray();
-
-			const {
-				sortedResults: users,
-				totalCount: [{ total } = { total: 0 }],
-			} = result[0];
 
 			return API.v1.success({
 				users,
