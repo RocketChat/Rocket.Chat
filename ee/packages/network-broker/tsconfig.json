@@ -1,9 +1,10 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"declaration": true,
-		"outDir": "./dist",
 		"rootDir": "./src",
+		"declaration": true,
+		"outDir": "./dist"
 	},
-	"files": ["./src/index.ts"]
+	"files": ["./src/index.ts"],
+	"exclude": ["**/*.spec.ts"]
 }

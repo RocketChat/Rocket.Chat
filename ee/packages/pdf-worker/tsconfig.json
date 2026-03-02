@@ -3,6 +3,5 @@
 	"compilerOptions": {
 		"jsx": "react-jsx"
 	},
-	"include": ["./src/**/*", "./**/*.spec.ts", "./jest.config.ts", "./.storybook/**/*"],
-	"exclude": []
+	"include": ["./src", "./jest.config.ts", "./.storybook/**/*"]
 }

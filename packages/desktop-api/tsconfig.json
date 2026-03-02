@@ -7,8 +7,7 @@
 
 		"declarationMap": false,
 		"outDir": "./dist",
-		"sourceMap": false,
-
+		"sourceMap": false
 	},
 	"include": ["./src"]
 }

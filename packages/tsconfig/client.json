@@ -3,7 +3,6 @@
 	"extends": "./base.json",
 	"compilerOptions": {
 		"module": "esnext",
-		"rootDir": "${configDir}",
 
 		"declaration": true,
 		"declarationMap": true,

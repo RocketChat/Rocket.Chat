@@ -1,6 +1,3 @@
 {
-	"extends": "@rocket.chat/tsconfig/base.json",
-	"compilerOptions": {
-		"rootDir": "."
-	}
+	"extends": "@rocket.chat/tsconfig/base.json"
 }

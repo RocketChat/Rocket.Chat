@@ -1,10 +1,10 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"outDir": "./dist",
 		"rootDir": "./src",
 		"declaration": true,
+		"outDir": "./dist"
 	},
-	"include": ["./src/**/*", "../../../apps/meteor/definition/externals/meteor"],
+	"include": ["./src"],
 	"exclude": ["./dist"]
 }

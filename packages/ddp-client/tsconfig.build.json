@@ -5,9 +5,7 @@
 
 		"declaration": true,
 		"declarationMap": true,
-		"outDir": "./dist",
-
-		"target": "es6",
+		"outDir": "./dist"
 	},
 	"include": ["./src"],
 	"exclude": ["**/*.spec.ts", "**/*.test.ts"]

@@ -1,9 +1,10 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
+		"rootDir": "../../../..",
 		"strictPropertyInitialization": false, // TODO: Remove this line
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*", "./definition"],
+	"include": ["./src", "./definition"],
 	"exclude": ["./dist", "./ecosystem.config.js"]
 }

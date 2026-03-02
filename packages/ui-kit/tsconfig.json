@@ -2,6 +2,6 @@
 	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
 		"module": "esnext",
-		"plugins": [{ "transform": "typia/lib/transform" }],
+		"plugins": [{ "transform": "typia/lib/transform" }]
 	}
 }

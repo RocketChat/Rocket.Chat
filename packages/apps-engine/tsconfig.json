@@ -14,8 +14,8 @@
 		"lib": ["es2017", "dom"],
 		"rootDir": "./src",
 		"outDir": ".",
-		"skipLibCheck": true,
+		"skipLibCheck": true
 	},
 	"exclude": ["deno-runtime"],
-	"include": ["./src/**/*"],
+	"include": ["./src"]
 }

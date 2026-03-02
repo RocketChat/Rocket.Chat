@@ -13,6 +13,7 @@
 		"module": "commonjs",
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
+		"rootDir": "${configDir}",
 
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,

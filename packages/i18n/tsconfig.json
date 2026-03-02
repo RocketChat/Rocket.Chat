@@ -4,7 +4,6 @@
 		"module": "node18",
 		"moduleResolution": "node16",
 		"rewriteRelativeImportExtensions": true,
-		"rootDir": ".",
 
 		"outDir": "./dist",
 

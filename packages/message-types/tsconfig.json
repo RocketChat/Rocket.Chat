@@ -1,9 +1,4 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig",
 	"extends": "@rocket.chat/tsconfig/server.json",
-	"compilerOptions": {
-		"rootDirs": ["./src", "./"],
-		"outDir": "./dist"
-	},
-	"include": ["./src/**/*", "./jest.config.ts"],
+	"include": ["./src", "./jest.config.ts"]
 }

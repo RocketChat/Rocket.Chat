@@ -1,8 +1,6 @@
 {
 	"extends": "@rocket.chat/tsconfig/base.json",
 	"compilerOptions": {
-		"rootDir": ".",
-
 		"module": "ESNext",
 		"lib": ["ESNext", "DOM"],
 
@@ -23,9 +21,9 @@
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
 			"/*": ["*"],
-			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"],
+			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"]
 		},
-		"preserveSymlinks": true,
+		"preserveSymlinks": true
 	},
 	"include": ["./**/*", "./.storybook/**/*", "./jest.config.ts", "./.scripts/**/*"],
 	"exclude": [
@@ -33,12 +31,12 @@
 		"./.meteor/**",
 		"./imports/client/**",
 		"**/dist/**",
-		"./public/**",
+		"./public/**"
 		// "./ee/server/services/**",
 		// "./**/*.spec.ts"
 	],
 	"ts-node": {
 		"files": false,
-		"swc": true,
-	},
+		"swc": true
+	}
 }

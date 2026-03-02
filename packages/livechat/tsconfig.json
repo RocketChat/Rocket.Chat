@@ -16,7 +16,7 @@
 		"allowJs": true,
 		"checkJs": false,
 
-		"jsxImportSource": "preact",
+		"jsxImportSource": "preact"
 	},
 	"include": ["./src", "./webpack.config.ts", "./svg-component-loader.ts", ".storybook/**/*.ts"],
 	"exclude": ["./dist"]
