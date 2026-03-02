@@ -1,3 +1,10 @@
+import { BlockContext } from './BlockContext';
+import type { BlockRenderers } from './BlockRenderers';
+import type { Conditions } from './Conditions';
+import { renderBlockElement } from './renderBlockElement';
+import { renderLayoutBlock } from './renderLayoutBlock';
+import { renderTextObject } from './renderTextObject';
+import { resolveConditionalBlocks } from './resolveConditionalBlocks';
 import type { Block } from '../blocks/Block';
 import type { BlockElement } from '../blocks/BlockElement';
 import { LayoutBlockType } from '../blocks/LayoutBlockType';
@@ -15,14 +22,6 @@ import type { InputBlock } from '../blocks/layout/InputBlock';
 import type { SectionBlock } from '../blocks/layout/SectionBlock';
 import type { Markdown } from '../blocks/text/Markdown';
 import type { PlainText } from '../blocks/text/PlainText';
-import { isNotNull } from '../isNotNull';
-import { BlockContext } from './BlockContext';
-import type { BlockRenderers } from './BlockRenderers';
-import type { Conditions } from './Conditions';
-import { renderBlockElement } from './renderBlockElement';
-import { renderLayoutBlock } from './renderLayoutBlock';
-import { renderTextObject } from './renderTextObject';
-import { resolveConditionalBlocks } from './resolveConditionalBlocks';
 
 export abstract class SurfaceRenderer<TOutputObject, TAllowedLayoutBlock extends RenderableLayoutBlock = RenderableLayoutBlock>
 	implements BlockRenderers<TOutputObject>
@@ -45,7 +44,7 @@ export abstract class SurfaceRenderer<TOutputObject, TAllowedLayoutBlock extends
 			.flatMap(resolveConditionalBlocks(conditions))
 			.filter(this.isAllowedLayoutBlock)
 			.map(renderLayoutBlock(this))
-			.filter(isNotNull);
+			.filter((value): value is TOutputObject => value !== null);
 	}
 
 	public renderTextObject(textObject: TextObject, index: number, context: BlockContext): TOutputObject | null {
