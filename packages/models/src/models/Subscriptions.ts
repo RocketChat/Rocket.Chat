@@ -1312,18 +1312,48 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	unarchiveByRoomId(roomId: string): Promise<UpdateResult | Document> {
-		const query = { rid: roomId };
+	async unarchiveByRoomId(roomId: string): Promise<boolean> {
+		const hasArchived = await this.col.countDocuments({ rid: roomId, archived: true }, { limit: 1 });
+		if (!hasArchived) {
+			return false;
+		}
 
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				alert: false,
-				open: true,
-				archived: false,
-			},
-		};
+		await this.col
+			.aggregate(
+				[
+					{ $match: { rid: roomId, archived: true } },
+					{ $project: { '_id': 1, 'u._id': 1 } },
+					{
+						$lookup: {
+							from: Users.getCollectionName(),
+							localField: 'u._id',
+							foreignField: '_id',
+							as: '_user',
+							pipeline: [{ $project: { active: 1 } }],
+						},
+					},
+					{ $match: { '_user.active': true } },
+					{
+						$project: {
+							_id: 1,
+							archived: { $literal: false },
+							open: { $literal: true },
+							alert: { $literal: false },
+						},
+					},
+					{
+						$merge: {
+							into: this.getCollectionName(),
+							whenMatched: 'merge',
+							whenNotMatched: 'discard',
+						},
+					},
+				],
+				{ allowDiskUse: true },
+			)
+			.toArray();
 
-		return this.updateMany(query, update);
+		return true;
 	}
 
 	unarchiveByUsernameExcludingRoomIds(username: string, excludeRoomIds: string[]): Promise<UpdateResult | Document> {

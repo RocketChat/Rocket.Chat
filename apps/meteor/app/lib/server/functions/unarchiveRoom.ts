@@ -7,8 +7,9 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomId } from '..
 export const unarchiveRoom = async function (rid: string, user: IMessage['u']): Promise<void> {
 	await Rooms.unarchiveById(rid);
 
-	const unarchiveResponse = await Subscriptions.unarchiveByRoomId(rid);
-	if (unarchiveResponse.modifiedCount) {
+	const hasUnarchived = await Subscriptions.unarchiveByRoomId(rid);
+
+	if (hasUnarchived) {
 		void notifyOnSubscriptionChangedByRoomId(rid);
 	}
 
