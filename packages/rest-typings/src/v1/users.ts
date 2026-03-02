@@ -9,7 +9,6 @@ import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
 import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
-import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
 import type { UsersSendConfirmationEmailParamsPOST } from './users/UsersSendConfirmationEmailParamsPOST';
@@ -18,25 +17,10 @@ import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferencePa
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
 
-type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
-
-const UsersInfoSchema = {
-	type: 'object',
-	properties: {
-		userId: {
-			type: 'string',
-			nullable: true,
-		},
-		username: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: [],
-	additionalProperties: false,
+type UsersInfoParamsGet = ({ userId: string } | { username: string } | { importId: string }) & {
+	fields?: string;
+	includeUserRooms?: string;
 };
-
-export const isUsersInfoProps = ajv.compile<UsersInfo>(UsersInfoSchema);
 
 type Users2faSendEmailCode = { emailOrUsername: string };
 
@@ -271,6 +255,12 @@ export type UsersEndpoints = {
 		};
 	};
 
+	'/v1/users.info': {
+		GET: (params: UsersInfoParamsGet) => {
+			user: IUser & { rooms?: Pick<ISubscription, 'rid' | 'name' | 't' | 'roles' | 'unread'>[] };
+		};
+	};
+
 	'/v1/users.create': {
 		POST: (params: UserCreateParamsPOST) => {
 			user: IUser;
@@ -327,11 +317,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.info': {
-		GET: (params: UsersInfoParamsGet) => {
-			user: IUser & { rooms?: Pick<ISubscription, 'rid' | 'name' | 't' | 'roles' | 'unread'>[] };
-		};
-	};
 
 	'/v1/users.register': {
 		POST: (params: UserRegisterParamsPOST) => {
@@ -373,7 +358,6 @@ export type UsersEndpoints = {
 export * from './users/UserCreateParamsPOST';
 export * from './users/UserSetActiveStatusParamsPOST';
 export * from './users/UserDeactivateIdleParamsPOST';
-export * from './users/UsersInfoParamsGet';
 export * from './users/UsersListStatusParamsGET';
 export * from './users/UsersSendWelcomeEmailParamsPOST';
 export * from './users/UserRegisterParamsPOST';

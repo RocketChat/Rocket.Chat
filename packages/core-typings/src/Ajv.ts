@@ -11,12 +11,15 @@ import type { ISubscription } from './ISubscription';
 import type { SlashCommand } from './SlashCommands';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
 
+import type { IUser } from './IUser';
+
 export const schemas = typia.json.schemas<
 	[
 		ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall,
 		CallHistoryItem,
 		ICustomUserStatus,
 		SlashCommand,
+		IUser,
 	],
 	'3.0'
 >();
