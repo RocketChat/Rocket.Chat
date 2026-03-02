@@ -14,8 +14,6 @@ import {
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
-	isChatStarMessageProps,
-	isChatUnstarMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
 	isChatFollowMessageProps,
@@ -58,6 +56,42 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+
+type ChatStarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+type ChatUnstarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+const ChatStarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnstarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
+
+const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
 
 API.v1.addRoute(
 	'chat.delete',
@@ -350,6 +384,80 @@ const chatEndpoints = API.v1
 				message,
 			});
 		},
+	)
+	.post(
+		'chat.starMessage',
+		{
+			authRequired: true,
+			body: isChatStarMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await starMessage(this.user, {
+				_id: msg._id,
+				rid: msg.rid,
+				starred: true,
+			});
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.unStarMessage',
+		{
+			authRequired: true,
+			body: isChatUnstarMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await starMessage(this.user, {
+				_id: msg._id,
+				rid: msg.rid,
+				starred: false,
+			});
+
+			return API.v1.success();
+		},
 	);
 
 API.v1.addRoute(
@@ -441,50 +549,6 @@ API.v1.addRoute(
 			return API.v1.success({
 				message,
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.starMessage',
-	{ authRequired: true, validateParams: isChatStarMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			await starMessage(this.user, {
-				_id: msg._id,
-				rid: msg.rid,
-				starred: true,
-			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unStarMessage',
-	{ authRequired: true, validateParams: isChatUnstarMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			await starMessage(this.user, {
-				_id: msg._id,
-				rid: msg.rid,
-				starred: false,
-			});
-
-			return API.v1.success();
 		},
 	},
 );
