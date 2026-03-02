@@ -3,6 +3,7 @@ import { useState } from 'react';
 
 import ToggleButton from './ToggleButton';
 
+// TODO: move to actions folder
 export default {
 	title: 'V2/Components/ToggleButton',
 	component: ToggleButton,
