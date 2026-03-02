@@ -4,13 +4,14 @@ import type { ComponentProps, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchItem from './NavBarSearchItem';
+import type { SearchRenderableItem } from './hooks/useSearchItems';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import SidebarItemBadges from '../../sidebar/badges/SidebarItemBadges';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 
 type NavBarSearchItemWithDataProps = {
-	room: SubscriptionWithRoom;
+	room: SearchRenderableItem;
 	id: string;
 	AvatarTemplate: ReactElement;
 } & Partial<ComponentProps<typeof NavBarSearchItem>>;
@@ -21,9 +22,15 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
-	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room);
+	// SearchRenderableItem is structurally compatible with UnreadData:
+	// all required numeric fields (unread, userMentions, groupMentions) are present.
+	// Local subscriptions carry real unread data; spotlight results default to 0 → no badge shown.
+	const { unreadTitle, showUnread, highlightUnread: highlighted } = useUnreadDisplay(room as SubscriptionWithRoom);
 
-	const icon = <SidebarV2ItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />;
+	// SearchRenderableItem satisfies Pick<IRoom, 't'|'prid'|'teamMain'|'uids'|'u'>:
+	// - For spotlight rooms (t='c'): u stub is safe, isDirectMessageRoom is never true.
+	// - For spotlight users (t='d'): u is populated from real server user data.
+	const icon = <SidebarV2ItemIcon highlighted={highlighted} icon={<RoomIcon room={room as SubscriptionWithRoom} placement='sidebar' size='x20' />} />;
 
 	return (
 		<NavBarSearchItem
@@ -33,7 +40,7 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			icon={icon}
-			badges={<SidebarItemBadges room={room} roomTitle={title} />}
+			badges={<SidebarItemBadges room={room as SubscriptionWithRoom} roomTitle={title} />}
 			avatar={AvatarTemplate}
 		/>
 	);

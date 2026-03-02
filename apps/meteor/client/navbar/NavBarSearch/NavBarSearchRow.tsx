@@ -1,13 +1,13 @@
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
-import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 import NavBarSearchItemWithData from './NavBarSearchItemWithData';
 import NavBarSearchUserRow from './NavBarSearchUserRow';
+import type { SearchRenderableItem } from './hooks/useSearchItems';
 
 type NavBarSearchRowProps = {
-	room: SubscriptionWithRoom;
+	room: SearchRenderableItem;
 	onClick: () => void;
 };
 
