@@ -4,6 +4,10 @@ import type { FindCursor, IndexDescription, Collection, Db, UpdateResult } from 
 
 import { BaseRaw } from './BaseRaw';
 
+function escapeRegExp(text: string): string {
+	return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalendarEventModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<ICalendarEvent>>) {
 		super(db, 'calendar_event', trash);
@@ -41,6 +45,20 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			{
 				uid,
 				startTime: { $gte: startTime, $lt: finalTime },
+			},
+			{
+				sort: { startTime: 1 },
+			},
+		);
+	}
+
+	public findBySubject(uid: IUser['_id'], text: string): FindCursor<ICalendarEvent> {
+		const escapedText = escapeRegExp(text);
+
+		return this.find(
+			{
+				uid,
+				subject: { $regex: escapedText, $options: 'i' },
 			},
 			{
 				sort: { startTime: 1 },
