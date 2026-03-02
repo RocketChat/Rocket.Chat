@@ -417,9 +417,10 @@ export class HomeContent {
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.threadMessageList.last().hover();
-		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).waitFor();
-		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).click();
+		await this.lastThreadMessageText.hover();
+		const menuButton = this.lastThreadMessageText.getByRole('button', { name: 'More', exact: true });
+		await menuButton.waitFor();
+		await menuButton.click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
