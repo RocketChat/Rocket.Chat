@@ -380,7 +380,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const result = await deleteUserOwnAccount(this.userId, password, confirmRelinquish);
+			await deleteUserOwnAccount(this.userId, password, confirmRelinquish);
 
 			return API.v1.success();
 		},

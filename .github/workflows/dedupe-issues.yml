@@ -24,11 +24,10 @@ jobs:
 
       - name: Run Claude Code slash command
         uses: anthropics/claude-code-base-action@beta
-        continue-on-error: true
         with:
           prompt: '/dedupe ${{ github.repository }}/issues/${{ github.event.issue.number || inputs.issue_number }}'
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          model: 'claude-3-5-sonnet-20241022'
+          claude_args: '--model claude-sonnet-4-5-20250929'
           claude_env: |
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
