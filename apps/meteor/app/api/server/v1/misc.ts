@@ -48,7 +48,7 @@ export interface IMeResponse {
   username: string;
   nickname: string;
   emails: Array<{ address: string; verified: boolean }>;
-  email: string;
+  email?: string; // made optional
   status: string;
   statusDefault: string;
   statusText: string;
@@ -63,7 +63,7 @@ export interface IMeResponse {
   roles: string[];
   active: boolean;
   defaultRoom: string;
-  customFields: unknown[];
+  customFields: Record<string, unknown>; // fixed from array
   requirePasswordChange: boolean;
   requirePasswordChangeReason: string;
   services: Record<string, unknown>;
@@ -86,7 +86,7 @@ export const meResponseSchema = {
       type: 'array',
       items: { type: 'object', properties: { address: { type: 'string' }, verified: { type: 'boolean' } }, required: ['address', 'verified'], additionalProperties: false },
     },
-    email: { type: 'string' },
+    email: { type: 'string', nullable: true }, // optional
     status: { type: 'string' },
     statusDefault: { type: 'string' },
     statusText: { type: 'string' },
@@ -100,8 +100,8 @@ export const meResponseSchema = {
     idleTimeLimit: { type: 'number' },
     roles: { type: 'array', items: { type: 'string' } },
     active: { type: 'boolean' },
-	defaultRoom: { type: 'string' },
-    customFields: { type: 'array', items: {} },
+    defaultRoom: { type: 'string' },
+    customFields: { type: 'object', additionalProperties: true }, // fixed
     requirePasswordChange: { type: 'boolean' },
     requirePasswordChangeReason: { type: 'string' },
     services: { type: 'object', additionalProperties: true },
@@ -112,16 +112,15 @@ export const meResponseSchema = {
     avatarETag: { type: 'string' },
   },
   required: [
-    'success', '_id', 'name', 'username', 'nickname', 'emails', 'email',
+    'success', '_id', 'name', 'username', 'nickname', 'emails',
     'status', 'statusDefault', 'statusText', 'statusConnection', 'bio',
     'avatarOrigin', 'utcOffset', 'language', 'settings', 'enableAutoAway',
-    'idleTimeLimit', 'roles', 'active', 'defaultRoom', 'customFields',
+    'idleTimeLimit', 'roles', 'active', 'defaultRoom',
     'requirePasswordChange', 'requirePasswordChangeReason', 'services',
     'statusLivechat', 'banners', 'oauth', '_updatedAt', 'avatarETag',
   ],
-   additionalProperties: true,
+  additionalProperties: true,
 } as const;
-
 /**
  * --------------------------------
  * /api/v1/me endpoint
