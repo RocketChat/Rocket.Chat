@@ -202,7 +202,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='username'
 									control={control}
-									rules={{ required: t('Required_field', { field: t('Post_to_Channel') }) }}
+									rules={{ required: t('Required_field', { field: t('Post_as') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={usernameField}
