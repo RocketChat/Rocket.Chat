@@ -21,4 +21,6 @@ export interface IBaseUploadsModel<T extends IUpload> extends IBaseModel<T> {
 	updateFileNameById(fileId: string, name: string): Promise<Document | UpdateResult>;
 
 	deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult>;
+
+	findOneByIdAndUserIdAndRoomId(fileId: string, userId: string, rid: string, options?: FindOptions<T>): Promise<T | null>;
 }

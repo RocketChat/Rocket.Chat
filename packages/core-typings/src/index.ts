@@ -112,7 +112,6 @@ export * from './ICalendarEvent';
 
 export * from './search';
 export * from './omnichannel';
-export * from './IAppsTokens';
 export * from './ILivechatUnitMonitor';
 export * from './ICronHistoryItem';
 
