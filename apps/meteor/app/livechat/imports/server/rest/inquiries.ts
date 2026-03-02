@@ -69,7 +69,7 @@ API.v1.addRoute(
 				return API.v1.failure('The user is invalid');
 			}
 			return API.v1.success({
-				inquiry: await takeInquiry(this.bodyParams.userId || this.userId, this.bodyParams.inquiryId),
+				inquiry: await takeInquiry(this.bodyParams.userId || this.userId, this.bodyParams.inquiryId, this.bodyParams.options),
 			});
 		},
 	},
