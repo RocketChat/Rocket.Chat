@@ -1,6 +1,5 @@
-import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import MessageListTab from './MessageListTab';
@@ -14,21 +13,24 @@ const StarredMessagesTab = () => {
 
 	const room = useRoom();
 
-	const starredMessagesQueryResult = useQuery({
+	const starredMessagesQueryResult = useInfiniteQuery({
 		queryKey: roomsQueryKeys.starredMessages(room._id),
-		queryFn: async () => {
-			const messages: IMessage[] = [];
+		queryFn: async ({ pageParam: offset = 0 }) => {
+			const result = await getStarredMessages({ roomId: room._id, offset, count: 25 });
 
-			for (
-				let offset = 0, result = await getStarredMessages({ roomId: room._id, offset: 0 });
-				result.count > 0;
-				// eslint-disable-next-line no-await-in-loop
-				offset += result.count, result = await getStarredMessages({ roomId: room._id, offset })
-			) {
-				messages.push(...result.messages.map(mapMessageFromApi));
-			}
-
-			return Promise.all(messages.map(onClientMessageReceived));
+			
+			const messages = await Promise.all(
+				result.messages.map(mapMessageFromApi).map(onClientMessageReceived)
+			);
+			return {
+				messages,
+				total: result.total,
+			};
+		},
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, allPages) => {
+			const loadedCount = allPages.reduce((acc, page) => acc + page.messages.length, 0);
+			return loadedCount < lastPage.total ? loadedCount : undefined;
 		},
 	});
 

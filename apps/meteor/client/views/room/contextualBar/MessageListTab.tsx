@@ -13,9 +13,9 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
+import type { UseQueryResult, UseInfiniteQueryResult } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -32,17 +32,34 @@ type MessageListTabProps = {
 	title: ReactNode;
 	emptyResultMessage: string;
 	context: MessageActionContext;
-	queryResult: UseQueryResult<IMessage[]>;
+	queryResult: UseQueryResult<IMessage[]> | UseInfiniteQueryResult<any>;
 };
 
 const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps): ReactElement => {
+	const messages = useMemo(() => {
+		if (!queryResult.data) {
+			return [];
+		}
+		if (Array.isArray(queryResult.data)) {
+			return queryResult.data;
+		}
+		return queryResult.data.pages.flatMap((page: any) => page.items || page.messages || page);
+	}, [queryResult.data]);
+
 	const formatDate = useFormatDate();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const { closeTab } = useRoomToolbox();
+
 	const handleTabBarCloseButtonClick = useCallback(() => {
 		closeTab();
 	}, [closeTab]);
+
+	const handleEndReached = useCallback(() => {
+		if ('fetchNextPage' in queryResult && queryResult.hasNextPage && !queryResult.isFetchingNextPage) {
+			void queryResult.fetchNextPage();
+		}
+	}, [queryResult]);
 
 	const subscription = useRoomSubscription();
 
@@ -61,19 +78,20 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 				)}
 				{queryResult.isSuccess && (
 					<>
-						{queryResult.data.length === 0 && <ContextualbarEmptyContent title={emptyResultMessage} />}
+						{messages.length === 0 && <ContextualbarEmptyContent title={emptyResultMessage} />}
 
-						{queryResult.data.length > 0 && (
+						{messages.length > 0 && (
 							<MessageListErrorBoundary>
 								<MessageListProvider>
 									<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
 										<VirtualizedScrollbars>
 											<Virtuoso
-												totalCount={queryResult.data.length}
+												totalCount={messages.length}
 												overscan={25}
-												data={queryResult.data}
+												data={messages}
+												endReached={handleEndReached}
 												itemContent={(index, message) => {
-													const previous = queryResult.data[index - 1];
+													const previous = messages[index - 1];
 
 													const newDay = isMessageNewDay(message, previous);
 
@@ -117,3 +135,4 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 };
 
 export default MessageListTab;
+
