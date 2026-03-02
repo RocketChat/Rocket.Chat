@@ -866,6 +866,7 @@ jobs:
           aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
 
   docker-image-publish:
+    if: github.repository == 'RocketChat/Rocket.Chat'
     name: 🚀 Publish Docker Images (DockerHub)
     runs-on: ubuntu-24.04-arm
     needs: [deploy, release-versions]
@@ -983,6 +984,7 @@ jobs:
           done
 
   notify-services:
+    if: github.repository == 'RocketChat/Rocket.Chat'
     name: 🚀 Notify external services
     runs-on: ubuntu-24.04-arm
     needs:
@@ -1031,7 +1033,7 @@ jobs:
   docs-update:
     name: Update Version Durability
 
-    if: github.event_name == 'release'
+    if: github.repository == 'RocketChat/Rocket.Chat' && github.event_name == 'release'
     needs:
       - docker-image-publish
 
