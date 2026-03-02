@@ -56,6 +56,12 @@ export interface ICachedSettings {
 
 	set(record: ISetting): void;
 
+	/**
+	 * Bulk load records into the store without emitting or registering ready listeners.
+	 * Use during initial load; call initialized() after.
+	 */
+	setBulk(records: ISetting[]): void;
+
 	getConfig(config?: OverCustomSettingsConfig): SettingsConfig;
 
 	watchByRegex(regex: RegExp, cb: (...args: [string, SettingValue]) => void, config?: OverCustomSettingsConfig): () => void;
@@ -336,6 +342,16 @@ export class CachedSettings
 		}
 		this.emit(record._id, this.store.get(record._id)?.value);
 		this.emit('*', [record._id, this.store.get(record._id)?.value]);
+	}
+
+	/**
+	 * Bulk load records into the store without emitting or registering ready listeners.
+	 * Use during initial load only; call initialized() after.
+	 */
+	public setBulk(records: ISetting[]): void {
+		for (const record of records) {
+			this.store.set(record._id, record);
+		}
 	}
 
 	public getConfig = (config?: OverCustomSettingsConfig): SettingsConfig => ({
