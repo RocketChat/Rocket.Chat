@@ -130,7 +130,8 @@ class AmazonS3Store extends UploadFS.Store {
 					}),
 				);
 			} catch (error) {
-				SystemLogger.error({ error });
+				SystemLogger.error({ error, key: this.getPath(file), bucket: classOptions.params.Bucket });
+				throw error;
 			}
 		};
 
