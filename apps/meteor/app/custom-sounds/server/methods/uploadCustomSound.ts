@@ -19,7 +19,7 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 Meteor.methods<ServerMethods>({
-	async uploadCustomSound(binaryContent, contentType, soundData) {
+	async uploadCustomSound(binaryContent, _contentType, soundData) {
 		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-sounds'))) {
 			throw new Meteor.Error('not_authorized');
 		}
@@ -30,7 +30,7 @@ Meteor.methods<ServerMethods>({
 		}
 
 		const mimeType = await fromBuffer(file);
-		if (!mimeType || mimeType.mime !== MIME.mp3 || mimeType.ext !== 'mp3' || soundData.extension !== 'mp3') {
+		if (mimeType?.mime !== MIME.mp3 || mimeType.ext !== 'mp3' || soundData.extension !== 'mp3') {
 			throw new Meteor.Error('invalid-file-type', 'Only MP3 files are allowed');
 		}
 
