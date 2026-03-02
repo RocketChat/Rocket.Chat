@@ -448,7 +448,7 @@ describe('[EmojiCustom]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The "emojiId" params is required!');
+					expect(res.body.error).to.be.equal("must have required property 'emojiId'");
 				})
 				.end(done);
 		});
