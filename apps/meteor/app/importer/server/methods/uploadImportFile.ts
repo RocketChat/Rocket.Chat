@@ -35,7 +35,7 @@ export const executeUploadImportFile = async (
 	// Save the file on the File Store
 	const file = Buffer.from(binaryContent, 'base64');
 	const readStream = RocketChatFile.bufferToStream(file);
-	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName, contentType);
+	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
 
 	await new Promise<void>((resolve, reject) => {
 		try {

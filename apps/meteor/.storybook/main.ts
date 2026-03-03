@@ -4,7 +4,7 @@ import type { StorybookConfig } from '@storybook/react-webpack5';
 import webpack from 'webpack';
 
 export default {
-	stories: ['../client/**/*.stories.{js,tsx}', '../app/**/*.stories.{js,tsx}', '../ee/app/**/*.stories.{js,tsx}'],
+	stories: ['../client/**/*.stories.{js,tsx}'],
 
 	addons: [
 		getAbsolutePath('@storybook/addon-essentials'),
@@ -44,7 +44,7 @@ export default {
 		});
 
 		config.plugins?.push(
-			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.js')),
+			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.ts')),
 			new webpack.NormalModuleReplacementPlugin(/(app)\/*.*\/(server)\/*/, require.resolve('./mocks/empty.ts')),
 		);
 

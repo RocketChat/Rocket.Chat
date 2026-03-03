@@ -63,7 +63,9 @@ router.use(async (req: Request, res, next) => {
 	const { 'x-visitor-token': visitorToken } = req.headers;
 
 	if (visitorToken) {
-		req.body.visitor = await Apps.getConverters()?.get('visitors').convertByToken(visitorToken);
+		req.body.visitor = await Apps.getConverters()
+			?.get('visitors')
+			.convertByToken(visitorToken as string); // FIXME might be string[]
 	}
 
 	if (!req.user && !req.body.visitor) {

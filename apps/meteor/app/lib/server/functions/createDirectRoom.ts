@@ -41,7 +41,7 @@ const generateSubscription = (
 export async function createDirectRoom(
 	members: IUser[] | string[],
 	roomExtraData: Partial<IRoom> = {},
-	options: {
+	options?: {
 		forceNew?: boolean;
 		creator?: IUser['_id'];
 		subscriptionExtra?: ISubscriptionExtraData;
@@ -159,7 +159,7 @@ export async function createDirectRoom(
 
 		for await (const member of membersWithPreferences) {
 			const subscriptionStatus: Partial<ISubscription> =
-				roomExtraData.federated && options.creator !== member._id && creatorUser
+				roomExtraData.federated && options!.creator !== member._id && creatorUser
 					? {
 							status: 'INVITED',
 							inviter: {

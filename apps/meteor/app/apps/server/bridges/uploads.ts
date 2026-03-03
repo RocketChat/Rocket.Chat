@@ -51,7 +51,7 @@ export class AppUploadBridge extends UploadBridge {
 
 		const fileStore = FileUpload.getStore('Uploads');
 
-		details.type = determineFileType(buffer, details.name);
+		details.type = await determineFileType(buffer, details.name);
 
 		const uploadedFile = await fileStore.insert(getUploadDetails(details), buffer);
 		this.orch.debugLog(`The App ${appId} has created an upload`, uploadedFile);

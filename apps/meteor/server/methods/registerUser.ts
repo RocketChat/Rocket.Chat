@@ -150,7 +150,7 @@ let registerUserRuleId = RateLimiter.limitMethod(
 	},
 );
 
-settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
+settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	// When running on testMode, there's no rate limiting added, so this function throws an error
 	if (process.env.TEST_MODE === 'true') {
 		return;
@@ -159,11 +159,21 @@ settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
 	if (!registerUserRuleId) {
 		throw new Error('Rate limiter rule for "registerUser" not found');
 	}
+
+	if (typeof value !== 'number') {
+		return;
+	}
+
 	// remove old DDP rate limiter rule and create a new one with the updated setting value
 	DDPRateLimiter.removeRule(registerUserRuleId);
-	registerUserRuleId = RateLimiter.limitMethod('registerUser', value, settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
-		userId() {
-			return true;
+	registerUserRuleId = RateLimiter.limitMethod(
+		'registerUser',
+		value,
+		(settings.get<number>('API_Enable_Rate_Limiter_Limit_Time_Default') as number) ?? 60000,
+		{
+			userId() {
+				return true;
+			},
 		},
-	});
+	);
 });

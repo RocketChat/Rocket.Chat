@@ -21,6 +21,8 @@ export interface ISetting {
 	public: boolean;
 	/** Whether this setting should be hidden from the user/administrator's eyes (can't be hidden and required). */
 	hidden?: boolean;
+	/** The group this setting belongs to. */
+	group?: string;
 	/** The selectable values when the setting's type is "select" or "multiSelect". */
 	values?: Array<ISettingSelectValue>;
 	/** Whether the **string** type is several lines or just one line. */

@@ -1,4 +1,5 @@
 import 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { DDPCommon, IStreamerConstructor, IStreamer } from 'meteor/ddp-common';
 
@@ -34,6 +35,12 @@ declare module 'meteor/meteor' {
 			error: string | number;
 			reason?: string;
 		}
+
+		// eslint-disable-next-line @typescript-eslint/no-empty-interface
+		interface User extends IUser {}
+
+		// eslint-disable-next-line @typescript-eslint/no-empty-interface
+		interface UserServices extends NonNullable<IUser['services']> {}
 
 		interface Device {
 			isDesktop: () => boolean;
