@@ -50,7 +50,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 							</Box>
 						)}
 						<Box color='hint' fontScale='micro'>
-							{format(uploadedAt)}
+							{uploadedAt != null ? format(uploadedAt) : '—'}
 						</Box>
 					</Box>
 				</Box>

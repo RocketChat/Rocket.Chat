@@ -7,7 +7,7 @@ exports[`renders WithDateObject without crashing 1`] = `
       aria-hidden="false"
       class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-1p3fsdk"
       role="status"
-      title="Invited January 1, 2025"
+      title="Invited January 1st, 2025"
     >
       
     </i>
@@ -22,7 +22,7 @@ exports[`renders WithISOStringDate without crashing 1`] = `
       aria-hidden="false"
       class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-1p3fsdk"
       role="status"
-      title="Invited January 1, 2025"
+      title="Invited January 1st, 2025"
     >
       
     </i>

@@ -1,5 +1,5 @@
 import { LivechatContacts, Statistics, Users } from '@rocket.chat/models';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import { settings } from '../../../settings/server';
 import { statistics } from '../../../statistics/server';
@@ -69,7 +69,7 @@ export async function buildWorkspaceRegistrationData<T extends string | undefine
 	const workspaceType = settings.get<string>('Server_Type');
 
 	const seats = await Users.getActiveLocalUserCount();
-	const MAC = await LivechatContacts.countContactsOnPeriod(moment.utc().format('YYYY-MM'));
+	const MAC = await LivechatContacts.countContactsOnPeriod(format(new Date(), 'yyyy-MM'));
 
 	const license = settings.get<string>('Enterprise_License');
 

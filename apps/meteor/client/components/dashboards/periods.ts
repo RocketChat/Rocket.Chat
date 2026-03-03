@@ -1,32 +1,92 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { DurationInputArg1, DurationInputArg2 } from 'moment';
-import moment from 'moment';
+import { startOfDay, startOfWeek, startOfMonth, startOfYear, endOfDay, subDays, subMonths } from 'date-fns';
 
 const label = (translationKey: TranslationKey): readonly [translationKey: TranslationKey] => [translationKey];
 
+function startOfDayUTC(d: Date): Date {
+	return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0));
+}
+
+function endOfDayUTC(d: Date): Date {
+	return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999));
+}
+
+function startOfWeekUTC(d: Date): Date {
+	const day = d.getUTCDay(); // 0 = Sunday
+	const sunday = new Date(d);
+	sunday.setUTCDate(d.getUTCDate() - day);
+	return startOfDayUTC(sunday);
+}
+
+function startOfMonthUTC(d: Date): Date {
+	return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1, 0, 0, 0, 0));
+}
+
+function startOfYearUTC(d: Date): Date {
+	return new Date(Date.UTC(d.getUTCFullYear(), 0, 1, 0, 0, 0, 0));
+}
+
+type StartOf = 'day' | 'year' | 'month' | 'week';
+type Subtract = { amount: number; unit: 'days' | 'months' };
+
 export const getClosedPeriod =
 	({
-		startOf,
-		subtract,
+		startOf: startOfKey,
+		subtract: subtractOpt,
 	}: {
-		startOf: 'day' | 'year' | 'month' | 'week';
-		subtract?: { amount: DurationInputArg1; unit: DurationInputArg2 };
+		startOf: StartOf;
+		subtract?: Subtract;
 	}): ((utc: boolean) => {
 		start: Date;
 		end: Date;
 	}) =>
-	(utc): { start: Date; end: Date } => {
-		const start = utc ? moment().utc() : moment();
-		const end = utc ? moment().utc() : moment();
+	(utc: boolean): { start: Date; end: Date } => {
+		const now = new Date();
 
-		if (subtract) {
-			const { amount, unit } = subtract;
-			start.subtract(amount, unit);
+		let start: Date;
+		if (subtractOpt) {
+			const { amount, unit } = subtractOpt;
+			start = unit === 'days' ? subDays(now, amount) : subMonths(now, amount);
+		} else {
+			start = new Date(now.getTime());
+		}
+
+		if (utc) {
+			switch (startOfKey) {
+				case 'day':
+					start = startOfDayUTC(start);
+					break;
+				case 'week':
+					start = startOfWeekUTC(start);
+					break;
+				case 'month':
+					start = startOfMonthUTC(start);
+					break;
+				case 'year':
+					start = startOfYearUTC(start);
+					break;
+			}
+			return { start, end: endOfDayUTC(now) };
+		}
+
+		switch (startOfKey) {
+			case 'day':
+				start = startOfDay(start);
+				break;
+			case 'week':
+				start = startOfWeek(start);
+				break;
+			case 'month':
+				start = startOfMonth(start);
+				break;
+			case 'year':
+				start = startOfYear(start);
+				break;
 		}
 
 		return {
-			start: start.startOf(startOf).toDate(),
-			end: end.endOf('day').toDate(),
+			start,
+			end: endOfDay(now),
 		};
 	};
 

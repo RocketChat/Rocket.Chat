@@ -3,7 +3,7 @@ import { access, mkdir, rm, writeFile } from 'fs/promises';
 
 import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
-import moment from 'moment';
+import { differenceInDays } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
 
 import { FileUpload } from '../../../app/file-upload/server';
@@ -257,7 +257,7 @@ export async function processDataDownloads(): Promise<void> {
 
 	if (operation.status !== 'pending') {
 		// If the operation has started but was not updated in over a day, then skip it
-		if (operation._updatedAt && moment().diff(moment(operation._updatedAt), 'days') > 1) {
+		if (operation._updatedAt && differenceInDays(new Date(), operation._updatedAt) > 1) {
 			operation.status = 'skipped';
 			await ExportOperations.updateOperation(operation);
 			return processDataDownloads();

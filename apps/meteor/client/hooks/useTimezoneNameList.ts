@@ -1,4 +1,8 @@
-import moment from 'moment-timezone';
 import { useMemo } from 'react';
 
-export const useTimezoneNameList = (): string[] => useMemo(() => moment.tz.names(), []);
+const getTimeZoneNames = (): string[] => {
+	const intl = Intl as typeof Intl & { supportedValuesOf?(key: 'timeZone'): string[] };
+	return typeof intl.supportedValuesOf === 'function' ? intl.supportedValuesOf('timeZone') : [];
+};
+
+export const useTimezoneNameList = (): string[] => useMemo(() => getTimeZoneNames(), []);

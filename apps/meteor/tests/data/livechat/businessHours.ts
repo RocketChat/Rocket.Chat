@@ -1,10 +1,11 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { POSTLivechatBusinessHoursSaveParams } from '@rocket.chat/rest-typings';
-import moment from 'moment';
 
 import { api, credentials, request } from '../api-data';
 import { updateEESetting, updateSetting } from '../permissions.helper';
+
+const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 type ISaveBhApiWorkHour = Omit<ILivechatBusinessHour, '_id' | 'ts' | 'timezone'> & {
 	workHours: { day: string; start: string; finish: string; open: boolean }[];
@@ -197,7 +198,7 @@ export const getWorkHours = (open = true): ISaveBhApiWorkHour['workHours'] => {
 
 	for (let i = 0; i < 7; i++) {
 		workHours.push({
-			day: moment().day(i).format('dddd'),
+			day: DAY_NAMES[i],
 			start: '00:00',
 			finish: '23:59',
 

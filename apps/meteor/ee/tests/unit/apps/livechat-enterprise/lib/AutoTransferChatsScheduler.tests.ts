@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import { beforeEach, describe, it } from 'mocha';
-import moment from 'moment';
+import { addSeconds } from 'date-fns';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -102,7 +102,7 @@ describe('AutoTransferChats', () => {
 			await scheduler.init();
 			scheduler.unscheduleRoom = sinon.stub();
 
-			const myScheduleTime = moment(new Date()).add(10, 's').toDate();
+			const myScheduleTime = addSeconds(new Date(), 10);
 			await scheduler.scheduleRoom('roomId', 10);
 
 			expect(scheduler.unscheduleRoom.calledWith('roomId')).to.be.true;

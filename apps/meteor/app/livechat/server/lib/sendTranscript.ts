@@ -15,7 +15,6 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
-import moment from 'moment-timezone';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
@@ -150,7 +149,11 @@ export async function sendTranscript({
 			}
 		}
 
-		const datetime = moment.tz(message.ts, timezone).locale(userLanguage).format('LLL');
+		const datetime = new Intl.DateTimeFormat(userLanguage, {
+			timeZone: timezone,
+			dateStyle: 'long',
+			timeStyle: 'short',
+		}).format(new Date(message.ts));
 		const singleMessage = `
 			<p><strong>${escapeHtml(author)}</strong>  <em>${escapeHtml(datetime)}</em></p>
 			<p>${messageContent}</p>

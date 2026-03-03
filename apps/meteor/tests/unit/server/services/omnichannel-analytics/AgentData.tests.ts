@@ -1,7 +1,6 @@
 /* eslint-disable new-cap */
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import { expect } from 'chai';
-import moment from 'moment-timezone';
 import sinon from 'sinon';
 
 import { AgentOverviewData } from '../../../../../server/services/omnichannel-analytics/AgentData';
@@ -71,7 +70,7 @@ describe('AgentData Analytics', () => {
 			try {
 				// @ts-expect-error - test
 				// eslint-disable-next-line prettier/prettier, no-return-await
-				await agentOverview.callAction('invalid', moment(), moment());
+				await agentOverview.callAction('invalid', new Date(), new Date());
 			} catch (e) {
 				expect(e).to.be.instanceOf(Error);
 			}
@@ -92,31 +91,31 @@ describe('AgentData Analytics', () => {
 			const spy6 = sinon.spy(agentOverview, 'Avg_reaction_time');
 			const spy7 = sinon.spy(agentOverview, 'Avg_response_time');
 
-			await agentOverview.callAction('Total_conversations', moment(), moment());
+			await agentOverview.callAction('Total_conversations', new Date(), new Date());
 
 			expect(spy.calledOnce).to.be.true;
 
-			await agentOverview.callAction('Total_messages', moment(), moment());
+			await agentOverview.callAction('Total_messages', new Date(), new Date());
 
 			expect(spy2.calledOnce).to.be.true;
 
-			await agentOverview.callAction('Avg_chat_duration', moment(), moment());
+			await agentOverview.callAction('Avg_chat_duration', new Date(), new Date());
 
 			expect(spy3.calledOnce).to.be.true;
 
-			await agentOverview.callAction('Avg_first_response_time', moment(), moment());
+			await agentOverview.callAction('Avg_first_response_time', new Date(), new Date());
 
 			expect(spy4.calledOnce).to.be.true;
 
-			await agentOverview.callAction('Best_first_response_time', moment(), moment());
+			await agentOverview.callAction('Best_first_response_time', new Date(), new Date());
 
 			expect(spy5.calledOnce).to.be.true;
 
-			await agentOverview.callAction('Avg_reaction_time', moment(), moment());
+			await agentOverview.callAction('Avg_reaction_time', new Date(), new Date());
 
 			expect(spy6.calledOnce).to.be.true;
 
-			await agentOverview.callAction('Avg_response_time', moment(), moment());
+			await agentOverview.callAction('Avg_response_time', new Date(), new Date());
 
 			expect(spy7.calledOnce).to.be.true;
 		});
@@ -132,7 +131,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_conversations(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_conversations(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -159,7 +158,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_conversations(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_conversations(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -196,7 +195,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_conversations(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_conversations(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -242,7 +241,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_conversations(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_conversations(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -276,7 +275,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_conversations(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_conversations(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -300,7 +299,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_chat_duration(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_chat_duration(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -330,7 +329,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_chat_duration(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_chat_duration(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -373,7 +372,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_chat_duration(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_chat_duration(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -428,7 +427,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_chat_duration(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_chat_duration(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -464,7 +463,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_chat_duration(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_chat_duration(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -498,7 +497,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_chat_duration(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_chat_duration(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -522,7 +521,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_messages(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_messages(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -550,7 +549,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_messages(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_messages(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -589,7 +588,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_messages(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_messages(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -638,7 +637,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_messages(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_messages(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -685,7 +684,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Total_messages(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Total_messages(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -718,7 +717,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -750,7 +749,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -797,7 +796,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -867,7 +866,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -928,7 +927,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -967,7 +966,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1000,7 +999,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1028,7 +1027,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1052,7 +1051,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Best_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Best_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1134,7 +1133,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Best_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Best_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -1241,7 +1240,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Best_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Best_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -1340,7 +1339,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Best_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Best_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -1368,7 +1367,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Best_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Best_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1389,7 +1388,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Best_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Best_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1410,7 +1409,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Best_first_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Best_first_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1434,7 +1433,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1468,7 +1467,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [{ name: 'agent 1', value: '00:01:40' }],
@@ -1512,7 +1511,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -1569,7 +1568,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -1595,7 +1594,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1621,7 +1620,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_response_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_response_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1647,7 +1646,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_reaction_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_reaction_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1670,7 +1669,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_reaction_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_reaction_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [{ name: 'agent 1', value: '00:01:40' }],
@@ -1698,7 +1697,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_reaction_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_reaction_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -1730,7 +1729,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_reaction_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_reaction_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [
@@ -1758,7 +1757,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_reaction_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_reaction_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],
@@ -1786,7 +1785,7 @@ describe('AgentData Analytics', () => {
 
 			const agentOverview = new AgentOverviewData(modelMock as any);
 
-			const result = await agentOverview.Avg_reaction_time(moment(), moment(), 'departmentId');
+			const result = await agentOverview.Avg_reaction_time(new Date(), new Date(), 'departmentId');
 
 			expect(result).to.be.deep.equal({
 				data: [],

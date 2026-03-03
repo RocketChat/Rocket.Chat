@@ -2,7 +2,6 @@ import { CronTime } from 'cron';
 import date from 'date.js';
 import debugInitializer from 'debug';
 import humanInterval from 'human-interval';
-import moment from 'moment-timezone';
 
 import type { Agenda, RepeatOptions } from './Agenda';
 import type { IJob, IJobAttributes } from './definition/IJob';
@@ -14,6 +13,8 @@ const debug = debugInitializer('agenda:job');
 export type JobArgs = {
 	agenda: Agenda;
 } & IJob;
+
+type CronNextDate = { valueOf(): number };
 
 export class Job {
 	public agenda: Agenda;
@@ -55,26 +56,21 @@ export class Job {
 		return this;
 	}
 
-	public dateForTimezone(date: Date, timezone?: string | null): moment.Moment {
-		const newDate = moment(date);
-		if (timezone) {
-			newDate.tz(timezone);
-		}
-
-		return newDate;
+	public dateForTimezone(date: Date, _timezone?: string | null): Date {
+		return date;
 	}
 
 	private _computeFromInterval(interval: string | number, previousNextRunAt: Date): void {
 		const { repeatTimezone: timezone, name, _id } = this.attrs;
 
 		debug('[%s:%s] computing next run via interval [%s]', name, _id, interval);
-		const lastRun = this.dateForTimezone(this.attrs.lastRunAt || new Date(), timezone);
+		const lastRun = this.attrs.lastRunAt || new Date();
 		try {
 			const cronTime = new CronTime(interval);
-			let nextDate = cronTime._getNextDateFrom(lastRun);
-			if (nextDate.valueOf() === lastRun.valueOf() || nextDate.valueOf() <= previousNextRunAt.valueOf()) {
+			let nextDate = cronTime._getNextDateFrom(lastRun, timezone ?? undefined) as CronNextDate;
+			if (nextDate.valueOf() === lastRun.getTime() || nextDate.valueOf() <= previousNextRunAt.getTime()) {
 				// Handle cronTime giving back the same date for the next run time
-				nextDate = cronTime._getNextDateFrom(this.dateForTimezone(new Date(lastRun.valueOf() + 1000), timezone));
+				nextDate = cronTime._getNextDateFrom(new Date(lastRun.getTime() + 1000), timezone ?? undefined) as CronNextDate;
 			}
 
 			this.attrs.nextRunAt = new Date(nextDate.valueOf());
@@ -85,10 +81,10 @@ export class Job {
 				const numberInterval = (typeof interval === 'number' ? interval : humanInterval(interval)) || 0;
 
 				if (!this.attrs.lastRunAt && numberInterval) {
-					this.attrs.nextRunAt = new Date(lastRun.valueOf());
+					this.attrs.nextRunAt = new Date(lastRun.getTime());
 					debug('[%s:%s] nextRunAt set to [%s]', this.attrs.name, this.attrs._id, this.attrs.nextRunAt.toISOString());
 				} else {
-					this.attrs.nextRunAt = new Date(lastRun.valueOf() + numberInterval);
+					this.attrs.nextRunAt = new Date(lastRun.getTime() + numberInterval);
 					debug('[%s:%s] nextRunAt set to [%s]', this.attrs.name, this.attrs._id, this.attrs.nextRunAt.toISOString());
 				}
 				// Either `xo` linter or Node.js 8 stumble on this line if it isn't just ignored

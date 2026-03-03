@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
 import { beforeEach, describe, it } from 'mocha';
-import moment from 'moment';
+import { addSeconds } from 'date-fns';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -133,7 +133,7 @@ describe('AutoCloseOnHoldScheduler', () => {
 			await scheduler.init();
 			await scheduler.scheduleRoom('roomId', 5, 'test comment');
 
-			const myScheduleTime = moment(new Date()).add(5, 's').toDate();
+			const myScheduleTime = addSeconds(new Date(), 5);
 			expect(mockAgendaCancel.calledBefore(mockAgendaDefine)).to.be.true;
 			expect(mockAgendaCancel.calledWith({ name: 'omnichannel_auto_close_on_hold_scheduler-roomId' }));
 			expect(mockAgendaDefine.calledWithMatch('omnichannel_auto_close_on_hold_scheduler-roomId'));

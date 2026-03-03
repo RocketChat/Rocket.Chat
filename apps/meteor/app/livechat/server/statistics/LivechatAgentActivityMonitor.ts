@@ -1,13 +1,13 @@
 import type { ILivechatAgent, ISocketConnection } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
+import { format, differenceInSeconds } from 'date-fns';
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 
 const formatDate = (dateTime = new Date()): { date: number } => ({
-	date: parseInt(moment(dateTime).format('YYYYMMDD')),
+	date: parseInt(format(dateTime, 'yyyyMMdd'), 10),
 });
 
 export class LivechatAgentActivityMonitor {
@@ -65,13 +65,13 @@ export class LivechatAgentActivityMonitor {
 	async _updateActiveSessions(): Promise<void> {
 		const openLivechatAgentSessions = LivechatAgentActivity.findOpenSessions();
 
-		const today = moment(new Date());
-		const startedAt = new Date(today.year(), today.month(), today.date());
+		const now = new Date();
+		const startedAt = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 		for await (const session of openLivechatAgentSessions) {
-			const startDate = moment(session.lastStartedAt);
-			const stoppedAt = new Date(startDate.year(), startDate.month(), startDate.date(), 23, 59, 59);
-			const data = { ...formatDate(startDate.toDate()), agentId: session.agentId };
-			const availableTime = moment(stoppedAt).diff(moment(new Date(session.lastStartedAt)), 'seconds');
+			const startDate = new Date(session.lastStartedAt);
+			const stoppedAt = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate(), 23, 59, 59);
+			const data = { ...formatDate(startDate), agentId: session.agentId };
+			const availableTime = differenceInSeconds(stoppedAt, new Date(session.lastStartedAt));
 
 			await Promise.all([
 				LivechatAgentActivity.updateLastStoppedAt({ ...data, availableTime, lastStoppedAt: stoppedAt }),
@@ -109,7 +109,7 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'statusLivechat'>>(userId, { projection: { statusLivechat: 1 } });
-		if (!user || user.statusLivechat !== 'available') {
+		if (user?.statusLivechat !== 'available') {
 			return;
 		}
 
@@ -126,7 +126,7 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'status'>>(userId, { projection: { status: 1 } });
-		if (user && user.status === 'offline') {
+		if (user?.status === 'offline') {
 			return;
 		}
 
@@ -152,7 +152,7 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		const stoppedAt = new Date();
-		const availableTime = moment(stoppedAt).diff(moment(new Date(livechatSession.lastStartedAt)), 'seconds');
+		const availableTime = differenceInSeconds(stoppedAt, new Date(livechatSession.lastStartedAt));
 
 		await Promise.all([
 			LivechatAgentActivity.updateLastStoppedAt({ agentId, date, availableTime, lastStoppedAt: stoppedAt }),

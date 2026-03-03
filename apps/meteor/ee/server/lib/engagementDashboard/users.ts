@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users, Analytics, Sessions } from '@rocket.chat/models';
-import moment from 'moment';
+import { subDays, subHours } from 'date-fns';
 
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
@@ -22,7 +22,7 @@ export const fillFirstDaysOfUsersIfNeeded = async (date: Date): Promise<void> =>
 		date: convertDateToInt(date),
 	}).toArray();
 	if (!usersFromAnalytics.length) {
-		const startOfPeriod = moment(date).subtract(90, 'days').toDate();
+		const startOfPeriod = subDays(date, 90);
 		const users = await Users.getTotalOfRegisteredUsersByDate({
 			start: startOfPeriod,
 			end: date,
@@ -54,10 +54,10 @@ export const findWeeklyUsersRegisteredData = async ({
 	};
 }> => {
 	const daysBetweenDates = diffBetweenDaysInclusive(end, start);
-	const endOfLastWeek = moment(start).clone().subtract(1, 'days').toDate();
-	const startOfLastWeek = moment(endOfLastWeek).clone().subtract(daysBetweenDates, 'days').toDate();
+	const endOfLastWeek = subDays(start, 1);
+	const startOfLastWeek = subDays(endOfLastWeek, daysBetweenDates);
 	const today = convertDateToInt(end);
-	const yesterday = convertDateToInt(moment(end).clone().subtract(1, 'days').toDate());
+	const yesterday = convertDateToInt(subDays(end, 1));
 	const currentPeriodUsers = await Analytics.getTotalOfRegisteredUsersByDate({
 		start: convertDateToInt(start),
 		end: convertDateToInt(end),
@@ -85,19 +85,12 @@ export const findWeeklyUsersRegisteredData = async ({
 	};
 };
 
-const createDestructuredDate = (
-	input: moment.MomentInput,
-): {
-	year: number;
-	month: number;
-	day: number;
-} => {
-	const date = moment(input);
-
+const createDestructuredDate = (input: Date | number): { year: number; month: number; day: number } => {
+	const date = new Date(input);
 	return {
-		year: date.year(),
-		month: date.month() + 1,
-		day: date.date(),
+		year: date.getFullYear(),
+		month: date.getMonth() + 1,
+		day: date.getDate(),
 	};
 };
 
@@ -133,7 +126,7 @@ export const findBusiestsChatsInADayByHours = async ({
 	}[];
 }> => ({
 	hours: await Sessions.getBusiestTimeWithinHoursPeriod({
-		start: moment(start).subtract(24, 'hours').toDate(),
+		start: subHours(start, 24),
 		end: start,
 		groupSize: 2,
 	}),
@@ -152,7 +145,7 @@ export const findBusiestsChatsWithinAWeek = async ({
 	}[];
 }> => ({
 	month: await Sessions.getTotalOfSessionsByDayBetweenDates({
-		start: createDestructuredDate(moment(start).subtract(7, 'days')),
+		start: createDestructuredDate(subDays(start, 7)),
 		end: createDestructuredDate(start),
 	}),
 });

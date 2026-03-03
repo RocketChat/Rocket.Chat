@@ -1,13 +1,16 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import moment from 'moment';
+import { endOfDay, subWeeks } from 'date-fns';
 
 type UseWeeklyChatActivityOptions = {
 	displacement: number;
 	utc: boolean;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+function endOfDayUTC(d: Date): Date {
+	return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999));
+}
+
 export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivityOptions) => {
 	const getWeeklyChatActivity = useEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/weekly-data');
 
@@ -15,7 +18,8 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 		queryKey: ['admin/engagement-dashboard/users/weekly-chat-activity', { displacement, utc }],
 
 		queryFn: async () => {
-			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'weeks').toDate();
+			const end = utc ? endOfDayUTC(new Date()) : endOfDay(new Date());
+			const day = subWeeks(end, displacement);
 
 			const response = await getWeeklyChatActivity({
 				start: day.toISOString(),

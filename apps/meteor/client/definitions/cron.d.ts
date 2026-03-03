@@ -1,3 +1,3 @@
-declare module 'cron' {
-	export declare function sendAt(precision: string): Moment;
-}
+// declare module 'cron' {
+// 	export declare function sendAt(precision: string): Moment;
+// }

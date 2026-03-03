@@ -1,13 +1,16 @@
-import moment from 'moment-timezone';
+import { startOfDay, addHours, format } from 'date-fns';
 
 export const getMomentChartLabelsAndData = (timestamp = Date.now()) => {
-	const timingLabels = [];
-	const initData = [];
-	const today = moment(timestamp).startOf('day');
-	for (let m = today; m.diff(moment(timestamp), 'hours') < 0; m.add(1, 'hours')) {
-		const n = moment(m).add(1, 'hours');
-		timingLabels.push(`${m.format('hA')}-${n.format('hA')}`);
+	const timingLabels: string[] = [];
+	const initData: number[] = [];
+	const now = new Date(timestamp);
+	let m = startOfDay(timestamp);
+
+	while (m < now) {
+		const n = addHours(m, 1);
+		timingLabels.push(`${format(m, 'ha')}-${format(n, 'ha')}`);
 		initData.push(0);
+		m = n;
 	}
 
 	return [timingLabels, initData] as const;

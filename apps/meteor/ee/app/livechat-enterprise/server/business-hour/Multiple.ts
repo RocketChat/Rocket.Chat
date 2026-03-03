@@ -2,7 +2,6 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { AtLeast, ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
-import moment from 'moment';
 
 import { openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
@@ -41,8 +40,7 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 			// TODO is this required? since we're calling `this.openBusinessHour(businessHour)` later on, which will call this again (kinda)
 			await makeAgentsUnavailableBasedOnBusinessHour();
 
-			const currentTime = moment.utc(moment().utc().format('dddd:HH:mm'), 'dddd:HH:mm');
-			const day = currentTime.format('dddd');
+			const day = new Date().toLocaleString('en-US', { timeZone: 'UTC', weekday: 'long' });
 			const activeBusinessHours = await this.BusinessHourRepository.findActiveAndOpenBusinessHoursByDay(day, {
 				projection: {
 					workHours: 1,
@@ -246,8 +244,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	private async applyAnyOpenBusinessHourToAgent(agentId: string): Promise<void> {
-		const currentTime = moment().utc();
-		const day = currentTime.format('dddd');
+		const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		const day = DAY_NAMES[new Date().getUTCDay()];
 		const allActiveBusinessHoursForEntireWeek = await this.BusinessHourRepository.findActiveBusinessHours({
 			projection: {
 				workHours: 1,
