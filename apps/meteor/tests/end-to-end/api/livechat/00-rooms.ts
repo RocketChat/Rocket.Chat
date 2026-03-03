@@ -170,8 +170,7 @@ describe('LIVECHAT - rooms', () => {
 				await Promise.all(
 					[...roomsToClose].map((roomId) =>
 						closeOmnichannelRoom(roomId)
-							.then(() => roomsToClose.delete(roomId))
-							.catch(() => {}),
+							.then(() => roomsToClose.delete(roomId)),
 					),
 				);
 				await deleteVisitor(visitor.token);
