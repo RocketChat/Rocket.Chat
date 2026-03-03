@@ -1,10 +1,7 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-const ACTION_STRIP_HEIGHT = 32;
-const ACTION_STRIP_MARGIN = 8;
-
-export const ACTION_STRIP_TOTAL_HEIGHT = ACTION_STRIP_HEIGHT + ACTION_STRIP_MARGIN * 2;
+export const ACTION_STRIP_TOTAL_HEIGHT = 56;
 
 type ActionStripProps = {
 	children: ReactNode;
@@ -23,6 +20,10 @@ const ActionStrip = ({ children, leftSlot, rightSlot }: ActionStripProps) => {
 			w='full'
 			alignItems='center'
 			height={ACTION_STRIP_TOTAL_HEIGHT}
+			bg='surface-light'
+			borderBlock='1px solid'
+			borderColor='stroke-extra-light'
+			paddingInline={20}
 		>
 			{leftSlot}
 			<ButtonGroup large align='center' style={{ flexGrow: 2, justifySelf: 'center' }}>

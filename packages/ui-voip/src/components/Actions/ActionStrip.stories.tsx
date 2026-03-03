@@ -6,6 +6,8 @@ import ActionStrip from './ActionStrip';
 import ActionButton from '../ActionButton';
 import Timer from '../Timer';
 import ToggleButton from '../ToggleButton';
+import ActionToggleChat from './ActionToggleChat';
+import { useState } from 'react';
 
 export default {
 	title: 'V2/Components/Actions/ActionStrip',
@@ -15,10 +17,10 @@ export default {
 			.withTranslations('en', 'core', {
 				Mute: 'Mute',
 				Unmute: 'Unmute',
-				Screen_sharing: 'Screen sharing',
-				Screen_sharing_off: 'Screen sharing off',
 				Hold: 'Hold',
 				Resume: 'Resume',
+				Show_chat: 'Show chat',
+				Hide_chat: 'Hide chat',
 			})
 			.buildStoryDecorator(),
 	],
@@ -28,8 +30,9 @@ const NOOP = () => undefined;
 
 export const ActionStripStory: StoryFn<typeof ActionStrip> = (args) => {
 	const { t } = useTranslation();
+	const [pressed, setPressed] = useState(false);
 	return (
-		<ActionStrip leftSlot={<Timer />} rightSlot='test' {...args}>
+		<ActionStrip leftSlot={<Timer />} rightSlot={<ActionToggleChat pressed={pressed} onClick={() => setPressed(!pressed)} />} {...args}>
 			<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={false} onToggle={NOOP} />
 			<ToggleButton
 				label={t('Screen_sharing')}
