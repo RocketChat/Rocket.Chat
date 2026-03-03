@@ -40,9 +40,9 @@ class TestParser extends UiKitParserModal<unknown> {
 			props: {
 				key: index,
 				children: [
-					...(element.text ? [this.text(element.text, BlockContext.SECTION, key++)] : []),
-					...(element.fields?.map((field: any) => this.text(field, BlockContext.SECTION, key++)) ?? []),
-					...(element.accessory ? [this.renderAccessories(element.accessory, BlockContext.SECTION, undefined, key++)] : []),
+					...(element.text ? [this.renderTextObject(element.text, key++, BlockContext.SECTION)] : []),
+					...(element.fields?.map((field: any) => this.renderTextObject(field, key++, BlockContext.SECTION)) ?? []),
+					...(element.accessory ? [this.renderSectionAccessoryBlockElement(element.accessory, key++)] : []),
 				],
 				block: context === BlockContext.BLOCK,
 			},
@@ -53,7 +53,7 @@ class TestParser extends UiKitParserModal<unknown> {
 		component: 'actions',
 		props: {
 			key: index,
-			children: element.elements.map((element: any, key: number) => this.renderActions(element, BlockContext.ACTION, undefined, key)),
+			children: element.elements.map((element: any, key: number) => this.renderActionsBlockElement(element, key)),
 			block: context === BlockContext.BLOCK,
 		},
 	});
@@ -62,7 +62,7 @@ class TestParser extends UiKitParserModal<unknown> {
 		component: 'context',
 		props: {
 			key: index,
-			children: element.elements.map((element: any, key: number) => this.renderContext(element, BlockContext.CONTEXT, undefined, key)),
+			children: element.elements.map((element: any, key: number) => this.renderContextBlockElement(element, key)),
 			block: context === BlockContext.BLOCK,
 		},
 	});
@@ -72,9 +72,9 @@ class TestParser extends UiKitParserModal<unknown> {
 		props: {
 			key: index,
 			children: [
-				this.plainText(element.label, BlockContext.FORM, 0),
-				this.renderInputs(element.element, BlockContext.FORM, undefined, 1),
-				...(element.hint ? [this.plainText(element.hint, BlockContext.FORM, 2)] : []),
+				this.plain_text(element.label, BlockContext.FORM, 0),
+				this.renderInputBlockElement(element.element, 1),
+				...(element.hint ? [this.plain_text(element.hint, BlockContext.FORM, 2)] : []),
 			],
 			block: context === BlockContext.BLOCK,
 		},
@@ -84,7 +84,7 @@ class TestParser extends UiKitParserModal<unknown> {
 		component: 'button',
 		props: {
 			key: index,
-			children: element.text ? [this.text(element.text, BlockContext.SECTION, 0)] : [],
+			children: element.text ? [this.renderTextObject(element.text, 0, BlockContext.SECTION)] : [],
 			...(element.url && { href: element.url }),
 			...(element.value && { value: element.value }),
 			variant: element.style ?? 'normal',
@@ -109,7 +109,7 @@ class TestParser extends UiKitParserModal<unknown> {
 								block: false,
 							},
 						},
-						...(element.title ? [this.plainText(element.title, -1, key++)] : []),
+						...(element.title ? [this.plain_text(element.title, BlockContext.NONE, key++)] : []),
 					],
 					block: true,
 				},
@@ -135,7 +135,10 @@ class TestParser extends UiKitParserModal<unknown> {
 				component: 'menu-item',
 				props: {
 					key,
-					children: [this.text(option.text, -1, 0), ...(option.description ? [this.plainText(option.description, -1, 1)] : [])],
+					children: [
+						this.renderTextObject(option.text, 0),
+						...(option.description ? [this.plain_text(option.description, BlockContext.NONE, 1)] : []),
+					],
 					value: option.value,
 					...(option.url && { url: option.url }),
 				},
@@ -143,33 +146,33 @@ class TestParser extends UiKitParserModal<unknown> {
 		},
 	});
 
-	datePicker = (element: any, _context: any, index: any): any => ({
+	datepicker = (element: any, _context: any, index: any): any => ({
 		component: 'input',
 		props: {
 			key: index,
 			type: 'date',
 			...(element.placeholder && {
-				placeholder: this.text(element.placeholder, -1, 0),
+				placeholder: this.renderTextObject(element.placeholder, 0),
 			}),
 			...(element.initialDate && { defaultValue: element.initialDate }),
 		},
 	});
 
-	staticSelect = (element: any, _context: any, index: any): any => ({
+	static_select = (element: any, _context: any, index: any): any => ({
 		component: 'select',
 		props: {
 			key: index,
 			...(element.placeholder && {
-				placeholder: this.text(element.placeholder, -1, 0),
+				placeholder: this.renderTextObject(element.placeholder, 0),
 			}),
 			children: element.options.map((option: any, key: any) => ({
 				component: 'option',
 				props: {
 					key,
-					children: this.text(option.text, -1, 0),
+					children: this.renderTextObject(option.text, 0),
 					value: option.value,
 					...(option.description && {
-						description: this.text(option.description, -1, 0),
+						description: this.renderTextObject(option.description, 0),
 					}),
 				},
 			})),
@@ -179,22 +182,22 @@ class TestParser extends UiKitParserModal<unknown> {
 		},
 	});
 
-	multiStaticSelect = (element: any, _context: any, index: any): any => ({
+	multi_static_select = (element: any, _context: any, index: any): any => ({
 		component: 'select',
 		props: {
 			key: index,
 			...(element.placeholder && {
-				placeholder: this.text(element.placeholder, -1, 0),
+				placeholder: this.renderTextObject(element.placeholder, 0),
 			}),
 			multiple: true,
 			children: element.options.map((option: any, key: any) => ({
 				component: 'option',
 				props: {
 					key,
-					children: this.text(option.text, -1, 0),
+					children: this.renderTextObject(option.text, 0),
 					value: option.value,
 					...(option.description && {
-						description: this.text(option.description, -1, 0),
+						description: this.renderTextObject(option.description, 0),
 					}),
 				},
 			})),
@@ -206,13 +209,13 @@ class TestParser extends UiKitParserModal<unknown> {
 		},
 	});
 
-	plainInput = (element: any, _context: any, index: any): any => ({
+	plain_text_input = (element: any, _context: any, index: any): any => ({
 		component: 'input',
 		props: {
 			key: index,
 			type: 'text',
 			...(element.placeholder && {
-				placeholder: this.plainText(element.placeholder, -1, 0),
+				placeholder: this.plain_text(element.placeholder, BlockContext.NONE, 0),
 			}),
 			...(element.initialValue && { defaultValue: element.initialValue }),
 			multiline: element.multiline ?? false,
@@ -225,7 +228,7 @@ class TestParser extends UiKitParserModal<unknown> {
 		},
 	});
 
-	linearScale = ({ minValue = 0, maxValue = 10 }: any, _context: any, index: any): any => ({
+	linear_scale = ({ minValue = 0, maxValue = 10 }: any, _context: any, index: any): any => ({
 		component: 'linear-scale',
 		props: {
 			key: index,
@@ -234,13 +237,12 @@ class TestParser extends UiKitParserModal<unknown> {
 				props: {
 					key,
 					children: [
-						this.text(
+						this.renderTextObject(
 							{
 								type: 'plain_text',
 								text: String(minValue + key),
 								emoji: true,
 							} as PlainText,
-							-1,
 							0,
 						),
 					],

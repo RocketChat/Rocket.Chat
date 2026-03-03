@@ -6,9 +6,9 @@ import type { ContextBlock } from './layout/ContextBlock';
 
 export const isContextBlockElement = (block: TextObject | BlockElement): block is ContextBlock['elements'][number] => {
 	switch (block.type as ContextBlock['elements'][number]['type']) {
-		case BlockElementType.IMAGE:
-		case TextObjectType.PLAIN_TEXT:
-		case TextObjectType.MARKDOWN:
+		case `${BlockElementType.IMAGE}`:
+		case `${TextObjectType.PLAIN_TEXT}`:
+		case `${TextObjectType.MRKDWN}`:
 			return true;
 
 		default:
