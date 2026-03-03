@@ -45,10 +45,17 @@ export class MediaStreamTrackWrapper {
 
 	private endedIntervalHandler: ReturnType<typeof setInterval> | null = null;
 
+	private cleared = false;
+
+	private _onTrackMute: () => void;
+
+	private _onTrackUnmute: () => void;
+
+	private _onTrackEnded: () => void;
+
 	constructor(public readonly track: MediaStreamTrack) {
 		this.emitter = new Emitter();
 		this.muteTriggered = track.muted ?? false;
-		this.configureEvents();
 
 		this.endedIntervalHandler = setInterval(() => {
 			if (this.endedTriggered || this.track.readyState !== 'ended') {
@@ -57,6 +64,24 @@ export class MediaStreamTrackWrapper {
 
 			this.setEnded();
 		}, ENDED_INTERVAL);
+
+		this._onTrackMute = () => this.onTrackMute();
+		this._onTrackUnmute = () => this.onTrackUnmute();
+		this._onTrackEnded = () => this.setEnded();
+
+		this.track.addEventListener('mute', this._onTrackMute);
+		this.track.addEventListener('unmute', this._onTrackUnmute);
+		this.track.addEventListener('ended', this._onTrackEnded);
+	}
+
+	public clear() {
+		this.cleared = true;
+		this.clearMuteTimeout();
+		this.clearEndedInterval();
+
+		this.track.removeEventListener('mute', this._onTrackMute);
+		this.track.removeEventListener('unmute', this._onTrackUnmute);
+		this.track.removeEventListener('ended', this._onTrackEnded);
 	}
 
 	private setMuted(muted: boolean) {
@@ -84,29 +109,26 @@ export class MediaStreamTrackWrapper {
 		this.emitter.emit('ended');
 	}
 
-	configureEvents() {
-		this.track.addEventListener('mute', () => {
-			this.clearMuteTimeout();
+	private onTrackMute() {
+		if (this.cleared) {
+			return;
+		}
+		this.clearMuteTimeout();
 
-			this.muteTimeoutHandler = setTimeout(() => {
-				this.setMuted(true);
-			}, MUTE_DELAY);
-		});
-
-		this.track.addEventListener('unmute', () => {
-			this.clearMuteTimeout();
-
-			if (this.muteTriggered) {
-				this.setMuted(false);
-			}
-		});
-
-		this.track.addEventListener('ended', () => {
-			this.setEnded();
-		});
+		this.muteTimeoutHandler = setTimeout(() => {
+			this.setMuted(true);
+		}, MUTE_DELAY);
 	}
 
-	clearMuteTimeout() {
+	private onTrackUnmute() {
+		this.clearMuteTimeout();
+
+		if (this.muteTriggered) {
+			this.setMuted(false);
+		}
+	}
+
+	private clearMuteTimeout() {
 		if (!this.muteTimeoutHandler) {
 			return;
 		}
@@ -115,7 +137,7 @@ export class MediaStreamTrackWrapper {
 		this.muteTimeoutHandler = null;
 	}
 
-	clearEndedInterval() {
+	private clearEndedInterval() {
 		if (!this.endedIntervalHandler) {
 			return;
 		}

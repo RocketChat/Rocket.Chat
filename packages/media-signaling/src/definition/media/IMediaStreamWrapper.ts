@@ -36,6 +36,17 @@ export interface IMediaStreamWrapper {
 	readonly active: boolean;
 
 	/**
+	 * The audio level of the current audio track: A number between 0 and 1 (linear), where 0 represents silence, and 1.0 represents maximum level
+	 *
+	 * Will be zero if the browser doesn't provide this information:
+	 *
+	 * Chrome: Provides audio level for both tracks
+	 * Firefox: Provides audio level for remote track, but not for local track
+	 * Safari: Doesn't provide any audio level
+	 **/
+	readonly audioLevel: number;
+
+	/**
 	 * Indicates if there's any track on this stream that is receiving or may receive audio
 	 **/
 	hasAudio(): boolean;
@@ -48,7 +59,7 @@ export interface IMediaStreamWrapper {
 	/**
 	 * indicates if the audio track is not receiving audio from the system or network; beyond what the rocket.chat client can control
 	 * */
-	isAudioMuted(): boolean;
+	isAudioMutedBySystem(): boolean;
 
 	/**
 	 * indicates if the audio track is enabled by the rocket.chat client (aka not muted by the user nor placed on hold)

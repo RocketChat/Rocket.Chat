@@ -17,10 +17,10 @@ import type {
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
+import type { MediaStreamIdentification, IMediaStreamWrapper } from '../definition/media';
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { isPendingState } from './services/states';
 import { serializeError } from './utils/serializeError';
-import type { IMediaStreamWrapper } from '../definition/media/IMediaStreamWrapper';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
@@ -205,14 +205,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	private receivedRemoteSdp: boolean;
 
 	private enabledFeatures: CallFeature[] | null;
-
-	public get audioLevel(): number {
-		return this.webrtcProcessor?.audioLevel || 0;
-	}
-
-	public get localAudioLevel(): number {
-		return this.webrtcProcessor?.localAudioLevel || 0;
-	}
 
 	private _flags: CallFlag[];
 
@@ -1016,7 +1008,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.updateClientState();
 	}
 
-	protected getLocalStreamIds() {
+	protected getLocalStreamIds(): MediaStreamIdentification[] {
 		return this.webrtcProcessor?.getLocalStreamIds() || [];
 	}
 

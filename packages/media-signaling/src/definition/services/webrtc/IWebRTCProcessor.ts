@@ -43,9 +43,6 @@ export interface IWebRTCProcessor extends IServiceProcessor<WebRTCInternalStateM
 	waitForIceGathering(): Promise<void>;
 	getLocalDescription(): RTCSessionDescriptionInit | null;
 
-	audioLevel: number;
-	localAudioLevel: number;
-
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
 	isRemoteHeld(): boolean;
 	isRemoteMute(): boolean;
