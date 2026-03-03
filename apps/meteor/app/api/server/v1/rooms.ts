@@ -306,29 +306,53 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.saveNotification',
-	{ authRequired: true },
-	{
-		async post() {
-			const { roomId, notifications } = this.bodyParams;
-
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
-
-			if (!notifications || Object.keys(notifications).length === 0) {
-				return API.v1.failure("The 'notifications' param is required");
-			}
-
-			await Promise.all(
-				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
-					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
-				),
-			);
-
-			return API.v1.success();
+const saveNotificationBodySchema = ajv.compile<{
+	roomId: string;
+	notifications: Record<string, string>;
+}>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string', minLength: 1 },
+		notifications: {
+			type: 'object',
+			minProperties: 1,
+			additionalProperties: { type: 'string' },
 		},
+	},
+	required: ['roomId', 'notifications'],
+	additionalProperties: false,
+});
+
+const saveNotificationResponseSchema = ajv.compile({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const roomsSaveNotificationEndpoint = API.v1.post(
+	'rooms.saveNotification',
+	{
+		authRequired: true,
+		body: saveNotificationBodySchema,
+		response: {
+			200: saveNotificationResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { roomId, notifications } = this.bodyParams;
+
+		await Promise.all(
+			Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+				saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
+			),
+		);
+
+		return API.v1.success({ success: true });
 	},
 );
 
@@ -1213,7 +1237,8 @@ export const roomEndpoints = API.v1
 
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
+	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

@@ -176,6 +176,25 @@ function buildIssueBody(todo: TodoItem, owner: string, repo: string, sha: string
 	return lines.join('\n');
 }
 
+function buildIssueBodyFromGroup(todos: TodoItem[], owner: string, repo: string, sha: string): string {
+	const bodies = [...new Set(todos.map((t) => t.body).filter(Boolean))] as string[];
+	const locationLines = todos.map((todo) => {
+		const blobUrl = `https://github.com/${owner}/${repo}/blob/${sha}/${encodeURI(todo.filename)}#L${todo.line}-L${todo.line + BLOB_LINES}`;
+		return `- [\`${todo.filename}#L${todo.line}\`](${blobUrl})`;
+	});
+	const lines = [
+		bodies.join('\n\n') || '',
+		'',
+		`<!-- todo-issue -->`,
+		`📝 Found in ${todos.length} location(s):`,
+		'',
+		...locationLines,
+		'',
+		`Commit: ${sha}`,
+	];
+	return lines.join('\n');
+}
+
 async function ensureLabelExists(owner: string, repo: string, label: string, token: string): Promise<void> {
 	try {
 		await githubRequest(`/repos/${owner}/${repo}/labels`, token, 'POST', {
@@ -187,14 +206,25 @@ async function ensureLabelExists(owner: string, repo: string, label: string, tok
 	}
 }
 
-export async function createIssue(todo: TodoItem, config: Config, sha: string): Promise<void> {
+function mergeTodoGroup(todos: TodoItem[]): TodoItem {
+	const first = todos[0];
+	const labels = [...new Set(todos.flatMap((t) => t.labels))];
+	const assignees = [...new Set(todos.flatMap((t) => t.assignees))];
+	return { ...first, labels, assignees };
+}
+
+export async function createIssue(todoOrGroup: TodoItem | TodoItem[], config: Config, sha: string): Promise<void> {
+	const group = Array.isArray(todoOrGroup) ? todoOrGroup : [todoOrGroup];
+	const todo = mergeTodoGroup(group);
+
 	for (const label of todo.labels) {
 		await ensureLabelExists(config.owner, config.repo, label, config.token);
 	}
 
-	const body = buildIssueBody(todo, config.owner, config.repo, sha);
+	const body = group.length > 1 ? buildIssueBodyFromGroup(group, config.owner, config.repo, sha) : buildIssueBody(todo, config.owner, config.repo, sha);
 
-	console.log(`[CREATE] "${todo.title}" (${todo.filename}#L${todo.line})`);
+	const locations = group.map((t) => `${t.filename}#L${t.line}`).join(', ');
+	console.log(`[CREATE] "${todo.title}" (${locations})`);
 
 	const payload: Record<string, unknown> = {
 		title: todo.title,
