@@ -36,10 +36,43 @@ import { getUserInfo } from '../helpers/getUserInfo';
 
 /**
  * --------------------------------
+ * Types and Schemas
+ * --------------------------------
+ */
+
+// Keys allowed in fields query
+type Keys =
+  | 'name' | 'username' | 'nickname' | 'emails' | 'status' | 'statusDefault'
+  | 'statusText' | 'statusConnection' | 'bio' | 'avatarOrigin' | 'utcOffset'
+  | 'language' | 'settings' | 'idleTimeLimit' | 'roles' | 'active' | 'defaultRoom'
+  | 'customFields' | 'requirePasswordChange' | 'requirePasswordChangeReason'
+  | 'services.github' | 'services.gitlab' | 'services.password.bcrypt'
+  | 'services.totp.enabled' | 'services.email2fa.enabled' | 'statusLivechat'
+  | 'banners' | 'oauth.authorizedClients' | '_updatedAt' | 'avatarETag';
+
+// Query params type
+export type MeParams = { fields: Record<Keys, 0> | Record<Keys, 1>; user: IUser };
+
+// AJV validation schema
+const meSchema = {
+  type: 'object',
+  properties: {},
+  additionalProperties: false,
+  required: ['fields', 'user'],
+};
+export const isMeProps = ajv.compile<MeParams>(meSchema);
+
+// Response type
+export type IMeResponse = {
+  success: true;
+} & Awaited<ReturnType<typeof getUserInfo>>;
+
+/**
+ * --------------------------------
  * /api/v1/me endpoint
  * --------------------------------
  */
-const meEndpoints = API.v1.get(
+export const meEndpoints = API.v1.get(
   'me',
   {
     authRequired: true,
@@ -47,17 +80,17 @@ const meEndpoints = API.v1.get(
       401: validateUnauthorizedErrorResponse,
       200: {
         allOf: [
-    		{ $ref: '#/components/schemas/ApiSuccessV1' },
-    		{ $ref: '#/components/schemas/IUser' },
-  		],
+          { $ref: '#/components/schemas/ApiSuccessV1' },
+          { $ref: '#/components/schemas/IUser' },
+        ],
       },
     },
   },
-  async function action() {
-    const userFields = { ...getBaseUserFields(), services: 1 };
-    const user = await Users.findOneById(this.userId, { projection: userFields });
+async function action() {
+	const userFields = { ...getBaseUserFields(), services: 1 };
+    const user = await Users.findOneById(this.userId!, { projection: userFields });
 
-	if (!user) {
+    if (!user) {
       throw new Meteor.Error('error-invalid-user', 'User not found');
     }
 
