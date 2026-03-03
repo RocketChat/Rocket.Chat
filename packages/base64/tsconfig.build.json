@@ -1,12 +1,13 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"outDir": "dist",
-		"target": "ES2015",
-		"module": "ESNext",
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"module": "esnext",
 		"declaration": true,
 		"declarationMap": true,
-		"sourceMap": true,
+		"sourceMap": true
 	},
+	"include": ["./src"],
 	"exclude": ["**/*.spec.ts"]
 }

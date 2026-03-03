@@ -1,8 +1,6 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"skipLibCheck": true,
 		"noEmit": true
-	},
-	"exclude": [ "**/dist/**", "**/node_modules/**"]
+	}
 }

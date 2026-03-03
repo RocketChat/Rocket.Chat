@@ -1,12 +1,13 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"outDir": "dist",
-		"target": "ES2015",
-		"module": "commonjs",
 		"declaration": true,
 		"declarationMap": true,
+		"outDir": "dist",
 		"sourceMap": true,
+
+		"rootDir": "./src"
 	},
+	"include": ["./src"],
 	"exclude": ["**/*.spec.ts"]
 }

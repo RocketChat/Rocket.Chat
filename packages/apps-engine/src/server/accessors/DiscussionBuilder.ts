@@ -6,7 +6,7 @@ import { RoomType } from '../../definition/rooms';
 import type { IRoom } from '../../definition/rooms/IRoom';
 
 export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder {
-	public kind: RocketChatAssociationModel.DISCUSSION;
+	public declare kind: RocketChatAssociationModel.DISCUSSION;
 
 	private reply: string;
 

@@ -1,9 +1,8 @@
 {
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
-		"rootDir": "./src",
 		"strictPropertyInitialization": false,
-		"experimentalDecorators": true,
+		"experimentalDecorators": true
 	},
-	"include": ["./src/**/*"],
+	"include": ["./src"]
 }

@@ -1,9 +1,7 @@
 {
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
-		"noEmit": false,
+		"noEmit": false
 	},
-	"exclude": [
-		"./ee/server/services/**"
-	]
+	"exclude": ["./ee/server/services/**"]
 }

@@ -1,6 +1,14 @@
 {
 	"presets": [
-		"@babel/preset-env",
+		[
+			"@babel/preset-env",
+			{
+				"bugfixes": true,
+				"modules": false,
+				"targets": "last 2 versions, firefox ESR, node 22",
+				"exclude": ["@babel/plugin-transform-object-rest-spread"]
+			}
+		],
 		"@babel/preset-react",
 		[
 			"@babel/preset-typescript",
@@ -10,13 +18,13 @@
 		]
 	],
 	"plugins": [
-    [
-      "@babel/plugin-transform-react-jsx",
-      {
-        "runtime": "automatic"
-      }
-    ]
-  ],
+		[
+			"@babel/plugin-transform-react-jsx",
+			{
+				"runtime": "automatic"
+			}
+		]
+	],
 	"env": {
 		"coverage": {
 			"plugins": [

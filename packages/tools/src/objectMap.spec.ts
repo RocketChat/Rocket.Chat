@@ -5,13 +5,13 @@ import { objectMap } from './objectMap';
 describe('objectMap', () => {
 	it('should map a simple object non-recursively', () => {
 		const input = { a: 1, b: 2, c: 3 };
-		const callback = ({ key, value }) => ({ key: key.toUpperCase(), value: value * 2 });
+		const callback = ({ key, value }: { key: string; value: any }) => ({ key: key.toUpperCase(), value: value * 2 });
 		const expected = { A: 2, B: 4, C: 6 };
 		expect(objectMap(input, callback)).to.deep.equal(expected);
 	});
 	it('should filter out undefined results from callback', () => {
 		const input = { a: 1, b: 2, c: 3 };
-		const callback = ({ key, value }) => (value > 1 ? { key, value } : undefined);
+		const callback = ({ key, value }: { key: string; value: any }) => (value > 1 ? { key, value } : undefined);
 		const expected = { b: 2, c: 3 };
 		expect(objectMap(input, callback)).to.deep.equal(expected);
 	});
@@ -25,7 +25,10 @@ describe('objectMap', () => {
 				},
 			},
 		};
-		const callback = ({ key, value }) => ({ key: `mapped_${key}`, value: typeof value === 'number' ? value * 10 : value });
+		const callback = ({ key, value }: { key: string | symbol | number; value: any }) => ({
+			key: `mapped_${String(key)}`,
+			value: typeof value === 'number' ? value * 10 : value,
+		});
 		const expected = {
 			mapped_a: 10,
 			mapped_b: {
@@ -39,7 +42,7 @@ describe('objectMap', () => {
 	});
 	it('should handle an empty object', () => {
 		const input = {};
-		const callback = ({ key, value }) => ({ key: `mapped_${key}`, value });
+		const callback = ({ key, value }: { key: string; value: any }) => ({ key: `mapped_${key}`, value });
 		const expected = {};
 		expect(objectMap(input, callback)).to.deep.equal(expected);
 	});
@@ -50,7 +53,10 @@ describe('objectMap', () => {
 			c: true,
 			d: null,
 		};
-		const callback = ({ key, value }) => ({ key: key.toUpperCase(), value: typeof value === 'number' ? value * 2 : value });
+		const callback = ({ key, value }: { key: string; value: any }) => ({
+			key: key.toUpperCase(),
+			value: typeof value === 'number' ? value * 2 : value,
+		});
 		const expected = {
 			A: 2,
 			B: 'string',
@@ -70,7 +76,7 @@ describe('objectMap', () => {
 				},
 			},
 		};
-		const callback = ({ key, value }) => ({ key: key.toUpperCase(), value });
+		const callback = ({ key, value }: { key: string | symbol | number; value: any }) => ({ key: String(key).toUpperCase(), value });
 		const expected = {
 			A: 1,
 			B: {
@@ -86,7 +92,7 @@ describe('objectMap', () => {
 	it('should not modify the original object', () => {
 		const input = { a: 1, b: 2 };
 		const original = { ...input };
-		const callback = ({ key, value }) => ({ key, value: value * 2 });
+		const callback = ({ key, value }: { key: string; value: any }) => ({ key, value: value * 2 });
 		objectMap(input, callback);
 		expect(input).to.deep.equal(original);
 	});

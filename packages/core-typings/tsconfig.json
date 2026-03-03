@@ -7,5 +7,5 @@
 		"outDir": "./dist",
 		"plugins": [{ "transform": "typia/lib/transform" }]
 	},
-	"include": ["./src/**/*"]
+	"include": ["./src"]
 }
