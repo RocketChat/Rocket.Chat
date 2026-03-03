@@ -42,9 +42,7 @@ export async function closeRoom(params: CloseRoomParams, attempts = 2): Promise<
 		removedInquiryObj = removedInquiry;
 	} catch (e) {
 		logger.error({ err: e, msg: 'Failed to close room', afterAttempts: attempts });
-		if (session.inTransaction()) {
-			await session.abortTransaction();
-		}
+		await session.abortTransaction();
 		// Dont propagate transaction errors
 		if (shouldRetryTransaction(e)) {
 			if (attempts > 0) {

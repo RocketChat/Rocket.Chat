@@ -65,16 +65,14 @@ export function proxify<T>(namespace: string): T {
  */
 export async function ensureAllIndexes(): Promise<void> {
 	const names = new Set([...lazyModels.keys(), ...models.keys()]);
-	await Promise.all(
-		Array.from(names).map(async (name) => {
-			try {
-				const model = proxify(name) as IBaseModel<any, any, any> & { createIndexes?: () => Promise<void> };
-				if (typeof model.createIndexes === 'function') {
-					await model.createIndexes();
-				}
-			} catch (err) {
-				console.warn(`ensureAllIndexes: failed for model ${name}`, err);
+	for (const name of names) {
+		try {
+			const model = proxify(name) as IBaseModel<any, any, any> & { createIndexes?: () => Promise<void> };
+			if (typeof model.createIndexes === 'function') {
+				await model.createIndexes();
 			}
-		}),
-	);
+		} catch (err) {
+			console.warn(`ensureAllIndexes: failed for model ${name}`, err);
+		}
+	}
 }
