@@ -40,8 +40,7 @@ export const useGetAutocompleteOptions = (instance: MediaSignalingSession | unde
 			return (
 				items.map((user) => {
 					const label = user.name || user.username;
-					// TODO: This endpoint does not provide the extension number, which is necessary to show in the UI.
-					const identifier = user.username !== label ? user.username : undefined;
+					const identifier = user.freeSwitchExtension || (user.username !== label ? user.username : undefined);
 
 					return {
 						value: user._id,
