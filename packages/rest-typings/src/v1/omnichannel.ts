@@ -2854,14 +2854,14 @@ type POSTLivechatRoomCloseByUserParams = {
 	generateTranscriptPdf?: boolean;
 	forceClose?: boolean;
 	transcriptEmail?:
-	| {
-		// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
-		sendToVisitor: false;
-	}
-	| {
-		sendToVisitor: true;
-		requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
-	};
+		| {
+				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
+				sendToVisitor: false;
+		  }
+		| {
+				sendToVisitor: true;
+				requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
+		  };
 };
 
 const POSTLivechatRoomCloseByUserParamsSchema = {
@@ -4375,8 +4375,8 @@ export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWeb
 
 type POSTLivechatRoomsCloseAll =
 	| {
-		departmentIds?: string[];
-	}
+			departmentIds?: string[];
+	  }
 	| undefined;
 
 const POSTLivechatRoomsCloseAllSchema = {
