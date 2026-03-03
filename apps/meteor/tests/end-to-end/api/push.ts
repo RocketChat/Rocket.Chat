@@ -8,9 +8,46 @@ describe('[Push]', () => {
 	before((done) => getCredentials(done));
 
 	describe('POST [/push.token]', () => {
+		it('should succeed with a valid gcm token', async () => {
+			await request
+				.post(api('push.token'))
+				.set(credentials)
+				.send({
+					type: 'gcm',
+					value: 'token',
+					appName: 'com.example.rocketchat',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('result').and.to.be.an('object');
+				});
+		});
+
+		it('should succeed with a valid apn token', async () => {
+			await request
+				.post(api('push.token'))
+				.set(credentials)
+				.send({
+					type: 'apn',
+					value: 'token',
+					appName: 'com.example.rocketchat',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('result').and.to.be.an('object');
+				});
+		});
+
 		it('should fail if not logged in', async () => {
 			await request
 				.post(api('push.token'))
+				.send({
+					type: 'gcm',
+					value: 'token',
+					appName: 'com.example.rocketchat',
+				})
 				.expect(401)
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
@@ -29,7 +66,8 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-type-param-not-valid');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').that.includes(`must have required property 'type'`);
 				});
 		});
 
@@ -44,7 +82,8 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').that.includes(`must have required property 'value'`);
 				});
 		});
 
@@ -59,7 +98,8 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-appName-param-not-valid');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').that.includes(`must have required property 'appName'`);
 				});
 		});
 
@@ -69,11 +109,14 @@ describe('[Push]', () => {
 				.set(credentials)
 				.send({
 					type: 'unknownPlatform',
+					value: 'token',
+					appName: 'com.example.rocketchat',
 				})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-type-param-not-valid');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').that.includes(`must be equal to one of the allowed values`);
 				});
 		});
 
@@ -89,23 +132,8 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
-				});
-		});
-
-		it('should add a token if valid', async () => {
-			await request
-				.post(api('push.token'))
-				.set(credentials)
-				.send({
-					type: 'gcm',
-					value: 'token',
-					appName: 'com.example.rocketchat',
-				})
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('result').and.to.be.an('object');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').that.includes(`must NOT have fewer than 1 characters`);
 				});
 		});
 	});
@@ -132,7 +160,8 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').that.includes(`must have required property 'token'`);
 				});
 		});
 
@@ -146,7 +175,8 @@ describe('[Push]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-token-param-not-valid');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').that.includes(`must NOT have fewer than 1 characters`);
 				});
 		});
 

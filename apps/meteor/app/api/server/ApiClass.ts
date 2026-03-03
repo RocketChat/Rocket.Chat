@@ -825,13 +825,11 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						this.queryFields = options.queryFields;
 						this.logger = logger;
 
-						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute(this);
-							this.user = user!;
-							this.userId = this.user?._id;
-							const authToken = this.request.headers.get('x-auth-token');
-							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
-						}
+						const user = await api.authenticatedRoute(this);
+						this.user = user!;
+						this.userId = this.user?._id;
+						const authToken = this.request.headers.get('x-auth-token');
+						this.token = Accounts._hashLoginToken(String(authToken))!;
 
 						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
 						const shouldPreventUserRead = !this.user && options.authRequired;
@@ -1089,7 +1087,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 					try {
 						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
-						this.user = await Users.findOne(
+						const user = await Users.findOne(
 							{
 								_id: auth.id,
 							},
@@ -1098,18 +1096,16 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							},
 						);
 
-						if (!this.user) {
+						if (!user) {
 							return self.unauthorized();
 						}
-
-						this.userId = this.user._id;
 
 						return self.success({
 							status: 'success',
 							data: {
-								userId: this.userId,
+								userId: user._id,
 								authToken: auth.token,
-								me: await getUserInfo(this.user || ({} as IUser)),
+								me: await getUserInfo(user || ({} as IUser)),
 							},
 						});
 					} catch (error) {
