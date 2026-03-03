@@ -62,7 +62,7 @@ const categories: BenchCategory[] = [
 			{ name: 'nested', input: '**bold _italic_ and ~~strike~~**' },
 			{ name: 'deep nesting', input: '**bold _italic ~~strike _deep italic_~~_**' },
 			{ name: 'bold + italic mixed', input: '*Bold text* and _italic text_ in a message' },
-			{ name: 'deeply nested', input: '*bold _italic ~strike~ italic_ bold*' },
+			{ name: 'deeply nested', input: '*bold _italic ~~strike~~ italic_ bold*' },
 			{ name: 'multiple', input: '**bold** normal _italic_ normal ~~strike~~ **more bold** _more italic_' },
 		],
 	},
