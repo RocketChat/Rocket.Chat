@@ -1,4 +1,4 @@
-import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
+import type { IMethodConnection, IUser, RequiredField } from '@rocket.chat/core-typings';
 import type { Route, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
@@ -827,7 +827,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 						const user = await api.authenticatedRoute(this);
 
-						const isUserWithUsername = (user: IUser | null): user is Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>> => {
+						const isUserWithUsername = (user: IUser | null): user is RequiredField<IUser, 'username'> => {
 							return user !== null && typeof user === 'object' && 'username' in user && user.username !== undefined;
 						};
 
