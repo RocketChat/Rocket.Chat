@@ -65,6 +65,20 @@ export function proxify<T>(namespace: string): T {
  */
 export async function ensureAllIndexes(): Promise<void> {
 	const names = new Set([...lazyModels.keys(), ...models.keys()]);
+
+	// Ensure trash collection indexes are created first since many models depend on it
+	if (names.has('ITrashModel')) {
+		try {
+			const trashModel = proxify('ITrashModel') as IBaseModel<any, any, any> & { createIndexes?: () => Promise<void> };
+			if (typeof trashModel.createIndexes === 'function') {
+				await trashModel.createIndexes();
+			}
+		} catch (err) {
+			console.warn('ensureAllIndexes: failed to create trash collection indexes', err);
+		}
+		names.delete('ITrashModel');
+	}
+
 	for await (const name of names) {
 		try {
 			const model = proxify(name) as IBaseModel<any, any, any> & { createIndexes?: () => Promise<void> };
