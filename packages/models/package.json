@@ -18,6 +18,7 @@
 		"unit": "jest"
 	},
 	"dependencies": {
+		"@rocket.chat/emitter": "^0.32.0",
 		"@rocket.chat/model-typings": "workspace:~",
 		"@rocket.chat/random": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
