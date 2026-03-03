@@ -85,7 +85,9 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 		this.sessionInstance = new MediaSignalingSession({
 			userId,
-			transport: (signal: ClientMediaSignal) => this.sendSignal(signal),
+			transport: (signal: ClientMediaSignal) => {
+				void this.sendSignal(signal);
+			},
 			processorFactories: {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},

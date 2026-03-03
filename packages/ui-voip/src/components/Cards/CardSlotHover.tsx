@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 type CardSlotHoverProps = {
 	children: ReactNode;
@@ -14,9 +14,11 @@ const styles = css`
 `;
 
 const CardSlotHover = ({ children }: CardSlotHoverProps) => {
-	return <Box is='span' className={['card-slot-hover', styles]}>
-		{children}
-	</Box>;
+	return (
+		<Box is='span' className={['card-slot-hover', styles]}>
+			{children}
+		</Box>
+	);
 };
 
 export default CardSlotHover;

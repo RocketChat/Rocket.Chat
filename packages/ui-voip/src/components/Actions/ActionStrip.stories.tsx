@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ActionStrip from './ActionStrip';
@@ -7,7 +8,6 @@ import ActionButton from '../ActionButton';
 import Timer from '../Timer';
 import ToggleButton from '../ToggleButton';
 import ActionToggleChat from './ActionToggleChat';
-import { useState } from 'react';
 
 export default {
 	title: 'V2/Components/Actions/ActionStrip',

@@ -40,7 +40,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 				return;
 			}
 			const call = instance.getMainCall();
-			if (!call || call.state !== 'ringing') {
+			if (call?.state !== 'ringing') {
 				return;
 			}
 			call.accept();

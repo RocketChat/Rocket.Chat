@@ -49,7 +49,11 @@ export default {
 			variant: index % 2 === 0 ? 'highlighted' : 'default',
 		}),
 		getStreamCardProps: (index: number) => ({
-			children: <Box width='100%' height='100%' minHeight={120}>test</Box>,
+			children: (
+				<Box width='100%' height='100%' minHeight={120}>
+					test
+				</Box>
+			),
 			own: index % 2 === 0,
 			onClickFocusStream: () => undefined,
 			focused: index % 4 === 0,
@@ -89,4 +93,3 @@ export const StreamCardListContainerStory: StoryFn<StoryComponentType> = (args) 
 		</CardListContainer>
 	);
 };
-

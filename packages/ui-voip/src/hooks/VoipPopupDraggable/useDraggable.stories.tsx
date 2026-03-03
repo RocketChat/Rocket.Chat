@@ -328,7 +328,7 @@ export const BoundingBehavior: Story = {
 		await step('should adjust element position when screen is resized and element is cut off', async () => {
 			const handle = await canvas.findByTestId('drag-handle');
 			const draggable = await canvas.findByTestId('draggable-box');
-			const boundingBox = (await canvas.findByTestId('bounding-box')) as HTMLElement;
+			const boundingBox = await canvas.findByTestId('bounding-box');
 
 			const initialRect = boundingBox.getBoundingClientRect();
 
