@@ -132,9 +132,7 @@ export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDis
 export const isPublicRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'c';
 export const isPrivateRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'p';
 
-export const isABACManagedRoom = (
-	room: Partial<IRoom>,
-): room is IRoom & { abacAttributes: IAbacAttributeDefinition[] } =>
+export const isABACManagedRoom = (room: Partial<IRoom>): room is IRoom & { abacAttributes: IAbacAttributeDefinition[] } =>
 	Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
