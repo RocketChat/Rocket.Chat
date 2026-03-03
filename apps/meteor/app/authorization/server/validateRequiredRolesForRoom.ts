@@ -30,10 +30,7 @@ export async function validateRequiredRolesForRoom(
 		throw new Meteor.Error(
 			'error-required-role-missing',
 			'You do not have the required role to join this channel.',
-			{
-				requiredRoles: room.requiredRoles,
-				userRoles,
-			},
+		
 		);
 	}
 }
