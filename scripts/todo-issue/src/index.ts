@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 
-import type { Config } from './types';
+import type { Config, TodoItem } from './types';
 import { extractTodos } from './diff';
 import { matchTodos } from './matcher';
 import { isSimilar } from './similarity';
@@ -72,10 +72,7 @@ async function getDiff(config: Config): Promise<{ diffText: string; resolvedHead
 
 	console.log(`[INFO] Push mode: comparing ${config.baseSha.slice(0, 7)}...${config.headSha.slice(0, 7)}`);
 	return {
-		diffText: await getDiffFromApi(
-			`/repos/${config.owner}/${config.repo}/compare/${config.baseSha}...${config.headSha}`,
-			config.token,
-		),
+		diffText: await getDiffFromApi(`/repos/${config.owner}/${config.repo}/compare/${config.baseSha}...${config.headSha}`, config.token),
 		resolvedHeadSha: config.headSha,
 	};
 }
@@ -101,24 +98,40 @@ async function run(): Promise<void> {
 	const existingIssues = await fetchExistingIssues(config);
 
 	if (config.importAll || config.pathFilter) {
-		const toCreate = todos.filter((t) => t.type === 'add').filter((todo) => {
-			return !existingIssues.find((i) => i.title === todo.title || isSimilar(i.title, todo.title));
-		});
+		const added = todos
+			.filter((t) => t.type === 'add')
+			.filter((todo) => {
+				return !existingIssues.find((i) => i.title === todo.title || isSimilar(i.title, todo.title));
+			});
 
-		console.log(`[INFO] Import: ${toCreate.length} new issues to create`);
+		const byTitle = new Map<string, TodoItem[]>();
+		for (const todo of added) {
+			const list = byTitle.get(todo.title) ?? [];
+			list.push(todo);
+			byTitle.set(todo.title, list);
+		}
 
-		for (const todo of toCreate) {
-			await createIssue(todo, config, resolvedHeadSha);
+		console.log(`[INFO] Import: ${byTitle.size} new issues to create (${added.length} TODOs grouped by title)`);
+
+		for (const group of byTitle.values()) {
+			await createIssue(group, config, resolvedHeadSha);
 		}
 	} else {
 		const { toCreate, toClose, toUpdate, toReference } = matchTodos(todos, existingIssues);
 
+		const createByTitle = new Map<string, TodoItem[]>();
+		for (const todo of toCreate) {
+			const list = createByTitle.get(todo.title) ?? [];
+			list.push(todo);
+			createByTitle.set(todo.title, list);
+		}
+
 		console.log(
-			`[INFO] Actions: ${toCreate.length} create, ${toClose.length} close, ${toUpdate.length} update, ${toReference.length} reference`,
+			`[INFO] Actions: ${createByTitle.size} create, ${toClose.length} close, ${toUpdate.length} update, ${toReference.length} reference`,
 		);
 
-		for (const todo of toCreate) {
-			await createIssue(todo, config, resolvedHeadSha);
+		for (const group of createByTitle.values()) {
+			await createIssue(group, config, resolvedHeadSha);
 		}
 
 		for (const todo of toClose) {
