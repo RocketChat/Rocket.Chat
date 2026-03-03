@@ -25,6 +25,8 @@ test.each([
 	['https://test', [paragraph([plain('https://test')])]],
 	['httpsss://rocket.chat/test', [paragraph([link('httpsss://rocket.chat/test')])]],
 	['https://rocket.chat:3000/test', [paragraph([link('https://rocket.chat:3000/test')])]],
+	['https://rocket.chat:99999', [paragraph([link('https://rocket.chat:99999')])]],
+	['https://rocket.chat:99999/test', [paragraph([link('https://rocket.chat:99999/test')])]],
 	['https://rocket.chat/test?search', [paragraph([link('https://rocket.chat/test?search')])]],
 	['https://rocket.chat/test?search=test', [paragraph([link('https://rocket.chat/test?search=test')])]],
 	['https://rocket.chat', [paragraph([link('https://rocket.chat')])]],
@@ -155,6 +157,11 @@ describe('autoLink helper function', () => {
 		expect(autoLink('https://rocket.chat/test')).toMatchObject(link('https://rocket.chat/test'));
 
 		expect(autoLink('http://rocket.chat/test')).toMatchObject(link('http://rocket.chat/test'));
+	});
+
+	it('should preserve the original protocol for invalid absolute URLs', () => {
+		expect(autoLink('https://rocket.chat:99999')).toMatchObject(link('https://rocket.chat:99999'));
+		expect(autoLink('https://rocket.chat:65536')).toMatchObject(link('https://rocket.chat:65536'));
 	});
 
 	it('should preserve the original protocol even if for custom protocols', () => {

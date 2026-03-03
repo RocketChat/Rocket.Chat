@@ -75,6 +75,8 @@ const isValidLink = (link: string) => {
 	}
 };
 
+const hasAbsoluteSchemePrefix = (src: string) => /^[A-Za-z0-9+-]{1,32}:\/\//.test(src);
+
 export const link = (src: string, label?: Markup[]): Link => ({
 	type: 'LINK',
 	value: { src: plain(src), label: label ?? [plain(src)] },
@@ -92,7 +94,7 @@ export const autoLink = (src: string, customDomains?: string[]) => {
 		return plain(src);
 	}
 
-	const href = isValidLink(src) || src.startsWith('//') ? src : `//${src}`;
+	const href = isValidLink(src) || src.startsWith('//') || hasAbsoluteSchemePrefix(src) ? src : `//${src}`;
 
 	return link(href, [plain(src)]);
 };
