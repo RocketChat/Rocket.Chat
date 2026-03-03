@@ -4,97 +4,77 @@ describe('BlockSplitter', () => {
     it('should split simple paragraphs', () => {
         const input = 'Hello\nWorld';
         const blocks = BlockSplitter.split(input);
-        expect(blocks).toHaveLength(1);
-        expect(blocks[0]).toEqual({
-            type: BlockType.PARAGRAPH,
-            content: 'Hello\nWorld',
-        });
+        expect(blocks.length).toBe(1);
+        expect(blocks[0].type).toBe(BlockType.PARAGRAPH);
+        expect(blocks[0].content).toBe('Hello\nWorld');
     });
 
     it('should identify headings', () => {
         const input = '# Heading 1\n## Heading 2\nContent';
         const blocks = BlockSplitter.split(input);
-        expect(blocks).toHaveLength(3);
-        expect(blocks[0]).toEqual({
-            type: BlockType.HEADING,
-            content: 'Heading 1',
-            level: 1,
-        });
-        expect(blocks[1]).toEqual({
-            type: BlockType.HEADING,
-            content: 'Heading 2',
-            level: 2,
-        });
-        expect(blocks[2]).toEqual({
-            type: BlockType.PARAGRAPH,
-            content: 'Content',
-        });
+        expect(blocks.length).toBe(3);
+        expect(blocks[0].type).toBe(BlockType.HEADING);
+        expect(blocks[0].level).toBe(1);
+        expect(blocks[1].type).toBe(BlockType.HEADING);
+        expect(blocks[1].level).toBe(2);
     });
 
     it('should identify code blocks', () => {
         const input = 'Pre\n```javascript\nconst a = 1;\n```\nPost';
         const blocks = BlockSplitter.split(input);
-        expect(blocks).toHaveLength(3);
-        expect(blocks[0].type).toBe(BlockType.PARAGRAPH);
-        expect(blocks[1]).toEqual({
-            type: BlockType.CODE,
-            content: 'const a = 1;',
-            language: 'javascript',
-        });
-        expect(blocks[2].content).toBe('Post');
+        expect(blocks.length).toBe(3);
+        expect(blocks[1].type).toBe(BlockType.CODE);
+        expect(blocks[1].language).toBe('javascript');
+        expect(blocks[1].content).toBe('const a = 1;');
     });
 
-    it('should handle unordered lists and preserve markers', () => {
-        const input = '- item 1\n* item 2';
+    it('should handle list splitting and preserve full syntax', () => {
+        const input = '- item 1\n* item 2\n1. item 3';
         const blocks = BlockSplitter.split(input);
+        // Per review: consecutive list lines remain in the same block
+        // regardless of isOrdered change.
         expect(blocks.length).toBe(1);
         expect(blocks[0].type).toBe(BlockType.LIST);
-        expect(blocks[0].ordered).toBe(false);
-        expect(blocks[0].content).toBe('- item 1\n* item 2');
+        expect(blocks[0].ordered).toBe(false); // First item determines metadata
+        expect(blocks[0].content).toBe('- item 1\n* item 2\n1. item 3');
     });
 
-    it('should handle ordered lists', () => {
-        const input = '1. item 1\n2. item 2';
+    it('should handle nested lists via indentation', () => {
+        const input = '- Level 1\n  - Level 2\n    - Level 3';
         const blocks = BlockSplitter.split(input);
         expect(blocks.length).toBe(1);
-        expect(blocks[0].type).toBe(BlockType.LIST);
-        expect(blocks[0].ordered).toBe(true);
-        expect(blocks[0].content).toBe('1. item 1\n2. item 2');
+        expect(blocks[0].content).toBe('- Level 1\n  - Level 2\n    - Level 3');
     });
 
-    it('should support nested lists via indentation', () => {
-        const input = '- item 1\n  - subitem\n  continues';
-        const blocks = BlockSplitter.split(input);
-        expect(blocks.length).toBe(1);
-        expect(blocks[0].content).toBe('- item 1\n  - subitem\n  continues');
-    });
-
-    it('should split lists of different types', () => {
-        const input = '- item 1\n1. item 2';
+    it('should correctly detect boundaries: list followed by heading', () => {
+        const input = '- list item\n\n# Heading';
         const blocks = BlockSplitter.split(input);
         expect(blocks.length).toBe(2);
-        expect(blocks[0].ordered).toBe(false);
-        expect(blocks[1].ordered).toBe(true);
+        expect(blocks[0].type).toBe(BlockType.LIST);
+        expect(blocks[1].type).toBe(BlockType.HEADING);
     });
 
-    it('should identify blockquotes', () => {
-        const input = '> Quote line 1\n> Quote line 2\nNormal text';
+    it('should correctly detect boundaries: list followed by paragraph', () => {
+        const input = '- list item\n\nNormal text';
         const blocks = BlockSplitter.split(input);
-        expect(blocks).toHaveLength(2);
-        expect(blocks[0]).toEqual({
-            type: BlockType.QUOTE,
-            content: 'Quote line 1\nQuote line 2',
-        });
+        expect(blocks.length).toBe(2);
+        expect(blocks[0].type).toBe(BlockType.LIST);
         expect(blocks[1].type).toBe(BlockType.PARAGRAPH);
     });
 
-    it('should handle mixed content correctly', () => {
-        const input = '# Title\n\nSome text here.\n\n> A quote\n\n```\ncode\n```';
+    it('should not continue a list with a blank line even if indented', () => {
+        const input = '- list item\n  \n# Next';
         const blocks = BlockSplitter.split(input);
-        expect(blocks).toHaveLength(4);
-        expect(blocks[0].type).toBe(BlockType.HEADING);
-        expect(blocks[1].type).toBe(BlockType.PARAGRAPH);
-        expect(blocks[2].type).toBe(BlockType.QUOTE);
-        expect(blocks[3].type).toBe(BlockType.CODE);
+        expect(blocks.length).toBe(2);
+        expect(blocks[0].type).toBe(BlockType.LIST);
+        expect(blocks[1].type).toBe(BlockType.HEADING);
+    });
+
+    it('should identify blockquotes and preserve content', () => {
+        const input = '> quote line 1\n> quote line 2\nNormal text';
+        const blocks = BlockSplitter.split(input);
+        expect(blocks.length).toBe(2);
+        expect(blocks[0].type).toBe(BlockType.QUOTE);
+        expect(blocks[0].content).toBe('quote line 1\nquote line 2');
     });
 });

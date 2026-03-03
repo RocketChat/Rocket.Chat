@@ -25,7 +25,6 @@ export class BlockSplitter {
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i];
 
-            // 1. Heading
             const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
             if (headingMatch) {
                 this.flush(blocks, currentBlock);
@@ -39,7 +38,6 @@ export class BlockSplitter {
                 continue;
             }
 
-            // 2. Code Block
             if (line.startsWith('```')) {
                 this.flush(blocks, currentBlock);
                 const language = line.slice(3).trim();
@@ -58,13 +56,13 @@ export class BlockSplitter {
                 continue;
             }
 
-            // 3. Lists
             const listMatch = line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
-            const isIndented = /^\s+/.test(line);
+            const isIndentedAndNotBlank = /^\s+\S/.test(line);
 
             if (listMatch) {
                 const isOrdered = /^\d+\./.test(listMatch[2]);
-                if (currentBlock?.type !== BlockType.LIST || currentBlock.ordered !== isOrdered) {
+                // Per review: consecutive list lines remain in the same LIST block regardless of isOrdered changes
+                if (currentBlock?.type !== BlockType.LIST) {
                     this.flush(blocks, currentBlock);
                     currentBlock = {
                         type: BlockType.LIST,
@@ -77,13 +75,11 @@ export class BlockSplitter {
                 continue;
             }
 
-            // Continuation of a list (indented lines)
-            if (isIndented && currentBlock?.type === BlockType.LIST) {
+            if (isIndentedAndNotBlank && currentBlock?.type === BlockType.LIST) {
                 currentBlock.content += '\n' + line;
                 continue;
             }
 
-            // 4. Blockquote
             const quoteMatch = line.match(/^>\s*(.*)$/);
             if (quoteMatch) {
                 if (currentBlock?.type !== BlockType.QUOTE) {
@@ -98,7 +94,6 @@ export class BlockSplitter {
                 continue;
             }
 
-            // 5. Paragraph (fallback)
             if (line.trim() === '') {
                 this.flush(blocks, currentBlock);
                 currentBlock = null;
