@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -233,37 +233,50 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
-type ChatDeleteLocal = {
-	msgId: string;
-	roomId: string;
+type ChatDelete = {
+	msgId: IMessage['_id'];
+	roomId: IRoom['_id'];
 	asUser?: boolean;
 };
 
-const ChatDeleteLocalSchema = {
+const ChatDeleteSchema = {
 	type: 'object',
 	properties: {
-		msgId: { type: 'string' },
-		roomId: { type: 'string' },
-		asUser: { type: 'boolean', nullable: true },
+		msgId: {
+			type: 'string',
+		},
+		roomId: {
+			type: 'string',
+		},
+		asUser: {
+			type: 'boolean',
+			nullable: true,
+		},
 	},
 	required: ['msgId', 'roomId'],
 	additionalProperties: false,
 };
 
-const isChatDeleteLocalProps = ajv.compile<ChatDeleteLocal>(ChatDeleteLocalSchema);
+type ChatReact =
+	| { emoji: string; messageId: IMessage['_id']; shouldReact?: boolean }
+	| { reaction: string; messageId: IMessage['_id']; shouldReact?: boolean };
 
-type ChatReactLocal =
-	| { emoji: string; messageId: string; shouldReact?: boolean }
-	| { reaction: string; messageId: string; shouldReact?: boolean };
-
-const ChatReactLocalSchema = {
+const ChatReactSchema = {
 	oneOf: [
 		{
 			type: 'object',
 			properties: {
-				emoji: { type: 'string' },
-				messageId: { type: 'string', minLength: 1 },
-				shouldReact: { type: 'boolean', nullable: true },
+				emoji: {
+					type: 'string',
+				},
+				messageId: {
+					type: 'string',
+					minLength: 1,
+				},
+				shouldReact: {
+					type: 'boolean',
+					nullable: true,
+				},
 			},
 			required: ['emoji', 'messageId'],
 			additionalProperties: false,
@@ -271,9 +284,17 @@ const ChatReactLocalSchema = {
 		{
 			type: 'object',
 			properties: {
-				reaction: { type: 'string' },
-				messageId: { type: 'string', minLength: 1 },
-				shouldReact: { type: 'boolean', nullable: true },
+				reaction: {
+					type: 'string',
+				},
+				messageId: {
+					type: 'string',
+					minLength: 1,
+				},
+				shouldReact: {
+					type: 'boolean',
+					nullable: true,
+				},
 			},
 			required: ['reaction', 'messageId'],
 			additionalProperties: false,
@@ -281,7 +302,9 @@ const ChatReactLocalSchema = {
 	],
 };
 
-const isChatReactLocalProps = ajv.compile<ChatReactLocal>(ChatReactLocalSchema);
+const isChatDeleteProps = ajv.compile<ChatDelete>(ChatDeleteSchema);
+
+const isChatReactProps = ajv.compile<ChatReact>(ChatReactSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -431,7 +454,7 @@ const chatEndpoints = API.v1
 		'chat.delete',
 		{
 			authRequired: true,
-			body: isChatDeleteLocalProps,
+			body: isChatDeleteProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
@@ -495,7 +518,7 @@ const chatEndpoints = API.v1
 		'chat.react',
 		{
 			authRequired: true,
-			body: isChatReactLocalProps,
+			body: isChatReactProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,

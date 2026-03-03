@@ -218,6 +218,10 @@ const ChatSyncThreadsListSchema = {
 
 export const isChatSyncThreadsListProps = ajv.compile<ChatSyncThreadsList>(ChatSyncThreadsListSchema);
 
+type ChatReact =
+	| { emoji: string; messageId: IMessage['_id']; shouldReact?: boolean }
+	| { reaction: string; messageId: IMessage['_id']; shouldReact?: boolean };
+
 /**
  * The param `ignore` cannot be boolean, since this is a GET method. Use strings 'true' or 'false' instead.
  * @param {string} ignore
@@ -849,7 +853,7 @@ export type ChatEndpoints = {
 	};
 
 	'/v1/chat.react': {
-		POST: (params: { emoji: string; messageId: string; shouldReact?: boolean } | { reaction: string; messageId: string; shouldReact?: boolean }) => void;
+		POST: (params: ChatReact) => void;
 	};
 	'/v1/chat.ignoreUser': {
 		GET: (params: ChatIgnoreUser) => void;
