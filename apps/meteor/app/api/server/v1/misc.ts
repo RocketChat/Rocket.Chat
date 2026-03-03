@@ -665,7 +665,7 @@ API.v1.addRoute(
 
 			const auditSettingOperation = updateAuditedByUser({
 				_id: this.userId,
-				username: this.user.username!,
+				username: this.user.username,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
 			});
@@ -685,7 +685,7 @@ API.v1.addRoute(
 
 				return resetAuditedSettingByUser({
 					_id: this.userId,
-					username: this.user.username!,
+					username: this.user.username,
 					ip: this.requestIp,
 					useragent: this.request.headers.get('user-agent') || '',
 				})(Settings.resetValueById, settingId);

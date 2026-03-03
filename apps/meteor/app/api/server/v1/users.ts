@@ -113,7 +113,7 @@ API.v1.addRoute(
 				_id: this.user._id,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
-				username: this.user.username || '',
+				username: this.user.username,
 			});
 
 			await saveUser(this.userId, userData, { auditStore });
