@@ -33,25 +33,8 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
-
-/**
- * --------------------------------
- * Types and Schemas
- * --------------------------------
- */
-
-// Keys allowed in fields query
-type Keys =
-  | 'name' | 'username' | 'nickname' | 'emails' | 'status' | 'statusDefault'
-  | 'statusText' | 'statusConnection' | 'bio' | 'avatarOrigin' | 'utcOffset'
-  | 'language' | 'settings' | 'idleTimeLimit' | 'roles' | 'active' | 'defaultRoom'
-  | 'customFields' | 'requirePasswordChange' | 'requirePasswordChangeReason'
-  | 'services.github' | 'services.gitlab' | 'services.password.bcrypt'
-  | 'services.totp.enabled' | 'services.email2fa.enabled' | 'statusLivechat'
-  | 'banners' | 'oauth.authorizedClients' | '_updatedAt' | 'avatarETag';
-
-// Query params type
-export type MeParams = { fields: Record<Keys, 0> | Record<Keys, 1>; user: IUser };
+import { ajv } from '@rocket.chat/rest-typings';
+import { MeParams } from '@rocket.chat/rest-typings';
 
 // AJV validation schema
 const meSchema = {
@@ -61,11 +44,6 @@ const meSchema = {
   required: ['fields', 'user'],
 };
 export const isMeProps = ajv.compile<MeParams>(meSchema);
-
-// Response type
-export type IMeResponse = {
-  success: true;
-} & Awaited<ReturnType<typeof getUserInfo>>;
 
 /**
  * --------------------------------
