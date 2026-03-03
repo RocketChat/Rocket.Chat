@@ -1,0 +1,1 @@
+export const _debug = console.error.bind(console);

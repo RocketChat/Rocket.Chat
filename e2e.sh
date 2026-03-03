@@ -1,7 +1,7 @@
 #!/bin/bash
 # e2e.sh - Run E2E tests locally (mimics CI environment)
 #
-# Usage: ./e2e.sh [--coverage] [--shards N]
+# Usage: ./e2e.sh [--coverage] [--shards N] [--test PATH] [--grep PATTERN] [-- [playwright args...]]
 #
 # This script:
 # 1. Builds the environment (optionally with coverage instrumentation)
@@ -24,6 +24,9 @@ log_cmd() { echo -e "${BLUE}[CMD]${NC} $1"; }
 # Default configuration
 ENABLE_COVERAGE=false
 TOTAL_SHARDS=4
+TARGETED_TESTS=()
+PLAYWRIGHT_ARGS=()
+HAS_TARGETED_FILTER=false
 
 # Parse flags
 while [[ $# -gt 0 ]]; do
@@ -36,18 +39,41 @@ while [[ $# -gt 0 ]]; do
       TOTAL_SHARDS="$2"
       shift 2
       ;;
+    --test)
+      TARGETED_TESTS+=("$2")
+      HAS_TARGETED_FILTER=true
+      shift 2
+      ;;
+    --grep)
+      PLAYWRIGHT_ARGS+=("-g" "$2")
+      HAS_TARGETED_FILTER=true
+      shift 2
+      ;;
+    --)
+      shift
+      while [[ $# -gt 0 ]]; do
+        PLAYWRIGHT_ARGS+=("$1")
+        shift
+      done
+      ;;
     --help)
       echo "Usage: $0 [options]"
       echo ""
       echo "Options:"
       echo "  --coverage    Enable code coverage collection and reporting"
       echo "  --shards N    Number of test shards to run (default: 4)"
+      echo "  --test PATH   Run a specific Playwright test file (can be used multiple times)"
+      echo "  --grep TEXT   Run tests matching a Playwright grep pattern"
+      echo "  --            Pass remaining arguments directly to Playwright"
       echo "  --help        Show this help message"
       echo ""
       echo "Examples:"
       echo "  $0                    # Run tests without coverage"
       echo "  $0 --coverage         # Run tests with coverage"
       echo "  $0 --shards 2         # Run only 2 shards"
+      echo "  $0 --test tests/e2e/prune-messages.spec.ts"
+      echo "  $0 --grep \"pruning files only\""
+      echo "  $0 --test tests/e2e/prune-messages.spec.ts -- --project chromium"
       exit 0
       ;;
     *)
@@ -58,9 +84,15 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Configuration (matches CI)
-export MONGO_URL='mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true'
-export COVERAGE_DIR='/tmp/coverage/ui'
-export IS_EE=''
+export MONGO_URL="${MONGO_URL:-mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true}"
+export COVERAGE_DIR="${COVERAGE_DIR:-/tmp/coverage/ui}"
+export IS_EE="${IS_EE:-false}"
+
+# Targeted runs should be deterministic and not split unexpectedly across shards.
+if [ "$HAS_TARGETED_FILTER" = true ] && [ "$TOTAL_SHARDS" -gt 1 ]; then
+  log_warn "Targeted test options detected; forcing --shards 1 for predictable execution."
+  TOTAL_SHARDS=1
+fi
 
 
 # Run each shard
@@ -78,12 +110,26 @@ for shard in $(seq 1 $TOTAL_SHARDS); do
   # Run tests for this shard
   cd apps/meteor
   yarn prepare
+
+  TEST_COMMAND=(yarn test:e2e)
+  if [ ${#TARGETED_TESTS[@]} -gt 0 ]; then
+    TEST_COMMAND+=("${TARGETED_TESTS[@]}")
+  fi
+
+  TEST_COMMAND+=("${PLAYWRIGHT_ARGS[@]}")
+
+  if [ "$TOTAL_SHARDS" -gt 1 ]; then
+    TEST_COMMAND+=(--shard "$shard/$TOTAL_SHARDS")
+  fi
+
+  log_cmd "${TEST_COMMAND[*]}"
+
   if [ "$ENABLE_COVERAGE" = true ]; then
-    E2E_COVERAGE=true yarn test:e2e --shard $shard/$TOTAL_SHARDS || {
+    E2E_COVERAGE=true "${TEST_COMMAND[@]}" || {
       log_warn "Shard $shard failed, continuing with other shards..."
     }
   else
-    yarn test:e2e --shard $shard/$TOTAL_SHARDS || {
+    "${TEST_COMMAND[@]}" || {
       log_warn "Shard $shard failed, continuing with other shards..."
     }
   fi

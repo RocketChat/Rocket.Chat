@@ -4,6 +4,7 @@
 		"target": "es2018",
 		"module": "esNext",
 		"lib": ["esnext", "dom"],
+		"types": [],
 
 		"allowJs": true,
 		"checkJs": false,
@@ -22,7 +23,7 @@
 		"paths": {
 			/* Support absolute /imports/* with a leading '/' */
 			"/*": ["*"],
-			"meteor/*": ["./node_modules/@types/meteor/*", ".meteor/local/types/packages.d.ts"],
+			"meteor/*": ["./src/meteor/*"],
 		},
 		"preserveSymlinks": true,
 

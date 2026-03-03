@@ -1,0 +1,1 @@
+export { PasswordAuthMixin } from './accounts-password.ts';

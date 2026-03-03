@@ -105,6 +105,7 @@ export const useThreadMainMessageQuery = (
 	{ onDelete }: { onDelete?: () => void } = {},
 ): UseQueryResult<IThreadMainMessage, Error> => {
 	const room = useRoom();
+	const subscribeToNotifyRoom = useStream('notify-room');
 
 	const getMessage = useGetMessageByID();
 	const subscribeToMessage = useSubscribeToMessage();
@@ -118,6 +119,33 @@ export const useThreadMainMessageQuery = (
 			unsubscribeRef.current = undefined;
 		};
 	}, [tmid]);
+
+	useEffect(() => {
+		const queryKey = ['rooms', room._id, 'threads', tmid, 'main-message'] as const;
+
+		const unsubscribeFromDeleteMessageBulk = subscribeToNotifyRoom(`${room._id}/deleteMessageBulk`, async (params) => {
+			if (!params.filesOnly) {
+				return;
+			}
+
+			if (params.ids && !params.ids.includes(tmid)) {
+				return;
+			}
+
+			const current = queryClient.getQueryData<IThreadMainMessage>(queryKey);
+			if (current) {
+				const updated = modifyMessageOnFilesDelete(current, params.replaceFileAttachmentsWith);
+				const msg = await onClientMessageReceived(updated);
+				queryClient.setQueryData(queryKey, () => msg);
+			}
+
+			queryClient.invalidateQueries({ queryKey, exact: true });
+		});
+
+		return () => {
+			unsubscribeFromDeleteMessageBulk();
+		};
+	}, [subscribeToNotifyRoom, room._id, tmid, queryClient]);
 
 	return useQuery({
 		queryKey: ['rooms', room._id, 'threads', tmid, 'main-message'] as const,

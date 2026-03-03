@@ -2,41 +2,8 @@ import { Random } from '@rocket.chat/random';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
-import { type LoginCallback, callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
+import { callLoginMethod, handleLogin } from '../../lib/2fa/overrideLoginMethod';
 import { settings } from '../../lib/settings';
-
-declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		function loginWithSamlToken(credentialToken: string, callback?: LoginCallback): void;
-
-		function loginWithSaml(options: { provider: string; credentialToken?: string }): void;
-	}
-}
-
-declare module 'meteor/accounts-base' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Accounts {
-		export let saml: {
-			credentialToken?: string;
-			credentialSecret?: string;
-		};
-
-		/**
-		 * There is one case where the onlogout event is triggered with no user:
-		 * during the deletion, the user is logged out, and the framework try to get the user from the database.
-		 */
-		function onLogout(func: (options: { user?: Meteor.User; connection: Meteor.Connection }) => void): void;
-	}
-}
-
-declare module 'meteor/service-configuration' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface Configuration {
-		logoutBehaviour?: 'SAML' | 'Local';
-		idpSLORedirectURL?: string;
-	}
-}
 
 if (!Accounts.saml) {
 	Accounts.saml = {};

@@ -1,1 +1,0 @@
-export * as DiffSequence from './diff-sequence-core.ts';

@@ -3,17 +3,6 @@ import { Meteor } from 'meteor/meteor';
 
 import { overrideLoginMethod, type LoginCallback } from '../../lib/2fa/overrideLoginMethod';
 
-declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
-	namespace Meteor {
-		function loginWithPassword(
-			userDescriptor: { username: string } | { email: string } | { id: string } | string,
-			password: string,
-			callback?: LoginCallback,
-		): void;
-	}
-}
-
 const loginWithPasswordAndTOTP = (
 	userDescriptor: { username: string } | { email: string } | { id: string } | string,
 	password: string,

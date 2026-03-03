@@ -1,0 +1,1 @@
+export { DiffSequence, type Document } from './diff-sequence.ts';

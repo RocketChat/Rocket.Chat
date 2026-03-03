@@ -1,13 +1,10 @@
 // eslint-disable-next-line spaced-comment
 /// <reference types="vite/client" />
-
-import { Accounts } from './meteor/accounts-base.ts';
-import { registerService, serviceNames, unregisterService } from './meteor/accounts-oauth.ts';
-import { loginWithPassword, _hashPassword } from './meteor/accounts-password.ts';
-import { Meteor } from './meteor/meteor.ts';
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
 import { e2e } from '../client/lib/e2ee/rocketchat.e2e.ts';
 
-import './meteor/service-configuration.ts';
+import 'meteor/service-configuration';
 
 import '../app/theme/client/main.css';
 
@@ -26,11 +23,3 @@ const require = (text: string) => {
 };
 
 Object.assign(globalThis, { require });
-
-Object.assign(Accounts, { _hashPassword }, { oauth: { registerService, serviceNames, unregisterService } });
-Object.assign(Meteor, {
-	loginWithPassword,
-	loggingIn: Accounts.loggingIn.bind(Accounts),
-	logout: Accounts.logout.bind(Accounts),
-	loginWithToken: Accounts.loginWithToken.bind(Accounts),
-});

@@ -1,0 +1,1 @@
+export { EJSON } from './ejson.ts';
