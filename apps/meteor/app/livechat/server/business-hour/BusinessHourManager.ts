@@ -1,9 +1,8 @@
+import { tzOffset } from '@date-fns/tz';
 import type { ILivechatBusinessHour, IBusinessHourTimezone } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { AgendaCronJobs } from '@rocket.chat/cron';
 import { LivechatBusinessHours, LivechatDepartment, Users } from '@rocket.chat/models';
-
-import { tzOffset } from '@date-fns/tz';
 
 import type { IBusinessHourBehavior, IBusinessHourType } from './AbstractBusinessHour';
 import { closeBusinessHour } from './closeBusinessHour';
