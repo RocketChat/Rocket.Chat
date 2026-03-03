@@ -10,9 +10,11 @@ describe('Snapshots', () => {
 	beforeAll(() => {
 		jest.useFakeTimers().setSystemTime(new Date(2025, 5, 1, 12, 0, 0));
 	});
+
 	afterAll(() => {
 		jest.useRealTimers();
 	});
+
 	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
 		console.log('new date', new Date());
 		const view = render(<Story />);
