@@ -160,14 +160,14 @@ describe('LIVECHAT - rooms', () => {
 
 		describe('with a valid visitor', () => {
 			let visitor: ILivechatVisitor;
-			const roomsToClose: string[] = [];
+			const roomsToClose = new Set<string>();
 
 			before(async () => {
 				visitor = await createVisitor();
 			});
 
 			after(async () => {
-				await Promise.all(roomsToClose.map((roomId) => closeOmnichannelRoom(roomId).catch(() => {})));
+				await Promise.all([...roomsToClose].map((roomId) => closeOmnichannelRoom(roomId).catch(() => {})));
 				await deleteVisitor(visitor.token);
 			});
 
@@ -183,7 +183,7 @@ describe('LIVECHAT - rooms', () => {
 				expect(body.room).to.have.property('v');
 				expect(body.room.v).to.have.property('token', visitor.token);
 				expect(body.room.source.type).to.be.equal('api');
-				roomsToClose.push(body.room._id);
+				roomsToClose.add(body.room._id);
 			});
 
 			it('should return an existing open room when visitor has one available', async () => {
@@ -200,7 +200,7 @@ describe('LIVECHAT - rooms', () => {
 				expect(body2).to.have.property('room');
 				expect(body2.room).to.have.property('_id', body.room._id);
 				expect(body2.newRoom).to.be.false;
-				roomsToClose.push(body.room._id);
+				roomsToClose.add(body.room._id);
 			});
 
 			it('should return a room for the visitor when rid points to a valid open room', async () => {
@@ -211,7 +211,7 @@ describe('LIVECHAT - rooms', () => {
 				expect(body).to.have.property('room');
 				expect(body.room.v).to.have.property('token', visitor.token);
 				expect(body.newRoom).to.be.false;
-				roomsToClose.push(room._id);
+				roomsToClose.add(room._id);
 			});
 
 			it('should properly read widget cookies', async () => {
@@ -224,7 +224,7 @@ describe('LIVECHAT - rooms', () => {
 				expect(body).to.have.property('room');
 				expect(body.room.v).to.have.property('token', visitor.token);
 				expect(body.room.source.type).to.be.equal('widget');
-				roomsToClose.push(body.room._id);
+				roomsToClose.add(body.room._id);
 			});
 		});
 	});
