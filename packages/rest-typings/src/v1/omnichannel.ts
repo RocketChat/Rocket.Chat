@@ -186,9 +186,11 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					name: { type: 'string' },
 					count: {
 						type: 'number',
+						minimum: 0,
 					},
 					order: {
 						type: 'number',
+						minimum: 0,
 					},
 				},
 				required: ['agentId', 'username'],
@@ -211,9 +213,11 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					},
 					count: {
 						type: 'number',
+						minimum: 0,
 					},
 					order: {
 						type: 'number',
+						minimum: 0,
 					},
 					departmentEnabled: { type: 'boolean' },
 					departmentId: { type: 'string' },
@@ -826,10 +830,12 @@ const POSTLivechatDepartmentSchema = {
 					},
 					count: {
 						type: 'number',
+						minimum: 0,
 						nullable: true,
 					},
 					order: {
 						type: 'number',
+						minimum: 0,
 						nullable: true,
 					},
 				},
@@ -2848,14 +2854,14 @@ type POSTLivechatRoomCloseByUserParams = {
 	generateTranscriptPdf?: boolean;
 	forceClose?: boolean;
 	transcriptEmail?:
-		| {
-				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
-				sendToVisitor: false;
-		  }
-		| {
-				sendToVisitor: true;
-				requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
-		  };
+	| {
+		// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
+		sendToVisitor: false;
+	}
+	| {
+		sendToVisitor: true;
+		requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
+	};
 };
 
 const POSTLivechatRoomCloseByUserParamsSchema = {
@@ -4369,8 +4375,8 @@ export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWeb
 
 type POSTLivechatRoomsCloseAll =
 	| {
-			departmentIds?: string[];
-	  }
+		departmentIds?: string[];
+	}
 	| undefined;
 
 const POSTLivechatRoomsCloseAllSchema = {
