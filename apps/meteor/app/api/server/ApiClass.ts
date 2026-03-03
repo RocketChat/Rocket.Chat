@@ -995,7 +995,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		}
 
 		for (const method of this.authMethods) {
-			// eslint-disable-next-line no-await-in-loop -- we want serial execution
 			const user = await method(routeContext);
 
 			if (user) {

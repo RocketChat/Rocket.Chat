@@ -72,12 +72,12 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 
 	if (emojiData._id) {
 		matchingResults = await EmojiCustom.findByNameOrAliasExceptID(emojiData.name, emojiData._id).toArray();
-		for await (const alias of aliases) {
+		for (const alias of aliases) {
 			matchingResults = matchingResults.concat(await EmojiCustom.findByNameOrAliasExceptID(alias, emojiData._id).toArray());
 		}
 	} else {
 		matchingResults = await EmojiCustom.findByNameOrAlias(emojiData.name).toArray();
-		for await (const alias of aliases) {
+		for (const alias of aliases) {
 			matchingResults = matchingResults.concat(await EmojiCustom.findByNameOrAlias(alias).toArray());
 		}
 	}

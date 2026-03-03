@@ -27,7 +27,6 @@ import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingInt
 
 const ivmEngine = new IsolatedVMScriptEngine(true);
 
-// eslint-disable-next-line no-unused-vars
 function getEngine(_integration: IIntegration): IsolatedVMScriptEngine<true> {
 	return ivmEngine;
 }
@@ -59,7 +58,7 @@ async function createIntegration(options: IntegrationOptions, user: IUser): Prom
 			if (options.data == null) {
 				options.data = {};
 			}
-			if (options.data.channel_name != null && options.data.channel_name.indexOf('#') === -1) {
+			if (options.data.channel_name?.indexOf('#') === -1) {
 				options.data.channel_name = `#${options.data.channel_name}`;
 			}
 			return addOutgoingIntegration(user._id, {
@@ -190,7 +189,6 @@ async function executeIntegrationRest(
 	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
 		const buffers = [];
 		const reader = this.request.body.getReader();
-		// eslint-disable-next-line no-await-in-loop
 		for (let result = await reader.read(); !result.done; result = await reader.read()) {
 			buffers.push(result.value);
 		}
