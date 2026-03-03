@@ -1,5 +1,23 @@
 # @rocket.chat/core-typings
 
+## 8.3.0-rc.0
+
+### Minor Changes
+
+- ([#36916](https://github.com/RocketChat/Rocket.Chat/pull/36916) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat custom-user-status.list API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- ([#36953](https://github.com/RocketChat/Rocket.Chat/pull/36953) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat commands.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- <details><summary>Updated dependencies [d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae]:</summary>
+
+  - @rocket.chat/message-parser@0.31.35-rc.0
+  - @rocket.chat/ui-kit@0.39.1-rc.0
+  </details>
+
 ## 8.2.0
 
 ### Minor Changes

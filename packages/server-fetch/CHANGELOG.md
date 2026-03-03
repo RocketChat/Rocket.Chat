@@ -1,5 +1,18 @@
 # @rocket.chat/server-fetch
 
+## 0.1.1-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, 539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
+
+  - @rocket.chat/models@2.1.1-rc.0
+  - @rocket.chat/logger@1.0.1-rc.0
+  - @rocket.chat/tools@0.2.5-rc.0
+  </details>
+
 ## 0.1.0
 
 ### Minor Changes

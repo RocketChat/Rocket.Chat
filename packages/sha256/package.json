@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/sha256",
-	"version": "1.0.12",
+	"version": "1.0.13-rc.0",
 	"private": true,
 	"description": "SHA256 implementation; Fork of Meteor's SHA256 package",
 	"main": "./dist/sha256.js",

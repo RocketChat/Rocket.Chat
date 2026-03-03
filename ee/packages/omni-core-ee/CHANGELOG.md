@@ -1,5 +1,19 @@
 # @rocket.chat/omni-core-ee
 
+## 0.0.17-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, 539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
+
+  - @rocket.chat/models@2.1.1-rc.0
+  - @rocket.chat/core-services@0.13.1-rc.0
+  - @rocket.chat/omni-core@0.0.17-rc.0
+  - @rocket.chat/logger@1.0.1-rc.0
+  </details>
+
 ## 0.0.16
 
 ### Patch Changes

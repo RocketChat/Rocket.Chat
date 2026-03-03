@@ -1,5 +1,19 @@
 # @rocket.chat/livechat Change Log
 
+## 2.0.5-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae]:</summary>
+
+  - @rocket.chat/message-parser@0.31.35-rc.0
+  - @rocket.chat/gazzodown@29.0.0-rc.0
+  - @rocket.chat/random@1.2.3-rc.0
+  - @rocket.chat/ui-kit@0.39.1-rc.0
+  </details>
+
 ## 2.0.4
 
 ### Patch Changes

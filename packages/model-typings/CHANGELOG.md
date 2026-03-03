@@ -1,5 +1,18 @@
 # @rocket.chat/model-typings
 
+## 2.1.1-rc.0
+
+### Patch Changes
+
+- ([#39010](https://github.com/RocketChat/Rocket.Chat/pull/39010)) Fixes an authorization issue that allowed users to confirm uploads from other users
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.0
+  </details>
+
 ## 2.1.0
 
 ### Minor Changes

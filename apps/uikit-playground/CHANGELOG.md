@@ -1,5 +1,19 @@
 # @rocket.chat/uikit-playground
 
+## 0.7.8-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/fuselage-ui-kit@29.0.0-rc.0
+  - @rocket.chat/core-typings@8.3.0-rc.0
+  - @rocket.chat/ui-contexts@29.0.0-rc.0
+  - @rocket.chat/ui-avatar@25.0.0-rc.0
+  </details>
+
 ## 0.7.7
 
 ### Patch Changes

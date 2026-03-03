@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/favicon",
-	"version": "0.0.4",
+	"version": "0.0.5-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

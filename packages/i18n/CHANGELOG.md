@@ -1,5 +1,18 @@
 # @rocket.chat/i18n
 
+## 2.1.1-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- ([#38955](https://github.com/RocketChat/Rocket.Chat/pull/38955) by [@mossae](https://github.com/mossae)) Fixes invalid email domain error not being displayed on the registration form.
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
+
+  - @rocket.chat/tools@0.2.5-rc.0
+  </details>
+
 ## 2.1.0
 
 ### Minor Changes

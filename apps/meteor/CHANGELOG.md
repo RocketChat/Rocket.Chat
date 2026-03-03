@@ -1,5 +1,135 @@
 # @rocket.chat/meteor
 
+## 8.3.0-rc.0
+
+### Minor Changes
+
+- ([#38978](https://github.com/RocketChat/Rocket.Chat/pull/38978) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat autotranslate translateMessage API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation
+
+- ([#39225](https://github.com/RocketChat/Rocket.Chat/pull/39225) by [@sezallagwal](https://github.com/sezallagwal)) Add OpenAPI support for the chat.followMessage and chat.unfollowMessage API endpoints by migrating to a modern chained route definition syntax and utilizing AJV schemas for body and response validation.
+
+- ([#39227](https://github.com/RocketChat/Rocket.Chat/pull/39227) by [@sezallagwal](https://github.com/sezallagwal)) Add OpenAPI support for the chat.starMessage and chat.unStarMessage API endpoints by migrating to a modern chained route definition syntax and utilizing AJV schemas for body and response validation.
+
+- ([#38957](https://github.com/RocketChat/Rocket.Chat/pull/38957) by [@Verifieddanny](https://github.com/Verifieddanny)) Migrated rooms.leave endpoint to new OpenAPI pattern with AJV validation
+
+- ([#38549](https://github.com/RocketChat/Rocket.Chat/pull/38549) by [@Rohitgiri02](https://github.com/Rohitgiri02)) migrated rooms.delete endpoint to new OpenAPI pattern with AJV validation
+
+- ([#39094](https://github.com/RocketChat/Rocket.Chat/pull/39094) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Adds OpenAPI support for the Rocket.Chat e2e.updateGroupKey endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36402](https://github.com/RocketChat/Rocket.Chat/pull/36402) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat users.getAvatarSuggestion API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#38881](https://github.com/RocketChat/Rocket.Chat/pull/38881) by [@smirk-dev](https://github.com/smirk-dev)) adds `instances.get` API endpoint to new chained pattern with response schemas
+
+- ([#38883](https://github.com/RocketChat/Rocket.Chat/pull/38883) by [@smirk-dev](https://github.com/smirk-dev)) Migrates `ldap.testConnection` and `ldap.testSearch` REST API endpoints from legacy `addRoute` pattern to the new chained `.post()` API pattern with typed response schemas and AJV body validation (replacing Meteor `check()`).
+
+- ([#38882](https://github.com/RocketChat/Rocket.Chat/pull/38882) by [@smirk-dev](https://github.com/smirk-dev)) Migrates `presence.getConnections` and `presence.enableBroadcast` REST API endpoints from legacy `addRoute` pattern to the new chained `.get()`/`.post()` API pattern with typed response schemas.
+
+- ([#38610](https://github.com/RocketChat/Rocket.Chat/pull/38610)) Fixes Custom Sounds Contextualbar state and refresh behavior
+
+- ([#36779](https://github.com/RocketChat/Rocket.Chat/pull/36779) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e.fetchMyKeys endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36916](https://github.com/RocketChat/Rocket.Chat/pull/36916) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat custom-user-status.list API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation
+
+- ([#39219](https://github.com/RocketChat/Rocket.Chat/pull/39219) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#38610](https://github.com/RocketChat/Rocket.Chat/pull/38610)) Adds new `custom-sounds.getOne` REST endpoint to retrieve a single custom sound by `_id` and updates client to consume it.
+
+### Patch Changes
+
+- ([#39010](https://github.com/RocketChat/Rocket.Chat/pull/39010)) Fixes an authorization issue that allowed users to confirm uploads from other users
+
+- ([#38531](https://github.com/RocketChat/Rocket.Chat/pull/38531)) Fixes a cross-resource access issue that allowed users to retrieve emojis from the Custom Sounds endpoint and sounds from the Custom Emojis endpoint when using the FileSystem storage mode.
+
+- ([#38662](https://github.com/RocketChat/Rocket.Chat/pull/38662) by [@TheRazorbill](https://github.com/TheRazorbill)) Fixes wrong i18n key in RegisterWorkspace confirmation step so the text is translated instead of showing a missing key.
+
+- ([#38983](https://github.com/RocketChat/Rocket.Chat/pull/38983) by [@copilot-swe-agent](https://github.com/copilot-swe-agent)) Fixes incoming webhook messages ignoring literal `\n` escape sequences, and fixes the `MarkdownText` `document` variant not rendering newlines as line breaks.
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- ([#39003](https://github.com/RocketChat/Rocket.Chat/pull/39003)) Fix marking a message as sent before the request finishes
+
+- ([#36786](https://github.com/RocketChat/Rocket.Chat/pull/36786) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat e2e.getUsersOfRoomWithoutKey endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#38932](https://github.com/RocketChat/Rocket.Chat/pull/38932)) Fixes version update banner showing outdated versions after server upgrade.
+
+- ([#38760](https://github.com/RocketChat/Rocket.Chat/pull/38760) by [@Khizarshah01](https://github.com/Khizarshah01)) Limits `Outgoing webhook` maximum response size to 10mb.
+
+- ([#36882](https://github.com/RocketChat/Rocket.Chat/pull/36882) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat push.test API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#39250](https://github.com/RocketChat/Rocket.Chat/pull/39250)) Fixes `inquiries.take` not failing when attempting to take a chat while over chat limits
+
+- ([#38852](https://github.com/RocketChat/Rocket.Chat/pull/38852)) Fixes an issue where `Production` flag was not being respected when initializing Push Notifications configuration
+
+- ([#38944](https://github.com/RocketChat/Rocket.Chat/pull/38944) by [@Khizarshah01](https://github.com/Khizarshah01)) Limits Omnichannel webhook maximum response size to 10mb.
+
+- ([#38954](https://github.com/RocketChat/Rocket.Chat/pull/38954)) Fixes reactivity of Custom Sounds and Custom Emojis storage settings
+
+- ([#35995](https://github.com/RocketChat/Rocket.Chat/pull/35995) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat rooms.favorite APIs endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36523](https://github.com/RocketChat/Rocket.Chat/pull/36523) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat emoji-custom.create API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#36953](https://github.com/RocketChat/Rocket.Chat/pull/36953) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat commands.get API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- ([#38974](https://github.com/RocketChat/Rocket.Chat/pull/38974) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat dm.close/im.close API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
+
+- <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, a4e3c1635d55ec4ce04cbde741426770e43581fb, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae, 5518503736b72674753e711ba4089d177ab988a5, a4341ec67d1f0413f30bbabfd292d1b0a41728b2, 40253146de8d8f83737e71b0ade7c67e0c295a28, 85c0ac7d8c7a5b7b89ef58f4a42b18467a8e2dd4, 803b8075514de54c9ff34ba0c9aa3ee5fc3bbe61, 1361a1f4f1e3c0cc3f2a191cef8eccc12a714cde, 2a2701098536b32143003be8d267891978c708c9, 37acece030bc9f39bdaa86ab0130eb818332033e, d8baf395181b70fef9ce448eb509f65b66049615, ddc0ed34b03072362d166f1160104a9332b362e8, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, 78b3fe3ef20e3a545b84551ba3f85cb40e862ba7, 98a6c58a38c053c60db2b4d53a9df0e94fecf0ba, 29b453e1def8092a8d78c28736e2bfb24229717b, 39f2e87e1caa6842e69155f033205cfdc4767b9e, c117492ad90d291a361eedc929506f557495caf7, 7c7324184589a15bf3e67b4f0c1cc222f8d48db3]:</summary>
+
+  - @rocket.chat/model-typings@2.1.1-rc.0
+  - @rocket.chat/models@2.1.1-rc.0
+  - @rocket.chat/message-parser@0.31.35-rc.0
+  - @rocket.chat/rest-typings@8.3.0-rc.0
+  - @rocket.chat/server-cloud-communication@0.0.3-rc.0
+  - @rocket.chat/omnichannel-services@0.3.49-rc.0
+  - @rocket.chat/federation-matrix@0.0.14-rc.0
+  - @rocket.chat/web-ui-registration@29.0.0-rc.0
+  - @rocket.chat/network-broker@0.2.31-rc.0
+  - @rocket.chat/password-policies@0.1.1-rc.0
+  - @rocket.chat/omni-core-ee@0.0.17-rc.0
+  - @rocket.chat/fuselage-ui-kit@29.0.0-rc.0
+  - @rocket.chat/instance-status@0.1.52-rc.0
+  - @rocket.chat/media-signaling@0.1.2-rc.0
+  - @rocket.chat/patch-injection@0.0.2-rc.0
+  - @rocket.chat/media-calls@0.2.5-rc.0
+  - @rocket.chat/pdf-worker@0.3.31-rc.0
+  - @rocket.chat/ui-theming@0.4.5-rc.0
+  - @rocket.chat/account-utils@0.0.3-rc.0
+  - @rocket.chat/core-services@0.13.1-rc.0
+  - @rocket.chat/message-types@0.1.1-rc.0
+  - @rocket.chat/mongo-adapter@0.0.3-rc.0
+  - @rocket.chat/ui-video-conf@29.0.0-rc.0
+  - @rocket.chat/cas-validate@0.0.4-rc.0
+  - @rocket.chat/core-typings@8.3.0-rc.0
+  - @rocket.chat/server-fetch@0.1.1-rc.0
+  - @rocket.chat/presence@0.2.52-rc.0
+  - @rocket.chat/apps-engine@1.60.1-rc.0
+  - @rocket.chat/http-router@7.9.19-rc.0
+  - @rocket.chat/poplib@0.0.3-rc.0
+  - @rocket.chat/ui-composer@0.5.4-rc.0
+  - @rocket.chat/ui-contexts@29.0.0-rc.0
+  - @rocket.chat/license@1.1.12-rc.0
+  - @rocket.chat/api-client@0.2.52-rc.0
+  - @rocket.chat/log-format@0.0.3-rc.0
+  - @rocket.chat/gazzodown@29.0.0-rc.0
+  - @rocket.chat/omni-core@0.0.17-rc.0
+  - @rocket.chat/ui-avatar@25.0.0-rc.0
+  - @rocket.chat/ui-client@29.0.0-rc.0
+  - @rocket.chat/abac@0.1.5-rc.0
+  - @rocket.chat/favicon@0.0.5-rc.0
+  - @rocket.chat/tracing@0.0.2-rc.0
+  - @rocket.chat/ui-voip@19.0.0-rc.0
+  - @rocket.chat/agenda@0.1.1-rc.0
+  - @rocket.chat/base64@1.0.14-rc.0
+  - @rocket.chat/logger@1.0.1-rc.0
+  - @rocket.chat/random@1.2.3-rc.0
+  - @rocket.chat/sha256@1.0.13-rc.0
+  - @rocket.chat/ui-kit@0.39.1-rc.0
+  - @rocket.chat/tools@0.2.5-rc.0
+  - @rocket.chat/apps@0.6.5-rc.0
+  - @rocket.chat/cron@0.1.52-rc.0
+  - @rocket.chat/i18n@2.1.1-rc.0
+  - @rocket.chat/jwt@0.2.1-rc.0
+  </details>
+
 ## 8.2.0
 
 ### Minor Changes

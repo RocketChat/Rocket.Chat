@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-theming",
-	"version": "0.4.4",
+	"version": "0.4.5-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",

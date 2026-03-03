@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/patch-injection",
-	"version": "0.0.1",
+	"version": "0.0.2-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
