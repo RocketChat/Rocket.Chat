@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { lineBreak, paragraph, plain, spoilerBlock } from '../src/utils';
+import { lineBreak, paragraph, plain, spoilerBlock } from './helpers';
 
 describe('block spoiler parsing', () => {
 	test.each([

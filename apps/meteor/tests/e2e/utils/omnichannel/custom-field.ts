@@ -10,6 +10,23 @@ export const removeCustomField = (api: BaseTest['api'], id: string) => {
 	});
 };
 
+export const setVisitorCustomFieldValue = async (
+	api: BaseTest['api'],
+	params: { token: string; customFieldId: string; value: string; overwrite?: boolean },
+) => {
+	const response = await api.post('/livechat/custom.field', {
+		token: params.token,
+		key: params.customFieldId,
+		value: params.value,
+		overwrite: params.overwrite ?? true,
+	});
+	if (!response.ok()) {
+		throw new Error(`Failed to set visitor custom field [http status: ${response.status()}]`);
+	}
+	const { field } = await response.json();
+	return { response, field };
+};
+
 export const createCustomField = async (api: BaseTest['api'], overwrites: Partial<CustomField>) => {
 	const response = await api.post('/livechat/custom-fields.save', {
 		customFieldId: null,
