@@ -5,16 +5,14 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from './useEndpoint';
 import { useRouter } from './useRouter';
 
-export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((rid: IRoom['_id']) => void) => {
+export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}) => {
 	const router = useRouter();
 	const getRoomById = useEndpoint('GET', '/v1/rooms.info');
 
-	return useEffectEvent(async (roomId: string) => {
+	return useEffectEvent(async (roomId: IRoom['_id']) => {
 		const { room } = await getRoomById({ roomId });
 
-		if (!room) {
-			return;
-		}
+		if (!room) return;
 
 		const { t, name, _id: rid } = room;
 
