@@ -4,35 +4,8 @@ import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal, WebRTC
 import { useSetting, useStream, useWriteStream } from '@rocket.chat/ui-contexts';
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
 
-import type { ConnectionState, PeerInfo, State } from './MediaCallContext';
 import { MediaCallLogger } from './MediaCallLogger';
 import { useIceServers } from '../hooks/useIceServers';
-
-interface IBaseSession {
-	state: State;
-	connectionState: ConnectionState;
-	peerInfo: PeerInfo | undefined;
-	transferredBy: string | undefined;
-	muted: boolean;
-	held: boolean;
-	remoteMuted: boolean;
-	remoteHeld: boolean;
-	startedAt: Date | null; // todo not sure if I need this
-	hidden: boolean;
-}
-
-interface IEmptySession extends IBaseSession {
-	state: Extract<State, 'closed' | 'new'>;
-	callId: undefined;
-}
-
-interface ICallSession extends IBaseSession {
-	state: Extract<State, 'calling' | 'ringing' | 'ongoing'>;
-	callId: string;
-	peerInfo: PeerInfo;
-}
-
-export type SessionInfo = IEmptySession | ICallSession;
 
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
 
