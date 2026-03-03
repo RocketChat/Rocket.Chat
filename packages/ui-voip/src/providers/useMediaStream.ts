@@ -1,6 +1,6 @@
 import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const getRemoteStream = (instance?: MediaSignalingSession) => {
 	try {
@@ -13,7 +13,7 @@ const getRemoteStream = (instance?: MediaSignalingSession) => {
 			return null;
 		}
 
-		return mainCall.getRemoteMediaStream();
+		return mainCall.getRemoteMediaStream()?.stream || null;
 	} catch (error) {
 		console.error('MediaCall: useMediaStream - Error getting remote media stream', error);
 		return null;
@@ -23,8 +23,31 @@ const getRemoteStream = (instance?: MediaSignalingSession) => {
 const useMediaStream = (
 	instance?: MediaSignalingSession,
 ): [(node: HTMLAudioElement | null) => void, { current: HTMLAudioElement | null }] => {
-	const remoteStream = getRemoteStream(instance);
+	const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
 	const actualRef = useRef<HTMLAudioElement | null>(null);
+
+	useEffect(() => {
+		if (!instance) {
+			setRemoteStream(null);
+			return;
+		}
+
+		const syncRemoteStream = () => {
+			const nextStream = getRemoteStream(instance);
+			setRemoteStream((oldStream) => {
+				if (!nextStream) {
+					return null;
+				}
+				return oldStream === nextStream ? oldStream : nextStream;
+			});
+		};
+
+		syncRemoteStream();
+
+		return instance.on('sessionStateChange', () => {
+			syncRemoteStream();
+		});
+	}, [instance]);
 
 	return [
 		useSafeRefCallback(
@@ -36,7 +59,7 @@ const useMediaStream = (
 						return;
 					}
 
-					node.srcObject = remoteStream.stream;
+					node.srcObject = remoteStream;
 					node.play().catch((error) => {
 						console.error('MediaCall: useMediaStream - Error playing media stream', error);
 					});
