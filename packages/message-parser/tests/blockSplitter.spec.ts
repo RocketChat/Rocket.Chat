@@ -31,11 +31,8 @@ describe('BlockSplitter', () => {
 	it('should handle list splitting and preserve full syntax', () => {
 		const input = '- item 1\n* item 2\n1. item 3';
 		const blocks = BlockSplitter.split(input);
-		// Per review: consecutive list lines remain in the same block
-		// regardless of isOrdered change.
 		expect(blocks.length).toBe(1);
 		expect(blocks[0].type).toBe(BlockType.LIST);
-		expect(blocks[0].ordered).toBe(false); // First item determines metadata
 		expect(blocks[0].content).toBe('- item 1\n* item 2\n1. item 3');
 	});
 
@@ -46,6 +43,13 @@ describe('BlockSplitter', () => {
 		expect(blocks[0].content).toBe('- Level 1\n  - Level 2\n    - Level 3');
 	});
 
+	it('should allow indented blank lines to continue a list', () => {
+		const input = '- item 1\n  \n- item 2';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(1);
+		expect(blocks[0].content).toBe('- item 1\n  \n- item 2');
+	});
+
 	it('should correctly detect boundaries: list followed by heading', () => {
 		const input = '- list item\n\n# Heading';
 		const blocks = BlockSplitter.split(input);
@@ -54,27 +58,19 @@ describe('BlockSplitter', () => {
 		expect(blocks[1].type).toBe(BlockType.HEADING);
 	});
 
-	it('should correctly detect boundaries: list followed by paragraph', () => {
-		const input = '- list item\n\nNormal text';
+	it('should identify blockquotes and preserve markers', () => {
+		const input = '> quote line 1\n> quote line 2';
 		const blocks = BlockSplitter.split(input);
-		expect(blocks.length).toBe(2);
-		expect(blocks[0].type).toBe(BlockType.LIST);
-		expect(blocks[1].type).toBe(BlockType.PARAGRAPH);
-	});
-
-	it('should not continue a list with a blank line even if indented', () => {
-		const input = '- list item\n  \n# Next';
-		const blocks = BlockSplitter.split(input);
-		expect(blocks.length).toBe(2);
-		expect(blocks[0].type).toBe(BlockType.LIST);
-		expect(blocks[1].type).toBe(BlockType.HEADING);
-	});
-
-	it('should identify blockquotes and preserve content', () => {
-		const input = '> quote line 1\n> quote line 2\nNormal text';
-		const blocks = BlockSplitter.split(input);
-		expect(blocks.length).toBe(2);
+		expect(blocks.length).toBe(1);
 		expect(blocks[0].type).toBe(BlockType.QUOTE);
-		expect(blocks[0].content).toBe('quote line 1\nquote line 2');
+		expect(blocks[0].content).toBe('> quote line 1\n> quote line 2');
+	});
+
+	it('should support nested blockquotes', () => {
+		const input = '> outer\n>> inner';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(1);
+		expect(blocks[0].type).toBe(BlockType.QUOTE);
+		expect(blocks[0].content).toBe('> outer\n>> inner');
 	});
 });

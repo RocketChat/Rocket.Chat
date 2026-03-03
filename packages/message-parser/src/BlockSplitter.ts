@@ -55,7 +55,7 @@ export class BlockSplitter {
 			}
 
 			const listMatch = line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
-			const isIndentedAndNotBlank = /^\s+\S/.test(line);
+			const isIndented = /^\s+/.test(line);
 
 			if (listMatch) {
 				const isOrdered = /^\d+\./.test(listMatch[2]);
@@ -73,21 +73,20 @@ export class BlockSplitter {
 				continue;
 			}
 
-			if (isIndentedAndNotBlank && currentBlock?.type === BlockType.LIST) {
+			if (isIndented && currentBlock?.type === BlockType.LIST) {
 				currentBlock.content += `\n${line}`;
 				continue;
 			}
 
-			const quoteMatch = line.match(/^>\s*(.*)$/);
-			if (quoteMatch) {
+			if (line.startsWith('>')) {
 				if (currentBlock?.type !== BlockType.QUOTE) {
 					this.flush(blocks, currentBlock);
 					currentBlock = {
 						type: BlockType.QUOTE,
-						content: quoteMatch[1],
+						content: line,
 					};
 				} else {
-					currentBlock.content += `\n${quoteMatch[1]}`;
+					currentBlock.content += `\n${line}`;
 				}
 				continue;
 			}
