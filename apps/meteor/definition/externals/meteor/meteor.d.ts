@@ -126,7 +126,7 @@ declare module 'meteor/meteor' {
 		const connection: IMeteorConnection;
 
 		function _relativeToSiteRootUrl(path: string): string;
-		const _localStorage: Window['localStorage'];
+		let _localStorage: Window['localStorage'];
 
 		function methods<TServerMethods extends ServerMethods>(methods: {
 			[TMethodName in keyof TServerMethods]?: (
