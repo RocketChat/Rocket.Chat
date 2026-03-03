@@ -79,7 +79,6 @@ class TestParser extends UiKitParserAttachment<unknown> {
 
 	image = (element: any, context: any, index: any): any => {
 		if (context === BlockContext.BLOCK) {
-			let key = 0;
 			return {
 				component: 'image-container',
 				props: {
@@ -88,13 +87,13 @@ class TestParser extends UiKitParserAttachment<unknown> {
 						{
 							component: 'image',
 							props: {
-								key: key++,
+								key: 0,
 								src: element.imageUrl,
 								alt: element.altText,
 								block: false,
 							},
 						},
-						...(element.title ? [this.plain_text(element.title, BlockContext.NONE, key++)] : []),
+						...(element.title ? [this.plain_text(element.title, BlockContext.NONE, 1)] : []),
 					],
 					block: true,
 				},
