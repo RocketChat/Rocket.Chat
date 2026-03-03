@@ -55,7 +55,7 @@ Meteor.methods<ServerMethods>({
 
 		const options: FindOptions<IMessage> = {
 			sort: {
-				ts: -1,
+				ts: 1,
 			},
 			limit: Math.ceil(limit / 2),
 		};
@@ -65,10 +65,6 @@ Meteor.methods<ServerMethods>({
 		const moreBefore = messages.length === options.limit;
 
 		messages.push(mainMessage);
-
-		options.sort = {
-			ts: 1,
-		};
 
 		options.limit = Math.floor(limit / 2);
 
