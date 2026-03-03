@@ -1,4 +1,4 @@
-import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
+import type { IMethodConnection, IUser, RequiredField } from '@rocket.chat/core-typings';
 import type { Route, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
@@ -276,7 +276,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			body: result,
 		} as SuccessResult<T>;
 
-		return finalResult as SuccessResult<T>;
+		return finalResult;
 	}
 
 	public redirect<T, C extends RedirectStatusCodes>(code: C, result: T): RedirectResult<T, C> {
@@ -799,7 +799,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				const { tags = ['Missing Documentation'] } = _options as Record<string, any>;
 
 				if (typeof operations[method as keyof Operations<TPathPattern, TOptions>] === 'function') {
-					(operations as Record<string, any>)[method as string] = {
+					(operations as Record<string, any>)[method] = {
 						action: operations[method as keyof Operations<TPathPattern, TOptions>],
 					};
 				} else {
@@ -826,6 +826,11 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						this.logger = logger;
 
 						const user = await api.authenticatedRoute(this);
+
+						const isUserWithUsername = (user: IUser | null): user is RequiredField<IUser, 'username'> => {
+							return user !== null && typeof user === 'object' && 'username' in user && user.username !== undefined;
+						};
+
 						this.user = user!;
 						this.userId = this.user?._id;
 						const authToken = this.request.headers.get('x-auth-token');
@@ -845,6 +850,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 								});
 							}
 							return result;
+						}
+
+						if (user && !options.userWithoutUsername && !isUserWithUsername(user)) {
+							throw new Meteor.Error('error-unauthorized', 'Users must have a username');
 						}
 
 						const objectForRateLimitMatch = {
@@ -953,7 +962,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					`/${route}`.replaceAll('//', '/'),
 					{ ..._options, tags } as TypedOptions,
 					license(_options as TypedOptions, License),
-					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
+					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action,
 				);
 				this._routes.push({
 					path: route,
@@ -1075,7 +1084,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 		(this as APIClass<'/v1'>).addRoute(
 			'login',
-			{ authRequired: false },
+			{ authRequired: false, userWithoutUsername: true },
 			{
 				async post() {
 					const request = this.request as unknown as Request;
