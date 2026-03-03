@@ -60,6 +60,7 @@ const AdminUserSetRandomPasswordRadios = ({
 					<Trans
 						i18nKey='Send_Email_SMTP_Warning'
 						components={{
+							// eslint-disable-next-line jsx-a11y/anchor-has-content
 							a: <a href='/admin/settings/Email' />,
 						}}
 					/>

@@ -30,9 +30,8 @@ const FingerprintChangeModal = ({ onConfirm, onCancel, onClose }: FingerprintCha
 				<Trans
 					i18nKey='Unique_ID_change_detected_learn_more_link'
 					components={{
-						a: (
-							<a href={links.go.fingerPrintChangedFaq} target='_blank' rel='noopener noreferrer' />
-						),
+						// eslint-disable-next-line jsx-a11y/anchor-has-content
+						a: <a href={links.go.fingerPrintChangedFaq} target='_blank' rel='noopener noreferrer' />,
 					}}
 				/>
 			</Box>
