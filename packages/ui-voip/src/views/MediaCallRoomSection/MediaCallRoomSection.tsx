@@ -137,14 +137,12 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 						avatarUrl={user.avatarUrl}
 						muted={muted}
 						held={held}
-						sharing={localScreen?.active ?? false}
 					/>
 					<PeerCard
 						displayName={peerInfo.displayName}
 						avatarUrl={peerInfo.avatarUrl}
 						muted={remoteMuted}
 						held={remoteHeld}
-						sharing={remoteScreen?.active ?? false}
 					/>
 					{remoteScreen?.active && focusedCard !== 'remote' && remoteStreamCard}
 					{localScreen?.active && focusedCard !== 'local' && localStreamCard}

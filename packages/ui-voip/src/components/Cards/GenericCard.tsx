@@ -3,7 +3,6 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 import CardSlotContainer, { type SlotPosition } from './CardSlotContainer';
-import CardSlotContainerInner from './CardSlotContainerInner';
 
 const boxShadow = css`
 	box-shadow:
@@ -73,16 +72,13 @@ const GenericCard = ({
 			{children}
 			{/* TODO: Maybe the slots should be used as components instead of props */}
 			{slots &&
-				Object.entries(slots).map(([position, child]) => {
-					if (!child) {
+				Object.entries(slots).map(([position, children]) => {
+					if (!children) {
 						return null;
 					}
 					return (
 						<CardSlotContainer key={position} position={position as SlotPosition}>
-							<CardSlotContainerInner />
-							<Box is='span' zIndex='3'>
-								{child}
-							</Box>
+							{children}
 						</CardSlotContainer>
 					);
 				})}
