@@ -33,9 +33,19 @@ type MessageListTabProps = {
 	emptyResultMessage: string;
 	context: MessageActionContext;
 	queryResult: UseQueryResult<IMessage[]>;
+	onLoadMore?: () => void;
+	hasMore?: boolean;
 };
 
-const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryResult }: MessageListTabProps): ReactElement => {
+const MessageListTab = ({
+	iconName,
+	title,
+	emptyResultMessage,
+	context,
+	queryResult,
+	onLoadMore,
+	hasMore = false,
+}: MessageListTabProps): ReactElement => {
 	const formatDate = useFormatDate();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
@@ -102,6 +112,11 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 															)}
 														</>
 													);
+												}}
+												endReached={() => {
+													if (hasMore && onLoadMore) {
+														onLoadMore();
+													}
 												}}
 											/>
 										</VirtualizedScrollbars>
