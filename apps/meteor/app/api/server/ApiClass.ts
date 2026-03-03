@@ -10,11 +10,9 @@ import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
-// eslint-disable-next-line import/no-duplicates
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-// eslint-disable-next-line import/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
@@ -852,7 +850,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							return result;
 						}
 
-						if (!options.userWithoutUsername && !isUserWithUsername(user)) {
+						if (user && !options.userWithoutUsername && !isUserWithUsername(user)) {
 							throw new Meteor.Error('error-unauthorized', 'You must be logged in to do this');
 						}
 
