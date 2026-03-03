@@ -22,20 +22,24 @@ import { Apps } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
 
-import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from "../../../authorization/server/functions/hasPermission";
-import { addUserToRoom } from "../../../lib/server/functions/addUserToRoom";
-import { checkEmailAvailability } from "../../../lib/server/functions/checkEmailAvailability";
-import { checkUsernameAvailability } from "../../../lib/server/functions/checkUsernameAvailability";
-import { removeUserFromRoom } from "../../../lib/server/functions/removeUserFromRoom";
-import { sendMessage } from "../../../lib/server/functions/sendMessage";
-import { setUsernameWithValidation } from "../../../lib/server/functions/setUsername";
-import { validateNameChars } from "../../../lib/server/functions/validateNameChars";
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { addUserToRoom } from '../../../lib/server/functions/addUserToRoom';
+import { archiveRoom } from '../../../lib/server/functions/archiveRoom';
+import { createMedsenseBotRoom as createMedsenseBotRoomForUsers } from '../../../lib/server/functions/createMedsenseBotRoom';
+import { deleteRoom } from '../../../lib/server/functions/deleteRoom';
+import { ensureUserInRoom } from '../../../lib/server/functions/ensureUserInRoom';
+import { checkEmailAvailability } from '../../../lib/server/functions/checkEmailAvailability';
+import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
+import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
+import { sendMessage } from '../../../lib/server/functions/sendMessage';
+import { setUsernameWithValidation } from '../../../lib/server/functions/setUsername';
+import { validateNameChars } from '../../../lib/server/functions/validateNameChars';
 import { settings } from '../../../settings/server';
 import { addUserRolesAsync } from '../../../../server/lib/roles/addUserRoles';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
 import { registerUser } from '../../../../server/methods/registerUser';
-import { API } from "../api";
-import notifications from "../../../notifications/server/lib/Notifications";
+import { API } from '../api';
+import notifications from '../../../notifications/server/lib/Notifications';
 
 type MedsenseRegistrationStatus = 'pending' | 'verified' | 'locked' | 'completed' | 'expired';
 
@@ -150,6 +154,83 @@ const buildRegistrationSMS = ({ linkUrl, code, patientName }: { linkUrl: string;
 const findRegistrationByToken = async (token: string): Promise<IMedsensePatientRegistration | null> => {
     const tokenHash = hashRegistrationValue(token);
     return MedsensePatientRegistrations.findOneAsync({ tokenHash });
+};
+
+const getMedsenseOrchestratorBaseUrl = (): string | null => {
+    const candidates = [
+        process.env.MEDSENSE_ORCHESTRATOR_URL,
+        process.env.ORCHESTRATOR_URL,
+    ];
+    for (const candidate of candidates) {
+        if (typeof candidate === 'string' && candidate.trim()) {
+            return candidate.trim().replace(/\/+$/, '');
+        }
+    }
+    return null;
+};
+
+const notifyMedsenseSessionEnd = async ({
+    roomId,
+    requestId,
+    finalMessageId,
+    reason,
+}: {
+    roomId: string;
+    requestId?: string;
+    finalMessageId?: string;
+    reason: string;
+}): Promise<boolean> => {
+    const baseUrl = getMedsenseOrchestratorBaseUrl();
+    if (!baseUrl) {
+        console.warn('[medsense/request.close] MEDSENSE_ORCHESTRATOR_URL or ORCHESTRATOR_URL is not configured; skipping session end notify');
+        return false;
+    }
+
+    const headers: Record<string, string> = {};
+    const sharedSecret = typeof process.env.RC_SECRET === 'string' ? process.env.RC_SECRET.trim() : '';
+    if (sharedSecret) {
+        headers['X-Rocketchat-Secret'] = sharedSecret;
+    }
+
+    try {
+        const response = await HTTP.post(`${baseUrl}/session/end`, {
+            data: {
+                roomId,
+                requestId,
+                finalMessageId,
+                reason,
+            },
+            headers,
+            timeout: 3000,
+            throwError: false,
+        });
+
+        if (response.statusCode !== 200 || response.data?.success === false) {
+            console.warn(
+                '[medsense/request.close] Session end notify failed',
+                JSON.stringify({
+                    statusCode: response.statusCode,
+                    reason,
+                    roomId,
+                    requestId,
+                    response: response.data,
+                }),
+            );
+            return false;
+        }
+        return true;
+    } catch (error) {
+        console.warn(
+            '[medsense/request.close] Session end notify error',
+            JSON.stringify({
+                reason,
+                roomId,
+                requestId,
+                error: (error as Error)?.message || String(error),
+            }),
+        );
+        return false;
+    }
 };
 
 Meteor.startup(() => {
@@ -277,6 +358,70 @@ const resolveLegacySpecialtyFlowToActionId = async (legacyFlowId: string): Promi
         || actions.find((action) => action.id.toLowerCase().endsWith(':uti_assessment') && normalized === 'uti');
 
     return mapped?.id || null;
+};
+
+const getMedsenseHubActionById = async (qualifiedActionId?: string): Promise<MedsenseHubAction | null> => {
+    if (!qualifiedActionId) {
+        return null;
+    }
+
+    const actions = await discoverMedsenseHubActions();
+    return actions.find((action) => action.id === qualifiedActionId) || null;
+};
+
+const extractSpecialtyExecutionResult = (payload: any): Record<string, any> | null => {
+    if (!payload || typeof payload !== 'object') {
+        return null;
+    }
+
+    const result = payload.result;
+    if (result && typeof result === 'object') {
+        return result as Record<string, any>;
+    }
+
+    return payload as Record<string, any>;
+};
+
+const updateRoomRequestStatus = async (roomId: string, status: string, requestId?: string): Promise<void> => {
+    await Rooms.update(
+        { _id: roomId },
+        {
+            $set: {
+                ...(requestId ? { medsenseActiveRequestId: requestId } : {}),
+                medsenseActiveRequestStatus: status,
+            },
+        },
+    );
+    api.broadcast('room.save', { _id: roomId, medsenseActiveRequestStatus: status });
+};
+
+const closePrecreatedSpecialtyRequest = async ({
+    requestId,
+    roomId,
+    closedByUserId,
+    closedByUsername,
+}: {
+    requestId?: string;
+    roomId?: string;
+    closedByUserId: string;
+    closedByUsername?: string;
+}): Promise<void> => {
+    if (!requestId || !roomId) {
+        return;
+    }
+
+    await MedsenseRequests.markClosed(requestId, closedByUserId, closedByUsername || 'system');
+    await Rooms.update(
+        { _id: roomId },
+        {
+            $unset: {
+                medsenseActiveRequestId: 1,
+                medsenseActiveRequestStatus: 1,
+            },
+        },
+    );
+    api.broadcast('room.save', { _id: roomId, medsenseActiveRequestStatus: null });
+    await archiveRoom(roomId, { _id: closedByUserId, username: closedByUsername || 'system' });
 };
 
 // Pharmacies Management (Kept Intact)
@@ -819,6 +964,150 @@ API.v1.addRoute(
 // NEW: Request-Record Queue APIs
 // =========================================================================================
 
+// Create Request + Room
+API.v1.addRoute(
+    "medsense/request.create",
+    { authRequired: true },
+    {
+        async post() {
+            check(
+                this.bodyParams,
+                Match.ObjectIncluding({
+                    pharmacyId: String,
+                    reason: String,
+                    requestedByUserId: String,
+                    requestedByUsername: Match.Maybe(String),
+                    contextSummary: Match.Maybe(String),
+                    botUserId: Match.Maybe(String),
+                    status: Match.Maybe(String),
+                    pendingPatientUsername: Match.Maybe(String),
+                    pendingPatientName: Match.Maybe(String),
+                }),
+            );
+
+            const {
+                pharmacyId,
+                reason,
+                requestedByUserId,
+                requestedByUsername,
+                contextSummary,
+                botUserId,
+                status,
+                pendingPatientUsername,
+                pendingPatientName,
+            } = this.bodyParams;
+
+            const isAdmin = await hasPermissionAsync(this.userId, "admin");
+            if (!isAdmin) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                if (!user?.roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
+
+            const requesterUser = await Users.findOneById(requestedByUserId, { projection: { username: 1, name: 1, roles: 1 } });
+            if (!requesterUser?._id || !requesterUser.username) {
+                return API.v1.failure("Requested-by user not found");
+            }
+
+            const patientUser = Array.isArray(requesterUser.roles) && requesterUser.roles.length === 1 && requesterUser.roles.includes('user')
+                ? requesterUser
+                : null;
+
+            let botUser = null;
+            if (botUserId) {
+                botUser = await Users.findOneById(botUserId, { projection: { username: 1, name: 1 } });
+            } else {
+                const botUsernameSetting = settings.get<string>('Medsense_Bot_User');
+                const botUsername = typeof botUsernameSetting === 'string' ? botUsernameSetting.trim() : '';
+                if (botUsername) {
+                    botUser = await Users.findOneByUsernameIgnoringCase(botUsername, { projection: { username: 1, name: 1 } });
+                }
+            }
+
+            if (!botUser?._id || !botUser.username) {
+                return API.v1.failure("Medsense bot user not found");
+            }
+
+            const now = new Date();
+            const preAssessmentExpiresAt = new Date(now.getTime() + 15 * 60 * 1000);
+            const initialStatus = typeof status === 'string' && status.trim() ? status.trim() : 'waiting_staff';
+            const displayUsername =
+                (typeof requestedByUsername === 'string' && requestedByUsername.trim()) ||
+                (typeof pendingPatientUsername === 'string' && pendingPatientUsername.trim()) ||
+                requesterUser.username;
+
+            const requestId = await MedsenseRequests.createRequest({
+                roomId: null,
+                pharmacyId,
+                requestedByUserId,
+                requestedByUsername: displayUsername,
+                reason,
+                status: initialStatus as any,
+                patientStage: 'pre_assessment',
+                contextSummary: contextSummary || '',
+                answers: {},
+                preAssessmentExpiresAt,
+                createdAt: now,
+            });
+
+            let room;
+            try {
+                room = await createMedsenseBotRoomForUsers({
+                    patientUser,
+                    botUser,
+                    creatorUser: patientUser ? undefined : requesterUser,
+                    roomNameSeed: (pendingPatientUsername as string | undefined) || displayUsername,
+                    roomExtraData: patientUser
+                        ? {
+                            customFields: {
+                                patientId: patientUser._id,
+                                patientUsername: patientUser.username,
+                            },
+                        }
+                        : {
+                            customFields: {
+                                ...(pendingPatientUsername ? { pendingPatientUsername } : {}),
+                                ...(pendingPatientName ? { pendingPatientName } : {}),
+                                ...(pendingPatientUsername ? { patientUsername: pendingPatientUsername } : {}),
+                            },
+                        },
+                });
+            } catch (error: any) {
+                await MedsenseRequests.markRoomCreateFailed(requestId, error?.message || 'Failed to create request room');
+                return API.v1.failure("Failed to create request room");
+            }
+
+            try {
+                await MedsenseRequests.attachRoom(requestId, room._id, initialStatus as any);
+                await updateRoomRequestStatus(room._id, initialStatus, requestId);
+            } catch (error: any) {
+                await MedsenseRequests.markRoomCreateFailed(requestId, error?.message || 'Failed to attach request room');
+                try {
+                    await deleteRoom(room._id);
+                } catch (deleteError) {
+                    console.error('Failed to delete request room after attach failure', deleteError);
+                }
+                return API.v1.failure("Failed to create request room");
+            }
+
+            const request = await MedsenseRequests.findOneById(requestId);
+            return API.v1.success({
+                requestId,
+                roomId: room._id,
+                status: initialStatus,
+                request,
+                room: {
+                    _id: room._id,
+                    name: room.name,
+                    fname: room.fname,
+                    t: room.t,
+                },
+            });
+        },
+    },
+);
+
 // Create Request
 API.v1.addRoute(
     "medsense/request.set",
@@ -930,7 +1219,7 @@ API.v1.addRoute(
                 status,
             });
 
-            if (status) {
+            if (status && request.roomId) {
                 await Rooms.update(
                     { _id: request.roomId },
                     {
@@ -1047,7 +1336,7 @@ API.v1.addRoute(
             }
 
             const request = await MedsenseRequests.findOneById(requestId);
-            if (!request || !['waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'].includes(request.status)) {
+            if (!request || !['invite_sent', 'waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'].includes(request.status)) {
                 return API.v1.failure("Request not found or not pending");
             }
 
@@ -1091,58 +1380,73 @@ API.v1.addRoute(
 
 // Close Request
 API.v1.addRoute(
-    "medsense/request.close",
-    { authRequired: true },
-    {
-        async post() {
-            check(this.bodyParams, Match.ObjectIncluding({ requestId: String }));
-            const { requestId } = this.bodyParams;
+	'medsense/request.close',
+	{ authRequired: true },
+	{
+		async post() {
+			check(this.bodyParams, Match.ObjectIncluding({ requestId: String, message: Match.Maybe(String) }));
+			const { requestId, message } = this.bodyParams;
 
-            if (!(await hasPermissionAsync(this.userId, 'medsense-close-request'))) {
-                return API.v1.forbidden();
-            }
+			const currentUser = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+			const isBot = Boolean(currentUser?.roles?.includes('bot'));
 
-            const request = await MedsenseRequests.findOneById(requestId);
-            if (!request || request.status === 'closed') {
-                return API.v1.failure("Request not found or already closed");
-            }
+			if (!isBot && !(await hasPermissionAsync(this.userId, 'medsense-close-request'))) {
+				return API.v1.forbidden();
+			}
 
-            const room = await Rooms.findOneById(request.roomId);
-            if (!room?.t) {
-                return API.v1.failure("Room type missing for request room");
-            }
+			const request = await MedsenseRequests.findOneById(requestId);
+			if (!request || request.status === 'closed') {
+				return API.v1.failure('Request not found or already closed');
+			}
 
-            try {
-                await removeUserFromRoom(request.roomId, this.user);
-            } catch (error: any) {
-                return API.v1.failure(`Failed to remove user from room: ${error?.message ?? error}`);
-            }
+			const room = await Rooms.findOneById(request.roomId);
+			if (!room?.t) {
+				return API.v1.failure('Room type missing for request room');
+			}
 
-            // Mark Closed
-            await MedsenseRequests.markClosed(requestId, this.userId, this.user.username);
+			if (!isBot) {
+				try {
+					await removeUserFromRoom(request.roomId, this.user);
+				} catch (error: any) {
+					return API.v1.failure(`Failed to remove user from room: ${error?.message ?? error}`);
+				}
+			}
 
-            // Clear Room fields
-            await Rooms.update(
-                { _id: request.roomId },
-                {
-                    $unset: {
-                        medsenseActiveRequestId: 1,
-                        medsenseActiveRequestStatus: 1,
-                    },
-                }
-            );
+			await MedsenseRequests.markClosed(requestId, this.userId, this.user.username);
 
-            // System Message
-            await sendMessage(this.user, {
-                rid: request.roomId,
-                msg: `Request closed by @${this.user.username}`,
-            }, room);
+			await Rooms.update(
+				{ _id: request.roomId },
+				{
+					$unset: {
+						medsenseActiveRequestId: 1,
+						medsenseActiveRequestStatus: 1,
+					},
+				},
+			);
 
-            api.broadcast('room.save', { _id: request.roomId, medsenseActiveRequestStatus: null });
+			const closeMessageRecord = await sendMessage(
+				this.user,
+				{
+					rid: request.roomId,
+					msg: typeof message === 'string' && message.trim() ? message.trim() : `Request closed by @${this.user.username}`,
+				},
+				room,
+			);
 
-            return API.v1.success();
-        },
-    },
+			api.broadcast('room.save', { _id: request.roomId, medsenseActiveRequestStatus: null });
+			if (!isBot) {
+				await notifyMedsenseSessionEnd({
+					roomId: request.roomId,
+					requestId,
+					finalMessageId: (closeMessageRecord as any)?._id,
+					reason: 'staff_request_close',
+				});
+			}
+			await archiveRoom(request.roomId, this.user);
+
+			return API.v1.success();
+		},
+	},
 );
 
 // Decline Request (close with decline message)
@@ -1162,7 +1466,7 @@ API.v1.addRoute(
             }
 
             const request = await MedsenseRequests.findOneById(requestId);
-            if (!request || !['waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'].includes(request.status)) {
+            if (!request || !['invite_sent', 'waiting_patient', 'ai_preassessment', 'waiting_staff', 'ready_for_staff'].includes(request.status)) {
                 return API.v1.failure("Request not found or not pending");
             }
 
@@ -1194,12 +1498,19 @@ API.v1.addRoute(
                 ? await Users.findOneByUsername(botUsername, { projection: { username: 1 } })
                 : null;
             const messageUser = botUser ?? this.user;
-            await sendMessage(messageUser, {
+            const declineMessageRecord = await sendMessage(messageUser, {
                 rid: request.roomId,
                 msg: declineText,
             }, room);
 
             api.broadcast('room.save', { _id: request.roomId, medsenseActiveRequestStatus: null });
+            await notifyMedsenseSessionEnd({
+                roomId: request.roomId,
+                requestId,
+                finalMessageId: (declineMessageRecord as any)?._id,
+                reason: 'staff_request_decline',
+            });
+            await archiveRoom(request.roomId, this.user);
 
             return API.v1.success();
         },
@@ -1273,12 +1584,14 @@ API.v1.addRoute(
                     return {
                         actionId: action.id,
                         id: action.id,
-                        appId: parsed?.appId,
-                        label: action.label || parsed?.actionId || action.id,
-                        description: action.description,
-                        icon: action.icon,
-                    };
-                });
+                    appId: parsed?.appId,
+                    label: action.label || parsed?.actionId || action.id,
+                    description: action.description,
+                    icon: action.icon,
+                    flowId: (action as any).flowId,
+                    capabilities: action.capabilities,
+                };
+            });
 
             return API.v1.success({ actions });
         },
@@ -1466,6 +1779,9 @@ API.v1.addRoute(
                 }
             }
 
+            const selectedSpecialtyAction = await getMedsenseHubActionById(resolvedSpecialtyActionId);
+            const shouldPrecreateSpecialty = Boolean(selectedSpecialtyAction?.capabilities?.requestFirstConfirmationFlow);
+
             const token = createRegistrationToken();
             const code = createRegistrationCode();
             const now = new Date();
@@ -1490,6 +1806,36 @@ API.v1.addRoute(
                 prefill,
             });
 
+            let specialtyRequestId: string | undefined;
+            let specialtyRoomId: string | undefined;
+            if (resolvedSpecialtyActionId && shouldPrecreateSpecialty) {
+                try {
+                    const relayed = await relayMedsenseHubExecute(String(resolvedSpecialtyActionId), {
+                        userId: this.userId,
+                        username: this.user?.username,
+                        context: {
+                            origin: 'registration_start',
+                            precreateOnly: true,
+                            pharmacyId: selectedPharmacyId,
+                            requestedByUserId: this.userId,
+                            requestedByUsername: this.user?.username,
+                            patientName: prefill.name,
+                            patientUsername: prefill.username,
+                        },
+                    });
+
+                    const result = relayed.statusCode === 200 ? extractSpecialtyExecutionResult(relayed.data) : null;
+                    if (!result?.requestId || !result?.roomId) {
+                        return API.v1.failure('Failed to initialize specialty flow');
+                    }
+
+                    specialtyRequestId = String(result.requestId);
+                    specialtyRoomId = String(result.roomId);
+                } catch (error: any) {
+                    return API.v1.failure(error?.message || 'Failed to initialize specialty flow');
+                }
+            }
+
             const registrationId = await MedsensePatientRegistrations.insertAsync({
                 tokenHash,
                 codeHash,
@@ -1502,7 +1848,9 @@ API.v1.addRoute(
                 prefill,
                 specialtyActionId: resolvedSpecialtyActionId,
                 specialtyFlowId: legacySpecialtyFlowId,
-                specialtyRoomId: this.bodyParams.specialtyRoomId ? String(this.bodyParams.specialtyRoomId) : undefined,
+                specialtyRoomId: specialtyRoomId || (this.bodyParams.specialtyRoomId ? String(this.bodyParams.specialtyRoomId) : undefined),
+                specialtyRequestId,
+                specialtyStatus: specialtyRequestId ? 'invite_pending' : undefined,
                 startedByUserId: this.userId,
                 startedByUsername: this.user?.username,
                 createdAt: now,
@@ -1516,9 +1864,39 @@ API.v1.addRoute(
                     patientName: prefill.name,
                 });
                 await sendMedsenseSMS(normalizedPhone, smsBody);
+                if (specialtyRequestId && specialtyRoomId) {
+                    await MedsenseRequests.updateAssessmentProgress(specialtyRequestId, { status: 'invite_sent' });
+                    await updateRoomRequestStatus(specialtyRoomId, 'invite_sent', specialtyRequestId);
+                }
             } catch (error: any) {
+                if (specialtyRequestId && specialtyRoomId) {
+                    try {
+                        await closePrecreatedSpecialtyRequest({
+                            requestId: specialtyRequestId,
+                            roomId: specialtyRoomId,
+                            closedByUserId: this.userId,
+                            closedByUsername: this.user?.username,
+                        });
+                    } catch (cleanupError) {
+                        console.error('Failed to clean up precreated specialty request after SMS failure', cleanupError);
+                    }
+                }
                 await MedsensePatientRegistrations.removeAsync({ _id: registrationId as string });
                 return API.v1.failure(`SMS Send Failed: ${error?.message || error}`);
+            }
+
+            if (specialtyRequestId) {
+                await MedsensePatientRegistrations.updateAsync(
+                    { _id: registrationId as string },
+                    {
+                        $set: {
+                            specialtyStatus: 'invite_sent',
+                            specialtyRequestId,
+                            specialtyRoomId: specialtyRoomId || undefined,
+                            _updatedAt: new Date(),
+                        },
+                    } as any,
+                );
             }
 
             return API.v1.success({
@@ -1821,11 +2199,14 @@ API.v1.addRoute(
 
             const specialtyActionId = registration.specialtyActionId || registration.specialtyFlowId;
             let specialtyRoomId = registration.specialtyRoomId;
-            let specialtyRequestId: string | undefined;
-            let specialtyStatus: string | undefined = specialtyActionId ? "pending" : undefined;
+            let specialtyRequestId: string | undefined = registration.specialtyRequestId;
+            const hasPrecreatedSpecialty = Boolean(registration.specialtyRequestId && registration.specialtyRoomId);
+            let specialtyStatus: string | undefined = specialtyActionId
+                ? (hasPrecreatedSpecialty ? "invite_sent" : "pending")
+                : undefined;
             let specialtyError: string | undefined;
 
-            if (specialtyActionId) {
+            if (specialtyActionId && !hasPrecreatedSpecialty) {
                 try {
                     const relayed = await relayMedsenseHubExecute(String(specialtyActionId), {
                         userId: registration.startedByUserId || userId,
@@ -1864,6 +2245,58 @@ API.v1.addRoute(
                     specialtyError = error?.message || "Failed to execute specialty action";
                 }
             }
+
+			if (specialtyRoomId) {
+				try {
+					const specialtyRoom = await Rooms.findOneById(String(specialtyRoomId));
+					if (!specialtyRoom) {
+						throw new Meteor.Error('error-invalid-room', 'Invalid specialty room');
+					}
+
+					await ensureUserInRoom(
+						String(specialtyRoomId),
+						{ _id: userId, username },
+						{ _id: registration.startedByUserId || userId, username: registration.startedByUsername || username },
+					);
+
+					const isMedsenseRoom = Boolean(
+						(specialtyRoom as any).medsenseActiveRequestId ||
+							(typeof specialtyRoom.name === 'string' && specialtyRoom.name.startsWith('medsense-')),
+					);
+
+					if (isMedsenseRoom) {
+						await Rooms.setCustomFieldsById(
+							String(specialtyRoomId),
+							{
+								...(specialtyRoom.customFields || {}),
+								patientId: userId,
+								patientUsername: username,
+							} as any,
+						);
+					}
+
+                    if (specialtyRequestId) {
+                        await MedsenseRequests.updateOne(
+                            { _id: specialtyRequestId },
+                            {
+                                $set: {
+                                    requestedByUserId: userId,
+                                    requestedByUsername: username,
+                                    status: 'waiting_patient',
+                                    _updatedAt: new Date(),
+                                },
+                            },
+                        );
+                        await updateRoomRequestStatus(String(specialtyRoomId), 'waiting_patient', specialtyRequestId);
+                        specialtyStatus = 'waiting_patient';
+                    } else if (!specialtyStatus) {
+                        specialtyStatus = 'pending_room_link';
+                    }
+				} catch (error: any) {
+					specialtyStatus = 'pending_room_link';
+					specialtyError = error?.message || 'Failed to attach patient to specialty room';
+				}
+			}
 
             const now = new Date();
             await MedsensePatientRegistrations.updateAsync(

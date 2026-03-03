@@ -1,12 +1,10 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Random } from '@rocket.chat/random';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { createRoom } from '../../app/lib/server/functions/createRoom';
-import { addUserToRoom } from '../../app/lib/server/functions/addUserToRoom';
+import { createMedsenseBotRoom as createMedsenseBotRoomForUsers } from '../../app/lib/server/functions/createMedsenseBotRoom';
 import { sendMessage } from '../../app/lib/server/functions/sendMessage';
 import { RateLimiterClass as RateLimiter } from '../../app/lib/server/lib/RateLimiter';
 import { settings } from '../../app/settings/server';
@@ -30,10 +28,7 @@ type MedsenseCreateBotRoomOptions = {
 	greeting?: string;
 };
 
-export const medsenseCreateBotRoom = async (
-	userId: IUser['_id'] | null,
-	options: MedsenseCreateBotRoomOptions = {},
-): Promise<string> => {
+export const medsenseCreateBotRoom = async (userId: IUser['_id'] | null, options: MedsenseCreateBotRoomOptions = {}): Promise<string> => {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'medsenseCreateBotRoom',
@@ -81,47 +76,16 @@ export const medsenseCreateBotRoom = async (
 		});
 	}
 
-	const roomName = `medsense-${user.username}-${botUsername}-${Random.id(6)}`;
-	const { rid } = await createRoom<'p'>('p', roomName, user, [botUser.username]);
-	const room = await Rooms.findOneById(rid);
-
-	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-			method: 'medsenseCreateBotRoom',
-		});
-	}
-
-	const botSubscription = await Subscriptions.findOneByRoomIdAndUserId(rid, botUser._id, { projection: { _id: 1 } });
-	if (!botSubscription) {
-		try {
-			await addUserToRoom(
-				rid,
-				{ _id: botUser._id, username: botUser.username },
-				{ _id: user._id, username: user.username },
-				{ skipSystemMessage: true, skipAlertSound: true },
-			);
-		} catch (error) {
-			// Fall back to a direct subscription if callbacks reject the bot user.
-		}
-
-		const ensured = await Subscriptions.findOneByRoomIdAndUserId(rid, botUser._id, { projection: { _id: 1 } });
-		if (!ensured) {
-			const now = new Date();
-			await Subscriptions.createWithRoomAndUser(room, botUser, { open: true, ts: now, ls: now, alert: false, unread: 0 });
-			const finalCheck = await Subscriptions.findOneByRoomIdAndUserId(rid, botUser._id, { projection: { _id: 1 } });
-			if (!finalCheck) {
-				throw new Meteor.Error('error-medsense-bot-user-not-added', 'Medsense bot user could not be added to the room', {
-					method: 'medsenseCreateBotRoom',
-				});
-			}
-		}
-	}
+	const room = await createMedsenseBotRoomForUsers({
+		patientUser: user,
+		botUser,
+	});
 
 	if (greeting) {
 		await sendMessage(user, { msg: greeting }, room);
 	}
 
-	return rid;
+	return room._id;
 };
 
 declare module '@rocket.chat/ddp-client' {

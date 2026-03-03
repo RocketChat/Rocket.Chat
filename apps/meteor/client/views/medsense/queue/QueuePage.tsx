@@ -52,6 +52,7 @@ const useFormatDate = () => {
 const formatRequestStatus = (status?: string) => {
 	if (!status) return '-';
 	const map: Record<string, string> = {
+		invite_sent: 'Invite sent',
 		waiting_patient: 'Waiting for patient',
 		ai_preassessment: 'AI pre-assessment',
 		waiting_staff: 'Waiting for staff',
@@ -72,6 +73,7 @@ const useStatusColors = (): Record<string, string> => {
 	const settingValue = useSetting('Medsense_Queue_Status_Colors') as string | undefined;
 	return useMemo(() => {
 		const defaultColors: Record<string, string> = {
+			invite_sent: 'secondary',
 			waiting_patient: 'warning',
 			ai_preassessment: 'secondary',
 			waiting_staff: 'warning',
