@@ -160,23 +160,10 @@ test.describe('prune-messages', () => {
 			).toBe(200);
 
 			await test.step('check main thread message for prune message-attachment', async () => {
-				const threadFileLink = content.threadMessageList.getByRole('link', { name: 'any_file.txt' });
-				let stableChecks = 0;
-
-				await expect
-					.poll(
-						async () => {
-							const threadText = await content.lastThreadMessageText.innerText().catch(() => '');
-							const hasPrunePlaceholder = threadText.includes('File removed by prune');
-							const hasFileLink = (await threadFileLink.count()) > 0;
-
-							stableChecks = hasPrunePlaceholder && !hasFileLink ? stableChecks + 1 : 0;
-
-							return stableChecks;
-						},
-						{ timeout: 15_000, intervals: [500] },
-					)
-					.toBeGreaterThanOrEqual(3);
+				await expect(content.getLastThreadMessageByFileName('any_file.txt')).not.toBeVisible();
+				await expect(content.lastThreadMessageText, 'Prune message attachment replaces file attachment').toContainText(
+					'File removed by prune',
+				);
 			});
 		},
 	);
