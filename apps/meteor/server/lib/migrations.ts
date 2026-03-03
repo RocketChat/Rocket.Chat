@@ -333,6 +333,7 @@ const getHashVersion = async () => {
 	);
 
 	hashVersion = result?.hash;
+	return hashVersion;
 };
 
 export async function shouldRunServerVersionChange(): Promise<boolean> {
