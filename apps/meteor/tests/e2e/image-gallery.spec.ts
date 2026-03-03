@@ -96,7 +96,7 @@ test.describe.serial('Image Gallery', async () => {
 		test('expect successfully move to older images by using the left arrow button', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.lastUserMessage.locator('img.gallery-item').click();
-			/* eslint-disable no-await-in-loop */
+
 			for (let i = 0; i < imageNames.length - 1; i++) {
 				await expect(poHomeChannel.content.previousSlideButton).toBeEnabled();
 				await expect(poHomeChannel.content.currentGalleryImage).toHaveAttribute(

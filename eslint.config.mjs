@@ -330,7 +330,6 @@ export default [
 			'@typescript-eslint/no-empty-function': 'off',
 			'@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
 			'new-cap': 'off',
-			'no-await-in-loop': 'off',
 		},
 	},
 	{
