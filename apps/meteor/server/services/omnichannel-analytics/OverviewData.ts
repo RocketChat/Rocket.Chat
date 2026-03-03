@@ -4,8 +4,8 @@ import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
 import { differenceInDays } from 'date-fns';
 import type { Filter } from 'mongodb';
 
-import { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';
 import { formatInTimezone, formatHourInTimezone, parseRangeInTimezone } from './utils';
+import { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';
 
 type OverviewDataValidActions = 'Conversations' | 'Productivity';
 

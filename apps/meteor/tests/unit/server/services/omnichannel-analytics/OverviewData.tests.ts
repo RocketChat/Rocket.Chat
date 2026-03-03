@@ -1,7 +1,7 @@
 /* eslint-disable new-cap */
 import { expect } from 'chai';
-import sinon from 'sinon';
 import { startOfDay, endOfDay, startOfMonth, endOfMonth } from 'date-fns';
+import sinon from 'sinon';
 
 import { conversations } from './mockData';
 import { OverviewData } from '../../../../../server/services/omnichannel-analytics/OverviewData';
@@ -188,7 +188,8 @@ describe('OverviewData Analytics', () => {
 		});
 		it('should return all values as 0 when theres data but not on the period we pass', async () => {
 			const overview = new OverviewData({
-				getAnalyticsBetweenDate: () => analytics({ gte: new Date(new Date().getFullYear(), 9, 1), lte: new Date(new Date().getFullYear(), 9, 1) }),
+				getAnalyticsBetweenDate: () =>
+					analytics({ gte: new Date(new Date().getFullYear(), 9, 1), lte: new Date(new Date().getFullYear(), 9, 1) }),
 				getOnHoldConversationsBetweenDate: () => 0,
 			} as any);
 			const result = await overview.Conversations(new Date(), new Date(), '', 'UTC', (v: string): string => v, {});
@@ -210,14 +211,7 @@ describe('OverviewData Analytics', () => {
 
 			// Fixed date to assure we get the same data
 			const d = new Date(Date.UTC(2023, 10, 12));
-			const result = await overview.Conversations(
-				startOfDay(d),
-				endOfDay(d),
-				'',
-				'UTC',
-				(v: string): string => v,
-				{},
-			);
+			const result = await overview.Conversations(startOfDay(d), endOfDay(d), '', 'UTC', (v: string): string => v, {});
 			expect(result).to.be.deep.equal([
 				{ title: 'Total_conversations', value: 1 },
 				{ title: 'Open_conversations', value: 0 },
@@ -301,12 +295,7 @@ describe('OverviewData Analytics', () => {
 			const overview = new OverviewData({
 				getAnalyticsMetricsBetweenDate: (_: any, date: { gte: Date; lte: Date }) => analytics(date),
 			} as any);
-			const result = await overview.Productivity(
-				startOfMonth(new Date(2023, 10, 1)),
-				endOfMonth(new Date(2023, 10, 1)),
-				'',
-				'UTC',
-			);
+			const result = await overview.Productivity(startOfMonth(new Date(2023, 10, 1)), endOfMonth(new Date(2023, 10, 1)), '', 'UTC');
 
 			expect(result).to.be.deep.equal([
 				{ title: 'Avg_response_time', value: '00:00:07' },

@@ -8115,7 +8115,7 @@ __metadata:
   resolution: "@rocket.chat/agenda@workspace:packages/agenda"
   dependencies:
     "@types/debug": "npm:^4.1.12"
-    cron: "npm:~1.8.2"
+    cron: "npm:4.4.0"
     date.js: "npm:~0.3.3"
     debug: "npm:~4.3.7"
     eslint: "npm:~9.39.3"
@@ -9280,7 +9280,7 @@ __metadata:
     cookie: "npm:^0.7.2"
     cookie-parser: "npm:^1.4.7"
     cors: "npm:^2.8.6"
-    cron: "npm:~1.8.2"
+    cron: "npm:4.4.0"
     cron-validator: "npm:^1.3.1"
     cross-env: "npm:^7.0.3"
     css-vars-ponyfill: "npm:^2.4.9"
@@ -13169,6 +13169,13 @@ __metadata:
   version: 4.17.23
   resolution: "@types/lodash@npm:4.17.23"
   checksum: 10/05935534a44aadef67c2158b2fb4a042a226970088106a40ddc67e4f063783149fe5cf02279d7dd4a1e72c98d9189b9430face659645dbf77270f8c4c3e387f5
+  languageName: node
+  linkType: hard
+
+"@types/luxon@npm:~3.7.0":
+  version: 3.7.1
+  resolution: "@types/luxon@npm:3.7.1"
+  checksum: 10/c7bc164c278393ea0be938f986c74b4cddfab9013b1aff4495b016f771ded1d5b7b7b4825b2c7f0b8799edce19c5f531c28ff434ab3dedf994ac2d99a20fd4c4
   languageName: node
   linkType: hard
 
@@ -18010,12 +18017,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cron@npm:~1.8.2":
-  version: 1.8.2
-  resolution: "cron@npm:1.8.2"
+"cron@npm:4.4.0":
+  version: 4.4.0
+  resolution: "cron@npm:4.4.0"
   dependencies:
-    moment-timezone: "npm:^0.5.x"
-  checksum: 10/bdccbf23fe1718004a84ecd988049da0e4978847184c94d2e08f5ffbea5bfebea43680a860ac95c5c711530d315fc3ab1193126479069ec2bfb5319ba10c97ad
+    "@types/luxon": "npm:~3.7.0"
+    luxon: "npm:~3.7.0"
+  checksum: 10/c969fdace813cc2b5898d755eb37a8a7e4192e4b43ef7b1a96c25bf9f54d5bcab016bfe851de297b570b67b4b5a37a2b242bde4a7c839860471ca243cdac79f6
   languageName: node
   linkType: hard
 
@@ -26613,6 +26621,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"luxon@npm:~3.7.0":
+  version: 3.7.2
+  resolution: "luxon@npm:3.7.2"
+  checksum: 10/b24cd205ed306ce7415991687897dcc4027921ae413c9116590bc33a95f93b86ce52cf74ba72b4f5c5ab1c10090517f54ac8edfb127c049e0bf55b90dc2260be
+  languageName: node
+  linkType: hard
+
 "lz-string@npm:^1.5.0":
   version: 1.5.0
   resolution: "lz-string@npm:1.5.0"
@@ -27759,16 +27774,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment-timezone@npm:^0.5.x":
-  version: 0.5.48
-  resolution: "moment-timezone@npm:0.5.48"
-  dependencies:
-    moment: "npm:^2.29.4"
-  checksum: 10/8e0b7a05577623552293b28eeee4e60634b8be87fdb74084fa6d5ccc516771eb42d88f29c5a5e50a94c494048d14cdef94f94526a9dfd5e1b0050ff29d0a6c0a
-  languageName: node
-  linkType: hard
-
-"moment@npm:^2.10.2, moment@npm:^2.29.4":
+"moment@npm:^2.10.2":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 10/ae42d876d4ec831ef66110bdc302c0657c664991e45cf2afffc4b0f6cd6d251dde11375c982a5c0564ccc0fa593fc564576ddceb8c8845e87c15f58aa6baca69
@@ -32406,7 +32412,7 @@ __metadata:
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
     node-gyp: "npm:^10.2.0"
     ts-node: "npm:^10.9.2"
-    turbo: "npm:~2.8.11"
+    turbo: "npm:2.8.12"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -35490,58 +35496,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"turbo-darwin-64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-darwin-64@npm:2.8.11"
+"turbo-darwin-64@npm:2.8.12":
+  version: 2.8.12
+  resolution: "turbo-darwin-64@npm:2.8.12"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-darwin-arm64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-darwin-arm64@npm:2.8.11"
+"turbo-darwin-arm64@npm:2.8.12":
+  version: 2.8.12
+  resolution: "turbo-darwin-arm64@npm:2.8.12"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-linux-64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-linux-64@npm:2.8.11"
+"turbo-linux-64@npm:2.8.12":
+  version: 2.8.12
+  resolution: "turbo-linux-64@npm:2.8.12"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-linux-arm64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-linux-arm64@npm:2.8.11"
+"turbo-linux-arm64@npm:2.8.12":
+  version: 2.8.12
+  resolution: "turbo-linux-arm64@npm:2.8.12"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo-windows-64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-windows-64@npm:2.8.11"
+"turbo-windows-64@npm:2.8.12":
+  version: 2.8.12
+  resolution: "turbo-windows-64@npm:2.8.12"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
 
-"turbo-windows-arm64@npm:2.8.11":
-  version: 2.8.11
-  resolution: "turbo-windows-arm64@npm:2.8.11"
+"turbo-windows-arm64@npm:2.8.12":
+  version: 2.8.12
+  resolution: "turbo-windows-arm64@npm:2.8.12"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"turbo@npm:~2.8.11":
-  version: 2.8.11
-  resolution: "turbo@npm:2.8.11"
+"turbo@npm:2.8.12":
+  version: 2.8.12
+  resolution: "turbo@npm:2.8.12"
   dependencies:
-    turbo-darwin-64: "npm:2.8.11"
-    turbo-darwin-arm64: "npm:2.8.11"
-    turbo-linux-64: "npm:2.8.11"
-    turbo-linux-arm64: "npm:2.8.11"
-    turbo-windows-64: "npm:2.8.11"
-    turbo-windows-arm64: "npm:2.8.11"
+    turbo-darwin-64: "npm:2.8.12"
+    turbo-darwin-arm64: "npm:2.8.12"
+    turbo-linux-64: "npm:2.8.12"
+    turbo-linux-arm64: "npm:2.8.12"
+    turbo-windows-64: "npm:2.8.12"
+    turbo-windows-arm64: "npm:2.8.12"
   dependenciesMeta:
     turbo-darwin-64:
       optional: true
@@ -35557,7 +35563,7 @@ __metadata:
       optional: true
   bin:
     turbo: bin/turbo
-  checksum: 10/5ac765e3f35b69ad9daf398a35c44b5db237640f17a234bbbd344594e4b1da014ed592dbc0e87d908548a8c6ad72037c2526baba57091e99765160b14ed4cd2a
+  checksum: 10/1ad9859f0976f3a0dbe4d4473cccd280950899b9ba1dde234dc342de890eec14ea86861efff56cc2ef3f547fa8b3dd31e11e36233158c3852cc3b79a962eebc3
   languageName: node
   linkType: hard
 

@@ -2,6 +2,7 @@ import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
 import type { AtLeast, ILivechatDepartment, ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatDepartment, LivechatDepartmentAgents, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
+
 import { openBusinessHour, removeBusinessHourByAgentIds } from './Helper';
 import { businessHourManager } from '../../../../../app/livechat/server/business-hour';
 import type { IBusinessHourBehavior } from '../../../../../app/livechat/server/business-hour/AbstractBusinessHour';

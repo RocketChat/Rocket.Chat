@@ -43,8 +43,7 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		});
 
 		const daysCount = differenceInDays(new Date(data.end), startDate);
-		const createPoints = (): { x: Date; y: number }[] =>
-			Array.from({ length: daysCount }, (_, i) => createPoint(i));
+		const createPoints = (): { x: Date; y: number }[] => Array.from({ length: daysCount }, (_, i) => createPoint(i));
 
 		const dauValuesLocal = createPoints();
 		const prevDauValue = createPoint(-1);

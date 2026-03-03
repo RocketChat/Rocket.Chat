@@ -2,9 +2,9 @@ import { Agenda } from '@rocket.chat/agenda';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { MainLogger } from '@rocket.chat/logger';
 import { LivechatRooms, Users } from '@rocket.chat/models';
+import { addSeconds } from 'date-fns';
 import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
-import { addSeconds } from 'date-fns';
 
 import { schedulerLogger } from './logger';
 import { closeRoom } from '../../../../../app/livechat/server/lib/closeRoom';

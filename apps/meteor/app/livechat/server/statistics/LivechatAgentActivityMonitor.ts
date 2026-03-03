@@ -1,8 +1,8 @@
 import type { ILivechatAgent, ISocketConnection } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
 import { LivechatAgentActivity, Sessions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import { format, differenceInSeconds } from 'date-fns';
+import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 
@@ -109,7 +109,7 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'statusLivechat'>>(userId, { projection: { statusLivechat: 1 } });
-		if (!user || user.statusLivechat !== 'available') {
+		if (user?.statusLivechat !== 'available') {
 			return;
 		}
 
@@ -126,7 +126,7 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'status'>>(userId, { projection: { status: 1 } });
-		if (user && user.status === 'offline') {
+		if (user?.status === 'offline') {
 			return;
 		}
 
