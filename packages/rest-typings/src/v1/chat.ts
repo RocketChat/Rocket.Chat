@@ -218,79 +218,6 @@ const ChatSyncThreadsListSchema = {
 
 export const isChatSyncThreadsListProps = ajv.compile<ChatSyncThreadsList>(ChatSyncThreadsListSchema);
 
-type ChatDelete = {
-	msgId: IMessage['_id'];
-	roomId: IRoom['_id'];
-	asUser?: boolean;
-};
-
-const ChatDeleteSchema = {
-	type: 'object',
-	properties: {
-		msgId: {
-			type: 'string',
-		},
-		roomId: {
-			type: 'string',
-		},
-		asUser: {
-			type: 'boolean',
-			nullable: true,
-		},
-	},
-	required: ['msgId', 'roomId'],
-	additionalProperties: false,
-};
-
-export const isChatDeleteProps = ajv.compile<ChatDelete>(ChatDeleteSchema);
-
-type ChatReact =
-	| { emoji: string; messageId: IMessage['_id']; shouldReact?: boolean }
-	| { reaction: string; messageId: IMessage['_id']; shouldReact?: boolean };
-
-const ChatReactSchema = {
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				emoji: {
-					type: 'string',
-				},
-				messageId: {
-					type: 'string',
-					minLength: 1,
-				},
-				shouldReact: {
-					type: 'boolean',
-					nullable: true,
-				},
-			},
-			required: ['emoji', 'messageId'],
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				reaction: {
-					type: 'string',
-				},
-				messageId: {
-					type: 'string',
-					minLength: 1,
-				},
-				shouldReact: {
-					type: 'boolean',
-					nullable: true,
-				},
-			},
-			required: ['reaction', 'messageId'],
-			additionalProperties: false,
-		},
-	],
-};
-
-export const isChatReactProps = ajv.compile<ChatReact>(ChatReactSchema);
-
 /**
  * The param `ignore` cannot be boolean, since this is a GET method. Use strings 'true' or 'false' instead.
  * @param {string} ignore
@@ -920,16 +847,7 @@ export type ChatEndpoints = {
 			};
 		};
 	};
-	'/v1/chat.delete': {
-		POST: (params: ChatDelete) => {
-			_id: string;
-			ts: string;
-			message: Pick<IMessage, '_id' | 'rid' | 'u'>;
-		};
-	};
-	'/v1/chat.react': {
-		POST: (params: ChatReact) => void;
-	};
+
 	'/v1/chat.ignoreUser': {
 		GET: (params: ChatIgnoreUser) => void;
 	};

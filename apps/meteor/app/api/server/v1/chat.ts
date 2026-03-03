@@ -8,7 +8,6 @@ import {
 	isChatGetURLPreviewProps,
 	isChatUpdateProps,
 	isChatGetThreadsListProps,
-	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
 	isChatPostMessageProps,
@@ -17,7 +16,6 @@ import {
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
 	isChatGetMentionedMessagesProps,
-	isChatReactProps,
 	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
 	isChatGetThreadMessagesProps,
@@ -127,46 +125,6 @@ const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFo
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 
-API.v1.addRoute(
-	'chat.delete',
-	{ authRequired: true, validateParams: isChatDeleteProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
-
-			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
-			}
-
-			if (this.bodyParams.roomId !== msg.rid) {
-				return API.v1.failure('The room id provided does not match where the message is from.');
-			}
-
-			if (
-				this.bodyParams.asUser &&
-				msg.u._id !== this.userId &&
-				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
-			) {
-				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
-			}
-
-			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;
-			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			await deleteMessageValidatingPermission(msg, user._id);
-
-			return API.v1.success({
-				_id: msg._id,
-				ts: Date.now().toString(),
-				message: msg,
-			});
-		},
-	},
-);
 
 API.v1.addRoute(
 	'chat.syncMessages',
@@ -274,6 +232,56 @@ const ChatUnpinMessageSchema = {
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+type ChatDeleteLocal = {
+	msgId: string;
+	roomId: string;
+	asUser?: boolean;
+};
+
+const ChatDeleteLocalSchema = {
+	type: 'object',
+	properties: {
+		msgId: { type: 'string' },
+		roomId: { type: 'string' },
+		asUser: { type: 'boolean', nullable: true },
+	},
+	required: ['msgId', 'roomId'],
+	additionalProperties: false,
+};
+
+const isChatDeleteLocalProps = ajv.compile<ChatDeleteLocal>(ChatDeleteLocalSchema);
+
+type ChatReactLocal =
+	| { emoji: string; messageId: string; shouldReact?: boolean }
+	| { reaction: string; messageId: string; shouldReact?: boolean };
+
+const ChatReactLocalSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				emoji: { type: 'string' },
+				messageId: { type: 'string', minLength: 1 },
+				shouldReact: { type: 'boolean', nullable: true },
+			},
+			required: ['emoji', 'messageId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				reaction: { type: 'string' },
+				messageId: { type: 'string', minLength: 1 },
+				shouldReact: { type: 'boolean', nullable: true },
+			},
+			required: ['reaction', 'messageId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isChatReactLocalProps = ajv.compile<ChatReactLocal>(ChatReactLocalSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -417,6 +425,109 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				message,
 			});
+		},
+	)
+	.post(
+		'chat.delete',
+		{
+			authRequired: true,
+			body: isChatDeleteLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ _id: string; ts: string; message: Pick<IMessage, '_id' | 'rid' | 'u'> }>({
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						ts: { type: 'string' },
+						message: {
+							type: 'object',
+							properties: {
+								_id: { type: 'string' },
+								rid: { type: 'string' },
+								u: { type: 'object' },
+							},
+							required: ['_id', 'rid', 'u'],
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['_id', 'ts', 'message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
+
+			if (!msg) {
+				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+			}
+
+			if (this.bodyParams.roomId !== msg.rid) {
+				return API.v1.failure('The room id provided does not match where the message is from.');
+			}
+
+			if (
+				this.bodyParams.asUser &&
+				msg.u._id !== this.userId &&
+				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
+			) {
+				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
+			}
+
+			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;
+			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
+
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			await deleteMessageValidatingPermission(msg, user._id);
+
+			return API.v1.success({
+				_id: msg._id,
+				ts: Date.now().toString(),
+				message: msg,
+			});
+		},
+	)
+	.post(
+		'chat.react',
+		{
+			authRequired: true,
+			body: isChatReactLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : (this.bodyParams as { reaction: string }).reaction;
+
+			if (!emoji) {
+				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
+			}
+
+			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
+
+			return API.v1.success();
 		},
 	)
 	.post(
@@ -653,29 +764,7 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'chat.react',
-	{ authRequired: true, validateParams: isChatReactProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : (this.bodyParams as { reaction: string }).reaction;
-
-			if (!emoji) {
-				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
-			}
-
-			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
-
-			return API.v1.success();
-		},
-	},
-);
 
 API.v1.addRoute(
 	'chat.reportMessage',
