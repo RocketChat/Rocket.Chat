@@ -99,12 +99,12 @@ export const upsertPermissions = async (): Promise<void> => {
 			await createSettingPermission(setting, previousSettingPermissions);
 		}
 
-		// remove permissions for non-existent settings
-		for await (const obsoletePermission of Object.keys(previousSettingPermissions)) {
-			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
-				await Permissions.deleteOne({ _id: obsoletePermission });
-			}
-		}
+		// // remove permissions for non-existent settings
+		// for await (const obsoletePermission of Object.keys(previousSettingPermissions)) {
+		// 	if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
+		// 		await Permissions.deleteOne({ _id: obsoletePermission });
+		// 	}
+		// }
 	};
 
 	// for each setting which already exists, create a permission to allow changing just this one setting
