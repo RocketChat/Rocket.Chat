@@ -289,7 +289,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										<Trans
 											i18nKey='Email_verification_isnt_required'
 											components={{
-												a: <a href='/admin/settings/Accounts'>{/* content injected by <Trans> */}</a>,
+												a: <a href='/admin/settings/Accounts' />,
 											}}
 										/>
 									</FieldHint>
