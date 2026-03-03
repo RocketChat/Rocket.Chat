@@ -6,7 +6,7 @@ import { after, before, describe, it } from 'mocha';
 
 import { retry } from './helpers/retry';
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
-import { sendSimpleMessage } from '../../data/chat.helper';
+import { sendMessage, sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
 import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor } from '../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -3422,6 +3422,255 @@ describe('Meteor.methods', () => {
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error).to.have.a.property('error', 'room-closed');
 				});
+		});
+	});
+
+	describe('[@loadSurroundingMessages]', () => {
+		let rid: IRoom['_id'];
+		let middleMessage: IMessage;
+		let channelName: string;
+
+		before('create room', (done) => {
+			channelName = `methods-test-channel-${Date.now()}`;
+			void request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					rid = res.body.group._id;
+				})
+				.end(done);
+		});
+
+		before('send messages', async () => {
+			await sendMessage({ message: { rid, msg: 'Message 1' } });
+
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			await sendMessage({ message: { rid, msg: 'Message 2' } });
+
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			const msg3 = await sendMessage({ message: { rid, msg: 'Message 3' } });
+			middleMessage = msg3.body.message;
+
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			const threadMsg = await sendMessage({ message: { rid, msg: 'Message 4 (Thread)' } });
+
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			await sendMessage({ message: { rid, msg: 'Message 4.1 (Reply)', tmid: threadMsg.body.message._id } });
+
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			await sendMessage({ message: { rid, msg: 'Message 4.2 (Reply)', tmid: threadMsg.body.message._id } });
+
+			await new Promise((resolve) => setTimeout(resolve, 50));
+			await sendMessage({ message: { rid, msg: 'Message 5' } });
+		});
+
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
+		it('should fail if not logged in', (done) => {
+			void request
+				.post(methodCall('loadSurroundingMessages'))
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage, 5],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+				})
+				.end(done);
+		});
+
+		it('should fail is message param is empty', (done) => {
+			void request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+					expect(res.body).to.have.a.property('message').that.include('Match error');
+				})
+				.end(done);
+		});
+
+		it('should fail is message param type is incorrect', (done) => {
+			void request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: ['invalid-message'],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+					expect(res.body).to.have.a.property('message').that.include('Match error');
+				})
+				.end(done);
+		});
+
+		it('should return false if message has no _id', (done) => {
+			void request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [{ rid }, 5],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.be.false;
+				})
+				.end(done);
+		});
+
+		it('should return false if message does not exist', (done) => {
+			void request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [{ _id: 'invalid-id', rid }, 5],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.be.false;
+				})
+				.end(done);
+		});
+
+		it('should return all messages (default limit)', (done) => {
+			void request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.have.property('messages').that.is.an('array');
+					expect(result.messages).to.have.lengthOf(7);
+					expect(result.messages[2]).to.have.property('_id', middleMessage._id);
+				})
+				.end(done);
+		});
+
+		it('should respect limit when provided', (done) => {
+			void request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage, 3],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.have.property('messages').that.is.an('array');
+					expect(result.messages).to.have.lengthOf(3);
+					expect(result.messages[1]).to.have.property('_id', middleMessage._id);
+				})
+				.end(done);
+		});
+
+		it('should filter out thread messages when showThreadMessages is false', (done) => {
+			void request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage, 50, false],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.have.property('messages').that.is.an('array');
+					expect(result.messages).to.have.lengthOf(5);
+					expect(result.messages[2]).to.have.property('_id', middleMessage._id);
+				})
+				.end(done);
+		});
+
+		it('should include thread messages when showThreadMessages is true', (done) => {
+			void request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage, 50, true],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+
+					expect(result).to.have.property('messages').that.is.an('array');
+					expect(result.messages).to.have.lengthOf(7);
+
+					const messageTexts = result.messages.map((m: IMessage) => m.msg);
+					expect(messageTexts).to.include('Message 4.1 (Reply)');
+					expect(messageTexts).to.include('Message 4.2 (Reply)');
+				})
+				.end(done);
 		});
 	});
 });
