@@ -401,7 +401,7 @@ export class SAML {
 			return;
 		}
 
-		if (!userRedirect) {
+		if (!userRedirect || typeof userRedirect !== 'string') {
 			res.writeHead(400);
 			res.end('Missing redirect parameter');
 			return;
