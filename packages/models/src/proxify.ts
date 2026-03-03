@@ -65,7 +65,7 @@ export function proxify<T>(namespace: string): T {
  */
 export async function ensureAllIndexes(): Promise<void> {
 	const names = new Set([...lazyModels.keys(), ...models.keys()]);
-	for (const name of names) {
+	for await (const name of names) {
 		try {
 			const model = proxify(name) as IBaseModel<any, any, any> & { createIndexes?: () => Promise<void> };
 			if (typeof model.createIndexes === 'function') {
