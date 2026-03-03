@@ -5,7 +5,6 @@ import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/mod
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
 	ajv,
-	isGETRoomsNameExists,
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
 	isRoomsExportProps,
@@ -103,23 +102,6 @@ export async function findRoomByIdOrName({
 
 	return room;
 }
-
-API.v1.addRoute(
-	'rooms.nameExists',
-	{
-		authRequired: true,
-		validateParams: isGETRoomsNameExists,
-	},
-	{
-		async get() {
-			const { roomName } = this.queryParams;
-
-			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
-
-			return API.v1.success({ exists: !!room });
-		},
-	},
-);
 
 const roomDeleteEndpoint = API.v1.post(
 	'rooms.delete',
@@ -1005,6 +987,39 @@ const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
 
 export const roomEndpoints = API.v1
 	.get(
+		'rooms.nameExists',
+		{
+			authRequired: true,
+			query: ajv.compile<{ roomName: string }>({
+				type: 'object',
+				properties: {
+					roomName: { type: 'string' },
+				},
+				required: ['roomName'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ exists: boolean }>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+						exists: { type: 'boolean' },
+					},
+					required: ['success', 'exists'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomName } = this.queryParams;
+			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
+
+			return API.v1.success({ exists: !!room });
+		},
+	)
+	.get(
 		'rooms.roles',
 		{
 			authRequired: true,
@@ -1211,9 +1226,7 @@ export const roomEndpoints = API.v1
 		},
 	);
 
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> & ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
