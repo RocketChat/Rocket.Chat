@@ -178,16 +178,19 @@ describe('LIVECHAT - rooms', () => {
 			it('should create a room for visitor', async () => {
 				const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
 
+				roomsToClose.add(body.room._id);
+
 				expect(body).to.have.property('success', true);
 				expect(body).to.have.property('room');
 				expect(body.room).to.have.property('v');
 				expect(body.room.v).to.have.property('token', visitor.token);
 				expect(body.room.source.type).to.be.equal('api');
-				roomsToClose.add(body.room._id);
 			});
 
 			it('should return an existing open room when visitor has one available', async () => {
 				const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+				roomsToClose.add(body.room._id);
 
 				expect(body).to.have.property('success', true);
 				expect(body).to.have.property('room');
@@ -200,18 +203,19 @@ describe('LIVECHAT - rooms', () => {
 				expect(body2).to.have.property('room');
 				expect(body2.room).to.have.property('_id', body.room._id);
 				expect(body2.newRoom).to.be.false;
-				roomsToClose.add(body.room._id);
 			});
 
 			it('should return a room for the visitor when rid points to a valid open room', async () => {
 				const room = await createLivechatRoom(visitor.token);
+
+				roomsToClose.add(room._id);
+
 				const { body } = await request.get(api('livechat/room')).query({ token: visitor.token, rid: room._id });
 
 				expect(body).to.have.property('success', true);
 				expect(body).to.have.property('room');
 				expect(body.room.v).to.have.property('token', visitor.token);
 				expect(body.newRoom).to.be.false;
-				roomsToClose.add(room._id);
 			});
 
 			it('should properly read widget cookies', async () => {
@@ -220,11 +224,12 @@ describe('LIVECHAT - rooms', () => {
 					.set('Cookie', [`rc_room_type=l`, `rc_is_widget=t`])
 					.query({ token: visitor.token });
 
+				roomsToClose.add(body.room._id);
+
 				expect(body).to.have.property('success', true);
 				expect(body).to.have.property('room');
 				expect(body.room.v).to.have.property('token', visitor.token);
 				expect(body.room.source.type).to.be.equal('widget');
-				roomsToClose.add(body.room._id);
 			});
 		});
 	});
