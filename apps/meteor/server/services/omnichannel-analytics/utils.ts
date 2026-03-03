@@ -1,5 +1,5 @@
-import { addDays, addHours, addWeeks, startOfDay, differenceInDays, differenceInWeeks } from 'date-fns';
 import { TZDate } from '@date-fns/tz';
+import { addDays, addHours, addWeeks, startOfDay, differenceInDays } from 'date-fns';
 
 const HOURS_IN_DAY = 24;
 const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -50,6 +50,7 @@ export function formatInTimezone(utcDate: Date, timezone: string, fmt: string): 
 	if (fmt === 'DD-MM-YYYY') return `${pad(d)}-${pad(m + 1)}-${y}`;
 	if (fmt === 'H') return String(h);
 	if (fmt === 'dddd') return DAY_NAMES[tzDate.getDay()];
+	// eslint-disable-next-line no-nested-ternary
 	if (fmt === 'hA') return h === 0 ? '12AM' : h < 12 ? `${h}AM` : h === 12 ? '12PM' : `${h - 12}PM`;
 	return '';
 }
@@ -57,5 +58,6 @@ export function formatInTimezone(utcDate: Date, timezone: string, fmt: string): 
 export function formatHourInTimezone(hour: number, timezone: string): string {
 	const tzDate = new TZDate(2025, 0, 6, hour, 0, 0, 0, timezone);
 	const h = tzDate.getHours();
+	// eslint-disable-next-line no-nested-ternary
 	return h === 0 ? '12AM' : h < 12 ? `${h}AM` : h === 12 ? '12PM' : `${h - 12}PM`;
 }

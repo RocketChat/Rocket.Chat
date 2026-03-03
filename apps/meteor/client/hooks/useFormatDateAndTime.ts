@@ -12,7 +12,7 @@ export const useFormatDateAndTime = ({ withSeconds }: UseFormatDateAndTimeParams
 	const format = useSetting('Message_TimeAndDateFormat', 'LLL');
 
 	return useCallback(
-		(time: string | Date | number) => {
+		(time: string | Date | number = new Date()) => {
 			switch (clockMode) {
 				case 1:
 					return formatDate(time, withSeconds ? 'MMMM D, Y h:mm:ss A' : 'MMMM D, Y h:mm A');

@@ -12,7 +12,7 @@ const getTimezoneOffsetString = (timeZone: string, date: Date = new Date()): str
 		timeZoneName: 'longOffset',
 	}).formatToParts(date);
 	const part = parts.find((p) => p.type === 'timeZoneName')?.value;
-	if (!part || !part.startsWith('GMT')) {
+	if (!part?.startsWith('GMT')) {
 		return '';
 	}
 	// GMT+02:00 or GMT-5:00 or GMT+2:00 -> normalize to +02:00 or -05:00
@@ -46,6 +46,7 @@ export const guessTimezoneFromOffset = (offset: string | number): string => {
 
 export const guessTimezone = (): string => {
 	try {
+		// eslint-disable-next-line new-cap
 		return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 	} catch {
 		return 'UTC';

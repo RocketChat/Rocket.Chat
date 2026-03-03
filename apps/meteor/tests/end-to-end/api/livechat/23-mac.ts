@@ -68,7 +68,7 @@ describe('MAC', () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(multipleContactsVisitor._id);
 			expect(res.body.contact).to.have.property('activity').that.is.an('array').with.lengthOf(1);
-			expect(res.body.contact.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
+			expect(res.body.contact.activity[0]).to.equal(new Date().toISOString().slice(0, 7));
 		});
 
 		it('should mark multiple rooms as active when they come from same contact after an agent sends a message', async () => {
@@ -90,7 +90,7 @@ describe('MAC', () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId: room.contactId });
 			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(multipleContactsVisitor._id);
 			expect(res.body.contact).to.have.property('activity').that.is.an('array').with.lengthOf(1);
-			expect(res.body.contact.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
+			expect(res.body.contact.activity[0]).to.equal(new Date().toISOString().slice(0, 7));
 			await closeOmnichannelRoom(room._id);
 		});
 
@@ -98,7 +98,7 @@ describe('MAC', () => {
 			const room = await createLivechatRoom(multipleContactsVisitor.token);
 
 			expect(room).to.have.nested.property('v.activity').and.to.be.an('array');
-			expect(room.v.activity?.includes(moment.utc().format('YYYY-MM'))).to.be.true;
+			expect(room.v.activity?.includes(new Date().toISOString().slice(0, 7))).to.be.true;
 			await closeOmnichannelRoom(room._id);
 		});
 
@@ -107,8 +107,8 @@ describe('MAC', () => {
 			const inquiry = await fetchInquiry(room._id);
 
 			expect(inquiry).to.have.nested.property('v.activity').and.to.be.an('array');
-			expect(inquiry.v.activity?.includes(moment.utc().format('YYYY-MM'))).to.be.true;
-			expect(room.v.activity?.includes(moment.utc().format('YYYY-MM'))).to.be.true;
+			expect(inquiry.v.activity?.includes(new Date().toISOString().slice(0, 7))).to.be.true;
+			expect(room.v.activity?.includes(new Date().toISOString().slice(0, 7))).to.be.true;
 			await closeOmnichannelRoom(room._id);
 		});
 
@@ -126,7 +126,7 @@ describe('MAC', () => {
 			expect(res.body.contact.channels[0].visitor.visitorId).to.be.equal(visitor._id);
 
 			expect(res.body.contact).to.have.nested.property('activity').and.to.be.an('array').with.lengthOf(1);
-			expect(res.body.contact.activity[0]).to.equal(moment.utc().format('YYYY-MM'));
+			expect(res.body.contact.activity[0]).to.equal(new Date().toISOString().slice(0, 7));
 			await closeOmnichannelRoom(room._id);
 		});
 	});

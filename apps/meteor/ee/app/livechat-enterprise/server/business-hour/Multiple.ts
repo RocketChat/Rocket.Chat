@@ -243,8 +243,8 @@ export class MultipleBusinessHoursBehavior extends AbstractBusinessHourBehavior 
 	}
 
 	private async applyAnyOpenBusinessHourToAgent(agentId: string): Promise<void> {
-		const currentTime = moment().utc();
-		const day = currentTime.format('dddd');
+		const DAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+		const day = DAY_NAMES[new Date().getUTCDay()];
 		const allActiveBusinessHoursForEntireWeek = await this.BusinessHourRepository.findActiveBusinessHours({
 			projection: {
 				workHours: 1,
