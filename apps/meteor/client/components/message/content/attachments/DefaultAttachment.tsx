@@ -87,10 +87,10 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 									return {
 										...rest,
 										title: title ? (
-											<MarkdownText variant='inline' parseEmoji content={title.replace(/(.*)/g, (line: string) => `${line}  `)} />
+											<MarkdownText variant='inline' parseEmoji content={String(title).replace(/(.*)/g, (line: string) => `${line}  `)} />
 										) : null,
 										value: value ? (
-											<MarkdownText variant='inline' parseEmoji content={value.replace(/(.*)/g, (line: string) => `${line}  `)} />
+											<MarkdownText variant='inline' parseEmoji content={String(value).replace(/(.*)/g, (line: string) => `${line}  `)} />
 										) : null,
 									};
 								})}
