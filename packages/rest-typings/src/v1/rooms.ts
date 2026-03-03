@@ -783,10 +783,6 @@ export type RoomsEndpoints = {
 		}) => { message: IMessage | null };
 	};
 
-	'/v1/rooms.saveNotification': {
-		POST: (params: { roomId: string; notifications: Notifications }) => void;
-	};
-
 	'/v1/rooms.get': {
 		GET: (params: { updatedSince: string }) => {
 			update: IRoom[];
