@@ -941,13 +941,19 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 
 		it('should successfully add an agent when count and order are 0', async () => {
+			await updatePermission('manage-livechat-departments', ['admin']);
+			await updatePermission('add-livechat-department-agents', ['admin', 'livechat-manager']);
+
 			const [dep, agent] = await Promise.all([createDepartment(), createAgent()]);
 			const res = await request
 				.post(api(`livechat/department/${dep._id}/agents`))
 				.set(credentials)
 				.send({ upsert: [{ agentId: agent._id, username: agent.username, count: 0, order: 0 }], remove: [] })
 				.expect(200);
+
 			expect(res.body).to.have.property('success', true);
+
+			await deleteDepartment(dep._id);
 		});
 
 		it('should successfully remove an agent from a department', async () => {
