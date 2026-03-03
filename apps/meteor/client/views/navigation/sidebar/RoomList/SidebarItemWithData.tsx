@@ -89,7 +89,6 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 
 const keys: (keyof RoomListRowProps)[] = ['id', 'style', 't', 'videoConfActions'];
 
-// eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;

@@ -322,7 +322,7 @@ API.v1.addRoute(
 			}
 
 			await Promise.all(
-				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+				Object.entries(notifications).map(async ([notificationKey, notificationValue]) =>
 					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
 				),
 			);
@@ -421,7 +421,6 @@ API.v1.addRoute(
 	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
 		async post() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
 			if (!prid) {
 				return API.v1.failure('Body parameter "prid" is required.');
@@ -516,7 +515,7 @@ API.v1.addRoute(
 			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			// If the initial image was not returned in the query, insert it as the first element of the list
-			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
+			if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
 				files.splice(0, 0, initialImage);
 			}
 
@@ -733,7 +732,7 @@ API.v1.addRoute(
 				void dataExport.sendFile(
 					{
 						rid,
-						format: format as 'html' | 'json',
+						format,
 						dateFrom: convertedDateFrom,
 						dateTo: convertedDateTo,
 					},
@@ -781,7 +780,7 @@ API.v1.addRoute(
 			const [room, user] = await Promise.all([
 				findRoomByIdOrName({
 					params: { roomId },
-				}) as Promise<IRoom>,
+				}),
 				Users.findOneByIdOrUsername(userId || username),
 			]);
 
@@ -1211,9 +1210,7 @@ export const roomEndpoints = API.v1
 		},
 	);
 
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> & ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

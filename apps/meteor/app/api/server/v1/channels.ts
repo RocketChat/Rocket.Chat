@@ -309,7 +309,7 @@ API.v1.addRoute(
 				rid: findResult._id,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
-				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+				...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
 				_hidden: { $ne: true },
 			};
 

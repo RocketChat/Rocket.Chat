@@ -7,7 +7,6 @@ type UseWeeklyChatActivityOptions = {
 	utc: boolean;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivityOptions) => {
 	const getWeeklyChatActivity = useEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/weekly-data');
 

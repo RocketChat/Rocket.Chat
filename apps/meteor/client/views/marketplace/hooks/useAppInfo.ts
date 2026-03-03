@@ -64,8 +64,8 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 							appVersion: appId,
 						})
 							.then(({ app }: any) => {
-								(appResult as App).tosLink = app.tosLink;
-								(appResult as App).privacyLink = app.privacyLink;
+								appResult.tosLink = app.tosLink;
+								appResult.privacyLink = app.privacyLink;
 								return getBundledInApp(app);
 							})
 							.catch(() => ({

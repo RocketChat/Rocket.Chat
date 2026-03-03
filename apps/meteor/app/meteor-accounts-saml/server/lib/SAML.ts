@@ -295,7 +295,7 @@ export class SAML {
 			}
 
 			let timeoutHandler: NodeJS.Timeout | undefined = undefined;
-			const redirect = (url?: string | undefined): void => {
+			const redirect = (url?: string): void => {
 				if (!timeoutHandler) {
 					// If the handler is null, then we already ended the response;
 					return;

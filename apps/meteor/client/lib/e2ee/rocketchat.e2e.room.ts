@@ -401,7 +401,7 @@ export class E2ERoom extends Emitter {
 
 		// Import session key for use.
 		try {
-			const key = await Aes.importKey(JSON.parse(this.sessionKeyExportedString!));
+			const key = await Aes.importKey(JSON.parse(this.sessionKeyExportedString));
 			// Key has been obtained. E2E is now in session.
 			this.groupSessionKey = key;
 			span.info('Group key imported');
@@ -498,13 +498,13 @@ export class E2ERoom extends Emitter {
 				}[]
 			> = { [this.roomId]: [] };
 			for await (const user of users) {
-				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key!);
+				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key);
 				if (!encryptedGroupKey) {
 					span.warn(`Could not encrypt group key for user ${user._id}`);
 					return;
 				}
 				if (decryptedOldGroupKeys) {
-					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key!, decryptedOldGroupKeys);
+					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key, decryptedOldGroupKeys);
 					if (oldKeys) {
 						usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys });
 						continue;

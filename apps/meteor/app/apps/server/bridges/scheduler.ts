@@ -90,7 +90,7 @@ export class AppSchedulerBridge extends SchedulerBridge {
 		});
 
 		if (runAfterRegister.length) {
-			return Promise.all(runAfterRegister) as Promise<Array<string>>;
+			return Promise.all(runAfterRegister);
 		}
 	}
 

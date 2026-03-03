@@ -512,7 +512,7 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 		throw new Error('error-invalid-inquiry');
 	}
 
-	if (oldServedBy && agentId === oldServedBy._id) {
+	if (agentId === oldServedBy?._id) {
 		throw new Error('error-selected-agent-room-agent-are-same');
 	}
 
@@ -724,7 +724,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	}
 
 	const { servedBy, chatQueued } = roomTaken;
-	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
+	if (!chatQueued && oldServedBy && oldServedBy._id === servedBy?._id) {
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug({
 				msg: 'Cannot forward room. Chat assigned to agent instead',

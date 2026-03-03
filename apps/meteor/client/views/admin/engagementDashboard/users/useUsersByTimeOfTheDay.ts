@@ -6,7 +6,6 @@ import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseUsersByTimeOfTheDayOptions = { period: Period['key']; utc: boolean };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useUsersByTimeOfTheDay = ({ period, utc }: UseUsersByTimeOfTheDayOptions) => {
 	const getUsersByTimeOfTheDay = useEndpoint('GET', '/v1/engagement-dashboard/users/users-by-time-of-the-day-in-a-week');
 

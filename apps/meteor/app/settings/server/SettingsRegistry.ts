@@ -208,7 +208,6 @@ export class SettingsRegistry {
 	 */
 	async addGroup(_id: string, cb?: addGroupCallback): Promise<void>;
 
-	// eslint-disable-next-line no-dupe-class-members
 	async addGroup(_id: string, groupOptions: ISettingAddGroupOptions | addGroupCallback = {}, cb?: addGroupCallback): Promise<void> {
 		if (!_id || (groupOptions instanceof Function && cb)) {
 			throw new Error('Invalid arguments');

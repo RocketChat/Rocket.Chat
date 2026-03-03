@@ -11,7 +11,7 @@ export class AnalyticsService extends ServiceClassInternal implements IAnalytics
 	}
 
 	async getSeatRequestCount(): Promise<number> {
-		const result = (await Analytics.findOne({ type: 'seat-request' }, {})) as IAnalyticsSeatRequest | null;
+		const result = await Analytics.findOne({ type: 'seat-request' }, {});
 
 		return result?.count ? result.count : 0;
 	}

@@ -187,7 +187,7 @@ function httpCallAsync(httpMethod: string, url: string, callback: callbackFn): v
 function httpCallAsync(httpMethod: string, url: string, optionsOrCallback: HttpCallOptions | callbackFn = {}, callback?: callbackFn): void {
 	// If the options argument was omitted, adjust the arguments:
 	if (!callback && typeof optionsOrCallback === 'function') {
-		return _call(httpMethod, url, {}, optionsOrCallback as callbackFn);
+		return _call(httpMethod, url, {}, optionsOrCallback);
 	}
 
 	return _call(httpMethod, url, optionsOrCallback as HttpCallOptions, callback as callbackFn);

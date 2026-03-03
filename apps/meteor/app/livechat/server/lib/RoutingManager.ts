@@ -253,7 +253,7 @@ export const RoutingManager: Routing = {
 			return room;
 		}
 
-		if (room.servedBy && room.servedBy._id === agent.agentId) {
+		if (room.servedBy?._id === agent.agentId) {
 			logger.debug({ msg: 'Cannot take inquiry. Already taken by agent', inquiryId: inquiry._id, agentId: room.servedBy._id });
 			return room;
 		}
@@ -368,7 +368,7 @@ export const RoutingManager: Routing = {
 
 		const subscriptions = await Subscriptions.findByRoomId(roomId).toArray();
 		subscriptions?.forEach(({ u }) => {
-			if (ignoreUser && ignoreUser._id === u._id) {
+			if (ignoreUser?._id === u._id) {
 				return;
 			}
 			void removeAgentFromSubscription(roomId, u);

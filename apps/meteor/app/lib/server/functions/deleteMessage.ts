@@ -120,7 +120,7 @@ async function deleteThreadMessage(message: IThreadMessage, user: IUser, room: I
 		}
 	}
 
-	if (updatedParentMessage && updatedParentMessage.tcount === 0) {
+	if (updatedParentMessage?.tcount === 0) {
 		void notifyOnMessageChange({
 			id: message.tmid,
 		});

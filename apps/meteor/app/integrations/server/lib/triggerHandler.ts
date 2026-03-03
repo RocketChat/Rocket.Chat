@@ -92,7 +92,6 @@ class RocketChatIntegrationHandler {
 		}
 	}
 
-	// eslint-disable-next-line no-unused-vars
 	getEngine(_integration: any): IsolatedVMScriptEngine<false> {
 		return this.ivmEngine;
 	}
@@ -797,11 +796,11 @@ class RocketChatIntegrationHandler {
 	}
 
 	async replay(integration: IOutgoingIntegration, history: IIntegrationHistory) {
-		if (!integration || integration.type !== 'webhook-outgoing') {
+		if (integration?.type !== 'webhook-outgoing') {
 			throw new Meteor.Error('integration-type-must-be-outgoing', 'The integration type to replay must be an outgoing webhook.');
 		}
 
-		if (!history || !history.data) {
+		if (!history?.data) {
 			throw new Meteor.Error('history-data-must-be-defined', 'The history data must be defined to replay an integration.');
 		}
 
@@ -811,7 +810,7 @@ class RocketChatIntegrationHandler {
 		let room;
 		let user;
 
-		if (history.data.owner && history.data.owner._id) {
+		if (history.data.owner?._id) {
 			owner = await Users.findOneById(history.data.owner._id);
 		}
 		if (history.data.message_id) {

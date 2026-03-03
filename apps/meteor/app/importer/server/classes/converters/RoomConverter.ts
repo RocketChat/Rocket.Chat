@@ -53,7 +53,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 	}
 
 	async findExistingRoom(data: IImportChannel): Promise<IRoom | null> {
-		if (data._id && data._id.toUpperCase() === 'GENERAL') {
+		if (data._id?.toUpperCase() === 'GENERAL') {
 			const room = await Rooms.findOneById('GENERAL', {});
 			// Prevent the importer from trying to create a new general
 			if (!room) {
@@ -84,7 +84,7 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 	async updateRoom(room: IRoom, roomData: IImportChannel, startedByUserId: string): Promise<void> {
 		roomData._id = room._id;
 
-		if ((roomData._id as string).toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
+		if (roomData._id.toUpperCase() === 'GENERAL' && roomData.name !== room.name) {
 			await saveRoomSettings(startedByUserId, 'GENERAL', 'roomName', roomData.name);
 		}
 

@@ -51,7 +51,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 
 		const replies = await Messages.find(query).toArray();
 
-		const room = (await this.orch.getConverters().get('rooms').convertById(mainMessage.rid)) as IRoom | undefined;
+		const room = await this.orch.getConverters().get('rooms').convertById(mainMessage.rid);
 
 		if (!room) {
 			return [];
@@ -120,7 +120,7 @@ export class AppThreadsConverter implements IAppThreadsConverter {
 					user = await convertToApp(message.u as unknown as IUser);
 				}
 
-				return user as IAppsUser;
+				return user;
 			},
 			files: async (message: IMessage) => convertMessageFiles(message.files, attachments),
 		} as const;

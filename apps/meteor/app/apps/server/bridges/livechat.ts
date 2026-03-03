@@ -57,7 +57,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
 		const guest = this.orch.getConverters().get('visitors').convertAppVisitor(message.visitor);
-		const appMessage = (await this.orch.getConverters().get('messages').convertAppMessage(message)) as IMessage | undefined;
+		const appMessage = await this.orch.getConverters().get('messages').convertAppMessage(message);
 		const livechatMessage = appMessage as ILivechatMessage | undefined;
 
 		const msg = await sendMessage({
@@ -121,13 +121,12 @@ export class AppLivechatBridge extends LivechatBridge {
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getName(),
-					...(source &&
-						source.type === 'app' && {
-							sidebarIcon: source.sidebarIcon,
-							defaultIcon: source.defaultIcon,
-							label: source.label,
-							destination: source.destination,
-						}),
+					...(source?.type === 'app' && {
+						sidebarIcon: source.sidebarIcon,
+						defaultIcon: source.defaultIcon,
+						label: source.label,
+						destination: source.destination,
+					}),
 				},
 			},
 			agent: agentRoom,

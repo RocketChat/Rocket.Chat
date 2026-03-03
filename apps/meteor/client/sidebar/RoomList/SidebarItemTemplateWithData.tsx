@@ -161,7 +161,6 @@ const keys: (keyof RoomListRowProps)[] = [
 	'videoConfActions',
 ];
 
-// eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;

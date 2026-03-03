@@ -410,17 +410,17 @@ const chatEndpoints = API.v1
 				this.userId,
 				hasContent
 					? {
-						_id: msg._id,
-						rid: msg.rid,
-						content: bodyParams.content,
-						...(bodyParams.e2eMentions && { e2eMentions: bodyParams.e2eMentions }),
-					}
+							_id: msg._id,
+							rid: msg.rid,
+							content: bodyParams.content,
+							...(bodyParams.e2eMentions && { e2eMentions: bodyParams.e2eMentions }),
+						}
 					: {
-						_id: msg._id,
-						rid: msg.rid,
-						msg: bodyParams.text,
-						...(bodyParams.customFields && { customFields: bodyParams.customFields }),
-					},
+							_id: msg._id,
+							rid: msg.rid,
+							msg: bodyParams.text,
+							...(bodyParams.customFields && { customFields: bodyParams.customFields }),
+						},
 				'previewUrls' in bodyParams ? bodyParams.previewUrls : undefined,
 			];
 
@@ -1072,5 +1072,5 @@ export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChatEndpoints { }
+	interface Endpoints extends ChatEndpoints {}
 }

@@ -25,7 +25,7 @@ declare module '@rocket.chat/rest-typings' {
 				channels: {
 					t: IRoom['t'];
 					messages: number;
-					name: IRoom['name'] | IRoom['fname'];
+					name: IRoom['name'];
 					usernames?: IDirectMessageRoom['usernames'];
 				}[];
 			};

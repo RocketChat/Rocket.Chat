@@ -238,8 +238,8 @@ export const FileUpload = {
 
 		const tempFilePath = UploadFS.getTempFilePath(file._id);
 
-		const height = settings.get('Accounts_AvatarSize') as number;
-		const width = height as number;
+		const height = settings.get('Accounts_AvatarSize');
+		const width = height;
 
 		const s = sharp(tempFilePath);
 		if (settings.get('FileUpload_RotateImages') === true) {
@@ -307,8 +307,8 @@ export const FileUpload = {
 			return;
 		}
 
-		const width = settings.get('Message_Attachments_Thumbnails_Width') as number;
-		const height = settings.get('Message_Attachments_Thumbnails_Height') as number;
+		const width = settings.get('Message_Attachments_Thumbnails_Width');
+		const height = settings.get('Message_Attachments_Thumbnails_Height');
 
 		if (fileParam.identify?.size && fileParam.identify.size.height < height && fileParam.identify?.size.width < width) {
 			return;
@@ -334,7 +334,7 @@ export const FileUpload = {
 			height,
 			thumbFileType: (mime.lookup(format) as string) || '',
 			thumbFileName: file?.name as string,
-			originalFileId: file?._id as string,
+			originalFileId: file?._id,
 		}));
 		image.pipe(transformer);
 
@@ -454,7 +454,7 @@ export const FileUpload = {
 		}
 
 		const { query } = URL.parse(url, true);
-		// eslint-disable-next-line @typescript-eslint/naming-convention
+
 		let { rc_uid, rc_token, rc_rid, rc_room_type } = query as Record<string, string | undefined>;
 		const { token } = query;
 
@@ -671,7 +671,6 @@ export const FileUpload = {
 				return;
 			}
 
-			// eslint-disable-next-line prettier/prettier
 			const headersToProxy = ['age', 'cache-control', 'content-length', 'content-type', 'date', 'expired', 'last-modified'];
 
 			headersToProxy.forEach((header) => {

@@ -71,10 +71,7 @@ const OutgoingWebhookForm = () => {
 		[t],
 	);
 
-	const eventOptions: SelectOption[] = useMemo(
-		() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label as TranslationKey)]),
-		[t],
-	);
+	const eventOptions: SelectOption[] = useMemo(() => Object.entries(outgoingEvents).map(([key, val]) => [key, t(val.label)]), [t]);
 
 	const scriptEngineOptions: SelectOption[] = useMemo(() => [['isolated-vm', t('Script_Engine_isolated_vm')]], [t]);
 

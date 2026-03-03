@@ -26,7 +26,7 @@ export const emojiParser = (html: string) => {
 	emojis.forEach((emojiElement) => {
 		const htmlElement = emojiElement.parentElement;
 
-		if (htmlElement && htmlElement.nodeName === 'CODE') {
+		if (htmlElement?.nodeName === 'CODE') {
 			emojiElement.replaceWith(emojiElement.getAttribute('title') ?? '');
 		}
 	});

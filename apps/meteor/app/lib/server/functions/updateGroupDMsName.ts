@@ -57,7 +57,6 @@ export const updateGroupDMsName = async (
 
 	const rooms = Rooms.findGroupDMsByUids([userThatChangedName._id], { projection: { uids: 1 }, session });
 
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	const getMembers = (uids: string[]) => uids.map((uid) => users.get(uid)).filter(isNotUndefined);
 
 	// loop rooms to update the subscriptions from them all

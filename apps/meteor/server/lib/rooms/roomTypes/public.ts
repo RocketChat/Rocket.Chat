@@ -35,7 +35,7 @@ roomCoordinator.add(PublicRoomType, {
 	},
 
 	async allowMemberAction(_room, action, _userId) {
-		if (isRoomFederated(_room as IRoom)) {
+		if (isRoomFederated(_room)) {
 			if (isRoomNativeFederated(_room) && isFederationEnabled()) {
 				return true;
 			}

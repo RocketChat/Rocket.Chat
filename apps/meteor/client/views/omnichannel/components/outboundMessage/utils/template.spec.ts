@@ -55,7 +55,7 @@ describe('processTemplatePreviewText', () => {
 		expect(text).toBe('Hello World');
 	});
 
-	it('it should keep the placeholder in case the parameter is an empty string', () => {
+	it('should keep the placeholder in case the parameter is an empty string', () => {
 		const text = processTemplatePreviewText('Hello {{1}}', [{ type: 'text', value: '', format: 'text' }]);
 
 		expect(text).toBe('Hello {{1}}');

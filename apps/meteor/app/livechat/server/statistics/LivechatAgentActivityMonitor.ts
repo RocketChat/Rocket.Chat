@@ -109,7 +109,7 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'statusLivechat'>>(userId, { projection: { statusLivechat: 1 } });
-		if (!user || user.statusLivechat !== 'available') {
+		if (user?.statusLivechat !== 'available') {
 			return;
 		}
 
@@ -126,7 +126,7 @@ export class LivechatAgentActivityMonitor {
 		}
 
 		const user = await Users.findOneById<Pick<ILivechatAgent, '_id' | 'status'>>(userId, { projection: { status: 1 } });
-		if (user && user.status === 'offline') {
+		if (user?.status === 'offline') {
 			return;
 		}
 

@@ -130,8 +130,8 @@ Meteor.methods<ServerMethods>({
 		const auditSettingOperation = updateAuditedByUser({
 			_id: uid,
 			username: (await Meteor.userAsync())!.username!,
-			ip: this.connection!.clientAddress || '',
-			useragent: this.connection!.httpHeaders['user-agent'] || '',
+			ip: this.connection.clientAddress || '',
+			useragent: this.connection.httpHeaders['user-agent'] || '',
 		});
 
 		const promises = params.map(({ _id, value }) => auditSettingOperation(Settings.updateValueById, _id, value));

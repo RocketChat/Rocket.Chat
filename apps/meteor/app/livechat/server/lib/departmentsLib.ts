@@ -42,7 +42,7 @@ export async function saveDepartment(
 			})
 		: null;
 
-	if (departmentUnit && !departmentUnit._id && department && department.parentId) {
+	if (departmentUnit && !departmentUnit._id && department?.parentId) {
 		const isLastDepartmentInUnit = (await LivechatDepartment.countDepartmentsInUnit(department.parentId)) === 1;
 		if (isLastDepartmentInUnit) {
 			throw new Meteor.Error('error-unit-cant-be-empty', "The last department in a unit can't be removed", {

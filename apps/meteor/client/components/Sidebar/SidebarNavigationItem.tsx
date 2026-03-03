@@ -28,7 +28,7 @@ const SidebarNavigationItem = ({
 	badge: Badge,
 }: SidebarNavigationItemProps) => {
 	const path = pathSection;
-	const isActive = !!path && currentPath?.includes(path as string);
+	const isActive = !!path && currentPath?.includes(path);
 
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;

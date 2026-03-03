@@ -14,7 +14,7 @@ addMigration({
 
 		Apps.initialize();
 
-		const sigMan = Apps.getManager()?.getSignatureManager() as AppSignatureManager;
+		const sigMan = Apps.getManager()?.getSignatureManager();
 		const appsStorage = Apps.getStorage() as AppRealStorage;
 
 		const apps = await appsStorage.retrieveAll();

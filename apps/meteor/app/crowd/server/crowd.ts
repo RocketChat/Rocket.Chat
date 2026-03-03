@@ -378,7 +378,7 @@ Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, lo
 		const crowd = new CROWD();
 		const user = await crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
 
-		if (user && user.crowd === false) {
+		if (user?.crowd === false) {
 			logger.debug({ msg: 'User is not a valid crowd user, falling back', username: loginRequest.username });
 			return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
 		}

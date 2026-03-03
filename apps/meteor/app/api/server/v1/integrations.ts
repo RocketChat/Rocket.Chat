@@ -110,7 +110,7 @@ API.v1.addRoute(
 
 			const filter = {
 				...query,
-				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+				...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 				...(type ? { type } : {}),
 			};
 

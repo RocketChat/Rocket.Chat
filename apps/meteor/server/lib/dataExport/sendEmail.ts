@@ -12,7 +12,7 @@ export const sendEmail = async (userData: Pick<IUser, 'name' | 'emails'>, subjec
 	}
 
 	const to = `${userData.name} <${emailAddress}>`;
-	const from = settings.get('From_Email') as string;
+	const from = settings.get('From_Email');
 
 	if (!Mailer.checkAddressFormat(emailAddress)) {
 		return;

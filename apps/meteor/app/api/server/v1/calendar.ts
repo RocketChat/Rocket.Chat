@@ -35,7 +35,7 @@ API.v1.addRoute(
 
 			const event = await Calendar.get(id);
 
-			if (!event || event.uid !== userId) {
+			if (event?.uid !== userId) {
 				return API.v1.failure();
 			}
 
@@ -104,7 +104,7 @@ API.v1.addRoute(
 
 			const event = await Calendar.get(eventId);
 
-			if (!event || event.uid !== userId) {
+			if (event?.uid !== userId) {
 				throw new Error('invalid-calendar-event');
 			}
 
@@ -133,7 +133,7 @@ API.v1.addRoute(
 
 			const event = await Calendar.get(eventId);
 
-			if (!event || event.uid !== userId) {
+			if (event?.uid !== userId) {
 				throw new Error('invalid-calendar-event');
 			}
 

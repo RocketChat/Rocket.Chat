@@ -35,7 +35,6 @@ const getDefaultApp = (): IAppStorageItem => ({
 });
 
 // We will be passing promises to the `expect` function
-/* eslint-disable @typescript-eslint/no-floating-promises */
 
 describe('canEnableApp', () => {
 	it('should throw the message "apps-engine-not-initialized" when appropriate', () => {

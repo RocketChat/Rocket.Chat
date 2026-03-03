@@ -24,7 +24,7 @@ slashCommands.add({
 			return result;
 		}
 
-		const regexp = new RegExp(settings.get('UTF8_Channel_Names_Validation') as string);
+		const regexp = new RegExp(settings.get('UTF8_Channel_Names_Validation'));
 
 		const channel = regexp.exec(params.trim());
 

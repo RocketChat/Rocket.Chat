@@ -54,7 +54,7 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 	}
 
 	configureLogin() {
-		const loginWithService = `loginWith${capitalize(this.name) as Capitalize<TServiceName>}` as const;
+		const loginWithService = `loginWith${capitalize(this.name)}` as const;
 
 		const loginWithOAuthTokenAndTOTP = createOAuthTotpLoginMethod(this);
 

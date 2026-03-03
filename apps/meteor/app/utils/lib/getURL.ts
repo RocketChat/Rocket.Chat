@@ -37,7 +37,7 @@ function getCloudUrl(
 
 export const _getURL = (
 	path: string,
-	// eslint-disable-next-line @typescript-eslint/naming-convention
+
 	{ cdn, full, cloud, cloud_route, cloud_params, _cdn_prefix, _root_url_path_prefix, _site_url }: Record<string, any>,
 	deeplinkUrl?: string,
 ): string => {
@@ -76,7 +76,7 @@ export const _getURL = (
 
 export const getURLWithoutSettings = (
 	path: string,
-	// eslint-disable-next-line @typescript-eslint/naming-convention
+
 	{
 		cdn = true,
 		full = false,

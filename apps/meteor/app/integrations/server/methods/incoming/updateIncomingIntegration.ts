@@ -206,7 +206,6 @@ export const updateIncomingIntegration = async (
 };
 
 Meteor.methods<ServerMethods>({
-	// eslint-disable-next-line complexity
 	async updateIncomingIntegration(integrationId, integration) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

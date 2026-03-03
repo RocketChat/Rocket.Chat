@@ -100,7 +100,7 @@ const customUserStatusEndpoints = API.v1.get(
 
 		const filter = {
 			...query,
-			...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+			...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			...(_id ? { _id } : {}),
 		};
 

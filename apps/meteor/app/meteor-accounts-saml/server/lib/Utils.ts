@@ -367,7 +367,7 @@ export class SAMLUtils {
 			}
 		}
 
-		if (mapping.regex && mainValue && mainValue.match) {
+		if (mapping.regex && mainValue?.match) {
 			let regexValue;
 			const match = mainValue.match(new RegExp(mapping.regex));
 			if (match?.length) {

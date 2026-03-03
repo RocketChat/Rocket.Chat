@@ -33,7 +33,7 @@ export const useNotification = () => {
 		} as any);
 
 		const n = new Notification(notification.title, {
-			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username as string),
+			icon: notification.icon || getUserAvatarURL(notification.payload.sender?.username),
 			body: stripTags(message?.msg),
 			tag: msgId,
 			canReply: true,

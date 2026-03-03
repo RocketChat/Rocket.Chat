@@ -1,7 +1,6 @@
 import type { IRocketChatDesktop } from '@rocket.chat/desktop-api';
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		RocketChatDesktop?: IRocketChatDesktop;
 
@@ -70,7 +69,6 @@ declare global {
 		addStream(stream: MediaStream): void;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface MediaTrackConstraints {
 		/** @deprecated */
 		mozMediaSource?: string;

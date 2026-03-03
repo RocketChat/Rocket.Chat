@@ -74,7 +74,7 @@ export async function process2faReturn({
 
 	const props = {
 		...getProps(error.details.method, emailOrUsername || error.details.emailOrUsername),
-		// eslint-disable-next-line no-nested-ternary
+
 		invalidAttempt: isTotpInvalidError(error),
 	};
 
@@ -111,7 +111,7 @@ export async function process2faAsyncReturn<TResult>({
 	const props = {
 		method: error.details.method,
 		emailOrUsername: emailOrUsername || error.details.emailOrUsername || getUser()?.username,
-		// eslint-disable-next-line no-nested-ternary
+
 		invalidAttempt: isTotpInvalidError(error),
 	};
 

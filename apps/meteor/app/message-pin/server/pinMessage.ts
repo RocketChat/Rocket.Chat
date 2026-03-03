@@ -136,7 +136,7 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 	}
 
 	let originalMessage = await Messages.findOneById(message._id);
-	if (originalMessage == null || originalMessage._id == null) {
+	if (originalMessage?._id == null) {
 		throw new Meteor.Error('error-invalid-message', 'Message you are unpinning was not found', {
 			method: 'unpinMessage',
 			action: 'Message_pinning',

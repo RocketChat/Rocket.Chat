@@ -82,7 +82,7 @@ export const processOnChange = (diff: Record<string, any>, id: string): void => 
 	const cbs = userCallbacks.get(id);
 	if (cbs) {
 		[...cbs]
-			.filter(({ hashedToken }) => tokens === undefined || !tokens.includes(hashedToken))
+			.filter(({ hashedToken }) => !tokens?.includes(hashedToken))
 			.forEach((item) => {
 				item.callbacks.removed(id);
 				cbs.delete(item);

@@ -11,7 +11,7 @@ export const registerAppsCountHandler = ({ api, _manager }: AppsRestApi) =>
 		{ authRequired: false },
 		{
 			async get() {
-				const manager = _manager as AppManager;
+				const manager = _manager;
 
 				const apps = await manager.get({ enabled: true });
 				const { maxMarketplaceApps, maxPrivateApps } = License.getAppsConfig();

@@ -119,9 +119,9 @@ API.v1.addRoute(
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
-				limit: count as number,
+				limit: count,
 				sort: { username: 1 },
-				skip: offset as number,
+				skip: offset,
 				projection,
 			});
 

@@ -27,7 +27,7 @@ slashCommands.add({
 			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
 		}
 
-		if (type && type.indexOf('d') === -1) {
+		if (type?.indexOf('d') === -1) {
 			return;
 		}
 		try {

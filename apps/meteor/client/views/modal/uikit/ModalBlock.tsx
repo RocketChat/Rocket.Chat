@@ -113,7 +113,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					if (!ref.current) {
 						return;
 					}
-					const elements = Array.from(ref.current.querySelectorAll(focusableElementsString)) as HTMLElement[];
+					const elements = Array.from(ref.current.querySelectorAll(focusableElementsString));
 					const [first] = elements;
 					const last = elements.pop();
 
@@ -161,7 +161,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 			if (!container.contains(e.target as HTMLElement)) {
 				return;
 			}
-			return handleKeyDown(e as KeyboardEvent);
+			return handleKeyDown(e);
 		};
 
 		document.addEventListener('keydown', ignoreIfNotContains);

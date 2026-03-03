@@ -24,10 +24,10 @@ API.v1.addRoute(
 
 			let updatedSinceDate: Date | undefined;
 			if (updatedSince) {
-				if (isNaN(Date.parse(updatedSince as string))) {
+				if (isNaN(Date.parse(updatedSince))) {
 					throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
 				}
-				updatedSinceDate = new Date(updatedSince as string);
+				updatedSinceDate = new Date(updatedSince);
 			}
 
 			const result = await getSubscriptions(this.userId, updatedSinceDate);

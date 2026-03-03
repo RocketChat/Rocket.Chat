@@ -607,7 +607,7 @@ export default class SlackAdapter {
 	 * https://api.slack.com/events/message
 	 */
 	async onMessage(slackMessage, isImporting) {
-		const isAFileShare = slackMessage && slackMessage.files && Array.isArray(slackMessage.files) && slackMessage.files.length;
+		const isAFileShare = slackMessage?.files && Array.isArray(slackMessage.files) && slackMessage.files.length;
 		if (isAFileShare) {
 			await this.processFileShare(slackMessage);
 			return;
@@ -841,22 +841,22 @@ export default class SlackAdapter {
 	}
 
 	async postMessage(slackChannel, rocketMessage) {
-		if (slackChannel && slackChannel.id) {
-			let iconUrl = getUserAvatarURL(rocketMessage.u && rocketMessage.u.username);
+		if (slackChannel?.id) {
+			let iconUrl = getUserAvatarURL(rocketMessage.u?.username);
 			if (iconUrl) {
 				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
 			}
 			const data = {
 				text: rocketMessage.msg,
 				channel: slackChannel.id,
-				username: rocketMessage.u && rocketMessage.u.username,
+				username: rocketMessage.u?.username,
 				icon_url: iconUrl,
 				link_names: 1,
 			};
 
 			if (rocketMessage.tmid) {
 				const tmessage = await Messages.findOneById(rocketMessage.tmid);
-				if (tmessage && tmessage.slackTs) {
+				if (tmessage?.slackTs) {
 					data.thread_ts = tmessage.slackTs;
 				}
 			}
@@ -873,7 +873,7 @@ export default class SlackAdapter {
 				this.removeMessageBeingSent(data);
 			}
 
-			if (postResult && postResult.message && postResult.message.bot_id && postResult.message.ts) {
+			if (postResult?.message?.bot_id && postResult.message.ts) {
 				this.slackBotId = postResult.message.bot_id;
 				await Messages.setSlackBotIdAndSlackTs(rocketMessage._id, postResult.message.bot_id, postResult.message.ts);
 				slackLogger.debug({
@@ -890,7 +890,7 @@ export default class SlackAdapter {
 	 https://api.slack.com/methods/chat.update
 	 */
 	async postMessageUpdate(slackChannel, rocketMessage) {
-		if (slackChannel && slackChannel.id) {
+		if (slackChannel?.id) {
 			const data = {
 				ts: this.getTimeStamp(rocketMessage),
 				channel: slackChannel.id,
@@ -931,7 +931,7 @@ export default class SlackAdapter {
 		}
 		const file = slackMessage.files[0];
 
-		if (file && file.url_private_download !== undefined) {
+		if (file?.url_private_download !== undefined) {
 			const rocketChannel = await this.rocket.getChannel(slackMessage);
 			const rocketUser = await this.rocket.getUser(slackMessage.user);
 
@@ -1158,7 +1158,7 @@ export default class SlackAdapter {
 	}
 
 	async processShareMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
-		if (slackMessage.file && slackMessage.file.url_private_download !== undefined) {
+		if (slackMessage.file?.url_private_download !== undefined) {
 			const details = {
 				message_id: this.createSlackMessageId(slackMessage.ts),
 				name: slackMessage.file.name,
@@ -1178,7 +1178,7 @@ export default class SlackAdapter {
 	}
 
 	async processPinnedItemMessage(rocketChannel, rocketUser, slackMessage, isImporting) {
-		if (slackMessage.attachments && slackMessage.attachments[0] && slackMessage.attachments[0].text) {
+		if (slackMessage.attachments?.[0]?.text) {
 			// TODO: refactor this logic to use the service to send this system message instead of using sendMessage
 			const rocketMsgObj = {
 				rid: rocketChannel._id,
@@ -1288,7 +1288,7 @@ export default class SlackAdapter {
 				attachment.image_url = url;
 				attachment.image_type = file.type;
 				attachment.image_size = file.size;
-				attachment.image_dimensions = file.identify && file.identify.size;
+				attachment.image_dimensions = file.identify?.size;
 			}
 			if (/^audio\/.+/.test(file.type)) {
 				attachment.audio_url = url;
@@ -1359,13 +1359,13 @@ export default class SlackAdapter {
 			let topic = '';
 			let topic_last_set = 0;
 			let topic_creator = null;
-			if (channel && channel.topic && channel.topic.value) {
+			if (channel?.topic?.value) {
 				topic = channel.topic.value;
 				topic_last_set = channel.topic.last_set;
 				topic_creator = channel.topic.creator;
 			}
 
-			if (channel && channel.purpose && channel.purpose.value) {
+			if (channel?.purpose?.value) {
 				if (topic_last_set) {
 					if (topic_last_set < channel.purpose.last_set) {
 						topic = channel.purpose.topic;
@@ -1433,7 +1433,7 @@ export default class SlackAdapter {
 					channel: this.getSlackChannel(rid).id,
 					oldest: 1,
 				});
-				while (results && results.has_more) {
+				while (results?.has_more) {
 					// eslint-disable-next-line no-await-in-loop
 					results = await this.importFromHistory({
 						channel: this.getSlackChannel(rid).id,

@@ -81,7 +81,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		setFocused((focused) => {
 			const sortedItems = items
 				.filter((item) => item.isSuccess)
-				.flatMap((item) => item.data as T[])
+				.flatMap((item) => item.data)
 				.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 			return sortedItems.find((item) => item._id === focused?._id) ?? sortedItems[0];
 		});
@@ -194,7 +194,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			setFocused((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data as T[])
+					.flatMap((item) => item.data)
 					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 
 				if (!list) {
@@ -203,7 +203,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 				const focusedIndex = list.findIndex((item) => item === focused);
 
-				return (focusedIndex > 0 ? list[focusedIndex - 1] : list[list.length - 1]) as T;
+				return focusedIndex > 0 ? list[focusedIndex - 1] : list[list.length - 1];
 			});
 			event.preventDefault();
 			event.stopImmediatePropagation();
@@ -213,7 +213,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			setFocused((focused) => {
 				const list = items
 					.filter((item) => item.isSuccess)
-					.flatMap((item) => item.data as T[])
+					.flatMap((item) => item.data)
 					.sort((a, b) => (('sort' in a && a.sort) || 0) - (('sort' in b && b.sort) || 0));
 
 				if (!list) {
@@ -222,7 +222,7 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 
 				const focusedIndex = list.findIndex((item) => item === focused);
 
-				return (focusedIndex < list.length - 1 ? list[focusedIndex + 1] : list[0]) as T;
+				return focusedIndex < list.length - 1 ? list[focusedIndex + 1] : list[0];
 			});
 			event.preventDefault();
 			event.stopImmediatePropagation();

@@ -9,7 +9,7 @@ import { addSettings } from '../settings/saml';
 
 await License.onLicense('saml-enterprise', () => {
 	SAMLUtils.events.on('mapUser', async ({ profile, userObject }: { profile: Record<string, any>; userObject: ISAMLUser }) => {
-		const roleAttributeName = settings.get('SAML_Custom_Default_role_attribute_name') as string;
+		const roleAttributeName = settings.get('SAML_Custom_Default_role_attribute_name');
 		const roleAttributeSync = settings.get('SAML_Custom_Default_role_attribute_sync');
 
 		if (!roleAttributeSync) {
@@ -48,7 +48,7 @@ await License.onLicense('saml-enterprise', () => {
 	});
 
 	SAMLUtils.events.on('updateCustomFields', async (loginResult: Record<string, any>, updatedUser: { userId: string; token: string }) => {
-		const userDataCustomFieldMap = settings.get('SAML_Custom_Default_user_data_custom_fieldmap') as string;
+		const userDataCustomFieldMap = settings.get('SAML_Custom_Default_user_data_custom_fieldmap');
 		const customMap: Record<string, any> = JSON.parse(userDataCustomFieldMap);
 
 		const customFieldsList: Record<string, any> = {};

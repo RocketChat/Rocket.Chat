@@ -112,7 +112,7 @@ const MessageBoxActionsToolbar = ({
 			.filter((item) => !hiddenActions.includes(item.id))
 			.map((item) => ({
 				id: item.id,
-				icon: item.icon as ComponentProps<typeof Icon>['name'],
+				icon: item.icon,
 				content: t(item.label),
 				onClick: (event?: MouseEvent<HTMLElement>) =>
 					item.action({

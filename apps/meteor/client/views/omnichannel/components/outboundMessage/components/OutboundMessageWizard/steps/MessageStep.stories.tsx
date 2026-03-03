@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Box } from '@rocket.chat/fuselage';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';

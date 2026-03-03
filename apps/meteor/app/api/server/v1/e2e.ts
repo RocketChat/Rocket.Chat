@@ -510,7 +510,6 @@ API.v1.addRoute(
 	},
 	{
 		async post() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { public_key, private_key, force } = this.bodyParams;
 
 			await setUserPublicAndPrivateKeysMethod(this.userId, {
