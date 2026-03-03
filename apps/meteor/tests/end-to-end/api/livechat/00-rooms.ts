@@ -195,6 +195,18 @@ describe('LIVECHAT - rooms', () => {
 				expect(body.room.source.type).to.be.equal('api');
 				await closeOmnichannelRoom(body.room._id);
 			});
+		});
+
+		describe('existing room retrieval', () => {
+			let visitor: ILivechatVisitor;
+
+			before(async () => {
+				visitor = await createVisitor();
+			});
+
+			after(async () => {
+				await deleteVisitor(visitor.token);
+			});
 
 			it('should return an existing open room when visitor has one available', async () => {
 				const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
@@ -212,6 +224,18 @@ describe('LIVECHAT - rooms', () => {
 				expect(body2.newRoom).to.be.false;
 				await closeOmnichannelRoom(body.room._id);
 			});
+		});
+
+		describe('room retrieval with rid', () => {
+			let visitor: ILivechatVisitor;
+
+			before(async () => {
+				visitor = await createVisitor();
+			});
+
+			after(async () => {
+				await deleteVisitor(visitor.token);
+			});
 
 			it('should return a room for the visitor when rid points to a valid open room', async () => {
 				const room = await createLivechatRoom(visitor.token);
@@ -222,6 +246,18 @@ describe('LIVECHAT - rooms', () => {
 				expect(body.room.v).to.have.property('token', visitor.token);
 				expect(body.newRoom).to.be.false;
 				await closeOmnichannelRoom(room._id);
+			});
+		});
+
+		describe('widget cookies', () => {
+			let visitor: ILivechatVisitor;
+
+			before(async () => {
+				visitor = await createVisitor();
+			});
+
+			after(async () => {
+				await deleteVisitor(visitor.token);
 			});
 
 			it('should properly read widget cookies', async () => {
