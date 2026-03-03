@@ -6,6 +6,7 @@ import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
+import { validateRequiredRolesForRoom } from '../../../authorization/server/validateRequiredRolesForRoom';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
@@ -49,17 +50,31 @@ export const addUserToRoom = async (
 	}
 
 	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(
+		rid,
+		userToBeAdded._id,
+	);
+	
 	if (subscription) {
 		return;
 	}
-
+	
 	if (
-		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
-		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id))
+		!(await roomDirectives.allowMemberAction(
+			room,
+			RoomMemberActions.JOIN,
+			userToBeAdded._id,
+		)) &&
+		!(await roomDirectives.allowMemberAction(
+			room,
+			RoomMemberActions.INVITE,
+			userToBeAdded._id,
+		))
 	) {
 		return;
 	}
+	
+	await validateRequiredRolesForRoom(room, userToBeAdded._id);
 
 	try {
 		const inviterUser = inviter && ((await Users.findOneById(inviter._id)) || undefined);
