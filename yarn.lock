@@ -9491,6 +9491,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/models@workspace:packages/models"
   dependencies:
+    "@rocket.chat/emitter": "npm:^0.32.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/model-typings": "workspace:~"
     "@rocket.chat/random": "workspace:^"

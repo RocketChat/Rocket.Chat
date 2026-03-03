@@ -311,7 +311,13 @@ export async function migrateDatabase(targetVersion: 'latest' | number, subcomma
 	return true;
 }
 
-export async function onServerVersionChange(cb: () => Promise<void>): Promise<void> {
+let hashVersion: string | undefined;
+
+const getHashVersion = async () => {
+	if (hashVersion) {
+		return hashVersion;
+	}
+
 	const result = await Migrations.findOneAndUpdate(
 		{
 			_id: 'upgrade',
@@ -326,9 +332,11 @@ export async function onServerVersionChange(cb: () => Promise<void>): Promise<vo
 		},
 	);
 
-	if (result?.hash === Info.commit.hash) {
-		return;
-	}
+	hashVersion = result?.hash;
+};
 
-	await cb();
+export async function shouldRunServerVersionChange(): Promise<boolean> {
+	const hash = await getHashVersion();
+
+	return hash !== Info.commit.hash;
 }
