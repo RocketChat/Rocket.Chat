@@ -44,6 +44,39 @@ describe('BlockSplitter', () => {
         expect(blocks[2].content).toBe('Post');
     });
 
+    it('should handle unordered lists and preserve markers', () => {
+        const input = '- item 1\n* item 2';
+        const blocks = BlockSplitter.split(input);
+        expect(blocks.length).toBe(1);
+        expect(blocks[0].type).toBe(BlockType.LIST);
+        expect(blocks[0].ordered).toBe(false);
+        expect(blocks[0].content).toBe('- item 1\n* item 2');
+    });
+
+    it('should handle ordered lists', () => {
+        const input = '1. item 1\n2. item 2';
+        const blocks = BlockSplitter.split(input);
+        expect(blocks.length).toBe(1);
+        expect(blocks[0].type).toBe(BlockType.LIST);
+        expect(blocks[0].ordered).toBe(true);
+        expect(blocks[0].content).toBe('1. item 1\n2. item 2');
+    });
+
+    it('should support nested lists via indentation', () => {
+        const input = '- item 1\n  - subitem\n  continues';
+        const blocks = BlockSplitter.split(input);
+        expect(blocks.length).toBe(1);
+        expect(blocks[0].content).toBe('- item 1\n  - subitem\n  continues');
+    });
+
+    it('should split lists of different types', () => {
+        const input = '- item 1\n1. item 2';
+        const blocks = BlockSplitter.split(input);
+        expect(blocks.length).toBe(2);
+        expect(blocks[0].ordered).toBe(false);
+        expect(blocks[1].ordered).toBe(true);
+    });
+
     it('should identify blockquotes', () => {
         const input = '> Quote line 1\n> Quote line 2\nNormal text';
         const blocks = BlockSplitter.split(input);
