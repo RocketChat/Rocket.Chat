@@ -1,9 +1,9 @@
+import { TZDate, tzOffset } from '@date-fns/tz';
 import type { AtLeast, ILivechatAgentStatus, ILivechatBusinessHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import type { IWorkHoursCronJobsWrapper } from '@rocket.chat/models';
-import { TZDate, tzOffset } from '@date-fns/tz';
 import { format, addHours, isBefore, isSameSecond } from 'date-fns';
 import type { UpdateFilter } from 'mongodb';
 

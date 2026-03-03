@@ -1,8 +1,7 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import { ObjectId } from 'mongodb';
-
 import { guessTimezone } from '@rocket.chat/tools';
+import { ObjectId } from 'mongodb';
 
 import { formatUtcDayTime, parseDayTimeInZone } from './AbstractBusinessHour';
 

@@ -41,14 +41,11 @@ export const filterBusinessHoursThatMustBeOpened = async (
 					.filter((hour) => hour.open)
 					.some((hour) => {
 						let startMinutes = toMinutesSinceSunday(hour.start.cron.dayOfWeek, `${hour.start.cron.time}:00`);
-						let finishMinutes = toMinutesSinceSunday(hour.finish.cron.dayOfWeek, `${hour.finish.cron.time}:00`);
+						const finishMinutes = toMinutesSinceSunday(hour.finish.cron.dayOfWeek, `${hour.finish.cron.time}:00`);
 
 						// Overnight range (e.g. Saturday 22:00 to Sunday 02:00)
 						if (startMinutes > finishMinutes) {
-							return (
-								currentMinutes >= startMinutes ||
-								currentMinutes < finishMinutes
-							);
+							return currentMinutes >= startMinutes || currentMinutes < finishMinutes;
 						}
 
 						// Same-day range: normalize for "current day is start day but start time is after current" (use previous week's start)
