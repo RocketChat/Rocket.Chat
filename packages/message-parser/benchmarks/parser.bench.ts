@@ -141,6 +141,10 @@ const categories: BenchCategory[] = [
 				name: 'long with formatting',
 				input: '**bold** _italic_ ~~strike~~ `code` @user #channel :smile: https://example.com '.repeat(10).trim(),
 			},
+			{
+				name: 'unmatched markers (pathological)',
+				input: '*_~*_~*_~*_~*_~ hello world absolutely no closing markers anywhere at all',
+			},
 		],
 	},
 	{
