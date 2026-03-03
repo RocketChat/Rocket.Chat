@@ -11,10 +11,8 @@ import {
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
-	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsChangeArchivationStateProps,
-	isRoomsHideProps,
 	isRoomsInviteProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -905,6 +903,14 @@ type RoomsLeave =
 			roomName: string;
 	  };
 
+type RoomsHideProps = {
+	roomId: string;
+};
+
+type RoomsOpenProps = {
+	roomId: string;
+};
+
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
 	properties: {
@@ -958,8 +964,34 @@ const isRoomsLeavePropsSchema = {
 	],
 };
 
+const roomsHideSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+const roomsOpenSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
+export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
 export const roomEndpoints = API.v1
 	.get(
