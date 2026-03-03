@@ -171,7 +171,7 @@ import { getUserInfo } from '../helpers/getUserInfo';
  */
 API.v1.addRoute(
 	'me',
-	{ authRequired: true },
+	{ authRequired: true, userWithoutUsername: true },
 	{
 		async get() {
 			const userFields = { ...getBaseUserFields(), services: 1 };
@@ -472,6 +472,7 @@ API.v1.addRoute(
 	'method.call/:method',
 	{
 		authRequired: true,
+		userWithoutUsername: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
 		applyMeteorContext: true,
@@ -534,6 +535,7 @@ API.v1.addRoute(
 	'method.callAnon/:method',
 	{
 		authRequired: false,
+		userWithoutUsername: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
 		applyMeteorContext: true,
