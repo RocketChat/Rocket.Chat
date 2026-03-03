@@ -6,17 +6,17 @@ export const formatQueuedAt = (room: Serialized<IOmnichannelRoom> | undefined) =
 	const queueStartedAt = queuedAt || ts;
 
 	// Room served: time from queueStartedAt to servedBy.ts
-	if (servedBy) {
+	if (servedBy?.ts != null && queueStartedAt != null) {
 		return formatDistance(new Date(servedBy.ts), new Date(queueStartedAt), { addSuffix: false });
 	}
 
 	// Room open and not served: time from queueStartedAt to now
-	if (open) {
+	if (open && queueStartedAt != null) {
 		return formatDistance(new Date(), new Date(queueStartedAt), { addSuffix: false });
 	}
 
 	// Room closed and not served: time from queueStartedAt to closedAt
-	if (closedAt && queueStartedAt) {
+	if (closedAt != null && queueStartedAt != null) {
 		return formatDistance(new Date(closedAt), new Date(queueStartedAt), { addSuffix: false });
 	}
 

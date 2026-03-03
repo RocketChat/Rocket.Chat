@@ -31,6 +31,7 @@ const { BusinessHourManager } = proxyquire.noCallThru().load('../../../../../../
 
 const cronAddStub = sinon.stub();
 const cronRemoveStub = sinon.stub();
+const saveBusinessHourStub = sinon.stub();
 
 describe('[OC] BusinessHourManager', () => {
 	afterEach(() => sinon.restore());
@@ -72,6 +73,7 @@ describe('[OC] BusinessHourManager', () => {
 		afterEach(() => {
 			sinon.restore();
 			loggerStub.resetHistory();
+			saveBusinessHourStub.resetHistory();
 		});
 
 		it('should call the verifier when the manager starts', async () => {

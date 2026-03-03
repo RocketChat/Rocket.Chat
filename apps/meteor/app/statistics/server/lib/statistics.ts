@@ -28,8 +28,8 @@ import {
 	LivechatRooms,
 	AbacAttributes,
 } from '@rocket.chat/models';
+import { format, subDays } from 'date-fns';
 import { MongoInternals } from 'meteor/mongo';
-import { format, subDays, subMonths } from 'date-fns';
 
 import { getAppsStatistics } from './getAppsStatistics';
 import { getContactVerificationStatistics } from './getContactVerificationStatistics';

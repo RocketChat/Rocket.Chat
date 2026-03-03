@@ -10423,7 +10423,6 @@ __metadata:
     "@types/react-dom": "npm:~18.3.7"
     "@vitejs/plugin-react": "npm:~4.5.2"
     codemirror: "npm:^6.0.2"
-    date-fns: "npm:~4.1.0"
     eslint: "npm:~9.39.3"
     eslint4b-prebuilt: "npm:^6.7.2"
     prettier: "npm:~3.3.3"

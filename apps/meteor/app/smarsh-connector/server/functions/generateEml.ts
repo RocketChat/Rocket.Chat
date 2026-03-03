@@ -1,7 +1,7 @@
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import { differenceInMinutes } from 'date-fns';
+import { Meteor } from 'meteor/meteor';
 
 import { sendEmail } from './sendEmail';
 import { i18n } from '../../../../server/lib/i18n';
@@ -51,7 +51,7 @@ export const generateEml = async (): Promise<void> => {
 				users: [],
 				msgs: 0,
 				files: [],
-				time: smarshHistory ? differenceInMinutes(date, smarshHistory.lastRan) : differenceInMinutes(date, room.ts),
+				time: smarshHistory ? differenceInMinutes(date, smarshHistory.lastRan) : differenceInMinutes(date, room.ts ?? new Date()),
 				room: room.name ? `#${room.name}` : `Direct Message Between: ${room?.usernames?.join(' & ')}`,
 			};
 
@@ -64,7 +64,7 @@ export const generateEml = async (): Promise<void> => {
 				rows.push(open20td);
 				rows.push(
 					new Intl.DateTimeFormat('en-US', {
-						timeZone: timeZone,
+						timeZone,
 						year: 'numeric',
 						month: '2-digit',
 						day: '2-digit',
