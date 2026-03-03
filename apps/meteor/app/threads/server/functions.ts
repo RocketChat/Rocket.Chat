@@ -27,9 +27,12 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
-	const [highlightsUids, threadFollowers] = await Promise.all([
+	const [highlightsUids, threadFollowers, roomMembers] = await Promise.all([
 		getUserIdsFromHighlights(rid, message),
 		Messages.getThreadFollowsByThreadId(tmid),
+		toAll || toHere
+			? Subscriptions.findByRoomIdAndNotUserId(rid, u._id, { projection: { 'u._id': 1 } }).toArray()
+			: Promise.resolve([]),
 	]);
 
 	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIds.includes(userId)) || [];
@@ -40,10 +43,20 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	// Notify message mentioned users and highlights
 	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
 
+	const roomMemberIds = roomMembers.map(({ u }) => u?._id).filter(Boolean) as string[];
+	const targetUsersForThread = toAll || toHere ? roomMemberIds : threadFollowersUids;
+
 	const promises = [
 		ReadReceipts.setAsThreadById(tmid),
-		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, notifyOptions),
+		Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, targetUsersForThread, tmid, notifyOptions),
 	];
+
+	if (toAll || toHere) {
+		promises.push(
+			Subscriptions.setAlertForRoomIdAndUserIds(rid, roomMemberIds),
+			Subscriptions.setOpenForRoomIdAndUserIds(rid, roomMemberIds),
+		);
+	}
 
 	if (mentionedUsers.length) {
 		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, mentionedUsers, tmid, { userMention: true }));
@@ -58,7 +71,8 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	await Promise.allSettled(promises);
 
-	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUids]);
+	const notifiedUsers = new Set([...targetUsersForThread, ...mentionedUsers, ...highlightsUids]);
+	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...notifiedUsers]);
 }
 
 export async function follow({ tmid, uid }: { tmid: string; uid: string }) {
