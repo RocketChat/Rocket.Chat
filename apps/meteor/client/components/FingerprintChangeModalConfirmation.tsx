@@ -41,9 +41,7 @@ const FingerprintChangeModalConfirmation = ({
 					i18nKey='Unique_ID_change_detected_learn_more_link'
 					components={{
 						a: (
-							<a href={links.go.fingerPrintChangedFaq} target='_blank' rel='noopener noreferrer'>
-								{/* content injected by <Trans>*/}
-							</a>
+							<a href={links.go.fingerPrintChangedFaq} target='_blank' rel='noopener noreferrer' />
 						),
 					}}
 				/>
