@@ -75,7 +75,7 @@ const isValidLink = (link: string) => {
 	}
 };
 
-const hasAbsoluteSchemePrefix = (src: string) => /^[A-Za-z0-9+-]{1,32}:\/\//.test(src);
+const hasAbsoluteSchemePrefix = (src: string) => /^[A-Za-z][A-Za-z0-9+.-]{0,31}:\/\//.test(src);
 
 export const link = (src: string, label?: Markup[]): Link => ({
 	type: 'LINK',
