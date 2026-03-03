@@ -12,8 +12,9 @@ export const EeNumberInput = ({ label, ...props }: { label: string } & Component
 	}
 
 	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-		if (Number(event.currentTarget.value) < 0) {
-			event.currentTarget.value = '0';
+		const minValue = min ?? 0;
+		if (Number(event.currentTarget.value) < minValue) {
+			event.currentTarget.value = String(minValue);
 		}
 
 		onChange?.(event);
