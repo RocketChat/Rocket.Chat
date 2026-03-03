@@ -14,7 +14,7 @@
 		"lint:fix": "eslint --fix ."
 	},
 	"dependencies": {
-		"cron": "~1.8.2",
+		"cron": "4.4.0",
 		"date.js": "~0.3.3",
 		"debug": "~4.3.7",
 		"human-interval": "^2.0.1",

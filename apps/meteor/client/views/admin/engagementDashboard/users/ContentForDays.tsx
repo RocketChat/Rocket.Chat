@@ -5,8 +5,8 @@ import { format, subDays } from 'date-fns';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
-import { formatDate } from '../../../../lib/utils/dateFormat';
 import { useWeeklyChatActivity } from './useWeeklyChatActivity';
+import { formatDate } from '../../../../lib/utils/dateFormat';
 
 type ContentForDaysProps = {
 	displacement: number;

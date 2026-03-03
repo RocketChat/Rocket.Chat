@@ -1,17 +1,8 @@
 import type { IOmnichannelRoom, IMessage, IBusinessHourWorkHour, ILivechatDepartment } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatBusinessHours, LivechatDepartment, Messages, LivechatRooms } from '@rocket.chat/models';
-import {
-	addDays,
-	startOfDay,
-	differenceInDays,
-	differenceInSeconds,
-	setHours,
-	setMinutes,
-	format,
-	isBefore,
-	isAfter,
-} from 'date-fns';
+import { addDays, startOfDay, differenceInDays, differenceInSeconds, setHours, setMinutes, format, isBefore, isAfter } from 'date-fns';
+
 import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../settings/server';
 import { businessHourManager } from '../business-hour';
@@ -62,7 +53,7 @@ export const getSecondsSinceLastAgentResponse = async (room: IOmnichannelRoom, a
 	const endOfConversation = new Date(room.closedAt || new Date());
 	const startOfInactivity = new Date(agentLastMessage.ts);
 	const daysOfInactivity = differenceInDays(startOfDay(endOfConversation), startOfDay(startOfInactivity));
-	let inactivityDay = startOfDay(startOfInactivity);
+	const inactivityDay = startOfDay(startOfInactivity);
 
 	for (let index = 0; index <= daysOfInactivity; index++) {
 		const dayDate = index === 0 ? inactivityDay : addDays(inactivityDay, index);

@@ -7,11 +7,11 @@ import type { ReactElement } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useUsersByTimeOfTheDay } from './useUsersByTimeOfTheDay';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import { useUsersByTimeOfTheDay } from './useUsersByTimeOfTheDay';
 
 type UsersByTimeOfTheDaySectionProps = {
 	timezone: 'utc' | 'local';
@@ -56,9 +56,7 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 		const timezoneOffsetHours = -new Date().getTimezoneOffset() / 60;
 
 		for (const { users, hour, day, month, year } of data.week) {
-			const d = utc
-				? new Date(Date.UTC(year, month - 1, day, hour, 0, 0, 0))
-				: new Date(year, month - 1, day, hour, 0, 0, 0);
+			const d = utc ? new Date(Date.UTC(year, month - 1, day, hour, 0, 0, 0)) : new Date(year, month - 1, day, hour, 0, 0, 0);
 			if (!utc) {
 				d.setHours(d.getHours() + timezoneOffsetHours);
 			}

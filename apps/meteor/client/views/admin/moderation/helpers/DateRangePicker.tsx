@@ -1,6 +1,6 @@
-import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
 import { Select, Box, type SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
 import type { Key } from 'react';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';

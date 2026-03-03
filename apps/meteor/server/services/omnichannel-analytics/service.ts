@@ -1,4 +1,3 @@
-/* eslint-disable new-cap */
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	AgentOverviewDataOptions,
@@ -98,11 +97,10 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 			for (let hour = 0; hour < HOURS_IN_DAY; hour++) {
 				const hourStart = addHours(from, hour);
 				const hourEnd = endOfHour(hourStart);
-				data.dataLabels.push(
-					`${formatHourInTimezone(hour, timezone)}-${formatHourInTimezone(hour + 1, timezone)}`,
-				);
+				data.dataLabels.push(`${formatHourInTimezone(hour, timezone)}-${formatHourInTimezone(hour + 1, timezone)}`);
 
 				const date = { gte: hourStart, lte: hourEnd };
+				// eslint-disable-next-line no-await-in-loop
 				data.dataPoints.push(await this.chart.callAction(chartLabel, date, departmentId, extraQuery));
 			}
 		} else {

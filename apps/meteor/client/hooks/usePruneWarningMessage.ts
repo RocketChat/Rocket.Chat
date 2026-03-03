@@ -2,12 +2,12 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useLanguage } from '@rocket.chat/ui-contexts';
-import { sendAt } from 'cron';
+// import { sendAt } from 'cron';
 import { intlFormat } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { useFormattedRelativeTime } from './useFormattedRelativeTime';
-import { getCronAdvancedTimerFromPrecisionSetting } from '../../lib/getCronAdvancedTimerFromPrecisionSetting';
+// import { getCronAdvancedTimerFromPrecisionSetting } from '../../lib/getCronAdvancedTimerFromPrecisionSetting';
 import { useRetentionPolicy } from '../views/room/hooks/useRetentionPolicy';
 
 const getMessage = ({ filesOnly, excludePinned }: { filesOnly: boolean; excludePinned: boolean }): TranslationKey => {
@@ -31,10 +31,10 @@ const getNextRunDate = ({
 	advancedCronTimer: string;
 }) => {
 	if (enableAdvancedCronTimer) {
-		return sendAt(advancedCronTimer);
+		// return sendAt(advancedCronTimer);
 	}
 
-	return sendAt(getCronAdvancedTimerFromPrecisionSetting(cronPrecision));
+	// return sendAt(getCronAdvancedTimerFromPrecisionSetting(cronPrecision));
 };
 
 const useNextRunDate = ({

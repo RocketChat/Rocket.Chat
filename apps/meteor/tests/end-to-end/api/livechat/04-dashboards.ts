@@ -3,16 +3,9 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
+import { subDays, differenceInSeconds, startOfDay, format } from 'date-fns';
 import { before, after, describe, it } from 'mocha';
 import type { Response } from 'supertest';
-import { subDays, differenceInSeconds, startOfDay, format } from 'date-fns';
-
-/** Parse HH:mm:ss or H:mm:ss to total seconds */
-function durationAsSeconds(value: string): number {
-	const parts = String(value).trim().split(':').map(Number);
-	const [h = 0, m = 0, s = 0] = parts.length === 3 ? parts : [0, 0, parts[0]];
-	return (h || 0) * 3600 + (m || 0) * 60 + (s || 0);
-}
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
@@ -29,6 +22,13 @@ import { sleep } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateEESetting, updateSetting } from '../../../data/permissions.helper';
 import { deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+
+/** Parse HH:mm:ss or H:mm:ss to total seconds */
+function durationAsSeconds(value: string): number {
+	const parts = String(value).trim().split(':').map(Number);
+	const [h = 0, m = 0, s = 0] = parts.length === 3 ? parts : [0, 0, parts[0]];
+	return (h || 0) * 3600 + (m || 0) * 60 + (s || 0);
+}
 
 describe('LIVECHAT - dashboards', function () {
 	// This test is expected to take more time since we're simulating real time conversations to verify analytics
