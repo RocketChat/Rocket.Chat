@@ -106,6 +106,110 @@ const reducer = (state: initialStateType, action: IAction) => {
 			state.screens[activeScreen].payload.surface = action.payload;
 			state.screens[activeScreen].changedByEditor = false;
 
+
+      return { ...state };
+    }
+    case ActionTypes.UpdatePayload: {
+      state.screens[activeScreen].payload.blocks = action?.payload?.blocks;
+      if (action?.payload?.surface)
+        state.screens[activeScreen].payload.surface = action?.payload?.surface;
+      state.screens[activeScreen].changedByEditor =
+        action?.payload?.changedByEditor === undefined;
+      state.projects[activeProject].flowEdges = filterEdges(
+        state.projects[activeProject].flowEdges,
+        action?.payload?.blocks.map((node) => node.actionId),
+        activeScreen
+      );
+      return { ...state };
+    }
+    case ActionTypes.ActionPreview: {
+      state.screens[activeScreen].actionPreview = action.payload;
+      return { ...state };
+    }
+    case ActionTypes.User:
+      return { ...state, user: action.payload };
+    case ActionTypes.OpenCreateNewScreen:
+      return { ...state, openCreateNewScreen: action.payload };
+    case ActionTypes.ActiveScreen:
+      return {
+        ...state,
+        openCreateNewScreen: false,
+        activeScreen: action.payload,
+      };
+    case ActionTypes.CreateNewScreen: {
+      const id = getUniqueId();
+      return {
+        ...state,
+        screens: {
+          ...state.screens,
+          [id]: {
+            id,
+            name: action?.payload || 'Untitled Screen',
+            payload: {
+              surface: SurfaceOptions.Message,
+              blocks: [],
+            },
+            date: getDate(),
+            actionPreview: {},
+          },
+        },
+        projects: {
+          ...state.projects,
+          [activeProject]: {
+            ...state.projects[activeProject],
+            screens: [...state.projects[activeProject].screens, id],
+          },
+        },
+        openCreateNewScreen: false,
+        activeScreen: id,
+      };
+    }
+    case ActionTypes.DuplicateScreen: {
+      const id = getUniqueId();
+      const screens = state.projects[activeProject].screens;
+      screens.splice(screens.indexOf(action.payload.id), 0, id);
+      return {
+        ...state,
+        screens: {
+          ...state.screens,
+          [id]: {
+            ...state.screens[action.payload.id],
+            id,
+            date: getDate(),
+            actionPreview: {},
+            name: action?.payload.name || 'Untitled Screen',
+            payload: state.screens[action.payload.id].payload,
+          },
+        },
+        projects: {
+          ...state.projects,
+          [activeProject]: {
+            ...state.projects[activeProject],
+            screens,
+          },
+        },
+        openCreateNewScreen: false,
+        activeScreen: id,
+      };
+    }
+    case ActionTypes.RenameScreen: {
+      state.screens[action?.payload?.id].name = action.payload.name;
+      return { ...state };
+    }
+    case ActionTypes.DeleteScreen: {
+      delete state.screens[action.payload];
+      state.projects[activeProject].screens = [
+        ...state.projects[activeProject].screens.filter(
+          (id) => id !== action.payload
+        ),
+      ];
+      state.projects[activeProject].flowEdges = state.projects[
+        activeProject
+      ].flowEdges.filter(
+        (edge) =>
+          edge.source !== action.payload && edge.target !== action.payload
+      );
+=======
 			return { ...state };
 		}
 		case ActionTypes.UpdatePayload: {
@@ -210,8 +314,11 @@ const reducer = (state: initialStateType, action: IAction) => {
 				(edge) => edge.source !== action.payload && edge.target !== action.payload,
 			);
 
+
 			state.projects[activeProject].flowNodes = state.projects[activeProject].flowNodes.filter((node) => node.id !== action.payload);
 
+
+=======
 			return { ...state };
 		}
 
