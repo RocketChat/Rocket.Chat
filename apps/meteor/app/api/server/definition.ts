@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 
-import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
+import type { IUser, LicenseModule, RequiredField } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
@@ -217,18 +217,18 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	};
 } & (TOptions extends { authRequired: true }
 	? {
-			user: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
+			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 			userId: string;
 			readonly token: string;
 		}
 	: TOptions extends { authOrAnonRequired: true }
 		? {
-				user?: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 				userId?: string;
 				readonly token?: string;
 			}
 		: {
-				user?: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 				userId?: string;
 				readonly token?: string;
 			});
