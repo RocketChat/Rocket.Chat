@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { ExternalLink, GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -39,10 +39,7 @@ const FingerprintChangeModalConfirmation = ({
 			<Box is='p' mbe={16}>
 				<Trans
 					i18nKey='Unique_ID_change_detected_learn_more_link'
-					components={{
-						// eslint-disable-next-line jsx-a11y/anchor-has-content
-						a: <a href={links.go.fingerPrintChangedFaq} target='_blank' rel='noopener noreferrer' />,
-					}}
+					components={{ a: <ExternalLink to={links.go.fingerPrintChangedFaq} /> }}
 				/>
 			</Box>
 		</GenericModal>
