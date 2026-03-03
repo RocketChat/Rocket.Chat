@@ -11,6 +11,7 @@ import type { ISubscription } from './ISubscription';
 import type { SlashCommand } from './SlashCommands';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
 import type { IUser } from "./IUser";
+import type { IMeResponse } from '../../../apps/meteor/app/api/server/v1/misc';
 
 export const schemas = typia.json.schemas<
 	[
@@ -18,7 +19,8 @@ export const schemas = typia.json.schemas<
 		CallHistoryItem,
 		ICustomUserStatus,
 		SlashCommand,
-		IUser
+		IUser,
+		IMeResponse
 	],
 	'3.0'
 >();
