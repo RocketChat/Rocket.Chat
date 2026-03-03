@@ -166,12 +166,7 @@ describe('LIVECHAT - rooms', () => {
 			});
 
 			after(async () => {
-				await Promise.all(
-					[...roomsToClose].map((roomId) =>
-						closeOmnichannelRoom(roomId)
-							.then(() => roomsToClose.delete(roomId)),
-					),
-				);
+				await Promise.all([...roomsToClose].map((roomId) => closeOmnichannelRoom(roomId).then(() => roomsToClose.delete(roomId))));
 				await deleteVisitor(visitor.token);
 			});
 
