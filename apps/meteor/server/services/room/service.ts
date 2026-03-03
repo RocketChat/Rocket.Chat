@@ -234,7 +234,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 		const sub = await Subscriptions.findByUserIdAndRoomIds(userId, [roomId], { projection: { roles: 1 } }).next();
 		if (!sub) {
-			throw new Error('user and room subsciption not found');
+			throw new Error('user and room subscription not found');
 		}
 
 		if (!sub.roles) {
