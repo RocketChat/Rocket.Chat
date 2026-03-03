@@ -1,6 +1,6 @@
-import GenericCard, { CARD_HEIGHT } from './GenericCard';
-import CardSlotStopSharingHover from './CardSlotStopSharingHover';
 import CardSlotPin from './CardSlotPin';
+import CardSlotStopSharingHover from './CardSlotStopSharingHover';
+import GenericCard /* , { CARD_HEIGHT } */ from './GenericCard';
 
 type StreamCardProps = {
 	children: React.ReactNode;
@@ -9,7 +9,7 @@ type StreamCardProps = {
 	onClickFocusStream?: () => void;
 	onClickStopSharing?: () => void;
 	focused?: boolean;
-	square?: boolean;
+	// square?: boolean;
 	autoHeight?: boolean;
 	maxHeight?: number;
 };
@@ -29,7 +29,7 @@ const StreamCard = ({
 	focused,
 	autoHeight,
 	maxHeight,
-	square = false,
+	// square = false,
 }: StreamCardProps) => {
 	return (
 		<GenericCard
@@ -38,7 +38,7 @@ const StreamCard = ({
 			// title={own ? t('Your_screen') : t('Peer__displayName__screen', { displayName })}
 			height={focused || autoHeight ? 'fit-content' : undefined}
 			minHeight={autoHeight ? 0 : undefined}
-			width={square ? CARD_HEIGHT : undefined}
+			// width={square ? CARD_HEIGHT : undefined}
 			maxHeight={maxHeight || '100%'}
 		>
 			{onClickFocusStream && <CardSlotPin focused={focused} onClick={onClickFocusStream} position='bottomRight' />}

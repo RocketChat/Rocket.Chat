@@ -56,16 +56,15 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
-				{/* TODO: Cannot get user info right here, I'm avoiding to other contexts, so it has to come from VoipContext */}
 				{localScreen?.active && (
-					<StreamCard displayName={t('You')} own autoHeight maxHeight={120}>
+					<StreamCard own autoHeight maxHeight={120} onClickStopSharing={onToggleScreenSharing}>
 						<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
 							<track kind='captions' />
 						</video>
 					</StreamCard>
 				)}
 				{remoteScreen?.active && (
-					<StreamCard displayName={'displayName' in peerInfo ? peerInfo.displayName : ''} autoHeight maxHeight={120}>
+					<StreamCard autoHeight maxHeight={120}>
 						<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
 							<track kind='captions' />
 						</video>

@@ -19,10 +19,10 @@ const styles = css`
 
 export const CARD_HEIGHT = 180;
 
-const CARD_MIN_WIDTH = CARD_HEIGHT;
+export const CARD_MIN_WIDTH = CARD_HEIGHT;
 const CARD_MAX_WIDTH = 320;
 
-const CARD_MARGIN = 2;
+export const CARD_MARGIN = 2;
 
 export const CARD_TOTAL_HEIGHT = CARD_HEIGHT + CARD_MARGIN * 2;
 export const CARD_TOTAL_WIDTH = CARD_MAX_WIDTH + CARD_MARGIN * 2;

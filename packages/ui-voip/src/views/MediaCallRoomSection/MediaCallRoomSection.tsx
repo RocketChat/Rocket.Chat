@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { memo, useEffect, useState } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ToggleButton, Timer, DevicePicker, ActionButton } from '../../components';
@@ -39,7 +39,7 @@ const getSplitStyles = (showChat?: boolean) => {
 const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: RoomCallSectionProps) => {
 	const { t } = useTranslation();
 
-	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>(null);
+	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>('remote');
 	const {
 		sessionState,
 		onMute,
@@ -70,18 +70,6 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 		setFocusedCard((prev) => (prev === 'local' ? null : 'local'));
 	};
 
-	useEffect(() => {
-		setFocusedCard((focusedCard) => {
-			if (focusedCard === 'remote' && !remoteScreen?.active) {
-				return null;
-			}
-			if (focusedCard === 'local' && !localScreen?.active) {
-				return null;
-			}
-			return focusedCard;
-		});
-	}, [remoteScreen?.active, localScreen?.active]);
-
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	// TODO flter out external peer info
 	if (!peerInfo || 'number' in peerInfo) {
@@ -89,31 +77,21 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 		// throw new Error('Peer info is required');
 	}
 
-	const remoteStreamCard = (
-		<StreamCard
-			onClickFocusStream={onClickFocusRemoteCard}
-			focused={focusedCard === 'remote'}
-			square={!!focusedCard && focusedCard !== 'remote'}
-		>
+	const remoteStreamCard = remoteScreen?.active ? (
+		<StreamCard onClickFocusStream={onClickFocusRemoteCard} focused={focusedCard === 'remote'}>
 			<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
 				<track kind='captions' />
 			</video>
 		</StreamCard>
-	);
+	) : null;
 
-	const localStreamCard = (
-		<StreamCard
-			own
-			onClickFocusStream={onClickFocusLocalCard}
-			onClickStopSharing={onToggleScreenSharing}
-			focused={focusedCard === 'local'}
-			square={!!focusedCard && focusedCard !== 'local'}
-		>
+	const localStreamCard = localScreen?.active ? (
+		<StreamCard own onClickFocusStream={onClickFocusLocalCard} onClickStopSharing={onToggleScreenSharing} focused={focusedCard === 'local'}>
 			<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
 				<track kind='captions' />
 			</video>
 		</StreamCard>
-	);
+	) : null;
 
 	const focusedCardElement = focusedCard === 'remote' ? remoteStreamCard : localStreamCard;
 
@@ -131,20 +109,10 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 		>
 			<CardListSection>
 				<CardListContainerWrapper focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
-					<PeerCard
-						displayName={user.displayName}
-						avatarUrl={user.avatarUrl}
-						muted={muted}
-						held={held}
-					/>
-					<PeerCard
-						displayName={peerInfo.displayName}
-						avatarUrl={peerInfo.avatarUrl}
-						muted={remoteMuted}
-						held={remoteHeld}
-					/>
-					{remoteScreen?.active && focusedCard !== 'remote' && remoteStreamCard}
-					{localScreen?.active && focusedCard !== 'local' && localStreamCard}
+					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
+					<PeerCard displayName={peerInfo.displayName} avatarUrl={peerInfo.avatarUrl} muted={remoteMuted} held={remoteHeld} />
+					{focusedCard !== 'remote' && remoteStreamCard}
+					{focusedCard !== 'local' && localStreamCard}
 				</CardListContainerWrapper>
 			</CardListSection>
 			<ActionStrip

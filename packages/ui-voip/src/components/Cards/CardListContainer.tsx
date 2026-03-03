@@ -5,7 +5,6 @@ type CardContainerProps = {
 	children: ReactNode;
 	shouldWrapCards?: boolean;
 	direction?: 'row' | 'column';
-	width?: 'fit-content' | number;
 	height?: number;
 	marginInline?: 'auto' | number;
 	justifyContent?: 'center' | 'start';
@@ -17,7 +16,6 @@ const CardContainer = ({
 	children,
 	shouldWrapCards,
 	direction = 'row',
-	width = 'fit-content',
 	height,
 	marginInline = 'auto',
 	overflow,
@@ -33,8 +31,6 @@ const CardContainer = ({
 			flexGrow={1}
 			justifyContent='center'
 			alignItems='center'
-			p={2}
-			width={width}
 			height={height}
 			overflow={overflow}
 		>
