@@ -43,88 +43,67 @@ export const upsertPermissions = async (): Promise<void> => {
 
 	const createSettingPermission = async function (
 		setting: ISetting,
-		previousSettingPermissions: Record<string, IPermission>,
+		previousSettingPermissions: {
+			[key: string]: IPermission;
+		},
 	): Promise<void> {
-		const { _id: permissionId, doc } = buildSettingPermissionDoc(setting, previousSettingPermissions);
-		try {
-			await Permissions.updateOne({ _id: permissionId }, { $set: doc }, { upsert: true });
-		} catch (e) {
-			if (!(e as Error).message.includes('E11000')) {
-				await Permissions.updateOne({ _id: permissionId }, { $set: doc }, { upsert: true });
-			}
-		}
-		delete previousSettingPermissions[permissionId];
-	};
-
-	const buildSettingPermissionDoc = function (
-		setting: ISetting,
-		previousSettingPermissions: Record<string, IPermission>,
-	): { _id: string; doc: Omit<IPermission, '_id'> } {
 		const permissionId = getSettingPermissionId(setting._id);
 		const permission: Omit<IPermission, '_id' | '_updatedAt'> = {
 			level: CONSTANTS.SETTINGS_LEVEL as 'settings' | undefined,
+			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
 			group: setting.group,
 			section: setting.section ?? undefined,
 			sorter: setting.sorter,
-			roles: previousSettingPermissions[permissionId]?.roles ?? [],
+			roles: [],
 		};
+		// copy previously assigned roles if available
+		if (previousSettingPermissions[permissionId]?.roles) {
+			permission.roles = previousSettingPermissions[permissionId].roles;
+		}
 		if (setting.group) {
 			permission.groupPermissionId = getSettingPermissionId(setting.group);
 		}
 		if (setting.section) {
 			permission.sectionPermissionId = getSettingPermissionId(setting.section);
 		}
-		return { _id: permissionId, doc: { ...permission, _updatedAt: new Date() } };
-	};
 
-	const BULK_WRITE_BATCH_SIZE = 500;
+		const existent = await Permissions.findOne(
+			{
+				_id: permissionId,
+				...permission,
+			},
+			{ projection: { _id: 1 } },
+		);
 
-	type SettingPermissionUpdateOp = {
-		updateOne: {
-			filter: { _id: string };
-			update: { $set: Omit<IPermission, '_id'> };
-			upsert: true;
-		};
+		if (!existent) {
+			try {
+				await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
+			} catch (e) {
+				if (!(e as Error).message.includes('E11000')) {
+					// E11000 refers to a MongoDB error that can occur when using unique indexes for upserts
+					// https://docs.mongodb.com/manual/reference/method/db.collection.update/#use-unique-indexes
+					await Permissions.updateOne({ _id: permissionId }, { $set: permission }, { upsert: true });
+				}
+			}
+		}
+
+		delete previousSettingPermissions[permissionId];
 	};
 
 	const createPermissionsForExistingSettings = async function (): Promise<void> {
 		const previousSettingPermissions = await getPreviousPermissions();
-		const settingsList = await Settings.findNotHidden().toArray();
 
-		const updateOps: SettingPermissionUpdateOp[] = [];
-		for (const setting of settingsList) {
-			const { _id: permissionId, doc } = buildSettingPermissionDoc(setting, previousSettingPermissions);
-			updateOps.push({
-				updateOne: {
-					filter: { _id: permissionId },
-					update: { $set: doc },
-					upsert: true,
-				},
-			});
-			delete previousSettingPermissions[permissionId];
+		const settings = await Settings.findNotHidden().toArray();
+		for await (const setting of settings) {
+			await createSettingPermission(setting, previousSettingPermissions);
 		}
 
-		// Batches run sequentially so E11000 retry applies per batch
-		/* eslint-disable no-await-in-loop */
-		for (let i = 0; i < updateOps.length; i += BULK_WRITE_BATCH_SIZE) {
-			const batch = updateOps.slice(i, i + BULK_WRITE_BATCH_SIZE);
-			try {
-				await Permissions.col.bulkWrite(batch, { ordered: false });
-			} catch (e) {
-				if ((e as Error).message.includes('E11000')) {
-					// E11000 duplicate key: retry without upsert for this batch (doc already exists)
-					await Promise.all(batch.map((op) => Permissions.updateOne(op.updateOne.filter, op.updateOne.update)));
-				} else {
-					throw e;
-				}
+		// remove permissions for non-existent settings
+		for await (const obsoletePermission of Object.keys(previousSettingPermissions)) {
+			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
+				await Permissions.deleteOne({ _id: obsoletePermission });
 			}
-		}
-		/* eslint-enable no-await-in-loop */
-
-		const obsoleteIds = Object.keys(previousSettingPermissions);
-		if (obsoleteIds.length > 0) {
-			await Permissions.deleteMany({ _id: { $in: obsoleteIds } });
 		}
 	};
 
