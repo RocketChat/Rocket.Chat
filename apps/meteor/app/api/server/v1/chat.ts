@@ -340,7 +340,7 @@ const chatSendMessageSchema = {
 			nullable: true,
 		},
 	},
-	required: ['message', 'rid'],
+	required: ['message'],
 	additionalProperties: false,
 };
 
