@@ -400,19 +400,30 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			readPreference: readSecondaryPreferred(db),
 		};
 
+		const [videoConferenceStarted, videoConferenceEnded, directCalling, directStarted, directEnded, livechatStarted, livechatEnded] =
+			await Promise.all([
+				VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.STARTED, options),
+				VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.ENDED, options),
+				VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.CALLING, options),
+				VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.STARTED, options),
+				VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.ENDED, options),
+				VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.STARTED, options),
+				VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.ENDED, options),
+			]);
+
 		return {
 			videoConference: {
-				started: await VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.STARTED, options),
-				ended: await VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.ENDED, options),
+				started: videoConferenceStarted,
+				ended: videoConferenceEnded,
 			},
 			direct: {
-				calling: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.CALLING, options),
-				started: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.STARTED, options),
-				ended: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.ENDED, options),
+				calling: directCalling,
+				started: directStarted,
+				ended: directEnded,
 			},
 			livechat: {
-				started: await VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.STARTED, options),
-				ended: await VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.ENDED, options),
+				started: livechatStarted,
+				ended: livechatEnded,
 			},
 			settings: {
 				provider: settings.get<string>('VideoConf_Default_Provider'),
