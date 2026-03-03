@@ -287,7 +287,9 @@ export class PasswordPolicy {
 		if (/[a-z]/.test(password)) poolSize += POOL.lowercase;
 		if (/[A-Z]/.test(password)) poolSize += POOL.uppercase;
 		if (/[0-9]/.test(password)) poolSize += POOL.digits;
-		if (/[^A-Za-z0-9]/.test(password)) poolSize += POOL.special;
+		if (/[!@#$%^&*()_\-+=\[{\]};:'",.<>/?\\|`~]/.test(password)) {
+  				poolSize += POOL.special;
+		}		
 		if (poolSize === 0) return 0;
 		return password.length * Math.log2(poolSize);
 	}
