@@ -37,6 +37,7 @@ import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
+import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { RocketChatAssets } from '../../../app/assets/server';
