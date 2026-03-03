@@ -320,10 +320,10 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	response: Response;
 } & (TOptions['authRequired'] extends true
 	? {
-			user: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
+			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 		}
 	: {
-			user?: TOptions extends { userWithoutUsername: true } ? IUser : Omit<IUser, 'username'> & Required<Pick<IUser, 'username'>>;
+			user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 		});
 
 type PromiseOrValue<T> = T | Promise<T>;
