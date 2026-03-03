@@ -1,10 +1,17 @@
+const NONE = Symbol('none');
+const BLOCK = Symbol('block');
+const SECTION = Symbol('section');
+const ACTION = Symbol('action');
+const FORM = Symbol('form');
+const CONTEXT = Symbol('context');
+
 export const BlockContext = {
-	NONE: Symbol('none'),
-	BLOCK: Symbol('block'),
-	SECTION: Symbol('section'),
-	ACTION: Symbol('action'),
-	FORM: Symbol('form'),
-	CONTEXT: Symbol('context'),
+	NONE,
+	BLOCK,
+	SECTION,
+	ACTION,
+	FORM,
+	CONTEXT,
 } as const;
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
