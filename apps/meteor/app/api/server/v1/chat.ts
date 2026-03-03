@@ -13,7 +13,6 @@ import {
 	isChatGetMessageProps,
 	isChatPostMessageProps,
 	isChatSearchProps,
-	isChatSendMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
 	isChatGetMentionedMessagesProps,
@@ -247,6 +246,11 @@ type ChatUnpinMessage = {
 	messageId: IMessage['_id'];
 };
 
+type ChatSendMessage = {
+	message: Partial<IMessage>;
+	previewUrls?: string[];
+};
+
 const ChatPinMessageSchema = {
 	type: 'object',
 	properties: {
@@ -271,9 +275,80 @@ const ChatUnpinMessageSchema = {
 	additionalProperties: false,
 };
 
+const chatSendMessageSchema = {
+	type: 'object',
+	properties: {
+		message: {
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+					nullable: true,
+				},
+				rid: {
+					type: 'string',
+				},
+				tmid: {
+					type: 'string',
+					nullable: true,
+				},
+				msg: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				tshow: {
+					type: 'boolean',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				blocks: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+			},
+		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+	},
+	required: ['message', 'rid'],
+	additionalProperties: false,
+};
+
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+const isChatSendMessageProps = ajv.compile<ChatSendMessage>(chatSendMessageSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -371,20 +446,20 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { bodyParams } = this;
+			const body = this.bodyParams;
 
-			const msg = await Messages.findOneById(bodyParams.msgId);
+			const msg = await Messages.findOneById(body.msgId);
 
 			// Ensure the message exists
 			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${bodyParams.msgId}".`);
+				return API.v1.failure(`No message found with the id of "${body.msgId}".`);
 			}
 
-			if (bodyParams.roomId !== msg.rid) {
+			if (body.roomId !== msg.rid) {
 				return API.v1.failure('The room id provided does not match where the message is from.');
 			}
 
-			const hasContent = 'content' in bodyParams;
+			const hasContent = 'content' in body;
 
 			if (hasContent && msg.t !== 'e2e') {
 				return API.v1.failure('Only encrypted messages can have content updated.');
@@ -396,16 +471,16 @@ const chatEndpoints = API.v1
 					? {
 							_id: msg._id,
 							rid: msg.rid,
-							content: bodyParams.content,
-							...(bodyParams.e2eMentions && { e2eMentions: bodyParams.e2eMentions }),
+							content: body.content,
+							...(body.e2eMentions && { e2eMentions: body.e2eMentions }),
 						}
 					: {
 							_id: msg._id,
 							rid: msg.rid,
-							msg: bodyParams.text,
-							...(bodyParams.customFields && { customFields: bodyParams.customFields }),
+							msg: body.text,
+							...(body.customFields && { customFields: body.customFields }),
 						},
-				'previewUrls' in bodyParams ? bodyParams.previewUrls : undefined,
+				'previewUrls' in body ? body.previewUrls : undefined,
 			];
 
 			// Permission checks are already done in the updateMessage method, so no need to duplicate them
@@ -558,6 +633,47 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	// The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
+	// for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
+	// one channel whereas the other one allows for sending to more than one channel at a time.
+	.post(
+		'chat.sendMessage',
+		{
+			authRequired: true,
+			body: isChatSendMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+
+		async function action() {
+			if (MessageTypes.isSystemMessage(this.bodyParams.message)) {
+				throw new Error("Cannot send system messages using 'chat.sendMessage'");
+			}
+
+			const sent = await applyAirGappedRestrictionsValidation(() =>
+				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
+			);
+			const [message] = await normalizeMessagesForUser([sent], this.userId);
+
+			return API.v1.success({
+				message,
+			});
+		},
 	);
 
 API.v1.addRoute(
@@ -624,30 +740,6 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				messages: await normalizeMessagesForUser(result, this.userId),
-			});
-		},
-	},
-);
-
-// The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
-// for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
-// one channel whereas the other one allows for sending to more than one channel at a time.
-API.v1.addRoute(
-	'chat.sendMessage',
-	{ authRequired: true, validateParams: isChatSendMessageProps },
-	{
-		async post() {
-			if (MessageTypes.isSystemMessage(this.bodyParams.message)) {
-				throw new Error("Cannot send system messages using 'chat.sendMessage'");
-			}
-
-			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.user, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
-			);
-			const [message] = await normalizeMessagesForUser([sent], this.userId);
-
-			return API.v1.success({
-				message,
 			});
 		},
 	},

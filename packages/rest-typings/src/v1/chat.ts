@@ -8,77 +8,6 @@ type ChatSendMessage = {
 	previewUrls?: string[];
 };
 
-const chatSendMessageSchema = {
-	type: 'object',
-	properties: {
-		message: {
-			type: 'object',
-			properties: {
-				_id: {
-					type: 'string',
-					nullable: true,
-				},
-				rid: {
-					type: 'string',
-				},
-				tmid: {
-					type: 'string',
-					nullable: true,
-				},
-				msg: {
-					type: 'string',
-					nullable: true,
-				},
-				alias: {
-					type: 'string',
-					nullable: true,
-				},
-				emoji: {
-					type: 'string',
-					nullable: true,
-				},
-				tshow: {
-					type: 'boolean',
-					nullable: true,
-				},
-				avatar: {
-					type: 'string',
-					nullable: true,
-				},
-				attachments: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				blocks: {
-					type: 'array',
-					items: {
-						type: 'object',
-					},
-					nullable: true,
-				},
-				customFields: {
-					type: 'object',
-					nullable: true,
-				},
-			},
-		},
-		previewUrls: {
-			type: 'array',
-			items: {
-				type: 'string',
-			},
-			nullable: true,
-		},
-	},
-	required: ['message'],
-	additionalProperties: false,
-};
-
-export const isChatSendMessageProps = ajv.compile<ChatSendMessage>(chatSendMessageSchema);
-
 type ChatGetMessage = {
 	msgId: IMessage['_id'];
 };
@@ -887,6 +816,10 @@ const ChatGetURLPreviewSchema = {
 export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
 export type ChatEndpoints = {
+	// This workaround an issue where "@rocket.chat/ddp-client" does not reference
+	// "@rocket.chat/meteor" correctly.
+	// Without this, the 'sendMessage' endpoint becomes unrecognizable to
+	// "@rocket.chat/ddp-client" and other dependent projects when moved or removed.
 	'/v1/chat.sendMessage': {
 		POST: (params: ChatSendMessage) => {
 			message: IMessage;
