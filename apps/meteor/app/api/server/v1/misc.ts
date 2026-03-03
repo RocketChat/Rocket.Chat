@@ -38,10 +38,17 @@ import { MeParams } from '@rocket.chat/rest-typings';
 
 // AJV validation schema
 const meSchema = {
-  type: 'object',
-  properties: {},
-  additionalProperties: false,
-  required: ['fields', 'user'],
+	type: 'object',
+	properties: {
+		fields: {
+			type: 'object',
+			additionalProperties: {
+				type: 'integer',
+				enum: [0, 1],
+			},
+		},
+	},
+	additionalProperties: false,
 };
 export const isMeProps = ajv.compile<MeParams>(meSchema);
 
