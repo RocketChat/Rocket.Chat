@@ -1,10 +1,9 @@
 import { resolve } from 'node:path';
 
-import server from '@rocket.chat/jest-presets/server';
 import type { Config } from 'jest';
 
 export default {
-	preset: server.preset,
+	preset: resolve(__dirname, '../../packages/jest-presets/dist/server'),
 	transform: {
 		'\\.pegjs$': resolve(__dirname, './loaders/pegtransform.js'),
 	},
