@@ -60,7 +60,7 @@ const AdminUserSetRandomPasswordRadios = ({
 					<Trans
 						i18nKey='Send_Email_SMTP_Warning'
 						components={{
-							a: <a href='/admin/settings/Email'>{/* content injected by <Trans> */}</a>,
+							a: <a href='/admin/settings/Email' />,
 						}}
 					/>
 				</FieldHint>
