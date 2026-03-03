@@ -2,7 +2,7 @@ import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError, FieldLink 
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEffect, useId, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { useResetE2EPasswordMutation } from '../../hooks/useResetE2EPasswordMutation';
 
@@ -61,15 +61,7 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 			onClose={onClose}
 			onCancel={onCancel}
 		>
-			<Box>
-				<Trans
-					i18nKey='E2E_password_request_text'
-					components={{
-						strong: <strong />,
-						br: <br />,
-					}}
-				/>
-			</Box>
+			<Box>{t('E2E_password_request_text')}</Box>
 			<FieldGroup mbs={24} w='full'>
 				<Field>
 					<FieldRow>
