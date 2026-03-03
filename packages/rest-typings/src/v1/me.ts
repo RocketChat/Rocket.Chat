@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
-type Keys =
+export type Keys =
 	| 'name'
 	| 'username'
 	| 'nickname'
@@ -32,11 +32,10 @@ type Keys =
 	| '_updatedAt'
 	| 'avatarETag';
 
-// Response type
-export type IMeResponse = {
-  success: true;
-};
+export interface IMeResponse extends IUser {
+	success: true;
+}
 
-export type MeParams = { 
+export type MeParams = {
 	fields?: Partial<Record<Keys, 0 | 1>>;
 };
