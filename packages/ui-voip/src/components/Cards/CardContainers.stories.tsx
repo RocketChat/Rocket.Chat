@@ -5,8 +5,7 @@ import type { ComponentType } from 'react';
 import CardListContainer from './CardListContainer';
 import CardListSection from './CardListSection';
 import PeerCard from './PeerCard';
-// import GenericCard from './GenericCard';
-// import PeerCard from './PeerCard';
+import StreamCard from './StreamCard';
 
 const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
               4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
@@ -28,6 +27,13 @@ type StoryComponentType = ComponentType<{
 		held: boolean;
 		sharing: boolean;
 	};
+	getStreamCardProps: (index: number) => {
+		children: React.ReactNode;
+		own: boolean;
+		onClickFocusStream: () => void;
+		focused: boolean;
+		autoHeight: boolean;
+	};
 }>;
 
 export default {
@@ -37,9 +43,18 @@ export default {
 		getPeerCardProps: (index: number) => ({
 			displayName: `John Doe ${index}`,
 			avatarUrl,
-			muted: index % 2 !== 0,
+			muted: index % 3 !== 0,
 			held: index % 2 === 0,
 			sharing: index % 2 !== 0,
+			variant: index % 2 === 0 ? 'highlighted' : 'default',
+		}),
+		getStreamCardProps: (index: number) => ({
+			children: <Box width='100%' height='100%' minHeight={120}>test</Box>,
+			own: index % 2 === 0,
+			onClickFocusStream: () => undefined,
+			focused: index % 4 === 0,
+			autoHeight: index % 4 === 0,
+			onClickStopSharing: () => undefined,
 		}),
 	},
 	decorators: [
@@ -63,3 +78,15 @@ export const CardListContainerStory: StoryFn<StoryComponentType> = (args) => {
 		</CardListContainer>
 	);
 };
+
+export const StreamCardListContainerStory: StoryFn<StoryComponentType> = (args) => {
+	return (
+		<CardListContainer {...args}>
+			<StreamCard {...args.getStreamCardProps(0)} />
+			<StreamCard {...args.getStreamCardProps(1)} />
+			<StreamCard {...args.getStreamCardProps(2)} />
+			<StreamCard {...args.getStreamCardProps(3)} />
+		</CardListContainer>
+	);
+};
+

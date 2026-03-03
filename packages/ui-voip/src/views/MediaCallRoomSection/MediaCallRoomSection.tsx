@@ -91,7 +91,6 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 
 	const remoteStreamCard = (
 		<StreamCard
-			displayName={peerInfo.displayName}
 			onClickFocusStream={onClickFocusRemoteCard}
 			focused={focusedCard === 'remote'}
 			square={!!focusedCard && focusedCard !== 'remote'}
@@ -104,9 +103,9 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 
 	const localStreamCard = (
 		<StreamCard
-			displayName={user.displayName}
 			own
 			onClickFocusStream={onClickFocusLocalCard}
+			onClickStopSharing={onToggleScreenSharing}
 			focused={focusedCard === 'local'}
 			square={!!focusedCard && focusedCard !== 'local'}
 		>

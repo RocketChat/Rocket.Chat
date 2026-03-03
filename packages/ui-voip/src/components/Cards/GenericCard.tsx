@@ -2,12 +2,19 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-import CardSlotContainer, { type SlotPosition } from './CardSlotContainer';
-
-const boxShadow = css`
+const styles = css`
 	box-shadow:
 		0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
+
+	&:hover {
+		.card-slot-hover {
+			display: block;
+		}
+	}
+	.card-slot-hover {
+		display: none;
+	}
 `;
 
 export const CARD_HEIGHT = 180;
@@ -20,12 +27,9 @@ const CARD_MARGIN = 2;
 export const CARD_TOTAL_HEIGHT = CARD_HEIGHT + CARD_MARGIN * 2;
 export const CARD_TOTAL_WIDTH = CARD_MAX_WIDTH + CARD_MARGIN * 2;
 
-export type GenericCardSlots = { [key in SlotPosition]?: ReactNode };
-
 type GenericCardProps = {
 	children: ReactNode;
 	title?: string;
-	slots?: GenericCardSlots;
 	maxWidth?: string | number;
 	maxHeight?: string | number;
 	width?: string | number;
@@ -33,11 +37,21 @@ type GenericCardProps = {
 	flexGrow?: number;
 	flexShrink?: number;
 	minHeight?: number;
+	variant?: 'highlighted' | 'default';
 };
+
+const highlightedBorderProps = {
+	border: '4px solid',
+	borderColor: 'stroke-extra-light-error',
+} as const;
+
+const defaultBorderProps = {
+	border: '1px solid',
+	borderColor: 'stroke-medium',
+} as const;
 
 const GenericCard = ({
 	children,
-	slots,
 	title,
 	maxWidth = CARD_MAX_WIDTH, // 4:3
 	maxHeight = CARD_HEIGHT, // 4:3
@@ -46,7 +60,9 @@ const GenericCard = ({
 	height = CARD_HEIGHT,
 	flexGrow = 0,
 	flexShrink = 1,
+	variant = 'default',
 }: GenericCardProps) => {
+	const borderProps = variant === 'highlighted' ? highlightedBorderProps : defaultBorderProps;
 	return (
 		<Box
 			position='relative'
@@ -56,10 +72,8 @@ const GenericCard = ({
 			overflow='hidden'
 			alignItems='center'
 			title={title}
-			border='1px solid'
-			borderRadius='8px'
-			borderColor='stroke-light'
-			className={boxShadow}
+			borderRadius='4px'
+			className={styles}
 			backgroundColor='surface-light'
 			maxHeight={maxHeight}
 			maxWidth={maxWidth}
@@ -68,20 +82,9 @@ const GenericCard = ({
 			minWidth={CARD_MIN_WIDTH}
 			minHeight={minHeight}
 			m={CARD_MARGIN}
+			{...borderProps}
 		>
 			{children}
-			{/* TODO: Maybe the slots should be used as components instead of props */}
-			{slots &&
-				Object.entries(slots).map(([position, children]) => {
-					if (!children) {
-						return null;
-					}
-					return (
-						<CardSlotContainer key={position} position={position as SlotPosition}>
-							{children}
-						</CardSlotContainer>
-					);
-				})}
 		</Box>
 	);
 };
