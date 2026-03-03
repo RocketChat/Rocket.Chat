@@ -11,14 +11,13 @@ describe('Skip Flags Regression (Complexity Audit)', () => {
     it('should demonstrate non-linear growth with nested formatting', () => {
         const times: Record<number, number> = {};
         for (let d = 1; d <= 7; d++) {
-            times[d] = measureDepth(d);
+            const samples = Array.from({ length: 5 }, () => measureDepth(d)).sort((a, b) => a - b);
+            times[d] = samples[Math.floor(samples.length / 2)];
         }
 
         console.table(Object.entries(times).map(([depth, time]) => ({ depth, 'time (ms)': time.toFixed(4) })));
 
-        // If d=7 takes significantly longer than linear growth from d=1
-        // we have confirmed the problem.
-        expect(times[7]).toBeDefined();
+        expect(times[7]).toBeGreaterThan(times[1]);
     });
 
     it('should handle pathological unmatched markers without crashing', () => {
