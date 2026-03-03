@@ -60,31 +60,40 @@ export class BlockSplitter {
 
             // 3. Lists
             const listMatch = line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
+            const isIndented = /^\s+/.test(line);
+
             if (listMatch) {
                 const isOrdered = /^\d+\./.test(listMatch[2]);
                 if (currentBlock?.type !== BlockType.LIST || currentBlock.ordered !== isOrdered) {
                     this.flush(blocks, currentBlock);
                     currentBlock = {
                         type: BlockType.LIST,
-                        content: listMatch[3],
+                        content: line,
                         ordered: isOrdered,
                     };
                 } else {
-                    currentBlock.content += '\n' + listMatch[3];
+                    currentBlock.content += '\n' + line;
                 }
                 continue;
             }
 
+            // Continuation of a list (indented lines)
+            if (isIndented && currentBlock?.type === BlockType.LIST) {
+                currentBlock.content += '\n' + line;
+                continue;
+            }
+
             // 4. Blockquote
-            if (line.startsWith('>')) {
+            const quoteMatch = line.match(/^>\s*(.*)$/);
+            if (quoteMatch) {
                 if (currentBlock?.type !== BlockType.QUOTE) {
                     this.flush(blocks, currentBlock);
                     currentBlock = {
                         type: BlockType.QUOTE,
-                        content: line.slice(1).trim(),
+                        content: quoteMatch[1],
                     };
                 } else {
-                    currentBlock.content += '\n' + line.slice(1).trim();
+                    currentBlock.content += '\n' + quoteMatch[1];
                 }
                 continue;
             }
