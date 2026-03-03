@@ -1,3 +1,5 @@
+import { Accounts } from 'meteor/accounts-base';
+
 import { isTotpInvalidError, isTotpMaxAttemptsError, isTotpRequiredError } from './utils';
 
 type LoginError = globalThis.Error | Meteor.Error | Meteor.TypedError;
