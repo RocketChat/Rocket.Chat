@@ -848,6 +848,9 @@ export type ChatEndpoints = {
 		};
 	};
 
+	'/v1/chat.react': {
+		POST: (params: { emoji: string; messageId: string; shouldReact?: boolean } | { reaction: string; messageId: string; shouldReact?: boolean }) => void;
+	};
 	'/v1/chat.ignoreUser': {
 		GET: (params: ChatIgnoreUser) => void;
 	};
