@@ -926,6 +926,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.error).to.include('must be >= 0');
+			await deleteDepartment(dep._id);
 		});
 		it('should fail if order is negative', async () => {
 			await updatePermission('manage-livechat-departments', ['admin']);
@@ -938,6 +939,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 				.expect(400);
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.error).to.include('must be >= 0');
+			await deleteDepartment(dep._id);
 		});
 
 		it('should successfully add an agent when count and order are 0', async () => {
