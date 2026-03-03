@@ -539,7 +539,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       <div
                         class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
                       >
-                        January 1, 2025
+                        January 1st, 2025
                       </div>
                     </div>
                   </div>
