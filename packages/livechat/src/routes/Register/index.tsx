@@ -11,7 +11,7 @@ import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
 import { Form, FormField, TextInput, SelectInput, CustomFields as CustomFieldsForm } from '../../components/Form';
 import { FormScrollShadow } from '../../components/Form/FormScrollShadow';
-import Screen from '../../components/Screen';
+import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
@@ -126,7 +126,7 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 	return (
 		<Screen title={title || defaultTitle} className={createClassName(styles, 'register')}>
 			<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
-				<Screen.Content full>
+				<ScreenContent full>
 					<Form
 						id='register'
 						// The price of using react-hook-form on a preact project ¯\_(ツ)_/¯
@@ -190,13 +190,13 @@ export const Register: FunctionalComponent<{ path: string }> = () => {
 						{customFields && <CustomFieldsForm customFields={customFields} loading={loading} control={control} errors={errors} />}
 						<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
 					</Form>
-				</Screen.Content>
+				</ScreenContent>
 			</FormScrollShadow>
-			<Screen.Footer>
+			<ScreenFooter>
 				<Button loading={loading} form='register' submit full disabled={!isDirty || !isValid || loading || isSubmitting}>
 					{t('start_chat')}
 				</Button>
-			</Screen.Footer>
+			</ScreenFooter>
 		</Screen>
 	);
 };

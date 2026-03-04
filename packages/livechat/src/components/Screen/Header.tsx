@@ -2,6 +2,7 @@ import type { ComponentChildren } from 'preact';
 import { useRef } from 'preact/hooks';
 import { useTranslation, withTranslation } from 'react-i18next';
 
+import type { ScreenContextValue } from './ScreenProvider';
 import type { Agent } from '../../definitions/agents';
 import MinimizeIcon from '../../icons/arrowDown.svg';
 import RestoreIcon from '../../icons/arrowUp.svg';
@@ -10,9 +11,18 @@ import NotificationsDisabledIcon from '../../icons/bellOff.svg';
 import OpenWindowIcon from '../../icons/newWindow.svg';
 import Alert from '../Alert';
 import { Avatar } from '../Avatar';
-import Header from '../Header';
-import Tooltip from '../Tooltip';
-import type { ScreenContextValue } from './ScreenProvider';
+import {
+	Header,
+	HeaderAction,
+	HeaderActions,
+	HeaderContent,
+	HeaderCustomField,
+	HeaderPicture,
+	HeaderPost,
+	HeaderSubTitle,
+	HeaderTitle,
+} from '../Header';
+import { TooltipContainer, TooltipTrigger } from '../Tooltip';
 
 type ScreenHeaderProps = {
 	alerts: { id: string; children: ComponentChildren; [key: string]: unknown }[];
@@ -74,31 +84,31 @@ const ScreenHeader = ({
 		<Header
 			ref={headerRef}
 			post={
-				<Header.Post>
+				<HeaderPost>
 					{alerts?.map((alert) => (
 						<Alert key={alert.id} {...alert} onDismiss={onDismissAlert}>
 							{alert.children}
 						</Alert>
 					))}
-				</Header.Post>
+				</HeaderPost>
 			}
 			large={largeHeader()}
 		>
 			{agent?.avatar && (
-				<Header.Picture>
+				<HeaderPicture>
 					<Avatar src={agent.avatar.src} description={agent.avatar.description} status={agent.status} large={largeHeader()} />
-				</Header.Picture>
+				</HeaderPicture>
 			)}
 
-			<Header.Content>
-				<Header.Title>{headerTitle()}</Header.Title>
-				{agent?.email && <Header.SubTitle>{agent.email}</Header.SubTitle>}
-				{agent?.phone && <Header.CustomField>{agent.phone}</Header.CustomField>}
-			</Header.Content>
-			<Tooltip.Container>
-				<Header.Actions>
-					<Tooltip.Trigger content={notificationsEnabled ? t('sound_is_on') : t('sound_is_off')} placement='bottom-left'>
-						<Header.Action
+			<HeaderContent>
+				<HeaderTitle>{headerTitle()}</HeaderTitle>
+				{agent?.email && <HeaderSubTitle>{agent.email}</HeaderSubTitle>}
+				{agent?.phone && <HeaderCustomField>{agent.phone}</HeaderCustomField>}
+			</HeaderContent>
+			<TooltipContainer>
+				<HeaderActions>
+					<TooltipTrigger content={notificationsEnabled ? t('sound_is_on') : t('sound_is_off')} placement='bottom-left'>
+						<HeaderAction
 							aria-label={notificationsEnabled ? t('disable_notifications') : t('enable_notifications')}
 							onClick={notificationsEnabled ? onDisableNotifications : onEnableNotifications}
 						>
@@ -107,24 +117,24 @@ const ScreenHeader = ({
 							) : (
 								<NotificationsDisabledIcon width={20} height={20} />
 							)}
-						</Header.Action>
-					</Tooltip.Trigger>
+						</HeaderAction>
+					</TooltipTrigger>
 					{(expanded || !windowed) && (
-						<Tooltip.Trigger content={minimized ? t('restore_chat') : t('minimize_chat')}>
-							<Header.Action aria-label={minimized ? t('restore_chat') : t('minimize_chat')} onClick={minimized ? onRestore : onMinimize}>
+						<TooltipTrigger content={minimized ? t('restore_chat') : t('minimize_chat')}>
+							<HeaderAction aria-label={minimized ? t('restore_chat') : t('minimize_chat')} onClick={minimized ? onRestore : onMinimize}>
 								{minimized ? <RestoreIcon width={20} height={20} /> : <MinimizeIcon width={20} height={20} />}
-							</Header.Action>
-						</Tooltip.Trigger>
+							</HeaderAction>
+						</TooltipTrigger>
 					)}
 					{!hideExpandChat && !expanded && !windowed && (
-						<Tooltip.Trigger content={t('expand_chat')} placement='bottom-left'>
-							<Header.Action aria-label={t('expand_chat')} onClick={onOpenWindow}>
+						<TooltipTrigger content={t('expand_chat')} placement='bottom-left'>
+							<HeaderAction aria-label={t('expand_chat')} onClick={onOpenWindow}>
 								<OpenWindowIcon width={20} height={20} />
-							</Header.Action>
-						</Tooltip.Trigger>
+							</HeaderAction>
+						</TooltipTrigger>
 					)}
-				</Header.Actions>
-			</Tooltip.Container>
+				</HeaderActions>
+			</TooltipContainer>
 		</Header>
 	);
 };

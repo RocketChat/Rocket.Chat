@@ -10,6 +10,19 @@ import { loadMessages } from '../../lib/room';
 import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';
 
+export type ScreenTheme = {
+	color: string;
+	fontColor: string;
+	iconColor: string;
+	position?: 'left' | 'right';
+	guestBubbleBackgroundColor?: string;
+	agentBubbleBackgroundColor?: string;
+	background?: string;
+	hideAgentAvatar: boolean;
+	hideGuestAvatar: boolean;
+	hideExpandChat: boolean;
+};
+
 export type ScreenContextValue = {
 	hideWatermark: boolean;
 	livechatLogo: { url: string } | undefined;
@@ -17,7 +30,10 @@ export type ScreenContextValue = {
 	minimized: boolean;
 	expanded: boolean;
 	windowed: boolean;
-	sound: unknown;
+	sound: {
+		src: string;
+		play: boolean;
+	};
 	alerts: unknown;
 	modal: unknown;
 	nameDefault: string;
@@ -30,18 +46,7 @@ export type ScreenContextValue = {
 	onOpenWindow: () => unknown;
 	onDismissAlert: () => unknown;
 	dismissNotification: () => void;
-	theme?: {
-		color?: string;
-		fontColor?: string;
-		iconColor?: string;
-		position?: 'left' | 'right';
-		guestBubbleBackgroundColor?: string;
-		agentBubbleBackgroundColor?: string;
-		background?: string;
-		hideGuestAvatar?: boolean;
-		hideAgentAvatar?: boolean;
-		hideExpandChat?: boolean;
-	};
+	theme: ScreenTheme;
 };
 
 export const ScreenContext = createContext<ScreenContextValue>({
