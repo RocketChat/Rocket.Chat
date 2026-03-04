@@ -24,10 +24,10 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('not_authorized');
 		}
 
-		const file = Buffer.from(binaryContent, 'binary');
-		if (file.length > MAX_CUSTOM_SOUND_SIZE_BYTES) {
+		if (binaryContent.length > MAX_CUSTOM_SOUND_SIZE_BYTES) {
 			throw new Meteor.Error('file-too-large', 'Max size is 5MB');
 		}
+		const file = Buffer.from(binaryContent, 'binary');
 
 		const mimeType = await fromBuffer(file);
 		if (mimeType?.mime !== MIME.mp3 || mimeType.ext !== 'mp3' || soundData.extension !== 'mp3') {
@@ -38,7 +38,7 @@ Meteor.methods<ServerMethods>({
 		await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.extension}`);
 
 		return new Promise((resolve) => {
-			const ws = RocketChatFileCustomSoundsInstance.createWriteStream(`${soundData._id}.mp3`, MIME.mp3);
+			const ws = RocketChatFileCustomSoundsInstance.createWriteStream(`${soundData._id}.${soundData.extension}`, MIME.mp3);
 			ws.on('end', () => {
 				setTimeout(() => api.broadcast('notify.updateCustomSound', { soundData }), 500);
 				resolve();

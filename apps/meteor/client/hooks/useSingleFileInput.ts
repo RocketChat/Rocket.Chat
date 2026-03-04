@@ -5,7 +5,7 @@ export const useSingleFileInput = (
 	onSetFile: (file: File, formData: FormData) => void,
 	fileType = 'image/*',
 	fileField = 'image',
-	maxSize?: number, // In bytes
+	maxSize?: number,
 	onError?: () => void,
 ): [onClick: () => void, reset: () => void] => {
 	const ref = useRef<HTMLInputElement>();
