@@ -14,4 +14,11 @@ describe('getUserIsMuted', () => {
 
 		expect(getUserIsMuted(user, room as any, true)).toBe(false);
 	});
+
+	it('should consider users with post-readonly permission unmuted when they are not in readonly room muted list', () => {
+		const user = { _id: 'uid', username: 'john' };
+		const room = { ro: true, unmuted: [], muted: ['mary'] };
+
+		expect(getUserIsMuted(user, room as any, true)).toBe(false);
+	});
 });
