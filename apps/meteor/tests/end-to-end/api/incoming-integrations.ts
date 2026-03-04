@@ -473,6 +473,53 @@ describe('[Incoming Integrations]', () => {
 
 			await removeIntegration(withScript._id, 'incoming');
 		});
+
+		describe('With manage-own-incoming-integrations permission', () => {
+			let integrationId: string;
+
+			before(async () => {
+				await updatePermission('manage-own-incoming-integrations', ['admin']);
+			});
+
+			after(async () => {
+				if (integrationId) {
+					await removeIntegration(integrationId, 'incoming');
+				}
+			});
+
+			it('should return scriptCompiled and no scriptError', async () => {
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: true,
+						scriptEngine: 'isolated-vm',
+						channel: '#general',
+						script: `
+          class Script {
+            process_incoming_request({ request }) {
+              return {
+                content:{
+                  text: request.content.text
+                }
+              };
+            }
+          }
+        `,
+					})
+					.expect(200);
+
+				expect(res.body.integration).to.have.property('scriptCompiled');
+				expect(res.body.integration).to.not.have.property('scriptError');
+
+				integrationId = res.body.integration._id;
+			});
+		});
 	});
 
 	describe('[/integrations.history]', () => {
