@@ -13,18 +13,22 @@ import {
 	Timer,
 	DevicePicker,
 	ActionButton,
-	useKeypad,
 	useInfoSlots,
 } from '../../components';
+import StreamCard from '../../components/Cards/StreamCard';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage } = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState } = sessionState;
+	const { sessionState, onMute, onHold, onForward, onEndCall, onClickDirectMessage, streams, onToggleScreenSharing } = useMediaCallView();
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 
-	const { element: keypad, buttonProps: keypadButtonProps } = useKeypad(onTone);
+	const { localScreen, remoteScreen } = streams;
+
+	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
+	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
 
 	const slots = useInfoSlots(muted, held, connectionState);
 	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
@@ -40,7 +44,7 @@ const OngoingCall = () => {
 	return (
 		<Widget>
 			<WidgetHandle />
-			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
+			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
 				{onClickDirectMessage && (
 					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
@@ -48,19 +52,39 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+				{localScreen?.active && (
+					<StreamCard own autoHeight maxHeight={120} onClickStopSharing={onToggleScreenSharing}>
+						<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
+							<track kind='captions' />
+						</video>
+					</StreamCard>
+				)}
+				{remoteScreen?.active && (
+					<StreamCard autoHeight maxHeight={120}>
+						<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
+							<track kind='captions' />
+						</video>
+					</StreamCard>
+				)}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				{keypad}
 				<ButtonGroup large>
-					<ActionButton disabled={connecting || reconnecting} icon='dialpad' label='Dialpad' {...keypadButtonProps} />
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+
 					<ToggleButton
 						label={t('Hold')}
 						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
 						titles={[t('Hold'), t('Resume')]}
 						pressed={held}
 						onToggle={onHold}
+					/>
+					<ToggleButton
+						label={t('Screen_sharing')}
+						icons={['computer', 'computer']}
+						titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
+						pressed={localScreen?.active ?? false}
+						onToggle={onToggleScreenSharing}
 					/>
 					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 					<ActionButton
