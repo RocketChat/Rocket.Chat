@@ -1,4 +1,4 @@
-import { ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import {
@@ -15,6 +15,7 @@ import {
 	ActionButton,
 	useInfoSlots,
 } from '../../components';
+import CardWidgetContainer from '../../components/Cards/CardWidgetContainer';
 import StreamCard from '../../components/Cards/StreamCard';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
@@ -51,21 +52,27 @@ const OngoingCall = () => {
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
-				<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
-				{localScreen?.active && (
-					<StreamCard own autoHeight maxHeight={120} onClickStopSharing={onToggleScreenSharing}>
-						<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
-							<track kind='captions' />
-						</video>
-					</StreamCard>
-				)}
-				{remoteScreen?.active && (
-					<StreamCard autoHeight maxHeight={120}>
-						<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
-							<track kind='captions' />
-						</video>
-					</StreamCard>
-				)}
+				<CardWidgetContainer>
+					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+
+					{remoteScreen?.active && (
+						<StreamCard autoHeight maxHeight={120}>
+							<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
+								<track kind='captions' />
+							</video>
+						</StreamCard>
+					)}
+					{localScreen?.active && (
+						<Box display='flex' flexDirection='column'>
+							<StreamCard own autoHeight maxHeight={120} onClickStopSharing={onToggleScreenSharing}>
+								<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
+									<track kind='captions' />
+								</video>
+							</StreamCard>
+							<WidgetInfo slots={[{ text: t('You_are_sharing_your_screen'), type: 'warning' }]} variant='card-content' />
+						</Box>
+					)}
+				</CardWidgetContainer>
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
