@@ -836,4 +836,41 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			}) ?? false
 		);
 	}
+
+	async notifyRoomRead({ room, userId, threadId }: { room: IRoomNativeFederated; userId: string; threadId: string }): Promise<void> {
+		// get rooms last message eventId
+		const eventId = await (async () => {
+			if (room.lastMessage?._id) {
+				const lastMessage = await Messages.findOneById(room.lastMessage._id, { projection: { federation: 1 } });
+				return lastMessage?.federation?.eventId;
+			}
+
+			const lastFederatedMessage = await Messages.findVisibleByRoomId(room._id, { projection: { federation: 1 }, sort: { ts: -1 } }).next();
+			return lastFederatedMessage?.federation?.eventId;
+		})();
+
+		if (!eventId) {
+			this.logger.warn({ msg: 'No event ID found for room, skipping read receipt', roomId: room._id });
+			return;
+		}
+
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('User not found');
+		}
+
+		if (!user.username) {
+			throw new Error('User username not found');
+		}
+
+		// TODO: should use common function to get matrix user ID
+		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+
+		await federationSDK.sendReadReceipt({
+			roomId: roomIdSchema.parse(room.federation.mrid),
+			eventIds: [eventIdSchema.parse(eventId)],
+			userId: userIdSchema.parse(matrixUserId),
+			...(threadId && { threadId: eventIdSchema.parse(threadId) }),
+		});
+	}
 }
