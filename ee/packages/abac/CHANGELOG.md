@@ -1,5 +1,16 @@
 # @rocket.chat/abac
 
+## 0.1.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.2
+  - @rocket.chat/core-services@0.12.2
+  - @rocket.chat/models@2.0.2
+  </details>
+
 ## 0.1.1
 
 ### Patch Changes

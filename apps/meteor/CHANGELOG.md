@@ -1,5 +1,52 @@
 # @rocket.chat/meteor
 
+## 8.0.2
+
+### Patch Changes
+
+- ([#38351](https://github.com/RocketChat/Rocket.Chat/pull/38351) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes integration saving error because of missing babel dependencies inside the docker container
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#38787](https://github.com/RocketChat/Rocket.Chat/pull/38787) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.2
+  - @rocket.chat/rest-typings@8.0.2
+  - @rocket.chat/abac@0.1.2
+  - @rocket.chat/federation-matrix@0.0.11
+  - @rocket.chat/license@1.1.9
+  - @rocket.chat/media-calls@0.2.2
+  - @rocket.chat/omnichannel-services@0.3.46
+  - @rocket.chat/pdf-worker@0.3.28
+  - @rocket.chat/presence@0.2.49
+  - @rocket.chat/api-client@0.2.49
+  - @rocket.chat/apps@0.6.2
+  - @rocket.chat/core-services@0.12.2
+  - @rocket.chat/cron@0.1.49
+  - @rocket.chat/fuselage-ui-kit@26.0.2
+  - @rocket.chat/gazzodown@26.0.2
+  - @rocket.chat/http-router@7.9.16
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/model-typings@2.0.2
+  - @rocket.chat/ui-avatar@22.0.2
+  - @rocket.chat/ui-client@26.0.2
+  - @rocket.chat/ui-contexts@26.0.2
+  - @rocket.chat/ui-voip@16.0.2
+  - @rocket.chat/web-ui-registration@26.0.2
+  - @rocket.chat/models@2.0.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.28
+  - @rocket.chat/omni-core-ee@0.0.14
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@26.0.2
+  - @rocket.chat/instance-status@0.1.49
+  - @rocket.chat/omni-core@0.0.14
+  </details>
+
 ## 8.0.1
 
 ### Patch Changes

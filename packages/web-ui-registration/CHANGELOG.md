@@ -1,5 +1,14 @@
 # @rocket.chat/web-ui-registration
 
+## 26.0.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@26.0.2
+  </details>
+
 ## 26.0.1
 
 ### Patch Changes
