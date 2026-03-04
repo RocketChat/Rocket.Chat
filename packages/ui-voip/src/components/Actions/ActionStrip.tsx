@@ -1,7 +1,7 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-export const ACTION_STRIP_TOTAL_HEIGHT = 56;
+export const ACTION_STRIP_TOTAL_HEIGHT = 52;
 
 type ActionStripProps = {
 	children: ReactNode;

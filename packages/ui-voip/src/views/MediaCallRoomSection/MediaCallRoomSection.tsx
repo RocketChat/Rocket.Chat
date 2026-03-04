@@ -28,12 +28,13 @@ const getSplitStyles = (showChat?: boolean) => {
 	if (showChat) {
 		return {
 			maxHeight: `${SECTION_MAX_HEIGHT}vh`,
-			borderBlockEnd: '1px solid',
-			borderBlockEndColor: 'stroke-light',
 		};
 	}
 	return {
 		height: '100%',
+		// This is a workaround to match the border height with the sidebar footer
+		// The sidebar footer uses a divider instead of a border, so it's 1px taller than it should be.
+		paddingBlockEnd: '1px',
 	};
 };
 
@@ -97,17 +98,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 	const focusedCardElement = focusedCard === 'remote' ? remoteStreamCard : localStreamCard;
 
 	return (
-		<Box
-			id='outer-element'
-			w='full'
-			bg='hover'
-			borderBlockEnd='1px solid'
-			borderBlockEndColor='stroke-light'
-			overflow='hidden'
-			display='flex'
-			flexDirection='column'
-			{...getSplitStyles(showChat)}
-		>
+		<Box id='outer-element' w='full' bg='hover' overflow='hidden' display='flex' flexDirection='column' {...getSplitStyles(showChat)}>
 			<CardListSection>
 				<CardListContainerWrapper focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
 					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
