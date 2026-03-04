@@ -909,14 +909,16 @@ const usersEndpoints = API.v1
 		async function action() {
 			const user = await Users.findOneById(this.userId);
 
-			if (user?.settings) {
-				const { preferences = {} } = user.settings;
-				preferences.language = user.language;
-
-				return API.v1.success({ preferences });
+			if (!user) {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user');
 			}
 
-			throw new Meteor.Error('error-preferences-not-found', i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
+			const preferences = {
+				...(user.settings?.preferences ?? {}),
+				language: user.language,
+			};
+
+			return API.v1.success({ preferences });
 		},
 	);
 
