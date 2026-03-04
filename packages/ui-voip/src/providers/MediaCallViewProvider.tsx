@@ -6,6 +6,7 @@ import {
 	useSetModal,
 	useSelectedDevices,
 	useToastMessageDispatch,
+	useSetting,
 } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useCallback, useEffect } from 'react';
@@ -220,6 +221,8 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		),
 	);
 
+	const screenShareEnabled = useSetting('VoIP_TeamCollab_Screen_Sharing_Enabled', true);
+
 	const contextValue = {
 		sessionState,
 		onClickDirectMessage,
@@ -234,6 +237,7 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onSelectPeer,
 		onToggleScreenSharing,
 		streams,
+		screenShareEnabled,
 	};
 
 	return (

@@ -23,6 +23,7 @@ type MediaCallViewContextValue = {
 	onSelectPeer: (peerInfo: PeerInfo) => void;
 	onToggleScreenSharing: () => void;
 	streams: MediaCallStreams;
+	screenShareEnabled?: boolean;
 };
 
 const defaultSessionState: SessionState = {
@@ -51,6 +52,7 @@ export const defaultMediaCallContextValue: MediaCallViewContextValue = {
 	onSelectPeer: () => undefined,
 	onToggleScreenSharing: () => undefined,
 	streams: {},
+	screenShareEnabled: undefined,
 };
 
 const MediaCallViewContext = createContext<MediaCallViewContextValue>(defaultMediaCallContextValue);
