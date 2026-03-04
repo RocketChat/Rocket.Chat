@@ -1,6 +1,3 @@
-# ==========================================
-# 1. SHARED BUILDER STAGE
-# ==========================================
 FROM node:22.16.0-alpine3.21 AS builder
 
 ARG SERVICE
@@ -94,9 +91,6 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
-# ==========================================
-# 2. STANDARD RELEASE STAGE (Non-FIPS)
-# ==========================================
 FROM node:22.16.0-alpine3.21 AS release-standard
 
 ARG SERVICE
@@ -124,9 +118,7 @@ EXPOSE 3000 9458
 
 CMD ["node", "src/service.js"]
 
-# ==========================================
-# 3. FIPS RELEASE STAGE
-# ==========================================
+# FIPS RELEASE STAGE
 FROM rocketchatfips140/dhi-node:22-alpine3.23 AS release-fips
 ARG SERVICE
 ENV NODE_ENV=production \
@@ -135,4 +127,4 @@ COPY --chown=node:node --from=builder /app /app
 WORKDIR /app/ee/apps/${SERVICE}
 USER node
 EXPOSE 3000 9458
-CMD ["node", "src/service.js"]
+CMD ["node", "--require", "./src/fips.js", "src/service.js"]
