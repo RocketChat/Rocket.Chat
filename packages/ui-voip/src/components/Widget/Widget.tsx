@@ -1,7 +1,8 @@
 import { Palette } from '@rocket.chat/fuselage';
+import { useDebouncedCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import styled from '@rocket.chat/styled';
 import type { ComponentProps, ReactNode } from 'react';
-import { useLayoutEffect } from 'react';
+import { useCallback, useLayoutEffect } from 'react';
 import { FocusScope } from 'react-aria';
 
 import { DragContext } from './WidgetDraggableContext';
@@ -32,8 +33,27 @@ type WidgetProps = {
 	children: ReactNode;
 } & ComponentProps<typeof WidgetBase>;
 
+type PositionCoordinates = {
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+};
+
 const Widget = ({ children, ...props }: WidgetProps) => {
-	const [draggableRef, boundingRef, handleRef] = useDraggable();
+	const [lastKnownPosition, setLastKnownPosition] = useLocalStorage<PositionCoordinates | null>('voip-widget-position', null);
+
+	const onChangePosition = useDebouncedCallback(
+		useCallback(
+			(position: PositionCoordinates) => {
+				setLastKnownPosition(position);
+			},
+			[setLastKnownPosition],
+		),
+		500,
+	);
+
+	const [draggableRef, boundingRef, handleRef] = useDraggable({ onChangePosition, restorePosition: lastKnownPosition });
 
 	useLayoutEffect(() => {
 		boundingRef(document.body);
