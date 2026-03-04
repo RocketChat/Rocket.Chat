@@ -67,7 +67,7 @@ export const convertHonoContextToApiActionContext = (
 		urlParams: c.req.param(),
 		queryParams: c.get('queryParams'),
 		bodyParams: c.get('bodyParams'),
-		request: c.req.raw.clone(),
+		request: c.req.raw,
 		path: c.req.path,
 		response: c.res,
 		route: c.req.routePath,
