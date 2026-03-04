@@ -13,7 +13,7 @@ import { FormScrollShadow } from '../../components/Form/FormScrollShadow';
 import { MultilineTextInput } from '../../components/Form/MultilineTextInput';
 import MarkdownBlock from '../../components/MarkdownBlock';
 import { ModalManager } from '../../components/Modal';
-import Screen from '../../components/Screen';
+import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { parseOfflineMessage } from '../../helpers/parseOfflineMessage';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
@@ -88,7 +88,7 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 		<Screen title={customOfflineTitle || title || defaultTitle} color={offlineColor} className={createClassName(styles, 'leave-message')}>
 			{displayOfflineForm ? (
 				<FormScrollShadow topRef={topRef} bottomRef={bottomRef}>
-					<Screen.Content full>
+					<ScreenContent full>
 						<div id='top' ref={topRef} style={{ height: '1px', width: '100%' }} />
 
 						<div className={createClassName(styles, 'leave-message__main-message')}>
@@ -158,22 +158,22 @@ const LeaveMessage: FunctionalComponent<{ path: string }> = () => {
 							</FormField>
 						</Form>
 						<div ref={bottomRef} id='bottom' style={{ height: '1px', width: '100%' }} />
-					</Screen.Content>
+					</ScreenContent>
 				</FormScrollShadow>
 			) : (
-				<Screen.Content full>
+				<ScreenContent full>
 					<div className={createClassName(styles, 'leave-message__main-message')}>
 						<MarkdownBlock text={offlineUnavailableMessage || defaultUnavailableMessage} />
 					</div>
-				</Screen.Content>
+				</ScreenContent>
 			)}
-			<Screen.Footer>
+			<ScreenFooter>
 				{displayOfflineForm ? (
 					<Button loading={loading} form='leaveMessage' submit full disabled={!isDirty || !isValid || loading || isSubmitting}>
 						{t('send')}
 					</Button>
 				) : null}
-			</Screen.Footer>
+			</ScreenFooter>
 		</Screen>
 	);
 };

@@ -2,14 +2,16 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { Footer, FooterContent, FooterOptions, PoweredBy } from '.';
 import ChangeIcon from '../../icons/change.svg';
 import FinishIcon from '../../icons/finish.svg';
 import RemoveIcon from '../../icons/remove.svg';
 import { Composer } from '../Composer';
-import Menu from '../Menu';
+import { MenuGroup, MenuItem } from '../Menu';
 import { PopoverContainer } from '../Popover';
-
+import Footer from './Footer';
+import FooterContent from './FooterContent';
+import FooterOptions from './FooterOptions';
+import PoweredBy from './PoweredBy';
 import '../../i18next';
 
 export default {
@@ -46,17 +48,17 @@ export const WithComposerAndOptions: StoryFn<ComponentProps<typeof Footer>> = (a
 		</FooterContent>
 		<FooterContent>
 			<FooterOptions>
-				<Menu.Group>
-					<Menu.Item onClick={action('change-department')} icon={ChangeIcon}>
+				<MenuGroup>
+					<MenuItem onClick={action('change-department')} icon={ChangeIcon}>
 						Change department
-					</Menu.Item>
-					<Menu.Item onClick={action('remove-user-data')} icon={RemoveIcon}>
+					</MenuItem>
+					<MenuItem onClick={action('remove-user-data')} icon={RemoveIcon}>
 						Forget/Remove my personal data
-					</Menu.Item>
-					<Menu.Item danger onClick={action('finish-chat')} icon={FinishIcon}>
+					</MenuItem>
+					<MenuItem danger onClick={action('finish-chat')} icon={FinishIcon}>
 						Finish this chat
-					</Menu.Item>
-				</Menu.Group>
+					</MenuItem>
+				</MenuGroup>
 			</FooterOptions>
 			<PoweredBy />
 		</FooterContent>

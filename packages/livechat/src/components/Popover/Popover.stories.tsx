@@ -1,8 +1,9 @@
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { PopoverContainer, PopoverTrigger } from '.';
+import { PopoverContainer } from '.';
 import { Button } from '../Button';
+import PopoverTrigger from './PopoverTrigger';
 
 export default {
 	title: 'Components/Popover',

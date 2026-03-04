@@ -4,7 +4,7 @@ import { Component, createRef } from 'preact';
 import { withTranslation } from 'react-i18next';
 
 import styles from './styles.scss';
-import Screen from '../../components/Screen';
+import { Screen, ScreenContent } from '../../components/Screen';
 import type { ScreenContextValue } from '../../components/Screen/ScreenProvider';
 import { createClassName } from '../../helpers/createClassName';
 import { parentCall } from '../../lib/parentCall';
@@ -44,7 +44,7 @@ class TriggerMessage extends Component<TriggerMessageProps> {
 
 		return (
 			<Screen title={title || defaultTitle} triggered ref={this.ref}>
-				<Screen.Content triggered={true}>
+				<ScreenContent triggered={true}>
 					{messages?.map(
 						(message, i) =>
 							message.msg && (
@@ -53,7 +53,7 @@ class TriggerMessage extends Component<TriggerMessageProps> {
 								</p>
 							),
 					)}
-				</Screen.Content>
+				</ScreenContent>
 				<footer className={createClassName(styles, 'trigger-message__footer')}>
 					<hr className={createClassName(styles, 'trigger-message__separator')} />
 					<button style={color && { color }} onClick={onStartChat} className={createClassName(styles, 'trigger-message__link-reply')}>

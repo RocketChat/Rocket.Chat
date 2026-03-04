@@ -388,9 +388,6 @@ export default [
 				pragmaFrag: 'Fragment',
 			},
 		},
-		rules: {
-			'react/no-multi-comp': 'warn',
-		},
 	},
 	{
 		ignores: ['packages/node-poplib/**', 'packages/storybook-config/*.@(d.ts|js)', 'scripts/**', '.github/**', '.houston/**'],
