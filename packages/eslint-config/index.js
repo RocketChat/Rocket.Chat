@@ -396,6 +396,7 @@ export default defineConfig(
 				},
 			],
 			'@typescript-eslint/ban-ts-comment': 'warn',
+			'@typescript-eslint/consistent-type-exports': 'error',
 			'@typescript-eslint/consistent-type-imports': ['error', { disallowTypeAnnotations: false }],
 			'@typescript-eslint/naming-convention': [
 				'error',

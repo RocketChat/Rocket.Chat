@@ -193,5 +193,5 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 }
 
 export { Response };
-export { ExtendedFetchOptions };
+export type { ExtendedFetchOptions };
 export { parseSsrfAllowlist };
