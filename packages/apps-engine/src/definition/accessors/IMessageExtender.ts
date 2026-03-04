@@ -1,4 +1,4 @@
-import type { JsonValue } from '../JsonValue';
+import type { SerializableValue } from '../JsonValue';
 import type { IMessage, IMessageAttachment } from '../messages';
 import type { RocketChatAssociationModel } from '../metadata';
 
@@ -13,7 +13,7 @@ export interface IMessageExtender {
 	 * @param key the name of the custom field
 	 * @param value the value of this custom field
 	 */
-	addCustomField(key: string, value: JsonValue): IMessageExtender;
+	addCustomField(key: string, value: SerializableValue): IMessageExtender;
 
 	/**
 	 * Adds a single attachment to the message.

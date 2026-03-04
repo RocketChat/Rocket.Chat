@@ -7,7 +7,7 @@ import type { IMessageAttachment } from '@rocket.chat/apps-engine/definition/mes
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
 import type { IBlock } from '@rocket.chat/apps-engine/definition/uikit/blocks/Blocks.ts';
-import type { JsonValue } from '../../../../src/definition/JsonValue.ts';
+import type { SerializableValue } from '../../../../src/definition/JsonValue.ts';
 
 import { BlockBuilder } from './BlockBuilder.ts';
 import { require } from '../../../lib/require.ts';
@@ -236,7 +236,7 @@ export class MessageBuilder implements IMessageBuilder {
 		return this.msg.blocks!;
 	}
 
-	public addCustomField(key: string, value: JsonValue): IMessageBuilder {
+	public addCustomField(key: string, value: SerializableValue): IMessageBuilder {
 		if (!this.msg.customFields) {
 			this.msg.customFields = {};
 		}

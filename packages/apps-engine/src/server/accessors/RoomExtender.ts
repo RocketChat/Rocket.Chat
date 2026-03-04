@@ -1,5 +1,5 @@
 import type { IRoomExtender } from '../../definition/accessors';
-import type { JsonValue } from '../../definition/JsonValue';
+import type { SerializableValue } from '../../definition/JsonValue';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import type { IRoom } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
@@ -15,7 +15,7 @@ export class RoomExtender implements IRoomExtender {
 		this.members = [];
 	}
 
-	public addCustomField(key: string, value: JsonValue): IRoomExtender {
+	public addCustomField(key: string, value: SerializableValue): IRoomExtender {
 		if (!this.room.customFields) {
 			this.room.customFields = {};
 		}

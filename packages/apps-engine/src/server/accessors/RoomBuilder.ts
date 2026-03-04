@@ -1,5 +1,5 @@
 import type { IRoomBuilder } from '../../definition/accessors';
-import type { JsonValue } from '../../definition/JsonValue';
+import type { SerializableValue } from '../../definition/JsonValue';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import type { IRoom, RoomType } from '../../definition/rooms';
 import type { IUser } from '../../definition/users';
@@ -128,7 +128,7 @@ export class RoomBuilder implements IRoomBuilder {
 		return this.room.displaySystemMessages;
 	}
 
-	public addCustomField(key: string, value: JsonValue): IRoomBuilder {
+	public addCustomField(key: string, value: SerializableValue): IRoomBuilder {
 		if (!this.room.customFields || typeof this.room.customFields !== 'object' || Array.isArray(this.room.customFields)) {
 			this.room.customFields = {};
 		}
@@ -137,12 +137,12 @@ export class RoomBuilder implements IRoomBuilder {
 		return this;
 	}
 
-	public setCustomFields(fields: { [key: string]: JsonValue }): IRoomBuilder {
+	public setCustomFields(fields: { [key: string]: SerializableValue }): IRoomBuilder {
 		this.room.customFields = fields;
 		return this;
 	}
 
-	public getCustomFields(): { [key: string]: JsonValue } {
+	public getCustomFields(): { [key: string]: SerializableValue } {
 		return this.room.customFields;
 	}
 
