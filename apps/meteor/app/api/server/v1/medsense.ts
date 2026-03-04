@@ -1442,7 +1442,21 @@ API.v1.addRoute(
 					reason: 'staff_request_close',
 				});
 			}
-			await archiveRoom(request.roomId, this.user);
+			await Rooms.update(
+				{ _id: request.roomId },
+				{
+					$set: {
+						ro: true,
+						reactWhenReadOnly: false,
+					},
+				},
+			);
+			api.broadcast('room.save', {
+				_id: request.roomId,
+				medsenseActiveRequestStatus: null,
+				ro: true,
+				reactWhenReadOnly: false,
+			});
 
 			return API.v1.success();
 		},
@@ -1510,7 +1524,21 @@ API.v1.addRoute(
                 finalMessageId: (declineMessageRecord as any)?._id,
                 reason: 'staff_request_decline',
             });
-            await archiveRoom(request.roomId, this.user);
+            await Rooms.update(
+                { _id: request.roomId },
+                {
+                    $set: {
+                        ro: true,
+                        reactWhenReadOnly: false,
+                    },
+                },
+            );
+            api.broadcast('room.save', {
+                _id: request.roomId,
+                medsenseActiveRequestStatus: null,
+                ro: true,
+                reactWhenReadOnly: false,
+            });
 
             return API.v1.success();
         },
