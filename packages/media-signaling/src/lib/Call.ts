@@ -161,6 +161,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._screenShareRequested;
 	}
 
+	private _activeTimestamp: Date | undefined;
+
+	public get activeTimestamp(): Date | undefined {
+		return this._activeTimestamp;
+	}
+
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
 
 	private acceptedLocally: boolean;
@@ -848,6 +854,9 @@ export class ClientMediaCall implements IClientMediaCall {
 				break;
 			case 'active':
 				this.emitter.emit('active');
+				if (!this._activeTimestamp) {
+					this._activeTimestamp = new Date();
+				}
 				this.reportStates();
 				break;
 

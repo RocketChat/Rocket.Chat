@@ -97,6 +97,9 @@ export interface IClientMediaCall {
 	contact: CallContact;
 	transferredBy: CallContact | null;
 
+	/** The timestamp of the moment the call was marked as active for the first time */
+	activeTimestamp?: Date;
+
 	/** if the call was requested by this session, then this will have the ID used to request the call, otherwise it will be the same as callId */
 	readonly tempCallId: string;
 	/** confirmed indicates if the call exists on the server */
