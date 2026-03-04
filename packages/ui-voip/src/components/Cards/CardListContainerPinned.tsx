@@ -1,3 +1,4 @@
+import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { CSSProperties, ReactNode } from 'react';
@@ -10,6 +11,13 @@ type CardListContainerPinnedProps = {
 	focusedCard: ReactNode;
 	flexDirection?: CSSProperties['flexDirection'];
 };
+
+// This is a workaround to center the card list when it's not overflowing yet.
+const scrollbarContainerStyle = css`
+	[data-overlayscrollbars-viewport] {
+		display: flex;
+	}
+`;
 
 const CardListContainerPinned = ({ children, focusedCard, flexDirection = 'row' }: CardListContainerPinnedProps) => {
 	return (
@@ -36,6 +44,7 @@ const CardListContainerPinned = ({ children, focusedCard, flexDirection = 'row' 
 				height='100%'
 				flexShrink={0}
 				width={CARD_MIN_WIDTH + CARD_MARGIN * 2}
+				className={scrollbarContainerStyle}
 			>
 				<CustomScrollbars>
 					<CardListContainer autoMargin overflow='hidden' direction={flexDirection === 'row' ? 'column' : 'row'}>
