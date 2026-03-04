@@ -74,6 +74,19 @@ const create = async ({
 	encrypted,
 	topic,
 }: CreateDiscussionProperties): Promise<IRoom & { rid: string }> => {
+	// Validate discussion name to reject empty or whitespace-only values.
+	if (!discussionName || discussionName.trim().length === 0) {
+		throw new Meteor.Error(
+			'error-invalid-discussion-name',
+			'Discussion name cannot be empty', { 
+				method: 'DiscussionCreation' 
+			},
+		);
+	}
+
+	// Remove leading and trailing whitespace
+	discussionName = discussionName.trim();
+
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message: null | IMessage = null;
 	if (pmid) {
