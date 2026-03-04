@@ -901,7 +901,7 @@ const usersEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 
 				200: ajv.compile<{
-					user: IUser & { rooms?: Pick<ISubscription, 'rid' | 'name' | 't' | 'roles' | 'unread'> & { federated?: boolean }[] };
+					user: IUser & { rooms?: Pick<ISubscription, 'rid' | 'name' | 't' | 'roles' | 'unread'> & { federated?: boolean[] }[] };
 					success: true;
 				}>({
 					type: 'object',
@@ -922,16 +922,16 @@ const usersEndpoints = API.v1
 													t: { type: 'string' },
 													roles: { type: 'array', items: { type: 'string' } },
 													unread: { type: 'number' },
-													federated: { type: 'boolean' },
+													federated: { type: 'array', items: { type: 'boolean' } },
 												},
 												required: ['rid', 't', 'unread', 'name'],
 												additionalProperties: false,
 											},
 										},
 									},
-									additionalProperties: true,
 								},
 							],
+							additionalProperties: false,
 						},
 						success: { type: 'boolean', enum: [true] },
 					},
@@ -956,6 +956,7 @@ const usersEndpoints = API.v1
 				return API.v1.failure('User not found.');
 			}
 			const myself = user._id === this.userId;
+
 			if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
 				return API.v1.success({
 					user: {
@@ -982,7 +983,7 @@ const usersEndpoints = API.v1
 				user,
 			});
 		},
-);
+	);
 
 API.v1.addRoute(
 	'users.getPreferences',
