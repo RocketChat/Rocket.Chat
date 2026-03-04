@@ -26,7 +26,7 @@ export class DevicesTable extends Table {
 	}
 
 	getColumnHeaderByName(name: string): Locator {
-		return this.root.getByRole('cell', { name, exact: true });
+		return this.root.getByRole('columnheader', { name, exact: true });
 	}
 
 	async orderByLastLogin() {
