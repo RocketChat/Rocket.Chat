@@ -8,6 +8,7 @@ import prettierPluginRecommended from 'eslint-plugin-prettier/recommended';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import storybookPlugin from 'eslint-plugin-storybook';
+import globals from 'globals';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import tseslint from 'typescript-eslint';
 
@@ -242,15 +243,21 @@ export default defineConfig(
 			'valid-typeof': ['error', { requireStringLiterals: true }],
 		},
 	},
-	// Disabled: node globals are not available in all environments (e.g. browser)
-// {
-// 	name: 'rocket.chat/node-globals',
-// 	languageOptions: {
-// 		globals: {
-// 			...globals.node,
-// 		},
-// 	},
-// },
+	// Disabled global node config — applied only to server-side files
+{
+	name: 'rocket.chat/node-globals',
+	files: [
+		'**/server/**',
+		'packages/core-services/**',
+		'packages/models/**',
+		'packages/agenda/**',
+	],
+	languageOptions: {
+		globals: {
+			...globals.node,
+		},
+	},
+},
 	{
 		name: 'rocket.chat/stylistic',
 		rules: {
