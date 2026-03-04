@@ -33,6 +33,7 @@ import { createDirectMessage } from '../../methods/createDirectMessage';
 import { removeRoomLeader } from '../../methods/removeRoomLeader';
 import { removeRoomModerator } from '../../methods/removeRoomModerator';
 import { removeRoomOwner } from '../../methods/removeRoomOwner';
+import { readMessages } from '../../lib/readMessages';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -329,5 +330,9 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return insertedId;
+	}
+
+	async markAsRead(room: IRoom, userId: string, readThreads = false): Promise<void> {
+		await readMessages(room, userId, readThreads);
 	}
 }

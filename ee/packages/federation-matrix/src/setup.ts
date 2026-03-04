@@ -94,6 +94,7 @@ export function configureFederationMatrixSettings(settings: {
 		edu: {
 			processTyping: processEDUTyping,
 			processPresence: processEDUPresence,
+			processReceipt: true,
 		},
 	});
 }

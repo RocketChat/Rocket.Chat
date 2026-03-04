@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, Room } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -69,6 +69,26 @@ export const edus = async () => {
 			logger.debug({ msg: 'Updated presence for user from Matrix federation', userId: matrixUser._id, status });
 		} catch (err) {
 			logger.error({ msg: 'Error handling Matrix presence event', err });
+		}
+	});
+
+	federationSDK.eventEmitterService.on('homeserver.matrix.receipt', async (data) => {
+		try {
+			const matrixUser = await Users.findOneByUsername(data.user_id);
+			if (!matrixUser) {
+				logger.debug({ msg: 'No federated user found for Matrix user_id', userId: data.user_id });
+				return;
+			}
+
+			const matrixRoom = await Rooms.findOne({ 'federation.mrid': data.room_id });
+			if (!matrixRoom) {
+				logger.debug({ msg: 'No bridged room found for Matrix room_id', roomId: data.room_id });
+				return;
+			}
+
+			await Room.markAsRead(matrixRoom, matrixUser._id);
+		} catch (err) {
+			logger.error({ msg: 'Error handling Matrix typing event', err });
 		}
 	});
 };

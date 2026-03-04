@@ -70,4 +70,5 @@ export interface IRoomService {
 		roles?: ISubscription['roles'];
 	}): Promise<string | undefined>;
 	updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean>;
+	markAsRead(room: IRoom, userId: string, readThreads?: boolean): Promise<void>;
 }
