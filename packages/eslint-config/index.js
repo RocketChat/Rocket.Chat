@@ -396,13 +396,7 @@ export default defineConfig(
 				},
 			],
 			'@typescript-eslint/ban-ts-comment': 'warn',
-			'@typescript-eslint/consistent-type-imports': [
-				'warn',
-				{
-					disallowTypeAnnotations: false,
-					fixStyle: 'inline-type-imports',
-				},
-			],
+			'@typescript-eslint/consistent-type-imports': ['error', { disallowTypeAnnotations: false }],
 			'@typescript-eslint/naming-convention': [
 				'error',
 				{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
