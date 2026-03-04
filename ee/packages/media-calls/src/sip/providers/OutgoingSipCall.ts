@@ -272,7 +272,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	}
 
 	protected async getPendingInboundNegotiation(): Promise<OutgoingSipCallNegotiation | null> {
-		for await (const localNegotiation of this.inboundRenegotiations.values()) {
+		for (const localNegotiation of this.inboundRenegotiations.values()) {
 			if (localNegotiation.answer) {
 				continue;
 			}

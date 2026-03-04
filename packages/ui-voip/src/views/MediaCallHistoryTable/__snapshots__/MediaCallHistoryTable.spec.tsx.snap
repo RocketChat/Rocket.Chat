@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`renders MediaCallHistoryTableStory without crashing 1`] = `
+exports[`Snapshots renders MediaCallHistoryTableStory without crashing 1`] = `
 <body>
   <div>
     <div
