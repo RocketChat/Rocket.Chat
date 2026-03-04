@@ -13,16 +13,17 @@ export type SlotPosition = keyof typeof slotPositionStyles;
 
 export type CardSlotContainerProps = {
 	position: SlotPosition;
+	margin?: number;
 	children: ReactNode;
 };
 
-const CardSlotContainerBase = styled('div', ({ position: _position, ...props }: CardSlotContainerProps) => props)`
+const CardSlotContainerBase = styled('div', ({ position: _position, margin: _margin, ...props }: CardSlotContainerProps) => props)`
 	position: absolute;
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	margin: 4px;
+	margin: ${({ margin }) => (margin ? `${margin}px` : '4px')};
 	height: 24px;
 	min-width: 24px;
 	padding-inline: 8px;
@@ -34,9 +35,9 @@ const CardSlotContainerBase = styled('div', ({ position: _position, ...props }: 
 	z-index: 1;
 `;
 
-const CardSlotContainer = ({ children, position }: CardSlotContainerProps) => {
+const CardSlotContainer = ({ children, position, margin }: CardSlotContainerProps) => {
 	return (
-		<CardSlotContainerBase position={position}>
+		<CardSlotContainerBase position={position} margin={margin}>
 			<Box is='span' fontScale='c2'>
 				{children}
 			</Box>

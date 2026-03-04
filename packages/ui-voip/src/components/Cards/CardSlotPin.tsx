@@ -13,7 +13,7 @@ type CardSlotPinProps = {
 const CardSlotPin = ({ focused, onClick, position }: CardSlotPinProps) => {
 	const { t } = useTranslation();
 	return (
-		<CardSlotContainer position={position}>
+		<CardSlotContainer position={position} margin={8}>
 			<IconButton
 				mi={-8} // TODO: this should not have negative margins, SlotContainer needs to be updated for special cases like this.
 				tiny
