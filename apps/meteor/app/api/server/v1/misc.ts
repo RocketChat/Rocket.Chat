@@ -7,8 +7,6 @@ import {
 	isShieldSvgProps,
 	isSpotlightProps,
 	isDirectoryProps,
-	isMethodCallProps,
-	isMethodCallAnonProps,
 	isFingerprintProps,
 	isMeteorCall,
 	validateUnauthorizedErrorResponse,
@@ -621,10 +619,6 @@ API.v1.post(
 
 		const data = EJSON.parse(this.bodyParams.message);
 
-		if (!isMethodCallProps(data)) {
-			return API.v1.failure('Invalid method call');
-		}
-
 		const { method, params, id } = data;
 
 		const connectionId =
@@ -677,12 +671,6 @@ API.v1.post(
 		response: {
 			200: methodCallResponseSchema,
 			400: methodCallErrorResponseSchema,
-			429: ajv.compile({
-				type: 'object',
-				properties: { success: { type: 'boolean', enum: [false] }, error: { type: 'string' } },
-				required: ['success'],
-				additionalProperties: true,
-			}),
 		},
 	},
 	async function action() {
@@ -691,10 +679,6 @@ API.v1.post(
 		});
 
 		const data = EJSON.parse(this.bodyParams.message);
-
-		if (!isMethodCallAnonProps(data)) {
-			return API.v1.failure('Invalid method call');
-		}
 
 		const { method, params, id } = data;
 
