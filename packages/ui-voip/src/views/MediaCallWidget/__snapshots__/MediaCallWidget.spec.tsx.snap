@@ -210,7 +210,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         </div>
       </header>
       <span
-        class="rcx-box rcx-box--full rcx-css-65g3x"
+        class="rcx-box rcx-box--full rcx-css-1k2ffyh"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-1gd28qh"
@@ -670,6 +670,20 @@ exports[`renders OngoingCall without crashing 1`] = `
           role="group"
         >
           <button
+            aria-label="Dialpad"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            label="Dialpad"
+            title="Open_dialpad"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-dialpad rcx-icon rcx-css-xb06ut"
+            >
+              
+            </i>
+          </button>
+          <button
             aria-label="Mute"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Mute"
@@ -695,20 +709,6 @@ exports[`renders OngoingCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-icon--name-pause-shape-unfilled rcx-icon rcx-css-xb06ut"
             >
               
-            </i>
-          </button>
-          <button
-            aria-label="Screen_sharing"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            label="Screen_sharing"
-            title="Screen_sharing"
-            type="button"
-          >
-            <i
-              aria-hidden="true"
-              class="rcx-box rcx-box--full rcx-icon--name-computer rcx-icon rcx-css-xb06ut"
-            >
-              
             </i>
           </button>
           <button
@@ -943,7 +943,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         </div>
       </header>
       <span
-        class="rcx-box rcx-box--full rcx-css-65g3x"
+        class="rcx-box rcx-box--full rcx-css-1k2ffyh"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-1gd28qh"

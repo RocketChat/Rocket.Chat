@@ -531,8 +531,8 @@ type useDraggableOptions = {
 	onChangePosition?: (position: IGenericRect) => void;
 };
 
-export const useDraggable = (options: useDraggableOptions) => {
-	const { restorePosition, onChangePosition } = options;
+export const useDraggable = (options?: useDraggableOptions) => {
+	const { restorePosition, onChangePosition } = options || {};
 	const [draggableElement] = useState<Draggable>(() => new Draggable(new DraggableDomElement()));
 	const [boundingElement] = useState<BoundingElement>(() => new BoundingElement(new BoundingDomElement(), draggableElement));
 	const [handleElement] = useState<HandleElement>(() => new HandleElement(new HandleDomElement(), draggableElement));

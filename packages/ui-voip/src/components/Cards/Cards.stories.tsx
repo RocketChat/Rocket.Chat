@@ -1,5 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/react';
 
+import CardSlotAudioState from './CardSlotAudioState';
+import CardSlotContainer from './CardSlotContainer';
 import GenericCard from './GenericCard';
 import PeerCard from './PeerCard';
 
@@ -9,12 +11,6 @@ export default {
 	args: {
 		title: 'Generic Card',
 		children: 'This is the content.',
-		slots: {
-			topLeft: 'Top Left',
-			topRight: 'Top Right',
-			bottomLeft: 'Bottom Left',
-			bottomRight: 'Bottom Right',
-		},
 	},
 } satisfies Meta<typeof GenericCard>;
 
@@ -30,8 +26,24 @@ const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBg
               SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z`;
 
-export const GenericCardStory: StoryFn<typeof GenericCard> = (args) => <GenericCard {...args} />;
+export const GenericCardStory: StoryFn<typeof GenericCard> = (args) => (
+	<GenericCard {...args}>
+		<CardSlotContainer position='bottomLeft'>
+			<span>John Doe</span>
+			<CardSlotAudioState muted={false} held={true} />
+		</CardSlotContainer>
+		<CardSlotContainer position='bottomRight'>
+			<span>Bottom Right</span>
+		</CardSlotContainer>
+		<CardSlotContainer position='topLeft'>
+			<span>Top Left</span>
+		</CardSlotContainer>
+		<CardSlotContainer position='topRight'>
+			<span>Top Right</span>
+		</CardSlotContainer>
+	</GenericCard>
+);
 
 export const PeerCardStory: StoryFn<typeof GenericCard> = (args) => (
-	<PeerCard displayName='John Doe' avatarUrl={avatarUrl} muted={false} held={false} {...args} sharing={true} />
+	<PeerCard displayName='John Doe' avatarUrl={avatarUrl} muted={false} held={false} {...args} />
 );
