@@ -254,6 +254,30 @@ async function handleLeave({
 	// TODO check if there are no pending invites to the room, and if so, delete the room
 }
 
+async function handleBan({
+	room_id: roomId,
+	state_key: userId,
+	sender: senderId,
+}: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
+	const serverName = federationSDK.getConfig('serverName');
+	const [username] = getUsernameServername(userId, serverName);
+
+	const bannedUser = await Users.findOneByUsername(username);
+	if (!bannedUser) {
+		return;
+	}
+
+	const room = await Rooms.findOneFederatedByMrid(roomId);
+	if (!room) {
+		throw new Error(`Room not found while banning user ${userId} from room ${roomId}`);
+	}
+
+	const [senderUsername] = getUsernameServername(senderId, serverName);
+	const senderUser = await Users.findOneByUsername(senderUsername);
+
+	await Room.performUserBan(room, bannedUser, senderUser ? { byUser: senderUser } : undefined);
+}
+
 export function member() {
 	federationSDK.eventEmitterService.on('homeserver.matrix.membership', async ({ event }) => {
 		try {
@@ -268,6 +292,10 @@ export function member() {
 
 				case 'leave':
 					await handleLeave(event);
+					break;
+
+				case 'ban':
+					await handleBan(event);
 					break;
 
 				default:

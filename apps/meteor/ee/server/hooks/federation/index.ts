@@ -5,6 +5,7 @@ import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
+import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
@@ -186,6 +187,16 @@ afterRemoveFromRoomCallback.add(
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-remove-from-room',
+);
+
+afterBanFromRoomCallback.add(
+	async (data: { bannedUser: IUser; userWhoBanned: IUser }, room: IRoom): Promise<void> => {
+		if (FederationActions.shouldPerformFederationAction(room)) {
+			await FederationMatrix.banUser(room, data.bannedUser, data.userWhoBanned);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-ban-from-room',
 );
 
 callbacks.add(

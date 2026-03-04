@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
+import { Messages, EmojiCustom, Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
@@ -138,6 +138,14 @@ export async function executeSetReaction(
 
 	if (!(await canAccessRoomAsync(room, user))) {
 		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'setReaction' });
+	}
+
+	// Defense-in-depth: explicitly block banned users from reacting
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+		projection: { _id: 1, status: 1 },
+	});
+	if (subscription?.status === 'BANNED') {
+		throw new Meteor.Error('error-user-banned', 'You are banned from this room', { method: 'setReaction' });
 	}
 
 	return setReaction(room, user, message, reaction, userAlreadyReacted);

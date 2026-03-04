@@ -1,6 +1,6 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Team, Room } from '@rocket.chat/core-services';
+import { Message, Team, Room } from '@rocket.chat/core-services';
 import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -11,7 +11,7 @@ import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddU
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
 
 /**
  * This function adds user to the given room.
@@ -51,6 +51,33 @@ export const addUserToRoom = async (
 	// Check if user is already in room
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
 	if (subscription) {
+		// If the user is banned, unban them via re-invite
+		if (subscription.status === 'BANNED') {
+			await Subscriptions.unbanByRoomIdAndUserId(rid, userToBeAdded._id);
+
+			// Re-add the room to the user's __rooms array for member listing
+			await Users.addRoomByUserId(userToBeAdded._id, rid);
+
+			// Increment the room's user count
+			await Rooms.incUsersCountById(rid, 1);
+
+			// Save system message for unban
+			if (!skipSystemMessage && userToBeAdded.username) {
+				if (inviter) {
+					await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username, userToBeAdded, {
+						u: { _id: inviter._id, username: inviter.username },
+					});
+				} else {
+					await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username, userToBeAdded);
+				}
+			}
+
+			void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userToBeAdded._id, 'updated');
+			void notifyOnRoomChangedById(rid);
+			return true;
+		}
+
+		// User already has an active subscription — nothing to do
 		return;
 	}
 

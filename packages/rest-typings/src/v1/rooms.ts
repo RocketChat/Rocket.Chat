@@ -522,6 +522,45 @@ const RoomsMuteUnmuteUserSchema = {
 };
 
 export const isRoomsMuteUnmuteUserProps = ajv.compile<RoomsMuteUnmuteUser>(RoomsMuteUnmuteUserSchema);
+
+type RoomsBanUserProps = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsBanUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsBanUserProps = ajv.compile<RoomsBanUserProps>(RoomsBanUserSchema);
+
 export type RoomsImagesProps = {
 	roomId: string;
 	startingFromId?: string;
@@ -829,6 +868,10 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.unmuteUser': {
 		POST: (params: RoomsMuteUnmuteUser) => void;
+	};
+
+	'/v1/rooms.banUser': {
+		POST: (params: RoomsBanUserProps) => void;
 	};
 
 	'/v1/rooms.images': {
