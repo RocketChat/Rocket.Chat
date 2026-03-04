@@ -28,6 +28,8 @@
     plain,
     quote,
     reducePlainTexts,
+    spoiler,
+    spoilerBlock,
     strike,
     task,
     tasks,
@@ -57,6 +59,7 @@ Start
  */
 Blocks
   = Blockquote
+  / BlockSpoiler
   / Code
   / Heading
   / Tasks
@@ -73,7 +76,19 @@ Blocks
  */
 Blockquote = b:BlockquoteLine+ { return quote(b); }
 
-BlockquoteLine = ">" [ \t]* @Paragraph
+BlockquoteLine
+  = ">" [ \t]* EndOfLine { return paragraph([plain('')]); }
+  / ">" [ \t]* @Paragraph
+
+/**
+ * Block Spoiler
+ * e.g:
+ * ||
+ * line one
+ * line two
+ * ||
+ */
+BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Paragraph)* EndOfLine? "||" { return spoilerBlock([first, ...rest]); }
 
 // <t:1630360800:?{format}>
 // <t:2025-07-22T10:00:00.000Z?:?{format}>
@@ -254,6 +269,7 @@ InlineItemPattern = Whitespace
   / AutolinkedPhone
   / AutolinkedEmail
   / AutolinkedURL
+  / Spoiler
   / EmphasisWithWhitespace
   / Emphasis
   / UserMention
@@ -268,6 +284,23 @@ InlineItemPattern = Whitespace
 
 /**
  *
+ * Spoiler
+ * e.g: ||spoiler||, ||spoiler **bold**||
+ *
+ */
+Spoiler = "||" &{ skipInlineEmoji = false; return true; } text:SpoilerContentItems "||" { return spoiler(text); }
+
+SpoilerContentItems = text:SpoilerContentItem+ { return reducePlainTexts(text); }
+
+// Ensure we consume at least one character and do not accidentally match the closing "||"
+SpoilerContentItem = !"||" item:SpoilerInlineItem { return item; } / !"||" item:SpoilerInlineItemFallback { return item; }
+
+SpoilerInlineItem = &{ skipInlineEmoji = false; return true; } item:InlineItemPattern { return item; }
+
+SpoilerInlineItemFallback = &{ skipInlineEmoji = true; return true; } item:Any { return item; }
+
+/**
+ *
  * URL
  * e.g:
  * Reference: [Rocket.Chat Website](https://rocket.chat), [](https://rocket.chat), <rocket.chat|Rocket.Chat Website>
@@ -275,18 +308,40 @@ InlineItemPattern = Whitespace
  *
  */
 References
-  = "[" title:LinkTitle* "](" href:LinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
+  = "[" title:LinkTitle* "](" href:MarkdownLinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
 LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
-LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; } // TODO: Accept parenthesis
+MarkdownLinkRef = MarkdownLinkURL / MarkdownLinkFilePath / p:Phone { return 'tel:' + p.number; }
+
+// LinkRef is used for non-markdown link contexts (like <url|title> syntax) where parentheses aren't balanced
+LinkRef = URL / FilePath / p:Phone { return 'tel:' + p.number; }
 
 FilePath = $(URLScheme URLBody+)
 
-Image = "![" title:Line? "](" href:LinkRef ")" { return title ? image(href, title) : image(href); }
+MarkdownLinkFilePath = $(URLScheme MarkdownLinkURLBody+)
+
+// MarkdownLinkURL allows parentheses in URLs when inside markdown link syntax [title](url)
+MarkdownLinkURL
+  = $(URLScheme URLAuthority MarkdownLinkURLBody*)
+  / $(URLAuthorityHost MarkdownLinkURLBody*)
+
+MarkdownLinkURLBody
+  = (
+    !(MarkdownLinkExtra+ (Whitespace / EndOfLine) / Whitespace)
+    !")" // Don't consume closing paren
+    (AnyText / [*\[\/\]\^_`{}~] / "(" MarkdownLinkURLBodyParen* ")")
+  )+
+
+// Match content inside parentheses within URL
+MarkdownLinkURLBodyParen = !(Whitespace / EndOfLine / ")") (AnyText / [*\[\/\]\^_`{}~(])
+
+MarkdownLinkExtra = [.,!%*\"':;=]
+
+Image = "![" title:Line? "](" href:MarkdownLinkRef ")" { return title ? image(href, title) : image(href); }
 
 URL
   = $(URLScheme URLAuthority URLBody*)
@@ -296,7 +351,7 @@ URLScheme = $([A-Za-z0-9+-] |1..32| ":")
 
 URLBody
   = (
-    !(Extra+ (Whitespace / EndOfLine) / Whitespace)
+    !(Extra+ (Whitespace / EndOfLine / !.) / Whitespace)
     (AnyText / [*\[\/\]\^_`{}~(])
   )+
 
@@ -319,7 +374,7 @@ URLAuthorityPort
 
 DomainName
   = "localhost"
-  / $(DomainNameLabel ("." DomainChar DomainNameLabel*)+)
+  / $(![\x5F] DomainNameLabel ("." DomainChar DomainNameLabel*)+)
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
@@ -380,7 +435,7 @@ AutoLinkURL
   = $(URLScheme URLAuthority AutoLinkURLBody*)
   / $(URLAuthorityHost AutoLinkURLBody*)
 
-AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine)) .
+AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine / !.)) .
 
 /**
  *

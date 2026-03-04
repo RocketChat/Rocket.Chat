@@ -1,4 +1,4 @@
-import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
+import type { IMethodConnection, IUser, RequiredField } from '@rocket.chat/core-typings';
 import type { Route, Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
@@ -276,7 +276,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			body: result,
 		} as SuccessResult<T>;
 
-		return finalResult as SuccessResult<T>;
+		return finalResult;
 	}
 
 	public redirect<T, C extends RedirectStatusCodes>(code: C, result: T): RedirectResult<T, C> {
@@ -582,7 +582,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	>(method: MinimalRoute['method'], subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
+		this.typedRoutes[path] = this.typedRoutes[path] || {};
 		const { query, authRequired, response, body, tags, ...rest } = options;
 		this.typedRoutes[path][method.toLowerCase()] = {
 			...(response && {
@@ -799,7 +799,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				const { tags = ['Missing Documentation'] } = _options as Record<string, any>;
 
 				if (typeof operations[method as keyof Operations<TPathPattern, TOptions>] === 'function') {
-					(operations as Record<string, any>)[method as string] = {
+					(operations as Record<string, any>)[method] = {
 						action: operations[method as keyof Operations<TPathPattern, TOptions>],
 					};
 				} else {
@@ -825,13 +825,16 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						this.queryFields = options.queryFields;
 						this.logger = logger;
 
-						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute(this);
-							this.user = user!;
-							this.userId = this.user?._id;
-							const authToken = this.request.headers.get('x-auth-token');
-							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
-						}
+						const user = await api.authenticatedRoute(this);
+
+						const isUserWithUsername = (user: IUser | null): user is RequiredField<IUser, 'username'> => {
+							return user !== null && typeof user === 'object' && 'username' in user && user.username !== undefined;
+						};
+
+						this.user = user!;
+						this.userId = this.user?._id;
+						const authToken = this.request.headers.get('x-auth-token');
+						this.token = Accounts._hashLoginToken(String(authToken))!;
 
 						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
 						const shouldPreventUserRead = !this.user && options.authRequired;
@@ -847,6 +850,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 								});
 							}
 							return result;
+						}
+
+						if (user && !options.userWithoutUsername && !isUserWithUsername(user)) {
+							throw new Meteor.Error('error-unauthorized', 'Users must have a username');
 						}
 
 						const objectForRateLimitMatch = {
@@ -955,7 +962,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					`/${route}`.replaceAll('//', '/'),
 					{ ..._options, tags } as TypedOptions,
 					license(_options as TypedOptions, License),
-					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
+					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action,
 				);
 				this._routes.push({
 					path: route,
@@ -988,7 +995,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		}
 
 		for (const method of this.authMethods) {
-			// eslint-disable-next-line no-await-in-loop -- we want serial execution
 			const user = await method(routeContext);
 
 			if (user) {
@@ -1077,7 +1083,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 		(this as APIClass<'/v1'>).addRoute(
 			'login',
-			{ authRequired: false },
+			{ authRequired: false, userWithoutUsername: true },
 			{
 				async post() {
 					const request = this.request as unknown as Request;
@@ -1089,7 +1095,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 					try {
 						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
-						this.user = await Users.findOne(
+						const user = await Users.findOne(
 							{
 								_id: auth.id,
 							},
@@ -1098,18 +1104,16 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							},
 						);
 
-						if (!this.user) {
+						if (!user) {
 							return self.unauthorized();
 						}
-
-						this.userId = this.user._id;
 
 						return self.success({
 							status: 'success',
 							data: {
-								userId: this.userId,
+								userId: user._id,
 								authToken: auth.token,
-								me: await getUserInfo(this.user || ({} as IUser)),
+								me: await getUserInfo(user || ({} as IUser)),
 							},
 						});
 					} catch (error) {

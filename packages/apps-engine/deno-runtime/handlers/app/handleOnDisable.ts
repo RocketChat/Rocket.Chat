@@ -3,8 +3,9 @@ import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
-export default async function handleOnDisable(_request: RequestContext): Promise<boolean> {
+export default async function handleOnDisable(request: RequestContext): Promise<boolean> {
 	const app = AppObjectRegistry.get<App>('app');
 
 	if (typeof app?.onDisable !== 'function') {
@@ -13,7 +14,7 @@ export default async function handleOnDisable(_request: RequestContext): Promise
 		});
 	}
 
-	await app.onDisable(AppAccessorsInstance.getConfigurationModify());
+	await app.onDisable.call(wrapAppForRequest(app, request), AppAccessorsInstance.getConfigurationModify());
 
 	return true;
 }

@@ -4,6 +4,7 @@
  */
 import { isE2EEMessage, type IMessage, type IRoom, type IUser } from '@rocket.chat/core-typings';
 
+import { extractMentionsFromMessageAST } from '../../lib/server/functions/extractMentionsFromMessageAST';
 import { type MentionsParserArgs, MentionsParser } from '../lib/MentionsParser';
 
 type MentionsServerArgs = MentionsParserArgs & {
@@ -50,13 +51,25 @@ export class MentionsServer extends MentionsParser {
 			isE2EEMessage(message) && e2eMentions?.e2eUserMentions && e2eMentions?.e2eUserMentions.length > 0
 				? e2eMentions?.e2eUserMentions
 				: this.getUserMentions(msg);
-		const mentionsAll: { _id: string; username: string }[] = [];
-		const userMentions = [];
 
-		for await (const m of mentions) {
-			const mention = m.includes(':') ? m.trim() : m.trim().substring(1);
+		return this.convertMentionsToUsers(mentions, rid, sender);
+	}
+
+	async convertMentionsToUsers(mentions: string[], rid: string, sender: IMessage['u']): Promise<IMessage['mentions']> {
+		const mentionsAll: { _id: string; username: string }[] = [];
+		const userMentions = new Set<string>();
+
+		for (const m of mentions) {
+			let mention: string;
+			if (m.includes(':')) {
+				mention = m.trim();
+			} else if (m.startsWith('@')) {
+				mention = m.substring(1);
+			} else {
+				mention = m;
+			}
 			if (mention !== 'all' && mention !== 'here') {
-				userMentions.push(mention);
+				userMentions.add(mention);
 				continue;
 			}
 			if (this.messageMaxAll() > 0 && (await this.getTotalChannelMembers(rid)) > this.messageMaxAll()) {
@@ -69,7 +82,7 @@ export class MentionsServer extends MentionsParser {
 			});
 		}
 
-		return [...mentionsAll, ...(userMentions.length ? await this.getUsers(userMentions) : [])];
+		return [...mentionsAll, ...(userMentions.size ? await this.getUsers(Array.from(userMentions)) : [])];
 	}
 
 	async getChannelbyMentions(message: IMessage) {
@@ -79,15 +92,23 @@ export class MentionsServer extends MentionsParser {
 			isE2EEMessage(message) && e2eMentions?.e2eChannelMentions && e2eMentions?.e2eChannelMentions.length > 0
 				? e2eMentions?.e2eChannelMentions
 				: this.getChannelMentions(msg);
-		return this.getChannels(channels.map((c) => c.trim().substring(1)));
+		return this.convertMentionsToChannels(channels);
+	}
+
+	async convertMentionsToChannels(channels: string[]): Promise<Pick<IRoom, '_id' | 'name' | 'fname' | 'federated'>[]> {
+		return this.getChannels(channels.map((c) => (c.startsWith('#') ? c.substring(1) : c)));
 	}
 
 	async execute(message: IMessage) {
-		const mentionsAll = await this.getUsersByMentions(message);
-		const channels = await this.getChannelbyMentions(message);
+		if (message.md) {
+			const { mentions, channels } = extractMentionsFromMessageAST(message.md);
+			message.mentions = await this.convertMentionsToUsers(mentions, message.rid, message.u);
+			message.channels = await this.convertMentionsToChannels(channels);
+			return message;
+		}
 
-		message.mentions = mentionsAll;
-		message.channels = channels;
+		message.mentions = await this.getUsersByMentions(message);
+		message.channels = await this.getChannelbyMentions(message);
 
 		return message;
 	}

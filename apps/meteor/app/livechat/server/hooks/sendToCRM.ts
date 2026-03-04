@@ -115,7 +115,7 @@ export async function sendToCRM(
 	}
 
 	if (messages) {
-		for await (const message of messages) {
+		for (const message of messages) {
 			if (message.t && !sendMessageType(message.t)) {
 				continue;
 			}
