@@ -60,7 +60,7 @@ async function deleteCustomSound(_id: string) {
 		.expect(200);
 }
 
-describe.only('[CustomSounds]', () => {
+describe('[CustomSounds]', () => {
 	const fileName = `test-file-${randomUUID()}`;
 	let fileId: string;
 	let fileId2: string;
