@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
 import { leaveRoomMethod } from '../../lib/server/methods/leaveRoom';

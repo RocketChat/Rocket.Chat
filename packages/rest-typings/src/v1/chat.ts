@@ -79,42 +79,6 @@ const chatSendMessageSchema = {
 
 export const isChatSendMessageProps = ajv.compile<ChatSendMessage>(chatSendMessageSchema);
 
-type ChatFollowMessage = {
-	mid: IMessage['_id'];
-};
-
-const chatFollowMessageSchema = {
-	type: 'object',
-	properties: {
-		mid: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['mid'],
-	additionalProperties: false,
-};
-
-export const isChatFollowMessageProps = ajv.compile<ChatFollowMessage>(chatFollowMessageSchema);
-
-type ChatUnfollowMessage = {
-	mid: IMessage['_id'];
-};
-
-const chatUnfollowMessageSchema = {
-	type: 'object',
-	properties: {
-		mid: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['mid'],
-	additionalProperties: false,
-};
-
-export const isChatUnfollowMessageProps = ajv.compile<ChatUnfollowMessage>(chatUnfollowMessageSchema);
-
 type ChatGetMessage = {
 	msgId: IMessage['_id'];
 };
@@ -932,12 +896,6 @@ export type ChatEndpoints = {
 		GET: (params: ChatGetMessage) => {
 			message: IMessage;
 		};
-	};
-	'/v1/chat.followMessage': {
-		POST: (params: ChatFollowMessage) => void;
-	};
-	'/v1/chat.unfollowMessage': {
-		POST: (params: ChatUnfollowMessage) => void;
 	};
 	'/v1/chat.reportMessage': {
 		POST: (params: ChatReportMessage) => void;

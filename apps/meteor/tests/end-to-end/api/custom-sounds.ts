@@ -260,6 +260,7 @@ describe.only('[CustomSounds]', () => {
 		let gridFsFileId: string;
 
 		before(async () => {
+			await updateSetting('CustomSounds_FileSystemPath', '', false);
 			await updateSetting('CustomSounds_Storage_Type', 'FileSystem');
 			fsFileId = await insertOrUpdateSound(`${fileName}-3`);
 			await uploadCustomSound(binary, `${fileName}-3`, fsFileId);
@@ -267,8 +268,6 @@ describe.only('[CustomSounds]', () => {
 			await updateSetting('CustomSounds_Storage_Type', 'GridFS');
 			gridFsFileId = await insertOrUpdateSound(`${fileName}-4`);
 			await uploadCustomSound(binary, `${fileName}-4`, gridFsFileId);
-
-			await updateSetting('CustomSounds_FileSystemPath', '');
 		});
 
 		after(async () => {
