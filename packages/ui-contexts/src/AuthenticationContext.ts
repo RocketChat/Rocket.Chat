@@ -27,9 +27,13 @@ export const AuthenticationContext = createContext<AuthenticationContextValue>({
 	loginWithToken: async () => Promise.reject(new Error('loginWithToken not implemented')),
 	loginWithIframe: async () => Promise.reject(new Error('loginWithIframe not implemented')),
 	loginWithTokenRoute: async () => Promise.reject(new Error('loginWithTokenRoute not implemented')),
-	unstoreLoginToken: () => async () => Promise.reject(new Error('unstoreLoginToken not implemented')),
+	unstoreLoginToken: () => {
+		throw new Error('unstoreLoginToken not implemented');
+	},
 	queryLoginServices: {
 		getCurrentValue: () => [],
-		subscribe: (_: () => void) => () => Promise.reject(new Error('queryLoginServices not implemented')),
+		subscribe: (_: () => void) => {
+			throw new Error('queryLoginServices not implemented');
+		},
 	},
 });
