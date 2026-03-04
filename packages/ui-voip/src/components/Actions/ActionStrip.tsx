@@ -9,7 +9,6 @@ type ActionStripProps = {
 	rightSlot?: ReactNode;
 };
 
-// TODO: fix alignment: timer shoves the button a little to the right
 const ActionStrip = ({ children, leftSlot, rightSlot }: ActionStripProps) => {
 	return (
 		<Box
@@ -25,11 +24,15 @@ const ActionStrip = ({ children, leftSlot, rightSlot }: ActionStripProps) => {
 			borderColor='stroke-extra-light'
 			paddingInline={20}
 		>
-			{leftSlot}
-			<ButtonGroup large align='center' style={{ flexGrow: 2, justifySelf: 'center' }}>
-				{children}
-			</ButtonGroup>
-			{rightSlot}
+			<Box is='span' display='flex' justifyContent='start' alignItems='center' flexGrow={0} flexBasis='20%'>
+				{leftSlot}
+			</Box>
+			<Box is='span' display='flex' justifyContent='center' alignItems='center' flexGrow={1} flexBasis='60%'>
+				<ButtonGroup large>{children}</ButtonGroup>
+			</Box>
+			<Box is='span' display='flex' justifyContent='end' alignItems='center' flexGrow={0} flexBasis='20%'>
+				{rightSlot}
+			</Box>
 		</Box>
 	);
 };

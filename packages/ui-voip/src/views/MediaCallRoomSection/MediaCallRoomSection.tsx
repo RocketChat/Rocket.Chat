@@ -1,9 +1,10 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ToggleButton, Timer, DevicePicker, ActionButton } from '../../components';
 import ActionStrip from '../../components/Actions/ActionStrip';
+import ActionToggleChat from '../../components/Actions/ActionToggleChat';
 import CardListContainerWrapper from '../../components/Cards/CardListContainerWrapper';
 import CardListSection, { SECTION_MAX_HEIGHT } from '../../components/Cards/CardListSection';
 import PeerCard from '../../components/Cards/PeerCard';
@@ -121,16 +122,14 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 						<Timer />
 					</Box>
 				}
+				rightSlot={
+					<ButtonGroup>
+						<ActionToggleChat pressed={showChat} onClick={onToggleChat} />
+						<DevicePicker secondary />
+					</ButtonGroup>
+				}
 			>
 				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-				<ToggleButton
-					label={t('Screen_sharing')}
-					icons={['computer', 'computer']}
-					titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
-					pressed={localScreen?.active ?? false}
-					onToggle={onToggleScreenSharing}
-				/>
-				<DevicePicker secondary />
 				<ToggleButton
 					label={t('Hold')}
 					icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
@@ -139,11 +138,11 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 					onToggle={onHold}
 				/>
 				<ToggleButton
-					label={t('Chat')}
-					icons={['balloon', 'balloon-off']}
-					titles={[t('Open_chat'), t('Close_chat')]}
-					pressed={showChat}
-					onToggle={onToggleChat}
+					label={t('Screen_sharing')}
+					icons={['computer', 'computer']}
+					titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
+					pressed={localScreen?.active ?? false}
+					onToggle={onToggleScreenSharing}
 				/>
 				<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 				<ActionButton label={t('Voice_call__user__hangup', { user: peerInfo.displayName })} icon='phone-off' danger onClick={onEndCall} />

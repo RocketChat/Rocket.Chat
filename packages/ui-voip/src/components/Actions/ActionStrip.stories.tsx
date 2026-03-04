@@ -35,13 +35,6 @@ export const ActionStripStory: StoryFn<typeof ActionStrip> = (args) => {
 		<ActionStrip leftSlot={<Timer />} rightSlot={<ActionToggleChat pressed={pressed} onClick={() => setPressed(!pressed)} />} {...args}>
 			<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={false} onToggle={NOOP} />
 			<ToggleButton
-				label={t('Screen_sharing')}
-				icons={['computer', 'computer']}
-				titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
-				pressed={false}
-				onToggle={NOOP}
-			/>
-			<ToggleButton
 				label={t('Hold')}
 				icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
 				titles={[t('Hold'), t('Resume')]}
@@ -49,9 +42,9 @@ export const ActionStripStory: StoryFn<typeof ActionStrip> = (args) => {
 				onToggle={NOOP}
 			/>
 			<ToggleButton
-				label={t('Chat')}
-				icons={['balloon', 'balloon-off']}
-				titles={[t('Open_chat'), t('Close_chat')]}
+				label={t('Screen_sharing')}
+				icons={['computer', 'computer']}
+				titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
 				pressed={false}
 				onToggle={NOOP}
 			/>
