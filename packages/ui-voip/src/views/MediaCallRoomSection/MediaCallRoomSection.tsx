@@ -98,7 +98,15 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 	const focusedCardElement = focusedCard === 'remote' ? remoteStreamCard : localStreamCard;
 
 	return (
-		<Box id='outer-element' w='full' bg='hover' overflow='hidden' display='flex' flexDirection='column' {...getSplitStyles(showChat)}>
+		<Box
+			id='outer-element'
+			w='full'
+			bg='surface-tint'
+			overflow='hidden'
+			display='flex'
+			flexDirection='column'
+			{...getSplitStyles(showChat)}
+		>
 			<CardListSection>
 				<CardListContainerWrapper focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
 					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
