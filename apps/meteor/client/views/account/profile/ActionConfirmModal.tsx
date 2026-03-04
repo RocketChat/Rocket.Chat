@@ -30,7 +30,7 @@ const ActionConfirmModal = ({ isPassword, onConfirm, onCancel }: ActionConfirmMo
 			await onConfirm(credential);
 		} catch (error: any) {
 			if (error.errorType === 'error-invalid-password') {
-				setError('credential', { message: t('Invalid_password') }, { shouldFocus: true });
+				setError('credential', { message: t('Invalid_password') });
 			}
 		}
 	};
