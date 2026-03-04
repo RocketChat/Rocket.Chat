@@ -609,24 +609,6 @@ const roomsCleanHistorySchema = {
 
 export const isRoomsCleanHistoryProps = ajv.compile<RoomsCleanHistoryProps>(roomsCleanHistorySchema);
 
-type RoomsOpenProps = {
-	roomId: string;
-};
-
-const roomsOpenSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isRoomsOpenProps = ajv.compile<RoomsOpenProps>(roomsOpenSchema);
-
 type MembersOrderedByRoleProps = {
 	roomId?: IRoom['_id'];
 	roomName?: IRoom['name'];
@@ -668,24 +650,6 @@ const membersOrderedByRoleRolePropsSchema = {
 };
 
 export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
-
-type RoomsHideProps = {
-	roomId: string;
-};
-
-const roomsHideSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
 type RoomsInviteProps = {
 	roomId: string;
