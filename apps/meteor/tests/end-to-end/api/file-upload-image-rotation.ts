@@ -41,8 +41,8 @@ describe('[File Upload - Image Rotation]', () => {
 		stripExifSetting = await getSettingValueById('Message_Attachments_Strip_Exif');
 		thumbnailsEnabledSetting = await getSettingValueById('Message_Attachments_Thumbnails_Enabled');
 
-		await updateSetting('FileUpload_RotateImages', true);
-		await updateSetting('Message_Attachments_Strip_Exif', true);
+		await updateSetting('FileUpload_RotateImages', true, false);
+		await updateSetting('Message_Attachments_Strip_Exif', true, false);
 		await updateSetting('Message_Attachments_Thumbnails_Enabled', true);
 	});
 
