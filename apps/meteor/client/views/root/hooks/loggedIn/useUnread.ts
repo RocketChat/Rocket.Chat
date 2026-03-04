@@ -35,7 +35,7 @@ export const useUnread = () => {
 			const { rid, unread: unreadValue, alert, unreadAlert: subscriptionUnreadAlert } = subscription;
 			const prev = prevSubsRef.current.get(rid);
 			// Emit per-sub event only if something that influences unread UI changed.
-			if (prev?.unread !== unreadValue || prev.alert !== alert || prev.unreadAlert !== subscriptionUnreadAlert) {
+			if (!prev || prev.unread !== unreadValue || prev.alert !== alert || prev.unreadAlert !== subscriptionUnreadAlert) {
 				fireEventUnreadChangedBySubscription(subscription);
 			}
 			nextSnapshot.set(rid, { unread: unreadValue, alert, unreadAlert: subscriptionUnreadAlert });

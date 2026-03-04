@@ -294,6 +294,7 @@ export const findRoomMember = async (
 		await new Promise((resolve) => setTimeout(resolve, initialDelay));
 	}
 
+	// eslint-disable-next-line no-await-in-loop
 	for (let attempt = 1; attempt <= maxRetries; attempt++) {
 		try {
 			// eslint-disable-next-line no-await-in-loop

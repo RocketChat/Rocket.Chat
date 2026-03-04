@@ -47,7 +47,7 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 
 		const currentVersion = Info.version;
 
-		if (last?.version === currentVersion) {
+		if (last && last.version === currentVersion) {
 			const yesterday = new Date();
 			yesterday.setDate(yesterday.getDate() - 1);
 

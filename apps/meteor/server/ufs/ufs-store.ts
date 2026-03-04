@@ -240,6 +240,7 @@ export class Store {
 
 	generateToken(pattern?: string) {
 		return (pattern || 'xyxyxyxyxy').replace(/[xy]/g, (c) => {
+			// eslint-disable-next-line no-mixed-operators
 			const r = (Math.random() * 16) | 0;
 			const v = c === 'x' ? r : (r & 0x3) | 0x8;
 			const s = v.toString(16);

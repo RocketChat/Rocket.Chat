@@ -77,7 +77,7 @@ slashCommands.add({
 				projection: { _id: 1 },
 			});
 			if (subscription == null) {
-				usersFiltered.push(user);
+				usersFiltered.push(user as IUser);
 				continue;
 			}
 			const usernameStr = user.username as string;

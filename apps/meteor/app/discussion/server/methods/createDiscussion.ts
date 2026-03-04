@@ -85,7 +85,7 @@ const create = async ({
 		}
 		if (prid) {
 			const parentRoom = await getParentRoom(message.rid);
-			if (prid !== parentRoom?._id) {
+			if (!parentRoom || prid !== parentRoom._id) {
 				throw new Meteor.Error('error-invalid-arguments', 'Root message room ID does not match parent room ID ', {
 					method: 'DiscussionCreation',
 				});

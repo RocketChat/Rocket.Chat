@@ -8,7 +8,11 @@ addMigration({
 	async up() {
 		const indexes = await Analytics.col.indexes();
 
-		if (indexes.find((index) => index.name === 'room._id_1_date_1' && index.partialFilterExpression?.type === 'rooms')) {
+		if (
+			indexes.find(
+				(index) => index.name === 'room._id_1_date_1' && index.partialFilterExpression && index.partialFilterExpression.type === 'rooms',
+			)
+		) {
 			return;
 		}
 

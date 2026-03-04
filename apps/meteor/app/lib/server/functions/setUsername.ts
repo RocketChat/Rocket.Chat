@@ -49,7 +49,7 @@ export const setUsernameWithValidation = async (userId: string, username: string
 		throw new Meteor.Error('error-not-allowed', 'Not allowed');
 	}
 
-	if (user.username === username || user.username?.toLowerCase() === username.toLowerCase()) {
+	if (user.username === username || (user.username && user.username.toLowerCase() === username.toLowerCase())) {
 		return;
 	}
 

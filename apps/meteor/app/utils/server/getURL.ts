@@ -2,7 +2,7 @@ import { settings } from '../../settings/server';
 import { getURLWithoutSettings } from '../lib/getURL';
 
 export const getURL = function (
-	path: string,
+	path: string, // eslint-disable-next-line @typescript-eslint/naming-convention
 	params: {
 		cdn?: boolean;
 		full?: boolean;

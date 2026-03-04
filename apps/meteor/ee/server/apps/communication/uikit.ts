@@ -48,7 +48,7 @@ Meteor.startup(() => {
 	// use specific rate limit of 600 (which is 60 times the default limits) requests per minute (around 10/second)
 	const apiLimiter = rateLimit({
 		windowMs: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
-		max: settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default') * 60,
+		max: (settings.get('API_Enable_Rate_Limiter_Limit_Calls_Default') as number) * 60,
 		skip: () =>
 			settings.get('API_Enable_Rate_Limiter') !== true ||
 			(process.env.NODE_ENV === 'development' && settings.get('API_Enable_Rate_Limiter_Dev') !== true),

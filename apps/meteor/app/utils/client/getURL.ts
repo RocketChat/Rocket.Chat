@@ -3,7 +3,7 @@ import { getURLWithoutSettings } from '../lib/getURL';
 import { Info } from '../rocketchat.info';
 
 export const getURL = function (
-	path: string,
+	path: string, // eslint-disable-next-line @typescript-eslint/naming-convention
 	params: {
 		cdn?: boolean;
 		full?: boolean;

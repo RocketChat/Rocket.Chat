@@ -100,7 +100,7 @@ const customSoundsEndpoints = API.v1
 
 			const filter = {
 				...query,
-				...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
+				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
 			};
 
 			const { cursor, totalCount } = CustomSounds.findPaginated(filter, {

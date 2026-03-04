@@ -112,7 +112,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 		const { inquiryId } = data;
 		// TODO: add projection and maybe use findOneQueued to avoid fetching the whole inquiry
 		const inquiry = await LivechatInquiryRaw.findOneById(inquiryId);
-		if (inquiry?.status !== 'queued') {
+		if (!inquiry || inquiry.status !== 'queued') {
 			return;
 		}
 

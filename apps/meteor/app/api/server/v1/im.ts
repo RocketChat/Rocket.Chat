@@ -510,7 +510,7 @@ API.v1.addRoute(
 				...query,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
-				...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
+				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
 				_hidden: { $ne: true },
 			};
 			const sortObj = sort || { ts: -1 };

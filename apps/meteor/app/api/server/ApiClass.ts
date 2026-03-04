@@ -276,7 +276,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			body: result,
 		} as SuccessResult<T>;
 
-		return finalResult;
+		return finalResult as SuccessResult<T>;
 	}
 
 	public redirect<T, C extends RedirectStatusCodes>(code: C, result: T): RedirectResult<T, C> {
@@ -799,7 +799,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				const { tags = ['Missing Documentation'] } = _options as Record<string, any>;
 
 				if (typeof operations[method as keyof Operations<TPathPattern, TOptions>] === 'function') {
-					(operations as Record<string, any>)[method] = {
+					(operations as Record<string, any>)[method as string] = {
 						action: operations[method as keyof Operations<TPathPattern, TOptions>],
 					};
 				} else {
@@ -953,7 +953,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					`/${route}`.replaceAll('//', '/'),
 					{ ..._options, tags } as TypedOptions,
 					license(_options as TypedOptions, License),
-					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action,
+					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
 				);
 				this._routes.push({
 					path: route,

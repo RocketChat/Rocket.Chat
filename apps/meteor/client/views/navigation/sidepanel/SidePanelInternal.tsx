@@ -52,7 +52,7 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 				</Box>
 			</SidepanelHeader>
 			<Box h='full' ref={ref}>
-				{rooms?.length === 0 && <SidePanelNoResults currentTab={currentTab} />}
+				{rooms && rooms.length === 0 && <SidePanelNoResults currentTab={currentTab} />}
 				<VirtualizedScrollbars>
 					<Virtuoso
 						totalCount={rooms.length}

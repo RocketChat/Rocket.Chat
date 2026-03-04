@@ -40,7 +40,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum,
+		fit?: keyof sharp.FitEnum | undefined,
 	): Promise<ResizeResult> {
 		const stream = this.bufferToStream(input);
 		return this.resizeFromStream(stream, width, height, keepType, blur, enlarge, fit);
@@ -53,7 +53,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum,
+		fit?: keyof sharp.FitEnum | undefined,
 	): Promise<ResizeResult> {
 		const transformer = sharp().resize({ width, height, fit, withoutEnlargement: !enlarge });
 

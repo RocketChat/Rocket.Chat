@@ -114,7 +114,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 					/>
 				</>
 			)}
-			{isSuccess && data?.emojis.length === 0 && <GenericNoResults />}
+			{isSuccess && data && data.emojis.length === 0 && <GenericNoResults />}
 			{isError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />

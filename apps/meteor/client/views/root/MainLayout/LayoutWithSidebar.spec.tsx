@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import { render } from '@testing-library/react';
-import type React from 'react';
+import React from 'react';
 
 import LayoutWithSidebar from './LayoutWithSidebar';
 

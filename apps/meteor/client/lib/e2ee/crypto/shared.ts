@@ -34,12 +34,12 @@ export const encryptBuffer = <TKey extends IKey, TParams extends ParamsOf<TKey>>
 	key: HasUsage<TKey, 'encrypt'>,
 	params: TParams,
 	data: BufferSource,
-): Promise<ArrayBuffer> => subtle.encrypt(params, key, data);
+): Promise<ArrayBuffer> => subtle.encrypt(params, key, data) as Promise<ArrayBuffer>;
 export const decryptBuffer = <TKey extends IKey>(
 	key: HasUsage<TKey, 'decrypt'>,
 	params: ParamsOf<TKey>,
 	data: BufferSource,
-): Promise<ArrayBuffer> => subtle.decrypt(params, key, data);
+): Promise<ArrayBuffer> => subtle.decrypt(params, key, data) as Promise<ArrayBuffer>;
 export const deriveBits = (...args: Parameters<typeof subtle.deriveBits>) => subtle.deriveBits(...args);
 
 type AesParams = {

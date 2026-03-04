@@ -29,7 +29,11 @@ export const getUserNotificationPreference = async (user: IUser | string, pref: 
 		return null;
 	}
 
-	if (typeof user?.settings?.preferences?.[preferenceKey] !== 'undefined' && user.settings.preferences[preferenceKey] !== 'default') {
+	if (
+		user?.settings?.preferences &&
+		typeof user.settings.preferences[preferenceKey] !== 'undefined' &&
+		user.settings.preferences[preferenceKey] !== 'default'
+	) {
 		return {
 			value: user.settings.preferences[preferenceKey],
 			origin: 'user',

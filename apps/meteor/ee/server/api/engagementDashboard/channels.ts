@@ -14,7 +14,7 @@ declare module '@rocket.chat/rest-typings' {
 				channels: {
 					room: {
 						_id: IRoom['_id'];
-						name: IRoom['name'];
+						name: IRoom['name'] | IRoom['fname'];
 						ts: IRoom['ts'];
 						t: IRoom['t'];
 						_updatedAt: IRoom['_updatedAt'];

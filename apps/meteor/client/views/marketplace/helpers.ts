@@ -225,7 +225,7 @@ export const appStatusSpanProps = (
 		};
 	}
 
-	const isOnTrialPeriod = subscriptionInfo?.status === 'trialing';
+	const isOnTrialPeriod = subscriptionInfo && subscriptionInfo.status === 'trialing';
 	if (isOnTrialPeriod) {
 		return {
 			icon: 'checkmark-circled',

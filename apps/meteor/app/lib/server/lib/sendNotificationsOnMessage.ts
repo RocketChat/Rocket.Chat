@@ -401,7 +401,7 @@ export async function sendAllNotifications(message: IMessage, room: IRoom) {
 		return message;
 	}
 
-	if (room?.t == null) {
+	if (!room || room.t == null) {
 		return message;
 	}
 

@@ -67,7 +67,7 @@ async function getRoomFromParams(params: { roomId?: string } | { roomName?: stri
 		}
 	})();
 
-	if (room?.t !== 'p') {
+	if (!room || room.t !== 'p') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
@@ -273,7 +273,7 @@ API.v1.addRoute(
 				room = await Rooms.findOneByName(params.roomName || '');
 			}
 
-			if (room?.t !== 'p') {
+			if (!room || room.t !== 'p') {
 				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 			}
 
@@ -791,7 +791,7 @@ API.v1.addRoute(
 				rid: findResult.rid,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
-				...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
+				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
 				_hidden: { $ne: true },
 			};
 

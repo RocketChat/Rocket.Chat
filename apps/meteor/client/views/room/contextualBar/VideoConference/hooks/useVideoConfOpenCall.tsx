@@ -7,7 +7,7 @@ export const useVideoConfOpenCall = () => {
 	const setModal = useSetModal();
 
 	const handleOpenCall = useCallback(
-		(callUrl: string, providerName?: string) => {
+		(callUrl: string, providerName?: string | undefined) => {
 			const desktopApp = window.RocketChatDesktop;
 
 			if (!desktopApp?.openInternalVideoChatWindow) {

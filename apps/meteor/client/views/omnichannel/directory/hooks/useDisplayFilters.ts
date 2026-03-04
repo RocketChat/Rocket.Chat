@@ -41,5 +41,5 @@ export const useDisplayFilters = (filtersQuery: ChatsFiltersQuery) => {
 };
 
 const parseMultiSelect = (data: PaginatedMultiSelectOption[]) => {
-	return data.map((a) => a.label.split(' (')[0]).join(', ');
+	return data.map((a) => (a.label as string).split(' (')[0]).join(', ');
 };

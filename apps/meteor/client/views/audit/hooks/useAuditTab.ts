@@ -11,7 +11,7 @@ const typeToTabMap: Record<IAuditLog['fields']['type'], string> = {
 	'l': 'omnichannel',
 };
 
-const tabToTabMap = new Map(Object.entries(typeToTabMap).map(([type, tab]) => [tab, type]));
+const tabToTabMap = new Map(Object.entries(typeToTabMap).map(([type, tab]) => [tab, type as IAuditLog['fields']['type']]));
 
 export const useAuditTab = () => {
 	const tab = useRouteParameter('tab');

@@ -41,7 +41,7 @@ export class UserStatuses implements Iterable<UserStatusDescriptor> {
 		return {
 			name: customUserStatus.name,
 			id: customUserStatus._id,
-			statusType: customUserStatus.statusType,
+			statusType: customUserStatus.statusType as UserStatus,
 			localizeName: false,
 		};
 	}

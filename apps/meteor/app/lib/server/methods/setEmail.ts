@@ -24,7 +24,7 @@ export const setEmailFunction = async (email: string, user: Meteor.User | IUser)
 		});
 	}
 
-	if (user.emails?.[0]?.address === email) {
+	if (user.emails?.[0] && user.emails[0].address === email) {
 		return email;
 	}
 

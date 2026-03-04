@@ -7,6 +7,7 @@ type UseHourlyChatActivityOptions = {
 	utc: boolean;
 };
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivityOptions) => {
 	const getHourlyChatActivity = useEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/hourly-data');
 

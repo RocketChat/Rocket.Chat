@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name, react/no-multi-comp */
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';

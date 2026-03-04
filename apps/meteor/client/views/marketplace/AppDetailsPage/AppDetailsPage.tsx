@@ -92,7 +92,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps): ReactElement => {
 			try {
 				await AppClientOrchestratorInstance.setAppSettings(
 					id,
-					Object.values(settings || {}).map((setting) => ({
+					(Object.values(settings || {}) as ISetting[]).map((setting) => ({
 						...setting,
 						value: data[setting.id],
 					})),

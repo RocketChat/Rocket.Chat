@@ -64,6 +64,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	const result = sdk.stream('notify-user', [`${uid}/userData`], (data) => {
 		switch (data.type) {
 			case 'inserted': {
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const { type, id, ...user } = data;
 				Users.state.store(user.data);
 				break;

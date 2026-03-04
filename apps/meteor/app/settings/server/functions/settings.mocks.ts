@@ -41,7 +41,7 @@ class SettingsClass {
 
 	insertOne(doc: any): void {
 		this.data.set(doc._id, doc);
-
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		this.settings.set(doc);
 		this.insertCalls++;
 	}
@@ -77,13 +77,13 @@ class SettingsClass {
 				this.data.set(query._id, data);
 
 				// Can't import before the mock command on end of this file!
-
+				// eslint-disable-next-line @typescript-eslint/no-var-requires
 				this.settings.set(data);
 			}, this.delay);
 		} else {
 			this.data.set(query._id, data);
 			// Can't import before the mock command on end of this file!
-
+			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			this.settings.set(data);
 		}
 
@@ -98,7 +98,7 @@ class SettingsClass {
 	updateValueById(id: string, value: any): void {
 		this.data.set(id, { ...this.data.get(id), value });
 		// Can't import before the mock command on end of this file!
-
+		// eslint-disable-next-line @typescript-eslint/no-var-requires
 		if (this.delay) {
 			setTimeout(() => {
 				this.settings.set(this.data.get(id) as ISetting);

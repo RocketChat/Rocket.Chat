@@ -71,7 +71,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 				{t('Tags')}
 			</FieldLabel>
 
-			{tagsResult?.tags?.length ? (
+			{tagsResult?.tags && tagsResult?.tags.length ? (
 				<FieldRow>
 					<CurrentChatTags
 						id={tagsFieldId}

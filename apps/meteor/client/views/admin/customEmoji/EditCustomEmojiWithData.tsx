@@ -32,7 +32,7 @@ const EditCustomEmojiWithData = ({ _id, onChange, close, ...props }: EditCustomE
 		return <FormSkeleton pi={20} />;
 	}
 
-	if (error || !data?.emojis || data.emojis.update.length < 1) {
+	if (error || !data || !data.emojis || data.emojis.update.length < 1) {
 		return <Callout title={t('Custom_Emoji_Error_Invalid_Emoji')} type='danger' />;
 	}
 

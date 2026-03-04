@@ -65,6 +65,7 @@ declare module 'meteor/accounts-base' {
 
 		export const _options: AccountsServerOptions;
 
+		// eslint-disable-next-line @typescript-eslint/no-namespace
 		namespace oauth {
 			function credentialRequestCompleteHandler(
 				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,

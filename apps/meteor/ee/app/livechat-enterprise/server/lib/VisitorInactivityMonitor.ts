@@ -11,7 +11,7 @@ import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
 
-const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result?.status === 'rejected';
+const isPromiseRejectedResult = (result: any): result is PromiseRejectedResult => result && result.status === 'rejected';
 
 export class VisitorInactivityMonitor {
 	_started: boolean;

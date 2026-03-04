@@ -186,7 +186,7 @@ async function doCloseRoom(
 	}
 
 	const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });
-	if (!params.forceClose && updatedRoom?.modifiedCount !== 1) {
+	if (!params.forceClose && (!updatedRoom || updatedRoom.modifiedCount !== 1)) {
 		throw new Error('Error closing room');
 	}
 

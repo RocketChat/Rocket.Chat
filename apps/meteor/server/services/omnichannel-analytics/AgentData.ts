@@ -145,7 +145,7 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
-			if (servedBy && metrics?.chatDuration) {
+			if (servedBy && metrics && metrics.chatDuration) {
 				if (agentChatDurations.has(servedBy.username)) {
 					agentChatDurations.set(servedBy.username, {
 						chatDuration: agentChatDurations.get(servedBy.username).chatDuration + metrics.chatDuration,
@@ -237,7 +237,7 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, responseBy }) => {
-			if (responseBy && metrics?.response?.ft) {
+			if (responseBy && metrics && metrics.response && metrics.response.ft) {
 				if (agentAvgRespTime.has(responseBy.username)) {
 					agentAvgRespTime.set(responseBy.username, {
 						frt: agentAvgRespTime.get(responseBy.username).frt + metrics.response.ft,
@@ -287,7 +287,7 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, responseBy }) => {
-			if (responseBy && metrics?.response?.ft) {
+			if (responseBy && metrics && metrics.response && metrics.response.ft) {
 				if (agentFirstRespTime.has(responseBy.username)) {
 					agentFirstRespTime.set(responseBy.username, Math.min(agentFirstRespTime.get(responseBy.username), metrics.response.ft));
 				} else {
@@ -329,7 +329,7 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
-			if (servedBy && metrics?.response?.avg) {
+			if (servedBy && metrics && metrics.response && metrics.response.avg) {
 				if (agentAvgRespTime.has(servedBy.username)) {
 					agentAvgRespTime.set(servedBy.username, {
 						avg: agentAvgRespTime.get(servedBy.username).avg + metrics.response.avg,
@@ -379,7 +379,7 @@ export class AgentOverviewData {
 		};
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics, servedBy }) => {
-			if (servedBy && metrics?.reaction?.ft) {
+			if (servedBy && metrics && metrics.reaction && metrics.reaction.ft) {
 				if (agentAvgReactionTime.has(servedBy.username)) {
 					agentAvgReactionTime.set(servedBy.username, {
 						frt: agentAvgReactionTime.get(servedBy.username).frt + metrics.reaction.ft,

@@ -75,7 +75,7 @@ export class StreamerCentral extends EV {
 	getStreamer<N extends EventNames>(name: N, options: StreamerOptions): Streamer<N> {
 		const existingInstance = this.instances[name];
 		if (existingInstance) {
-			return existingInstance;
+			return existingInstance as Streamer<N>;
 		}
 
 		const streamer = new Streamer(name, options);

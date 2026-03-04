@@ -209,7 +209,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const sessionId = this.queryParams?.sessionId;
+			const sessionId = this.queryParams?.sessionId as string;
 			const { sessions } = await Sessions.aggregateSessionsAndPopulate({ search: sessionId, count: 1 });
 			if (!sessions?.length) {
 				return API.v1.notFound('Session not found');

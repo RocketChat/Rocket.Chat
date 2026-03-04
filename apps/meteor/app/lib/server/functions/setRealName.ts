@@ -27,7 +27,7 @@ export const setRealName = async function (
 	}
 
 	// User already has desired name, return
-	if (user.name?.trim() === name) {
+	if (user.name && user.name.trim() === name) {
 		return user;
 	}
 

@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	AgentOverviewDataOptions,

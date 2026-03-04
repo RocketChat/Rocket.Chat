@@ -177,7 +177,7 @@ export const LivechatEnterprise = {
 
 	async removeSLA(executedBy: string, _id: string) {
 		const removedResult = await OmnichannelServiceLevelAgreements.removeById(_id);
-		if (removedResult?.deletedCount !== 1) {
+		if (!removedResult || removedResult.deletedCount !== 1) {
 			throw new Error(`SLA with id ${_id} not found`);
 		}
 

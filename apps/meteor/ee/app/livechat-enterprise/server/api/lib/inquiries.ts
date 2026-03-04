@@ -4,7 +4,7 @@ import { updateRoomSLA } from './sla';
 
 export async function setSLAToInquiry({ userId, roomId, sla }: { userId: string; roomId: string; sla?: string }): Promise<void> {
 	const inquiry = await LivechatInquiry.findOneByRoomId(roomId, { projection: { status: 1 } });
-	if (inquiry?.status !== 'queued') {
+	if (!inquiry || inquiry.status !== 'queued') {
 		throw new Error('error-invalid-inquiry');
 	}
 

@@ -28,7 +28,7 @@ export class SlackAPI {
 
 		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
 			channels = channels.concat(response.channels);
-			if (response.response_metadata?.next_cursor) {
+			if (response.response_metadata && response.response_metadata.next_cursor) {
 				const nextChannels = await this.getChannels(response.response_metadata.next_cursor);
 				channels = channels.concat(nextChannels);
 			}
@@ -56,7 +56,7 @@ export class SlackAPI {
 
 		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
 			groups = groups.concat(response.channels);
-			if (response.response_metadata?.next_cursor) {
+			if (response.response_metadata && response.response_metadata.next_cursor) {
 				const nextGroups = await this.getGroups(response.response_metadata.next_cursor);
 				groups = groups.concat(nextGroups);
 			}
@@ -104,7 +104,7 @@ export class SlackAPI {
 			const response = await request.json();
 			if (response && response && request.status === 200 && request.ok && Array.isArray(response.members)) {
 				members = members.concat(response.members);
-				const hasMoreItems = response.response_metadata?.next_cursor;
+				const hasMoreItems = response.response_metadata && response.response_metadata.next_cursor;
 				if (hasMoreItems) {
 					currentCursor = response.response_metadata.next_cursor;
 				}

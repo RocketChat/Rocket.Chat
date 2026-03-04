@@ -220,7 +220,7 @@ export class Router implements RouterContextValue {
 
 	readonly getLocationPathname = () => this.current?.path.replace(/\?.*/, '') as LocationPathname;
 
-	readonly getLocationSearch = () => location.search;
+	readonly getLocationSearch = () => location.search as LocationSearch;
 
 	readonly getRouteParameters = () => (this.current?.params ? (Object.fromEntries(this.current.params.entries()) as RouteParameters) : {});
 

@@ -45,7 +45,7 @@ const getSamlConfigs = function (service: string): SAMLConfiguration {
 			privateKey: settings.get(`${service}_private_key`),
 			publicCert: settings.get(`${service}_public_cert`),
 			// People often overlook the instruction to remove the header and footer of the certificate on this specific setting, so let's do it for them.
-			cert: SAMLUtils.normalizeCert(settings.get(`${service}_cert`) || ''),
+			cert: SAMLUtils.normalizeCert((settings.get(`${service}_cert`) as string) || ''),
 			algorithm: settings.get(`${service}_signature_algorithm`) || 'SHA1',
 		},
 		signatureValidationType: settings.get(`${service}_signature_validation_type`),

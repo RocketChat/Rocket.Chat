@@ -176,6 +176,7 @@ WebApp.connectHandlers.use(async (req, res, next) => {
 
 						if (
 							(file.modifiedAt instanceof Date && file.modifiedAt > modifiedSince) ||
+							// eslint-disable-next-line no-mixed-operators
 							(file.uploadedAt instanceof Date && file.uploadedAt > modifiedSince)
 						) {
 							res.writeHead(304); // Not Modified

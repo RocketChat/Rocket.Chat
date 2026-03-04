@@ -68,6 +68,7 @@ Meteor.startup(async () => {
 	});
 });
 
+// eslint-disable-next-line @typescript-eslint/no-this-alias
 const originalMeteorDebug = Meteor._debug;
 
 Meteor._debug = function (message, stack, ...args) {

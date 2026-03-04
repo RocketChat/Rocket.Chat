@@ -188,7 +188,7 @@ export default class RocketAdapter {
 			return;
 		}
 
-		if (!rocketMessage.attachments?.length) {
+		if (!rocketMessage.attachments || !rocketMessage.attachments.length) {
 			return;
 		}
 
@@ -252,7 +252,7 @@ export default class RocketAdapter {
 		for await (const member of members) {
 			if (member !== slackChannel.creator) {
 				const rocketUser = (await this.findUser(member)) || (await this.addUser(member));
-				if (rocketUser?.username) {
+				if (rocketUser && rocketUser.username) {
 					rocketUsers.push(rocketUser.username);
 				}
 			}
@@ -314,12 +314,12 @@ export default class RocketAdapter {
 					};
 
 					let lastSetTopic = 0;
-					if (slackChannel.topic?.value) {
+					if (slackChannel.topic && slackChannel.topic.value) {
 						roomUpdate.topic = slackChannel.topic.value;
 						lastSetTopic = slackChannel.topic.last_set;
 					}
 
-					if (slackChannel.purpose?.value && slackChannel.purpose.last_set > lastSetTopic) {
+					if (slackChannel.purpose && slackChannel.purpose.value && slackChannel.purpose.last_set > lastSetTopic) {
 						roomUpdate.topic = slackChannel.purpose.value;
 					}
 					await Rooms.addImportIds(slackChannel.rocketId, slackChannel.id);
@@ -359,7 +359,7 @@ export default class RocketAdapter {
 			if (user) {
 				const rocketUserData = user;
 				const isBot = rocketUserData.is_bot === true;
-				const email = rocketUserData.profile?.email || '';
+				const email = (rocketUserData.profile && rocketUserData.profile.email) || '';
 				let existingRocketUser;
 				if (!isBot) {
 					existingRocketUser =
@@ -391,7 +391,7 @@ export default class RocketAdapter {
 						roles: isBot ? ['bot'] : ['user'],
 					};
 
-					if (rocketUserData.profile?.real_name) {
+					if (rocketUserData.profile && rocketUserData.profile.real_name) {
 						userUpdate.name = rocketUserData.profile.real_name;
 					}
 
@@ -422,7 +422,7 @@ export default class RocketAdapter {
 				}
 
 				const importIds = [rocketUserData.id];
-				if (isBot && rocketUserData.profile?.bot_id) {
+				if (isBot && rocketUserData.profile && rocketUserData.profile.bot_id) {
 					importIds.push(rocketUserData.profile.bot_id);
 				}
 				await Users.addImportIds(rocketUserData.rocketId, importIds);

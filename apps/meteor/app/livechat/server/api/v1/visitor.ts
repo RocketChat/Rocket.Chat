@@ -55,7 +55,7 @@ API.v1.addRoute(
 				...(department && { department }),
 				...(username && { username }),
 				...(connectionData && { connectionData }),
-				...(phone && typeof phone === 'string' && { phone: { number: phone } }),
+				...(phone && typeof phone === 'string' && { phone: { number: phone as string } }),
 				connectionData: normalizeHttpHeaderData(this.request.headers),
 			};
 

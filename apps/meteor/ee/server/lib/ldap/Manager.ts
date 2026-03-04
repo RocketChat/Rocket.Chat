@@ -299,7 +299,7 @@ export class LDAPEEManager extends LDAPManager {
 			return;
 		}
 
-		const roles = await Roles.find(
+		const roles = (await Roles.find(
 			{},
 			{
 				projection: {
@@ -307,7 +307,7 @@ export class LDAPEEManager extends LDAPManager {
 					name: 1,
 				},
 			},
-		).toArray();
+		).toArray()) as Array<IRole>;
 
 		if (!roles) {
 			return;

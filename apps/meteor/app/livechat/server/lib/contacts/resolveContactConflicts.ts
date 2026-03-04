@@ -54,7 +54,7 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 
 		updatedConflictingFieldsArr = contact.conflictingFields.filter(
 			(conflictingField: ILivechatContactConflictingField) => !fieldsToRemove.has(conflictingField.field),
-		);
+		) as ILivechatContactConflictingField[];
 	}
 
 	const set = {

@@ -12,7 +12,7 @@ export const getDirtyFields = <T extends FieldValues>(
 ): Partial<T> => {
 	const dirtyFieldsObjValue = Object.keys(dirtyFields).reduce((acc, currentField) => {
 		const isDirty = Array.isArray(dirtyFields[currentField])
-			? dirtyFields[currentField].some((value) => value === true)
+			? (dirtyFields[currentField] as boolean[]).some((value) => value === true)
 			: dirtyFields[currentField] === true;
 		if (isDirty) {
 			return {

@@ -305,7 +305,7 @@ export class ActionManager implements IActionManager {
 		});
 	}
 
-	public disposeView(viewId: UiKit.ModalView['id']) {
+	public disposeView(viewId: UiKit.ModalView['id'] | UiKit.BannerView['viewId'] | UiKit.ContextualBarView['id']) {
 		const instance = this.viewInstances.get(viewId);
 		instance?.close?.();
 		this.viewInstances.delete(viewId);

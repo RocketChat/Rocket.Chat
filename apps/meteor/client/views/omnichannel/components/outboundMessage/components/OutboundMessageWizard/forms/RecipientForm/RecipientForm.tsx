@@ -82,7 +82,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 			const data = await getContact({ contactId });
 
 			// TODO: Can be safely removed once unknown contacts handling is added to the endpoint
-			if (data?.contact?.unknown) {
+			if (data?.contact && data.contact.unknown) {
 				throw new ContactNotFoundError();
 			}
 
@@ -149,7 +149,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 	}, [clearErrors, isErrorProvider, validateProviderField]);
 
 	useEffect(() => {
-		isDirty && onDirty?.();
+		isDirty && onDirty && onDirty();
 	}, [isDirty, onDirty]);
 
 	const submit = useEffectEvent(async (values: RecipientFormData) => {

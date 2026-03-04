@@ -6,7 +6,7 @@ import { getUserId } from '../user';
 export const getUidDirectMessage = (rid: IRoom['_id'], uid: IUser['_id'] | undefined = getUserId() ?? undefined): string | undefined => {
 	const room = Rooms.state.get(rid);
 
-	if (room?.t !== 'd' || !room.uids || room.uids.length > 2) {
+	if (!room || room.t !== 'd' || !room.uids || room.uids.length > 2) {
 		return undefined;
 	}
 
