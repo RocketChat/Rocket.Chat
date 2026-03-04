@@ -1,0 +1,261 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders KeypadStory without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <div
+      class="rcx-box rcx-box--full rcx-css-wwb6hw"
+    >
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            1
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          />
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            2
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          >
+            ABC
+          </span>
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            3
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          >
+            DEF
+          </span>
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            4
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          >
+            GHI
+          </span>
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            5
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          >
+            JKL
+          </span>
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            6
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          >
+            MNO
+          </span>
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            7
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          >
+            PQRS
+          </span>
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            8
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          >
+            TUV
+          </span>
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            9
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          >
+            WXYZ
+          </span>
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-t9aukj"
+          >
+            *
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          />
+        </span>
+      </button>
+      <button
+        aria-describedby="react-aria-description-0"
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            0
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          >
+            +
+          </span>
+        </span>
+      </button>
+      <button
+        class="rcx-box rcx-box--full rcx-button rcx-css-z0me2y rcx-css-1ftod5w"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          <span
+            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+          >
+            #
+          </span>
+          <span
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-css-1h75n7v"
+          />
+        </span>
+      </button>
+    </div>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+  <div
+    id="react-aria-description-0"
+    style="display: none;"
+  >
+    Long_press_to_do_x
+  </div>
+</body>
+`;
