@@ -1,7 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { ICreatedRoom, IMessage, IRoom, ISubscription, IUploadWithUser, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUploadWithUser, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { FindOptions, Filter } from 'mongodb';
+import type { FindOptions } from 'mongodb';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
