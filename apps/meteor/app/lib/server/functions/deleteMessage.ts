@@ -29,7 +29,7 @@ export const deleteMessageValidatingPermission = async (message: AtLeast<IMessag
 };
 
 export async function deleteMessage(message: IMessage, user: IUser): Promise<void> {
-	const deletedMsg: IMessage | null = await Messages.findOneById(message._id);
+	const deletedMsg: IMessage = message;
 	const isThread = (deletedMsg?.tcount || 0) > 0;
 	const keepHistory = settings.get('Message_KeepHistory') || isThread;
 	const showDeletedStatus = settings.get('Message_ShowDeletedStatus') || isThread;
