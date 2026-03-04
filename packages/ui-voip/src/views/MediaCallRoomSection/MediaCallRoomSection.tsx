@@ -52,7 +52,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 		streams: { remoteScreen, localScreen },
 	} = useMediaCallView();
 
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState } = sessionState;
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 
 	const shouldWrapCards = useShouldWrapCards(showChat, containerHeight);
 
@@ -110,7 +110,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 			<ActionStrip
 				leftSlot={
 					<Box color='default' alignContent='center' pis={16}>
-						<Timer />
+						<Timer startAt={startedAt} />
 					</Box>
 				}
 				rightSlot={

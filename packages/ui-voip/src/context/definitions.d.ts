@@ -28,7 +28,7 @@ interface IBaseSession {
 	held: boolean;
 	remoteMuted: boolean;
 	remoteHeld: boolean;
-	startedAt?: Date | null; // todo not sure if I need this
+	startedAt?: Date;
 	hidden: boolean;
 }
 

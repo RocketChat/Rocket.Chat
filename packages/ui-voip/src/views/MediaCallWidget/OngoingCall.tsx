@@ -25,7 +25,7 @@ const OngoingCall = () => {
 
 	const { sessionState, onMute, onHold, onForward, onEndCall, onTone, onClickDirectMessage, streams, onToggleScreenSharing } =
 		useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState } = sessionState;
+	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 
 	const { localScreen, remoteScreen } = streams;
 
@@ -48,7 +48,7 @@ const OngoingCall = () => {
 	return (
 		<Widget>
 			<WidgetHandle />
-			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer />}>
+			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
 				{onClickDirectMessage && (
 					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}

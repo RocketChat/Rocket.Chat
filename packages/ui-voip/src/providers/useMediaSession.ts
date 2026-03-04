@@ -17,7 +17,7 @@ const defaultSessionInfo: SessionState = {
 	held: false,
 	remoteMuted: false,
 	remoteHeld: false,
-	startedAt: new Date(),
+	startedAt: undefined,
 	hidden: false,
 };
 
@@ -118,7 +118,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 		const updateSessionState = () => {
 			const mainCall = instance.getMainCall();
-
+			console.log('mainCall', mainCall);
 			if (!mainCall) {
 				dispatch({ type: 'reset' });
 				return;
@@ -135,6 +135,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				remoteHeld,
 				remoteMute,
 				callId,
+				activeTimestamp: startedAt,
 			} = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
 
@@ -161,6 +162,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						remoteHeld,
 						remoteMuted: remoteMute,
 						callId,
+						startedAt,
 					},
 				});
 				return;
@@ -182,7 +184,19 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 			dispatch({
 				type: 'instance_updated',
-				payload: { state, peerInfo, transferredBy, muted, held, connectionState, hidden, remoteHeld, remoteMuted: remoteMute, callId },
+				payload: {
+					state,
+					peerInfo,
+					transferredBy,
+					muted,
+					held,
+					connectionState,
+					hidden,
+					remoteHeld,
+					remoteMuted: remoteMute,
+					callId,
+					startedAt,
+				},
 			});
 		};
 
