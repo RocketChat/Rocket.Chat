@@ -1,5 +1,75 @@
 # @rocket.chat/core-typings
 
+## 8.2.0
+
+### Minor Changes
+
+- ([#38173](https://github.com/RocketChat/Rocket.Chat/pull/38173)) Adds a new endpoint to delete uploaded files individually
+
+### Patch Changes
+
+- ([#37776](https://github.com/RocketChat/Rocket.Chat/pull/37776)) Prevents over-assignment of omnichannel agents beyond their max chats limit in microservices deployments by serializing agent assignment with explicit user-level locking.
+
+- ([#38379](https://github.com/RocketChat/Rocket.Chat/pull/38379)) Fixes association of encrypted messages and encrypted files, so that if one of them is removed, the other gets removed as well.
+
+- <details><summary>Updated dependencies [098f0a7467332f10a7bea5d435ae2ca3b5431fc9, 562d5ce6ad8afc67bef61e91939f8c21c4501610]:</summary>
+
+  - @rocket.chat/message-parser@0.31.34
+  </details>
+
+## 8.2.0-rc.2
+
+## 8.2.0-rc.1
+
+## 8.2.0-rc.0
+
+### Minor Changes
+
+- ([#38173](https://github.com/RocketChat/Rocket.Chat/pull/38173)) Adds a new endpoint to delete uploaded files individually
+
+### Patch Changes
+
+- ([#37776](https://github.com/RocketChat/Rocket.Chat/pull/37776)) Prevents over-assignment of omnichannel agents beyond their max chats limit in microservices deployments by serializing agent assignment with explicit user-level locking.
+
+- ([#38379](https://github.com/RocketChat/Rocket.Chat/pull/38379)) Fixes association of encrypted messages and encrypted files, so that if one of them is removed, the other gets removed as well.
+
+- <details><summary>Updated dependencies [098f0a7467332f10a7bea5d435ae2ca3b5431fc9, 562d5ce6ad8afc67bef61e91939f8c21c4501610]:</summary>
+
+  - @rocket.chat/message-parser@0.31.34-rc.0
+  </details>
+
+## 8.1.1
+
+## 8.1.0
+
+### Patch Changes
+
+- ([#37950](https://github.com/RocketChat/Rocket.Chat/pull/37950)) Fixes premium capability popup showing despite active enterprise license.
+
+- <details><summary>Updated dependencies [bed615ef323d4018f779cda013255ac9147e4cde]:</summary>
+
+  - @rocket.chat/message-parser@0.31.33
+  </details>
+
+## 8.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [bed615ef323d4018f779cda013255ac9147e4cde]:</summary>
+
+  - @rocket.chat/message-parser@0.31.33-rc.0
+  </details>
+
+## 8.1.0-rc.1
+
+## 8.1.0-rc.0
+
+### Patch Changes
+
+- ([#37950](https://github.com/RocketChat/Rocket.Chat/pull/37950)) Fixes premium capability popup showing despite active enterprise license.
+
+## 8.0.1
+
 ## 8.0.0
 
 ### Major Changes

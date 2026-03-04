@@ -1,10 +1,10 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
+
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
-	ajv,
-	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
+
+
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
@@ -22,6 +22,8 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -76,6 +78,7 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
+import { getUserInfo } from '../helpers/getUserInfo';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
@@ -95,20 +98,6 @@ API.v1.addRoute(
 				statusCode: 307,
 				body: url,
 			};
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.getAvatarSuggestion',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
-			const suggestions = await getAvatarSuggestionForUser(this.user);
-
-			return API.v1.success({ suggestions });
 		},
 	},
 );
@@ -185,14 +174,14 @@ API.v1.addRoute(
 			const twoFactorOptions = !userData.typedPassword
 				? null
 				: {
-						twoFactorCode: userData.typedPassword,
-						twoFactorMethod: 'password',
-					};
+					twoFactorCode: userData.typedPassword,
+					twoFactorMethod: 'password',
+				};
 
 			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
-				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
+				user: await getUserInfo((await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude })) as IUser, false),
 			});
 		},
 	},
@@ -514,8 +503,6 @@ API.v1.addRoute(
 
 			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
-			const hasUserQuery = query && Object.keys(query).length > 0;
-
 			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 
 			// if user provided a query, validate it with their allowed operators
@@ -531,7 +518,9 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('type') && 'type.*',
 						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
-					hasUserQuery ? this.queryOperations : [...this.queryOperations, '$regex', '$options'],
+					// At this point, we have already validated the user query not containing malicious fields
+					// On here we are using our own query so we can allow some extra fields
+					[...this.queryOperations, '$regex', '$options'],
 				)
 			) {
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
@@ -550,10 +539,10 @@ API.v1.addRoute(
 			const limit =
 				count !== 0
 					? [
-							{
-								$limit: count,
-							},
-						]
+						{
+							$limit: count,
+						},
+					]
 					: [];
 
 			const result = await Users.col
@@ -766,73 +755,6 @@ API.v1.addRoute(
 	},
 );
 
-const usersEndpoints = API.v1.post(
-	'users.createToken',
-	{
-		authRequired: true,
-		body: ajv.compile<{ userId: string; secret: string }>({
-			type: 'object',
-			properties: {
-				userId: {
-					type: 'string',
-					minLength: 1,
-				},
-				secret: {
-					type: 'string',
-					minLength: 1,
-				},
-			},
-			required: ['userId', 'secret'],
-			additionalProperties: false,
-		}),
-		response: {
-			200: ajv.compile<{ data: { userId: string; authToken: string } }>({
-				type: 'object',
-				properties: {
-					data: {
-						type: 'object',
-						properties: {
-							userId: {
-								type: 'string',
-								minLength: 1,
-							},
-							authToken: {
-								type: 'string',
-								minLength: 1,
-							},
-						},
-						required: ['userId'],
-						additionalProperties: false,
-					},
-					success: {
-						type: 'boolean',
-						enum: [true],
-					},
-				},
-				required: ['data', 'success'],
-				additionalProperties: false,
-			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-		},
-	},
-	async function action() {
-		const user = await getUserFromParams(this.bodyParams);
-
-		const data = await generateAccessToken(user._id, this.bodyParams.secret);
-
-		return API.v1.success({ data });
-	},
-);
-
 const UserPreferencesResponseSchema = {
 	type: 'object',
 	properties: {
@@ -848,35 +770,157 @@ const UserPreferencesResponseSchema = {
 
 const isUserPreferencesResponse = ajv.compile(UserPreferencesResponseSchema);
 
-const usersEndpoints = API.v1.get(
-	'users.getPreferences',
-	{
-		authRequired: true,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: isUserPreferencesResponse,
+const usersEndpoints = API.v1
+	.post(
+		'users.createToken',
+		{
+			authRequired: true,
+			body: ajv.compile<{ userId: string; secret: string }>({
+				type: 'object',
+				properties: {
+					userId: {
+						type: 'string',
+						minLength: 1,
+					},
+					secret: {
+						type: 'string',
+						minLength: 1,
+					},
+				},
+				required: ['userId', 'secret'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ data: { userId: string; authToken: string } }>({
+					type: 'object',
+					properties: {
+						data: {
+							type: 'object',
+							properties: {
+								userId: {
+									type: 'string',
+									minLength: 1,
+								},
+								authToken: {
+									type: 'string',
+									minLength: 1,
+								},
+							},
+							required: ['userId'],
+							additionalProperties: false,
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['data', 'success'],
+					additionalProperties: false,
+				}),
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [false] },
+						error: { type: 'string' },
+						errorType: { type: 'string' },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
 		},
-	},
-	async function action() {
-		const user = await Users.findOneById(this.userId);
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
 
-		if (user?.settings) {
-			const { preferences = {} } = user.settings;
-			preferences.language = user.language;
+			const data = await generateAccessToken(user._id, this.bodyParams.secret);
 
-			return API.v1.success({ preferences });
-		}
+			return API.v1.success({ data });
+		},
+	)
+	.get(
+		'users.getAvatarSuggestion',
+		{
+			authRequired: true,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					suggestions: Record<
+						string,
+						{
+							blob: string;
+							contentType: string;
+							service: string;
+							url: string;
+						}
+					>;
+				}>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+						suggestions: {
+							type: 'object',
+							additionalProperties: {
+								type: 'object',
+								properties: {
+									blob: {
+										type: 'string',
+									},
+									contentType: {
+										type: 'string',
+									},
+									service: {
+										type: 'string',
+									},
+									url: {
+										type: 'string',
+										format: 'uri',
+									},
+								},
+								required: ['blob', 'contentType', 'service', 'url'],
+								additionalProperties: false,
+							},
+						},
+					},
+					required: ['success', 'suggestions'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const suggestions = await getAvatarSuggestionForUser(this.user);
 
-		throw new Meteor.Error('error-preferences-not-found', i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
-	},
-);
+			return API.v1.success({ suggestions });
+		},
+	)
+	.get(
+		'users.getPreferences',
+		{
+			authRequired: true,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isUserPreferencesResponse,
+			},
+		},
+		async function action() {
+			const user = await Users.findOneById(this.userId);
+
+			if (user?.settings) {
+				const { preferences = {} } = user.settings;
+				preferences.language = user.language;
+
+				return API.v1.success({ preferences });
+			}
+
+			throw new Meteor.Error('error-preferences-not-found', i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
+		},
+	);
 
 export type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
-
-declare module '@rocket.chat/rest-typings' {
-	type Endpoints = UsersEndpoints;
-}
 
 API.v1.addRoute(
 	'users.forgotPassword',
@@ -1101,6 +1145,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isUsersSendConfirmationEmailParamsPOST,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 60000,
+		},
 	},
 	{
 		async post() {
@@ -1530,9 +1578,7 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
 
-type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
-
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends UsersEndpoints {}
+	interface Endpoints extends UsersEndpoints { }
 }

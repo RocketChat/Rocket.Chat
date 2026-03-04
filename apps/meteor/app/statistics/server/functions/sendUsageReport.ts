@@ -8,6 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import { statistics } from '..';
 import { shouldReportStatistics } from '../../../../server/cron/usageReport';
 import { getWorkspaceAccessToken } from '../../../cloud/server';
+import { Info } from '../../../utils/rocketchat.info';
 
 async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string | undefined> {
 	try {
@@ -21,6 +22,8 @@ async function sendStats(logger: Logger, cronStatistics: IStats): Promise<string
 				host: Meteor.absoluteUrl(),
 			},
 			headers,
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
 		});
 
 		const { statsToken } = await response.json();
@@ -41,7 +44,10 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 
 	return tracerSpan('generateStatistics', {}, async () => {
 		const last = await Statistics.findLast();
-		if (last) {
+
+		const currentVersion = Info.version;
+
+		if (last && last.version === currentVersion) {
 			const yesterday = new Date();
 			yesterday.setDate(yesterday.getDate() - 1);
 
@@ -61,7 +67,7 @@ export async function sendUsageReport(logger: Logger): Promise<string | undefine
 			}
 		}
 
-		// if our latest stats has more than 24h, it is time to generate a new one and send it
+		// if our latest stats has more than 24h OR the statistics.version differs from the actual version, it is time to generate a new one and send it
 		const cronStatistics = await statistics.save();
 		if (shouldSendToCollector) {
 			return sendStats(logger, cronStatistics);

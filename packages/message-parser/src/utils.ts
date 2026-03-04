@@ -60,6 +60,7 @@ export const inlineCode = generate('INLINE_CODE');
 export const tasks = generate('TASKS');
 
 export const italic = generate('ITALIC');
+export const spoiler = generate('SPOILER');
 
 export const plain = generate('PLAIN_TEXT');
 export const strike = generate('STRIKE');
@@ -82,7 +83,7 @@ export const link = (src: string, label?: Markup[]): Link => ({
 export const autoLink = (src: string, customDomains?: string[]) => {
 	const validHosts = ['localhost', ...(customDomains ?? [])];
 	const { isIcann, isIp, isPrivate, domain } = tldParse(src, {
-		detectIp: false,
+		detectIp: true,
 		allowPrivateDomains: true,
 		validHosts,
 	});
@@ -117,6 +118,7 @@ export const image = (() => {
 })();
 
 export const quote = generate('QUOTE');
+export const spoilerBlock = generate('SPOILER_BLOCK');
 
 export const mentionChannel = (() => {
 	const fn = generate('MENTION_CHANNEL');
@@ -130,7 +132,7 @@ export const unorderedList = generate('UNORDERED_LIST');
 export const listItem = (text: Inlines[], number?: number): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
-	...(number && { number }),
+	...(number !== undefined && { number }),
 });
 
 export const mentionUser = (() => {
@@ -172,7 +174,7 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 		}
 
 		return {
-			...current.value,
+			type: 'PLAIN_TEXT',
 			value: `:${current.value.value}:`,
 		};
 	}
@@ -180,23 +182,60 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 	return current;
 };
 
-export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] =>
-	values.flat().reduce(
-		(result, item, index, values) => {
-			const next = values[index + 1];
-			const current = joinEmoji(item, values[index - 1], next);
-			const previous: Inlines = result[result.length - 1];
+export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] => {
+	const result: Paragraph['value'] = [];
+	const flattenableValues = values as Array<Inlines | Inlines[]>;
 
-			if (previous) {
-				if (current.type === 'PLAIN_TEXT' && current.type === previous.type) {
-					previous.value += current.value;
-					return result;
+	let previousInline = undefined as Inlines | undefined;
+	let pendingInline = undefined as Inlines | undefined;
+
+	const appendJoinedInline = (inline: Inlines, nextInline: Inlines | undefined): void => {
+		const current = joinEmoji(inline, previousInline, nextInline);
+		const previous = result[result.length - 1];
+
+		if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
+			previous.value += current.value;
+		} else {
+			result.push(current);
+		}
+
+		previousInline = inline;
+	};
+
+	for (let index = 0; index < flattenableValues.length; index++) {
+		const entry = flattenableValues[index];
+
+		if (Array.isArray(entry)) {
+			for (let nestedIndex = 0; nestedIndex < entry.length; nestedIndex++) {
+				const currentInline = entry[nestedIndex];
+
+				if (pendingInline === undefined) {
+					pendingInline = currentInline;
+					continue;
 				}
+
+				appendJoinedInline(pendingInline, currentInline);
+				pendingInline = currentInline;
 			}
-			return [...result, current];
-		},
-		[] as Paragraph['value'],
-	);
+
+			continue;
+		}
+
+		if (pendingInline === undefined) {
+			pendingInline = entry;
+			continue;
+		}
+
+		appendJoinedInline(pendingInline, entry);
+		pendingInline = entry;
+	}
+
+	if (pendingInline !== undefined) {
+		appendJoinedInline(pendingInline, undefined);
+	}
+
+	return result;
+};
 export const lineBreak = (): LineBreak => ({
 	type: 'LINE_BREAK',
 	value: undefined,
@@ -272,5 +311,5 @@ export const extractFirstResult = (value: Types[keyof Types]['value']): Types[ke
 		return value;
 	}
 
-	return value.filter((item) => item).shift() as Types[keyof Types]['value'];
+	return value.find(Boolean) as Types[keyof Types]['value'];
 };

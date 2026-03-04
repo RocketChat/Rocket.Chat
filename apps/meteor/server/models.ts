@@ -4,7 +4,6 @@ import {
 	AppsLogsModel,
 	AppsModel,
 	AppsPersistenceModel,
-	AppsTokensRaw,
 	AvatarsRaw,
 	BannersDismissRaw,
 	BannersRaw,
@@ -20,7 +19,6 @@ import {
 	ExportOperationsRaw,
 	FederationKeysRaw,
 	FederationRoomEventsRaw,
-	FederationServersRaw,
 	ImportDataRaw,
 	ImportsModel,
 	InstanceStatusRaw,
@@ -87,7 +85,6 @@ registerModel('IAnalyticsModel', new AnalyticsRaw(db));
 registerModel('IAppLogsModel', new AppsLogsModel(db));
 registerModel('IAppsModel', new AppsModel(db));
 registerModel('IAppsPersistenceModel', new AppsPersistenceModel(db));
-registerModel('IAppsTokensModel', new AppsTokensRaw(db));
 registerModel('IAvatarsModel', new AvatarsRaw(db));
 registerModel('IBannersDismissModel', new BannersDismissRaw(db));
 registerModel('IBannersModel', new BannersRaw(db));
@@ -103,7 +100,6 @@ registerModel('IEmojiCustomModel', new EmojiCustomRaw(db, trashCollection));
 registerModel('IExportOperationsModel', new ExportOperationsRaw(db));
 registerModel('IFederationKeysModel', new FederationKeysRaw(db));
 registerModel('IFederationRoomEventsModel', new FederationRoomEventsRaw(db));
-registerModel('IFederationServersModel', new FederationServersRaw(db));
 registerModel('IImportDataModel', new ImportDataRaw(db));
 registerModel('IImportsModel', new ImportsModel(db));
 registerModel('IInstanceStatusModel', new InstanceStatusRaw(db));

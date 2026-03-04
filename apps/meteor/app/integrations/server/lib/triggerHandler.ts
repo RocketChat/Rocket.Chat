@@ -181,7 +181,7 @@ class RocketChatIntegrationHandler {
 			channel: tmpRoom.t === 'd' ? `@${tmpRoom._id}` : `#${tmpRoom._id}`,
 		};
 
-		return processWebhookMessage(message, user as IUser & { username: RequiredField<IUser, 'username'> }, defaultValues);
+		return processWebhookMessage(message, user as RequiredField<IUser, 'username'>, defaultValues);
 	}
 
 	eventNameArgumentsToObject(...args: unknown[]) {
@@ -619,6 +619,9 @@ class RocketChatIntegrationHandler {
 				headers: opts.headers,
 				...(opts.timeout && { timeout: opts.timeout }),
 				...(opts.data && { body: opts.data }),
+				// SECURITY: Integrations can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
+				size: 10 * 1024 * 1024,
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),
 		)
