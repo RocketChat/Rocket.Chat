@@ -75,7 +75,7 @@ export type Route = {
 };
 
 export abstract class AbstractRouter<TActionCallback = (c: Context) => Promise<ResponseSchema<TypedOptions>>> {
-	protected abstract convertActionToHandler(action: TActionCallback): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
+	protected abstract convertActionToHandler(action: TActionCallback, logger: Logger): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
 }
 
 type InnerRouter = Hono<{
