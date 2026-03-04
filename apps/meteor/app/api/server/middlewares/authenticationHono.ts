@@ -17,22 +17,10 @@ export function authenticationMiddlewareForHono(
 		authRequired?: boolean;
 		authOrAnonRequired?: boolean;
 		userWithoutUsername?: boolean;
-		cookies?: boolean;
 		logger: Logger;
 	},
 ): MiddlewareHandler {
 	return async (c: HonoContext, next) => {
-		// const token = (options.cookies && getCookie(c, 'rc_token')) || c.req.header('x-auth-token');
-		// const userId = (options.cookies && getCookie(c, 'rc_uid')) || c.req.header('x-user-id');
-		const token = c.req.header('x-auth-token');
-		const userId = c.req.header('x-user-id');
-		if (token || userId) {
-			const headers = new Headers(c.req.raw.headers);
-			if (token) headers.set('x-auth-token', token);
-			if (userId) headers.set('x-user-id', userId);
-			(c.req as { raw: Request }).raw = new Request(c.req.raw, { headers });
-		}
-
 		const user = await api.authenticatedRoute(convertHonoContextToApiActionContext(c, { logger: options.logger }));
 		const shouldPreventAnonymousRead = !user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
 		const shouldPreventUserRead = !user && options.authRequired;
@@ -47,7 +35,7 @@ export function authenticationMiddlewareForHono(
 				});
 			}
 
-			return c.json(result, result.statusCode);
+			return c.json(result.body, result.statusCode);
 		}
 
 		if (user && !options.userWithoutUsername && !isUserWithUsername(user)) {
