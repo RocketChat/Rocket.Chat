@@ -108,6 +108,7 @@ services:
     build:
       dockerfile: ee/apps/ddp-streamer/Dockerfile
       context: .
+      target: ${BUILD_TARGET:-release-standard}
       x-bake:
         platforms:
           - linux/amd64
