@@ -59,18 +59,18 @@ test.describe('export-messages', () => {
 		await exportMessagesTab.setMethod('Send file via email');
 
 		await exportMessagesTab.exposeOutputFormats();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('html')).toBeVisible();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('json')).toBeVisible();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('pdf')).not.toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('HTML')).toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('JSON')).toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('PDF')).not.toBeVisible();
 
-		await exportMessagesTab.setOutputFormat('html');
+		await exportMessagesTab.setOutputFormat('HTML');
 
 		await exportMessagesTab.setMethod('Download file');
 
 		await exportMessagesTab.exposeOutputFormats();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('html')).not.toBeVisible();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('json')).toBeVisible();
-		await expect(exportMessagesTab.getOutputFormatOptionByName('pdf')).toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('HTML')).not.toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('JSON')).toBeVisible();
+		await expect(exportMessagesTab.getOutputFormatOptionByName('PDF')).toBeVisible();
 	});
 
 	test('should display an error when trying to send email without filling to users or to additional emails', async ({ page }) => {
