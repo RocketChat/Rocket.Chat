@@ -219,7 +219,6 @@ export * from './v1/mailer/MailerUnsubscribeParamsPOST';
 export * from './v1/misc';
 export * from './v1/invites';
 export * from './v1/dm';
-export * from './v1/dm/DmHistoryProps';
 export * from './v1/integrations';
 export * from './v1/licenses';
 export * from './v1/omnichannel';
