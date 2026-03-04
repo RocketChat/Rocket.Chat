@@ -98,11 +98,13 @@ const getChannelsAndGroups = async (
 	const teamIds = result.map(({ teamId }) => teamId).filter(isTruthy);
 	const teamsMains = await Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } });
 
+	const teamsMap = new Map(teamsMains.map((team) => [team._id, team.name]));
+
 	const results = result.map((room) => {
 		if (room.teamId) {
-			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
-			if (team) {
-				return { ...room, belongsTo: team.name };
+			const teamName = teamsMap.get(room.teamId);
+			if (teamName) {
+				return { ...room, belongsTo: teamName };
 			}
 		}
 		return room;
