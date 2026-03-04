@@ -1,19 +1,10 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-<<<<<<< HEAD
 
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 
 
-=======
-import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
-import { Users, Subscriptions } from '@rocket.chat/models';
-import {
-	ajv,
-	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
->>>>>>> 4396c0a619 (feat: consolidate migration, enable swagger, and purge legacy typings)
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
@@ -933,11 +924,7 @@ const usersEndpoints = API.v1.get(
 export type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-<<<<<<< HEAD
 	interface Endpoints extends UsersEndpoints { }
-=======
-	type Endpoints = UsersEndpoints;
->>>>>>> 4396c0a619 (feat: consolidate migration, enable swagger, and purge legacy typings)
 }
 
 API.v1.addRoute(
