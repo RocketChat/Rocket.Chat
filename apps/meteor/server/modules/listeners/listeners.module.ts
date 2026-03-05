@@ -7,6 +7,7 @@ import type { IUser, IRoom, IRole, VideoConference, ISetting, IOmnichannelRoom }
 import { Logger } from '@rocket.chat/logger';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
+import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server/cached';
 import type { NotificationsModule } from '../notifications/notifications.module';
@@ -48,6 +49,10 @@ export class ListenersModule {
 
 		service.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
 			notifications.notifyUserInThisInstance(uid, 'force_logout', sessionId);
+			if (sessionId) {
+				const sessions = Meteor.server.sessions.get(sessionId);
+				sessions?.connectionHandle.close();
+			}
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {
