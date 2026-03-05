@@ -496,7 +496,7 @@ export async function saveRoomSettings(
 	}
 
 	// validations
-	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
+	for (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await validate(setting, {
 			userId,
 			value: settings[setting],
@@ -513,7 +513,7 @@ export async function saveRoomSettings(
 	}
 
 	// saving data
-	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
+	for (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await save(setting, {
 			userId,
 			user: user as RequiredField<IUser, 'username' | 'name'>,

@@ -5423,6 +5423,8 @@
   "UI_Use_Real_Name": "Use Real Name",
   "URL": "URL",
   "URLs": "URLs",
+  "URL_is_required": "URL is required",
+  "URL_must_start_with_'http://'_or_'https://'": "URL must start with 'http://' or 'https://'",
   "UTC_Timezone": "UTC Timezone",
   "UTF8_Channel_Names_Validation": "UTF8 Channel Names Validation",
   "UTF8_Channel_Names_Validation_Description": "RegExp that will be used to validate channel names",
@@ -7109,5 +7111,8 @@
   "Message_composer": "Message composer",
   "Thread_composer": "Thread composer",
   "Room_composer": "Room composer",
-  "Date_range_presets": "Date range presets"
+  "Date_range_presets": "Date range presets",
+  "message_body": "message body",
+  "message_attachment": "message attachment",
+  "system_message_body": "system message body"
 }
