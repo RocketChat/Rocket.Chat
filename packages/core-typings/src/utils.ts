@@ -48,7 +48,6 @@ export type Branded<T, B> = T & Brand<B>;
 
 type SerializablePrimitive = boolean | number | string | null;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type UnserializablePrimitive = bigint | symbol | undefined;
 
 type CustomSerializable<T> = {

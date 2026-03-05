@@ -76,7 +76,7 @@ test.describe.parallel('Quote Attachment', () => {
 			await poHomeChannel.content.btnModalConfirm.click();
 
 			await expect(poHomeChannel.content.lastThreadMessageFileDescription).toHaveText(fileDescription);
-			await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText(textFileName);
+			await expect(poHomeChannel.content.getLastThreadMessageByFileName(textFileName)).toBeVisible();
 		});
 
 		await test.step('Quote the message with attachment in thread', async () => {
