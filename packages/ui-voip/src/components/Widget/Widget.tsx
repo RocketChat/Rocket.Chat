@@ -1,12 +1,12 @@
 import { Palette } from '@rocket.chat/fuselage';
-import { useDebouncedCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import styled from '@rocket.chat/styled';
 import type { ComponentProps, ReactNode } from 'react';
-import { useCallback, useLayoutEffect } from 'react';
+import { useLayoutEffect } from 'react';
 import { FocusScope } from 'react-aria';
 
 import { DragContext } from './WidgetDraggableContext';
 import { useDraggable } from '../../hooks';
+import { type LastKnownPosition } from '../../providers/useWidgetPositionTracker';
 
 // TODO: Initial position from the draggable api instead of style props
 // TODO: A11Y
@@ -31,29 +31,12 @@ const WidgetBase = styled('article')`
 
 type WidgetProps = {
 	children: ReactNode;
+	restorePosition?: LastKnownPosition | null;
+	onChangePosition?: (position: LastKnownPosition | null) => void;
 } & ComponentProps<typeof WidgetBase>;
 
-type PositionCoordinates = {
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-};
-
-const Widget = ({ children, ...props }: WidgetProps) => {
-	const [lastKnownPosition, setLastKnownPosition] = useLocalStorage<PositionCoordinates | null>('voip-widget-position', null);
-
-	const onChangePosition = useDebouncedCallback(
-		useCallback(
-			(position: PositionCoordinates) => {
-				setLastKnownPosition(position);
-			},
-			[setLastKnownPosition],
-		),
-		500,
-	);
-
-	const [draggableRef, boundingRef, handleRef] = useDraggable({ onChangePosition, restorePosition: lastKnownPosition });
+const Widget = ({ children, onChangePosition, restorePosition, ...props }: WidgetProps) => {
+	const [draggableRef, boundingRef, handleRef] = useDraggable({ onChangePosition, restorePosition });
 
 	useLayoutEffect(() => {
 		boundingRef(document.body);

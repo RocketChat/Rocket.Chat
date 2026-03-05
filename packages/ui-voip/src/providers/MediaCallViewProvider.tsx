@@ -17,6 +17,7 @@ import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
 import { useScreenShareStreams } from './useScreenShareStreams';
 import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
+import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
@@ -220,6 +221,14 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		),
 	);
 
+	const { onChangePosition, getRestorePosition } = useWidgetPositionTracker();
+
+	useEffect(() => {
+		return instance?.on('endedCall', () => {
+			onChangePosition(null);
+		});
+	}, [instance, onChangePosition]);
+
 	const contextValue = {
 		sessionState,
 		onClickDirectMessage,
@@ -234,6 +243,10 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onSelectPeer,
 		onToggleScreenSharing,
 		streams,
+		widgetPositionTracker: {
+			onChangePosition,
+			getRestorePosition,
+		},
 	};
 
 	return (

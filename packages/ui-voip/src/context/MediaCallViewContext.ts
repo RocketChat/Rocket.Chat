@@ -3,6 +3,7 @@ import type { Device } from '@rocket.chat/ui-contexts';
 import { createContext, useContext } from 'react';
 
 import type { SessionState, PeerInfo } from './definitions';
+import { type LastKnownPosition } from '../providers/useWidgetPositionTracker';
 
 export type MediaCallStreams = {
 	remoteScreen?: IMediaStreamWrapper;
@@ -23,6 +24,10 @@ type MediaCallViewContextValue = {
 	onSelectPeer: (peerInfo: PeerInfo) => void;
 	onToggleScreenSharing: () => void;
 	streams: MediaCallStreams;
+	widgetPositionTracker?: {
+		onChangePosition: (position: LastKnownPosition | null) => void;
+		getRestorePosition: () => LastKnownPosition | null;
+	};
 };
 
 const defaultSessionState: SessionState = {

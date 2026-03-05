@@ -23,7 +23,17 @@ import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
-	const { sessionState, onMute, onHold, onForward, onEndCall, onClickDirectMessage, streams, onToggleScreenSharing } = useMediaCallView();
+	const {
+		sessionState,
+		onMute,
+		onHold,
+		onForward,
+		onEndCall,
+		onClickDirectMessage,
+		streams,
+		onToggleScreenSharing,
+		widgetPositionTracker,
+	} = useMediaCallView();
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 
 	const { localScreen, remoteScreen } = streams;
@@ -43,7 +53,7 @@ const OngoingCall = () => {
 	}
 
 	return (
-		<Widget>
+		<Widget restorePosition={widgetPositionTracker?.getRestorePosition()} onChangePosition={widgetPositionTracker?.onChangePosition}>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
 				{onClickDirectMessage && (
