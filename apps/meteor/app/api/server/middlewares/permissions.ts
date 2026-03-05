@@ -1,3 +1,4 @@
+import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
 import type { MiddlewareHandler } from 'hono';
 
@@ -6,6 +7,8 @@ import { API } from '../api';
 import { type PermissionsPayload, checkPermissionsForInvocation } from '../api.helpers';
 import type { TypedOptions } from '../definition';
 import type { HonoContext } from '../router';
+
+const logger = new Logger('PermissionsMiddleware');
 
 export const permissionsMiddleware =
 	(options: TypedOptions): MiddlewareHandler =>
@@ -26,11 +29,18 @@ export const permissionsMiddleware =
 			return c.json(failure.body, failure.statusCode);
 		}
 
-		const hasPermission = await checkPermissionsForInvocation(
-			user._id,
-			options.permissionsRequired as PermissionsPayload,
-			c.req.method as Method,
-		);
+		let hasPermission: boolean;
+		try {
+			hasPermission = await checkPermissionsForInvocation(
+				user._id,
+				options.permissionsRequired as PermissionsPayload,
+				c.req.method as Method,
+			);
+		} catch (e) {
+			logger.error({ msg: 'Error checking permissions for invocation', err: e });
+			const error = API.v1.internalError();
+			return c.json(error.body, error.statusCode);
+		}
 
 		if (!hasPermission) {
 			if (applyBreakingChanges) {
