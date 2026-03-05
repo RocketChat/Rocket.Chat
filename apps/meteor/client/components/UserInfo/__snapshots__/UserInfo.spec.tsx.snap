@@ -96,8 +96,8 @@ exports[`renders Default without crashing 1`] = `
                       >
                         <img
                           alt="🛴"
-                          class="emojione"
-                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          class="joypixels"
+                          src="https://cdn.jsdelivr.net/joypixels/assets/10.0/png/unicode/32/1f6f4.png"
                           title=":scooter:"
                         />
                          currently working on User Card
@@ -399,8 +399,8 @@ exports[`renders InvitedUser without crashing 1`] = `
                       >
                         <img
                           alt="🛴"
-                          class="emojione"
-                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          class="joypixels"
+                          src="https://cdn.jsdelivr.net/joypixels/assets/10.0/png/unicode/32/1f6f4.png"
                           title=":scooter:"
                         />
                          currently working on User Card
@@ -716,8 +716,8 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       >
                         <img
                           alt="🛴"
-                          class="emojione"
-                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          class="joypixels"
+                          src="https://cdn.jsdelivr.net/joypixels/assets/10.0/png/unicode/32/1f6f4.png"
                           title=":scooter:"
                         />
                          currently working on User Card
@@ -1079,8 +1079,8 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       >
                         <img
                           alt="🛴"
-                          class="emojione"
-                          src="https://cdn.jsdelivr.net/emojione/assets/4.5/png/32/1f6f4.png"
+                          class="joypixels"
+                          src="https://cdn.jsdelivr.net/joypixels/assets/10.0/png/unicode/32/1f6f4.png"
                           title=":scooter:"
                         />
                          currently working on User Card
