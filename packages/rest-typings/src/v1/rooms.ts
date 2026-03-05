@@ -669,23 +669,6 @@ const membersOrderedByRoleRolePropsSchema = {
 
 export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
 
-type RoomsHideProps = {
-	roomId: string;
-};
-
-const roomsHideSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
 type RoomsInviteProps = {
 	roomId: string;
@@ -855,9 +838,6 @@ export type RoomsEndpoints = {
 		}>;
 	};
 
-	'/v1/rooms.hide': {
-		POST: (params: RoomsHideProps) => void;
-	};
 
 	'/v1/rooms.invite': {
 		POST: (params: RoomsInviteProps) => void;
