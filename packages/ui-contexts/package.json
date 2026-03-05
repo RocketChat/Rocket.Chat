@@ -38,6 +38,8 @@
 		"jest": "~30.2.0",
 		"mongodb": "6.16.0",
 		"react": "~18.3.1",
+		"react-dom": "~18.3.1",
+		"react-virtuoso": "^4.12.0",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
