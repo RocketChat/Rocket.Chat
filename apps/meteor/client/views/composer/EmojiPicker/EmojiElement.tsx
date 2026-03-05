@@ -20,10 +20,8 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 	}
 
 	const emojiSmallClass = css`
-		> .emoji,
-		.emojione {
-			width: 1.125rem;
-			height: 1.125rem;
+		> .emoji {
+			font-size: 1.125rem;
 		}
 	`;
 
