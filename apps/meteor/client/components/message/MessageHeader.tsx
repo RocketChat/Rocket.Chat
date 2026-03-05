@@ -56,19 +56,13 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 				{...buttonProps}
 				{...triggerProps}
 			>
-				<MessageName
-					{...(!showUsername && { 'data-qa-type': 'username' })}
-					title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
-					data-username={user.username}
-				>
+				<MessageName title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined} data-username={user.username}>
 					{message.alias || displayName}
 				</MessageName>
 				{showUsername && (
 					<>
 						{' '}
-						<MessageUsername data-username={user.username} data-qa-type='username'>
-							@{user.username}
-						</MessageUsername>
+						<MessageUsername data-username={user.username}>@{user.username}</MessageUsername>
 					</>
 				)}
 			</MessageNameContainer>

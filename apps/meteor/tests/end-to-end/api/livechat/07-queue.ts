@@ -20,6 +20,8 @@ import {
 	makeAgentAvailable,
 	updateDepartment,
 	startANewLivechatRoomAndTakeIt,
+	fetchInquiry,
+	takeInquiry,
 } from '../../../data/livechat/rooms';
 import { createAnOnlineAgent, updateLivechatSettingsForUser } from '../../../data/livechat/users';
 import { sleep } from '../../../data/livechat/utils';
@@ -410,6 +412,8 @@ describe('LIVECHAT - Queue', () => {
 	let testUser: { user: IUser; credentials: Credentials };
 	let testDepartment: ILivechatDepartment;
 	let testDepartment2: ILivechatDepartment;
+	const roomsToClose: IOmnichannelRoom[] = [];
+	const visitorsToDelete: ILivechatVisitor[] = [];
 
 	before((done) => getCredentials(done));
 
@@ -447,6 +451,8 @@ describe('LIVECHAT - Queue', () => {
 	});
 
 	after(async () => {
+		await Promise.all(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+		await Promise.all(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
 		await Promise.all([
 			deleteUser(testUser.user),
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
@@ -461,6 +467,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should allow a user to take a chat on a department since agent limit is set to 1 and department limit is set to 2 (agent has 0 chats)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -474,6 +482,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow a user to take a chat on a department since agent limit is set to 1 and department limit is set to 2 (agent has 1 chat)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -495,6 +505,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take chat on department B when agent limit is 2 and already has 2 chats', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -518,6 +530,8 @@ describe('LIVECHAT - Queue', () => {
 		await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 0 }, [testDepartment._id, testDepartment2._id]);
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -529,6 +543,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take a chat on department B when is on the limit (user has 4 chats, 2 chats on department B)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -557,6 +573,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should allow user to take a chat on department B (user has 5 chats, global limit is 6, department limit is 0)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -568,6 +586,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take a chat on department B (user has 6 chats, global limit is 6, department limit is 0)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -589,6 +609,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take chat on department A (as limit for it hasnt changed)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -612,6 +634,8 @@ describe('LIVECHAT - Queue', () => {
 
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -640,6 +664,8 @@ describe('LIVECHAT - Queue', () => {
 	let testDepartment: ILivechatDepartment;
 	let testDepartment2: ILivechatDepartment;
 	let testDepartment3: ILivechatDepartment;
+	const roomsToClose: IOmnichannelRoom[] = [];
+	const visitorsToDelete: ILivechatVisitor[] = [];
 
 	before((done) => getCredentials(done));
 
@@ -701,8 +727,11 @@ describe('LIVECHAT - Queue', () => {
 	});
 
 	after(async () => {
+		await Promise.all(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+		await Promise.all(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
 		await Promise.all([
 			deleteUser(testUser.user),
+			deleteUser(testUser2.user),
 			updateEESetting('Livechat_maximum_chats_per_agent', 0),
 			updateEESetting('Livechat_waiting_queue', false),
 			updateSetting('Livechat_Routing_Method', 'Auto_Selection'),
@@ -717,6 +746,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should allow a user to take a chat on a department since agent limit is set to 1 and department limit is set to 2 (agent has 0 chats)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -730,6 +761,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow a user to take a chat on a department since agent limit is set to 1 and department limit is set to 2 (agent has 1 chat)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -751,6 +784,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take chat on department B when agent limit is 2 and already has 2 chats', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 
@@ -774,6 +809,8 @@ describe('LIVECHAT - Queue', () => {
 		await updateLivechatSettingsForUser(testUser.user._id, { maxNumberSimultaneousChat: 0 }, [testDepartment._id, testDepartment2._id]);
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -785,6 +822,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take a chat on department B when is on the limit (user has 4 chats, 2 chats on department B)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -813,6 +852,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should allow user to take a chat on department B (user has 5 chats, global limit is 6, department limit is 0)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -824,6 +865,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take a chat on department B (user has 6 chats, global limit is 6, department limit is 0)', async () => {
 		const visitor = await createVisitor(testDepartment2._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -845,6 +888,8 @@ describe('LIVECHAT - Queue', () => {
 	it('should not allow user to take chat on department A (as limit for it hasnt changed)', async () => {
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -868,6 +913,8 @@ describe('LIVECHAT - Queue', () => {
 
 		const visitor = await createVisitor(testDepartment._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -896,6 +943,8 @@ describe('LIVECHAT - Queue', () => {
 
 		const visitor = await createVisitor(testDepartment3._id);
 		const room = await createLivechatRoom(visitor.token);
+		visitorsToDelete.push(visitor);
+		roomsToClose.push(room);
 
 		await sleep(5000);
 		const roomInfo = await getLivechatRoomInfo(room._id);
@@ -1019,6 +1068,414 @@ describe('LIVECHAT - Queue', () => {
 			expect(messagesResponse.body).to.have.property('messages');
 			const systemMessages = messagesResponse.body.messages.filter((msg: any) => msg.t === 'livechat_transfer_history');
 			expect(systemMessages).to.have.length.greaterThan(0);
+		});
+	});
+});
+
+(IS_EE ? describe : describe.skip)('Livechat - Chat limits - Manual Selection', () => {
+	let manualUser: { user: IUser; credentials: Credentials };
+	let manualDepartment: ILivechatDepartment;
+	let manualDepartment2: ILivechatDepartment;
+	const manualRoomsToClose: IOmnichannelRoom[] = [];
+	const manualVisitorsToDelete: ILivechatVisitor[] = [];
+
+	before((done) => getCredentials(done));
+
+	before(async () => {
+		await Promise.all([
+			updateSetting('Livechat_enabled', true),
+			updateSetting('Livechat_Routing_Method', 'Manual_Selection'),
+			updateSetting('Omnichannel_enable_department_removal', true),
+			updateEESetting('Livechat_maximum_chats_per_agent', 0),
+			updateEESetting('Livechat_waiting_queue', true),
+		]);
+
+		await sleep(1000);
+	});
+
+	before(async () => {
+		const user = await createUser();
+		await createAgent(user.username);
+		const creds = await login(user.username, password);
+		await makeAgentAvailable(creds);
+
+		manualUser = { user, credentials: creds };
+	});
+
+	before(async () => {
+		manualDepartment = await createDepartment([{ agentId: manualUser.user._id }], `${new Date().toISOString()}-manual-dept`, true, {
+			maxNumberSimultaneousChat: 2,
+		});
+		manualDepartment2 = await createDepartment([{ agentId: manualUser.user._id }], `${new Date().toISOString()}-manual-dept2`, true, {
+			maxNumberSimultaneousChat: 2,
+		});
+		await updateLivechatSettingsForUser(manualUser.user._id, { maxNumberSimultaneousChat: 1 }, [
+			manualDepartment._id,
+			manualDepartment2._id,
+		]);
+	});
+
+	after(async () => {
+		await Promise.all(manualRoomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+		await Promise.all(manualVisitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
+		await Promise.all([
+			deleteUser(manualUser.user),
+			updateEESetting('Livechat_maximum_chats_per_agent', 0),
+			updateEESetting('Livechat_waiting_queue', false),
+			updateSetting('Livechat_Routing_Method', 'Auto_Selection'),
+			deleteDepartment(manualDepartment._id),
+			deleteDepartment(manualDepartment2._id),
+		]);
+		await updateSetting('Omnichannel_enable_department_removal', false);
+	});
+
+	describe('when agent limit is 1 and has 0 chats', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+
+		before(async () => {
+			visitor = await createVisitor(manualDepartment._id);
+			room = await createLivechatRoom(visitor.token);
+			manualVisitorsToDelete.push(visitor);
+			manualRoomsToClose.push(room);
+		});
+
+		it('should allow agent to manually take the inquiry', async () => {
+			const inquiry = await fetchInquiry(room._id);
+			await takeInquiry(inquiry._id, manualUser.credentials);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(manualUser.user._id);
+		});
+	});
+
+	describe('when agent limit is 1 and has 1 chat', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+
+		before(async () => {
+			visitor = await createVisitor(manualDepartment._id);
+			room = await createLivechatRoom(visitor.token);
+			manualVisitorsToDelete.push(visitor);
+			manualRoomsToClose.push(room);
+		});
+
+		it('should not allow agent to manually take the inquiry', async () => {
+			const inquiry = await fetchInquiry(room._id);
+
+			await request
+				.post(api('livechat/inquiries.take'))
+				.set(manualUser.credentials)
+				.send({ userId: manualUser.user._id, inquiryId: inquiry._id, options: { clientAction: true } })
+				.expect(400);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
+		});
+
+		describe('when agent limit is increased to 2', () => {
+			before(async () => {
+				await updateLivechatSettingsForUser(manualUser.user._id, { maxNumberSimultaneousChat: 2 }, [
+					manualDepartment._id,
+					manualDepartment2._id,
+				]);
+			});
+
+			it('should allow agent to take the pending inquiry', async () => {
+				const inquiry = await fetchInquiry(room._id);
+				await takeInquiry(inquiry._id, manualUser.credentials);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+				expect(roomInfo.servedBy).to.be.an('object');
+				expect(roomInfo.servedBy?._id).to.be.equal(manualUser.user._id);
+			});
+		});
+	});
+
+	describe('when agent limit is 2 and already has 2 chats on department A', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+
+		before(async () => {
+			visitor = await createVisitor(manualDepartment2._id);
+			room = await createLivechatRoom(visitor.token);
+			manualVisitorsToDelete.push(visitor);
+			manualRoomsToClose.push(room);
+		});
+
+		it('should not allow agent to take inquiry on department B', async () => {
+			const inquiry = await fetchInquiry(room._id);
+
+			await request
+				.post(api('livechat/inquiries.take'))
+				.set(manualUser.credentials)
+				.send({ userId: manualUser.user._id, inquiryId: inquiry._id, options: { clientAction: true } })
+				.expect(400);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
+		});
+
+		describe('when agent limit is increased to 3', () => {
+			before(async () => {
+				await updateLivechatSettingsForUser(manualUser.user._id, { maxNumberSimultaneousChat: 3 }, [
+					manualDepartment._id,
+					manualDepartment2._id,
+				]);
+			});
+
+			it('should allow agent to take the pending inquiry on department B', async () => {
+				const inquiry = await fetchInquiry(room._id);
+				await takeInquiry(inquiry._id, manualUser.credentials);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+				expect(roomInfo.servedBy).to.be.an('object');
+				expect(roomInfo.servedBy?._id).to.be.equal(manualUser.user._id);
+			});
+		});
+	});
+
+	describe('when agent limit is 0 and department B limit is 2 (agent has 3 chats)', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+
+		before(async () => {
+			await updateLivechatSettingsForUser(manualUser.user._id, { maxNumberSimultaneousChat: 0 }, [
+				manualDepartment._id,
+				manualDepartment2._id,
+			]);
+
+			visitor = await createVisitor(manualDepartment2._id);
+			room = await createLivechatRoom(visitor.token);
+			manualVisitorsToDelete.push(visitor);
+			manualRoomsToClose.push(room);
+		});
+
+		it('should allow agent to take inquiry on department B', async () => {
+			const inquiry = await fetchInquiry(room._id);
+			await takeInquiry(inquiry._id, manualUser.credentials);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(manualUser.user._id);
+		});
+	});
+
+	describe('when agent has 4 chats and 2 on department B (at department limit)', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+
+		before(async () => {
+			visitor = await createVisitor(manualDepartment2._id);
+			room = await createLivechatRoom(visitor.token);
+			manualVisitorsToDelete.push(visitor);
+			manualRoomsToClose.push(room);
+		});
+
+		it('should not allow agent to take inquiry on department B', async () => {
+			const inquiry = await fetchInquiry(room._id);
+
+			await request
+				.post(api('livechat/inquiries.take'))
+				.set(manualUser.credentials)
+				.send({ userId: manualUser.user._id, inquiryId: inquiry._id, options: { clientAction: true } })
+				.expect(400);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
+		});
+
+		describe('when global limit is set to 6', () => {
+			before(async () => {
+				await updateEESetting('Livechat_maximum_chats_per_agent', 6);
+			});
+
+			it('should not allow agent to take inquiry on department B even if global limit allows it', async () => {
+				const inquiry = await fetchInquiry(room._id);
+
+				await request
+					.post(api('livechat/inquiries.take'))
+					.set(manualUser.credentials)
+					.send({ userId: manualUser.user._id, inquiryId: inquiry._id, options: { clientAction: true } })
+					.expect(400);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+				expect(roomInfo.servedBy).to.be.undefined;
+			});
+
+			describe('when department B limit is removed', () => {
+				before(async () => {
+					await updateDepartment({
+						departmentId: manualDepartment2._id,
+						opts: { maxNumberSimultaneousChat: 0 },
+						userCredentials: credentials,
+					});
+				});
+
+				it('should allow agent to take the pending inquiry', async () => {
+					const inquiry = await fetchInquiry(room._id);
+					await takeInquiry(inquiry._id, manualUser.credentials);
+
+					const roomInfo = await getLivechatRoomInfo(room._id);
+					expect(roomInfo.servedBy).to.be.an('object');
+					expect(roomInfo.servedBy?._id).to.be.equal(manualUser.user._id);
+				});
+			});
+		});
+	});
+
+	describe('when agent has 5 chats, global limit is 6, department limit is 0', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+
+		before(async () => {
+			visitor = await createVisitor(manualDepartment2._id);
+			room = await createLivechatRoom(visitor.token);
+			manualVisitorsToDelete.push(visitor);
+			manualRoomsToClose.push(room);
+		});
+
+		it('should allow agent to take inquiry on department B', async () => {
+			const inquiry = await fetchInquiry(room._id);
+			await takeInquiry(inquiry._id, manualUser.credentials);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(manualUser.user._id);
+		});
+	});
+
+	describe('when agent has 6 chats, global limit is 6, department limit is 0', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+
+		before(async () => {
+			visitor = await createVisitor(manualDepartment2._id);
+			room = await createLivechatRoom(visitor.token);
+			manualVisitorsToDelete.push(visitor);
+			manualRoomsToClose.push(room);
+		});
+
+		it('should not allow agent to take inquiry on department B', async () => {
+			const inquiry = await fetchInquiry(room._id);
+
+			await request
+				.post(api('livechat/inquiries.take'))
+				.set(manualUser.credentials)
+				.send({ userId: manualUser.user._id, inquiryId: inquiry._id, options: { clientAction: true } })
+				.expect(400);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
+		});
+
+		describe('when global limit is removed', () => {
+			before(async () => {
+				await updateEESetting('Livechat_maximum_chats_per_agent', 0);
+			});
+
+			it('should allow agent to take the pending inquiry', async () => {
+				const inquiry = await fetchInquiry(room._id);
+				await takeInquiry(inquiry._id, manualUser.credentials);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+				expect(roomInfo.servedBy).to.be.an('object');
+				expect(roomInfo.servedBy?._id).to.be.equal(manualUser.user._id);
+			});
+		});
+	});
+
+	describe('when department A limit is still 2 (agent has 7 chats)', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+
+		before(async () => {
+			visitor = await createVisitor(manualDepartment._id);
+			room = await createLivechatRoom(visitor.token);
+			manualVisitorsToDelete.push(visitor);
+			manualRoomsToClose.push(room);
+		});
+
+		it('should not allow agent to take inquiry on department A', async () => {
+			const inquiry = await fetchInquiry(room._id);
+
+			await request
+				.post(api('livechat/inquiries.take'))
+				.set(manualUser.credentials)
+				.send({ userId: manualUser.user._id, inquiryId: inquiry._id, options: { clientAction: true } })
+				.expect(400);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
+		});
+
+		describe('when department A limit is removed', () => {
+			before(async () => {
+				await updateDepartment({
+					departmentId: manualDepartment._id,
+					opts: { maxNumberSimultaneousChat: 0 },
+					userCredentials: credentials,
+				});
+			});
+
+			it('should allow agent to take the pending inquiry on department A', async () => {
+				const inquiry = await fetchInquiry(room._id);
+				await takeInquiry(inquiry._id, manualUser.credentials);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+				expect(roomInfo.servedBy).to.be.an('object');
+				expect(roomInfo.servedBy?._id).to.be.equal(manualUser.user._id);
+			});
+		});
+	});
+
+	describe('when agent limit is set to 4 and global limit is high (agent has 8 chats)', () => {
+		let room: IOmnichannelRoom;
+		let visitor: ILivechatVisitor;
+
+		before(async () => {
+			await updateEESetting('Livechat_maximum_chats_per_agent', 100000);
+			await updateLivechatSettingsForUser(manualUser.user._id, { maxNumberSimultaneousChat: 4 }, [
+				manualDepartment._id,
+				manualDepartment2._id,
+			]);
+
+			visitor = await createVisitor(manualDepartment._id);
+			room = await createLivechatRoom(visitor.token);
+			manualVisitorsToDelete.push(visitor);
+			manualRoomsToClose.push(room);
+		});
+
+		it('should honor agent limit over global limit and not allow taking inquiry', async () => {
+			const inquiry = await fetchInquiry(room._id);
+
+			await request
+				.post(api('livechat/inquiries.take'))
+				.set(manualUser.credentials)
+				.send({ userId: manualUser.user._id, inquiryId: inquiry._id, options: { clientAction: true } })
+				.expect(400);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
+		});
+
+		describe('when agent limit is removed', () => {
+			before(async () => {
+				await updateLivechatSettingsForUser(manualUser.user._id, { maxNumberSimultaneousChat: 0 }, [
+					manualDepartment._id,
+					manualDepartment2._id,
+				]);
+			});
+
+			it('should allow agent to take the pending inquiry', async () => {
+				const inquiry = await fetchInquiry(room._id);
+				await takeInquiry(inquiry._id, manualUser.credentials);
+
+				const roomInfo = await getLivechatRoomInfo(room._id);
+				expect(roomInfo.servedBy).to.be.an('object');
+				expect(roomInfo.servedBy?._id).to.be.equal(manualUser.user._id);
+			});
 		});
 	});
 });

@@ -40,7 +40,7 @@ export const getUserNotificationPreference = async (user: IUser | string, pref: 
 		};
 	}
 	const serverValue = settings.get(`Accounts_Default_User_Preferences_${preferenceKey}`);
-	if (serverValue) {
+	if (typeof serverValue !== 'undefined') {
 		return {
 			value: serverValue,
 			origin: 'server',

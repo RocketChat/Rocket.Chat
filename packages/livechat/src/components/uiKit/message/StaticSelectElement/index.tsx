@@ -3,10 +3,10 @@ import type { ComponentChild } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 import { memo, useCallback, useMemo } from 'preact/compat';
 
+import styles from './styles.scss';
 import { createClassName } from '../../../../helpers/createClassName';
 import { SelectInput } from '../../../Form/SelectInput';
 import { usePerformAction } from '../Block';
-import styles from './styles.scss';
 
 type StaticSelectElementProps = uikit.StaticSelectElement & {
 	parser: uikit.SurfaceRenderer<ComponentChild>;
@@ -39,8 +39,8 @@ const StaticSelectElement = ({
 
 	const selectOptions = useMemo(
 		() =>
-			options.map((option) => ({
-				label: parser.text(option.text),
+			options.map((option, i) => ({
+				label: parser.renderTextObject(option.text, i),
 				value: option.value,
 			})),
 		[options, parser],
@@ -51,7 +51,7 @@ const StaticSelectElement = ({
 			className={createClassName(styles, 'uikit-static-select')}
 			disabled={performingAction}
 			options={selectOptions}
-			placeholder={placeholder && parser.text(placeholder)}
+			placeholder={placeholder && parser.renderTextObject(placeholder, 0)}
 			small
 			value={initialOption?.value ?? ''}
 			onChange={handleChange}

@@ -17,7 +17,7 @@ const Item = ({ block: element, surfaceRenderer: parser, index }: ItemProps): Re
 
 	switch (element.type) {
 		case UiKit.TextObjectType.PLAIN_TEXT:
-		case UiKit.TextObjectType.MARKDOWN:
+		case UiKit.TextObjectType.MRKDWN:
 			return (
 				<Box is='span' fontScale='c1' color='hint' margin={4}>
 					{renderedElement}

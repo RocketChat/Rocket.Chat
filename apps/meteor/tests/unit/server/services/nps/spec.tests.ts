@@ -9,15 +9,15 @@ const modelsMock = {
 		findOne: sinon.stub(),
 		save: sinon.stub(),
 	},
-	'Settings': {
-		getValueById: sinon.stub(),
-	},
 	'@noCallThru': true,
 };
 
 const servicesMock = {
 	Banner: {
 		create: sinon.stub(),
+	},
+	Settings: {
+		get: sinon.stub(),
 	},
 };
 
@@ -38,19 +38,19 @@ describe('NPS Service', () => {
 
 	describe('@create', () => {
 		beforeEach(() => {
-			modelsMock.Settings.getValueById.reset();
+			servicesMock.Settings.get.reset();
 			modelsMock.Nps.findOne.reset();
 			modelsMock.Nps.save.reset();
 			servicesMock.Banner.create.reset();
 			getbannerforadminsMock.reset();
 		});
 		it('should fail when user opted out of nps', async () => {
-			modelsMock.Settings.getValueById.withArgs('NPS_survey_enabled').resolves(false);
+			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(false);
 
 			await expect(new NPSService().create({})).to.be.rejectedWith('Server opted-out for NPS surveys');
 		});
 		it('should fail when nps expireDate is less than nps startAt', async () => {
-			modelsMock.Settings.getValueById.withArgs('NPS_survey_enabled').resolves(true);
+			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(true);
 			modelsMock.Nps.findOne.resolves(null);
 
 			await expect(new NPSService().create({ expireAt: new Date('2020-01-01'), startAt: new Date('2020-01-02') })).to.be.rejectedWith(
@@ -58,7 +58,7 @@ describe('NPS Service', () => {
 			);
 		});
 		it('should fail when expireDate is less than current date', async () => {
-			modelsMock.Settings.getValueById.withArgs('NPS_survey_enabled').resolves(true);
+			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(true);
 			modelsMock.Nps.findOne.resolves(null);
 
 			await expect(new NPSService().create({ expireAt: new Date('2020-01-02'), startAt: new Date('2020-01-01') })).to.be.rejectedWith(
@@ -66,7 +66,7 @@ describe('NPS Service', () => {
 			);
 		});
 		it('should try to create a banner when theres no nps saved', async () => {
-			modelsMock.Settings.getValueById.withArgs('NPS_survey_enabled').resolves(true);
+			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(true);
 			modelsMock.Nps.findOne.resolves(null);
 
 			const today = new Date();
@@ -94,7 +94,7 @@ describe('NPS Service', () => {
 			).to.be.true;
 		});
 		it('should fail if theres an error when saving the Nps', async () => {
-			modelsMock.Settings.getValueById.withArgs('NPS_survey_enabled').resolves(true);
+			servicesMock.Settings.get.withArgs('NPS_survey_enabled').resolves(true);
 			modelsMock.Nps.findOne.resolves({ _id: 'test' });
 			modelsMock.Nps.save.rejects();
 			await expect(new NPSService().create({})).to.be.rejectedWith('Error creating NPS');
