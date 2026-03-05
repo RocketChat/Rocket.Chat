@@ -22,7 +22,6 @@ import type { FederationEndpoints } from './v1/federation';
 import type { GroupsEndpoints } from './v1/groups';
 import type { ImportEndpoints } from './v1/import';
 import type { InstancesEndpoints } from './v1/instances';
-import type { IntegrationsEndpoints } from './v1/integrations';
 import type { IntegrationHooksEndpoints } from './v1/integrations/hooks';
 import type { InvitesEndpoints } from './v1/invites';
 import type { LDAPEndpoints } from './v1/ldap';
@@ -74,7 +73,6 @@ export interface Endpoints
 		MiscEndpoints,
 		PresenceEndpoints,
 		InstancesEndpoints,
-		IntegrationsEndpoints,
 		IntegrationHooksEndpoints,
 		VideoConferenceEndpoints,
 		InvitesEndpoints,
