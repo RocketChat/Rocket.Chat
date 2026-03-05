@@ -1,4 +1,4 @@
-/**
- * @todo rename it as isAbsoluteURL
- */
-export const isURL = (str: string): boolean => /^(https?:\/\/|data:)/.test(str);
+export const isAbsoluteURL = (str: string): boolean => /^(https?:\/\/|data:)/.test(str);
+
+/** @deprecated use isAbsoluteURL */
+export const isURL = isAbsoluteURL;
