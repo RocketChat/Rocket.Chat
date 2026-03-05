@@ -35,7 +35,7 @@ async function job(): Promise<void> {
 	const ignoreDiscussionQuery = ignoreDiscussion ? { prid: { $exists: false } } : {};
 
 	// get all rooms with default values
-	for await (const type of types) {
+	for (const type of types) {
 		const maxAge = getMaxAgeSettingIdByRoomType(type) || 0;
 		const latest = new Date(now.getTime() - maxAge);
 

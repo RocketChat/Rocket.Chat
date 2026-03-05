@@ -17,6 +17,8 @@ class VideoRecorder {
 
 	private mediaRecorder: MediaRecorder | undefined;
 
+	private sessionId = 0;
+
 	public getSupportedMimeTypes() {
 		if (window.MediaRecorder.isTypeSupported('video/webm')) {
 			return 'video/webm; codecs=vp8,opus';
@@ -29,8 +31,13 @@ class VideoRecorder {
 
 	public start(videoel?: HTMLVideoElement, cb?: (this: this, success: boolean) => void) {
 		this.videoel = videoel;
+		const currentSessionId = ++this.sessionId;
 
 		const handleSuccess = (stream: MediaStream) => {
+			if (this.isStaleSession(currentSessionId)) {
+				this.stopStreamTracks(stream);
+				return;
+			}
 			this.startUserMedia(stream);
 			cb?.call(this, true);
 		};
@@ -72,6 +79,22 @@ class VideoRecorder {
 		return this.recording.set(true);
 	}
 
+	private stopStreamTracks(stream: MediaStream) {
+		const vtracks = stream.getVideoTracks();
+		for (const vtrack of Array.from(vtracks)) {
+			vtrack.stop();
+		}
+
+		const atracks = stream.getAudioTracks();
+		for (const atrack of Array.from(atracks)) {
+			atrack.stop();
+		}
+	}
+
+	private isStaleSession(sessionId: number): boolean {
+		return this.sessionId !== sessionId;
+	}
+
 	private startUserMedia(stream: MediaStream) {
 		if (!this.videoel) {
 			return;
@@ -90,34 +113,25 @@ class VideoRecorder {
 	}
 
 	public stop(cb?: (blob: Blob) => void) {
-		if (!this.started) {
-			return;
-		}
+		this.sessionId++;
 
 		this.stopRecording();
 
 		if (this.stream) {
-			const vtracks = this.stream.getVideoTracks();
-			for (const vtrack of Array.from(vtracks)) {
-				vtrack.stop();
-			}
-
-			const atracks = this.stream.getAudioTracks();
-			for (const atrack of Array.from(atracks)) {
-				atrack.stop();
-			}
+			this.stopStreamTracks(this.stream);
 		}
 
 		if (this.videoel) {
-			this.videoel.pause;
+			this.videoel.pause();
 			this.videoel.src = '';
 		}
 
+		const wasStarted = this.started;
 		this.started = false;
 		this.cameraStarted.set(false);
 		this.recordingAvailable.set(false);
 
-		if (cb && this.chunks) {
+		if (cb && this.chunks && wasStarted) {
 			const blob = new Blob(this.chunks);
 			cb(blob);
 		}

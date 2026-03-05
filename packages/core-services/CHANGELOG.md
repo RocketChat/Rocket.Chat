@@ -1,5 +1,149 @@
 # @rocket.chat/core-services
 
+## 0.13.0
+
+### Minor Changes
+
+- ([#38173](https://github.com/RocketChat/Rocket.Chat/pull/38173)) Adds a new endpoint to delete uploaded files individually
+
+### Patch Changes
+
+- ([#38616](https://github.com/RocketChat/Rocket.Chat/pull/38616)) Fixes device management logout not redirecting to login page.
+
+- ([#38415](https://github.com/RocketChat/Rocket.Chat/pull/38415)) Fixes delete message permission check in read-only rooms to validate the deleting user's unmuted status instead of the message sender's
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, 098f0a7467332f10a7bea5d435ae2ca3b5431fc9, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 88da141f3c2af6f91980c7ca8b8777161f99a068, 1c474580b768358b49c93002b1277e7065df02fe, 75d089ca40248af963d7cd2a8034c3c6de6b971e, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 508b4a17d76dc1cd7d3a55bdba826216f51432e2, 562d5ce6ad8afc67bef61e91939f8c21c4501610, 123aebec2caa74b17d2b5dcbd2a2db2e687cf3ac]:</summary>
+
+  - @rocket.chat/core-typings@8.2.0
+  - @rocket.chat/models@2.1.0
+  - @rocket.chat/message-parser@0.31.34
+  - @rocket.chat/rest-typings@8.2.0
+  - @rocket.chat/http-router@7.9.18
+  </details>
+
+## 0.13.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.2
+  - @rocket.chat/rest-typings@8.2.0-rc.2
+  - @rocket.chat/http-router@7.9.18-rc.2
+  - @rocket.chat/models@2.1.0-rc.2
+  </details>
+
+## 0.13.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.1
+  - @rocket.chat/rest-typings@8.2.0-rc.1
+  - @rocket.chat/http-router@7.9.18-rc.1
+  - @rocket.chat/models@2.1.0-rc.1
+  </details>
+
+## 0.13.0-rc.0
+
+### Minor Changes
+
+- ([#38173](https://github.com/RocketChat/Rocket.Chat/pull/38173)) Adds a new endpoint to delete uploaded files individually
+
+### Patch Changes
+
+- ([#38616](https://github.com/RocketChat/Rocket.Chat/pull/38616)) Fixes device management logout not redirecting to login page.
+
+- ([#38415](https://github.com/RocketChat/Rocket.Chat/pull/38415)) Fixes delete message permission check in read-only rooms to validate the deleting user's unmuted status instead of the message sender's
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, 098f0a7467332f10a7bea5d435ae2ca3b5431fc9, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 88da141f3c2af6f91980c7ca8b8777161f99a068, 1c474580b768358b49c93002b1277e7065df02fe, 75d089ca40248af963d7cd2a8034c3c6de6b971e, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 508b4a17d76dc1cd7d3a55bdba826216f51432e2, 562d5ce6ad8afc67bef61e91939f8c21c4501610, 123aebec2caa74b17d2b5dcbd2a2db2e687cf3ac]:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.0
+  - @rocket.chat/models@2.1.0-rc.0
+  - @rocket.chat/message-parser@0.31.34-rc.0
+  - @rocket.chat/rest-typings@8.2.0-rc.0
+  - @rocket.chat/http-router@7.9.18-rc.0
+  </details>
+
+## 0.12.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.1.1
+  - @rocket.chat/rest-typings@8.1.1
+  - @rocket.chat/http-router@7.9.17
+  - @rocket.chat/models@2.0.3
+  </details>
+
+## 0.12.2
+
+### Patch Changes
+
+- ([#38151](https://github.com/RocketChat/Rocket.Chat/pull/38151)) Changes OEmbed URL processing. Now, the processing is done asynchronously and has a configurable timeout for each request. Additionally, the `API_EmbedIgnoredHosts` setting now accepts wildcard domains.
+
+- <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, fd319d58a621d66c20029fd962ddb24a1a24ecc3, 5c3c52b1fc8b0bd52d4744614ad4d2b8e2e03937, bed615ef323d4018f779cda013255ac9147e4cde, 6654c5b481f91bdcb03d68ee0f3a12d58201137e, 020dfbcab6a940ca2e03d802d0f6b54714a34aa2, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e, ccd76942bf74322f21deb855af5348856463b82a]:</summary>
+
+  - @rocket.chat/models@2.0.2
+  - @rocket.chat/rest-typings@8.1.0
+  - @rocket.chat/message-parser@0.31.33
+  - @rocket.chat/core-typings@8.1.0
+  - @rocket.chat/http-router@7.9.16
+  </details>
+
+## 0.12.2-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [bed615ef323d4018f779cda013255ac9147e4cde]:</summary>
+
+  - @rocket.chat/message-parser@0.31.33-rc.0
+  - @rocket.chat/core-typings@8.1.0-rc.2
+  - @rocket.chat/rest-typings@8.1.0-rc.2
+  - @rocket.chat/http-router@7.9.16-rc.2
+  - @rocket.chat/models@2.0.2-rc.2
+  </details>
+
+## 0.12.2-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [fd319d58a621d66c20029fd962ddb24a1a24ecc3]:</summary>
+
+  - @rocket.chat/rest-typings@8.1.0-rc.1
+  - @rocket.chat/http-router@7.9.15-rc.1
+  - @rocket.chat/models@2.0.1-rc.1
+  - @rocket.chat/core-typings@8.1.0-rc.1
+  </details>
+
+## 0.12.2-rc.0
+
+### Patch Changes
+
+- ([#38151](https://github.com/RocketChat/Rocket.Chat/pull/38151)) Changes OEmbed URL processing. Now, the processing is done asynchronously and has a configurable timeout for each request. Additionally, the `API_EmbedIgnoredHosts` setting now accepts wildcard domains.
+
+- <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, 5c3c52b1fc8b0bd52d4744614ad4d2b8e2e03937, 6654c5b481f91bdcb03d68ee0f3a12d58201137e, 020dfbcab6a940ca2e03d802d0f6b54714a34aa2, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e, ccd76942bf74322f21deb855af5348856463b82a]:</summary>
+
+  - @rocket.chat/models@2.0.1-rc.0
+  - @rocket.chat/rest-typings@8.1.0-rc.0
+  - @rocket.chat/core-typings@8.1.0-rc.0
+  - @rocket.chat/http-router@7.9.15-rc.0
+  </details>
+
+## 0.12.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.1
+  - @rocket.chat/rest-typings@8.0.1
+  - @rocket.chat/http-router@7.9.15
+  - @rocket.chat/models@2.0.1
+  </details>
+
 ## 0.12.0
 
 ### Minor Changes
