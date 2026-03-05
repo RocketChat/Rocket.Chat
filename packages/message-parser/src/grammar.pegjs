@@ -530,6 +530,7 @@ ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { skip
 
 ItalicContentPreferentialItemPattern = Whitespace
   / InlineCode
+  / TimestampRules
   / MaybeReferences
   / UserMention
   / ChannelMention
@@ -553,7 +554,7 @@ BoldContent = & { skipBoldEmoji = false; return true; } text:BoldContentItem+ { 
 
 BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { skipBoldEmoji = false; return item; }
 
-BoldContentPreferentialItemPattern = Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
+BoldContentPreferentialItemPattern = Whitespace / InlineCode / TimestampRules / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
 
 BoldContentFallbackItem = item:BoldContentFallbackItemPattern { skipBoldEmoji = true; return item; }
 
