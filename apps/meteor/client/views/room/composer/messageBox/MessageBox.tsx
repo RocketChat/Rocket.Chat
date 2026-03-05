@@ -20,6 +20,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import { handleSelectionWrapping } from './wrapSelection';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -212,6 +213,10 @@ const MessageBox = ({
 		}
 
 		if (chat.composer && handleFormattingShortcut(event, [...formattingButtons], chat.composer)) {
+			return;
+		}
+
+		if (chat.composer && handleSelectionWrapping(event, chat.composer)) {
 			return;
 		}
 
