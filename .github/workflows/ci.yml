@@ -345,7 +345,7 @@ jobs:
         env:
           # add suffix for the extra images with coverage if building for production
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_DDP_STREAMER: ${{ matrix.service[0] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
+          DOCKER_TAG_SUFFIX_FIPS: ${{ matrix.service[0] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
           BUILD_TARGET: ${{ matrix.service[0] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
@@ -363,7 +363,7 @@ jobs:
         if: matrix.service[1] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_DDP_STREAMER: ${{ matrix.service[1] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
+          DOCKER_TAG_SUFFIX_FIPS: ${{ matrix.service[1] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
           BUILD_TARGET: ${{ matrix.service[1] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
@@ -382,7 +382,7 @@ jobs:
         if: matrix.service[2] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_DDP_STREAMER: ${{ matrix.service[2] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
+          DOCKER_TAG_SUFFIX_FIPS: ${{ matrix.service[2] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
           BUILD_TARGET: ${{ matrix.service[2] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
@@ -401,7 +401,7 @@ jobs:
         if: matrix.service[3] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_DDP_STREAMER: ${{ matrix.service[3] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
+          DOCKER_TAG_SUFFIX_FIPS: ${{ matrix.service[3] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
           BUILD_TARGET: ${{ matrix.service[3] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
