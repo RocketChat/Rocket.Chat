@@ -1,4 +1,5 @@
-import { IconButton, MenuItem, MenuSection, Menu } from '@rocket.chat/fuselage';
+import { IconButton, MenuItem, MenuSection, MenuV2 } from '@rocket.chat/fuselage';
+import type { MenuV2Props } from '@rocket.chat/fuselage';
 import { cloneElement, type ComponentProps, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +29,7 @@ type GenericMenuConditionalProps =
 			sections?: never;
 	  };
 
-type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof Menu>, 'children'>;
+type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<MenuV2Props<object>, 'children'>;
 
 const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, className, ...props }: GenericMenuProps) => {
 	const { t, i18n } = useTranslation();
@@ -60,7 +61,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 	return (
 		<>
 			{sections && (
-				<Menu
+				<MenuV2
 					icon={icon}
 					title={i18n.exists(title) ? t(title) : title}
 					onAction={onAction || handleAction}
@@ -82,10 +83,10 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 							)}
 						</MenuSection>
 					))}
-				</Menu>
+				</MenuV2>
 			)}
 			{items && (
-				<Menu
+				<MenuV2
 					icon={icon}
 					title={i18n.exists(title) ? t(title) : title}
 					onAction={onAction || handleAction}
@@ -99,7 +100,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 							<GenericMenuItem {...item} />
 						</MenuItem>
 					))}
-				</Menu>
+				</MenuV2>
 			)}
 		</>
 	);
