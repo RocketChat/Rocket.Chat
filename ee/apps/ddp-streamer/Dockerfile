@@ -123,8 +123,13 @@ FROM rocketchatfips140/dhi-node:22-alpine3.23 AS release-fips
 ARG SERVICE
 ENV NODE_ENV=production \
     PORT=3000
+
+# Keep provider behavior explicit for auditing: enable FIPS provider while allowing
+# fallback to default provider for legacy algorithms required by dependencies.
+COPY ./ee/apps/ddp-streamer/openssl-ddp-streamer-fips.cnf /etc/ssl/openssl-ddp-streamer-fips.cnf
+
 COPY --chown=node:node --from=builder /app /app
 WORKDIR /app/ee/apps/${SERVICE}
 USER node
 EXPOSE 3000 9458
-CMD ["node", "--require", "./src/fips.js", "src/service.js"]
+CMD ["node", "--openssl-config=/etc/ssl/openssl-ddp-streamer-fips.cnf", "--openssl-shared-config", "--require", "./src/fips.js", "src/service.js"]
