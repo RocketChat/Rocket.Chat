@@ -1,5 +1,5 @@
 import apn from '@parse/node-apn';
-import type { IPushToken, RequiredField } from '@rocket.chat/core-typings';
+import type { RequiredField } from '@rocket.chat/core-typings';
 import EJSON from 'ejson';
 
 import type { PushOptions, PendingPushNotification } from './definition';
@@ -24,7 +24,7 @@ export const sendAPN = ({
 }: {
 	userToken: string;
 	notification: PendingPushNotification & { topic: string };
-	_removeToken: (token: IPushToken['token']) => void;
+	_removeToken: (token: string) => void;
 }) => {
 	if (!apnConnection) {
 		throw new Error('Apn Connection not initialized.');
@@ -34,7 +34,13 @@ export const sendAPN = ({
 
 	const note = new apn.Notification();
 
-	note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
+	if (notification.voip) {
+		note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires in 60 seconds
+		note.pushType = 'voip';
+	} else {
+		note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
+	}
+
 	if (notification.badge !== undefined) {
 		note.badge = notification.badge;
 	}
@@ -50,10 +56,16 @@ export const sendAPN = ({
 	// adds category support for iOS8 custom actions as described here:
 	// https://developer.apple.com/library/ios/documentation/NetworkingInternet/Conceptual/
 	// RemoteNotificationsPG/Chapters/IPhoneOSClientImp.html#//apple_ref/doc/uid/TP40008194-CH103-SW36
-	note.category = notification.apn?.category;
+	if (notification.apn?.category) {
+		note.category = notification.apn.category;
+	}
 
-	note.body = notification.text;
-	note.title = notification.title;
+	if (notification.text) {
+		note.body = notification.text;
+	}
+	if (notification.title) {
+		note.title = notification.title;
+	}
 
 	if (notification.notId != null) {
 		note.threadId = String(notification.notId);
@@ -62,7 +74,9 @@ export const sendAPN = ({
 	// Allow the user to set payload data
 	note.payload = notification.payload ? { ejson: EJSON.stringify(notification.payload) } : {};
 
-	note.payload.messageFrom = notification.from;
+	if (notification.from) {
+		note.payload.messageFrom = notification.from;
+	}
 	note.priority = priority;
 
 	note.topic = notification.topic;
@@ -81,9 +95,7 @@ export const sendAPN = ({
 					msg: 'Removing APN token',
 					token: userToken,
 				});
-				_removeToken({
-					apn: userToken,
-				});
+				_removeToken(userToken);
 			}
 		});
 	});

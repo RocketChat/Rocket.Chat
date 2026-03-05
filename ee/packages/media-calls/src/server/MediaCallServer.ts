@@ -70,6 +70,12 @@ export class MediaCallServer implements IMediaCallServer {
 		this.emitter.emit('historyUpdate', params);
 	}
 
+	public sendPushNotification(params: { callId: string }): void {
+		logger.debug({ msg: 'MediaCallServer.sendPushNotification', params });
+
+		this.emitter.emit('pushNotificationRequest', params);
+	}
+
 	public async requestCall(params: InternalCallParams): Promise<void> {
 		try {
 			const fullParams = await this.parseCallContacts(params);

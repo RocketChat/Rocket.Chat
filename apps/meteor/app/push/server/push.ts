@@ -78,9 +78,9 @@ export const isFCMCredentials = ajv.compile<FCMCredentials>(FCMCredentialsValida
 // This type must match the type defined in the push gateway
 type GatewayNotification = {
 	uniqueId: string;
-	from: string;
-	title: string;
-	text: string;
+	from?: string;
+	title?: string;
+	text?: string;
 	badge?: number;
 	sound?: string;
 	notId?: number;
@@ -123,8 +123,7 @@ type GatewayNotification = {
 export type NativeNotificationParameters = {
 	userTokens: string | string[];
 	notification: PendingPushNotification;
-	_replaceToken: (currentToken: IPushToken['token'], newToken: IPushToken['token']) => void;
-	_removeToken: (token: IPushToken['token']) => void;
+	_removeToken: (token: string) => void;
 	options: RequiredField<PushOptions, 'gcm'>;
 };
 
@@ -167,12 +166,10 @@ class PushClass {
 		}
 	}
 
-	private replaceToken(currentToken: IPushToken['token'], newToken: IPushToken['token']): void {
-		void PushToken.updateMany({ token: currentToken }, { $set: { token: newToken } });
-	}
-
-	private removeToken(token: IPushToken['token']): void {
-		void PushToken.deleteOne({ token });
+	private removeToken(token: string): void {
+		void PushToken.removeAllByTokenString(token).catch((err) => {
+			logger.error({ msg: 'Failed to remove push token', err });
+		});
 	}
 
 	private shouldUseGateway(): boolean {
@@ -188,10 +185,13 @@ class PushClass {
 		logger.debug({ msg: 'send to token', token: app.token });
 
 		if ('apn' in app.token && app.token.apn) {
+			const userToken = notification.voip ? app.voipToken : app.token.apn;
+			const topic = notification.voip ? `${app.appName}.voip` : app.appName;
+
 			countApn.push(app._id);
 			// Send to APN
-			if (this.options.apn) {
-				sendAPN({ userToken: app.token.apn, notification: { topic: app.appName, ...notification }, _removeToken: this.removeToken });
+			if (this.options.apn && userToken) {
+				sendAPN({ userToken, notification: { topic, ...notification }, _removeToken: this.removeToken });
 			}
 		} else if ('gcm' in app.token && app.token.gcm) {
 			countGcm.push(app._id);
@@ -210,7 +210,6 @@ class PushClass {
 			sendFCM({
 				userTokens: app.token.gcm,
 				notification,
-				_replaceToken: this.replaceToken,
 				_removeToken: this.removeToken,
 				options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
 			});
@@ -275,16 +274,7 @@ class PushClass {
 
 		if (result.status === 406) {
 			logger.info({ msg: 'removing push token', token });
-			await PushToken.deleteMany({
-				$or: [
-					{
-						'token.apn': token,
-					},
-					{
-						'token.gcm': token,
-					},
-				],
-			});
+			this.removeToken(token);
 			return;
 		}
 
@@ -340,8 +330,13 @@ class PushClass {
 			logger.debug({ msg: 'send to token', token: app.token });
 
 			if ('apn' in app.token && app.token.apn) {
-				countApn.push(app._id);
-				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { topic: app.appName, ...gatewayNotification });
+				const token = notification.voip ? app.voipToken : app.token.apn;
+				const topic = notification.voip ? `${app.appName}.voip` : app.appName;
+
+				if (token) {
+					countApn.push(app._id);
+					return this.sendGatewayPush(gateway, 'apn', token, { topic, ...gatewayNotification });
+				}
 			}
 
 			if ('gcm' in app.token && app.token.gcm) {
@@ -373,12 +368,7 @@ class PushClass {
 			userId: notification.userId,
 		});
 
-		const query = {
-			userId: notification.userId,
-			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
-		};
-
-		const appTokens = PushToken.find(query);
+		const appTokens = PushToken.findAllTokensByUserId(notification.userId);
 
 		for await (const app of appTokens) {
 			logger.debug({ msg: 'send to token', token: app.token });
@@ -427,9 +417,9 @@ class PushClass {
 	private _validateDocument(notification: PendingPushNotification): void {
 		// Check the general notification
 		check(notification, {
-			from: String,
-			title: String,
-			text: String,
+			from: Match.Optional(String),
+			title: Match.Optional(String),
+			text: Match.Optional(String),
 			sent: Match.Optional(Boolean),
 			sending: Match.Optional(Match.Integer),
 			badge: Match.Optional(Match.Integer),
@@ -448,6 +438,7 @@ class PushClass {
 			createdAt: Date,
 			createdBy: Match.OneOf(String, null),
 			priority: Match.Optional(Match.Integer),
+			voip: Match.Optional(Boolean),
 		});
 
 		if (!notification.userId) {
@@ -464,16 +455,15 @@ class PushClass {
 	}
 
 	public async send(options: IPushNotificationConfig) {
-		const notification: PendingPushNotification = {
+		const notification = {
 			createdAt: new Date(),
 			// createdBy is no longer used, but the gateway still expects it
 			createdBy: '<SERVER>',
 			sent: false,
 			sending: 0,
-			title: truncateString(options.title, PUSH_TITLE_LIMIT),
-			text: truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT),
-
-			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
+			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority', 'voip'),
+			...(options.title && { title: truncateString(options.title, PUSH_TITLE_LIMIT) }),
+			...(options.text && { text: truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT) }),
 
 			...(this.hasApnOptions(options)
 				? {

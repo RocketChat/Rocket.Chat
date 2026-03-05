@@ -72,6 +72,10 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		}
 
 		await this.sendSignal(buildNewCallSignal(call, this.role));
+
+		if (this.role === 'callee') {
+			getMediaCallServer().sendPushNotification({ callId: call._id });
+		}
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {

@@ -8,6 +8,7 @@ export type MediaCallServerEvents = {
 	callUpdated: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> };
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
 	historyUpdate: { callId: string };
+	pushNotificationRequest: { callId: string };
 };
 
 export interface IMediaCallServerSettings {
@@ -39,6 +40,7 @@ export interface IMediaCallServer {
 	sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void;
 	reportCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 	updateCallHistory(params: { callId: string }): void;
+	sendPushNotification(params: { callId: string }): void;
 
 	// functions that are run on events
 	receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal): void;
