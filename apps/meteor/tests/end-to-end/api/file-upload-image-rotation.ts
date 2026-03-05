@@ -1,7 +1,7 @@
 import path from 'path';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { ImageAttachmentProps, IMessage, IRoom, IUser, SettingValue } from '@rocket.chat/core-typings';
+import type { ImageAttachmentProps, IRoom, IUser, SettingValue } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import sharp from 'sharp';
@@ -51,12 +51,12 @@ describe('[File Upload - Image Rotation]', () => {
 			updateSetting('FileUpload_RotateImages', rotateImagesSetting),
 			updateSetting('Message_Attachments_Strip_Exif', stripExifSetting),
 			updateSetting('Message_Attachments_Thumbnails_Enabled', thumbnailsEnabledSetting),
-			testRoom ? deleteRoom({ type: 'p', roomId: testRoom._id }) : Promise.resolve(),
-			user ? deleteUser(user) : Promise.resolve(),
+			deleteRoom({ type: 'p', roomId: testRoom._id }),
+			deleteUser(user),
 		]);
 	});
 
-	it('should rotate pixels, strip EXIF orientation, and generate thumbnail from rotated image', async () => {
+	it('should rotate pixels and strip EXIF orientation', async () => {
 		const fixtureMetadata = await sharp(testImagePath).metadata();
 		expect(fixtureMetadata.width).to.equal(719);
 		expect(fixtureMetadata.height).to.equal(479);
@@ -64,10 +64,9 @@ describe('[File Upload - Image Rotation]', () => {
 
 		const requestConfig: IRequestConfig = { request, credentials: userCredentials };
 		const { message } = await uploadFileToRC(testRoom._id, testImagePath, 'rotation-exif-test', requestConfig);
-		const uploadMessage = message as IMessage;
 
-		expect(uploadMessage).to.have.property('attachments');
-		const attachment = uploadMessage.attachments?.find((item) => item.title === testImageName);
+		expect(message).to.have.property('attachments');
+		const attachment = message.attachments?.find((item) => item.title === testImageName);
 		expect(attachment).to.be.an('object');
 
 		const fileUrl = (attachment as { title_link?: string }).title_link;
@@ -82,6 +81,21 @@ describe('[File Upload - Image Rotation]', () => {
 		expect(originalMetadata.width).to.equal(479);
 		expect(originalMetadata.height).to.equal(719);
 		expect(originalMetadata.exif).to.be.undefined;
+	});
+
+	it('should generate thumbnail from rotated image', async () => {
+		const requestConfig: IRequestConfig = { request, credentials: userCredentials };
+		const { message } = await uploadFileToRC(testRoom._id, testImagePath, 'rotation-thumb-test', requestConfig);
+
+		expect(message).to.have.property('attachments');
+		const attachment = message.attachments?.find((item) => item.title === testImageName);
+		expect(attachment).to.be.an('object');
+
+		const fileUrl = (attachment as { title_link?: string }).title_link;
+		const thumbUrl = (attachment as ImageAttachmentProps).image_url;
+
+		expect(fileUrl).to.be.a('string');
+		expect(thumbUrl).to.be.a('string');
 
 		const thumbBuffer = await downloadBuffer(thumbUrl as string, userCredentials);
 		const thumbMetadata = await sharp(thumbBuffer).metadata();
@@ -89,24 +103,31 @@ describe('[File Upload - Image Rotation]', () => {
 		expect(thumbMetadata.width).to.be.lessThan(thumbMetadata.height as number);
 	});
 
-	it('should NOT rotate pixels when FileUpload_RotateImages is disabled', async () => {
-		await updateSetting('FileUpload_RotateImages', false);
+	describe('when FileUpload_RotateImages is disabled', () => {
+		before(async () => {
+			await updateSetting('FileUpload_RotateImages', false);
+		});
 
-		const requestConfig: IRequestConfig = { request, credentials: userCredentials };
-		const { message } = await uploadFileToRC(testRoom._id, testImagePath, 'no-rotation-test', requestConfig);
-		const uploadMessage = message as IMessage;
+		after(async () => {
+			await updateSetting('FileUpload_RotateImages', rotateImagesSetting);
+		});
 
-		expect(uploadMessage).to.have.property('attachments');
-		const attachment = uploadMessage.attachments?.find((item) => item.title === testImageName);
-		expect(attachment).to.be.an('object');
+		it('should NOT rotate pixels', async () => {
+			const requestConfig: IRequestConfig = { request, credentials: userCredentials };
+			const { message } = await uploadFileToRC(testRoom._id, testImagePath, 'no-rotation-test', requestConfig);
 
-		const fileUrl = (attachment as { title_link?: string }).title_link;
-		expect(fileUrl).to.be.a('string');
+			expect(message).to.have.property('attachments');
+			const attachment = message.attachments?.find((item) => item.title === testImageName);
+			expect(attachment).to.be.an('object');
 
-		const originalBuffer = await downloadBuffer(fileUrl as string, userCredentials);
-		const originalMetadata = await sharp(originalBuffer).metadata();
+			const fileUrl = (attachment as { title_link?: string }).title_link;
+			expect(fileUrl).to.be.a('string');
 
-		expect(originalMetadata.width).to.equal(719);
-		expect(originalMetadata.height).to.equal(479);
+			const originalBuffer = await downloadBuffer(fileUrl as string, userCredentials);
+			const originalMetadata = await sharp(originalBuffer).metadata();
+
+			expect(originalMetadata.width).to.equal(719);
+			expect(originalMetadata.height).to.equal(479);
+		});
 	});
 });
