@@ -17,12 +17,13 @@ export const permissionsMiddleware =
 		const user = c.get('user');
 
 		if (!user) {
-			const message = applyBreakingChanges
-				? 'You must be logged in to do this'
-				: 'User does not have the permissions required for this action';
+			if (applyBreakingChanges) {
+				const unauthorized = API.v1.unauthorized();
+				return c.json(unauthorized.body, unauthorized.statusCode);
+			}
 
+			const message = 'User does not have the permissions required for this action';
 			const failure = API.v1.failure({ error: message, message });
-
 			return c.json(failure.body, failure.statusCode);
 		}
 
@@ -33,13 +34,12 @@ export const permissionsMiddleware =
 		);
 
 		if (!hasPermission) {
-			const message = 'User does not have the permissions required for this action';
-
 			if (applyBreakingChanges) {
-				const failure = API.v1.failure({ error: message, message });
-				return c.json(failure.body, failure.statusCode);
+				const forbidden = API.v1.forbidden();
+				return c.json(forbidden.body, forbidden.statusCode);
 			}
 
+			const message = 'User does not have the permissions required for this action';
 			const failure = API.v1.failure({ error: message, message });
 			return c.json(failure.body, failure.statusCode);
 		}
