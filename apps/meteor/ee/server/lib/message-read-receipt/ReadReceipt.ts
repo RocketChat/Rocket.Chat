@@ -1,12 +1,10 @@
 import { api } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
-import { LivechatVisitors, ReadReceipts, ReadReceiptsArchive, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { Random } from '@rocket.chat/random';
+import { ReadReceipts, ReadReceiptsArchive, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
-import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list: Record<string, NodeJS.Timeout> = {};
@@ -62,7 +60,7 @@ class ReadReceiptClass {
 		updateMessages(room);
 	}
 
-	async markMessageAsReadBySender(message: IMessage, { _id: roomId, t }: { _id: string; t: string }, userId: string) {
+	async markMessageAsReadBySender(message: IMessage, { _id: roomId }: { _id: string }, userId: string) {
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
@@ -82,14 +80,12 @@ class ReadReceiptClass {
 			}
 		}
 
-		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
 		void this.storeReadReceipts(
 			() => {
 				return Promise.resolve([message]);
 			},
 			roomId,
 			userId,
-			extraData,
 		);
 	}
 
@@ -118,7 +114,6 @@ class ReadReceiptClass {
 		getMessages: () => Promise<Pick<IMessage, '_id' | 't' | 'pinned' | 'drid' | 'tmid'>[]>,
 		roomId: string,
 		userId: string,
-		extraData: Partial<IReadReceipt> = {},
 	) {
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			const ts = new Date();
@@ -128,11 +123,6 @@ class ReadReceiptClass {
 				userId,
 				messageId: message._id,
 				ts,
-				...(message.t && { t: message.t }),
-				...(message.pinned && { pinned: true }),
-				...(message.drid && { drid: message.drid }),
-				...(message.tmid && { tmid: message.tmid }),
-				...extraData,
 			}));
 
 			if (receipts.length === 0) {
@@ -160,12 +150,17 @@ class ReadReceiptClass {
 		// Combine receipts from both storages
 		const receipts = [...hotReceipts, ...coldReceipts];
 
+		// get unique receipts user ids
+		const userIds = [...new Set(receipts.map((receipt) => receipt.userId))];
+
+		// get users for the receipts
+		const users = await Users.findByIds(userIds, { projection: { username: 1, name: 1 } }).toArray();
+		const usersMap = new Map(users.map((user) => [user._id, user]));
+
 		return Promise.all(
 			receipts.map(async (receipt) => ({
 				...receipt,
-				user: (receipt.token
-					? await LivechatVisitors.getVisitorByToken(receipt.token, { projection: { username: 1, name: 1 } })
-					: await Users.findOneById(receipt.userId, { projection: { username: 1, name: 1, token: 1 } })) as IReadReceiptWithUser['user'],
+				user: usersMap.get(receipt.userId) as IReadReceiptWithUser['user'],
 			})),
 		);
 	}
