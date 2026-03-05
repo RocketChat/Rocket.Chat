@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Timestamp matches snapshot for format "f" 1`] = `
+<div>
+  <time
+    datetime="2025-06-15T14:30:45.000Z"
+    style="display: inline-block;"
+    title="6/15/2025, 2:30:45 PM"
+  >
+    <span
+      class="rcx-box rcx-box--full rcx-tag "
+    >
+      <span
+        class="rcx-tag__inner"
+      >
+        June 15th, 2025 at 2:30:45 PM GMT+0
+      </span>
+    </span>
+  </time>
+</div>
+`;
