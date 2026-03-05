@@ -118,7 +118,7 @@ class ReadReceiptClass {
 		if (settings.get('Message_Read_Receipt_Store_Users')) {
 			const ts = new Date();
 			const receipts = (await getMessages()).map((message) => ({
-				_id: Random.id(),
+				_id: message._id + userId,
 				roomId,
 				userId,
 				messageId: message._id,
