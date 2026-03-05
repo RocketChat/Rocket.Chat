@@ -216,10 +216,6 @@ const MessageBox = ({
 			return;
 		}
 
-		if (chat.composer && handleSelectionWrapping(event, chat.composer)) {
-			return;
-		}
-
 		if (event.shiftKey || event.ctrlKey || event.metaKey) {
 			return;
 		}
@@ -378,6 +374,26 @@ const MessageBox = ({
 		),
 	);
 
+	const beforeInputHandler = useEffectEvent((event: InputEvent) => {
+		if (chat.composer && handleSelectionWrapping(event, chat.composer)) {
+			return;
+		}
+	});
+
+	const beforeInputHandlerCallbackRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLTextAreaElement) => {
+				const eventHandler = (e: Event) => beforeInputHandler(e as InputEvent);
+				node.addEventListener('beforeinput', eventHandler);
+
+				return () => {
+					node.removeEventListener('beforeinput', eventHandler);
+				};
+			},
+			[beforeInputHandler],
+		),
+	);
+
 	const mergedRefs = useMessageComposerMergedRefs(
 		popup.callbackRef,
 		textareaRef,
@@ -385,6 +401,7 @@ const MessageBox = ({
 		callbackRef,
 		autofocusRef,
 		keyDownHandlerCallbackRef,
+		beforeInputHandlerCallbackRef,
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);

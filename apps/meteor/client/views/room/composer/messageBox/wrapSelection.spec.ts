@@ -8,12 +8,18 @@ const createMockTextArea = (value: string, selectionStart: number, selectionEnd:
 		selectionEnd,
 	}) as unknown as HTMLTextAreaElement;
 
-const createMockKeyboardEvent = (key: string, target: HTMLTextAreaElement): KeyboardEvent => {
+const createMockInputEvent = (
+	data: string | null,
+	target: HTMLTextAreaElement,
+	{ inputType = 'insertText', isComposing = false }: { inputType?: string; isComposing?: boolean } = {},
+): InputEvent => {
 	const event = {
-		key,
+		data,
+		inputType,
+		isComposing,
 		target,
 		preventDefault: jest.fn(),
-	} as unknown as KeyboardEvent;
+	} as unknown as InputEvent;
 	return event;
 };
 
@@ -27,7 +33,7 @@ describe('handleSelectionWrapping', () => {
 
 	it('should return false when no text is selected', () => {
 		const textarea = createMockTextArea('hello world', 5, 5);
-		const event = createMockKeyboardEvent('(', textarea);
+		const event = createMockInputEvent('(', textarea);
 
 		expect(handleSelectionWrapping(event, composer)).toBe(false);
 		expect(wrapSelection).not.toHaveBeenCalled();
@@ -36,7 +42,31 @@ describe('handleSelectionWrapping', () => {
 
 	it('should return false when the key is not a wrapping character', () => {
 		const textarea = createMockTextArea('hello world', 0, 5);
-		const event = createMockKeyboardEvent('a', textarea);
+		const event = createMockInputEvent('a', textarea);
+
+		expect(handleSelectionWrapping(event, composer)).toBe(false);
+		expect(wrapSelection).not.toHaveBeenCalled();
+	});
+
+	it('should return false when inputType is not insertText', () => {
+		const textarea = createMockTextArea('hello world', 0, 5);
+		const event = createMockInputEvent('(', textarea, { inputType: 'deleteContentBackward' });
+
+		expect(handleSelectionWrapping(event, composer)).toBe(false);
+		expect(wrapSelection).not.toHaveBeenCalled();
+	});
+
+	it('should return false when composing (IME active)', () => {
+		const textarea = createMockTextArea('hello world', 0, 5);
+		const event = createMockInputEvent('(', textarea, { isComposing: true });
+
+		expect(handleSelectionWrapping(event, composer)).toBe(false);
+		expect(wrapSelection).not.toHaveBeenCalled();
+	});
+
+	it('should return false when data is null', () => {
+		const textarea = createMockTextArea('hello world', 0, 5);
+		const event = createMockInputEvent(null, textarea);
 
 		expect(handleSelectionWrapping(event, composer)).toBe(false);
 		expect(wrapSelection).not.toHaveBeenCalled();
@@ -51,9 +81,9 @@ describe('handleSelectionWrapping', () => {
 		['{', '{{{text}}}'],
 		['[', '[{{text}}]'],
 		['*', '*{{text}}*'],
-	])('should wrap selected text when pressing "%s"', (key, expectedPattern) => {
+	])('should wrap selected text when inserting "%s"', (data, expectedPattern) => {
 		const textarea = createMockTextArea('hello world', 0, 5);
-		const event = createMockKeyboardEvent(key, textarea);
+		const event = createMockInputEvent(data, textarea);
 
 		expect(handleSelectionWrapping(event, composer)).toBe(true);
 		expect(event.preventDefault).toHaveBeenCalled();
@@ -62,7 +92,7 @@ describe('handleSelectionWrapping', () => {
 
 	it('should not wrap when selection is collapsed (cursor only)', () => {
 		const textarea = createMockTextArea('hello world', 3, 3);
-		const event = createMockKeyboardEvent('*', textarea);
+		const event = createMockInputEvent('*', textarea);
 
 		expect(handleSelectionWrapping(event, composer)).toBe(false);
 		expect(wrapSelection).not.toHaveBeenCalled();

@@ -11,7 +11,11 @@ const wrapSelectionPatterns: Record<string, string> = {
 	'*': '*{{text}}*',
 };
 
-export const handleSelectionWrapping = (event: KeyboardEvent, composer: ComposerAPI): boolean => {
+export const handleSelectionWrapping = (event: InputEvent, composer: ComposerAPI): boolean => {
+	if (event.inputType !== 'insertText' || event.isComposing) {
+		return false;
+	}
+
 	const input = event.target as HTMLTextAreaElement;
 	const { selectionStart, selectionEnd } = input;
 
@@ -19,7 +23,12 @@ export const handleSelectionWrapping = (event: KeyboardEvent, composer: Composer
 		return false;
 	}
 
-	const pattern = wrapSelectionPatterns[event.key];
+	const key = event.data;
+	if (!key) {
+		return false;
+	}
+
+	const pattern = wrapSelectionPatterns[key];
 	if (!pattern) {
 		return false;
 	}
