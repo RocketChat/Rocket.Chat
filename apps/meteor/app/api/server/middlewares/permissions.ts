@@ -22,8 +22,7 @@ export const permissionsMiddleware =
 				return c.json(unauthorized.body, unauthorized.statusCode);
 			}
 
-			const message = 'User does not have the permissions required for this action';
-			const failure = API.v1.failure({ error: message, message });
+			const failure = API.v1.unauthorized('User does not have the permissions required for this action [error-unauthorized]');
 			return c.json(failure.body, failure.statusCode);
 		}
 
@@ -39,8 +38,7 @@ export const permissionsMiddleware =
 				return c.json(forbidden.body, forbidden.statusCode);
 			}
 
-			const message = 'User does not have the permissions required for this action';
-			const failure = API.v1.failure({ error: message, message });
+			const failure = API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 			return c.json(failure.body, failure.statusCode);
 		}
 
