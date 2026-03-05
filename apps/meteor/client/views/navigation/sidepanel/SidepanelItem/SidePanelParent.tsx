@@ -1,4 +1,4 @@
-import { type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 
 import SidePanelParentRoom from './SidePanelParentRoom';

@@ -21,6 +21,7 @@ import {
 	Users,
 	ReadReceipts,
 } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';
@@ -254,8 +255,8 @@ export async function returnRoomAsInquiry(room: IOmnichannelRoom, departmentId?:
 	try {
 		await saveTransferHistory(room, transferData);
 		await RoutingManager.unassignAgent(inquiry, departmentId);
-	} catch (e) {
-		livechatLogger.error(e);
+	} catch (err) {
+		livechatLogger.error({ err });
 		throw new Meteor.Error('error-returning-inquiry');
 	}
 

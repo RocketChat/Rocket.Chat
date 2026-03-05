@@ -46,8 +46,8 @@ export class ListenersModule {
 			});
 		});
 
-		service.onEvent('user.forceLogout', (uid) => {
-			notifications.notifyUserInThisInstance(uid, 'force_logout');
+		service.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
+			notifications.notifyUserInThisInstance(uid, 'force_logout', sessionId);
 		});
 
 		service.onEvent('notify.ephemeralMessage', (uid, rid, message) => {

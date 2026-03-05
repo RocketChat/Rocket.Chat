@@ -4,7 +4,8 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.skip(!IS_EE, 'Export transcript as PDF > Enterprie Only');
@@ -62,7 +63,8 @@ test.describe('omnichannel- export chat transcript as PDF', () => {
 		await test.step('Expect to have exported PDF in rocket.cat', async () => {
 			await page.waitForTimeout(3000);
 			await agent.poHomeChannel.navbar.openChat('rocket.cat');
-			await expect(agent.poHomeChannel.transcript.DownloadedPDF).toBeVisible();
+			await expect(agent.poHomeChannel.content.lastUserMessage.getByText('PDF Transcript successfully generated')).toBeVisible();
+			await expect(agent.poHomeChannel.content.lastUserMessage.getByRole('link', { name: 'Transcript' })).toBeVisible();
 		});
 
 		// PDF can be exported from Omnichannel Contact Center

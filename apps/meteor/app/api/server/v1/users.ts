@@ -1,5 +1,5 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-import { type IExportOperation, type ILoginToken, type IPersonalAccessToken, type IUser, type UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
 	isUserCreateParamsPOST,
@@ -19,6 +19,8 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -31,7 +33,6 @@ import { regeneratePersonalAccessTokenOfUser } from '../../../../imports/persona
 import { removePersonalAccessTokenOfUser } from '../../../../imports/personal-access-tokens/server/api/methods/removeToken';
 import { UserChangedAuditStore } from '../../../../server/lib/auditServerEvents/userChanged';
 import { i18n } from '../../../../server/lib/i18n';
-import { removeOtherTokens } from '../../../../server/lib/removeOtherTokens';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { registerUser } from '../../../../server/methods/registerUser';
 import { requestDataDownload } from '../../../../server/methods/requestDataDownload';
@@ -74,6 +75,7 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
+import { getUserInfo } from '../helpers/getUserInfo';
 import { isUserFromParams } from '../helpers/isUserFromParams';
 import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
@@ -98,20 +100,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'users.getAvatarSuggestion',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
-			const suggestions = await getAvatarSuggestionForUser(this.user);
-
-			return API.v1.success({ suggestions });
-		},
-	},
-);
-
-API.v1.addRoute(
 	'users.update',
 	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
@@ -125,7 +113,7 @@ API.v1.addRoute(
 				_id: this.user._id,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
-				username: this.user.username || '',
+				username: this.user.username,
 			});
 
 			await saveUser(this.userId, userData, { auditStore });
@@ -153,7 +141,15 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.updateOwnBasicInfo',
-	{ authRequired: true, validateParams: isUsersUpdateOwnBasicInfoParamsPOST },
+	{
+		authRequired: true,
+		userWithoutUsername: true,
+		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 60000,
+		},
+	},
 	{
 		async post() {
 			const userData = {
@@ -180,16 +176,10 @@ API.v1.addRoute(
 						twoFactorMethod: 'password',
 					};
 
-			await executeSaveUserProfile.call(
-				this as unknown as Meteor.MethodThisType,
-				this.user,
-				userData,
-				this.bodyParams.customFields,
-				twoFactorOptions,
-			);
+			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
 			return API.v1.success({
-				user: await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude }),
+				user: await getUserInfo((await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude })) as IUser, false),
 			});
 		},
 	},
@@ -511,8 +501,6 @@ API.v1.addRoute(
 
 			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
-			const hasUserQuery = query && Object.keys(query).length > 0;
-
 			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 
 			// if user provided a query, validate it with their allowed operators
@@ -528,7 +516,9 @@ API.v1.addRoute(
 						inclusiveFieldsKeys.includes('type') && 'type.*',
 						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
-					hasUserQuery ? this.queryOperations : [...this.queryOperations, '$regex', '$options'],
+					// At this point, we have already validated the user query not containing malicious fields
+					// On here we are using our own query so we can allow some extra fields
+					[...this.queryOperations, '$regex', '$options'],
 				)
 			) {
 				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
@@ -763,72 +753,132 @@ API.v1.addRoute(
 	},
 );
 
-const usersEndpoints = API.v1.post(
-	'users.createToken',
-	{
-		authRequired: true,
-		body: ajv.compile<{ userId: string; secret: string }>({
-			type: 'object',
-			properties: {
-				userId: {
-					type: 'string',
-					minLength: 1,
-				},
-				secret: {
-					type: 'string',
-					minLength: 1,
-				},
-			},
-			required: ['userId', 'secret'],
-			additionalProperties: false,
-		}),
-		response: {
-			200: ajv.compile<{ data: { userId: string; authToken: string } }>({
+const usersEndpoints = API.v1
+	.post(
+		'users.createToken',
+		{
+			authRequired: true,
+			body: ajv.compile<{ userId: string; secret: string }>({
 				type: 'object',
 				properties: {
-					data: {
-						type: 'object',
-						properties: {
-							userId: {
-								type: 'string',
-								minLength: 1,
+					userId: {
+						type: 'string',
+						minLength: 1,
+					},
+					secret: {
+						type: 'string',
+						minLength: 1,
+					},
+				},
+				required: ['userId', 'secret'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ data: { userId: string; authToken: string } }>({
+					type: 'object',
+					properties: {
+						data: {
+							type: 'object',
+							properties: {
+								userId: {
+									type: 'string',
+									minLength: 1,
+								},
+								authToken: {
+									type: 'string',
+									minLength: 1,
+								},
 							},
-							authToken: {
-								type: 'string',
-								minLength: 1,
+							required: ['userId'],
+							additionalProperties: false,
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['data', 'success'],
+					additionalProperties: false,
+				}),
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [false] },
+						error: { type: 'string' },
+						errorType: { type: 'string' },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			const data = await generateAccessToken(user._id, this.bodyParams.secret);
+
+			return API.v1.success({ data });
+		},
+	)
+	.get(
+		'users.getAvatarSuggestion',
+		{
+			authRequired: true,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					suggestions: Record<
+						string,
+						{
+							blob: string;
+							contentType: string;
+							service: string;
+							url: string;
+						}
+					>;
+				}>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+						suggestions: {
+							type: 'object',
+							additionalProperties: {
+								type: 'object',
+								properties: {
+									blob: {
+										type: 'string',
+									},
+									contentType: {
+										type: 'string',
+									},
+									service: {
+										type: 'string',
+									},
+									url: {
+										type: 'string',
+										format: 'uri',
+									},
+								},
+								required: ['blob', 'contentType', 'service', 'url'],
+								additionalProperties: false,
 							},
 						},
-						required: ['userId'],
-						additionalProperties: false,
 					},
-					success: {
-						type: 'boolean',
-						enum: [true],
-					},
-				},
-				required: ['data', 'success'],
-				additionalProperties: false,
-			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+					required: ['success', 'suggestions'],
+					additionalProperties: false,
+				}),
+			},
 		},
-	},
-	async function action() {
-		const user = await getUserFromParams(this.bodyParams);
+		async function action() {
+			const suggestions = await getAvatarSuggestionForUser(this.user);
 
-		const data = await generateAccessToken(user._id, this.bodyParams.secret);
-
-		return API.v1.success({ data });
-	},
-);
+			return API.v1.success({ suggestions });
+		},
+	);
 
 API.v1.addRoute(
 	'users.getPreferences',
@@ -873,7 +923,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.getUsernameSuggestion',
-	{ authRequired: true },
+	{ authRequired: true, userWithoutUsername: true },
 	{
 		async get() {
 			const result = await generateUsernameSuggestion(this.user);
@@ -1072,6 +1122,10 @@ API.v1.addRoute(
 	{
 		authRequired: true,
 		validateParams: isUsersSendConfirmationEmailParamsPOST,
+		rateLimiterOptions: {
+			numRequestsAllowed: 1,
+			intervalTimeInMS: 60000,
+		},
 	},
 	{
 		async post() {
@@ -1232,7 +1286,7 @@ API.v1.addRoute(
 	{ authRequired: true },
 	{
 		async post() {
-			return API.v1.success(await removeOtherTokens(this.userId, this.connection.id));
+			return API.v1.success(await Users.removeNonLoginTokensExcept(this.userId, this.token));
 		},
 	},
 );
@@ -1374,7 +1428,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.setStatus',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		rateLimiterOptions: {
+			numRequestsAllowed: 5,
+			intervalTimeInMS: 60000,
+		},
+	},
 	{
 		async post() {
 			check(
@@ -1397,9 +1457,7 @@ API.v1.addRoute(
 				});
 			}
 
-			const user = await (async (): Promise<
-				Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'statusText' | 'roles'> | undefined | null
-			> => {
+			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
@@ -1416,7 +1474,7 @@ API.v1.addRoute(
 			let { statusText, status } = user;
 
 			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user._id, this.bodyParams.message, { emit: false });
+				await setStatusText(user, this.bodyParams.message, { emit: false });
 				statusText = this.bodyParams.message;
 			}
 

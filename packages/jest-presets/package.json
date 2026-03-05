@@ -27,7 +27,7 @@
 		"lint": "eslint ."
 	},
 	"dependencies": {
-		"@swc/core": "1.15.3",
+		"@swc/core": "1.15.11",
 		"@swc/jest": "~0.2.39",
 		"@testing-library/jest-dom": "~6.8.0",
 		"@types/jest-axe": "~3.5.9",
@@ -38,11 +38,10 @@
 		"uuid": "~11.0.5"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/identity-obj-proxy": "^3.0.2",
 		"@types/jest": "~30.0.0",
 		"@types/uuid": "^10.0.0",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"
 	},

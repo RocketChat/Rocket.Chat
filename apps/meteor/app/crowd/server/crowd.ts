@@ -9,7 +9,7 @@ import { Meteor } from 'meteor/meteor';
 import { logger } from './logger';
 import { crowdIntervalValuesToCronMap } from '../../../server/settings/crowd';
 import { deleteUser } from '../../lib/server/functions/deleteUser';
-import { _setRealName } from '../../lib/server/functions/setRealName';
+import { setRealName } from '../../lib/server/functions/setRealName';
 import { setUserActiveStatus } from '../../lib/server/functions/setUserActiveStatus';
 import { notifyOnUserChange, notifyOnUserChangeById, notifyOnUserChangeAsync } from '../../lib/server/lib/notifyListener';
 import { settings } from '../../settings/server';
@@ -206,7 +206,7 @@ export class CROWD {
 		}
 
 		if (crowdUser.displayname) {
-			await _setRealName(id, crowdUser.displayname);
+			await setRealName(id, crowdUser.displayname);
 		}
 
 		await Users.updateOne(
@@ -239,7 +239,7 @@ export class CROWD {
 
 		logger.info('Sync started...');
 
-		for await (const user of users) {
+		for (const user of users) {
 			let crowdUsername = user.hasOwnProperty('crowd_username') ? user.crowd_username : user.username;
 			logger.info({ msg: 'Syncing user', crowdUsername });
 			if (!crowdUsername) {
@@ -378,7 +378,7 @@ Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, lo
 		const crowd = new CROWD();
 		const user = await crowd.authenticate(loginRequest.username, loginRequest.crowdPassword);
 
-		if (user && user.crowd === false) {
+		if (user?.crowd === false) {
 			logger.debug({ msg: 'User is not a valid crowd user, falling back', username: loginRequest.username });
 			return fallbackDefaultAccountSystem(this, loginRequest.username, loginRequest.crowdPassword);
 		}
@@ -392,8 +392,8 @@ Accounts.registerLoginHandler('crowd', async function (this: typeof Accounts, lo
 
 		return result;
 	} catch (err: any) {
-		logger.debug({ err });
-		logger.error('Crowd user not authenticated due to an error');
+		logger.error({ msg: 'Crowd user not authenticated due to an error', err });
+
 		throw new Meteor.Error('user-not-found', err.message);
 	}
 });

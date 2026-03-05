@@ -8,13 +8,15 @@ import { toArrayBuffer } from '@std/streams';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import { assertAppAvailable, assertHandlerFunction, isRecord } from '../lib/assertions.ts';
+import { assertAppAvailable, assertHandlerFunction, isPlainObject } from '../lib/assertions.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 export const uploadEvents = ['executePreFileUpload'] as const;
 
 function assertIsUpload(v: unknown): asserts v is IUploadDetails {
-	if (isRecord(v) && !!v.rid && (!!v.userId || !!v.visitorToken)) return;
+	if (isPlainObject(v) && !!v.rid && (!!v.userId || !!v.visitorToken)) return;
 
 	throw JsonRpcError.invalidParams({ err: `Invalid 'file' parameter. Expected IUploadDetails, got`, value: v });
 }
@@ -25,13 +27,16 @@ function assertString(v: unknown): asserts v is string {
 	throw JsonRpcError.invalidParams({ err: `Invalid 'path' parameter. Expected string, got`, value: v });
 }
 
-export default async function handleUploadEvents(method: typeof uploadEvents[number], params: unknown): Promise<Defined | JsonRpcError> {
-	const [{ file, path }] = params as [{ file?: IUpload, path?: string }];
-
-	const app = AppObjectRegistry.get<App>('app');
-	const handlerFunction = app?.[method as keyof App] as unknown;
+export default async function handleUploadEvents(request: RequestContext): Promise<Defined | JsonRpcError> {
+	const { method: rawMethod, params } = request as { method: `app:${typeof uploadEvents[number]}`; params: [{ file?: IUploadDetails, path?: string }]};
+	const [, method] = rawMethod.split(':') as ['app', typeof uploadEvents[number]];
 
 	try {
+		const [{ file, path }] = params;
+
+		const app = AppObjectRegistry.get<App>('app');
+		const handlerFunction = app?.[method as keyof App] as unknown;
+
 		assertAppAvailable(app);
 		assertHandlerFunction(handlerFunction);
 		assertIsUpload(file);
@@ -49,7 +54,7 @@ export default async function handleUploadEvents(method: typeof uploadEvents[num
 		}
 
 		return await handlerFunction.call(
-			app,
+			wrapAppForRequest(app, request),
 			context,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getHttp(),

@@ -2,8 +2,9 @@ import type { IncomingMessage, ServerResponse } from 'http';
 import url from 'url';
 
 import { validate } from '@rocket.chat/cas-validate';
-import type { ICredentialToken } from '@rocket.chat/core-typings';
+import type { ICredentialToken, RequiredField } from '@rocket.chat/core-typings';
 import { CredentialTokens } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { logger } from './logger';
@@ -15,7 +16,7 @@ const closePopup = function (res: ServerResponse): void {
 	res.end(content, 'utf-8');
 };
 
-type IncomingMessageWithUrl = IncomingMessage & Required<Pick<IncomingMessage, 'url'>>;
+type IncomingMessageWithUrl = RequiredField<IncomingMessage, 'url'>;
 
 const casTicket = function (req: IncomingMessageWithUrl, token: string, callback: () => void): void {
 	// get configuration
@@ -30,7 +31,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 	const baseUrl = settings.get<string>('CAS_base_url');
 	const version = parseFloat(settings.get('CAS_version') ?? '1.0') as 1.0 | 2.0;
 	const appUrl = Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
-	logger.debug(`Using CAS_base_url: ${baseUrl}`);
+	logger.debug({ msg: 'Using CAS_base_url', baseUrl });
 
 	validate(
 		{
@@ -41,9 +42,9 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 		ticketId,
 		async (err, status, username, details) => {
 			if (err) {
-				logger.error(`error when trying to validate: ${err.message}`);
+				logger.error({ msg: 'error when trying to validate', err });
 			} else if (status) {
-				logger.info(`Validated user: ${username}`);
+				logger.info({ msg: 'Validated user', username });
 				const userInfo: Partial<ICredentialToken['userInfo']> = { username: username as string };
 
 				// CAS 2.0 attributes handling
@@ -52,7 +53,7 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 				}
 				await CredentialTokens.create(token, userInfo);
 			} else {
-				logger.error(`Unable to validate ticket: ${ticketId}`);
+				logger.error({ msg: 'Unable to validate ticket', ticketId });
 			}
 			// logger.debug("Received response: " + JSON.stringify(details, null , 4));
 

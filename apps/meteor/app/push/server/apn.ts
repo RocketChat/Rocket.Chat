@@ -1,5 +1,5 @@
 import apn from '@parse/node-apn';
-import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
+import type { IPushToken, RequiredField } from '@rocket.chat/core-typings';
 import EJSON from 'ejson';
 
 import type { PushOptions, PendingPushNotification } from './definition';
@@ -24,7 +24,7 @@ export const sendAPN = ({
 }: {
 	userToken: string;
 	notification: PendingPushNotification & { topic: string };
-	_removeToken: (token: IAppsTokens['token']) => void;
+	_removeToken: (token: IPushToken['token']) => void;
 }) => {
 	if (!apnConnection) {
 		throw new Error('Apn Connection not initialized.');
@@ -70,10 +70,17 @@ export const sendAPN = ({
 
 	void apnConnection.send(note, userToken).then((response) => {
 		response.failed.forEach((failure) => {
-			logger.debug(`Got error code ${failure.status} for token ${userToken}`);
+			logger.debug({
+				msg: 'Got error code for APN token',
+				status: failure.status,
+				token: userToken,
+			});
 
 			if (['400', '410'].includes(String(failure.status))) {
-				logger.debug(`Removing token ${userToken}`);
+				logger.debug({
+					msg: 'Removing APN token',
+					token: userToken,
+				});
 				_removeToken({
 					apn: userToken,
 				});
@@ -105,7 +112,10 @@ export const initAPN = ({ options, absoluteUrl }: { options: RequiredField<PushO
 			}
 		} else {
 			// Warn about gateways we dont know about
-			logger.warn(`WARNING: Push APN unknown gateway "${options.apn.gateway}"`);
+			logger.warn({
+				msg: 'WARNING: Push APN unknown gateway',
+				gateway: options.apn.gateway,
+			});
 		}
 	} else if (options.production) {
 		if (/http:\/\/localhost/.test(absoluteUrl)) {
@@ -127,7 +137,10 @@ export const initAPN = ({ options, absoluteUrl }: { options: RequiredField<PushO
 
 	// Rig apn connection
 	try {
-		apnConnection = new apn.Provider(options.apn);
+		apnConnection = new apn.Provider({
+			...options.apn,
+			production: options.production,
+		});
 	} catch (err) {
 		logger.error({ msg: 'Error trying to initialize APN', err });
 	}

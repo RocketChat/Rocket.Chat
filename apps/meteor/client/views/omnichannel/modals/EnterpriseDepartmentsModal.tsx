@@ -21,6 +21,8 @@ import { useTranslation } from 'react-i18next';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 
+// TODO: use `GenericModal` instead of creating a new modal from scratch
+// This seems a upSell modal for enterprise feature
 const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }): ReactElement => {
 	const { t } = useTranslation();
 	const router = useRouter();
@@ -42,13 +44,13 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 	useOutsideClick([ref], onClose);
 
 	return (
-		<Modal data-qa-id='enterprise-departments-modal' ref={ref}>
+		<Modal aria-label={t('Departments')} ref={ref}>
 			<ModalHeader>
 				<ModalHeaderText>
 					<ModalTagline>{t('Premium_capability')}</ModalTagline>
 					<ModalTitle>{t('Departments')}</ModalTitle>
 				</ModalHeaderText>
-				<ModalClose onClick={onClose} data-qa='modal-close' />
+				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent fontScale='p2'>
 				<ModalHeroImage src='/images/departments.svg' />
@@ -60,7 +62,6 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-
 					<Button onClick={goToManageSubscriptionPage} primary>
 						{t('Upgrade')}
 					</Button>

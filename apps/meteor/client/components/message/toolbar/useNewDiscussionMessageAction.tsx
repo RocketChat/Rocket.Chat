@@ -60,6 +60,7 @@ export const useNewDiscussionMessageAction = (
 					onClose={() => setModal(undefined)}
 					parentMessageId={message._id}
 					nameSuggestion={message?.msg?.substr(0, 140)}
+					encryptedParentRoom={room?.encrypted}
 				/>,
 			);
 		},

@@ -88,7 +88,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.1"
@@ -149,7 +149,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.2"
@@ -210,7 +210,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.3"
@@ -271,7 +271,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.4"
@@ -332,7 +332,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.5"
@@ -558,7 +558,7 @@ exports[`renders withError without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span
