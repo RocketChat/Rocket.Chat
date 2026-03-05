@@ -1,4 +1,4 @@
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 import mem from 'mem';
 
 import { emojisByCategory, emojiCategories, toneList } from './emojiPicker';
@@ -13,151 +13,121 @@ emojione.regShortNames = new RegExp(
 	'gi',
 );
 
-emojione.emojioneList[':tm:'] = {
+emojione.emojiList[':tm:'] = {
 	uc_base: '2122',
-	uc_output: '2122-fe0f',
-	uc_match: '2122-fe0f',
-	uc_greedy: '2122-fe0f',
+	uc_full: '2122-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':copyright:'] = {
+emojione.emojiList[':copyright:'] = {
 	uc_base: '00a9',
-	uc_output: '00a9-f0ef',
-	uc_match: '00a9-fe0f',
-	uc_greedy: '00a9-fe0f',
+	uc_full: '00a9-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':registered:'] = {
+emojione.emojiList[':registered:'] = {
 	uc_base: '00ae',
-	uc_output: '00ae-fe0f',
-	uc_match: '00ae-fe0f',
-	uc_greedy: '00ae-fe0f',
+	uc_full: '00ae-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_zero:'] = {
+emojione.emojiList[':digit_zero:'] = {
 	uc_base: '0030',
-	uc_output: '0030-fe0f',
-	uc_match: '0030-fe0f',
-	uc_greedy: '0030-fe0f',
+	uc_full: '0030-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_one:'] = {
+emojione.emojiList[':digit_one:'] = {
 	uc_base: '0031',
-	uc_output: '0031-fe0f',
-	uc_match: '0031-fe0f',
-	uc_greedy: '0031-fe0f',
+	uc_full: '0031-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_two:'] = {
+emojione.emojiList[':digit_two:'] = {
 	uc_base: '0032',
-	uc_output: '0032-fe0f',
-	uc_match: '0032-fe0f',
-	uc_greedy: '0032-fe0f',
+	uc_full: '0032-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_three:'] = {
+emojione.emojiList[':digit_three:'] = {
 	uc_base: '0033',
-	uc_output: '0033-fe0f',
-	uc_match: '0033-fe0f',
-	uc_greedy: '0033-fe0f',
+	uc_full: '0033-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_four:'] = {
+emojione.emojiList[':digit_four:'] = {
 	uc_base: '0034',
-	uc_output: '0034-fe0f',
-	uc_match: '0034-fe0f',
-	uc_greedy: '0034-fe0f',
+	uc_full: '0034-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_five:'] = {
+emojione.emojiList[':digit_five:'] = {
 	uc_base: '0035',
-	uc_output: '0035-fe0f',
-	uc_match: '0035-fe0f',
-	uc_greedy: '0035-fe0f',
+	uc_full: '0035-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_six:'] = {
+emojione.emojiList[':digit_six:'] = {
 	uc_base: '0036',
-	uc_output: '0036-fe0f',
-	uc_match: '0036-fe0f',
-	uc_greedy: '0036-fe0f',
+	uc_full: '0036-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_seven:'] = {
+emojione.emojiList[':digit_seven:'] = {
 	uc_base: '0037',
-	uc_output: '0037-fe0f',
-	uc_match: '0037-fe0f',
-	uc_greedy: '0037-fe0f',
+	uc_full: '0037-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_eight:'] = {
+emojione.emojiList[':digit_eight:'] = {
 	uc_base: '0038',
-	uc_output: '0038-fe0f',
-	uc_match: '0038-fe0f',
-	uc_greedy: '0038-fe0f',
+	uc_full: '0038-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':digit_nine:'] = {
+emojione.emojiList[':digit_nine:'] = {
 	uc_base: '0039',
-	uc_output: '0039-fe0f',
-	uc_match: '0039-fe0f',
-	uc_greedy: '0039-fe0f',
+	uc_full: '0039-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':pound_symbol:'] = {
+emojione.emojiList[':pound_symbol:'] = {
 	uc_base: '0023',
-	uc_output: '0023-fe0f',
-	uc_match: '0023-fe0f',
-	uc_greedy: '0023-fe0f',
+	uc_full: '0023-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
 };
 
-emojione.emojioneList[':asterisk_symbol:'] = {
+emojione.emojiList[':asterisk_symbol:'] = {
 	uc_base: '002a',
-	uc_output: '002a-fe0f',
-	uc_match: '002a-fe0f',
-	uc_greedy: '002a-fe0f',
+	uc_full: '002a-fe0f',
 	shortnames: [],
 	category: 'symbols',
 	emojiPackage: 'emojione',
@@ -165,8 +135,6 @@ emojione.emojioneList[':asterisk_symbol:'] = {
 // end fix
 
 // fix for :+1: - had to replace all function that does its conversion: https://github.com/joypixels/emojione/blob/4.5.0/lib/js/emojione.js#L249
-
-emojione.shortnameConversionMap = mem(emojione.shortnameConversionMap, { maxAge: 1000 });
 
 emojione.unicodeCharRegex = mem(emojione.unicodeCharRegex, { maxAge: 1000 });
 
@@ -179,12 +147,12 @@ const convertShortName = mem(
 		}
 
 		// map shortname to parent
-		if (!emojione.emojioneList[shortname]) {
-			for (const emoji in emojione.emojioneList) {
-				if (!emojione.emojioneList.hasOwnProperty(emoji) || emoji === '') {
+		if (!emojione.emojiList[shortname]) {
+			for (const emoji in emojione.emojiList) {
+				if (!emojione.emojiList.hasOwnProperty(emoji) || emoji === '') {
 					continue;
 				}
-				if (emojione.emojioneList[emoji].shortnames.indexOf(shortname) === -1) {
+				if (emojione.emojiList[emoji].shortnames.indexOf(shortname) === -1) {
 					continue;
 				}
 				shortname = emoji;
@@ -192,9 +160,9 @@ const convertShortName = mem(
 			}
 		}
 
-		const unicode = emojione.emojioneList[shortname].uc_output;
-		const fname = emojione.emojioneList[shortname].uc_base;
-		const category = fname.indexOf('-1f3f') >= 0 ? 'diversity' : emojione.emojioneList[shortname].category;
+		const unicode = emojione.emojiList[shortname].uc_full;
+		const fname = emojione.emojiList[shortname].uc_base;
+		const category = fname.indexOf('-1f3f') >= 0 ? 'diversity' : emojione.emojiList[shortname].category;
 		const title = emojione.imageTitleTag ? `title="${shortname}"` : '';
 		// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
 		// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path
@@ -224,7 +192,7 @@ const convertUnicode = mem(
 		m3 = emojione.unescapeHTML(m3);
 		const unicode = emojione.asciiList[m3];
 		const shortname = mappedUnicode[unicode];
-		const category = unicode.indexOf('-1f3f') >= 0 ? 'diversity' : emojione.emojioneList[shortname].category;
+		const category = unicode.indexOf('-1f3f') >= 0 ? 'diversity' : emojione.emojiList[shortname].category;
 		const title = emojione.imageTitleTag ? `title="${emojione.escapeHTML(m3)}"` : '';
 		// const size = ns.spriteSize === '32' || ns.spriteSize === '64' ? ns.spriteSize : '32';
 		// if the emoji path has been set, we'll use the provided path, otherwise we'll use the default path

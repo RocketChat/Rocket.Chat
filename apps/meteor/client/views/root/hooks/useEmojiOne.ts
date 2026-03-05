@@ -22,7 +22,7 @@ export const useEmojiOne = () => {
 			emoji.packages.emojione.renderPicker = config.renderPicker;
 
 			// RocketChat.emoji.list is the collection of emojis from all emoji packages
-			for (const [key, currentEmoji] of Object.entries(config.emojione.emojioneList)) {
+			for (const [key, currentEmoji] of Object.entries(config.emojione.emojiList)) {
 				currentEmoji.emojiPackage = 'emojione';
 				emoji.list[key] = currentEmoji;
 
