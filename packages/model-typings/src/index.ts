@@ -34,6 +34,7 @@ export * from './models/ILivechatUnitMonitorsModel';
 export * from './models/ILivechatVisitorsModel';
 export * from './models/ILoginServiceConfigurationModel';
 export * from './models/IMessagesModel';
+export * from './models/IScheduledMessagesModel';
 export * from './models/INotificationQueueModel';
 export * from './models/INpsModel';
 export * from './models/INpsVoteModel';

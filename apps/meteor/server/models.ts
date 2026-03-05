@@ -59,6 +59,7 @@ import {
 	ReportsRaw,
 	RolesRaw,
 	RoomsRaw,
+	ScheduledMessagesRaw,
 	ServerEventsRaw,
 	SessionsRaw,
 	SettingsRaw,
@@ -129,6 +130,7 @@ registerModel('IMediaCallChannelsModel', new MediaCallChannelsRaw(db));
 registerModel('IMediaCallNegotiationsModel', new MediaCallNegotiationsRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
+registerModel('IScheduledMessagesModel', new ScheduledMessagesRaw(db));
 registerModel('IMigrationsModel', new MigrationsRaw(db));
 registerModel('IModerationReportsModel', new ModerationReportsRaw(db));
 registerModel('INotificationQueueModel', new NotificationQueueRaw(db));

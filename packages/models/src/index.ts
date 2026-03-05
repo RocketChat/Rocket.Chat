@@ -34,6 +34,7 @@ import type {
 	ILivechatVisitorsModel,
 	ILoginServiceConfigurationModel,
 	IMessagesModel,
+	IScheduledMessagesModel,
 	INotificationQueueModel,
 	INpsModel,
 	INpsVoteModel,
@@ -86,6 +87,7 @@ import type { Collection, Db } from 'mongodb';
 import {
 	TeamMemberRaw,
 	MessagesRaw,
+	ScheduledMessagesRaw,
 	LivechatInquiryRaw,
 	LivechatDepartmentAgentsRaw,
 	PermissionsRaw,
@@ -161,6 +163,7 @@ export const LivechatUnit = proxify<ILivechatUnitModel>('ILivechatUnitModel');
 export const LivechatUnitMonitors = proxify<ILivechatUnitMonitorsModel>('ILivechatUnitMonitorsModel');
 export const LoginServiceConfiguration = proxify<ILoginServiceConfigurationModel>('ILoginServiceConfigurationModel');
 export const Messages = proxify<IMessagesModel>('IMessagesModel');
+export const ScheduledMessages = proxify<IScheduledMessagesModel>('IScheduledMessagesModel');
 export const MediaCalls = proxify<IMediaCallsModel>('IMediaCallsModel');
 export const MediaCallChannels = proxify<IMediaCallChannelsModel>('IMediaCallChannelsModel');
 export const MediaCallNegotiations = proxify<IMediaCallNegotiationsModel>('IMediaCallNegotiationsModel');
@@ -215,6 +218,8 @@ export function registerServiceModels(db: Db, trash?: Collection<RocketChatRecor
 	registerModel('ITeamMemberModel', () => new TeamMemberRaw(db));
 
 	registerModel('IMessagesModel', () => new MessagesRaw(db));
+
+	registerModel('IScheduledMessagesModel', () => new ScheduledMessagesRaw(db));
 
 	registerModel(
 		'ILivechatInquiryModel',

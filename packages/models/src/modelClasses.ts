@@ -35,6 +35,7 @@ export * from './models/LivechatTrigger';
 export * from './models/LivechatVisitors';
 export * from './models/LoginServiceConfiguration';
 export * from './models/Messages';
+export * from './models/ScheduledMessages';
 export * from './models/NotificationQueue';
 export * from './models/Nps';
 export * from './models/NpsVote';

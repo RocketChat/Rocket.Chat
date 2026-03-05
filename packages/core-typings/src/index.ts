@@ -37,6 +37,8 @@ export * from './IUserSession';
 export * from './IUserStatus';
 export * from './IUser';
 
+export * from './IScheduledMessage';
+
 export * from './ee/IAuditLog';
 export * from './ee/IWorkspaceCredentials';
 

@@ -1,7 +1,17 @@
-import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	MessageAttachment,
+	IReadReceiptWithUser,
+	OtrSystemMessages,
+	MessageUrl,
+	IThreadMainMessage,
+	IScheduledMessage,
+} from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
+import type { PaginatedResult } from '../helpers/PaginatedResult';
 
 type ChatSendMessage = {
 	message: Partial<IMessage>;
@@ -886,6 +896,158 @@ const ChatGetURLPreviewSchema = {
 
 export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
+type ChatOTR = { roomId: string; type: OtrSystemMessages };
+const ChatOTRSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		type: {
+			type: 'string',
+			enum: ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'],
+		},
+	},
+	required: ['roomId', 'type'],
+	additionalProperties: false,
+};
+export const isChatOTRProps = ajv.compile<ChatOTR>(ChatOTRSchema);
+
+type ChatScheduleMessage = {
+	roomId: string;
+	message: string;
+	scheduledAt: string;
+	tmid?: string;
+	previewUrls?: string[];
+	tshow?: boolean;
+};
+
+const ChatScheduleMessageSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		message: {
+			type: 'string',
+			minLength: 1,
+		},
+		scheduledAt: {
+			type: 'string',
+			format: 'date-time',
+		},
+		tmid: {
+			type: 'string',
+			nullable: true,
+		},
+		previewUrls: {
+			type: 'array',
+			items: {
+				type: 'string',
+			},
+			nullable: true,
+		},
+		tshow: {
+			type: 'boolean',
+			nullable: true,
+		},
+	},
+	required: ['roomId', 'message', 'scheduledAt'],
+	additionalProperties: false,
+};
+
+export const isChatScheduleMessageProps = ajv.compile<ChatScheduleMessage>(ChatScheduleMessageSchema);
+
+type ChatGetScheduledMessages = PaginatedRequest<{
+	roomId?: string;
+	userId?: string;
+	status?: 'pending' | 'sent' | 'cancelled' | 'failed';
+}>;
+
+const ChatGetScheduledMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			nullable: true,
+		},
+		userId: {
+			type: 'string',
+			nullable: true,
+		},
+		status: {
+			type: 'string',
+			enum: ['pending', 'sent', 'cancelled', 'failed'],
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	additionalProperties: false,
+};
+
+export const isChatGetScheduledMessagesProps = ajv.compile<ChatGetScheduledMessages>(ChatGetScheduledMessagesSchema);
+
+type ChatUpdateScheduledMessage = {
+	messageId: string;
+	scheduledAt?: string;
+	message?: string;
+};
+
+const ChatUpdateScheduledMessageSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+		scheduledAt: {
+			type: 'string',
+			format: 'date-time',
+			nullable: true,
+		},
+		message: {
+			type: 'string',
+			minLength: 1,
+			nullable: true,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+export const isChatUpdateScheduledMessageProps = ajv.compile<ChatUpdateScheduledMessage>(ChatUpdateScheduledMessageSchema);
+
+type ChatCancelScheduledMessage = {
+	messageId: string;
+};
+
+const ChatCancelScheduledMessageSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+export const isChatCancelScheduledMessageProps = ajv.compile<ChatCancelScheduledMessage>(ChatCancelScheduledMessageSchema);
+
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
 		POST: (params: ChatSendMessage) => {
@@ -1015,5 +1177,28 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };
+	};
+	'/v1/chat.otr': {
+		POST: (params: ChatOTR) => void;
+	};
+	'/v1/chat.scheduleMessage': {
+		POST: (params: ChatScheduleMessage) => {
+			scheduledMessage: IScheduledMessage;
+		};
+	};
+	'/v1/chat.getScheduledMessages': {
+		GET: (params: ChatGetScheduledMessages) => PaginatedResult<{
+			scheduledMessages: IScheduledMessage[];
+		}>;
+	};
+	'/v1/chat.updateScheduledMessage': {
+		PUT: (params: ChatUpdateScheduledMessage) => {
+			scheduledMessage: IScheduledMessage;
+		};
+	};
+	'/v1/chat.cancelScheduledMessage': {
+		DELETE: (params: ChatCancelScheduledMessage) => {
+			success: boolean;
+		};
 	};
 };

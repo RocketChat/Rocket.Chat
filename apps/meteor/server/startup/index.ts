@@ -17,8 +17,12 @@ export const startup = async () => {
 
 	await generateFederationKeys();
 
-	setImmediate(() => startCronJobs());
-	// only starts network broker if running in micro services mode
+	setImmediate(() => {
+		startCronJobs().catch((error) => {
+			console.error('Failed to start cron jobs:', error);
+		});
+	});
+
 	if (!isRunningMs()) {
 		require('./localServices');
 	}
