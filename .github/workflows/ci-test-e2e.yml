@@ -49,10 +49,6 @@ on:
         required: true
       CR_PAT:
         required: true
-      TEMP_DOCKERHUB_FIPS_USER:
-        required: false
-      TEMP_DOCKERHUB_FIPS_PASS:
-        required: false
       QASE_API_TOKEN:
         required: false
       REPORTER_ROCKETCHAT_URL:
@@ -84,6 +80,7 @@ jobs:
     env:
       # if building for production on develop branch or release, add suffix for coverage images
       DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+      DOCKER_TAG_SUFFIX_DDP_STREAMER: ${{ inputs.release == 'fips' && '-fips' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
       COVERAGE_DIR: '/tmp/coverage/${{ startsWith(inputs.type, ''api'') && ''api'' || inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
@@ -210,13 +207,7 @@ jobs:
           COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
           TEST_MODE: ${{ startsWith(inputs.type, 'api') && 'api' || 'true' }}
           APPS_ENGINE_RUNTIME_BACKEND: ${{ inputs.type == 'api-apps-node' && 'node' || '' }}
-          BUILD_TARGET: ${{ inputs.release == 'fips' && 'release-fips' || '' }}
         run: |
-          # Build only ddp-streamer locally when running FIPS to ensure the FIPS stage is used.
-          if [[ '${{ inputs.release }}' == 'fips' ]]; then
-            docker compose -f docker-compose-ci.yml build ddp-streamer-service
-          fi
-
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
 
       - uses: ./.github/actions/setup-playwright
