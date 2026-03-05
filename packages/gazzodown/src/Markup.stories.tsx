@@ -249,7 +249,7 @@ LineBreak.args = {
 	],
 };
 
-export const Example: StoryFn<{ msg: string }> = ({ msg }) => {
+export const Example: StoryFn<{ msg: string }> = ({ msg }: { msg: string }) => {
 	const parseOptions: Options = { katex: { dollarSyntax: true, parenthesisSyntax: true }, colors: true, emoticons: true };
 
 	return <Markup tokens={parse(msg, parseOptions)} />;
