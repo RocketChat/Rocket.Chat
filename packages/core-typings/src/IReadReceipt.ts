@@ -3,16 +3,11 @@ import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 
 export interface IReadReceipt {
-	token?: string;
+	_id: string;
 	messageId: IMessage['_id'];
 	roomId: IRoom['_id'];
-	ts: Date;
-	t?: IMessage['t'];
-	pinned?: IMessage['pinned'];
-	drid?: IMessage['drid'];
-	tmid?: IMessage['tmid'];
 	userId: IUser['_id'];
-	_id: string;
+	ts: Date;
 }
 
 export interface IReadReceiptWithUser extends IReadReceipt {

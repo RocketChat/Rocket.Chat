@@ -9,7 +9,7 @@ export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadRecei
 	}
 
 	protected override modelIndexes(): IndexDescription[] {
-		return [{ key: { roomId: 1, userId: 1, messageId: 1 }, unique: true }, { key: { messageId: 1 } }, { key: { userId: 1 } }];
+		return [{ key: { messageId: 1 } }, { key: { userId: 1 } }, { key: { roomId: 1 } }, { key: { ts: -1 } }];
 	}
 
 	findByMessageId(messageId: string): FindCursor<IReadReceipt> {
