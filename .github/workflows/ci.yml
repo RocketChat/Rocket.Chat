@@ -317,6 +317,10 @@ jobs:
           - arch: arm64
             service: [rocketchat]
             type: coverage
+          # build a dedicated FIPS ddp-streamer image for FIPS test lanes
+          - arch: amd64
+            service: [ddp-streamer-service]
+            type: fips
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -330,9 +334,13 @@ jobs:
         env:
           # add suffix for the extra images with coverage if building for production
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_DDP_STREAMER: ${{ matrix.service[0] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
+          BUILD_TARGET: ${{ matrix.service[0] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
+          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[0] }}
@@ -344,9 +352,13 @@ jobs:
         if: matrix.service[1] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_DDP_STREAMER: ${{ matrix.service[1] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
+          BUILD_TARGET: ${{ matrix.service[1] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
+          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[1] }}
@@ -359,9 +371,13 @@ jobs:
         if: matrix.service[2] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_DDP_STREAMER: ${{ matrix.service[2] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
+          BUILD_TARGET: ${{ matrix.service[2] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
+          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[2] }}
@@ -374,9 +390,13 @@ jobs:
         if: matrix.service[3] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
+          DOCKER_TAG_SUFFIX_DDP_STREAMER: ${{ matrix.service[3] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
+          BUILD_TARGET: ${{ matrix.service[3] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
+          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
           service: ${{ matrix.service[3] }}
@@ -441,6 +461,8 @@ jobs:
             # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
             if [ "$service" == "rocketchat-cov" ]; then
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
+            elif [ "$service" == "ddp-streamer-service-fips" ]; then
+              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "ddp-streamer-service" '.services[$s].image')-fips
             else
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
             fi
@@ -660,8 +682,6 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
-      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
   test-api-livechat-fips:
     name: 🔨 Test API Livechat (FIPS)
@@ -681,8 +701,6 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
-      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
   test-ui-fips:
     name: 🔨 Test UI (FIPS)
@@ -709,8 +727,6 @@ jobs:
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
-      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
