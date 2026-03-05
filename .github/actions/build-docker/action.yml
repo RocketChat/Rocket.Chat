@@ -5,6 +5,12 @@ inputs:
     required: true
   CR_PAT:
     required: true
+  TEMP_DOCKERHUB_FIPS_USER:
+    required: false
+    description: 'Temporary DockerHub user for FIPS base image pulls'
+  TEMP_DOCKERHUB_FIPS_PASS:
+    required: false
+    description: 'Temporary DockerHub password/token for FIPS base image pulls'
   deno-version:
     required: true
     description: 'Deno version'
@@ -27,7 +33,7 @@ inputs:
     default: true
   type:
     required: false
-    description: 'production or coverage'
+    description: 'production, coverage, or fips'
     default: 'coverage'
 
 runs:
@@ -41,6 +47,13 @@ runs:
         registry: ghcr.io
         username: ${{ inputs.CR_USER }}
         password: ${{ inputs.CR_PAT }}
+
+    - name: Login to DockerHub for FIPS base images
+      if: inputs.type == 'fips'
+      uses: docker/login-action@v3
+      with:
+        username: ${{ inputs.TEMP_DOCKERHUB_FIPS_USER }}
+        password: ${{ inputs.TEMP_DOCKERHUB_FIPS_PASS }}
 
     - name: Restore meteor build
       if: inputs.service == 'rocketchat'
@@ -121,7 +134,7 @@ runs:
         cat /tmp/meta.json
 
         if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
-          SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+          SERVICE_SUFFIX=${{ (inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop')) && '-cov' || (inputs.service == 'ddp-streamer-service' && inputs.type == 'fips' && '-fips' || '') }}
 
           mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
 
