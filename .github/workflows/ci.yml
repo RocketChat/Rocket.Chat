@@ -1,6 +1,16 @@
 name: CI
 
 on:
+  workflow_dispatch:
+    inputs:
+      test-scope:
+        description: Select test lanes to run
+        required: false
+        default: all
+        type: choice
+        options:
+          - all
+          - fips
   release:
     types: [published]
   pull_request:
@@ -464,7 +474,7 @@ jobs:
     name: 📦 Track Image Sizes
     needs: [build-gh-docker-publish, release-versions]
     runs-on: ubuntu-24.04-arm
-    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
+    if: github.event_name != 'workflow_dispatch' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/develop')
     permissions:
       pull-requests: write
       contents: write
@@ -496,6 +506,7 @@ jobs:
   test-storybook:
     name: 🔨 Test Storybook
     needs: [packages-build, release-versions]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-storybook.yml
     with:
@@ -507,6 +518,7 @@ jobs:
   test-unit:
     name: 🔨 Test Unit
     needs: [packages-build, release-versions]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-unit.yml
     with:
@@ -519,6 +531,7 @@ jobs:
   test-api:
     name: 🔨 Test API (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -535,6 +548,7 @@ jobs:
   test-api-livechat:
     name: 🔨 Test API Livechat (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -551,6 +565,7 @@ jobs:
   test-ui:
     name: 🔨 Test UI (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -576,6 +591,7 @@ jobs:
   test-api-ee:
     name: 🔨 Test API (EE)
     needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -596,6 +612,7 @@ jobs:
   test-api-livechat-ee:
     name: 🔨 Test API Livechat (EE)
     needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -616,6 +633,7 @@ jobs:
   test-ui-ee:
     name: 🔨 Test UI (EE)
     needs: [checks, build-gh-docker-publish, release-versions]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -708,6 +726,7 @@ jobs:
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
     runs-on: ubuntu-24.04
 
     steps:
@@ -804,6 +823,7 @@ jobs:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
     needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     steps:
       - uses: actions/checkout@v6
@@ -856,7 +876,7 @@ jobs:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
     needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
-    if: always()
+    if: ${{ always() && (github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips') }}
     steps:
       - name: Test finish aggregation
         run: |
@@ -913,7 +933,7 @@ jobs:
   deploy:
     name: 🚀 Publish build assets
     runs-on: ubuntu-24.04-arm
-    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
+    if: github.event_name != 'workflow_dispatch' && (github.event_name == 'release' || github.ref == 'refs/heads/develop')
     needs: [build-gh-docker-publish, release-versions]
 
     steps:
