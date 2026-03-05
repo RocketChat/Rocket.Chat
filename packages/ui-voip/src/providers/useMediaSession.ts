@@ -19,7 +19,10 @@ const defaultSessionInfo: SessionState = {
 	remoteHeld: false,
 	startedAt: undefined,
 	hidden: false,
+	supportedFeatures: ['audio'],
 };
+
+const availableFeatures = ['audio', 'screen-share'] as const;
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
 	if (contact.type === 'sip') {
@@ -118,7 +121,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 		const updateSessionState = () => {
 			const mainCall = instance.getMainCall();
-			console.log('mainCall', mainCall);
 			if (!mainCall) {
 				dispatch({ type: 'reset' });
 				return;
@@ -144,6 +146,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				return;
 			}
 
+			const supportedFeatures = availableFeatures.filter((feature) => mainCall.isFeatureAvailable(feature));
+
 			const connectionState = deriveConnectionStateFromCallState(callState);
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
@@ -163,6 +167,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						remoteMuted: remoteMute,
 						callId,
 						startedAt,
+						supportedFeatures,
 					},
 				});
 				return;
@@ -196,6 +201,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 					remoteMuted: remoteMute,
 					callId,
 					startedAt,
+					supportedFeatures,
 				},
 			});
 		};

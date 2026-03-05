@@ -96,7 +96,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: new MediaCallLogger(),
-			features: ['audio', 'screen-share'], // TODO: Control with setting
+			features: ['audio', 'screen-share'],
 		});
 
 		if (window.sessionStorage) {

@@ -1,4 +1,5 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
+import type { CallFeature } from '@rocket.chat/media-signaling';
 
 export type InternalPeerInfo = {
 	displayName: string;
@@ -30,6 +31,7 @@ interface IBaseSession {
 	remoteHeld: boolean;
 	startedAt?: Date;
 	hidden: boolean;
+	supportedFeatures: CallFeature[];
 }
 
 interface IEmptySession extends IBaseSession {

@@ -6,8 +6,7 @@ import { useMediaCallView } from '../../context/MediaCallViewContext';
 const MediaCallWidget = () => {
 	const { inRoomView } = useMediaCallInstance();
 	const {
-		sessionState: { state, hidden, transferredBy, peerInfo },
-		screenShareEnabled,
+		sessionState: { state, hidden, transferredBy, peerInfo, supportedFeatures },
 	} = useMediaCallView();
 
 	if (hidden || inRoomView) {
@@ -16,7 +15,7 @@ const MediaCallWidget = () => {
 
 	switch (state) {
 		case 'ongoing':
-			if ('username' in peerInfo && screenShareEnabled) {
+			if ('username' in peerInfo && supportedFeatures.includes('screen-share')) {
 				return <OngoingCallWithScreen />;
 			}
 			return <OngoingCall />;
