@@ -39,6 +39,8 @@ import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFrom
 import { ExtractRoutesFromAPI } from '../ApiClass';
 import { validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
+import { withUserIdProps } from '@rocket.chat/rest-typings/dist/v1/groups/BaseProps';
+
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -897,51 +899,14 @@ API.v1.addRoute(
 
 
 
-type GroupsBaseProps = { roomId: string; roomName?: string } | { roomId?: string; roomName: string };
-const withGroupBaseProperties = (properties: Record<string, any> = {}, required: string[] = []) => ({
-	oneOf: [
-		{
-			type: 'object',
-			properties: {
-				roomId: {
-					type: 'string',
-				},
-				...properties,
-			},
-			required: ['roomId'].concat(required),
-			additionalProperties: false,
-		},
-		{
-			type: 'object',
-			properties: {
-				roomName: {
-					type: 'string',
-				},
-				...properties,
-			},
-			required: ['roomName'].concat(required),
-			additionalProperties: false,
-		},
-	],
-});
 
-type WithUserId = GroupsBaseProps & { userId: string };
-const withUserIdSchema = withGroupBaseProperties(
-	{
-		userId: {
-			type: 'string',
-		},
-	},
-	['userId'],
-);
-export const GroupsRemoveModeratorProps = ajv.compile<WithUserId>(withUserIdSchema);
 
 
 const groupsEndpoints = API.v1.post(
 	"groups.removeModerator",
 	{
 		authRequired:true,
-		body: GroupsRemoveModeratorProps,
+		body: withUserIdProps,
 		response:{
 			400:validateBadRequestErrorResponse,
 			401:validateUnauthorizedErrorResponse,
