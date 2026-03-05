@@ -1,7 +1,13 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
-import type { CallRejectedReason, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
+import type {
+	CallFeature,
+	CallRejectedReason,
+	ClientMediaSignal,
+	ClientMediaSignalBody,
+	ServerMediaSignal,
+} from '@rocket.chat/media-signaling';
 
 import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
@@ -131,6 +137,10 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public async permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
 		return this.settings.permissionCheck(uid, callType);
+	}
+
+	public isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean {
+		return this.settings.isFeatureAvailableForUser(uid, feature);
 	}
 
 	/**

@@ -9,7 +9,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
-import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
+import { type CallFeature, isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
 import { getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
@@ -315,7 +315,20 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				},
 			},
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
+			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
 		};
+	}
+
+	private userHasFeaturePermission(_uid: IUser['_id'], feature: CallFeature): boolean {
+		if (feature === 'audio') {
+			return true;
+		}
+
+		if (feature === 'screen-share') {
+			return settings.get<boolean>('VoIP_TeamCollab_Screen_Sharing_Enabled') ?? false;
+		}
+
+		return false;
 	}
 
 	private async userHasMediaCallPermission(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
