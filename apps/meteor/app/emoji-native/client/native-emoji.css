@@ -1,0 +1,16 @@
+.emoji {
+	font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
+	font-style: normal;
+	font-weight: 400;
+
+	display: inline;
+
+	vertical-align: middle;
+
+	font-size: 1.375rem;
+	line-height: 1;
+}
+
+.emoji.big {
+	font-size: 2.25rem;
+}
