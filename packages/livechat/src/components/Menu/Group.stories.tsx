@@ -1,45 +1,45 @@
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import Menu, { Group, Item } from '.';
+import { Menu, MenuGroup, MenuItem } from '.';
 
 export default {
 	title: 'Components/Menu/Group',
-	component: Group,
+	component: MenuGroup,
 	parameters: {
 		layout: 'centered',
 	},
-} satisfies Meta<ComponentProps<typeof Group>>;
+} satisfies Meta<ComponentProps<typeof MenuGroup>>;
 
-export const Single: StoryFn<ComponentProps<typeof Group>> = (args) => (
+export const Single: StoryFn<ComponentProps<typeof MenuGroup>> = (args) => (
 	<Menu>
-		<Group {...args}>
-			<Item>A menu item</Item>
-			<Item>Another menu item</Item>
-		</Group>
+		<MenuGroup {...args}>
+			<MenuItem>A menu item</MenuItem>
+			<MenuItem>Another menu item</MenuItem>
+		</MenuGroup>
 	</Menu>
 );
 Single.storyName = 'single';
 
-export const Multiple: StoryFn<ComponentProps<typeof Group>> = (args) => (
+export const Multiple: StoryFn<ComponentProps<typeof MenuGroup>> = (args) => (
 	<Menu>
-		<Group {...args}>
-			<Item>A menu item</Item>
-			<Item>Another menu item</Item>
-		</Group>
-		<Group>
-			<Item>Report</Item>
-		</Group>
+		<MenuGroup {...args}>
+			<MenuItem>A menu item</MenuItem>
+			<MenuItem>Another menu item</MenuItem>
+		</MenuGroup>
+		<MenuGroup>
+			<MenuItem>Report</MenuItem>
+		</MenuGroup>
 	</Menu>
 );
 Multiple.storyName = 'multiple';
 
-export const WithTitle: StoryFn<ComponentProps<typeof Group>> = (args) => (
+export const WithTitle: StoryFn<ComponentProps<typeof MenuGroup>> = (args) => (
 	<Menu>
-		<Group {...args}>
-			<Item>A menu item</Item>
-			<Item>Another menu item</Item>
-		</Group>
+		<MenuGroup {...args}>
+			<MenuItem>A menu item</MenuItem>
+			<MenuItem>Another menu item</MenuItem>
+		</MenuGroup>
 	</Menu>
 );
 WithTitle.storyName = 'with title';

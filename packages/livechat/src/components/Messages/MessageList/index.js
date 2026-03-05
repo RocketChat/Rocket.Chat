@@ -24,7 +24,6 @@ export class MessageList extends MemoizedComponent {
 
 	static SCROLL_AT_BOTTOM_AREA = 128;
 
-	// eslint-disable-next-line no-use-before-define
 	scrollPosition = MessageList.SCROLL_AT_BOTTOM;
 
 	handleScroll = () => {
@@ -187,12 +186,13 @@ export class MessageList extends MemoizedComponent {
 	};
 
 	render = ({ className, style = {} }) => (
+		// eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
 		<div
-			onScroll={this.handleScroll}
-			className={createClassName(styles, 'message-list', {}, [className])}
-			onClick={this.handleClick}
-			style={style}
 			data-qa='message-list'
+			className={createClassName(styles, 'message-list', {}, [className])}
+			style={style}
+			onClick={this.handleClick}
+			onScroll={this.handleScroll}
 		>
 			<ol className={createClassName(styles, 'message-list__content')}>{this.renderItems(this.props)}</ol>
 		</div>

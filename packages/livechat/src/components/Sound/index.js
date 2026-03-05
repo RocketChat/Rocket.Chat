@@ -31,5 +31,6 @@ export class Sound extends Component {
 		this.handlePlayProp();
 	}
 
+	// eslint-disable-next-line jsx-a11y/media-has-caption
 	render = ({ src, onStart, onStop }) => <audio ref={this.handleRef} src={src} onPlay={onStart} onEnded={onStop} type='audio/mpeg' />;
 }

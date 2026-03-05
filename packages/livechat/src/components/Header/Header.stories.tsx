@@ -2,7 +2,17 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import Header, { Picture, Content, SubTitle, Title, Actions, Action, Post, CustomField } from '.';
+import {
+	Header,
+	HeaderPicture,
+	HeaderContent,
+	HeaderSubTitle,
+	HeaderTitle,
+	HeaderActions,
+	HeaderAction,
+	HeaderPost,
+	HeaderCustomField,
+} from '.';
 import { gazzoAvatar } from '../../../.storybook/helpers';
 import Arrow from '../../icons/arrowDown.svg';
 import Bell from '../../icons/bell.svg';
@@ -27,49 +37,49 @@ export default {
 
 export const WithTextContent: StoryFn<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
-		<Content>Need Help?</Content>
+		<HeaderContent>Need Help?</HeaderContent>
 	</Header>
 );
 WithTextContent.storyName = 'with text content';
 
 export const WithLongTextContent: StoryFn<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
-		<Content>{'Need Help? '.repeat(100)}</Content>
+		<HeaderContent>{'Need Help? '.repeat(100)}</HeaderContent>
 	</Header>
 );
 WithLongTextContent.storyName = 'with long text content';
 
 export const WithTitleAndSubtitle: StoryFn<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
-		<Content>
-			<Title>Rocket.Chat</Title>
-			<SubTitle>Livechat</SubTitle>
-		</Content>
+		<HeaderContent>
+			<HeaderTitle>Rocket.Chat</HeaderTitle>
+			<HeaderSubTitle>Livechat</HeaderSubTitle>
+		</HeaderContent>
 	</Header>
 );
 WithTitleAndSubtitle.storyName = 'with title and subtitle';
 
 export const WithPicture: StoryFn<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
-		<Picture>
+		<HeaderPicture>
 			<Bell width={20} height={20} />
-		</Picture>
-		<Content>Notification settings</Content>
+		</HeaderPicture>
+		<HeaderContent>Notification settings</HeaderContent>
 	</Header>
 );
 WithPicture.storyName = 'with picture';
 
 export const WithActions: StoryFn<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
-		<Content>Chat finished</Content>
-		<Actions>
-			<Action onClick={action('notifications')}>
+		<HeaderContent>Chat finished</HeaderContent>
+		<HeaderActions>
+			<HeaderAction onClick={action('notifications')}>
 				<Bell width={20} height={20} />
-			</Action>
-			<Action onClick={action('minimize')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('minimize')}>
 				<Arrow width={20} height={20} />
-			</Action>
-		</Actions>
+			</HeaderAction>
+		</HeaderActions>
 	</Header>
 );
 WithActions.storyName = 'with actions';
@@ -78,74 +88,74 @@ export const WithMultiplesAlerts: StoryFn<ComponentProps<typeof Header>> = (args
 	<Header
 		{...args}
 		post={
-			<Post>
+			<HeaderPost>
 				<Alert success>Success</Alert>
 				<Alert warning>Warning</Alert>
 				<Alert error>Error</Alert>
 				<Alert error color='#175CC4'>
 					Custom color
 				</Alert>
-			</Post>
+			</HeaderPost>
 		}
 	>
-		<Content>Chat finished</Content>
-		<Actions>
-			<Action onClick={action('notifications')}>
+		<HeaderContent>Chat finished</HeaderContent>
+		<HeaderActions>
+			<HeaderAction onClick={action('notifications')}>
 				<Bell width={20} height={20} />
-			</Action>
-			<Action onClick={action('minimize')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('minimize')}>
 				<Arrow width={20} height={20} />
-			</Action>
-		</Actions>
+			</HeaderAction>
+		</HeaderActions>
 	</Header>
 );
 WithMultiplesAlerts.storyName = 'with multiples alerts';
 
 export const ForUserChat: StoryFn<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
-		<Picture>
+		<HeaderPicture>
 			<Avatar src={gazzoAvatar} status='busy' />
-		</Picture>
-		<Content>
-			<Title>@guilherme.gazzo</Title>
-			<SubTitle>guilherme.gazzo@rocket.chat</SubTitle>
-		</Content>
-		<Actions>
-			<Action onClick={action('notifications')}>
+		</HeaderPicture>
+		<HeaderContent>
+			<HeaderTitle>@guilherme.gazzo</HeaderTitle>
+			<HeaderSubTitle>guilherme.gazzo@rocket.chat</HeaderSubTitle>
+		</HeaderContent>
+		<HeaderActions>
+			<HeaderAction onClick={action('notifications')}>
 				<Bell width={20} height={20} />
-			</Action>
-			<Action onClick={action('minimize')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('minimize')}>
 				<Arrow width={20} height={20} />
-			</Action>
-			<Action onClick={action('fullscreen')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('fullscreen')}>
 				<NewWindow width={20} height={20} />
-			</Action>
-		</Actions>
+			</HeaderAction>
+		</HeaderActions>
 	</Header>
 );
 ForUserChat.storyName = 'for user chat';
 
 export const WithCustomField: StoryFn<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args} large>
-		<Picture>
+		<HeaderPicture>
 			<Avatar src={gazzoAvatar} large status='away' />
-		</Picture>
-		<Content>
-			<Title>Guilherme Gazzo</Title>
-			<SubTitle>guilherme.gazzo@rocket.chat</SubTitle>
-			<CustomField>+ 55 42423 24242</CustomField>
-		</Content>
-		<Actions>
-			<Action onClick={action('notifications')}>
+		</HeaderPicture>
+		<HeaderContent>
+			<HeaderTitle>Guilherme Gazzo</HeaderTitle>
+			<HeaderSubTitle>guilherme.gazzo@rocket.chat</HeaderSubTitle>
+			<HeaderCustomField>+ 55 42423 24242</HeaderCustomField>
+		</HeaderContent>
+		<HeaderActions>
+			<HeaderAction onClick={action('notifications')}>
 				<Bell width={20} height={20} />
-			</Action>
-			<Action onClick={action('minimize')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('minimize')}>
 				<Arrow width={20} height={20} />
-			</Action>
-			<Action onClick={action('fullscreen')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('fullscreen')}>
 				<NewWindow width={20} height={20} />
-			</Action>
-		</Actions>
+			</HeaderAction>
+		</HeaderActions>
 	</Header>
 );
 WithCustomField.storyName = 'with custom field';
@@ -157,31 +167,31 @@ export const WithCustomFieldAndAlert: StoryFn<ComponentProps<typeof Header>> = (
 	<Header
 		{...args}
 		post={
-			<Post>
+			<HeaderPost>
 				<Alert success>Success</Alert>
 				<Alert warning>Warning</Alert>
-			</Post>
+			</HeaderPost>
 		}
 	>
-		<Picture>
+		<HeaderPicture>
 			<Avatar src={gazzoAvatar} large status='online' />
-		</Picture>
-		<Content>
-			<Title>Guilherme Gazzo</Title>
-			<SubTitle>guilherme.gazzo@rocket.chat</SubTitle>
-			<CustomField>+ 55 42423 24242</CustomField>
-		</Content>
-		<Actions>
-			<Action onClick={action('notifications')}>
+		</HeaderPicture>
+		<HeaderContent>
+			<HeaderTitle>Guilherme Gazzo</HeaderTitle>
+			<HeaderSubTitle>guilherme.gazzo@rocket.chat</HeaderSubTitle>
+			<HeaderCustomField>+ 55 42423 24242</HeaderCustomField>
+		</HeaderContent>
+		<HeaderActions>
+			<HeaderAction onClick={action('notifications')}>
 				<Bell width={20} height={20} />
-			</Action>
-			<Action onClick={action('minimize')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('minimize')}>
 				<Arrow width={20} height={20} />
-			</Action>
-			<Action onClick={action('fullscreen')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('fullscreen')}>
 				<NewWindow width={20} height={20} />
-			</Action>
-		</Actions>
+			</HeaderAction>
+		</HeaderActions>
 	</Header>
 );
 WithCustomFieldAndAlert.storyName = 'with custom field and alert';
@@ -191,25 +201,25 @@ WithCustomFieldAndAlert.args = {
 
 export const WithTheme: StoryFn<ComponentProps<typeof Header>> = (args) => (
 	<Header {...args}>
-		<Picture>
+		<HeaderPicture>
 			<Avatar src={gazzoAvatar} large status='away' />
-		</Picture>
-		<Content>
-			<Title>Guilherme Gazzo</Title>
-			<SubTitle>guilherme.gazzo@rocket.chat</SubTitle>
-			<CustomField>+ 55 42423 24242</CustomField>
-		</Content>
-		<Actions>
-			<Action onClick={action('notifications')}>
+		</HeaderPicture>
+		<HeaderContent>
+			<HeaderTitle>Guilherme Gazzo</HeaderTitle>
+			<HeaderSubTitle>guilherme.gazzo@rocket.chat</HeaderSubTitle>
+			<HeaderCustomField>+ 55 42423 24242</HeaderCustomField>
+		</HeaderContent>
+		<HeaderActions>
+			<HeaderAction onClick={action('notifications')}>
 				<Bell width={20} height={20} />
-			</Action>
-			<Action onClick={action('minimize')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('minimize')}>
 				<Arrow width={20} height={20} />
-			</Action>
-			<Action onClick={action('fullscreen')}>
+			</HeaderAction>
+			<HeaderAction onClick={action('fullscreen')}>
 				<NewWindow width={20} height={20} />
-			</Action>
-		</Actions>
+			</HeaderAction>
+		</HeaderActions>
 	</Header>
 );
 WithTheme.storyName = 'with theme';

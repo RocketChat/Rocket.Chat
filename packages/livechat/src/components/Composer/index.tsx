@@ -270,7 +270,9 @@ export class Composer extends Component<ComposerProps, ComposerState> {
 			{pre}
 			<div
 				ref={this.handleRef}
+				role='textbox'
 				contentEditable
+				tabIndex={0}
 				data-placeholder={placeholder}
 				data-qa='livechat-composer'
 				onInput={this.handleInput(onChange)}

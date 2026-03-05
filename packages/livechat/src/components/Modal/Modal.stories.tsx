@@ -2,7 +2,9 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import Modal from './component';
+import AlertModal from './AlertModal';
+import ConfirmationModal from './ConfirmationModal';
+import Modal from './Modal';
 import { loremIpsum } from '../../../.storybook/helpers';
 
 export default {
@@ -64,7 +66,7 @@ DisallowDismissByOverlay.args = {
 	onDismiss: action('dismiss'),
 };
 
-export const Confirm: StoryFn<ComponentProps<typeof Modal.Confirm>> = (args) => <Modal.Confirm {...args} />;
+export const Confirm: StoryFn<ComponentProps<typeof ConfirmationModal>> = (args) => <ConfirmationModal {...args} />;
 Confirm.storyName = 'confirm';
 Confirm.args = {
 	text: 'Are you ok?',
@@ -74,7 +76,7 @@ Confirm.args = {
 	onCancel: action('cancel'),
 };
 
-export const Alert: StoryFn<ComponentProps<typeof Modal.Alert>> = (args) => <Modal.Alert {...args} />;
+export const Alert: StoryFn<ComponentProps<typeof AlertModal>> = (args) => <AlertModal {...args} />;
 Alert.storyName = 'alert';
 Alert.args = {
 	text: 'You look great today.',

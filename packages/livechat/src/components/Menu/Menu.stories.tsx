@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import Menu, { Group, Item } from '.';
+import { Menu, MenuGroup, MenuItem } from '.';
 import { Button } from '../Button';
 
 export default {
@@ -29,19 +29,19 @@ Empty.storyName = 'empty';
 
 export const Simple: StoryFn<ComponentProps<typeof Menu>> = (args) => (
 	<Menu {...args}>
-		<Group>
-			<Item onClick={action('clicked')}>A menu item</Item>
-			<Item>Another menu item</Item>
-		</Group>
+		<MenuGroup>
+			<MenuItem onClick={action('clicked')}>A menu item</MenuItem>
+			<MenuItem>Another menu item</MenuItem>
+		</MenuGroup>
 	</Menu>
 );
 Simple.storyName = 'simple';
 Simple.args = {
 	children: (
-		<Group>
-			<Item onClick={action('clicked')}>A menu item</Item>
-			<Item>Another menu item</Item>
-		</Group>
+		<MenuGroup>
+			<MenuItem onClick={action('clicked')}>A menu item</MenuItem>
+			<MenuItem>Another menu item</MenuItem>
+		</MenuGroup>
 	),
 };
 
@@ -49,10 +49,10 @@ export const Placement: StoryFn<ComponentProps<typeof Menu>> = (args) => (
 	<div style={{ position: 'relative' }}>
 		<Button>Button</Button>
 		<Menu {...args}>
-			<Group>
-				<Item onClick={action('clicked')}>A menu item</Item>
-				<Item>Another menu item</Item>
-			</Group>
+			<MenuGroup>
+				<MenuItem onClick={action('clicked')}>A menu item</MenuItem>
+				<MenuItem>Another menu item</MenuItem>
+			</MenuGroup>
 		</Menu>
 	</div>
 );
