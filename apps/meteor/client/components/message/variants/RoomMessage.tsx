@@ -35,8 +35,22 @@ type RoomMessageProps = {
 	searchText?: string;
 } & ComponentProps<typeof Message>;
 
-const getAriaLabelledBy = ({ readReceiptEnabled, messageId }: { readReceiptEnabled: boolean; messageId: string }) => {
-	const labels = [`${messageId}-displayName`, `${messageId}-time`, `${messageId}-content`];
+const getAriaLabelledBy = ({
+	readReceiptEnabled,
+	messageId,
+	sequential,
+}: {
+	readReceiptEnabled: boolean;
+	messageId: string;
+	sequential: boolean;
+}) => {
+	const labels: string[] = [];
+
+	if (!sequential) {
+		labels.push(`${messageId}-displayName`, `${messageId}-time`);
+	}
+
+	labels.push(`${messageId}-content`);
 
 	if (readReceiptEnabled) {
 		labels.push(`${messageId}-read-status`);
@@ -81,7 +95,7 @@ const RoomMessage = ({
 			role='listitem'
 			aria-roledescription={t('message')}
 			tabIndex={0}
-			aria-labelledby={sequential ? undefined : getAriaLabelledBy({ readReceiptEnabled, messageId: message._id })}
+			aria-labelledby={getAriaLabelledBy({ readReceiptEnabled, messageId: message._id, sequential })}
 			onClick={selecting ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
