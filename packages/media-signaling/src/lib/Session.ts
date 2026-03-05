@@ -347,7 +347,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.inputTrack = newInputTrack;
 
-		for await (const call of this.knownCalls.values()) {
+		for (const call of this.knownCalls.values()) {
 			await call.setInputTrack(newInputTrack).catch((error) => {
 				if (newInputTrack) {
 					throw error;
