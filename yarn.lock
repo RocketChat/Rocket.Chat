@@ -8477,10 +8477,10 @@ __metadata:
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
-    "@types/emojione": "npm:^2.2.9"
     "@types/node": "npm:~22.16.5"
     "@types/sanitize-html": "npm:~2.16.0"
-    emojione: "npm:^4.5.0"
+    emojibase: "npm:^17.0.0"
+    emojibase-data: "npm:^17.0.0"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
     jest-qase-reporter: "npm:^2.1.4"
@@ -9303,9 +9303,8 @@ __metadata:
     drachtio-srf: "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch"
     ejson: "npm:^2.2.3"
     emailreplyparser: "npm:^0.0.5"
-    emoji-toolkit: "npm:^7.0.1"
-    emojione: "npm:^4.5.0"
-    emojione-assets: "npm:^4.5.0"
+    emojibase: "npm:^17.0.0"
+    emojibase-data: "npm:^17.0.0"
     esl: "npm:^11.2.1"
     eslint: "npm:~9.39.3"
     eventemitter3: "npm:^5.0.4"
@@ -9624,7 +9623,6 @@ __metadata:
     "@types/node": "npm:~22.16.5"
     date-fns: "npm:~4.1.0"
     ejson: "npm:^2.2.3"
-    emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~9.39.3"
     eventemitter3: "npm:^5.0.4"
     i18next: "npm:~23.4.9"
@@ -9662,7 +9660,6 @@ __metadata:
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/react": "npm:~18.3.27"
     ejson: "npm:^2.2.3"
-    emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~9.39.3"
     eventemitter3: "npm:^5.0.4"
     i18next: "npm:~23.4.9"
@@ -9745,12 +9742,10 @@ __metadata:
     "@storybook/react-webpack5": "npm:^8.6.17"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
-    "@types/emojione": "npm:^2.2.9"
     "@types/jest": "npm:~30.0.0"
     "@types/react": "npm:~18.3.27"
     "@types/react-dom": "npm:~18.3.7"
     buffer: "npm:~6.0.3"
-    emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~9.39.3"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
@@ -9869,7 +9864,6 @@ __metadata:
     "@types/polka": "npm:^0.5.8"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
-    emoji-toolkit: "npm:^7.0.1"
     eslint: "npm:~9.39.3"
     eventemitter3: "npm:^5.0.4"
     mem: "npm:^8.1.1"
@@ -12777,13 +12771,6 @@ __metadata:
   version: 2.2.2
   resolution: "@types/ejson@npm:2.2.2"
   checksum: 10/3f2eb25d98f93821156b071e647bca626563900ecb34bb81cdba33721ee7d046bb66db7d6de664312b9480821821a1d177cf5e146dc1f10adcf43cbd2e387bbe
-  languageName: node
-  linkType: hard
-
-"@types/emojione@npm:^2.2.9":
-  version: 2.2.9
-  resolution: "@types/emojione@npm:2.2.9"
-  checksum: 10/ec16f96f8d9886dc3f82bd8aa3ee34f320069771d9a82d01c3c20da9c0c13c7b07347eff2912b914caf3416e3cedea4b963ecc3331c23d743270c975a91ff4d4
   languageName: node
   linkType: hard
 
@@ -19707,24 +19694,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"emoji-toolkit@npm:^7.0.1":
-  version: 7.0.1
-  resolution: "emoji-toolkit@npm:7.0.1"
-  checksum: 10/5b8c84718d0efa4b00a877ac5c6cf3844a9e33f52d5d50b6d02563be781df311390b524a9989289f8a0e80104054dae4517a5e26ee1b40dc901051f80aa7f1af
+"emojibase-data@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "emojibase-data@npm:17.0.0"
+  peerDependencies:
+    emojibase: "*"
+  checksum: 10/124e24063c6123c29e9ccb716d88c376beba33c87f2bb6ec7d207d0a2ccf2831d83bf36c95363ff32b9e2c87d32d1b8ddf2e8d2776da804cabe5d0b7d47fde3f
   languageName: node
   linkType: hard
 
-"emojione-assets@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "emojione-assets@npm:4.5.0"
-  checksum: 10/c20fa0e4805e70da47c683712e4ae53229dcee437f891c85dfd906d89813deca9d049f0d34599b88dd28067631a2b744e3d1abe07e5431916b1c503bc1acedaf
-  languageName: node
-  linkType: hard
-
-"emojione@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "emojione@npm:4.5.0"
-  checksum: 10/5178a4b2be685f43464c0cde9939c11576a0e7c817adff381e15e7df0373107275e998217463649aee246cef2151bbf839357edbbdc8c38415498e4e71818159
+"emojibase@npm:^17.0.0":
+  version: 17.0.0
+  resolution: "emojibase@npm:17.0.0"
+  checksum: 10/8ee6b0cc6ca807e11a1ec72288cc83477f82eedd9f57a69ccbb7d120f811ff3b30d4ff42c100226dde7576f6b17a77f22d2aa103541f208b30dcde1da23dbe4e
   languageName: node
   linkType: hard
 

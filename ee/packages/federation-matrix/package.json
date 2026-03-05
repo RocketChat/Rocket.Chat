@@ -28,7 +28,8 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/network-broker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"emojione": "^4.5.0",
+		"emojibase": "^17.0.0",
+		"emojibase-data": "^17.0.0",
 		"marked": "^16.1.2",
 		"mongodb": "6.16.0",
 		"pino": "^8.21.0",
@@ -39,7 +40,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/ddp-client": "workspace:^",
-		"@types/emojione": "^2.2.9",
 		"@types/node": "~22.16.5",
 		"@types/sanitize-html": "~2.16.0",
 		"eslint": "~9.39.3",
