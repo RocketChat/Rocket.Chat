@@ -115,7 +115,7 @@ services:
           - linux/arm64
       args:
         SERVICE: ddp-streamer
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_DDP_STREAMER:-}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_FIPS:-}
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
