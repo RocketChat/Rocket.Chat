@@ -53,7 +53,7 @@ function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOut
 }
 
 async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channels: string[]): Promise<void> {
-	for await (let channel of channels) {
+	for (let channel of channels) {
 		if (scopedChannels.includes(channel)) {
 			if (channel === 'all_public_channels') {
 				// No special permissions needed to add integration to public channels
