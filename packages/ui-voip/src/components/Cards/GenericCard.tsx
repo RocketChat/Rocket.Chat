@@ -6,15 +6,6 @@ const styles = css`
 	box-shadow:
 		0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};
-
-	&:hover {
-		.card-slot-hover {
-			display: block;
-		}
-	}
-	.card-slot-hover {
-		display: none;
-	}
 `;
 
 export const CARD_HEIGHT = 180;

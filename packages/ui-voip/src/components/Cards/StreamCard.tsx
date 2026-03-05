@@ -1,5 +1,5 @@
 import CardSlotPin from './CardSlotPin';
-import CardSlotStopSharingHover from './CardSlotStopSharingHover';
+import CardSlotStopSharing from './CardSlotStopSharing';
 import GenericCard from './GenericCard';
 
 type StreamCardProps = {
@@ -29,7 +29,7 @@ const StreamCard = ({ children, own, onClickFocusStream, onClickStopSharing, foc
 			maxHeight={maxHeight || '100%'}
 		>
 			{onClickFocusStream && <CardSlotPin focused={focused} onClick={onClickFocusStream} position='bottomRight' />}
-			{own && onClickStopSharing && <CardSlotStopSharingHover onClick={onClickStopSharing} />}
+			{own && onClickStopSharing && <CardSlotStopSharing onClick={onClickStopSharing} />}
 			{children}
 		</GenericCard>
 	);

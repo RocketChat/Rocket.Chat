@@ -6,8 +6,8 @@ export { default as CardWidgetContainer } from './CardWidgetContainer';
 export { default as CardSlotAudioState } from './CardSlotAudioState';
 export { default as CardSlotContainer } from './CardSlotContainer';
 export { default as CardSlotPin } from './CardSlotPin';
-export { default as CardSlotHover } from './CardSlotHover';
-export { default as CardSlotStopSharingHover } from './CardSlotStopSharingHover';
+export { default as CardSlotMiddle } from './CardSlotMiddle';
+export { default as CardSlotStopSharing } from './CardSlotStopSharing';
 
 export { default as CardListContainer } from './CardListContainer';
 export { default as CardListContainerPinned } from './CardListContainerPinned';

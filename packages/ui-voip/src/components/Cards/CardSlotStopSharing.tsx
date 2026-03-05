@@ -1,22 +1,22 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import CardSlotHover from './CardSlotHover';
+import CardSlotMiddle from './CardSlotMiddle';
 
-type CardSlotStopSharingHoverProps = {
+type CardSlotStopSharingProps = {
 	onClick: () => void;
 };
 
-const CardSlotStopSharingHover = ({ onClick }: CardSlotStopSharingHoverProps) => {
+const CardSlotStopSharing = ({ onClick }: CardSlotStopSharingProps) => {
 	const { t } = useTranslation();
 	return (
-		<CardSlotHover>
+		<CardSlotMiddle>
 			{/* // TODO: use fuselage `desktop-cross` when available */}
 			<Button danger small icon='desktop' onClick={onClick}>
 				{t('Stop_sharing')}
 			</Button>
-		</CardSlotHover>
+		</CardSlotMiddle>
 	);
 };
 
-export default CardSlotStopSharingHover;
+export default CardSlotStopSharing;
