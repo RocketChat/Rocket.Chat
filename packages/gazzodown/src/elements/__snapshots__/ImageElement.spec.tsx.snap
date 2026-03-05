@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ImageElement matches snapshot 1`] = `
+<div>
+  <a
+    href="https://example.com/img.png"
+    rel="noopener noreferrer"
+    target="_blank"
+    title="Snapshot image"
+  >
+    <img
+      alt="Snapshot image"
+      data-title="https://example.com/img.png"
+      src="https://example.com/img.png"
+      style="max-width: 100%;"
+    />
+  </a>
+</div>
+`;

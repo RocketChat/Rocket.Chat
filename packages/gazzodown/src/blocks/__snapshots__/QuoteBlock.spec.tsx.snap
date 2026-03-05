@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`QuoteBlock matches snapshot 1`] = `
+<div>
+  <blockquote>
+    <div>
+      Snapshot quote
+    </div>
+  </blockquote>
+</div>
+`;

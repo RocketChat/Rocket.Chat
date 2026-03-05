@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PlainSpan matches snapshot with highlighting 1`] = `
+<div>
+  Hello 
+  <mark
+    class="highlight-text"
+    title="Highlighted_chosen_word"
+  >
+    World
+  </mark>
+   Goodbye 
+  <mark
+    class="highlight-text"
+    title="Highlighted_chosen_word"
+  >
+    World
+  </mark>
+</div>
+`;

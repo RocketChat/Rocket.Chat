@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`UserMentionElement matches snapshot for resolved mention 1`] = `
+<div>
+  <span
+    class="rcx-box rcx-box--full rcx-message__highlight rcx-message__highlight--other rcx-message__highlight--clickable"
+    data-uid="user123"
+    role="button"
+    tabindex="0"
+    title="Mentions_user"
+  >
+    john
+  </span>
+</div>
+`;
+
+exports[`UserMentionElement matches snapshot for unresolved mention 1`] = `
+<div>
+  @
+  unknown
+</div>
+`;

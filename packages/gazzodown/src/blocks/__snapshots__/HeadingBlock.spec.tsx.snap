@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`HeadingBlock matches snapshot 1`] = `
+<div>
+  <h2>
+    Snapshot heading
+  </h2>
+</div>
+`;
