@@ -96,7 +96,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
-			if (!subscription) {
+			if (!subscription || subscription.status === 'BANNED') {
 				return addUserToRoom(data.rid, newUser, user);
 			}
 			if (!newUser.username) {
