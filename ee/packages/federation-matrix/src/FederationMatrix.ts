@@ -153,7 +153,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			this.logger.debug({ msg: 'Ensuring federated users exist locally before DM creation', memberCount: usernames.length });
 
 			const federatedUsers = usernames.filter(validateFederatedUsername);
-			for await (const username of federatedUsers) {
+			for (const username of federatedUsers) {
 				const existingUser = await Users.findOneByUsername(username);
 				if (existingUser && isUserNativeFederated(existingUser)) {
 					continue;
@@ -513,7 +513,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			for await (const [eventId, username] of Object.entries(reactionData.federationReactionEventIds)) {
+			for (const [eventId, username] of Object.entries(reactionData.federationReactionEventIds)) {
 				if (username !== user.username) {
 					continue;
 				}
