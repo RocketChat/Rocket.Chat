@@ -189,7 +189,7 @@ async function run() {
 	console.log();
 
 	// Benchmarks must run sequentially to avoid interference
-	// eslint-disable-next-line no-restricted-syntax
+
 	for (const category of categories) {
 		const bench = new Bench({
 			time: category.time ?? 1000,

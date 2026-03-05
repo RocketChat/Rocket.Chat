@@ -73,4 +73,46 @@ describe('BlockSplitter', () => {
 		expect(blocks[0].type).toBe(BlockType.QUOTE);
 		expect(blocks[0].content).toBe('> outer\n>> inner');
 	});
+
+	it('should set ordered to undefined for mixed ordered and unordered list items', () => {
+		const input = '- unordered\n1. ordered';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(1);
+		expect(blocks[0].type).toBe(BlockType.LIST);
+		expect(blocks[0].ordered).toBeUndefined();
+	});
+
+	it('should keep ordered=true for fully ordered lists', () => {
+		const input = '1. first\n2. second';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(1);
+		expect(blocks[0].type).toBe(BlockType.LIST);
+		expect(blocks[0].ordered).toBe(true);
+	});
+
+	it('should keep ordered=false for fully unordered lists', () => {
+		const input = '- first\n* second';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(1);
+		expect(blocks[0].type).toBe(BlockType.LIST);
+		expect(blocks[0].ordered).toBe(false);
+	});
+
+	it('should create a new paragraph block after a list block', () => {
+		const input = '- list item\n\nParagraph text';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(2);
+		expect(blocks[0].type).toBe(BlockType.LIST);
+		expect(blocks[1].type).toBe(BlockType.PARAGRAPH);
+		expect(blocks[1].content).toBe('Paragraph text');
+	});
+
+	it('should create a new paragraph block after a quote block', () => {
+		const input = '> blockquote\n\nParagraph text';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(2);
+		expect(blocks[0].type).toBe(BlockType.QUOTE);
+		expect(blocks[1].type).toBe(BlockType.PARAGRAPH);
+		expect(blocks[1].content).toBe('Paragraph text');
+	});
 });

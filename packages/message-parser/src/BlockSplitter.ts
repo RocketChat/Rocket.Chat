@@ -59,7 +59,6 @@ export class BlockSplitter {
 
 			if (listMatch) {
 				const isOrdered = /^\d+\./.test(listMatch[2]);
-				// Per review: consecutive list lines remain in the same LIST block regardless of isOrdered changes
 				if (currentBlock?.type !== BlockType.LIST) {
 					this.flush(blocks, currentBlock);
 					currentBlock = {
@@ -68,6 +67,9 @@ export class BlockSplitter {
 						ordered: isOrdered,
 					};
 				} else {
+					if (currentBlock.ordered !== undefined && currentBlock.ordered !== isOrdered) {
+						currentBlock.ordered = undefined;
+					}
 					currentBlock.content += `\n${line}`;
 				}
 				continue;
