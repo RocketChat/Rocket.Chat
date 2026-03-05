@@ -78,25 +78,25 @@ const createFakeDiscussion = (id: string): IDiscussionMessage =>
 	}) as IDiscussionMessage;
 
 describe('DiscussionsList', () => {
-	it('hides the empty state while loading', () => {
+	it('should hide the empty state while loading', () => {
 		render(<DiscussionsList {...defaultProps} loading={true} total={0} />);
 
 		expect(screen.queryByText('No_Discussions_found')).not.toBeInTheDocument();
 	});
 
-	it('shows an error message when error is an Error instance', () => {
+	it('should display an error message when error is an Error instance', () => {
 		render(<DiscussionsList {...defaultProps} error={new Error('Something went wrong')} />);
 
 		expect(screen.getByText(/Something went wrong/)).toBeInTheDocument();
 	});
 
-	it('shows the empty state when there are no discussions and loading is done', () => {
+	it('should display the empty state when there are no discussions and loading is done', () => {
 		render(<DiscussionsList {...defaultProps} loading={false} total={0} />);
 
 		expect(screen.getByText('No_Discussions_found')).toBeInTheDocument();
 	});
 
-	it('renders a row for each discussion item', () => {
+	it('should render a row for each discussion item', () => {
 		const discussions = [createFakeDiscussion('1'), createFakeDiscussion('2'), createFakeDiscussion('3')];
 
 		render(<DiscussionsList {...defaultProps} total={discussions.length} discussions={discussions} />);

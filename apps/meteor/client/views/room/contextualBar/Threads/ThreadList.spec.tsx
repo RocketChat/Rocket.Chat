@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import { VirtuosoMockContext } from 'react-virtuoso';
 
 import ThreadList from './ThreadList';
 import { createFakeRoom } from '../../../../../tests/mocks/data';
@@ -27,6 +28,9 @@ describe('ThreadList Component', () => {
 					'/v1/chat.getThreadsList',
 					jest.fn().mockRejectedValue({ success: false, error: 'error-not-allowed', errorType: 'error-not-allowed' }),
 				)
+				.wrap((children) => (
+					<VirtuosoMockContext.Provider value={{ viewportHeight: 300, itemHeight: 100 }}>{children}</VirtuosoMockContext.Provider>
+				))
 				.build(),
 		});
 		expect(await screen.findByText('error-not-allowed')).toBeInTheDocument();

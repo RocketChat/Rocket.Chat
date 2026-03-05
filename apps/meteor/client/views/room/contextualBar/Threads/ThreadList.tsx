@@ -1,8 +1,8 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
-	CustomScrollbars,
+	VirtualizedScrollbars,
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarHeader,
@@ -13,9 +13,9 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useVirtualizer } from '@tanstack/react-virtual';
 import type { FormEvent } from 'react';
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useState, useCallback } from 'react';
+import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
@@ -34,7 +34,9 @@ const ThreadList = () => {
 		closeTab();
 	}, [closeTab]);
 
-	const [scrollElement, setScrollElement] = useState<HTMLElement | null>(null);
+	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
+		debounceDelay: 200,
+	});
 
 	const autoFocusRef = useAutoFocus<HTMLInputElement>(true);
 
@@ -106,22 +108,6 @@ const ThreadList = () => {
 	const items = data?.items || [];
 	const itemCount = data?.itemCount ?? 0;
 
-	const virtualizer = useVirtualizer({
-		count: items.length,
-		getScrollElement: () => scrollElement,
-		estimateSize: () => 96,
-		overscan: 25,
-	});
-
-	const virtualItems = virtualizer.getVirtualItems();
-	const lastItem = virtualItems[virtualItems.length - 1];
-
-	useEffect(() => {
-		if (lastItem && lastItem.index >= items.length - 1 && items.length < itemCount) {
-			fetchNextPage();
-		}
-	}, [lastItem, items.length, itemCount, fetchNextPage]);
-
 	const goToThread = useGoToThread({ replace: true });
 	const handleThreadClick = useCallback(
 		(tmid: IMessage['_id']) => {
@@ -164,43 +150,29 @@ const ThreadList = () => {
 
 				{isSuccess && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && itemCount > 0 && items.length > 0 && (
-						<CustomScrollbars ref={setScrollElement}>
-							<div
+						<VirtualizedScrollbars>
+							<Virtuoso
 								style={{
-									height: virtualizer.getTotalSize(),
-									width: '100%',
-									position: 'relative',
+									height: blockSize,
+									width: inlineSize,
 								}}
-							>
-								{virtualItems.map((virtualRow) => {
-									const thread = items[virtualRow.index];
-									return (
-										<div
-											key={virtualRow.key}
-											data-index={virtualRow.index}
-											ref={virtualizer.measureElement}
-											style={{
-												position: 'absolute',
-												top: 0,
-												left: 0,
-												width: '100%',
-												transform: `translateY(${virtualRow.start}px)`,
-											}}
-										>
-											<ThreadListItem
-												thread={thread}
-												unread={subscription?.tunread ?? []}
-												unreadUser={subscription?.tunreadUser ?? []}
-												unreadGroup={subscription?.tunreadGroup ?? []}
-												onClick={handleThreadClick}
-											/>
-										</div>
-									);
-								})}
-							</div>
-						</CustomScrollbars>
+								totalCount={itemCount}
+								endReached={() => fetchNextPage()}
+								overscan={25}
+								data={items}
+								itemContent={(_index, data: IThreadMainMessage) => (
+									<ThreadListItem
+										thread={data}
+										unread={subscription?.tunread ?? []}
+										unreadUser={subscription?.tunreadUser ?? []}
+										unreadGroup={subscription?.tunreadGroup ?? []}
+										onClick={handleThreadClick}
+									/>
+								)}
+							/>
+						</VirtualizedScrollbars>
 					)}
 				</Box>
 			</ContextualbarContent>
