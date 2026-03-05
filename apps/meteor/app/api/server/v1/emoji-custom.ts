@@ -87,11 +87,11 @@ API.v1.addRoute(
 				await findEmojisCustom({
 					query: name
 						? {
-								name: {
-									$regex: escapeRegExp(name),
-									$options: 'i',
-								},
-							}
+							name: {
+								$regex: escapeRegExp(name),
+								$options: 'i',
+							},
+						}
 						: query,
 					pagination: {
 						offset,
@@ -165,9 +165,9 @@ const emojiCustomCreateEndpoints = API.v1.post(
 			});
 
 			await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, emojiData);
-		} catch (err) {
+		} catch (err: any) {
 			SystemLogger.error({ err });
-			return API.v1.failure();
+			return API.v1.failure(err.error || err.message);
 		}
 
 		return API.v1.success();
@@ -255,5 +255,5 @@ export type EmojiCustomEndpoints = EmojiCustomCreateEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends EmojiCustomCreateEndpoints {}
+	interface Endpoints extends EmojiCustomCreateEndpoints { }
 }
