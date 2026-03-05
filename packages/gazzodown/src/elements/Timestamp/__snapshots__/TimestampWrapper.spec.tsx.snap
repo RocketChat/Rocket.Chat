@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`TimestampWrapper matches snapshot 1`] = `
+<div>
+  <time
+    datetime="2024-06-15T13:10:45.000Z"
+    style="display: inline-block;"
+    title="6/15/2024, 1:10:45 PM"
+  >
+    <span
+      class="rcx-box rcx-box--full rcx-tag "
+    >
+      <span
+        class="rcx-tag__inner"
+      >
+        06/15/2024, 1:10 PM
+      </span>
+    </span>
+  </time>
+</div>
+`;

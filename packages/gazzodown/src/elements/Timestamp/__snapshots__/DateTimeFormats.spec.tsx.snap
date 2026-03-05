@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`FullDate matches snapshot 1`] = `
+<div>
+  <time
+    datetime="2025-03-20T10:15:30.000Z"
+    style="display: inline-block;"
+    title="3/20/2025, 10:15:30 AM"
+  >
+    <span
+      class="rcx-box rcx-box--full rcx-tag "
+    >
+      <span
+        class="rcx-tag__inner"
+      >
+        March 20th, 2025 at 10:15:30 AM GMT+0
+      </span>
+    </span>
+  </time>
+</div>
+`;
+
+exports[`FullDateLong matches snapshot 1`] = `
+<div>
+  <time
+    datetime="2025-03-20T10:15:30.000Z"
+    style="display: inline-block;"
+    title="3/20/2025, 10:15:30 AM"
+  >
+    <span
+      class="rcx-box rcx-box--full rcx-tag "
+    >
+      <span
+        class="rcx-tag__inner"
+      >
+        Thursday, March 20th, 2025 at 10:15:30 AM GMT+00:00
+      </span>
+    </span>
+  </time>
+</div>
+`;
+
+exports[`LongDate matches snapshot 1`] = `
+<div>
+  <time
+    datetime="2025-03-20T10:15:00.000Z"
+    style="display: inline-block;"
+    title="3/20/2025, 10:15:00 AM"
+  >
+    <span
+      class="rcx-box rcx-box--full rcx-tag "
+    >
+      <span
+        class="rcx-tag__inner"
+      >
+        03/20/2025, 10:15 AM
+      </span>
+    </span>
+  </time>
+</div>
+`;
+
+exports[`LongTime matches snapshot 1`] = `
+<div>
+  <time
+    datetime="2025-01-15T08:05:30.000Z"
+    style="display: inline-block;"
+    title="1/15/2025, 8:05:30 AM"
+  >
+    <span
+      class="rcx-box rcx-box--full rcx-tag "
+    >
+      <span
+        class="rcx-tag__inner"
+      >
+        8:05:30 AM
+      </span>
+    </span>
+  </time>
+</div>
+`;
+
+exports[`ShortDate matches snapshot 1`] = `
+<div>
+  <time
+    datetime="2025-03-20T00:00:00.000Z"
+    style="display: inline-block;"
+    title="3/20/2025, 12:00:00 AM"
+  >
+    <span
+      class="rcx-box rcx-box--full rcx-tag "
+    >
+      <span
+        class="rcx-tag__inner"
+      >
+        03/20/2025
+      </span>
+    </span>
+  </time>
+</div>
+`;
+
+exports[`ShortTime matches snapshot 1`] = `
+<div>
+  <time
+    datetime="2025-01-15T08:05:00.000Z"
+    style="display: inline-block;"
+    title="1/15/2025, 8:05:00 AM"
+  >
+    <span
+      class="rcx-box rcx-box--full rcx-tag "
+    >
+      <span
+        class="rcx-tag__inner"
+      >
+        8:05 AM
+      </span>
+    </span>
+  </time>
+</div>
+`;

@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`RelativeTime matches snapshot 1`] = `
+<div>
+  <time
+    datetime="2025-06-15T11:30:00.000Z"
+    style="display: inline-block;"
+    title="6/15/2025, 11:30:00 AM"
+  >
+    <span
+      class="rcx-box rcx-box--full rcx-tag "
+    >
+      <span
+        class="rcx-tag__inner"
+      >
+        30 minutes ago
+      </span>
+    </span>
+  </time>
+</div>
+`;
