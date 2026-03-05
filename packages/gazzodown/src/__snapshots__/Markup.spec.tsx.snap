@@ -1,0 +1,486 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders a Katex block 1`] = `
+<div>
+  <div
+    aria-label="x^2 + y^2 = z^2"
+    role="math"
+    style="overflow-x: auto;"
+  >
+    <span
+      class="katex-display"
+    >
+      <span
+        class="katex"
+      >
+        <span
+          class="katex-mathml"
+        />
+        <span
+          aria-hidden="true"
+          class="katex-html"
+        >
+          <span
+            class="base"
+          >
+            <span
+              class="strut"
+              style="height:0.9474em;vertical-align:-0.0833em;"
+            />
+            <span
+              class="mord"
+            >
+              <span
+                class="mord mathnormal"
+              >
+                x
+              </span>
+              <span
+                class="msupsub"
+              >
+                <span
+                  class="vlist-t"
+                >
+                  <span
+                    class="vlist-r"
+                  >
+                    <span
+                      class="vlist"
+                      style="height:0.8641em;"
+                    >
+                      <span
+                        style="top:-3.113em;margin-right:0.05em;"
+                      >
+                        <span
+                          class="pstrut"
+                          style="height:2.7em;"
+                        />
+                        <span
+                          class="sizing reset-size6 size3 mtight"
+                        >
+                          <span
+                            class="mord mtight"
+                          >
+                            2
+                          </span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </span>
+            <span
+              class="mspace"
+              style="margin-right:0.2222em;"
+            />
+            <span
+              class="mbin"
+            >
+              +
+            </span>
+            <span
+              class="mspace"
+              style="margin-right:0.2222em;"
+            />
+          </span>
+          <span
+            class="base"
+          >
+            <span
+              class="strut"
+              style="height:1.0585em;vertical-align:-0.1944em;"
+            />
+            <span
+              class="mord"
+            >
+              <span
+                class="mord mathnormal"
+                style="margin-right:0.03588em;"
+              >
+                y
+              </span>
+              <span
+                class="msupsub"
+              >
+                <span
+                  class="vlist-t"
+                >
+                  <span
+                    class="vlist-r"
+                  >
+                    <span
+                      class="vlist"
+                      style="height:0.8641em;"
+                    >
+                      <span
+                        style="top:-3.113em;margin-right:0.05em;"
+                      >
+                        <span
+                          class="pstrut"
+                          style="height:2.7em;"
+                        />
+                        <span
+                          class="sizing reset-size6 size3 mtight"
+                        >
+                          <span
+                            class="mord mtight"
+                          >
+                            2
+                          </span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </span>
+            <span
+              class="mspace"
+              style="margin-right:0.2778em;"
+            />
+            <span
+              class="mrel"
+            >
+              =
+            </span>
+            <span
+              class="mspace"
+              style="margin-right:0.2778em;"
+            />
+          </span>
+          <span
+            class="base"
+          >
+            <span
+              class="strut"
+              style="height:0.8641em;"
+            />
+            <span
+              class="mord"
+            >
+              <span
+                class="mord mathnormal"
+                style="margin-right:0.04398em;"
+              >
+                z
+              </span>
+              <span
+                class="msupsub"
+              >
+                <span
+                  class="vlist-t"
+                >
+                  <span
+                    class="vlist-r"
+                  >
+                    <span
+                      class="vlist"
+                      style="height:0.8641em;"
+                    >
+                      <span
+                        style="top:-3.113em;margin-right:0.05em;"
+                      >
+                        <span
+                          class="pstrut"
+                          style="height:2.7em;"
+                        />
+                        <span
+                          class="sizing reset-size6 size3 mtight"
+                        >
+                          <span
+                            class="mord mtight"
+                          >
+                            2
+                          </span>
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </span>
+          </span>
+        </span>
+      </span>
+    </span>
+  </div>
+</div>
+`;
+
+exports[`renders a big emoji block 1`] = `
+<div
+  role="presentation"
+>
+  <span
+    aria-label=":smile:"
+    role="img"
+    title=":smile:"
+  >
+    :smile:
+  </span>
+  <span
+    role="img"
+    title="😀"
+  >
+    😀
+  </span>
+  <span
+    aria-label=":smile:"
+    role="img"
+    title=":smile:"
+  >
+    :smile:
+  </span>
+</div>
+`;
+
+exports[`renders a big emoji block with ASCII emoji 1`] = `
+<div
+  role="presentation"
+>
+  <span
+    aria-label=":slight_smile:"
+    role="img"
+    title=":slight_smile:"
+  >
+    :slight_smile:
+  </span>
+  <span
+    role="img"
+    title="🙂"
+  >
+    🙂
+  </span>
+  :)
+</div>
+`;
+
+exports[`renders a blockquote 1`] = `
+<div>
+  <blockquote>
+    <div>
+      Cogito ergo sum.
+    </div>
+    <div>
+      Sit amet, consectetur adipiscing elit.
+    </div>
+    <div>
+      Donec eget ex euismod, euismod nisi euismod, vulputate nisi.
+    </div>
+  </blockquote>
+</div>
+`;
+
+exports[`renders a code block 1`] = `
+<div>
+  <pre
+    class="rcx-box rcx-box--full rcx-css-1siaxf"
+    data-code-block-wrapper="true"
+    role="region"
+  >
+    <button
+      class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1qmamur rcx-css-15t2ip4"
+      title="Copy"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+    </button>
+    <span
+      class="copyonly"
+    >
+      \`\`\`
+    </span>
+    <code
+      class="code-colors hljs"
+    >
+      const foo = bar;
+    </code>
+    <span
+      class="copyonly"
+    >
+      \`\`\`
+    </span>
+  </pre>
+</div>
+`;
+
+exports[`renders a code block with language 1`] = `
+<div>
+  <pre
+    class="rcx-box rcx-box--full rcx-css-1siaxf"
+    data-code-block-wrapper="true"
+    role="region"
+  >
+    <button
+      class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1qmamur rcx-css-15t2ip4"
+      title="Copy"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+    </button>
+    <span
+      class="copyonly"
+    >
+      \`\`\`
+    </span>
+    <code
+      class="code-colors language-javascript hljs"
+    >
+      const foo = bar;
+    </code>
+    <span
+      class="copyonly"
+    >
+      \`\`\`
+    </span>
+  </pre>
+</div>
+`;
+
+exports[`renders a heading 1`] = `
+<div>
+  <h2>
+    Hello
+  </h2>
+</div>
+`;
+
+exports[`renders a line break 1`] = `
+<div>
+  <br />
+</div>
+`;
+
+exports[`renders a paragraph 1`] = `
+<div>
+  <div>
+    Hello
+  </div>
+</div>
+`;
+
+exports[`renders a task list 1`] = `
+<div>
+  <ul
+    class="task-list"
+  >
+    <li>
+      <label
+        class="rcx-box rcx-box--full rcx-check-box"
+      >
+        <input
+          checked=""
+          class="rcx-box rcx-box--full rcx-check-box__input"
+          type="checkbox"
+        />
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-check-box__fake"
+        />
+      </label>
+       
+      Chores
+    </li>
+    <li>
+      <label
+        class="rcx-box rcx-box--full rcx-check-box"
+      >
+        <input
+          class="rcx-box rcx-box--full rcx-check-box__input"
+          type="checkbox"
+        />
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-check-box__fake"
+        />
+      </label>
+       
+      Dishes
+    </li>
+    <li>
+      <label
+        class="rcx-box rcx-box--full rcx-check-box"
+      >
+        <input
+          checked=""
+          class="rcx-box rcx-box--full rcx-check-box__input"
+          type="checkbox"
+        />
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-check-box__fake"
+        />
+      </label>
+       
+      Laundry
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`renders a unordered list 1`] = `
+<div>
+  <ul>
+    <li>
+      Hello
+    </li>
+    <li>
+      Hola
+    </li>
+    <li>
+      你好
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`renders an ordered list 1`] = `
+<div>
+  <ol>
+    <li>
+      Hello
+    </li>
+    <li>
+      Hola
+    </li>
+    <li>
+      你好
+    </li>
+  </ol>
+</div>
+`;
+
+exports[`renders empty 1`] = `<div />`;
+
+exports[`renders plain text instead of ASCII emojis based on useEmojis preference 1`] = `
+<div>
+  <div>
+    Hey! 
+    :smile:
+     
+    :)
+  </div>
+</div>
+`;
+
+exports[`renders plain text instead of emojis based on preference 1`] = `
+<div>
+  <div>
+    Hey! 
+    :smile:
+     
+    :)
+  </div>
+</div>
+`;
