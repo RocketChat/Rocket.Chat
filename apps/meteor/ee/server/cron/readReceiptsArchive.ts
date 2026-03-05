@@ -103,5 +103,11 @@ export async function readReceiptsArchiveCron(): Promise<void> {
 		await cronJobs.remove('ReadReceiptsArchive');
 	}
 
+	if (!settings.get<boolean>('Message_Read_Receipt_Archive_Enabled')) {
+		return;
+	}
+
+	logger.info(`Scheduling read receipts archive cron job with schedule: ${cronSchedule}`);
+
 	return cronJobs.add('ReadReceiptsArchive', cronSchedule, async () => archiveOldReadReceipts());
 }
