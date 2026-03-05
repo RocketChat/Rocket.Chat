@@ -1,7 +1,7 @@
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { ReactNode } from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 type VirtualListProps<T> = {
 	items: T[];
@@ -38,14 +38,19 @@ const VirtualList = <T,>({
 		paddingEnd,
 	});
 
+	const onEndReachedRef = useRef(onEndReached);
+	useEffect(() => {
+		onEndReachedRef.current = onEndReached;
+	});
+
 	const virtualItems = virtualizer.getVirtualItems();
 	const lastVirtualItemIndex = virtualItems[virtualItems.length - 1]?.index;
 
 	useEffect(() => {
 		if (lastVirtualItemIndex !== undefined && lastVirtualItemIndex >= items.length - 1 && items.length < totalCount) {
-			onEndReached?.();
+			onEndReachedRef.current?.();
 		}
-	}, [lastVirtualItemIndex, items.length, totalCount, onEndReached]);
+	}, [lastVirtualItemIndex, items.length, totalCount]);
 
 	return (
 		<CustomScrollbars ref={setScrollElement}>
