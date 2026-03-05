@@ -18,7 +18,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-import { parseDeprecation } from './api.helpers';
+import { checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
 	ForbiddenResult,
@@ -780,6 +780,8 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		}
 
 		const operations = endpoints;
+
+		checkPermissions(options);
 
 		// Allow for more than one route using the same option and endpoints
 		if (!Array.isArray(subpaths)) {
