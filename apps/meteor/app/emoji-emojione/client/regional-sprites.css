@@ -3,13 +3,13 @@
 .emojione-regional {
   background-image: url('/packages/emojione/regional-sprites.png');
 
-  &._1f1f2 {
+  &._1f1ff {
     background-repeat: no-repeat;
     background-size: 600% 500%;
     background-position: 0% 0%;
   }
 
-  &._1f1ff {
+  &._1f1fe {
     background-repeat: no-repeat;
     background-size: 600% 500%;
     background-position: 20% 0%;
@@ -81,7 +81,7 @@
     background-position: 0% 75%;
   }
 
-  &._1f1fe {
+  &._1f1f2 {
     background-repeat: no-repeat;
     background-size: 600% 500%;
     background-position: 20% 75%;
