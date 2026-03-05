@@ -142,51 +142,41 @@ export const getCategoriesList = () => {
 
 export const getEmojisBySearchTerm = (
 	searchTerm: string,
-	actualTone: number,
-	recentEmojis: string[],
-	setRecentEmojis: (emojis: string[]) => void,
+	_actualTone: number,
+	_recentEmojis: string[],
+	_setRecentEmojis: (emojis: string[]) => void,
 ) => {
-	const emojis = [];
+	const emojis: EmojiItem[] = [];
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
 
-	for (let current in emoji.list) {
-		if (!emoji.list.hasOwnProperty(current)) {
-			continue;
-		}
+	for (let currentKey in emoji.list) {
+		if (Object.prototype.hasOwnProperty.call(emoji.list, currentKey)) {
+			const currentEmoji = emoji.list[currentKey];
+			const shortnames = Array.isArray(currentEmoji.shortnames) ? currentEmoji.shortnames : [currentEmoji.shortnames];
+			const aliasOf = (currentEmoji as any).aliasOf;
+			const aliases = (currentEmoji as any).aliases || [];
 
-		if (searchRegExp.test(current)) {
-			const emojiObject = emoji.list[current];
-			const { emojiPackage, shortnames = [] } = emojiObject;
-			let tone = '';
-			current = current.replace(/:/g, '');
-			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
+			// The canonical name for this emoji (to avoid duplicates for aliases)
+			const targetEmoji = aliasOf ? `:${aliasOf}:` : currentKey;
 
-			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(current)) {
-				tone = `_tone${actualTone}`;
-			}
+			// Check primary key, all shortnames, and aliases
+			const matchesSearch = [currentKey, ...shortnames, ...aliases].some((name) => name && searchRegExp.test(name));
 
-			let emojiFound = false;
+			// For alias entries (custom emoji specifically), also check their aliasOf property
+			const matchesAliasOf = aliasOf && searchRegExp.test(aliasOf);
 
-			for (const key in emoji.packages[emojiPackage].emojisByCategory) {
-				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
-					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
-					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
-					if (contents.indexOf(current) !== -1 || searchValArray?.includes(searchTerm)) {
-						emojiFound = true;
-						break;
-					}
-				}
-			}
+			if (matchesSearch || matchesAliasOf) {
+				const realEmoji = emoji.list[targetEmoji] || currentEmoji;
+				const emojiPackageName = (realEmoji as any).emojiPackage || (Object.keys(emoji.packages)[0] as string);
 
-			if (emojiFound) {
-				const emojiToRender = `:${current}${tone}:`;
-
-				if (!emoji.list[emojiToRender]) {
-					removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
-					break;
+				if (!emoji.packages[emojiPackageName]) {
+					continue;
 				}
 
-				emojis.push({ emoji: current, image: emoji.packages[emojiPackage].renderPicker(emojiToRender) });
+				const image = emoji.packages[emojiPackageName].renderPicker(targetEmoji);
+				if (image && !emojis.some((e) => e.emoji === targetEmoji)) {
+					emojis.push({ emoji: targetEmoji, image });
+				}
 			}
 		}
 	}
