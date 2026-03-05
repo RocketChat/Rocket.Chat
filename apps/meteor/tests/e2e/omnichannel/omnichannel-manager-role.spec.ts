@@ -5,6 +5,7 @@ import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelAgents, OmnichannelManager, OmnichannelMonitors } from '../page-objects/omnichannel';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { createManager } from '../utils/omnichannel/managers';
@@ -79,6 +80,7 @@ test.describe('OC - Manager Role', () => {
 				agentId: `user2`,
 			}),
 		]);
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', true);
 	});
 
 	// Delete all created data
@@ -92,6 +94,7 @@ test.describe('OC - Manager Role', () => {
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
 		]);
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {

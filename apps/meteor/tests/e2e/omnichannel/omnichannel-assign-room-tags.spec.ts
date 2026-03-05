@@ -2,6 +2,7 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createConversation } from '../utils/omnichannel/rooms';
@@ -13,7 +14,7 @@ const visitorB = createFakeVisitor();
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Tags Visibility', () => {
+test.describe.serial('OC - Tags Visibility', () => {
 	test.skip(!IS_EE, 'OC - Tags Visibility > Enterprise Edition Only');
 
 	let poOmnichannel: HomeOmnichannel;
@@ -27,6 +28,7 @@ test.describe('OC - Tags Visibility', () => {
 	let sharedTag: Awaited<ReturnType<typeof createTag>>;
 
 	test.beforeAll('Create departments', async ({ api }) => {
+		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).status()).toBe(200);
 		departmentA = await createDepartment(api, { name: 'Department A' });
 		departmentB = await createDepartment(api, { name: 'Department B' });
 	});
@@ -63,12 +65,13 @@ test.describe('OC - Tags Visibility', () => {
 		await page.goto('/');
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await Promise.all(conversations.map((conversation) => conversation.delete()));
 		await Promise.all([tagA, tagB, globalTag, sharedTag].map((tag) => tag.delete()));
 		await agent.delete();
 		await departmentA.delete();
 		await departmentB.delete();
+		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', false)).status()).toBe(200);
 	});
 
 	test('Verify agent should see correct tags based on department association', async () => {

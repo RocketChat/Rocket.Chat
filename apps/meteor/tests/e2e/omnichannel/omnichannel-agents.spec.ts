@@ -24,12 +24,18 @@ test.describe.serial('OC - Manage Agents', () => {
 		await poOmnichannelAgents.sidebar.linkAgents.click();
 	});
 
+	test.beforeAll(async ({ api }) => {
+		expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
+	});
+
+	test.afterAll(async ({ api }) => {
+		expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
+	});
+
 	// Ensure that there is no leftover data even if test fails
 	test.afterEach(async ({ api }) => {
 		await api.delete('/livechat/users/agent/user1');
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: true }).then((res) => expect(res.status()).toBe(200));
 		await department.delete();
-		await api.post('/settings/Omnichannel_enable_department_removal', { value: false }).then((res) => expect(res.status()).toBe(200));
 	});
 
 	test('OC - Manage Agents - Add, search and remove using table', async ({ page }) => {
