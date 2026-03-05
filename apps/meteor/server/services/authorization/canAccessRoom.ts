@@ -113,10 +113,7 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 		if (!user) {
 			throw new Error('User not found');
 		}
-
-		if (process.env.NODE_ENV === 'development') {
-			console.log('User converted to full IUser object');
-		}
+		
 	}
 
 	for await (const roomAccessValidator of roomAccessValidators) {
