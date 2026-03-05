@@ -167,7 +167,7 @@ const emojiCustomCreateEndpoints = API.v1.post(
 			await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, emojiData);
 		} catch (err: any) {
 			SystemLogger.error({ err });
-			return API.v1.failure(err.error || err.message);
+			return API.v1.failure(err.reason || err.message || err.error);
 		}
 
 		return API.v1.success();
