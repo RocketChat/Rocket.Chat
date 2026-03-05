@@ -8,7 +8,7 @@ import { retry } from './helpers/retry';
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
 import { sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
-import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor } from '../../data/livechat/rooms';
+import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor, makeAgentAvailable } from '../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -3389,6 +3389,10 @@ describe('Meteor.methods', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
+			await updateSetting('Livechat_enabled', true);
+			await createAgent();
+			await makeAgentAvailable();
+
 			const visitor = await createVisitor();
 			room = await createLivechatRoom(visitor.token);
 			await closeOmnichannelRoom(room._id);
@@ -3398,7 +3402,7 @@ describe('Meteor.methods', () => {
 			userCredentials = await login(user.username, password);
 		});
 
-		after(() => Promise.all([deleteUser(user)]));
+		after(() => Promise.all([deleteUser(user), updateSetting('Livechat_enabled', false)]));
 
 		it('should not allow an agent to join a closed livechat room', async () => {
 			await request

@@ -175,7 +175,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="example.user"
@@ -259,7 +259,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="john.doe"
@@ -348,7 +348,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="sarah.smith"
@@ -434,7 +434,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="mike.wilson"
@@ -520,7 +520,7 @@ exports[`renders Default without crashing 1`] = `
                         class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                       >
                         <img
-                          alt=""
+                          alt="Avatar"
                           aria-hidden="true"
                           class="rcx-avatar__element rcx-avatar__element--x28"
                           data-username="emma.davis"

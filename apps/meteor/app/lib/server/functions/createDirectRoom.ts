@@ -157,7 +157,7 @@ export async function createDirectRoom(
 
 		const roomNames = getNameForDMs(roomMembers);
 
-		for await (const member of membersWithPreferences) {
+		for (const member of membersWithPreferences) {
 			const subscriptionStatus: Partial<ISubscription> =
 				roomExtraData.federated && options.creator !== member._id && creatorUser
 					? {
