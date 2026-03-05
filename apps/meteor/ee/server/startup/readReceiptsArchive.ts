@@ -10,3 +10,7 @@ settings.watch<string>('Message_Read_Receipt_Archive_Cron', async (value) => {
 		await readReceiptsArchiveCron();
 	}
 });
+
+settings.watch<boolean>('Message_Read_Receipt_Archive_Enabled', async () => {
+	await readReceiptsArchiveCron();
+});
