@@ -41,15 +41,13 @@ async function insertToken(data: PushTokenData): Promise<IPushToken['_id']> {
 }
 
 async function updateToken(doc: IPushToken, data: PushTokenData): Promise<IPushToken['_id']> {
-	const updateResult = await (async () => {
-		return PushToken.refreshTokenById(doc._id, {
-			token: data.token,
-			authToken: data.authToken,
-			appName: data.appName,
-			userId: data.userId,
-			...(data.voipToken && { voipToken: data.voipToken }),
-		});
-	})();
+	const updateResult = await PushToken.refreshTokenById(doc._id, {
+		token: data.token,
+		authToken: data.authToken,
+		appName: data.appName,
+		userId: data.userId,
+		...(data.voipToken && { voipToken: data.voipToken }),
+	});
 
 	if (updateResult.modifiedCount) {
 		const { authToken: _, ...dataWithNoAuthToken } = data;
