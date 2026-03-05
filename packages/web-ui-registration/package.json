@@ -17,7 +17,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"dompurify": "~3.3.1"
+		"dompurify": "~3.3.2"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
