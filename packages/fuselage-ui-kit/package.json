@@ -86,7 +86,7 @@
 		"storybook": "^8.6.17",
 		"storybook-dark-mode": "^4.0.2",
 		"typescript": "~5.9.3",
-		"webpack": "~5.99.9"
+		"webpack": "~5.104.0"
 	},
 	"peerDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",

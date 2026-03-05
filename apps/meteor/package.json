@@ -297,7 +297,7 @@
 		"twit": "^2.2.11",
 		"typia": "~9.7.2",
 		"ua-parser-js": "~1.0.41",
-		"underscore": "^1.13.7",
+		"underscore": "^1.13.8",
 		"universal-perf-hooks": "^1.0.1",
 		"webdav": "^4.11.5",
 		"xml-crypto": "~3.2.1",
@@ -447,7 +447,7 @@
 		"ts-node": "^10.9.2",
 		"tsx": "~4.20.6",
 		"typescript": "~5.9.3",
-		"webpack": "~5.99.9"
+		"webpack": "~5.104.0"
 	},
 	"volta": {
 		"extends": "../../package.json"

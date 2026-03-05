@@ -43,7 +43,7 @@
 		"prom-client": "^14.2.0",
 		"prometheus-gc-stats": "^1.1.0",
 		"sharp": "^0.33.5",
-		"underscore": "^1.13.7",
+		"underscore": "^1.13.8",
 		"uuid": "^11.0.3",
 		"ws": "~8.18.3"
 	},
