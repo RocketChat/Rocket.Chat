@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`KatexElement matches snapshot 1`] = `
+<div>
+  <span>
+    <span
+      class="katex"
+    >
+      \\\\alpha + \\\\beta
+    </span>
+  </span>
+</div>
+`;

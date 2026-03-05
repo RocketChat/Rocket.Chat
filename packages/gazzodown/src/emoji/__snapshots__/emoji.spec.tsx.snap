@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`Emoji passes big prop to EmojiRenderer 1`] = `
+<div>
+  <span
+    role="img"
+    title="🔥"
+  >
+    🔥
+  </span>
+</div>
+`;
+
+exports[`Emoji passes preview prop to EmojiRenderer 1`] = `
+<div>
+  <span
+    role="img"
+    title="🎉"
+  >
+    🎉
+  </span>
+</div>
+`;

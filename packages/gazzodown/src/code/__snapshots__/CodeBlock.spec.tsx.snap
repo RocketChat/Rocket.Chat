@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CodeBlock matches snapshot 1`] = `
+<div>
+  <pre
+    class="rcx-box rcx-box--full rcx-css-1siaxf"
+    data-code-block-wrapper="true"
+    role="region"
+  >
+    <button
+      class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-1qmamur rcx-css-15t2ip4"
+      title="Copy"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-copy rcx-icon rcx-css-4pvxx3"
+      >
+        
+      </i>
+    </button>
+    <span
+      class="copyonly"
+    >
+      \`\`\`
+    </span>
+    <code
+      class="code-colors language-javascript hljs"
+    >
+      const x = 42;
+    </code>
+    <span
+      class="copyonly"
+    >
+      \`\`\`
+    </span>
+  </pre>
+</div>
+`;

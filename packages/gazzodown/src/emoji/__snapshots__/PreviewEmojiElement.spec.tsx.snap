@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PreviewEmojiElement matches snapshot 1`] = `
+<div>
+  <span
+    role="img"
+    title="🚀"
+  >
+    🚀
+  </span>
+</div>
+`;

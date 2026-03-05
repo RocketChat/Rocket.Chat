@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PreviewInlineElements matches snapshot 1`] = `
+<div>
+  Preview 
+  <strong>
+    bold
+  </strong>
+  code
+</div>
+`;
