@@ -11,6 +11,7 @@ jest.mock('highlight.js', () => ({
 it('renders empty', () => {
 	const { container } = render(<Markup tokens={[]} />);
 	expect(container).toBeEmptyDOMElement();
+	expect(container).toMatchSnapshot();
 });
 
 it('renders a big emoji block', () => {
@@ -39,6 +40,7 @@ it('renders a big emoji block', () => {
 	expect(screen.getByRole('presentation')).toHaveTextContent(':smile:😀:smile:');
 	expect(screen.getAllByRole('img')).toHaveLength(3);
 	expect(screen.getAllByRole('img', { name: ':smile:' })).toHaveLength(2);
+	expect(screen.getByRole('presentation')).toMatchSnapshot();
 });
 
 it('renders a big emoji block with ASCII emoji', () => {
@@ -67,10 +69,11 @@ it('renders a big emoji block with ASCII emoji', () => {
 	expect(screen.getByRole('presentation')).toHaveTextContent(':slight_smile:🙂:)');
 	expect(screen.getAllByRole('img')).toHaveLength(2);
 	expect(screen.getAllByRole('img', { name: ':slight_smile:' })).toHaveLength(1);
+	expect(screen.getByRole('presentation')).toMatchSnapshot();
 });
 
 it('renders a paragraph', () => {
-	render(
+	const { container } = render(
 		<Markup
 			tokens={[
 				{
@@ -82,10 +85,11 @@ it('renders a paragraph', () => {
 	);
 
 	expect(screen.getByText('Hello')).toBeInTheDocument();
+	expect(container).toMatchSnapshot();
 });
 
 it('renders a heading', () => {
-	render(
+	const { container } = render(
 		<Markup
 			tokens={[
 				{
@@ -98,10 +102,11 @@ it('renders a heading', () => {
 	);
 
 	expect(screen.getByRole('heading', { name: 'Hello' })).toBeInTheDocument();
+	expect(container).toMatchSnapshot();
 });
 
 it('renders a unordered list', () => {
-	render(
+	const { container } = render(
 		<Markup
 			tokens={[
 				{
@@ -124,10 +129,11 @@ it('renders a unordered list', () => {
 	expect(items[0]).toHaveTextContent('Hello');
 	expect(items[1]).toHaveTextContent('Hola');
 	expect(items[2]).toHaveTextContent('你好');
+	expect(container).toMatchSnapshot();
 });
 
 it('renders an ordered list', () => {
-	render(
+	const { container } = render(
 		<Markup
 			tokens={[
 				{
@@ -150,10 +156,11 @@ it('renders an ordered list', () => {
 	expect(items[0]).toHaveTextContent('Hello');
 	expect(items[1]).toHaveTextContent('Hola');
 	expect(items[2]).toHaveTextContent('你好');
+	expect(container).toMatchSnapshot();
 });
 
 it('renders a task list', () => {
-	render(
+	const { container } = render(
 		<Markup
 			tokens={[
 				{
@@ -183,10 +190,11 @@ it('renders a task list', () => {
 	expect(checkboxes[0]).toBeChecked();
 	expect(checkboxes[1]).not.toBeChecked();
 	expect(checkboxes[2]).toBeChecked();
+	expect(container).toMatchSnapshot();
 });
 
 it('renders a blockquote', () => {
-	render(
+	const { container } = render(
 		<Markup
 			tokens={[
 				{
@@ -213,10 +221,11 @@ it('renders a blockquote', () => {
 	expect(screen.getByText('Cogito ergo sum.')).toBeInTheDocument();
 	expect(screen.getByText('Sit amet, consectetur adipiscing elit.')).toBeInTheDocument();
 	expect(screen.getByText('Donec eget ex euismod, euismod nisi euismod, vulputate nisi.')).toBeInTheDocument();
+	expect(container).toMatchSnapshot();
 });
 
 it('renders a code block', async () => {
-	render(
+	const { container } = render(
 		<Suspense fallback={null}>
 			<Markup
 				tokens={[
@@ -230,13 +239,14 @@ it('renders a code block', async () => {
 		</Suspense>,
 	);
 
-	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
+	expect(await screen.findByRole('region')).toBeInTheDocument();
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
+	expect(container).toMatchSnapshot();
 });
 
 it('renders a code block with language', async () => {
-	render(
+	const { container } = render(
 		<Suspense fallback={null}>
 			<Markup
 				tokens={[
@@ -250,10 +260,11 @@ it('renders a code block with language', async () => {
 		</Suspense>,
 	);
 
-	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
+	expect(await screen.findByRole('region')).toBeInTheDocument();
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
-	expect(screen.getByRole('region').querySelector('.language-javascript')).toBeInTheDocument();
+	expect(screen.getByRole('code')).toHaveClass('language-javascript');
+	expect(container).toMatchSnapshot();
 });
 
 it('renders a Katex block', async () => {
@@ -271,10 +282,13 @@ it('renders a Katex block', async () => {
 	);
 
 	// workaround for jest-dom's inability to handle MathML
+	// eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
 	await waitFor(() => expect(container.querySelector('math')).toBeTruthy());
+	// eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
 	container.querySelector('math')?.remove();
 
 	expect(screen.getByRole('math', { name: 'x^2 + y^2 = z^2' })).toBeInTheDocument();
+	expect(container).toMatchSnapshot();
 });
 
 it('renders a line break', () => {
@@ -290,10 +304,11 @@ it('renders a line break', () => {
 	);
 
 	expect(container).toContainHTML('<br>');
+	expect(container).toMatchSnapshot();
 });
 
 it('renders plain text instead of emojis based on preference', () => {
-	render(
+	const { container } = render(
 		<MarkupInteractionContext.Provider
 			value={{
 				convertAsciiToEmoji: false,
@@ -317,10 +332,11 @@ it('renders plain text instead of emojis based on preference', () => {
 	);
 
 	expect(screen.getByText('Hey! :smile: :)')).toBeInTheDocument();
+	expect(container).toMatchSnapshot();
 });
 
 it('renders plain text instead of ASCII emojis based on useEmojis preference', () => {
-	render(
+	const { container } = render(
 		<MarkupInteractionContext.Provider
 			value={{
 				convertAsciiToEmoji: true,
@@ -344,4 +360,5 @@ it('renders plain text instead of ASCII emojis based on useEmojis preference', (
 	);
 
 	expect(screen.getByText('Hey! :smile: :)')).toBeInTheDocument();
+	expect(container).toMatchSnapshot();
 });
