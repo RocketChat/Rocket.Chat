@@ -1203,12 +1203,6 @@ export const roomEndpoints = API.v1
 				return API.v1.unauthorized('You do not have access to this room');
 			}
 
-			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
-
-			if (!user) {
-				return API.v1.failure('error-invalid-user');
-			}
-
 			const modCount = await hideRoomMethod(this.userId, roomId);
 
 			if (!modCount) {
