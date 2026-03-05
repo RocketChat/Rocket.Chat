@@ -1,8 +1,10 @@
-import { Field, FieldGroup, TextInput, FieldLabel, FieldRow, Box } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, TextInput, FieldLabel, FieldRow, Box, FieldError } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useEffect, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+
+import { isValidLink } from '../../../../client/views/room/MessageList/lib/isValidLink';
 
 type AddLinkComposerActionModalProps = {
 	selectedText?: string;
@@ -15,8 +17,8 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 	const textField = useId();
 	const urlField = useId();
 
-	const { handleSubmit, setFocus, control } = useForm({
-		mode: 'onBlur',
+	const { handleSubmit, setFocus, control, formState } = useForm({
+		mode: 'onChange',
 		defaultValues: {
 			text: selectedText || '',
 			url: '',
@@ -40,6 +42,7 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 			confirmText={t('Add')}
 			onCancel={onClose}
 			wrapperFunction={(props) => <Box is='form' onSubmit={(e) => void submit(e)} {...props} />}
+			confirmDisabled={!formState.isValid}
 			title={t('Add_link')}
 		>
 			<FieldGroup>
@@ -52,8 +55,20 @@ const AddLinkComposerActionModal = ({ selectedText, onClose, onConfirm }: AddLin
 				<Field>
 					<FieldLabel htmlFor={urlField}>{t('URL')}</FieldLabel>
 					<FieldRow>
-						<Controller control={control} name='url' render={({ field }) => <TextInput autoComplete='off' id={urlField} {...field} />} />
+						<Controller
+							control={control}
+							name='url'
+							rules={{
+								validate: (value) => isValidLink(value) || t('Invalid_URL'),
+								required: {
+									value: true,
+									message: t(`URL_is_required`),
+								},
+							}}
+							render={({ field }) => <TextInput autoComplete='off' id={urlField} {...field} />}
+						/>
 					</FieldRow>
+					<FieldError>{formState.errors.url?.message}</FieldError>
 				</Field>
 			</FieldGroup>
 		</GenericModal>

@@ -47,7 +47,7 @@ export class SlackUsersImporter extends Importer {
 		const parsed = this.csvParser(buf.toString());
 
 		let userCount = 0;
-		for await (const [index, user] of parsed.entries()) {
+		for (const [index, user] of parsed.entries()) {
 			// Ignore the first column
 			if (index === 0) {
 				continue;

@@ -8,27 +8,17 @@ type MessageToolbarItemProps = {
 	icon: IconName;
 	title: string;
 	disabled?: boolean;
-	qa: string;
 	onClick: MouseEventHandler;
 };
 
-const MessageToolbarItem = ({ id, icon, title, disabled, qa, onClick }: MessageToolbarItemProps) => {
+const MessageToolbarItem = ({ id, icon, title, disabled, onClick }: MessageToolbarItemProps) => {
 	const hiddenActions = useLayoutHiddenActions().messageToolbox;
 
 	if (hiddenActions.includes(id)) {
 		return null;
 	}
 
-	return (
-		<FuselageMessageToolbarItem
-			icon={icon}
-			title={title}
-			disabled={disabled}
-			data-qa-id={qa}
-			data-qa-type='message-action-menu'
-			onClick={onClick}
-		/>
-	);
+	return <FuselageMessageToolbarItem icon={icon} title={title} disabled={disabled} onClick={onClick} />;
 };
 
 export default MessageToolbarItem;
