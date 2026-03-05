@@ -18,7 +18,7 @@ import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
-import { useEmojiOne } from './hooks/useEmojiOne';
+import { useNativeEmoji } from './hooks/useNativeEmoji';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
 import { useIframeCommands } from './hooks/useIframeCommands';
@@ -51,7 +51,7 @@ const AppLayout = () => {
 	useAnalyticsEventTracking();
 	useLoadRoomForAllowedAnonymousRead();
 	useNotificationPermission();
-	useEmojiOne();
+	useNativeEmoji();
 	useRedirectToSetupWizard();
 	useSettingsOnLoadSiteUrl();
 	useLivechatEnterprise();
