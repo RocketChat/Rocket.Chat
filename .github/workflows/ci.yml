@@ -1,16 +1,6 @@
 name: CI
 
 on:
-  workflow_dispatch:
-    inputs:
-      test-scope:
-        description: Select test lanes to run
-        required: false
-        default: all
-        type: choice
-        options:
-          - all
-          - fips
   release:
     types: [published]
   pull_request:
@@ -550,7 +540,7 @@ jobs:
     name: 📦 Track Image Sizes
     needs: [build-gh-docker-publish, release-versions]
     runs-on: ubuntu-24.04-arm
-    if: github.event_name != 'workflow_dispatch' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/develop')
+    if: github.event_name == 'pull_request' || github.ref == 'refs/heads/develop'
     permissions:
       pull-requests: write
       contents: write
@@ -636,7 +626,6 @@ jobs:
   test-api:
     name: 🔨 Test API (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -654,7 +643,6 @@ jobs:
   test-api-livechat:
     name: 🔨 Test API Livechat (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -672,7 +660,6 @@ jobs:
   test-ui:
     name: 🔨 Test UI (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -699,7 +686,6 @@ jobs:
   test-api-ee:
     name: 🔨 Test API (EE)
     needs: [checks, build-gh-docker-publish, release-versions]
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -721,7 +707,6 @@ jobs:
   test-api-livechat-ee:
     name: 🔨 Test API Livechat (EE)
     needs: [checks, build-gh-docker-publish, release-versions]
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -764,7 +749,6 @@ jobs:
   test-ui-ee:
     name: 🔨 Test UI (EE)
     needs: [checks, build-gh-docker-publish, release-versions]
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -858,7 +842,6 @@ jobs:
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
     runs-on: ubuntu-24.04
 
     steps:
@@ -955,7 +938,6 @@ jobs:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
     needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.test-scope != 'fips' }}
 
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -1073,7 +1055,7 @@ jobs:
   deploy:
     name: 🚀 Publish build assets
     runs-on: ubuntu-24.04-arm
-    if: github.event_name != 'workflow_dispatch' && (github.event_name == 'release' || github.ref == 'refs/heads/develop')
+    if: github.event_name == 'release' || github.ref == 'refs/heads/develop'
     needs: [build-gh-docker-publish, release-versions]
 
     steps:
