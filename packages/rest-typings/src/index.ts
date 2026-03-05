@@ -5,7 +5,6 @@ import type { DefaultEndpoints } from './default';
 import type { ReplacePlaceholders } from './helpers/ReplacePlaceholders';
 import type { AssetsEndpoints } from './v1/assets';
 import type { AuthEndpoints } from './v1/auth';
-import type { AutoTranslateEndpoints } from './v1/autoTranslate';
 import type { BannersEndpoints } from './v1/banners';
 import type { CalendarEndpoints } from './v1/calendar';
 import type { ChannelsEndpoints } from './v1/channels';
@@ -83,7 +82,6 @@ export interface Endpoints
 		EmailInboxEndpoints,
 		MailerEndpoints,
 		SubscriptionsEndpoints,
-		AutoTranslateEndpoints,
 		ImportEndpoints,
 		FederationEndpoints,
 		CalendarEndpoints,
@@ -241,8 +239,6 @@ export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
 export * from './v1/moderation';
 export * from './v1/server-events';
 
-export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
-export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
 export * from './v1/e2e';
 export * from './v1/import';
