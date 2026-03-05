@@ -120,7 +120,7 @@ describe('Reactions', () => {
 		beforeEach(() => {
 			modelsMock.EmojiCustom.countByNameOrAlias.reset();
 		});
-		it('should throw an error if reaction is not on emojione list', async () => {
+		it('should throw an error if reaction is not on emoji list', async () => {
 			modelsMock.EmojiCustom.countByNameOrAlias.resolves(0);
 			await expect(executeSetReaction('test', 'test', 'test')).to.be.rejectedWith('error-not-allowed');
 		});
