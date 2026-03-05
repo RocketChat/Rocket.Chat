@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`BoldSpan matches snapshot 1`] = `
+<div>
+  <strong>
+    Bold 
+  </strong>
+  <strong>
+    <em>
+      and italic
+    </em>
+  </strong>
+</div>
+`;

@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ItalicSpan matches snapshot 1`] = `
+<div>
+  <em>
+    Snapshot italic
+  </em>
+</div>
+`;

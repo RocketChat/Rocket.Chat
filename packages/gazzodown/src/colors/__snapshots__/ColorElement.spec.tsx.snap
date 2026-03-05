@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ColorElement matches snapshot 1`] = `
+<div>
+  <span>
+    <span
+      style="background-color: rgba(100, 150, 200, 0.784); display: inline-block; width: 1em; height: 1em; vertical-align: middle; margin-inline-end: 0.5em;"
+    />
+    rgba(
+    100
+    , 
+    150
+    , 
+    200
+    , 
+    78.43137254901961
+    %)
+  </span>
+</div>
+`;

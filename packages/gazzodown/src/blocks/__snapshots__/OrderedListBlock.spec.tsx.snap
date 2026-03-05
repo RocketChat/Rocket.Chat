@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`OrderedListBlock matches snapshot 1`] = `
+<div>
+  <ol>
+    <li>
+      Item
+    </li>
+  </ol>
+</div>
+`;
