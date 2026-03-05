@@ -6,6 +6,8 @@ const paragraph = (value: Array<Record<string, unknown>>) => ({ type: 'PARAGRAPH
 
 const bold = (value: Array<Record<string, unknown>>) => ({ type: 'BOLD' as const, value });
 
+const italic = (value: Array<Record<string, unknown>>) => ({ type: 'ITALIC' as const, value });
+
 const strike = (value: Array<Record<string, unknown>>) => ({ type: 'STRIKE' as const, value });
 
 const timestampNode = (value: string, format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' = 't') => ({

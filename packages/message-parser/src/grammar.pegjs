@@ -551,6 +551,7 @@ ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { retu
 
 ItalicContentPreferentialItemPattern = Whitespace
   / InlineCode
+  / TimestampRules
   / MaybeReferences
   / UserMention
   / ChannelMention
@@ -574,7 +575,7 @@ BoldContent = text:BoldContentItem+ { return bold(reducePlainTexts(text)); }
 
 BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { return item; }
 
-BoldContentPreferentialItemPattern = Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
+BoldContentPreferentialItemPattern = Whitespace / InlineCode / TimestampRules / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
 
 BoldContentFallbackItem = item:BoldContentFallbackItemPattern { return item; }
 
