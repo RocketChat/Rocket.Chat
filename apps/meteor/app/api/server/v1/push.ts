@@ -166,7 +166,7 @@ const pushTokenEndpoints = API.v1
 			const { id, type, value, appName, voipToken } = this.bodyParams;
 
 			if (voipToken && !id) {
-				throw new Error('voip-tokens-must-specify-device-id');
+				return API.v1.failure('voip-tokens-must-specify-device-id');
 			}
 
 			const rawToken = this.request.headers.get('x-auth-token');
