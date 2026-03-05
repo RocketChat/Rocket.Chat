@@ -20,6 +20,8 @@ import type { IMediaSignalLogger } from '../definition/logger';
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { isPendingState } from './services/states';
 import { serializeError } from './utils/serializeError';
+import type { MediaStreamIdentification } from '../definition/media';
+import type { IMediaStreamWrapper } from '../definition/media/IMediaStreamWrapper';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
@@ -196,14 +198,6 @@ export class ClientMediaCall implements IClientMediaCall {
 	private receivedRemoteSdp: boolean;
 
 	private enabledFeatures: CallFeature[] | null;
-
-	public get audioLevel(): number {
-		return this.webrtcProcessor?.audioLevel || 0;
-	}
-
-	public get localAudioLevel(): number {
-		return this.webrtcProcessor?.localAudioLevel || 0;
-	}
 
 	private _flags: CallFlag[];
 
@@ -475,19 +469,22 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public getRemoteMediaStream(): MediaStream | null {
-		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream');
-		if (this.hidden || !this.signed) {
+	public getLocalMediaStream(tag?: string): IMediaStreamWrapper | null {
+		this.config.logger?.debug('ClientMediaCall.getLocalMediaStream', tag);
+		if (!this.mayUseStreams()) {
 			return null;
 		}
 
-		if (this.shouldIgnoreWebRTC()) {
+		return this.webrtcProcessor.streams.getLocalStreamByTag(tag || 'main');
+	}
+
+	public getRemoteMediaStream(tag?: string): IMediaStreamWrapper | null {
+		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream', tag);
+		if (!this.mayUseStreams()) {
 			return null;
 		}
 
-		this.prepareWebRtcProcessor();
-
-		return this.webrtcProcessor.getRemoteMediaStream();
+		return this.webrtcProcessor.streams.getRemoteStreamByTag(tag || 'main');
 	}
 
 	public async processSignal(signal: ServerMediaSignal, oldCall?: ClientMediaCall | null) {
@@ -904,6 +901,9 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
+		if (signal.streams) {
+			this.webrtcProcessor.setRemoteIds(signal.streams);
+		}
 		switch (signal.sdp.type) {
 			case 'offer':
 				await this.processAnswerRequest(signal);
@@ -924,11 +924,15 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.logger?.debug('ClientMediaCall.deliverSdp');
 
 		if (!this.hidden) {
-			this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+			this.config.transporter.sendToServer(this.callId, 'local-sdp', { ...data, streams: this.getLocalStreamIds() });
 			this.sentLocalSdp = true;
 		}
 
 		this.updateClientState();
+	}
+
+	protected getLocalStreamIds(): MediaStreamIdentification[] {
+		return this.webrtcProcessor?.getLocalStreamIds() || [];
 	}
 
 	protected async rejectAsUnavailable(): Promise<void> {
@@ -949,7 +953,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const earlySignals = Array.from(this.earlySignals.values());
 		this.earlySignals.clear();
 
-		for await (const signal of earlySignals) {
+		for (const signal of earlySignals) {
 			try {
 				await this.processSignal(signal);
 			} catch (e) {
@@ -1139,6 +1143,11 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.updateRemoteStates();
 	}
 
+	private onWebRTCStreamChanged(): void {
+		this.config.logger?.debug('ClientMediaCall.onWebRTCStreamChanged');
+		this.emitter.emit('streamChange');
+	}
+
 	private onNegotiationNeeded(oldNegotiationId: string): void {
 		this.config.logger?.debug('ClientMediaCall.onNegotiationNeeded', oldNegotiationId);
 
@@ -1231,11 +1240,27 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.signed;
 	}
 
+	private mayUseStreams(): this is ClientMediaCallWebRTC {
+		if (this.hidden || !this.signed) {
+			return false;
+		}
+
+		if (this.shouldIgnoreWebRTC()) {
+			return false;
+		}
+
+		if (!this.webrtcProcessor) {
+			return false;
+		}
+
+		return true;
+	}
+
 	private prepareWebRtcProcessor(): asserts this is ClientMediaCallWebRTC {
-		this.config.logger?.debug('ClientMediaCall.prepareWebRtcProcessor');
 		if (this.webrtcProcessor) {
 			return;
 		}
+		this.config.logger?.debug('ClientMediaCall.prepareWebRtcProcessor');
 
 		const {
 			logger,
@@ -1255,6 +1280,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
+		this.webrtcProcessor.emitter.on('streamChanged', () => this.onWebRTCStreamChanged());
 
 		this.negotiationManager.emitter.on('local-sdp', ({ sdp, negotiationId }) => this.deliverSdp({ sdp, negotiationId }));
 		this.negotiationManager.emitter.on('negotiation-needed', ({ oldNegotiationId }) => this.onNegotiationNeeded(oldNegotiationId));

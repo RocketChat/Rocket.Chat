@@ -146,12 +146,10 @@ test.describe.serial('teams-management', () => {
 	test('should send hello in the targetTeam and reply in a thread', async ({ page }) => {
 		await poHomeTeam.navbar.openChat(targetTeam);
 		await poHomeTeam.content.sendMessage('hello');
-		await page.locator('[data-qa-type="message"]').last().hover();
-
-		await page.locator('role=button[name="Reply in thread"]').click();
+		await poHomeTeam.content.openReplyInThread();
 		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetTeam}"]`).type('any-reply-message');
 		await page.keyboard.press('Enter');
-		await expect(poHomeTeam.tabs.flexTabViewThreadMessage).toHaveText('any-reply-message');
+		await expect(poHomeTeam.content.lastThreadMessageText).toHaveText('any-reply-message');
 	});
 
 	test('should set targetTeam as readonly', async () => {

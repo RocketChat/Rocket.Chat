@@ -29,7 +29,6 @@ import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFi
 import { isSMTPConfigured } from '../../../utils/server/functions/isSMTPConfigured';
 import { getURL } from '../../../utils/server/getURL';
 import { API } from '../api';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
@@ -172,7 +171,7 @@ import { getUserInfo } from '../helpers/getUserInfo';
  */
 API.v1.addRoute(
 	'me',
-	{ authRequired: true },
+	{ authRequired: true, userWithoutUsername: true },
 	{
 		async get() {
 			const userFields = { ...getBaseUserFields(), services: 1 };
@@ -244,7 +243,7 @@ API.v1.addRoute(
 					text = `#${channel}`;
 					break;
 				case 'user':
-					if (settings.get('API_Shield_user_require_auth') && !(await getLoggedInUser(this.request))) {
+					if (settings.get('API_Shield_user_require_auth') && !this.user) {
 						return API.v1.failure('You must be logged in to do this.');
 					}
 					const user = await getUserFromParams(this.queryParams);
@@ -473,6 +472,7 @@ API.v1.addRoute(
 	'method.call/:method',
 	{
 		authRequired: true,
+		userWithoutUsername: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
 		applyMeteorContext: true,
@@ -535,6 +535,7 @@ API.v1.addRoute(
 	'method.callAnon/:method',
 	{
 		authRequired: false,
+		userWithoutUsername: true,
 		rateLimiterOptions: false,
 		validateParams: isMeteorCall,
 		applyMeteorContext: true,
@@ -666,7 +667,7 @@ API.v1.addRoute(
 
 			const auditSettingOperation = updateAuditedByUser({
 				_id: this.userId,
-				username: this.user.username!,
+				username: this.user.username,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
 			});
@@ -686,7 +687,7 @@ API.v1.addRoute(
 
 				return resetAuditedSettingByUser({
 					_id: this.userId,
-					username: this.user.username!,
+					username: this.user.username,
 					ip: this.requestIp,
 					useragent: this.request.headers.get('user-agent') || '',
 				})(Settings.resetValueById, settingId);

@@ -11,11 +11,21 @@ type CreateRoomParams = {
 	username?: string;
 	members?: string[];
 	credentials?: Credentials;
+	readOnly?: boolean;
 	extraData?: Record<string, any>;
 	config?: IRequestConfig;
 };
 
-export const createRoom = ({ name, type, username, members, credentials: customCredentials, extraData, config }: CreateRoomParams) => {
+export const createRoom = ({
+	name,
+	type,
+	username,
+	members,
+	credentials: customCredentials,
+	extraData,
+	readOnly,
+	config,
+}: CreateRoomParams) => {
 	if (!type) {
 		throw new Error('"type" is required in "createRoom.ts" test helper');
 	}
@@ -42,6 +52,7 @@ export const createRoom = ({ name, type, username, members, credentials: customC
 		.send({
 			...params,
 			...(members && { members }),
+			...(readOnly && { readOnly }),
 			...(extraData && { extraData }),
 		});
 };
@@ -283,10 +294,8 @@ export const findRoomMember = async (
 		await new Promise((resolve) => setTimeout(resolve, initialDelay));
 	}
 
-	// eslint-disable-next-line no-await-in-loop
 	for (let attempt = 1; attempt <= maxRetries; attempt++) {
 		try {
-			// eslint-disable-next-line no-await-in-loop
 			const membersResponse = await getRoomMembers(roomId, config);
 			const member = membersResponse.members.find((member: IUser) => member.username === username);
 
@@ -295,14 +304,12 @@ export const findRoomMember = async (
 			}
 
 			if (attempt < maxRetries) {
-				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		} catch (error) {
 			console.warn(`Attempt ${attempt} to find room member failed:`, error);
 
 			if (attempt < maxRetries) {
-				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		}
