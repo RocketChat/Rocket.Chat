@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CreateChannelModal from './CreateChannelModal';
@@ -289,7 +289,7 @@ describe('CreateChannelModal', () => {
 
 			await userEvent.type(screen.getByLabelText(/Name/i), 'newchannel');
 			await userEvent.click(screen.getByRole('button', { name: /Create/i }));
-			expect(onClose).toHaveBeenCalled();
+			await waitFor(() => expect(onClose).toHaveBeenCalled());
 		});
 
 		it('should not close the modal on failure', async () => {
@@ -310,7 +310,7 @@ describe('CreateChannelModal', () => {
 			await userEvent.type(screen.getByLabelText(/Name/i), 'failedchannel');
 			await userEvent.click(screen.getByRole('button', { name: /Create/i }));
 
-			expect(onClose).not.toHaveBeenCalled();
+			await waitFor(() => expect(onClose).not.toHaveBeenCalled());
 		});
 	});
 });
