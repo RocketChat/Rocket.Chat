@@ -173,7 +173,7 @@ const permissionsEndpoints = API.v1
 				return API.v1.failure('Invalid role', 'error-invalid-role');
 			}
 
-			for await (const permission of bodyParams.permissions) {
+			for (const permission of bodyParams.permissions) {
 				await Permissions.setRoles(permission._id, permission.roles);
 				void notifyOnPermissionChangedById(permission._id);
 			}

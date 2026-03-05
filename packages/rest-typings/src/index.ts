@@ -230,6 +230,7 @@ export * from './helpers/ReplacePlaceholders';
 export * from './helpers/WithItemCount';
 export * from './v1/emojiCustom';
 export * from './v1/instances';
+export * from './v1/ldap';
 export * from './v1/users';
 export * from './v1/users/UsersSetAvatarParamsPOST';
 export * from './v1/users/UsersSetPreferenceParamsPOST';
@@ -242,9 +243,7 @@ export * from './v1/server-events';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
-export * from './v1/autotranslate/AutotranslateTranslateMessageParamsPOST';
 export * from './v1/e2e/e2eSetUserPublicAndPrivateKeysParamsPOST';
-export * from './v1/e2e/e2eUpdateGroupKeyParamsPOST';
 export * from './v1/e2e';
 export * from './v1/import';
 export * from './v1/email-inbox';

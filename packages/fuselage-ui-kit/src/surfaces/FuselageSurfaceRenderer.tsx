@@ -83,14 +83,6 @@ export abstract class FuselageSurfaceRenderer extends UiKit.SurfaceRenderer<Reac
 		return <MarkdownTextElement key={index} textObject={textObject} />;
 	}
 
-	public override text(textObject: UiKit.TextObject, context: UiKit.BlockContext, index: number): ReactElement | null {
-		if (textObject.type === 'mrkdwn') {
-			return this.mrkdwn(textObject, context, index);
-		}
-
-		return this.plain_text(textObject, context, index);
-	}
-
 	actions(block: UiKit.ActionsBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
 		if (context === UiKit.BlockContext.BLOCK) {
 			return (

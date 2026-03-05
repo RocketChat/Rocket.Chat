@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { bold, emoji, italic, link, mentionChannel, mentionUser, paragraph, plain, spoiler, strike } from '../src/utils';
+import { bold, emoji, italic, link, mentionChannel, mentionUser, paragraph, plain, spoiler, strike } from './helpers';
 
 describe('spoiler parsing', () => {
 	test.each([

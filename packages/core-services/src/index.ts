@@ -43,7 +43,13 @@ import type {
 	IListRoomsFilter,
 } from './types/ITeamService';
 import type { ITelemetryEvent, TelemetryMap, TelemetryEvents } from './types/ITelemetryEvent';
-import type { UiKitCoreAppPayload, IUiKitCoreApp, IUiKitCoreAppService } from './types/IUiKitCoreApp';
+import type {
+	UiKitCoreAppBlockActionPayload,
+	UiKitCoreAppViewClosedPayload,
+	UiKitCoreAppViewSubmitPayload,
+	IUiKitCoreApp,
+	IUiKitCoreAppService,
+} from './types/IUiKitCoreApp';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
@@ -118,7 +124,9 @@ export {
 	ITeamService,
 	ITeamUpdateData,
 	ITelemetryEvent,
-	UiKitCoreAppPayload,
+	UiKitCoreAppBlockActionPayload,
+	UiKitCoreAppViewClosedPayload,
+	UiKitCoreAppViewSubmitPayload,
 	IUiKitCoreApp,
 	IUiKitCoreAppService,
 	IVideoConfService,
@@ -181,6 +189,7 @@ export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-
 export const Import = proxify<IImportService>('import');
 export const OmnichannelAnalytics = proxify<IOmnichannelAnalyticsService>('omnichannel-analytics');
 export const User = proxify<IUserService>('user');
+export const Push = proxify<IPushService>('push');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available
