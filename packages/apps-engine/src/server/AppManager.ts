@@ -1108,6 +1108,8 @@ export class AppManager {
 	 * Should a packageValue be provided and not empty, then it's considered set.
 	 */
 	private areRequiredSettingsSet(storageItem: IAppStorageItem): boolean {
+		const isValueSet = (v: unknown): boolean => v !== undefined && v !== null && v !== '';
+
 		let result = true;
 
 		for (const setk of Object.keys(storageItem.settings)) {
@@ -1117,7 +1119,7 @@ export class AppManager {
 				continue;
 			}
 
-			if (typeof sett.value !== 'undefined' || typeof sett.packageValue !== 'undefined') {
+			if (isValueSet(sett.value) || isValueSet(sett.packageValue)) {
 				continue;
 			}
 

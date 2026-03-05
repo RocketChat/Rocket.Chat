@@ -259,4 +259,131 @@ export class AppManagerTestFixture {
 		Expect(expectedStorageItem.signature).toBe('signed-app-data');
 		Expect(updatePartialAndReturnDocumentSpy).toHaveBeenCalled().exactly(1).times;
 	}
+
+	@Test('areRequiredSettingsSet - returns true when there are no required settings')
+	public areRequiredSettingsSetNoRequiredSettings() {
+		const manager = new AppManager({
+			metadataStorage: this.testingInfastructure.getAppStorage(),
+			logStorage: this.testingInfastructure.getLogStorage(),
+			bridges: this.testingInfastructure.getAppBridges(),
+			sourceStorage: this.testingInfastructure.getSourceStorage(),
+		});
+
+		const storageItem = TestData.getAppStorageItem({
+			settings: {
+				optionalSetting: { id: 'optionalSetting', type: 0, required: false, packageValue: undefined, value: undefined } as any,
+			},
+		});
+
+		Expect((manager as any).areRequiredSettingsSet(storageItem)).toBe(true);
+	}
+
+	@Test('areRequiredSettingsSet - returns false when a required setting has no value and no packageValue')
+	public areRequiredSettingsSetMissingBothValues() {
+		const manager = new AppManager({
+			metadataStorage: this.testingInfastructure.getAppStorage(),
+			logStorage: this.testingInfastructure.getLogStorage(),
+			bridges: this.testingInfastructure.getAppBridges(),
+			sourceStorage: this.testingInfastructure.getSourceStorage(),
+		});
+
+		const storageItem = TestData.getAppStorageItem({
+			settings: {
+				requiredSetting: { id: 'requiredSetting', type: 0, required: true, packageValue: undefined, value: undefined } as any,
+			},
+		});
+
+		Expect((manager as any).areRequiredSettingsSet(storageItem)).toBe(false);
+	}
+
+	@Test('areRequiredSettingsSet - returns true when a required setting has a real value')
+	public areRequiredSettingsSetWithValue() {
+		const manager = new AppManager({
+			metadataStorage: this.testingInfastructure.getAppStorage(),
+			logStorage: this.testingInfastructure.getLogStorage(),
+			bridges: this.testingInfastructure.getAppBridges(),
+			sourceStorage: this.testingInfastructure.getSourceStorage(),
+		});
+
+		const storageItem = TestData.getAppStorageItem({
+			settings: {
+				requiredSetting: { id: 'requiredSetting', type: 0, required: true, packageValue: undefined, value: 'configured' } as any,
+			},
+		});
+
+		Expect((manager as any).areRequiredSettingsSet(storageItem)).toBe(true);
+	}
+
+	@Test('areRequiredSettingsSet - returns true when a required setting has a real packageValue but no value')
+	public areRequiredSettingsSetWithPackageValue() {
+		const manager = new AppManager({
+			metadataStorage: this.testingInfastructure.getAppStorage(),
+			logStorage: this.testingInfastructure.getLogStorage(),
+			bridges: this.testingInfastructure.getAppBridges(),
+			sourceStorage: this.testingInfastructure.getSourceStorage(),
+		});
+
+		const storageItem = TestData.getAppStorageItem({
+			settings: {
+				requiredSetting: { id: 'requiredSetting', type: 0, required: true, packageValue: 'default', value: undefined } as any,
+			},
+		});
+
+		Expect((manager as any).areRequiredSettingsSet(storageItem)).toBe(true);
+	}
+
+	@Test('areRequiredSettingsSet - returns false when a required setting has null value and null packageValue')
+	public areRequiredSettingsSetNullValues() {
+		const manager = new AppManager({
+			metadataStorage: this.testingInfastructure.getAppStorage(),
+			logStorage: this.testingInfastructure.getLogStorage(),
+			bridges: this.testingInfastructure.getAppBridges(),
+			sourceStorage: this.testingInfastructure.getSourceStorage(),
+		});
+
+		const storageItem = TestData.getAppStorageItem({
+			settings: {
+				requiredSetting: { id: 'requiredSetting', type: 0, required: true, packageValue: null, value: null } as any,
+			},
+		});
+
+		Expect((manager as any).areRequiredSettingsSet(storageItem)).toBe(false);
+	}
+
+	@Test('areRequiredSettingsSet - returns false when a required setting has empty string value and empty string packageValue')
+	public areRequiredSettingsSetEmptyStringValues() {
+		const manager = new AppManager({
+			metadataStorage: this.testingInfastructure.getAppStorage(),
+			logStorage: this.testingInfastructure.getLogStorage(),
+			bridges: this.testingInfastructure.getAppBridges(),
+			sourceStorage: this.testingInfastructure.getSourceStorage(),
+		});
+
+		const storageItem = TestData.getAppStorageItem({
+			settings: {
+				requiredSetting: { id: 'requiredSetting', type: 0, required: true, packageValue: '', value: '' } as any,
+			},
+		});
+
+		Expect((manager as any).areRequiredSettingsSet(storageItem)).toBe(false);
+	}
+
+	@Test('areRequiredSettingsSet - returns true when a required setting has null value but a valid packageValue is present')
+	public areRequiredSettingsSetNullValueWithValidPackageValue() {
+		const manager = new AppManager({
+			metadataStorage: this.testingInfastructure.getAppStorage(),
+			logStorage: this.testingInfastructure.getLogStorage(),
+			bridges: this.testingInfastructure.getAppBridges(),
+			sourceStorage: this.testingInfastructure.getSourceStorage(),
+		});
+
+		const storageItem = TestData.getAppStorageItem({
+			settings: {
+				requiredSetting: { id: 'requiredSetting', type: 0, required: true, packageValue: 'default', value: null } as any,
+			},
+		});
+
+		// packageValue is 'default' (valid), so the setting is considered set
+		Expect((manager as any).areRequiredSettingsSet(storageItem)).toBe(true);
+	}
 }

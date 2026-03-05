@@ -2,4 +2,4 @@
 "@rocket.chat/apps-engine": patch
 ---
 
-Fixed `areRequiredSettingsSet` comparing setting values against the string literal `"undefined"` instead of using `typeof` to check for actual `undefined` values, which caused required app settings to never be properly validated.
+Fixed `areRequiredSettingsSet` to correctly identify unset required app settings. Previously, the check compared values against the string literal `"undefined"` instead of using `typeof`, and also incorrectly treated `null` and empty string (`""`) as valid configured values. The method now uses a strict `isValueSet` guard so that `null`, `""`, and `undefined` are all treated as unset, preventing apps with empty required settings from being enabled.
