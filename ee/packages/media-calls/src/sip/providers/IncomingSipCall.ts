@@ -301,7 +301,7 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	private async getPendingInboundNegotiation(): Promise<IncomingSipCallNegotiation | null> {
-		for await (const localNegotiation of this.inboundRenegotiations.values()) {
+		for (const localNegotiation of this.inboundRenegotiations.values()) {
 			if (localNegotiation.answer) {
 				continue;
 			}

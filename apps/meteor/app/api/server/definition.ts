@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 
-import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
+import type { IUser, LicenseModule, RequiredField } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
@@ -110,6 +110,7 @@ export type SharedOptions<TMethod extends string> = (
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired?: boolean;
+			userWithoutUsername?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 			rateLimiterOptions?:
 				| {
@@ -128,6 +129,7 @@ export type SharedOptions<TMethod extends string> = (
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired: true;
+			userWithoutUsername?: boolean;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
 			rateLimiterOptions?:
@@ -215,18 +217,18 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	};
 } & (TOptions extends { authRequired: true }
 	? {
-			user: IUser;
+			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 			userId: string;
 			readonly token: string;
 		}
 	: TOptions extends { authOrAnonRequired: true }
 		? {
-				user?: IUser;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 				userId?: string;
 				readonly token?: string;
 			}
 		: {
-				user?: IUser;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 				userId?: string;
 				readonly token?: string;
 			});
@@ -312,16 +314,16 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 		query: Record<string, unknown>;
 	}>;
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
-
+	request: Request;
 	requestIp?: string;
 	route: string;
 	response: Response;
 } & (TOptions['authRequired'] extends true
 	? {
-			user: IUser;
+			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 		}
 	: {
-			user?: IUser;
+			user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 		});
 
 type PromiseOrValue<T> = T | Promise<T>;

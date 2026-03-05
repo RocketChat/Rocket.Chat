@@ -5,7 +5,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint src",
+		"lint": "eslint .",
 		"lint:fix": "eslint --fix src"
 	},
 	"dependencies": {
@@ -14,8 +14,6 @@
 		"@actions/github": "^6.0.1",
 		"@octokit/core": "^5.0.1",
 		"@octokit/plugin-throttling": "^6.1.0",
-		"@rocket.chat/eslint-config": "workspace:^",
-		"eslint": "~8.45.0",
 		"mdast-util-to-string": "2.0.0",
 		"remark-parse": "9.0.0",
 		"remark-stringify": "9.0.1",
@@ -24,6 +22,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "~22.16.5",
+		"eslint": "~9.39.3",
 		"typescript": "~5.9.3"
 	},
 	"packageManager": "yarn@4.12.0",
