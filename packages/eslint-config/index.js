@@ -231,7 +231,6 @@ export default defineConfig(
 		rules: {
 			'getter-return': ['error', { allowImplicit: true }],
 			'no-async-promise-executor': 'warn',
-			'no-await-in-loop': 'error',
 			'no-case-declarations': 'warn',
 			'no-constant-binary-expression': 'warn',
 			'no-debugger': 'error',
