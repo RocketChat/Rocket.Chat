@@ -44,9 +44,4 @@ roomCoordinator.add(LivechatRoomType, {
 			return LivechatVisitors.findOneEnabledById(message.u._id);
 		}
 	},
-
-	getReadReceiptsExtraData(message) {
-		const { token } = message as any;
-		return { token };
-	},
 } as AtLeast<IRoomTypeServerDirectives, 'roomName'>);

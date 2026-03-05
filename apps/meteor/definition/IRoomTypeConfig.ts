@@ -1,14 +1,4 @@
-import type {
-	IRoom,
-	RoomType,
-	IUser,
-	IMessage,
-	IReadReceipt,
-	ValueOf,
-	AtLeast,
-	ISubscription,
-	IOmnichannelRoom,
-} from '@rocket.chat/core-typings';
+import type { IRoom, RoomType, IUser, IMessage, ValueOf, AtLeast, ISubscription, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { IRouterPaths, RouteName } from '@rocket.chat/ui-contexts';
 
@@ -106,7 +96,6 @@ export interface IRoomTypeServerDirectives {
 	) => Promise<{ title: string | undefined; text: string; name: string | undefined }>;
 	getMsgSender: (message: IMessage) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
-	getReadReceiptsExtraData: (message: IMessage) => Partial<IReadReceipt>;
 	includeInDashboard: () => boolean;
 	roomFind?: (rid: string) => Promise<IRoom | undefined> | Promise<IOmnichannelRoom | null> | IRoom | undefined;
 }

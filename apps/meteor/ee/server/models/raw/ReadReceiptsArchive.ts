@@ -1,7 +1,7 @@
-import type { IReadReceipt, IUser, IMessage, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
 import { BaseRaw, readSecondaryPreferred } from '@rocket.chat/models';
-import type { Collection, FindCursor, Db, IndexDescription, Filter, DeleteResult, UpdateResult, Document } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription, DeleteResult } from 'mongodb';
 
 export class ReadReceiptsArchiveRaw extends BaseRaw<IReadReceipt> implements IReadReceiptsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IReadReceipt>>) {
@@ -42,26 +42,6 @@ export class ReadReceiptsArchiveRaw extends BaseRaw<IReadReceipt> implements IRe
 
 	removeByMessageIds(messageIds: string[]): Promise<DeleteResult> {
 		return this.deleteMany({ messageId: { $in: messageIds } });
-	}
-
-	async removeByIdPinnedTimestampLimitAndUsers(
-		_roomId: string,
-		_ignorePinned: boolean,
-		_ignoreDiscussion: boolean,
-		_ts: Filter<IMessage>['ts'],
-		_users: IUser['_id'][],
-		_ignoreThreads: boolean,
-	): Promise<DeleteResult> {
-		// Not needed for archive, but required by interface
-		return { acknowledged: true, deletedCount: 0 };
-	}
-
-	setPinnedByMessageId(messageId: string, pinned = true): Promise<Document | UpdateResult> {
-		return this.updateMany({ messageId }, { $set: { pinned } });
-	}
-
-	setAsThreadById(messageId: string): Promise<Document | UpdateResult> {
-		return this.updateMany({ messageId }, { $set: { tmid: messageId } });
 	}
 
 	findOlderThan(date: Date): FindCursor<IReadReceipt> {
