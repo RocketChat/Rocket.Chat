@@ -115,4 +115,27 @@ describe('BlockSplitter', () => {
 		expect(blocks[1].type).toBe(BlockType.PARAGRAPH);
 		expect(blocks[1].content).toBe('Paragraph text');
 	});
+
+	it('should handle empty input correctly', () => {
+		const input = '';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(0);
+	});
+
+	it('should yield a CODE block with incomplete flag for an unclosed code fence', () => {
+		const input = '```js\ncode';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(1);
+		expect(blocks[0].type).toBe(BlockType.CODE);
+		expect(blocks[0].content).toBe('code');
+		expect(blocks[0].incomplete).toBe(true);
+	});
+
+	it('should treat a heading without a space as a paragraph', () => {
+		const input = '#NoSpace';
+		const blocks = BlockSplitter.split(input);
+		expect(blocks.length).toBe(1);
+		expect(blocks[0].type).toBe(BlockType.PARAGRAPH);
+		expect(blocks[0].content).toBe('#NoSpace');
+	});
 });

@@ -12,6 +12,7 @@ export type Block = {
 	level?: number;
 	language?: string;
 	ordered?: boolean;
+	incomplete?: boolean;
 };
 
 export class BlockSplitter {
@@ -40,16 +41,27 @@ export class BlockSplitter {
 				this.flush(blocks, currentBlock);
 				const language = line.slice(3).trim();
 				const codeLines = [];
+				let closed = false;
 				i++;
 				while (i < lines.length && !lines[i].startsWith('```')) {
 					codeLines.push(lines[i]);
 					i++;
 				}
+				if (i < lines.length) {
+					closed = true;
+				}
 				blocks.push({
 					type: BlockType.CODE,
 					content: codeLines.join('\n'),
 					language,
+					incomplete: !closed,
 				});
+				currentBlock = null;
+				continue;
+			}
+
+			if (line.trim() === '') {
+				this.flush(blocks, currentBlock);
 				currentBlock = null;
 				continue;
 			}
@@ -90,12 +102,6 @@ export class BlockSplitter {
 				} else {
 					currentBlock.content += `\n${line}`;
 				}
-				continue;
-			}
-
-			if (line.trim() === '') {
-				this.flush(blocks, currentBlock);
-				currentBlock = null;
 				continue;
 			}
 
