@@ -252,22 +252,27 @@ export const timestampFromIsoTime = ({
 	seconds,
 	milliseconds,
 	timezone,
-}: {
-	year: string[];
-	month: string[];
-	day: string[];
-	hours: string[];
-	minutes: string[];
-	seconds: string[];
-	milliseconds?: string[];
+  }: {
+	year: string;
+	month: string;
+	day: string;
+	hours: string;
+	minutes: string;
+	seconds: string;
+	milliseconds?: string;
 	timezone?: string;
-}) => {
+  }) => {
 	const date =
-		(new Date(`${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds || '000'}${timezone ? `${timezone}` : ''}`).getTime() /
-			1000) |
-		0;
+	  (new Date(
+		`${year}-${month}-${day}T${hours}:${minutes}:${seconds}.${milliseconds || '000'}${
+		  timezone ? `${timezone}` : ''
+		}`,
+	  ).getTime() /
+		1000) |
+	  0;
+  
 	return date.toString();
-};
+  };
 
 export const extractFirstResult = (value: Types[keyof Types]['value']): Types[keyof Types]['value'] => {
 	if (typeof value !== 'object' || !Array.isArray(value)) {
