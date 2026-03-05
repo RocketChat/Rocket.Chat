@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PreviewKatexElement matches snapshot 1`] = `
+<div>
+  \\\\int_0^1 f(x) dx
+</div>
+`;

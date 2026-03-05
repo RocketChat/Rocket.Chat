@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PreviewColorElement matches snapshot with alpha 1`] = `
+<div>
+  #
+  ff
+  80
+  00
+  80
+</div>
+`;
+
+exports[`PreviewColorElement matches snapshot without alpha 1`] = `
+<div>
+  #
+  ff
+  80
+  00
+</div>
+`;

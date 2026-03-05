@@ -1,0 +1,20 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`KatexErrorBoundary matches snapshot for error state 1`] = `
+<div>
+  <span
+    class="rcx-css-xjkixw"
+    title="Katex parse error"
+  >
+    \\\\broken
+  </span>
+</div>
+`;
+
+exports[`KatexErrorBoundary matches snapshot for success state 1`] = `
+<div>
+  <span>
+    rendered math
+  </span>
+</div>
+`;

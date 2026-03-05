@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`KatexBlock matches snapshot 1`] = `
+<div>
+  <div
+    aria-label="\\\\sum_{i=0}^{n} i"
+    role="math"
+    style="overflow-x: auto;"
+  >
+    <span
+      class="katex-display"
+    >
+      \\\\sum_{i=0}^{n} i
+    </span>
+  </div>
+</div>
+`;

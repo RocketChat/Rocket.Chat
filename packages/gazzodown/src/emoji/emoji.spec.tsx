@@ -4,38 +4,48 @@ import { MarkupInteractionContext } from '..';
 import Emoji from './Emoji';
 
 describe('Emoji', () => {
-	it('renders emoji unicode fallback when detectEmoji is not provided', () => {
+	it('renders unicode emoji via EmojiRenderer', () => {
 		render(
 			<MarkupInteractionContext.Provider value={{ convertAsciiToEmoji: true, useEmoji: true }}>
-				<Emoji type='EMOJI' value={undefined} unicode='😀' />
+				<Emoji type='EMOJI' value={undefined} unicode='🚀' />
 			</MarkupInteractionContext.Provider>,
 		);
 
-		expect(screen.getByRole('img')).toHaveTextContent('😀');
+		expect(screen.getByRole('img')).toHaveTextContent('🚀');
 	});
 
-	it('renders shortCode fallback when detectEmoji is not provided', () => {
+	it('renders shortCode emoji via EmojiRenderer', () => {
 		render(
 			<MarkupInteractionContext.Provider value={{ convertAsciiToEmoji: true, useEmoji: true }}>
-				<Emoji type='EMOJI' value={{ type: 'PLAIN_TEXT', value: 'smile' }} shortCode='smile' />
+				<Emoji type='EMOJI' value={{ type: 'PLAIN_TEXT', value: 'rocket' }} shortCode='rocket' />
 			</MarkupInteractionContext.Provider>,
 		);
 
-		expect(screen.getByRole('img')).toHaveTextContent(':smile:');
+		expect(screen.getByTitle(':rocket:')).toBeInTheDocument();
 	});
 
-	it('renders plain text when useEmoji is false', () => {
+	it('renders plain text when useEmoji is false for shortCode emoji', () => {
 		render(
 			<MarkupInteractionContext.Provider value={{ convertAsciiToEmoji: true, useEmoji: false }}>
-				<Emoji type='EMOJI' value={{ type: 'PLAIN_TEXT', value: 'smile' }} shortCode='smile' />
+				<Emoji type='EMOJI' value={{ type: 'PLAIN_TEXT', value: 'rocket' }} shortCode='rocket' />
 			</MarkupInteractionContext.Provider>,
 		);
 
-		expect(screen.getByText(':smile:')).toBeInTheDocument();
+		expect(screen.getByText(':rocket:')).toBeInTheDocument();
 		expect(screen.queryByRole('img')).not.toBeInTheDocument();
 	});
 
-	it('renders ASCII text when convertAsciiToEmoji is false and emoji is ASCII', () => {
+	it('renders ascii value when useEmoji is false and value differs from shortCode', () => {
+		render(
+			<MarkupInteractionContext.Provider value={{ convertAsciiToEmoji: true, useEmoji: false }}>
+				<Emoji type='EMOJI' value={{ type: 'PLAIN_TEXT', value: ':)' }} shortCode='slight_smile' />
+			</MarkupInteractionContext.Provider>,
+		);
+
+		expect(screen.getByText(':)')).toBeInTheDocument();
+	});
+
+	it('renders ascii text when convertAsciiToEmoji is false', () => {
 		render(
 			<MarkupInteractionContext.Provider value={{ convertAsciiToEmoji: false, useEmoji: true }}>
 				<Emoji type='EMOJI' value={{ type: 'PLAIN_TEXT', value: ':)' }} shortCode='slight_smile' />
@@ -45,23 +55,33 @@ describe('Emoji', () => {
 		expect(screen.getByText(':)')).toBeInTheDocument();
 	});
 
-	it('renders emoji renderer when convertAsciiToEmoji is true', () => {
+	it('renders normally when convertAsciiToEmoji is true', () => {
 		render(
 			<MarkupInteractionContext.Provider value={{ convertAsciiToEmoji: true, useEmoji: true }}>
 				<Emoji type='EMOJI' value={{ type: 'PLAIN_TEXT', value: ':)' }} shortCode='slight_smile' />
 			</MarkupInteractionContext.Provider>,
 		);
 
-		expect(screen.getByRole('img')).toBeInTheDocument();
+		expect(screen.getByTitle(':slight_smile:')).toBeInTheDocument();
 	});
 
-	it('renders original value text when useEmoji is false and shortCode matches value', () => {
-		render(
-			<MarkupInteractionContext.Provider value={{ useEmoji: false }}>
-				<Emoji type='EMOJI' value={{ type: 'PLAIN_TEXT', value: 'thumbsup' }} shortCode='thumbsup' />
+	it('passes big prop to EmojiRenderer', () => {
+		const { container } = render(
+			<MarkupInteractionContext.Provider value={{ convertAsciiToEmoji: true, useEmoji: true }}>
+				<Emoji big type='EMOJI' value={undefined} unicode='🔥' />
 			</MarkupInteractionContext.Provider>,
 		);
 
-		expect(screen.getByText(':thumbsup:')).toBeInTheDocument();
+		expect(container).toMatchSnapshot();
+	});
+
+	it('passes preview prop to EmojiRenderer', () => {
+		const { container } = render(
+			<MarkupInteractionContext.Provider value={{ convertAsciiToEmoji: true, useEmoji: true }}>
+				<Emoji preview type='EMOJI' value={undefined} unicode='🎉' />
+			</MarkupInteractionContext.Provider>,
+		);
+
+		expect(container).toMatchSnapshot();
 	});
 });

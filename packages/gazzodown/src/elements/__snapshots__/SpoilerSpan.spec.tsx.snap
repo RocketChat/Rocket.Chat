@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`SpoilerSpan matches snapshot when hidden 1`] = `
+<div>
+  <span
+    aria-expanded="false"
+    aria-label="Spoiler hidden. Activate to reveal."
+    role="button"
+    style="cursor: pointer; user-select: none; border-radius: 2px; padding-inline: 2px; filter: blur(4px); transition: filter 230ms ease;"
+    tabindex="0"
+  >
+    <span
+      style="border: 0px; height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; white-space: nowrap; width: 1px;"
+    >
+      Spoiler hidden. Activate to reveal.
+    </span>
+    <span
+      aria-hidden="true"
+    >
+      Snapshot spoiler
+    </span>
+  </span>
+</div>
+`;
+
+exports[`SpoilerSpan matches snapshot when revealed 1`] = `
+<div>
+  <span
+    style="filter: none; transition: filter 230ms ease;"
+  >
+    Revealed snapshot
+  </span>
+</div>
+`;
