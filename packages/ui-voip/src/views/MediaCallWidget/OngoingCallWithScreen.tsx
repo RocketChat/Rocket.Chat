@@ -88,8 +88,8 @@ const OngoingCall = () => {
 					/>
 					<ToggleButton
 						label={t('Screen_sharing')}
-						icons={['computer', 'computer']}
-						titles={[t('Screen_sharing'), t('Screen_sharing_off')]}
+						icons={['computer', 'computer']} // TODO: Use new Icons from fuselage when available
+						titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 						pressed={localScreen?.active ?? false}
 						onToggle={onToggleScreenSharing}
 					/>
