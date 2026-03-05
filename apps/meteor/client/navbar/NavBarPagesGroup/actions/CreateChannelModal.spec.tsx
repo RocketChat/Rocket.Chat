@@ -266,4 +266,51 @@ describe('CreateChannelModal', () => {
 			expect(federated).toHaveAccessibleDescription('Federation_Matrix_Federated_Description');
 		});
 	});
+
+	describe('Creation', () => {
+		it('should close the modal and navigate to the room on success', async () => {
+			const onClose = jest.fn();
+			render(<CreateChannelModal onClose={onClose} />, {
+				wrapper: mockAppRoot()
+					.withJohnDoe()
+					.withSetting('UTF8_Channel_Names_Validation', '[a-zA-Z0-9-]+')
+					.withSetting('UI_Allow_room_names_with_special_chars', true)
+					.withEndpoint('GET', '/v1/rooms.nameExists', () => ({ exists: false }))
+					.withEndpoint('POST', '/v1/channels.create', () => ({
+						success: true,
+						channel: { _id: 'channelId', name: 'newchannel', t: 'c' as any } as any,
+					}))
+					.withEndpoint('POST', '/v1/groups.create', () => ({
+						success: true,
+						group: { _id: 'groupId', name: 'newgroup', t: 'p' as any } as any,
+					}))
+					.build(),
+			});
+
+			await userEvent.type(screen.getByLabelText(/Name/i), 'newchannel');
+			await userEvent.click(screen.getByRole('button', { name: /Create/i }));
+			expect(onClose).toHaveBeenCalled();
+		});
+
+		it('should not close the modal on failure', async () => {
+			const onClose = jest.fn();
+			render(<CreateChannelModal onClose={onClose} />, {
+				wrapper: mockAppRoot()
+					.withJohnDoe()
+					.withEndpoint('GET', '/v1/rooms.nameExists', () => ({ exists: false }))
+					.withEndpoint('POST', '/v1/channels.create', () => {
+						throw new Error('Creation failed');
+					})
+					.withEndpoint('POST', '/v1/groups.create', () => {
+						throw new Error('Creation failed');
+					})
+					.build(),
+			});
+
+			await userEvent.type(screen.getByLabelText(/Name/i), 'failedchannel');
+			await userEvent.click(screen.getByRole('button', { name: /Create/i }));
+
+			expect(onClose).not.toHaveBeenCalled();
+		});
+	});
 });
