@@ -118,7 +118,6 @@ declare module 'meteor/meteor' {
 					},
 				]
 			): SubscriptionHandle;
-			_lastSessionId: string;
 
 			call(methodName: string, ...args: [...unknown, callback?: (error: Error | null, result: unknown) => void]): void;
 		}
