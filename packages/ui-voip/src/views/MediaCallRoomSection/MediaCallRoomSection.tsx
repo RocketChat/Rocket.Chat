@@ -87,7 +87,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 
 	const remoteStreamCard = remoteScreen?.active ? (
 		<StreamCard onClickFocusStream={onClickFocusRemoteCard} focused={focusedCard === 'remote'}>
-			<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
+			<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
 				<track kind='captions' />
 			</video>
 		</StreamCard>
@@ -95,7 +95,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 
 	const localStreamCard = localScreen?.active ? (
 		<StreamCard own onClickFocusStream={onClickFocusLocalCard} onClickStopSharing={onToggleScreenSharing} focused={focusedCard === 'local'}>
-			<video preload='metadata' style={{ objectFit: 'cover', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
+			<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
 				<track kind='captions' />
 			</video>
 		</StreamCard>
