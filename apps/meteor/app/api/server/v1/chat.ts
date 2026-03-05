@@ -15,7 +15,6 @@ import {
 	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatIgnoreUserProps,
-	isChatGetPinnedMessagesProps,
 	isChatGetMentionedMessagesProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
@@ -558,6 +557,81 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.get(
+		'chat.getPinnedMessages',
+		{
+			authRequired: true,
+			query: ajv.compile<{ roomId: string; count?: number; offset?: number; sort?: string }>({
+				type: 'object',
+				properties: {
+					roomId: {
+						type: 'string',
+						minLength: 1,
+					},
+					count: {
+						type: 'number',
+						nullable: true,
+					},
+					offset: {
+						type: 'number',
+						nullable: true,
+					},
+					sort: {
+						type: 'string',
+						nullable: true,
+					},
+				},
+				required: ['roomId'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						messages: {
+							type: 'array',
+							items: {
+								$ref: '#/components/schemas/IMessage',
+							},
+						},
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			}
+
+			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
+				skip: offset,
+				limit: count,
+			});
+
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				messages: await normalizeMessagesForUser(messages, this.userId),
+				count: messages.length,
+				offset,
+				total,
+			});
+		},
 	);
 
 API.v1.addRoute(
@@ -745,35 +819,6 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				messages,
-				count: messages.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getPinnedMessages',
-	{ authRequired: true, validateParams: isChatGetPinnedMessagesProps },
-	{
-		async get() {
-			const { roomId } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
-				skip: offset,
-				limit: count,
-			});
-
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(messages, this.userId),
 				count: messages.length,
 				offset,
 				total,
