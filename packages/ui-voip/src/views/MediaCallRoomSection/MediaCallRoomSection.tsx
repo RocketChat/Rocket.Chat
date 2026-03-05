@@ -2,14 +2,20 @@ import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { ToggleButton, Timer, DevicePicker, ActionButton } from '../../components';
-import ActionStrip from '../../components/Actions/ActionStrip';
-import ActionToggleChat from '../../components/Actions/ActionToggleChat';
-import CardListContainerWrapper from '../../components/Cards/CardListContainerWrapper';
-import CardListSection, { SECTION_MAX_HEIGHT } from '../../components/Cards/CardListSection';
-import PeerCard from '../../components/Cards/PeerCard';
-import StreamCard from '../../components/Cards/StreamCard';
-import { useShouldWrapCards } from '../../components/Cards/useShouldWrapCards';
+import {
+	ToggleButton,
+	Timer,
+	DevicePicker,
+	ActionButton,
+	CardListContainerWrapper,
+	CardListSection,
+	PeerCard,
+	StreamCard,
+	useShouldWrapCards,
+	CARD_LIST_SECTION_MAX_HEIGHT,
+	ActionStrip,
+	ActionToggleChat,
+} from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRoomView from '../../context/useRoomView';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
@@ -27,7 +33,7 @@ type RoomCallSectionProps = {
 const getSplitStyles = (showChat?: boolean) => {
 	if (showChat) {
 		return {
-			maxHeight: `${SECTION_MAX_HEIGHT}vh`,
+			maxHeight: `${CARD_LIST_SECTION_MAX_HEIGHT}vh`,
 		};
 	}
 	return {

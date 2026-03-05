@@ -14,9 +14,9 @@ import {
 	DevicePicker,
 	ActionButton,
 	useInfoSlots,
+	CardWidgetContainer,
+	StreamCard,
 } from '../../components';
-import CardWidgetContainer from '../../components/Cards/CardWidgetContainer';
-import StreamCard from '../../components/Cards/StreamCard';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
