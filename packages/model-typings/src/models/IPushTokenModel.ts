@@ -15,7 +15,6 @@ export interface IPushTokenModel extends IBaseModel<IPushToken> {
 		id: IPushToken['_id'],
 		data: Pick<IPushToken, 'token' | 'appName' | 'authToken' | 'userId' | 'voipToken'>,
 	): Promise<UpdateResult<IPushToken>>;
-	setVoipTokenById(id: IPushToken['_id'], voipToken: string): Promise<UpdateResult<IPushToken>>;
 
 	removeByUserIdExceptTokens(userId: string, tokens: IPushToken['authToken'][]): Promise<DeleteResult>;
 	removeDuplicateTokens(tokenData: Pick<IPushToken, '_id' | 'token' | 'appName' | 'authToken'>): Promise<DeleteResult>;

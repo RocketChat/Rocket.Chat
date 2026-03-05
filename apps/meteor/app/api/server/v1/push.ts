@@ -26,6 +26,7 @@ type PushTokenPOST = {
 	type: IPushTokenTypes;
 	value: string;
 	appName: string;
+	voipToken?: string;
 };
 
 const PushTokenPOSTSchema: JSONSchemaType<PushTokenPOST> = {
@@ -46,6 +47,10 @@ const PushTokenPOSTSchema: JSONSchemaType<PushTokenPOST> = {
 		appName: {
 			type: 'string',
 			minLength: 1,
+		},
+		voipToken: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['type', 'value', 'appName'],
@@ -115,13 +120,10 @@ const pushTokenEndpoints = API.v1
 								token: {
 									type: 'object',
 									properties: {
-										'apn': {
+										apn: {
 											type: 'string',
 										},
-										'gcm': {
-											type: 'string',
-										},
-										'apn.voip': {
+										gcm: {
 											type: 'string',
 										},
 									},
@@ -161,9 +163,9 @@ const pushTokenEndpoints = API.v1
 			authRequired: true,
 		},
 		async function action() {
-			const { id, type, value, appName } = this.bodyParams;
+			const { id, type, value, appName, voipToken } = this.bodyParams;
 
-			if (type === 'apn.voip' && !id) {
+			if (voipToken && !id) {
 				throw new Error('voip-tokens-must-specify-device-id');
 			}
 
@@ -179,7 +181,7 @@ const pushTokenEndpoints = API.v1
 				authToken,
 				appName,
 				userId: this.userId,
-				...(type === 'apn.voip' && { voipToken: value }),
+				...(voipToken && { voipToken }),
 			});
 
 			return API.v1.success({ result: cleanTokenResult(result) });

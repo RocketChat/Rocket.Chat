@@ -1,7 +1,7 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { ILoginToken } from './IUser';
 
-export const pushTokenTypes = ['gcm', 'apn', 'apn.voip'] as const;
+export const pushTokenTypes = ['gcm', 'apn'] as const;
 
 export type IPushTokenTypes = (typeof pushTokenTypes)[number];
 

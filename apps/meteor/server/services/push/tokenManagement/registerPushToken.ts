@@ -41,13 +41,7 @@ async function insertToken(data: PushTokenData): Promise<IPushToken['_id']> {
 }
 
 async function updateToken(doc: IPushToken, data: PushTokenData): Promise<IPushToken['_id']> {
-	const hasNonVoipToken = Object.keys(doc.token).filter((key) => !key.includes('voip')).length > 0;
-
 	const updateResult = await (async () => {
-		if (data.voipToken && hasNonVoipToken) {
-			return PushToken.setVoipTokenById(doc._id, data.voipToken);
-		}
-
 		return PushToken.refreshTokenById(doc._id, {
 			token: data.token,
 			authToken: data.authToken,

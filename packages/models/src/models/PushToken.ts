@@ -68,12 +68,9 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 					userId: data.userId,
 					...(data.voipToken && { voipToken: data.voipToken }),
 				},
+				...(!data.voipToken && { $unset: { voipToken: 1 } }),
 			},
 		);
-	}
-
-	async setVoipTokenById(id: IPushToken['_id'], voipToken: string): Promise<UpdateResult<IPushToken>> {
-		return this.updateOne({ _id: id }, { $set: { voipToken } });
 	}
 
 	findOneByTokenAndAppName(token: IPushToken['token'], appName: IPushToken['appName']): Promise<IPushToken | null> {
