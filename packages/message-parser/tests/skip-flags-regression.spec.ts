@@ -8,17 +8,11 @@ describe('Skip Flags Regression (Complexity Audit)', () => {
 		return performance.now() - start;
 	};
 
-	it('should log timing data for nested formatting depths', () => {
-		const times: Record<number, number> = {};
-		for (let d = 1; d <= 7; d++) {
-			times[d] = measureDepth(d);
+	it('should parse nested formatting across multiple depths without throwing', () => {
+		for (let d = 1; d <= 50; d++) {
+			const input = `${'*'.repeat(d)}text${'*'.repeat(d)}`;
+			expect(() => parse(input)).not.toThrow();
 		}
-
-		console.table(Object.entries(times).map(([depth, time]) => ({ depth, 'time (ms)': time.toFixed(4) })));
-
-		// If d=7 takes significantly longer than linear growth from d=1
-		// we have confirmed the problem.
-		expect(times[7]).toBeDefined();
 	});
 
 	it('should handle pathological unmatched markers without crashing', () => {
