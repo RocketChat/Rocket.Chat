@@ -613,6 +613,7 @@ const chatEndpoints = API.v1
 		async function action() {
 			const { roomId } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
@@ -621,6 +622,7 @@ const chatEndpoints = API.v1
 			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
 				skip: offset,
 				limit: count,
+				sort,
 			});
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
