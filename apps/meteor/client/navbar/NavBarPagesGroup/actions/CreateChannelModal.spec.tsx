@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CreateChannelModal from './CreateChannelModal';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 jest.mock('../../../lib/utils/goToRoomById', () => ({
@@ -290,6 +291,7 @@ describe('CreateChannelModal', () => {
 			await userEvent.type(screen.getByLabelText(/Name/i), 'newchannel');
 			await userEvent.click(screen.getByRole('button', { name: /Create/i }));
 			await waitFor(() => expect(onClose).toHaveBeenCalled());
+			await waitFor(() => expect(goToRoomById).toHaveBeenCalled());
 		});
 
 		it('should not close the modal on failure', async () => {
