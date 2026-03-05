@@ -128,7 +128,7 @@ const RoomMessage = ({
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 				{ignored ? (
-					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
+					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
