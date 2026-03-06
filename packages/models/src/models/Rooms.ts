@@ -2228,36 +2228,25 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			{
 				$lookup: {
 					from: 'rocketchat_subscription',
-					let: {
-						roomId: '$_id',
-					},
-					pipeline: [
-						{
-							$match: {
+					localField: '_id',
+					foreignField: 'rid',
+					as: 'subscription',
+				},
+			},
+			{
+				$addFields: {
+					subscription: {
+						$filter: {
+							input: '$subscription',
+							as: 'sub',
+							cond: {
 								$and: [
-									{
-										$expr: {
-											$eq: ['$rid', '$$roomId'],
-										},
-									},
-									{
-										$expr: {
-											$eq: ['$u._id', userId],
-										},
-									},
-									{
-										$expr: {
-											$ne: ['$t', 'c'],
-										},
-									},
+									{ $eq: ['$$sub.u._id', userId] },
+									{ $ne: ['$$sub.t', 'c'] },
 								],
 							},
 						},
-						{
-							$project: { _id: 1 },
-						},
-					],
-					as: 'subscription',
+					},
 				},
 			},
 			{
