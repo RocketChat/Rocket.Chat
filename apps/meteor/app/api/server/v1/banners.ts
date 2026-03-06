@@ -73,49 +73,6 @@ API.v1.addRoute(
 	},
 );
 
-/**
- * @openapi
- *  /api/v1/banners:
- *    get:
- *      description: Gets the banners to be shown to the authenticated user
- *      security:
- *        $ref: '#/security/authenticated'
- *      parameters:
- *        - name: platform
- *          in: query
- *          description: The platform rendering the banner
- *          required: true
- *          schema:
- *            type: string
- *            enum: [web, mobile]
- *          example: web
- *      responses:
- *        200:
- *          description: The banners matching the criteria
- *          content:
- *            application/json:
- *              schema:
- *                allOf:
- *                  - $ref: '#/components/schemas/ApiSuccessV1'
- *                  - type: object
- *                    properties:
- *                      banners:
- *                        type: array
- *                        items:
- *                          $ref: '#/components/schemas/IBanner'
- *        400:
- *          description: Bad request
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- *        401:
- *          description: Unauthorized
- *          content:
- *            application/json:
- *              schema:
- *                $ref: '#/components/schemas/ApiFailureV1'
- */
 const bannersEndpoints = API.v1.get(
 	'banners',
 	{
@@ -137,7 +94,7 @@ const bannersEndpoints = API.v1.get(
 				properties: {
 					banners: {
 						type: 'array',
-						items: { type: 'object' },
+						items: { $ref: '#/components/schemas/IBanner' },
 					},
 					success: { type: 'boolean', enum: [true] },
 				},

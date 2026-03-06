@@ -1,6 +1,7 @@
 import typia from 'typia';
 
 import type { CallHistoryItem } from './ICallHistoryItem';
+import type { IBanner } from './IBanner';
 import type { ICustomSound } from './ICustomSound';
 import type { ICustomUserStatus } from './ICustomUserStatus';
 import type { IInvite } from './IInvite';
@@ -13,7 +14,7 @@ import type { IMediaCall } from './mediaCalls/IMediaCall';
 
 export const schemas = typia.json.schemas<
 	[
-		ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall,
+		ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall | IBanner,
 		CallHistoryItem,
 		ICustomUserStatus,
 		SlashCommand,
