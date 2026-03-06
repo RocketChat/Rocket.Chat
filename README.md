@@ -116,7 +116,3 @@ We're hiring developers, technical support, and product managers all the time. C
 - [Facebook](https://www.facebook.com/RocketChatApp)
 - [LinkedIn](https://www.linkedin.com/company/rocket-chat)
 - [YouTube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
-
-# 🗒️ Credits
-
-- Emoji provided graciously by [JoyPixels](https://www.joypixels.com).
