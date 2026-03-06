@@ -1,7 +1,4 @@
-import { Meteor } from 'meteor/meteor';
-
 import { emoji } from '../../emoji/server';
-import { getUserPreference } from '../../utils/server/lib/getUserPreference';
 import { getEmojiConfig } from '../lib/getEmojiConfig';
 
 const config = getEmojiConfig();
@@ -25,10 +22,3 @@ for (const [key, currentEmoji] of Object.entries(config.emojiList)) {
 		});
 	}
 }
-
-Meteor.startup(async () => {
-	if (emoji.packages.native) {
-		const convertAscii = await getUserPreference(Meteor.userId() as string, 'convertAsciiEmoji');
-		emoji.packages.native.ascii = typeof convertAscii === 'boolean' ? convertAscii : true;
-	}
-});
