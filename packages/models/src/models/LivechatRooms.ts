@@ -1526,7 +1526,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 								if: {
 									$eq: ['$source.type', 'app'],
 								},
-								then: '$$REMOVE',
+								then: null,
 								else: { type: '$source.type' },
 							},
 						},
@@ -1537,7 +1537,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 								if: {
 									$eq: ['$source.type', 'app'],
 								},
-								else: '$$REMOVE',
+								else: null,
 								then: {
 									type: '$source.type',
 									id: '$source.id',
@@ -1548,6 +1548,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 							},
 						},
 					},
+				},
+			},
+			{
+				$addFields: {
+					types: { $filter: { input: '$types', cond: { $ne: ['$$this', null] } } },
+					apps: { $filter: { input: '$apps', cond: { $ne: ['$$this', null] } } },
 				},
 			},
 			{
