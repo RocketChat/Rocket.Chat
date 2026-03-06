@@ -23,6 +23,7 @@ export type MediaSignalingEvents = {
 
 export type MediaSignalingSessionConfig = {
 	userId: string;
+	mobileDeviceId?: string;
 	oldSessionId?: string;
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
@@ -74,7 +75,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	constructor(private config: MediaSignalingSessionConfig) {
 		super();
 		this._userId = config.userId;
-		this._sessionId = config.randomStringFactory();
+		this._sessionId = config.mobileDeviceId || config.randomStringFactory();
 		this.recurringStateReportHandler = null;
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
