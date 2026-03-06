@@ -138,6 +138,41 @@ beforeAddUserToRoom.add(
 	'native-federation-on-before-add-users-to-room',
 );
 
+// Handle self-join: when a user joins a federated room via channels.join (no inviter),
+// the beforeAddUserToRoom hook above skips because inviter is undefined.
+// This afterJoinRoom callback catches that case and sends the Matrix invite
+// so the user is properly registered on the Matrix homeserver.
+callbacks.add(
+	'afterJoinRoom',
+	async (user: IUser, room: IRoom): Promise<void> => {
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
+		}
+
+		if (!user.username) {
+			return;
+		}
+
+		// Skip if the user is a native federated user (external Matrix user) —
+		// their join was already handled by an incoming federation event.
+		if (isUserNativeFederated(user)) {
+			return;
+		}
+
+		// Only handle self-join (no inviter). Invited users are already
+		// handled by the beforeAddUserToRoom hook above.
+		// We use the joining user as both the invitee and the "inviter"
+		// since there is no explicit inviter in the self-join flow.
+		try {
+			await FederationMatrix.inviteUsersToRoom(room, [user.username], user);
+		} catch (error) {
+			console.error('[federation] Failed to send Matrix invite for self-join:', error);
+		}
+	},
+	callbacks.priority.LOW,
+	'native-federation-after-self-join-room',
+);
+
 callbacks.add(
 	'afterSetReaction',
 	async (message: IMessage, params): Promise<void> => {
