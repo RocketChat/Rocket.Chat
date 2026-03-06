@@ -2,7 +2,8 @@ import { Message, FederationMatrix } from '@rocket.chat/core-services';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Messages } from '@rocket.chat/models'; // Rooms
-import emojione from 'emoji-toolkit';
+
+import { toShort } from '../emojiUtils';
 
 const logger = new Logger('federation-matrix:reaction');
 
@@ -38,7 +39,7 @@ export function reaction() {
 				return;
 			}
 
-			const reactionEmoji = emojione.toShort(reactionKey);
+			const reactionEmoji = toShort(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, true);
 			await Messages.setFederationReactionEventId(internalUsername, rcMessage._id, reactionEmoji, eventId);
 		} catch (err) {
@@ -82,7 +83,7 @@ export function reaction() {
 				return;
 			}
 
-			const reactionEmoji = emojione.toShort(reactionKey);
+			const reactionEmoji = toShort(reactionKey);
 			await Message.reactToMessage(user._id, reactionEmoji, rcMessage._id, false);
 			await Messages.unsetFederationReactionEventId(redactedEventId, rcMessage._id, reactionEmoji);
 		} catch (err) {

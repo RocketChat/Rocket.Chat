@@ -1,13 +1,13 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import emojione from 'emoji-toolkit';
 import type { TFunction } from 'i18next';
 
+import { shortnameToUnicode } from '../../../../app/emoji-emojione/lib/unicodeConverters';
 import { filterMarkdown } from '../../../../app/markdown/lib/markdown';
 
 export const normalizeMessagePreview = (message: IMessage, t: TFunction): string | undefined => {
 	if (message.msg) {
-		return escapeHTML(filterMarkdown(emojione.shortnameToUnicode(message.msg)));
+		return escapeHTML(filterMarkdown(shortnameToUnicode(message.msg)));
 	}
 
 	if (message.attachments) {

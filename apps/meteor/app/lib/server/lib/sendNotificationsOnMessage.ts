@@ -8,11 +8,11 @@ import {
 	type AtLeast,
 } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import emojione from 'emoji-toolkit';
 import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
 import { getMentions } from './notifyUsersOnMessage';
+import { shortnameToUnicode } from '../../../emoji-emojione/lib/unicodeConverters';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -191,13 +191,13 @@ export const sendNotification = async ({
 			isThread,
 		})
 	) {
-		const messageWithUnicode = message.msg ? emojione.shortnameToUnicode(message.msg) : message.msg;
+		const messageWithUnicode = message.msg ? shortnameToUnicode(message.msg) : message.msg;
 		const firstAttachment = message.attachments?.length && message.attachments.shift();
 
 		if (firstAttachment) {
 			firstAttachment.description =
-				typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
-			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
+				typeof firstAttachment.description === 'string' ? shortnameToUnicode(firstAttachment.description) : undefined;
+			firstAttachment.text = typeof firstAttachment.text === 'string' ? shortnameToUnicode(firstAttachment.text) : undefined;
 		}
 
 		const attachments = firstAttachment ? [firstAttachment, ...(message.attachments ?? [])].filter(Boolean) : [];

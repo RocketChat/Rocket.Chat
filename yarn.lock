@@ -8476,7 +8476,6 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@types/node": "npm:~22.16.5"
     "@types/sanitize-html": "npm:~2.16.0"
-    emoji-toolkit: "npm:^10.0.0"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
     jest-qase-reporter: "npm:^2.1.4"
@@ -9299,7 +9298,6 @@ __metadata:
     ejson: "npm:^2.2.3"
     emailreplyparser: "npm:^0.0.5"
     emoji-assets: "npm:9.0.0"
-    emoji-toolkit: "npm:^10.0.0"
     esl: "npm:^11.2.1"
     eslint: "npm:~9.39.3"
     eventemitter3: "npm:^5.0.4"
@@ -9618,7 +9616,6 @@ __metadata:
     "@types/node": "npm:~22.16.5"
     date-fns: "npm:~4.1.0"
     ejson: "npm:^2.2.3"
-    emoji-toolkit: "npm:^10.0.0"
     eslint: "npm:~9.39.3"
     eventemitter3: "npm:^5.0.4"
     i18next: "npm:~23.4.9"
@@ -9656,7 +9653,6 @@ __metadata:
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/react": "npm:~18.3.27"
     ejson: "npm:^2.2.3"
-    emoji-toolkit: "npm:^10.0.0"
     eslint: "npm:~9.39.3"
     eventemitter3: "npm:^5.0.4"
     i18next: "npm:~23.4.9"
@@ -9742,7 +9738,6 @@ __metadata:
     "@types/react": "npm:~18.3.27"
     "@types/react-dom": "npm:~18.3.7"
     buffer: "npm:~6.0.3"
-    emoji-toolkit: "npm:^10.0.0"
     eslint: "npm:~9.39.3"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
@@ -9860,7 +9855,6 @@ __metadata:
     "@types/polka": "npm:^0.5.8"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     ejson: "npm:^2.2.3"
-    emoji-toolkit: "npm:^10.0.0"
     eslint: "npm:~9.39.3"
     eventemitter3: "npm:^5.0.4"
     mem: "npm:^8.1.1"
@@ -19687,13 +19681,6 @@ __metadata:
   version: 9.2.2
   resolution: "emoji-regex@npm:9.2.2"
   checksum: 10/915acf859cea7131dac1b2b5c9c8e35c4849e325a1d114c30adb8cd615970f6dca0e27f64f3a4949d7d6ed86ecd79a1c5c63f02e697513cddd7b5835c90948b8
-  languageName: node
-  linkType: hard
-
-"emoji-toolkit@npm:^10.0.0":
-  version: 10.0.0
-  resolution: "emoji-toolkit@npm:10.0.0"
-  checksum: 10/836b7b9f071e59092ffcd0916aeba88b041096c81c58d4677bf28bd0a23ad0d5ddf3feff98867fb479a10768693a9751db00ef4fea9837548395f6b89ed56bcb
   languageName: node
   linkType: hard
 

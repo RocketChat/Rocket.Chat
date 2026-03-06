@@ -21,7 +21,7 @@ export const emojiParser = (html: string) => {
 
 	checkEmojiOnly.innerHTML = html;
 
-	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty), .emojione:not(:empty)'));
+	const emojis = Array.from(checkEmojiOnly.querySelectorAll('.emoji:not(:empty)'));
 
 	emojis.forEach((emojiElement) => {
 		const htmlElement = emojiElement.parentElement;
@@ -39,7 +39,7 @@ export const emojiParser = (html: string) => {
 		const isTextNode = (node: Node): node is Text => node.nodeType === Node.TEXT_NODE;
 
 		const filter = (node: Node) => {
-			if (isElement(node) && (node.classList.contains('emojione') || node.classList.contains('emoji'))) {
+			if (isElement(node) && node.classList.contains('emoji')) {
 				return NodeFilter.FILTER_REJECT;
 			}
 			return NodeFilter.FILTER_ACCEPT;

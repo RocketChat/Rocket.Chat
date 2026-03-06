@@ -1,30 +1,29 @@
 import { Box } from '@rocket.chat/fuselage';
-import DOMPurify from 'dompurify';
 
 const ToneItem = ({ tone }: { tone: number }) => {
 	let toneEmoji;
 
 	switch (tone) {
 		case 1:
-			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3fb">✋🏻</span>';
+			toneEmoji = '✋🏻';
 			break;
 		case 2:
-			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3fc">✋🏼</span>';
+			toneEmoji = '✋🏼';
 			break;
 		case 3:
-			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3fd">✋🏽</span>';
+			toneEmoji = '✋🏽';
 			break;
 		case 4:
-			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3fe">✋🏾</span>';
+			toneEmoji = '✋🏾';
 			break;
 		case 5:
-			toneEmoji = '<span class="emojione emojione-diversity _270b-1f3ff">✋🏿</span>';
+			toneEmoji = '✋🏿';
 			break;
 		default:
-			toneEmoji = '<span class="emojione emojione-people _270b">✋</span>';
+			toneEmoji = '✋';
 	}
 
-	return <Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(toneEmoji) }} />;
+	return <Box className='emoji'>{toneEmoji}</Box>;
 };
 
 export default ToneItem;
