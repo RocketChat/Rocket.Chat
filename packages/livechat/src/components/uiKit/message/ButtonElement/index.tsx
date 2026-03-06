@@ -52,7 +52,7 @@ const ButtonElement = ({ text, actionId, url, value, style, context, confirm, pa
 			onClick={handleClick}
 			onMouseUp={handleMouseUp}
 		>
-			{parser.text(text)}
+			{parser.renderTextObject(text, 0)}
 		</button>
 	);
 };

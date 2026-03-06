@@ -31,6 +31,7 @@ const StarredMessagesTab = () => {
 		getNextPageParam: (lastPage, allPages) => {
 			const loadedCount = allPages.reduce((acc, page) => acc + page.messages.length, 0);
 			return loadedCount < lastPage.total ? loadedCount : undefined;
+
 		},
 	});
 
