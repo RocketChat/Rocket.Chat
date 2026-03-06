@@ -892,8 +892,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findVisibleByRoomIdAfterTimestamp(
 		roomId: string,
 		timestamp: Date,
-		options?: FindOptions<IMessage>,
 		showThreadMessages = true,
+		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage> {
 		const query = {
 			_hidden: {
@@ -931,8 +931,8 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findVisibleByRoomIdBeforeTimestamp(
 		roomId: string,
 		timestamp: Date,
-		options?: FindOptions<IMessage>,
 		showThreadMessages = true,
+		options?: FindOptions<IMessage>,
 	): FindCursor<IMessage> {
 		const query = {
 			_hidden: {

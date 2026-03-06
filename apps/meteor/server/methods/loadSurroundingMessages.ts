@@ -65,8 +65,8 @@ Meteor.methods<ServerMethods>({
 		const messages = await Messages.findVisibleByRoomIdBeforeTimestamp(
 			mainMessage.rid,
 			mainMessage.ts,
-			options,
 			showThreadMessages,
+			options,
 		).toArray();
 
 		const moreBefore = messages.length === options.limit;
@@ -82,8 +82,8 @@ Meteor.methods<ServerMethods>({
 		const afterMessages = await Messages.findVisibleByRoomIdAfterTimestamp(
 			mainMessage.rid,
 			mainMessage.ts,
-			options,
 			showThreadMessages,
+			options,
 		).toArray();
 
 		const moreAfter = afterMessages.length === options.limit;
