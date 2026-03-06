@@ -1241,7 +1241,7 @@ export const roomEndpoints = API.v1
 			authRequired: true,
 			body: isRoomsMuteUnmuteUserProps,
 			response: {
-				200: ajv.compile<{ success: true }>({
+				200: ajv.compile<void>({
 					type: 'object',
 					properties: {
 						success: { type: 'boolean', enum: [true] },
@@ -1262,7 +1262,7 @@ export const roomEndpoints = API.v1
 
 			await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
 
-			return API.v1.success({ success: true });
+			return API.v1.success();
 		},
 	)
 	.post(
@@ -1271,7 +1271,7 @@ export const roomEndpoints = API.v1
 			authRequired: true,
 			body: isRoomsMuteUnmuteUserProps,
 			response: {
-				200: ajv.compile<{ success: true }>({
+				200: ajv.compile<void>({
 					type: 'object',
 					properties: {
 						success: { type: 'boolean', enum: [true] },
@@ -1292,7 +1292,7 @@ export const roomEndpoints = API.v1
 
 			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
 
-			return API.v1.success({ success: true });
+			return API.v1.success();
 		},
 	);
 
