@@ -143,9 +143,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 						as: 'u',
 						cond: {
 							$and: [
-								...(!includeOfflineAgents
-									? [{ $ne: ['$$u.status', 'offline'] }, { $eq: ['$$u.statusLivechat', 'available'] }]
-									: []),
+								...(!includeOfflineAgents ? [{ $ne: ['$$u.status', 'offline'] }, { $eq: ['$$u.statusLivechat', 'available'] }] : []),
 								...(agentId ? [{ $eq: ['$$u._id', agentId] }] : []),
 							],
 						},
@@ -2163,10 +2161,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 								input: '$messages',
 								as: 'msg',
 								cond: {
-									$and: [
-										{ $lte: ['$$msg.t', null] },
-										...(extraQuery ? [extraQuery] : []),
-									],
+									$and: [{ $lte: ['$$msg.t', null] }, ...(extraQuery ? [extraQuery] : [])],
 								},
 							},
 						},
