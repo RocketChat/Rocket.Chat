@@ -3,10 +3,13 @@
 exports[`BigEmojiElement matches snapshot 1`] = `
 <div>
   <span
-    role="img"
     title="🎉"
   >
-    🎉
+    <span
+      class="rcx-message__emoji emoji rcx-message__emoji--big 🎉"
+    >
+      🎉
+    </span>
   </span>
 </div>
 `;
