@@ -83,8 +83,8 @@ it('renders first item of unordered list with dash prefix', () => {
 		/>,
 	);
 
-	expect(container.textContent).toContain('First');
-	expect(container.textContent).not.toContain('Second');
+	expect(container.textContent).toContain('- First');
+	expect(container.textContent).not.toContain('- Second');
 });
 
 it('renders first item of ordered list with number prefix', () => {
@@ -102,8 +102,8 @@ it('renders first item of ordered list with number prefix', () => {
 		/>,
 	);
 
-	expect(container.textContent).toContain('First');
-	expect(container.textContent).not.toContain('Second');
+	expect(container.textContent).toContain('1. First');
+	expect(container.textContent).not.toContain('2. Second');
 });
 
 it('renders first task with checkbox symbol', () => {
