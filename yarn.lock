@@ -3288,13 +3288,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gar/promisify@npm:^1.0.1":
-  version: 1.1.3
-  resolution: "@gar/promisify@npm:1.1.3"
-  checksum: 10/052dd232140fa60e81588000cbe729a40146579b361f1070bce63e2a761388a22a16d00beeffc504bd3601cb8e055c57b21a185448b3ed550cf50716f4fd442e
-  languageName: node
-  linkType: hard
-
 "@gerrit0/mini-shiki@npm:^3.17.0":
   version: 3.21.0
   resolution: "@gerrit0/mini-shiki@npm:3.21.0"
@@ -5065,16 +5058,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@npmcli/fs@npm:^1.0.0":
-  version: 1.1.1
-  resolution: "@npmcli/fs@npm:1.1.1"
-  dependencies:
-    "@gar/promisify": "npm:^1.0.1"
-    semver: "npm:^7.3.5"
-  checksum: 10/8b5e6d75759b9f1a8b7885913df274c8cbbb1221176872615f2aecedf47b2c36e5dfbf4046ff1a905c9f3592fbd32051b3050b8a897bf03514a1a404b39af074
-  languageName: node
-  linkType: hard
-
 "@npmcli/fs@npm:^3.1.0":
   version: 3.1.1
   resolution: "@npmcli/fs@npm:3.1.1"
@@ -5090,16 +5073,6 @@ __metadata:
   dependencies:
     semver: "npm:^7.3.5"
   checksum: 10/405c4490e1ff11cf299775449a3c254a366a4b1ffc79d87159b0ee7d5558ac9f6a2f8c0735fd6ff3873cef014cb1a44a5f9127cb6a1b2dbc408718cca9365b5a
-  languageName: node
-  linkType: hard
-
-"@npmcli/move-file@npm:^1.0.1":
-  version: 1.1.2
-  resolution: "@npmcli/move-file@npm:1.1.2"
-  dependencies:
-    mkdirp: "npm:^1.0.4"
-    rimraf: "npm:^3.0.2"
-  checksum: 10/c96381d4a37448ea280951e46233f7e541058cf57a57d4094dd4bdcaae43fa5872b5f2eb6bfb004591a68e29c5877abe3cdc210cb3588cbf20ab2877f31a7de7
   languageName: node
   linkType: hard
 
@@ -7984,7 +7957,7 @@ __metadata:
     alsatian: "npm:^2.4.0"
     browserify: "npm:^16.5.2"
     debug: "npm:^4.3.7"
-    esbuild: "npm:~0.25.12"
+    esbuild: "npm:~0.27.3"
     eslint: "npm:~9.39.3"
     jose: "npm:^4.15.9"
     jsonrpc-lite: "npm:^2.2.0"
@@ -8420,13 +8393,13 @@ __metadata:
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@rocket.chat/ui-video-conf": "workspace:^"
-    "@storybook/addon-essentials": "npm:^8.6.17"
+    "@storybook/addon-essentials": "npm:^8.6.18"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/blocks": "npm:^8.6.17"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
-    "@storybook/theming": "npm:^8.6.17"
+    "@storybook/blocks": "npm:^8.6.18"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
+    "@storybook/theming": "npm:^8.6.18"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
@@ -8445,7 +8418,7 @@ __metadata:
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:^4.12.0"
     rimraf: "npm:^6.0.1"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.0"
@@ -8507,15 +8480,15 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/addon-actions": "npm:^8.6.17"
-    "@storybook/addon-docs": "npm:^8.6.17"
-    "@storybook/addon-essentials": "npm:^8.6.17"
-    "@storybook/addon-interactions": "npm:^8.6.17"
-    "@storybook/addon-links": "npm:^8.6.17"
+    "@storybook/addon-actions": "npm:^8.6.18"
+    "@storybook/addon-docs": "npm:^8.6.18"
+    "@storybook/addon-essentials": "npm:^8.6.18"
+    "@storybook/addon-interactions": "npm:^8.6.18"
+    "@storybook/addon-links": "npm:^8.6.18"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
     "@types/jest": "npm:~30.0.0"
@@ -8538,7 +8511,7 @@ __metadata:
     react-i18next: "npm:~13.2.2"
     react-stately: "npm:~3.17.0"
     react-virtuoso: "npm:^4.12.0"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.0"
   peerDependencies:
@@ -8704,12 +8677,12 @@ __metadata:
     "@rocket.chat/random": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
-    "@storybook/addon-essentials": "npm:^8.6.17"
+    "@storybook/addon-essentials": "npm:^8.6.18"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/preact": "npm:^8.6.17"
-    "@storybook/preact-webpack5": "npm:^8.6.17"
-    "@storybook/theming": "npm:^8.6.17"
+    "@storybook/preact": "npm:^8.6.18"
+    "@storybook/preact-webpack5": "npm:^8.6.18"
+    "@storybook/theming": "npm:^8.6.18"
     "@types/crypto-js": "npm:~4.2.2"
     "@types/mini-css-extract-plugin": "npm:~2.5.1"
     "@types/react": "npm:~18.3.27"
@@ -8757,13 +8730,13 @@ __metadata:
     rimraf: "npm:^6.0.1"
     sass: "npm:~1.80.7"
     sass-loader: "npm:~16.0.6"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     storybook-dark-mode: "npm:^4.0.2"
     style-loader: "npm:^1.3.0"
     stylelint: "npm:^16.10.0"
     stylelint-order: "npm:^6.0.4"
     svg-loader: "npm:^0.0.2"
-    terser-webpack-plugin: "npm:~4.2.3"
+    terser-webpack-plugin: "npm:~5.3.17"
     typescript: "npm:~5.9.3"
     url-loader: "npm:^4.1.1"
     webpack: "npm:~5.104.0"
@@ -9002,13 +8975,13 @@ __metadata:
     "@rocket.chat/web-ui-registration": "workspace:^"
     "@slack/bolt": "npm:^3.22.0"
     "@slack/rtm-api": "npm:~7.0.4"
-    "@storybook/addon-a11y": "npm:^8.6.17"
-    "@storybook/addon-essentials": "npm:^8.6.17"
-    "@storybook/addon-interactions": "npm:^8.6.17"
+    "@storybook/addon-a11y": "npm:^8.6.18"
+    "@storybook/addon-essentials": "npm:^8.6.18"
+    "@storybook/addon-interactions": "npm:^8.6.18"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
@@ -9245,7 +9218,7 @@ __metadata:
     sodium-plus: "npm:^0.9.0"
     source-map: "npm:~0.7.6"
     speakeasy: "npm:^2.0.0"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     stream-buffers: "npm:^3.0.3"
     strict-uri-encode: "npm:^2.0.0"
     string-strip-html: "npm:^8.5.0"
@@ -9261,7 +9234,7 @@ __metadata:
     textarea-caret: "npm:^3.1.0"
     tinykeys: "npm:^1.4.0"
     ts-node: "npm:^10.9.2"
-    tsx: "npm:~4.20.6"
+    tsx: "npm:~4.21.0"
     tsyringe: "npm:^4.10.0"
     tweetnacl: "npm:^1.0.3"
     twilio: "npm:^5.4.2"
@@ -9294,7 +9267,7 @@ __metadata:
     "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:*"
-    "@storybook/react": "npm:^8.6.17"
+    "@storybook/react": "npm:^8.6.18"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/jest-dom": "npm:~6.8.0"
@@ -9307,7 +9280,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@tanstack/react-query": "*"
@@ -9564,10 +9537,10 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/message-parser": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@storybook/addon-essentials": "npm:^8.6.17"
+    "@storybook/addon-essentials": "npm:^8.6.18"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
     "@types/emojione": "npm:^2.2.9"
@@ -9584,7 +9557,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9826,20 +9799,20 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
     "@rocket.chat/icons": "npm:~0.46.0"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@storybook/addon-a11y": "npm:^8.6.17"
-    "@storybook/addon-essentials": "npm:^8.6.17"
+    "@storybook/addon-a11y": "npm:^8.6.18"
+    "@storybook/addon-essentials": "npm:^8.6.18"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/blocks": "npm:^8.6.17"
-    "@storybook/preview-api": "npm:^8.6.17"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
-    "@storybook/theming": "npm:^8.6.17"
+    "@storybook/blocks": "npm:^8.6.18"
+    "@storybook/preview-api": "npm:^8.6.18"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
+    "@storybook/theming": "npm:^8.6.18"
     eslint: "npm:~9.39.3"
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.0"
@@ -9961,8 +9934,8 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
     "@types/jest": "npm:~30.0.0"
@@ -9980,7 +9953,7 @@ __metadata:
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:^4.12.0"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@react-aria/toolbar": "*"
@@ -10010,14 +9983,14 @@ __metadata:
     "@rocket.chat/icons": "npm:~0.46.0"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@storybook/addon-a11y": "npm:^8.6.17"
-    "@storybook/addon-actions": "npm:^8.6.17"
-    "@storybook/addon-docs": "npm:^8.6.17"
-    "@storybook/addon-essentials": "npm:^8.6.17"
+    "@storybook/addon-a11y": "npm:^8.6.18"
+    "@storybook/addon-actions": "npm:^8.6.18"
+    "@storybook/addon-docs": "npm:^8.6.18"
+    "@storybook/addon-essentials": "npm:^8.6.18"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
     "@types/jest": "npm:~30.0.0"
     "@types/react": "npm:~18.3.27"
     "@types/react-dom": "npm:~18.3.7"
@@ -10026,7 +9999,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.0"
   peerDependencies:
@@ -10142,14 +10115,14 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/addon-a11y": "npm:^8.6.17"
-    "@storybook/addon-actions": "npm:^8.6.17"
-    "@storybook/addon-docs": "npm:^8.6.17"
-    "@storybook/addon-essentials": "npm:^8.6.17"
+    "@storybook/addon-a11y": "npm:^8.6.18"
+    "@storybook/addon-actions": "npm:^8.6.18"
+    "@storybook/addon-docs": "npm:^8.6.18"
+    "@storybook/addon-essentials": "npm:^8.6.18"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
     "@types/jest": "npm:~30.0.0"
     "@types/jest-axe": "npm:~3.5.9"
     "@types/react": "npm:~18.3.27"
@@ -10160,7 +10133,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.104.0"
   peerDependencies:
@@ -10200,15 +10173,15 @@ __metadata:
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:^"
-    "@storybook/addon-a11y": "npm:^8.6.17"
-    "@storybook/addon-actions": "npm:^8.6.17"
-    "@storybook/addon-docs": "npm:^8.6.17"
-    "@storybook/addon-essentials": "npm:^8.6.17"
-    "@storybook/addon-interactions": "npm:^8.6.17"
+    "@storybook/addon-a11y": "npm:^8.6.18"
+    "@storybook/addon-actions": "npm:^8.6.18"
+    "@storybook/addon-docs": "npm:^8.6.18"
+    "@storybook/addon-essentials": "npm:^8.6.18"
+    "@storybook/addon-interactions": "npm:^8.6.18"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
-    "@storybook/test": "npm:^8.6.17"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
+    "@storybook/test": "npm:^8.6.18"
     "@storybook/test-runner": "npm:^0.22.1"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.1"
@@ -10227,7 +10200,7 @@ __metadata:
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:^4.12.0"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/css-in-js": "*"
@@ -10309,13 +10282,13 @@ __metadata:
     "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/addon-actions": "npm:^8.6.17"
-    "@storybook/addon-docs": "npm:^8.6.17"
-    "@storybook/addon-essentials": "npm:^8.6.17"
+    "@storybook/addon-actions": "npm:^8.6.18"
+    "@storybook/addon-docs": "npm:^8.6.18"
+    "@storybook/addon-essentials": "npm:^8.6.18"
     "@storybook/addon-webpack5-compiler-swc": "npm:~3.0.0"
-    "@storybook/react": "npm:^8.6.17"
-    "@storybook/react-webpack5": "npm:^8.6.17"
-    "@storybook/theming": "npm:^8.6.17"
+    "@storybook/react": "npm:^8.6.18"
+    "@storybook/react-webpack5": "npm:^8.6.18"
+    "@storybook/theming": "npm:^8.6.18"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.1"
     "@testing-library/react": "npm:~16.3.2"
@@ -10329,7 +10302,7 @@ __metadata:
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:^4.12.0"
-    storybook: "npm:^8.6.17"
+    storybook: "npm:^8.6.18"
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -10870,23 +10843,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-a11y@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-a11y@npm:8.6.17"
+"@storybook/addon-a11y@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-a11y@npm:8.6.18"
   dependencies:
-    "@storybook/addon-highlight": "npm:8.6.17"
+    "@storybook/addon-highlight": "npm:8.6.18"
     "@storybook/global": "npm:^5.0.0"
-    "@storybook/test": "npm:8.6.17"
+    "@storybook/test": "npm:8.6.18"
     axe-core: "npm:^4.2.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/020f1a57ac360f36ba0cfaa2218782a228695664a8577e753ab39d774fb73f1793002810687cd7fe3237ea79472f03ba4fbb82a3f0411bc6897888b8e2ddea49
+    storybook: ^8.6.18
+  checksum: 10/5cef9b97337d7bc57b0cc94eadbab5bd18a3226ed4a5b83208c91b822d0a68cc7c252c274207014402e2c741352c97a36d96d93f2155e238971a23f843fb7d79
   languageName: node
   linkType: hard
 
-"@storybook/addon-actions@npm:8.6.17, @storybook/addon-actions@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-actions@npm:8.6.17"
+"@storybook/addon-actions@npm:8.6.18, @storybook/addon-actions@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-actions@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@types/uuid": "npm:^9.0.1"
@@ -10894,137 +10867,137 @@ __metadata:
     polished: "npm:^4.2.2"
     uuid: "npm:^9.0.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/3df7a2f0f772b5baaea193d721c4a5568ac7c23202f7afed32114a7334918ae473d4569a14043fb28f5b949ab3ff1b4a9ab50fa62ea0a2af3d0cd0dffa4036df
+    storybook: ^8.6.18
+  checksum: 10/d2c9209775b772b21c2f45d60be1a72fe3d28520f816614b53e9a50e40ee0476a614cec05a6b0cf1d069bf668c559a19422f4447c164d0a0a369a053fb85bcd4
   languageName: node
   linkType: hard
 
-"@storybook/addon-backgrounds@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-backgrounds@npm:8.6.17"
+"@storybook/addon-backgrounds@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-backgrounds@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     memoizerific: "npm:^1.11.3"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/470ca47276ea5c561bfbb8b9d90549b3fa87a7f1bb3c620f0f15c682cf6b41ebd282e1b98d1c24596af86af2b0db8de5e4508a80702e72ff3b5b9cfc762dd251
+    storybook: ^8.6.18
+  checksum: 10/de69ac2241add38e7095f3d9ce410cdbc956f2205073aa33b0d53bff41ce0f699fd0ea33b7bda7d8359bfd3b2642804dffdb97beeeb3703ced4fb3f418db71b3
   languageName: node
   linkType: hard
 
-"@storybook/addon-controls@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-controls@npm:8.6.17"
+"@storybook/addon-controls@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-controls@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     dequal: "npm:^2.0.2"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/cc388392a62ec88fef04ecc581202747856fc80f402b327de7a9fb94b87e388aaf0addc59029728f0a299cc952f205a127e412be165685e9f315abf6271cd257
+    storybook: ^8.6.18
+  checksum: 10/c76bd6a789bb318ee092e986b6801259de2d90044d6a3df94e63157c009ad82f28f389ec9bfa33141cac6a186d8ef67d922cd1a14a355d5f813ad910e03639e2
   languageName: node
   linkType: hard
 
-"@storybook/addon-docs@npm:8.6.17, @storybook/addon-docs@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-docs@npm:8.6.17"
+"@storybook/addon-docs@npm:8.6.18, @storybook/addon-docs@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-docs@npm:8.6.18"
   dependencies:
     "@mdx-js/react": "npm:^3.0.0"
-    "@storybook/blocks": "npm:8.6.17"
-    "@storybook/csf-plugin": "npm:8.6.17"
-    "@storybook/react-dom-shim": "npm:8.6.17"
+    "@storybook/blocks": "npm:8.6.18"
+    "@storybook/csf-plugin": "npm:8.6.18"
+    "@storybook/react-dom-shim": "npm:8.6.18"
     react: "npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     react-dom: "npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/ce35b8b990f3183c983d4b75b631f7b07f5bb1d3a147518e047fe2b513fee77c223e78db4c8d2c87e09ebb8e000a30b7060c5316d7cc7ffa39bb66a7139a787c
+    storybook: ^8.6.18
+  checksum: 10/3f241f610865cc368dfad98c74323fd04fde979cb4ea08aec3ff92535f11251d44feff39b1c81439b790bbb432cc441ee78f8508222df4cd037f5b2cdd4d5ac2
   languageName: node
   linkType: hard
 
-"@storybook/addon-essentials@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-essentials@npm:8.6.17"
+"@storybook/addon-essentials@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-essentials@npm:8.6.18"
   dependencies:
-    "@storybook/addon-actions": "npm:8.6.17"
-    "@storybook/addon-backgrounds": "npm:8.6.17"
-    "@storybook/addon-controls": "npm:8.6.17"
-    "@storybook/addon-docs": "npm:8.6.17"
-    "@storybook/addon-highlight": "npm:8.6.17"
-    "@storybook/addon-measure": "npm:8.6.17"
-    "@storybook/addon-outline": "npm:8.6.17"
-    "@storybook/addon-toolbars": "npm:8.6.17"
-    "@storybook/addon-viewport": "npm:8.6.17"
+    "@storybook/addon-actions": "npm:8.6.18"
+    "@storybook/addon-backgrounds": "npm:8.6.18"
+    "@storybook/addon-controls": "npm:8.6.18"
+    "@storybook/addon-docs": "npm:8.6.18"
+    "@storybook/addon-highlight": "npm:8.6.18"
+    "@storybook/addon-measure": "npm:8.6.18"
+    "@storybook/addon-outline": "npm:8.6.18"
+    "@storybook/addon-toolbars": "npm:8.6.18"
+    "@storybook/addon-viewport": "npm:8.6.18"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/28faaee33ebe4794952618ac52944cf23458d9b61c76556a02660b9173519f690ceefe42eb49b77a0d5e1922cc9fa7bdc10ca16302de1e2b46e7ba8372574ccf
+    storybook: ^8.6.18
+  checksum: 10/76507ddcba17cef78048b2d191a43eb3d13e078a930c4ab2b494b9b37000a0b794a5b26096835a5991272dde795280d5a9fb07109e42426e194502e810ee0bae
   languageName: node
   linkType: hard
 
-"@storybook/addon-highlight@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-highlight@npm:8.6.17"
+"@storybook/addon-highlight@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-highlight@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/022effa867a8171a9500806513da4228a62c1ce54625f89856783252f17e5adf594e3bf28f473b44af8d2161fc08337329e09d61a065ef00d74e48a704a8d249
+    storybook: ^8.6.18
+  checksum: 10/a764c949026190ba45c515e2f2e3955114340f249fbeb7c11379c568fad464d3335dfa744fbc678f5b21ad9ceca929b231ebdb635d12e1996fd7b7263671c0d6
   languageName: node
   linkType: hard
 
-"@storybook/addon-interactions@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-interactions@npm:8.6.17"
+"@storybook/addon-interactions@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-interactions@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
-    "@storybook/instrumenter": "npm:8.6.17"
-    "@storybook/test": "npm:8.6.17"
+    "@storybook/instrumenter": "npm:8.6.18"
+    "@storybook/test": "npm:8.6.18"
     polished: "npm:^4.2.2"
     ts-dedent: "npm:^2.2.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/1da114800aca04a9bf7f8658a63a0ba7b192712762f060bd0c8ce9cf6058ce4c529e365fcfa0243529468b92a4c66699815aa2471985130e154aadfd3db79ee8
+    storybook: ^8.6.18
+  checksum: 10/586597a1aa98cd3bf1c261fb7b4da651afefc76e5e2a97e0ebc2410669bb4b16d8e7df675b8f5aee862456e3be85b44ddfe21d1b777aa31cc9f1bcaec1da5970
   languageName: node
   linkType: hard
 
-"@storybook/addon-links@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-links@npm:8.6.17"
+"@storybook/addon-links@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-links@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^8.6.17
+    storybook: ^8.6.18
   peerDependenciesMeta:
     react:
       optional: true
-  checksum: 10/8df86a8115c49ec0ab92f97dd19356ac4264cd9c176fcc0974fe9be1d41d096a3bb21a80de828b0823ef9657622f067759ceae4d7c3a9529b021406ea148f2a2
+  checksum: 10/2abd52a9b3628000331101326a9d1158daad27389b84a88deb4e4232eaf14ccdcf44c9d512857c0a8a60b421297015cf686e1410dc9dfdee47f18c4a8642ecce
   languageName: node
   linkType: hard
 
-"@storybook/addon-measure@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-measure@npm:8.6.17"
+"@storybook/addon-measure@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-measure@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     tiny-invariant: "npm:^1.3.1"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/3a79d1ed56bfa5aa47ecd57e60b89eff1e2208e570047e10c2f51a9776d255fc112c268e4c54c279876be9177982e3a1640a6366bd8eeb749ee2c2055818e8ad
+    storybook: ^8.6.18
+  checksum: 10/d56825395e8a4316aea1cec7de03635616d0591d0686b0ea7462f6bbdba7fd2d53d9378688e3fbc412a27199a04cf6e19ecd4c8e0a3ea65722bc222aaea30eca
   languageName: node
   linkType: hard
 
-"@storybook/addon-outline@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-outline@npm:8.6.17"
+"@storybook/addon-outline@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-outline@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/1777f59f654b1cdc401ad438eef7023c610768bbafd48af5e18de5c7478bcf711be6fea06db1cb321890a03890711580b8c3f1e8edf1a8aa87bfbd3d095ee131
+    storybook: ^8.6.18
+  checksum: 10/35dbe22bfc9a6d1964ce16de63067f46fece44fac2b49cf2d981247fd17f11cf0802dbe397c16690e84b866a9590c343a4f5dedc0ea6d8eb51044c758c9cc447
   languageName: node
   linkType: hard
 
@@ -11039,23 +11012,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-toolbars@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-toolbars@npm:8.6.17"
+"@storybook/addon-toolbars@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-toolbars@npm:8.6.18"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/9cd8ea339792e584d080a1a9524fcd0a41d9d176a49271a9b740efda7678dc1137a2545d1e61d0adb4ef50ff48c9cb80d6525bad5febb216fa0562629e839f8d
+    storybook: ^8.6.18
+  checksum: 10/85ec5922bf9b2467db2d9a723caf68d6156dc36fa220898be1bbb5351e2321bfc96189b357d8a206b4e2740a15c7c40db13dc89acf424f47dad0dd0b30200e53
   languageName: node
   linkType: hard
 
-"@storybook/addon-viewport@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/addon-viewport@npm:8.6.17"
+"@storybook/addon-viewport@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/addon-viewport@npm:8.6.18"
   dependencies:
     memoizerific: "npm:^1.11.3"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/08399a158d4fd20c81816589beb722d093154f48b6bcd07aa2344a4d392120fa73f88ea74a4df1db749f9de8cfe14893b1f2013d289029cfad4e5510a7ab2c0c
+    storybook: ^8.6.18
+  checksum: 10/b1989f7740e8f4b65fdaea8fa8a8d9a546c483f7282f92373e2b8c89818b80c566342d9c5cd0f6142cd610a878cdfc99e5221aaa31f410741acd226329e254a0
   languageName: node
   linkType: hard
 
@@ -11069,30 +11042,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/blocks@npm:8.6.17, @storybook/blocks@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/blocks@npm:8.6.17"
+"@storybook/blocks@npm:8.6.18, @storybook/blocks@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/blocks@npm:8.6.18"
   dependencies:
     "@storybook/icons": "npm:^1.2.12"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-    storybook: ^8.6.17
+    storybook: ^8.6.18
   peerDependenciesMeta:
     react:
       optional: true
     react-dom:
       optional: true
-  checksum: 10/51855cda3b6a8e770f36ead12e35fa4ef650bb50c38d3dcce5cdcbbf6d1f556f50172fd05dc09eec808854adc4516b480871a18106ab16e6bbc08102e3957aee
+  checksum: 10/eb63a94b8dac61a009a7a83ed45e598cc7ba5c47f8f7212155d44a20d9cd8be8da42b000cd667c703bb76a598e1cfbffa14e4db1437cfef16610d4bb0623b4c0
   languageName: node
   linkType: hard
 
-"@storybook/builder-webpack5@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/builder-webpack5@npm:8.6.17"
+"@storybook/builder-webpack5@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/builder-webpack5@npm:8.6.18"
   dependencies:
-    "@storybook/core-webpack": "npm:8.6.17"
+    "@storybook/core-webpack": "npm:8.6.18"
     "@types/semver": "npm:^7.3.4"
     browser-assert: "npm:^1.2.1"
     case-sensitive-paths-webpack-plugin: "npm:^2.4.0"
@@ -11117,20 +11090,20 @@ __metadata:
     webpack-hot-middleware: "npm:^2.25.1"
     webpack-virtual-modules: "npm:^0.6.0"
   peerDependencies:
-    storybook: ^8.6.17
+    storybook: ^8.6.18
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/f37bba5c95daad1eca99387622112b6e85d34d7177eaf23c7fd6dd01bca1c0956799a28c510a96d267214e367a2583c3bb839a2053f4d84e0f84604178a07f4c
+  checksum: 10/1444a39e9847a64d68f0fa8871fde70adf6cdc0b9713391c42bd97244b1af54eca95b47ea4fe15d17d65bb0c7ddb401ac8b4f3a443a5a6e3e05d2398ecab5544
   languageName: node
   linkType: hard
 
-"@storybook/components@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/components@npm:8.6.17"
+"@storybook/components@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/components@npm:8.6.18"
   peerDependencies:
     storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
-  checksum: 10/bd92739837e9c1ea0e32fb7d7bd270a3a7025722e0a95f5e7c4956b0d6b29a684f38196a9434bac1054ebb17a0eb79872bd1ed1a701ff6888911b57ba4f9a62f
+  checksum: 10/5f14142b7c1ebdc91873f4d530ec50ce67ae264e9ffc1359fa9731139a1de4c77bb43188a894c211bdd631747c0931529d1df1c681bcf49a17c717553d5b4f3a
   languageName: node
   linkType: hard
 
@@ -11152,22 +11125,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/core-webpack@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/core-webpack@npm:8.6.17"
+"@storybook/core-webpack@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/core-webpack@npm:8.6.18"
   dependencies:
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/29e64de67dac9fb48a3d53b65de627d09787df02dfee678c896d655fadf22ea5e0778fcdb2272e80c2f100e3e2a3d4a753739be34f00a564308b45c119e8269d
+    storybook: ^8.6.18
+  checksum: 10/a8e055b4afcdc08a440585ce9983de7de9df36f6a77a22fcf472546dd0932033b7a3ce3665d4c11f4f86a73c0e12b8bdcbd85d5447f79026da3de88cf611814f
   languageName: node
   linkType: hard
 
-"@storybook/core@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/core@npm:8.6.17"
+"@storybook/core@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/core@npm:8.6.18"
   dependencies:
-    "@storybook/theming": "npm:8.6.17"
+    "@storybook/theming": "npm:8.6.18"
     better-opn: "npm:^3.0.2"
     browser-assert: "npm:^1.2.1"
     esbuild: "npm:^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0 || ^0.22.0 || ^0.23.0 || ^0.24.0 || ^0.25.0"
@@ -11183,18 +11156,18 @@ __metadata:
   peerDependenciesMeta:
     prettier:
       optional: true
-  checksum: 10/2749dfed1219878f9959b9944533a0a428cae22482130a3d45ceffb2186d259670d79fc6ee4b3e334ba168f692308ae7b95d55fa2afba6ccbc6f6464a3cf0fd6
+  checksum: 10/ba9014903155d3bc0c0eb481bf1aeb634503822c9d6f7a16278e0a3f36d6f2e302906f2320c6fc320d43fa6e009638c31ecae5d67a77ca8a502dde3a87f04f08
   languageName: node
   linkType: hard
 
-"@storybook/csf-plugin@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/csf-plugin@npm:8.6.17"
+"@storybook/csf-plugin@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/csf-plugin@npm:8.6.18"
   dependencies:
     unplugin: "npm:^1.3.1"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/ca5bd82ff5773c133a5b5e0710d0ffc1b6c72ab4677ec49999ad15fb08677227ab05ffae4d58be3817f9e2d61f33ee3c41e20660e4d0db14e1c7d43326ded92d
+    storybook: ^8.6.18
+  checksum: 10/e47b36c43329cb74a8f97b8620fe418bf1298e7cc193d643884816b4c5fa7462e4de27a03dba926b0a289fe8b22f48cf6a39a7d0bbca9b68d9651480c9371329
   languageName: node
   linkType: hard
 
@@ -11224,24 +11197,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/instrumenter@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/instrumenter@npm:8.6.17"
+"@storybook/instrumenter@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/instrumenter@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@vitest/utils": "npm:^2.1.1"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/ec4ae8e5f4b08931193722a86a07fae065c5db195d7eb9a766f301a6307ecbe8e6f7f104fcd1f03bc3a7283d379e7d960f621e331277fdc5444750ae02b3e186
+    storybook: ^8.6.18
+  checksum: 10/d6115f9f62eca5855a357299491b04a3ccf5a7963e952b74fddf54d7b53b2d1b3b00e3590236a4cfbbedae4ff393ad21a1fcacd8e21786711db10ecf6d5f357b
   languageName: node
   linkType: hard
 
-"@storybook/manager-api@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/manager-api@npm:8.6.17"
+"@storybook/manager-api@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/manager-api@npm:8.6.18"
   peerDependencies:
     storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
-  checksum: 10/40f34b34c8e4f9d5e5495c11a139ccd3c30135777d7d062b8d8a22e40e4ded9073844952919417a1d4b3895ebb4c67fb545aef933b78a4cc85240b027778f8f6
+  checksum: 10/40176c8536671fd6506062bdd6bf3eabcf1a664d7fadbab11fab389558ec5a1e094835e35fa771de0bbe4817ce5672af40703908fcc3e00c54a0586b7af653d1
   languageName: node
   linkType: hard
 
@@ -11263,55 +11236,55 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/preact-webpack5@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/preact-webpack5@npm:8.6.17"
+"@storybook/preact-webpack5@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/preact-webpack5@npm:8.6.18"
   dependencies:
-    "@storybook/builder-webpack5": "npm:8.6.17"
-    "@storybook/preact": "npm:8.6.17"
-    "@storybook/preset-preact-webpack": "npm:8.6.17"
+    "@storybook/builder-webpack5": "npm:8.6.18"
+    "@storybook/preact": "npm:8.6.18"
+    "@storybook/preset-preact-webpack": "npm:8.6.18"
   peerDependencies:
     preact: ">=10.0.0"
-    storybook: ^8.6.17
-  checksum: 10/d628637d0142c09b243b5a06e2e02e635a68b2a8c88fe4a714b533b612fb19527b810b830648c21061ab66f867c00dca3061b39ee5905f3dd4ae1af493a600b0
+    storybook: ^8.6.18
+  checksum: 10/2c01519bcd6b574d3e2ae98fc96120f890826a17d0ac5a3e0a7c27dc07e1d5c09542e85433b1d802287fdcbc7fbde81bf7526d148bf9a21221443bb377932cb2
   languageName: node
   linkType: hard
 
-"@storybook/preact@npm:8.6.17, @storybook/preact@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/preact@npm:8.6.17"
+"@storybook/preact@npm:8.6.18, @storybook/preact@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/preact@npm:8.6.18"
   dependencies:
-    "@storybook/components": "npm:8.6.17"
+    "@storybook/components": "npm:8.6.18"
     "@storybook/global": "npm:^5.0.0"
-    "@storybook/manager-api": "npm:8.6.17"
-    "@storybook/preview-api": "npm:8.6.17"
-    "@storybook/theming": "npm:8.6.17"
+    "@storybook/manager-api": "npm:8.6.18"
+    "@storybook/preview-api": "npm:8.6.18"
+    "@storybook/theming": "npm:8.6.18"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
     preact: ^8.0.0||^10.0.0
-    storybook: ^8.6.17
-  checksum: 10/8d2fdff72a90cce1dafc8f356df81e118a3c128c0969b17c93380c5b5601f81ce1ce1fb38bab314cbb42c21c30bfd3915b3ea20c884d7981f5448ef094d6052c
+    storybook: ^8.6.18
+  checksum: 10/bb5cb1cbc45eac11e65da43611e32a0374630b1c09c3d61f349dfe81cc7be8e9303bbfa20e66d016f7b8b27440b05ffdea2b1ae0374b2a02f12896a47665a007
   languageName: node
   linkType: hard
 
-"@storybook/preset-preact-webpack@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/preset-preact-webpack@npm:8.6.17"
+"@storybook/preset-preact-webpack@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/preset-preact-webpack@npm:8.6.18"
   dependencies:
-    "@storybook/core-webpack": "npm:8.6.17"
+    "@storybook/core-webpack": "npm:8.6.18"
   peerDependencies:
     preact: ^8.0.0||^10.0.0
-    storybook: ^8.6.17
-  checksum: 10/ebed6cb1dd9cbd89dc3dae95ed5c8dac268b8d9b8bdb99866f3558cb29c08d336af9f8e058d0d775a5b738b5f200320f45a49e0d4384e03b9ecbbf3e9928ebd6
+    storybook: ^8.6.18
+  checksum: 10/0f732b4354cd9c928b73129488bca6c768350088f28890339c3e4bc851adbbcfae7470338bd0d473eb94795ba9843aef544b55da65715f0025c6e6ac17034eba
   languageName: node
   linkType: hard
 
-"@storybook/preset-react-webpack@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/preset-react-webpack@npm:8.6.17"
+"@storybook/preset-react-webpack@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/preset-react-webpack@npm:8.6.18"
   dependencies:
-    "@storybook/core-webpack": "npm:8.6.17"
-    "@storybook/react": "npm:8.6.17"
+    "@storybook/core-webpack": "npm:8.6.18"
+    "@storybook/react": "npm:8.6.18"
     "@storybook/react-docgen-typescript-plugin": "npm:1.0.6--canary.9.0c3f3b7.0"
     "@types/semver": "npm:^7.3.4"
     find-up: "npm:^5.0.0"
@@ -11324,20 +11297,20 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^8.6.17
+    storybook: ^8.6.18
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/47449cad350dc9d8ef8957571c8a5df47ce83bfeedc08e895043d43702588eef0f6c1e1610efa39fea7e38677c817e4f8f63f70a9145130d015e75713c125b84
+  checksum: 10/e8ac548258323afd3693aa407a21965ce8b63b4bd0cd238bef826dafc727f62dc90c3ded7e4d8d76379373d5a797014c09401a77bd7aa8c6945cb0c0f82c906e
   languageName: node
   linkType: hard
 
-"@storybook/preview-api@npm:8.6.17, @storybook/preview-api@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/preview-api@npm:8.6.17"
+"@storybook/preview-api@npm:8.6.18, @storybook/preview-api@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/preview-api@npm:8.6.18"
   peerDependencies:
     storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
-  checksum: 10/cc5141088215f87a77a3b92aeecf08b921e64a18b7723839d85681e0145ac8089332395ef7d925a2663b2a335147ac65fe6dc5b27257402a0d9aabf72566aeba
+  checksum: 10/4d2ca71644f2fd1ccb5d5277aab5a29651749304f733c2a814b98a1bc63d020f4d50459128b3f619c7e4fdef24af732a17bcab52ea388ee3eb678aded8d9fe29
   languageName: node
   linkType: hard
 
@@ -11359,58 +11332,58 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react-dom-shim@npm:8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/react-dom-shim@npm:8.6.17"
+"@storybook/react-dom-shim@npm:8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/react-dom-shim@npm:8.6.18"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^8.6.17
-  checksum: 10/8cc54d9298bd3b649317b28bdf4a0d3b832350ca47f47a35f273e4ecbec3bca77607f42c223ab9ae24e242831983af2a02e4dbfd07a2f232c73a9ab87290bb9a
+    storybook: ^8.6.18
+  checksum: 10/a3ca6030d480ce316c52e498b2b9e984566c8145e0dfa82d1a100900d5219c0aadf315133cdc9a978ffbda73beb660cf05a5c967a92260485e3310ad26b0548c
   languageName: node
   linkType: hard
 
-"@storybook/react-webpack5@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/react-webpack5@npm:8.6.17"
+"@storybook/react-webpack5@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/react-webpack5@npm:8.6.18"
   dependencies:
-    "@storybook/builder-webpack5": "npm:8.6.17"
-    "@storybook/preset-react-webpack": "npm:8.6.17"
-    "@storybook/react": "npm:8.6.17"
+    "@storybook/builder-webpack5": "npm:8.6.18"
+    "@storybook/preset-react-webpack": "npm:8.6.18"
+    "@storybook/react": "npm:8.6.18"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^8.6.17
+    storybook: ^8.6.18
     typescript: ">= 4.2.x"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/feefac4e221f0f59f00a2b5763dcf727cc7d2c9ab2e6a92498a4ba7685e22cd746615153b564ee47b77259b3883a43bfa6628ad4f2584c26c3bbd8e81a211c23
+  checksum: 10/fd8ad7b0690f259a4393e81cfc7f8b41e56f1738510a593a4f3b66fe93e337a6568aa70d00d906ef57de8c4f9436757d57e8174902f70509e2169c76fe173873
   languageName: node
   linkType: hard
 
-"@storybook/react@npm:8.6.17, @storybook/react@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/react@npm:8.6.17"
+"@storybook/react@npm:8.6.18, @storybook/react@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/react@npm:8.6.18"
   dependencies:
-    "@storybook/components": "npm:8.6.17"
+    "@storybook/components": "npm:8.6.18"
     "@storybook/global": "npm:^5.0.0"
-    "@storybook/manager-api": "npm:8.6.17"
-    "@storybook/preview-api": "npm:8.6.17"
-    "@storybook/react-dom-shim": "npm:8.6.17"
-    "@storybook/theming": "npm:8.6.17"
+    "@storybook/manager-api": "npm:8.6.18"
+    "@storybook/preview-api": "npm:8.6.18"
+    "@storybook/react-dom-shim": "npm:8.6.18"
+    "@storybook/theming": "npm:8.6.18"
   peerDependencies:
-    "@storybook/test": 8.6.17
+    "@storybook/test": 8.6.18
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^8.6.17
+    storybook: ^8.6.18
     typescript: ">= 4.2.x"
   peerDependenciesMeta:
     "@storybook/test":
       optional: true
     typescript:
       optional: true
-  checksum: 10/b60591a429ef638894869ae33f7d261ee72c13d7bc1ee1671b68e0e1b068c16be4273b3a79f7bbd5c445b8b46cc8d0a5930b23a520e52cfaeb2fbd8258aac6ef
+  checksum: 10/430c4dfb1ff0aab03454eef289dfd0cb80b57273085b4aa8367e05125b0950b02ccc8ce51099b4d676ae70b0a739567999182f3d1805a71963b3d6b54e6d80b1
   languageName: node
   linkType: hard
 
@@ -11445,29 +11418,29 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/test@npm:8.6.17, @storybook/test@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/test@npm:8.6.17"
+"@storybook/test@npm:8.6.18, @storybook/test@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/test@npm:8.6.18"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
-    "@storybook/instrumenter": "npm:8.6.17"
+    "@storybook/instrumenter": "npm:8.6.18"
     "@testing-library/dom": "npm:10.4.0"
     "@testing-library/jest-dom": "npm:6.5.0"
     "@testing-library/user-event": "npm:14.5.2"
     "@vitest/expect": "npm:2.0.5"
     "@vitest/spy": "npm:2.0.5"
   peerDependencies:
-    storybook: ^8.6.17
-  checksum: 10/23438b233b16472db4ab4f39344ae8b1f47cbad4973465ba7cd94bd2cfe09fe0c29bc4e9805fd2674deda46a43b5ffcb55c4aaed8ba02b4abd548f69ddf88f87
+    storybook: ^8.6.18
+  checksum: 10/90940aa7015122f393dc68aae9c2de490e3481706e69e771cf7c3779d2e568afd8559a4a18ec2363fcb8d52b4731e90682a2cf4d117da21d905cc663a0488317
   languageName: node
   linkType: hard
 
-"@storybook/theming@npm:8.6.17, @storybook/theming@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "@storybook/theming@npm:8.6.17"
+"@storybook/theming@npm:8.6.18, @storybook/theming@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "@storybook/theming@npm:8.6.18"
   peerDependencies:
     storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
-  checksum: 10/c2041070fba5eaabda3318cf259910af4e1e14a14a961345c2ec49322d95fb2f36cdf4d5a3e3d045f13751538fa8ac68b366053d37cd32de3ac80b786f2c97c5
+  checksum: 10/e6f02c449a11ba7eea7ada81b17b4442c557f0fac0238f34706ca95ff1a1852014c5c56be07c5e6f43ee75ab4e8a3071e8372901b17674c4a82bfe9f48b425e1
   languageName: node
   linkType: hard
 
@@ -16614,32 +16587,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cacache@npm:^15.0.5":
-  version: 15.3.0
-  resolution: "cacache@npm:15.3.0"
-  dependencies:
-    "@npmcli/fs": "npm:^1.0.0"
-    "@npmcli/move-file": "npm:^1.0.1"
-    chownr: "npm:^2.0.0"
-    fs-minipass: "npm:^2.0.0"
-    glob: "npm:^7.1.4"
-    infer-owner: "npm:^1.0.4"
-    lru-cache: "npm:^6.0.0"
-    minipass: "npm:^3.1.1"
-    minipass-collect: "npm:^1.0.2"
-    minipass-flush: "npm:^1.0.5"
-    minipass-pipeline: "npm:^1.2.2"
-    mkdirp: "npm:^1.0.3"
-    p-map: "npm:^4.0.0"
-    promise-inflight: "npm:^1.0.1"
-    rimraf: "npm:^3.0.2"
-    ssri: "npm:^8.0.1"
-    tar: "npm:^6.0.2"
-    unique-filename: "npm:^1.1.1"
-  checksum: 10/1432d84f3f4b31421cf47c15e6956e5e736a93c65126b0fd69ae5f70643d29be8996f33d4995204f578850de5d556268540911c04ecc1c026375b18600534f08
-  languageName: node
-  linkType: hard
-
 "cacache@npm:^18.0.0":
   version: 18.0.4
   resolution: "cacache@npm:18.0.4"
@@ -20086,7 +20033,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0 || ^0.22.0 || ^0.23.0 || ^0.24.0 || ^0.25.0, esbuild@npm:~0.25.0, esbuild@npm:~0.25.12":
+"esbuild@npm:^0.18.0 || ^0.19.0 || ^0.20.0 || ^0.21.0 || ^0.22.0 || ^0.23.0 || ^0.24.0 || ^0.25.0":
   version: 0.25.12
   resolution: "esbuild@npm:0.25.12"
   dependencies:
@@ -20175,7 +20122,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"esbuild@npm:^0.27.0":
+"esbuild@npm:^0.27.0, esbuild@npm:~0.27.0, esbuild@npm:~0.27.3":
   version: 0.27.3
   resolution: "esbuild@npm:0.27.3"
   dependencies:
@@ -23319,13 +23266,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"infer-owner@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "infer-owner@npm:1.0.4"
-  checksum: 10/181e732764e4a0611576466b4b87dac338972b839920b2a8cde43642e4ed6bd54dc1fb0b40874728f2a2df9a1b097b8ff83b56d5f8f8e3927f837fdcb47d8a89
-  languageName: node
-  linkType: hard
-
 "inflight@npm:^1.0.4":
   version: 1.0.6
   resolution: "inflight@npm:1.0.6"
@@ -25340,17 +25280,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-worker@npm:^26.5.0":
-  version: 26.6.2
-  resolution: "jest-worker@npm:26.6.2"
-  dependencies:
-    "@types/node": "npm:*"
-    merge-stream: "npm:^2.0.0"
-    supports-color: "npm:^7.0.0"
-  checksum: 10/5f6b94cf0e8701392a9402fc7af34a1324d334fc6a440d4d55d2d9348114659c035b8d9b259930f9c9e40cbdda0ef9bfe4d7c780e1107057bbe1202672b38533
-  languageName: node
-  linkType: hard
-
 "jest-worker@npm:^27.4.5":
   version: 27.5.1
   resolution: "jest-worker@npm:27.5.1"
@@ -27297,15 +27226,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minipass-collect@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "minipass-collect@npm:1.0.2"
-  dependencies:
-    minipass: "npm:^3.0.0"
-  checksum: 10/14df761028f3e47293aee72888f2657695ec66bd7d09cae7ad558da30415fdc4752bbfee66287dcc6fd5e6a2fa3466d6c484dc1cbd986525d9393b9523d97f10
-  languageName: node
-  linkType: hard
-
 "minipass-collect@npm:^2.0.1":
   version: 2.0.1
   resolution: "minipass-collect@npm:2.0.1"
@@ -27354,7 +27274,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minipass-pipeline@npm:^1.2.2, minipass-pipeline@npm:^1.2.4":
+"minipass-pipeline@npm:^1.2.4":
   version: 1.2.4
   resolution: "minipass-pipeline@npm:1.2.4"
   dependencies:
@@ -27372,7 +27292,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minipass@npm:^3.0.0, minipass@npm:^3.1.1":
+"minipass@npm:^3.0.0":
   version: 3.1.6
   resolution: "minipass@npm:3.1.6"
   dependencies:
@@ -30512,13 +30432,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"promise-inflight@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "promise-inflight@npm:1.0.1"
-  checksum: 10/1560d413ea20c5a74f3631d39ba8cbd1972b9228072a755d01e1f5ca5110382d9af76a1582d889445adc6e75bb5ac4886b56dc4b6eae51b30145d7bb1ac7505b
-  languageName: node
-  linkType: hard
-
 "promise-polyfill@npm:^8.1.3":
   version: 8.3.0
   resolution: "promise-polyfill@npm:8.3.0"
@@ -32845,15 +32758,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serialize-javascript@npm:^5.0.1":
-  version: 5.0.1
-  resolution: "serialize-javascript@npm:5.0.1"
-  dependencies:
-    randombytes: "npm:^2.1.0"
-  checksum: 10/76bf4539bca2e870fd08ab0cd8689e74699b55a47f8803cab50017ce761aa1648cb720148dfc29c323861f9e442fa6a4ac537ae5ef73cd748ec1cc77b388761a
-  languageName: node
-  linkType: hard
-
 "serve-index@npm:^1.9.1":
   version: 1.9.1
   resolution: "serve-index@npm:1.9.1"
@@ -33374,13 +33278,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-list-map@npm:^2.0.0":
-  version: 2.0.1
-  resolution: "source-list-map@npm:2.0.1"
-  checksum: 10/3918ffba5fe8447bc816800026fe707aab233d9d05a3487225d880e23b7e37ed455b4e1b844e05644f6ecc7c9b837c0cc32da54dd37f77c993370ebcdb049246
-  languageName: node
-  linkType: hard
-
 "source-map-generator@npm:0.8.0":
   version: 0.8.0
   resolution: "source-map-generator@npm:0.8.0"
@@ -33648,15 +33545,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ssri@npm:^8.0.1":
-  version: 8.0.1
-  resolution: "ssri@npm:8.0.1"
-  dependencies:
-    minipass: "npm:^3.1.1"
-  checksum: 10/fde247b7107674d9a424a20f9c1a6e3ad88a139c2636b9d9ffa7df59e85e11a894cdae48fadd0ad6be41eb0d5b847fe094736513d333615c7eebc3d111abe0d2
-  languageName: node
-  linkType: hard
-
 "stable-hash-x@npm:^0.2.0":
   version: 0.2.0
   resolution: "stable-hash-x@npm:0.2.0"
@@ -33743,11 +33631,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:^8.6.17":
-  version: 8.6.17
-  resolution: "storybook@npm:8.6.17"
+"storybook@npm:^8.6.18":
+  version: 8.6.18
+  resolution: "storybook@npm:8.6.18"
   dependencies:
-    "@storybook/core": "npm:8.6.17"
+    "@storybook/core": "npm:8.6.18"
   peerDependencies:
     prettier: ^2 || ^3
   peerDependenciesMeta:
@@ -33757,7 +33645,7 @@ __metadata:
     getstorybook: ./bin/index.cjs
     sb: ./bin/index.cjs
     storybook: ./bin/index.cjs
-  checksum: 10/b8a2fe00d3454e4cbeeae684a57c3c4cf8444e9780e5d8ab73f8f1a1df0260e746b0e3fff67458c039f0707f14e3f7870670a157834985b769166756f8a75bfc
+  checksum: 10/157c26d611e849d1551940e9d07416a978bf9f8f38bedd0caa810f72c03f077a38f16c5bb186a01a5722bbe5422302a72b0cbd23d651dd02407060b96d053846
   languageName: node
   linkType: hard
 
@@ -34608,7 +34496,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar@npm:^6.0.2, tar@npm:^6.1.11, tar@npm:^6.2.1":
+"tar@npm:^6.1.11, tar@npm:^6.2.1":
   version: 6.2.1
   resolution: "tar@npm:6.2.1"
   dependencies:
@@ -34679,7 +34567,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:^5.3.1, terser-webpack-plugin@npm:^5.3.16":
+"terser-webpack-plugin@npm:^5.3.1, terser-webpack-plugin@npm:^5.3.16, terser-webpack-plugin@npm:~5.3.17":
   version: 5.3.17
   resolution: "terser-webpack-plugin@npm:5.3.17"
   dependencies:
@@ -34700,26 +34588,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:~4.2.3":
-  version: 4.2.3
-  resolution: "terser-webpack-plugin@npm:4.2.3"
-  dependencies:
-    cacache: "npm:^15.0.5"
-    find-cache-dir: "npm:^3.3.1"
-    jest-worker: "npm:^26.5.0"
-    p-limit: "npm:^3.0.2"
-    schema-utils: "npm:^3.0.0"
-    serialize-javascript: "npm:^5.0.1"
-    source-map: "npm:^0.6.1"
-    terser: "npm:^5.3.4"
-    webpack-sources: "npm:^1.4.3"
-  peerDependencies:
-    webpack: ^4.0.0 || ^5.0.0
-  checksum: 10/8c3a52ca8ef2a8e9f94dd11ea878f49b3c0aad7247b1fca191bcbaa8496d46124b743a76db5c268689dcd04b5145a3e611f5685b6d13d3c22b35d93bc6ae6f8c
-  languageName: node
-  linkType: hard
-
-"terser@npm:^5.10.0, terser@npm:^5.3.4, terser@npm:^5.31.1":
+"terser@npm:^5.10.0, terser@npm:^5.31.1":
   version: 5.43.1
   resolution: "terser@npm:5.43.1"
   dependencies:
@@ -35312,11 +35181,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsx@npm:~4.20.6":
-  version: 4.20.6
-  resolution: "tsx@npm:4.20.6"
+"tsx@npm:~4.21.0":
+  version: 4.21.0
+  resolution: "tsx@npm:4.21.0"
   dependencies:
-    esbuild: "npm:~0.25.0"
+    esbuild: "npm:~0.27.0"
     fsevents: "npm:~2.3.3"
     get-tsconfig: "npm:^4.7.5"
   dependenciesMeta:
@@ -35324,7 +35193,7 @@ __metadata:
       optional: true
   bin:
     tsx: dist/cli.mjs
-  checksum: 10/16396df25c474d7526f7adf9cd0c1f0b71a8c42f70bb93c2399c561eae3998abc015e8fe36a1e149fd289472919fb02816c5b46d72cf9f4335932419ecf2de8b
+  checksum: 10/7afedeff855ba98c47dc28b33d7e8e253c4dc1f791938db402d79c174bdf806b897c1a5f91e5b1259c112520c816f826b4c5d98f0bad7e95b02dec66fedb64d2
   languageName: node
   linkType: hard
 
@@ -35879,15 +35748,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"unique-filename@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "unique-filename@npm:1.1.1"
-  dependencies:
-    unique-slug: "npm:^2.0.0"
-  checksum: 10/9b6969d649a2096755f19f793315465c6427453b66d67c2a1bee8f36ca7e1fc40725be2c028e974dec110d365bd30a4248e89b1044dc1dfe29663b6867d071ef
-  languageName: node
-  linkType: hard
-
 "unique-filename@npm:^3.0.0":
   version: 3.0.0
   resolution: "unique-filename@npm:3.0.0"
@@ -35903,15 +35763,6 @@ __metadata:
   dependencies:
     unique-slug: "npm:^5.0.0"
   checksum: 10/6a62094fcac286b9ec39edbd1f8f64ff92383baa430af303dfed1ffda5e47a08a6b316408554abfddd9730c78b6106bef4ca4d02c1231a735ddd56ced77573df
-  languageName: node
-  linkType: hard
-
-"unique-slug@npm:^2.0.0":
-  version: 2.0.2
-  resolution: "unique-slug@npm:2.0.2"
-  dependencies:
-    imurmurhash: "npm:^0.1.4"
-  checksum: 10/6cfaf91976acc9c125fd0686c561ee9ca0784bb4b2b408972e6cd30e747b4ff0ca50264c01bcf5e711b463535ea611ffb84199e9f73088cd79ac9ddee8154042
   languageName: node
   linkType: hard
 
@@ -36758,16 +36609,6 @@ __metadata:
     clone-deep: "npm:^4.0.1"
     wildcard: "npm:^2.0.0"
   checksum: 10/c22812671a93d938bed21c02461d0efb0a7ec0b0f5e7cf28853b2c428a9ad947a26076e97243b1d9cb1cc5a3f92f24e467fc442f03f6e583d082bb3f3f460baf
-  languageName: node
-  linkType: hard
-
-"webpack-sources@npm:^1.4.3":
-  version: 1.4.3
-  resolution: "webpack-sources@npm:1.4.3"
-  dependencies:
-    source-list-map: "npm:^2.0.0"
-    source-map: "npm:~0.6.1"
-  checksum: 10/6237c5d1ba639a5d67bd1135c9bba487eadbd04c5e75a2849508013f13cb4b57387e689e0991c19a14a87085be7cc0b8dd1515422ae351f6e3f813ed100ccbb8
   languageName: node
   linkType: hard
 
