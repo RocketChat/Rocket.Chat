@@ -79,53 +79,42 @@ export class LivechatBusinessHoursRaw extends BaseRaw<ILivechatBusinessHour> imp
 		});
 	}
 
-	findHoursToScheduleJobs(): Promise<IWorkHoursCronJobsWrapper[]> {
-		return this.col
-			.aggregate([
-				{
-					$facet: {
-						start: [
-							{ $match: { active: true } },
-							{ $project: { _id: 0, workHours: 1 } },
-							{ $unwind: { path: '$workHours' } },
-							{ $match: { 'workHours.open': true } },
-							{
-								$group: {
-									_id: { day: '$workHours.start.cron.dayOfWeek' },
-									times: { $addToSet: '$workHours.start.cron.time' },
-								},
-							},
-							{
-								$project: {
-									_id: 0,
-									day: '$_id.day',
-									times: 1,
-								},
-							},
-						],
-						finish: [
-							{ $match: { active: true } },
-							{ $project: { _id: 0, workHours: 1 } },
-							{ $unwind: { path: '$workHours' } },
-							{ $match: { 'workHours.open': true } },
-							{
-								$group: {
-									_id: { day: '$workHours.finish.cron.dayOfWeek' },
-									times: { $addToSet: '$workHours.finish.cron.time' },
-								},
-							},
-							{
-								$project: {
-									_id: 0,
-									day: '$_id.day',
-									times: 1,
-								},
-							},
-						],
+	async findHoursToScheduleJobs(): Promise<IWorkHoursCronJobsWrapper[]> {
+		const basePipeline = [
+			{ $match: { active: true } },
+			{ $project: { _id: 0, workHours: 1 } },
+			{ $unwind: { path: '$workHours' } },
+			{ $match: { 'workHours.open': true } },
+		];
+
+		const [start, finish] = await Promise.all([
+			this.col
+				.aggregate([
+					...basePipeline,
+					{
+						$group: {
+							_id: { day: '$workHours.start.cron.dayOfWeek' },
+							times: { $addToSet: '$workHours.start.cron.time' },
+						},
 					},
-				},
-			])
-			.toArray() as any;
+					{ $project: { _id: 0, day: '$_id.day', times: 1 } },
+				])
+				.toArray(),
+			this.col
+				.aggregate([
+					...basePipeline,
+					{
+						$group: {
+							_id: { day: '$workHours.finish.cron.dayOfWeek' },
+							times: { $addToSet: '$workHours.finish.cron.time' },
+						},
+					},
+					{ $project: { _id: 0, day: '$_id.day', times: 1 } },
+				])
+				.toArray(),
+		]);
+
+		return [{ start, finish }] as any;
 	}
 
 	async findActiveBusinessHoursToOpen(
