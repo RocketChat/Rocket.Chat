@@ -286,46 +286,34 @@ export class AnalyticsRaw extends BaseRaw<IAnalytics> implements IAnalyticsModel
 		if (options?.count) {
 			sortAndPaginationParams.push({ $limit: options.count });
 		}
-		const facet = {
-			$facet: {
-				channels: [...sortAndPaginationParams],
-				total: [{ $count: 'total' }],
-			},
-		};
-		const totalUnwind = { $unwind: '$total' };
-		const totalProject = {
-			$project: {
-				channels: '$channels',
-				total: '$total.total',
-			},
-		};
-
 		const params: Exclude<Parameters<Collection<IRoom>['aggregate']>[0], undefined> = [
 			typeAndDateMatch,
 			roomsGroup,
 			lookup,
 			roomsUnwind,
 			project,
-			facet,
-			totalUnwind,
-			totalProject,
 		];
 
-		return params;
+		return { baseParams: params, sortAndPaginationParams };
 	}
 
-	findRoomsByTypesWithNumberOfMessagesBetweenDate(params: {
+	async findRoomsByTypesWithNumberOfMessagesBetweenDate(params: {
 		types: Array<IRoom['t']>;
 		start: number;
 		end: number;
 		startOfLastWeek: number;
 		endOfLastWeek: number;
 		options?: any;
-	}): AggregationCursor<{ channels: IChannelsWithNumberOfMessagesBetweenDate[]; total: number }> {
-		const aggregationParams = this.getRoomsWithNumberOfMessagesBetweenDateQuery(params);
-		return this.col.aggregate<{ channels: IChannelsWithNumberOfMessagesBetweenDate[]; total: number }>(aggregationParams, {
-			allowDiskUse: true,
-			readPreference: readSecondaryPreferred(),
-		});
+	}): Promise<{ channels: IChannelsWithNumberOfMessagesBetweenDate[]; total: number }[]> {
+		const { baseParams, sortAndPaginationParams } = this.getRoomsWithNumberOfMessagesBetweenDateQuery(params);
+		const aggregateOptions = { allowDiskUse: true, readPreference: readSecondaryPreferred() };
+
+		const [channels, countResult] = await Promise.all([
+			this.col.aggregate<IChannelsWithNumberOfMessagesBetweenDate>([...baseParams, ...sortAndPaginationParams], aggregateOptions).toArray(),
+			this.col.aggregate<{ total: number }>([...baseParams, { $count: 'total' }], aggregateOptions).toArray(),
+		]);
+
+		const total = countResult[0]?.total || 0;
+		return [{ channels, total }];
 	}
 }
