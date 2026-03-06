@@ -3,7 +3,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Palette } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
-
+import { usePreventPropagation } from '@rocket.chat/ui-contexts';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import OutlookCalendarEventModal from '../OutlookCalendarEventModal';
 import { useOutlookOpenCall } from '../hooks/useOutlookOpenCall';
@@ -15,6 +15,7 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();
 	const openCall = useOutlookOpenCall(meetingUrl);
+	const preventPropagation = usePreventPropagation();
 
 	const hovered = css`
 		&:hover {
@@ -57,13 +58,7 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 			</Box>
 			<Box>
 				{meetingUrl && (
-					<Button
-						small
-						onClick={(e) => {
-							e.stopPropagation();
-							openCall();
-						}}
-					>
+					<Button onClick={preventPropagation(openCall)} small>
 						{t('Join')}
 					</Button>
 				)}
