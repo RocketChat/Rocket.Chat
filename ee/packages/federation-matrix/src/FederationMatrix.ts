@@ -838,21 +838,22 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async notifyRoomRead({ room, userId, threadId }: { room: IRoomNativeFederated; userId: string; threadId: string }): Promise<void> {
-		// get rooms last message eventId
-		const eventId = await (async () => {
-			if (room.lastMessage?._id) {
-				const lastMessage = await Messages.findOneById(room.lastMessage._id, { projection: { federation: 1 } });
-				return lastMessage?.federation?.eventId;
-			}
+		// get last event_id for the room or thread
+		const lastMessage = threadId
+			? await Messages.findVisibleThreadByThreadId(threadId, {
+					sort: { ts: -1 },
+					projection: { federation: 1 },
+				}).next()
+			: await Messages.findVisibleByRoomId(room._id, { projection: { federation: 1 }, sort: { ts: -1 } }).next();
 
-			const lastFederatedMessage = await Messages.findVisibleByRoomId(room._id, { projection: { federation: 1 }, sort: { ts: -1 } }).next();
-			return lastFederatedMessage?.federation?.eventId;
-		})();
-
-		if (!eventId) {
+		if (!lastMessage?.federation?.eventId) {
 			this.logger.warn({ msg: 'No event ID found for room, skipping read receipt', roomId: room._id });
 			return;
 		}
+
+		const threadEventId = threadId
+			? (await Messages.findOneById(threadId, { projection: { federation: 1 } }))?.federation?.eventId
+			: undefined;
 
 		const user = await Users.findOneById(userId);
 		if (!user) {
@@ -868,9 +869,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		await federationSDK.sendReadReceipt({
 			roomId: roomIdSchema.parse(room.federation.mrid),
-			eventIds: [eventIdSchema.parse(eventId)],
+			eventIds: [eventIdSchema.parse(lastMessage?.federation?.eventId)],
 			userId: userIdSchema.parse(matrixUserId),
-			...(threadId && { threadId: eventIdSchema.parse(threadId) }),
+			...(threadEventId && { threadId: eventIdSchema.parse(threadEventId) }),
 		});
 	}
 }

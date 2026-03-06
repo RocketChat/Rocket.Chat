@@ -2,7 +2,7 @@ import { api, Room } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Users } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:edu');
 
@@ -86,9 +86,19 @@ export const edus = async () => {
 				return;
 			}
 
-			await Room.markAsRead(matrixRoom, matrixUser._id);
+			if (data.thread_id) {
+				const msg = await Messages.findOneByFederationId(data.thread_id);
+				if (!msg) {
+					logger.debug({ msg: 'No message found for Matrix thread_id', threadId: data.thread_id });
+					return;
+				}
+
+				await Room.readThread({ room: matrixRoom, user: matrixUser, tmid: msg._id });
+			} else {
+				await Room.markAsRead(matrixRoom, matrixUser._id);
+			}
 		} catch (err) {
-			logger.error({ msg: 'Error handling Matrix typing event', err });
+			logger.error({ msg: 'Error handling Matrix receipt event', err });
 		}
 	});
 };

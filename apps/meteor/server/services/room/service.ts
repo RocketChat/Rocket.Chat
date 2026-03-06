@@ -34,6 +34,7 @@ import { removeRoomLeader } from '../../methods/removeRoomLeader';
 import { removeRoomModerator } from '../../methods/removeRoomModerator';
 import { removeRoomOwner } from '../../methods/removeRoomOwner';
 import { readMessages } from '../../lib/readMessages';
+import { readThread } from '../../../app/threads/server/functions';
 
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
@@ -334,5 +335,13 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async markAsRead(room: IRoom, userId: string, readThreads = false): Promise<void> {
 		await readMessages(room, userId, readThreads);
+	}
+
+	async readThread({ user, room, tmid }: { user: IUser; room: IRoom; tmid: string }): Promise<void> {
+		await readThread({
+			user,
+			room,
+			tmid,
+		});
 	}
 }
