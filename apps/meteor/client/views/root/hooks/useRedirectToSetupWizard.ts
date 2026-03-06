@@ -8,7 +8,6 @@ export const useRedirectToSetupWizard = (): void => {
   const isAdmin = useRole('admin');
 
   useEffect(() => {
-    if (!router) {
       return;
     }
 
