@@ -18,9 +18,9 @@ import {
 	sendMessage,
 	deleteVisitor,
 } from '../../../data/livechat/rooms';
-import { LivechatResourceTracker } from '../../../data/livechatResourceTracker';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
+import { LivechatResourceTracker } from '../../../data/livechatResourceTracker';
 import {
 	updatePermission,
 	updateSetting,

@@ -23,9 +23,9 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
-import { withSetting } from '../../data/settings.helper';
 import { assignRoleToUser, createCustomRole, deleteCustomRole } from '../../data/roles.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { withSetting } from '../../data/settings.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -2016,8 +2016,10 @@ describe('[Rooms]', () => {
 		const discussionRoomName = `${nameRoom}-discussion`;
 
 		let testGroup: IRoom;
+		let originalSpecialChars: SettingValue;
 
 		before(async () => {
+			originalSpecialChars = await getSettingValueById('UI_Allow_room_names_with_special_chars');
 			await updateSetting('UI_Allow_room_names_with_special_chars', true);
 			testGroup = (await createRoom({ type: 'p', name: fnameRoom })).body.group;
 			await request.post(api('rooms.createDiscussion')).set(credentials).send({
@@ -2028,7 +2030,7 @@ describe('[Rooms]', () => {
 
 		after(() =>
 			Promise.all([
-				updateSetting('UI_Allow_room_names_with_special_chars', false),
+				updateSetting('UI_Allow_room_names_with_special_chars', originalSpecialChars),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
 				updatePermission('view-room-administration', ['admin']),
 			]),
