@@ -1,7 +1,6 @@
 import '../app/authorization/client';
 import '../app/autotranslate/client';
 import '../app/emoji/client';
-import '../app/emoji-native/client';
 import '../app/gitlab/client';
 import '../app/license/client';
 import '../app/lib/client';
