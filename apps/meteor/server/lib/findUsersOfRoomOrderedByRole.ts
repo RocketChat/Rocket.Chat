@@ -92,18 +92,20 @@ export async function findUsersOfRoomOrderedByRole({
 			{
 				$lookup: {
 					from: Subscriptions.getCollectionName(),
+					localField: '_id',
+					foreignField: 'u._id',
 					as: 'subscription',
-					let: { userId: '$_id', roomId: rid },
-					pipeline: [
-						{
-							$match: {
-								$expr: {
-									$and: [{ $eq: ['$rid', '$$roomId'] }, { $eq: ['$u._id', '$$userId'] }],
-								},
-							},
+				},
+			},
+			{
+				$addFields: {
+					subscription: {
+						$filter: {
+							input: '$subscription',
+							as: 'sub',
+							cond: { $eq: ['$$sub.rid', rid] },
 						},
-						{ $project: { roles: 1, status: 1, ts: 1 } },
-					],
+					},
 				},
 			},
 			{
