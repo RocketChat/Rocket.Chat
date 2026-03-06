@@ -821,6 +821,56 @@ const usersEndpoints = API.v1
 		},
 	)
 	.get(
+		'users.getAvatarSuggestion',
+		{
+			authRequired: true,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					suggestions: Record<
+						string,
+						{
+							blob: string;
+							contentType: string;
+							service: string;
+							url: string;
+						}
+					>;
+					success: boolean;
+				}>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+						suggestions: {
+							type: 'object',
+							additionalProperties: {
+								type: 'object',
+								properties: {
+									blob: { type: 'string' },
+									contentType: { type: 'string' },
+									service: { type: 'string' },
+									url: { type: 'string', format: 'uri' },
+								},
+								required: ['blob', 'contentType', 'service', 'url'],
+								additionalProperties: false,
+							},
+						},
+					},
+					required: ['success', 'suggestions'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const suggestions = await getAvatarSuggestionForUser(this.user);
+			return API.v1.success({ suggestions });
+		},
+	)
+	.get(
 		'users.list',
 		{
 			authRequired: true,
@@ -849,6 +899,7 @@ const usersEndpoints = API.v1
 					count: number;
 					offset: number;
 					total: number;
+					success: boolean;
 				}>({
 					type: 'object',
 					properties: {
@@ -859,26 +910,41 @@ const usersEndpoints = API.v1
 						count: { type: 'number' },
 						offset: { type: 'number' },
 						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['users', 'count', 'offset', 'total'],
+					required: ['users', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				403: ajv.compile({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [false] },
+						error: { type: 'string' },
+						errorType: { type: 'string' },
+					},
+					required: ['success', 'error'],
 					additionalProperties: false,
 				}),
 			},
 		},
 		async function action() {
+			if (
+				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+			) {
+				return API.v1.forbidden();
+			}
+
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const nonEmptyFields = getNonEmptyFields(fields);
-
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
-
 			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
 			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 
-			// if user provided a query, validate it with their allowed operators
-			// otherwise we use the default query (with $regex and $options)
 			if (
 				!isValidQuery(
 					nonEmptyQuery,
@@ -890,8 +956,6 @@ const usersEndpoints = API.v1
 						inclusiveFieldsKeys.includes('type') && 'type.*',
 						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
 					].filter(Boolean) as string[],
-					// At this point, we have already validated the user query not containing malicious fields
-					// On here we are using our own query so we can allow some extra fields
 					['$or', '$and', '$regex', '$options'],
 				)
 			) {
@@ -908,41 +972,16 @@ const usersEndpoints = API.v1
 				actualSort.nameInsensitive = sort.name;
 			}
 
-			const limit =
-				count !== 0
-					? [
-							{
-								$limit: count,
-							},
-						]
-					: [];
+			const limit = count !== 0 ? [{ $limit: count }] : [];
 
 			const result = await Users.col
 				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
-					{
-						$match: nonEmptyQuery,
-					},
-					{
-						$project: inclusiveFields,
-					},
-					{
-						$addFields: {
-							nameInsensitive: {
-								$toLower: '$name',
-							},
-						},
-					},
+					{ $match: nonEmptyQuery },
+					{ $project: inclusiveFields },
+					{ $addFields: { nameInsensitive: { $toLower: '$name' } } },
 					{
 						$facet: {
-							sortedResults: [
-								{
-									$sort: actualSort,
-								},
-								{
-									$skip: offset,
-								},
-								...limit,
-							],
+							sortedResults: [{ $sort: actualSort }, { $skip: offset }, ...limit],
 							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
 						},
 					},
