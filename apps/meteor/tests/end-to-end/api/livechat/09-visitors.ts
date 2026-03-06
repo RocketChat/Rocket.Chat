@@ -16,7 +16,9 @@ import {
 	createVisitorWithCustomData,
 	sendAgentMessage,
 	sendMessage,
+	deleteVisitor,
 } from '../../../data/livechat/rooms';
+import { LivechatResourceTracker } from '../../../data/livechatResourceTracker';
 import { getRandomVisitorToken } from '../../../data/livechat/users';
 import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
 import {
@@ -570,6 +572,10 @@ describe('LIVECHAT - visitors', () => {
 	});
 
 	describe('livechat/visitors.pagesVisited', () => {
+		const tracker = new LivechatResourceTracker();
+
+		after(() => tracker.cleanup());
+
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
 
@@ -599,6 +605,7 @@ describe('LIVECHAT - visitors', () => {
 			await updatePermission('view-l-room', ['admin']);
 			const createdVisitor = await createVisitor();
 			const createdRoom = await createLivechatRoom(createdVisitor.token);
+			tracker.add(createdVisitor, createdRoom);
 
 			await request
 				.get(api(`livechat/visitors.pagesVisited/${createdRoom._id}`))
@@ -616,6 +623,10 @@ describe('LIVECHAT - visitors', () => {
 	});
 
 	describe('livechat/visitors.chatHistory/room/room-id/visitor/visitor-id', () => {
+		const tracker = new LivechatResourceTracker();
+
+		after(() => tracker.cleanup());
+
 		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
 			await updatePermission('view-l-room', []);
 
@@ -644,8 +655,9 @@ describe('LIVECHAT - visitors', () => {
 		it('should return an array of chat history', async () => {
 			await updatePermission('view-l-room', ['admin']);
 			const createdVisitor = await createVisitor();
-
 			const createdRoom = await createLivechatRoom(createdVisitor.token);
+			tracker.add(createdVisitor, createdRoom);
+
 			await request
 				.get(api(`livechat/visitors.chatHistory/room/${createdRoom._id}/visitor/${createdVisitor._id}`))
 				.set(credentials)
@@ -840,6 +852,10 @@ describe('LIVECHAT - visitors', () => {
 	});
 
 	describe('livechat/visitors.autocomplete', () => {
+		const visitorsToDelete: string[] = [];
+
+		after(() => Promise.allSettled(visitorsToDelete.map((token) => deleteVisitor(token))));
+
 		it('should return an error when the user doesnt have the right permissions', async () => {
 			await updatePermission('view-l-room', []);
 			await request
@@ -880,6 +896,7 @@ describe('LIVECHAT - visitors', () => {
 		it('should return a list of visitors when the query params is all valid', async () => {
 			await updatePermission('view-l-room', ['admin', 'livechat-agent']);
 			const createdVisitor = await createVisitor();
+			visitorsToDelete.push(createdVisitor.token);
 
 			await request
 				.get(api('livechat/visitors.autocomplete'))
@@ -904,6 +921,10 @@ describe('LIVECHAT - visitors', () => {
 	});
 
 	describe('livechat/visitors.searchChats/room/:roomId/visitor/:visitorId', () => {
+		const tracker = new LivechatResourceTracker();
+
+		after(() => tracker.cleanup());
+
 		it('should return an error when the user doesnt have the right permissions', async () => {
 			await updatePermission('view-l-room', []);
 			await request
@@ -931,6 +952,8 @@ describe('LIVECHAT - visitors', () => {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			const createdVisitor = await createVisitor();
 			const room = await createLivechatRoom(createdVisitor.token);
+			tracker.add(createdVisitor, room);
+
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/123`))
 				.set(credentials)
@@ -949,6 +972,8 @@ describe('LIVECHAT - visitors', () => {
 			await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 			const createdVisitor = await createVisitor();
 			const room = await createLivechatRoom(createdVisitor.token);
+			tracker.add(createdVisitor, room);
+
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/123`))
 				.set(credentials)
@@ -1033,6 +1058,7 @@ describe('LIVECHAT - visitors', () => {
 		it('should return only served chats when servedChatsOnly is true', async () => {
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
+			tracker.add(visitor, room);
 
 			await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=true`))
@@ -1072,11 +1098,15 @@ describe('LIVECHAT - visitors', () => {
 
 		it('should return all chats when both closed & served flags are false', async () => {
 			const visitor = await createVisitor();
+			tracker.add(visitor);
 			const room = await createLivechatRoom(visitor.token);
+			tracker.addRoom(room);
 			await closeOmnichannelRoom(room._id);
 			const room2 = await createLivechatRoom(visitor.token);
+			tracker.addRoom(room2);
 			await closeOmnichannelRoom(room2._id);
-			await createLivechatRoom(visitor.token);
+			const room3 = await createLivechatRoom(visitor.token);
+			tracker.addRoom(room3);
 
 			const { body } = await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=false`))
@@ -1093,6 +1123,10 @@ describe('LIVECHAT - visitors', () => {
 	});
 
 	describe('livechat/visitor.status', () => {
+		const visitorsToDelete: string[] = [];
+
+		after(() => Promise.allSettled(visitorsToDelete.map((token) => deleteVisitor(token))));
+
 		it('should return an error if token is not present as body param', async () => {
 			const res = await request.post(api('livechat/visitor.status')).set(credentials).expect(400);
 			expect(res.body).to.have.property('success', false);
@@ -1107,6 +1141,7 @@ describe('LIVECHAT - visitors', () => {
 		});
 		it('should update visitor status if all things are valid', async () => {
 			const visitor = await createVisitor();
+			visitorsToDelete.push(visitor.token);
 			const res = await request
 				.post(api('livechat/visitor.status'))
 				.set(credentials)
@@ -1117,6 +1152,10 @@ describe('LIVECHAT - visitors', () => {
 	});
 
 	describe('GET [omnichannel/contact.search]', () => {
+		const visitorsToDelete: string[] = [];
+
+		after(() => Promise.allSettled(visitorsToDelete.map((token) => deleteVisitor(token))));
+
 		it('should fail if no email|phone|custom params are passed as query', async () => {
 			await request.get(api('omnichannel/contact.search')).set(credentials).expect('Content-Type', 'application/json').expect(400);
 		});
@@ -1146,6 +1185,7 @@ describe('LIVECHAT - visitors', () => {
 		});
 		it('should find a contact by email', async () => {
 			const visitor = await createVisitor();
+			visitorsToDelete.push(visitor.token);
 			await request
 				.get(api('omnichannel/contact.search'))
 				.query({ email: visitor.visitorEmails?.[0].address })
@@ -1168,6 +1208,7 @@ describe('LIVECHAT - visitors', () => {
 		});
 		it('should find a contact by phone', async () => {
 			const visitor = await createVisitor();
+			visitorsToDelete.push(visitor.token);
 			await request
 				.get(api('omnichannel/contact.search'))
 				.query({ phone: visitor.phone?.[0].phoneNumber })
@@ -1276,6 +1317,10 @@ describe('LIVECHAT - visitors', () => {
 	});
 
 	describe('livechat/visitors.search', () => {
+		const visitorsToDelete: string[] = [];
+
+		after(() => Promise.allSettled(visitorsToDelete.map((token) => deleteVisitor(token))));
+
 		it('should fail if user doesnt have view-l-room permission', async () => {
 			await updatePermission('view-l-room', []);
 			const res = await request.get(api('livechat/visitors.search')).query({ text: 'nel' }).set(credentials).send();
@@ -1292,6 +1337,7 @@ describe('LIVECHAT - visitors', () => {
 		});
 		it('should return a list of visitors when term is a valid string', async () => {
 			const visitor = await createVisitor();
+			visitorsToDelete.push(visitor.token);
 
 			const res = await request.get(api('livechat/visitors.search')).query({ term: visitor.name }).set(credentials).send();
 			expect(res.body).to.have.property('success', true);
