@@ -239,7 +239,14 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					getItemsFromServer: async () => {
 						return [];
 					},
-					getValue: (item) => `${item._id.substring(1)}`,
+					prefix: '',
+					getValue: (item) => {
+						const emojiEntry = emoji.list[item._id];
+						if (emojiEntry?.emojiPackage === 'emojiCustom') {
+							return item._id;
+						}
+						return emojiEntry?.unicode ?? item._id;
+					},
 					renderItem: ({ item }) => <ComposerBoxPopupEmoji {...item} />,
 				}),
 			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({

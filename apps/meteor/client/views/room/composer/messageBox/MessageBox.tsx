@@ -20,6 +20,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import { emoji } from '../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -155,7 +156,13 @@ const MessageBox = ({
 		}
 
 		const ref = messageComposerRef.current as HTMLElement;
-		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
+		chat.emojiPicker.open(ref, (emojiName: string) => {
+			const emojiKey = `:${emojiName}:`;
+			const emojiEntry = emoji.list[emojiKey];
+			const isCustom = emojiEntry?.emojiPackage === 'emojiCustom';
+			const text = isCustom ? emojiKey : (emojiEntry?.unicode ?? emojiKey);
+			chat.composer?.insertText(` ${text} `);
+		});
 	});
 
 	const handleSendMessage = useEffectEvent(() => {
@@ -373,6 +380,38 @@ const MessageBox = ({
 		),
 	);
 
+	const emojiShortcodeCompletionRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLTextAreaElement) => {
+				const eventHandler = (e: KeyboardEvent) => {
+					if (e.key !== ':') return;
+
+					const composer = chat.composer;
+					if (!composer) return;
+
+					const value = composer.substring(0, composer.selection.start);
+					const match = value.match(/:([a-zA-Z0-9_+-]+):$/);
+					if (!match) return;
+
+					const shortname = `:${match[1]}:`;
+					const emojiEntry = emoji.list[shortname];
+					if (!emojiEntry || emojiEntry.emojiPackage === 'emojiCustom' || !emojiEntry.unicode) return;
+
+					const start = value.lastIndexOf(shortname);
+					const end = composer.selection.start;
+					composer.replaceText(emojiEntry.unicode, { start, end });
+				};
+
+				node.addEventListener('keyup', eventHandler);
+
+				return () => {
+					node.removeEventListener('keyup', eventHandler);
+				};
+			},
+			[chat],
+		),
+	);
+
 	const mergedRefs = useMessageComposerMergedRefs(
 		popup.callbackRef,
 		textareaRef,
@@ -380,6 +419,7 @@ const MessageBox = ({
 		callbackRef,
 		autofocusRef,
 		keyDownHandlerCallbackRef,
+		emojiShortcodeCompletionRef,
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
