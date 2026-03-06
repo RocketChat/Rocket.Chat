@@ -1,5 +1,4 @@
 import { Push } from '@rocket.chat/core-services';
-import { pushTokenTypes } from '@rocket.chat/core-typings';
 import type { IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
@@ -39,7 +38,7 @@ const PushTokenPOSTSchema: JSONSchemaType<PushTokenPOST> = {
 		},
 		type: {
 			type: 'string',
-			enum: pushTokenTypes,
+			enum: ['apn', 'gcm'],
 		},
 		value: {
 			type: 'string',

@@ -1,9 +1,7 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { ILoginToken } from './IUser';
 
-export const pushTokenTypes = ['gcm', 'apn'] as const;
-
-export type IPushTokenTypes = (typeof pushTokenTypes)[number];
+export type IPushTokenTypes = 'gcm' | 'apn';
 
 export interface IPushToken extends IRocketChatRecord {
 	token: Partial<Record<IPushTokenTypes, string>>;
