@@ -25,29 +25,28 @@ export const useRedirectToSetupWizard = (): void => {
       const isNotFoundPage = routeName === 'not-found';
       const isSetupWizardPage = routeName === 'setup-wizard';
 
-      const isWizardInProgress =
-        Boolean(userId) && Boolean(isAdmin) && setupWizardState === 'in_progress';
+	const userId = useUserId();
+	const setupWizardState = useSetting('Show_Setup_Wizard');
+	const router = useRouter();
+	const isAdmin = useRole('admin');
 
-      const mustRedirect =
-        (!userId && setupWizardState === 'pending') || isWizardInProgress;
+	useEffect(() => {
+		if (!router) return;
+		if (setupWizardState === undefined) return;
 
-      if (mustRedirect && !isNotFoundPage && !isSetupWizardPage) {
-        router.navigate('/setup-wizard');
-      }
-    };
+		const routeName = router.getRouteName();
+		if (!routeName) return;
 
-    // Run once for the current route
-    handleRouteChange();
+		const isNotFoundPage = routeName === 'not-found';
 
-    // Subscribe to future route changes so the logic re-runs on navigation
-    const unsubscribe = router.subscribeToRouteChange
-      ? router.subscribeToRouteChange(handleRouteChange)
-      : undefined;
+		const isWizardInProgress =
+			Boolean(userId) && Boolean(isAdmin) && setupWizardState === 'in_progress';
 
-    return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
-      }
-    };
-  }, [userId, setupWizardState, isAdmin, router]);
+		const mustRedirect =
+			(!userId && setupWizardState === 'pending') || isWizardInProgress;
+
+		if (mustRedirect && !isNotFoundPage) {
+			router.navigate('/setup-wizard');
+		}
+	}, [userId, setupWizardState, isAdmin, router]);
 };
