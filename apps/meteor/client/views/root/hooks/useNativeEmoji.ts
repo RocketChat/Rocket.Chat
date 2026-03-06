@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect } from 'react';
 
 import { emoji } from '../../../../app/emoji/client';
 import { getEmojiConfig } from '../../../../app/emoji-native/lib/getEmojiConfig';
+import { legacyEmojioneMap } from '../../../../app/emoji-native/lib/legacyEmojioneMap';
 
 const config = getEmojiConfig();
 
@@ -28,6 +29,23 @@ export const useNativeEmoji = () => {
 					emoji.list[shortname] = currentEmoji;
 				});
 			}
+		}
+
+		// Register legacy emojione shortcodes so old reactions and stored shortcodes resolve correctly
+		for (const [shortcode, unicode] of Object.entries(legacyEmojioneMap)) {
+			const key = `:${shortcode}:`;
+			if (emoji.list[key]) continue;
+
+			emoji.list[key] = {
+				uc_base: '',
+				uc_output: '',
+				uc_match: '',
+				uc_greedy: '',
+				shortnames: [],
+				category: '',
+				emojiPackage: 'native',
+				unicode,
+			};
 		}
 
 		emoji.dispatchUpdate();
