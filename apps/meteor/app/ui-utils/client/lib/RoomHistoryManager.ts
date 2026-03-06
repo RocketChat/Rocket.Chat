@@ -295,7 +295,15 @@ class RoomHistoryManagerClass extends Emitter {
 		room.loaded = undefined;
 	}
 
-	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }, showThreadMessages = true) {
+	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		return this.loadSurroundingMessages(message, true);
+	}
+
+	public async getSurroundingChannelMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		return this.loadSurroundingMessages(message, false);
+	}
+
+	private async loadSurroundingMessages(message: (Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) | undefined, showThreadMessages: boolean) {
 		if (!message?.rid) {
 			return;
 		}
