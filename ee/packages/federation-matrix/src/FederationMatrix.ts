@@ -36,6 +36,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private processEDUPresence: boolean;
 
+	private processEDUReceipt: boolean;
+
 	private validateUserDomain: boolean;
 
 	private readonly logger = new Logger(this.name);
@@ -59,6 +61,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const { value } = setting;
 			if (typeof value === 'boolean') {
 				this.processEDUPresence = value;
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_EDU_Process_Receipt', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.processEDUReceipt = value;
 			}
 		});
 
@@ -838,6 +847,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async notifyRoomRead({ room, userId, threadId }: { room: IRoomNativeFederated; userId: string; threadId: string }): Promise<void> {
+		if (!this.processEDUReceipt) {
+			return;
+		}
+
 		// get last event_id for the room or thread
 		const lastMessage = threadId
 			? await Messages.findVisibleThreadByThreadId(threadId, {

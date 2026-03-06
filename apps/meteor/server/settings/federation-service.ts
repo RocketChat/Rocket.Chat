@@ -85,6 +85,15 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			alert: 'Federation_Service_EDU_Process_Presence_Alert',
 		});
 
+		await this.add('Federation_Service_EDU_Process_Receipt', false, {
+			type: 'boolean',
+			public: false,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: false,
+			alert: 'Federation_Service_EDU_Process_Receipt_Alert',
+		});
+
 		await this.add('Federation_Service_Join_Encrypted_Rooms', false, {
 			type: 'boolean',
 			public: false,
