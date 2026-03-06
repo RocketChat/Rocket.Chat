@@ -473,9 +473,10 @@ class PushClass {
 			createdBy: '<SERVER>',
 			sent: false,
 			sending: 0,
-			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority', 'useVoipToken'),
 			...(options.title && { title: truncateString(options.title, PUSH_TITLE_LIMIT) }),
 			...(options.text && { text: truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT) }),
+
+			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority', 'useVoipToken'),
 
 			...(this.hasApnOptions(options)
 				? {
