@@ -23,6 +23,7 @@ import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { withSetting } from '../../data/settings.helper';
 import { assignRoleToUser, createCustomRole, deleteCustomRole } from '../../data/roles.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -105,12 +106,18 @@ describe('[Rooms]', () => {
 		let userCredentials: Credentials;
 		const testChannelName = `channel.test.upload.${Date.now()}-${Math.random()}`;
 		let blockedMediaTypes: SettingValue;
+		let originalRestrictToRoomMembers: SettingValue;
+		let originalProtectFiles: SettingValue;
+		let originalE2EEncryptFiles: SettingValue;
 
 		before(async () => {
 			user = await createUser({ joinDefaultChannels: false });
 			userCredentials = await login(user.username, password);
 			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
 			blockedMediaTypes = await getSettingValueById('FileUpload_MediaTypeBlackList');
+			originalRestrictToRoomMembers = await getSettingValueById('FileUpload_Restrict_to_room_members');
+			originalProtectFiles = await getSettingValueById('FileUpload_ProtectFiles');
+			originalE2EEncryptFiles = await getSettingValueById('E2E_Enable_Encrypt_Files');
 			const newBlockedMediaTypes = (blockedMediaTypes as string)
 				.split(',')
 				.filter((type) => type !== 'image/svg+xml')
@@ -123,10 +130,10 @@ describe('[Rooms]', () => {
 			Promise.all([
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteUser(user),
-				updateSetting('FileUpload_Restrict_to_room_members', true),
-				updateSetting('FileUpload_ProtectFiles', true),
+				updateSetting('FileUpload_Restrict_to_room_members', originalRestrictToRoomMembers),
+				updateSetting('FileUpload_ProtectFiles', originalProtectFiles),
 				updateSetting('FileUpload_MediaTypeBlackList', blockedMediaTypes),
-				updateSetting('E2E_Enable_Encrypt_Files', true),
+				updateSetting('E2E_Enable_Encrypt_Files', originalE2EEncryptFiles),
 			]),
 		);
 
@@ -249,8 +256,7 @@ describe('[Rooms]', () => {
 				});
 		});
 		describe('/rooms.media - Max allowed size', () => {
-			before(async () => updateSetting('Message_MaxAllowedSize', 10));
-			after(async () => updateSetting('Message_MaxAllowedSize', 5000));
+			withSetting('Message_MaxAllowedSize', 10);
 			it('should allow uploading a file with description under the max character limit', async () => {
 				await request
 					.post(api(`rooms.media/${testChannel._id}`))
@@ -750,6 +756,11 @@ describe('[Rooms]', () => {
 		let directMessageChannelId: IRoom['_id'];
 		let user: TestUser<IUser>;
 		let userCredentials: Credentials;
+		let originalShowDeletedStatus: SettingValue;
+
+		before(async () => {
+			originalShowDeletedStatus = await getSettingValueById('Message_ShowDeletedStatus');
+		});
 
 		beforeEach(async () => {
 			user = await createUser();
@@ -770,7 +781,7 @@ describe('[Rooms]', () => {
 			]),
 		);
 
-		after(() => updateSetting('Message_ShowDeletedStatus', false));
+		after(() => updateSetting('Message_ShowDeletedStatus', originalShowDeletedStatus));
 
 		it('should return success when send a valid public channel', (done) => {
 			void request
@@ -1324,6 +1335,7 @@ describe('[Rooms]', () => {
 		let user2Credentials: Credentials;
 		const testChannelName = `channel.leave.${Date.now()}-${Math.random()}`;
 		const testGroupName = `group.leave.${Date.now()}-${Math.random()}`;
+		let originalAPIUserLimit: SettingValue;
 
 		before(async () => {
 			user2 = await createUser();
@@ -1331,6 +1343,7 @@ describe('[Rooms]', () => {
 			testChannel = (await createRoom({ type: 'c', name: testChannelName })).body.channel;
 			testGroup = (await createRoom({ type: 'p', name: testGroupName })).body.group;
 			testDM = (await createRoom({ type: 'd', username: user2.username })).body.room;
+			originalAPIUserLimit = await getSettingValueById('API_User_Limit');
 			await updateSetting('API_User_Limit', 1000000);
 		});
 
@@ -1342,7 +1355,7 @@ describe('[Rooms]', () => {
 				updatePermission('leave-c', ['admin', 'user', 'bot', 'anonymous', 'app']),
 				updatePermission('leave-p', ['admin', 'user', 'bot', 'anonymous', 'app']),
 				deleteUser(user2),
-				updateSetting('API_User_Limit', 10000),
+				updateSetting('API_User_Limit', originalAPIUserLimit),
 			]),
 		);
 
@@ -1494,45 +1507,39 @@ describe('[Rooms]', () => {
 			]),
 		);
 
-		it('should throw an error when the user tries to create a discussion and the feature is disabled', (done) => {
-			void updateSetting('Discussion_enabled', false).then(() => {
-				void request
-					.post(api('rooms.createDiscussion'))
-					.set(credentials)
-					.send({
-						prid: testChannel._id,
-						t_name: 'valid name',
-					})
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
-					})
-					.end(() => updateSetting('Discussion_enabled', true).then(done));
-			});
-		});
-		it('should throw an error when the user tries to create a discussion and does not have at least one of the required permissions', (done) => {
-			void updatePermission('start-discussion', []).then(() => {
-				void updatePermission('start-discussion-other-user', []).then(() => {
-					void request
-						.post(api('rooms.createDiscussion'))
-						.set(credentials)
-						.send({
-							prid: testChannel._id,
-							t_name: 'valid name',
-						})
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
-						})
-						.end(() => {
-							void updatePermission('start-discussion', ['admin', 'user', 'guest'])
-								.then(() => updatePermission('start-discussion-other-user', ['admin', 'user', 'guest']))
-								.then(done);
-						});
+		it('should throw an error when the user tries to create a discussion and the feature is disabled', async () => {
+			await updateSetting('Discussion_enabled', false);
+			await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: 'valid name',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 				});
-			});
+			await updateSetting('Discussion_enabled', true);
+		});
+		it('should throw an error when the user tries to create a discussion and does not have at least one of the required permissions', async () => {
+			await updatePermission('start-discussion', []);
+			await updatePermission('start-discussion-other-user', []);
+			await request
+				.post(api('rooms.createDiscussion'))
+				.set(credentials)
+				.send({
+					prid: testChannel._id,
+					t_name: 'valid name',
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+			await updatePermission('start-discussion', ['admin', 'user', 'guest']);
+			await updatePermission('start-discussion-other-user', ['admin', 'user', 'guest']);
 		});
 		it('should throw an error when the user tries to create a discussion without the required parameter "prid"', (done) => {
 			void request
@@ -2072,47 +2079,43 @@ describe('[Rooms]', () => {
 				})
 				.end(done);
 		});
-		it('should search the list of admin rooms using non-latin characters when UI_Allow_room_names_with_special_chars setting is toggled', (done) => {
-			void updateSetting('UI_Allow_room_names_with_special_chars', true).then(() => {
-				void request
-					.get(api('rooms.adminRooms'))
-					.set(credentials)
-					.query({
-						filter: fnameRoom,
-					})
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('rooms').and.to.be.an('array');
-						expect(res.body.rooms).to.have.lengthOf(1);
-						expect(res.body.rooms[0].fname).to.be.equal(fnameRoom);
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
-			});
+		it('should search the list of admin rooms using non-latin characters when UI_Allow_room_names_with_special_chars setting is toggled', async () => {
+			await updateSetting('UI_Allow_room_names_with_special_chars', true);
+			await request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: fnameRoom,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].fname).to.be.equal(fnameRoom);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				});
 		});
-		it('should search the list of admin rooms using latin characters only when UI_Allow_room_names_with_special_chars setting is disabled', (done) => {
-			void updateSetting('UI_Allow_room_names_with_special_chars', false).then(() => {
-				void request
-					.get(api('rooms.adminRooms'))
-					.set(credentials)
-					.query({
-						filter: nameRoom,
-					})
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('rooms').and.to.be.an('array');
-						expect(res.body.rooms).to.have.lengthOf(1);
-						expect(res.body.rooms[0].name).to.be.equal(nameRoom);
-						expect(res.body).to.have.property('offset');
-						expect(res.body).to.have.property('total');
-						expect(res.body).to.have.property('count');
-					})
-					.end(done);
-			});
+		it('should search the list of admin rooms using latin characters only when UI_Allow_room_names_with_special_chars setting is disabled', async () => {
+			await updateSetting('UI_Allow_room_names_with_special_chars', false);
+			await request
+				.get(api('rooms.adminRooms'))
+				.set(credentials)
+				.query({
+					filter: nameRoom,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('rooms').and.to.be.an('array');
+					expect(res.body.rooms).to.have.lengthOf(1);
+					expect(res.body.rooms[0].name).to.be.equal(nameRoom);
+					expect(res.body).to.have.property('offset');
+					expect(res.body).to.have.property('total');
+					expect(res.body).to.have.property('count');
+				});
 		});
 		it('should filter by only rooms types', (done) => {
 			void request

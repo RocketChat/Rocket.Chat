@@ -3,6 +3,7 @@ import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updateSetting } from '../../data/permissions.helper';
+import { withSetting } from '../../data/settings.helper';
 
 describe('[Push]', () => {
 	before((done) => getCredentials(done));
@@ -221,7 +222,7 @@ describe('[Push]', () => {
 	});
 
 	describe('[/push.test]', () => {
-		before(() => updateSetting('Push_enable', false));
+		withSetting('Push_enable', false);
 
 		it('should fail if not logged in', async () => {
 			await request
