@@ -75,7 +75,7 @@ async function getRoomFromParams(params: { roomId?: string } | { roomName?: stri
 		}
 	})();
 
-	if (!room || room.t !== 'p') {
+	if (room?.t !== 'p') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
@@ -281,7 +281,7 @@ API.v1.addRoute(
 				room = await Rooms.findOneByName(params.roomName || '');
 			}
 
-			if (!room || room.t !== 'p') {
+			if (room?.t !== 'p') {
 				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 			}
 
@@ -841,7 +841,7 @@ API.v1.addRoute(
 				rid: findResult.rid,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
-				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+				...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
 				_hidden: { $ne: true },
 			};
 
@@ -1354,5 +1354,6 @@ API.v1.addRoute(
 type GroupEndpoints = ExtractRoutesFromAPI<typeof groupDeleteEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends GroupEndpoints {}
 }
