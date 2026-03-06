@@ -1,6 +1,7 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { insertOrUpdateSound } from '../lib/insertOrUpdateSound';
 
 export type ICustomSoundData = {
@@ -25,6 +26,9 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async insertOrUpdateSound(soundData) {
-		return insertOrUpdateSound(this.userId, soundData);
+		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-sounds'))) {
+			throw new Meteor.Error('not_authorized');
+		}
+		return insertOrUpdateSound(soundData);
 	},
 });

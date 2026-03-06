@@ -102,7 +102,11 @@ export async function getUploadFormData<
 			return reject(new MeteorError('No file uploaded'));
 		}
 		if (options.validate !== undefined && !options.validate(fields)) {
-			return reject(new MeteorError(`Invalid fields ${options.validate.errors?.join(', ')}`));
+			const errorMessage =
+				options.validate.errors
+					?.map((e) => `${e.instancePath ? `${e.instancePath} ` : ''}${e.message ?? JSON.stringify(e.params)}`)
+					.join(', ') ?? 'Unknown validation error';
+			return reject(new MeteorError(`Invalid fields: ${errorMessage}`));
 		}
 		return resolve(uploadedFile);
 	}

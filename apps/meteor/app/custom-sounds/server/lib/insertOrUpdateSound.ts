@@ -3,15 +3,10 @@ import { CustomSounds } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import type { ICustomSoundData } from '../methods/insertOrUpdateSound';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
-export const insertOrUpdateSound = async (userId: string | null, soundData: ICustomSoundData): Promise<string> => {
-	if (!userId || !(await hasPermissionAsync(userId, 'manage-sounds'))) {
-		throw new Meteor.Error('not_authorized');
-	}
-
+export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<string> => {
 	if (!soundData.name?.trim()) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateSound',

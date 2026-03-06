@@ -3,6 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import type { ICustomSoundData } from './insertOrUpdateSound';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { uploadCustomSound } from '../lib/uploadCustomSound';
 
 declare module '@rocket.chat/ddp-client' {
@@ -14,6 +15,10 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async uploadCustomSound(binaryContent, contentType, soundData) {
-		await uploadCustomSound(this.userId, binaryContent, contentType, soundData);
+		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-sounds'))) {
+			throw new Meteor.Error('not_authorized');
+		}
+		const buffer = Buffer.from(binaryContent, 'binary');
+		await uploadCustomSound(buffer, contentType, soundData);
 	},
 });
