@@ -8,8 +8,8 @@ import {
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	withUserIdProps
 } from '@rocket.chat/rest-typings';
-import { withUserIdProps } from '@rocket.chat/rest-typings/dist/v1/groups/BaseProps';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -908,7 +908,7 @@ const groupsEndpoints = API.v1.post(
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
+			200: ajv.compile<{ success: true }>({
 				type: 'object',
 				properties: {
 					success: { type: 'boolean', enum: [true] },
@@ -928,7 +928,7 @@ const groupsEndpoints = API.v1.post(
 
 		await removeRoomModerator(this.userId, findResult.rid, user._id);
 
-		return API.v1.success();
+		return API.v1.success({ success: true });
 	},
 );
 
