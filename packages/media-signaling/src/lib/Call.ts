@@ -953,7 +953,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const earlySignals = Array.from(this.earlySignals.values());
 		this.earlySignals.clear();
 
-		for await (const signal of earlySignals) {
+		for (const signal of earlySignals) {
 			try {
 				await this.processSignal(signal);
 			} catch (e) {
