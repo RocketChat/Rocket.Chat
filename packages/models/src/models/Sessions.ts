@@ -12,7 +12,7 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { ISessionsModel } from '@rocket.chat/model-typings';
-import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type {
 	AggregationCursor,
 	AnyBulkWriteOperation,
@@ -827,26 +827,14 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 		};
 
-		const facetOperator = {
-			$facet: {
-				docs: [sortOperator, ...skipOperator, limitOperator, ...customSortOp],
-				count: [
-					{
-						$count: 'total',
-					},
-				],
-			},
-		};
+		const baseQuery = [matchOperator, sortOperator, groupOperator, projectOperator];
 
-		const queryArray = [matchOperator, sortOperator, groupOperator, projectOperator, facetOperator];
+		const [sessions, countResult] = await Promise.all([
+			this.col.aggregate<DeviceManagementSession>([...baseQuery, sortOperator, ...skipOperator, limitOperator, ...customSortOp]).toArray(),
+			this.col.aggregate<{ total: number }>([...baseQuery, { $count: 'total' }]).toArray(),
+		]);
 
-		const [
-			{
-				docs: sessions,
-				count: [{ total } = { total: 0 }],
-			},
-		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementSession[] }>>(queryArray).toArray();
-
+		const total = countResult[0]?.total || 0;
 		return { sessions, total, count, offset };
 	}
 
@@ -953,26 +941,14 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 		};
 
-		const facetOperator = {
-			$facet: {
-				docs: [sortOperator, ...skipOperator, limitOperator, lookupOperator, unwindOperator, projectOperator, ...customSortOp],
-				count: [
-					{
-						$count: 'total',
-					},
-				],
-			},
-		};
+		const baseQuery = [matchOperator, sortOperator, groupOperator];
 
-		const queryArray = [matchOperator, sortOperator, groupOperator, facetOperator];
+		const [sessions, countResult] = await Promise.all([
+			this.col.aggregate<DeviceManagementPopulatedSession>([...baseQuery, sortOperator, ...skipOperator, limitOperator, lookupOperator, unwindOperator, projectOperator, ...customSortOp]).toArray(),
+			this.col.aggregate<{ total: number }>([...baseQuery, { $count: 'total' }]).toArray(),
+		]);
 
-		const [
-			{
-				docs: sessions,
-				count: [{ total } = { total: 0 }],
-			},
-		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementPopulatedSession[] }>>(queryArray).toArray();
-
+		const total = countResult[0]?.total || 0;
 		return { sessions, total, count, offset };
 	}
 
