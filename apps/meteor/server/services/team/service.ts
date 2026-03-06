@@ -1122,7 +1122,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		const [{ totalCount: [{ count: total }] = [], paginatedResults: data = [] }] =
-			(await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, type, { skip, limit, sort }).toArray()) || [];
+			(await Rooms.findChildrenOfTeam(team._id, mainRoom._id, userId, filter, type, { skip, limit, sort })) || [];
 
 		return {
 			total,
