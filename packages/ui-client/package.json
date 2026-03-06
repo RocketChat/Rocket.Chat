@@ -19,7 +19,7 @@
 	},
 	"dependencies": {
 		"@rocket.chat/onboarding-ui": "~0.36.2",
-		"dompurify": "~3.3.1"
+		"dompurify": "~3.3.2"
 	},
 	"devDependencies": {
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
@@ -31,9 +31,12 @@
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/layout": "^0.34.2",
+		"@rocket.chat/logo": "^0.32.4",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/models": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
+		"@rocket.chat/styled": "~0.32.0",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-avatar": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:~",
@@ -45,6 +48,7 @@
 		"@types/react": "~18.3.27",
 		"@types/react-dom": "~18.3.7",
 		"eslint": "~9.39.3",
+		"i18next": "~23.4.9",
 		"jest": "~30.2.0",
 		"overlayscrollbars": "^2.11.4",
 		"overlayscrollbars-react": "^0.5.6",
@@ -52,6 +56,7 @@
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
 		"react-hook-form": "~7.45.4",
+		"react-i18next": "~13.2.2",
 		"react-virtuoso": "^4.12.0",
 		"storybook": "^8.6.17",
 		"typescript": "~5.9.3"
