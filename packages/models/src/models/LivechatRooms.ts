@@ -95,7 +95,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne(query);
 	}
 
-	getQueueMetrics({
+	async getQueueMetrics({
 		departmentId,
 		agentId,
 		includeOfflineAgents,
@@ -196,16 +196,16 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			pagination.push({ $limit: options.count });
 		}
 
-		const facet = {
-			$facet: {
-				sortedResults: pagination,
-				totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-			},
-		};
+		const baseParams = [...firstParams, usersGroup, project];
+		const aggregateOptions = { readPreference: readSecondaryPreferred(), allowDiskUse: true };
 
-		const params = [...firstParams, usersGroup, project, facet];
+		const [sortedResults, countResult] = await Promise.all([
+			this.col.aggregate([...baseParams, ...pagination], aggregateOptions).toArray(),
+			this.col.aggregate<{ total: number }>([...baseParams, { $count: 'total' }], aggregateOptions).toArray(),
+		]);
 
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
+		const totalCount = countResult.length ? [{ total: countResult[0].total }] : [];
+		return [{ sortedResults, totalCount }];
 	}
 
 	async findAllNumberOfAbandonedRooms({
