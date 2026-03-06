@@ -184,7 +184,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	async getMessagesData(messages: IMessage[], t: TFunction): Promise<MessageData[]> {
 		const messagesData: MessageData[] = [];
-		for await (const message of messages) {
+		for (const message of messages) {
 			const systemMessage = this.getSystemMessage(message, t);
 
 			if (systemMessage) {
@@ -209,7 +209,7 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 			const files = [];
 			const quotes = [];
 
-			for await (const attachment of message.attachments) {
+			for (const attachment of message.attachments) {
 				if (isQuoteAttachment(attachment)) {
 					quotes.push(...this.getQuotesFromMessage(message));
 					continue;
