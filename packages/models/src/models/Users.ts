@@ -573,17 +573,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 					{
 						$lookup: {
 							from: 'rocketchat_livechat_department_agents',
-							let: { userId: '$_id' },
-							pipeline: [
-								{
-									$match: {
-										$expr: {
-											$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', department] }],
-										},
-									},
-								},
-							],
+							localField: '_id',
+							foreignField: 'agentId',
 							as: 'department',
+						},
+					},
+					{
+						$addFields: {
+							department: {
+								$filter: {
+									input: '$department',
+									as: 'dept',
+									cond: { $eq: ['$$dept.departmentId', department] },
+								},
+							},
 						},
 					},
 					{
@@ -598,22 +601,26 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{
 				$lookup: {
 					from: 'rocketchat_subscription',
-					let: { id: '$_id' },
-					pipeline: [
-						{
-							$match: {
-								$expr: {
-									$and: [
-										{ $eq: ['$u._id', '$$id'] },
-										{ $eq: ['$open', true] },
-										{ $ne: ['$onHold', true] },
-										{ ...(department && { $eq: ['$department', department] }) },
-									],
-								},
+					localField: '_id',
+					foreignField: 'u._id',
+					as: 'subs',
+				},
+			},
+			{
+				$addFields: {
+					subs: {
+						$filter: {
+							input: '$subs',
+							as: 'sub',
+							cond: {
+								$and: [
+									{ $eq: ['$$sub.open', true] },
+									{ $ne: ['$$sub.onHold', true] },
+									...(department ? [{ $eq: ['$$sub.department', department] }] : []),
+								],
 							},
 						},
-					],
-					as: 'subs',
+					},
 				},
 			},
 			{
@@ -655,17 +662,20 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 					{
 						$lookup: {
 							from: 'rocketchat_livechat_department_agents',
-							let: { userId: '$_id' },
-							pipeline: [
-								{
-									$match: {
-										$expr: {
-											$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', department] }],
-										},
-									},
-								},
-							],
+							localField: '_id',
+							foreignField: 'agentId',
 							as: 'department',
+						},
+					},
+					{
+						$addFields: {
+							department: {
+								$filter: {
+									input: '$department',
+									as: 'dept',
+									cond: { $eq: ['$$dept.departmentId', department] },
+								},
+							},
 						},
 					},
 					{
