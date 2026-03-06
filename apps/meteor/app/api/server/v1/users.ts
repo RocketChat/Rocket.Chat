@@ -544,36 +544,24 @@ API.v1.addRoute(
 					: [];
 
 			const baseQuery = [
-					{
-						$match: nonEmptyQuery,
-					},
-					{
-						$project: inclusiveFields,
-					},
-					{
-						$addFields: {
-							nameInsensitive: {
-								$toLower: '$name',
-							},
+				{
+					$match: nonEmptyQuery,
+				},
+				{
+					$project: inclusiveFields,
+				},
+				{
+					$addFields: {
+						nameInsensitive: {
+							$toLower: '$name',
 						},
 					},
-				];
+				},
+			];
 
 			const [users, countResult] = await Promise.all([
-				Users.col
-					.aggregate<IUser>([
-						...baseQuery,
-						{ $sort: actualSort },
-						{ $skip: offset },
-						...limit,
-					])
-					.toArray(),
-				Users.col
-					.aggregate<{ total: number }>([
-						...baseQuery,
-						{ $count: 'total' },
-					])
-					.toArray(),
+				Users.col.aggregate<IUser>([...baseQuery, { $sort: actualSort }, { $skip: offset }, ...limit]).toArray(),
+				Users.col.aggregate<{ total: number }>([...baseQuery, { $count: 'total' }]).toArray(),
 			]);
 
 			const total = countResult[0]?.total || 0;

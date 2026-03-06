@@ -2240,10 +2240,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 							input: '$subscription',
 							as: 'sub',
 							cond: {
-								$and: [
-									{ $eq: ['$$sub.u._id', userId] },
-									{ $ne: ['$$sub.t', 'c'] },
-								],
+								$and: [{ $eq: ['$$sub.u._id', userId] }, { $ne: ['$$sub.t', 'c'] }],
 							},
 						},
 					},

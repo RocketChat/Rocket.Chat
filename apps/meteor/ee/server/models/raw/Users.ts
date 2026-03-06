@@ -76,11 +76,7 @@ export class UsersEE extends UsersRaw {
 									input: '$subs',
 									as: 'sub',
 									cond: {
-										$and: [
-											{ $eq: ['$$sub.t', 'l'] },
-											{ $eq: ['$$sub.open', true] },
-											{ $ne: ['$$sub.onHold', true] },
-										],
+										$and: [{ $eq: ['$$sub.t', 'l'] }, { $eq: ['$$sub.open', true] }, { $ne: ['$$sub.onHold', true] }],
 									},
 								},
 							},

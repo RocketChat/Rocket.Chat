@@ -950,7 +950,18 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 		const baseQuery = [matchOperator, sortOperator, groupOperator];
 
 		const [sessions, countResult] = await Promise.all([
-			this.col.aggregate<DeviceManagementPopulatedSession>([...baseQuery, sortOperator, ...skipOperator, limitOperator, lookupOperator, unwindOperator, projectOperator, ...customSortOp]).toArray(),
+			this.col
+				.aggregate<DeviceManagementPopulatedSession>([
+					...baseQuery,
+					sortOperator,
+					...skipOperator,
+					limitOperator,
+					lookupOperator,
+					unwindOperator,
+					projectOperator,
+					...customSortOp,
+				])
+				.toArray(),
 			this.col.aggregate<{ total: number }>([...baseQuery, { $count: 'total' }]).toArray(),
 		]);
 

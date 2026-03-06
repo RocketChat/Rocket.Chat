@@ -503,7 +503,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 								$exists: true,
 								...(exceptions.length > 0 && { $nin: exceptions }),
 							},
-							...(searchTerm && orStatement.length > 0 && { $or: orStatement.map((cond) => Object.fromEntries(Object.entries(cond).map(([k, v]) => [`user.${k}`, v]))) }),
+							...(searchTerm &&
+								orStatement.length > 0 && {
+									$or: orStatement.map((cond) => Object.fromEntries(Object.entries(cond).map(([k, v]) => [`user.${k}`, v]))),
+								}),
 						},
 					},
 					// Use group to organize the data at the same time that we pick what to project to the end result
