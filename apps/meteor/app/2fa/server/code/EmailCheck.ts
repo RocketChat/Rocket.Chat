@@ -101,13 +101,13 @@ ${t('If_you_didnt_try_to_login_in_your_account_please_ignore_this_email')}
 		const random = Random._randomString(6, '0123456789');
 		const encryptedRandom = await bcrypt.hash(random, Accounts._bcryptRounds());
 		const expire = new Date();
-		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration') as string, 10);
+		const expirationInSeconds = parseInt(settings.get('Accounts_TwoFactorAuthentication_By_Email_Code_Expiration'), 10);
 
 		expire.setSeconds(expire.getSeconds() + expirationInSeconds);
 
 		await Users.addEmailCodeByUserId(user._id, encryptedRandom, expire);
 
-		for await (const address of emails) {
+		for (const address of emails) {
 			await this.send2FAEmail(address, random, user);
 		}
 	}

@@ -24,7 +24,7 @@ export const handleNpsOnWorkspaceSync = async (nps: Cloud.NpsSurveyAnnouncement)
 };
 
 export const handleBannerOnWorkspaceSync = async (banners: IBanner[]) => {
-	for await (const banner of banners) {
+	for (const banner of banners) {
 		await Banner.create(banner);
 	}
 };

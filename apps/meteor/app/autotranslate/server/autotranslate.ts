@@ -319,7 +319,7 @@ export abstract class AutoTranslate {
 
 		if (message.attachments && message.attachments.length > 0) {
 			setImmediate(async () => {
-				for await (const [index, attachment] of message.attachments?.entries() ?? []) {
+				for (const [index, attachment] of message.attachments?.entries() ?? []) {
 					if (attachment.description || attachment.text) {
 						// Removes the initial link `[ ](quoterl)` from quote message before translation
 						const translatedText = attachment?.text?.replace(/\[(.*?)\]\(.*?\)/g, '$1') || attachment?.text;
