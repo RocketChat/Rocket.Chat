@@ -6,10 +6,6 @@ type BannersId = {
 	platform: BannerPlatform;
 };
 
-type Banners = {
-	platform: BannerPlatform;
-};
-
 const BannersSchema = {
 	type: 'object',
 	properties: {
@@ -22,7 +18,7 @@ const BannersSchema = {
 	additionalProperties: false,
 };
 
-export const isBannersProps = ajv.compile<Banners>(BannersSchema);
+export const isBannersProps = ajv.compile<BannersId>(BannersSchema);
 
 type BannersDismiss = {
 	bannerId: string;
@@ -45,12 +41,6 @@ export const isBannersDismissProps = ajv.compile<BannersDismiss>(BannersDismissS
 export type BannersEndpoints = {
 	'/v1/banners/:id': {
 		GET: (params: BannersId) => {
-			banners: IBanner[];
-		};
-	};
-
-	'/v1/banners': {
-		GET: (params: Banners) => {
 			banners: IBanner[];
 		};
 	};

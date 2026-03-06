@@ -1,6 +1,14 @@
+import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
 import { Banner } from '@rocket.chat/core-services';
-import { isBannersDismissProps, isBannersProps } from '@rocket.chat/rest-typings';
+import {
+	isBannersDismissProps,
+	isBannersProps,
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
 /**
@@ -95,24 +103,57 @@ API.v1.addRoute(
  *                        type: array
  *                        items:
  *                          $ref: '#/components/schemas/IBanner'
- *        default:
- *          description: Unexpected error
+ *        400:
+ *          description: Bad request
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/ApiFailureV1'
+ *        401:
+ *          description: Unauthorized
  *          content:
  *            application/json:
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
+const bannersEndpoints = API.v1.get(
 	'banners',
-	{ authRequired: true, validateParams: isBannersProps },
 	{
-		async get() {
-			const { platform } = this.queryParams;
-
-			const banners = await Banner.getBannersForUser(this.userId, platform);
-
-			return API.v1.success({ banners });
+		authRequired: true,
+		query: ajv.compile<{ platform: BannerPlatform }>({
+			type: 'object',
+			properties: {
+				platform: {
+					type: 'string',
+					enum: ['web', 'mobile'],
+				},
+			},
+			required: ['platform'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ banners: IBanner[]; success: true }>({
+				type: 'object',
+				properties: {
+					banners: {
+						type: 'array',
+						items: { type: 'object' },
+					},
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['banners', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { platform } = this.queryParams;
+
+		const banners = await Banner.getBannersForUser(this.userId, platform);
+
+		return API.v1.success({ banners });
 	},
 );
 
@@ -161,3 +202,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type BannersGetEndpoints = ExtractRoutesFromAPI<typeof bannersEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends BannersGetEndpoints {}
+}
