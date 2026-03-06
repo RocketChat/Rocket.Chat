@@ -12,12 +12,13 @@ import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationReq
 import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
+
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
-import { shortnameToUnicode } from './utils/emojiConverter';
 import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { validateFederatedUsername } from './helpers/validateFederatedUsername';
 import { MatrixMediaService } from './services/MatrixMediaService';
+import { shortnameToUnicode } from './utils/emojiConverter';
 
 export const fileTypes: Record<string, FileMessageType> = {
 	image: 'm.image',
