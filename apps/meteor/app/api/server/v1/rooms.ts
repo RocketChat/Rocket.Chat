@@ -7,7 +7,6 @@ import {
 	ajv,
 	isGETRoomsNameExists,
 	isRoomsImagesProps,
-	isRoomsMuteUnmuteUserProps,
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
@@ -876,42 +875,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms.muteUser',
-	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
-	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.unmuteUser',
-	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
-	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
 	'rooms.open',
 	{ authRequired: true, validateParams: isRoomsOpenProps },
 	{
@@ -1026,6 +989,44 @@ const isRoomsLeavePropsSchema = {
 
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+
+type RoomsMuteUnmuteUser = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsMuteUnmuteUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isRoomsMuteUnmuteUserProps = ajv.compile<RoomsMuteUnmuteUser>(RoomsMuteUnmuteUserSchema);
 
 export const roomEndpoints = API.v1
 	.get(
@@ -1232,6 +1233,66 @@ export const roomEndpoints = API.v1
 			await leaveRoomMethod(user, room._id);
 
 			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.muteUser',
+		{
+			authRequired: true,
+			body: isRoomsMuteUnmuteUserProps,
+			response: {
+				200: ajv.compile<{ success: true }>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success({ success: true });
+		},
+	)
+	.post(
+		'rooms.unmuteUser',
+		{
+			authRequired: true,
+			body: isRoomsMuteUnmuteUserProps,
+			response: {
+				200: ajv.compile<{ success: true }>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success({ success: true });
 		},
 	);
 
