@@ -299,7 +299,7 @@
 		"ua-parser-js": "~1.0.41",
 		"underscore": "^1.13.8",
 		"universal-perf-hooks": "^1.0.1",
-		"webdav": "^4.11.5",
+		"webdav": "^5.9.0",
 		"xml-crypto": "~3.2.1",
 		"xml-encryption": "~3.1.0",
 		"xml2js": "~0.6.2",

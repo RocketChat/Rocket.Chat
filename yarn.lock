@@ -2273,6 +2273,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@buttercup/fetch@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "@buttercup/fetch@npm:0.2.1"
+  dependencies:
+    node-fetch: "npm:^3.3.0"
+  dependenciesMeta:
+    node-fetch:
+      optional: true
+  checksum: 10/ad2fc2ce964409a44238cca94a93ad3817666c477fd1c1ace914a3c589c638522747545bf53f3a684c10a2edf957134dc2d3fa7effe5a773d1bea2c2bee9dd2c
+  languageName: node
+  linkType: hard
+
 "@changesets/apply-release-plan@npm:^7.0.7":
   version: 7.0.7
   resolution: "@changesets/apply-release-plan@npm:7.0.7"
@@ -9254,7 +9266,7 @@ __metadata:
     ua-parser-js: "npm:~1.0.41"
     underscore: "npm:^1.13.8"
     universal-perf-hooks: "npm:^1.0.1"
-    webdav: "npm:^4.11.5"
+    webdav: "npm:^5.9.0"
     webpack: "npm:~5.104.0"
     xml-crypto: "npm:~3.2.1"
     xml-encryption: "npm:~3.1.0"
@@ -15466,17 +15478,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^0.30.0":
-  version: 0.30.3
-  resolution: "axios@npm:0.30.3"
-  dependencies:
-    follow-redirects: "npm:^1.15.4"
-    form-data: "npm:^4.0.4"
-    proxy-from-env: "npm:^1.1.0"
-  checksum: 10/a39b790b89e78ff058322ecf8c2e42f5293387b4b5d0f1c2f15c35d4187ad6a786e0e044480b39cd7126dfd180b33c9f1bedc76b79a65a8db8e014b3509281a7
-  languageName: node
-  linkType: hard
-
 "axios@npm:^1.11.0":
   version: 1.11.0
   resolution: "axios@npm:1.11.0"
@@ -18490,6 +18491,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"data-uri-to-buffer@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "data-uri-to-buffer@npm:4.0.1"
+  checksum: 10/0d0790b67ffec5302f204c2ccca4494f70b4e2d940fea3d36b09f0bb2b8539c2e86690429eb1f1dc4bcc9e4df0644193073e63d9ee48ac9fce79ec1506e4aa4c
+  languageName: node
+  linkType: hard
+
 "data-urls@npm:^5.0.0":
   version: 5.0.0
   resolution: "data-urls@npm:5.0.0"
@@ -19704,6 +19712,13 @@ __metadata:
   version: 4.5.0
   resolution: "entities@npm:4.5.0"
   checksum: 10/ede2a35c9bce1aeccd055a1b445d41c75a14a2bb1cd22e242f20cf04d236cdcd7f9c859eb83f76885327bfae0c25bf03303665ee1ce3d47c5927b98b0e3e3d48
+  languageName: node
+  linkType: hard
+
+"entities@npm:^6.0.1":
+  version: 6.0.1
+  resolution: "entities@npm:6.0.1"
+  checksum: 10/62af1307202884349d2867f0aac5c60d8b57102ea0b0e768b16246099512c28e239254ad772d6834e7e14cb1b6f153fc3d0c031934e3183b086c86d3838d874a
   languageName: node
   linkType: hard
 
@@ -21149,17 +21164,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^4.2.4":
-  version: 4.5.4
-  resolution: "fast-xml-parser@npm:4.5.4"
-  dependencies:
-    strnum: "npm:^1.0.5"
-  bin:
-    fxparser: src/cli/cli.js
-  checksum: 10/991f11a15d82be778c3452e5f1109975d66276bb951ba4db87417507da15d0b1c09d15a4e4db15a216cf3315b4325f66ff3b7f9b7557d6a2055103755fb39cce
-  languageName: node
-  linkType: hard
-
 "fast-xml-parser@npm:^5.3.4":
   version: 5.4.2
   resolution: "fast-xml-parser@npm:5.4.2"
@@ -21222,6 +21226,16 @@ __metadata:
     picomatch:
       optional: true
   checksum: 10/14ca1c9f0a0e8f4f2e9bf4e8551065a164a09545dae548c12a18d238b72e51e5a7b39bd8e5494b56463a0877672d0a6c1ef62c6fa0677db1b0c847773be939b1
+  languageName: node
+  linkType: hard
+
+"fetch-blob@npm:^3.1.2, fetch-blob@npm:^3.1.4":
+  version: 3.2.0
+  resolution: "fetch-blob@npm:3.2.0"
+  dependencies:
+    node-domexception: "npm:^1.0.0"
+    web-streams-polyfill: "npm:^3.0.3"
+  checksum: 10/5264ecceb5fdc19eb51d1d0359921f12730941e333019e673e71eb73921146dceabcb0b8f534582be4497312d656508a439ad0f5edeec2b29ab2e10c72a1f86b
   languageName: node
   linkType: hard
 
@@ -21550,16 +21564,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.15.4":
-  version: 1.15.11
-  resolution: "follow-redirects@npm:1.15.11"
-  peerDependenciesMeta:
-    debug:
-      optional: true
-  checksum: 10/07372fd74b98c78cf4d417d68d41fdaa0be4dcacafffb9e67b1e3cf090bc4771515e65020651528faab238f10f9b9c0d9707d6c1574a6c0387c5de1042cde9ba
-  languageName: node
-  linkType: hard
-
 "fontkit@npm:^2.0.2":
   version: 2.0.2
   resolution: "fontkit@npm:2.0.2"
@@ -21702,6 +21706,15 @@ __metadata:
     combined-stream: "npm:^1.0.6"
     mime-types: "npm:^2.1.12"
   checksum: 10/1b6f3ccbf4540e535887b42218a2431a3f6cfdea320119c2affa2a7a374ad8fdd1e60166fc865181f45d49b1684c3e90e7b2190d3fe016692957afb9cf0d0d02
+  languageName: node
+  linkType: hard
+
+"formdata-polyfill@npm:^4.0.10":
+  version: 4.0.10
+  resolution: "formdata-polyfill@npm:4.0.10"
+  dependencies:
+    fetch-blob: "npm:^3.1.2"
+  checksum: 10/9b5001d2edef3c9449ac3f48bd4f8cc92e7d0f2e7c1a5c8ba555ad4e77535cc5cf621fabe49e97f304067037282dd9093b9160a3cb533e46420b446c4e6bc06f
   languageName: node
   linkType: hard
 
@@ -22675,10 +22688,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hot-patcher@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "hot-patcher@npm:1.0.0"
-  checksum: 10/6031321323083a581d7795efac50338b097d8adbaa7a85b24e49e52211e39725279b38c4f8ed4331de121cb224809f2cc543239584d3f8d382e1e4e284bc69b4
+"hot-patcher@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "hot-patcher@npm:2.0.1"
+  checksum: 10/c207007dd55609527bcb26450606c714c313ac52af466746d25916f722da2c48fd1257871c07bd07af5ee586f2c1bf8ab59919db66dcea4a2c82b7c51c9a1317
   languageName: node
   linkType: hard
 
@@ -25920,10 +25933,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"layerr@npm:^0.1.2":
-  version: 0.1.2
-  resolution: "layerr@npm:0.1.2"
-  checksum: 10/d6aac6f08b3e0b2a494a3b902edb29920319148f3648541c74c1dc386f0cae810800a413c12dcdec35e251202ad171daa27340ef543c3eef980e69a61a63439f
+"layerr@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "layerr@npm:3.0.0"
+  checksum: 10/5b9518795ef5d447f2b4c66ebab223b0a4fb37505ba27013920f71691726211298e630750d5fa8b03ddb5ce191d24e26d49fa40e0042193ecd680f15d89311f9
   languageName: node
   linkType: hard
 
@@ -27933,6 +27946,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"node-domexception@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "node-domexception@npm:1.0.0"
+  checksum: 10/e332522f242348c511640c25a6fc7da4f30e09e580c70c6b13cb0be83c78c3e71c8d4665af2527e869fc96848924a4316ae7ec9014c091e2156f41739d4fa233
+  languageName: node
+  linkType: hard
+
 "node-exports-info@npm:^1.6.0":
   version: 1.6.0
   resolution: "node-exports-info@npm:1.6.0"
@@ -27970,6 +27990,17 @@ __metadata:
     encoding:
       optional: true
   checksum: 10/b24f8a3dc937f388192e59bcf9d0857d7b6940a2496f328381641cb616efccc9866e89ec43f2ec956bbd6c3d3ee05524ce77fe7b29ccd34692b3a16f237d6676
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:^3.3.0, node-fetch@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "node-fetch@npm:3.3.2"
+  dependencies:
+    data-uri-to-buffer: "npm:^4.0.0"
+    fetch-blob: "npm:^3.1.4"
+    formdata-polyfill: "npm:^4.0.10"
+  checksum: 10/24207ca8c81231c7c59151840e3fded461d67a31cf3e3b3968e12201a42f89ce4a0b5fb7079b1fa0a4655957b1ca9257553200f03a9f668b45ebad265ca5593d
   languageName: node
   linkType: hard
 
@@ -34069,13 +34100,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"strnum@npm:^1.0.5":
-  version: 1.1.2
-  resolution: "strnum@npm:1.1.2"
-  checksum: 10/ccd6297a1fdaf0fc8ea0ea904acdae76878d49a4b0d98a70155df4bc081fd88eac5ec99fb150f3d1d1af065c1898d38420705259ba6c39aa850c671bcd54e35d
-  languageName: node
-  linkType: hard
-
 "strnum@npm:^2.1.2":
   version: 2.2.0
   resolution: "strnum@npm:2.2.0"
@@ -36029,10 +36053,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"url-join@npm:^4.0.1":
-  version: 4.0.1
-  resolution: "url-join@npm:4.0.1"
-  checksum: 10/b53b256a9a36ed6b0f6768101e78ca97f32d7b935283fd29ce19d0bbfb6f88aa80aa6c03fd87f2f8978ab463a6539f597a63051e7086f3379685319a7495f709
+"url-join@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "url-join@npm:5.0.0"
+  checksum: 10/5921384a8ad4395b49ce4b50aa26efbc429cebe0bc8b3660ad693dd12fd859747b5369be0443e60e53a7850b2bc9d7d0687bcb94386662b40e743596bbf38101
   languageName: node
   linkType: hard
 
@@ -36503,24 +36527,32 @@ __metadata:
   languageName: node
   linkType: hard
 
-"webdav@npm:^4.11.5":
-  version: 4.11.5
-  resolution: "webdav@npm:4.11.5"
+"web-streams-polyfill@npm:^3.0.3":
+  version: 3.3.3
+  resolution: "web-streams-polyfill@npm:3.3.3"
+  checksum: 10/8e7e13501b3834094a50abe7c0b6456155a55d7571312b89570012ef47ec2a46d766934768c50aabad10a9c30dd764a407623e8bfcc74fcb58495c29130edea9
+  languageName: node
+  linkType: hard
+
+"webdav@npm:^5.9.0":
+  version: 5.9.0
+  resolution: "webdav@npm:5.9.0"
   dependencies:
-    axios: "npm:^0.30.0"
+    "@buttercup/fetch": "npm:^0.2.1"
     base-64: "npm:^1.0.0"
     byte-length: "npm:^1.0.2"
-    fast-xml-parser: "npm:^4.2.4"
-    he: "npm:^1.2.0"
-    hot-patcher: "npm:^1.0.0"
-    layerr: "npm:^0.1.2"
+    entities: "npm:^6.0.1"
+    fast-xml-parser: "npm:^5.3.4"
+    hot-patcher: "npm:^2.0.1"
+    layerr: "npm:^3.0.0"
     md5: "npm:^2.3.0"
-    minimatch: "npm:^5.1.0"
+    minimatch: "npm:^9.0.5"
     nested-property: "npm:^4.0.0"
+    node-fetch: "npm:^3.3.2"
     path-posix: "npm:^1.0.0"
-    url-join: "npm:^4.0.1"
+    url-join: "npm:^5.0.0"
     url-parse: "npm:^1.5.10"
-  checksum: 10/201e4ae3413ff787adaea823290d4489e76ea8d71d450a09dff1a8dd51ce99bbb1b534733444a59d14eb495e2b1bcf8ea732555c98da1268618ad5923b690e3b
+  checksum: 10/e80ad01a19bc68922dab4df0be7bb9bc64e5a0b5aad67dcd858d4313a7b1da0d2b16776d4f29686214c7ca50fa479d7b3fb5934abdf5fcf14488479a05c3ced5
   languageName: node
   linkType: hard
 

@@ -5,8 +5,6 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IMediaService, ResizeResult } from '@rocket.chat/core-services';
 import { streamToBuffer } from '@rocket.chat/tools';
 import ExifTransformer from 'exif-be-gone';
-import ft from 'file-type';
-import isSvg from 'is-svg';
 import sharp from 'sharp';
 
 export class MediaService extends ServiceClassInternal implements IMediaService {
@@ -40,7 +38,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum | undefined,
+		fit?: keyof sharp.FitEnum,
 	): Promise<ResizeResult> {
 		const stream = this.bufferToStream(input);
 		return this.resizeFromStream(stream, width, height, keepType, blur, enlarge, fit);
@@ -53,7 +51,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 		keepType: boolean,
 		blur: boolean,
 		enlarge: boolean,
-		fit?: keyof sharp.FitEnum | undefined,
+		fit?: keyof sharp.FitEnum,
 	): Promise<ResizeResult> {
 		const transformer = sharp().resize({ width, height, fit, withoutEnlargement: !enlarge });
 
@@ -80,14 +78,25 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 	}
 
 	async isImage(buff: Buffer): Promise<boolean> {
-		const data = await ft.fromBuffer(buff);
+		// ✅ Dynamically import the ESM module
+		const { fromBuffer } = await import('file-type');
+
+		// ✅ Safely handle the v17+ method rename (fromBuffer -> fileTypeFromBuffer)
+		const data = await fromBuffer(buff);
+
 		if (!data?.ext) {
-			return false || this.isSvgImage(buff);
+			return this.isSvgImage(buff);
 		}
-		return this.imageExts.has(data.ext) || this.isSvgImage(buff);
+
+		if (this.imageExts.has(data.ext)) {
+			return true;
+		}
+
+		return this.isSvgImage(buff);
 	}
 
-	isSvgImage(buff: Buffer): boolean {
+	async isSvgImage(buff: Buffer): Promise<boolean> {
+		const { default: isSvg } = await import('is-svg');
 		return isSvg(buff.toString('utf-8'));
 	}
 
