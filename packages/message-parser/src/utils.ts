@@ -292,13 +292,13 @@ export const timestampFromIsoTime = ({
 	milliseconds,
 	timezone,
 }: {
-	year: string[];
-	month: string[];
-	day: string[];
-	hours: string[];
-	minutes: string[];
-	seconds: string[];
-	milliseconds?: string[];
+	year: string;
+	month: string;
+	day: string;
+	hours: string;
+	minutes: string;
+	seconds: string;
+	milliseconds?: string;
 	timezone?: string;
 }) => {
 	const date =
