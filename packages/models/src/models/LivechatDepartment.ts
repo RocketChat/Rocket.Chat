@@ -384,7 +384,7 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 										],
 									},
 									then: '$_id',
-									else: '$$REMOVE',
+									else: null,
 								},
 							},
 						},
@@ -395,9 +395,19 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 										$or: [{ $eq: ['$enabled', false] }, { $eq: ['$archived', true] }],
 									},
 									then: '$_id',
-									else: '$$REMOVE',
+									else: null,
 								},
 							},
+						},
+					},
+				},
+				{
+					$project: {
+						validDepartments: {
+							$filter: { input: '$validDepartments', cond: { $ne: ['$$this', null] } },
+						},
+						invalidDepartments: {
+							$filter: { input: '$invalidDepartments', cond: { $ne: ['$$this', null] } },
 						},
 					},
 				},
