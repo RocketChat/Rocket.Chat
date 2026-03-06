@@ -1,5 +1,6 @@
 import type { EmojiEntry } from './generateEmojiData';
 import { getEmojiData } from './generateEmojiData';
+import { legacyEmojioneMap } from './legacyEmojioneMap';
 import { shortnameToUnicode } from './shortnameToUnicode';
 
 const emojiCategories = [
@@ -19,9 +20,17 @@ function renderEmoji(text: string): string {
 	return text.replace(/:([a-zA-Z0-9_+-]+):/g, (match, shortcode) => {
 		const key = `:${shortcode}:`;
 		const emoji = emojiList[key] as EmojiEntry | undefined;
-		if (!emoji?.unicode) return match;
+		if (emoji?.unicode) {
+			return `<span class="emoji" title="${match}">${emoji.unicode}</span>`;
+		}
 
-		return `<span class="emoji" title="${match}">${emoji.unicode}</span>`;
+		// Fallback to legacy emojione shortcodes for backward compatibility
+		const legacy = legacyEmojioneMap[shortcode];
+		if (legacy) {
+			return `<span class="emoji" title="${match}">${legacy}</span>`;
+		}
+
+		return match;
 	});
 }
 
