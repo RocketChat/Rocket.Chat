@@ -9020,12 +9020,12 @@ __metadata:
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/jest": "npm:~30.0.0"
-    "@types/ws": "npm:^8.5.13"
+    "@types/ws": "npm:^8.18.1"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
     jest-websocket-mock: "npm:~2.5.0"
     typescript: "npm:~5.9.3"
-    ws: "npm:~8.18.3"
+    ws: "npm:~8.19.0"
   peerDependencies:
     "@rocket.chat/emitter": "*"
   languageName: unknown
@@ -9054,7 +9054,7 @@ __metadata:
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/underscore": "npm:^1.13.0"
     "@types/uuid": "npm:^10.0.0"
-    "@types/ws": "npm:^8.5.13"
+    "@types/ws": "npm:^8.18.1"
     colorette: "npm:^1.4.0"
     ejson: "npm:^2.2.3"
     eslint: "npm:~9.39.3"
@@ -9074,7 +9074,7 @@ __metadata:
     typescript: "npm:~5.9.3"
     underscore: "npm:^1.13.7"
     uuid: "npm:^11.0.3"
-    ws: "npm:~8.18.3"
+    ws: "npm:~8.19.0"
   languageName: unknown
   linkType: soft
 
@@ -15182,6 +15182,15 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10/5236b6c54817bdf17674337db5776bb34a876b77a90d885d0f70084c9d453cc2f21703207cc1147d33a9e49a4306773830fbade4729b01ffe33ef0c82cd4c701
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.18.1":
+  version: 8.18.1
+  resolution: "@types/ws@npm:8.18.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10/1ce05e3174dcacf28dae0e9b854ef1c9a12da44c7ed73617ab6897c5cbe4fccbb155a20be5508ae9a7dde2f83bd80f5cf3baa386b934fc4b40889ec963e94f3a
   languageName: node
   linkType: hard
 
@@ -33687,7 +33696,7 @@ __metadata:
     "@types/express": "npm:^4.17.25"
     "@types/fibers": "npm:^3.1.4"
     "@types/node": "npm:~22.16.5"
-    "@types/ws": "npm:^8.5.13"
+    "@types/ws": "npm:^8.18.1"
     ajv: "npm:^8.17.1"
     bcrypt: "npm:^5.1.1"
     body-parser: "npm:^1.20.4"
@@ -33709,7 +33718,7 @@ __metadata:
     sodium-plus: "npm:^0.9.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.9.3"
-    ws: "npm:~8.18.3"
+    ws: "npm:~8.19.0"
   languageName: unknown
   linkType: soft
 
@@ -38492,9 +38501,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:~8.18.3":
-  version: 8.18.3
-  resolution: "ws@npm:8.18.3"
+"ws@npm:~8.19.0":
+  version: 8.19.0
+  resolution: "ws@npm:8.19.0"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -38503,7 +38512,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: 10/725964438d752f0ab0de582cd48d6eeada58d1511c3f613485b5598a83680bedac6187c765b0fe082e2d8cc4341fc57707c813ae780feee82d0c5efe6a4c61b6
+  checksum: 10/26e4901e93abaf73af9f26a93707c95b4845e91a7a347ec8c569e6e9be7f9df066f6c2b817b2d685544e208207898a750b78461e6e8d810c11a370771450c31b
   languageName: node
   linkType: hard
 
