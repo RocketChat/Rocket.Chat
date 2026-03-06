@@ -419,13 +419,17 @@ export class LivechatDepartmentRaw extends BaseRaw<ILivechatDepartment> implemen
 					localField: 'parentId',
 					foreignField: 'unitId',
 					as: 'monitors',
-					pipeline: [
-						{
-							$match: {
-								monitorId,
-							},
+				},
+			},
+			{
+				$addFields: {
+					monitors: {
+						$filter: {
+							input: '$monitors',
+							as: 'mon',
+							cond: { $eq: ['$$mon.monitorId', monitorId] },
 						},
-					],
+					},
 				},
 			},
 			{
