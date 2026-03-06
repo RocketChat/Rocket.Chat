@@ -57,7 +57,13 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 			</Box>
 			<Box>
 				{meetingUrl && (
-					<Button onClick={openCall} small>
+					<Button
+						small
+						onClick={(e) => {
+							e.stopPropagation();
+							openCall();
+						}}
+					>
 						{t('Join')}
 					</Button>
 				)}
