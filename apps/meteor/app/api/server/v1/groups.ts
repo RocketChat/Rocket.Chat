@@ -1,7 +1,14 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isGroupsOnlineProps,
+	isGroupsMessagesProps,
+	isGroupsFilesProps,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -31,6 +38,7 @@ import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -368,21 +376,63 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const groupDeleteEndpoint = API.v1.post(
 	'groups.delete',
-	{ authRequired: true },
 	{
-		async post() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-				checkedArchived: false,
-			});
-
-			await eraseRoom(findResult.rid, this.user);
-
-			return API.v1.success();
+		authRequired: true,
+		body: ajv.compile<{ roomId?: string | undefined } | { roomName?: string | undefined }>({
+			oneOf: [
+				{
+					type: 'object',
+					properties: {
+						roomId: {
+							type: 'string',
+							description: 'Enter the room ID. This parameter is required if no roomName is provided.',
+						},
+					},
+					required: ['roomId'],
+					additionalProperties: false,
+				},
+				{
+					type: 'object',
+					properties: {
+						roomName: {
+							type: 'string',
+							description: 'Enter the room name. This parameter is required if no roomId is provided.',
+						},
+					},
+					required: ['roomName'],
+					additionalProperties: false,
+				},
+			],
+		}),
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+			checkedArchived: false,
+		});
+
+		await eraseRoom(findResult.rid, this.user);
+
+		return API.v1.success();
 	},
 );
 
@@ -1300,3 +1350,9 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type GroupEndpoints = ExtractRoutesFromAPI<typeof groupDeleteEndpoint>;
+
+declare module '@rocket.chat/rest-typings' {
+	interface Endpoints extends GroupEndpoints {}
+}
