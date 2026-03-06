@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"date-fns": "~4.1.0",
-		"dompurify": "~3.3.1",
+		"dompurify": "~3.3.2",
 		"highlight.js": "11.8.0",
 		"react-error-boundary": "^3.1.4",
 		"react-stately": "~3.17.0"

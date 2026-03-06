@@ -1,4 +1,4 @@
-export * from './groups';
+export type * from './groups';
 
 export * from './GroupsArchiveProps';
 export * from './GroupsCloseProps';
