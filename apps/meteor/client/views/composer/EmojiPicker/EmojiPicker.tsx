@@ -3,7 +3,6 @@ import { useMediaQuery, useMergedRefs, useOutsideClick } from '@rocket.chat/fuse
 import {
 	EmojiPickerCategoryHeader,
 	EmojiPickerContainer,
-	EmojiPickerFooter,
 	EmojiPickerPreviewArea,
 	EmojiPickerHeader,
 	EmojiPickerListArea,
@@ -237,7 +236,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						<ToneSelector tone={actualTone} setTone={setActualTone} />
 					</ToneSelectorWrapper>
 				</EmojiPickerPreviewArea>
-				<EmojiPickerFooter>{t('Powered_by_JoyPixels')}</EmojiPickerFooter>
 			</EmojiPickerContainer>
 		</EmojiPickerDropdown>
 	);
