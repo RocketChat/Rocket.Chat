@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-video-conf",
-	"version": "27.0.1",
+	"version": "28.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -22,8 +22,8 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.71.0",
-		"@rocket.chat/fuselage-hooks": "^0.39.0",
+		"@rocket.chat/fuselage": "^0.73.0",
+		"@rocket.chat/fuselage-hooks": "^0.40.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "~0.46.0",
 		"@rocket.chat/jest-presets": "workspace:~",
