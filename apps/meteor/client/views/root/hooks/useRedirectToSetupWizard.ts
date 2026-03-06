@@ -10,8 +10,8 @@ export const useRedirectToSetupWizard = (): void => {
   useEffect(() => {
       return;
     }
-
-    if (setupWizardState === undefined) {
+    const routeName = router.getRouteName();
+    if (!routeName) return;
       return;
     }
 
