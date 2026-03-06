@@ -1,1 +1,0 @@
-import './native-emoji.css';
