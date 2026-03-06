@@ -124,7 +124,7 @@ const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): Filte
 
 const getGroupSessionsByHour = (
 	_id: { range: string; day: string; month: string; year: string } | string,
-): { listGroup: object; countGroup: object } => {
+): { listGroup: object; filterNulls: object; countGroup: object } => {
 	const isOpenSession = { $not: ['$session.closedAt'] };
 	const isAfterLoginAt = { $gte: ['$range', { $hour: '$session.loginAt' }] };
 	const isBeforeClosedAt = { $lte: ['$range', { $hour: '$session.closedAt' }] };
@@ -139,10 +139,16 @@ const getGroupSessionsByHour = (
 							$or: [{ $and: [isOpenSession, isAfterLoginAt] }, { $and: [isAfterLoginAt, isBeforeClosedAt] }],
 						},
 						'$session.userId',
-						'$$REMOVE',
+						null,
 					],
 				},
 			},
+		},
+	};
+
+	const filterNulls = {
+		$addFields: {
+			usersList: { $filter: { input: '$usersList', cond: { $ne: ['$$this', null] } } },
 		},
 	};
 
@@ -152,7 +158,7 @@ const getGroupSessionsByHour = (
 		},
 	};
 
-	return { listGroup, countGroup };
+	return { listGroup, filterNulls, countGroup };
 };
 
 const getSortByFullDate = (): { year: number; month: number; day: number } => ({
@@ -1119,7 +1125,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			.aggregate<{
 				hour: number;
 				users: number;
-			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
+			}>([match, rangeProject, unwind, groups.listGroup, groups.filterNulls, groups.countGroup, presentationProject, sort])
 			.toArray();
 	}
 
@@ -1221,7 +1227,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				month: number;
 				year: number;
 				users: number;
-			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
+			}>([match, rangeProject, unwind, groups.listGroup, groups.filterNulls, groups.countGroup, presentationProject, sort])
 			.toArray();
 	}
 
