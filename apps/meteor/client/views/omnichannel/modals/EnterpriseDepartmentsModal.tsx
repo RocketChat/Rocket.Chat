@@ -1,11 +1,11 @@
-import { ModalHeroImage, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import { GenericModal } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import GenericUpsellModal from '../../../components/GenericUpsellModal';
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useCheckoutUrl } from '../../admin/subscription/hooks/useCheckoutUrl';
 
@@ -31,21 +31,16 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }):
 
 	return (
 		<Box ref={ref}>
-			<GenericModal
-				variant='upsell'
-				tagline={t('Premium_capability')}
+			<GenericUpsellModal
 				title={t('Departments')}
+				img='/images/departments.svg'
+				subtitle={t('Premium_Departments_title')}
+				description={t('Premium_Departments_description_upgrade')}
 				cancelText={t('Cancel')}
-				confirmText={t('Upgrade')}
 				onCancel={onClose}
+				onClose={onClose}
 				onConfirm={goToManageSubscriptionPage}
-			>
-				<ModalHeroImage src='/images/departments.svg' />
-				<Box fontScale='h3' mbe={28}>
-					{t('Premium_Departments_title')}
-				</Box>
-				{t('Premium_Departments_description_upgrade')}
-			</GenericModal>
+			/>
 		</Box>
 	);
 };
