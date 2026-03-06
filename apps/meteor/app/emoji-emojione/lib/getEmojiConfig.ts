@@ -106,6 +106,12 @@ const isEmojiSupported = (str: string) => {
 	return str;
 };
 
+// https://github.com/joypixels/emoji-toolkit/issues/50#issuecomment-2113222096
+// The emoji-toolkit lib has a large overhead issue on the first call to emojione.regShortNames
+// that causes the first message sent once the app is loaded to take around 3 seconds to be sent
+// so doing a dummy call to trigger the load and cache while loading the app should avoid the issue for now
+isEmojiSupported('👍');
+
 export const getEmojiConfig = () => ({
 	emojione,
 	emojisByCategory,
