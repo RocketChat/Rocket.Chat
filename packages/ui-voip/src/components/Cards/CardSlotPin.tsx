@@ -18,7 +18,7 @@ const CardSlotPin = ({ focused, onClick, position }: CardSlotPinProps) => {
 				mi={-8} // TODO: this should not have negative margins, SlotContainer needs to be updated for special cases like this.
 				tiny
 				secondary={false}
-				icon={focused ? 'cross' : 'pin'} // TODO: use pin-filled when available in fuselage
+				icon={focused ? 'pin-filled' : 'pin'}
 				onClick={onClick}
 				title={focused ? t('Unpin') : t('Pin')}
 			/>

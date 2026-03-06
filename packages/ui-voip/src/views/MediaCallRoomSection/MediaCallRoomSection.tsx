@@ -144,7 +144,7 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 				/>
 				<ToggleButton
 					label={t('Screen_sharing')}
-					icons={['computer', 'computer']} // TODO: Use new Icons from fuselage when available
+					icons={['desktop-arrow-up', 'desktop-cross']}
 					titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 					pressed={localScreen?.active ?? false}
 					onToggle={onToggleScreenSharing}

@@ -11,8 +11,7 @@ const CardSlotStopSharing = ({ onClick }: CardSlotStopSharingProps) => {
 	const { t } = useTranslation();
 	return (
 		<CardSlotMiddle>
-			{/* // TODO: use fuselage `desktop-cross` when available */}
-			<Button danger small icon='desktop' onClick={onClick}>
+			<Button danger small icon='desktop-cross' onClick={onClick}>
 				{t('Stop_sharing')}
 			</Button>
 		</CardSlotMiddle>
