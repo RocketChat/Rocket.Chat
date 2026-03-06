@@ -280,7 +280,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findPaginated<T>(query, options);
 	}
 
-	findAgentsWithDepartments<T extends Document = ILivechatAgent>(
+	async findAgentsWithDepartments<T extends Document = ILivechatAgent>(
 		role: IRole['_id'][] | IRole['_id'],
 		query: Filter<IUser>,
 		options?: FindOptions<IUser>,
@@ -319,15 +319,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 					departments: { $push: '$departments.departmentId' },
 				},
 			},
-			{
-				$facet: {
-					sortedResults: [{ $sort: options?.sort }, { $skip: options?.skip }, options?.limit && { $limit: options.limit }],
-					totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-				},
-			},
 		];
 
-		return this.col.aggregate<{ sortedResults: (T & { departments: string[] })[]; totalCount: { total: number }[] }>(aggregate).toArray();
+		const paginationStages = [{ $sort: options?.sort }, { $skip: options?.skip }, ...(options?.limit ? [{ $limit: options.limit }] : [])];
+
+		const [sortedResults, countResult] = await Promise.all([
+			this.col.aggregate<T & { departments: string[] }>([...aggregate, ...paginationStages]).toArray(),
+			this.col.aggregate<{ total: number }>([...aggregate, { $count: 'total' }]).toArray(),
+		]);
+
+		const totalCount = countResult.length ? [{ total: countResult[0].total }] : [];
+		return [{ sortedResults, totalCount }];
 	}
 
 	findOneByUsernameAndRoomIgnoringCase(username: string | RegExp, rid: string, options?: FindOptions<IUser>) {
