@@ -42,5 +42,5 @@ export type PendingPushNotification = {
 	priority?: number;
 
 	contentAvailable?: 1 | 0;
-	voip?: boolean;
+	useVoipToken?: boolean;
 };

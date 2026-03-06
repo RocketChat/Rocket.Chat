@@ -6,24 +6,18 @@ import type {
 	IInternalMediaCallHistoryItem,
 	CallHistoryItemState,
 	IExternalMediaCallHistoryItem,
-	MediaCallContact,
 } from '@rocket.chat/core-typings';
-import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
 import { getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
+import { logger } from './logger';
+import { sendVoipPushNotification } from './push/sendVoipPushNotification';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { metrics } from '../../../app/metrics/server/lib/metrics';
-import { Push } from '../../../app/push/server/push';
-import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
 import { settings } from '../../../app/settings/server';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { createDirectMessage } from '../../methods/createDirectMessage';
-
-const logger = new Logger('media-call service');
 
 export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
 	protected name = 'media-call';
@@ -33,7 +27,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
 		callServer.emitter.on('callUpdated', (params) => api.broadcast('media-call.updated', params));
 		callServer.emitter.on('historyUpdate', ({ callId }) => setImmediate(() => this.saveCallToHistory(callId)));
-		callServer.emitter.on('pushNotificationRequest', ({ callId }) => this.sendPushNotification(callId));
+		callServer.emitter.on('pushNotificationRequest', ({ callId, event }) => sendVoipPushNotification(callId, event));
 		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
@@ -75,75 +69,6 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		} catch (err) {
 			logger.error({ msg: 'Media Call Server failed to check if there are expired calls', err });
 		}
-	}
-
-	private async getActorUser<T extends Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(
-		actor: MediaCallContact,
-	): Promise<T | null> {
-		const options = { projection: { name: 1, username: 1 } };
-
-		switch (actor.type) {
-			case 'user':
-				return Users.findOneById<T>(actor.id, options);
-			case 'sip':
-				return Users.findOneByFreeSwitchExtension<T>(actor.id, options);
-		}
-	}
-
-	private async getActorUserData(actor: MediaCallContact): Promise<{ name: string; avatarUrl?: string }> {
-		const user = await this.getActorUser(actor);
-
-		if (user) {
-			return {
-				name: user.name || user.username || user.freeSwitchExtension || '',
-				...(user.username && { avatarUrl: getUserAvatarURL(user.username) }),
-			};
-		}
-
-		if (actor.type === 'sip') {
-			return {
-				name: actor.displayName || actor.sipExtension || actor.id,
-			};
-		}
-
-		return {
-			name: actor.displayName || actor.username || '',
-			...(actor.username && { avatarUrl: getUserAvatarURL(actor.username) }),
-		};
-	}
-
-	private async sendPushNotification(callId: IMediaCall['_id']): Promise<void> {
-		const call = await MediaCalls.findOneById(callId);
-		if (!call) {
-			logger.error({ msg: 'Failed to send push notification: Media Call not found', callId });
-			return;
-		}
-
-		if (call.callee.type !== 'user') {
-			logger.error({ msg: 'Failed to send push notification: Invalid Callee Type', callId });
-			return;
-		}
-
-		const { id: userId, username } = call.callee;
-		const { name: caller, avatarUrl: avatar } = await this.getActorUserData(call.caller);
-
-		metrics.notificationsSent.inc({ notification_type: 'mobile' });
-		await Push.send({
-			voip: true,
-			priority: 10,
-			payload: {
-				host: Meteor.absoluteUrl(),
-				hostName: settings.get<string>('Site_Name'),
-				notificationType: 'voip',
-				...(avatar && { avatar }),
-				state: call.state,
-				callId: call._id,
-				caller,
-				username,
-			},
-			userId,
-			notId: PushNotification.getNotificationId(call._id),
-		});
 	}
 
 	private async saveCallToHistory(callId: IMediaCall['_id']): Promise<void> {

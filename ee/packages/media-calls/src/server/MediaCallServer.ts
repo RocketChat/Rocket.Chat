@@ -6,7 +6,12 @@ import type { CallRejectedReason, ClientMediaSignal, ClientMediaSignalBody, Serv
 import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
-import type { IMediaCallServer, IMediaCallServerSettings, MediaCallServerEvents } from '../definition/IMediaCallServer';
+import type {
+	IMediaCallServer,
+	IMediaCallServerSettings,
+	MediaCallServerEvents,
+	VoipPushNotificationEventType,
+} from '../definition/IMediaCallServer';
 import { CallRejectedError, type GetActorContactOptions, type InternalCallParams } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
 import { GlobalSignalProcessor } from '../internal/SignalProcessor';
@@ -70,7 +75,7 @@ export class MediaCallServer implements IMediaCallServer {
 		this.emitter.emit('historyUpdate', params);
 	}
 
-	public sendPushNotification(params: { callId: string }): void {
+	public sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {
 		logger.debug({ msg: 'MediaCallServer.sendPushNotification', params });
 
 		this.emitter.emit('pushNotificationRequest', params);

@@ -56,6 +56,21 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		);
 	}
 
+	findTokensByUserIdExceptId<T extends IPushToken>(
+		userId: IUser['_id'],
+		idToIgnore: IPushToken['_id'],
+		options?: FindOptions<IPushToken>,
+	): FindCursor<T> {
+		return this.find<T>(
+			{
+				_id: { $ne: idToIgnore },
+				userId,
+				$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
+			},
+			options,
+		);
+	}
+
 	async insertToken(data: AtLeast<IPushToken, 'token' | 'authToken' | 'appName' | 'userId'>): Promise<InsertOneResult<IPushToken>> {
 		return this.insertOne({
 			enabled: true,

@@ -18,6 +18,7 @@ export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
 const PUSH_TITLE_LIMIT = 65;
 const PUSH_MESSAGE_BODY_LIMIT = 240;
+const PUSH_GATEWAY_MAX_ATTEMPTS = 5;
 
 type FCMCredentials = {
 	type: string;
@@ -185,8 +186,8 @@ class PushClass {
 		logger.debug({ msg: 'send to token', token: app.token });
 
 		if ('apn' in app.token && app.token.apn) {
-			const userToken = notification.voip ? app.voipToken : app.token.apn;
-			const topic = notification.voip ? `${app.appName}.voip` : app.appName;
+			const userToken = notification.useVoipToken ? app.voipToken : app.token.apn;
+			const topic = notification.useVoipToken ? `${app.appName}.voip` : app.appName;
 
 			countApn.push(app._id);
 			// Send to APN
@@ -254,7 +255,7 @@ class PushClass {
 		service: 'apn' | 'gcm',
 		token: string,
 		notification: Optional<GatewayNotification, 'uniqueId'>,
-		tries = 0,
+		retryOptions: { tries: number; maxTries: number } = { tries: 0, maxTries: PUSH_GATEWAY_MAX_ATTEMPTS },
 	): Promise<void> {
 		notification.uniqueId = this.options.uniqueId;
 
@@ -292,15 +293,17 @@ class PushClass {
 			return;
 		}
 
+		const { tries, maxTries } = retryOptions;
+
 		logger.error({ msg: 'Error sending push to gateway', tries, err: response });
 
-		if (tries <= 4) {
+		if (tries < maxTries) {
 			// [1, 2, 4, 8, 16] minutes (total 31)
 			const ms = 60000 * Math.pow(2, tries);
 
 			logger.log({ msg: 'Retrying push to gateway', tries: tries + 1, in: ms });
 
-			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, { tries: tries + 1, maxTries }), ms);
 		}
 	}
 
@@ -325,40 +328,47 @@ class PushClass {
 		}
 
 		const gatewayNotification = this.getGatewayNotificationData(notification);
+		const retryOptions = {
+			tries: 0,
+			maxTries: notification.useVoipToken ? 1 : PUSH_GATEWAY_MAX_ATTEMPTS,
+		};
 
 		for (const gateway of this.options.gateways) {
 			logger.debug({ msg: 'send to token', token: app.token });
 
 			if ('apn' in app.token && app.token.apn) {
-				const token = notification.voip ? app.voipToken : app.token.apn;
-				const topic = notification.voip ? `${app.appName}.voip` : app.appName;
+				const token = notification.useVoipToken ? app.voipToken : app.token.apn;
+				const topic = notification.useVoipToken ? `${app.appName}.voip` : app.appName;
 
 				if (token) {
 					countApn.push(app._id);
-					return this.sendGatewayPush(gateway, 'apn', token, { topic, ...gatewayNotification });
+					return this.sendGatewayPush(gateway, 'apn', token, { topic, ...gatewayNotification }, retryOptions);
 				}
 			}
 
 			if ('gcm' in app.token && app.token.gcm) {
 				countGcm.push(app._id);
-				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, gatewayNotification);
+				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, gatewayNotification, retryOptions);
 			}
 		}
 	}
 
-	private async sendNotification(notification: PendingPushNotification): Promise<{ apn: string[]; gcm: string[] }> {
+	private async sendNotification(
+		notification: PendingPushNotification,
+		options: { skipTokenId?: IPushToken['_id'] } = {},
+	): Promise<{ apn: string[]; gcm: string[] }> {
 		logger.debug({ msg: 'Sending notification', notification });
 
 		const countApn: string[] = [];
 		const countGcm: string[] = [];
 
-		if (notification.from !== String(notification.from)) {
+		if (notification.from && notification.from !== String(notification.from)) {
 			throw new Error('Push.send: option "from" not a string');
 		}
-		if (notification.title !== String(notification.title)) {
+		if (notification.title && notification.title !== String(notification.title)) {
 			throw new Error('Push.send: option "title" not a string');
 		}
-		if (notification.text !== String(notification.text)) {
+		if (notification.text && notification.text !== String(notification.text)) {
 			throw new Error('Push.send: option "text" not a string');
 		}
 
@@ -368,7 +378,9 @@ class PushClass {
 			userId: notification.userId,
 		});
 
-		const appTokens = PushToken.findAllTokensByUserId(notification.userId);
+		const appTokens = options.skipTokenId
+			? PushToken.findTokensByUserIdExceptId(notification.userId, options.skipTokenId)
+			: PushToken.findAllTokensByUserId(notification.userId);
 
 		for await (const app of appTokens) {
 			logger.debug({ msg: 'send to token', token: app.token });
@@ -438,7 +450,7 @@ class PushClass {
 			createdAt: Date,
 			createdBy: Match.OneOf(String, null),
 			priority: Match.Optional(Match.Integer),
-			voip: Match.Optional(Boolean),
+			useVoipToken: Match.Optional(Boolean),
 		});
 
 		if (!notification.userId) {
@@ -455,13 +467,13 @@ class PushClass {
 	}
 
 	public async send(options: IPushNotificationConfig) {
-		const notification = {
+		const notification: PendingPushNotification = {
 			createdAt: new Date(),
 			// createdBy is no longer used, but the gateway still expects it
 			createdBy: '<SERVER>',
 			sent: false,
 			sending: 0,
-			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority', 'voip'),
+			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority', 'useVoipToken'),
 			...(options.title && { title: truncateString(options.title, PUSH_TITLE_LIMIT) }),
 			...(options.text && { text: truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT) }),
 
@@ -485,7 +497,7 @@ class PushClass {
 		this._validateDocument(notification);
 
 		try {
-			await this.sendNotification(notification);
+			await this.sendNotification(notification, pick(options, 'skipTokenId'));
 		} catch (error: any) {
 			logger.debug({
 				msg: 'Could not send notification to user',

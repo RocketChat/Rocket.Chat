@@ -10,6 +10,11 @@ export interface IPushTokenModel extends IBaseModel<IPushToken> {
 	findOneByTokenAndAppName(token: IPushToken['token'], appName: IPushToken['appName']): Promise<IPushToken | null>;
 	findFirstByUserId<T extends IPushToken>(userId: IUser['_id'], options?: FindOptions<IPushToken>): Promise<T | null>;
 	findAllTokensByUserId<T extends IPushToken>(userId: IUser['_id'], options?: FindOptions<IPushToken>): FindCursor<T>;
+	findTokensByUserIdExceptId<T extends IPushToken>(
+		userId: IUser['_id'],
+		idToIgnore: IPushToken['_id'],
+		options?: FindOptions<IPushToken>,
+	): FindCursor<T>;
 
 	insertToken(data: AtLeast<IPushToken, 'token' | 'authToken' | 'appName' | 'userId'>): Promise<InsertOneResult<IPushToken>>;
 	refreshTokenById(

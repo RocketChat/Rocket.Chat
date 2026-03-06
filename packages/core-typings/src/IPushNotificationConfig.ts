@@ -1,3 +1,5 @@
+import type { IPushToken } from './IPushToken';
+
 export interface IPushNotificationConfig {
 	from?: string;
 	badge?: number;
@@ -15,5 +17,6 @@ export interface IPushNotificationConfig {
 	apn?: {
 		category: string;
 	};
-	voip?: boolean;
+	useVoipToken?: boolean;
+	skipTokenId?: IPushToken['_id'];
 }

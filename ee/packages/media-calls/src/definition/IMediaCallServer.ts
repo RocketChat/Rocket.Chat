@@ -4,11 +4,14 @@ import type { ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from
 
 import type { InternalCallParams } from './common';
 
+export type VoipPushNotificationType = 'incoming_call' | 'remoteEnded' | 'answeredElsewhere' | 'declinedElsewhere' | 'unanswered';
+export type VoipPushNotificationEventType = 'new' | 'answer' | 'end';
+
 export type MediaCallServerEvents = {
 	callUpdated: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> };
 	signalRequest: { toUid: IUser['_id']; signal: ServerMediaSignal };
 	historyUpdate: { callId: string };
-	pushNotificationRequest: { callId: string };
+	pushNotificationRequest: { callId: string; event: VoipPushNotificationEventType };
 };
 
 export interface IMediaCallServerSettings {
@@ -40,7 +43,7 @@ export interface IMediaCallServer {
 	sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void;
 	reportCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 	updateCallHistory(params: { callId: string }): void;
-	sendPushNotification(params: { callId: string }): void;
+	sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void;
 
 	// functions that are run on events
 	receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal): void;
