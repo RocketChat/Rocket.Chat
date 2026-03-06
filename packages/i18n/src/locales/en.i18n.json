@@ -2866,6 +2866,7 @@
   "LDAP_Enable": "Enable",
   "LDAP_Enable_Description": "Attempt to utilize LDAP for authentication.",
   "LDAP_Enable_LDAP_Groups_To_RC_Teams": "Enable team mapping from LDAP to Rocket.Chat",
+  "LDAP_and_Crowd_cannot_be_enabled_simultaneously": "LDAP and Crowd cannot be enabled at the same time. Please disable one of them.",
   "LDAP_Encryption": "Encryption",
   "LDAP_Encryption_Description": "The encryption method used to secure communications to the LDAP server. Examples include `plain` (no encryption), `SSL/LDAPS` (encrypted from the start), and `StartTLS` (upgrade to encrypted communication once connected).",
   "LDAP_Enterprise": "Premium",
