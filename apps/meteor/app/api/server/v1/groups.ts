@@ -1,7 +1,15 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps, ajv } from '@rocket.chat/rest-typings';
+import {
+	isGroupsOnlineProps,
+	isGroupsMessagesProps,
+	isGroupsFilesProps,
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
+import { withUserIdProps } from '@rocket.chat/rest-typings/dist/v1/groups/BaseProps';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -31,16 +39,12 @@ import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
-import { ExtractRoutesFromAPI } from '../ApiClass';
-import { validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
-import { validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
-import { withUserIdProps } from '@rocket.chat/rest-typings/dist/v1/groups/BaseProps';
-
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -896,43 +900,36 @@ API.v1.addRoute(
 	},
 );
 
-
-
-
-
-
-
 const groupsEndpoints = API.v1.post(
-	"groups.removeModerator",
+	'groups.removeModerator',
 	{
-		authRequired:true,
+		authRequired: true,
 		body: withUserIdProps,
-		response:{
-			400:validateBadRequestErrorResponse,
-			401:validateUnauthorizedErrorResponse,
-			200:ajv.compile<void>({
-				type:'object',
-					properties:{
-						success:{type:'boolean', enum:[true]},
-					},
-					required:['success'],
-					additionalProperties:false,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
 			}),
 		},
 	},
 	async function action() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.bodyParams,
-				userId: this.userId,
-			});
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.bodyParams,
+			userId: this.userId,
+		});
 
-			const user = await getUserFromParams(this.bodyParams);
+		const user = await getUserFromParams(this.bodyParams);
 
-			await removeRoomModerator(this.userId, findResult.rid, user._id);
+		await removeRoomModerator(this.userId, findResult.rid, user._id);
 
-			return API.v1.success();
+		return API.v1.success();
 	},
-
 );
 
 API.v1.addRoute(
@@ -1326,10 +1323,9 @@ API.v1.addRoute(
 	},
 );
 
-
 export type GroupEndpoints = ExtractRoutesFromAPI<typeof groupsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-    // eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
 	interface Endpoints extends GroupEndpoints {}
 }
