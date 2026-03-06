@@ -8,7 +8,6 @@ import {
 	type AtLeast,
 } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import { shortnameToUnicode } from '../../../emoji-native/lib/shortnameToUnicode';
 import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
@@ -16,6 +15,7 @@ import { getMentions } from './notifyUsersOnMessage';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { shortnameToUnicode } from '../../../emoji-native/lib/shortnameToUnicode';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
 import { settings } from '../../../settings/server';
 import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../functions/notifications';
