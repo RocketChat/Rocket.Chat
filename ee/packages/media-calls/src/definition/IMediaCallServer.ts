@@ -2,7 +2,7 @@ import type { IUser } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
 import type { ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
-import type { InternalCallParams } from './common';
+import type { InternalCallParams, SignalProcessingOptions } from './common';
 
 export type VoipPushNotificationType = 'incoming_call' | 'remoteEnded' | 'answeredElsewhere' | 'declinedElsewhere' | 'unanswered';
 export type VoipPushNotificationEventType = 'new' | 'answer' | 'end';
@@ -46,7 +46,7 @@ export interface IMediaCallServer {
 	sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void;
 
 	// functions that are run on events
-	receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal): void;
+	receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal, options?: SignalProcessingOptions): Promise<void>;
 	receiveCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 
 	// extra functions available to the service
