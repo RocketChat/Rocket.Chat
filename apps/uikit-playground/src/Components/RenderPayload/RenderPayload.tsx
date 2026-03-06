@@ -5,7 +5,7 @@ import {
 	UiKitContextualBar as uiKitContextualBar,
 } from '@rocket.chat/fuselage-ui-kit';
 
-import { type ILayoutBlock } from '../../Context/initialState';
+import type { ILayoutBlock } from '../../Context/initialState';
 import { SurfaceOptions } from '../Preview/Display/Surface/constant';
 
 const RenderPayload = ({
