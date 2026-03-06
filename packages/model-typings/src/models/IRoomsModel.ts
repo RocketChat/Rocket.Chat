@@ -316,7 +316,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		filter?: string,
 		type?: 'channels' | 'discussions',
 		options?: FindOptions<IRoom>,
-	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>;
+	): Promise<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }[]>;
 	resetRoomKeyAndSetE2EEQueueByRoomId(
 		roomId: string,
 		e2eKeyId: string,
