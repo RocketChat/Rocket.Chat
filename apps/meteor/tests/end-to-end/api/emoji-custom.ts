@@ -4,6 +4,7 @@ import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
+import { updateSetting } from '../../data/permissions.helper';
 
 describe('[EmojiCustom]', () => {
 	const customEmojiName = `my-custom-emoji-${Date.now()}`;
@@ -479,6 +480,133 @@ describe('[EmojiCustom]', () => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+	});
+
+	describe('Emoji storage settings reactivity', () => {
+		const normalizeSvg = (svg: string) => svg.replace(/\r\n/g, '\n').trim();
+
+		const now = Date.now();
+		const fsEmojiName = `emoji-fs-${now}`;
+		const gridFsEmojiName = `emoji-gridfs-${now}`;
+		const svgFallback = normalizeSvg(`<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" pointer-events="none" width="50" height="50" style="width: 50px; height: 50px; background-color: #000;">
+	<text text-anchor="middle" y="50%" x="50%" dy="0.36em" pointer-events="auto" fill="#ffffff" font-family="Helvetica, Arial, Lucida Grande, sans-serif" style="font-weight: 400; font-size: 28px;">
+		?
+	</text>
+</svg>`);
+
+		before(async () => {
+			await updateSetting('EmojiUpload_FileSystemPath', '', false);
+			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
+			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: fsEmojiName }).expect(200);
+
+			await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
+			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: gridFsEmojiName }).expect(200);
+		});
+
+		after(async () => {
+			const list = await request.get(api('emoji-custom.all')).set(credentials);
+			const fsEmoji = list.body.emojis.find((e: IEmojiCustom) => e.name === fsEmojiName);
+			const gridEmoji = list.body.emojis.find((e: IEmojiCustom) => e.name === gridFsEmojiName);
+
+			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem', false);
+			await updateSetting('EmojiUpload_FileSystemPath', '');
+			if (fsEmoji) {
+				await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: fsEmoji._id });
+			}
+
+			await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
+			if (gridEmoji) {
+				await request.post(api('emoji-custom.delete')).set(credentials).send({ emojiId: gridEmoji._id });
+			}
+		});
+
+		describe('EmojiUpload_Storage_Type', () => {
+			describe('when storage is GridFs', () => {
+				before(async () => {
+					await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
+				});
+
+				it('should resolve GridFS files only', async () => {
+					await request
+						.get(`/emoji-custom/${fsEmojiName}.png`)
+						.set(credentials)
+						.expect(200)
+						.expect((res) => {
+							const received = normalizeSvg(res.body.toString());
+							expect(received).to.equal(svgFallback);
+						});
+					await request
+						.get(`/emoji-custom/${gridFsEmojiName}.png`)
+						.set(credentials)
+						.expect(200)
+						.expect((res) => expect(res.headers).to.have.property('content-type', 'image/png'));
+				});
+			});
+
+			describe('when storage is FileSystem', () => {
+				before(async () => {
+					await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
+				});
+
+				it('should resolve FileSystem files only', async () => {
+					await request
+						.get(`/emoji-custom/${fsEmojiName}.png`)
+						.set(credentials)
+						.expect(200)
+						.expect((res) => expect(res.headers).to.have.property('content-type', 'image/png'));
+					await request
+						.get(`/emoji-custom/${gridFsEmojiName}.png`)
+						.set(credentials)
+						.expect(200)
+						.expect((res) => {
+							const received = normalizeSvg(res.body.toString());
+							expect(received).to.equal(svgFallback);
+						});
+				});
+			});
+		});
+
+		describe('EmojiUpload_FileSystemPath', () => {
+			before(async () => {
+				await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
+			});
+
+			describe('when file system path is the default one', () => {
+				before(async () => {
+					await updateSetting('EmojiUpload_FileSystemPath', '');
+				});
+
+				it('should resolve files', async () => {
+					await request
+						.get(`/emoji-custom/${fsEmojiName}.png`)
+						.set(credentials)
+						.expect(200)
+						.expect((res) => expect(res.headers).to.have.property('content-type', 'image/png'));
+				});
+			});
+
+			describe('when file system path is NOT the default one', () => {
+				before(async () => {
+					await updateSetting('EmojiUpload_FileSystemPath', '~/emoji-test');
+				});
+
+				after(async () => {
+					await updateSetting('CustomSounds_FileSystemPath', '');
+				});
+
+				it('should NOT resolve files', async () => {
+					await request
+						.get(`/emoji-custom/${fsEmojiName}.png`)
+						.set(credentials)
+						.expect(200)
+						.expect((res) => {
+							const received = normalizeSvg(res.body.toString());
+							expect(received).to.equal(svgFallback);
+						});
+				});
+			});
 		});
 	});
 });

@@ -1,5 +1,5 @@
 import apn from '@parse/node-apn';
-import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
+import type { IPushToken, RequiredField } from '@rocket.chat/core-typings';
 import EJSON from 'ejson';
 
 import type { PushOptions, PendingPushNotification } from './definition';
@@ -24,7 +24,7 @@ export const sendAPN = ({
 }: {
 	userToken: string;
 	notification: PendingPushNotification & { topic: string };
-	_removeToken: (token: IAppsTokens['token']) => void;
+	_removeToken: (token: IPushToken['token']) => void;
 }) => {
 	if (!apnConnection) {
 		throw new Error('Apn Connection not initialized.');
@@ -137,7 +137,10 @@ export const initAPN = ({ options, absoluteUrl }: { options: RequiredField<PushO
 
 	// Rig apn connection
 	try {
-		apnConnection = new apn.Provider(options.apn);
+		apnConnection = new apn.Provider({
+			...options.apn,
+			production: options.production,
+		});
 	} catch (err) {
 		logger.error({ msg: 'Error trying to initialize APN', err });
 	}

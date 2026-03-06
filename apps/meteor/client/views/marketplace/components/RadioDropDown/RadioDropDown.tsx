@@ -30,7 +30,7 @@ const RadioDropDown = ({ group, onSelected, ...props }: RadioDropDownProps & Com
 
 	return (
 		<>
-			<RadioDropDownAnchor ref={reference} group={group} onClick={toggleCollapsed as any} {...props} />
+			<RadioDropDownAnchor ref={reference} group={group} onClick={() => toggleCollapsed()} {...props} />
 			{collapsed && (
 				<DropDownListWrapper ref={reference} onClose={onClose}>
 					<RadioButtonList group={group} onSelected={onSelected} />

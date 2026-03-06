@@ -91,7 +91,7 @@ const updateIframeGuestData = (data: Partial<StoreState['guest']>) => {
 	}
 
 	const guestData = { token, ...data };
-	createOrUpdateGuest(guestData);
+	void createOrUpdateGuest(guestData);
 };
 
 export type HooksWidgetAPI = typeof api;
@@ -135,7 +135,7 @@ const api = {
 			location: { href },
 		} = info;
 
-		Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
+		void Livechat.sendVisitorNavigation({ token, rid, pageInfo: { change, title, location: { href } } });
 	},
 
 	setCustomField: (key: string, value = '', overwrite = true) => {
@@ -286,8 +286,8 @@ const api = {
 
 	setLanguage: async (language: StoreState['iframe']['language']) => {
 		const { iframe } = store.state;
-		await store.setState({ iframe: { ...iframe, language } });
-		i18next.changeLanguage(language);
+		store.setState({ iframe: { ...iframe, language } });
+		void i18next.changeLanguage(language);
 	},
 
 	showWidget: () => {
@@ -348,7 +348,7 @@ function onNewMessageHandler(event: MessageEvent<LivechatMessageEventData<HooksW
 
 	// There is an existing issue with overload resolution with type union arguments please see https://github.com/microsoft/TypeScript/issues/14107
 	// @ts-expect-error: A spread argument must either have a tuple type or be passed to a rest parameter
-	api[fn](...args);
+	void api[fn](...args);
 }
 
 class Hooks {

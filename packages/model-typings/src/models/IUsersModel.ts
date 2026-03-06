@@ -21,6 +21,7 @@ import type {
 	WithId,
 	UpdateOptions,
 	UpdateFilter,
+	BulkWriteResult,
 } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -104,8 +105,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	isUserInRole(userId: IUser['_id'], roleId: IRole['_id']): Promise<Pick<IUser, 'roles' | '_id'> | null>;
 
-	getDistinctFederationDomains(): Promise<string[]>;
-
 	getNextLeastBusyAgent(
 		department?: string,
 		ignoreAgentId?: string,
@@ -137,6 +136,9 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		lastRoutingTime?: Date;
 		queueInfo: { chats: number; chatsForDepartment?: number };
 	}>;
+
+	acquireAgentLock(agentId: IUser['_id'], lockTime: Date, lockTimeoutMs?: number): Promise<boolean>;
+	releaseAgentLock(agentId: IUser['_id'], lockTime: Date): Promise<boolean>;
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]>;
 
@@ -396,6 +398,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	bannerExistsById(userId: string, bannerId: string): Promise<boolean>;
 	setBannerReadById(userId: string, bannerId: string): Promise<UpdateResult>;
 	removeBannerById(userId: string, bannerId: string): Promise<UpdateResult>;
+	setBannersInBulk(updates: { userId: IUser['_id']; banners: NonNullable<IUser['banners']> }[]): Promise<BulkWriteResult>;
 	removeSamlServiceSession(userId: string): Promise<UpdateResult>;
 	updateDefaultStatus(userId: string, status: string): Promise<UpdateResult>;
 	setSamlInResponseTo(userId: string, inResponseTo: string): Promise<UpdateResult>;

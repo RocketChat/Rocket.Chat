@@ -1,5 +1,7 @@
+import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import Gravatar from 'gravatar';
+import { Accounts } from 'meteor/accounts-base';
 
 import { getNewUserRoles } from '../../../../../server/services/user/lib/getNewUserRoles';
 import { settings } from '../../../../settings/server';
@@ -11,11 +13,11 @@ import { handleNickname } from './handleNickname';
 import type { SaveUserData } from './saveUser';
 import { sendPasswordEmail, sendWelcomeEmail } from './sendUserEmail';
 
-export const saveNewUser = async function (userData: SaveUserData, sendPassword: boolean) {
+export const saveNewUser = async function (userData: SaveUserData, sendPassword: boolean, performedBy: IUser) {
 	await validateEmailDomain(userData.email);
 
 	const roles = (!!userData.roles && userData.roles.length > 0 && userData.roles) || getNewUserRoles();
-	const isGuest = roles && roles.length === 1 && roles.includes('guest');
+	const isGuest = roles?.length === 1 && roles.includes('guest');
 
 	// insert user
 	const createUser: Record<string, any> = {
@@ -25,6 +27,7 @@ export const saveNewUser = async function (userData: SaveUserData, sendPassword:
 		isGuest,
 		globalRoles: roles,
 		skipNewUserRolesSetting: true,
+		performedBy,
 	};
 	if (userData.email) {
 		createUser.email = userData.email;

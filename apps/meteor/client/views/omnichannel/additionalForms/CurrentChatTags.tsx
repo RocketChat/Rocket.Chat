@@ -5,8 +5,8 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import AutoCompleteTagsMultiple from '../tags/AutoCompleteTagsMultiple';
 
 type CurrentChatTagsProps = Pick<ComponentProps<typeof AutoCompleteTagsMultiple>, 'id' | 'aria-labelledby'> & {
-	value: PaginatedMultiSelectOption[];
-	handler: (value: PaginatedMultiSelectOption[]) => void;
+	value: NonNullable<ComponentProps<typeof AutoCompleteTagsMultiple>['value']>;
+	handler: NonNullable<ComponentProps<typeof AutoCompleteTagsMultiple>['onChange']>;
 	department?: string;
 	viewAll?: boolean;
 };
