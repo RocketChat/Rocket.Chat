@@ -39,6 +39,13 @@ export class MeteorService extends ServiceClassInternal implements IMeteor {
 
 		new ListenersModule(this, notifications);
 
+		this.onEvent('user.forceLogout', (_uid: string, sessionId?: string) => {
+			if (sessionId) {
+				const sessions = Meteor.server.sessions.get(sessionId);
+				sessions?.connectionHandle.close();
+			}
+		});
+
 		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
 			if (clientAction !== 'removed') {
 				settings.set(setting);
