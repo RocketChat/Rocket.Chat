@@ -669,7 +669,6 @@ const membersOrderedByRoleRolePropsSchema = {
 
 export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
 
-
 type RoomsInviteProps = {
 	roomId: string;
 	action: 'accept' | 'reject';
@@ -829,7 +828,6 @@ export type RoomsEndpoints = {
 			members: (IUser & { subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'> })[];
 		}>;
 	};
-
 
 	'/v1/rooms.invite': {
 		POST: (params: RoomsInviteProps) => void;
