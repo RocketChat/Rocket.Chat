@@ -40,7 +40,7 @@ declare module 'meteor/meteor' {
 		}
 
 		const server: {
-			sessions: Map<string, { userId: string; heartbeat: DDPCommon.Heartbeat }>;
+			sessions: Map<string, { userId: string; heartbeat: DDPCommon.Heartbeat; connectionHandle: Meteor.Connection }>;
 			publish_handlers: {
 				meteor_autoupdate_clientVersions(): void;
 			};
@@ -118,7 +118,6 @@ declare module 'meteor/meteor' {
 					},
 				]
 			): SubscriptionHandle;
-			_lastSessionId: string;
 
 			call(methodName: string, ...args: [...unknown, callback?: (error: Error | null, result: unknown) => void]): void;
 		}
