@@ -3,6 +3,7 @@ import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { GrantType } from '/server/oauth2-server/model';
 
 describe('[OAuth Server]', () => {
 	let oAuthAppId: string;
@@ -88,7 +89,7 @@ describe('[OAuth Server]', () => {
 				.post(`/oauth/token`)
 				.type('form')
 				.send({
-					grant_type: 'authorization_code',
+					grant_type: GrantType.AuthorizationCode,
 					code,
 					client_id: clientId,
 					client_secret: clientSecret,
