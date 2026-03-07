@@ -45,5 +45,5 @@ test.each([
 	['# Hello\n', [heading([plain('Hello')], 1), lineBreak()]],
 	['# # Hello\n', [heading([plain('# Hello')], 1), lineBreak()]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

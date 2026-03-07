@@ -16,5 +16,5 @@ test.each([
 	['\\[foo]: /url "not a reference"', [paragraph([plain('\\[foo]: /url "not a reference"')])]],
 	['\\&ouml; not a character entity', [paragraph([plain('\\&ouml; not a character entity')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

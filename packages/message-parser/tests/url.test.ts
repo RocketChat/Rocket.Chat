@@ -131,7 +131,7 @@ test.each([
 	['https://www.google.com!', [paragraph([link('https://www.google.com'), plain('!')])]],
 	['visit www.google.com.', [paragraph([plain('visit '), link('//www.google.com', [plain('www.google.com')]), plain('.')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });
 
 describe('autoLink with custom hosts settings comming from Rocket.Chat', () => {
@@ -140,42 +140,42 @@ describe('autoLink with custom hosts settings comming from Rocket.Chat', () => {
 		['gitlab.local', [paragraph([link('//gitlab.local', [plain('gitlab.local')])])]],
 		['internaltool.intranet', [paragraph([link('//internaltool.intranet', [plain('internaltool.intranet')])])]],
 	])('parses %p', (input, output) => {
-		expect(parse(input, { customDomains: ['local', 'intranet'] })).toMatchObject(output);
+		expect(parse(input, { customDomains: ['local', 'intranet'] })).toEqual(output);
 	});
 });
 
 describe('autoLink WITHOUT custom hosts settings comming from Rocket.Chat', () => {
 	test.each([['https://internaltool.testt', [paragraph([plain('https://internaltool.testt')])]]])('parses %p', (input, output) => {
-		expect(parse(input, { customDomains: ['local'] })).toMatchObject(output);
+		expect(parse(input, { customDomains: ['local'] })).toEqual(output);
 	});
 });
 
 describe('autoLink helper function', () => {
 	it('should preserve the original protocol if the protocol is http or https', () => {
-		expect(autoLink('https://rocket.chat/test')).toMatchObject(link('https://rocket.chat/test'));
+		expect(autoLink('https://rocket.chat/test')).toEqual(link('https://rocket.chat/test'));
 
-		expect(autoLink('http://rocket.chat/test')).toMatchObject(link('http://rocket.chat/test'));
+		expect(autoLink('http://rocket.chat/test')).toEqual(link('http://rocket.chat/test'));
 	});
 
 	it('should preserve the original protocol even if for custom protocols', () => {
-		expect(autoLink('custom://rocket.chat/test')).toMatchObject(link('custom://rocket.chat/test'));
+		expect(autoLink('custom://rocket.chat/test')).toEqual(link('custom://rocket.chat/test'));
 	});
 
 	it('should return // as the protocol if // is the protocol specified', () => {
-		expect(autoLink('//rocket.chat/test')).toMatchObject(link('//rocket.chat/test'));
+		expect(autoLink('//rocket.chat/test')).toEqual(link('//rocket.chat/test'));
 	});
 
 	it("should return an url concatenated '//' if the url has no protocol", () => {
-		expect(autoLink('rocket.chat/test')).toMatchObject(link('//rocket.chat/test', [plain('rocket.chat/test')]));
+		expect(autoLink('rocket.chat/test')).toEqual(link('//rocket.chat/test', [plain('rocket.chat/test')]));
 	});
 
 	it("should return an url concatenated '//' if the url has no protocol and has sub-domain", () => {
-		expect(autoLink('spark-public.s3.amazonaws.com')).toMatchObject(
+		expect(autoLink('spark-public.s3.amazonaws.com')).toEqual(
 			link('//spark-public.s3.amazonaws.com', [plain('spark-public.s3.amazonaws.com')]),
 		);
 	});
 
 	it("should return an plain text url due to invalid TLD that's validate with the external library TLDTS", () => {
-		expect(autoLink('rocket.chattt/url_path')).toMatchObject(plain('rocket.chattt/url_path'));
+		expect(autoLink('rocket.chattt/url_path')).toEqual(plain('rocket.chattt/url_path'));
 	});
 });

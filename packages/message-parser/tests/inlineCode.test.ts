@@ -8,5 +8,5 @@ test.each([
 	['`@rocket.chat`', [paragraph([inlineCode(plain('@rocket.chat'))])]],
 	['`@rocket.chat/message-parser`', [paragraph([inlineCode(plain('@rocket.chat/message-parser'))])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });
