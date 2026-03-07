@@ -151,12 +151,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.list': {
-		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
-			users: DefaultUserInfo[];
-		}>;
-	};
-
 	'/v1/users.listByStatus': {
 		GET: (params: UsersListStatusParamsGET) => PaginatedResult<{
 			users: DefaultUserInfo[];
