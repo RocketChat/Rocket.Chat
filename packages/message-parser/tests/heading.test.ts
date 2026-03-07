@@ -49,5 +49,5 @@ test.each([
 	['### :smile: text :newspaper:', [heading([emoji('smile'), plain(' text '), emoji('newspaper')], 3)]],
 
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

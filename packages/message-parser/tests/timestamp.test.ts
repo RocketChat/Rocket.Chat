@@ -24,14 +24,14 @@ test.each([
 	[`<t:1708551317:R>`, [paragraph([timestampNode('1708551317', 'R')])]],
 	['hello <t:1708551317>', [paragraph([plain('hello '), timestampNode('1708551317')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });
 
 test.each([
 	['<t:1708551317:I>', [paragraph([plain('<t:1708551317:I>')])]],
 	['<t:17>', [paragraph([plain('<t:17>')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });
 
 test.each([
@@ -39,7 +39,7 @@ test.each([
 	['~<t:1708551317:R>~', [paragraph([strike([timestampNode('1708551317', 'R')])])]],
 	['*<t:1708551317>*', [paragraph([bold([plain('<t:1708551317>')])])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });
 
 test.each([
@@ -48,7 +48,7 @@ test.each([
 
 	['<t:2025-07-24T20:19:58.154+00:00:R>', [paragraph([timestampNode('1753388398', 'R')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });
 
 describe('relative hour timestamp parsing', () => {
@@ -67,6 +67,6 @@ describe('relative hour timestamp parsing', () => {
 		['<t:10:00:05+00:00>', [paragraph([timestampNode('1753178405')])]],
 		['<t:10:00+00:00>', [paragraph([timestampNode('1753178400')])]],
 	])('parses %p', (input, output) => {
-		expect(parse(input)).toMatchObject(output);
+		expect(parse(input)).toEqual(output);
 	});
 });

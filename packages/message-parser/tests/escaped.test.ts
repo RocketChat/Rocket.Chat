@@ -17,5 +17,5 @@ test.each([
 	['\\&ouml; not a character entity', [paragraph([plain('\\&ouml; not a character entity')])]],
 	['\\<t:1708551317:R>', [paragraph([plain('<t:1708551317:R>')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

@@ -18,5 +18,5 @@ test.each([
 	],
 	['Easy as \\(E = mc^2\\), right?', [paragraph([plain('Easy as '), inlineKatex('E = mc^2'), plain(', right?')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input, { katex: { parenthesisSyntax: true } })).toMatchObject(output);
+	expect(parse(input, { katex: { parenthesisSyntax: true } })).toEqual(output);
 });
