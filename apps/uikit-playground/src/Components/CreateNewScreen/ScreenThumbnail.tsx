@@ -7,7 +7,7 @@ import { context, renameScreenAction } from '../../Context';
 import { activeScreenAction } from '../../Context/action/activeScreenAction';
 import { deleteScreenAction } from '../../Context/action/deleteScreenAction';
 import { duplicateScreenAction } from '../../Context/action/duplicateScreenAction';
-import { type ScreenType } from '../../Context/initialState';
+import type { ScreenType } from '../../Context/initialState';
 import renderPayload from '../RenderPayload/RenderPayload';
 import EditMenu from '../ScreenThumbnail/EditMenu/EditMenu';
 import ScreenThumbnailWrapper from '../ScreenThumbnail/ScreenThumbnailWrapper';
