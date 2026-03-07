@@ -8,7 +8,8 @@ import {
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
-	withUserIdProps
+	withGroupBaseProperties,
+	GroupsBaseProps
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
@@ -76,7 +77,7 @@ async function getRoomFromParams(params: { roomId?: string } | { roomName?: stri
 		}
 	})();
 
-	if (!room || room.t !== 'p') {
+	if (room?.t !== 'p') {
 		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
@@ -282,7 +283,7 @@ API.v1.addRoute(
 				room = await Rooms.findOneByName(params.roomName || '');
 			}
 
-			if (!room || room.t !== 'p') {
+			if (room?.t !== 'p') {
 				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 			}
 
@@ -800,7 +801,7 @@ API.v1.addRoute(
 				rid: findResult.rid,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
-				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+				...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
 				_hidden: { $ne: true },
 			};
 
@@ -899,6 +900,18 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type WithUserId = GroupsBaseProps & { userId: string };
+const withUserIdSchema = withGroupBaseProperties(
+	{
+		userId: {
+			type: 'string',
+		},
+	},
+	['userId'],
+);
+
+const withUserIdProps = ajv.compile<WithUserId>(withUserIdSchema);
 
 const groupsEndpoints = API.v1.post(
 	'groups.removeModerator',
