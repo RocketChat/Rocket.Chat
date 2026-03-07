@@ -2,7 +2,6 @@ import type { IWebdavAccount } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { WebdavAccounts } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-import { createClient } from 'webdav';
 
 import { settings } from '../../../settings/server';
 import { getWebdavCredentials } from '../lib/getWebdavCredentials';
@@ -39,13 +38,17 @@ Meteor.methods<ServerMethods>({
 
 		try {
 			const cred = getWebdavCredentials(account);
+			const { createClient } = await import('webdav');
 			const client = createClient(account.serverURL, cred);
 			const serverURL = settings.get('Accounts_OAuth_Nextcloud_URL');
 			const res = await client.customRequest(`${serverURL}/index.php/core/preview.png?file=${path}&x=64&y=64`, {
 				method: 'GET',
-				responseType: 'arraybuffer',
 			});
-			return { success: true, data: res.data as ArrayBuffer };
+
+			// ✅ Use the Fetch API method to extract the array buffer
+			const data = await res.arrayBuffer();
+
+			return { success: true, data };
 		} catch (error) {
 			// ignore error
 		}

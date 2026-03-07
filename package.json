@@ -55,7 +55,8 @@
 		"lodash": "4.17.21",
 		"minimist": "1.2.6",
 		"mongodb": "6.10.0",
-		"underscore": "1.13.7"
+		"underscore": "1.13.8",
+		"webpack": "~5.104.0"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
