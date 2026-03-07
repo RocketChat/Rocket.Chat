@@ -35,6 +35,7 @@
     ".:build:bundle": "webpack-cli",
     ".:build:clean": "rimraf dist",
     "build": "run-s .:build:clean .:build:bundle",
+    "bench": "ts-node --compiler-options '{\"module\":\"commonjs\"}' benchmarks/lexer.bench.ts",
     "lint": "eslint .",
     "test": "jest",
     "testunit": "jest",
