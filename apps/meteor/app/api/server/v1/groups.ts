@@ -908,7 +908,7 @@ const groupsEndpoints = API.v1.post(
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{ success: true }>({
+			200: ajv.compile<void>({
 				type: 'object',
 				properties: {
 					success: { type: 'boolean', enum: [true] },
@@ -928,7 +928,7 @@ const groupsEndpoints = API.v1.post(
 
 		await removeRoomModerator(this.userId, findResult.rid, user._id);
 
-		return API.v1.success({ success: true });
+		return API.v1.success();
 	},
 );
 
@@ -1323,7 +1323,7 @@ API.v1.addRoute(
 	},
 );
 
-export type GroupEndpoints = ExtractRoutesFromAPI<typeof groupsEndpoints>;
+type GroupEndpoints = ExtractRoutesFromAPI<typeof groupsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
