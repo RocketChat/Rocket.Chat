@@ -802,7 +802,7 @@ const isMemeberEndpoint = API.v1.get(
 				userId: { type: 'string' },
 				username: { type: 'string' },
 			},
-			required: ['roomId'],
+			oneOf: [{ required: ['roomId', 'userId'] }, { required: ['roomId', 'username'] }],
 			additionalProperties: false,
 		}),
 		response: {
@@ -832,7 +832,7 @@ const isMemeberEndpoint = API.v1.get(
 			findRoomByIdOrName({
 				params: { roomId },
 			}),
-			Users.findOneByIdOrUsername((userId || username) as string),
+			Users.findOneByIdOrUsername((userId || username)!),
 		]);
 
 		if (!user?._id) {
