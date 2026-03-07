@@ -30,7 +30,7 @@ export const useReplyInDMAction = (
 	}, [encrypted, isABACEnabled, t]);
 
 	const canReplyInDM = useMemo(() => {
-		if (!subscription || room.t === 'd' || room.t === 'l' || isLayoutEmbedded) {
+		if (!subscription || (room.t !== 'c' && room.t !== 'p') || isLayoutEmbedded) {
 			return false;
 		}
 		if (!user || user._id === message.u._id || !canCreateDM) {
