@@ -1,18 +1,18 @@
-# Updating emojione
+# Updating emojis (now using emoji-toolkit)
 
 ## Generate new category map variable for emojipicker
-Run
+Run the generator script which now pulls metadata from `emoji-toolkit`
+
 ```
 node --experimental-modules generateEmojiIndex.mjs
 ```
 
-## Generate new percentage sprite
-Clone the repository https://github.com/Ranks/emojione/ and replace the file `assets/sprites/emojione.sprites.mustache` with the content 
-of [emojione.sprites.mustache](emojione.sprites.mustache), then run at `emojione` folder:
+The script will download 64px PNGs from the JoyPixels CDN into `.emoji-cache`
+and build updated sprite sheets under `public/packages/emojione/`.
 
-```
-grunt sprite
-sass --sourcemap=none assets/sprites/emojione.sprites.scss sprites.css
-```
+## Sprite generation notes
+The old manual `grunt`/`sass` workflow is no longer required.  If you need to
+rebuild sprites offline you can cache the PNG files yourself by running the
+script once with internet access; subsequent runs will reuse the cached images.
 
-And replace the file `sprites.css` at Rocket.Chat's `/packages/rocketchat-emoji-emojione/sprites.css`.
+The generated CSS is written to `apps/meteor/app/emoji-emojione/client/emojione-sprites.css`.
