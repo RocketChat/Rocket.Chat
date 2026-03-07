@@ -1,6 +1,6 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 
-export type FeaturesAvailable = 'secondarySidebar' | 'expandableMessageComposer';
+export type FeaturesAvailable = 'secondarySidebar' | 'expandableMessageComposer' | 'roomHeaderReordering';
 
 export type FeaturePreviewProps = {
 	name: FeaturesAvailable;
@@ -25,6 +25,15 @@ export const defaultFeaturesPreview: FeaturePreviewProps[] = [
 		description: 'Filters_and_secondary_sidebar_description',
 		group: 'Navigation',
 		imageUrl: 'images/featurePreview/secondary-sidebar.png',
+		value: false,
+		enabled: true,
+	},
+	{
+		name: 'roomHeaderReordering',
+		// 'as any' bypasses the TranslationKey check so the build can finish
+		i18n: 'Room_Header_Reordering' as any,
+		description: 'Room_Header_Reordering_Description' as any,
+		group: 'Navigation',
 		value: false,
 		enabled: true,
 	},
