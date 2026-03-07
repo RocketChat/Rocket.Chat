@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 /**
  * Federation test data and configuration
  * This file provides validated federation configuration for federation tests.
