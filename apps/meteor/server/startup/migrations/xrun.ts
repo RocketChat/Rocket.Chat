@@ -3,8 +3,10 @@ import type { UpdateResult } from 'mongodb';
 
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 import { settings } from '../../../app/settings/server';
+import { runDataMigrations } from '../../lib/dataMigrations';
 import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
 import { ensureCloudWorkspaceRegistered } from '../cloudRegistration';
+import '../dataMigrations';
 
 const { MIGRATION_VERSION = 'latest' } = process.env;
 
@@ -63,4 +65,5 @@ export const performMigrationProcedure = async (): Promise<void> => {
 		await ensureCloudWorkspaceRegistered();
 		await moveRetentionSetting();
 	});
+	await runDataMigrations();
 };
