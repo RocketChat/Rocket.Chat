@@ -39,7 +39,7 @@ API.v1.addRoute(
 
 			const { modifiedCount } = await updateAuditedByUser({
 				_id: this.userId,
-				username: this.user.username!,
+				username: this.user.username,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
 			})(Settings.updateValueById, key, value);
@@ -76,7 +76,7 @@ API.v1.addRoute(
 
 			const { modifiedCount } = await updateAuditedByUser({
 				_id: this.userId,
-				username: this.user.username!,
+				username: this.user.username,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
 			})(Settings.updateValueById, key, value);

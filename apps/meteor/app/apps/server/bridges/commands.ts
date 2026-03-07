@@ -3,7 +3,6 @@ import type { ISlashCommand, ISlashCommandPreview, ISlashCommandPreviewItem } fr
 import { SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
 import { CommandBridge } from '@rocket.chat/apps-engine/server/bridges/CommandBridge';
 import type { IMessage, RequiredField, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { Utilities } from '../../../../ee/lib/misc/Utilities';
 import { parseParameters } from '../../../../lib/utils/parseParameters';
@@ -179,10 +178,10 @@ export class AppCommandsBridge extends CommandBridge {
 		command: string,
 		parameters: any,
 		message: RequiredField<Partial<IMessage>, 'rid'>,
+		userId: string,
 	): Promise<ISlashCommandPreview | undefined> {
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		const uid = Meteor.userId() as string;
-		const user: IAppsUser | undefined = await this.orch.getConverters()?.get('users').convertById(uid);
+		const user: IAppsUser | undefined = await this.orch.getConverters()?.get('users').convertById(userId);
 		const room: IAppsRoom | undefined = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
@@ -201,11 +200,11 @@ export class AppCommandsBridge extends CommandBridge {
 		parameters: any,
 		message: IMessage,
 		preview: ISlashCommandPreviewItem,
+		userId: string,
 		triggerId: string,
 	): Promise<void> {
 		// #TODO: #AppsEngineTypes - Remove explicit types and typecasts once the apps-engine definition/implementation mismatch is fixed.
-		const uid = Meteor.userId() as string;
-		const user: IAppsUser | undefined = await this.orch.getConverters()?.get('users').convertById(uid);
+		const user: IAppsUser | undefined = await this.orch.getConverters()?.get('users').convertById(userId);
 		const room: IAppsRoom | undefined = await this.orch.getConverters()?.get('rooms').convertById(message.rid);
 		const threadId = message.tmid;
 		const params = parseParameters(parameters);
