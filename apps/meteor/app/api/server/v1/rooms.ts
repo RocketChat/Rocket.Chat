@@ -17,6 +17,7 @@ import {
 	isRoomsInviteProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -823,28 +824,28 @@ const isMemeberEndpoint = API.v1.get(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			403: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
 		const { roomId, userId, username } = this.queryParams;
-		const [room, user] = await Promise.all([
-			findRoomByIdOrName({
-				params: { roomId },
-			}),
-			Users.findOneByIdOrUsername((userId || username)!),
-		]);
+		const room = await findRoomByIdOrName({
+			params: { roomId },
+		});
+
+		if (!(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.forbidden('unauthorized');
+		}
+
+		const user = await Users.findOneByIdOrUsername((userId || username)!);
 
 		if (!user?._id) {
 			return API.v1.failure('error-user-not-found');
 		}
 
-		if (await canAccessRoomAsync(room, { _id: this.user._id })) {
-			return API.v1.success({
-				isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
-			});
-		}
-		return API.v1.forbidden('unauthorized');
+		return API.v1.success({
+			isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
+		});
 	},
 );
 
