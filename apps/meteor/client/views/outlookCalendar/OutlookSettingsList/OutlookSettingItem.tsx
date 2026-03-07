@@ -10,18 +10,17 @@ type OutlookSettingItemProps = {
 	handleEnable: (value: boolean) => void;
 };
 
+const hovered = css`
+	&:hover,
+	&:focus {
+	background: ${Palette.surface['surface-hover']};
+	.rcx-message {
+		background: ${Palette.surface['surface-hover']};
+	}
+}`;
+
 const OutlookSettingItem = ({ id, title, subTitle, enabled, handleEnable }: OutlookSettingItemProps) => {
 	const { t } = useTranslation();
-
-	const hovered = css`
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-			.rcx-message {
-				background: ${Palette.surface['surface-hover']};
-			}
-		}
-	`;
 
 	return (
 		<Box
