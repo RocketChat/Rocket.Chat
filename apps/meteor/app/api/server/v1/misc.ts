@@ -63,12 +63,14 @@ export const meEndpoints = API.v1.get(
     authRequired: true,
     response: {
       401: validateUnauthorizedErrorResponse,
-      200: {
-        allOf: [
-          { $ref: '#/components/schemas/ApiSuccessV1' },
-          { $ref: '#/components/schemas/IUser' },
-        ],
-      },
+      200: ajv.compile<{ success: true }>({
+        type: 'object',
+        properties: {
+          success: { type: 'boolean', enum: [true] },
+        },
+        required: ['success'],
+        additionalProperties: true,
+      }),
     },
   },
 async function action() {
