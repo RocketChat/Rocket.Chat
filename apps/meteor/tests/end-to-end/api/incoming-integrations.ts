@@ -937,6 +937,34 @@ describe('[Incoming Integrations]', () => {
 				});
 		});
 
+		it('should preserve alias when updating without alias field', async () => {
+			const previousAlias = integration.alias;
+
+			await request
+				.put(api('integrations.update'))
+				.set(credentials)
+				.send({
+					type: 'webhook-incoming',
+					name: 'Incoming test updated x3',
+					enabled: true,
+					username: senderUser.username,
+					scriptEnabled: true,
+					overrideDestinationChannelEnabled: true,
+					channel: '#general',
+					integrationId: integration._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('integration');
+					expect(res.body.integration._id).to.be.equal(integration._id);
+					expect(res.body.integration.name).to.be.equal('Incoming test updated x3');
+					expect(res.body.integration.alias).to.be.equal(previousAlias);
+					integration = res.body.integration;
+				});
+		});
+
 		it('should send messages to the channel under the updated username', async () => {
 			const successfulMessage = `Message sent successfully at #${Random.id()}`;
 			await request

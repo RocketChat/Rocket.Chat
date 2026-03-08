@@ -72,7 +72,8 @@ export const updateIncomingIntegration = async (
 		});
 	}
 
-	const aliasValidation = validateIntegrationAlias(integration.alias);
+	const hasAliasField = 'alias' in integration;
+	const aliasValidation = hasAliasField ? validateIntegrationAlias(integration.alias) : 'ok';
 	if (aliasValidation === 'too-long') {
 		throw new Meteor.Error('error-invalid-alias-length', 'Invalid alias length', { method: 'updateIncomingIntegration' });
 	}
@@ -81,7 +82,7 @@ export const updateIncomingIntegration = async (
 		throw new Meteor.Error('error-invalid-alias', 'Invalid alias', { method: 'updateIncomingIntegration' });
 	}
 
-	const sanitizedAlias = integration.alias?.trim();
+	const sanitizedAlias = hasAliasField ? integration.alias?.trim() : undefined;
 
 	const oldScriptEngine = currentIntegration.scriptEngine;
 	const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
@@ -208,9 +209,9 @@ export const updateIncomingIntegration = async (
 		{
 			$set: {
 				...setFields,
-				...(sanitizedAlias ? { alias: sanitizedAlias } : {}),
+				...(hasAliasField && sanitizedAlias ? { alias: sanitizedAlias } : {}),
 			},
-			...(sanitizedAlias ? {} : { $unset: { alias: 1 as const } }),
+			...(hasAliasField && !sanitizedAlias ? { $unset: { alias: 1 as const } } : {}),
 		},
 		{ returnDocument: 'after' },
 	);
