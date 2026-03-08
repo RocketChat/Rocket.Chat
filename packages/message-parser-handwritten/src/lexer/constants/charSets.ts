@@ -61,5 +61,6 @@ export function isUnicodeEmojiStart(input: string, pos: number): boolean {
     if (c1 === 0xd83d && c2 >= 0xde00 && c2 <= 0xde4f) return true; // U+1F600
     if (c1 === 0xd83d && c2 >= 0xde80 && c2 <= 0xdefa) return true; // U+1F680
     if (c1 === 0xd83e && c2 >= 0xdd00 && c2 <= 0xddff) return true; // U+1F900
+    if (c1 === 0xd83e && c2 >= 0xde00 && c2 <= 0xdeff) return true; // U+1FA00
     return false;
 }
