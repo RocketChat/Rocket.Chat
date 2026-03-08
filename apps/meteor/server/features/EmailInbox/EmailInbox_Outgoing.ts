@@ -77,7 +77,7 @@ const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId:
 	return sendMessage(user, message, options.room);
 };
 
-async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
+async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }|undefined> {
 	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo
@@ -148,7 +148,7 @@ slashCommands.add({
 				.filter(Boolean)
 				.join('\n\n') || '';
 
-		void sendEmail(
+		const info = await sendEmail(
 			inbox,
 			{
 				to: room.email?.replyTo,
@@ -163,8 +163,11 @@ slashCommands.add({
 				sender: message.u.username,
 				rid: message.rid,
 			},
-		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
-
+		);
+		if (!info?.messageId) {
+			return;
+		}
+		await LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId);
 		await Messages.updateOne(
 			{ _id: message._id },
 			{
@@ -262,16 +265,12 @@ callbacks.add(
 			return message;
 		}
 
-		if (!inbox) {
-			return message;
-		}
-
 		const replyToMessage = await Messages.findOneById(match.groups.id);
 		if (!replyToMessage || !isIMessageInbox(replyToMessage) || !replyToMessage.email?.messageId) {
 			return message;
 		}
 
-		void sendEmail(
+		const info = await sendEmail(
 			inbox,
 			{
 				text: match.groups.text,
@@ -285,7 +284,13 @@ callbacks.add(
 				sender: message.u.username,
 				rid: room._id,
 			},
-		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
+		);
+
+		if (!info?.messageId) {
+			return message;
+		}
+
+		await LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId);
 
 		message.msg = match.groups.text;
 
