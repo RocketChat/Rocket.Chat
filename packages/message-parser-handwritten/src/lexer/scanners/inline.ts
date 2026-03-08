@@ -98,6 +98,7 @@ export function scanC(ctx: ScanContext, pos: number): number {
         COLOR_RE.lastIndex = pos;
         const m = COLOR_RE.exec(input);
         if (m) {
+            flushText(ctx, pos);
             emit(ctx, TokenKind.COLOR, m[0], m[1], pos);
             return pos + m[0].length;
         }
