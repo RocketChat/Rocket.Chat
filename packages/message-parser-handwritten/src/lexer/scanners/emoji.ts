@@ -31,13 +31,14 @@ export function scanUnicodeEmoji(ctx: ScanContext, pos: number): number {
         if (next >= 0xd800 && next <= 0xdfff && i + 1 < len) { i += 2; }
         else if (isUnicodeEmojiStart(input, i)) { i++; }
         else { i = beforeZwj; break; }
+        if (i < len) {
+            const vs2 = input.charCodeAt(i);
+            if (vs2 === 0xfe0e || vs2 === 0xfe0f) i++;
+        }
         if (i + 1 < len && input.charCodeAt(i) === 0xd83c) {
             const lo2 = input.charCodeAt(i + 1);
             if (lo2 >= 0xdffb && lo2 <= 0xdfff) i += 2;
         }
-        if (i < len) {
-            const vs2 = input.charCodeAt(i);
-            if (vs2 === 0xfe0e || vs2 === 0xfe0f) i++;
         }
     }
 
