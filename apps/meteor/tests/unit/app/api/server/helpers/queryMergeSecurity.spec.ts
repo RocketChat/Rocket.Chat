@@ -1,87 +1,93 @@
 import { expect } from 'chai';
-import proxyquire from 'proxyquire';
-import sinon from 'sinon';
 
 describe('Query merge security - rid protection', () => {
-	// Test helper to simulate the query merge logic with rid protection
-	const createQueryWithProtection = () => {
-		// This simulates the fixed pattern: rid is set first, then user query is spread with rid filtered out
-		return (baseRid: string, userQuery: Record<string, unknown>) => ({
-			rid: baseRid,
+	// The secure pattern used in the fix: filter out rid from user query before merging
+	const createSecureMerge = () => {
+		return (serverRid: string, userQuery: Record<string, unknown>) => ({
+			rid: serverRid,
 			...Object.fromEntries(
 				Object.entries(userQuery).filter(([key]) => key !== 'rid'),
 			),
 		});
 	};
 
-	const createVulnerableQuery = () => {
-		// This simulates the vulnerable pattern: user query is spread first, then rid is set
-		return (baseRid: string, userQuery: Record<string, unknown>) => ({
-			...userQuery,
-			rid: baseRid,
+	// The vulnerable pattern: spread user query AFTER server rid (allows override)
+	const createVulnerableMerge = () => {
+		return (serverRid: string, userQuery: Record<string, unknown>) => ({
+			rid: serverRid,
+			...userQuery, // User query can override server rid here!
 		});
 	};
 
-	describe('Secure query merge pattern', () => {
-		it('should prioritize server-side rid over user-provided rid in query', () => {
-			const secureMerge = createQueryWithProtection();
-			const userQuery = { rid: 'malicious-room-id', text: 'hello' };
+	describe('Secure merge pattern (FIXED)', () => {
+		it('should enforce server rid and filter out user-provided rid', () => {
+			const merge = createSecureMerge();
+			const userQuery = { rid: 'malicious-room', text: 'hello' };
 			
-			const result = secureMerge('legitimate-room-id', userQuery);
+			const result = merge('legitimate-room', userQuery);
 			
-			// The server-set rid should be used, not the user-provided one
-			expect(result.rid).to.equal('legitimate-room-id');
-			// But other query parameters should still be preserved
+			// Server rid should be preserved
+			expect(result.rid).to.equal('legitimate-room');
+			// Other query params should be preserved
 			expect(result.text).to.equal('hello');
 		});
 
 		it('should allow other query parameters while protecting rid', () => {
-			const secureMerge = createQueryWithProtection();
+			const merge = createSecureMerge();
 			const userQuery = { 
-				rid: 'malicious-room-id', 
+				rid: 'malicious-room', 
 				'starred._id': { $in: ['user1'] },
 				pinned: true,
-				_hidden: false,
 			};
 			
-			const result = secureMerge('legitimate-room-id', userQuery);
+			const result = merge('legitimate-room', userQuery);
 			
-			expect(result.rid).to.equal('legitimate-room-id');
+			expect(result.rid).to.equal('legitimate-room');
 			expect(result['starred._id']).to.deep.equal({ $in: ['user1'] });
 			expect(result.pinned).to.equal(true);
 		});
 
-		it('should handle empty user query', () => {
-			const secureMerge = createQueryWithProtection();
-			const userQuery = {};
+		it('should handle query without rid key', () => {
+			const merge = createSecureMerge();
+			const userQuery = { text: 'search', ts: { $gt: '2024-01-01' } };
 			
-			const result = secureMerge('legitimate-room-id', userQuery);
+			const result = merge('legitimate-room', userQuery);
 			
-			expect(result.rid).to.equal('legitimate-room-id');
+			expect(result.rid).to.equal('legitimate-room');
+			expect(result.text).to.equal('search');
 		});
 
-		it('should handle query without rid key', () => {
-			const secureMerge = createQueryWithProtection();
-			const userQuery = { text: 'search term', ts: { $gt: '2024-01-01' } };
+		it('should handle empty user query', () => {
+			const merge = createSecureMerge();
+			const result = merge('legitimate-room', {});
 			
-			const result = secureMerge('legitimate-room-id', userQuery);
-			
-			expect(result.rid).to.equal('legitimate-room-id');
-			expect(result.text).to.equal('search term');
-			expect(result.ts).to.deep.equal({ $gt: '2024-01-01' });
+			expect(result.rid).to.equal('legitimate-room');
 		});
 	});
 
-	describe('Vulnerable query merge pattern (for comparison)', () => {
-		it('should show the vulnerability - user rid can override server rid', () => {
-			const vulnerableMerge = createVulnerableQuery();
-			const userQuery = { rid: 'malicious-room-id', text: 'hello' };
+	describe('Vulnerable merge pattern (BEFORE FIX)', () => {
+		it('demonstrates vulnerability: user-provided rid overrides server rid', () => {
+			const merge = createVulnerableMerge();
+			const userQuery = { rid: 'malicious-room', text: 'hello' };
 			
-			const result = vulnerableMerge('legitimate-room-id', userQuery);
+			const result = merge('legitimate-room', userQuery);
 			
-			// In the vulnerable pattern, the last value wins
-			// This demonstrates why the fix is necessary
-			expect(result.rid).to.equal('malicious-room-id');
+			// In vulnerable pattern, user query wins due to spread order
+			expect(result.rid).to.equal('malicious-room');
+		});
+
+		it('demonstrates how Object.assign order matters', () => {
+			// Using Object.assign with user query second allows override
+			const serverRid = 'legitimate-room';
+			const userQuery = { rid: 'malicious-room', text: 'hello' };
+			
+			// This is SAFE: server rid set after user query
+			const safeResult = Object.assign({}, userQuery, { rid: serverRid });
+			expect(safeResult.rid).to.equal('legitimate-room');
+			
+			// This is VULNERABLE: user query set after server rid
+			const vulnerableResult = Object.assign({ rid: serverRid }, userQuery);
+			expect(vulnerableResult.rid).to.equal('malicious-room');
 		});
 	});
 });
