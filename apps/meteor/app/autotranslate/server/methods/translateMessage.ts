@@ -7,7 +7,7 @@ import { translateMessage } from '../functions/translateMessage';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		'autoTranslate.translateMessage'(message: IMessage | undefined, targetLanguage: string): Promise<void>;
+		'autoTranslate.translateMessage'(message: IMessage | undefined, targetLanguage: string): Promise<IMessage | undefined>;
 	}
 }
 
