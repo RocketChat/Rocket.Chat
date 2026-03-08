@@ -34,6 +34,7 @@ test.each([
 
 test.each([
 	['~<t:1708551317>~', [paragraph([strike([timestampNode('1708551317')])])]],
+	['~<t:1708551317:R>~', [paragraph([strike([timestampNode('1708551317', 'R')])])]],
 	['*<t:1708551317>*', [paragraph([bold([plain('<t:1708551317>')])])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
