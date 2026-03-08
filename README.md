@@ -120,3 +120,7 @@ We're hiring developers, technical support, and product managers all the time. C
 # 🗒️ Credits
 
 - Emoji provided graciously by [JoyPixels](https://www.joypixels.com).
+
+## Contribution
+
+This documentation was improved to make it easier for beginners to understand the Rocket.Chat project.
