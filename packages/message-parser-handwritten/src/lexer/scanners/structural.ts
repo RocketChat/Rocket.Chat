@@ -17,10 +17,10 @@ export function scanEscape(ctx: ScanContext, pos: number): number {
     const next = ctx.input.charCodeAt(pos + 1);
 
     // KaTeX delimiters
-    if (next === CH_LBRACKET) { flushText(ctx, pos); emit(ctx, TokenKind.KATEX_BLOCK_START, '\\[', '\\[', pos); return pos + 2; }
-    if (next === CH_RBRACKET) { flushText(ctx, pos); emit(ctx, TokenKind.KATEX_BLOCK_END, '\\]', '\\]', pos); return pos + 2; }
-    if (next === CH_LPAREN) { flushText(ctx, pos); emit(ctx, TokenKind.KATEX_INLINE_START, '\\(', '\\(', pos); return pos + 2; }
-    if (next === CH_RPAREN) { flushText(ctx, pos); emit(ctx, TokenKind.KATEX_INLINE_END, '\\)', '\\)', pos); return pos + 2; }
+    if (next === CH_LBRACKET) { flushText(ctx, pos); emit(ctx, TokenKind.KATEX_BLOCK_START, '\\[', '\\[', pos); ctx.katexBlockOpen = true; return pos + 2; }
+    if (next === CH_RBRACKET) { flushText(ctx, pos); emit(ctx, TokenKind.KATEX_BLOCK_END, '\\]', '\\]', pos); ctx.katexBlockOpen = false; return pos + 2; }
+    if (next === CH_LPAREN) { flushText(ctx, pos); emit(ctx, TokenKind.KATEX_INLINE_START, '\\(', '\\(', pos); ctx.katexInlineOpen = true; return pos + 2; }
+    if (next === CH_RPAREN) { flushText(ctx, pos); emit(ctx, TokenKind.KATEX_INLINE_END, '\\)', '\\)', pos); ctx.katexInlineOpen = false; return pos + 2; }
 
     // escapable char
     if (next < 128 && ESCAPABLE[next]) {
