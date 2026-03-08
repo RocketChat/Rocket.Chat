@@ -35,7 +35,16 @@ test.each([
 
 test.each([
 	['~<t:1708551317>~', [paragraph([strike([timestampNode('1708551317')])])]],
-	['*<t:1708551317>*', [paragraph([bold([timestampNode('1708551317')])])]],
+	['**<t:1708551317>**', [paragraph([bold([timestampNode('1708551317')])])]],
+	['**hello <t:1708551317> world**', [
+		paragraph([
+			bold([
+				plain('hello '),
+				timestampNode('1708551317'),
+				plain(' world'),
+			]),
+		]),
+	]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });
