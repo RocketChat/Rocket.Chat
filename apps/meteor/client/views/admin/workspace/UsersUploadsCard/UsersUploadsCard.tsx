@@ -23,10 +23,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps): ReactElement =
 	const router = useRouter();
 
 	const handleEngagement = useEffectEvent(() => {
-		router.navigate({
-			pattern: '/admin/engagement/:tab?',
-			params: { tab: 'users' },
-		});
+		router.navigate('/admin/engagement/users');
 	});
 
 	const { data: canViewEngagement = false } = useHasLicenseModule('engagement-dashboard');
