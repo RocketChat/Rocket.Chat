@@ -169,7 +169,7 @@ slashCommands.add({
 			return;
 		}
 
-		void LivechatRooms.updateEmailThreadByRoomId(room._id, emailInfo.messageId);
+		await LivechatRooms.updateEmailThreadByRoomId(room._id, emailInfo.messageId);
 
 		await Messages.updateOne(
 			{ _id: message._id },
@@ -293,7 +293,7 @@ callbacks.add(
 			return message;
 		}
 
-		void LivechatRooms.updateEmailThreadByRoomId(room._id, emailInfo.messageId);
+		await LivechatRooms.updateEmailThreadByRoomId(room._id, emailInfo.messageId);
 
 		message.msg = match.groups.text;
 
@@ -346,9 +346,13 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	await sendEmail(inbox, {
+	const result = await sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
 		text: 'Test of inbox configuration successful',
 	});
+
+	if (!result) {
+		throw new Error('smtp-test-failed');
+	}
 }
