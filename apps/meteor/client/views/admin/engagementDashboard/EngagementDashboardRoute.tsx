@@ -50,7 +50,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				/>,
 			);
 		}
-		// Subscribe and cleanup
+
 		const unsubscribe = router.subscribeToRouteChange(() => {
 			if (router.getRouteName() !== 'engagement-dashboard') {
 				return;
