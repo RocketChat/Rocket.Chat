@@ -8,7 +8,7 @@ export function scanUnicodeEmoji(ctx: ScanContext, pos: number): number {
 
     // base codepoint
     const c1 = input.charCodeAt(i);
-    i += (c1 >= 0xd800 && c1 <= 0xdfff) ? 2 : 1;
+    i += (c1 >= 0xd800 && c1 <= 0xdfff && i + 1 < len) ? 2 : 1;
 
     // variation selector
     if (i < len) {
@@ -28,7 +28,7 @@ export function scanUnicodeEmoji(ctx: ScanContext, pos: number): number {
         i++;
         if (i >= len) { i = beforeZwj; break; }
         const next = input.charCodeAt(i);
-        if (next >= 0xd800 && next <= 0xdfff) { i += 2; }
+        if (next >= 0xd800 && next <= 0xdfff && i + 1 < len) { i += 2; }
         else if (isUnicodeEmojiStart(input, i)) { i++; }
         else { i = beforeZwj; break; }
         if (i + 1 < len && input.charCodeAt(i) === 0xd83c) {
