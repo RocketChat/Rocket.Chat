@@ -1,6 +1,14 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import {
+	isOmnichannelRoom,
+	type IMessage,
+	type IRoom,
+	type IUser,
+	type MessageAttachment,
+	type MessageAttachmentAction,
+	type MessageAttachmentDefault,
+} from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
@@ -73,7 +81,9 @@ const objectMaybeIncluding = (types: any) =>
 		return true;
 	});
 
-const validateAttachmentsFields = (attachmentField: any) => {
+const validateAttachmentsFields = (
+	attachmentField: NonNullable<MessageAttachmentDefault['fields']>[number]
+) => {
 	check(
 		attachmentField,
 		objectMaybeIncluding({
@@ -88,7 +98,9 @@ const validateAttachmentsFields = (attachmentField: any) => {
 	}
 };
 
-const validateAttachmentsActions = (attachmentActions: any) => {
+const validateAttachmentsActions = (
+	attachmentActions: MessageAttachmentAction['actions'][number]
+) => {
 	check(
 		attachmentActions,
 		objectMaybeIncluding({
@@ -104,7 +116,9 @@ const validateAttachmentsActions = (attachmentActions: any) => {
 	);
 };
 
-const validateAttachment = (attachment: any) => {
+const validateAttachment = (
+	attachment: MessageAttachment
+) => {
 	check(
 		attachment,
 		objectMaybeIncluding({
@@ -137,18 +151,22 @@ const validateAttachment = (attachment: any) => {
 		}),
 	);
 
-	if (attachment.fields?.length) {
+	if ('fields' in attachment && attachment.fields?.length) {
 		attachment.fields.map(validateAttachmentsFields);
 	}
 
-	if (attachment.actions?.length) {
+	if ('actions' in attachment && attachment.actions?.length) {
 		attachment.actions.map(validateAttachmentsActions);
 	}
 };
 
-const validateBodyAttachments = (attachments: any[]) => attachments.map(validateAttachment);
+const validateBodyAttachments = (attachments: NonNullable<IMessage['attachments']>) => attachments.map(validateAttachment);
 
-export const validateMessage = async (message: any, room: any, user: any) => {
+export const validateMessage = async (
+	message: Partial<IMessage>,
+	room: IRoom,
+	user: IUser
+) => {
 	check(
 		message,
 		objectMaybeIncluding({
@@ -166,7 +184,11 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 	);
 
 	if (message.alias || message.avatar) {
-		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
+		const isLiveChatGuest =
+			!message.avatar &&
+			'token' in user &&
+			isOmnichannelRoom(room) &&
+			user.token === room.v?.token;
 
 		if (!isLiveChatGuest && !(await hasPermissionAsync(user._id, 'message-impersonate', room._id))) {
 			throw new Error('Not enough permission');
