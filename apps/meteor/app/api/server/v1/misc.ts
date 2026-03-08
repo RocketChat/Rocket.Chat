@@ -34,7 +34,7 @@ import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 import { getUserInfo } from '../helpers/getUserInfo';
 import { ajv } from '@rocket.chat/rest-typings';
-import { MeParams } from '@rocket.chat/rest-typings';
+import { IMeResponse, MeParams } from '@rocket.chat/rest-typings';
 
 // AJV validation schema
 const meSchema = {
@@ -63,9 +63,28 @@ export const meEndpoints = API.v1.get(
     authRequired: true,
     response: {
       401: validateUnauthorizedErrorResponse,
-      200: ajv.compile<{ success: true }>({
+      200: ajv.compile<IMeResponse>({
         type: 'object',
         properties: {
+          _id: { type: 'string' },
+          name: { type: 'string' },
+          username: { type: 'string' },
+          nickname: { type: 'string' },
+          email: { type: 'string' },
+          status: { type: 'string' },
+          statusDefault: { type: 'string' },
+          statusText: { type: 'string' },
+          statusConnection: { type: 'string' },
+          bio: { type: 'string' },
+          utcOffset: { type: 'number' },
+          language: { type: 'string' },
+          roles: { type: 'array', items: { type: 'string' } },
+          active: { type: 'boolean' },
+          avatarUrl: { type: 'string' },
+          settings: {
+            type: 'object',
+            additionalProperties: true,
+          },
           success: { type: 'boolean', enum: [true] },
         },
         required: ['success'],
