@@ -528,7 +528,8 @@ ItalicContentItem = ItalicContentPreferentialItem / ItalicContentFallbackItem
 
 ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { skipItalicEmoji = false; return item; }
 
-ItalicContentPreferentialItemPattern = Whitespace
+ItalicContentPreferentialItemPattern = TimestampRules
+  /Whitespace
   / InlineCode
   / MaybeReferences
   / UserMention
@@ -553,7 +554,7 @@ BoldContent = & { skipBoldEmoji = false; return true; } text:BoldContentItem+ { 
 
 BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { skipBoldEmoji = false; return item; }
 
-BoldContentPreferentialItemPattern = Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
+BoldContentPreferentialItemPattern = TimestampRules/Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
 
 BoldContentFallbackItem = item:BoldContentFallbackItemPattern { skipBoldEmoji = true; return item; }
 

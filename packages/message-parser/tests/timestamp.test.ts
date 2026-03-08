@@ -1,3 +1,4 @@
+import { timeStamp } from 'node:console';
 import { parse } from '../src';
 
 const plain = (value: string) => ({ type: 'PLAIN_TEXT' as const, value });
@@ -34,7 +35,7 @@ test.each([
 
 test.each([
 	['~<t:1708551317>~', [paragraph([strike([timestampNode('1708551317')])])]],
-	['*<t:1708551317>*', [paragraph([bold([plain('<t:1708551317>')])])]],
+	['*<t:1708551317>*', [paragraph([bold([timestampNode('1708551317')])])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });
