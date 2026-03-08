@@ -62,6 +62,56 @@ export const setAvatarFromServiceWithValidation = async (
 	return setUserAvatar(user, dataURI, contentType, service);
 };
 
+const avatarDownloadSizeExceeded = (url: string, maxSize: number): never => {
+	throw new Meteor.Error(
+		'error-avatar-exceeds-size-limit',
+		`Avatar URL response exceeds configured max size (${maxSize} bytes): ${encodeURI(url)}`,
+		{
+			function: 'setUserAvatar',
+			url,
+			maxSize,
+		},
+	);
+};
+
+const parseContentLength = (header: string | null): number | null => {
+	if (!header) {
+		return null;
+	}
+
+	const parsed = Number.parseInt(header, 10);
+	return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+};
+
+const bufferResponseWithLimit = async (response: Response, maxSize: number, url: string): Promise<Buffer> => {
+	const contentLength = parseContentLength(response.headers.get('content-length'));
+	if (maxSize > 0 && contentLength !== null && contentLength > maxSize) {
+		avatarDownloadSizeExceeded(url, maxSize);
+	}
+
+	const stream = response.body;
+	if (!stream) {
+		return Buffer.alloc(0);
+	}
+
+	const chunks: Buffer[] = [];
+	let totalSize = 0;
+
+	for await (const chunk of stream) {
+		const bufferChunk = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+		totalSize += bufferChunk.length;
+
+		if (maxSize > 0 && totalSize > maxSize) {
+			stream.destroy();
+			avatarDownloadSizeExceeded(url, maxSize);
+		}
+
+		chunks.push(bufferChunk);
+	}
+
+	return Buffer.concat(chunks, totalSize);
+};
+
 export function setUserAvatar(
 	user: Pick<IUser, '_id' | 'username'>,
 	dataURI: Buffer,
@@ -157,8 +207,10 @@ export async function setUserAvatar(
 				});
 			}
 
+			const maxFileSize = settings.get<number>('FileUpload_MaxFileSize');
+
 			return {
-				buffer: Buffer.from(await response.arrayBuffer()),
+				buffer: await bufferResponseWithLimit(response, maxFileSize, dataURI),
 				type: response.headers.get('content-type') || '',
 			};
 		}
