@@ -66,8 +66,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				);
 			}
 		});
-
-		return () => unsubscribe();
+		return unsubscribe;
 	}, [shouldShowUpsell, router, setModal, t, handleManageSubscription]);
 
 	if (isModalOpen || isPending) {
