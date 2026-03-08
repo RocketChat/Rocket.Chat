@@ -24,12 +24,13 @@ export function scanUnicodeEmoji(ctx: ScanContext, pos: number): number {
 
     // ZWJ sequences
     while (i < len && input.charCodeAt(i) === 0x200d) {
+        const beforeZwj = i;
         i++;
-        if (i >= len) break;
+        if (i >= len) { i = beforeZwj; break; }
         const next = input.charCodeAt(i);
         if (next >= 0xd800 && next <= 0xdfff) { i += 2; }
         else if (isUnicodeEmojiStart(input, i)) { i++; }
-        else { i--; break; }
+        else { i = beforeZwj; break; }
         if (i + 1 < len && input.charCodeAt(i) === 0xd83c) {
             const lo2 = input.charCodeAt(i + 1);
             if (lo2 >= 0xdffb && lo2 <= 0xdfff) i += 2;
