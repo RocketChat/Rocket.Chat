@@ -50,8 +50,14 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				/>,
 			);
 		}
+		// Subscribe and cleanup
+		const unsubscribe = router.subscribeToRouteChange(() => {
+			if (router.getRouteName() !== 'engagement-dashboard') {
+				return;
+			}
 
-		router.subscribeToRouteChange(() => {
+			const { tab } = router.getRouteParameters();
+
 			if (!isValidTab(tab)) {
 				router.navigate(
 					{
@@ -62,7 +68,13 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				);
 			}
 		});
-	}, [shouldShowUpsell, router, tab, setModal, t, handleManageSubscription]);
+
+		return () => {
+			if (typeof unsubscribe === 'function') {
+				unsubscribe();
+			}
+		};
+	}, [shouldShowUpsell, router, setModal, t, handleManageSubscription]);
 
 	if (isModalOpen || isPending) {
 		return <PageSkeleton />;
