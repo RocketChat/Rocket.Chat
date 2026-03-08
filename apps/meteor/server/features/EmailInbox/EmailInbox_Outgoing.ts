@@ -77,7 +77,7 @@ const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId:
 	return sendMessage(user, message, options.room);
 };
 
-async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
+async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string } | undefined> {
 	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo
@@ -346,7 +346,7 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	void sendEmail(inbox, {
+	await sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
 		text: 'Test of inbox configuration successful',
