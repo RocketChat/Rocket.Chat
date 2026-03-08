@@ -27,6 +27,10 @@ const createResponse = ({ status = 200, contentType = 'image/png', contentLength
 		},
 	},
 	body: Readable.from(chunks),
+	arrayBuffer: async () => {
+		const buffer = Buffer.concat(chunks);
+		return buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength);
+	},
 });
 
 describe('setUserAvatar', () => {
