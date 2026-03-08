@@ -1,4 +1,4 @@
-#!/usr/bin/env npx ts-node
+#!/usr/bin/env -S npx ts-node
 /**
  * Benchmark suite for the Lexer.
  *
@@ -9,7 +9,6 @@
 
 import { Bench, type Task } from 'tinybench';
 import { Lexer } from '../src/lexer/lexer';
-
 // ── Fixture type ───────────────────────────────────────────────────────────
 
 type Fixture = {
