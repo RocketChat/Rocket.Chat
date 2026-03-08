@@ -343,9 +343,12 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		throw new Error('user-without-verified-email');
 	}
 
-	void sendEmail(inbox, {
+	const info = await sendEmail(inbox, {
 		to: address,
 		subject: 'Test of inbox configuration',
 		text: 'Test of inbox configuration successful',
 	});
+	if (!info?.messageId) {
+		throw new Error('smtp-send-failed');
+	}
 }
