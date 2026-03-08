@@ -92,7 +92,7 @@ export const EMOTICONS: ReadonlyArray<readonly [string, string]> = [
     ['>:\\',  'confused'],
     ['>:/',   'confused'],
     [':-.', 'confused'],
-    ['>.< ',  'persevere'],
+    ['>.<',  'persevere'],
     [":'(",   'cry'],
     [":'-(",  'cry'],
     [';-(',   'cry'],
