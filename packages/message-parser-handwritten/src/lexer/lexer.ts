@@ -65,7 +65,7 @@ export class Lexer {
             }
         }
 
-        flushText(ctx, truncated ? ctx.len : pos);
+        flushText(ctx, pos);
         if (!truncated) {
             ctx.tokens.push(makeToken(TokenKind.EOF, '', '', pos));
         }
