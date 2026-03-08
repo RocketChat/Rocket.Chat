@@ -86,10 +86,7 @@ const parseContentLength = (header: string | null): number | null => {
 const bufferResponseWithLimit = async (response: Response, maxSize: number, url: string): Promise<Buffer> => {
 	const contentLength = parseContentLength(response.headers.get('content-length'));
 	if (maxSize > 0 && contentLength !== null && contentLength > maxSize) {
-		try {
-			await response.body?.cancel();
-		} catch {
-		}
+		response.body?.destroy();
 		avatarDownloadSizeExceeded(url, maxSize);
 	}
 
