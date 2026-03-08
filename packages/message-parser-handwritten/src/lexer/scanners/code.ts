@@ -33,8 +33,8 @@ function scanFencedBlock(ctx: ScanContext, pos: number): number {
         pos++;
     }
 
-            // unclosed fence
-            emitCodeBody(ctx, bodyStart, pos);
+    // unclosed fence
+    emitCodeBody(ctx, bodyStart, pos);
     return pos;
 }
 
