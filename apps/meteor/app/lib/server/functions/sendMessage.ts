@@ -99,10 +99,10 @@ const validateAttachmentsFields = (
 };
 
 const validateAttachmentsActions = (
-	attachmentActions: MessageAttachmentAction['actions'][number]
+	attachmentAction: MessageAttachmentAction['actions'][number]
 ) => {
 	check(
-		attachmentActions,
+		attachmentAction,
 		objectMaybeIncluding({
 			type: String,
 			text: String,
