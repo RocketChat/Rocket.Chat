@@ -1,4 +1,3 @@
-import { timeStamp } from 'node:console';
 import { parse } from '../src';
 
 const plain = (value: string) => ({ type: 'PLAIN_TEXT' as const, value });
@@ -6,6 +5,8 @@ const plain = (value: string) => ({ type: 'PLAIN_TEXT' as const, value });
 const paragraph = (value: Array<Record<string, unknown>>) => ({ type: 'PARAGRAPH' as const, value });
 
 const bold = (value: Array<Record<string, unknown>>) => ({ type: 'BOLD' as const, value });
+
+const italic = (value: Array<Record<string, unknown>>) => ({ type: 'ITALIC' as const, value });
 
 const strike = (value: Array<Record<string, unknown>>) => ({ type: 'STRIKE' as const, value });
 
@@ -36,6 +37,8 @@ test.each([
 test.each([
 	['~<t:1708551317>~', [paragraph([strike([timestampNode('1708551317')])])]],
 	['**<t:1708551317>**', [paragraph([bold([timestampNode('1708551317')])])]],
+	['_<t:1708551317>_', [paragraph([italic([timestampNode('1708551317')])])]],
+
 	['**hello <t:1708551317> world**', [
 		paragraph([
 			bold([
