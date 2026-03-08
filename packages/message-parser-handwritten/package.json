@@ -59,7 +59,8 @@
     "ts-node": "~10.9.2",
     "typescript": "~5.9.3",
     "webpack": "~5.99.9",
-    "webpack-cli": "~5.1.4"
+    "webpack-cli": "~5.1.4",
+    "tinybench": "^3.0.5"
   },
   "volta": {
     "extends": "../../package.json"
