@@ -65,7 +65,7 @@ export class CsvImporter extends Importer {
 			return roomId;
 		};
 
-		for await (const entry of zip.getEntries()) {
+		for (const entry of zip.getEntries()) {
 			this.logger.debug({ msg: 'Entry', entryName: entry.entryName });
 
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
@@ -88,7 +88,7 @@ export class CsvImporter extends Importer {
 				const parsedChannels = this.csvParser(entry.getData().toString());
 				channelsCount = parsedChannels.length;
 
-				for await (const c of parsedChannels) {
+				for (const c of parsedChannels) {
 					const name = c[0].trim();
 					const id = getRoomId(name);
 					const creator = c[1].trim();
@@ -121,7 +121,7 @@ export class CsvImporter extends Importer {
 				const parsedUsers = this.csvParser(entry.getData().toString());
 				usersCount = parsedUsers.length;
 
-				for await (const u of parsedUsers) {
+				for (const u of parsedUsers) {
 					const username = u[0].trim();
 					availableUsernames.add(username);
 
@@ -196,7 +196,7 @@ export class CsvImporter extends Importer {
 				await super.updateRecord({ messagesstatus: channelName });
 
 				if (isDirect) {
-					for await (const msg of data) {
+					for (const msg of data) {
 						if (!msg.otherUsername) {
 							continue;
 						}
@@ -229,7 +229,7 @@ export class CsvImporter extends Importer {
 				} else {
 					const rid = getRoomId(folderName);
 
-					for await (const msg of data) {
+					for (const msg of data) {
 						const newMessage = {
 							rid,
 							u: {
@@ -258,7 +258,7 @@ export class CsvImporter extends Importer {
 		}
 
 		// Check if any of the message usernames was not in the imported list of users
-		for await (const username of usedUsernames) {
+		for (const username of usedUsernames) {
 			if (availableUsernames.has(username)) {
 				continue;
 			}

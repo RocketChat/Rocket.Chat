@@ -1,7 +1,7 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { useCurrentRoutePath, useRouter } from '@rocket.chat/ui-contexts';
 import { render } from '@testing-library/react';
-import React from 'react';
+import type { ReactNode } from 'react';
 
 import LayoutWithSidebar from './LayoutWithSidebar';
 
@@ -17,13 +17,13 @@ jest.mock('../../navigation', () => () => <div>NavigationRegion</div>);
 jest.mock('./AccessibilityShortcut', () => () => <div>AccessibilityShortcut</div>);
 jest.mock('../../navigation/providers/RoomsNavigationProvider', () => ({
 	__esModule: true,
-	default: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+	default: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
 
 jest.mock('@rocket.chat/ui-client', () => ({
-	FeaturePreview: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-	FeaturePreviewOn: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-	FeaturePreviewOff: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+	FeaturePreview: ({ children }: { children: ReactNode }) => <>{children}</>,
+	FeaturePreviewOn: ({ children }: { children: ReactNode }) => <>{children}</>,
+	FeaturePreviewOff: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
 
 const mockedUseCurrentRoutePath = useCurrentRoutePath as jest.MockedFunction<typeof useCurrentRoutePath>;
