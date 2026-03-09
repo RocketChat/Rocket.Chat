@@ -24,10 +24,8 @@ export class Lexer {
         };
 
         let pos = 0;
-        let truncated = false;
         while (pos < ctx.len) {
             if (ctx.tokens.length >= MAX_TOKENS) {
-                truncated = true;
                 break;
             }
             const code = ctx.input.charCodeAt(pos);
@@ -63,9 +61,7 @@ export class Lexer {
         }
 
         flushText(ctx, pos);
-        if (!truncated) {
-            ctx.tokens.push(makeToken(TokenKind.EOF, '', '', pos));
-        }
+        ctx.tokens.push(makeToken(TokenKind.EOF, '', '', pos));
         return ctx.tokens;
     }
 }
