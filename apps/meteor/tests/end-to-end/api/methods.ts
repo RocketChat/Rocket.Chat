@@ -15,7 +15,6 @@ import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE } from '../../e2e/config/constants';
-import { sleep } from '../../../lib/utils/sleep';
 
 describe('Meteor.methods', () => {
 	before((done) => getCredentials(done));
@@ -3454,24 +3453,12 @@ describe('Meteor.methods', () => {
 
 		before('send messages', async () => {
 			await sendMessage({ message: { rid, msg: 'Message 1' } });
-
-			await sleep(50);
 			await sendMessage({ message: { rid, msg: 'Message 2' } });
-
-			await sleep(50);
 			const msg3 = await sendMessage({ message: { rid, msg: 'Message 3' } });
 			middleMessage = msg3.body.message;
-
-			await sleep(50);
 			const threadMsg = await sendMessage({ message: { rid, msg: 'Message 4 (Thread)' } });
-
-			await sleep(50);
 			await sendMessage({ message: { rid, msg: 'Message 4.1 (Reply)', tmid: threadMsg.body.message._id } });
-
-			await sleep(50);
 			await sendMessage({ message: { rid, msg: 'Message 4.2 (Reply)', tmid: threadMsg.body.message._id } });
-
-			await sleep(50);
 			await sendMessage({ message: { rid, msg: 'Message 5' } });
 		});
 
