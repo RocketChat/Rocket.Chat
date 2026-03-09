@@ -20,7 +20,6 @@ concurrency:
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
-  FIPS_ENABLED_SERVICES: '["ddp-streamer-service","presence-service"]'
 
 jobs:
   release-versions:
@@ -319,8 +318,6 @@ jobs:
         env:
           # add suffix for the extra images with coverage if building for production
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_FIPS: ${{ contains(fromJSON(env.FIPS_ENABLED_SERVICES), matrix.service[0]) && matrix.type == 'fips' && '-fips' || '' }}
-          BUILD_TARGET: ${{ contains(fromJSON(env.FIPS_ENABLED_SERVICES), matrix.service[0]) && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -337,8 +334,6 @@ jobs:
         if: matrix.service[1] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_FIPS: ${{ contains(fromJSON(env.FIPS_ENABLED_SERVICES), matrix.service[1]) && matrix.type == 'fips' && '-fips' || '' }}
-          BUILD_TARGET: ${{ contains(fromJSON(env.FIPS_ENABLED_SERVICES), matrix.service[1]) && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -356,8 +351,6 @@ jobs:
         if: matrix.service[2] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_FIPS: ${{ contains(fromJSON(env.FIPS_ENABLED_SERVICES), matrix.service[2]) && matrix.type == 'fips' && '-fips' || '' }}
-          BUILD_TARGET: ${{ contains(fromJSON(env.FIPS_ENABLED_SERVICES), matrix.service[2]) && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -375,8 +368,6 @@ jobs:
         if: matrix.service[3] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_FIPS: ${{ contains(fromJSON(env.FIPS_ENABLED_SERVICES), matrix.service[3]) && matrix.type == 'fips' && '-fips' || '' }}
-          BUILD_TARGET: ${{ contains(fromJSON(env.FIPS_ENABLED_SERVICES), matrix.service[3]) && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -404,6 +395,7 @@ jobs:
         with:
           sparse-checkout: |
             docker-compose-ci.yml
+            docker-compose-ci.fips.yml
           sparse-checkout-cone-mode: false
           ref: ${{ github.ref }}
 
@@ -980,6 +972,7 @@ jobs:
         with:
           sparse-checkout: |
             docker-compose-ci.yml
+            docker-compose-ci.fips.yml
           sparse-checkout-cone-mode: false
           ref: ${{ github.ref }}
 
@@ -1062,8 +1055,15 @@ jobs:
               IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${service}"
             fi
 
-            # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-            SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${service}" '.services[$s].image')
+            # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
+            if [ "$service" == "rocketchat-cov" ]; then
+              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
+            elif [[ "$service" == *"-fips" ]]; then
+              base_service="${service%-fips}"
+              SRC=$(docker compose -f docker-compose-ci.yml -f docker-compose-ci.fips.yml config --format json 2>/dev/null | jq -r --arg s "$base_service" '.services[$s].image')
+            else
+              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${service}" '.services[$s].image')
+            fi
             DEST_REPO="docker.io/${IMAGE_NAME}"
 
             echo "Copying $SRC to ${DEST_REPO}:${PRIMARY}"

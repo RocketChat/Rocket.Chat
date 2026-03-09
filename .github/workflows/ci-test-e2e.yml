@@ -73,7 +73,6 @@ jobs:
     env:
       # if building for production on develop branch or release, add suffix for coverage images
       DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
-      DOCKER_TAG_SUFFIX_FIPS: ${{ inputs.release == 'fips' && '-fips' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
       COVERAGE_DIR: '/tmp/coverage/${{ startsWith(inputs.type, ''api'') && ''api'' || inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
@@ -88,6 +87,16 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
+      - name: Set compose files
+        run: |
+          if [[ '${{ inputs.release }}' == 'fips' ]]; then
+            echo 'COMPOSE_FILES=-f docker-compose-ci.yml -f docker-compose-ci.fips.yml' >> $GITHUB_ENV
+            echo 'COMPOSE_FILES_METEOR=-f ../../docker-compose-ci.yml -f ../../docker-compose-ci.fips.yml' >> $GITHUB_ENV
+          else
+            echo 'COMPOSE_FILES=-f docker-compose-ci.yml' >> $GITHUB_ENV
+            echo 'COMPOSE_FILES_METEOR=-f ../../docker-compose-ci.yml' >> $GITHUB_ENV
+          fi
+
       - name: Collect Workflow Telemetry
         if: inputs.type == 'perf'
         uses: catchpoint/workflow-telemetry-action@v2
@@ -172,7 +181,7 @@ jobs:
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api' || inputs.type == 'api-livechat'
         run: |
-          docker compose -f docker-compose-ci.yml up -d httpbin
+          docker compose $COMPOSE_FILES up -d httpbin
 
       - name: Prepare code coverage directory
         run: |
@@ -185,7 +194,7 @@ jobs:
         if: inputs.release == 'ce'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d rocketchat --wait
 
       - name: Start containers for EE
         if: inputs.release == 'ee' || inputs.release == 'fips'
@@ -193,7 +202,7 @@ jobs:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
         run: |
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --wait
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
@@ -203,9 +212,9 @@ jobs:
         run: |
           docker ps
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
+          until echo "$(docker compose $COMPOSE_FILES logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
+            ((c++)) && ((c==10)) && docker compose $COMPOSE_FILES logs ddp-streamer-service && exit 1
             sleep 10
           done;
 
@@ -223,7 +232,7 @@ jobs:
 
           npm run testapi
 
-          docker compose -f ../../docker-compose-ci.yml stop
+          docker compose $COMPOSE_FILES_METEOR stop
 
           ls -la $COVERAGE_DIR
           exit $s
@@ -239,7 +248,7 @@ jobs:
 
           npm run testapi:livechat
 
-          docker compose -f ../../docker-compose-ci.yml stop
+          docker compose $COMPOSE_FILES_METEOR stop
 
           ls -la $COVERAGE_DIR
           exit $s
@@ -288,11 +297,11 @@ jobs:
 
       - name: Show server logs if E2E test failed
         if: failure()
-        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
+        run: docker compose $COMPOSE_FILES logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
 
       - name: Show mongo logs if E2E test failed
         if: failure()
-        run: docker compose -f docker-compose-ci.yml logs mongo
+        run: docker compose $COMPOSE_FILES logs mongo
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version
