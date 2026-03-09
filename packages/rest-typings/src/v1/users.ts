@@ -318,15 +318,6 @@ export type UsersEndpoints = {
 		POST: (params: { message?: string; status?: UserStatus; userId?: string; username?: string; user?: string }) => void;
 	};
 
-	'/v1/users.getStatus': {
-		GET: () => {
-			status: 'online' | 'offline' | 'away' | 'busy';
-			message?: string;
-			_id?: string;
-			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
-		};
-	};
-
 	'/v1/users.info': {
 		GET: (params: UsersInfoParamsGet) => {
 			user: IUser & { rooms?: Pick<ISubscription, 'rid' | 'name' | 't' | 'roles' | 'unread'>[] };
