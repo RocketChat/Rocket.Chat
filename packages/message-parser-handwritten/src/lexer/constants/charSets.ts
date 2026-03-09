@@ -13,7 +13,7 @@ export const CHAR_CLASS = new Uint8Array(128);
 for (const ch of '\r\n\\`$<>|#-*_~:@![])+\t ') CHAR_CLASS[ch.charCodeAt(0)] = 1;
 for (let d = CH_0; d <= CH_9; d++) CHAR_CLASS[d] = 1;
 CHAR_CLASS[CH_C_LO] = 1;
-for (const ch of '=;XDB8%(y') CHAR_CLASS[ch.charCodeAt(0)] = 1;
+for (const ch of "'=;XDB8%(yO") CHAR_CLASS[ch.charCodeAt(0)] = 1;
 
 // chars that can be backslash-escaped
 export const ESCAPABLE = new Uint8Array(128);
