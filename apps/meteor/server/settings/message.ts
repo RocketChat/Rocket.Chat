@@ -71,6 +71,7 @@ export const createMessageSettings = () =>
 				invalidValue: false,
 				modules: ['message-read-receipt'],
 				i18nDescription: 'Message_Read_Receipt_Archive_Enabled_Description',
+				alert: 'Message_Read_Receipt_Archive_Enabled_Alert',
 				enableQuery: { _id: 'Message_Read_Receipt_Store_Users', value: true },
 			});
 			await this.add('Message_Read_Receipt_Archive_Retention_Days', 30, {
