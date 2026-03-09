@@ -427,9 +427,9 @@ const Api = new WebHookAPI({
 });
 
 Api.router
-	.use(loggerMiddleware(integrationLogger))
+	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi, histogram: metrics.rocketchatRestApiSeconds, responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes, activeRequestsGauge: metrics.rocketchatRestApiActiveRequests }))
 	.use(tracerSpanMiddleware)
-	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi, histogram: metrics.rocketchatRestApiSeconds, responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes, activeRequestsGauge: metrics.rocketchatRestApiActiveRequests }));
+	.use(loggerMiddleware(integrationLogger));
 
 Api.addRoute(
 	':integrationId/:userId/:token',
