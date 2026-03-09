@@ -292,9 +292,9 @@ jobs:
           - arch: arm64
             service: [rocketchat]
             type: coverage
-          # build a dedicated FIPS ddp-streamer image for FIPS test lanes
+          # build dedicated FIPS images for FIPS test lanes
           - arch: amd64
-            service: [ddp-streamer-service]
+            service: [ddp-streamer-service, presence-service]
             type: fips
 
     steps:
@@ -318,8 +318,8 @@ jobs:
         env:
           # add suffix for the extra images with coverage if building for production
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_FIPS: ${{ matrix.service[0] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
-          BUILD_TARGET: ${{ matrix.service[0] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
+          DOCKER_TAG_SUFFIX_FIPS: ${{ (matrix.service[0] == 'ddp-streamer-service' || matrix.service[0] == 'presence-service') && matrix.type == 'fips' && '-fips' || '' }}
+          BUILD_TARGET: ${{ (matrix.service[0] == 'ddp-streamer-service' || matrix.service[0] == 'presence-service') && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -336,8 +336,8 @@ jobs:
         if: matrix.service[1] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_FIPS: ${{ matrix.service[1] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
-          BUILD_TARGET: ${{ matrix.service[1] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
+          DOCKER_TAG_SUFFIX_FIPS: ${{ (matrix.service[1] == 'ddp-streamer-service' || matrix.service[1] == 'presence-service') && matrix.type == 'fips' && '-fips' || '' }}
+          BUILD_TARGET: ${{ (matrix.service[1] == 'ddp-streamer-service' || matrix.service[1] == 'presence-service') && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -355,8 +355,8 @@ jobs:
         if: matrix.service[2] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_FIPS: ${{ matrix.service[2] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
-          BUILD_TARGET: ${{ matrix.service[2] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
+          DOCKER_TAG_SUFFIX_FIPS: ${{ (matrix.service[2] == 'ddp-streamer-service' || matrix.service[2] == 'presence-service') && matrix.type == 'fips' && '-fips' || '' }}
+          BUILD_TARGET: ${{ (matrix.service[2] == 'ddp-streamer-service' || matrix.service[2] == 'presence-service') && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -374,8 +374,8 @@ jobs:
         if: matrix.service[3] && github.actor != 'dependabot[bot]'
         env:
           DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-          DOCKER_TAG_SUFFIX_FIPS: ${{ matrix.service[3] == 'ddp-streamer-service' && matrix.type == 'fips' && '-fips' || '' }}
-          BUILD_TARGET: ${{ matrix.service[3] == 'ddp-streamer-service' && matrix.type == 'fips' && 'release-fips' || '' }}
+          DOCKER_TAG_SUFFIX_FIPS: ${{ (matrix.service[3] == 'ddp-streamer-service' || matrix.service[3] == 'presence-service') && matrix.type == 'fips' && '-fips' || '' }}
+          BUILD_TARGET: ${{ (matrix.service[3] == 'ddp-streamer-service' || matrix.service[3] == 'presence-service') && matrix.type == 'fips' && 'release-fips' || '' }}
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
@@ -444,6 +444,8 @@ jobs:
             # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
             if [ "$service" == "rocketchat-cov" ]; then
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
+            elif [ "$service" == "presence-service-fips" ]; then
+              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "presence-service" '.services[$s].image')-fips
             elif [ "$service" == "ddp-streamer-service-fips" ]; then
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "ddp-streamer-service" '.services[$s].image')-fips
             else
