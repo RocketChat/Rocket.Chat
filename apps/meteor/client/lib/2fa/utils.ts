@@ -1,3 +1,5 @@
+import type { Meteor } from 'meteor/meteor';
+
 export const isTotpRequiredError = (
 	error: unknown,
 ): error is Meteor.Error & ({ error: 'totp-required' } | { errorType: 'totp-required' }) =>

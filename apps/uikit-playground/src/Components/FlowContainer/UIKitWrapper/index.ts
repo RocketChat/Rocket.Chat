@@ -1,1 +1,1 @@
-export {default} from './UIKitWrapper';
+export { default } from './UIKitWrapper';

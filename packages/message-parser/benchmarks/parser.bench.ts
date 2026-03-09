@@ -77,12 +77,12 @@ const categories: BenchCategory[] = [
 	{
 		name: 'Emoji',
 		fixtures: [
-			{ name: 'single shortcode', input: ':smile:' },
-			{ name: 'triple shortcode (BigEmoji)', input: ':smile::heart::rocket:' },
-			{ name: 'single unicode', input: '😀' },
-			{ name: 'triple unicode (BigEmoji)', input: '😀🚀🌈' },
-			{ name: 'in text', input: 'Hello :smile: world :heart: test :rocket: done' },
-			{ name: 'mixed', input: 'Great job :thumbsup: 🎉 keep going :rocket:' },
+			{ name: 'single shortcode', input: ':smile:', options: fullOptions },
+			{ name: 'triple shortcode (BigEmoji)', input: ':smile::heart::rocket:', options: fullOptions },
+			{ name: 'single unicode', input: '😀', options: fullOptions },
+			{ name: 'triple unicode (BigEmoji)', input: '😀🚀🌈', options: fullOptions },
+			{ name: 'in text', input: 'Hello :smile: world :heart: test :rocket: done', options: fullOptions },
+			{ name: 'mixed', input: 'Great job :thumbsup: 🎉 keep going :rocket:', options: fullOptions },
 		],
 	},
 	{
@@ -189,7 +189,7 @@ async function run() {
 	console.log();
 
 	// Benchmarks must run sequentially to avoid interference
-	// eslint-disable-next-line no-restricted-syntax
+
 	for (const category of categories) {
 		const bench = new Bench({
 			time: category.time ?? 1000,
@@ -200,7 +200,6 @@ async function run() {
 			bench.add(fixture.name, () => parse(fixture.input, fixture.options));
 		}
 
-		// eslint-disable-next-line no-await-in-loop
 		await bench.run();
 
 		console.log(`── ${category.name} ${'─'.repeat(Math.max(0, 56 - category.name.length))}`);

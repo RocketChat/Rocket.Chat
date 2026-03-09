@@ -479,7 +479,7 @@ export class CustomOAuth {
 const { updateOrCreateUserFromExternalService } = Accounts;
 
 Accounts.updateOrCreateUserFromExternalService = async function (...args /* serviceName, serviceData, options*/) {
-	for await (const hook of BeforeUpdateOrCreateUserFromExternalService) {
+	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		await hook.apply(this, args);
 	}
 
