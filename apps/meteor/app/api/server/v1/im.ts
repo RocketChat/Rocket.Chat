@@ -505,9 +505,12 @@ API.v1.addRoute(
 			const parseIds = (ids: string | undefined, field: string) =>
 				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
+			const userQuery = { ...query };
+			delete userQuery.rid;
+
 			const ourQuery = {
 				rid: room._id,
-				...query,
+				...userQuery,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
@@ -557,7 +560,9 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
-			const ourQuery = Object.assign({}, query, { rid: room._id });
+			const userQuery = { ...query };
+			delete userQuery.rid;
+			const ourQuery = Object.assign({}, userQuery, { rid: room._id });
 
 			const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
 				sort: sort || { ts: -1 },
