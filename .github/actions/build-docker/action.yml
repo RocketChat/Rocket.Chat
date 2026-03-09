@@ -86,6 +86,10 @@ runs:
       run: |
         set -o xtrace
         export DENO_VERSION="${{ inputs.deno-version }}"
+        compose_files=(-f docker-compose-ci.yml)
+        if [[ "${{ inputs.type }}" == 'fips' ]]; then
+          compose_files+=(-f docker-compose-ci.fips.yml)
+        fi
 
         # Removes unnecessary swc cores and sharp binaries to reduce image size
         swc_arch='x64'
@@ -111,11 +115,11 @@ runs:
           LOAD_OR_PUSH="--load"
         fi
 
-        # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
+        # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
+        IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
 
         docker buildx bake \
-          -f docker-compose-ci.yml \
+          "${compose_files[@]}" \
           ${LOAD_OR_PUSH} \
           --allow=fs.read=/tmp/build \
           --set "*.tags+=${IMAGE}-gha-run-${{ github.run_id }}" \
@@ -156,9 +160,13 @@ runs:
       shell: bash
       run: |
         set -o xtrace
+        compose_files=(-f docker-compose-ci.yml)
+        if [[ "${{ inputs.type }}" == 'fips' ]]; then
+          compose_files+=(-f docker-compose-ci.fips.yml)
+        fi
 
-        # Get image name from docker-compose-ci.yml
-        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
+        # Get image name from compose config
+        IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
 
         # Create directory for image archives
         mkdir -p /tmp/docker-images
