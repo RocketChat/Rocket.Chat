@@ -7,7 +7,7 @@ import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rock
 import { RoomBridge } from '@rocket.chat/apps-engine/server/bridges/RoomBridge';
 import type { ISubscription, IUser as ICoreUser, IRoom as ICoreRoom, IMessage as ICoreMessage } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms, Messages } from '@rocket.chat/models';
-import type { FindOptions, Sort } from 'mongodb';
+import type { Filter, FindOptions, Sort } from 'mongodb';
 
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
@@ -143,17 +143,37 @@ export class AppRoomBridge extends RoomBridge {
 	protected async getMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		this.orch.debugLog(`The App ${appId} is getting the messages of the room: "${roomId}" with options:`, options);
 
-		const { limit, skip = 0, sort: _sort, showThreadMessages } = options;
+		const { limit, skip = 0, sort: _sort, showThreadMessages, after, before } = options;
 
 		const messageConverter = this.orch.getConverters()?.get('messages');
 		if (!messageConverter) {
 			throw new Error('Message converter not found');
 		}
 
-		const threadFilterQuery = showThreadMessages ? {} : { tmid: { $exists: false } };
+		let sortDirection = _sort?.createdAt;
+		if (!sortDirection && (after || before)) {
+			sortDirection = 'asc';
+		}
 
-		// We support only one field for now
-		const sort: Sort | undefined = _sort?.createdAt ? { ts: _sort.createdAt } : undefined;
+		const isAsc = sortDirection !== 'desc';
+		const afterOp: '$gt' | '$lt' = isAsc ? '$gt' : '$lt';
+		const beforeOp: '$gt' | '$lt' = isAsc ? '$lt' : '$gt';
+
+		let ts: Filter<ICoreMessage>['ts'] | undefined;
+		if (after || before) {
+			ts = {};
+			if (after) {
+				(ts as Record<string, Date>)[afterOp] = after.createdAt;
+			}
+			if (before) {
+				(ts as Record<string, Date>)[beforeOp] = before.createdAt;
+			}
+		}
+
+		let sort: Sort | undefined;
+		if (sortDirection) {
+			sort = { ts: sortDirection };
+		}
 
 		const messageQueryOptions: FindOptions<ICoreMessage> = {
 			limit,
@@ -161,14 +181,7 @@ export class AppRoomBridge extends RoomBridge {
 			sort,
 		};
 
-		const query = {
-			rid: roomId,
-			_hidden: { $ne: true },
-			t: { $exists: false },
-			...threadFilterQuery,
-		};
-
-		const cursor = Messages.find(query, messageQueryOptions);
+		const cursor = Messages.findVisibleByRoomIdNotSystemMessages(roomId, ts, messageQueryOptions, showThreadMessages);
 
 		const messagePromises: Promise<IMessageRaw>[] = await cursor.map((message) => messageConverter.convertMessageRaw(message)).toArray();
 

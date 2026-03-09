@@ -8,11 +8,29 @@ import { AppPermissions } from '../permissions/AppPermissions';
 
 export const GetMessagesSortableFields = ['createdAt'] as const;
 
+export type GetMessagesCursor = {
+	createdAt: IMessageRaw['createdAt'];
+};
+
 export type GetMessagesOptions = {
 	limit: number;
-	skip: number;
-	sort: Record<(typeof GetMessagesSortableFields)[number], 'asc' | 'desc'>;
+	skip?: number;
+	sort?: Record<(typeof GetMessagesSortableFields)[number], 'asc' | 'desc'>;
 	showThreadMessages: boolean;
+	/**
+	 * Returns messages strictly after the provided cursor (timestamp based).
+	 * Useful for cursor-based pagination without using large skips.
+	 *
+	 * When `sort.createdAt` is `desc`, "after" is relative to that ordering (i.e. towards older messages).
+	 */
+	after?: GetMessagesCursor;
+	/**
+	 * Returns messages strictly before the provided cursor (timestamp based).
+	 * Useful for cursor-based pagination without using large skips.
+	 *
+	 * When `sort.createdAt` is `desc`, "before" is relative to that ordering (i.e. towards newer messages).
+	 */
+	before?: GetMessagesCursor;
 };
 
 /**

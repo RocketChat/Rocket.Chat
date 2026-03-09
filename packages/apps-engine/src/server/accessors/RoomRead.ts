@@ -32,14 +32,23 @@ export class RoomRead implements IRoomRead {
 			throw new Error(`Invalid limit provided. Expected number <= 100, got ${options.limit}`);
 		}
 
-		options.limit ??= 100;
-		options.showThreadMessages ??= true;
+		const after = typeof options.after !== 'undefined' ? this.parseMessageCursor(options.after, 'after') : undefined;
+		const before = typeof options.before !== 'undefined' ? this.parseMessageCursor(options.before, 'before') : undefined;
 
-		if (options.sort) {
-			this.validateSort(options.sort);
+		const completeOptions: GetMessagesOptions = {
+			limit: options.limit ?? 100,
+			skip: options.skip,
+			sort: options.sort,
+			showThreadMessages: options.showThreadMessages ?? true,
+			after,
+			before,
+		};
+
+		if (completeOptions.sort) {
+			this.validateSort(completeOptions.sort);
 		}
 
-		return this.roomBridge.doGetMessages(roomId, options as GetMessagesOptions, this.appId);
+		return this.roomBridge.doGetMessages(roomId, completeOptions, this.appId);
 	}
 
 	public getMembers(roomId: string): Promise<Array<IUser>> {
@@ -111,5 +120,36 @@ export class RoomRead implements IRoomRead {
 				throw new Error(`Invalid sort direction for field "${key}". Expected "asc" or "desc", got ${value}`);
 			}
 		});
+	}
+
+	private parseMessageCursor(cursor: unknown, optionName: string): { createdAt: Date } {
+		if (!cursor || typeof cursor !== 'object') {
+			throw new Error(`Invalid "${optionName}" cursor. Expected an object with { createdAt }.`);
+		}
+
+		const { createdAt } = cursor as Partial<{ createdAt: unknown }>;
+
+		let parsedCreatedAt: Date | undefined;
+		if (createdAt instanceof Date) {
+			parsedCreatedAt = createdAt;
+		} else if (typeof createdAt === 'string' || typeof createdAt === 'number') {
+			parsedCreatedAt = new Date(createdAt);
+		} else {
+			parsedCreatedAt = undefined;
+		}
+
+		if (!parsedCreatedAt || Number.isNaN(parsedCreatedAt.getTime())) {
+			let typeLabel: string = typeof createdAt;
+			if (createdAt === null) {
+				typeLabel = 'null';
+			} else if (Array.isArray(createdAt)) {
+				typeLabel = 'array';
+			}
+			throw new Error(`Invalid "${optionName}" cursor createdAt. Expected a valid Date, got ${typeLabel}`);
+		}
+
+		return {
+			createdAt: parsedCreatedAt,
+		};
 	}
 }

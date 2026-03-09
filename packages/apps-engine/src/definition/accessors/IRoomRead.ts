@@ -47,8 +47,14 @@ export interface IRoomRead {
 	 * @param options Optional parameters for retrieving messages:
 	 *                - limit: The maximum number of messages to retrieve. Maximum 100
 	 *                - skip: The number of messages to skip (for pagination).
+	 *                - after: Cursor to return messages strictly after a given message (timestamp based).
+	 *                - before: Cursor to return messages strictly before a given message (timestamp based).
 	 *                - sort: An object defining the sorting order of the messages. Each key is a field to sort by, and the value is either "asc" for ascending order or "desc" for descending order.
 	 *                - showThreadMessages: Whether to include thread messages in the results. Defaults to true.
+	 *
+	 * Cursor notes:
+	 * - Cursor filtering is timestamp-based.
+	 * - When sorting by `createdAt: "desc"`, "after"/"before" are relative to that ordering.
 	 * @returns A Promise that resolves to an array of IMessage objects representing the messages in the room.
 	 */
 	getMessages(roomId: string, options?: Partial<GetMessagesOptions>): Promise<Array<IMessageRaw>>;

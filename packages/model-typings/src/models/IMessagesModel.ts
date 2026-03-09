@@ -159,6 +159,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: FindOptions<IMessage>,
 		showThreadMessages?: boolean,
 	): FindCursor<IMessage>;
+	findVisibleByRoomIdNotSystemMessages(
+		roomId: IRoom['_id'],
+		ts: Filter<IMessage>['ts'] | undefined,
+		options?: FindOptions<IMessage>,
+		showThreadMessages?: boolean,
+	): FindCursor<IMessage>;
 	findFilesByRoomIdPinnedTimestampAndUsers(
 		rid: string,
 		excludePinned: boolean,
