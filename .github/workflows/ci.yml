@@ -20,6 +20,10 @@ concurrency:
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  DOCKER_BUILD_ARCHES_JSON: '["arm64","amd64"]'
+  DOCKER_BUILD_SERVICES_JSON: '["authorization-service","queue-worker-service","ddp-streamer-service","account-service","presence-service","omnichannel-transcript-service","rocketchat"]'
+  DOCKER_BUILD_EXTRA_COVERAGE_JSON: '[{"arch":"amd64","service":"rocketchat","type":"coverage"},{"arch":"arm64","service":"rocketchat","type":"coverage"}]'
+  DOCKER_BUILD_FIPS_SERVICES_JSON: '["ddp-streamer-service","presence-service"]'
 
 jobs:
   release-versions:
@@ -262,9 +266,48 @@ jobs:
           source-hash: ${{ needs.release-versions.outputs.source-hash }}
           type: ${{ matrix.type }}
 
+  build-gh-docker-matrix:
+    name: ⚙️ Build Docker Matrix
+    needs: [build]
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      matrix: ${{ steps.generate.outputs.matrix }}
+    steps:
+      - id: generate
+        env:
+          DOCKER_BUILD_ARCHES_JSON: ${{ env.DOCKER_BUILD_ARCHES_JSON }}
+          DOCKER_BUILD_SERVICES_JSON: ${{ env.DOCKER_BUILD_SERVICES_JSON }}
+          DOCKER_BUILD_EXTRA_COVERAGE_JSON: ${{ env.DOCKER_BUILD_EXTRA_COVERAGE_JSON }}
+          DOCKER_BUILD_FIPS_SERVICES_JSON: ${{ env.DOCKER_BUILD_FIPS_SERVICES_JSON }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+
+          const baseType = '${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}';
+          const arches = JSON.parse(process.env.DOCKER_BUILD_ARCHES_JSON);
+          const services = JSON.parse(process.env.DOCKER_BUILD_SERVICES_JSON);
+          const extraCoverageRows = JSON.parse(process.env.DOCKER_BUILD_EXTRA_COVERAGE_JSON);
+          const fipsServices = JSON.parse(process.env.DOCKER_BUILD_FIPS_SERVICES_JSON);
+
+          const include = [];
+          for (const arch of arches) {
+            for (const service of services) {
+              include.push({ arch, service, type: baseType });
+            }
+          }
+
+          if (baseType === 'production') {
+            include.push(...extraCoverageRows);
+          }
+
+          include.push(...fipsServices.map((service) => ({ arch: 'amd64', service, type: 'fips' })));
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify({ include })}\n`);
+          NODE
+
   build-gh-docker:
-    name: 🚢 Build Docker (${{ matrix.service }}-${{ matrix.type }}-${{ matrix.arch }})
-    needs: [build, release-versions]
+    name: 🚢 Build Docker (${{ matrix.service }}-${{ matrix.arch }}-${{ matrix.type }})
+    needs: [build, build-gh-docker-matrix, release-versions]
     runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
 
     env:
@@ -273,35 +316,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        arch: [arm64, amd64]
-        service: [authorization-service, queue-worker-service, ddp-streamer-service, account-service, presence-service, omnichannel-transcript-service, rocketchat]
-        type:
-          # if running in a PR build with coverage
-          - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
-        exclude:
-          # avoid duplicate rocketchat coverage rows in PRs (the include rows below handle coverage)
-          - arch: amd64
-            service: rocketchat
-            type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || '' }}
-          - arch: arm64
-            service: rocketchat
-            type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || '' }}
-        include:
-          # if not, build with coverage for tests
-          - arch: amd64
-            service: rocketchat
-            type: coverage
-          - arch: arm64
-            service: rocketchat
-            type: coverage
-          # build dedicated FIPS images for FIPS test lanes
-          - arch: amd64
-            service: ddp-streamer-service
-            type: fips
-          - arch: amd64
-            service: presence-service
-            type: fips
+      matrix: ${{ fromJSON(needs.build-gh-docker-matrix.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v6
