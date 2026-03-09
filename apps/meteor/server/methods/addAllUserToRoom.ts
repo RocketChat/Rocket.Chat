@@ -12,6 +12,7 @@ import { settings } from '../../app/settings/server';
 import { getDefaultSubscriptionPref } from '../../app/utils/lib/getDefaultSubscriptionPref';
 import { callbacks } from '../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../lib/getSubscriptionAutotranslateDefaultConfig';
+import type { IUser } from '@rocket.chat/core-typings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -36,35 +37,39 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 	if (activeUsersOnly === true) {
 		userFilter.active = true;
 	}
-	const count = await Users.countDocuments(userFilter);
-
-	if (count > settings.get<number>('API_User_Limit')) {
-		throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
-			method: 'addAllToRoom',
-		});
-	}
-	const usersCursor = Users.find(userFilter).batchSize(100);
-
+	
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
 			method: 'addAllToRoom',
 		});
 	}
+
+	const count = await Users.countDocuments(userFilter); 
+	if (count > settings.get<number>('API_User_Limit')) {
+		throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
+			method: 'addAllToRoom',
+		});
+	}
+	const usersCursor = Users.find(userFilter).batchSize(100)
+
+	const collectedUsers : IUser[] = [];
 	const usernames: string[] = [];
-	for await (const user of usersCursor) {
-		if (user.username) {
-			usernames.push(user.username);
+	for await(const user of usersCursor){
+		collectedUsers.push(user);
+		if(user.username){
+			usernames.push(user.username)
 		}
 	}
-	await beforeAddUserToRoom(usernames, room);
-
-	const users = Users.find(userFilter).batchSize(100);
+	await beforeAddUserToRoom(
+		usernames,
+		room
+	);
 
 	const now = new Date();
-	for await (const user of users) {
+	for  (const user of collectedUsers) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
-		if (subscription != null) {
+		if (subscription) {
 			continue;
 		}
 		await callbacks.run('beforeJoinRoom', user, room);
