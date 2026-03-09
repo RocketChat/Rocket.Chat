@@ -4,7 +4,7 @@ import { renderHook, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { ReactNode } from 'react';
 
-import { useDevicePermissionPrompt } from './useDevicePermissionPrompt';
+import { PermissionRequestCancelledCallRejectedError, useDevicePermissionPrompt2 } from './useDevicePermissionPrompt';
 
 const types = ['device-change', 'outgoing', 'incoming'] as const;
 
@@ -24,13 +24,11 @@ const appRoot = mockAppRoot()
 		VoIP_allow_and_accept: 'Allow and accept',
 		VoIP_cancel_and_reject: 'Cancel and reject',
 		Cancel: 'Cancel',
+		Allow: 'Allow',
 		VoIP_device_permission_required_description:
 			'Your web browser stopped {{workspaceUrl}} from using your microphone and/or speaker.\n\nAllow speaker and microphone access in your browser settings to prevent seeing this message again.',
 	})
 	.wrap(modalWrapper);
-
-const onAccept = jest.fn(() => undefined);
-const onReject = jest.fn(() => undefined);
 
 Object.defineProperty(global.navigator, 'mediaDevices', {
 	value: {
@@ -38,32 +36,33 @@ Object.defineProperty(global.navigator, 'mediaDevices', {
 	},
 });
 
-describe.each(types)('useDevicePermissionPrompt - Action: %s', (actionType) => {
+describe.each(types)('useDevicePermissionPrompt2 - Action: %s', (actionType) => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-	it('Should immediately call onAccept (permission granted)', async () => {
-		const { result } = renderHook(() => useDevicePermissionPrompt({ onAccept, onReject, actionType }), {
+	it('Should immediately resolve with stream (permission granted)', async () => {
+		const { result } = renderHook(() => useDevicePermissionPrompt2(), {
 			wrapper: appRoot.withMicrophonePermissionState({ state: 'granted' } as PermissionStatus).build(),
 		});
 
-		act(() => {
-			result.current();
+		let stream: MediaStream | undefined;
+		await act(async () => {
+			stream = await result.current({ actionType });
 		});
 
 		await waitFor(() => {
-			expect(onAccept).toHaveBeenCalled();
+			expect(stream).toBeDefined();
 			expect(result.current).toBeInstanceOf(Function);
 		});
 	});
 
 	it('Should open "denied" modal (permission denied)', async () => {
-		const { result } = renderHook(() => useDevicePermissionPrompt({ onAccept, onReject, actionType }), {
+		const { result } = renderHook(() => useDevicePermissionPrompt2(), {
 			wrapper: appRoot.withMicrophonePermissionState({ state: 'denied' } as PermissionStatus).build(),
 		});
 
 		act(() => {
-			result.current();
+			void result.current({ actionType });
 		});
 
 		const cancel = await screen.findByText('Cancel');
@@ -71,24 +70,22 @@ describe.each(types)('useDevicePermissionPrompt - Action: %s', (actionType) => {
 
 		await userEvent.click(cancel);
 
-		expect(onReject).not.toHaveBeenCalled();
-		// There is no accept button in the denied state modal
-		expect(onAccept).not.toHaveBeenCalled();
 		expect(cancel).not.toBeInTheDocument();
 	});
 });
 
-describe('useDevicePermissionPrompt - Permission state: prompt', () => {
+describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
-	it('Should open "incoming - prompt" modal and call respective actions', async () => {
-		const { result } = renderHook(() => useDevicePermissionPrompt({ onAccept, onReject, actionType: 'incoming' }), {
+	it('Should open "incoming - prompt" modal and resolve/reject respectively', async () => {
+		const { result } = renderHook(() => useDevicePermissionPrompt2(), {
 			wrapper: appRoot.withMicrophonePermissionState({ state: 'prompt' } as PermissionStatus).build(),
 		});
 
+		let acceptPromise!: Promise<MediaStream>;
 		act(() => {
-			result.current();
+			acceptPromise = result.current({ actionType: 'incoming' });
 		});
 
 		const accept = await screen.findByText('Allow and accept');
@@ -97,15 +94,17 @@ describe('useDevicePermissionPrompt - Permission state: prompt', () => {
 
 		await userEvent.click(accept);
 
-		expect(onAccept).toHaveBeenCalled();
-		expect(onReject).not.toHaveBeenCalled();
+		const stream = await acceptPromise;
+		expect(stream).toBeDefined();
 		expect(screen.queryByText('Allow and accept')).not.toBeInTheDocument();
 
 		jest.clearAllMocks();
 
+		let rejectPromise!: Promise<MediaStream>;
 		act(() => {
-			result.current();
+			rejectPromise = result.current({ actionType: 'incoming' });
 		});
+		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
 		const cancel = await screen.findByText('Cancel and reject');
 
@@ -114,18 +113,18 @@ describe('useDevicePermissionPrompt - Permission state: prompt', () => {
 
 		await userEvent.click(cancel);
 
-		expect(onReject).toHaveBeenCalled();
-		expect(onAccept).not.toHaveBeenCalled();
+		await rejectionExpectation;
 		expect(cancel).not.toBeInTheDocument();
 	});
 
-	it('Should open "outgoing - prompt" modal and call respective actions', async () => {
-		const { result } = renderHook(() => useDevicePermissionPrompt({ onAccept, onReject, actionType: 'outgoing' }), {
+	it('Should open "outgoing - prompt" modal and resolve / close on cancel', async () => {
+		const { result } = renderHook(() => useDevicePermissionPrompt2(), {
 			wrapper: appRoot.withMicrophonePermissionState({ state: 'prompt' } as PermissionStatus).build(),
 		});
 
+		let acceptPromise!: Promise<MediaStream>;
 		act(() => {
-			result.current();
+			acceptPromise = result.current({ actionType: 'outgoing' });
 		});
 
 		const accept = await screen.findByText('Allow and call');
@@ -134,14 +133,14 @@ describe('useDevicePermissionPrompt - Permission state: prompt', () => {
 
 		await userEvent.click(accept);
 
-		expect(onAccept).toHaveBeenCalled();
-		expect(onReject).not.toHaveBeenCalled();
+		const stream = await acceptPromise;
+		expect(stream).toBeDefined();
 		expect(screen.queryByText('Allow and call')).not.toBeInTheDocument();
 
 		jest.clearAllMocks();
 
 		act(() => {
-			result.current();
+			void result.current({ actionType: 'outgoing' });
 		});
 
 		const cancel = await screen.findByText('Cancel');
@@ -151,19 +150,17 @@ describe('useDevicePermissionPrompt - Permission state: prompt', () => {
 
 		await userEvent.click(cancel);
 
-		// The outgoing prompt modal only closes when the user clicks the cancel button, no function is called.
-		expect(onReject).not.toHaveBeenCalled();
-		expect(onAccept).not.toHaveBeenCalled();
 		expect(cancel).not.toBeInTheDocument();
 	});
 
-	it('Should open "device-change - prompt" modal and call respective actions', async () => {
-		const { result } = renderHook(() => useDevicePermissionPrompt({ onAccept, onReject, actionType: 'device-change' }), {
+	it('Should open "device-change - prompt" modal and resolve / close on cancel', async () => {
+		const { result } = renderHook(() => useDevicePermissionPrompt2(), {
 			wrapper: appRoot.withMicrophonePermissionState({ state: 'prompt' } as PermissionStatus).build(),
 		});
 
+		let acceptPromise!: Promise<MediaStream>;
 		act(() => {
-			result.current();
+			acceptPromise = result.current({ actionType: 'device-change' });
 		});
 
 		const accept = await screen.findByText('Allow');
@@ -172,14 +169,14 @@ describe('useDevicePermissionPrompt - Permission state: prompt', () => {
 
 		await userEvent.click(accept);
 
-		expect(onAccept).toHaveBeenCalled();
-		expect(onReject).not.toHaveBeenCalled();
+		const stream = await acceptPromise;
+		expect(stream).toBeDefined();
 		expect(screen.queryByText('Allow')).not.toBeInTheDocument();
 
 		jest.clearAllMocks();
 
 		act(() => {
-			result.current();
+			void result.current({ actionType: 'device-change' });
 		});
 
 		const cancel = await screen.findByText('Cancel');
@@ -189,9 +186,6 @@ describe('useDevicePermissionPrompt - Permission state: prompt', () => {
 
 		await userEvent.click(cancel);
 
-		// The device-change modal only closes when the user clicks the cancel button, no function is called.
-		expect(onReject).not.toHaveBeenCalled();
-		expect(onAccept).not.toHaveBeenCalled();
 		expect(cancel).not.toBeInTheDocument();
 	});
 });

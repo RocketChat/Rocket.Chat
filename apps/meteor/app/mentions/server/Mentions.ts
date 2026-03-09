@@ -59,7 +59,7 @@ export class MentionsServer extends MentionsParser {
 		const mentionsAll: { _id: string; username: string }[] = [];
 		const userMentions = new Set<string>();
 
-		for await (const m of mentions) {
+		for (const m of mentions) {
 			let mention: string;
 			if (m.includes(':')) {
 				mention = m.trim();

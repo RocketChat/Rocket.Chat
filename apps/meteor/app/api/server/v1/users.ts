@@ -113,7 +113,7 @@ API.v1.addRoute(
 				_id: this.user._id,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
-				username: this.user.username || '',
+				username: this.user.username,
 			});
 
 			await saveUser(this.userId, userData, { auditStore });
@@ -143,6 +143,7 @@ API.v1.addRoute(
 	'users.updateOwnBasicInfo',
 	{
 		authRequired: true,
+		userWithoutUsername: true,
 		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
 		rateLimiterOptions: {
 			numRequestsAllowed: 1,
@@ -922,7 +923,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.getUsernameSuggestion',
-	{ authRequired: true },
+	{ authRequired: true, userWithoutUsername: true },
 	{
 		async get() {
 			const result = await generateUsernameSuggestion(this.user);
