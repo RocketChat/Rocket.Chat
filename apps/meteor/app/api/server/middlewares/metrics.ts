@@ -29,14 +29,16 @@ export const metricsMiddleware =
 		// get rid of the base path (i.e.: /api/v1/)
 		const entrypoint = basePathRegex ? routePath.replace(basePathRegex, '') : routePath;
 
-		const labels = {
+		const histogramLabels = {
 			status: c.res.status,
 			method: method.toLowerCase(),
-			version: api.version,
-			...(settings.get('Prometheus_API_User_Agent') && { user_agent: c.req.header('user-agent') }),
 			entrypoint: basePathRegex && entrypoint.startsWith('method.call') ? decodeURIComponent(path.replace(basePathRegex, '')) : entrypoint,
 		};
 
-		rocketchatRestApiEnd(labels);
-		rocketchatRestApiHistEnd?.(labels);
+		rocketchatRestApiEnd({
+			...histogramLabels,
+			version: api.version,
+			...(settings.get('Prometheus_API_User_Agent') && { user_agent: c.req.header('user-agent') }),
+		});
+		rocketchatRestApiHistEnd?.(histogramLabels);
 	};

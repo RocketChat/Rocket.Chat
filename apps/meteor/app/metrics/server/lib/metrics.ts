@@ -82,7 +82,7 @@ export const metrics = {
 	rocketchatRestApiSeconds: new client.Histogram({
 		name: 'rocketchat_rest_api_seconds',
 		help: 'histogram of rocketchat rest api count and time in seconds',
-		labelNames: ['method', 'entrypoint', 'user_agent', 'status', 'version'],
+		labelNames: ['method', 'entrypoint', 'status'],
 		buckets: latencyBuckets,
 	}),
 
