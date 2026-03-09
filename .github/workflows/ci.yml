@@ -263,7 +263,7 @@ jobs:
           type: ${{ matrix.type }}
 
   build-gh-docker:
-    name: 🚢 Build Docker
+    name: 🚢 Build Docker (${{ matrix.service }}-${{ matrix.type }}-${{ matrix.arch }})
     needs: [build, release-versions]
     runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
 
@@ -275,26 +275,32 @@ jobs:
       fail-fast: false
       matrix:
         arch: [arm64, amd64]
-        service:
-          [
-            [authorization-service, queue-worker-service, ddp-streamer-service],
-            [account-service, presence-service, omnichannel-transcript-service],
-            [rocketchat],
-          ]
+        service: [authorization-service, queue-worker-service, ddp-streamer-service, account-service, presence-service, omnichannel-transcript-service, rocketchat]
         type:
           # if running in a PR build with coverage
           - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
+        exclude:
+          # avoid duplicate rocketchat coverage rows in PRs (the include rows below handle coverage)
+          - arch: amd64
+            service: rocketchat
+            type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || '' }}
+          - arch: arm64
+            service: rocketchat
+            type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || '' }}
         include:
           # if not, build with coverage for tests
           - arch: amd64
-            service: [rocketchat]
+            service: rocketchat
             type: coverage
           - arch: arm64
-            service: [rocketchat]
+            service: rocketchat
             type: coverage
           # build dedicated FIPS images for FIPS test lanes
           - arch: amd64
-            service: [ddp-streamer-service, presence-service]
+            service: ddp-streamer-service
+            type: fips
+          - arch: amd64
+            service: presence-service
             type: fips
 
     steps:
@@ -312,7 +318,7 @@ jobs:
           tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       # we only build and publish the actual docker images if not a PR from a fork
-      - name: Image ${{ matrix.service[0] }}
+      - name: Image ${{ matrix.service }}
         uses: ./.github/actions/build-docker
         if: github.actor != 'dependabot[bot]'
         env:
@@ -325,60 +331,9 @@ jobs:
           TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[0] }}
+          service: ${{ matrix.service }}
           type: ${{ matrix.type }}
           publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-
-      - name: Image ${{ matrix.service[1] || '"skipped"' }}
-        uses: ./.github/actions/build-docker
-        if: matrix.service[1] && github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[1] }}
-          type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-          setup-docker: false
-
-      - name: Image ${{ matrix.service[2] || '"skipped"' }}
-        uses: ./.github/actions/build-docker
-        if: matrix.service[2] && github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[2] }}
-          type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-          setup-docker: false
-
-      - name: Image ${{ matrix.service[3] || '"skipped"' }}
-        uses: ./.github/actions/build-docker
-        if: matrix.service[3] && github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[3] }}
-          type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-          setup-docker: false
 
   build-gh-docker-publish:
     name: 🚢 Publish Docker Images (ghcr.io)
