@@ -149,6 +149,7 @@ const pushTokenEndpoints = API.v1
 								},
 								voipToken: {
 									type: 'string',
+									nullable: true,
 								},
 							},
 							additionalProperties: false,

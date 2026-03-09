@@ -13,7 +13,7 @@ import { logger } from '../logger';
 async function getActorUser<T extends Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(
 	actor: MediaCallContact,
 ): Promise<T | null> {
-	const options = { projection: { name: 1, username: 1 } };
+	const options = { projection: { name: 1, username: 1, freeSwitchExtension: 1 } };
 
 	switch (actor.type) {
 		case 'user':
