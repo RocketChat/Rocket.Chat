@@ -413,7 +413,7 @@ const groupDeleteEndpoint = API.v1.post(
 		authRequired: true,
 		body: isGroupsDeleteProps,
 		response: {
-			200: ajv.compile<void>({
+			200: ajv.compile<{ success: true }>({
 				type: 'object',
 				properties: {
 					success: {
