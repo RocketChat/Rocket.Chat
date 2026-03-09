@@ -2,6 +2,9 @@ import { makeToken, Token, TokenKind } from './Token';
 import { EMOTICON_TRIE, getEmoticonShortCode } from './constants/emoticons';
 import { CH_LF, CH_CR } from './constants/charCodes';
 
+// Safety cap to avoid runaway tokenization on malformed input.
+export const MAX_TOKENS = 4096;
+
 export interface ScanContext {
     readonly input: string;
     readonly len: number;
@@ -20,6 +23,7 @@ export function isLineStart(pos: number, prevCode: number): boolean {
 // Flush accumulated text as a TEXT token
 export function flushText(ctx: ScanContext, pos: number): void {
     if (ctx.textStart === -1) return;
+    if (ctx.tokens.length >= MAX_TOKENS) { ctx.textStart = -1; return; }
     const raw = ctx.input.slice(ctx.textStart, pos);
     ctx.tokens.push(makeToken(TokenKind.TEXT, raw, raw, ctx.textStart));
     ctx.textStart = -1;
@@ -32,6 +36,7 @@ export function emit(
     value: string,
     start: number,
 ): void {
+    if (ctx.tokens.length >= MAX_TOKENS) return;
     ctx.tokens.push(makeToken(kind, raw, value, start));
 }
 

@@ -1,11 +1,8 @@
 import { makeToken, Token, TokenKind } from './Token';
-import { ScanContext, flushText } from './ScanContext';
+import { ScanContext, flushText, MAX_TOKENS } from './ScanContext';
 import { CHAR_CLASS, isUnicodeEmojiStart } from './constants/charSets';
 import { SCANNER_TABLE } from './scanners/index';
 import { scanUnicodeEmoji } from './scanners/emoji';
-
-// Safety cap to avoid runaway tokenization on malformed input.
-const MAX_TOKENS = 4096;
 
 export class Lexer {
     private readonly _input: string;
