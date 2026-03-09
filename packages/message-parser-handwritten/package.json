@@ -18,8 +18,8 @@
   },
   "exports": {
     ".": {
-      "default": "./dist/messageParser.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/messageParser.js"
     }
   },
   "main": "dist/messageParser.js",
