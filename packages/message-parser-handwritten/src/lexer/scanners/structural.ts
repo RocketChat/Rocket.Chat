@@ -1,4 +1,4 @@
-import { ScanContext, flushText, emit } from '../ScanContext';
+import { ScanContext, flushText, emit, tryEmoticon } from '../ScanContext';
 import { TokenKind } from '../Token';
 import { CH_LBRACKET, CH_RBRACKET, CH_LPAREN, CH_RPAREN } from '../constants/charCodes';
 import { ESCAPABLE, WS_ASCII } from '../constants/charSets';
@@ -29,6 +29,9 @@ export function scanEscape(ctx: ScanContext, pos: number): number {
         emit(ctx, TokenKind.ESCAPED, `\\${escaped}`, escaped, pos);
         return pos + 2;
     }
+
+    const emResult = tryEmoticon(ctx, pos);
+    if (emResult !== false) return emResult;
 
     // not a recognized escape
     if (ctx.textStart === -1) ctx.textStart = pos;

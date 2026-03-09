@@ -8,10 +8,10 @@ import {
     CH_DASH,
     CH_0, CH_9, CH_COLON, CH_SEMICOLON,
     CH_LT, CH_EQ, CH_GT, CH_AT,
-    CH_B_UP, CH_D_UP, CH_X_UP,
+    CH_B_UP, CH_D_UP, CH_O_UP, CH_X_UP,
     CH_LBRACKET, CH_BACKSLASH, CH_RBRACKET, CH_UNDERSCORE, CH_BACKTICK,
     CH_C_LO, CH_Y_LO,
-    CH_PIPE, CH_TILDE,
+    CH_PIPE, CH_TILDE, CH_OUT_QUOTE,
 } from '../constants/charCodes';
 
 import { scanNewline, scanEscape, scanWhitespace } from './structural';
@@ -80,5 +80,7 @@ register(CH_B_UP, scanEmoticonStarter);
 register(CH_PERCENT, scanEmoticonStarter);
 register(CH_LPAREN, scanEmoticonStarter);
 register(CH_Y_LO, scanEmoticonStarter);
+register(CH_OUT_QUOTE, scanEmoticonStarter);
+register(CH_O_UP, scanEmoticonStarter);
 
 export { SCANNER_TABLE };
