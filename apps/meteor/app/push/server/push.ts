@@ -18,7 +18,7 @@ export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
 const PUSH_TITLE_LIMIT = 65;
 const PUSH_MESSAGE_BODY_LIMIT = 240;
-const PUSH_GATEWAY_MAX_ATTEMPTS = 5;
+const PUSH_GATEWAY_MAX_RETRIES = 5;
 
 type FCMCredentials = {
 	type: string;
@@ -255,7 +255,7 @@ class PushClass {
 		service: 'apn' | 'gcm',
 		token: string,
 		notification: Optional<GatewayNotification, 'uniqueId'>,
-		retryOptions: { tries: number; maxTries: number } = { tries: 0, maxTries: PUSH_GATEWAY_MAX_ATTEMPTS },
+		retryOptions: { tries: number; maxRetries: number } = { tries: 0, maxRetries: PUSH_GATEWAY_MAX_RETRIES },
 	): Promise<void> {
 		notification.uniqueId = this.options.uniqueId;
 
@@ -293,17 +293,17 @@ class PushClass {
 			return;
 		}
 
-		const { tries, maxTries } = retryOptions;
+		const { tries, maxRetries } = retryOptions;
 
 		logger.error({ msg: 'Error sending push to gateway', tries, err: response });
 
-		if (tries < maxTries) {
+		if (tries < maxRetries) {
 			// [1, 2, 4, 8, 16] minutes (total 31)
 			const ms = 60000 * Math.pow(2, tries);
 
 			logger.log({ msg: 'Retrying push to gateway', tries: tries + 1, in: ms });
 
-			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, { tries: tries + 1, maxTries }), ms);
+			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, { tries: tries + 1, maxRetries }), ms);
 		}
 	}
 
@@ -330,7 +330,7 @@ class PushClass {
 		const gatewayNotification = this.getGatewayNotificationData(notification);
 		const retryOptions = {
 			tries: 0,
-			maxTries: notification.useVoipToken ? 1 : PUSH_GATEWAY_MAX_ATTEMPTS,
+			maxRetries: notification.useVoipToken ? 0 : PUSH_GATEWAY_MAX_RETRIES,
 		};
 
 		for (const gateway of this.options.gateways) {
