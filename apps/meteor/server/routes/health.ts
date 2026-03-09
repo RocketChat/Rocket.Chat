@@ -121,7 +121,7 @@ WebApp.rawHandlers.use('/livez', (_req: IncomingMessage, res: ServerResponse) =>
 	setDefaultHeaders(res);
 
 	res.writeHead(200);
-	res.end(JSON.stringify({ status: 'ok' }));
+	res.end('ok');
 });
 
 /**
