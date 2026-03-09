@@ -110,6 +110,7 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 	}
 
 	metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
+	metrics.messagesSentTotal.inc();
 
 	const message: Pick<IMessage, 'ts' | 'msg' | 'groupable' | 'rid' | 'sentByEmail' | 'tmid'> = {
 		ts: tsDiff < 10000 ? ts : new Date(),

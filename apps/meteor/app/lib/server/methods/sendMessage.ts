@@ -106,6 +106,7 @@ export async function executeSendMessage(
 		}
 
 		metrics.messagesSent.inc(); // TODO This line needs to be moved to it's proper place. See the comments on: https://github.com/RocketChat/Rocket.Chat/pull/5736
+		metrics.messagesSentTotal.inc();
 		return await sendMessage(user, message, room, { previewUrls: extraInfo?.previewUrls });
 	} catch (err: any) {
 		SystemLogger.error({ msg: 'Error sending message:', err });

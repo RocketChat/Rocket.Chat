@@ -134,6 +134,14 @@ const callback = (msg, name) => async (reply, input) => {
 			name: input.name,
 			connection_id: input.connectionId,
 		});
+		metrics.ddpRateLimitExceededTotal.inc({
+			limit_name: name,
+			user_id: input.userId,
+			client_address: input.clientAddress,
+			type: input.type,
+			name: input.name,
+			connection_id: input.connectionId,
+		});
 		// sleep before sending the error to slow down next requests
 		if (slowDownRate > 0 && reply.numInvocationsExceeded) {
 			await sleep(slowDownRate * reply.numInvocationsExceeded);

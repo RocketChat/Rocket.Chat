@@ -57,11 +57,14 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 
 		const method = name === 'stream' ? `${name}:${originalArgs[0]}` : name;
 
-		const end = metrics.meteorMethods.startTimer({
+		const meteorMethodLabels = {
 			method,
 			has_connection: this.connection != null,
 			has_user: this.userId != null,
-		});
+		};
+
+		const end = metrics.meteorMethods.startTimer(meteorMethodLabels);
+		const endHistogram = metrics.meteorMethodsSeconds.startTimer(meteorMethodLabels);
 
 		logger.method({
 			method,
@@ -84,6 +87,7 @@ const wrapMethods = function (name, originalHandler, methodsMap) {
 			async () => {
 				const result = await originalHandler.apply(this, originalArgs);
 				end();
+				endHistogram();
 				return result;
 			},
 		);
@@ -115,10 +119,12 @@ Meteor.publish = function (name, func) {
 		});
 
 		const end = metrics.meteorSubscriptions.startTimer({ subscription: name });
+		const endHistogram = metrics.meteorSubscriptionsSeconds.startTimer({ subscription: name });
 
 		const originalReady = this.ready;
 		this.ready = function () {
 			end();
+			endHistogram();
 			return originalReady.apply(this, args);
 		};
 

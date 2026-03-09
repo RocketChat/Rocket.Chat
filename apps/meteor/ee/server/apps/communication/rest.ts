@@ -72,7 +72,7 @@ export class AppsRestApi {
 		const logger = new Logger('APPS');
 		this.api.router
 			.use(loggerMiddleware(logger))
-			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/apps\//), api: this.api, settings, summary: metrics.rocketchatRestApi }))
+			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/apps\//), api: this.api, settings, summary: metrics.rocketchatRestApi, histogram: metrics.rocketchatRestApiSeconds }))
 			.use(tracerSpanMiddleware);
 
 		this.addManagementRoutes();
