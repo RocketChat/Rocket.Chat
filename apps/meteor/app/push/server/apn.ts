@@ -34,7 +34,7 @@ export const sendAPN = ({
 
 	const note = new apn.Notification();
 
-	if (notification.voip) {
+	if (notification.useVoipToken) {
 		note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires in 60 seconds
 		note.pushType = 'voip';
 	} else {
