@@ -946,7 +946,6 @@
   "FileUpload_S3_Proxy_Uploads": "代理上传",
   "FileUpload_S3_Proxy_Uploads_Description": "代理通过您的服务器上传文件传输，而不是直接访问资产的URL",
   "FileUpload_S3_Region": "地区",
-  "FileUpload_S3_SignatureVersion": "签名版本",
   "FileUpload_S3_URLExpiryTimeSpan": "网址过期Timespan",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "在此之后，Amazon S3生成的URL将不再有效（以秒为单位）。如果设置为小于5秒，则该字段将被忽略。",
   "FileUpload_Storage_Type": "存储类型",

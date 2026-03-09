@@ -1405,7 +1405,6 @@
   "FileUpload_S3_Proxy_Uploads": "프록시 업로드",
   "FileUpload_S3_Proxy_Uploads_Description": "애셋의 URL에 직접 액세스하는 대신 서버를 통해 프록시 전송 파일 전송",
   "FileUpload_S3_Region": "리전",
-  "FileUpload_S3_SignatureVersion": "서명 버전",
   "FileUpload_S3_URLExpiryTimeSpan": "URL 만료 시간",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Amazon S3에서 생성된 URL 유효시간(초 단위). 5초 미만으로 설정하면이 무시됩니다.",
   "FileUpload_Storage_Type": "저장소 유형",

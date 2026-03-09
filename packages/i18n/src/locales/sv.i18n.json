@@ -2166,7 +2166,6 @@
   "FileUpload_S3_Proxy_UserDataFiles": "Datafiler Proxyanvändare",
   "FileUpload_S3_Proxy_UserDataFiles_Description": "Överföring av  datafiler för proxyanvändare sker via din server i stället för direktåtkomst till tillgångens URL",
   "FileUpload_S3_Region": "Område",
-  "FileUpload_S3_SignatureVersion": "Signaturversion",
   "FileUpload_S3_URLExpiryTimeSpan": "URL-sändningstiden",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Tid efter vilken Amazon S3-genererade webbadresser inte längre kommer att vara giltiga (i sekunder). Om den är inställd på mindre än 5 sekunder, ignoreras det här fältet.",
   "FileUpload_Storage_Type": "Lagringstyp",

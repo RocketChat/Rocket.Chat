@@ -1740,7 +1740,6 @@
   "FileUpload_S3_Proxy_Uploads": "Proxyfeltöltések",
   "FileUpload_S3_Proxy_Uploads_Description": "Proxyfeltöltés fájlátvitelek a kiszolgálón keresztül az eszköz URL-jének közvetlen elérése helyett",
   "FileUpload_S3_Region": "Régió",
-  "FileUpload_S3_SignatureVersion": "Aláírás verziója",
   "FileUpload_S3_URLExpiryTimeSpan": "URL-ek lejárati időtartama",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Az az idő, amely után az Amazon S3 által előállított URL-ek többé nem lesznek érvényesek (másodpercben). Ha 5 másodpercnél kevesebbre van állítva, akkor ez a mező mellőzve lesz.",
   "FileUpload_Storage_Type": "Tároló típusa",

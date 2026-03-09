@@ -929,7 +929,6 @@
   "FileUpload_S3_Proxy_Uploads": "Ngarkimet proxy",
   "FileUpload_S3_Proxy_Uploads_Description": "Proxy ngarkon transmetimet e skedarëve përmes serverit tuaj në vend të qasjes direkte në URL-në e asetit",
   "FileUpload_S3_Region": "Rajon",
-  "FileUpload_S3_SignatureVersion": "Versioni i Nënshkrimit",
   "FileUpload_S3_URLExpiryTimeSpan": "Periudhat e skadimit të URL-ve",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Koha pas së cilës URL-të e krijuara nga Amazon S3 nuk do të jenë më të vlefshme (në sekonda). Nëse vendoset në më pak se 5 sekonda, kjo fushë do të injorohet.",
   "FileUpload_Storage_Type": "Storage Lloji",
