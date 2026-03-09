@@ -147,6 +147,8 @@ runs:
             SERVICE_SUFFIX='-cov'
           elif [[ "$INPUT_SERVICE" == 'ddp-streamer-service' && "$INPUT_TYPE" == 'fips' ]]; then
             SERVICE_SUFFIX='-fips'
+          elif [[ "$INPUT_SERVICE" == 'presence-service' && "$INPUT_TYPE" == 'fips' ]]; then
+            SERVICE_SUFFIX='-fips'
           fi
 
           mkdir -p "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}"
