@@ -88,14 +88,13 @@ services:
     build:
       dockerfile: ee/apps/presence-service/Dockerfile
       context: .
-      target: ${BUILD_TARGET:-release-standard}
       x-bake:
         platforms:
           - linux/amd64
           - linux/arm64
       args:
         SERVICE: presence-service
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_FIPS:-}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
@@ -109,14 +108,13 @@ services:
     build:
       dockerfile: ee/apps/ddp-streamer/Dockerfile
       context: .
-      target: ${BUILD_TARGET:-release-standard}
       x-bake:
         platforms:
           - linux/amd64
           - linux/arm64
       args:
         SERVICE: ddp-streamer
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_FIPS:-}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
