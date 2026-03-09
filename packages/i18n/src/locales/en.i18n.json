@@ -989,6 +989,7 @@
   "Call_ended_bold": "*Voice call ended*",
   "Call_not_answered_bold": "*Voice call not answered*",
   "Call_failed_bold": "*Voice call failed*",
+  "Call_feature_unsupported": "Other party doesn't support this",
   "Call_transferred_bold": "*Voice call transferred*",
   "Call_history": "Call history",
   "Call_history_provides_a_record_of_when_calls_took_place_and_who_joined": "Call history provides a record of when calls took place and who joined.",

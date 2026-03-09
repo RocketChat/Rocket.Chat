@@ -5,6 +5,7 @@ import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
+import { DEFAULT_CALL_FEATURES } from '../../constants';
 import { logger } from '../../logger';
 import { buildNewCallSignal } from '../../server/buildNewCallSignal';
 import { getMediaCallServer } from '../../server/injection';
@@ -151,6 +152,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			requestedService: call.service,
 			requestedBy: call.transferredBy,
 			parentCallId: call._id,
+			features: DEFAULT_CALL_FEATURES,
 		});
 	}
 
