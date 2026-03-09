@@ -48,7 +48,7 @@ export const permissionsMiddleware =
 				return c.json(forbidden.body, forbidden.statusCode);
 			}
 
-			const failure = API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+			const failure = API.v1.unauthorized('User does not have the permissions required for this action [error-unauthorized]');
 			return c.json(failure.body, failure.statusCode);
 		}
 
