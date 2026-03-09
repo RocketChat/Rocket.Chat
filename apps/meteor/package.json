@@ -400,7 +400,7 @@
 		"@types/underscore": "^1.13.0",
 		"@types/xml-crypto": "~1.4.6",
 		"@types/xml-encryption": "~1.2.4",
-		"@vitejs/plugin-react": "~5.1.4",
+		"@vitejs/plugin-react": "~6.0.0-beta.0",
 		"autoprefixer": "^9.8.8",
 		"babel-loader": "~10.0.0",
 		"babel-plugin-array-includes": "^2.0.3",
