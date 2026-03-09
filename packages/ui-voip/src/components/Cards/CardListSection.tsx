@@ -9,7 +9,7 @@ export const SECTION_MAX_HEIGHT = 50;
 
 const CardListSection = ({ children }: CardListSectionProps) => {
 	return (
-		<Box display='flex' flexGrow={1} flexShrink={1} overflow='auto' justifyContent='stretch' alignItems='center'>
+		<Box display='flex' flexGrow={1} flexShrink={1} overflow='auto' justifyContent='stretch' alignItems='center' p={2}>
 			{children}
 		</Box>
 	);
