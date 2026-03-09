@@ -2,10 +2,13 @@ import type { Page } from '@playwright/test';
 
 import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
+import type { IUserState } from './fixtures/userStates';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createTargetChannel, deleteChannel, setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
+import type { ITestUser } from './utils/user-helpers';
+import { createTestUser, loginTestUser } from './utils/user-helpers';
 
 test.use({ storageState: Users.admin.state });
 
@@ -14,11 +17,20 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 	let targetChannel: string;
 	let user1Context: { page: Page; poHomeChannel: HomeChannel } | undefined;
 	let user2Context: { page: Page; poHomeChannel: HomeChannel } | undefined;
+	let testUser1: ITestUser;
+	let testUser2: ITestUser;
+	let testUser1State: IUserState;
+	let testUser2State: IUserState;
 
 	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api, { members: ['user1', 'user2'] });
+		testUser1 = await createTestUser(api);
+		testUser2 = await createTestUser(api);
+
+		[testUser1State, testUser2State] = await Promise.all([loginTestUser(api, testUser1), loginTestUser(api, testUser2)]);
+
+		targetChannel = await createTargetChannel(api, { members: [testUser1.data.username, testUser2.data.username] });
 		await setSettingValueById(api, 'Message_Read_Receipt_Enabled', true);
 		await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true);
 	});
@@ -27,10 +39,8 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 		await setSettingValueById(api, 'Message_Read_Receipt_Enabled', false);
 		await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', false);
 
-		await api.post('/users.setActiveStatus', { userId: Users.user1.data._id, activeStatus: true });
-		await api.post('/users.setActiveStatus', { userId: Users.user2.data._id, activeStatus: true });
-
 		await deleteChannel(api, targetChannel);
+		await Promise.all([testUser1?.delete(), testUser2?.delete()]);
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -50,11 +60,11 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 	});
 
 	test('should correctly handle read receipts as users are deactivated', async ({ browser, api, page }) => {
-		const { page: page1 } = await createAuxContext(browser, Users.user1);
+		const { page: page1 } = await createAuxContext(browser, testUser1State);
 		const user1Ctx = { page: page1, poHomeChannel: new HomeChannel(page1) };
 		user1Context = user1Ctx;
 
-		const { page: page2 } = await createAuxContext(browser, Users.user2);
+		const { page: page2 } = await createAuxContext(browser, testUser2State);
 		const user2Ctx = { page: page2, poHomeChannel: new HomeChannel(page2) };
 		user2Context = user2Ctx;
 
@@ -77,7 +87,7 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 		});
 
 		await test.step('when some users are deactivated', async () => {
-			await api.post('/users.setActiveStatus', { userId: Users.user1.data._id, activeStatus: false });
+			await api.post('/users.setActiveStatus', { userId: testUser1.data._id, activeStatus: false });
 
 			await poHomeChannel.content.sendMessage('Message 2: User1 deactivated, two active users');
 
@@ -92,7 +102,7 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 		});
 
 		await test.step('when only one user remains active (user alone in room)', async () => {
-			await api.post('/users.setActiveStatus', { userId: Users.user2.data._id, activeStatus: false });
+			await api.post('/users.setActiveStatus', { userId: testUser2.data._id, activeStatus: false });
 
 			await poHomeChannel.content.sendMessage('Message 3: Only admin active');
 
@@ -103,8 +113,5 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 			await expect(page.getByRole('dialog').getByRole('listitem')).toHaveCount(1);
 			await page.getByRole('button', { name: 'Close' }).click();
 		});
-
-		await api.post('/users.setActiveStatus', { userId: Users.user1.data._id, activeStatus: true });
-		await api.post('/users.setActiveStatus', { userId: Users.user2.data._id, activeStatus: true });
 	});
 });
