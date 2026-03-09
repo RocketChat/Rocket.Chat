@@ -21,6 +21,9 @@ import {
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	PaginatedRequest,
+	PaginatedResult,
+	DefaultUserInfo,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -723,14 +726,9 @@ const usersEndpoints = API.v1
 							url: string;
 						}
 					>;
-					success: boolean;
 				}>({
 					type: 'object',
 					properties: {
-						success: {
-							type: 'boolean',
-							enum: [true],
-						},
 						suggestions: {
 							type: 'object',
 							additionalProperties: {
@@ -746,7 +744,7 @@ const usersEndpoints = API.v1
 							},
 						},
 					},
-					required: ['success', 'suggestions'],
+					required: ['suggestions'],
 					additionalProperties: false,
 				}),
 			},
@@ -760,14 +758,9 @@ const usersEndpoints = API.v1
 		'users.list',
 		{
 			authRequired: true,
+			queryOperations: ['$or', '$and'],
 			permissionsRequired: ['view-d-room'],
-			query: ajv.compile<{
-				offset?: string;
-				count?: string;
-				sort?: string;
-				fields?: string;
-				query?: string;
-			}>({
+			query: ajv.compile<PaginatedRequest<{ fields?: string; query?: string }>>({
 				type: 'object',
 				properties: {
 					offset: { type: 'string', nullable: true },
@@ -780,13 +773,7 @@ const usersEndpoints = API.v1
 				additionalProperties: false,
 			}),
 			response: {
-				200: ajv.compile<{
-					users: IUser[];
-					count: number;
-					offset: number;
-					total: number;
-					success: boolean;
-				}>({
+				200: ajv.compile<PaginatedResult<{ users: DefaultUserInfo[] }>>({
 					type: 'object',
 					properties: {
 						users: {
@@ -796,20 +783,18 @@ const usersEndpoints = API.v1
 						count: { type: 'number' },
 						offset: { type: 'number' },
 						total: { type: 'number' },
-						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['users', 'count', 'offset', 'total', 'success'],
+					required: ['users', 'count', 'offset', 'total'],
 					additionalProperties: false,
 				}),
 				400: validateBadRequestErrorResponse,
 				403: ajv.compile({
 					type: 'object',
 					properties: {
-						success: { type: 'boolean', enum: [false] },
 						error: { type: 'string' },
 						errorType: { type: 'string' },
 					},
-					required: ['success', 'error'],
+					required: ['error'],
 					additionalProperties: false,
 				}),
 			},
