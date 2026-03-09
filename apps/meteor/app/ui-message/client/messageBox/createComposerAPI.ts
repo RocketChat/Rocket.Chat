@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
-import { Tracker } from 'meteor/tracker';
 import type { RefObject } from 'react';
 
 import { limitQuoteChain } from './limitQuoteChain';
@@ -223,48 +222,83 @@ export const createComposerAPI = (
 	};
 
 	const wrapSelection = (pattern: string): void => {
-		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
-		const initText = input.value.slice(0, selectionStart);
-		const selectedText = input.value.slice(selectionStart, selectionEnd);
-		const finalText = input.value.slice(selectionEnd, input.value.length);
+		const token = '{{text}}';
+		const i = pattern.indexOf(token);
+		if (i === -1) return;
+
+		const startPattern = pattern.slice(0, i);
+		const endPattern = pattern.slice(i + token.length);
+
+		const text = input.value;
+		let { selectionStart: start, selectionEnd: end } = input;
 
 		focus();
 
-		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
+		const before = text.slice(0, start);
+		const selected = text.slice(start, end);
+		const after = text.slice(end);
 
-		if (startPatternFound) {
-			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = input.value.slice(selectionEnd, selectionEnd + endPattern.length) === endPattern;
+		const left = before.lastIndexOf(startPattern);
+		const rightRelative = after.indexOf(endPattern);
+		const right = rightRelative === -1 ? -1 : end + rightRelative;
 
-			if (endPatternFound) {
-				insertText(selectedText);
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = selectionEnd + endPattern.length;
+		const inside =
+			left !== -1 &&
+			right !== -1 &&
+			left + startPattern.length <= start &&
+			right >= end;
 
-				if (!document.execCommand?.('insertText', false, selectedText)) {
-					input.value = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
-				}
+		if (inside) {
+			const unwrapStart = left;
+			const unwrapEnd = right + endPattern.length;
 
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = input.selectionStart + selectedText.length;
-				triggerEvent(input, 'input');
-				triggerEvent(input, 'change');
+			const inner = text.slice(
+				left + startPattern.length,
+				right
+			);
 
-				focus();
-				return;
+			input.setSelectionRange(unwrapStart, unwrapEnd);
+
+			if (!document.execCommand?.('insertText', false, inner)) {
+				input.value =
+					text.slice(0, unwrapStart) +
+					inner +
+					text.slice(unwrapEnd);
 			}
+
+			const pos = unwrapStart;
+			input.setSelectionRange(pos, pos + inner.length);
+
+			triggerEvent(input, 'input');
+			triggerEvent(input, 'change');
+			focus();
+			return;
 		}
 
-		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
-			input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
+		if (!selected && before.endsWith(startPattern)) {
+			const newBefore = before.slice(0, before.length - startPattern.length);
+			input.value = newBefore + after;
+			const pos = newBefore.length;
+			input.setSelectionRange(pos, pos);
+			triggerEvent(input, 'input');
+			triggerEvent(input, 'change');
+			focus();
+			return;
 		}
 
-		input.selectionStart = selectionStart + pattern.indexOf('{{text}}');
-		input.selectionEnd = input.selectionStart + selectedText.length;
+		const wrapped = `${startPattern}${selected}${endPattern}`;
+
+		input.setSelectionRange(start, end);
+
+		if (!document.execCommand?.('insertText', false, wrapped)) {
+			input.value = before + wrapped + after;
+		}
+
+		const caret = start + startPattern.length;
+		input.setSelectionRange(caret, caret + selected.length);
+
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
-
 		focus();
 	};
 
