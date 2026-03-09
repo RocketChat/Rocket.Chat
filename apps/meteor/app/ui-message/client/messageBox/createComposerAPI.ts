@@ -221,49 +221,79 @@ export const createComposerAPI = (
 		stopFormatterTracker.stop();
 	};
 
-	const wrapSelection = (pattern: string): void => {
+		const wrapSelection = (pattern: string): void => {
 		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
-		const initText = input.value.slice(0, selectionStart);
-		const selectedText = input.value.slice(selectionStart, selectionEnd);
-		const finalText = input.value.slice(selectionEnd, input.value.length);
+		const fullText = input.value;
+
+		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
+		const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
+
+		let start = selectionStart;
+		let end = selectionEnd;
+
+		const selectedText = fullText.slice(start, end);
+
+		const isWrapped = (
+			text: string,
+			startIdx: number,
+			endIdx: number,
+		): boolean => {
+			return (
+				startIdx >= startPattern.length &&
+				text.slice(startIdx - startPattern.length, startIdx) === startPattern &&
+				text.slice(endIdx, endIdx + endPattern.length) === endPattern
+			);
+		};
+
+		if (start === end) {
+			while (start > 0 && !/\s/.test(fullText[start - 1])) start--;
+			while (end < fullText.length && !/\s/.test(fullText[end])) end++;
+		}
+
+		const expandedText = fullText.slice(start, end);
 
 		focus();
 
-		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
+		if (isWrapped(fullText, start, end)) {
+			const before = fullText.slice(0, start - startPattern.length);
+			const after = fullText.slice(end + endPattern.length);
 
-		if (startPatternFound) {
-			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
-
-			if (endPatternFound) {
-				insertText(selectedText);
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = selectionEnd + endPattern.length;
-
-				if (!document.execCommand?.('insertText', false, selectedText)) {
-					input.value = initText.slice(0, initText.length - startPattern.length) + selectedText + finalText.slice(endPattern.length);
-				}
-
-				input.selectionStart = selectionStart - startPattern.length;
-				input.selectionEnd = input.selectionStart + selectedText.length;
-				triggerEvent(input, 'input');
-				triggerEvent(input, 'change');
-
-				focus();
-				return;
+			if (!document.execCommand?.('insertText', false, expandedText)) {
+				input.value = before + expandedText + after;
 			}
+
+			input.selectionStart = start - startPattern.length;
+			input.selectionEnd = input.selectionStart + expandedText.length;
+
+			triggerEvent(input, 'input');
+			triggerEvent(input, 'change');
+			focus();
+			return;
 		}
 
-		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {
-			input.value = initText + pattern.replace('{{text}}', selectedText) + finalText;
+		if (
+			fullText.slice(start - startPattern.length, start) === startPattern &&
+			fullText.slice(end, end + endPattern.length) === endPattern
+		) {
+			input.selectionStart = start;
+			input.selectionEnd = end;
+			focus();
+			return;
 		}
 
-		input.selectionStart = selectionStart + pattern.indexOf('{{text}}');
-		input.selectionEnd = input.selectionStart + selectedText.length;
+		const wrapped = `${startPattern}${expandedText}${endPattern}`;
+		const before = fullText.slice(0, start);
+		const after = fullText.slice(end);
+
+		if (!document.execCommand?.('insertText', false, wrapped)) {
+			input.value = before + wrapped + after;
+		}
+
+		input.selectionStart = start + startPattern.length;
+		input.selectionEnd = input.selectionStart + expandedText.length;
+
 		triggerEvent(input, 'input');
 		triggerEvent(input, 'change');
-
 		focus();
 	};
 

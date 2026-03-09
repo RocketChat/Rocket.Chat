@@ -1,5 +1,5 @@
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FormattingToolbarDropdown from './FormattingToolbarDropdown';
@@ -17,6 +17,28 @@ type MessageBoxFormattingToolbarProps = {
 const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disabled }: MessageBoxFormattingToolbarProps) => {
 	const { t } = useTranslation();
 
+	const [activeModes, setActiveModes] = useState<Record<string, boolean>>({});
+
+	const toggleMode = (pattern: string, label: string) => {
+		const token = '{{text}}';
+		const tokenIndex = pattern.indexOf(token);
+		if (tokenIndex === -1) return;
+
+		const startPattern = pattern.slice(0, tokenIndex);
+		const endPattern = pattern.slice(tokenIndex + token.length);
+
+		const isActive = activeModes[label];
+
+		const { start, end } = composer.selection;
+		if (start === end) {
+			composer.insertText(isActive ? endPattern : startPattern);
+			setActiveModes((prev) => ({ ...prev, [label]: !isActive }));
+			return;
+		}
+
+		composer.wrapSelection(pattern);
+	};
+
 	if (variant === 'small') {
 		const collapsedItems = [...items];
 		const featuredFormatter = collapsedItems.splice(0, 1)[0];
@@ -26,11 +48,14 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 				{'icon' in featuredFormatter && (
 					<MessageComposerAction
 						onClick={() =>
-							isPromptButton(featuredFormatter) ? featuredFormatter.prompt(composer) : composer.wrapSelection(featuredFormatter.pattern)
+							isPromptButton(featuredFormatter)
+								? featuredFormatter.prompt(composer)
+								: toggleMode(featuredFormatter.pattern, featuredFormatter.label)
 						}
 						icon={featuredFormatter.icon}
 						title={t(featuredFormatter.label)}
 						disabled={disabled}
+						pressed={!!activeModes[featuredFormatter.label]}
 					/>
 				)}
 				<FormattingToolbarDropdown composer={composer} items={collapsedItems} disabled={disabled} />
@@ -48,6 +73,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 						key={formatter.label}
 						data-id={formatter.label}
 						title={t(formatter.label)}
+						pressed={!!activeModes[formatter.label]}
 						onClick={(): void => {
 							if (isPromptButton(formatter)) {
 								formatter.prompt(composer);
@@ -57,7 +83,7 @@ const MessageBoxFormattingToolbar = ({ items, variant = 'large', composer, disab
 								window.open(formatter.link, '_blank', 'rel=noreferrer noopener');
 								return;
 							}
-							composer.wrapSelection(formatter.pattern);
+							toggleMode(formatter.pattern, formatter.label);
 						}}
 					/>
 				) : (

@@ -17,7 +17,6 @@ type TextButton = {
 type PatternButton = {
 	icon: IconName;
 	pattern: string;
-	// text?: () => string | undefined;
 	command?: string;
 	link?: string;
 } & FormattingButtonDefault;
@@ -35,19 +34,19 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
 		label: 'Bold',
 		icon: 'bold',
-		pattern: '*{{text}}*',
+		pattern: '**{{text}}**', 
 		command: 'b',
 	},
 	{
 		label: 'Italic',
 		icon: 'italic',
-		pattern: '_{{text}}_',
+		pattern: '\u200B_{{text}}_\u200B',
 		command: 'i',
 	},
 	{
 		label: 'Strikethrough',
 		icon: 'strike',
-		pattern: '~{{text}}~',
+		pattern: '~~{{text}}~~', 
 	},
 	{
 		label: 'Inline_code',
@@ -57,7 +56,7 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 	{
 		label: 'Multi_line_code',
 		icon: 'multiline',
-		pattern: '```\n{{text}}\n``` ',
+		pattern: '```\n{{text}}\n```',
 	},
 	{
 		label: 'Link',
@@ -73,7 +72,6 @@ export const formattingButtons: ReadonlyArray<FormattingButton> = [
 			};
 
 			const onConfirm = (url: string, text: string) => {
-				// Composer API can't handle the selection of the text while the modal is open
 				flushSync(() => {
 					onClose();
 				});
