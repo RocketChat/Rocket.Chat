@@ -19,7 +19,7 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 	ajv,
-	validateForbiddenErrorResponse,
+	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
