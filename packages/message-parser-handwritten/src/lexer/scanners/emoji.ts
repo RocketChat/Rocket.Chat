@@ -39,7 +39,6 @@ export function scanUnicodeEmoji(ctx: ScanContext, pos: number): number {
             const lo2 = input.charCodeAt(i + 1);
             if (lo2 >= 0xdffb && lo2 <= 0xdfff) i += 2;
         }
-        }
     }
 
     const raw = input.slice(pos, i);
