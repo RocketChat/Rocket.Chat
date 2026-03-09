@@ -744,7 +744,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		if (!this.isFeatureAvailable('screen-share')) {
-			return;
+			this.throwError('Screen sharing is not available for this call.');
 		}
 
 		this.requireWebRTC();
