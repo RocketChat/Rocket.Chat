@@ -18,7 +18,6 @@ const ForwardMessageAction = ({ message, room }: ForwardMessageActionProps) => {
 	const { t } = useTranslation();
 
 	const encrypted = isE2EEMessage(message);
-	// @ts-expect-error to be implemented
 	const isABACEnabled = !!room.abacAttributes;
 
 	const getTitle = useMemo(() => {
@@ -36,7 +35,6 @@ const ForwardMessageAction = ({ message, room }: ForwardMessageActionProps) => {
 			id='forward-message'
 			icon='arrow-forward'
 			title={getTitle}
-			qa='Forward_message'
 			disabled={encrypted || isABACEnabled}
 			onClick={async () => {
 				const permalink = await getPermaLink(message._id);

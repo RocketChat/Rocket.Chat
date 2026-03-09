@@ -1,14 +1,4 @@
-import {
-	Button,
-	Modal,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalHeader,
-	ModalIcon,
-	ModalTitle,
-} from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 type ReturnChatQueueModalProps = {
@@ -16,26 +6,20 @@ type ReturnChatQueueModalProps = {
 	onCancel: () => void;
 };
 
-const ReturnChatQueueModal = ({ onCancel, onMoveChat, ...props }: ReturnChatQueueModalProps) => {
+const ReturnChatQueueModal = ({ onCancel, onMoveChat }: ReturnChatQueueModalProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Modal {...props} data-qa-id='return-to-queue-modal'>
-			<ModalHeader>
-				<ModalIcon name='burger-arrow-left' />
-				<ModalTitle>{t('Return_to_the_queue')}</ModalTitle>
-				<ModalClose onClick={onCancel} />
-			</ModalHeader>
-			<ModalContent fontScale='p2'>{t('Would_you_like_to_return_the_queue')}</ModalContent>
-			<ModalFooter>
-				<ModalFooterControllers>
-					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button primary onClick={onMoveChat}>
-						{t('Confirm')}
-					</Button>
-				</ModalFooterControllers>
-			</ModalFooter>
-		</Modal>
+		<GenericModal
+			variant='warning'
+			icon='burger-arrow-left'
+			title={t('Return_to_the_queue')}
+			onConfirm={onMoveChat}
+			onCancel={onCancel}
+			confirmText={t('Confirm')}
+		>
+			{t('Would_you_like_to_return_the_queue')}
+		</GenericModal>
 	);
 };
 

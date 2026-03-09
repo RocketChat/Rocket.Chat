@@ -10,7 +10,7 @@ import type {
 	RandomStringFactory,
 	ServerMediaSignal,
 } from '../definition';
-import type { IClientMediaCall, CallActorType, CallContact } from '../definition/call';
+import type { IClientMediaCall, CallActorType, CallContact, CallFeature } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
 
 export type MediaSignalingEvents = {
@@ -30,6 +30,8 @@ export type MediaSignalingSessionConfig = {
 	randomStringFactory: RandomStringFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
+	iceServers?: RTCIceServer[];
+	features: CallFeature[];
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -90,7 +92,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public isBusy(): boolean {
-		return this.getMainCall()?.busy ?? false;
+		return this.getMainCall(false)?.busy ?? false;
 	}
 
 	public enableStateReport(interval: number): void {
@@ -126,12 +128,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.knownCalls.get(callId) || null;
 	}
 
-	public getMainCall(): IClientMediaCall | null {
+	public getMainCall(skipLocal = false): IClientMediaCall | null {
 		let ringingCall: IClientMediaCall | null = null;
 		let pendingCall: IClientMediaCall | null = null;
 
 		for (const call of this.knownCalls.values()) {
 			if (call.state === 'hangup' || call.ignored) {
+				continue;
+			}
+			if (skipLocal && !call.confirmed) {
 				continue;
 			}
 
@@ -193,12 +198,16 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public async startCall(calleeType: CallActorType, calleeId: string, params: { contactInfo?: CallContact } = {}): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
+		if (this.getMainCall(false)) {
+			throw new Error(`Already on a call.`);
+		}
+
 		const { contactInfo } = params;
 
 		const callId = this.createTemporaryCallId();
 		const call = this.createCall(callId);
 
-		await call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
+		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
 	}
 
 	public register(): void {
@@ -213,6 +222,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public setIceGatheringTimeout(newTimeout: number): void {
 		this.config.iceGatheringTimeout = newTimeout;
+	}
+
+	public setIceServers(iceServers: RTCIceServer[]): void {
+		this.config.iceServers = iceServers;
 	}
 
 	private createTemporaryCallId(): string {
@@ -323,7 +336,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.inputTrack = newInputTrack;
 
-		for await (const call of this.knownCalls.values()) {
+		for (const call of this.knownCalls.values()) {
 			await call.setInputTrack(newInputTrack).catch((error) => {
 				if (newInputTrack) {
 					throw error;
@@ -414,7 +427,20 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return this.hangupCallsThatNeedInput();
 		}
 
-		return this.setInputTrack(tracks[0]);
+		const inputTrack = tracks[0];
+
+		// If we no longer have a call that can use this track, just release it
+		if (inputTrack && !this.mayNeedInputTrack()) {
+			try {
+				// Stop the track so the browser doesn't have to wait for GC to detect that the stream is not in use
+				inputTrack.stop();
+			} catch {
+				// we don't care if this failed
+			}
+			return;
+		}
+
+		return this.setInputTrack(inputTrack);
 	}
 
 	private hangupCallsThatNeedInput(): void {
@@ -433,12 +459,20 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 	}
 
-	private async maybeStopInputTrack(): Promise<void> {
-		this.config.logger?.debug('MediaSignalingSession.maybeStopInputTrack');
+	private mayNeedInputTrack(): boolean {
 		for (const call of this.knownCalls.values()) {
 			if (call.mayNeedInputTrack()) {
-				return;
+				return true;
 			}
+		}
+
+		return false;
+	}
+
+	private async maybeStopInputTrack(): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.maybeStopInputTrack');
+		if (this.mayNeedInputTrack()) {
+			return;
 		}
 
 		await this.setInputTrack(null);
@@ -450,8 +484,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			logger: this.config.logger,
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,
-			iceGatheringTimeout: this.config.iceGatheringTimeout || 1000,
+			iceGatheringTimeout: this.config.iceGatheringTimeout || 5000,
+			iceServers: this.config.iceServers || [],
 			sessionId: this._sessionId,
+			supportedFeatures: this.config.features,
 		};
 
 		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack });
@@ -462,11 +498,13 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('clientStateChange', () => this.onCallClientStateChange(call));
 		call.emitter.on('trackStateChange', () => this.onTrackStateChange(call));
 		call.emitter.on('initialized', () => this.onNewCall(call));
+		call.emitter.on('confirmed', () => this.onConfirmedCall(call));
 		call.emitter.on('accepted', () => this.onAcceptedCall(call));
 		call.emitter.on('accepting', () => this.onAcceptingCall(call));
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ended', () => this.onEndedCall(call));
+		call.emitter.on('streamChange', () => this.onSessionStateChange());
 
 		return call;
 	}
@@ -488,6 +526,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onNewCall(_call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onNewCall');
+		this.onSessionStateChange();
+	}
+
+	private onConfirmedCall(_call: ClientMediaCall): void {
+		this.config.logger?.debug('MediaSignalingSession.onConfirmedCall');
 		this.onSessionStateChange();
 	}
 
@@ -523,14 +566,15 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private onSessionStateChange(): void {
-		const mainCall = this.getMainCall();
-		const hasCall = Boolean(mainCall);
-		const hasVisibleCall = Boolean(mainCall && !mainCall.hidden);
-		const hasBusyCall = Boolean(hasVisibleCall && mainCall?.busy);
-
 		const hadCall = this.lastState.hasCall;
 		const hadVisibleCall = this.lastState.hasVisibleCall;
 		const hadBusyCall = this.lastState.hasBusyCall;
+
+		// Do not skip local calls if we transitioned from a different active call to it
+		const mainCall = this.getMainCall(!hadCall);
+		const hasCall = Boolean(mainCall);
+		const hasVisibleCall = Boolean(mainCall && !mainCall.hidden);
+		const hasBusyCall = Boolean(hasVisibleCall && mainCall?.busy);
 
 		this.lastState = { hasCall, hasVisibleCall, hasBusyCall };
 

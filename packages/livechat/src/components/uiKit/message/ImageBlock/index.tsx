@@ -66,18 +66,19 @@ const ImageBlock = ({ appId, blockId, title, imageUrl, altText, parser }: ImageB
 	return (
 		<Block appId={appId} blockId={blockId}>
 			<div className={createClassName(styles, 'uikit-image-block')}>
-				{title && <h3 className={createClassName(styles, 'uikit-image-block__title')}>{parser.text(title)}</h3>}
+				{title && <h3 className={createClassName(styles, 'uikit-image-block__title')}>{parser.renderTextObject(title, 0)}</h3>}
 				<div className={createClassName(styles, 'uikit-image-block__content', { loading })} style={contentStyle}>
 					<div className={createClassName(styles, 'uikit-image-block__wrapper')} style={wrapperStyle}>
 						<a
-							children={imageUrl}
 							className={createClassName(styles, 'uikit-image-block__link')}
 							href={imageUrl}
 							rel='noopener noreferrer'
 							style={linkStyle}
 							target='_blank'
 							title={altText}
-						/>
+						>
+							{imageUrl}
+						</a>
 					</div>
 				</div>
 			</div>

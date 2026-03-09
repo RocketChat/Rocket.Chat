@@ -26,7 +26,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		super(db, 'media_calls', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { createdAt: 1 }, unique: false },
 			{ key: { ended: 1, uids: 1, expiresAt: 1 }, unique: false },
@@ -70,7 +70,11 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async acceptCallById(callId: string, data: { calleeContractId: string }, expiresAt: Date): Promise<UpdateResult> {
+	public async acceptCallById(
+		callId: string,
+		data: { calleeContractId: string; supportedFeatures: string[] },
+		expiresAt: Date,
+	): Promise<UpdateResult> {
 		const { calleeContractId } = data;
 
 		return this.updateOne(
@@ -84,6 +88,11 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					'callee.contractId': calleeContractId,
 					'acceptedAt': new Date(),
 					expiresAt,
+				},
+				$pull: {
+					features: {
+						$nin: data.supportedFeatures,
+					},
 				},
 			},
 		);

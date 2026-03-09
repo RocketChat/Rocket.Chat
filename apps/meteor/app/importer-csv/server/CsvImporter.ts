@@ -19,7 +19,7 @@ export class CsvImporter extends Importer {
 		this.csvParser = parse;
 	}
 
-	async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
+	override async prepareUsingLocalFile(fullFilePath: string): Promise<ImporterProgress> {
 		this.logger.debug('start preparing import operation');
 		await this.converter.clearImportData();
 
@@ -40,7 +40,7 @@ export class CsvImporter extends Importer {
 					oldRate = rate;
 				}
 			} catch (e) {
-				this.logger.error(e);
+				this.logger.error({ msg: 'Error while increasing CSV import progress', err: e });
 			}
 		};
 
@@ -65,19 +65,19 @@ export class CsvImporter extends Importer {
 			return roomId;
 		};
 
-		for await (const entry of zip.getEntries()) {
-			this.logger.debug(`Entry: ${entry.entryName}`);
+		for (const entry of zip.getEntries()) {
+			this.logger.debug({ msg: 'Entry', entryName: entry.entryName });
 
 			// Ignore anything that has `__MACOSX` in it's name, as sadly these things seem to mess everything up
 			if (entry.entryName.indexOf('__MACOSX') > -1) {
-				this.logger.debug(`Ignoring the file: ${entry.entryName}`);
+				this.logger.debug({ msg: 'Ignoring the file', entryName: entry.entryName });
 				increaseProgressCount();
 				continue;
 			}
 
 			// Directories are ignored, since they are "virtual" in a zip file
 			if (entry.isDirectory) {
-				this.logger.debug(`Ignoring the directory entry: ${entry.entryName}`);
+				this.logger.debug({ msg: 'Ignoring the directory entry', entryName: entry.entryName });
 				increaseProgressCount();
 				continue;
 			}
@@ -88,7 +88,7 @@ export class CsvImporter extends Importer {
 				const parsedChannels = this.csvParser(entry.getData().toString());
 				channelsCount = parsedChannels.length;
 
-				for await (const c of parsedChannels) {
+				for (const c of parsedChannels) {
 					const name = c[0].trim();
 					const id = getRoomId(name);
 					const creator = c[1].trim();
@@ -121,7 +121,7 @@ export class CsvImporter extends Importer {
 				const parsedUsers = this.csvParser(entry.getData().toString());
 				usersCount = parsedUsers.length;
 
-				for await (const u of parsedUsers) {
+				for (const u of parsedUsers) {
 					const username = u[0].trim();
 					availableUsernames.add(username);
 
@@ -168,7 +168,7 @@ export class CsvImporter extends Importer {
 				try {
 					msgs = this.csvParser(entry.getData().toString());
 				} catch (e) {
-					this.logger.warn(`The file ${entry.entryName} contains invalid syntax`, e);
+					this.logger.warn({ msg: 'The file contains invalid syntax', entryName: entry.entryName, err: e });
 					increaseProgressCount();
 					continue;
 				}
@@ -196,7 +196,7 @@ export class CsvImporter extends Importer {
 				await super.updateRecord({ messagesstatus: channelName });
 
 				if (isDirect) {
-					for await (const msg of data) {
+					for (const msg of data) {
 						if (!msg.otherUsername) {
 							continue;
 						}
@@ -229,7 +229,7 @@ export class CsvImporter extends Importer {
 				} else {
 					const rid = getRoomId(folderName);
 
-					for await (const msg of data) {
+					for (const msg of data) {
 						const newMessage = {
 							rid,
 							u: {
@@ -258,7 +258,7 @@ export class CsvImporter extends Importer {
 		}
 
 		// Check if any of the message usernames was not in the imported list of users
-		for await (const username of usedUsernames) {
+		for (const username of usedUsernames) {
 			if (availableUsernames.has(username)) {
 				continue;
 			}
@@ -277,7 +277,7 @@ export class CsvImporter extends Importer {
 
 		// Ensure we have at least a single record of any kind
 		if (usersCount === 0 && channelsCount === 0 && messagesCount === 0 && contactsCount === 0) {
-			this.logger.error('No valid record found in the import file.');
+			this.logger.error({ msg: 'No valid record found in the import file.' });
 			await super.updateProgress(ProgressStep.ERROR);
 		}
 

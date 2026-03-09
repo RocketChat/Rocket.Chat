@@ -10,11 +10,6 @@ import {
 	ContextualbarClose,
 	ContextualbarTitle,
 	ContextualbarDialog,
-} from '@rocket.chat/ui-client';
-import { useTranslation } from 'react-i18next';
-
-import RoomInfoActions from './RoomInfoActions';
-import {
 	InfoPanel,
 	InfoPanelActionGroup,
 	InfoPanelAvatar,
@@ -23,7 +18,10 @@ import {
 	InfoPanelSection,
 	InfoPanelText,
 	InfoPanelTitle,
-} from '../../../../../components/InfoPanel';
+} from '@rocket.chat/ui-client';
+import { useTranslation } from 'react-i18next';
+
+import RoomInfoActions from './RoomInfoActions';
 import RetentionPolicyCallout from '../../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useRetentionPolicy } from '../../../hooks/useRetentionPolicy';

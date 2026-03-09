@@ -1,21 +1,10 @@
-import { ContextualbarV2EmptyContent, ContextualbarEmptyContent as ContextualbarEmptyContentComponent } from '@rocket.chat/fuselage';
+import { ContextualbarV2EmptyContent } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { forwardRef, memo } from 'react';
 
-import { FeaturePreview, FeaturePreviewOff, FeaturePreviewOn } from '../FeaturePreview';
-
-const ContextualbarEmptyContent = forwardRef<HTMLElement, ComponentProps<typeof ContextualbarEmptyContentComponent>>(
+const ContextualbarEmptyContent = forwardRef<HTMLElement, ComponentProps<typeof ContextualbarV2EmptyContent>>(
 	function ContextualbarEmptyContent(props, ref) {
-		return (
-			<FeaturePreview feature='newNavigation'>
-				<FeaturePreviewOff>
-					<ContextualbarEmptyContentComponent ref={ref} {...props} />
-				</FeaturePreviewOff>
-				<FeaturePreviewOn>
-					<ContextualbarV2EmptyContent ref={ref} {...props} />
-				</FeaturePreviewOn>
-			</FeaturePreview>
-		);
+		return <ContextualbarV2EmptyContent ref={ref} {...props} />;
 	},
 );
 

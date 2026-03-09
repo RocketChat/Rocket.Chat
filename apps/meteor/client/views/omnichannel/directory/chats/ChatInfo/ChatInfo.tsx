@@ -1,18 +1,17 @@
 import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
+import { ContextualbarScrollableContent, ContextualbarFooter, InfoPanelField, InfoPanelLabel, InfoPanelText } from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission, useUserId } from '@rocket.chat/ui-contexts';
-import moment from 'moment';
 import { useMemo } from 'react';
 
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
-import { InfoPanelField, InfoPanelLabel, InfoPanelText } from '../../../../../components/InfoPanel';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
+import { useFormattedRelativeTime } from '../../../../../hooks/useFormattedRelativeTime';
 import CustomField from '../../../components/CustomField';
 import { useValidCustomFields } from '../../../contactInfo/hooks/useValidCustomFields';
 import { AgentField, SlaField, ContactField, SourceField } from '../../components';
@@ -25,7 +24,6 @@ type ChatInfoProps = {
 	route: keyof IRouterPaths;
 };
 
-// TODO: Remove moment we are mixing moment and our own formatters :sadface:
 function ChatInfo({ id, route }: ChatInfoProps) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -53,6 +51,10 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 		source,
 		queuedAt,
 	} = room ?? {};
+
+	const inactivityTime = useFormattedRelativeTime(
+		responseBy?.lastMessageTs ? Date.now() - new Date(responseBy.lastMessageTs).getTime() : 0,
+	);
 
 	const routePath = useRoute(route || 'omnichannel-directory');
 	const subscription = useUserSubscription(id);
@@ -125,10 +127,10 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 							<InfoPanelText>{queueTime}</InfoPanelText>
 						</InfoPanelField>
 					)}
-					{closedAt && (
+					{closedAt && ts && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
-							<InfoPanelText>{moment(closedAt).from(moment(ts), true)}</InfoPanelText>
+							<InfoPanelText>{formatDuration((new Date(closedAt).getTime() - new Date(ts).getTime()) / 1000)}</InfoPanelText>
 						</InfoPanelField>
 					)}
 					{ts && (
@@ -158,7 +160,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 					{!waitingResponse && responseBy?.lastMessageTs && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>
-							<InfoPanelText>{moment(responseBy.lastMessageTs).fromNow(true)}</InfoPanelText>
+							<InfoPanelText>{inactivityTime}</InfoPanelText>
 						</InfoPanelField>
 					)}
 					{customFieldEntries?.length > 0 &&

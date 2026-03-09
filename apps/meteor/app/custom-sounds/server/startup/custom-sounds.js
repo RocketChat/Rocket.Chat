@@ -1,3 +1,4 @@
+import { CustomSounds } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
@@ -7,7 +8,7 @@ import { settings } from '../../../settings/server';
 
 export let RocketChatFileCustomSoundsInstance;
 
-Meteor.startup(() => {
+const initializeCustomSoundsStorage = () => {
 	let storeType = 'GridFS';
 
 	if (settings.get('CustomSounds_Storage_Type')) {
@@ -20,7 +21,10 @@ Meteor.startup(() => {
 		throw new Error(`Invalid RocketChatStore type [${storeType}]`);
 	}
 
-	SystemLogger.info(`Using ${storeType} for custom sounds storage`);
+	SystemLogger.info({
+		msg: 'Using custom sounds storage',
+		storeType,
+	});
 
 	let path = '~/uploads';
 	if (settings.get('CustomSounds_FileSystemPath') != null) {
@@ -33,7 +37,10 @@ Meteor.startup(() => {
 		name: 'custom_sounds',
 		absolutePath: path,
 	});
+};
 
+Meteor.startup(() => {
+	initializeCustomSoundsStorage();
 	return WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
 		const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
 
@@ -44,7 +51,17 @@ Meteor.startup(() => {
 			return;
 		}
 
+		const sound = await CustomSounds.findOneById(fileId.split('.')[0], { projection: { _id: 1 } });
+
+		if (!sound) {
+			res.writeHead(404);
+			res.write('Not found');
+			res.end();
+			return;
+		}
+
 		const file = await RocketChatFileCustomSoundsInstance.getFileWithReadStream(fileId);
+
 		if (!file) {
 			res.writeHead(404);
 			res.write('Not found');
@@ -83,3 +100,5 @@ Meteor.startup(() => {
 		file.readStream.pipe(res);
 	});
 });
+
+settings.watchMultiple(['CustomSounds_Storage_Type', 'CustomSounds_FileSystemPath'], initializeCustomSoundsStorage);

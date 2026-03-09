@@ -106,9 +106,9 @@ export class CachedSettings
 	 * @param _id - The setting id
 	 * @returns {boolean}
 	 */
-	public has(_id: ISetting['_id']): boolean {
+	public override has(_id: ISetting['_id']): boolean {
 		if (!this.ready && warn) {
-			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
+			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 		return this.store.has(_id);
 	}
@@ -120,7 +120,7 @@ export class CachedSettings
 	 */
 	public getSetting(_id: ISetting['_id']): ISetting | undefined {
 		if (!this.ready && warn) {
-			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
+			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 		return this.store.get(_id);
 	}
@@ -134,7 +134,7 @@ export class CachedSettings
 	 */
 	public get<T extends SettingValue = SettingValue>(_id: ISetting['_id']): T {
 		if (!this.ready && warn) {
-			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
+			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 		return this.store.get(_id)?.value as T;
 	}
@@ -148,7 +148,7 @@ export class CachedSettings
 	 */
 	public getByRegexp<T extends SettingValue = SettingValue>(_id: RegExp): [string, T][] {
 		if (!this.ready && warn) {
-			SystemLogger.warn(`Settings not initialized yet. getting: ${_id}`);
+			SystemLogger.warn({ msg: 'Settings not initialized yet. getting', _id });
 		}
 
 		return [...this.store.entries()].filter(([key]) => _id.test(key)).map(([key, setting]) => [key, setting.value]) as [string, T][];
@@ -181,9 +181,15 @@ export class CachedSettings
 			const settings = _id.map((id) => this.store.get(id)?.value);
 			callback(settings as T[]);
 		}
-		const mergeFunction = _.debounce((): void => {
-			callback(_id.map((id) => this.store.get(id)?.value) as T[]);
-		}, 100);
+
+		const mergeFunction =
+			process.env.TEST_MODE !== 'true'
+				? _.debounce((): void => {
+						callback(_id.map((id) => this.store.get(id)?.value) as T[]);
+					}, 100)
+				: (): void => {
+						callback(_id.map((id) => this.store.get(id)?.value) as T[]);
+					};
 
 		const fns = _id.map((id) => this.on(id, mergeFunction));
 		return (): void => {

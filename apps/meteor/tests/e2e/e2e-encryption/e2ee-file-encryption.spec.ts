@@ -1,7 +1,6 @@
-import { faker } from '@faker-js/faker';
-
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { createTargetGroupAndReturnFullRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -15,10 +14,11 @@ const settingsList = [
 
 const originalSettings = preserveSettings(settingsList);
 
+test.use({ storageState: Users.userE2EE.state });
+
 test.describe('E2EE File Encryption', () => {
 	let poHomeChannel: HomeChannel;
-
-	test.use({ storageState: Users.userE2EE.state });
+	let encryptedRoomId: string;
 
 	test.beforeAll(async ({ api }) => {
 		await api.post('/settings/E2E_Enable', { value: true });
@@ -33,22 +33,28 @@ test.describe('E2EE File Encryption', () => {
 		await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' });
 	});
 
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ api, page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		const { group } = await createTargetGroupAndReturnFullRoom(api, {
+			extraData: {
+				broadcast: false,
+				encrypted: true,
+			},
+			members: [Users.userE2EE.data._id],
+		});
+
+		encryptedRoomId = group._id;
+
+		await page.goto(`/group/${group.name}`);
+		await page.locator('#main-content').waitFor();
+		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+	});
+
+	test.afterEach(async ({ api }) => {
+		expect((await api.post('/groups.delete', { roomId: encryptedRoomId })).status()).toBe(200);
 	});
 
 	test('File and description encryption and editing the description', async ({ page }) => {
-		await test.step('create an encrypted channel', async () => {
-			const channelName = faker.string.uuid();
-
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-
-			await expect(page).toHaveURL(`/group/${channelName}`);
-
-			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-		});
-
 		await test.step('send a file in channel', async () => {
 			await poHomeChannel.content.dragAndDropTxtFile();
 			await poHomeChannel.content.descriptionInput.fill('any_description');
@@ -57,33 +63,32 @@ test.describe('E2EE File Encryption', () => {
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+			await expect(poHomeChannel.content.getLastMessageByFileName('any_file1.txt')).toBeVisible();
 		});
 
 		await test.step('edit the description', async () => {
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionEditMessage.click();
 
-			expect(await poHomeChannel.composer.inputValue()).toBe('any_description');
+			expect(await poHomeChannel.composer.inputMessage.inputValue()).toBe('any_description');
 
-			await poHomeChannel.content.inputMessage.fill('edited any_description');
+			await poHomeChannel.composer.inputMessage.fill('edited any_description');
 			await page.keyboard.press('Enter');
 
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('edited any_description');
 		});
+
+		await test.step('delete the file from files list', async () => {
+			await poHomeChannel.roomToolbar.openMoreOptions();
+			await poHomeChannel.roomToolbar.menuItemFiles.click();
+			await poHomeChannel.tabs.files.deleteFile('any_file1.txt');
+
+			await expect(poHomeChannel.tabs.files.getFileByName('any_file1.txt')).toHaveCount(0);
+			await expect(poHomeChannel.content.lastUserMessage).not.toBeVisible();
+		});
 	});
 
-	test('File encryption with whitelisted and blacklisted media types', async ({ page, api }) => {
-		await test.step('create an encrypted room', async () => {
-			const channelName = faker.string.uuid();
-
-			await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-
-			await expect(page).toHaveURL(`/group/${channelName}`);
-
-			await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-		});
-
+	test('File encryption with whitelisted and blacklisted media types', async ({ api }) => {
 		await test.step('send a text file in channel', async () => {
 			await poHomeChannel.content.dragAndDropTxtFile();
 			await poHomeChannel.content.descriptionInput.fill('message 1');
@@ -92,7 +97,7 @@ test.describe('E2EE File Encryption', () => {
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('message 1');
-			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+			await expect(poHomeChannel.content.getLastMessageByFileName('any_file1.txt')).toBeVisible();
 		});
 
 		await test.step('set whitelisted media type setting', async () => {
@@ -107,7 +112,7 @@ test.describe('E2EE File Encryption', () => {
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
-			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
+			await expect(poHomeChannel.content.getLastMessageByFileName('any_file2.txt')).toBeVisible();
 		});
 
 		await test.step('set blacklisted media type setting to not accept application/octet-stream media type', async () => {
@@ -122,7 +127,7 @@ test.describe('E2EE File Encryption', () => {
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 			await expect(poHomeChannel.content.getFileDescription).toHaveText('message 2');
-			await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file2.txt');
+			await expect(poHomeChannel.content.getLastMessageByFileName('any_file2.txt')).toBeVisible();
 		});
 	});
 
@@ -137,17 +142,7 @@ test.describe('E2EE File Encryption', () => {
 			await api.post('/settings/FileUpload_MediaTypeBlackList', { value: 'image/svg+xml' });
 		});
 
-		test('Upload file without encryption in e2ee room', async ({ page }) => {
-			await test.step('create an encrypted channel', async () => {
-				const channelName = faker.string.uuid();
-
-				await poHomeChannel.sidenav.createEncryptedChannel(channelName);
-
-				await expect(page).toHaveURL(`/group/${channelName}`);
-
-				await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
-			});
-
+		test('Upload file without encryption in e2ee room', async () => {
 			await test.step('send a test encrypted message to check e2ee is working', async () => {
 				await poHomeChannel.content.sendMessage('This is an encrypted message.');
 
@@ -163,7 +158,7 @@ test.describe('E2EE File Encryption', () => {
 
 				await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).not.toBeVisible();
 				await expect(poHomeChannel.content.getFileDescription).toHaveText('any_description');
-				await expect(poHomeChannel.content.lastMessageFileName).toContainText('any_file1.txt');
+				await expect(poHomeChannel.content.getLastMessageByFileName('any_file1.txt')).toBeVisible();
 			});
 		});
 	});

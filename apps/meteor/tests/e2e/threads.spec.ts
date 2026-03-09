@@ -13,7 +13,7 @@ test.describe.serial('Threads', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => deleteChannel(api, targetChannel));
@@ -29,8 +29,7 @@ test.describe.serial('Threads', () => {
 
 	test('expect thread message preview if alsoSendToChannel checkbox is checked', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
-		await page.locator('[data-qa-type="message"]').last().hover();
-		await page.locator('role=button[name="Reply in thread"]').click();
+		await poHomeChannel.content.openReplyInThread();
 
 		await expect(page).toHaveURL(/.*thread/);
 
@@ -38,7 +37,7 @@ test.describe.serial('Threads', () => {
 		await page.getByRole('dialog').locator('[name="msg"]').last().fill('This is a thread message also sent in channel');
 		await page.keyboard.press('Enter');
 		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is a thread message also sent in channel');
-		await expect(poHomeChannel.content.lastUserMessage).toContainText('This is a thread message also sent in channel');
+		await expect(poHomeChannel.content.lastThreadMessagePreview).toContainText('This is a thread message also sent in channel');
 	});
 	test('expect open threads contextual bar when clicked on thread preview', async ({ page }) => {
 		await poHomeChannel.content.lastThreadMessagePreviewText.click();
@@ -59,7 +58,7 @@ test.describe.serial('Threads', () => {
 		test('expect to close thread contextual bar on clicking outside', async ({ page }) => {
 			await poHomeChannel.content.lastThreadMessagePreviewText.click();
 			await expect(page).toHaveURL(/.*thread/);
-			await poHomeChannel.content.lastUserMessageNotThread.click();
+			await poHomeChannel.content.lastUserMessage.click();
 			await expect(page).not.toHaveURL(/.*thread/);
 		});
 		test('expect open threads contextual bar when clicked on thread preview', async ({ page }) => {
@@ -90,17 +89,16 @@ test.describe.serial('Threads', () => {
 		await poHomeChannel.content.btnModalConfirm.click();
 
 		await expect(poHomeChannel.content.lastThreadMessageFileDescription).toHaveText('any_description');
-		await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText('any_file1.txt');
+		await expect(poHomeChannel.content.getLastThreadMessageByFileName('any_file1.txt')).toBeVisible();
 	});
 
 	test.describe('thread message actions', () => {
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.content.sendMessage('this is a message for reply');
-			await page.locator('[data-qa-type="message"]').last().hover();
-			await page.locator('role=button[name="Reply in thread"]').click();
+			await poHomeChannel.content.openReplyInThread();
 		});
 
 		test('expect delete the thread message and close thread if has only one message', async ({ page }) => {
@@ -133,8 +131,8 @@ test.describe.serial('Threads', () => {
 		});
 
 		test('expect quote the thread message', async ({ page }) => {
-			await page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
-			await page.locator('role=button[name="Quote"]').click();
+			await poHomeChannel.content.lastThreadMessageText.hover();
+			await poHomeChannel.content.lastThreadMessageText.getByRole('button', { name: 'Quote' }).click();
 			await page.locator('[name="msg"]').last().fill('this is a quote message');
 			await page.keyboard.press('Enter');
 
@@ -170,7 +168,7 @@ test.describe.serial('Threads', () => {
 
 		test('expect close thread if has only one message and user press escape', async ({ page }) => {
 			await expect(page).toHaveURL(/.*thread/);
-			await expect(page.getByRole('dialog').locator('[data-qa-type="message"]')).toBeVisible();
+			await expect(poHomeChannel.content.lastThreadMessageText).toBeVisible();
 			await expect(page.locator('[name="msg"]').last()).toBeFocused();
 			await page.keyboard.press('Escape');
 			await expect(page).not.toHaveURL(/.*thread/);
@@ -178,7 +176,7 @@ test.describe.serial('Threads', () => {
 
 		test('expect reset the thread composer to original message if user presses escape', async ({ page }) => {
 			await expect(page).toHaveURL(/.*thread/);
-			await expect(page.getByRole('dialog').locator('[data-qa-type="message"]')).toBeVisible();
+			await expect(poHomeChannel.content.lastThreadMessageText).toBeVisible();
 
 			await expect(page.locator('[name="msg"]').last()).toBeFocused();
 			await page.locator('[name="msg"]').last().fill('message to be edited');
@@ -195,7 +193,7 @@ test.describe.serial('Threads', () => {
 
 		test('expect clean composer and keep the thread open if user is editing message and presses escape', async ({ page }) => {
 			await expect(page).toHaveURL(/.*thread/);
-			await expect(page.getByRole('dialog').locator('[data-qa-type="message"]')).toBeVisible();
+			await expect(poHomeChannel.content.lastThreadMessageText).toBeVisible();
 			await expect(page.locator('[name="msg"]').last()).toBeFocused();
 
 			await page.locator('[name="msg"]').last().fill('message to be edited');

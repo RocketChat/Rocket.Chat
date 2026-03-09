@@ -1,4 +1,5 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
 import type { ReactElement } from 'react';
@@ -7,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 import RoleCell from './RoleCell';
 import { CONSTANTS } from '../../../../../app/authorization/lib';
-import { GenericTableRow, GenericTableCell } from '../../../../components/GenericTable';
 import { useChangeRole } from '../hooks/useChangeRole';
 
 const getName = (t: TFunction, permission: IPermission): string => {

@@ -50,9 +50,13 @@ export class DDPStreamer extends ServiceClass {
 			}
 		});
 
-		this.onEvent('user.forceLogout', (uid: string) => {
+		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
 			this.wss?.clients.forEach((ws) => {
 				const client = clientMap.get(ws);
+				if (sessionId && client?.connection.id === sessionId) {
+					ws.close();
+					return;
+				}
 				if (client?.userId === uid) {
 					ws.terminate();
 				}
@@ -66,10 +70,10 @@ export class DDPStreamer extends ServiceClass {
 
 	// update connections count every 30 seconds
 	updateConnections = throttle(() => {
-		InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
+		void InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
 	}, 30000);
 
-	async created(): Promise<void> {
+	override async created(): Promise<void> {
 		if (!this.context) {
 			return;
 		}
@@ -154,7 +158,6 @@ export class DDPStreamer extends ServiceClass {
 					'oauth.authorizedClients': 1,
 					'_updatedAt': 1,
 					'avatarETag': 1,
-					'extension': 1,
 					'openBusinessHours': 1,
 					'services.totp.enabled': 1,
 					'services.email2fa.enabled': 1,
@@ -183,41 +186,41 @@ export class DDPStreamer extends ServiceClass {
 
 			server.emit('presence', { userId, connection });
 
-			this.api?.broadcast('accounts.login', { userId, connection });
+			void this.api?.broadcast('accounts.login', { userId, connection });
 		});
 
 		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
 			const { userId, connection } = info;
 
-			this.api?.broadcast('accounts.logout', { userId, connection });
+			void this.api?.broadcast('accounts.logout', { userId, connection });
 
-			this.updateConnections();
+			void this.updateConnections();
 
 			if (!userId) {
 				return;
 			}
-			Presence.removeConnection(userId, connection.id, nodeID);
+			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
 		server.on(DDP_EVENTS.DISCONNECTED, (info) => {
 			const { userId, connection } = info;
 
-			this.api?.broadcast('socket.disconnected', connection);
+			void this.api?.broadcast('socket.disconnected', connection);
 
 			this.updateConnections();
 
 			if (!userId) {
 				return;
 			}
-			Presence.removeConnection(userId, connection.id, nodeID);
+			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
 		server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
-			this.api?.broadcast('socket.connected', connection);
+			void this.api?.broadcast('socket.connected', connection);
 		});
 	}
 
-	async started(): Promise<void> {
+	override async started(): Promise<void> {
 		// TODO this call creates a dependency to MeteorService, should it be a hard dependency? or can this call fail and be ignored?
 		try {
 			const versions = await MeteorService.getAutoUpdateClientVersions();
@@ -259,13 +262,13 @@ export class DDPStreamer extends ServiceClass {
 
 			this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
 
-			InstanceStatus.registerInstance('ddp-streamer', {});
+			void InstanceStatus.registerInstance('ddp-streamer', {});
 		} catch (err) {
 			console.error('DDPStreamer did not start correctly', err);
 		}
 	}
 
-	async stopped(): Promise<void> {
+	override async stopped(): Promise<void> {
 		this.wss?.clients.forEach(function (client) {
 			client.terminate();
 		});

@@ -1,8 +1,8 @@
 import type { ISettingSelectOption } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { isPOSTLivechatAppearanceParams } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 
-import { isTruthy } from '../../../../../lib/isTruthy';
 import { updateAuditedByUser } from '../../../../../server/settings/lib/auditedSettingUpdates';
 import { API } from '../../../../api/server';
 import { notifyOnSettingChangedById } from '../../../../lib/server/lib/notifyListener';
@@ -97,7 +97,7 @@ API.v1.addRoute(
 
 			const auditSettingOperation = updateAuditedByUser({
 				_id: this.userId,
-				username: this.user.username!,
+				username: this.user.username,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
 			});

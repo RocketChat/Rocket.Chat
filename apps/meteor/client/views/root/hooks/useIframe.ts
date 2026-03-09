@@ -1,5 +1,6 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useLoginWithIframe, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
+import type { Meteor } from 'meteor/meteor';
 import { useCallback, useEffect, useState } from 'react';
 
 export const useIframe = () => {

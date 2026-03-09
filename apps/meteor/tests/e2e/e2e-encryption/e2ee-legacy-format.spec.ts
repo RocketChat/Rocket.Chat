@@ -2,8 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { APIRequestContext } from '@playwright/test';
 
 import { BASE_API_URL } from '../config/constants';
-import injectInitialData from '../fixtures/inject-initial-data';
-import { Users, restoreState } from '../fixtures/userStates';
+import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
@@ -54,10 +53,7 @@ test.describe('E2EE Legacy Format', () => {
 	test('legacy expect create a private channel encrypted and send an encrypted message', async ({ page, request }) => {
 		const channelName = faker.string.uuid();
 
-		await injectInitialData();
-		await restoreState(page, Users.userE2EE, { except: ['private_key', 'public_key', 'e2e.randomPassword'] });
-
-		await poHomeChannel.sidenav.createEncryptedChannel(channelName);
+		await poHomeChannel.navbar.createEncryptedChannel(channelName);
 
 		await expect(page).toHaveURL(`/group/${channelName}`);
 
@@ -76,7 +72,7 @@ test.describe('E2EE Legacy Format', () => {
 
 		await page.evaluate(
 			async ({ rid, kid, encryptedKey }) => {
-				// eslint-disable-next-line import/no-unresolved, @typescript-eslint/no-var-requires, import/no-absolute-path, @typescript-eslint/consistent-type-imports
+				// eslint-disable-next-line import/no-unresolved, import/no-absolute-path
 				const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
 				const room = await e2e.getInstanceByRoomId(rid);
 				await room?.importGroupKey(kid + encryptedKey);

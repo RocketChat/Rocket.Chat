@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom, IRoom, IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { DEFAULT_SLA_CONFIG, isRoomNativeFederated, LivechatPriorityWeight } from '@rocket.chat/core-typings';
+import { DEFAULT_SLA_CONFIG, isABACManagedRoom, isRoomNativeFederated, LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
@@ -53,7 +53,9 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 			source: (room as IOmnichannelRoom | undefined)?.source,
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 			federated: room.federated,
-
+			...(isABACManagedRoom(room) && {
+				abacAttributes: room.abacAttributes,
+			}),
 			...(isRoomNativeFederated(room) && {
 				federation: room.federation,
 			}),
@@ -103,7 +105,7 @@ class RoomsCachedStore extends PrivateCachedStore<IRoom> {
 		);
 	}
 
-	protected deserializeFromCache(record: unknown) {
+	protected override deserializeFromCache(record: unknown) {
 		const deserialized = super.deserializeFromCache(record);
 
 		if (deserialized?.lastMessage?._updatedAt) {

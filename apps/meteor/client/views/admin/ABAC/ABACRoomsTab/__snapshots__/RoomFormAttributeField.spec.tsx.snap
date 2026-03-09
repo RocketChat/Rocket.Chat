@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`RoomFormAttributeField renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-field"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1g16yxh"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-field__row"
+        >
+          <div
+            aria-invalid="false"
+            aria-required="false"
+            class="rcx-box rcx-box--full rcx-select rcx-css-1hx4au7"
+            name="attributes.0.key"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-select__wrapper--hidden rcx-select__wrapper rcx-css-bpb89k"
+            >
+              <span
+                class="rcx-box rcx-box--full rcx-select__item rcx-css-4wu0oz"
+              >
+                ABAC_Search_Attribute
+              </span>
+              <input
+                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box rcx-select__focus rcx-css-1l0s473"
+                placeholder="ABAC_Search_Attribute"
+                value=""
+              />
+              <div
+                class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-6bg1ps"
+              >
+                <i
+                  aria-hidden="true"
+                  class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+                >
+                  
+                </i>
+              </div>
+            </div>
+          </div>
+        </span>
+        <span
+          class="rcx-box rcx-box--full rcx-field__row"
+        >
+          <div
+            aria-invalid="false"
+            aria-required="false"
+            class="rcx-box rcx-box--full rcx-select rcx-css-1te28na"
+            name="attributes.0.values"
+          >
+            <div
+              class="rcx-box rcx-box--full rcx-css-1sr8su7"
+            >
+              <div
+                class="rcx-box rcx-box--full rcx-css-w398ts"
+                role="listbox"
+              >
+                <button
+                  aria-haspopup="listbox"
+                  class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-trljwa rcx-css-3fq6z9"
+                  type="button"
+                >
+                  ABAC_Select_Attribute_Values
+                </button>
+              </div>
+            </div>
+            <div
+              class="rcx-box rcx-box--full rcx-select__addon rcx-css-x7bl3q rcx-css-1bprq55"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-chevron-down rcx-icon rcx-css-4pvxx3"
+              >
+                
+              </i>
+            </div>
+          </div>
+        </span>
+      </div>
+    </div>
+  </div>
+</body>
+`;

@@ -26,6 +26,18 @@ export default (instance: MessageTypes) => {
 	});
 
 	instance.registerType({
+		id: 'ui',
+		system: true,
+		text: (t, message) => t('User_invited_to_room', { user_invited: message.msg }),
+	});
+
+	instance.registerType({
+		id: 'uir',
+		system: true,
+		text: (t) => t('User_rejected_invitation_to_room'),
+	});
+
+	instance.registerType({
 		id: 'added-user-to-team',
 		system: true,
 		text: (t, message) => t('Added__username__to_this_team', { user_added: message.msg }),
@@ -199,5 +211,11 @@ export default (instance: MessageTypes) => {
 		id: 'message_pinned',
 		system: true,
 		text: (t) => t('Pinned_a_message'),
+	});
+
+	instance.registerType({
+		id: 'abac-removed-user-from-room',
+		system: true,
+		text: (t) => t('abac_removed_user_from_the_room'),
 	});
 };

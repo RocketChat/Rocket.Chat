@@ -1,12 +1,4 @@
-import type {
-	IMessage,
-	IRoom,
-	MessageAttachment,
-	IReadReceiptWithUser,
-	OtrSystemMessages,
-	MessageUrl,
-	IThreadMainMessage,
-} from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -87,42 +79,6 @@ const chatSendMessageSchema = {
 
 export const isChatSendMessageProps = ajv.compile<ChatSendMessage>(chatSendMessageSchema);
 
-type ChatFollowMessage = {
-	mid: IMessage['_id'];
-};
-
-const chatFollowMessageSchema = {
-	type: 'object',
-	properties: {
-		mid: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['mid'],
-	additionalProperties: false,
-};
-
-export const isChatFollowMessageProps = ajv.compile<ChatFollowMessage>(chatFollowMessageSchema);
-
-type ChatUnfollowMessage = {
-	mid: IMessage['_id'];
-};
-
-const chatUnfollowMessageSchema = {
-	type: 'object',
-	properties: {
-		mid: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['mid'],
-	additionalProperties: false,
-};
-
-export const isChatUnfollowMessageProps = ajv.compile<ChatUnfollowMessage>(chatUnfollowMessageSchema);
-
 type ChatGetMessage = {
 	msgId: IMessage['_id'];
 };
@@ -140,40 +96,6 @@ const ChatGetMessageSchema = {
 };
 
 export const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
-
-type ChatStarMessage = {
-	messageId: IMessage['_id'];
-};
-
-const ChatStarMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-export const isChatStarMessageProps = ajv.compile<ChatStarMessage>(ChatStarMessageSchema);
-
-type ChatUnstarMessage = {
-	messageId: IMessage['_id'];
-};
-
-const ChatUnstarMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-export const isChatUnstarMessageProps = ajv.compile<ChatUnstarMessage>(ChatUnstarMessageSchema);
 
 type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
@@ -964,24 +886,6 @@ const ChatGetURLPreviewSchema = {
 
 export const isChatGetURLPreviewProps = ajv.compile<ChatGetURLPreview>(ChatGetURLPreviewSchema);
 
-type ChatOTR = { roomId: string; type: OtrSystemMessages };
-const ChatOTRSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-		type: {
-			type: 'string',
-			enum: ['user_joined_otr', 'user_requested_otr_key_refresh', 'user_key_refreshed_successfully'],
-		},
-	},
-	required: ['roomId', 'type'],
-	additionalProperties: false,
-};
-export const isChatOTRProps = ajv.compile<ChatOTR>(ChatOTRSchema);
-
 export type ChatEndpoints = {
 	'/v1/chat.sendMessage': {
 		POST: (params: ChatSendMessage) => {
@@ -992,18 +896,6 @@ export type ChatEndpoints = {
 		GET: (params: ChatGetMessage) => {
 			message: IMessage;
 		};
-	};
-	'/v1/chat.followMessage': {
-		POST: (params: ChatFollowMessage) => void;
-	};
-	'/v1/chat.unfollowMessage': {
-		POST: (params: ChatUnfollowMessage) => void;
-	};
-	'/v1/chat.starMessage': {
-		POST: (params: ChatStarMessage) => void;
-	};
-	'/v1/chat.unStarMessage': {
-		POST: (params: ChatUnstarMessage) => void;
 	};
 	'/v1/chat.reportMessage': {
 		POST: (params: ChatReportMessage) => void;
@@ -1120,9 +1012,6 @@ export type ChatEndpoints = {
 			offset: number;
 			total: number;
 		};
-	};
-	'/v1/chat.otr': {
-		POST: (params: ChatOTR) => void;
 	};
 	'/v1/chat.getURLPreview': {
 		GET: (params: ChatGetURLPreview) => { urlPreview: MessageUrl };

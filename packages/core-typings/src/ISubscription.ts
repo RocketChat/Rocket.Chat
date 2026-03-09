@@ -1,16 +1,17 @@
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRole } from './IRole';
+import type { IRoom } from './IRoom';
 import type { IUser } from './IUser';
 import type { RoomType } from './RoomType';
 
-type RoomID = string;
+type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
 
-export type OldKey = { e2eKeyId: string; ts: Date; E2EKey: string };
+export type SubscriptionStatus = 'INVITED';
 
 export interface ISubscription extends IRocketChatRecord {
 	u: Pick<IUser, '_id' | 'username' | 'name'>;
 	v?: Pick<IUser, '_id' | 'username' | 'name' | 'status'> & { token?: string };
-	rid: RoomID;
+	rid: IRoom['_id'];
 	open: boolean;
 	ts: Date;
 
@@ -35,7 +36,7 @@ export interface ISubscription extends IRocketChatRecord {
 	tunreadGroup?: Array<string>;
 	tunreadUser?: Array<string>;
 
-	prid?: RoomID;
+	prid?: IRoom['_id'];
 
 	roles?: IRole['_id'][];
 
@@ -72,12 +73,18 @@ export interface ISubscription extends IRocketChatRecord {
 	customFields?: Record<string, any>;
 	oldRoomKeys?: OldKey[];
 	suggestedOldRoomKeys?: OldKey[];
+
+	status?: SubscriptionStatus;
+	inviter?: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>;
+
+	abacLastTimeChecked?: Date;
 }
 
-export interface IOmnichannelSubscription extends ISubscription {
-	department?: string; // TODO REMOVE/DEPRECATE no need keeo in both room and subscription
+export interface IInviteSubscription extends ISubscription {
+	status: 'INVITED';
+	inviter: NonNullable<ISubscription['inviter']>;
 }
 
-export interface ISubscriptionDirectMessage extends Omit<ISubscription, 'name'> {
-	t: 'd';
-}
+export const isInviteSubscription = (subscription: ISubscription): subscription is IInviteSubscription => {
+	return subscription?.status === 'INVITED' && !!subscription.inviter;
+};

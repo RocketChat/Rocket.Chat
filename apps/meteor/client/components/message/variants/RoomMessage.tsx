@@ -1,8 +1,8 @@
-import { type IMessage, isOTRAckMessage, isOTRMessage } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 
@@ -15,13 +15,13 @@ import {
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
-import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
+import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -34,6 +34,30 @@ type RoomMessageProps = {
 	ignoredUser?: boolean;
 	searchText?: string;
 } & ComponentProps<typeof Message>;
+
+const getAriaLabelledBy = ({
+	readReceiptEnabled,
+	messageId,
+	sequential,
+}: {
+	readReceiptEnabled: boolean;
+	messageId: string;
+	sequential: boolean;
+}) => {
+	const labels: string[] = [];
+
+	if (!sequential) {
+		labels.push(`${messageId}-displayName`, `${messageId}-time`);
+	}
+
+	labels.push(`${messageId}-content`);
+
+	if (readReceiptEnabled) {
+		labels.push(`${messageId}-read-status`);
+	}
+
+	return labels.join(' ');
+};
 
 const RoomMessage = ({
 	message,
@@ -55,10 +79,11 @@ const RoomMessage = ({
 	const { openUserCard, triggerProps } = useUserCard();
 
 	const selecting = useIsSelecting();
-	const isOTRMsg = isOTRMessage(message) || isOTRAckMessage(message);
 
 	const toggleSelected = useToggleSelect(message._id);
-	const selected = useIsSelectedMessage(message._id, isOTRMsg);
+	const selected = useIsSelectedMessage(message._id);
+
+	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 
 	useCountSelected();
 	const messageRef = useJumpToMessage(message._id);
@@ -68,22 +93,19 @@ const RoomMessage = ({
 			ref={messageRef}
 			id={message._id}
 			role='listitem'
-			aria-roledescription={isOTRMsg ? t('OTR_message') : t('message')}
+			aria-roledescription={t('message')}
 			tabIndex={0}
-			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
-			onClick={selecting && !isOTRMsg ? toggleSelected : undefined}
+			aria-labelledby={getAriaLabelledBy({ readReceiptEnabled, messageId: message._id, sequential })}
+			onClick={selecting ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
 			sequential={sequential}
-			data-qa-editing={editing}
-			data-qa-selected={selected}
 			data-id={message._id}
 			data-mid={message._id}
 			data-unread={unread}
 			data-sequential={sequential}
 			data-own={message.u._id === uid}
-			data-qa-type='message'
 			aria-busy={message.temp}
 			{...props}
 		>
@@ -100,13 +122,13 @@ const RoomMessage = ({
 						{...triggerProps}
 					/>
 				)}
-				{selecting && <CheckBox disabled={isOTRMsg} checked={selected} onChange={toggleSelected} />}
+				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 				{ignored ? (
-					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
+					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}

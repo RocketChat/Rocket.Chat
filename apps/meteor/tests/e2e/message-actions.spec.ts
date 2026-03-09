@@ -22,7 +22,7 @@ test.describe.serial('message-actions', () => {
 		poHomeChannel = new HomeChannel(page);
 		poHomeDiscussion = new HomeDiscussion(page);
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 	});
 	test('expect reply the message in direct', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply in direct');
@@ -34,47 +34,35 @@ test.describe.serial('message-actions', () => {
 
 	test('expect reply the message', async ({ page }) => {
 		await poHomeChannel.content.sendMessage('this is a message for reply');
-		await page.locator('[data-qa-type="message"]').last().hover();
-		await page.locator('role=button[name="Reply in thread"]').click();
+		await poHomeChannel.content.openReplyInThread();
 		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
 		await page.keyboard.press('Enter');
 
-		await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
+		await expect(poHomeChannel.content.lastThreadMessageText).toHaveText('this is a reply message');
 	});
 
 	// with thread open we listen to the subscription and update the collection from there
 	test('expect follow/unfollow message with thread open', async ({ page }) => {
 		await test.step('start thread', async () => {
 			await poHomeChannel.content.sendMessage('this is a message for reply');
-			await page.locator('[data-qa-type="message"]').last().hover();
-			await page.locator('role=button[name="Reply in thread"]').click();
+			await poHomeChannel.content.openReplyInThread();
 			await page.getByRole('dialog').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
 			await page.keyboard.press('Enter');
-			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
+			await expect(poHomeChannel.content.lastThreadMessageText).toHaveText('this is a reply message');
 		});
 
 		await test.step('unfollow thread', async () => {
-			const unFollowButton = page
-				.locator('[data-qa-type="message"]', { has: page.getByRole('button', { name: 'Following' }) })
-				.last()
-				.getByRole('button', { name: 'Following' });
+			const unFollowButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' });
 			await expect(unFollowButton).toBeVisible();
+
 			await unFollowButton.click();
 		});
 
 		await test.step('follow thread', async () => {
-			const followButton = page
-				.locator('[data-qa-type="message"]', { has: page.getByRole('button', { name: 'Not following' }) })
-				.last()
-				.getByRole('button', { name: 'Not following' });
+			const followButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Not following' });
 			await expect(followButton).toBeVisible();
 			await followButton.click();
-			await expect(
-				page
-					.locator('[data-qa-type="message"]', { has: page.getByRole('button', { name: 'Following' }) })
-					.last()
-					.getByRole('button', { name: 'Following' }),
-			).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' })).toBeVisible();
 		});
 	});
 
@@ -82,27 +70,26 @@ test.describe.serial('message-actions', () => {
 	test('expect follow/unfollow message with thread closed', async ({ page }) => {
 		await test.step('start thread', async () => {
 			await poHomeChannel.content.sendMessage('this is a message for reply');
-			await page.locator('[data-qa-type="message"]').last().hover();
-			await page.locator('role=button[name="Reply in thread"]').click();
+			await poHomeChannel.content.openReplyInThread();
 			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
 			await page.keyboard.press('Enter');
-			await expect(poHomeChannel.tabs.flexTabViewThreadMessage).toHaveText('this is a reply message');
+			await expect(poHomeChannel.content.lastThreadMessageText).toHaveText('this is a reply message');
 		});
 
 		// close thread before testing because the behavior changes
 		await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
 
 		await test.step('unfollow thread', async () => {
-			const unFollowButton = page.locator('[data-qa-type="message"]').last().getByTitle('Following');
+			const unFollowButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' });
 			await expect(unFollowButton).toBeVisible();
 			await unFollowButton.click();
 		});
 
 		await test.step('follow thread', async () => {
-			const followButton = page.locator('[data-qa-type="message"]').last().getByTitle('Not following');
+			const followButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Not following' });
 			await expect(followButton).toBeVisible();
 			await followButton.click();
-			await expect(page.locator('[data-qa-type="message"]').last().getByTitle('Following')).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' })).toBeVisible();
 		});
 	});
 
@@ -120,17 +107,15 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage('Message to delete');
 		await poHomeChannel.content.deleteLastMessage();
 
-		await expect(poHomeChannel.content.lastUserMessage.locator('[data-qa-type="message-body"]:has-text("Message to delete")')).toHaveCount(
-			0,
-		);
+		await expect(poHomeChannel.content.lastUserMessageBody).not.toHaveText('Message to delete');
 	});
 
 	test('expect quote the message', async ({ page }) => {
 		const message = `Message for quote - ${Date.now()}`;
 
 		await poHomeChannel.content.sendMessage(message);
-		await page.locator('[data-qa-type="message"]').last().hover();
-		await page.locator('role=button[name="Quote"]').click();
+		await poHomeChannel.content.lastUserMessage.hover();
+		await poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Quote' }).click();
 		await page.locator('[name="msg"]').fill('this is a quote message');
 		await page.keyboard.press('Enter');
 
@@ -150,7 +135,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeDiscussion.inputName.fill(discussionName);
 		await createButton.click();
 		await expect(page.locator('header h1')).toHaveText(discussionName);
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		// Should fail if more than one discussion has been created
 		await expect(poHomeChannel.content.getMessageByText(discussionName)).toHaveCount(1);
 	});
@@ -196,7 +181,7 @@ test.describe.serial('message-actions', () => {
 		test.beforeEach(async ({ page }) => {
 			poHomeChannel = new HomeChannel(page);
 			await page.goto('/home');
-			await poHomeChannel.sidenav.openChat(targetChannel);
+			await poHomeChannel.navbar.openChat(targetChannel);
 		});
 		test('expect reply the message in direct', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('this is a message for reply in direct');
@@ -212,7 +197,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.navbar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
@@ -221,7 +206,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.forwardMessage(forwardTeam);
 
-		await poHomeChannel.sidenav.openChat(forwardTeam);
+		await poHomeChannel.navbar.openChat(forwardTeam);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
@@ -233,7 +218,7 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.forwardMessage(direct);
 
-		await poHomeChannel.sidenav.openChat(ADMIN_CREDENTIALS.username);
+		await poHomeChannel.navbar.openChat(ADMIN_CREDENTIALS.username);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(message);
 	});
 
@@ -245,7 +230,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.navbar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -257,7 +242,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.navbar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -269,7 +254,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.navbar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -281,7 +266,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.navbar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 
@@ -293,7 +278,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
 
-		await poHomeChannel.sidenav.openChat(forwardChannel);
+		await poHomeChannel.navbar.openChat(forwardChannel);
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 	});
 });

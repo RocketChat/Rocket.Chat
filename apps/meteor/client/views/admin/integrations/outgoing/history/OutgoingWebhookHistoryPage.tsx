@@ -1,5 +1,5 @@
 import { Button, ButtonGroup, Pagination } from '@rocket.chat/fuselage';
-import { CustomScrollbars } from '@rocket.chat/ui-client';
+import { CustomScrollbars, usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRouteParameter, useMethod, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
@@ -7,8 +7,6 @@ import { useMemo, useState, useEffect } from 'react';
 
 import HistoryContent from './HistoryContent';
 import { sdk } from '../../../../../../app/utils/client/lib/SDKClient';
-import { usePagination } from '../../../../../components/GenericTable/hooks/usePagination';
-import { Page, PageHeader, PageContent } from '../../../../../components/Page';
 
 const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 	const dispatchToastMessage = useToastMessageDispatch();

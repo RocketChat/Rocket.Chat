@@ -809,7 +809,7 @@ export const createAccountSettings = () =>
 		});
 
 		await this.section('Password_Policy', async function () {
-			await this.add('Accounts_Password_Policy_Enabled', false, {
+			await this.add('Accounts_Password_Policy_Enabled', true, {
 				type: 'boolean',
 				public: true,
 			});
@@ -820,7 +820,7 @@ export const createAccountSettings = () =>
 				public: true,
 			};
 
-			await this.add('Accounts_Password_Policy_MinLength', 7, {
+			await this.add('Accounts_Password_Policy_MinLength', 14, {
 				type: 'int',
 				public: true,
 				enableQuery,

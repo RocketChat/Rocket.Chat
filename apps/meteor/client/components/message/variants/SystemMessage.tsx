@@ -16,7 +16,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserPresence } from '@rocket.chat/ui-contexts';
+import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +27,6 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useUserCard } from '../../../views/room/contexts/UserCardContext';
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import {
@@ -69,8 +68,6 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
 			isSelected={isSelected}
-			data-qa-selected={isSelected}
-			data-qa='system-message'
 			data-system-message-type={message.t}
 			{...props}
 		>
@@ -89,7 +86,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							</>
 						)}
 					</MessageNameContainer>
-					{messageType && <MessageSystemBody data-qa-type='system-message-body'>{messageType.text(t, message)}</MessageSystemBody>}
+					{messageType && (
+						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
+							{messageType.text(t, message)}
+						</MessageSystemBody>
+					)}
 					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				{message.attachments && (

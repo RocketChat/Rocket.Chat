@@ -1,5 +1,5 @@
 import { Box, Select, Tabs } from '@rocket.chat/fuselage';
-import { PageScrollableContent } from '@rocket.chat/ui-client';
+import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 import ChannelsTab from './channels/ChannelsTab';
 import MessagesTab from './messages/MessagesTab';
 import UsersTab from './users/UsersTab';
-import { Page, PageHeader } from '../../../components/Page';
 
 type EngagementDashboardPageProps = {
 	tab: 'users' | 'messages' | 'channels';

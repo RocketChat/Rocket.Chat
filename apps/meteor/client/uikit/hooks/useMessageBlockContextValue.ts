@@ -1,6 +1,7 @@
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import {
 	useVideoConfDispatchOutgoing,
 	useVideoConfIsCalling,
@@ -38,6 +39,8 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 
 	const actionManager = useUiKitActionManager();
 
+	const { openTab } = useRoomToolbox();
+
 	return {
 		action: ({ appId, actionId, blockId, value }, event) => {
 			if (appId === 'videoconf-core') {
@@ -49,6 +52,12 @@ export const useMessageBlockContextValue = (rid: IRoom['_id'], mid: IMessage['_i
 
 				if (actionId === 'callBack') {
 					return handleOpenVideoConf(blockId);
+				}
+			}
+
+			if (appId === 'media-call-core') {
+				if (actionId === 'open-history') {
+					return openTab('media-call-history', blockId);
 				}
 			}
 

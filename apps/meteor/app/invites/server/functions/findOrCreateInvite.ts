@@ -63,6 +63,13 @@ export const findOrCreateInvite = async (userId: string, invite: Pick<IInvite, '
 		});
 	}
 
+	if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
+		throw new Meteor.Error('error-invalid-room', 'Room is ABAC managed', {
+			method: 'findOrCreateInvite',
+			field: 'rid',
+		});
+	}
+
 	if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, userId))) {
 		throw new Meteor.Error('error-room-type-not-allowed', 'Cannot create invite links for this room type', {
 			method: 'findOrCreateInvite',

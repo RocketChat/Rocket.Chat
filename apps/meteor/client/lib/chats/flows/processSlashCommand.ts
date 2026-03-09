@@ -73,7 +73,7 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 		return true;
 	}
 
-	await sdk.rest.post('/v1/statistics.telemetry', {
+	void sdk.rest.post('/v1/statistics.telemetry', {
 		params: [{ eventName: 'slashCommandsStats', timestamp: Date.now(), command: commandName }],
 	});
 

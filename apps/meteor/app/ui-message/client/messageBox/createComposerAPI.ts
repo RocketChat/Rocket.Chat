@@ -1,6 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
+import { Tracker } from 'meteor/tracker';
+import type { RefObject } from 'react';
 
 import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
@@ -8,7 +10,12 @@ import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string, quoteChainLimit: number): ComposerAPI => {
+export const createComposerAPI = (
+	input: HTMLTextAreaElement,
+	storageID: string,
+	quoteChainLimit: number,
+	composerRef: RefObject<HTMLElement>,
+): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -224,11 +231,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
+		const startPatternFound = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
 
 		if (startPatternFound) {
 			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
+			const endPatternFound = input.value.slice(selectionEnd, selectionEnd + endPattern.length) === endPattern;
 
 			if (endPatternFound) {
 				insertText(selectedText);
@@ -292,6 +299,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string,
 	};
 
 	return {
+		composerRef,
 		replaceText,
 		insertNewLine,
 		blur: () => input.blur(),

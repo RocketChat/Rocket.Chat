@@ -19,7 +19,7 @@ test.describe.parallel('Quote Attachment', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -76,7 +76,7 @@ test.describe.parallel('Quote Attachment', () => {
 			await poHomeChannel.content.btnModalConfirm.click();
 
 			await expect(poHomeChannel.content.lastThreadMessageFileDescription).toHaveText(fileDescription);
-			await expect(poHomeChannel.content.lastThreadMessageFileName).toContainText(textFileName);
+			await expect(poHomeChannel.content.getLastThreadMessageByFileName(textFileName)).toBeVisible();
 		});
 
 		await test.step('Quote the message with attachment in thread', async () => {

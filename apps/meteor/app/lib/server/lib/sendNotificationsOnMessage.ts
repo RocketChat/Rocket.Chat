@@ -13,7 +13,7 @@ import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
 import { getMentions } from './notifyUsersOnMessage';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
@@ -201,7 +201,7 @@ export const sendNotification = async ({
 		}
 
 		const attachments = firstAttachment ? [firstAttachment, ...(message.attachments ?? [])].filter(Boolean) : [];
-		for await (const email of receiver.emails) {
+		for (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
@@ -401,7 +401,7 @@ export async function sendAllNotifications(message: IMessage, room: IRoom) {
 		return message;
 	}
 
-	if (!room || room.t == null) {
+	if (room?.t == null) {
 		return message;
 	}
 

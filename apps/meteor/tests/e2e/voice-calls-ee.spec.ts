@@ -28,8 +28,8 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		const [user1, user2] = sessions;
 
 		await test.step('should open direct message with user2', async () => {
-			await user1.poHomeChannel.sidenav.openChat('user2');
-			await expect(user1.poHomeChannel.content.inputMessage).toBeVisible();
+			await user1.poHomeChannel.navbar.openChat('user2');
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 		});
 
 		await test.step('initiate a voice call from room toolbar', async () => {
@@ -52,8 +52,8 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	test('should handle call controls during active call', async () => {
 		const [user1, user2] = sessions;
 		await test.step('establish call connection', async () => {
-			await user1.poHomeChannel.sidenav.openChat('user2');
-			await expect(user1.poHomeChannel.content.inputMessage).toBeVisible();
+			await user1.poHomeChannel.navbar.openChat('user2');
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.initiateCall();
 			await user2.poHomeChannel.voiceCalls.acceptCall();
@@ -106,8 +106,8 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		const user3 = { page: user3Context.page, poHomeChannel: new HomeChannel(user3Context.page) };
 
 		await test.step('establish call between user1 and user2', async () => {
-			await user1.poHomeChannel.sidenav.openChat('user2');
-			await expect(user1.poHomeChannel.content.inputMessage).toBeVisible();
+			await user1.poHomeChannel.navbar.openChat('user2');
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.initiateCall();
 			await user2.poHomeChannel.voiceCalls.acceptCall();
@@ -137,8 +137,8 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 		const [user1, user2] = sessions;
 
 		await test.step('user1 initiates call to user2', async () => {
-			await user1.poHomeChannel.sidenav.openChat('user2');
-			await expect(user1.poHomeChannel.content.inputMessage).toBeVisible();
+			await user1.poHomeChannel.navbar.openChat('user2');
+			await expect(user1.poHomeChannel.composer.inputMessage).toBeVisible();
 			await user1.poHomeChannel.content.btnVoiceCall.click();
 			await user1.poHomeChannel.voiceCalls.initiateCall();
 		});

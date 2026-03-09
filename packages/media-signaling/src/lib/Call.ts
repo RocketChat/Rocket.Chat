@@ -13,12 +13,15 @@ import type {
 	CallHangupReason,
 	CallActorType,
 	CallFlag,
+	CallFeature,
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
 import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
 import { isPendingState } from './services/states';
 import { serializeError } from './utils/serializeError';
+import type { MediaStreamIdentification } from '../definition/media';
+import type { IMediaStreamWrapper } from '../definition/media/IMediaStreamWrapper';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
@@ -34,6 +37,8 @@ export interface IClientMediaCallConfig {
 	sessionId: string;
 
 	iceGatheringTimeout: number;
+	iceServers: RTCIceServer[];
+	supportedFeatures: CallFeature[];
 }
 
 const TIMEOUT_TO_ACCEPT = 30000;
@@ -143,6 +148,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		return !this.isPendingAcceptance() && !this.isOver();
 	}
 
+	public get confirmed(): boolean {
+		return this.hasRemoteData;
+	}
+
+	public get tempCallId(): string {
+		return this.localCallId;
+	}
+
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
 
 	private acceptedLocally: boolean;
@@ -180,13 +193,11 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private negotiationManager: NegotiationManager;
 
-	public get audioLevel(): number {
-		return this.webrtcProcessor?.audioLevel || 0;
-	}
+	private sentLocalSdp: boolean;
 
-	public get localAudioLevel(): number {
-		return this.webrtcProcessor?.localAudioLevel || 0;
-	}
+	private receivedRemoteSdp: boolean;
+
+	private enabledFeatures: CallFeature[] | null;
 
 	private _flags: CallFlag[];
 
@@ -217,6 +228,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
 		this.creationTimestamp = new Date();
+		this.sentLocalSdp = false;
+		this.receivedRemoteSdp = false;
+		this.enabledFeatures = null;
 
 		this.earlySignals = new Set();
 		this.stateTimeoutHandlers = new Set();
@@ -263,7 +277,11 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	/** Initialize an outbound call with the callee information and send a call request to the server */
-	public async requestCall(callee: { type: CallActorType; id: string }, contactInfo?: CallContact): Promise<void> {
+	public async requestCall(
+		callee: { type: CallActorType; id: string },
+		supportedFeatures: CallFeature[],
+		contactInfo?: CallContact,
+	): Promise<void> {
 		if (this.initialized) {
 			return;
 		}
@@ -273,6 +291,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.transporter.sendToServer(this.callId, 'request-call', {
 			callee,
 			supportedServices: Object.keys(this.config.processorFactories) as CallService[],
+			supportedFeatures,
 		});
 
 		return this.initializeOutboundCall({ ...contactInfo, ...callee });
@@ -296,16 +315,21 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._flags = signal.flags || [];
 
 		this._transferredBy = signal.transferredBy || null;
-		this.changeContact(signal.contact);
 
 		if (this._role === 'caller' && !this.acceptedLocally) {
 			if (oldCall) {
 				this.acceptedLocally = true;
+			} else if (signal.self?.contractId && signal.self.contractId !== this.config.sessionId) {
+				// Call from another session, must be flagged as ignored before any event is triggered
+				this.config.logger?.log('Ignoring Outbound Call from a different session');
+				this.contractState = 'ignored';
 			} else if (AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS) {
 				this.config.logger?.log('Ignoring Unknown Outbound Call');
 				this.ignore();
 			}
 		}
+
+		this.changeContact(signal.contact);
 
 		// If the call is already flagged as over before the initialization, do not process anything other than filling in the basic information
 		if (this.isOver()) {
@@ -335,9 +359,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		// Send an ACK so the server knows that this session exists and is reachable
 		this.acknowledge();
 
-		if (this._role === 'callee' || !this.acceptedLocally) {
-			this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
-		}
+		// Adds a secondary timeout for all sessions of the call; Won't matter if the original caller session is still active, but is needed for transferred calls.
+		this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
 
 		// If the call was requested by this specific session, assume we're signed already.
 		if (
@@ -352,6 +375,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (!wasInitialized) {
 			this.emitter.emit('initialized');
 		}
+		this.emitter.emit('confirmed');
 
 		await this.processEarlySignals();
 	}
@@ -400,6 +424,28 @@ export class ClientMediaCall implements IClientMediaCall {
 					return 'accepting';
 				}
 				return 'pending';
+			case 'accepted':
+				if (!this.negotiationManager.currentNegotiationId) {
+					return 'waiting-for-offer';
+				}
+
+				if (this._role === 'caller') {
+					if (!this.sentLocalSdp) {
+						return 'generating-local-sdp';
+					}
+					if (!this.receivedRemoteSdp) {
+						return 'waiting-for-answer';
+					}
+				} else {
+					if (!this.receivedRemoteSdp) {
+						return 'waiting-for-offer';
+					}
+					if (!this.sentLocalSdp) {
+						return 'generating-local-sdp';
+					}
+				}
+
+				return 'activating';
 			default:
 				return this._state;
 		}
@@ -423,19 +469,22 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public getRemoteMediaStream(): MediaStream {
-		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream');
-		if (this.hidden) {
-			this.throwError('getRemoteMediaStream is not available for this call');
+	public getLocalMediaStream(tag?: string): IMediaStreamWrapper | null {
+		this.config.logger?.debug('ClientMediaCall.getLocalMediaStream', tag);
+		if (!this.mayUseStreams()) {
+			return null;
 		}
 
-		if (this.shouldIgnoreWebRTC()) {
-			this.throwError('getRemoteMediaStream is not available for this service');
+		return this.webrtcProcessor.streams.getLocalStreamByTag(tag || 'main');
+	}
+
+	public getRemoteMediaStream(tag?: string): IMediaStreamWrapper | null {
+		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream', tag);
+		if (!this.mayUseStreams()) {
+			return null;
 		}
 
-		this.prepareWebRtcProcessor();
-
-		return this.webrtcProcessor.getRemoteMediaStream();
+		return this.webrtcProcessor.streams.getRemoteStreamByTag(tag || 'main');
 	}
 
 	public async processSignal(signal: ServerMediaSignal, oldCall?: ClientMediaCall | null) {
@@ -488,7 +537,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.acceptedLocally = true;
-		this.config.transporter.answer(this.callId, 'accept');
+		this.config.transporter.answer(this.callId, 'accept', { supportedFeatures: this.config.supportedFeatures });
 
 		if (this.getClientState() === 'accepting') {
 			this.updateStateTimeouts();
@@ -693,6 +742,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.webrtcProcessor?.getStats(selector) ?? null;
 	}
 
+	public isFeatureAvailable(feature: CallFeature): boolean {
+		if (!this.enabledFeatures) {
+			return false;
+		}
+
+		return this.enabledFeatures.includes(feature);
+	}
+
 	private changeState(newState: CallState): void {
 		if (newState === this._state) {
 			return;
@@ -734,6 +791,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.logger?.debug('ClientMediaCall.updateClientState', `${oldClientState} => ${clientState}`);
 
 		this.updateStateTimeouts();
+		// Any time the client state changes within the 'accepted' call state, set a new timeout for the new client state
+		// This ensures there will be three separate timeouts for the different negotiation stages: "generating local sdp", "waiting for remote sdp" and "connecting"
+		if (this._state === 'accepted') {
+			this.addStateTimeout(clientState, TIMEOUT_TO_PROGRESS_SIGNALING);
+		}
+
 		this.requestStateReport();
 		this.oldClientState = clientState;
 		this.emitter.emit('clientStateChange', oldClientState);
@@ -782,7 +845,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.requireWebRTC();
-		this.negotiationManager.addNegotiation(negotiationId);
+		void this.negotiationManager.addNegotiation(negotiationId);
 	}
 
 	protected shouldIgnoreWebRTC(): boolean {
@@ -808,7 +871,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
-		this.negotiationManager.addNegotiation(signal.negotiationId, signal.sdp);
+		void this.negotiationManager.addNegotiation(signal.negotiationId, signal.sdp);
 	}
 
 	protected sendError(error: Partial<ClientMediaSignalError>): void {
@@ -838,26 +901,38 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
-		if (signal.sdp.type === 'offer') {
-			return this.processAnswerRequest(signal);
+		if (signal.streams) {
+			this.webrtcProcessor.setRemoteIds(signal.streams);
+		}
+		switch (signal.sdp.type) {
+			case 'offer':
+				await this.processAnswerRequest(signal);
+				break;
+			case 'answer':
+				await this.negotiationManager.setRemoteDescription(signal.negotiationId, signal.sdp);
+				break;
+			default:
+				this.config.logger?.error('Unsupported sdp type.');
+				return;
 		}
 
-		if (signal.sdp.type !== 'answer') {
-			this.config.logger?.error('Unsupported sdp type.');
-			return;
-		}
-
-		await this.negotiationManager.setRemoteDescription(signal.negotiationId, signal.sdp);
+		this.receivedRemoteSdp = true;
+		this.updateClientState();
 	}
 
 	protected deliverSdp(data: { sdp: RTCSessionDescriptionInit; negotiationId: string }) {
 		this.config.logger?.debug('ClientMediaCall.deliverSdp');
 
 		if (!this.hidden) {
-			this.config.transporter.sendToServer(this.callId, 'local-sdp', data);
+			this.config.transporter.sendToServer(this.callId, 'local-sdp', { ...data, streams: this.getLocalStreamIds() });
+			this.sentLocalSdp = true;
 		}
 
 		this.updateClientState();
+	}
+
+	protected getLocalStreamIds(): MediaStreamIdentification[] {
+		return this.webrtcProcessor?.getLocalStreamIds() || [];
 	}
 
 	protected async rejectAsUnavailable(): Promise<void> {
@@ -878,7 +953,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const earlySignals = Array.from(this.earlySignals.values());
 		this.earlySignals.clear();
 
-		for await (const signal of earlySignals) {
+		for (const signal of earlySignals) {
 			try {
 				await this.processSignal(signal);
 			} catch (e) {
@@ -907,7 +982,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		switch (signal.notification) {
 			case 'accepted':
-				return this.flagAsAccepted();
+				return this.flagAsAccepted(signal.features);
 			case 'active':
 				if (this.state === 'accepted' || this.hidden) {
 					this.changeState('active');
@@ -919,8 +994,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	private async flagAsAccepted(): Promise<void> {
+	private async flagAsAccepted(enabledFeatures?: CallFeature[]): Promise<void> {
 		this.config.logger?.debug('ClientMediaCall.flagAsAccepted');
+
+		if (enabledFeatures && this._state !== 'accepted') {
+			this.enabledFeatures = enabledFeatures;
+		}
 
 		// If hidden, just move the state without doing anything
 		if (this.hidden) {
@@ -940,8 +1019,6 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		// Both sides of the call have accepted it, we can change the state now
 		this.changeState('accepted');
-
-		this.addStateTimeout('accepted', TIMEOUT_TO_PROGRESS_SIGNALING);
 	}
 
 	private flagAsEnded(reason: CallHangupReason): void {
@@ -981,12 +1058,28 @@ export class ClientMediaCall implements IClientMediaCall {
 				if (callback) {
 					callback();
 				} else {
-					void this.hangup('timeout');
+					void this.hangup(this.getTimeoutHangupReason(state));
 				}
 			}, timeout),
 		};
 
 		this.stateTimeoutHandlers.add(handler);
+	}
+
+	private getTimeoutHangupReason(state: ClientState): CallHangupReason {
+		switch (state) {
+			case 'pending':
+				return 'not-answered';
+			case 'waiting-for-offer':
+			case 'waiting-for-answer':
+				return 'timeout-remote-sdp';
+			case 'generating-local-sdp':
+				return 'timeout-local-sdp';
+			case 'activating':
+				return 'timeout-activation';
+		}
+
+		return 'timeout';
 	}
 
 	private updateStateTimeouts(): void {
@@ -1048,6 +1141,11 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.updateRemoteStates();
+	}
+
+	private onWebRTCStreamChanged(): void {
+		this.config.logger?.debug('ClientMediaCall.onWebRTCStreamChanged');
+		this.emitter.emit('streamChange');
 	}
 
 	private onNegotiationNeeded(oldNegotiationId: string): void {
@@ -1142,11 +1240,27 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.signed;
 	}
 
+	private mayUseStreams(): this is ClientMediaCallWebRTC {
+		if (this.hidden || !this.signed) {
+			return false;
+		}
+
+		if (this.shouldIgnoreWebRTC()) {
+			return false;
+		}
+
+		if (!this.webrtcProcessor) {
+			return false;
+		}
+
+		return true;
+	}
+
 	private prepareWebRtcProcessor(): asserts this is ClientMediaCallWebRTC {
-		this.config.logger?.debug('ClientMediaCall.prepareWebRtcProcessor');
 		if (this.webrtcProcessor) {
 			return;
 		}
+		this.config.logger?.debug('ClientMediaCall.prepareWebRtcProcessor');
 
 		const {
 			logger,
@@ -1158,8 +1272,15 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.throwError('webrtc-not-implemented');
 		}
 
-		this.webrtcProcessor = webrtcFactory({ logger, iceGatheringTimeout, call: this, inputTrack: this.inputTrack });
+		this.webrtcProcessor = webrtcFactory({
+			logger,
+			iceGatheringTimeout,
+			call: this,
+			inputTrack: this.inputTrack,
+			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
+		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));
+		this.webrtcProcessor.emitter.on('streamChanged', () => this.onWebRTCStreamChanged());
 
 		this.negotiationManager.emitter.on('local-sdp', ({ sdp, negotiationId }) => this.deliverSdp({ sdp, negotiationId }));
 		this.negotiationManager.emitter.on('negotiation-needed', ({ oldNegotiationId }) => this.onNegotiationNeeded(oldNegotiationId));
@@ -1178,5 +1299,5 @@ export class ClientMediaCall implements IClientMediaCall {
 }
 
 export abstract class ClientMediaCallWebRTC extends ClientMediaCall {
-	public abstract webrtcProcessor: IWebRTCProcessor;
+	public abstract override webrtcProcessor: IWebRTCProcessor;
 }

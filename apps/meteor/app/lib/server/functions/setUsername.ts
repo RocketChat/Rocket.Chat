@@ -15,8 +15,8 @@ import { joinDefaultChannels } from './joinDefaultChannels';
 import { saveUserIdentity } from './saveUserIdentity';
 import { setUserAvatar } from './setUserAvatar';
 import { validateUsername } from './validateUsername';
-import { callbacks } from '../../../../lib/callbacks';
 import { onceTransactionCommitedSuccessfully } from '../../../../server/database/utils';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { notifyOnUserChange } from '../lib/notifyListener';
@@ -123,8 +123,8 @@ export const _setUsername = async function (
 				setImmediate(() => {
 					Accounts.sendEnrollmentEmail(user._id);
 				});
-			} catch (e: any) {
-				SystemLogger.error(e);
+			} catch (err: any) {
+				SystemLogger.error({ err });
 			}
 		}, session);
 	}

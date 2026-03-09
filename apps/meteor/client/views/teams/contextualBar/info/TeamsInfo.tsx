@@ -9,12 +9,6 @@ import {
 	ContextualbarClose,
 	ContextualbarScrollableContent,
 	ContextualbarDialog,
-} from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import { useTeamActions } from './useTeamActions';
-import {
 	InfoPanel,
 	InfoPanelAction,
 	InfoPanelActionGroup,
@@ -24,9 +18,14 @@ import {
 	InfoPanelSection,
 	InfoPanelText,
 	InfoPanelTitle,
-} from '../../../../components/InfoPanel';
+} from '@rocket.chat/ui-client';
+import type { ReactElement } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import { useTeamActions } from './useTeamActions';
 import RetentionPolicyCallout from '../../../../components/InfoPanel/RetentionPolicyCallout';
 import MarkdownText from '../../../../components/MarkdownText';
+import RoomInfoABACSection from '../../../room/contextualBar/Info/RoomInfo/ABAC/RoomInfoABACSection';
 import { useSplitRoomActions } from '../../../room/contextualBar/Info/hooks/useSplitRoomActions';
 import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
@@ -135,6 +134,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 						)}
 
 						{retentionPolicy?.isActive && <RetentionPolicyCallout room={room} />}
+						<RoomInfoABACSection room={room} />
 					</InfoPanelSection>
 				</InfoPanel>
 			</ContextualbarScrollableContent>

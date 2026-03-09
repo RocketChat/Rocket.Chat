@@ -31,7 +31,6 @@ COPY ./packages/media-signaling/dist packages/media-signaling/dist
 
 COPY ./packages/message-parser/package.json packages/message-parser/package.json
 COPY ./packages/message-parser/dist packages/message-parser/dist
-COPY ./packages/message-parser/messageParser.js packages/message-parser/messageParser.js
 
 COPY ./packages/peggy-loader/package.json packages/peggy-loader/package.json
 COPY ./packages/peggy-loader/dist packages/peggy-loader/dist

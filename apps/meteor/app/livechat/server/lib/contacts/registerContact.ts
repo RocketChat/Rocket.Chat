@@ -5,7 +5,7 @@ import type { MatchKeysAndValues, OnlyFieldsOfType } from 'mongodb';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
 import { validateCustomFields } from './validateCustomFields';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import {
 	notifyOnRoomChangedById,
 	notifyOnSubscriptionChangedByRoomId,
@@ -97,7 +97,7 @@ export async function registerContact(
 	const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(visitorId, {}, extraQuery).toArray();
 
 	if (rooms?.length) {
-		for await (const room of rooms) {
+		for (const room of rooms) {
 			const { _id: rid } = room;
 
 			const responses = await Promise.all([

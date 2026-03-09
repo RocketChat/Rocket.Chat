@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { OmnichannelCloseChatModal } from './omnichannel-close-chat-modal';
-import { OmnichannelOnHoldModal } from './omnichannel-on-hold-modal';
+import { MenuOptions } from './menu';
+import { OmnichannelCloseChatModal, OmnichannelOnHoldModal } from './modals';
 
 export abstract class Toolbar {
 	constructor(protected root: Locator) {}
@@ -12,8 +12,11 @@ export abstract class Toolbar {
 }
 
 export class RoomToolbar extends Toolbar {
+	readonly menu: MenuOptions;
+
 	constructor(page: Page) {
 		super(page.getByRole('toolbar', { name: 'Primary Room actions' }));
+		this.menu = new MenuOptions(page);
 	}
 
 	get btnRoomInfo() {
@@ -60,6 +63,10 @@ export class RoomToolbar extends Toolbar {
 		return this.root.getByRole('button', { name: 'Options' });
 	}
 
+	get btnSearchMessages(): Locator {
+		return this.root.getByRole('button', { name: 'Search Messages' });
+	}
+
 	get btnDisableE2EEncryption(): Locator {
 		return this.root.getByRole('button', { name: 'Disable E2E encryption' });
 	}
@@ -78,6 +85,10 @@ export class RoomToolbar extends Toolbar {
 
 	get menuItemPruneMessages(): Locator {
 		return this.root.getByRole('menuitem', { name: 'Prune Messages' });
+	}
+
+	get menuItemFiles(): Locator {
+		return this.menu.getMenuItem('Files');
 	}
 
 	async openRoomInfo() {

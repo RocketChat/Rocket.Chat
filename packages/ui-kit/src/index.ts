@@ -1,68 +1,66 @@
-export { ConfirmationDialog } from './blocks/ConfirmationDialog';
-export { Option } from './blocks/Option';
-export { OptionGroup } from './blocks/OptionGroup';
+export type { ConfirmationDialog } from './blocks/ConfirmationDialog';
+export type { Option } from './blocks/Option';
+export type { OptionGroup } from './blocks/OptionGroup';
 
-export { PlainText } from './blocks/text/PlainText';
-export { Markdown } from './blocks/text/Markdown';
-export { TextObject } from './blocks/TextObject';
+export type { PlainText } from './blocks/text/PlainText';
+export type { Markdown } from './blocks/text/Markdown';
+export type { TextObject } from './blocks/TextObject';
 
-export { Conditions } from './rendering/Conditions';
+export type { Conditions } from './rendering/Conditions';
 
-export { ButtonElement } from './blocks/elements/ButtonElement';
-export { ChannelsSelectElement } from './blocks/elements/ChannelsSelectElement';
-export { ConversationsSelectElement } from './blocks/elements/ConversationsSelectElement';
-export { DatePickerElement } from './blocks/elements/DatePickerElement';
-export { ImageElement } from './blocks/elements/ImageElement';
-export { LinearScaleElement } from './blocks/elements/LinearScaleElement';
-export { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement';
-export { MultiChannelsSelectElement } from './blocks/elements/MultiChannelsSelectElement';
-export { MultiConversationsSelectElement } from './blocks/elements/MultiConversationsSelectElement';
-export { MultiUsersSelectElement } from './blocks/elements/MultiUsersSelectElement';
-export { OverflowElement } from './blocks/elements/OverflowElement';
-export { PlainTextInputElement } from './blocks/elements/PlainTextInputElement';
-export { StaticSelectElement } from './blocks/elements/StaticSelectElement';
-export { UsersSelectElement } from './blocks/elements/UsersSelectElement';
-export { ToggleSwitchElement } from './blocks/elements/ToggleSwitchElement';
-export { CheckboxElement } from './blocks/elements/CheckboxElement';
-export { RadioButtonElement } from './blocks/elements/RadioButtonElement';
-export { TimePickerElement } from './blocks/elements/TimePickerElement';
-export { BlockElement } from './blocks/BlockElement';
-export { ExperimentalTabElement } from './blocks/elements/ExperimentalTabElement';
-export { IconElement } from './blocks/elements/IconElement';
-export { IconButtonElement } from './blocks/elements/IconButtonElement';
+export type { ButtonElement } from './blocks/elements/ButtonElement';
+export type { ChannelsSelectElement } from './blocks/elements/ChannelsSelectElement';
+export type { ConversationsSelectElement } from './blocks/elements/ConversationsSelectElement';
+export type { DatePickerElement } from './blocks/elements/DatePickerElement';
+export type { ImageElement } from './blocks/elements/ImageElement';
+export type { LinearScaleElement } from './blocks/elements/LinearScaleElement';
+export type { MultiStaticSelectElement } from './blocks/elements/MultiStaticSelectElement';
+export type { MultiChannelsSelectElement } from './blocks/elements/MultiChannelsSelectElement';
+export type { MultiConversationsSelectElement } from './blocks/elements/MultiConversationsSelectElement';
+export type { MultiUsersSelectElement } from './blocks/elements/MultiUsersSelectElement';
+export type { OverflowElement } from './blocks/elements/OverflowElement';
+export type { PlainTextInputElement } from './blocks/elements/PlainTextInputElement';
+export type { StaticSelectElement } from './blocks/elements/StaticSelectElement';
+export type { UsersSelectElement } from './blocks/elements/UsersSelectElement';
+export type { ToggleSwitchElement } from './blocks/elements/ToggleSwitchElement';
+export type { CheckboxElement } from './blocks/elements/CheckboxElement';
+export type { RadioButtonElement } from './blocks/elements/RadioButtonElement';
+export type { TimePickerElement } from './blocks/elements/TimePickerElement';
+export type { BlockElement } from './blocks/BlockElement';
+export type { ExperimentalTabElement } from './blocks/elements/ExperimentalTabElement';
+export type { IconElement, FrameableIconElement } from './blocks/elements/IconElement';
+export type { IconButtonElement } from './blocks/elements/IconButtonElement';
 
-export { ActionsBlock } from './blocks/layout/ActionsBlock';
-export { ConditionalBlock } from './blocks/layout/ConditionalBlock';
-export { ContextBlock } from './blocks/layout/ContextBlock';
+export type { ActionsBlock } from './blocks/layout/ActionsBlock';
+export type { ConditionalBlock } from './blocks/layout/ConditionalBlock';
+export type { ContextBlock } from './blocks/layout/ContextBlock';
 export * from './blocks/layout/PreviewBlock';
-export { DividerBlock } from './blocks/layout/DividerBlock';
-export { ImageBlock } from './blocks/layout/ImageBlock';
-export { InputBlock } from './blocks/layout/InputBlock';
-export { SectionBlock } from './blocks/layout/SectionBlock';
-export { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock';
-export { LayoutBlock } from './blocks/LayoutBlock';
-export { CalloutBlock } from './blocks/layout/CalloutBlock';
-export { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock';
-export { InfoCardBlock } from './blocks/layout/InfoCardBlock';
+export type { DividerBlock } from './blocks/layout/DividerBlock';
+export type { ImageBlock } from './blocks/layout/ImageBlock';
+export type { InputBlock } from './blocks/layout/InputBlock';
+export type { SectionBlock } from './blocks/layout/SectionBlock';
+export type { VideoConferenceBlock } from './blocks/layout/VideoConferenceBlock';
+export type { LayoutBlock } from './blocks/LayoutBlock';
+export type { CalloutBlock } from './blocks/layout/CalloutBlock';
+export type { ExperimentalTabNavigationBlock } from './blocks/layout/ExperimentalTabNavigationBlock';
+export type { InfoCardBlock } from './blocks/layout/InfoCardBlock';
 
-export { InputElementDispatchAction } from './blocks/InputElementDispatchAction';
+export type { InputElementDispatchAction } from './blocks/InputElementDispatchAction';
 
-export { Block } from './blocks/Block';
-export { RenderableBlock } from './blocks/RenderableBlock';
+export type { Block } from './blocks/Block';
+export type { RenderableBlock } from './blocks/RenderableBlock';
 
 export { LayoutBlockType } from './blocks/LayoutBlockType';
 export { BlockElementType } from './blocks/BlockElementType';
 export { TextObjectType } from './blocks/TextObjectType';
 export { BlockContext } from './rendering/BlockContext';
 
-export * from './blocks/deprecations';
-
-export { type BlockRenderers } from './rendering/BlockRenderers';
-export { type RenderableLayoutBlock } from './blocks/RenderableLayoutBlock';
+export type { BlockRenderers } from './rendering/BlockRenderers';
+export type { RenderableLayoutBlock } from './blocks/RenderableLayoutBlock';
 
 export { SurfaceRenderer } from './rendering/SurfaceRenderer';
-export { ActionableElement } from './blocks/ActionableElement';
-export { ActionOf } from './rendering/ActionOf';
+export type { ActionableElement } from './blocks/ActionableElement';
+export type { ActionOf } from './rendering/ActionOf';
 
 export * from './surfaces/View';
 

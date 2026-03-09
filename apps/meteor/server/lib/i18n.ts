@@ -6,6 +6,7 @@ import { i18n } from '../../app/utils/lib/i18n';
 // Meteor bundler is incredible (derogatory)
 // eslint-disable-next-line no-constant-condition
 if (false) {
+	// @ts-expect-error unreachable code
 	import('@rocket.chat/i18n/dist/resources/af.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/ar.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/az.i18n.json');

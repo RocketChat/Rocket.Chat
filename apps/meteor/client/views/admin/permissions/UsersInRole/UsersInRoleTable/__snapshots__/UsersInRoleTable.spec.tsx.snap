@@ -10,7 +10,7 @@ exports[`renders Default without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-h9m6k6"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div
@@ -88,7 +88,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.1"
@@ -100,12 +100,12 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-1mrdogu"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-1bu7eoe"
+                            class="rcx-box rcx-box--full rcx-css-1mvbnvb"
                           >
                             User 1
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-u4h3tr"
+                            class="rcx-box rcx-box--full rcx-css-1ixnlhp"
                           >
                             @user.1
                           </div>
@@ -149,7 +149,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.2"
@@ -161,12 +161,12 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-1mrdogu"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-1bu7eoe"
+                            class="rcx-box rcx-box--full rcx-css-1mvbnvb"
                           >
                             User 2
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-u4h3tr"
+                            class="rcx-box rcx-box--full rcx-css-1ixnlhp"
                           >
                             @user.2
                           </div>
@@ -210,7 +210,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.3"
@@ -222,12 +222,12 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-1mrdogu"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-1bu7eoe"
+                            class="rcx-box rcx-box--full rcx-css-1mvbnvb"
                           >
                             User 3
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-u4h3tr"
+                            class="rcx-box rcx-box--full rcx-css-1ixnlhp"
                           >
                             @user.3
                           </div>
@@ -271,7 +271,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.4"
@@ -283,12 +283,12 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-1mrdogu"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-1bu7eoe"
+                            class="rcx-box rcx-box--full rcx-css-1mvbnvb"
                           >
                             User 4
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-u4h3tr"
+                            class="rcx-box rcx-box--full rcx-css-1ixnlhp"
                           >
                             @user.4
                           </div>
@@ -332,7 +332,7 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x40"
                         >
                           <img
-                            alt=""
+                            alt="Avatar"
                             aria-hidden="true"
                             class="rcx-avatar__element rcx-avatar__element--x40"
                             data-username="user.5"
@@ -344,12 +344,12 @@ exports[`renders Default without crashing 1`] = `
                           class="rcx-box rcx-box--full rcx-css-1mrdogu"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-1bu7eoe"
+                            class="rcx-box rcx-box--full rcx-css-1mvbnvb"
                           >
                             User 5
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-u4h3tr"
+                            class="rcx-box rcx-box--full rcx-css-1ixnlhp"
                           >
                             @user.5
                           </div>
@@ -558,7 +558,7 @@ exports[`renders withError without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span
@@ -585,7 +585,7 @@ exports[`renders withLoading without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-h9m6k6"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-pln26h rcx-css-1cb6i7s"
+          class="rcx-box rcx-box--full rcx-css-vlo1oi rcx-css-1cb6i7s"
           data-overlayscrollbars="host"
         >
           <div

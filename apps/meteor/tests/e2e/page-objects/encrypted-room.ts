@@ -1,10 +1,10 @@
 import { HomeContent, HomeFlextab } from './fragments';
-import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from './fragments/e2ee';
 import { Message } from './fragments/message';
+import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from './fragments/modals';
 
 export class EncryptedRoomPage extends HomeContent {
-	get encryptedIcon() {
-		return this.page.locator('.rcx-room-header i.rcx-icon--name-key');
+	get encryptedTitle() {
+		return this.page.getByRole('button', { name: '- encrypted' });
 	}
 
 	get encryptionNotReadyIndicator() {
@@ -12,11 +12,11 @@ export class EncryptedRoomPage extends HomeContent {
 	}
 
 	get lastMessage() {
-		return new Message(this.page.locator('[data-qa-type="message"]').last());
+		return new Message(this.lastUserMessage);
 	}
 
 	lastNthMessage(index: number) {
-		return new Message(this.page.locator(`[data-qa-type="message"]`).nth(-index - 1));
+		return new Message(this.nthMessage(-index - 1));
 	}
 
 	async enableEncryption() {

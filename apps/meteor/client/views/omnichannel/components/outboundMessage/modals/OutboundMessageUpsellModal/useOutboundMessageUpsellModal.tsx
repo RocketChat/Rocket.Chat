@@ -1,10 +1,10 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useLicense } from '@rocket.chat/ui-client';
 import { useRole, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import OutboundMessageUpsellModal from './OutboundMessageUpsellModal';
 import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
-import { useLicense } from '../../../../../../hooks/useLicense';
 
 export const useOutboundMessageUpsellModal = () => {
 	const setModal = useSetModal();

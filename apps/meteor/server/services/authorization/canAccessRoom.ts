@@ -1,23 +1,27 @@
-import { Authorization } from '@rocket.chat/core-services';
+import { Authorization, License, Abac, Settings } from '@rocket.chat/core-services';
 import type { RoomAccessValidator } from '@rocket.chat/core-services';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
-import type { IUser, ITeam } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
+import { TeamType, AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
+import type { IUser, ITeam, IRoom } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms, TeamMember, Team, Users } from '@rocket.chat/models';
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
-import { canAccessRoomVoip } from './canAccessRoomVoip';
 
 async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
-		// TODO: it was using cached version from /app/settings/server/raw.js
-		const anon = await Settings.getValueById('Accounts_AllowAnonymousRead');
+		const anon = await Settings.get<boolean>('Accounts_AllowAnonymousRead');
 		return !!anon;
 	}
 
 	return Authorization.hasPermission(user._id, 'view-c-room');
 }
 
-const roomAccessValidators: RoomAccessValidator[] = [
+type RoomAccessValidatorConverted = (
+	room?: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
+	user?: IUser,
+	extraData?: Record<string, any>,
+) => Promise<boolean>;
+
+const roomAccessValidators: RoomAccessValidatorConverted[] = [
 	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
 		if (!room) {
 			return false;
@@ -31,7 +35,7 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		const team = await Team.findOneById<Pick<ITeam, 'type'>>(room.teamId, {
 			projection: { type: 1 },
 		});
-		if (team?.type === TEAM_TYPE.PUBLIC) {
+		if (team?.type === TeamType.PUBLIC) {
 			return canAccessPublicRoom(user);
 		}
 
@@ -52,20 +56,27 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		return canAccessPublicRoom(user);
 	},
 
-	async function _validateIfAlreadyJoined(room, user): Promise<boolean> {
+	async function _validateIfAlreadyJoined(room, user, extraData): Promise<boolean> {
 		if (!room?._id || !user?._id) {
 			return false;
 		}
 
-		if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id))) {
-			return false;
+		const [canViewJoined, canViewT] = await Promise.all([
+			Authorization.hasPermission(user, 'view-joined-room'),
+			Authorization.hasPermission(user, `view-${room.t}-room`),
+		]);
+
+		// When there's no ABAC setting, license or values on the room, fallback to previous behavior
+		if (!room?.abacAttributes?.length || !(await License.hasModule('abac')) || !(await Settings.get<boolean>('ABAC_Enabled'))) {
+			const includeInvitations = extraData?.includeInvitations ?? false;
+			if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id, includeInvitations))) {
+				return false;
+			}
+
+			return canViewJoined || canViewT;
 		}
 
-		if (await Authorization.hasPermission(user._id, 'view-joined-room')) {
-			return true;
-		}
-
-		return Authorization.hasPermission(user._id, `view-${room.t}-room`);
+		return (canViewJoined || canViewT) && Abac.canAccessObject(room, user, AbacAccessOperation.READ, AbacObjectType.ROOM);
 	},
 
 	async function _validateAccessToDiscussionsParentRoom(room, user): Promise<boolean> {
@@ -82,8 +93,11 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	},
 
 	canAccessRoomLivechat,
-	canAccessRoomVoip,
 ];
+
+const isPartialUser = (user: IUser | Pick<IUser, '_id'> | undefined): user is Pick<IUser, '_id'> => {
+	return Boolean(user && Object.keys(user).length === 1 && '_id' in user);
+};
 
 export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
 	// TODO livechat can send both as null, so they we need to validate nevertheless
@@ -91,8 +105,22 @@ export const canAccessRoom: RoomAccessValidator = async (room, user, extraData):
 	// 	return false;
 	// }
 
+	// TODO: remove this after migrations
+	// if user only contains _id, convert it to a full IUser object
+
+	if (isPartialUser(user)) {
+		user = (await Users.findOneById(user._id)) || undefined;
+		if (!user) {
+			throw new Error('User not found');
+		}
+
+		if (process.env.NODE_ENV === 'development') {
+			console.log('User converted to full IUser object');
+		}
+	}
+
 	for await (const roomAccessValidator of roomAccessValidators) {
-		if (await roomAccessValidator(room, user, extraData)) {
+		if (await roomAccessValidator(room, user as IUser, extraData)) {
 			return true;
 		}
 	}

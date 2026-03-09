@@ -4,6 +4,7 @@ import { MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
 
 import { BaseCallProvider } from '../../base/BaseCallProvider';
+import { logger } from '../../logger';
 import type { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import type { SipServerSession } from '../Session';
 
@@ -20,7 +21,7 @@ export abstract class BaseSipCall extends BaseCallProvider {
 		this.lastCallState = 'none';
 	}
 
-	public async reactToCallChanges(params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
+	public override async reactToCallChanges(params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
 		// If we already knew this call was over, there's nothing more to reflect
 		if (this.lastCallState === 'hangup') {
 			return;
@@ -44,6 +45,7 @@ export abstract class BaseSipCall extends BaseCallProvider {
 	protected abstract reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void>;
 
 	protected async sendDTMF(dialog: Srf.Dialog, dtmf: string, duration: number): Promise<void> {
+		logger.debug({ msg: 'BaseSipCall.sendDTMF' });
 		await dialog.request({
 			method: 'INFO',
 			headers: {

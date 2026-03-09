@@ -43,6 +43,14 @@ class JIRAReporter implements Reporter {
 	}
 
 	async onTestEnd(test: TestCase, result: TestResult) {
+		try {
+			await this._onTestEnd(test, result);
+		} catch (error) {
+			console.error('Error sending test result to JIRA', error);
+		}
+	}
+
+	private async _onTestEnd(test: TestCase, result: TestResult) {
 		if (process.env.REPORTER_ROCKETCHAT_REPORT !== 'true') {
 			return;
 		}
@@ -74,7 +82,7 @@ class JIRAReporter implements Reporter {
 		// first search and check if there is an existing issue
 		// replace all ()[]- with nothing
 		const search = await fetch(
-			`${this.url}/rest/api/2/search?${new URLSearchParams({
+			`${this.url}/rest/api/3/search?${new URLSearchParams({
 				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[\(\)\[\]-]/g, '')}'`,
 			})}`,
 			{
@@ -89,7 +97,7 @@ class JIRAReporter implements Reporter {
 		if (!search.ok) {
 			throw new Error(
 				`JIRA: Failed to search for existing issue: ${search.statusText}.` +
-					`${this.url}/rest/api/2/search${new URLSearchParams({
+					`${this.url}/rest/api/3/search${new URLSearchParams({
 						jql: `project = FLAKY AND summary ~ '${payload.name}'`,
 					})}`,
 			);
@@ -109,7 +117,7 @@ class JIRAReporter implements Reporter {
 			const { location } = test;
 
 			if (this.pr === 0) {
-				await fetch(`${this.url}/rest/api/2/issue/${existing.key}`, {
+				await fetch(`${this.url}/rest/api/3/issue/${existing.key}`, {
 					method: 'PUT',
 					body: JSON.stringify({
 						update: {
@@ -127,7 +135,7 @@ class JIRAReporter implements Reporter {
 				});
 			}
 
-			await fetch(`${this.url}/rest/api/2/issue/${existing.key}/comment`, {
+			await fetch(`${this.url}/rest/api/3/issue/${existing.key}/comment`, {
 				method: 'POST',
 				body: JSON.stringify({
 					body: `Test run ${payload.run} failed
@@ -173,7 +181,7 @@ ${this.run_url}
 			},
 		};
 
-		const responseIssue = await fetch(`${this.url}/rest/api/2/issue`, {
+		const responseIssue = await fetch(`${this.url}/rest/api/3/issue`, {
 			method: 'POST',
 			body: JSON.stringify(data),
 			headers: {
@@ -186,7 +194,7 @@ ${this.run_url}
 
 		const { location } = test;
 
-		await fetch(`${this.url}/rest/api/2/issue/${issue}/comment`, {
+		await fetch(`${this.url}/rest/api/3/issue/${issue}/comment`, {
 			method: 'POST',
 			body: JSON.stringify({
 				body: `Test run ${payload.run} failed

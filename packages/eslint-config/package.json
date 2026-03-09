@@ -2,40 +2,40 @@
 	"name": "@rocket.chat/eslint-config",
 	"version": "0.7.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
+	"type": "module",
+	"main": "./index.js",
+	"exports": {
+		".": "./index.js"
+	},
+	"files": [
+		"/index.js"
+	],
+	"scripts": {
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix ."
+	},
 	"dependencies": {
-		"@babel/core": "~7.28.5",
-		"@babel/eslint-parser": "~7.28.5",
+		"@babel/core": "~7.28.6",
+		"@babel/eslint-parser": "~7.28.6",
+		"@eslint/js": "~9.39.3",
 		"@types/eslint": "~8.44.9",
 		"@types/prettier": "^2.7.3",
-		"@typescript-eslint/eslint-plugin": "~5.60.1",
-		"@typescript-eslint/parser": "~5.60.1",
-		"eslint": "~8.45.0",
-		"eslint-config-prettier": "~9.1.2",
+		"eslint": "~9.39.3",
+		"eslint-config-prettier": "~10.1.8",
 		"eslint-import-resolver-typescript": "~4.4.4",
 		"eslint-plugin-anti-trojan-source": "~1.1.2",
-		"eslint-plugin-import": "~2.31.0",
-		"eslint-plugin-jest": "~28.8.3",
-		"eslint-plugin-jsx-a11y": "^6.10.2",
-		"eslint-plugin-prettier": "~5.2.6",
-		"prettier": "~3.3.3"
+		"eslint-plugin-import": "~2.32.0",
+		"eslint-plugin-jest": "~29.15.0",
+		"eslint-plugin-jsx-a11y": "~6.10.2",
+		"eslint-plugin-prettier": "~5.5.5",
+		"eslint-plugin-react": "~7.37.5",
+		"eslint-plugin-react-hooks": "~7.0.1",
+		"eslint-plugin-storybook": "~10.2.12",
+		"eslint-plugin-testing-library": "~7.16.0",
+		"globals": "~17.3.0",
+		"prettier": "~3.3.3",
+		"typescript-eslint": "~8.56.1"
 	},
-	"scripts": {
-		"lint": "eslint --ext .js .",
-		"lint:fix": "eslint --ext .js . --fix"
-	},
-	"main": "./standard/index.js",
-	"files": [
-		"/standard",
-		"/original",
-		"/best-practices",
-		"/errors",
-		"/es6",
-		"/imports",
-		"/node",
-		"/style",
-		"/variables",
-		"react.js"
-	],
 	"devDependencies": {
 		"typescript": "~5.9.3"
 	},

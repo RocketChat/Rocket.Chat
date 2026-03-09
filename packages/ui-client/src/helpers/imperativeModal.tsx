@@ -27,6 +27,8 @@ const mapCurrentModal = (descriptor: ModalDescriptor): ReactNode => {
 			...descriptor.props,
 		});
 	}
+
+	return null;
 };
 
 class ImperativeModalEmmiter extends Emitter<{ update: ModalDescriptor }> {

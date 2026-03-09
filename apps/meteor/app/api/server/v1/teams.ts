@@ -1,6 +1,6 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
 import {
 	isTeamsConvertToChannelProps,
@@ -20,6 +20,7 @@ import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { removeUserFromRoom } from '../../../lib/server/functions/removeUserFromRoom';
+import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { eraseTeam } from '../lib/eraseTeam';
@@ -72,7 +73,7 @@ API.v1.addRoute(
 				this.bodyParams,
 				Match.ObjectIncluding({
 					name: String,
-					type: Match.OneOf(TEAM_TYPE.PRIVATE, TEAM_TYPE.PUBLIC),
+					type: Match.OneOf(TeamType.PRIVATE, TeamType.PUBLIC),
 					members: Match.Maybe([String]),
 					room: Match.Maybe(Match.Any),
 					owner: Match.Maybe(String),
@@ -131,8 +132,8 @@ API.v1.addRoute(
 			const rooms = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
 
 			if (rooms.length) {
-				for await (const room of rooms) {
-					await eraseRoom(room, this.userId);
+				for (const room of rooms) {
+					await eraseRoom(room, this.user);
 				}
 			}
 
@@ -234,6 +235,13 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 			const canUpdateAny = !!(await hasPermissionAsync(this.userId, 'view-all-team-channels', team.roomId));
+
+			if (settings.get('ABAC_Enabled') && isDefault) {
+				const room = await Rooms.findOneByIdAndType(roomId, 'p', { projection: { abacAttributes: 1 } });
+				if (room?.abacAttributes?.length) {
+					return API.v1.failure('error-room-is-abac-managed');
+				}
+			}
 
 			const room = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
 

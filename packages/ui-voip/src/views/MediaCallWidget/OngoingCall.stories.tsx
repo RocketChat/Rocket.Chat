@@ -2,7 +2,7 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import OngoingCall from './OngoingCall';
-import { MockedMediaCallProvider } from '../../context';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot().buildStoryDecorator();
 
@@ -58,6 +58,14 @@ export const OngoingCallWithRemoteStatusHeld: StoryFn<typeof OngoingCall> = () =
 export const OngoingCallWithSlotsAndRemoteStatus: StoryFn<typeof OngoingCall> = () => {
 	return (
 		<MockedMediaCallProvider muted={true} held={true} remoteMuted={true} remoteHeld={true}>
+			<OngoingCall />
+		</MockedMediaCallProvider>
+	);
+};
+
+export const OngoingCallWithDmButton: StoryFn<typeof OngoingCall> = () => {
+	return (
+		<MockedMediaCallProvider onClickDirectMessage={() => undefined}>
 			<OngoingCall />
 		</MockedMediaCallProvider>
 	);

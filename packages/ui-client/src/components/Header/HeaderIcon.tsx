@@ -2,12 +2,12 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef, ReactElement } from 'react';
 import { isValidElement } from 'react';
 
-export type HeaderIconProps = { icon: ReactElement | ComponentPropsWithoutRef<typeof Icon> | null };
+type HeaderIconProps = { icon: ReactElement | ComponentPropsWithoutRef<typeof Icon> | null };
 
 const HeaderIcon = ({ icon }: HeaderIconProps) =>
 	icon && (
-		<Box display='flex' flexShrink={0} alignItems='center' size='x18' overflow='hidden' justifyContent='center'>
-			{isValidElement<any>(icon) ? icon : <Icon color='default' size='x18' name={icon.name} />}
+		<Box display='flex' flexShrink={0} alignItems='center' overflow='hidden' justifyContent='center'>
+			{isValidElement<any>(icon) ? icon : <Icon color='default' size='x20' name={icon.name} />}
 		</Box>
 	);
 

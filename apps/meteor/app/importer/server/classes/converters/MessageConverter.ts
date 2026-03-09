@@ -27,7 +27,7 @@ type IMessageReactions = Record<string, IMessageReaction>;
 export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 	private rids: string[] = [];
 
-	async convertData({ afterImportAllMessagesFn, ...callbacks }: MessageConversionCallbacks = {}): Promise<void> {
+	override async convertData({ afterImportAllMessagesFn, ...callbacks }: MessageConversionCallbacks = {}): Promise<void> {
 		this.rids = [];
 		await super.convertData(callbacks);
 
@@ -38,12 +38,11 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 	}
 
 	protected async resetLastMessages(): Promise<void> {
-		for await (const rid of this.rids) {
+		for (const rid of this.rids) {
 			try {
 				await Rooms.resetLastMessageById(rid, null);
-			} catch (e) {
-				this._logger.warn(`Failed to update last message of room ${rid}`);
-				this._logger.error(e);
+			} catch (err) {
+				this._logger.error({ msg: 'Failed to update last message of room', roomId: rid, err });
 			}
 		}
 	}
@@ -55,7 +54,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 
 		const creator = await this._cache.findImportedUser(data.u._id);
 		if (!creator) {
-			this._logger.warn(`Imported user not found: ${data.u._id}`);
+			this._logger.warn({ msg: 'Imported user not found', userId: data.u._id });
 			throw new Error('importer-message-unknown-user');
 		}
 		const rid = await this._cache.findImportedRoomId(data.rid);
@@ -70,13 +69,12 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 
 		try {
 			await insertMessage(creator, msgObj as unknown as IDBMessage, rid, true);
-		} catch (e) {
-			this._logger.warn(`Failed to import message with timestamp ${String(msgObj.ts)} to room ${rid}`);
-			this._logger.error(e);
+		} catch (err) {
+			this._logger.error({ msg: 'Failed to import message', timestamp: msgObj.ts, roomId: rid, err });
 		}
 	}
 
-	protected async convertRecord(record: IImportMessageRecord): Promise<boolean> {
+	protected override async convertRecord(record: IImportMessageRecord): Promise<boolean> {
 		await this.insertMessage(record.data);
 		return true;
 	}
@@ -122,11 +120,11 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		}
 
 		const result: MentionedChannel[] = [];
-		for await (const importId of channels) {
+		for (const importId of channels) {
 			const { name, _id } = (await this.getMentionedChannelData(importId)) || {};
 
 			if (!_id || !name) {
-				this._logger.warn(`Mentioned room not found: ${importId}`);
+				this._logger.warn({ msg: 'Mentioned room not found', importId });
 				continue;
 			}
 
@@ -148,7 +146,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		}
 
 		const result: MentionedUser[] = [];
-		for await (const importId of mentions) {
+		for (const importId of mentions) {
 			if (importId === ('all' as 'string') || importId === 'here') {
 				result.push({
 					_id: importId,
@@ -162,12 +160,12 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			const data = await this._cache.findImportedUser(importId);
 
 			if (!data) {
-				this._logger.warn(`Mentioned user not found: ${importId}`);
+				this._logger.warn({ msg: 'Mentioned user not found', importId });
 				continue;
 			}
 
 			if (!data.username) {
-				this._logger.debug(importId);
+				this._logger.debug({ msg: 'Mentioned user has no username', importId });
 				throw new Error('importer-message-mentioned-username-not-found');
 			}
 
@@ -187,7 +185,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 	): Promise<undefined | IMessageReactions> {
 		const reactions: IMessageReactions = {};
 
-		for await (const name of Object.keys(importedReactions)) {
+		for (const name of Object.keys(importedReactions)) {
 			if (!importedReactions.hasOwnProperty(name)) {
 				continue;
 			}
@@ -202,7 +200,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 				usernames: [],
 			};
 
-			for await (const importId of users) {
+			for (const importId of users) {
 				const username = await this._cache.findImportedUsername(importId);
 				if (username && !reaction.usernames.includes(username)) {
 					reaction.usernames.push(username);
@@ -221,7 +219,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 
 	protected async convertMessageReplies(replies: string[]): Promise<string[]> {
 		const result: string[] = [];
-		for await (const importId of replies) {
+		for (const importId of replies) {
 			const userId = await this._cache.findImportedUserId(importId);
 			if (userId && !result.includes(userId)) {
 				result.push(userId);
@@ -257,7 +255,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		}
 	}
 
-	protected getDataType(): 'message' {
+	protected override getDataType(): 'message' {
 		return 'message';
 	}
 }

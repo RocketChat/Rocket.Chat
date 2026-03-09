@@ -1,7 +1,7 @@
 import type { ILivechatDepartment, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, LivechatDepartment } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { cbLogger } from '../lib/logger';
 
 callbacks.add(
@@ -30,7 +30,11 @@ callbacks.add(
 			return options;
 		}
 
-		cbLogger.debug(`Updating department ${newDepartmentId} ancestors for room ${rid}`);
+		cbLogger.debug({
+			msg: 'Updating department ancestors for room',
+			departmentId: newDepartmentId,
+			roomId: rid,
+		});
 		await LivechatRooms.updateDepartmentAncestorsById(room._id, ancestors);
 
 		return options;

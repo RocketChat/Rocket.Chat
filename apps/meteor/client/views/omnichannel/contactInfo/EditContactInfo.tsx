@@ -1,5 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
+import { validateEmail } from '@rocket.chat/tools';
 import {
 	CustomFieldsForm,
 	ContextualbarScrollableContent,
@@ -22,7 +23,6 @@ import AdvancedContactModal from './AdvancedContactModal';
 import { useCreateContact } from './hooks/useCreateContact';
 import { useEditContact } from './hooks/useEditContact';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { validateEmail } from '../../../../lib/emailValidator';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { ContactManagerInput } from '../additionalForms';

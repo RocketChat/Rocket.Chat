@@ -35,7 +35,7 @@ export class VoiceCalls {
 	}
 
 	get callControlGroup(): Locator {
-		return this.page.getByRole('group');
+		return this.page.getByRole('article').getByRole('group');
 	}
 
 	btnEndCall(name: string): Locator {

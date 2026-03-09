@@ -18,8 +18,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-import type { PermissionsPayload } from './api.helpers';
-import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
+import { checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
 	ForbiddenResult,
@@ -28,7 +27,6 @@ import type {
 	NotFoundResult,
 	Operations,
 	Options,
-	PartialThis,
 	SuccessResult,
 	TypedThis,
 	TypedAction,
@@ -37,9 +35,14 @@ import type {
 	RedirectStatusCodes,
 	RedirectResult,
 	UnavailableResult,
+	GenericRouteExecutionContext,
+	TooManyRequestsResult,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
+import { authenticationMiddlewareForHono } from './middlewares/authenticationHono';
+import { permissionsMiddleware } from './middlewares/permissions';
+import type { APIActionContext } from './router';
 import { RocketChatAPIRouter } from './router';
 import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
 import { isObject } from '../../../lib/utils/isObject';
@@ -56,7 +59,7 @@ const logger = new Logger('API');
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
-const applyBreakingChanges = shouldBreakInVersion('8.0.0');
+export const applyBreakingChanges = shouldBreakInVersion('9.0.0');
 type MinimalRoute = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
 	path: string;
@@ -156,12 +159,7 @@ const generateConnection = (
 	clientAddress: ipAddress,
 });
 
-export class APIClass<
-	TBasePath extends string = '',
-	TOperations extends {
-		[x: string]: unknown;
-	} = {},
-> {
+export class APIClass<TBasePath extends string = '', TOperations extends Record<string, unknown> = Record<string, never>> {
 	public typedRoutes: Record<string, Record<string, Route>> = {};
 
 	protected apiPath?: string;
@@ -170,7 +168,7 @@ export class APIClass<
 
 	private _routes: { path: string; options: Options; endpoints: Record<string, string> }[] = [];
 
-	public authMethods: ((...args: any[]) => any)[];
+	public authMethods: ((routeContext: APIActionContext) => Promise<IUser | undefined>)[];
 
 	protected helperMethods: Map<string, () => any> = new Map();
 
@@ -248,11 +246,11 @@ export class APIClass<
 		};
 	}
 
-	async parseJsonQuery(this: PartialThis) {
-		return parseJsonQuery(this);
+	async parseJsonQuery(routeContext: GenericRouteExecutionContext) {
+		return parseJsonQuery(routeContext);
 	}
 
-	public addAuthMethod(func: (this: PartialThis, ...args: any[]) => any): void {
+	public addAuthMethod(func: (routeContext: APIActionContext) => Promise<IUser | undefined>): void {
 		this.authMethods.push(func);
 	}
 
@@ -280,7 +278,7 @@ export class APIClass<
 			body: result,
 		} as SuccessResult<T>;
 
-		return finalResult as SuccessResult<T>;
+		return finalResult;
 	}
 
 	public redirect<T, C extends RedirectStatusCodes>(code: C, result: T): RedirectResult<T, C> {
@@ -388,7 +386,7 @@ export class APIClass<
 		};
 	}
 
-	public tooManyRequests(msg?: string): { statusCode: number; body: Record<string, any> & { success?: boolean } } {
+	public tooManyRequests<T>(msg?: T): TooManyRequestsResult<T> {
 		return {
 			statusCode: 429,
 			body: {
@@ -500,18 +498,16 @@ export class APIClass<
 	public async processTwoFactor({
 		userId,
 		request,
-		invocation,
 		options,
 		connection,
 	}: {
 		userId: string;
 		request: Request;
-		invocation: { twoFactorChecked?: boolean };
 		options?: Options;
 		connection: IMethodConnection;
-	}): Promise<void> {
+	}): Promise<boolean> {
 		if (options && (!('twoFactorRequired' in options) || !options.twoFactorRequired)) {
-			return;
+			return false;
 		}
 		const code = request.headers.get('x-2fa-code') ? String(request.headers.get('x-2fa-code')) : undefined;
 		const method = request.headers.get('x-2fa-method') ? String(request.headers.get('x-2fa-method')) : undefined;
@@ -524,7 +520,7 @@ export class APIClass<
 			connection,
 		});
 
-		invocation.twoFactorChecked = true;
+		return true;
 	}
 
 	public getFullRouteName(route: string, method: string): string {
@@ -588,7 +584,7 @@ export class APIClass<
 	>(method: MinimalRoute['method'], subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
+		this.typedRoutes[path] = this.typedRoutes[path] || {};
 		const { query, authRequired, response, body, tags, ...rest } = options;
 		this.typedRoutes[path][method.toLowerCase()] = {
 			...(response && {
@@ -785,7 +781,7 @@ export class APIClass<
 
 		const operations = endpoints;
 
-		const shouldVerifyPermissions = checkPermissions(options);
+		checkPermissions(options);
 
 		// Allow for more than one route using the same option and endpoints
 		if (!Array.isArray(subpaths)) {
@@ -805,7 +801,7 @@ export class APIClass<
 				const { tags = ['Missing Documentation'] } = _options as Record<string, any>;
 
 				if (typeof operations[method as keyof Operations<TPathPattern, TOptions>] === 'function') {
-					(operations as Record<string, any>)[method as string] = {
+					(operations as Record<string, any>)[method] = {
 						action: operations[method as keyof Operations<TPathPattern, TOptions>],
 					};
 				} else {
@@ -818,33 +814,21 @@ export class APIClass<
 				}
 				// Add a try/catch for each endpoint
 				const originalAction = (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action;
+
+				if (options.deprecation && shouldBreakInVersion(options.deprecation.version)) {
+					throw new Meteor.Error('error-deprecated', `The endpoint ${route} should be removed`);
+				}
+
 				// eslint-disable-next-line @typescript-eslint/no-this-alias
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
-						if (options.authRequired || options.authOrAnonRequired) {
-							const user = await api.authenticatedRoute.call(this, this.request);
-							this.user = user!;
-							this.userId = this.user?._id;
-							const authToken = this.request.headers.get('x-auth-token');
-							this.token = (authToken && Accounts._hashLoginToken(String(authToken)))!;
-						}
+						this.queryOperations = options.queryOperations;
+						this.queryFields = options.queryFields;
+						this.logger = logger;
 
-						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
-						const shouldPreventUserRead = !this.user && options.authRequired;
-
-						if (shouldPreventAnonymousRead || shouldPreventUserRead) {
-							const result = api.unauthorized('You must be logged in to do this.');
-							// compatibility with the old API
-							// TODO: MAJOR
-							if (!applyBreakingChanges) {
-								Object.assign(result.body, {
-									status: 'error',
-									message: 'You must be logged in to do this.',
-								});
-							}
-							return result;
-						}
+						const authToken = this.request.headers.get('x-auth-token');
+						this.token = Accounts._hashLoginToken(String(authToken))!;
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
@@ -872,57 +856,28 @@ export class APIClass<
 									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
-							if (shouldVerifyPermissions) {
-								if (!this.userId) {
-									if (applyBreakingChanges) {
-										throw new Meteor.Error('error-unauthorized', 'You must be logged in to do this');
-									}
-									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action');
-								}
-								if (
-									!(await checkPermissionsForInvocation(
-										this.userId,
-										_options.permissionsRequired as PermissionsPayload,
-										this.request.method as Method,
-									))
-								) {
-									if (applyBreakingChanges) {
-										throw new Meteor.Error('error-forbidden', 'User does not have the permissions required for this action', {
-											permissions: _options.permissionsRequired,
-										});
-									}
-									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
-										permissions: _options.permissionsRequired,
-									});
-								}
-							}
-
-							const invocation = new DDPCommon.MethodInvocation({
-								connection,
-								isSimulation: false,
-								userId: this.userId,
-							});
-
-							Accounts._accountData[connection.id] = {
-								connection,
-							};
-
-							Accounts._setAccountData(connection.id, 'loginToken', this.token!);
-
-							this.userId &&
+							if (
+								this.userId &&
 								(await api.processTwoFactor({
 									userId: this.userId,
 									request: this.request,
-									invocation: invocation as unknown as Record<string, any>,
 									options: _options,
 									connection: connection as unknown as IMethodConnection,
-								}));
+								}))
+							) {
+								this.twoFactorChecked = true;
+							}
 
-							this.queryOperations = options.queryOperations;
-							(this as any).queryFields = options.queryFields;
-							this.parseJsonQuery = api.parseJsonQuery.bind(this as unknown as PartialThis);
+							this.parseJsonQuery = () => api.parseJsonQuery(this);
 
-							result = (await DDP._CurrentInvocation.withValue(invocation as any, async () => originalAction.apply(this))) || api.success();
+							if (options.applyMeteorContext) {
+								const invocation = APIClass.createMeteorInvocation(connection, this.userId, this.token);
+								result = await invocation
+									.applyInvocation(() => originalAction.apply(this))
+									.finally(() => invocation[Symbol.asyncDispose]());
+							} else {
+								result = await originalAction.apply(this);
+							}
 						} catch (e: any) {
 							result = ((e: any) => {
 								switch (e.error) {
@@ -955,8 +910,15 @@ export class APIClass<
 				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
 					`/${route}`.replaceAll('//', '/'),
 					{ ..._options, tags } as TypedOptions,
+					authenticationMiddlewareForHono(this, {
+						authRequired: options.authRequired,
+						authOrAnonRequired: options.authOrAnonRequired,
+						userWithoutUsername: options.userWithoutUsername,
+						logger,
+					}),
+					permissionsMiddleware(_options as TypedOptions),
 					license(_options as TypedOptions, License),
-					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
+					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action,
 				);
 				this._routes.push({
 					path: route,
@@ -972,12 +934,9 @@ export class APIClass<
 		});
 	}
 
-	protected async authenticatedRoute(req: Request): Promise<IUser | null> {
-		const headers = Object.fromEntries(req.headers.entries());
-
-		const { 'x-user-id': userId } = headers;
-
-		const userToken = String(headers['x-auth-token']);
+	public async authenticatedRoute(routeContext: APIActionContext): Promise<IUser | null> {
+		const userId = routeContext.request.headers.get('x-user-id');
+		const userToken = routeContext.request.headers.get('x-auth-token');
 
 		if (userId && userToken) {
 			return Users.findOne(
@@ -990,6 +949,15 @@ export class APIClass<
 				},
 			);
 		}
+
+		for (const method of this.authMethods) {
+			const user = await method(routeContext);
+
+			if (user) {
+				return user;
+			}
+		}
+
 		return null;
 	}
 
@@ -1071,7 +1039,7 @@ export class APIClass<
 
 		(this as APIClass<'/v1'>).addRoute(
 			'login',
-			{ authRequired: false },
+			{ authRequired: false, userWithoutUsername: true },
 			{
 				async post() {
 					const request = this.request as unknown as Request;
@@ -1083,7 +1051,7 @@ export class APIClass<
 
 					try {
 						const auth = await DDP._CurrentInvocation.withValue(invocation as any, async () => Meteor.callAsync('login', args));
-						this.user = await Users.findOne(
+						const user = await Users.findOne(
 							{
 								_id: auth.id,
 							},
@@ -1092,18 +1060,16 @@ export class APIClass<
 							},
 						);
 
-						if (!this.user) {
+						if (!user) {
 							return self.unauthorized();
 						}
-
-						this.userId = this.user._id;
 
 						return self.success({
 							status: 'success',
 							data: {
-								userId: this.userId,
+								userId: user._id,
 								authToken: auth.token,
-								me: await getUserInfo(this.user || ({} as IUser)),
+								me: await getUserInfo(user || ({} as IUser)),
 							},
 						});
 					} catch (error) {
@@ -1198,5 +1164,39 @@ export class APIClass<
 				},
 			},
 		);
+	}
+
+	static createMeteorInvocation(
+		connection: {
+			id: string;
+			close: () => void;
+			clientAddress: string;
+			httpHeaders: Record<string, any>;
+		},
+		userId?: string,
+		token?: string,
+	) {
+		const invocation = new DDPCommon.MethodInvocation({
+			connection,
+			isSimulation: false,
+			userId,
+		});
+
+		Accounts._accountData[connection.id] = {
+			connection,
+		};
+		if (token) {
+			Accounts._setAccountData(connection.id, 'loginToken', token);
+		}
+
+		return {
+			invocation,
+			applyInvocation: <F extends () => Promise<any>>(action: F): ReturnType<F> => {
+				return DDP._CurrentInvocation.withValue(invocation as any, async () => action()) as ReturnType<F>;
+			},
+			[Symbol.asyncDispose]() {
+				return Promise.resolve();
+			},
+		};
 	}
 }

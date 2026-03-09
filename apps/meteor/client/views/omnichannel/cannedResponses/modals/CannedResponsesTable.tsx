@@ -1,12 +1,6 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { hashKey, useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-
-import CannedResponseFilter from './CannedResponseFilter';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -15,9 +9,15 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 	GenericTableCell,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
+import { hashKey, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
+
+import CannedResponseFilter from './CannedResponseFilter';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { links } from '../../../../lib/links';
 import RemoveCannedResponseButton from '../RemoveCannedResponseButton';
@@ -152,7 +152,7 @@ const CannedResponsesTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.cannedResponses.map(({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }) => (
-								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id, scope)} action qa-user-id={_id}>
+								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id, scope)} action>
 									<GenericTableCell withTruncatedText>{shortcut}</GenericTableCell>
 									<GenericTableCell withTruncatedText>{defaultOptions[scope as Scope]}</GenericTableCell>
 									<GenericTableCell withTruncatedText>

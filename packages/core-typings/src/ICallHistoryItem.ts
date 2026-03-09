@@ -37,12 +37,17 @@ interface IMediaCallHistoryItem extends ICallHistoryItem {
 export interface IInternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	external: false;
 	contactId: IUser['_id'];
+	contactName?: IUser['name'];
+	contactUsername?: IUser['username'];
 
 	rid?: IRoom['_id'];
 	messageId?: IMessage['_id']; // Id of the message that was sent after the call ended
 }
 
-// TODO: IExternalMediaCallHistoryItem, planned for 8.0
-// TODO: IVideoConfHistoryItem, expected in the future but not yet on the roadmap
+export interface IExternalMediaCallHistoryItem extends IMediaCallHistoryItem {
+	external: true;
 
-export type CallHistoryItem = IInternalMediaCallHistoryItem;
+	contactExtension: string;
+}
+
+export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem;

@@ -82,7 +82,6 @@ roomCoordinator.add(
 		},
 
 		getIcon(room) {
-			// @ts-expect-error TODO: Implement ABAC attributes in rooms
 			if (room.abacAttributes) {
 				if (room.teamMain) {
 					return 'team-shield';

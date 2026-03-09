@@ -1,9 +1,9 @@
 import crypto from 'crypto';
 
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IGetRoomRoles, IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
+import type { IRoom, ISubscription, ITeam, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
-import type { PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
+import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.chat/rest-typings';
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
@@ -154,14 +154,17 @@ const registerUser = async (
 		name?: string;
 		pass?: string;
 	} = {},
-	overrideCredentials = credentials,
+	overrideCredentials: Credentials | null = credentials,
 ) => {
 	const username = userData.username || `user.test.${Date.now()}`;
 	const email = userData.email || `${username}@rocket.chat`;
-	const result = await request
-		.post(api('users.register'))
-		.set(overrideCredentials)
-		.send({ email, name: username, username, pass: password, ...userData });
+
+	const req = request.post(api('users.register'));
+
+	if (overrideCredentials) {
+		req.set(overrideCredentials);
+	}
+	const result = await req.send({ email, name: username, username, pass: password, ...userData });
 
 	return result.body.user;
 };
@@ -579,13 +582,11 @@ describe('[Users]', () => {
 
 		(IS_EE ? describe : describe.skip)('Voice call extension', () => {
 			beforeEach(async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', true);
-				await updatePermission('manage-voip-extensions', ['admin']);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
 			});
 
 			after(async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', true);
-				await updatePermission('manage-voip-extensions', ['admin']);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
 			});
 
 			it('should create a user with a voice call extension', async () => {
@@ -646,7 +647,7 @@ describe('[Users]', () => {
 			});
 
 			it('should not create a user if voip is disabled', async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 				await request
 					.post(api('users.create'))
 					.set(credentials)
@@ -654,30 +655,6 @@ describe('[Users]', () => {
 						email: 'fail_voip_disabled@rocket.chat',
 						name: 'fail_voip_disabled',
 						username: 'fail_voip_disabled',
-						password,
-						active: true,
-						roles: ['user'],
-						joinDefaultChannels: true,
-						verified: true,
-						freeSwitchExtension: '999',
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
-					});
-			});
-
-			it('should not create a user if user has no permission to manage voip extensions', async () => {
-				await updatePermission('manage-voip-extensions', []);
-				await request
-					.post(api('users.create'))
-					.set(credentials)
-					.send({
-						email: 'fail_no_permission@rocket.chat',
-						name: 'fail_no_permission',
-						username: 'fail_no_permission',
 						password,
 						active: true,
 						roles: ['user'],
@@ -843,7 +820,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
@@ -864,7 +841,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username: 'test$username<>',
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -882,7 +859,7 @@ describe('[Users]', () => {
 					email,
 					name: 'name',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
@@ -899,13 +876,32 @@ describe('[Users]', () => {
 					email,
 					name: '</\\name>',
 					username,
-					pass: 'test',
+					pass: 'P@ssw0rd1234.!',
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error').and.to.be.equal('Name contains invalid characters');
+				})
+				.end(done);
+		});
+
+		it('should return an error when logged in user tries to register', (done) => {
+			void request
+				.post(api('users.register'))
+				.set(credentials)
+				.send({
+					email: `newuser${Date.now()}@email.com`,
+					name: 'New User',
+					username: `newuser${Date.now()}`,
+					pass: 'P@ssw0rd1234.!',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error').and.to.be.equal('Logged in users can not register again.');
 				})
 				.end(done);
 		});
@@ -1118,7 +1114,6 @@ describe('[Users]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.nested.property('user.services.password');
-						expect(res.body).to.have.nested.property('user.services.resume');
 					})
 					.end(done);
 			});
@@ -1131,7 +1126,7 @@ describe('[Users]', () => {
 				email: `me-${Date.now()}@email.com`,
 				name: 'testuser',
 				username: ufsUsername,
-				password: '1234',
+				password,
 			});
 
 			await request
@@ -1151,6 +1146,25 @@ describe('[Users]', () => {
 				});
 
 			await deleteUser(user);
+		});
+
+		it("should NOT return sensitive fields on services even though it's the same user requesting its info", (done) => {
+			void request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: credentials['X-User-Id'],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.services.password').and.to.be.a('boolean');
+					expect(res.body).to.not.have.nested.property('user.services.email');
+					expect(res.body).to.not.have.nested.property('user.services.resume');
+					expect(res.body).to.not.have.nested.property('user.services.passwordHistory');
+				})
+				.end(done);
 		});
 	});
 	describe('[/users.getPresence]', () => {
@@ -2197,7 +2211,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -2219,7 +2233,7 @@ describe('[Users]', () => {
 						.send({
 							userId: targetUser._id,
 							data: {
-								password: 'itsnotworking',
+								password: '1tsn0tw0rkingP@ssw0rd1234.!',
 							},
 						})
 						.expect('Content-Type', 'application/json')
@@ -2556,15 +2570,11 @@ describe('[Users]', () => {
 			});
 
 			after(async () => {
-				await Promise.all([
-					deleteUser(user),
-					updateSetting('VoIP_TeamCollab_Enabled', true),
-					updatePermission('manage-voip-extensions', ['admin']),
-				]);
+				await Promise.all([deleteUser(user), updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
 			});
 
 			beforeEach(async () => {
-				await Promise.all([updatePermission('manage-voip-extensions', ['admin']), updateSetting('VoIP_TeamCollab_Enabled', true)]);
+				await Promise.all([updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true)]);
 			});
 
 			it("should update the user's voice call extension", async () => {
@@ -2601,22 +2611,8 @@ describe('[Users]', () => {
 					});
 			});
 
-			it("should not update the user's voice call extension if the user has no permission to manage voip extensions", async () => {
-				await updatePermission('manage-voip-extensions', []);
-				await request
-					.post(api('users.update'))
-					.set(credentials)
-					.send({
-						userId: user._id,
-						data: {
-							freeSwitchExtension: '9998',
-						},
-					})
-					.expect(400);
-			});
-
 			it("should not update the user's voice call extension if voip setting is disabled", async () => {
-				await updateSetting('VoIP_TeamCollab_Enabled', false);
+				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', false);
 				await request
 					.post(api('users.update'))
 					.set(credentials)
@@ -2744,7 +2740,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'the new pass',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2787,6 +2783,27 @@ describe('[Users]', () => {
 					expect(user.emails[0].address).to.be.equal(editedEmail);
 					expect(user.emails[0].verified).to.be.false;
 					expect(user).to.not.have.property('e2e');
+				})
+				.end(done);
+		});
+
+		it("should not include sensitive data on the 'services' object from the response", (done) => {
+			void request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						username: editedUsername,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { user } = res.body;
+					expect(res.body).to.have.property('success', true);
+					expect(user.services).to.not.have.property('passwordHistory');
+					expect(user.services).to.not.have.property('email');
+					expect(user.services.password).to.have.property('exists').that.is.a('boolean');
 				})
 				.end(done);
 		});
@@ -2895,7 +2912,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.send({
 					data: {
-						newPassword: 'MyNewPassw0rd',
+						newPassword: '1Tsn3wP@ssw0rd1234.!',
 					},
 				})
 				.expect('Content-Type', 'application/json')
@@ -2935,13 +2952,11 @@ describe('[Users]', () => {
 		describe('[Password Policy]', () => {
 			before(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', true);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', false);
 			});
 
 			after(async () => {
 				await updateSetting('Accounts_AllowPasswordChange', true);
-				await updateSetting('Accounts_Password_Policy_Enabled', false);
 				await updateSetting('Accounts_TwoFactorAuthentication_Enabled', true);
 			});
 
@@ -3130,7 +3145,7 @@ describe('[Users]', () => {
 					.send({
 						data: {
 							currentPassword,
-							newPassword: '123Abc@!',
+							newPassword: '1Tsn3wP@ssw0rd1234.!',
 						},
 					})
 					.expect('Content-Type', 'application/json')
@@ -3365,12 +3380,15 @@ describe('[Users]', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
-			targetUser = await registerUser({
-				email: `${testUsername}.@test.com`,
-				username: `${testUsername}test`,
-				name: testUsername,
-				pass: password,
-			});
+			targetUser = await registerUser(
+				{
+					email: `${testUsername}.@test.com`,
+					username: `${testUsername}test`,
+					name: testUsername,
+					pass: password,
+				},
+				null,
+			);
 			userCredentials = await login(targetUser.username, password);
 		});
 
@@ -3395,7 +3413,7 @@ describe('[Users]', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
-			targetUser = await registerUser();
+			targetUser = await registerUser(undefined, null);
 			userCredentials = await login(targetUser.username, password);
 		});
 
@@ -3463,7 +3481,7 @@ describe('[Users]', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
-			targetUser = await registerUser();
+			targetUser = await registerUser(undefined, null);
 			userCredentials = await login(targetUser.username, password);
 		});
 
@@ -3641,7 +3659,7 @@ describe('[Users]', () => {
 			let targetUser: TestUser<IUser>;
 			let room: IRoom;
 			beforeEach(async () => {
-				targetUser = await registerUser();
+				targetUser = await registerUser(undefined, null);
 				room = (
 					await createRoom({
 						type: 'c',
@@ -4433,6 +4451,69 @@ describe('[Users]', () => {
 				})
 				.then(tryAuthentication);
 		});
+
+		it('should remove only logged out session push tokens', async () => {
+			const credentials1 = await login(user.username, password);
+			const credentials2 = await login(user.username, password);
+
+			await request
+				.post(api('push.token'))
+				.set(credentials1)
+				.send({
+					type: 'gcm',
+					value: 'device-1-token',
+					appName: 'com.example.device1',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('push.token'))
+				.set(credentials2)
+				.send({
+					type: 'gcm',
+					value: 'device-2-token',
+					appName: 'com.example.device2',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('users.logoutOtherClients'))
+				.set(credentials2)
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			await request
+				.delete(api('push.token'))
+				.set(credentials2)
+				.send({
+					token: 'device-1-token',
+				})
+				.expect(404)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
+
+			await request
+				.delete(api('push.token'))
+				.set(credentials2)
+				.send({
+					token: 'device-2-token',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
 	});
 
 	describe('[/users.autocomplete]', () => {
@@ -4961,6 +5042,49 @@ describe('[Users]', () => {
 			void updatePermission('logout-other-user', []).then(() => {
 				void request.post(api('users.logout')).set(userCredentials).expect('Content-Type', 'application/json').expect(200).end(done);
 			});
+		});
+
+		it('should remove all push tokens when user logs out', async () => {
+			const testCredentials = await login(user.username, password);
+
+			await request
+				.post(api('push.token'))
+				.set(testCredentials)
+				.send({
+					type: 'gcm',
+					value: 'logout-test-token',
+					appName: 'com.example.logout.test',
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await request
+				.post(api('users.logout'))
+				.set(testCredentials)
+				.send({
+					userId: user._id,
+				})
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+
+			const newCredentials = await login(user.username, password);
+
+			await request
+				.delete(api('push.token'))
+				.set(newCredentials)
+				.send({
+					token: 'logout-test-token',
+				})
+				.expect(404)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 

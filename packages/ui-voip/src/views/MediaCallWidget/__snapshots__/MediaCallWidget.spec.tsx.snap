@@ -9,10 +9,11 @@ exports[`renders IncomingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
+        style="user-select: none; webkit-user-select: none;"
       >
         <i
           aria-hidden="true"
@@ -25,13 +26,13 @@ exports[`renders IncomingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           Incoming Call...
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"
@@ -74,7 +75,7 @@ exports[`renders IncomingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -98,7 +99,7 @@ exports[`renders IncomingCall without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -106,14 +107,14 @@ exports[`renders IncomingCall without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
@@ -130,7 +131,7 @@ exports[`renders IncomingCall without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
@@ -166,10 +167,11 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
+        style="user-select: none; webkit-user-select: none;"
       >
         <i
           aria-hidden="true"
@@ -182,13 +184,13 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           Transferring_call_incoming...
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"
@@ -241,7 +243,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -265,7 +267,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -273,14 +275,14 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
@@ -297,7 +299,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
             </span>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
@@ -360,10 +362,11 @@ exports[`renders NewCall without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
+        style="user-select: none; webkit-user-select: none;"
       >
         <i
           aria-hidden="true"
@@ -376,13 +379,13 @@ exports[`renders NewCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           New_call
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="Close"
@@ -428,7 +431,7 @@ exports[`renders NewCall without crashing 1`] = `
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-6vi44e"
+                  class="rcx-box rcx-box--full rcx-icon--name-magnifier rcx-icon rcx-css-1wz6xj9"
                 >
                   
                 </i>
@@ -466,7 +469,7 @@ exports[`renders NewCall without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-jgzlgu"
             >
               <div
-                class="rcx-box rcx-box--full rcx-css-14t6xuk"
+                class="rcx-box rcx-box--full rcx-css-1jbbtow"
               >
                 <span
                   class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -490,7 +493,7 @@ exports[`renders NewCall without crashing 1`] = `
                 </span>
               </div>
               <div
-                class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+                class="rcx-box rcx-box--full rcx-css-1m7ucy6"
               >
                 1234567890
               </div>
@@ -499,7 +502,7 @@ exports[`renders NewCall without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
@@ -521,7 +524,7 @@ exports[`renders NewCall without crashing 1`] = `
             </i>
           </button>
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button rcx-css-t3n91h"
             type="button"
           >
             <span
@@ -556,10 +559,11 @@ exports[`renders OngoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
+        style="user-select: none; webkit-user-select: none;"
       >
         <i
           aria-hidden="true"
@@ -572,7 +576,7 @@ exports[`renders OngoingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           <time
@@ -584,7 +588,7 @@ exports[`renders OngoingCall without crashing 1`] = `
           </time>
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"
@@ -627,7 +631,7 @@ exports[`renders OngoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -651,7 +655,7 @@ exports[`renders OngoingCall without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -659,7 +663,7 @@ exports[`renders OngoingCall without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--align-start rcx-button-group--large"
@@ -667,7 +671,7 @@ exports[`renders OngoingCall without crashing 1`] = `
         >
           <button
             aria-label="Dialpad"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Dialpad"
             title="Open_dialpad"
             type="button"
@@ -681,7 +685,7 @@ exports[`renders OngoingCall without crashing 1`] = `
           </button>
           <button
             aria-label="Mute"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Mute"
             title="Mute"
             type="button"
@@ -695,7 +699,7 @@ exports[`renders OngoingCall without crashing 1`] = `
           </button>
           <button
             aria-label="Hold"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Hold"
             title="Hold"
             type="button"
@@ -709,7 +713,7 @@ exports[`renders OngoingCall without crashing 1`] = `
           </button>
           <button
             aria-label="Forward"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
             label="Forward"
             title="Forward"
             type="button"
@@ -723,7 +727,7 @@ exports[`renders OngoingCall without crashing 1`] = `
           </button>
           <button
             aria-label="Voice_call__user__hangup"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary-danger rcx-button--square rcx-button--icon rcx-button"
             label="Voice_call__user__hangup"
             title="Voice_call__user__hangup"
             type="button"
@@ -755,10 +759,11 @@ exports[`renders OutgoingCall without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
+        style="user-select: none; webkit-user-select: none;"
       >
         <i
           aria-hidden="true"
@@ -771,13 +776,13 @@ exports[`renders OutgoingCall without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           Calling...
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"
@@ -820,7 +825,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -844,7 +849,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -852,14 +857,14 @@ exports[`renders OutgoingCall without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >
@@ -895,10 +900,11 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
     />
     <article
       aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
-      class="rcx-css-1ltrbpz"
+      class="rcx-css-155a7q5"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-lyi0e7 rcx-css-11m6c1h"
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
+        style="user-select: none; webkit-user-select: none;"
       >
         <i
           aria-hidden="true"
@@ -911,13 +917,13 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-4vvilp"
       >
         <h3
-          class="rcx-box rcx-box--full rcx-css-15wnn68"
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
           id="rcx-media-call-widget-title"
         >
           Transferring_call...
         </h3>
         <div
-          class="rcx-box rcx-box--full rcx-css-ws1yyr"
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
         >
           <button
             aria-label="customize"
@@ -970,7 +976,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-css-jgzlgu"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-14t6xuk"
+              class="rcx-box rcx-box--full rcx-css-1jbbtow"
             >
               <span
                 class="rcx-box rcx-box--full rcx-css-ilfe77"
@@ -994,7 +1000,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
               </span>
             </div>
             <div
-              class="rcx-box rcx-box--full rcx-css-1c8uhnw"
+              class="rcx-box rcx-box--full rcx-css-1m7ucy6"
             >
               1234567890
             </div>
@@ -1002,14 +1008,14 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         </div>
       </section>
       <footer
-        class="rcx-box rcx-box--full rcx-css-184ke9m"
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
       >
         <div
           class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
           role="group"
         >
           <button
-            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-button-group__item rcx-css-t3n91h"
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button rcx-css-t3n91h"
             name="phone"
             type="button"
           >

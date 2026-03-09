@@ -3,7 +3,8 @@ import type { Page } from '@playwright/test';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelLiveChat, HomeOmnichannel } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 test.describe('Omnichannel chat history', () => {
@@ -45,15 +46,15 @@ test.describe('Omnichannel chat history', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeOmnichannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('expect to be able to edit room info', async () => {
-			await agent.poHomeOmnichannel.roomInfo.btnEditRoomInfo.click();
-			await agent.poHomeOmnichannel.roomInfo.inputTopic.fill('any_topic');
-			await agent.poHomeOmnichannel.roomInfo.btnSaveEditRoom.click();
+			await agent.poHomeOmnichannel.roomInfo.btnEdit.click();
+			await agent.poHomeOmnichannel.editRoomInfo.inputTopic.fill('any_topic');
+			await agent.poHomeOmnichannel.editRoomInfo.btnSave.click();
 
-			await expect(agent.poHomeOmnichannel.roomInfo.dialogRoomInfo).toContainText('any_topic');
+			await expect(agent.poHomeOmnichannel.roomInfo.root).toContainText('any_topic');
 		});
 
 		await test.step('Expect to be able to close an omnichannel to conversation', async () => {
@@ -68,7 +69,7 @@ test.describe('Omnichannel chat history', () => {
 		});
 
 		await test.step('Expect to have 1 omnichannel assigned to agent 1', async () => {
-			await agent.poHomeOmnichannel.sidenav.openChat(newVisitor.name);
+			await agent.poHomeOmnichannel.navbar.openChat(newVisitor.name);
 		});
 
 		await test.step('Expect to be able to see conversation history', async () => {
