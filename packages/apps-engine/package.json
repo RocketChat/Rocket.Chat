@@ -52,6 +52,7 @@
 		".:lint:eslint": "eslint .",
 		".:test:deno": "cd deno-runtime && deno task test",
 		".:test:node": "NODE_ENV=test ts-node --transpileOnly ./tests/runner.ts",
+		".:test:node-builtin": "NODE_ENV=test ts-node --transpileOnly ./tests/node-runner.ts",
 		"build": "run-s .:build:clean .:build:default .:build:deno-cache",
 		"bundle": "node scripts/bundle.js",
 		"dev": "yarn .:build:default --watch",
@@ -60,7 +61,7 @@
 		"lint": "yarn .:lint:eslint && yarn .:lint:deno",
 		"prepack": "yarn bundle",
 		"start": "run-s .:build:clean .:build:watch",
-		"testunit": "run-p .:test:node .:test:deno",
+		"testunit": "run-p .:test:node .:test:node-builtin .:test:deno",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"nyc": {
