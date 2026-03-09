@@ -314,10 +314,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.setStatus': {
-		POST: (params: { message?: string; status?: UserStatus; userId?: string; username?: string; user?: string }) => void;
-	};
-
 	'/v1/users.getStatus': {
 		GET: () => {
 			status: 'online' | 'offline' | 'away' | 'busy';
