@@ -168,7 +168,7 @@ class PushClass {
 	}
 
 	private removeToken(token: string): void {
-		void PushToken.removeAllByTokenString(token).catch((err) => {
+		void PushToken.removeOrUnsetByTokenString(token).catch((err) => {
 			logger.error({ msg: 'Failed to remove push token', err });
 		});
 	}
@@ -189,9 +189,9 @@ class PushClass {
 			const userToken = notification.useVoipToken ? app.voipToken : app.token.apn;
 			const topic = notification.useVoipToken ? `${app.appName}.voip` : app.appName;
 
-			countApn.push(app._id);
 			// Send to APN
 			if (this.options.apn && userToken) {
+				countApn.push(app._id);
 				sendAPN({ userToken, notification: { topic, ...notification }, _removeToken: this.removeToken });
 			}
 		} else if ('gcm' in app.token && app.token.gcm) {
@@ -308,9 +308,9 @@ class PushClass {
 	}
 
 	private getGatewayNotificationData(notification: PendingPushNotification): Omit<GatewayNotification, 'uniqueId'> {
-		// Gateway currently accepts every attribute from the PendingPushNotification type, except for the priority
+		// Gateway currently accepts every attribute from the PendingPushNotification type, except for the priority and useVoipToken
 		// If new attributes are added to the PendingPushNotification type, they'll need to be removed here as well.
-		const { priority: _priority, ...notifData } = notification;
+		const { priority: _priority, useVoipToken: _useVoipToken, ...notifData } = notification;
 
 		return {
 			...notifData,

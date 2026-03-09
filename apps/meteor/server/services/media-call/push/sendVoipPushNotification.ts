@@ -53,7 +53,7 @@ async function getActorUserData(
 	};
 }
 
-export async function sendVoipPushNotification(callId: IMediaCall['_id'], event: VoipPushNotificationEventType): Promise<void> {
+async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: VoipPushNotificationEventType): Promise<void> {
 	const call = await MediaCalls.findOneById(callId);
 	if (!call) {
 		logger.error({ msg: 'Failed to send push notification: Media Call not found', callId });
@@ -101,4 +101,10 @@ export async function sendVoipPushNotification(callId: IMediaCall['_id'], event:
 		// We should not send state change notifications to the device where the call was accepted/rejected
 		...(call.callee.contractId && { skipTokenId: call.callee.contractId }),
 	});
+}
+
+export function sendVoipPushNotification(callId: IMediaCall['_id'], event: VoipPushNotificationEventType): void {
+	void sendVoipPushNotificationAsync(callId, event).catch((err) => {
+		logger.error({ msg: 'Failed to send VoIP push notification', err, callId, event });
+	})
 }
