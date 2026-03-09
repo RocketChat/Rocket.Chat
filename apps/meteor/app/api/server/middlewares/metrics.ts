@@ -9,22 +9,22 @@ export const metricsMiddleware =
 		basePathRegex,
 		api,
 		settings,
-		summary,
-		histogram,
+		endpointTimeSummary,
+		endpointTimeHistogram,
 		responseSizeHistogram,
 		activeRequestsGauge,
 	}: {
 		basePathRegex?: RegExp;
 		api: APIClass;
 		settings: CachedSettings;
-		summary: Summary;
-		histogram: Histogram;
+		endpointTimeSummary: Summary;
+		endpointTimeHistogram: Histogram;
 		responseSizeHistogram: Histogram;
 		activeRequestsGauge: Gauge;
 	}): MiddlewareHandler =>
 	async (c, next) => {
-		const rocketchatRestApiEnd = summary.startTimer();
-		const rocketchatRestApiHistEnd = histogram.startTimer();
+		const rocketchatRestApiEnd = endpointTimeSummary.startTimer();
+		const rocketchatRestApiHistEnd = endpointTimeHistogram.startTimer();
 
 		const methodLabel = { method: c.req.method.toLowerCase() };
 		activeRequestsGauge.inc(methodLabel);
