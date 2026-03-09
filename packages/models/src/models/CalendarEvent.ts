@@ -47,6 +47,15 @@ export class CalendarEventRaw extends BaseRaw<ICalendarEvent> implements ICalend
 			},
 		);
 	}
+     public findBySubject(uid: IUser['_id'], text: string): FindCursor<ICalendarEvent> {
+	const escapedText = text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+	return this.find({
+		uid,
+		subject: { $regex: escapedText, $options: 'i' },
+	});
+}
+	
 
 	public async updateEvent(
 		eventId: ICalendarEvent['_id'],

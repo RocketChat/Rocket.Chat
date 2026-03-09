@@ -10,22 +10,23 @@ import { useOutlookOpenCall } from '../hooks/useOutlookOpenCall';
 
 type OutlookEventItemProps = Serialized<ICalendarEvent>;
 
+
+const hovered = css`
+	&:hover {
+		cursor: pointer;
+	}
+
+	&:hover,
+	&:focus {
+		background: ${Palette.surface['surface-hover']};
+	}
+`;
+
 const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: OutlookEventItemProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();
 	const openCall = useOutlookOpenCall(meetingUrl);
-
-	const hovered = css`
-		&:hover {
-			cursor: pointer;
-		}
-
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-		}
-	`;
 
 	const handleOpenEvent = () => {
 		setModal(
@@ -55,6 +56,7 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 				<Box fontScale='h4'>{subject}</Box>
 				<Box fontScale='c1'>{formatDateAndTime(startTime)}</Box>
 			</Box>
+
 			<Box>
 				{meetingUrl && (
 					<Button onClick={openCall} small>
