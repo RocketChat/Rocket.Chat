@@ -637,6 +637,7 @@ type MembersOrderedByRoleProps = {
 export type RoomsMembersOrderedByRoleProps = PaginatedRequest<MembersOrderedByRoleProps>;
 
 const membersOrderedByRoleRolePropsSchema = {
+	type: 'object',
 	properties: {
 		roomId: {
 			type: 'string',
@@ -663,7 +664,10 @@ const membersOrderedByRoleRolePropsSchema = {
 			type: 'string',
 		},
 	},
-	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	oneOf: [
+		{ type: 'object', required: ['roomId'] },
+		{ type: 'object', required: ['roomName'] },
+	],
 	additionalProperties: false,
 };
 
