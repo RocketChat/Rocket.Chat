@@ -47,4 +47,20 @@ describe('spoiler parsing', () => {
 	])('parses edge cases: %p', (input, output) => {
 		expect(parse(input)).toMatchObject(output);
 	});
+
+	it('should not leak inline emoji skip flags across repeated parse calls', () => {
+		const cases = [
+			['||text :emoji: text||', [paragraph([spoiler([plain('text '), emoji('emoji'), plain(' text')])])]],
+			['||__i__ ~~s~~||', [paragraph([spoiler([italic([plain('i')]), plain(' '), strike([plain('s')])])])]],
+			['||@user mention||', [paragraph([spoiler([mentionUser('user'), plain(' mention')])])]],
+		] as const;
+
+		for (const [input, output] of cases) {
+			expect(parse(input)).toMatchObject(output);
+		}
+
+		for (const [input, output] of cases) {
+			expect(parse(input)).toMatchObject(output);
+		}
+	});
 });
