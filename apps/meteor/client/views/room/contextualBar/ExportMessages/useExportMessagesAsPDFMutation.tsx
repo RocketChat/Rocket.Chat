@@ -34,6 +34,7 @@ const NOTO_SANS_FONTS: { name: string; fontSrc: string }[] = [
 const pdfStyles = StyleSheet.create({
 	page: {
 		fontFamily: NOTO_SANS_FONTS.map((font) => font.name),
+		color: '#000',
 	},
 	messageHeader: {
 		display: 'flex',
@@ -42,24 +43,19 @@ const pdfStyles = StyleSheet.create({
 		gap: 10,
 	},
 	username: {
-		color: '#000',
 		fontSize: 14,
 	},
 	dateTime: {
-		color: '#aaa',
 		fontSize: 12,
 	},
 	threadMessagesCount: {
-		color: '#000',
 		fontSize: 14,
 	},
 	threadMessage: {
-		color: '#555',
 		fontSize: 12,
 		...leftTab,
 	},
 	message: {
-		color: '#555',
 		fontSize: 14,
 	},
 });
