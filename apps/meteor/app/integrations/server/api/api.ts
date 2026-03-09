@@ -428,7 +428,7 @@ const Api = new WebHookAPI({
 
 Api.router
 	.use(loggerMiddleware(integrationLogger))
-	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi }))
+	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi, histogram: metrics.rocketchatRestApiSeconds }))
 	.use(tracerSpanMiddleware);
 
 Api.addRoute(

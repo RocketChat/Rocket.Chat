@@ -179,11 +179,13 @@ export async function getEmailData({ message, receiver, sender, subscription, ro
 	}
 
 	metrics.notificationsSent.inc({ notification_type: 'email' });
+	metrics.notificationsSentTotal.inc({ notification_type: 'email' });
 	return email;
 }
 
 export function sendEmailFromData(data) {
 	metrics.notificationsSent.inc({ notification_type: 'email' });
+	metrics.notificationsSentTotal.inc({ notification_type: 'email' });
 	return Mailer.send(data);
 }
 

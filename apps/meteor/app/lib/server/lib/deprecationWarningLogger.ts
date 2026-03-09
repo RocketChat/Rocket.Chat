@@ -40,6 +40,7 @@ export const apiDeprecationLogger = ((logger) => {
 			writeDeprecationHeader(res, 'endpoint-deprecation', message, version);
 
 			metrics.deprecations.inc({ type: 'deprecation', kind: 'endpoint', name: endpoint });
+			metrics.deprecationsTotal.inc({ type: 'deprecation', kind: 'endpoint', name: endpoint });
 
 			logger.warn({ msg: message, endpoint, version, info });
 		},
@@ -63,6 +64,7 @@ export const apiDeprecationLogger = ((logger) => {
 			}
 
 			metrics.deprecations.inc({ type: 'parameter-deprecation', kind: 'endpoint', name: endpoint, params: parameter });
+			metrics.deprecationsTotal.inc({ type: 'parameter-deprecation', kind: 'endpoint', name: endpoint, params: parameter });
 
 			writeDeprecationHeader(res, 'parameter-deprecation', message, version);
 
@@ -92,6 +94,7 @@ export const apiDeprecationLogger = ((logger) => {
 			compareVersions(version, message);
 
 			metrics.deprecations.inc({ type: 'invalid-usage', kind: 'endpoint', name: endpoint, params: parameter });
+			metrics.deprecationsTotal.inc({ type: 'invalid-usage', kind: 'endpoint', name: endpoint, params: parameter });
 
 			writeDeprecationHeader(res, 'invalid-usage', message, version);
 
@@ -116,6 +119,7 @@ export const methodDeprecationLogger = ((logger) => {
 			}
 			compareVersions(version, message);
 			metrics.deprecations.inc({ type: 'deprecation', name: method, kind: 'method' });
+			metrics.deprecationsTotal.inc({ type: 'deprecation', name: method, kind: 'method' });
 			logger.warn({ msg: message, method, version, replacement });
 		},
 		parameter: (method: string, parameter: string, version: DeprecationLoggerNextPlannedVersion) => {
@@ -125,6 +129,7 @@ export const methodDeprecationLogger = ((logger) => {
 			}
 
 			metrics.deprecations.inc({ type: 'parameter-deprecation', name: method, params: parameter });
+			metrics.deprecationsTotal.inc({ type: 'parameter-deprecation', name: method, params: parameter });
 
 			compareVersions(version, message);
 			logger.warn({ msg: message, method, parameter, version });
@@ -151,6 +156,7 @@ export const methodDeprecationLogger = ((logger) => {
 			compareVersions(version, message);
 
 			metrics.deprecations.inc({ type: 'invalid-usage', name: method, params: parameter, kind: 'method' });
+			metrics.deprecationsTotal.inc({ type: 'invalid-usage', name: method, params: parameter, kind: 'method' });
 
 			logger.warn({ msg: message, method, parameter, version });
 		},

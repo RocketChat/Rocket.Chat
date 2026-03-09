@@ -675,6 +675,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		metrics.notificationsSent.inc({ notification_type: 'mobile' });
+		metrics.notificationsSentTotal.inc({ notification_type: 'mobile' });
 		await Push.send({
 			from: 'push',
 			badge: 0,

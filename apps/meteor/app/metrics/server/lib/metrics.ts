@@ -4,14 +4,27 @@ import client from 'prom-client';
 
 const percentiles = [0.01, 0.1, 0.5, 0.9, 0.95, 0.99, 1];
 
+const latencyBuckets = [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10];
+const queueWaitBuckets = [1, 5, 10, 30, 60, 120, 300, 600, 900, 1800, 3600];
+
 export const metrics = {
 	deprecations: new client.Counter({
 		name: 'rocketchat_deprecations',
 		labelNames: ['type', 'kind', 'name', 'params'],
 		help: 'cumulated number of deprecations being used',
 	}),
+	deprecationsTotal: new client.Counter({
+		name: 'rocketchat_deprecations_total',
+		labelNames: ['type', 'kind', 'name', 'params'],
+		help: 'cumulated number of deprecations being used',
+	}),
 	metricsRequests: new client.Counter({
 		name: 'rocketchat_metrics_requests',
+		labelNames: ['notification_type'],
+		help: 'cumulated number of calls to the metrics endpoint',
+	}),
+	metricsRequestsTotal: new client.Counter({
+		name: 'rocketchat_metrics_requests_total',
 		labelNames: ['notification_type'],
 		help: 'cumulated number of calls to the metrics endpoint',
 	}),
@@ -30,11 +43,23 @@ export const metrics = {
 		labelNames: ['method', 'has_connection', 'has_user'],
 		percentiles,
 	}),
+	meteorMethodsSeconds: new client.Histogram({
+		name: 'rocketchat_meteor_methods_seconds',
+		help: 'histogram of meteor methods count and time in seconds',
+		labelNames: ['method', 'has_connection', 'has_user'],
+		buckets: latencyBuckets,
+	}),
 	rocketchatCallbacks: new client.Summary({
 		name: 'rocketchat_callbacks',
 		help: 'summary of rocketchat callbacks count and time',
 		labelNames: ['hook', 'callback'],
 		percentiles,
+	}),
+	rocketchatCallbacksSeconds: new client.Histogram({
+		name: 'rocketchat_callbacks_seconds',
+		help: 'histogram of rocketchat callbacks count and time in seconds',
+		labelNames: ['hook', 'callback'],
+		buckets: latencyBuckets,
 	}),
 	rocketchatHooks: new client.Summary({
 		name: 'rocketchat_hooks',
@@ -42,11 +67,23 @@ export const metrics = {
 		labelNames: ['hook', 'callbacks_length'],
 		percentiles,
 	}),
+	rocketchatHooksSeconds: new client.Histogram({
+		name: 'rocketchat_hooks_seconds',
+		help: 'histogram of rocketchat hooks count and time in seconds',
+		labelNames: ['hook', 'callbacks_length'],
+		buckets: latencyBuckets,
+	}),
 	rocketchatRestApi: new client.Summary({
 		name: 'rocketchat_rest_api',
 		help: 'summary of rocketchat rest api count and time',
 		labelNames: ['method', 'entrypoint', 'user_agent', 'status', 'version'],
 		percentiles,
+	}),
+	rocketchatRestApiSeconds: new client.Histogram({
+		name: 'rocketchat_rest_api_seconds',
+		help: 'histogram of rocketchat rest api count and time in seconds',
+		labelNames: ['method', 'entrypoint', 'user_agent', 'status', 'version'],
+		buckets: latencyBuckets,
 	}),
 
 	meteorSubscriptions: new client.Summary({
@@ -55,13 +92,28 @@ export const metrics = {
 		labelNames: ['subscription'],
 		percentiles,
 	}),
+	meteorSubscriptionsSeconds: new client.Histogram({
+		name: 'rocketchat_meteor_subscriptions_seconds',
+		help: 'histogram of meteor subscriptions count and time in seconds',
+		labelNames: ['subscription'],
+		buckets: latencyBuckets,
+	}),
 
 	messagesSent: new client.Counter({
 		name: 'rocketchat_message_sent',
 		help: 'cumulated number of messages sent',
 	}),
+	messagesSentTotal: new client.Counter({
+		name: 'rocketchat_messages_sent_total',
+		help: 'cumulated number of messages sent',
+	}),
 	notificationsSent: new client.Counter({
 		name: 'rocketchat_notification_sent',
+		labelNames: ['notification_type'],
+		help: 'cumulated number of notifications sent',
+	}),
+	notificationsSentTotal: new client.Counter({
+		name: 'rocketchat_notifications_sent_total',
 		labelNames: ['notification_type'],
 		help: 'cumulated number of notifications sent',
 	}),
@@ -72,6 +124,11 @@ export const metrics = {
 		maxAgeSeconds: 60,
 		ageBuckets: 5,
 		// pruneAgedBuckets: true, // Type not added to prom-client on 14.2 https://github.com/siimon/prom-client/pull/558
+	}),
+	messageRoundtripTimeSeconds: new client.Histogram({
+		name: 'rocketchat_messages_roundtrip_time_seconds',
+		help: 'time in seconds spent by a message from save to receive back',
+		buckets: latencyBuckets,
 	}),
 
 	ddpSessions: new client.Gauge({
@@ -88,6 +145,11 @@ export const metrics = {
 	}),
 	ddpRateLimitExceeded: new client.Counter({
 		name: 'rocketchat_ddp_rate_limit_exceeded',
+		labelNames: ['limit_name', 'user_id', 'client_address', 'type', 'name', 'connection_id'],
+		help: 'number of times a ddp rate limiter was exceeded',
+	}),
+	ddpRateLimitExceededTotal: new client.Counter({
+		name: 'rocketchat_ddp_rate_limit_exceeded_total',
 		labelNames: ['limit_name', 'user_id', 'client_address', 'type', 'name', 'connection_id'],
 		help: 'number of times a ddp rate limiter was exceeded',
 	}),
@@ -191,6 +253,12 @@ export const metrics = {
 		labelNames: ['bridge', 'method', 'app_id'],
 		percentiles,
 	}),
+	appBridgeMethodsSeconds: new client.Histogram({
+		name: 'rocketchat_apps_bridge_methods_seconds',
+		help: 'histogram of app bridge method calls count and time in seconds',
+		labelNames: ['bridge', 'method', 'app_id'],
+		buckets: latencyBuckets,
+	}),
 
 	// Meteor Facts
 	meteorFacts: new client.Gauge({
@@ -206,8 +274,16 @@ export const metrics = {
 		name: 'rocketchat_livechat_webhooks_success',
 		help: 'successful livechat webhooks',
 	}),
+	totalLivechatWebhooksSuccessTotal: new client.Counter({
+		name: 'rocketchat_livechat_webhooks_success_total',
+		help: 'successful livechat webhooks',
+	}),
 	totalLivechatWebhooksFailures: new client.Counter({
 		name: 'rocketchat_livechat_webhooks_failures',
+		help: 'failed livechat webhooks',
+	}),
+	totalLivechatWebhooksFailuresTotal: new client.Counter({
+		name: 'rocketchat_livechat_webhooks_failures_total',
 		help: 'failed livechat webhooks',
 	}),
 
@@ -231,6 +307,12 @@ export const metrics = {
 		labelNames: ['queue'],
 		help: 'Time taken in seconds for an item to be processed for the first time by Omni queues',
 		percentiles,
+	}),
+	timeToQueueProcessingByQueueHistogram: new client.Histogram({
+		name: 'rocketchat_queue_wait_duration_seconds',
+		labelNames: ['queue'],
+		help: 'Histogram of time taken in seconds for an item to be processed for the first time by Omni queues',
+		buckets: queueWaitBuckets,
 	}),
 };
 
