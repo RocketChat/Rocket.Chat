@@ -94,6 +94,7 @@ export async function sendVoipPushNotification(callId: IMediaCall['_id'], event:
 			callId: call._id,
 			caller,
 			username,
+			createdAt: call.createdAt.toISOString(),
 		},
 		userId,
 		notId: PushNotification.getNotificationId(call._id),
