@@ -89,6 +89,7 @@ services:
     build:
       dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
       context: out/presence-service
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
@@ -109,6 +110,7 @@ services:
     build:
       dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
       context: out/ddp-streamer
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
