@@ -1,6 +1,7 @@
 import type { IMediaCall, IUser, MediaCallContact, MediaCallActorType } from '@rocket.chat/core-typings';
 import type { VoipPushNotificationEventType } from '@rocket.chat/media-calls';
 import { MediaCalls, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { getPushNotificationType } from './getPushNotificationType';
 import { metrics } from '../../../../app/metrics/server/lib/metrics';
@@ -106,5 +107,5 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 export function sendVoipPushNotification(callId: IMediaCall['_id'], event: VoipPushNotificationEventType): void {
 	void sendVoipPushNotificationAsync(callId, event).catch((err) => {
 		logger.error({ msg: 'Failed to send VoIP push notification', err, callId, event });
-	})
+	});
 }
