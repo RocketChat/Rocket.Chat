@@ -376,7 +376,7 @@ API.v1.addRoute(
 	},
 );
 
-export const GroupsDeletePropsSchema = {
+const GroupsDeletePropsSchema = {
 	oneOf: [
 		{
 			type: 'object',
@@ -403,9 +403,9 @@ export const GroupsDeletePropsSchema = {
 	],
 } as const;
 
-export type GroupsDeleteProps = { roomId: string } | { roomName: string };
+type GroupsDeleteProps = { roomId: string } | { roomName: string };
 
-export const isGroupsDeleteProps = ajv.compile<GroupsDeleteProps>(GroupsDeletePropsSchema);
+const isGroupsDeleteProps = ajv.compile<GroupsDeleteProps>(GroupsDeletePropsSchema);
 
 const groupDeleteEndpoint = API.v1.post(
 	'groups.delete',
