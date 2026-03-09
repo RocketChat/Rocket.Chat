@@ -162,12 +162,15 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 			],
 		});
 
-		await this.updateMany({
-			voipToken: token,
-		}, {
-			$unset: {
-				voipToken: 1,
+		await this.updateMany(
+			{
+				voipToken: token,
 			},
-		});
+			{
+				$unset: {
+					voipToken: 1,
+				},
+			},
+		);
 	}
 }
