@@ -278,7 +278,7 @@ const getUrlMeta = async function (
 	}
 	return afterParseUrlContent({
 		url,
-		meta: metas,
+		meta: metas as OEmbedMeta,
 		headers,
 		content,
 	});
