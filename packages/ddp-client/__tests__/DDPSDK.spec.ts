@@ -1,4 +1,3 @@
-/* eslint-disable no-debugger */
 import util from 'util';
 
 import WS from 'jest-websocket-mock';
@@ -16,7 +15,6 @@ const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F =>
 		const methods = [].concat(...Array(times));
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		for (const _ of methods) {
-			// eslint-disable-next-line no-await-in-loop
 			await fn(...args);
 		}
 	}) as F;
