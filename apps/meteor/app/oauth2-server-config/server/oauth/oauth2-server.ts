@@ -75,7 +75,9 @@ API.v1.addAuthMethod((routeContext) => {
 	const authorization = routeContext.request.headers.get('authorization') ?? undefined;
 	const query = isPlainObject(routeContext.queryParams) ? routeContext.queryParams : {};
 	const accessToken = typeof query.access_token === 'string' ? query.access_token : undefined;
-	delete routeContext.queryParams.access_token;
+	if (routeContext.queryParams.access_token) {
+		delete routeContext.queryParams.access_token;
+	}
 
 	return oAuth2ServerAuth({ authorization, accessToken });
 });
