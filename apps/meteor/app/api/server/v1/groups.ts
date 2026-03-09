@@ -376,36 +376,42 @@ API.v1.addRoute(
 	},
 );
 
+export const GroupsDeletePropsSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+					description: 'Enter the room ID. This parameter is required if no roomName is provided.',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+					description: 'Enter the room name. This parameter is required if no roomId is provided.',
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+} as const;
+
+export type GroupsDeleteProps = { roomId: string } | { roomName: string };
+
+export const isGroupsDeleteProps = ajv.compile<GroupsDeleteProps>(GroupsDeletePropsSchema);
+
 const groupDeleteEndpoint = API.v1.post(
 	'groups.delete',
 	{
 		authRequired: true,
-		body: ajv.compile<{ roomId?: string | undefined } | { roomName?: string | undefined }>({
-			oneOf: [
-				{
-					type: 'object',
-					properties: {
-						roomId: {
-							type: 'string',
-							description: 'Enter the room ID. This parameter is required if no roomName is provided.',
-						},
-					},
-					required: ['roomId'],
-					additionalProperties: false,
-				},
-				{
-					type: 'object',
-					properties: {
-						roomName: {
-							type: 'string',
-							description: 'Enter the room name. This parameter is required if no roomId is provided.',
-						},
-					},
-					required: ['roomName'],
-					additionalProperties: false,
-				},
-			],
-		}),
+		body: isGroupsDeleteProps,
 		response: {
 			200: ajv.compile<void>({
 				type: 'object',
