@@ -102,7 +102,17 @@ settings.watch<number>('API_Enable_Rate_Limiter_Limit_Calls_Default', (value) =>
 export const startRestAPI = () => {
 	(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
 		API.api
-			.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/api\/v1\//), api: API.v1, settings, summary: metrics.rocketchatRestApi, histogram: metrics.rocketchatRestApiSeconds, responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes, activeRequestsGauge: metrics.rocketchatRestApiActiveRequests }))
+			.use(
+				metricsMiddleware({
+					basePathRegex: new RegExp(/^\/api\/v1\//),
+					api: API.v1,
+					settings,
+					summary: metrics.rocketchatRestApi,
+					histogram: metrics.rocketchatRestApiSeconds,
+					responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes,
+					activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
+				}),
+			)
 			.use(tracerSpanMiddleware)
 			.use(remoteAddressMiddleware)
 			.use(cors(settings))

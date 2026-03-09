@@ -427,7 +427,17 @@ const Api = new WebHookAPI({
 });
 
 Api.router
-	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi, histogram: metrics.rocketchatRestApiSeconds, responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes, activeRequestsGauge: metrics.rocketchatRestApiActiveRequests }))
+	.use(
+		metricsMiddleware({
+			basePathRegex: new RegExp(/^\/hooks\//),
+			api: Api,
+			settings,
+			summary: metrics.rocketchatRestApi,
+			histogram: metrics.rocketchatRestApiSeconds,
+			responseSizeHistogram: metrics.rocketchatRestApiResponseSizeBytes,
+			activeRequestsGauge: metrics.rocketchatRestApiActiveRequests,
+		}),
+	)
 	.use(tracerSpanMiddleware)
 	.use(loggerMiddleware(integrationLogger));
 
