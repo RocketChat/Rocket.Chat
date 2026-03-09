@@ -237,7 +237,7 @@ export class AppRoomBridge extends RoomBridge {
 			throw new Error('Room id not found');
 		}
 
-		for await (const username of members) {
+		for (const username of members) {
 			const member = await Users.findOneByUsername(username, {});
 
 			if (!member) {
