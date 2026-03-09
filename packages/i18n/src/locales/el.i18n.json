@@ -932,7 +932,6 @@
   "FileUpload_S3_Proxy_Uploads": "Μεταφορτώσεις μεσολάβησης",
   "FileUpload_S3_Proxy_Uploads_Description": "Η μεταβίβαση αρχείων διακομιστή μεσολάβησης μέσω του διακομιστή σας αντί για άμεση πρόσβαση στη διεύθυνση URL του στοιχείου",
   "FileUpload_S3_Region": "Περιοχή",
-  "FileUpload_S3_SignatureVersion": "Έκδοση υπογραφής",
   "FileUpload_S3_URLExpiryTimeSpan": "Διάρκεια λήξης URL διευθύνσεων URL",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Ο χρόνος μετά την οποία οι διευθύνσεις URL που παράγονται από το Amazon S3 δεν θα είναι πλέον έγκυρες (σε δευτερόλεπτα). Εάν είναι ρυθμισμένο σε λιγότερο από 5 δευτερόλεπτα, αυτό το πεδίο θα αγνοηθεί.",
   "FileUpload_Storage_Type": "Τύπος αποθήκευσης",

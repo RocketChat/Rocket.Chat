@@ -1601,7 +1601,6 @@
   "FileUpload_S3_Proxy_Uploads": "عمليات الرفع الخاصة بالوكيل",
   "FileUpload_S3_Proxy_Uploads_Description": "إرسال ملف الرفع الخاص بالوكيل من خلال الخادم الخاص بك بدلاً من الوصول المباشر إلى عنوان URL الخاص بالأصل",
   "FileUpload_S3_Region": "المنطقة",
-  "FileUpload_S3_SignatureVersion": "إصدار التوقيع",
   "FileUpload_S3_URLExpiryTimeSpan": "فترة انتهاء صلاحية عناوين URL",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "الوقت الذي لن تصبح بعده عناوين URL التي تنشئها Amazon S3 صالحة (بالثواني). إذا تم التعيين على أقل من 5 ثوانٍ، فسيتم تجاهل هذا الحقل.",
   "FileUpload_Storage_Type": "نوع التخزين",

@@ -934,7 +934,6 @@
   "FileUpload_S3_Proxy_Uploads": "Proxy uploady",
   "FileUpload_S3_Proxy_Uploads_Description": "Proxy prenášať súborové súbory cez váš server namiesto priameho prístupu k URL adries",
   "FileUpload_S3_Region": "kraj",
-  "FileUpload_S3_SignatureVersion": "Podpisová verzia",
   "FileUpload_S3_URLExpiryTimeSpan": "Časový interval vypršania webových adries",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Čas, po ktorom generované adresy URL Amazon S3 už nebudú platné (v sekundách). Ak je nastavené na menej ako 5 sekúnd, toto pole bude ignorované.",
   "FileUpload_Storage_Type": "Typ úložiska",

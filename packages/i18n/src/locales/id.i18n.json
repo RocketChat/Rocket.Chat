@@ -927,7 +927,6 @@
   "FileUpload_S3_Proxy_Uploads": "Unggah Proksi",
   "FileUpload_S3_Proxy_Uploads_Description": "Transmisikan file upload proxy melalui server Anda, bukan akses langsung ke URL aset",
   "FileUpload_S3_Region": "Wilayah",
-  "FileUpload_S3_SignatureVersion": "Versi Tanda Tangan",
   "FileUpload_S3_URLExpiryTimeSpan": "Kadaluarsa kadaluarsa",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Waktu setelah URL yang dihasilkan oleh Amazon S3 tidak lagi valid (dalam hitungan detik). Jika diatur kurang dari 5 detik, bidang ini akan diabaikan.",
   "FileUpload_Storage_Type": "storage Type",
