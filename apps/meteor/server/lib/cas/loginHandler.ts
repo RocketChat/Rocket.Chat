@@ -1,6 +1,7 @@
 import { CredentialTokens, Users } from '@rocket.chat/models';
 import { getObjectKeys, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import { createNewUser } from './createNewUser';
 import { findExistingCASUser } from './findExistingCASUser';

@@ -1,5 +1,5 @@
 import { useUser } from '@rocket.chat/ui-contexts';
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { useCustomEmoji } from '../hooks/loggedIn/useCustomEmoji';
 import { useE2EEncryption } from '../hooks/loggedIn/useE2EEncryption';

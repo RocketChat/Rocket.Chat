@@ -1,11 +1,11 @@
-import { ActionTypes } from "../reducer";
+import { ActionTypes } from '../reducer';
 
 export type IsTabletAction = {
-  type: ActionTypes.IsTablet,
-  payload: boolean,
+	type: ActionTypes.IsTablet;
+	payload: boolean;
 };
 
 export const isTabletAction = (payload: boolean): IsTabletAction => ({
-  type: ActionTypes.IsTablet,
-  payload,
+	type: ActionTypes.IsTablet,
+	payload,
 });

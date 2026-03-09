@@ -1,4 +1,4 @@
-import { Authorization, type IFederationMatrixService, Room, ServiceClass } from '@rocket.chat/core-services';
+import { Authorization, type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
 	isMessageFromMatrixFederation,
@@ -11,7 +11,7 @@ import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederat
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
 import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
+import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
@@ -41,20 +41,30 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	private readonly logger = new Logger(this.name);
 
 	override async created(): Promise<void> {
-		// although this is async function, it is not awaited, so we need to register the listeners before everything else
-		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
-
-			const { _id, value } = setting;
-			if (_id === 'Federation_Service_Domain' && typeof value === 'string') {
+		this.onSettingChanged('Federation_Service_Domain', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'string') {
 				this.serverName = value;
-			} else if (_id === 'Federation_Service_EDU_Process_Typing' && typeof value === 'boolean') {
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_EDU_Process_Typing', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
 				this.processEDUTyping = value;
-			} else if (_id === 'Federation_Service_EDU_Process_Presence' && typeof value === 'boolean') {
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_EDU_Process_Presence', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
 				this.processEDUPresence = value;
-			} else if (_id === 'Federation_Service_Validate_User_Domain' && typeof value === 'boolean') {
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_Validate_User_Domain', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
 				this.validateUserDomain = value;
 			}
 		});
@@ -98,11 +108,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
+	}
 
-		this.serverName = (await Settings.getValueById<string>('Federation_Service_Domain')) || '';
-		this.processEDUTyping = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Typing')) || false;
-		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
-		this.validateUserDomain = (await Settings.getValueById<boolean>('Federation_Service_Validate_User_Domain')) || false;
+	override async started(): Promise<void> {
+		this.serverName = (await Settings.get<string>('Federation_Service_Domain')) || '';
+		this.processEDUTyping = (await Settings.get<boolean>('Federation_Service_EDU_Process_Typing')) || false;
+		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
+		this.validateUserDomain = (await Settings.get<boolean>('Federation_Service_Validate_User_Domain')) || false;
 	}
 
 	async createRoom(room: IRoom, owner: IUser): Promise<{ room_id: string; event_id: string }> {
@@ -141,7 +153,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			this.logger.debug({ msg: 'Ensuring federated users exist locally before DM creation', memberCount: usernames.length });
 
 			const federatedUsers = usernames.filter(validateFederatedUsername);
-			for await (const username of federatedUsers) {
+			for (const username of federatedUsers) {
 				const existingUser = await Users.findOneByUsername(username);
 				if (existingUser && isUserNativeFederated(existingUser)) {
 					continue;
@@ -501,7 +513,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			for await (const [eventId, username] of Object.entries(reactionData.federationReactionEventIds)) {
+			for (const [eventId, username] of Object.entries(reactionData.federationReactionEventIds)) {
 				if (username !== user.username) {
 					continue;
 				}
