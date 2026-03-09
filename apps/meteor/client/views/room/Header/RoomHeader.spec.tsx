@@ -61,5 +61,14 @@ describe('RoomHeader', () => {
 			render(<RoomHeader room={mockedRoom} slots={{ toolbox: { content: <div>Slotted Toolbox</div> } }} />, { wrapper: appRoot });
 			expect(screen.getByText('Slotted Toolbox')).toBeInTheDocument();
 		});
+		it('should render toolbox pre slot', () => {
+			render(<RoomHeader room={mockedRoom} slots={{ toolbox: { pre: <div>Pre Item</div> } }} />, { wrapper: appRoot });
+			expect(screen.getByText('Pre Item')).toBeInTheDocument();
+		});
+
+		it('should render toolbox pos slot', () => {
+			render(<RoomHeader room={mockedRoom} slots={{ toolbox: { pos: <div>Pos Item</div> } }} />, { wrapper: appRoot });
+			expect(screen.getByText('Pos Item')).toBeInTheDocument();
+		});
 	});
 });
