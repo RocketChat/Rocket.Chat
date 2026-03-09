@@ -263,7 +263,16 @@ InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
 
 InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
 
+EscapedTimestampRules
+  = "\\" "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" {
+      return plain(`<t:${date}:${format}>`);
+    }
+  / "\\" "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" {
+      return plain(`<t:${date}>`);
+    }
+
 InlineItemPattern = Whitespace
+  / EscapedTimestampRules
   / TimestampRules
   / MaybeReferences
   / AutolinkedPhone

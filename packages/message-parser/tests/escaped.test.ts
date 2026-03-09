@@ -15,6 +15,7 @@ test.each([
 	['\\# not a heading', [paragraph([plain('# not a heading')])]],
 	['\\[foo]: /url "not a reference"', [paragraph([plain('\\[foo]: /url "not a reference"')])]],
 	['\\&ouml; not a character entity', [paragraph([plain('\\&ouml; not a character entity')])]],
+	['\\<t:1708551317:R>', [paragraph([plain('<t:1708551317:R>')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });
