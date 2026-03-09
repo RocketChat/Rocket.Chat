@@ -136,6 +136,11 @@ export const createMessageSettings = () =>
 			public: true,
 			i18nDescription: 'Message_GroupingPeriodDescription',
 		});
+		await this.add('Message_VirtualList_MaxRendered', 50, {
+			type: 'int',
+			public: true,
+			i18nDescription: 'Message_VirtualList_MaxRendered_Description',
+		});
 		await this.add('API_Embed', true, {
 			type: 'boolean',
 			public: true,
