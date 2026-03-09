@@ -145,9 +145,7 @@ runs:
           SERVICE_SUFFIX=''
           if [[ "$INPUT_SERVICE" == 'rocketchat' && "$INPUT_TYPE" == 'coverage' ]] && [[ "$GITHUB_EVENT_NAME" == 'release' || "$GITHUB_REF" == 'refs/heads/develop' ]]; then
             SERVICE_SUFFIX='-cov'
-          elif [[ "$INPUT_SERVICE" == 'ddp-streamer-service' && "$INPUT_TYPE" == 'fips' ]]; then
-            SERVICE_SUFFIX='-fips'
-          elif [[ "$INPUT_SERVICE" == 'presence-service' && "$INPUT_TYPE" == 'fips' ]]; then
+          elif [[ "$INPUT_TYPE" == 'fips' ]]; then
             SERVICE_SUFFIX='-fips'
           fi
 
