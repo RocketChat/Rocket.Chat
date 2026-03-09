@@ -16,11 +16,11 @@ export const metricsMiddleware =
 		api: APIClass;
 		settings: CachedSettings;
 		summary: Summary;
-		histogram?: Histogram;
+		histogram: Histogram;
 	}): MiddlewareHandler =>
 	async (c, next) => {
 		const rocketchatRestApiEnd = summary.startTimer();
-		const rocketchatRestApiHistEnd = histogram?.startTimer();
+		const rocketchatRestApiHistEnd = histogram.startTimer();
 
 		await next();
 
@@ -40,5 +40,5 @@ export const metricsMiddleware =
 			version: api.version,
 			...(settings.get('Prometheus_API_User_Agent') && { user_agent: c.req.header('user-agent') }),
 		});
-		rocketchatRestApiHistEnd?.(histogramLabels);
+		rocketchatRestApiHistEnd(histogramLabels);
 	};
