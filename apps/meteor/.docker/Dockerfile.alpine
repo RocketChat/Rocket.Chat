@@ -1,7 +1,3 @@
-FROM denoland/deno:bin-2.3.1 AS deno-bin
-
-FROM gcr.io/distroless/cc@sha256:66d87e170bc2c5e2b8cf853501141c3c55b4e502b8677595c57534df54a68cc5 AS cc
-
 FROM node:22.16.0-alpine3.22 AS builder
 
 ENV LANG=C.UTF-8
@@ -33,24 +29,12 @@ ENV LANG=C.UTF-8
 # and more complex or security conscious daemons run as dedicated users.
 # The daemon user is also handy for locally installed daemons.
 # """
-RUN apk add --no-cache shadow ttf-dejavu \
+RUN apk add --no-cache shadow deno ttf-dejavu \
     # Update OpenSSL
     # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
     && apk upgrade --no-cache openssl \
     && groupmod -n rocketchat nogroup \
     && useradd -u 65533 -r -g rocketchat rocketchat
-
-# Install Deno with glibc support
-# Deno binary is compiled against glibc, so we copy glibc libraries from distroless/cc
-COPY --from=cc --chown=root:root --chmod=755 /lib/*-linux-gnu/* /usr/local/lib/
-COPY --from=cc --chown=root:root --chmod=755 /lib/ld-linux-* /lib/
-
-RUN mkdir -p /lib64 \
-    && ln -s /lib/ld-linux-* /lib64/ || true
-
-ENV LD_LIBRARY_PATH="/usr/local/lib"
-
-COPY --from=deno-bin /deno /usr/local/bin/deno
 
 # needs a mongo instance - defaults to container linking with alias 'mongo'
 ENV DEPLOY_METHOD=docker \

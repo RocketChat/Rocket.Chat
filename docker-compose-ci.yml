@@ -3,7 +3,7 @@ services:
     volumes:
       - ${COVERAGE_DIR:-/tmp/coverage}:${COVERAGE_DIR:-/tmp/coverage}
     build:
-      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.debian
+      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.alpine
       context: /tmp/build
       x-bake:
         platforms:
