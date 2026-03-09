@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -12,7 +12,6 @@ import { settings } from '../../app/settings/server';
 import { getDefaultSubscriptionPref } from '../../app/utils/lib/getDefaultSubscriptionPref';
 import { callbacks } from '../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../lib/getSubscriptionAutotranslateDefaultConfig';
-import type { IUser } from '@rocket.chat/core-typings';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -53,7 +52,7 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 	}
 	const usersCursor = Users.find(userFilter).batchSize(100)
 
-	const collectedUsers : IUser[] = [];
+	const collectedUsers: IUser[] = [];
 	const usernames: string[] = [];
 	for await(const user of usersCursor){
 		collectedUsers.push(user);
