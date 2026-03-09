@@ -247,10 +247,6 @@ describe('[Push]', () => {
 	});
 
 	describe('[/push.info]', () => {
-		before(() => Promise.all([updateSetting('Push_gateway', 'https://random-gateway.rocket.chat')]));
-
-		after(() => Promise.all([updateSetting('Push_gateway', 'https://gateway.rocket.chat')]));
-
 		it('should fail if not logged in', async () => {
 			await request
 				.get(api('push.info'))
@@ -261,19 +257,24 @@ describe('[Push]', () => {
 				});
 		});
 
-		it('should succesfully retrieve non default push notification info', async () => {
-			await request
-				.get(api('push.info'))
-				.set(credentials)
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('pushGatewayEnabled', false);
-					expect(res.body).to.have.property('defaultPushGateway', false);
-				});
+		describe('when using a non-default push gateway', () => {
+			before(() => updateSetting('Push_gateway', 'https://random-gateway.rocket.chat'));
+
+			after(() => updateSetting('Push_gateway', 'https://gateway.rocket.chat'));
+
+			it('should succesfully retrieve non default push notification info', async () => {
+				await request
+					.get(api('push.info'))
+					.set(credentials)
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('pushGatewayEnabled', false);
+						expect(res.body).to.have.property('defaultPushGateway', false);
+					});
+			});
 		});
 
 		it('should succesfully retrieve default push notification info', async () => {
-			await updateSetting('Push_gateway', 'https://gateway.rocket.chat');
 			await request
 				.get(api('push.info'))
 				.set(credentials)
