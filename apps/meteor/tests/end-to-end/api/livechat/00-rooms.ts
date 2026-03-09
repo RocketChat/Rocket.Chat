@@ -198,8 +198,12 @@ describe('LIVECHAT - rooms', () => {
 			await deleteVisitor(visitor.token);
 		});
 		it('should properly read widget cookies', async () => {
-			// TODO: this visitor should be created on before block and deleted on after block
 			const visitor = await createVisitor();
+
+			// Close any pre-existing room so the next call creates a fresh one
+			const preRoom = await createLivechatRoom(visitor.token);
+			await closeOmnichannelRoom(preRoom._id);
+
 			const { body } = await request
 				.get(api('livechat/room'))
 				.set('Cookie', [`rc_room_type=l`, `rc_is_widget=t`])
@@ -208,6 +212,7 @@ describe('LIVECHAT - rooms', () => {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('room');
 			expect(body.room.v).to.have.property('token', visitor.token);
+			expect(body.newRoom).to.be.true;
 			expect(body.room.source.type).to.be.equal('widget');
 			await closeOmnichannelRoom(body.room._id);
 			await deleteVisitor(visitor.token);
