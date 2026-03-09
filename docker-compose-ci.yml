@@ -88,13 +88,14 @@ services:
     build:
       dockerfile: ee/apps/presence-service/Dockerfile
       context: .
+      target: ${BUILD_TARGET:-release-standard}
       x-bake:
         platforms:
           - linux/amd64
           - linux/arm64
       args:
         SERVICE: presence-service
-    image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_FIPS:-}
     environment:
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
