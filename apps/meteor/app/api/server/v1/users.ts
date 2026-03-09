@@ -19,8 +19,8 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 	ajv,
-	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -877,6 +877,47 @@ const usersEndpoints = API.v1
 
 			return API.v1.success({ suggestions });
 		},
+	)
+	.get(
+		'users.getStatus',
+		{
+			authRequired: true,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					_id?: string;
+					status: 'online' | 'offline' | 'away' | 'busy';
+					connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+				}>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+						_id: { type: 'string' },
+						status: { type: 'string', enum: ['online', 'offline', 'away', 'busy'] },
+						connectionStatus: { type: 'string', enum: ['online', 'offline', 'away', 'busy'] },
+					},
+					required: ['success', 'status'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
+				const user: IUser | null = await Users.findOneById(this.userId);
+				return API.v1.success({
+					_id: user?._id,
+					connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					status: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+				});
+			}
+
+			const user = await getUserFromParams(this.queryParams);
+
+			return API.v1.success({
+				_id: user._id,
+				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+			});
+		},
 	);
 
 API.v1.addRoute(
@@ -922,7 +963,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.getUsernameSuggestion',
-	{ authRequired: true },
+	{ authRequired: true, userWithoutUsername: true },
 	{
 		async get() {
 			const result = await generateUsernameSuggestion(this.user);
@@ -1512,38 +1553,6 @@ API.v1.addRoute(
 			});
 
 			return API.v1.success();
-		},
-	},
-);
-
-// status: 'online' | 'offline' | 'away' | 'busy';
-// message?: string;
-// _id: string;
-// connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
-// };
-
-API.v1.addRoute(
-	'users.getStatus',
-	{ authRequired: true },
-	{
-		async get() {
-			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
-				const user: IUser | null = await Users.findOneById(this.userId);
-				return API.v1.success({
-					_id: user?._id,
-					// message: user.statusText,
-					connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-					status: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-				});
-			}
-
-			const user = await getUserFromParams(this.queryParams);
-
-			return API.v1.success({
-				_id: user._id,
-				// message: user.statusText,
-				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-			});
 		},
 	},
 );
