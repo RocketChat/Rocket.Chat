@@ -85,6 +85,17 @@ export const metrics = {
 		labelNames: ['method', 'entrypoint', 'status'],
 		buckets: latencyBuckets,
 	}),
+	rocketchatRestApiResponseSizeBytes: new client.Histogram({
+		name: 'rocketchat_rest_api_response_size_bytes',
+		help: 'histogram of rocketchat rest api response sizes in bytes',
+		labelNames: ['method', 'entrypoint', 'status'],
+		buckets: [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000],
+	}),
+	rocketchatRestApiActiveRequests: new client.Gauge({
+		name: 'rocketchat_rest_api_active_requests',
+		help: 'number of currently active rest api requests',
+		labelNames: ['method'],
+	}),
 
 	meteorSubscriptions: new client.Summary({
 		name: 'rocketchat_meteor_subscriptions',
