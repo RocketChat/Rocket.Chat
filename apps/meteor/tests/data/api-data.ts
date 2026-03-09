@@ -36,7 +36,7 @@ export const apiRoleScopeSubscriptions = `${roleScopeSubscriptions}` as const;
 export const apiRoleDescription = `api${roleDescription}` as const;
 export const reservedWords = ['admin', 'administrator', 'system', 'user'] as const;
 
-export const credentials: Partial<Credentials> = {};
+export const credentials = {} as Credentials;
 
 export type PathWithoutPrefix<TPath> = TPath extends `/v1/${infer U}` ? U : never;
 
