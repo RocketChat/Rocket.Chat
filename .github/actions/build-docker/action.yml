@@ -133,7 +133,7 @@ runs:
         cat /tmp/meta.json
 
         if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
-          SERVICE_SUFFIX=${{ (inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop')) && '-cov' || (inputs.service == 'ddp-streamer-service' && inputs.type == 'fips' && '-fips' || '') }}
+          SERVICE_SUFFIX=${{ (inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop')) && '-cov' || ((inputs.service == 'ddp-streamer-service' || inputs.service == 'presence-service') && inputs.type == 'fips' && '-fips' || '') }}
 
           mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
 
