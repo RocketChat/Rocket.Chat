@@ -129,12 +129,12 @@ export const beforeGetUrlContent = (data: {
 
 const cleanupOembed = (data: {
 	url: string;
-	meta: OEmbedMeta;
+	meta: Partial<OEmbedMeta>;
 	headers: { [k: string]: string };
 	content: OEmbedUrlContent;
 }): {
 	url: string;
-	meta: OEmbedMeta;
+	meta: Partial<OEmbedMeta>;
 	headers: { [k: string]: string };
 	content: OEmbedUrlContent;
 } => {
@@ -147,18 +147,18 @@ const cleanupOembed = (data: {
 
 	return {
 		...data,
-		meta: meta as OEmbedMeta,
+		meta,
 	};
 };
 
 export const afterParseUrlContent = (data: {
 	url: string;
-	meta: OEmbedMeta;
+	meta: Partial<OEmbedMeta>;
 	headers: { [k: string]: string };
 	content: OEmbedUrlContent;
 }): {
 	url: string;
-	meta: OEmbedMeta;
+	meta: Partial<OEmbedMeta>;
 	headers: { [k: string]: string };
 	content: OEmbedUrlContent;
 } => {
