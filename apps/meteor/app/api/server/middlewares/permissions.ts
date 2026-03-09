@@ -44,7 +44,7 @@ export const permissionsMiddleware =
 
 		if (!hasPermission) {
 			if (applyBreakingChanges) {
-				const forbidden = API.v1.forbidden(''User does not have the permissions required for this action [error-unauthorized]'');
+				const forbidden = API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
 				return c.json(forbidden.body, forbidden.statusCode);
 			}
 
