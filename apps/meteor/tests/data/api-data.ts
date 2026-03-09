@@ -36,10 +36,7 @@ export const apiRoleScopeSubscriptions = `${roleScopeSubscriptions}` as const;
 export const apiRoleDescription = `api${roleDescription}` as const;
 export const reservedWords = ['admin', 'administrator', 'system', 'user'] as const;
 
-export const credentials: Credentials = {
-	'X-Auth-Token': undefined,
-	'X-User-Id': undefined,
-} as unknown as Credentials; // FIXME
+export const credentials: Partial<Credentials> = {};
 
 export type PathWithoutPrefix<TPath> = TPath extends `/v1/${infer U}` ? U : never;
 
