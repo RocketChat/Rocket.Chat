@@ -49,12 +49,11 @@ runs:
         password: ${{ inputs.CR_PAT }}
 
     - name: Login to DockerHub for FIPS base images
-      if: inputs.type == 'fips'
+      if: inputs.type == 'fips' && inputs.TEMP_DOCKERHUB_FIPS_USER != '' && inputs.TEMP_DOCKERHUB_FIPS_PASS != ''
       uses: docker/login-action@v3
       with:
         username: ${{ inputs.TEMP_DOCKERHUB_FIPS_USER }}
         password: ${{ inputs.TEMP_DOCKERHUB_FIPS_PASS }}
-
     - name: Restore meteor build
       if: inputs.service == 'rocketchat'
       uses: actions/download-artifact@v6
