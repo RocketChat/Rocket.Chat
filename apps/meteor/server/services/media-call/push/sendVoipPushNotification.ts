@@ -80,7 +80,10 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 		return;
 	}
 
-	const { id: userId } = call.callee;
+	const {
+		kind,
+		callee: { id: userId },
+	} = call;
 	const caller = await getActorUserData(call.caller);
 
 	metrics.notificationsSent.inc({ notification_type: 'mobile' });
@@ -92,6 +95,7 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 			hostName: settings.get<string>('Site_Name'),
 			notificationType: 'voip',
 			type,
+			kind,
 			callId: call._id,
 			caller,
 			createdAt: call.createdAt.toISOString(),
