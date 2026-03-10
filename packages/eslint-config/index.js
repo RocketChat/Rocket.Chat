@@ -243,7 +243,7 @@ export default defineConfig(
 			'valid-typeof': ['error', { requireStringLiterals: true }],
 		},
 	},
-	// Disabled global node config — applied only to server-side files
+	// Node globals scoped to server-side files only
 {
 	name: 'rocket.chat/node-globals',
 	files: [
