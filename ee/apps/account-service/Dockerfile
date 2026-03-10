@@ -87,7 +87,7 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
-FROM node:22.22.2-alpine3.22
+FROM node:22.22.2-alpine3.22 AS release-standard
 
 ARG SERVICE
 
@@ -113,3 +113,14 @@ USER rocketchat
 EXPOSE 3000 9458
 
 CMD ["node", "src/service.js"]
+
+# FIPS RELEASE STAGE
+FROM rocketchatfips140/dhi-node:22-fips AS release-fips
+ARG SERVICE
+ENV NODE_ENV=production \
+    PORT=3000
+COPY --chown=node:node --from=builder /app /app
+WORKDIR /app/ee/apps/${SERVICE}
+USER node
+EXPOSE 3000 9458
+CMD ["node", "--require", "./src/fips.js", "src/service.js"]
