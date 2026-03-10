@@ -14,6 +14,16 @@ export function scanUnicodeEmoji(ctx: ScanContext, pos: number): number {
     const c1 = input.charCodeAt(i);
     i += (c1 >= 0xd800 && c1 <= 0xdfff && i + 1 < len) ? 2 : 1;
 
+    // regional-indicator flag sequence (e.g. 🇺🇸): two RI surrogate pairs → one token
+    // RI high surrogate = 0xD83C, RI low surrogate in 0xDDE6–0xDDFF
+    if (c1 === 0xd83c) {
+        const lo1 = input.charCodeAt(pos + 1);
+        if (lo1 >= 0xdde6 && lo1 <= 0xddff && i + 1 < len && input.charCodeAt(i) === 0xd83c) {
+            const lo2 = input.charCodeAt(i + 1);
+            if (lo2 >= 0xdde6 && lo2 <= 0xddff) i += 2;
+        }
+    }
+
     // variation selector
     if (i < len) {
         const vs = input.charCodeAt(i);
