@@ -26,7 +26,7 @@ async function getActorUser<T extends Pick<IUser, '_id' | 'name' | 'username' | 
 
 async function getActorUserData(
 	actor: MediaCallContact,
-): Promise<{ type: MediaCallActorType; id: string; name: string; avatarUrl?: string }> {
+): Promise<{ type: MediaCallActorType; id: string; name: string; avatarUrl?: string; username?: string }> {
 	const actorUsername = actor.type === 'user' ? actor.username : undefined;
 	const actorExtension = actor.sipExtension || (actor.type === 'sip' ? actor.id : undefined);
 
@@ -34,7 +34,7 @@ async function getActorUserData(
 		type: actor.type,
 		id: actor.id,
 		name: actor.displayName || actorUsername || actorExtension || '',
-	};
+	} as const;
 
 	const user = await getActorUser(actor);
 
@@ -44,13 +44,13 @@ async function getActorUserData(
 		return {
 			...data,
 			name: user.name || user.username || user.freeSwitchExtension || data.name,
-			...(username && { avatarUrl: getUserAvatarURL(username) }),
+			...(username && { username, avatarUrl: getUserAvatarURL(username) }),
 		};
 	}
 
 	return {
 		...data,
-		...(actorUsername && { avatarUrl: getUserAvatarURL(actorUsername) }),
+		...(actorUsername && { username: actorUsername, avatarUrl: getUserAvatarURL(actorUsername) }),
 	};
 }
 
@@ -80,7 +80,7 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 		return;
 	}
 
-	const { id: userId, username } = call.callee;
+	const { id: userId } = call.callee;
 	const caller = await getActorUserData(call.caller);
 
 	metrics.notificationsSent.inc({ notification_type: 'mobile' });
@@ -94,7 +94,6 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 			type,
 			callId: call._id,
 			caller,
-			username,
 			createdAt: call.createdAt.toISOString(),
 		},
 		userId,
