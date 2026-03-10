@@ -878,6 +878,46 @@ const usersEndpoints = API.v1
 
 			return API.v1.success({ suggestions });
 		},
+	)
+	.get(
+		'users.getPresence',
+		{
+    		authRequired: true,
+    		response: {
+      			400: validateBadRequestErrorResponse,
+      			401: validateUnauthorizedErrorResponse,
+      			200: ajv.compile<{
+        			presence: 'online' | 'offline' | 'away' | 'busy';
+        			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+        			lastLogin?: string;
+      			}>({
+        			type: 'object',
+        			properties: {
+          				success: { type: 'boolean', enum: [true] },
+          				presence: { type: 'string', enum: ['online', 'offline', 'away', 'busy'] },
+          				connectionStatus: { type: 'string', enum: ['online', 'offline', 'away', 'busy'] },
+          				lastLogin: { type: 'string', format: 'date-time' },
+        			},
+        			required: ['presence', 'success'],
+        			additionalProperties: false,
+      			}),
+    		},
+  		},
+  		async function action() {
+    		if (isUserFromParams(this.queryParams, this.userId, this.user)) {
+      			const user = await Users.findOneById(this.userId);
+      			return API.v1.success({
+        			presence: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+        			connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+        			...(user?.lastLogin && { lastLogin: user.lastLogin.toISOString() }),
+      			});
+    		}
+
+    		const user = await getUserFromParams(this.queryParams);
+			return API.v1.success({
+      			presence: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+    		});
+  		}
 	);
 
 API.v1.addRoute(
@@ -1398,29 +1438,6 @@ API.v1.addRoute(
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.getPresence',
-	{ authRequired: true },
-	{
-		async get() {
-			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
-				const user = await Users.findOneById(this.userId);
-				return API.v1.success({
-					presence: (user?.status || 'offline') as UserStatus,
-					connectionStatus: user?.statusConnection || 'offline',
-					...(user?.lastLogin && { lastLogin: user?.lastLogin }),
-				});
-			}
-
-			const user = await getUserFromParams(this.queryParams);
-
-			return API.v1.success({
-				presence: user.status || ('offline' as UserStatus),
 			});
 		},
 	},
