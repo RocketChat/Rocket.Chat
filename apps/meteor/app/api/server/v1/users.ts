@@ -883,6 +883,17 @@ const usersEndpoints = API.v1
 		'users.getPresence',
 		{
     		authRequired: true,
+			query: ajv.compile<{
+				userId?: string;
+				username?: string;
+			}>({
+				type: 'object',
+				properties: {
+					userId: { type: 'string' },
+					username: { type: 'string' },
+				},
+				additionalProperties: false,
+			}),
     		response: {
       			400: validateBadRequestErrorResponse,
       			401: validateUnauthorizedErrorResponse,
@@ -909,7 +920,7 @@ const usersEndpoints = API.v1
       			return API.v1.success({
         			presence: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
         			connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-        			...(user?.lastLogin && { lastLogin: user.lastLogin.toISOString() }),
+        			...(user?.lastLogin && { lastLogin: user.lastLogin }),
       			});
     		}
 
