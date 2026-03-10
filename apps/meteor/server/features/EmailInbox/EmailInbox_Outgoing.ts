@@ -77,7 +77,7 @@ const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId:
 	return sendMessage(user, message, options.room);
 };
 
-async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }|undefined> {
+async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
 	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo
@@ -89,6 +89,9 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			...mail,
 		})
 		.then((info) => {
+			if (!info) {
+				throw new Error('smtp-send-failed');
+			}
 			logger.info({ msg: 'Message sent', info });
 			return info;
 		})
