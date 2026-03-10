@@ -1,6 +1,7 @@
 import type { IMediaCall, IUser, MediaCallContact, MediaCallActorType } from '@rocket.chat/core-typings';
 import type { VoipPushNotificationEventType } from '@rocket.chat/media-calls';
 import { MediaCalls, Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { getPushNotificationType } from './getPushNotificationType';
 import { metrics } from '../../../../app/metrics/server/lib/metrics';
@@ -13,7 +14,7 @@ import { logger } from '../logger';
 async function getActorUser<T extends Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(
 	actor: MediaCallContact,
 ): Promise<T | null> {
-	const options = { projection: { name: 1, username: 1 } };
+	const options = { projection: { name: 1, username: 1, freeSwitchExtension: 1 } };
 
 	switch (actor.type) {
 		case 'user':
@@ -25,7 +26,7 @@ async function getActorUser<T extends Pick<IUser, '_id' | 'name' | 'username' | 
 
 async function getActorUserData(
 	actor: MediaCallContact,
-): Promise<{ type: MediaCallActorType; id: string; name: string; avatarUrl?: string }> {
+): Promise<{ type: MediaCallActorType; id: string; name: string; avatarUrl?: string; username?: string }> {
 	const actorUsername = actor.type === 'user' ? actor.username : undefined;
 	const actorExtension = actor.sipExtension || (actor.type === 'sip' ? actor.id : undefined);
 
@@ -33,7 +34,7 @@ async function getActorUserData(
 		type: actor.type,
 		id: actor.id,
 		name: actor.displayName || actorUsername || actorExtension || '',
-	};
+	} as const;
 
 	const user = await getActorUser(actor);
 
@@ -43,17 +44,17 @@ async function getActorUserData(
 		return {
 			...data,
 			name: user.name || user.username || user.freeSwitchExtension || data.name,
-			...(username && { avatarUrl: getUserAvatarURL(username) }),
+			...(username && { username, avatarUrl: getUserAvatarURL(username) }),
 		};
 	}
 
 	return {
 		...data,
-		...(actorUsername && { avatarUrl: getUserAvatarURL(actorUsername) }),
+		...(actorUsername && { username: actorUsername, avatarUrl: getUserAvatarURL(actorUsername) }),
 	};
 }
 
-export async function sendVoipPushNotification(callId: IMediaCall['_id'], event: VoipPushNotificationEventType): Promise<void> {
+async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: VoipPushNotificationEventType): Promise<void> {
 	const call = await MediaCalls.findOneById(callId);
 	if (!call) {
 		logger.error({ msg: 'Failed to send push notification: Media Call not found', callId });
@@ -79,7 +80,7 @@ export async function sendVoipPushNotification(callId: IMediaCall['_id'], event:
 		return;
 	}
 
-	const { id: userId, username } = call.callee;
+	const { id: userId } = call.callee;
 	const caller = await getActorUserData(call.caller);
 
 	metrics.notificationsSent.inc({ notification_type: 'mobile' });
@@ -93,12 +94,17 @@ export async function sendVoipPushNotification(callId: IMediaCall['_id'], event:
 			type,
 			callId: call._id,
 			caller,
-			username,
 			createdAt: call.createdAt.toISOString(),
 		},
 		userId,
 		notId: PushNotification.getNotificationId(call._id),
 		// We should not send state change notifications to the device where the call was accepted/rejected
 		...(call.callee.contractId && { skipTokenId: call.callee.contractId }),
+	});
+}
+
+export function sendVoipPushNotification(callId: IMediaCall['_id'], event: VoipPushNotificationEventType): void {
+	void sendVoipPushNotificationAsync(callId, event).catch((err) => {
+		logger.error({ msg: 'Failed to send VoIP push notification', err, callId, event });
 	});
 }

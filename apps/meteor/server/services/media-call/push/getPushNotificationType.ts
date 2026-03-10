@@ -1,6 +1,5 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-
-export type VoipPushNotificationType = 'incoming_call' | 'remoteEnded' | 'answeredElsewhere' | 'declinedElsewhere' | 'unanswered';
+import type { VoipPushNotificationType } from '@rocket.chat/media-calls';
 
 export function getPushNotificationType(call: IMediaCall): VoipPushNotificationType {
 	if (call.acceptedAt) {

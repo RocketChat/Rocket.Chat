@@ -150,8 +150,8 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 		});
 	}
 
-	removeAllByTokenString(token: string): Promise<DeleteResult> {
-		return this.deleteMany({
+	async removeOrUnsetByTokenString(token: string): Promise<void> {
+		await this.deleteMany({
 			$or: [
 				{
 					'token.apn': token,
@@ -159,10 +159,18 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 				{
 					'token.gcm': token,
 				},
-				{
-					voipToken: token,
-				},
 			],
 		});
+
+		await this.updateMany(
+			{
+				voipToken: token,
+			},
+			{
+				$unset: {
+					voipToken: 1,
+				},
+			},
+		);
 	}
 }
