@@ -23,7 +23,7 @@ env:
   DOCKER_BUILD_ARCHES_JSON: '["arm64","amd64"]'
   DOCKER_BUILD_SERVICES_JSON: '["authorization-service","queue-worker-service","ddp-streamer-service","account-service","presence-service","omnichannel-transcript-service","rocketchat"]'
   DOCKER_BUILD_EXTRA_COVERAGE_JSON: '[{"arch":"amd64","service":"rocketchat","type":"coverage"},{"arch":"arm64","service":"rocketchat","type":"coverage"}]'
-  DOCKER_BUILD_FIPS_SERVICES_JSON: '["authorization-service","queue-worker-service","ddp-streamer-service","presence-service"]'
+  DOCKER_BUILD_FIPS_SERVICES_JSON: '["authorization-service","queue-worker-service","ddp-streamer-service","account-service","presence-service"]'
 
 jobs:
   release-versions:
