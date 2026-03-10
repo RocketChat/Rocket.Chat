@@ -204,6 +204,11 @@ jobs:
           mkdir -p $COVERAGE_DIR
           chmod 777 $COVERAGE_DIR
 
+      - name: Pull FIPS images
+        if: inputs.release == 'fips' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        run: |
+          docker compose $COMPOSE_FILES pull
+
       - name: Start containers for CE
         if: inputs.release == 'ce'
         run: |
@@ -216,7 +221,11 @@ jobs:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
         run: |
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --wait
+          if [[ '${{ inputs.release }}' == 'fips' ]]; then
+            DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --wait --no-build
+          else
+            DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --wait
+          fi
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
@@ -226,11 +235,31 @@ jobs:
         run: |
           docker ps
 
-          until echo "$(docker compose $COMPOSE_FILES logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && docker compose $COMPOSE_FILES logs ddp-streamer-service && exit 1
-            sleep 10
-          done;
+          wait_for_service() {
+            local service="$1"
+            local retries=18
+            local delay=10
+
+            for attempt in $(seq 1 "$retries"); do
+              if docker compose $COMPOSE_FILES logs "$service" | grep -q "NetworkBroker started successfully"; then
+                echo "Service '$service' is ready"
+                return 0
+              fi
+
+              echo "Waiting '$service' to start up (attempt ${attempt}/${retries})"
+              sleep "$delay"
+            done
+
+            echo "Service '$service' did not become ready in time"
+            docker compose $COMPOSE_FILES logs "$service"
+            return 1
+          }
+
+          wait_for_service ddp-streamer-service
+          wait_for_service account-service
+          wait_for_service authorization-service
+          wait_for_service queue-worker-service
+          wait_for_service presence-service
 
       - name: Remove unused Docker images
         run: docker system prune -af
