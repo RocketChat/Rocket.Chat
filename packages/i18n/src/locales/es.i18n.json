@@ -1627,7 +1627,6 @@
   "FileUpload_S3_Proxy_Uploads": "Subidas de proxy",
   "FileUpload_S3_Proxy_Uploads_Description": "Transmisiones de archivos de subida de proxy a través de tu servidor en lugar de acceso directo a la URL del activo",
   "FileUpload_S3_Region": "Región",
-  "FileUpload_S3_SignatureVersion": "Versión de firma",
   "FileUpload_S3_URLExpiryTimeSpan": "Intervalo de tiempo de caducidad de URL",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Intervalo (en segundos) tras el cual las URL generadas por Amazon S3 ya no serán válidas. Si se establece en menos de 5 segundos, este campo se ignorará.",
   "FileUpload_Storage_Type": "Tipo de almacenamiento",

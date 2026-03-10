@@ -928,7 +928,6 @@
   "FileUpload_S3_Proxy_Uploads": "Volmagoplaaie",
   "FileUpload_S3_Proxy_Uploads_Description": "Proxy upload lêer oordragte deur u bediener in plaas van direkte toegang tot die bate se URL",
   "FileUpload_S3_Region": "streek",
-  "FileUpload_S3_SignatureVersion": "Handtekening Weergawe",
   "FileUpload_S3_URLExpiryTimeSpan": "URL's Vervaldatum",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Die tyd daarna sal Amazon S3-gegenereerde URL's nie meer geldig wees nie (in sekondes). As dit minder as 5 sekondes is, sal hierdie veld geïgnoreer word.",
   "FileUpload_Storage_Type": "Bergingstipe",

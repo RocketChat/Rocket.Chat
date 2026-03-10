@@ -1755,7 +1755,6 @@
   "FileUpload_S3_Proxy_Uploads": "Przesyłanie z serwera proxy",
   "FileUpload_S3_Proxy_Uploads_Description": "Przesyłanie pliku proxy za pośrednictwem serwera zamiast bezpośredniego dostępu do adresu URL zasobu",
   "FileUpload_S3_Region": "Region",
-  "FileUpload_S3_SignatureVersion": "Wersja podpisu",
   "FileUpload_S3_URLExpiryTimeSpan": "Czas przedawnienia URL",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Czas po którym linki generowane w Amazon S3 przestaną działać (w sekundach). Jeśli ustawiono mniej niż 5 sekund, pole to będzie ignorowane.",
   "FileUpload_Storage_Type": "Sposób przechowywania",

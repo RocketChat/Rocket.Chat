@@ -2213,7 +2213,6 @@
   "FileUpload_S3_Proxy_UserDataFiles": "Bruk proxy for brukerdatafiler",
   "FileUpload_S3_Proxy_UserDataFiles_Description": "Proxy brukerdatafiloverføringer gjennom serveren din i stedet for direkte til ressursens URL",
   "FileUpload_S3_Region": "Region",
-  "FileUpload_S3_SignatureVersion": "Signaturversjon",
   "FileUpload_S3_URLExpiryTimeSpan": "Utløpstid for nettadresser",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Tiden Amazon S3-genererte URL-er vil være gyldige (i sekunder). Hvis satt til mindre enn 5 sekunder, vil dette feltet bli ignorert.",
   "FileUpload_Storage_Type": "Lagringstype",

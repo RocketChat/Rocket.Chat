@@ -1155,7 +1155,6 @@
   "FileUpload_S3_Proxy_Uploads": "بارگذاری پروکسی",
   "FileUpload_S3_Proxy_Uploads_Description": "پروکسی فایل آپلود فایل را از طریق سرور خود به جای دسترسی مستقیم به آدرس دارایی",
   "FileUpload_S3_Region": "منطقه",
-  "FileUpload_S3_SignatureVersion": "نسخه امضاء",
   "FileUpload_S3_URLExpiryTimeSpan": "URL های طولانی مدت انقضا",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "زمانیکه URL آمازون S3 تولید می شود، دیگر معتبر نخواهد بود (در ثانیه). اگر کمتر از 5 ثانیه تنظیم شود، این فیلد نادیده گرفته می شود.",
   "FileUpload_Storage_Type": "نوع ذخیره سازی",

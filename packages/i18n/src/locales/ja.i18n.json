@@ -1580,7 +1580,6 @@
   "FileUpload_S3_Proxy_Uploads": "プロキシアップロード",
   "FileUpload_S3_Proxy_Uploads_Description": "アセットのURLに直接アクセスするのではなく、サーバー経由でアップロードファイル転送をプロキシする",
   "FileUpload_S3_Region": "地域",
-  "FileUpload_S3_SignatureVersion": "署名バージョン",
   "FileUpload_S3_URLExpiryTimeSpan": "URLの有効期限",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Amazon S3で生成されたURLが無効になるまでの時間（秒）。5秒未満に設定すると、このフィールドは無視されます。",
   "FileUpload_Storage_Type": "ストレージ種類",

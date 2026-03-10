@@ -930,7 +930,6 @@
   "FileUpload_S3_Proxy_Uploads": "Muat Naik Proksi",
   "FileUpload_S3_Proxy_Uploads_Description": "Penghantaran proksi muat naik fail melalui pelayan anda dan bukannya akses langsung ke URL aset itu",
   "FileUpload_S3_Region": "rantau",
-  "FileUpload_S3_SignatureVersion": "Versi Tandatangan",
   "FileUpload_S3_URLExpiryTimeSpan": "Timespan Tamat Tempoh URL",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Masa selepas URL yang dijana Amazon S3 tidak lagi sah (dalam saat). Sekiranya ditetapkan kurang dari 5 saat, medan ini akan diabaikan.",
   "FileUpload_Storage_Type": "Jenis Storage",

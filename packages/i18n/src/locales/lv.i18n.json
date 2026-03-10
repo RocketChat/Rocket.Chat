@@ -942,7 +942,6 @@
   "FileUpload_S3_Proxy_Uploads": "Starpniekservera augšupielādes",
   "FileUpload_S3_Proxy_Uploads_Description": "Starpniekservera augšupielādētie faili tiek pārsūtīti, izmantojot jūsu serveri, nevis tiešu piekļuvi aktīva URL",
   "FileUpload_S3_Region": "Apgabals",
-  "FileUpload_S3_SignatureVersion": "Paraksta versija",
   "FileUpload_S3_URLExpiryTimeSpan": "URL termiņa beigas",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Laiks, pēc kura Amazon S3 ģenerētie URL vairs nebūs derīgi (sekundēs). Ja iestatījums ir mazāks par 5 sekundēm, šis lauks tiks ignorēts.",
   "FileUpload_Storage_Type": "Uzglabāšanas veids",
