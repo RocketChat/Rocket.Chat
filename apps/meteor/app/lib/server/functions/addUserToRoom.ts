@@ -11,7 +11,7 @@ import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddU
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 /**
  * This function adds user to the given room.
@@ -72,7 +72,12 @@ export const addUserToRoom = async (
 				}
 			}
 
-			void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userToBeAdded._id, 'updated');
+			// Send 'inserted' so the client re-subscribes to the room stream
+			// (the ban sent 'removed' which caused the client to drop it)
+			const unbannedSubscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+			if (unbannedSubscription) {
+				void notifyOnSubscriptionChanged(unbannedSubscription, 'inserted');
+			}
 			void notifyOnRoomChangedById(rid);
 			return true;
 		}

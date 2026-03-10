@@ -23,7 +23,7 @@ const messageMock = {
 
 const removeUserFromRolesAsyncMock = sinon.stub();
 const notifyOnRoomChangedByIdMock = sinon.stub();
-const notifyOnSubscriptionChangedByRoomIdAndUserIdMock = sinon.stub();
+const notifyOnSubscriptionChangedMock = sinon.stub();
 const afterBanFromRoomCallbackMock = { run: sinon.stub() };
 
 const meteorErrorMock = class extends Error {
@@ -40,7 +40,7 @@ const { performUserBan, banUserFromRoom } = p.noCallThru().load('../../../../../
 	'../../../../server/lib/roles/removeUserFromRoles': { removeUserFromRolesAsync: removeUserFromRolesAsyncMock },
 	'../lib/notifyListener': {
 		notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
-		notifyOnSubscriptionChangedByRoomIdAndUserId: notifyOnSubscriptionChangedByRoomIdAndUserIdMock,
+		notifyOnSubscriptionChanged: notifyOnSubscriptionChangedMock,
 	},
 });
 
@@ -54,7 +54,7 @@ describe('banUserFromRoom', () => {
 		messageMock.saveSystemMessage.reset();
 		removeUserFromRolesAsyncMock.reset();
 		notifyOnRoomChangedByIdMock.reset();
-		notifyOnSubscriptionChangedByRoomIdAndUserIdMock.reset();
+		notifyOnSubscriptionChangedMock.reset();
 		afterBanFromRoomCallbackMock.run.reset();
 	});
 
@@ -229,8 +229,9 @@ describe('banUserFromRoom', () => {
 			expect(args).to.have.lengthOf(4); // no extraData
 		});
 
-		it('should notify on subscription and room changes', async () => {
-			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves({ _id: 'sub1' });
+		it('should notify subscription as removed so client drops the stream', async () => {
+			const subscription = { _id: 'sub1', rid: 'room1', u: { _id: 'user1' } };
+			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves(subscription);
 			modelsMock.Subscriptions.banByRoomIdAndUserId.resolves();
 			modelsMock.Users.removeRoomByUserId.resolves();
 			modelsMock.Rooms.incUsersCountById.resolves();
@@ -242,7 +243,7 @@ describe('banUserFromRoom', () => {
 
 			await performUserBan(room, user);
 
-			expect(notifyOnSubscriptionChangedByRoomIdAndUserIdMock.calledWith('room1', 'user1', 'updated')).to.be.true;
+			expect(notifyOnSubscriptionChangedMock.calledWith(subscription, 'removed')).to.be.true;
 			expect(notifyOnRoomChangedByIdMock.calledWith('room1')).to.be.true;
 		});
 	});

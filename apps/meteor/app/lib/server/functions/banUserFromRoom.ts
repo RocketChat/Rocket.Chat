@@ -5,7 +5,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 /**
  * Bans a user from a room when triggered by federation or other external events.
@@ -13,9 +13,7 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId }
  * propagation loops during external event processing.
  */
 export const performUserBan = async function (room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-		projection: { _id: 1, status: 1 },
-	});
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 	if (!subscription) {
 		return;
 	}
@@ -53,7 +51,9 @@ export const performUserBan = async function (room: IRoom, user: IUser, options?
 		await Message.saveSystemMessage('user-banned', room._id, user.username, user);
 	}
 
-	void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, user._id, 'updated');
+	// Send 'removed' so the client drops the room stream/socket subscription.
+	// The record still exists in DB with status BANNED for access-control purposes.
+	void notifyOnSubscriptionChanged(subscription, 'removed');
 	void notifyOnRoomChangedById(room._id);
 };
 
