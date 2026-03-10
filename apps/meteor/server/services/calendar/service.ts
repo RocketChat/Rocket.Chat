@@ -285,8 +285,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const user = await Users.findOneById(event.uid, { projection: { status: 1, statusDefault: 1 } });
-		if (!user || user.status === UserStatus.OFFLINE) {
+		const user = await Users.findOneById(event.uid, { projection: { statusDefault: 1 } });
+		if (!user || user.statusDefault === UserStatus.OFFLINE) {
 			return;
 		}
 
@@ -313,7 +313,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const user = await Users.findOneById(event.uid, { projection: { status: 1, statusDefault: 1 } });
+		const user = await Users.findOneById(event.uid, { projection: { statusDefault: 1 } });
 		if (!user) {
 			return;
 		}

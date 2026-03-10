@@ -20,9 +20,9 @@ export async function applyStatusChange({
 	status?: UserStatus;
 	shouldScheduleRemoval?: boolean;
 }): Promise<void> {
-	const user = await Users.findOneById(uid, { projection: { roles: 1, username: 1, name: 1, status: 1, statusDefault: 1 } });
+	const user = await Users.findOneById(uid, { projection: { roles: 1, username: 1, name: 1, statusDefault: 1 } });
 
-	if (!user || user.status === UserStatus.OFFLINE) {
+	if (!user || user.statusDefault === UserStatus.OFFLINE) {
 		logger.debug({
 			msg: 'Cannot apply status change for event, user is offline or does not exist',
 			eventId,
