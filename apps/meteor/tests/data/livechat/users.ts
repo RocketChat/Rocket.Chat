@@ -5,7 +5,7 @@ import { Random } from '@rocket.chat/random';
 
 import { api, credentials, request } from '../api-data';
 import { password } from '../user';
-import { createUser, login, setUserAway, setUserStatus } from '../users.helper';
+import { createUser, login, setUserStatus } from '../users.helper';
 import { createAgent, makeAgentAvailable, makeAgentUnavailable } from './rooms';
 
 export const createBotAgent = async (): Promise<{
@@ -102,7 +102,6 @@ export const createAnAwayAgent = async (): Promise<{
 	await createAgent(agent.username);
 	await makeAgentAvailable(createdUserCredentials);
 	await setUserStatus(createdUserCredentials, UserStatus.AWAY);
-	await setUserAway(createdUserCredentials);
 
 	return {
 		credentials: createdUserCredentials,
