@@ -18,11 +18,9 @@ describe('setUserActiveStatus', () => {
 		},
 		Subscriptions: {
 			setArchivedByUsername: sinon.stub(),
-			findByUserId: sinon.stub(),
-			unarchiveByUsernameExcludingRoomIds: sinon.stub(),
+			unarchiveByUserIdExceptForArchivedRooms: sinon.stub(),
 		},
 		Rooms: {
-			findArchivedByRoomIds: sinon.stub(),
 			setDmReadOnlyByUserId: sinon.stub(),
 			getDirectConversationsByUserId: sinon.stub(),
 		},
@@ -144,55 +142,12 @@ describe('setUserActiveStatus', () => {
 		});
 
 		it('should unarchive subscriptions excluding archived rooms when user is reactivated', async () => {
-			const subscriptions = [{ rid: 'room1' }, { rid: 'room2' }, { rid: 'room3' }];
-			const archivedRooms = [{ _id: 'room2' }];
-
-			stubs.Subscriptions.findByUserId.returns({
-				toArray: sinon.stub().resolves(subscriptions),
-			});
-			stubs.Rooms.findArchivedByRoomIds.returns({
-				toArray: sinon.stub().resolves(archivedRooms),
-			});
-			stubs.Subscriptions.unarchiveByUsernameExcludingRoomIds.resolves({ modifiedCount: 2 });
+			stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.resolves();
 
 			await setUserActiveStatus(userId, true);
 
-			expect(stubs.Subscriptions.findByUserId.calledWith(userId, { projection: { rid: 1 } })).to.be.true;
-			expect(stubs.Rooms.findArchivedByRoomIds.calledWith(['room1', 'room2', 'room3'], { projection: { _id: 1 } })).to.be.true;
-			expect(stubs.Subscriptions.unarchiveByUsernameExcludingRoomIds.calledWith(username, ['room2'])).to.be.true;
+			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.calledOnceWith(userId)).to.be.true;
 			expect(stubs.notifyOnSubscriptionChangedByUserId.calledWith(userId)).to.be.true;
-		});
-
-		it('should unarchive all subscriptions if no rooms are archived', async () => {
-			const subscriptions = [{ rid: 'room1' }, { rid: 'room2' }];
-
-			stubs.Subscriptions.findByUserId.returns({
-				toArray: sinon.stub().resolves(subscriptions),
-			});
-			stubs.Rooms.findArchivedByRoomIds.returns({
-				toArray: sinon.stub().resolves([]),
-			});
-			stubs.Subscriptions.unarchiveByUsernameExcludingRoomIds.resolves({ modifiedCount: 2 });
-
-			await setUserActiveStatus(userId, true);
-
-			expect(stubs.Subscriptions.unarchiveByUsernameExcludingRoomIds.calledWith(username, [])).to.be.true;
-			expect(stubs.notifyOnSubscriptionChangedByUserId.calledWith(userId)).to.be.true;
-		});
-
-		it('should not notify if no subscriptions were modified during reactivation', async () => {
-			stubs.Subscriptions.findByUserId.returns({
-				toArray: sinon.stub().resolves([{ rid: 'room1' }]),
-			});
-			stubs.Rooms.findArchivedByRoomIds.returns({
-				toArray: sinon.stub().resolves([]),
-			});
-			stubs.Subscriptions.unarchiveByUsernameExcludingRoomIds.resolves({ modifiedCount: 0 });
-
-			await setUserActiveStatus(userId, true);
-
-			expect(stubs.Subscriptions.unarchiveByUsernameExcludingRoomIds.calledOnce).to.be.true;
-			expect(stubs.notifyOnSubscriptionChangedByUserId.called).to.be.false;
 		});
 	});
 
@@ -210,8 +165,7 @@ describe('setUserActiveStatus', () => {
 
 			await setUserActiveStatus(userId, true);
 
-			expect(stubs.Subscriptions.findByUserId.called).to.be.false;
-			expect(stubs.Subscriptions.unarchiveByUsernameExcludingRoomIds.called).to.be.false;
+			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.called).to.be.false;
 		});
 	});
 

@@ -19,13 +19,6 @@ import {
 	notifyOnUserChange,
 } from '../lib/notifyListener';
 
-async function getArchivedRoomIdsForUser(userId: string): Promise<string[]> {
-	const subscriptions = await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray();
-	const roomIds = subscriptions.map((sub) => sub.rid);
-	const archivedRooms = await Rooms.findArchivedByRoomIds(roomIds, { projection: { _id: 1 } }).toArray();
-	return archivedRooms.map((room) => room._id);
-}
-
 async function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
 	// for that, we need to fetch the direct messages, fetch the users involved and then the ids of rooms we can reactivate
@@ -119,17 +112,14 @@ export async function setUserActiveStatus(
 		await callbacks.run('afterDeactivateUser', user);
 	}
 
-	if (user.username && active === false) {
-		const { modifiedCount } = await Subscriptions.setArchivedByUsername(user.username, true);
-		if (modifiedCount) {
-			void notifyOnSubscriptionChangedByUserId(userId);
-		}
-	}
-
-	if (user.username && active === true && !user.active) {
-		const archivedRoomIds = await getArchivedRoomIdsForUser(userId);
-		const { modifiedCount } = await Subscriptions.unarchiveByUsernameExcludingRoomIds(user.username, archivedRoomIds);
-		if (modifiedCount) {
+	if (user.username) {
+		if (active === false) {
+			const { modifiedCount } = await Subscriptions.setArchivedByUsername(user.username, true);
+			if (modifiedCount) {
+				void notifyOnSubscriptionChangedByUserId(userId);
+			}
+		} else if (active === true && !user.active) {
+			await Subscriptions.unarchiveByUserIdExceptForArchivedRooms(userId);
 			void notifyOnSubscriptionChangedByUserId(userId);
 		}
 	}

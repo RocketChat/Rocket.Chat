@@ -1356,20 +1356,29 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return true;
 	}
 
-	unarchiveByUsernameExcludingRoomIds(username: string, excludeRoomIds: string[]): Promise<UpdateResult | Document> {
-		const query: Filter<ISubscription> = {
-			'u.username': username,
-			'rid': { $nin: excludeRoomIds },
-			'archived': true,
-		};
-
-		const update: UpdateFilter<ISubscription> = {
-			$set: {
-				archived: false,
-			},
-		};
-
-		return this.updateMany(query, update);
+	async unarchiveByUserIdExceptForArchivedRooms(userId: string): Promise<void> {
+		await this.col
+			.aggregate([
+				{ $match: { 'u._id': userId, 'archived': true } },
+				{
+					$lookup: {
+						from: Rooms.getCollectionName(),
+						localField: 'rid',
+						foreignField: '_id',
+						as: 'room',
+					},
+				},
+				{ $match: { 'room.0.archived': { $ne: true } } },
+				{
+					$merge: {
+						on: '_id',
+						into: this.getCollectionName(),
+						whenMatched: [{ $set: { archived: false } }],
+						whenNotMatched: 'discard',
+					},
+				},
+			])
+			.toArray();
 	}
 
 	hideByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
