@@ -39,6 +39,7 @@ import { removeRoomOwner } from '../../../../server/methods/removeRoomOwner';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { getUserMentionsByChannelPaginated } from '../../../mentions/server/methods/getUserMentionsByChannel';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
@@ -431,23 +432,20 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			if (!this.user?.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			const findResult = await findChannelByIdOrName({ params: { roomId } });
+			const findResult = await findChannelByIdOrName({
+				params: { roomId },
+				checkedArchived: false,
+			});
 
 			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
 				return API.v1.forbidden();
 			}
 
-			const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(this.user.username, roomId, {
+			const { mentions, total } = await getUserMentionsByChannelPaginated(this.userId, roomId, {
 				sort: sort || { ts: 1 },
 				skip: offset,
 				limit: count,
 			});
-
-			const [mentions, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				mentions,

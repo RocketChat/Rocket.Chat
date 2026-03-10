@@ -36,6 +36,22 @@ export const getUserMentionsByChannel = async (
 	return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).toArray();
 };
 
+export async function getUserMentionsByChannelPaginated(
+	userId: string,
+	roomId: string,
+	options: { limit: number; skip: number; sort: Record<string, 1 | -1> },
+): Promise<{ mentions: IMessage[]; total: number }> {
+	const user = await Users.findOneById(userId);
+	if (!user?.username) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+	}
+
+	const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(user.username, roomId, options);
+	const [mentions, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	return { mentions, total };
+}
+
 Meteor.methods<ServerMethods>({
 	async getUserMentionsByChannel({ roomId, options }) {
 		const uid = Meteor.userId();
