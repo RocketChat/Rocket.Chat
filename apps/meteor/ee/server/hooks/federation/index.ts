@@ -203,7 +203,7 @@ afterBanFromRoomCallback.add(
 afterUnbanFromRoomCallback.add(
 	async (data: { unbannedUser: IUser; userWhoUnbanned: IUser }, room: IRoom): Promise<void> => {
 		if (FederationActions.shouldPerformFederationAction(room)) {
-			await FederationMatrix.inviteUsersToRoom(room, [data.unbannedUser.username!], data.userWhoUnbanned);
+			await FederationMatrix.unbanUser(room, data.unbannedUser, data.userWhoUnbanned);
 		}
 	},
 	callbacks.priority.HIGH,
