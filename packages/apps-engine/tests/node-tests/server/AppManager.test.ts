@@ -30,6 +30,7 @@ describe('AppManager', () => {
 			logStorage: testingInfastructure.getLogStorage(),
 			bridges: testingInfastructure.getAppBridges(),
 			sourceStorage: testingInfastructure.getSourceStorage(),
+			tempFilePath: '',
 		});
 
 		assert.strictEqual(manager.getStorage(), testingInfastructure.getAppStorage());
@@ -45,6 +46,7 @@ describe('AppManager', () => {
 					logStorage: {} as AppLogStorage,
 					bridges: {} as AppBridges,
 					sourceStorage: {} as AppSourceStorage,
+					tempFilePath: '',
 				}),
 			{
 				name: 'Error',
@@ -63,6 +65,7 @@ describe('AppManager', () => {
 					logStorage: invalid as any,
 					bridges: invalid as any,
 					sourceStorage: invalid as any,
+					tempFilePath: '',
 				}),
 			{
 				name: 'Error',
@@ -77,6 +80,7 @@ describe('AppManager', () => {
 					logStorage: invalid as any,
 					bridges: invalid as any,
 					sourceStorage: invalid as any,
+					tempFilePath: '',
 				}),
 			{
 				name: 'Error',
@@ -91,6 +95,7 @@ describe('AppManager', () => {
 					logStorage: testingInfastructure.getLogStorage(),
 					bridges: invalid as any,
 					sourceStorage: invalid as any,
+					tempFilePath: '',
 				}),
 			{
 				name: 'Error',
@@ -105,6 +110,7 @@ describe('AppManager', () => {
 					logStorage: testingInfastructure.getLogStorage(),
 					bridges: testingInfastructure.getAppBridges(),
 					sourceStorage: invalid as any,
+					tempFilePath: '',
 				}),
 			{
 				name: 'Error',
@@ -119,6 +125,7 @@ describe('AppManager', () => {
 			logStorage: testingInfastructure.getLogStorage(),
 			bridges: testingInfastructure.getAppBridges(),
 			sourceStorage: testingInfastructure.getSourceStorage(),
+			tempFilePath: '',
 		});
 
 		assert.ok(manager.getParser() instanceof AppPackageParser);
@@ -140,6 +147,7 @@ describe('AppManager', () => {
 			logStorage: testingInfastructure.getLogStorage(),
 			bridges: testingInfastructure.getAppBridges(),
 			sourceStorage: testingInfastructure.getSourceStorage(),
+			tempFilePath: '',
 		});
 
 		const appsOverview = TestData.getAppsOverview();
@@ -162,6 +170,7 @@ describe('AppManager', () => {
 			logStorage: testingInfastructure.getLogStorage(),
 			bridges: testingInfastructure.getAppBridges(),
 			sourceStorage: testingInfastructure.getSourceStorage(),
+			tempFilePath: '',
 		});
 
 		const appsOverview = TestData.getAppsOverview();
@@ -184,6 +193,7 @@ describe('AppManager', () => {
 			logStorage: testingInfastructure.getLogStorage(),
 			bridges: testingInfastructure.getAppBridges(),
 			sourceStorage: testingInfastructure.getSourceStorage(),
+			tempFilePath: '',
 		});
 
 		const sameLicenseData = 'same-license-data';
@@ -222,6 +232,7 @@ describe('AppManager', () => {
 			logStorage: testingInfastructure.getLogStorage(),
 			bridges: testingInfastructure.getAppBridges(),
 			sourceStorage: testingInfastructure.getSourceStorage(),
+			tempFilePath: '',
 		});
 
 		const existingSubscriptionInfo = TestData.getMarketplaceSubscriptionInfo({
