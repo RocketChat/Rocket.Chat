@@ -1,4 +1,4 @@
-import type { ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import type { IVisitorExternalIdentifier, ILivechatVisitor, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { FindPaginated, ILivechatVisitorsModel } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type {
@@ -31,6 +31,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
+			{ key: { 'externalIds.source': 1, 'externalIds.userId': 1 }, sparse: true },
 			{ key: { name: 1 }, sparse: true },
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
@@ -47,6 +48,25 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		};
 
 		return this.findOne(query);
+	}
+
+	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null> {
+		const query = {
+			'externalIds.source': source,
+			'externalIds.userId': externalUserId,
+		};
+
+		return this.findOne(query);
+	}
+
+	addExternalId(_id: string, externalId: IVisitorExternalIdentifier): Promise<UpdateResult> {
+		return this.updateOne({ _id }, [
+			{
+				$set: {
+					externalIds: { $setUnion: [{ $ifNull: ['$externalIds', []] }, [externalId]] },
+				},
+			},
+		]);
 	}
 
 	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
