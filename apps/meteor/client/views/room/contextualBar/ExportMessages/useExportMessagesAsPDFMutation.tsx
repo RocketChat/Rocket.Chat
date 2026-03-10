@@ -14,27 +14,26 @@ const leftTab = {
 	marginLeft: 20,
 };
 const NOTO_SANS_FONTS: { name: string; fontSrc: string }[] = [
-	{ name: 'Noto Sans Hebrew', fontSrc: '/fonts/NotoSansHebrew-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans', fontSrc: '/fonts/NotoSans-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans Arabic', fontSrc: '/fonts/NotoSansArabic-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans Devanagari', fontSrc: '/fonts/NotoSansDevanagari-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans Bengali', fontSrc: '/fonts/NotoSansBengali-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans Tamil', fontSrc: '/fonts/NotoSansTamil-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans Sinhala', fontSrc: '/fonts/NotoSansSinhala-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans Thai', fontSrc: '/fonts/NotoSansThai-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans Lao', fontSrc: '/fonts/NotoSansLao-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans Georgian', fontSrc: '/fonts/NotoSansGeorgian-VariableFont_wdth,wght.ttf' },
-	{ name: 'Noto Sans JP', fontSrc: '/fonts/NotoSansJP-VariableFont_wght.ttf' },
-	{ name: 'Noto Sans KR', fontSrc: '/fonts/NotoSansKR-VariableFont_wght.ttf' },
-	{ name: 'Noto Sans SC', fontSrc: '/fonts/NotoSansSC-VariableFont_wght.ttf' },
-	{ name: 'Noto Sans TC', fontSrc: '/fonts/NotoSansTC-VariableFont_wght.ttf' },
-	{ name: 'Noto Sans HK', fontSrc: '/fonts/NotoSansHK-VariableFont_wght.ttf' },
+	{ name: 'Noto Sans Hebrew', fontSrc: '/fonts/NotoSansHebrew-Regular.ttf' },
+	{ name: 'Noto Sans', fontSrc: '/fonts/NotoSans-Regular.ttf' },
+	{ name: 'Noto Sans Arabic', fontSrc: '/fonts/NotoSansArabic-Regular.ttf' },
+	{ name: 'Noto Sans Devanagari', fontSrc: '/fonts/NotoSansDevanagari-Regular.ttf' },
+	{ name: 'Noto Sans Bengali', fontSrc: '/fonts/NotoSansBengali-Regular.ttf' },
+	{ name: 'Noto Sans Tamil', fontSrc: '/fonts/NotoSansTamil-Regular.ttf' },
+	{ name: 'Noto Sans Sinhala', fontSrc: '/fonts/NotoSansSinhala-Regular.ttf' },
+	{ name: 'Noto Sans Thai', fontSrc: '/fonts/NotoSansThai-Regular.ttf' },
+	{ name: 'Noto Sans Lao', fontSrc: '/fonts/NotoSansLao-Regular.ttf' },
+	{ name: 'Noto Sans Georgian', fontSrc: '/fonts/NotoSansGeorgian-Regular.ttf' },
+	{ name: 'Noto Sans JP', fontSrc: '/fonts/NotoSansJP-Regular.ttf' },
+	{ name: 'Noto Sans KR', fontSrc: '/fonts/NotoSansKR-Regular.ttf' },
+	{ name: 'Noto Sans SC', fontSrc: '/fonts/NotoSansSC-Regular.ttf' },
+	{ name: 'Noto Sans TC', fontSrc: '/fonts/NotoSansTC-Regular.ttf' },
+	{ name: 'Noto Sans HK', fontSrc: '/fonts/NotoSansHK-Regular.ttf' },
 ];
 
 const pdfStyles = StyleSheet.create({
 	page: {
 		fontFamily: NOTO_SANS_FONTS.map((font) => font.name),
-		color: '#000',
 	},
 	messageHeader: {
 		display: 'flex',
@@ -43,19 +42,24 @@ const pdfStyles = StyleSheet.create({
 		gap: 10,
 	},
 	username: {
+		color: '#000',
 		fontSize: 14,
 	},
 	dateTime: {
+		color: '#aaa',
 		fontSize: 12,
 	},
 	threadMessagesCount: {
+		color: '#000',
 		fontSize: 14,
 	},
 	threadMessage: {
+		color: '#555',
 		fontSize: 12,
 		...leftTab,
 	},
 	message: {
+		color: '#555',
 		fontSize: 14,
 	},
 });
