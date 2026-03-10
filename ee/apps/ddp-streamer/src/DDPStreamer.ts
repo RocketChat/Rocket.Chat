@@ -50,9 +50,13 @@ export class DDPStreamer extends ServiceClass {
 			}
 		});
 
-		this.onEvent('user.forceLogout', (uid: string) => {
+		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
 			this.wss?.clients.forEach((ws) => {
 				const client = clientMap.get(ws);
+				if (sessionId && client?.connection.id === sessionId) {
+					ws.close();
+					return;
+				}
 				if (client?.userId === uid) {
 					ws.terminate();
 				}
@@ -66,7 +70,7 @@ export class DDPStreamer extends ServiceClass {
 
 	// update connections count every 30 seconds
 	updateConnections = throttle(() => {
-		InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
+		void InstanceStatus.updateConnections(this.wss?.clients.size ?? 0);
 	}, 30000);
 
 	override async created(): Promise<void> {
@@ -182,37 +186,37 @@ export class DDPStreamer extends ServiceClass {
 
 			server.emit('presence', { userId, connection });
 
-			this.api?.broadcast('accounts.login', { userId, connection });
+			void this.api?.broadcast('accounts.login', { userId, connection });
 		});
 
 		server.on(DDP_EVENTS.LOGGEDOUT, (info) => {
 			const { userId, connection } = info;
 
-			this.api?.broadcast('accounts.logout', { userId, connection });
+			void this.api?.broadcast('accounts.logout', { userId, connection });
 
-			this.updateConnections();
+			void this.updateConnections();
 
 			if (!userId) {
 				return;
 			}
-			Presence.removeConnection(userId, connection.id, nodeID);
+			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
 		server.on(DDP_EVENTS.DISCONNECTED, (info) => {
 			const { userId, connection } = info;
 
-			this.api?.broadcast('socket.disconnected', connection);
+			void this.api?.broadcast('socket.disconnected', connection);
 
 			this.updateConnections();
 
 			if (!userId) {
 				return;
 			}
-			Presence.removeConnection(userId, connection.id, nodeID);
+			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
 		server.on(DDP_EVENTS.CONNECTED, ({ connection }) => {
-			this.api?.broadcast('socket.connected', connection);
+			void this.api?.broadcast('socket.connected', connection);
 		});
 	}
 
@@ -258,7 +262,7 @@ export class DDPStreamer extends ServiceClass {
 
 			this.wss.on('connection', (ws, req) => new Client(ws, req.url !== '/websocket', req));
 
-			InstanceStatus.registerInstance('ddp-streamer', {});
+			void InstanceStatus.registerInstance('ddp-streamer', {});
 		} catch (err) {
 			console.error('DDPStreamer did not start correctly', err);
 		}

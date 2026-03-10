@@ -1,22 +1,27 @@
-import { Authorization, License, Abac } from '@rocket.chat/core-services';
+import { Authorization, License, Abac, Settings } from '@rocket.chat/core-services';
 import type { RoomAccessValidator } from '@rocket.chat/core-services';
 import { TeamType, AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
-import type { IUser, ITeam } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms, Settings, TeamMember, Team } from '@rocket.chat/models';
+import type { IUser, ITeam, IRoom } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms, TeamMember, Team, Users } from '@rocket.chat/models';
 
 import { canAccessRoomLivechat } from './canAccessRoomLivechat';
 
 async function canAccessPublicRoom(user?: Partial<IUser>): Promise<boolean> {
 	if (!user?._id) {
-		// TODO: it was using cached version from /app/settings/server/raw.js
-		const anon = await Settings.getValueById('Accounts_AllowAnonymousRead');
+		const anon = await Settings.get<boolean>('Accounts_AllowAnonymousRead');
 		return !!anon;
 	}
 
 	return Authorization.hasPermission(user._id, 'view-c-room');
 }
 
-const roomAccessValidators: RoomAccessValidator[] = [
+type RoomAccessValidatorConverted = (
+	room?: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
+	user?: IUser,
+	extraData?: Record<string, any>,
+) => Promise<boolean>;
+
+const roomAccessValidators: RoomAccessValidatorConverted[] = [
 	async function _validateAccessToPublicRoomsInTeams(room, user): Promise<boolean> {
 		if (!room) {
 			return false;
@@ -57,16 +62,12 @@ const roomAccessValidators: RoomAccessValidator[] = [
 		}
 
 		const [canViewJoined, canViewT] = await Promise.all([
-			Authorization.hasPermission(user._id, 'view-joined-room'),
-			Authorization.hasPermission(user._id, `view-${room.t}-room`),
+			Authorization.hasPermission(user, 'view-joined-room'),
+			Authorization.hasPermission(user, `view-${room.t}-room`),
 		]);
 
 		// When there's no ABAC setting, license or values on the room, fallback to previous behavior
-		if (
-			!room?.abacAttributes?.length ||
-			!(await License.hasModule('abac')) ||
-			(!(await Settings.getValueById('ABAC_Enabled')) as boolean)
-		) {
+		if (!room?.abacAttributes?.length || !(await License.hasModule('abac')) || !(await Settings.get<boolean>('ABAC_Enabled'))) {
 			const includeInvitations = extraData?.includeInvitations ?? false;
 			if (!(await Subscriptions.countByRoomIdAndUserId(room._id, user._id, includeInvitations))) {
 				return false;
@@ -94,14 +95,32 @@ const roomAccessValidators: RoomAccessValidator[] = [
 	canAccessRoomLivechat,
 ];
 
+const isPartialUser = (user: IUser | Pick<IUser, '_id'> | undefined): user is Pick<IUser, '_id'> => {
+	return Boolean(user && Object.keys(user).length === 1 && '_id' in user);
+};
+
 export const canAccessRoom: RoomAccessValidator = async (room, user, extraData): Promise<boolean> => {
 	// TODO livechat can send both as null, so they we need to validate nevertheless
 	// if (!room || !user) {
 	// 	return false;
 	// }
 
+	// TODO: remove this after migrations
+	// if user only contains _id, convert it to a full IUser object
+
+	if (isPartialUser(user)) {
+		user = (await Users.findOneById(user._id)) || undefined;
+		if (!user) {
+			throw new Error('User not found');
+		}
+
+		if (process.env.NODE_ENV === 'development') {
+			console.log('User converted to full IUser object');
+		}
+	}
+
 	for await (const roomAccessValidator of roomAccessValidators) {
-		if (await roomAccessValidator(room, user, extraData)) {
+		if (await roomAccessValidator(room, user as IUser, extraData)) {
 			return true;
 		}
 	}

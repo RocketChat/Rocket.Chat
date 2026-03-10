@@ -1,5 +1,145 @@
 # @rocket.chat/models
 
+## 2.1.0
+
+### Minor Changes
+
+- ([#38173](https://github.com/RocketChat/Rocket.Chat/pull/38173)) Adds a new endpoint to delete uploaded files individually
+
+### Patch Changes
+
+- ([#37776](https://github.com/RocketChat/Rocket.Chat/pull/37776)) Prevents over-assignment of omnichannel agents beyond their max chats limit in microservices deployments by serializing agent assignment with explicit user-level locking.
+
+- ([#38376](https://github.com/RocketChat/Rocket.Chat/pull/38376)) Fix a validation issue in the `livechat/custom-fields.save` endpoint
+
+- ([#38265](https://github.com/RocketChat/Rocket.Chat/pull/38265)) Fixes endpoints `omnichannel/contacts.update` and `omnichannel/contacts.conflicts` where the contact manager field could not be cleared.
+
+- ([#38568](https://github.com/RocketChat/Rocket.Chat/pull/38568)) Adds automatic cleanup of statistics collection with 1-year retention via TTL index.
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, e57f15845e4df048dd2f08f11aa08215780a2c34, 88da141f3c2af6f91980c7ca8b8777161f99a068, 75d089ca40248af963d7cd2a8034c3c6de6b971e, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 508b4a17d76dc1cd7d3a55bdba826216f51432e2]:</summary>
+
+  - @rocket.chat/model-typings@2.1.0
+  - @rocket.chat/rest-typings@8.2.0
+  </details>
+
+## 2.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@8.2.0-rc.2
+  - @rocket.chat/model-typings@2.1.0-rc.2
+  </details>
+
+## 2.1.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@8.2.0-rc.1
+  - @rocket.chat/model-typings@2.1.0-rc.1
+  </details>
+
+## 2.1.0-rc.0
+
+### Minor Changes
+
+- ([#38173](https://github.com/RocketChat/Rocket.Chat/pull/38173)) Adds a new endpoint to delete uploaded files individually
+
+### Patch Changes
+
+- ([#37776](https://github.com/RocketChat/Rocket.Chat/pull/37776)) Prevents over-assignment of omnichannel agents beyond their max chats limit in microservices deployments by serializing agent assignment with explicit user-level locking.
+
+- ([#38376](https://github.com/RocketChat/Rocket.Chat/pull/38376)) Fix a validation issue in the `livechat/custom-fields.save` endpoint
+
+- ([#38265](https://github.com/RocketChat/Rocket.Chat/pull/38265)) Fixes endpoints `omnichannel/contacts.update` and `omnichannel/contacts.conflicts` where the contact manager field could not be cleared.
+
+- ([#38568](https://github.com/RocketChat/Rocket.Chat/pull/38568)) Adds automatic cleanup of statistics collection with 1-year retention via TTL index.
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, e57f15845e4df048dd2f08f11aa08215780a2c34, 88da141f3c2af6f91980c7ca8b8777161f99a068, 75d089ca40248af963d7cd2a8034c3c6de6b971e, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 508b4a17d76dc1cd7d3a55bdba826216f51432e2]:</summary>
+
+  - @rocket.chat/model-typings@2.1.0-rc.0
+  - @rocket.chat/rest-typings@8.2.0-rc.0
+  </details>
+
+## 2.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@8.1.1
+  - @rocket.chat/model-typings@2.0.3
+  </details>
+
+## 2.0.2
+
+### Patch Changes
+
+- ([#38183](https://github.com/RocketChat/Rocket.Chat/pull/38183)) Fixes `/sendEmailAttachment` to support sending multiple file attachments in a single email
+
+- ([#38079](https://github.com/RocketChat/Rocket.Chat/pull/38079)) Fixes a condition where deleting a message with multiple file attachments would not always delete all of those files
+
+- ([#37919](https://github.com/RocketChat/Rocket.Chat/pull/37919)) Makes roomsPerGuest exclude DMs when counting subscriptions, ensuring guest limits apply only to non-DM rooms as per expected behavior.
+
+- ([#38105](https://github.com/RocketChat/Rocket.Chat/pull/38105)) Fixes user deletion not removing thumbnails of images sent by the deleted user
+
+- <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, fd319d58a621d66c20029fd962ddb24a1a24ecc3, 5c3c52b1fc8b0bd52d4744614ad4d2b8e2e03937, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e]:</summary>
+
+  - @rocket.chat/model-typings@2.0.2
+  - @rocket.chat/rest-typings@8.1.0
+  </details>
+
+## 2.0.2-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@8.1.0-rc.2
+  - @rocket.chat/model-typings@2.0.2-rc.2
+  </details>
+
+## 2.0.2-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [fd319d58a621d66c20029fd962ddb24a1a24ecc3]:</summary>
+
+  - @rocket.chat/rest-typings@8.1.0-rc.1
+  - @rocket.chat/model-typings@2.0.1-rc.1
+  </details>
+
+## 2.0.2-rc.0
+
+### Patch Changes
+
+- ([#38183](https://github.com/RocketChat/Rocket.Chat/pull/38183)) Fixes `/sendEmailAttachment` to support sending multiple file attachments in a single email
+
+- ([#38079](https://github.com/RocketChat/Rocket.Chat/pull/38079)) Fixes a condition where deleting a message with multiple file attachments would not always delete all of those files
+
+- ([#37919](https://github.com/RocketChat/Rocket.Chat/pull/37919)) Makes roomsPerGuest exclude DMs when counting subscriptions, ensuring guest limits apply only to non-DM rooms as per expected behavior.
+
+- ([#38105](https://github.com/RocketChat/Rocket.Chat/pull/38105)) Fixes user deletion not removing thumbnails of images sent by the deleted user
+
+- <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, 5c3c52b1fc8b0bd52d4744614ad4d2b8e2e03937, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e]:</summary>
+
+  - @rocket.chat/model-typings@2.0.1-rc.0
+  - @rocket.chat/rest-typings@8.1.0-rc.0
+  </details>
+
+## 2.0.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/rest-typings@8.0.1
+  - @rocket.chat/model-typings@2.0.1
+  </details>
+
 ## 2.0.0
 
 ### Major Changes

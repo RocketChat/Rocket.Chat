@@ -1,6 +1,6 @@
 import type { IncomingMessage } from 'http';
 
-import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
+import type { IUser, LicenseModule, RequiredField } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
@@ -110,6 +110,7 @@ export type SharedOptions<TMethod extends string> = (
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired?: boolean;
+			userWithoutUsername?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 			rateLimiterOptions?:
 				| {
@@ -128,6 +129,7 @@ export type SharedOptions<TMethod extends string> = (
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired: true;
+			userWithoutUsername?: boolean;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
 			rateLimiterOptions?:
@@ -150,6 +152,7 @@ export type SharedOptions<TMethod extends string> = (
 		version: DeprecationLoggerNextPlannedVersion;
 		alternatives?: PathPattern[];
 	};
+	applyMeteorContext?: boolean;
 };
 
 export type GenericRouteExecutionContext = ActionThis<any, any, any>;
@@ -191,6 +194,8 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
 
+	readonly twoFactorChecked: boolean;
+
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		/**
@@ -212,19 +217,19 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	};
 } & (TOptions extends { authRequired: true }
 	? {
-			user: IUser;
+			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 			userId: string;
 			readonly token: string;
 		}
 	: TOptions extends { authOrAnonRequired: true }
 		? {
-				user?: IUser;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 				userId?: string;
 				readonly token?: string;
 			}
 		: {
-				user?: IUser | null;
-				userId?: string | undefined;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
+				userId?: string;
 				readonly token?: string;
 			});
 
@@ -292,8 +297,8 @@ export type TypedOptions = {
 } & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
+	readonly logger: Logger;
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
-	user: TOptions['authRequired'] extends true ? IUser : IUser | null;
 	token: TOptions['authRequired'] extends true ? string : string | undefined;
 	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
 	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
@@ -309,11 +314,17 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 		query: Record<string, unknown>;
 	}>;
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
-
+	request: Request;
 	requestIp?: string;
 	route: string;
 	response: Response;
-};
+} & (TOptions['authRequired'] extends true
+	? {
+			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
+		}
+	: {
+			user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
+		});
 
 type PromiseOrValue<T> = T | Promise<T>;
 

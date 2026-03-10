@@ -1,5 +1,97 @@
 # @rocket.chat/mock-providers
 
+## 0.4.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [e57f15845e4df048dd2f08f11aa08215780a2c34]:</summary>
+
+  - @rocket.chat/i18n@2.1.0
+  - @rocket.chat/ui-contexts@28.0.0
+  </details>
+
+## 0.4.11-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@28.0.0-rc.2
+  </details>
+
+## 0.4.11-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@28.0.0-rc.1
+  </details>
+
+## 0.4.11-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [e57f15845e4df048dd2f08f11aa08215780a2c34]:</summary>
+
+  - @rocket.chat/i18n@2.1.0-rc.0
+  - @rocket.chat/ui-contexts@28.0.0-rc.0
+  </details>
+
+## 0.4.10
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@27.0.1
+  </details>
+
+## 0.4.9
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7b51ba84340480fa28e85c8f35d9d2f947d3250e, 9a205633c25065fda9024184c406ac9675c3f23f]:</summary>
+
+  - @rocket.chat/i18n@2.0.1
+  - @rocket.chat/ui-contexts@27.0.0
+  </details>
+
+## 0.4.9-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@27.0.0-rc.2
+  </details>
+
+## 0.4.9-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/ui-contexts@27.0.0-rc.1
+  </details>
+
+## 0.4.9-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [7b51ba84340480fa28e85c8f35d9d2f947d3250e, 9a205633c25065fda9024184c406ac9675c3f23f]:</summary>
+
+  - @rocket.chat/i18n@2.0.1-rc.0
+  - @rocket.chat/ui-contexts@27.0.0-rc.0
+  </details>
+
+## 0.4.8
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+- @rocket.chat/ui-contexts@26.0.1
+</details>
+
 ## 0.4.7
 
 ### Patch Changes
