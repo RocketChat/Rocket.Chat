@@ -242,6 +242,6 @@ API.v1.addRoute(
 type InvitesEndpoints = ExtractRoutesFromAPI<typeof invites>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends InvitesEndpoints { }
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
+	interface Endpoints extends InvitesEndpoints {}
 }
