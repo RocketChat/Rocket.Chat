@@ -124,23 +124,48 @@ runs:
           LOAD_OR_PUSH="--load"
         fi
 
-        # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
-          IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
+        export DOCKER_CLIENT_TIMEOUT=300
+        export COMPOSE_HTTP_TIMEOUT=300
 
-        docker buildx bake \
-          "${compose_files[@]}" \
-          ${LOAD_OR_PUSH} \
-          --allow=fs.read=/tmp/build \
-          --set "*.tags+=${IMAGE}-gha-run-${GITHUB_RUN_ID}" \
-          --set "*.labels.org.opencontainers.image.description=Build run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-          --set "*.labels.org.opencontainers.image.source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
-          --set "*.platform=linux/${INPUT_ARCH}" \
-          --set *.cache-from=type=gha \
-          --set *.cache-to=type=gha,mode=max \
-          --provenance=false \
-          --sbom=false \
-          --metadata-file "/tmp/meta.json" \
+        # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
+        IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
+
+        buildx_bake_cmd=(
+          docker buildx bake
+          "${compose_files[@]}"
+          "$LOAD_OR_PUSH"
+          "--allow=fs.read=/tmp/build"
+          "--set"
+          "*.tags+=${IMAGE}-gha-run-${GITHUB_RUN_ID}"
+          "--set"
+          "*.labels.org.opencontainers.image.description=Build run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          "--set"
+          "*.labels.org.opencontainers.image.source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          "--set"
+          "*.platform=linux/${INPUT_ARCH}"
+          "--set"
+          "*.cache-from=type=gha"
+          "--set"
+          "*.cache-to=type=gha,mode=max"
+          "--provenance=false"
+          "--sbom=false"
+          --metadata-file "/tmp/meta.json"
           "$INPUT_SERVICE"
+        )
+
+        attempts=1
+        max_attempts=3
+        until "${buildx_bake_cmd[@]}"; do
+          if [[ "$INPUT_PUBLISH_IMAGE" != 'true' || $attempts -ge $max_attempts ]]; then
+            echo "docker buildx bake failed after ${attempts} attempt(s)."
+            exit 1
+          fi
+
+          attempts=$((attempts + 1))
+          sleep_seconds=$((15 * attempts))
+          echo "docker buildx bake failed (likely transient push error). Retrying in ${sleep_seconds}s... (attempt ${attempts}/${max_attempts})"
+          sleep "${sleep_seconds}"
+        done
 
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
