@@ -1810,5 +1810,119 @@ import { SynapseClient } from '../helper/synapse-client';
 				});
 			});
 		});
+
+		describe('Kicking a user from Synapse after they have joined', () => {
+			let matrixRoomId: string;
+			let channelName: string;
+			let rid: string;
+
+			beforeAll(async () => {
+				channelName = `federated-channel-kick-${Date.now()}`;
+				matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+				// hs1 invites RC user
+				await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+				const pendingInvitation = subscriptions.update.find(
+					(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+				);
+
+				expect(pendingInvitation).not.toBeUndefined();
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				rid = pendingInvitation!.rid!;
+
+				// RC user accepts the invitation and joins
+				const acceptResponse = await acceptRoomInvite(rid, rc1AdminRequestConfig);
+				expect(acceptResponse.success).toBe(true);
+
+				// Wait for the user to join
+				await retry(
+					'Waiting for RC user to join room on Matrix side',
+					async () => {
+						const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+						expect(member?.membership).toBe('join');
+					},
+					{ delayMs: 200, retries: 10 },
+				);
+
+				// hs1 kicks the RC user
+				await hs1AdminApp.matrixClient.kick(matrixRoomId, federationConfig.rc1.adminMatrixUserId, 'Kicked from room');
+			}, 20000);
+
+			it('should remove the subscription for the kicked user', async () => {
+				await retry(
+					'Waiting for subscription to be removed',
+					async () => {
+						const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+						const removedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
+						expect(removedSub).toBeFalsy();
+					},
+					{ delayMs: 500, retries: 10 },
+				);
+			});
+
+			it('should have the RC user with leave membership on Synapse side after being kicked', async () => {
+				const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+				expect(member?.membership).toBe('leave');
+			});
+		});
+
+		describe('Banning a user from Synapse after they have joined', () => {
+			let matrixRoomId: string;
+			let channelName: string;
+			let rid: string;
+
+			beforeAll(async () => {
+				channelName = `federated-channel-ban-${Date.now()}`;
+				matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+				// hs1 invites RC user
+				await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+				const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+
+				const pendingInvitation = subscriptions.update.find(
+					(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+				);
+
+				expect(pendingInvitation).not.toBeUndefined();
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				rid = pendingInvitation!.rid!;
+
+				// RC user accepts the invitation and joins
+				const acceptResponse = await acceptRoomInvite(rid, rc1AdminRequestConfig);
+				expect(acceptResponse.success).toBe(true);
+
+				// Wait for the user to join
+				await retry(
+					'Waiting for RC user to join room on Matrix side',
+					async () => {
+						const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+						expect(member?.membership).toBe('join');
+					},
+					{ delayMs: 200, retries: 10 },
+				);
+
+				// hs1 bans the RC user
+				await hs1AdminApp.matrixClient.ban(matrixRoomId, federationConfig.rc1.adminMatrixUserId, 'Banned from room');
+			}, 20000);
+
+			it('should remove the subscription for the banned user', async () => {
+				await retry(
+					'Waiting for subscription to be removed',
+					async () => {
+						const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+						const removedSub = subscriptions.update.find((sub) => sub.fname?.includes(channelName));
+						expect(removedSub).toBeFalsy();
+					},
+					{ delayMs: 500, retries: 10 },
+				);
+			});
+
+			it('should have the RC user with ban membership on Synapse side after being banned', async () => {
+				const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+				expect(member?.membership).toBe('ban');
+			});
+		});
 	});
 });

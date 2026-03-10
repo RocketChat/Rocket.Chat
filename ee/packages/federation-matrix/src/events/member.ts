@@ -266,6 +266,7 @@ export function member() {
 					await handleJoin(event);
 					break;
 
+				case 'ban':
 				case 'leave':
 					await handleLeave(event);
 					break;
