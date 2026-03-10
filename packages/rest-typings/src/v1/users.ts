@@ -295,25 +295,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.getPresence': {
-		GET: (
-			params:
-				| {
-						userId: string;
-				  }
-				| {
-						username: string;
-				  }
-				| {
-						user: string;
-				  },
-		) => {
-			presence: UserStatus;
-			connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
-			lastLogin?: string;
-		};
-	};
-
 	'/v1/users.setStatus': {
 		POST: (params: { message?: string; status?: UserStatus; userId?: string; username?: string; user?: string }) => void;
 	};
