@@ -6,6 +6,7 @@ import type { CalendarEventImportProps } from './CalendarEventImportProps';
 import type { CalendarEventInfoProps } from './CalendarEventInfoProps';
 import type { CalendarEventListProps } from './CalendarEventListProps';
 import type { CalendarEventUpdateProps } from './CalendarEventUpdateProps';
+import type { CalendarEventSearchProps } from './CalendarEventSearchProps';
 
 export * from './CalendarEventCreateProps';
 export * from './CalendarEventDeleteProps';
@@ -13,6 +14,7 @@ export * from './CalendarEventImportProps';
 export * from './CalendarEventInfoProps';
 export * from './CalendarEventUpdateProps';
 export * from './CalendarEventListProps';
+export * from './CalendarEventSearchProps';
 
 export type CalendarEndpoints = {
 	'/v1/calendar-events.create': {
@@ -37,5 +39,9 @@ export type CalendarEndpoints = {
 
 	'/v1/calendar-events.delete': {
 		POST: (params: CalendarEventDeleteProps) => void;
+	};
+
+	'/v1/calendar-events.search': {
+		GET: (params: CalendarEventSearchProps) => { data: ICalendarEvent[] };
 	};
 };

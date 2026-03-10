@@ -1,5 +1,6 @@
 import { Calendar } from '@rocket.chat/core-services';
 import {
+	isCalendarEventSearchProps,
 	isCalendarEventListProps,
 	isCalendarEventCreateProps,
 	isCalendarEventImportProps,
@@ -24,6 +25,25 @@ API.v1.addRoute(
 		},
 	},
 );
+
+API.v1.addRoute(
+	'calendar-events.search',
+	{
+		authRequired: true,
+		validateParams: isCalendarEventSearchProps, 
+		rateLimiterOptions: { numRequestsAllowed: 3, intervalTimeInMS: 1000 },
+	},
+	{
+		async get() {
+			const { userId } = this;
+			const { text } = this.queryParams;
+
+			const data = await Calendar.searchBySubject(userId, text);
+			return API.v1.success({ data });
+		},
+	},
+);
+
 
 API.v1.addRoute(
 	'calendar-events.info',
