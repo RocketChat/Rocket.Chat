@@ -96,7 +96,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 				</GenericTable>
 			)}
 			{!isError && data && data.length === 0 && <GenericNoResult />}
-			{!isError && data && data.length > 0 && (
+			{data && data.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>
