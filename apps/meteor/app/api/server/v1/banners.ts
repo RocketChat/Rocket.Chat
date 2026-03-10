@@ -2,14 +2,48 @@ import { Banner } from '@rocket.chat/core-services';
 import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
 import {
 	ajv,
-	isBannersDismissProps,
-	isBannersProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
+
+type Banners = {
+	platform: BannerPlatform;
+};
+
+const BannersSchema = {
+	type: 'object',
+	properties: {
+		platform: {
+			type: 'string',
+			enum: ['web', 'mobile'],
+		},
+	},
+	required: ['platform'],
+	additionalProperties: false,
+};
+
+const isBannersProps = ajv.compile<Banners>(BannersSchema);
+
+type BannersDismiss = {
+	bannerId: string;
+};
+
+const BannersDismissSchema = {
+	type: 'object',
+	properties: {
+		bannerId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['bannerId'],
+	additionalProperties: false,
+};
+
+const isBannersDismissProps = ajv.compile<BannersDismiss>(BannersDismissSchema);
 
 const bannersIdEndpoints = API.v1.get(
 	'banners/:id',
