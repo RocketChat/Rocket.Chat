@@ -786,7 +786,20 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.mediaConfirm/:rid/:fileId': {
-		POST: (params: { msg?: string; tmid?: string; description?: string; t?: IMessage['t']; content?: IE2EEMessage['content'] }) => {
+		POST: (params: {
+			description?: string;
+			avatar?: string;
+			emoji?: string;
+			alias?: string;
+			groupable?: boolean;
+			msg?: string;
+			tmid?: string;
+			customFields?: Record<string, any>;
+			t?: IMessage['t'];
+			content?: IE2EEMessage['content'];
+			fileName?: string;
+			fileContent?: IE2EEMessage['content'];
+		}) => {
 			message: IMessage | null;
 		};
 	};

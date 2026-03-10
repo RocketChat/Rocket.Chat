@@ -146,8 +146,10 @@ async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message:
 				 * subsequent messages will have a new ID with empty text
 				 * */
 				const messageToSend = index === 0 ? composedMessage : { ...composedMessage, msg: '' };
-				await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileToConfirm._id}`, messageToSend);
-				// return sdk.call('sendMessage', messageToSend, [fileUrls[index]], [fileToConfirm]);
+				await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileToConfirm._id}`, {
+					...messageToSend,
+					...(shouldMarkAsE2E ? { fileContent: fileToConfirm.content } : { fileName: fileToConfirm.name }),
+				});
 			}),
 		);
 		store.clear();
