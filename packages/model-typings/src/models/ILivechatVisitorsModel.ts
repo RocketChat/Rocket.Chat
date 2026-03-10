@@ -1,4 +1,4 @@
-import type { ILivechatVisitor } from '@rocket.chat/core-typings';
+import type { IVisitorExternalIdentifier, ILivechatVisitor } from '@rocket.chat/core-typings';
 import type {
 	AggregationCursor,
 	FindCursor,
@@ -49,6 +49,10 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null>;
 
 	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null>;
+
+	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null>;
+
+	addExternalId(_id: string, externalId: IVisitorExternalIdentifier): Promise<UpdateResult>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 
