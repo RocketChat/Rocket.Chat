@@ -276,6 +276,8 @@ const rolesRoutes = API.v1
 									username: { type: 'string' },
 									roles: { type: 'array', items: { type: 'string' } },
 								},
+								required: ['_id', 'username', 'roles'],
+								additionalProperties: false,
 							},
 						},
 						success: {
@@ -300,5 +302,5 @@ type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
-	interface Endpoints extends RolesEndpoints {}
+	interface Endpoints extends RolesEndpoints { }
 }
