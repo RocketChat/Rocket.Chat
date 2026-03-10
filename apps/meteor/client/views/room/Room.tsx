@@ -14,6 +14,7 @@ import RoomInvite from './RoomInvite';
 import RoomBody from './body/RoomBody';
 import { useRoom, useRoomSubscription } from './contexts/RoomContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
+import { useMedsenseDocumentationHandoff } from './hooks/useMedsenseDocumentationHandoff';
 import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
@@ -27,6 +28,7 @@ const Room = (): ReactElement => {
 	const subscription = useRoomSubscription();
 	const toolbox = useRoomToolbox();
 	const contextualBarView = useAppsContextualBar();
+	useMedsenseDocumentationHandoff();
 	const isE2EEnabled = useSetting('E2E_Enable');
 	const unencryptedMessagesAllowed = useSetting('E2E_Allow_Unencrypted_Messages');
 	const shouldDisplayE2EESetup = room?.encrypted && !unencryptedMessagesAllowed && isE2EEnabled;

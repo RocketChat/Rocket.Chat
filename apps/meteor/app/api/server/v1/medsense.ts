@@ -1,4 +1,5 @@
 import { api, OmnichannelIntegration } from "@rocket.chat/core-services";
+import type { IMedsenseDocumentationTemplate } from '@rocket.chat/core-typings';
 import { createHash, randomBytes, randomInt, timingSafeEqual } from "crypto";
 import {
     MedsensePharmacies,
@@ -9,6 +10,9 @@ import {
     MedsenseInterventionNotes,
     MedsensePharmacyInvites,
     MedsensePatientContext,
+    MedsenseDocumentationTemplates,
+    MedsenseDrugCatalog,
+    Settings,
     Users,
     Rooms,
     Subscriptions,
@@ -119,7 +123,792 @@ const normalizeRegistrationPhone = (value: string): string | null => {
     if (digits.length === 11 && digits.startsWith('1')) {
         return `+${digits}`;
     }
-    return null;
+	return null;
+};
+
+const DOCUMENTATION_SECTION_TYPES = new Set([
+	'patient_info',
+	'questionnaire',
+	'assessment',
+	'attestations',
+	'action_taken',
+	'provider_communication',
+	'prescriptions',
+	'counselling',
+	'follow_up',
+	'signatures',
+]);
+
+const DOCUMENTATION_FIELD_TYPES = new Set([
+	'readonly',
+	'text',
+	'textarea',
+	'date',
+	'select',
+	'multiselect',
+	'radio',
+	'checkbox',
+	'boolean',
+	'drug',
+	'repeater',
+]);
+
+const DEFAULT_DOCUMENTATION_PREFILL_CONFIDENCE_THRESHOLD = 0.8;
+
+const getNestedValue = (input: any, path?: string): any => {
+	if (!path) {
+		return undefined;
+	}
+
+	return path.split('.').reduce((value: any, segment) => {
+		if (value === undefined || value === null) {
+			return undefined;
+		}
+
+		return value[segment];
+	}, input);
+};
+
+const normalizeTemplateOptions = (options: any): string[] | undefined => {
+	if (!Array.isArray(options)) {
+		return undefined;
+	}
+
+	const normalized = options
+		.map((option) => {
+			if (typeof option === 'string') {
+				return option.trim();
+			}
+
+			if (option && typeof option === 'object') {
+				const value = typeof option.value === 'string' ? option.value.trim() : '';
+				const label = typeof option.label === 'string' ? option.label.trim() : '';
+				return value || label;
+			}
+
+			return '';
+		})
+		.filter(Boolean);
+
+	return normalized.length ? normalized : undefined;
+};
+
+const normalizeTemplateField = (field: any, index: number, path: string): any => {
+	const key = typeof field?.key === 'string' ? field.key.trim() : '';
+	const label = typeof field?.label === 'string' ? field.label.trim() : '';
+	const type = typeof field?.type === 'string' ? field.type.trim() : '';
+
+	if (!key) {
+		throw new Meteor.Error('invalid-template-field', `Missing field key at ${path}`);
+	}
+
+	if (!label) {
+		throw new Meteor.Error('invalid-template-field', `Missing field label at ${path}`);
+	}
+
+	if (!DOCUMENTATION_FIELD_TYPES.has(type)) {
+		throw new Meteor.Error('invalid-template-field', `Unsupported field type "${type}" at ${path}`);
+	}
+
+	const normalizedFields = Array.isArray(field?.fields)
+		? field.fields.map((child: any, childIndex: number) => normalizeTemplateField(child, childIndex, `${path}.fields[${childIndex}]`))
+		: undefined;
+	const drugCatalogCodes = Array.isArray(field?.drugCatalogCodes)
+		? field.drugCatalogCodes.map((code: any) => String(code).trim()).filter(Boolean)
+		: undefined;
+
+	if (type === 'repeater' && (!normalizedFields || !normalizedFields.length)) {
+		throw new Meteor.Error('invalid-template-field', `Repeater fields require nested fields at ${path}`);
+	}
+
+	return {
+		key,
+		label,
+		type,
+		required: Boolean(field?.required),
+		helpText: typeof field?.helpText === 'string' ? field.helpText.trim() : undefined,
+		pdfTitle: typeof field?.pdfTitle === 'string' ? field.pdfTitle.trim() : undefined,
+		visibleInPdf: field?.visibleInPdf !== false,
+		aiPrefill: field?.aiPrefill !== false,
+		prefillConfidenceThreshold:
+			typeof field?.prefillConfidenceThreshold === 'number' && Number.isFinite(field.prefillConfidenceThreshold)
+				? Math.max(0, Math.min(1, field.prefillConfidenceThreshold))
+				: undefined,
+		sourceKey: typeof field?.sourceKey === 'string' ? field.sourceKey.trim() : undefined,
+		options: normalizeTemplateOptions(field?.options),
+		drugCatalogCodes,
+		fields: normalizedFields,
+		defaultValue: field?.defaultValue,
+		sortOrder: typeof field?.sortOrder === 'number' ? field.sortOrder : index,
+	};
+};
+
+const normalizeTemplateSection = (section: any, index: number): any => {
+	const key = typeof section?.key === 'string' ? section.key.trim() : '';
+	const title = typeof section?.title === 'string' ? section.title.trim() : '';
+	const type = typeof section?.type === 'string' ? section.type.trim() : '';
+
+	if (!key) {
+		throw new Meteor.Error('invalid-template-section', `Missing section key at index ${index}`);
+	}
+
+	if (!title) {
+		throw new Meteor.Error('invalid-template-section', `Missing section title at index ${index}`);
+	}
+
+	if (!DOCUMENTATION_SECTION_TYPES.has(type)) {
+		throw new Meteor.Error('invalid-template-section', `Unsupported section type "${type}" at index ${index}`);
+	}
+
+	return {
+		key,
+		title,
+		type,
+		sortOrder: typeof section?.sortOrder === 'number' ? section.sortOrder : index,
+		pdfTitle: typeof section?.pdfTitle === 'string' ? section.pdfTitle.trim() : undefined,
+		visibleInPdf: section?.visibleInPdf !== false,
+		fields: Array.isArray(section?.fields)
+			? section.fields.map((field: any, fieldIndex: number) => normalizeTemplateField(field, fieldIndex, `sections[${index}].fields[${fieldIndex}]`))
+			: [],
+	};
+};
+
+const normalizeDocumentationTemplateInput = (payload: any): Partial<IMedsenseDocumentationTemplate> => {
+	const interventionTypes = Array.isArray(payload?.interventionTypes)
+		? payload.interventionTypes.map((value: string) => String(value).trim()).filter(Boolean)
+		: [];
+	const specialtyActionIds = Array.isArray(payload?.specialtyActionIds)
+		? payload.specialtyActionIds.map((value: string) => String(value).trim()).filter(Boolean)
+		: [];
+	const sections = Array.isArray(payload?.sections) ? payload.sections.map(normalizeTemplateSection) : [];
+
+	if (!interventionTypes.length) {
+		throw new Meteor.Error('invalid-template', 'At least one intervention type is required');
+	}
+
+	if (!sections.length) {
+		throw new Meteor.Error('invalid-template', 'At least one template section is required');
+	}
+
+	if (payload?.signatureRules?.requirePatientSignature && !payload?.signatureRules?.allowPatientSignature) {
+		throw new Meteor.Error('invalid-template', 'Patient signature cannot be required when patient signatures are disabled');
+	}
+
+	return {
+		key: typeof payload?.key === 'string' ? payload.key.trim() : undefined,
+		label: typeof payload?.label === 'string' ? payload.label.trim() : undefined,
+		description: typeof payload?.description === 'string' ? payload.description.trim() : undefined,
+		interventionTypes,
+		specialtyActionIds,
+		sections,
+		signatureRules: {
+			requirePharmacistSignature: Boolean(payload?.signatureRules?.requirePharmacistSignature),
+			allowPatientSignature: Boolean(payload?.signatureRules?.allowPatientSignature),
+			requirePatientSignature: Boolean(payload?.signatureRules?.requirePatientSignature),
+		},
+		pdfConfig: {
+			documentTitle: typeof payload?.pdfConfig?.documentTitle === 'string' ? payload.pdfConfig.documentTitle.trim() : '',
+			includeQrCode: Boolean(payload?.pdfConfig?.includeQrCode),
+			showTemplateVersion: Boolean(payload?.pdfConfig?.showTemplateVersion),
+			footerText: typeof payload?.pdfConfig?.footerText === 'string' ? payload.pdfConfig.footerText.trim() : undefined,
+		},
+	};
+};
+
+const extractCcddVersion = (raw: string): string | null => {
+	const match = raw.match(/"version"\s*:\s*"([^"]+)"/);
+	return match?.[1] || null;
+};
+
+const getCcddPropertyValue = (extensionEntry: any): any => {
+	const nested = Array.isArray(extensionEntry?.extension) ? extensionEntry.extension : [];
+	const valueEntry = nested.find((item: any) => item?.url === 'value');
+	if (!valueEntry) {
+		return undefined;
+	}
+
+	if ('valueBoolean' in valueEntry) {
+		return valueEntry.valueBoolean;
+	}
+	if ('valueCode' in valueEntry) {
+		return valueEntry.valueCode;
+	}
+	if ('valueDateTime' in valueEntry) {
+		return valueEntry.valueDateTime;
+	}
+	if ('valueString' in valueEntry) {
+		return valueEntry.valueString;
+	}
+
+	return undefined;
+};
+
+const getCcddPropertyMap = (entry: any): Record<string, any> => {
+	const propertyMap: Record<string, any> = {};
+
+	for (const extensionEntry of Array.isArray(entry?.extension) ? entry.extension : []) {
+		const nested = Array.isArray(extensionEntry?.extension) ? extensionEntry.extension : [];
+		const codeEntry = nested.find((item: any) => item?.url === 'code');
+		const code = codeEntry?.valueCode;
+		if (!code) {
+			continue;
+		}
+
+		propertyMap[code] = getCcddPropertyValue(extensionEntry);
+	}
+
+	return propertyMap;
+};
+
+const parseCcddDrugCatalogContent = async (raw: string, sourceLabel = 'uploaded file') => {
+	const version = extractCcddVersion(raw);
+	if (!version) {
+		throw new Meteor.Error('ccdd-invalid-file', 'Unable to detect CCDD version in source file');
+	}
+
+	const parsed = JSON.parse(raw);
+	const contains = Array.isArray(parsed?.expansion?.contains) ? parsed.expansion.contains : [];
+	const entries = contains
+		.map((entry: any) => {
+			const code = typeof entry?.code === 'string' ? entry.code.trim() : '';
+			const displayName = typeof entry?.display === 'string' ? entry.display.trim() : '';
+			const properties = getCcddPropertyMap(entry);
+			const status = typeof properties.status === 'string' ? properties.status : '';
+			const inactive = properties.inactive === true;
+
+			if (!code || !displayName) {
+				return null;
+			}
+
+			return {
+				code,
+				displayName,
+				searchText: displayName.toLowerCase(),
+				active: status === 'active' && !inactive,
+			};
+		})
+		.filter(Boolean) as Array<{ code: string; displayName: string; searchText: string; active: boolean }>;
+
+	return {
+		sourceLabel,
+		version,
+		rowCount: entries.length,
+		entries,
+	};
+};
+
+const getDrugCatalogStats = async () => {
+	const importedVersion = await Settings.findOneById('Medsense_CCDD_NTP_Imported_Version', { projection: { value: 1 } });
+	const lastImportedAt = await Settings.findOneById('Medsense_CCDD_NTP_Last_Imported_At', { projection: { value: 1 } });
+	const activeCount = await MedsenseDrugCatalog.countDocuments({ active: true });
+
+	return {
+		importedVersion: typeof importedVersion?.value === 'string' ? importedVersion.value : '',
+		lastImportedAt: typeof lastImportedAt?.value === 'string' ? lastImportedAt.value : '',
+		activeCount,
+	};
+};
+
+const hydrateTemplateDrugFieldOptions = async (template: IMedsenseDocumentationTemplate): Promise<IMedsenseDocumentationTemplate> => {
+	const sections = Array.isArray(template?.sections) ? template.sections : [];
+	const codes = Array.from(
+		new Set(
+			sections.flatMap((section) =>
+				(section.fields || []).flatMap((field: any) => (Array.isArray(field?.drugCatalogCodes) ? field.drugCatalogCodes : [])),
+			),
+		),
+	);
+
+	if (!codes.length) {
+		return template;
+	}
+
+	const drugs = await MedsenseDrugCatalog.findActiveByCodes(codes).toArray();
+	const displayByCode = new Map(drugs.map((drug) => [drug.code, drug.displayName]));
+
+	return {
+		...template,
+		sections: sections.map((section) => ({
+			...section,
+			fields: (section.fields || []).map((field: any) => {
+				if (field.type !== 'drug' || !Array.isArray(field.drugCatalogCodes)) {
+					return field;
+				}
+
+				return {
+					...field,
+					options: field.drugCatalogCodes.map((code: string) => displayByCode.get(code)).filter(Boolean),
+				};
+			}),
+		})),
+	};
+};
+
+const hydrateInterventionDocumentationTemplate = async (intervention: any): Promise<any> => {
+	if (!intervention?.documentationTemplateSnapshot) {
+		return intervention;
+	}
+
+	return {
+		...intervention,
+		documentationTemplateSnapshot: await hydrateTemplateDrugFieldOptions(intervention.documentationTemplateSnapshot),
+	};
+};
+
+const DEFAULT_INTERVENTION_TYPES = [
+	{ value: 'uti', label: 'UTI Assessment' },
+	{ value: 'counseling', label: 'Counseling' },
+	{ value: 'medication_review', label: 'Medication Review' },
+	{ value: 'refill_request', label: 'Refill Request' },
+	{ value: 'drug_interaction', label: 'Drug Interaction' },
+	{ value: 'adverse_event', label: 'Adverse Event' },
+	{ value: 'other', label: 'Other' },
+];
+
+const getConfiguredInterventionTypes = (): Array<{ value: string; label: string }> => {
+	const raw = settings.get<string>('Medsense_Intervention_Types');
+	if (!raw) {
+		return DEFAULT_INTERVENTION_TYPES;
+	}
+
+	try {
+		const parsed = JSON.parse(raw);
+		if (!Array.isArray(parsed)) {
+			return DEFAULT_INTERVENTION_TYPES;
+		}
+
+		const normalized = parsed
+			.map((item: any) => ({
+				value: typeof item?.value === 'string' ? item.value.trim() : '',
+				label: typeof item?.label === 'string' ? item.label.trim() : '',
+			}))
+			.filter((item: { value: string; label: string }) => item.value && item.label);
+
+		return normalized.length ? normalized : DEFAULT_INTERVENTION_TYPES;
+	} catch {
+		return DEFAULT_INTERVENTION_TYPES;
+	}
+};
+
+const canAccessInterventionDocumentation = async (userId: string, intervention: any): Promise<boolean> => {
+	const hasDocumentationPermission = await hasPermissionAsync(userId, 'medsense-create-interventions');
+	if (!hasDocumentationPermission) {
+		const user = await Users.findOneById(userId, { projection: { roles: 1 } });
+		const roles = user?.roles || [];
+		if (!roles.includes('admin') && !roles.includes('bot')) {
+			return false;
+		}
+	}
+
+	const canManageAll = await hasPermissionAsync(userId, 'medsense-manage-all-pharmacies');
+	if (canManageAll) {
+		return true;
+	}
+
+	const membership = await MedsensePharmacyMemberships.findOne({ pharmacyId: intervention.pharmacyId, userId });
+	return Boolean(membership);
+};
+
+const isFilledDocumentationValue = (value: any): boolean => {
+	if (value === undefined || value === null) {
+		return false;
+	}
+
+	if (typeof value === 'string') {
+		return value.trim().length > 0;
+	}
+
+	if (Array.isArray(value)) {
+		return value.length > 0;
+	}
+
+	if (typeof value === 'object') {
+		return Object.keys(value).length > 0;
+	}
+
+	return true;
+};
+
+const collectTemplateFieldDescriptors = (template: IMedsenseDocumentationTemplate): Array<{ section: any; field: any }> => {
+	const descriptors: Array<{ section: any; field: any }> = [];
+
+	for (const section of template.sections || []) {
+		for (const field of section.fields || []) {
+			descriptors.push({ section, field });
+		}
+	}
+
+	return descriptors;
+};
+
+const normalizeDocumentationFieldValue = (field: any, value: any): any => {
+	if (value === undefined || value === null) {
+		return undefined;
+	}
+
+	if (field.type === 'repeater') {
+		if (!Array.isArray(value)) {
+			return undefined;
+		}
+
+		const rows = value
+			.map((row: any) => {
+				if (!row || typeof row !== 'object') {
+					return null;
+				}
+
+				const normalizedRow = (field.fields || []).reduce((acc: Record<string, any>, child: any) => {
+					const normalizedChild = normalizeDocumentationFieldValue(child, row[child.key]);
+					if (normalizedChild !== undefined) {
+						acc[child.key] = normalizedChild;
+					}
+					return acc;
+				}, {});
+
+				return Object.keys(normalizedRow).length ? normalizedRow : null;
+			})
+			.filter(Boolean);
+
+		return rows.length ? rows : undefined;
+	}
+
+	if (field.type === 'boolean') {
+		if (typeof value === 'boolean') {
+			return value;
+		}
+		if (typeof value === 'string') {
+			const normalized = value.trim().toLowerCase();
+			if (['true', 'yes', 'y', '1'].includes(normalized)) {
+				return true;
+			}
+			if (['false', 'no', 'n', '0'].includes(normalized)) {
+				return false;
+			}
+		}
+		return undefined;
+	}
+
+	if (field.type === 'multiselect' || field.type === 'checkbox') {
+		const values = Array.isArray(value) ? value : [value];
+		const normalized = values
+			.map((item) => String(item).trim())
+			.filter((item) => item.length > 0);
+		if (!normalized.length) {
+			return undefined;
+		}
+		if (Array.isArray(field.options) && field.options.length) {
+			const allowed = new Set(field.options.map((option: string) => String(option)));
+			const filtered = normalized.filter((item) => allowed.has(item));
+			return filtered.length ? filtered : undefined;
+		}
+		return normalized;
+	}
+
+	if (field.type === 'select' || field.type === 'radio') {
+		const normalized = String(value).trim();
+		if (!normalized) {
+			return undefined;
+		}
+		if (Array.isArray(field.options) && field.options.length && !field.options.includes(normalized)) {
+			return undefined;
+		}
+		return normalized;
+	}
+
+	if (field.type === 'date') {
+		const normalized = String(value).trim();
+		return normalized || undefined;
+	}
+
+	const normalized = typeof value === 'string' ? value.trim() : String(value).trim();
+	return normalized || undefined;
+};
+
+const buildDocumentationContext = async (intervention: any, requestedRoomId?: string): Promise<Record<string, any>> => {
+	const patient = await Users.findOneById(intervention.patientUserId, {
+		projection: {
+			name: 1,
+			username: 1,
+			emails: 1,
+		},
+	});
+
+	let request = requestedRoomId
+		? await MedsenseRequests.findOne({ roomId: requestedRoomId }, { sort: { createdAt: -1 } as any })
+		: null;
+
+	if (!request) {
+		request = await MedsenseRequests.findOne(
+			{ requestedByUserId: intervention.patientUserId, pharmacyId: intervention.pharmacyId },
+			{ sort: { createdAt: -1 } as any },
+		);
+	}
+
+	const resolvedRoomId = requestedRoomId || request?.roomId || undefined;
+	const room = resolvedRoomId
+		? await Rooms.findOneById(resolvedRoomId, {
+			projection: {
+				medsenseSessionInfo: 1,
+			},
+		})
+		: null;
+	const sessionInfo = _normalizeSessionInfo((room as any)?.medsenseSessionInfo);
+	const roomContextSummaries = Array.isArray(sessionInfo.roomContextSummaries) ? sessionInfo.roomContextSummaries : [];
+	const roomContextSummary = roomContextSummaries.length ? roomContextSummaries[roomContextSummaries.length - 1] : null;
+
+	return {
+		roomId: resolvedRoomId,
+		patient: {
+			name: patient?.name,
+			username: patient?.username,
+			email: Array.isArray((patient as any)?.emails) ? (patient as any).emails[0]?.address : undefined,
+		},
+		request,
+		roomContextSummary,
+		roomFormSubmissions: Array.isArray((sessionInfo as any).roomFormSubmissions) ? (sessionInfo as any).roomFormSubmissions : [],
+		intervention,
+	};
+};
+
+const buildTemplateDraftValues = (
+	template: IMedsenseDocumentationTemplate,
+	existingValues?: Record<string, any>,
+	existingPrescriptions?: any[],
+	existingFollowUp?: Record<string, any>,
+): { documentationValues: Record<string, any>; prescriptions: any[]; followUp: Record<string, any> } => {
+	const documentationValues = { ...(existingValues || {}) };
+	const prescriptions = Array.isArray(existingPrescriptions) ? existingPrescriptions : [];
+	const followUp = { ...(existingFollowUp || {}) };
+
+	for (const section of template.sections || []) {
+		if (section.type === 'prescriptions' || section.type === 'signatures') {
+			continue;
+		}
+
+		for (const field of section.fields || []) {
+			const target = section.type === 'follow_up' ? followUp : documentationValues;
+			if (target[field.key] !== undefined && target[field.key] !== null && target[field.key] !== '') {
+				continue;
+			}
+
+			if (field.defaultValue !== undefined) {
+				target[field.key] = field.defaultValue;
+			}
+		}
+	}
+
+	return {
+		documentationValues,
+		prescriptions,
+		followUp,
+	};
+};
+
+const callDocumentationPrefillWebhook = async ({
+	roomId,
+	requestId,
+	intervention,
+	template,
+	context,
+	forceRefresh,
+}: {
+	roomId?: string;
+	requestId?: string;
+	intervention: any;
+	template: IMedsenseDocumentationTemplate;
+	context: Record<string, any>;
+	forceRefresh?: boolean;
+}): Promise<Record<string, any> | null> => {
+	const webhookUrl =
+		settings.get<string>('Medsense_Documentation_Prefill_Webhook_Url') || process.env.MEDSENSE_DOCUMENTATION_PREFILL_WEBHOOK_URL;
+	const webhookSecret =
+		settings.get<string>('Medsense_Documentation_Prefill_Webhook_Secret') || process.env.MEDSENSE_DOCUMENTATION_PREFILL_WEBHOOK_SECRET;
+	const timeoutMsRaw =
+		settings.get<string>('Medsense_Documentation_Prefill_Timeout_MS') || process.env.MEDSENSE_DOCUMENTATION_PREFILL_TIMEOUT_MS || '15000';
+	const timeoutMs = Number.parseInt(String(timeoutMsRaw), 10) || 15000;
+
+	if (!webhookUrl || !webhookSecret) {
+		return null;
+	}
+
+	const payload = {
+		roomId: roomId || context.roomId,
+		requestId,
+		interventionId: intervention._id,
+		specialtyActionId: intervention.specialtyActionId,
+		forceRefresh: Boolean(forceRefresh),
+		template: {
+			_id: template._id,
+			key: template.key,
+			label: template.label,
+			version: template.version,
+			sections: (template.sections || []).map((section: any) => ({
+				key: section.key,
+				title: section.title,
+				type: section.type,
+				fields: (section.fields || []).map((field: any) => ({
+					key: field.key,
+					label: field.label,
+					type: field.type,
+					required: Boolean(field.required),
+					options: field.options || [],
+					aiPrefill: field.aiPrefill !== false,
+					prefillConfidenceThreshold: field.prefillConfidenceThreshold,
+					fields: field.fields || [],
+				})),
+			})),
+		},
+		context: {
+			patient: context.patient,
+			request: context.request
+				? {
+					_id: context.request._id,
+					reason: context.request.reason,
+					contextSummary: context.request.contextSummary,
+					aiSummary: context.request.aiSummary,
+					answers: context.request.answers || {},
+					currentStepId: context.request.currentStepId,
+				}
+				: null,
+			roomContextSummary: context.roomContextSummary,
+			roomFormSubmissions: context.roomFormSubmissions || [],
+			intervention: {
+				_id: intervention._id,
+				type: intervention.type,
+				notes: intervention.notes,
+				documentationValues: intervention.documentationValues || {},
+				prescriptions: intervention.prescriptions || [],
+				followUp: intervention.followUp || {},
+			},
+		},
+	};
+
+	try {
+		const response = await HTTP.post(webhookUrl, {
+			timeout: timeoutMs,
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Rocketchat-Secret': webhookSecret,
+			},
+			data: payload,
+		});
+
+		return response?.data && typeof response.data === 'object' ? response.data : null;
+	} catch (error) {
+		console.error('Documentation prefill webhook failed', error);
+		return null;
+	}
+};
+
+const applyDocumentationPrefillResults = ({
+	template,
+	baseDocumentationValues,
+	basePrescriptions,
+	baseFollowUp,
+	prefillResponse,
+}: {
+	template: IMedsenseDocumentationTemplate;
+	baseDocumentationValues: Record<string, any>;
+	basePrescriptions: any[];
+	baseFollowUp: Record<string, any>;
+	prefillResponse: Record<string, any> | null;
+}) => {
+	const documentationValues = { ...(baseDocumentationValues || {}) };
+	const prescriptions = Array.isArray(basePrescriptions) ? [...basePrescriptions] : [];
+	const followUp = { ...(baseFollowUp || {}) };
+	const metadataFields: Array<Record<string, any>> = [];
+
+	const rawFields = Array.isArray(prefillResponse?.fields) ? prefillResponse?.fields : [];
+	const rawFieldMap = new Map(
+		rawFields
+			.filter((entry: any) => entry && typeof entry === 'object' && typeof entry.fieldKey === 'string')
+			.map((entry: any) => [String(entry.fieldKey), entry]),
+	);
+	const processedPrescriptionFields = new Set<string>();
+
+	for (const { section, field } of collectTemplateFieldDescriptors(template)) {
+		if (section.type === 'signatures' || field.aiPrefill === false) {
+			continue;
+		}
+
+		const existingValue = section.type === 'follow_up' ? followUp[field.key] : section.type === 'prescriptions' ? prescriptions : documentationValues[field.key];
+		const responseField = rawFieldMap.get(field.key);
+		const normalizedValue = responseField ? normalizeDocumentationFieldValue(field, responseField.value) : undefined;
+		const confidence = typeof responseField?.confidence === 'number' ? responseField.confidence : 0;
+		const threshold =
+			typeof field.prefillConfidenceThreshold === 'number'
+				? field.prefillConfidenceThreshold
+				: DEFAULT_DOCUMENTATION_PREFILL_CONFIDENCE_THRESHOLD;
+
+		if (section.type === 'prescriptions') {
+			if (processedPrescriptionFields.has(section.key)) {
+				continue;
+			}
+
+			const sectionFields = section.fields || [];
+			if (Array.isArray(normalizedValue) && confidence >= threshold) {
+				normalizedValue.forEach((rowValue: Record<string, any>, rowIndex: number) => {
+					sectionFields.forEach((sectionField: any) => {
+						const cellValue = rowValue?.[sectionField.key];
+						if (!isFilledDocumentationValue(cellValue)) {
+							return;
+						}
+						metadataFields.push({
+							fieldKey: sectionField.key,
+							sectionKey: section.key,
+							target: 'prescription',
+							rowIndex,
+							suggestedValue: cellValue,
+							confidence,
+							reviewStatus: 'pending',
+							source: typeof responseField?.source === 'string' ? responseField.source : undefined,
+							reasoningSummary: typeof responseField?.reasoningSummary === 'string' ? responseField.reasoningSummary : undefined,
+						});
+					});
+				});
+				processedPrescriptionFields.add(section.key);
+				continue;
+			}
+
+			if (responseField && normalizedValue !== undefined && confidence >= threshold) {
+				metadataFields.push({
+					fieldKey: field.key,
+					sectionKey: section.key,
+					target: 'prescription',
+					rowIndex: 0,
+					suggestedValue: normalizedValue,
+					confidence,
+					reviewStatus: 'pending',
+					source: typeof responseField?.source === 'string' ? responseField.source : undefined,
+					reasoningSummary: typeof responseField?.reasoningSummary === 'string' ? responseField.reasoningSummary : undefined,
+				});
+			}
+			continue;
+		}
+
+		if (responseField && !isFilledDocumentationValue(existingValue) && normalizedValue !== undefined && confidence >= threshold) {
+			metadataFields.push({
+				fieldKey: field.key,
+				sectionKey: section.key,
+				target: section.type === 'follow_up' ? 'follow_up' : 'documentation',
+				suggestedValue: normalizedValue,
+				confidence,
+				reviewStatus: 'pending',
+				source: typeof responseField.source === 'string' ? responseField.source : undefined,
+				reasoningSummary: typeof responseField.reasoningSummary === 'string' ? responseField.reasoningSummary : undefined,
+			});
+		}
+	}
+
+	return {
+		documentationValues,
+		prescriptions,
+		followUp,
+		prefill: {
+			model: typeof prefillResponse?.model === 'string' ? prefillResponse.model : undefined,
+			fields: metadataFields,
+		},
+	};
 };
 
 const getMedsenseSmsService = async () => {
@@ -1380,87 +2169,87 @@ API.v1.addRoute(
 
 // Close Request
 API.v1.addRoute(
-	'medsense/request.close',
-	{ authRequired: true },
-	{
-		async post() {
-			check(this.bodyParams, Match.ObjectIncluding({ requestId: String, message: Match.Maybe(String) }));
-			const { requestId, message } = this.bodyParams;
+    'medsense/request.close',
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({ requestId: String, message: Match.Maybe(String) }));
+            const { requestId, message } = this.bodyParams;
 
-			const currentUser = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-			const isBot = Boolean(currentUser?.roles?.includes('bot'));
+            const currentUser = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+            const isBot = Boolean(currentUser?.roles?.includes('bot'));
 
-			if (!isBot && !(await hasPermissionAsync(this.userId, 'medsense-close-request'))) {
-				return API.v1.forbidden();
-			}
+            if (!isBot && !(await hasPermissionAsync(this.userId, 'medsense-close-request'))) {
+                return API.v1.forbidden();
+            }
 
-			const request = await MedsenseRequests.findOneById(requestId);
-			if (!request || request.status === 'closed') {
-				return API.v1.failure('Request not found or already closed');
-			}
+            const request = await MedsenseRequests.findOneById(requestId);
+            if (!request || request.status === 'closed') {
+                return API.v1.failure('Request not found or already closed');
+            }
 
-			const room = await Rooms.findOneById(request.roomId);
-			if (!room?.t) {
-				return API.v1.failure('Room type missing for request room');
-			}
+            const room = await Rooms.findOneById(request.roomId);
+            if (!room?.t) {
+                return API.v1.failure('Room type missing for request room');
+            }
 
-			if (!isBot) {
-				try {
-					await removeUserFromRoom(request.roomId, this.user);
-				} catch (error: any) {
-					return API.v1.failure(`Failed to remove user from room: ${error?.message ?? error}`);
-				}
-			}
+            if (!isBot) {
+                try {
+                    await removeUserFromRoom(request.roomId, this.user);
+                } catch (error: any) {
+                    return API.v1.failure(`Failed to remove user from room: ${error?.message ?? error}`);
+                }
+            }
 
-			await MedsenseRequests.markClosed(requestId, this.userId, this.user.username);
+            await MedsenseRequests.markClosed(requestId, this.userId, this.user.username);
 
-			await Rooms.update(
-				{ _id: request.roomId },
-				{
-					$unset: {
-						medsenseActiveRequestId: 1,
-						medsenseActiveRequestStatus: 1,
-					},
-				},
-			);
+            await Rooms.update(
+                { _id: request.roomId },
+                {
+                    $unset: {
+                        medsenseActiveRequestId: 1,
+                        medsenseActiveRequestStatus: 1,
+                    },
+                },
+            );
 
-			const closeMessageRecord = await sendMessage(
-				this.user,
-				{
-					rid: request.roomId,
-					msg: typeof message === 'string' && message.trim() ? message.trim() : `Request closed by @${this.user.username}`,
-				},
-				room,
-			);
+            const closeMessageRecord = await sendMessage(
+                this.user,
+                {
+                    rid: request.roomId,
+                    msg: typeof message === 'string' && message.trim() ? message.trim() : `Request closed by @${this.user.username}`,
+                },
+                room,
+            );
 
-			api.broadcast('room.save', { _id: request.roomId, medsenseActiveRequestStatus: null });
-			if (!isBot) {
-				await notifyMedsenseSessionEnd({
-					roomId: request.roomId,
-					requestId,
-					finalMessageId: (closeMessageRecord as any)?._id,
-					reason: 'staff_request_close',
-				});
-			}
-			await Rooms.update(
-				{ _id: request.roomId },
-				{
-					$set: {
-						ro: true,
-						reactWhenReadOnly: false,
-					},
-				},
-			);
-			api.broadcast('room.save', {
-				_id: request.roomId,
-				medsenseActiveRequestStatus: null,
-				ro: true,
-				reactWhenReadOnly: false,
-			});
+            api.broadcast('room.save', { _id: request.roomId, medsenseActiveRequestStatus: null });
+            if (!isBot) {
+                await notifyMedsenseSessionEnd({
+                    roomId: request.roomId,
+                    requestId,
+                    finalMessageId: (closeMessageRecord as any)?._id,
+                    reason: 'staff_request_close',
+                });
+            }
+            await Rooms.update(
+                { _id: request.roomId },
+                {
+                    $set: {
+                        ro: true,
+                        reactWhenReadOnly: false,
+                    },
+                },
+            );
+            api.broadcast('room.save', {
+                _id: request.roomId,
+                medsenseActiveRequestStatus: null,
+                ro: true,
+                reactWhenReadOnly: false,
+            });
 
-			return API.v1.success();
-		},
-	},
+            return API.v1.success();
+        },
+    },
 );
 
 // Decline Request (close with decline message)
@@ -1612,14 +2401,14 @@ API.v1.addRoute(
                     return {
                         actionId: action.id,
                         id: action.id,
-                    appId: parsed?.appId,
-                    label: action.label || parsed?.actionId || action.id,
-                    description: action.description,
-                    icon: action.icon,
-                    flowId: (action as any).flowId,
-                    capabilities: action.capabilities,
-                };
-            });
+                        appId: parsed?.appId,
+                        label: action.label || parsed?.actionId || action.id,
+                        description: action.description,
+                        icon: action.icon,
+                        flowId: (action as any).flowId,
+                        capabilities: action.capabilities,
+                    };
+                });
 
             return API.v1.success({ actions });
         },
@@ -2274,34 +3063,34 @@ API.v1.addRoute(
                 }
             }
 
-			if (specialtyRoomId) {
-				try {
-					const specialtyRoom = await Rooms.findOneById(String(specialtyRoomId));
-					if (!specialtyRoom) {
-						throw new Meteor.Error('error-invalid-room', 'Invalid specialty room');
-					}
+            if (specialtyRoomId) {
+                try {
+                    const specialtyRoom = await Rooms.findOneById(String(specialtyRoomId));
+                    if (!specialtyRoom) {
+                        throw new Meteor.Error('error-invalid-room', 'Invalid specialty room');
+                    }
 
-					await ensureUserInRoom(
-						String(specialtyRoomId),
-						{ _id: userId, username },
-						{ _id: registration.startedByUserId || userId, username: registration.startedByUsername || username },
-					);
+                    await ensureUserInRoom(
+                        String(specialtyRoomId),
+                        { _id: userId, username },
+                        { _id: registration.startedByUserId || userId, username: registration.startedByUsername || username },
+                    );
 
-					const isMedsenseRoom = Boolean(
-						(specialtyRoom as any).medsenseActiveRequestId ||
-							(typeof specialtyRoom.name === 'string' && specialtyRoom.name.startsWith('medsense-')),
-					);
+                    const isMedsenseRoom = Boolean(
+                        (specialtyRoom as any).medsenseActiveRequestId ||
+                        (typeof specialtyRoom.name === 'string' && specialtyRoom.name.startsWith('medsense-')),
+                    );
 
-					if (isMedsenseRoom) {
-						await Rooms.setCustomFieldsById(
-							String(specialtyRoomId),
-							{
-								...(specialtyRoom.customFields || {}),
-								patientId: userId,
-								patientUsername: username,
-							} as any,
-						);
-					}
+                    if (isMedsenseRoom) {
+                        await Rooms.setCustomFieldsById(
+                            String(specialtyRoomId),
+                            {
+                                ...(specialtyRoom.customFields || {}),
+                                patientId: userId,
+                                patientUsername: username,
+                            } as any,
+                        );
+                    }
 
                     if (specialtyRequestId) {
                         await MedsenseRequests.updateOne(
@@ -2320,11 +3109,11 @@ API.v1.addRoute(
                     } else if (!specialtyStatus) {
                         specialtyStatus = 'pending_room_link';
                     }
-				} catch (error: any) {
-					specialtyStatus = 'pending_room_link';
-					specialtyError = error?.message || 'Failed to attach patient to specialty room';
-				}
-			}
+                } catch (error: any) {
+                    specialtyStatus = 'pending_room_link';
+                    specialtyError = error?.message || 'Failed to attach patient to specialty room';
+                }
+            }
 
             const now = new Date();
             await MedsensePatientRegistrations.updateAsync(
@@ -2719,964 +3508,1763 @@ const VALID_CONTEXT_SOURCES = ['session_rollup', 'staff'] as const;
 const VALID_CONTEXT_VOCABS = ['RXNORM', 'SNOMEDCT_US'] as const;
 const TYPE_NORMALIZATION: Record<string, string> = { medicalhistory: 'medical_history', medicalHistory: 'medical_history' };
 const _parseLooseBool = (value: unknown): boolean => {
-	if (typeof value === 'boolean') {
-		return value;
-	}
-	if (typeof value === 'number') {
-		return value !== 0;
-	}
-	if (typeof value === 'string') {
-		const normalized = value.trim().toLowerCase();
-		if (!normalized) {
-			return false;
-		}
-		if (['true', '1', 'yes', 'y'].includes(normalized)) {
-			return true;
-		}
-		if (['false', '0', 'no', 'n'].includes(normalized)) {
-			return false;
-		}
-	}
-	return false;
+    if (typeof value === 'boolean') {
+        return value;
+    }
+    if (typeof value === 'number') {
+        return value !== 0;
+    }
+    if (typeof value === 'string') {
+        const normalized = value.trim().toLowerCase();
+        if (!normalized) {
+            return false;
+        }
+        if (['true', '1', 'yes', 'y'].includes(normalized)) {
+            return true;
+        }
+        if (['false', '0', 'no', 'n'].includes(normalized)) {
+            return false;
+        }
+    }
+    return false;
 };
 
 const _legacySummary = (entry: any): string => {
-	if (typeof entry?.summary === 'string' && entry.summary.trim()) {
-		return entry.summary.trim();
-	}
-	const notes = Array.isArray(entry?.notes) ? entry.notes : [];
-	const latest = notes.length ? notes[notes.length - 1] : undefined;
-	if (typeof latest?.text === 'string') {
-		return latest.text;
-	}
-	return '';
+    if (typeof entry?.summary === 'string' && entry.summary.trim()) {
+        return entry.summary.trim();
+    }
+    const notes = Array.isArray(entry?.notes) ? entry.notes : [];
+    const latest = notes.length ? notes[notes.length - 1] : undefined;
+    if (typeof latest?.text === 'string') {
+        return latest.text;
+    }
+    return '';
 };
 
 const _legacyCui = (type: string, text: string): string => {
-	const key = String(text || '')
-		.toLowerCase()
-		.replace(/[^a-z0-9]+/g, '-')
-		.replace(/^-+|-+$/g, '')
-		.slice(0, 80);
-	return `LEGACY:${type}:${key || Date.now()}`;
+    const key = String(text || '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 80);
+    return `LEGACY:${type}:${key || Date.now()}`;
 };
 
 const _resolvePatientUserIdForRoom = async (roomId: string, explicitPatientUserId?: string): Promise<string | undefined> => {
-	let patientUserId = explicitPatientUserId;
-	const room = await Rooms.findOneById(roomId, {
-		projection: {
-			medsenseActiveRequestId: 1,
-		},
-	});
+    let patientUserId = explicitPatientUserId;
+    const room = await Rooms.findOneById(roomId, {
+        projection: {
+            medsenseActiveRequestId: 1,
+        },
+    });
 
-	if (!patientUserId && room?.medsenseActiveRequestId) {
-		const activeReq = await MedsenseRequests.findOneById(room.medsenseActiveRequestId);
-		patientUserId = activeReq?.requestedByUserId;
-	}
+    if (!patientUserId && room?.medsenseActiveRequestId) {
+        const activeReq = await MedsenseRequests.findOneById(room.medsenseActiveRequestId);
+        patientUserId = activeReq?.requestedByUserId;
+    }
 
-	if (!patientUserId) {
-		const latestReq = await MedsenseRequests.findOne(
-			{ roomId },
-			{ sort: { createdAt: -1 }, projection: { requestedByUserId: 1 } },
-		);
-		patientUserId = latestReq?.requestedByUserId;
-	}
+    if (!patientUserId) {
+        const latestReq = await MedsenseRequests.findOne(
+            { roomId },
+            { sort: { createdAt: -1 }, projection: { requestedByUserId: 1 } },
+        );
+        patientUserId = latestReq?.requestedByUserId;
+    }
 
-	if (!patientUserId) {
-		const members = await Subscriptions.findByRoomId(roomId).toArray();
-		const memberIds = members.map((m) => m.u?._id).filter(Boolean) as string[];
-		if (memberIds.length) {
-			const candidates = await Users.find(
-				{ _id: { $in: memberIds }, roles: { $in: ['user'] } },
-				{ projection: { roles: 1 } },
-			).toArray();
-			const exactUser = candidates.find((u) => Array.isArray(u.roles) && u.roles.length === 1 && u.roles.includes('user'));
-			patientUserId = (exactUser || candidates[0])?._id;
-		}
-	}
+    if (!patientUserId) {
+        const members = await Subscriptions.findByRoomId(roomId).toArray();
+        const memberIds = members.map((m) => m.u?._id).filter(Boolean) as string[];
+        if (memberIds.length) {
+            const candidates = await Users.find(
+                { _id: { $in: memberIds }, roles: { $in: ['user'] } },
+                { projection: { roles: 1 } },
+            ).toArray();
+            const exactUser = candidates.find((u) => Array.isArray(u.roles) && u.roles.length === 1 && u.roles.includes('user'));
+            patientUserId = (exactUser || candidates[0])?._id;
+        }
+    }
 
-	return patientUserId;
+    return patientUserId;
 };
 
 API.v1.addRoute(
-	'medsense/context.room',
-	{ authRequired: true },
-	{
-		async get() {
-			check(this.queryParams, Match.ObjectIncluding({
-				roomId: String,
-				patientUserId: Match.Optional(String),
-			}));
+    'medsense/context.room',
+    { authRequired: true },
+    {
+        async get() {
+            check(this.queryParams, Match.ObjectIncluding({
+                roomId: String,
+                patientUserId: Match.Optional(String),
+            }));
 
-			if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+            if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			const roomId = String(this.queryParams.roomId);
-			const room = await Rooms.findOneById(roomId, {
-				projection: {
-					name: 1,
-					fname: 1,
-					medsenseActiveRequestId: 1,
-					medsenseActiveRequestStatus: 1,
-					medsenseSessionInfo: 1,
-				},
-			});
-			if (!room) {
-				return API.v1.failure('Room not found');
-			}
+            const roomId = String(this.queryParams.roomId);
+            const room = await Rooms.findOneById(roomId, {
+                projection: {
+                    name: 1,
+                    fname: 1,
+                    medsenseActiveRequestId: 1,
+                    medsenseActiveRequestStatus: 1,
+                    medsenseSessionInfo: 1,
+                },
+            });
+            if (!room) {
+                return API.v1.failure('Room not found');
+            }
 
-			let request = room.medsenseActiveRequestId
-				? await MedsenseRequests.findOneById(room.medsenseActiveRequestId)
-				: null;
-			if (!request) {
-				request = await MedsenseRequests.findOne(
-					{ roomId },
-					{ sort: { createdAt: -1 } },
-				);
-			}
+            let request = room.medsenseActiveRequestId
+                ? await MedsenseRequests.findOneById(room.medsenseActiveRequestId)
+                : null;
+            if (!request) {
+                request = await MedsenseRequests.findOne(
+                    { roomId },
+                    { sort: { createdAt: -1 } },
+                );
+            }
 
-			const patientUserId = await _resolvePatientUserIdForRoom(roomId, this.queryParams.patientUserId as string | undefined);
-			let pharmacyId = request?.pharmacyId;
+            const patientUserId = await _resolvePatientUserIdForRoom(roomId, this.queryParams.patientUserId as string | undefined);
+            let pharmacyId = request?.pharmacyId;
 
-			if (!pharmacyId && patientUserId) {
-				const preference = await MedsensePatientPharmacy.findByPatientUserId(patientUserId);
-				pharmacyId = preference?.pharmacyId;
-			}
+            if (!pharmacyId && patientUserId) {
+                const preference = await MedsensePatientPharmacy.findByPatientUserId(patientUserId);
+                pharmacyId = preference?.pharmacyId;
+            }
 
-			const [patient, pharmacy] = await Promise.all([
-				patientUserId
-					? Users.findOneById(patientUserId, { projection: { name: 1, username: 1 } })
-					: Promise.resolve(null),
-				pharmacyId
-					? MedsensePharmacies.findOneById(pharmacyId)
-					: Promise.resolve(null),
-			]);
+            const [patient, pharmacy] = await Promise.all([
+                patientUserId
+                    ? Users.findOneById(patientUserId, { projection: { name: 1, username: 1 } })
+                    : Promise.resolve(null),
+                pharmacyId
+                    ? MedsensePharmacies.findOneById(pharmacyId)
+                    : Promise.resolve(null),
+            ]);
 
-			const patientName = patient?.name || patient?.username || undefined;
-			const pharmacyName = pharmacy?.name || undefined;
-			const roomContextSummaries = Array.isArray((room as any)?.medsenseSessionInfo?.roomContextSummaries)
-				? (room as any).medsenseSessionInfo.roomContextSummaries
-				: [];
-			const latestRoomSummary = roomContextSummaries.length
-				? roomContextSummaries[roomContextSummaries.length - 1]
-				: undefined;
-			const aiSummary =
-				request?.aiSummary ||
-				request?.contextSummary ||
-				(typeof latestRoomSummary?.summary === 'string' ? latestRoomSummary.summary : '');
+            const patientName = patient?.name || patient?.username || undefined;
+            const pharmacyName = pharmacy?.name || undefined;
+            const roomContextSummaries = Array.isArray((room as any)?.medsenseSessionInfo?.roomContextSummaries)
+                ? (room as any).medsenseSessionInfo.roomContextSummaries
+                : [];
+            const latestRoomSummary = roomContextSummaries.length
+                ? roomContextSummaries[roomContextSummaries.length - 1]
+                : undefined;
+            const aiSummary =
+                request?.aiSummary ||
+                request?.contextSummary ||
+                (typeof latestRoomSummary?.summary === 'string' ? latestRoomSummary.summary : '');
 
-			const interventions = patientUserId
-				? await MedsenseInterventions.findByPatientUserId(patientUserId, pharmacyId).toArray()
-				: [];
+            const interventions = patientUserId
+                ? await MedsenseInterventions.findByPatientUserId(patientUserId, pharmacyId).toArray()
+                : [];
 
-			const subscriptions = await Subscriptions.findByRoomId(roomId, {
-				projection: { u: 1 },
-			}).toArray();
-			const memberIds = subscriptions.map((sub) => sub.u?._id).filter(Boolean) as string[];
-			let staffCount = 0;
-			if (memberIds.length) {
-				const members = await Users.find(
-					{ _id: { $in: memberIds } },
-					{ projection: { roles: 1 } },
-				).toArray();
-				staffCount = members.filter((member) => {
-					const roles = Array.isArray(member.roles) ? member.roles : [];
-					if (!roles.length) {
-						return false;
-					}
-					if (roles.includes('bot') || roles.includes('app')) {
-						return false;
-					}
-					return !roles.every((role) => role === 'user');
-				}).length;
-			}
+            const subscriptions = await Subscriptions.findByRoomId(roomId, {
+                projection: { u: 1 },
+            }).toArray();
+            const memberIds = subscriptions.map((sub) => sub.u?._id).filter(Boolean) as string[];
+            let staffCount = 0;
+            if (memberIds.length) {
+                const members = await Users.find(
+                    { _id: { $in: memberIds } },
+                    { projection: { roles: 1 } },
+                ).toArray();
+                staffCount = members.filter((member) => {
+                    const roles = Array.isArray(member.roles) ? member.roles : [];
+                    if (!roles.length) {
+                        return false;
+                    }
+                    if (roles.includes('bot') || roles.includes('app')) {
+                        return false;
+                    }
+                    return !roles.every((role) => role === 'user');
+                }).length;
+            }
 
-			return API.v1.success({
-				context: {
-					requestId: request?._id,
-					requestStatus: request?.status || room.medsenseActiveRequestStatus || undefined,
-					pharmacyId,
-					pharmacyName,
-					patientUserId: patientUserId || undefined,
-					patientName,
-					aiSummary,
-					staffCount,
-					activeInterventions: interventions,
-				},
-			});
-		},
-	},
+            return API.v1.success({
+                context: {
+                    requestId: request?._id,
+                    requestStatus: request?.status || room.medsenseActiveRequestStatus || undefined,
+                    pharmacyId,
+                    pharmacyName,
+                    patientUserId: patientUserId || undefined,
+                    patientName,
+                    aiSummary,
+                    staffCount,
+                    activeInterventions: interventions,
+                },
+            });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/context.requestManagement',
-	{ authRequired: true },
-	{
-		async get() {
-			check(this.queryParams, Match.ObjectIncluding({
-				roomId: String,
-				patientUserId: Match.Optional(String),
-			}));
+    'medsense/context.requestManagement',
+    { authRequired: true },
+    {
+        async get() {
+            check(this.queryParams, Match.ObjectIncluding({
+                roomId: String,
+                patientUserId: Match.Optional(String),
+            }));
 
-			if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+            if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			const roomId = String(this.queryParams.roomId);
-			const room = await Rooms.findOneById(roomId, {
-				projection: {
-					name: 1,
-					fname: 1,
-					medsenseActiveRequestId: 1,
-					medsenseActiveRequestStatus: 1,
-				},
-			});
-			if (!room) {
-				return API.v1.failure('Room not found');
-			}
+            const roomId = String(this.queryParams.roomId);
+            const room = await Rooms.findOneById(roomId, {
+                projection: {
+                    name: 1,
+                    fname: 1,
+                    medsenseActiveRequestId: 1,
+                    medsenseActiveRequestStatus: 1,
+                },
+            });
+            if (!room) {
+                return API.v1.failure('Room not found');
+            }
 
-			let request = room.medsenseActiveRequestId
-				? await MedsenseRequests.findOneById(room.medsenseActiveRequestId)
-				: null;
-			if (!request) {
-				request = await MedsenseRequests.findOne(
-					{ roomId },
-					{ sort: { createdAt: -1 } },
-				);
-			}
+            let request = room.medsenseActiveRequestId
+                ? await MedsenseRequests.findOneById(room.medsenseActiveRequestId)
+                : null;
+            if (!request) {
+                request = await MedsenseRequests.findOne(
+                    { roomId },
+                    { sort: { createdAt: -1 } },
+                );
+            }
 
-			const patientUserId = await _resolvePatientUserIdForRoom(roomId, this.queryParams.patientUserId as string | undefined);
-			let pharmacyId = request?.pharmacyId;
+            const patientUserId = await _resolvePatientUserIdForRoom(roomId, this.queryParams.patientUserId as string | undefined);
+            let pharmacyId = request?.pharmacyId;
 
-			if (!pharmacyId && patientUserId) {
-				const preference = await MedsensePatientPharmacy.findByPatientUserId(patientUserId);
-				pharmacyId = preference?.pharmacyId;
-			}
+            if (!pharmacyId && patientUserId) {
+                const preference = await MedsensePatientPharmacy.findByPatientUserId(patientUserId);
+                pharmacyId = preference?.pharmacyId;
+            }
 
-			const [patient, pharmacy] = await Promise.all([
-				patientUserId
-					? Users.findOneById(patientUserId, { projection: { name: 1, username: 1 } })
-					: Promise.resolve(null),
-				pharmacyId
-					? MedsensePharmacies.findOneById(pharmacyId)
-					: Promise.resolve(null),
-			]);
+            const [patient, pharmacy] = await Promise.all([
+                patientUserId
+                    ? Users.findOneById(patientUserId, { projection: { name: 1, username: 1 } })
+                    : Promise.resolve(null),
+                pharmacyId
+                    ? MedsensePharmacies.findOneById(pharmacyId)
+                    : Promise.resolve(null),
+            ]);
 
-			const patientName = patient?.name || patient?.username || undefined;
-			const pharmacyName = pharmacy?.name || undefined;
+            const patientName = patient?.name || patient?.username || undefined;
+            const pharmacyName = pharmacy?.name || undefined;
 
-			const subscriptions = await Subscriptions.findByRoomId(roomId, {
-				projection: { u: 1 },
-			}).toArray();
-			const memberIds = subscriptions.map((sub) => sub.u?._id).filter(Boolean) as string[];
-			let staffCount = 0;
-			if (memberIds.length) {
-				const members = await Users.find(
-					{ _id: { $in: memberIds } },
-					{ projection: { roles: 1 } },
-				).toArray();
-				staffCount = members.filter((member) => {
-					const roles = Array.isArray(member.roles) ? member.roles : [];
-					if (!roles.length) {
-						return false;
-					}
-					if (roles.includes('bot') || roles.includes('app')) {
-						return false;
-					}
-					return !roles.every((role) => role === 'user');
-				}).length;
-			}
+            const subscriptions = await Subscriptions.findByRoomId(roomId, {
+                projection: { u: 1 },
+            }).toArray();
+            const memberIds = subscriptions.map((sub) => sub.u?._id).filter(Boolean) as string[];
+            let staffCount = 0;
+            if (memberIds.length) {
+                const members = await Users.find(
+                    { _id: { $in: memberIds } },
+                    { projection: { roles: 1 } },
+                ).toArray();
+                staffCount = members.filter((member) => {
+                    const roles = Array.isArray(member.roles) ? member.roles : [];
+                    if (!roles.length) {
+                        return false;
+                    }
+                    if (roles.includes('bot') || roles.includes('app')) {
+                        return false;
+                    }
+                    return !roles.every((role) => role === 'user');
+                }).length;
+            }
 
-			return API.v1.success({
-				context: {
-					roomId,
-					requestId: request?._id,
-					requestStatus: request?.status || room.medsenseActiveRequestStatus || undefined,
-					patientUserId: patientUserId || undefined,
-					patientName,
-					pharmacyId,
-					pharmacyName,
-					staffCount,
-				},
-			});
-		},
-	},
+            return API.v1.success({
+                context: {
+                    roomId,
+                    requestId: request?._id,
+                    requestStatus: request?.status || room.medsenseActiveRequestStatus || undefined,
+                    specialtyActionId: request?.specialtyActionId || undefined,
+                    patientUserId: patientUserId || undefined,
+                    patientName,
+                    pharmacyId,
+                    pharmacyName,
+                    staffCount,
+                },
+            });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/interventions.create',
-	{ authRequired: true },
-	{
-		async post() {
-			check(this.bodyParams, Match.ObjectIncluding({
-				pharmacyId: String,
-				patientUserId: String,
-				type: String,
-				notes: Match.Optional(String),
-			}));
+    'medsense/interventions.create',
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                pharmacyId: String,
+                patientUserId: String,
+                type: String,
+                specialtyActionId: Match.Optional(String),
+                notes: Match.Optional(String),
+            }));
 
-			if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+            if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			const interventionId = await MedsenseInterventions.createIntervention({
-				pharmacyId: String(this.bodyParams.pharmacyId),
-				patientUserId: String(this.bodyParams.patientUserId),
-				type: String(this.bodyParams.type),
-				notes: typeof this.bodyParams.notes === 'string' ? this.bodyParams.notes : undefined,
-				createdBy: {
-					_id: this.userId,
-					username: this.user?.username || 'system',
-				},
-				createdAt: new Date(),
-			});
+            const interventionId = await MedsenseInterventions.createIntervention({
+                pharmacyId: String(this.bodyParams.pharmacyId),
+                patientUserId: String(this.bodyParams.patientUserId),
+                type: String(this.bodyParams.type),
+                specialtyActionId: typeof this.bodyParams.specialtyActionId === 'string' ? this.bodyParams.specialtyActionId : undefined,
+                notes: typeof this.bodyParams.notes === 'string' ? this.bodyParams.notes : undefined,
+                createdBy: {
+                    _id: this.userId,
+                    username: this.user?.username || 'system',
+                },
+                createdAt: new Date(),
+            });
 
-			const intervention = await MedsenseInterventions.findOneById(interventionId);
-			return API.v1.success({ interventionId, intervention });
-		},
-	},
+            const intervention = await MedsenseInterventions.findOneById(interventionId);
+            return API.v1.success({ interventionId, intervention });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/interventions.info',
-	{ authRequired: true },
-	{
-		async get() {
-			check(this.queryParams, Match.ObjectIncluding({
-				interventionId: String,
-			}));
+    'medsense/interventions.info',
+    { authRequired: true },
+    {
+        async get() {
+            check(this.queryParams, Match.ObjectIncluding({
+                interventionId: String,
+            }));
 
-			if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+            if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			const interventionId = String(this.queryParams.interventionId);
-			const intervention = await MedsenseInterventions.findOneById(interventionId);
-			if (!intervention) {
-				return API.v1.failure('Intervention not found');
-			}
+            const interventionId = String(this.queryParams.interventionId);
+            const intervention = await MedsenseInterventions.findOneById(interventionId);
+            if (!intervention) {
+                return API.v1.failure('Intervention not found');
+            }
 
-			const notes = await MedsenseInterventionNotes.findByInterventionId(interventionId).toArray();
-			return API.v1.success({ intervention, notes });
-		},
-	},
+            const notes = await MedsenseInterventionNotes.findByInterventionId(interventionId).toArray();
+            return API.v1.success({ intervention, notes });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/interventions.note.add',
-	{ authRequired: true },
-	{
-		async post() {
-			check(this.bodyParams, Match.ObjectIncluding({
-				interventionId: String,
-				text: String,
-			}));
+    'medsense/interventions.note.add',
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                interventionId: String,
+                text: String,
+            }));
 
-			if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+            if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			const interventionId = String(this.bodyParams.interventionId);
-			const intervention = await MedsenseInterventions.findOneById(interventionId);
-			if (!intervention) {
-				return API.v1.failure('Intervention not found');
-			}
+            const interventionId = String(this.bodyParams.interventionId);
+            const intervention = await MedsenseInterventions.findOneById(interventionId);
+            if (!intervention) {
+                return API.v1.failure('Intervention not found');
+            }
 
-			const text = String(this.bodyParams.text || '').trim();
-			if (!text) {
-				return API.v1.failure('text is required');
-			}
+            const text = String(this.bodyParams.text || '').trim();
+            if (!text) {
+                return API.v1.failure('text is required');
+            }
 
-			const noteId = await MedsenseInterventionNotes.createNote({
-				interventionId,
-				text,
-				authorId: this.userId,
-				authorUsername: this.user?.username || 'system',
-				createdAt: new Date(),
-			});
+            const noteId = await MedsenseInterventionNotes.createNote({
+                interventionId,
+                text,
+                authorId: this.userId,
+                authorUsername: this.user?.username || 'system',
+                createdAt: new Date(),
+            });
 
-			return API.v1.success({ noteId });
-		},
-	},
+            return API.v1.success({ noteId });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/interventions.byPatient',
-	{ authRequired: true },
-	{
-		async get() {
-			check(this.queryParams, Match.ObjectIncluding({
-				patientUserId: String,
-				pharmacyId: Match.Optional(String),
-			}));
+    'medsense/interventions.byPatient',
+    { authRequired: true },
+    {
+        async get() {
+            check(this.queryParams, Match.ObjectIncluding({
+                patientUserId: String,
+                pharmacyId: Match.Optional(String),
+            }));
 
-			if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+            if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			const patientUserId = String(this.queryParams.patientUserId);
-			const pharmacyId = typeof this.queryParams.pharmacyId === 'string' ? this.queryParams.pharmacyId : undefined;
-			const interventions = await MedsenseInterventions.findByPatientUserId(patientUserId, pharmacyId).toArray();
-			return API.v1.success({ interventions });
-		},
-	},
+            const patientUserId = String(this.queryParams.patientUserId);
+            const pharmacyId = typeof this.queryParams.pharmacyId === 'string' ? this.queryParams.pharmacyId : undefined;
+            const interventions = await MedsenseInterventions.findByPatientUserId(patientUserId, pharmacyId).toArray();
+            return API.v1.success({ interventions });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/patient.context.matchBatch',
-	{ authRequired: true },
-	{
-		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'medsense-edit-patient-context'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+    'medsense/patient.context.matchBatch',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'medsense-edit-patient-context'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			check(this.bodyParams, Match.ObjectIncluding({
-				patientUserId: String,
-				roomId: String,
-				candidates: [Match.Any],
-				limitPerCandidate: Match.Optional(Number),
-			}));
+            check(this.bodyParams, Match.ObjectIncluding({
+                patientUserId: String,
+                roomId: String,
+                candidates: [Match.Any],
+                limitPerCandidate: Match.Optional(Number),
+            }));
 
-			const { patientUserId, candidates } = this.bodyParams;
-			const limitPerCandidate = Math.max(1, Math.min(Number(this.bodyParams.limitPerCandidate || 3), 5));
-			if (!Array.isArray(candidates)) {
-				return API.v1.failure('candidates must be an array');
-			}
+            const { patientUserId, candidates } = this.bodyParams;
+            const limitPerCandidate = Math.max(1, Math.min(Number(this.bodyParams.limitPerCandidate || 3), 5));
+            if (!Array.isArray(candidates)) {
+                return API.v1.failure('candidates must be an array');
+            }
 
-			const normalizedCandidates = candidates
-				.filter((c) => c && typeof c === 'object')
-				.map((raw: any) => {
-					const t = String(raw.type || '').trim();
-					const type = (TYPE_NORMALIZATION[t] || t).toLowerCase();
-					const umlsCandidates = Array.isArray(raw.umlsCandidates)
-						? raw.umlsCandidates
-								.filter((u: any) => u && typeof u === 'object' && String(u.cui || '').trim())
-								.map((u: any) => ({
-									cui: String(u.cui || '').trim(),
-									vocab: String(u.vocab || '').trim().toUpperCase(),
-									code: String(u.code || '').trim() || undefined,
-									name: String(u.name || '').trim() || undefined,
-								}))
-						: [];
-					return {
-						candidateId: String(raw.candidateId || '').trim(),
-						type,
-						entityText: String(raw.entityText || '').trim(),
-						umlsCandidates,
-					};
-				})
-				.filter((c) => c.candidateId && VALID_CONTEXT_TYPES.includes(c.type as any));
+            const normalizedCandidates = candidates
+                .filter((c) => c && typeof c === 'object')
+                .map((raw: any) => {
+                    const t = String(raw.type || '').trim();
+                    const type = (TYPE_NORMALIZATION[t] || t).toLowerCase();
+                    const umlsCandidates = Array.isArray(raw.umlsCandidates)
+                        ? raw.umlsCandidates
+                            .filter((u: any) => u && typeof u === 'object' && String(u.cui || '').trim())
+                            .map((u: any) => ({
+                                cui: String(u.cui || '').trim(),
+                                vocab: String(u.vocab || '').trim().toUpperCase(),
+                                code: String(u.code || '').trim() || undefined,
+                                name: String(u.name || '').trim() || undefined,
+                            }))
+                        : [];
+                    return {
+                        candidateId: String(raw.candidateId || '').trim(),
+                        type,
+                        entityText: String(raw.entityText || '').trim(),
+                        umlsCandidates,
+                    };
+                })
+                .filter((c) => c.candidateId && VALID_CONTEXT_TYPES.includes(c.type as any));
 
-			const matchesByCandidate = await MedsensePatientContext.matchBatchByCandidates(
-				patientUserId,
-				normalizedCandidates as any,
-				limitPerCandidate,
-			);
+            const matchesByCandidate = await MedsensePatientContext.matchBatchByCandidates(
+                patientUserId,
+                normalizedCandidates as any,
+                limitPerCandidate,
+            );
 
-			return API.v1.success({ matchesByCandidate });
-		},
-	},
+            return API.v1.success({ matchesByCandidate });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/patient.context.apply',
-	{ authRequired: true },
-	{
-		async post() {
-			if (!(await hasPermissionAsync(this.userId, 'medsense-edit-patient-context'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+    'medsense/patient.context.apply',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'medsense-edit-patient-context'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			check(this.bodyParams, Match.ObjectIncluding({
-				patientUserId: String,
-				roomId: String,
-			}));
+            check(this.bodyParams, Match.ObjectIncluding({
+                patientUserId: String,
+                roomId: String,
+            }));
 
-			const { patientUserId, roomId } = this.bodyParams;
-			const updates = Array.isArray((this.bodyParams as any).updates) ? (this.bodyParams as any).updates : [];
-			const decisions = Array.isArray((this.bodyParams as any).decisions) ? (this.bodyParams as any).decisions : [];
+            const { patientUserId, roomId } = this.bodyParams;
+            const updates = Array.isArray((this.bodyParams as any).updates) ? (this.bodyParams as any).updates : [];
+            const decisions = Array.isArray((this.bodyParams as any).decisions) ? (this.bodyParams as any).decisions : [];
 
-			if (!updates.length && !decisions.length) {
-				return API.v1.failure('updates or decisions is required');
-			}
+            if (!updates.length && !decisions.length) {
+                return API.v1.failure('updates or decisions is required');
+            }
 
-			const applied = { add: 0, update: 0, remove: 0, noop: 0 };
-			const errors: string[] = [];
+            const applied = { add: 0, update: 0, remove: 0, noop: 0 };
+            const errors: string[] = [];
 
-			for (let i = 0; i < updates.length; i++) {
-				const raw = updates[i];
-				if (!raw || typeof raw !== 'object') {
-					errors.push(`updates[${i}] invalid object`);
-					continue;
-				}
+            for (let i = 0; i < updates.length; i++) {
+                const raw = updates[i];
+                if (!raw || typeof raw !== 'object') {
+                    errors.push(`updates[${i}] invalid object`);
+                    continue;
+                }
 
-				const typeRaw = String((raw as any).type || '').trim();
-				const type = (TYPE_NORMALIZATION[typeRaw] || typeRaw).toLowerCase();
-				if (!VALID_CONTEXT_TYPES.includes(type as any)) {
-					errors.push(`updates[${i}] invalid type`);
-					continue;
-				}
+                const typeRaw = String((raw as any).type || '').trim();
+                const type = (TYPE_NORMALIZATION[typeRaw] || typeRaw).toLowerCase();
+                if (!VALID_CONTEXT_TYPES.includes(type as any)) {
+                    errors.push(`updates[${i}] invalid type`);
+                    continue;
+                }
 
-				const selectedCui = String((raw as any).selectedCui || '').trim();
-				if (!selectedCui) {
-					applied.noop += 1;
-					continue;
-				}
+                const selectedCui = String((raw as any).selectedCui || '').trim();
+                if (!selectedCui) {
+                    applied.noop += 1;
+                    continue;
+                }
 
-				const entityName = String((raw as any).entityName || '').trim();
-				if (!entityName) {
-					errors.push(`updates[${i}] missing entityName`);
-					continue;
-				}
+                const entityName = String((raw as any).entityName || '').trim();
+                if (!entityName) {
+                    errors.push(`updates[${i}] missing entityName`);
+                    continue;
+                }
 
-				const selectedVocab = String((raw as any).selectedVocab || '').trim().toUpperCase();
-				if (!VALID_CONTEXT_VOCABS.includes(selectedVocab as any)) {
-					errors.push(`updates[${i}] invalid selectedVocab`);
-					continue;
-				}
+                const selectedVocab = String((raw as any).selectedVocab || '').trim().toUpperCase();
+                if (!VALID_CONTEXT_VOCABS.includes(selectedVocab as any)) {
+                    errors.push(`updates[${i}] invalid selectedVocab`);
+                    continue;
+                }
 
-				const active = _parseLooseBool((raw as any).active);
-				const historical = _parseLooseBool((raw as any).historical);
-				const status = active ? 'active' : historical ? 'historical' : null;
-				if (!status) {
-					applied.noop += 1;
-					continue;
-				}
+                const active = _parseLooseBool((raw as any).active);
+                const historical = _parseLooseBool((raw as any).historical);
+                const status = active ? 'active' : historical ? 'historical' : null;
+                if (!status) {
+                    applied.noop += 1;
+                    continue;
+                }
 
-				const note = String((raw as any).note || '').trim();
-				if (!note) {
-					errors.push(`updates[${i}] missing note`);
-					continue;
-				}
+                const note = String((raw as any).note || '').trim();
+                if (!note) {
+                    errors.push(`updates[${i}] missing note`);
+                    continue;
+                }
 
-				const sourceRaw = String((raw as any).source || 'session_rollup').trim().toLowerCase();
-				const source = (VALID_CONTEXT_SOURCES.includes(sourceRaw as any) ? sourceRaw : 'session_rollup') as typeof VALID_CONTEXT_SOURCES[number];
+                const sourceRaw = String((raw as any).source || 'session_rollup').trim().toLowerCase();
+                const source = (VALID_CONTEXT_SOURCES.includes(sourceRaw as any) ? sourceRaw : 'session_rollup') as typeof VALID_CONTEXT_SOURCES[number];
 
-				const result = await MedsensePatientContext.upsertEntityWithNote({
-					patientUserId,
-					type: type as typeof VALID_CONTEXT_TYPES[number],
-					entityName,
-					cui: selectedCui,
-					vocab: selectedVocab as typeof VALID_CONTEXT_VOCABS[number],
-					code: String((raw as any).selectedCode || '').trim() || undefined,
-					status: status as 'active' | 'historical',
-					note: {
-						text: note,
-						addedAt: new Date(),
-						roomId,
-						source,
-					},
-					addedAt: new Date(),
-				});
+                const result = await MedsensePatientContext.upsertEntityWithNote({
+                    patientUserId,
+                    type: type as typeof VALID_CONTEXT_TYPES[number],
+                    entityName,
+                    cui: selectedCui,
+                    vocab: selectedVocab as typeof VALID_CONTEXT_VOCABS[number],
+                    code: String((raw as any).selectedCode || '').trim() || undefined,
+                    status: status as 'active' | 'historical',
+                    note: {
+                        text: note,
+                        addedAt: new Date(),
+                        roomId,
+                        source,
+                    },
+                    addedAt: new Date(),
+                });
 
-				if ((result as any).upsertedId) {
-					applied.add += 1;
-				} else if ((result as any).modifiedCount > 0) {
-					applied.update += 1;
-				} else {
-					applied.noop += 1;
-				}
-			}
+                if ((result as any).upsertedId) {
+                    applied.add += 1;
+                } else if ((result as any).modifiedCount > 0) {
+                    applied.update += 1;
+                } else {
+                    applied.noop += 1;
+                }
+            }
 
-			for (let i = 0; i < decisions.length; i++) {
-				const raw = decisions[i];
-				if (!raw || typeof raw !== 'object') {
-					errors.push(`decisions[${i}] invalid object`);
-					continue;
-				}
+            for (let i = 0; i < decisions.length; i++) {
+                const raw = decisions[i];
+                if (!raw || typeof raw !== 'object') {
+                    errors.push(`decisions[${i}] invalid object`);
+                    continue;
+                }
 
-				const action = String((raw as any).action || '').trim().toLowerCase();
-				const targetEntryId = String((raw as any).targetEntryId || '').trim();
-				const summary = String((raw as any).summary || '').trim();
-				let typeRaw = String((raw as any).type || '').trim();
-				typeRaw = TYPE_NORMALIZATION[typeRaw] || typeRaw;
-				const type = typeRaw ? typeRaw.toLowerCase() : '';
-				const sourceRaw = String((raw as any).source || 'session_rollup').trim().toLowerCase();
-				const source = (VALID_CONTEXT_SOURCES.includes(sourceRaw as any) ? sourceRaw : 'session_rollup') as typeof VALID_CONTEXT_SOURCES[number];
+                const action = String((raw as any).action || '').trim().toLowerCase();
+                const targetEntryId = String((raw as any).targetEntryId || '').trim();
+                const summary = String((raw as any).summary || '').trim();
+                let typeRaw = String((raw as any).type || '').trim();
+                typeRaw = TYPE_NORMALIZATION[typeRaw] || typeRaw;
+                const type = typeRaw ? typeRaw.toLowerCase() : '';
+                const sourceRaw = String((raw as any).source || 'session_rollup').trim().toLowerCase();
+                const source = (VALID_CONTEXT_SOURCES.includes(sourceRaw as any) ? sourceRaw : 'session_rollup') as typeof VALID_CONTEXT_SOURCES[number];
 
-				if (!['add', 'update', 'remove', 'noop'].includes(action)) {
-					errors.push(`decisions[${i}] invalid action`);
-					continue;
-				}
-				if (action === 'noop') {
-					applied.noop += 1;
-					continue;
-				}
-				if (action === 'remove') {
-					if (!targetEntryId) {
-						errors.push(`decisions[${i}] remove requires targetEntryId`);
-						continue;
-					}
-					const result = await MedsensePatientContext.deleteOne({ _id: targetEntryId, patientUserId });
-					if (!result.deletedCount) {
-						errors.push(`decisions[${i}] remove target not found`);
-						continue;
-					}
-					applied.remove += 1;
-					continue;
-				}
-				if (action === 'add') {
-					if (!type || !VALID_CONTEXT_TYPES.includes(type as any) || !summary) {
-						errors.push(`decisions[${i}] add requires valid type and summary`);
-						continue;
-					}
-					const vocab = type === 'medication' ? 'RXNORM' : 'SNOMEDCT_US';
-					const result = await MedsensePatientContext.upsertEntityWithNote({
-						patientUserId,
-						type: type as typeof VALID_CONTEXT_TYPES[number],
-						entityName: summary,
-						cui: _legacyCui(type, summary),
-						vocab: vocab as typeof VALID_CONTEXT_VOCABS[number],
-						status: 'historical',
-						note: {
-							text: summary,
-							addedAt: new Date(),
-							roomId,
-							source,
-						},
-						addedAt: new Date(),
-					});
-					if ((result as any).upsertedId) {
-						applied.add += 1;
-					} else if ((result as any).modifiedCount > 0) {
-						applied.update += 1;
-					} else {
-						applied.noop += 1;
-					}
-					continue;
-				}
+                if (!['add', 'update', 'remove', 'noop'].includes(action)) {
+                    errors.push(`decisions[${i}] invalid action`);
+                    continue;
+                }
+                if (action === 'noop') {
+                    applied.noop += 1;
+                    continue;
+                }
+                if (action === 'remove') {
+                    if (!targetEntryId) {
+                        errors.push(`decisions[${i}] remove requires targetEntryId`);
+                        continue;
+                    }
+                    const result = await MedsensePatientContext.deleteOne({ _id: targetEntryId, patientUserId });
+                    if (!result.deletedCount) {
+                        errors.push(`decisions[${i}] remove target not found`);
+                        continue;
+                    }
+                    applied.remove += 1;
+                    continue;
+                }
+                if (action === 'add') {
+                    if (!type || !VALID_CONTEXT_TYPES.includes(type as any) || !summary) {
+                        errors.push(`decisions[${i}] add requires valid type and summary`);
+                        continue;
+                    }
+                    const vocab = type === 'medication' ? 'RXNORM' : 'SNOMEDCT_US';
+                    const result = await MedsensePatientContext.upsertEntityWithNote({
+                        patientUserId,
+                        type: type as typeof VALID_CONTEXT_TYPES[number],
+                        entityName: summary,
+                        cui: _legacyCui(type, summary),
+                        vocab: vocab as typeof VALID_CONTEXT_VOCABS[number],
+                        status: 'historical',
+                        note: {
+                            text: summary,
+                            addedAt: new Date(),
+                            roomId,
+                            source,
+                        },
+                        addedAt: new Date(),
+                    });
+                    if ((result as any).upsertedId) {
+                        applied.add += 1;
+                    } else if ((result as any).modifiedCount > 0) {
+                        applied.update += 1;
+                    } else {
+                        applied.noop += 1;
+                    }
+                    continue;
+                }
 
-				if (!targetEntryId) {
-					errors.push(`decisions[${i}] update requires targetEntryId`);
-					continue;
-				}
-				const setFields: Record<string, any> = { _updatedAt: new Date(), roomId, source };
-				if (summary) {
-					setFields.summary = summary;
-				}
-				if (type && VALID_CONTEXT_TYPES.includes(type as any)) {
-					setFields.type = type;
-				}
-				if (!summary && !setFields.type) {
-					applied.noop += 1;
-					continue;
-				}
-				const result = await MedsensePatientContext.updateOne({ _id: targetEntryId, patientUserId }, { $set: setFields });
-				if (!result.matchedCount) {
-					errors.push(`decisions[${i}] update target not found`);
-					continue;
-				}
-				applied.update += 1;
-			}
+                if (!targetEntryId) {
+                    errors.push(`decisions[${i}] update requires targetEntryId`);
+                    continue;
+                }
+                const setFields: Record<string, any> = { _updatedAt: new Date(), roomId, source };
+                if (summary) {
+                    setFields.summary = summary;
+                }
+                if (type && VALID_CONTEXT_TYPES.includes(type as any)) {
+                    setFields.type = type;
+                }
+                if (!summary && !setFields.type) {
+                    applied.noop += 1;
+                    continue;
+                }
+                const result = await MedsensePatientContext.updateOne({ _id: targetEntryId, patientUserId }, { $set: setFields });
+                if (!result.matchedCount) {
+                    errors.push(`decisions[${i}] update target not found`);
+                    continue;
+                }
+                applied.update += 1;
+            }
 
-			return API.v1.success({
-				applied,
-				...(errors.length ? { errors } : {}),
-			});
-		},
-	},
+            return API.v1.success({
+                applied,
+                ...(errors.length ? { errors } : {}),
+            });
+        },
+    },
 );
 
 
 const _defaultSessionInfo = () => ({
-	version: 1,
-	assignedAgent: null as string | null,
-	sessionStartMsgId: null as string | null,
-	sessionStartTs: null as string | null,
-	lastActivityTs: null as string | null,
-	lastAssessedMsgId: null as string | null,
-	sessionBuffer: [] as Array<Record<string, any>>,
-	roomContextSummaries: [] as Array<Record<string, any>>,
-	summary: {
-		text: '',
-		updatedAt: null as string | null,
-	},
+    version: 1,
+    assignedAgent: null as string | null,
+    sessionStartMsgId: null as string | null,
+    sessionStartTs: null as string | null,
+    lastActivityTs: null as string | null,
+    lastAssessedMsgId: null as string | null,
+    sessionBuffer: [] as Array<Record<string, any>>,
+    sessionForms: [] as Array<Record<string, any>>,
+    roomFormSubmissions: [] as Array<Record<string, any>>,
+    roomContextSummaries: [] as Array<Record<string, any>>,
+    summary: {
+        text: '',
+        updatedAt: null as string | null,
+    },
 });
 
 const _normalizeSessionInfo = (raw: any) => {
-	const base = _defaultSessionInfo();
-	const source = raw && typeof raw === 'object' ? raw : {};
-	const normalized = {
-		...base,
-		...source,
-	};
-	normalized.sessionBuffer = Array.isArray(source.sessionBuffer) ? source.sessionBuffer : base.sessionBuffer;
-	normalized.roomContextSummaries = Array.isArray(source.roomContextSummaries)
-		? source.roomContextSummaries
-		: base.roomContextSummaries;
-	normalized.summary = source.summary && typeof source.summary === 'object'
-		? {
-			text: typeof source.summary.text === 'string' ? source.summary.text : '',
-			updatedAt: typeof source.summary.updatedAt === 'string' ? source.summary.updatedAt : null,
-		}
-		: base.summary;
-	return normalized;
+    const base = _defaultSessionInfo();
+    const source = raw && typeof raw === 'object' ? raw : {};
+    const normalized = {
+        ...base,
+        ...source,
+    };
+    normalized.sessionBuffer = Array.isArray(source.sessionBuffer) ? source.sessionBuffer : base.sessionBuffer;
+    normalized.sessionForms = Array.isArray(source.sessionForms) ? source.sessionForms : base.sessionForms;
+    normalized.roomFormSubmissions = Array.isArray(source.roomFormSubmissions) ? source.roomFormSubmissions : base.roomFormSubmissions;
+    normalized.roomContextSummaries = Array.isArray(source.roomContextSummaries)
+        ? source.roomContextSummaries
+        : base.roomContextSummaries;
+    normalized.summary = source.summary && typeof source.summary === 'object'
+        ? {
+            text: typeof source.summary.text === 'string' ? source.summary.text : '',
+            updatedAt: typeof source.summary.updatedAt === 'string' ? source.summary.updatedAt : null,
+        }
+        : base.summary;
+    return normalized;
 };
 
 API.v1.addRoute(
-	'medsense/room.sessionInfo',
-	{ authRequired: true },
-	{
-		async get() {
-			check(this.queryParams, Match.ObjectIncluding({ roomId: String }));
-			const roomId = String(this.queryParams.roomId);
+    'medsense/room.sessionInfo',
+    { authRequired: true },
+    {
+        async get() {
+            check(this.queryParams, Match.ObjectIncluding({ roomId: String }));
+            const roomId = String(this.queryParams.roomId);
 
-			const room = await Rooms.findOneById(roomId, {
-				projection: { medsenseSessionInfo: 1 },
-			});
-			if (!room) {
-				return API.v1.failure('Room not found');
-			}
+            const room = await Rooms.findOneById(roomId, {
+                projection: { medsenseSessionInfo: 1 },
+            });
+            if (!room) {
+                return API.v1.failure('Room not found');
+            }
 
-			return API.v1.success({
-				sessionInfo: _normalizeSessionInfo((room as any).medsenseSessionInfo),
-			});
-		},
-	},
+            return API.v1.success({
+                sessionInfo: _normalizeSessionInfo((room as any).medsenseSessionInfo),
+            });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/room.sessionInfo.active',
-	{ authRequired: true },
-	{
-		async get() {
-			const rawLimit = typeof this.queryParams.limit === 'string' ? this.queryParams.limit : '100';
-			const parsedLimit = Number.parseInt(rawLimit, 10);
-			const limit = Number.isFinite(parsedLimit) ? Math.max(1, Math.min(parsedLimit, 500)) : 100;
+    'medsense/room.sessionInfo.active',
+    { authRequired: true },
+    {
+        async get() {
+            const rawLimit = typeof this.queryParams.limit === 'string' ? this.queryParams.limit : '100';
+            const parsedLimit = Number.parseInt(rawLimit, 10);
+            const limit = Number.isFinite(parsedLimit) ? Math.max(1, Math.min(parsedLimit, 500)) : 100;
 
-			const rooms = await Rooms.find(
-				{
-					'medsenseSessionInfo.assignedAgent': { $exists: true, $ne: null },
-				},
-				{
-					projection: {
-						medsenseSessionInfo: 1,
-						medsenseActiveRequestId: 1,
-					},
-					limit,
-				},
-			).toArray();
+            const rooms = await Rooms.find(
+                {
+                    'medsenseSessionInfo.assignedAgent': { $exists: true, $ne: null },
+                },
+                {
+                    projection: {
+                        medsenseSessionInfo: 1,
+                        medsenseActiveRequestId: 1,
+                    },
+                    limit,
+                },
+            ).toArray();
 
-			const sessions = await Promise.all(
-				rooms.map(async (room: any) => {
-					const sessionInfo = _normalizeSessionInfo(room?.medsenseSessionInfo);
-					const sessionBuffer = Array.isArray(sessionInfo.sessionBuffer) ? sessionInfo.sessionBuffer : [];
-					const lastBufferEntry = sessionBuffer.length ? sessionBuffer[sessionBuffer.length - 1] : null;
-					const lastActivityTs =
-						(sessionInfo as any).lastActivityTs ||
-						lastBufferEntry?.endTs ||
-						lastBufferEntry?.startTs ||
-						sessionInfo.sessionStartTs ||
-						sessionInfo.summary?.updatedAt ||
-						null;
-					const patientUserId = await _resolvePatientUserIdForRoom(room._id);
-					return {
-						roomId: room._id,
-						assignedAgent: sessionInfo.assignedAgent,
-						lastActivityTs,
-						patientUserId: patientUserId || undefined,
-					};
-				}),
-			);
+            const sessions = await Promise.all(
+                rooms.map(async (room: any) => {
+                    const sessionInfo = _normalizeSessionInfo(room?.medsenseSessionInfo);
+                    const sessionBuffer = Array.isArray(sessionInfo.sessionBuffer) ? sessionInfo.sessionBuffer : [];
+                    const lastBufferEntry = sessionBuffer.length ? sessionBuffer[sessionBuffer.length - 1] : null;
+                    const lastActivityTs =
+                        (sessionInfo as any).lastActivityTs ||
+                        lastBufferEntry?.endTs ||
+                        lastBufferEntry?.startTs ||
+                        sessionInfo.sessionStartTs ||
+                        sessionInfo.summary?.updatedAt ||
+                        null;
+                    const patientUserId = await _resolvePatientUserIdForRoom(room._id);
+                    return {
+                        roomId: room._id,
+                        assignedAgent: sessionInfo.assignedAgent,
+                        lastActivityTs,
+                        patientUserId: patientUserId || undefined,
+                    };
+                }),
+            );
 
-			return API.v1.success({ sessions });
-		},
-	},
+            return API.v1.success({ sessions });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/room.typing',
-	{ authRequired: true },
-	{
-		async post() {
-			check(this.bodyParams, Match.ObjectIncluding({
-				roomId: String,
-				isTyping: Boolean,
-			}));
+    'medsense/room.typing',
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                roomId: String,
+                isTyping: Boolean,
+            }));
 
-			if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+            if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			const roomId = String(this.bodyParams.roomId);
-			const isTyping = Boolean((this.bodyParams as any).isTyping);
-			const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
-			if (!room) {
-				return API.v1.failure('Room not found');
-			}
+            const roomId = String(this.bodyParams.roomId);
+            const isTyping = Boolean((this.bodyParams as any).isTyping);
+            const room = await Rooms.findOneById(roomId, { projection: { _id: 1 } });
+            if (!room) {
+                return API.v1.failure('Room not found');
+            }
 
-			notifications.notifyRoom(roomId, 'user-activity', 'MedSense', isTyping ? ['user-typing'] : []);
+            notifications.notifyRoom(roomId, 'user-activity', 'MedSense', isTyping ? ['user-typing'] : []);
 
-			return API.v1.success({
-				roomId,
-				isTyping,
-				label: 'MedSense',
-			});
-		},
-	},
+            return API.v1.success({
+                roomId,
+                isTyping,
+                label: 'MedSense',
+            });
+        },
+    },
 );
 API.v1.addRoute(
-	'medsense/room.sessionInfo.update',
-	{ authRequired: true },
-	{
-		async post() {
-			check(this.bodyParams, Match.ObjectIncluding({
-				roomId: String,
-				sessionInfo: Match.ObjectIncluding({}),
-			}));
+    'medsense/room.sessionInfo.update',
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                roomId: String,
+                sessionInfo: Match.ObjectIncluding({}),
+            }));
 
-			const roomId = String(this.bodyParams.roomId);
-			const incoming = (this.bodyParams as any).sessionInfo || {};
+            const roomId = String(this.bodyParams.roomId);
+            const incoming = (this.bodyParams as any).sessionInfo || {};
 
-			const room = await Rooms.findOneById(roomId, {
-				projection: { medsenseSessionInfo: 1 },
-			});
-			if (!room) {
-				return API.v1.failure('Room not found');
-			}
+            const room = await Rooms.findOneById(roomId, {
+                projection: { medsenseSessionInfo: 1 },
+            });
+            if (!room) {
+                return API.v1.failure('Room not found');
+            }
 
-			const current = _normalizeSessionInfo((room as any).medsenseSessionInfo);
-			const next = {
-				...current,
-				...incoming,
-			};
+            const current = _normalizeSessionInfo((room as any).medsenseSessionInfo);
+            const next = {
+                ...current,
+                ...incoming,
+            };
 
-			if ('sessionBuffer' in incoming) {
-				next.sessionBuffer = Array.isArray(incoming.sessionBuffer) ? incoming.sessionBuffer : [];
-			}
-			if ('roomContextSummaries' in incoming) {
-				next.roomContextSummaries = Array.isArray(incoming.roomContextSummaries) ? incoming.roomContextSummaries : [];
-			}
-			if ('summary' in incoming) {
-				next.summary = incoming.summary && typeof incoming.summary === 'object'
-					? {
-						text: typeof incoming.summary.text === 'string' ? incoming.summary.text : '',
-						updatedAt: typeof incoming.summary.updatedAt === 'string' ? incoming.summary.updatedAt : null,
-					}
-					: current.summary;
-			}
+            if ('sessionBuffer' in incoming) {
+                next.sessionBuffer = Array.isArray(incoming.sessionBuffer) ? incoming.sessionBuffer : [];
+            }
+            if ('sessionForms' in incoming) {
+                next.sessionForms = Array.isArray(incoming.sessionForms) ? incoming.sessionForms : [];
+            }
+            if ('roomFormSubmissions' in incoming) {
+                next.roomFormSubmissions = Array.isArray(incoming.roomFormSubmissions) ? incoming.roomFormSubmissions : [];
+            }
+            if ('roomContextSummaries' in incoming) {
+                next.roomContextSummaries = Array.isArray(incoming.roomContextSummaries) ? incoming.roomContextSummaries : [];
+            }
+            if ('summary' in incoming) {
+                next.summary = incoming.summary && typeof incoming.summary === 'object'
+                    ? {
+                        text: typeof incoming.summary.text === 'string' ? incoming.summary.text : '',
+                        updatedAt: typeof incoming.summary.updatedAt === 'string' ? incoming.summary.updatedAt : null,
+                    }
+                    : current.summary;
+            }
 
-			await Rooms.update(
-				{ _id: roomId },
-				{ $set: { medsenseSessionInfo: next } },
-			);
+            await Rooms.update(
+                { _id: roomId },
+                { $set: { medsenseSessionInfo: next } },
+            );
 
-			return API.v1.success({ sessionInfo: next });
-		},
-	},
+            return API.v1.success({ sessionInfo: next });
+        },
+    },
 );
 
 API.v1.addRoute(
-	'medsense/context.consolidated',
-	{ authRequired: true },
-	{
-		async get() {
-			if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
-				const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
-				const roles = user?.roles || [];
-				if (!roles.includes('admin') && !roles.includes('bot')) {
-					return API.v1.forbidden();
-				}
-			}
+    'medsense/intervention-types.list',
+    { authRequired: true },
+    {
+        async get() {
+            if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
 
-			check(this.queryParams, Match.ObjectIncluding({
-				roomId: String,
-				keywords: Match.Optional(String),
-				limit: Match.Optional(String),
-				patientUserId: Match.Optional(String),
-			}));
+            return API.v1.success({
+                interventionTypes: getConfiguredInterventionTypes(),
+            });
+        },
+    },
+);
 
-			const roomId = String(this.queryParams.roomId);
-			const keywords = typeof this.queryParams.keywords === 'string' ? this.queryParams.keywords : '';
-			const limit = Math.min(parseInt(this.queryParams.limit || '3', 10) || 3, 5);
+API.v1.addRoute(
+    'medsense/drug-catalog.list',
+    { authRequired: true },
+    {
+        async get() {
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
 
-			const room = await Rooms.findOneById(roomId, {
-				projection: {
-					medsenseSessionInfo: 1,
-					medsenseActiveRequestId: 1,
-				},
-			});
-			if (!room) {
-				return API.v1.failure('Room not found');
-			}
+            const text = typeof this.queryParams?.text === 'string' ? this.queryParams.text : '';
+            const limit = Math.min(100, Math.max(1, Number(this.queryParams?.limit) || 50));
+            const drugs = await MedsenseDrugCatalog.searchActive(text, limit).toArray();
+            return API.v1.success({
+                drugs,
+                ...(await getDrugCatalogStats()),
+            });
+        },
+    },
+);
 
-			const patientUserId = await _resolvePatientUserIdForRoom(roomId, this.queryParams.patientUserId as string | undefined);
-			if (!patientUserId) {
-				return API.v1.success({ context: null });
-			}
+API.v1.addRoute(
+    'medsense/drug-catalog.import-status',
+    { authRequired: true },
+    {
+        async get() {
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
 
-			const sessionInfo = (room as any).medsenseSessionInfo || {};
-			const sessionBuffer = Array.isArray(sessionInfo.sessionBuffer) ? sessionInfo.sessionBuffer : [];
-			const sessionBufferTail = sessionBuffer.slice(-2);
+            return API.v1.success({
+                ...(await getDrugCatalogStats()),
+            });
+        },
+    },
+);
 
-			const roomContextSummaries = Array.isArray(sessionInfo.roomContextSummaries) ? sessionInfo.roomContextSummaries : [];
-			const roomContextSummary = roomContextSummaries.length
-				? roomContextSummaries[roomContextSummaries.length - 1]
-				: null;
+API.v1.addRoute(
+    'medsense/drug-catalog.import',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
 
-			let patientContextMatches = [] as any[];
-			if (keywords && keywords.trim()) {
-				patientContextMatches = await MedsensePatientContext.searchByPatient(patientUserId, keywords.trim(), limit);
-			} else {
-				patientContextMatches = await MedsensePatientContext.findRecentByPatient(patientUserId, limit).toArray();
-			}
+            check(this.bodyParams, Match.ObjectIncluding({
+                fileName: String,
+                fileContent: String,
+                force: Match.Optional(Boolean),
+            }));
 
-			patientContextMatches = (patientContextMatches || []).map((entry: any) => {
-				const notes = Array.isArray(entry?.notes) ? entry.notes : [];
-				const latest = notes.length ? notes[notes.length - 1] : undefined;
-				return {
-					...entry,
-					summary: _legacySummary(entry),
-					roomId: entry?.roomId || latest?.roomId || null,
-					source: entry?.source || latest?.source || null,
-					tags: Array.isArray(entry?.tags) ? entry.tags : [],
-				};
-			});
+            const { fileName, fileContent, force } = this.bodyParams as any;
+            const parsed = await parseCcddDrugCatalogContent(String(fileContent), String(fileName));
+            const currentVersion = await Settings.findOneById('Medsense_CCDD_NTP_Imported_Version', { projection: { value: 1 } });
+            if (!Boolean(force) && currentVersion?.value === parsed.version) {
+                return API.v1.success({
+                    imported: false,
+                    reason: 'version_unchanged',
+                    version: parsed.version,
+                    rowCount: parsed.rowCount,
+                    ...(await getDrugCatalogStats()),
+                });
+            }
 
-			return API.v1.success({
-				patientUserId,
-				sessionBufferTail,
-				roomContextSummary,
-				patientContextMatches,
-			});
-		},
-	},
+            await MedsenseDrugCatalog.replaceCatalog(parsed.version, parsed.entries);
+            const now = new Date();
+            const lastImportedAt = now.toISOString();
+
+            await Settings.updateOne(
+                { _id: 'Medsense_CCDD_NTP_Imported_Version' },
+                {
+                    $set: {
+                        value: parsed.version,
+                        _updatedAt: now,
+                    },
+                    $setOnInsert: {
+                        createdAt: now,
+                    },
+                },
+                { upsert: true },
+            );
+            await Settings.updateOne(
+                { _id: 'Medsense_CCDD_NTP_Last_Imported_At' },
+                {
+                    $set: {
+                        value: lastImportedAt,
+                        _updatedAt: now,
+                    },
+                    $setOnInsert: {
+                        createdAt: now,
+                    },
+                },
+                { upsert: true },
+            );
+
+            return API.v1.success({
+                imported: true,
+                version: parsed.version,
+                rowCount: parsed.rowCount,
+                sourceFile: parsed.sourceLabel,
+                ...(await getDrugCatalogStats()),
+            });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/context.consolidated',
+    { authRequired: true },
+    {
+        async get() {
+            if (!(await hasPermissionAsync(this.userId, 'medsense-create-interventions'))) {
+                const user = await Users.findOneById(this.userId, { projection: { roles: 1 } });
+                const roles = user?.roles || [];
+                if (!roles.includes('admin') && !roles.includes('bot')) {
+                    return API.v1.forbidden();
+                }
+            }
+
+            check(this.queryParams, Match.ObjectIncluding({
+                roomId: String,
+                keywords: Match.Optional(String),
+                limit: Match.Optional(String),
+                patientUserId: Match.Optional(String),
+            }));
+
+            const roomId = String(this.queryParams.roomId);
+            const keywords = typeof this.queryParams.keywords === 'string' ? this.queryParams.keywords : '';
+            const limit = Math.min(parseInt(this.queryParams.limit || '3', 10) || 3, 5);
+
+            const room = await Rooms.findOneById(roomId, {
+                projection: {
+                    medsenseSessionInfo: 1,
+                    medsenseActiveRequestId: 1,
+                },
+            });
+            if (!room) {
+                return API.v1.failure('Room not found');
+            }
+
+            const patientUserId = await _resolvePatientUserIdForRoom(roomId, this.queryParams.patientUserId as string | undefined);
+            if (!patientUserId) {
+                return API.v1.success({ context: null });
+            }
+
+            const sessionInfo = (room as any).medsenseSessionInfo || {};
+            const sessionBuffer = Array.isArray(sessionInfo.sessionBuffer) ? sessionInfo.sessionBuffer : [];
+            const sessionBufferTail = sessionBuffer.slice(-2);
+
+            const roomContextSummaries = Array.isArray(sessionInfo.roomContextSummaries) ? sessionInfo.roomContextSummaries : [];
+            const roomContextSummary = roomContextSummaries.length
+                ? roomContextSummaries[roomContextSummaries.length - 1]
+                : null;
+            const roomFormSubmissions = Array.isArray(sessionInfo.roomFormSubmissions) ? sessionInfo.roomFormSubmissions : [];
+
+            let patientContextMatches = [] as any[];
+            if (keywords && keywords.trim()) {
+                patientContextMatches = await MedsensePatientContext.searchByPatient(patientUserId, keywords.trim(), limit);
+            } else {
+                patientContextMatches = await MedsensePatientContext.findRecentByPatient(patientUserId, limit).toArray();
+            }
+
+            patientContextMatches = (patientContextMatches || []).map((entry: any) => {
+                const notes = Array.isArray(entry?.notes) ? entry.notes : [];
+                const latest = notes.length ? notes[notes.length - 1] : undefined;
+                return {
+                    ...entry,
+                    summary: _legacySummary(entry),
+                    roomId: entry?.roomId || latest?.roomId || null,
+                    source: entry?.source || latest?.source || null,
+                    tags: Array.isArray(entry?.tags) ? entry.tags : [],
+                };
+            });
+
+            return API.v1.success({
+                patientUserId,
+                sessionBufferTail,
+                roomContextSummary,
+                roomFormSubmissions,
+                patientContextMatches,
+            });
+        },
+    },
+);
+
+// --- Documentation Templates Admin APIs ---
+
+API.v1.addRoute(
+    'medsense/documentation.templates.list',
+    { authRequired: true },
+    {
+        async get() {
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
+
+            const templates = await MedsenseDocumentationTemplates.find({}, { sort: { createdAt: -1 } }).toArray();
+            return API.v1.success({ templates: await Promise.all(templates.map((template) => hydrateTemplateDrugFieldOptions(template))) });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/documentation.templates.info',
+    { authRequired: true },
+    {
+        async get() {
+            check(this.queryParams, Match.ObjectIncluding({ templateId: String }));
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
+
+            const template = await MedsenseDocumentationTemplates.findOneById(String(this.queryParams.templateId));
+            if (!template) {
+                return API.v1.failure('Template not found');
+            }
+            return API.v1.success({ template: await hydrateTemplateDrugFieldOptions(template) });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/documentation.templates.create',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
+
+            check(this.bodyParams, Match.ObjectIncluding({
+                key: String,
+                label: String,
+                description: Match.Optional(String),
+                interventionTypes: [String],
+                specialtyActionIds: [String],
+                sections: [Object],
+                signatureRules: Match.ObjectIncluding({
+                    requirePharmacistSignature: Boolean,
+                    allowPatientSignature: Boolean,
+                    requirePatientSignature: Boolean,
+                }),
+                pdfConfig: Match.ObjectIncluding({
+                    documentTitle: String,
+                }),
+            }));
+
+            let normalizedTemplate: Partial<IMedsenseDocumentationTemplate>;
+            try {
+                normalizedTemplate = normalizeDocumentationTemplateInput(this.bodyParams);
+            } catch (error: any) {
+                return API.v1.failure(error?.message || 'Invalid template definition');
+            }
+
+            const { key, label, description, interventionTypes, specialtyActionIds, sections, signatureRules, pdfConfig } = normalizedTemplate as any;
+
+            const existing = await MedsenseDocumentationTemplates.findOne({ key });
+            if (existing) {
+                return API.v1.failure('Template with this key already exists');
+            }
+
+            const insertResult = await MedsenseDocumentationTemplates.insertOne({
+                key,
+                label,
+                description,
+                status: 'draft',
+                interventionTypes,
+                specialtyActionIds,
+                version: 1,
+                sections,
+                signatureRules,
+                pdfConfig,
+                createdAt: new Date(),
+                _updatedAt: new Date(),
+            });
+
+            const template = await MedsenseDocumentationTemplates.findOneById(insertResult.insertedId);
+            return API.v1.success({ template: template ? await hydrateTemplateDrugFieldOptions(template as IMedsenseDocumentationTemplate) : template });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/documentation.templates.update',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
+
+            check(this.bodyParams, Match.ObjectIncluding({
+                templateId: String,
+                updateData: Object,
+            }));
+
+            const { templateId, updateData } = this.bodyParams as any;
+            const template = await MedsenseDocumentationTemplates.findOneById(templateId);
+            if (!template) {
+                return API.v1.failure('Template not found');
+            }
+
+            let normalizedTemplate: Partial<IMedsenseDocumentationTemplate>;
+            try {
+                normalizedTemplate = normalizeDocumentationTemplateInput({
+                    ...template,
+                    ...updateData,
+                    key: template.key,
+                });
+            } catch (error: any) {
+                return API.v1.failure(error?.message || 'Invalid template definition');
+            }
+
+            await MedsenseDocumentationTemplates.updateOne(
+                { _id: templateId },
+                {
+                    $set: {
+                        ...normalizedTemplate,
+                        version: template.version + 1,
+                        updatedAt: new Date(),
+                        _updatedAt: new Date(),
+                    },
+                },
+            );
+
+            const updated = await MedsenseDocumentationTemplates.findOneById(templateId);
+            return API.v1.success({ template: updated ? await hydrateTemplateDrugFieldOptions(updated as IMedsenseDocumentationTemplate) : updated });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/documentation.templates.activate',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
+
+            check(this.bodyParams, Match.ObjectIncluding({ templateId: String }));
+            const templateId = String(this.bodyParams.templateId);
+
+            const template = await MedsenseDocumentationTemplates.findOneById(templateId);
+            if (!template) {
+                return API.v1.failure('Template not found');
+            }
+
+            // For each specialtyActionId, deactivate other templates
+            for (const specialtyActionId of template.specialtyActionIds) {
+                await MedsenseDocumentationTemplates.deactivateOtherTemplates(specialtyActionId, templateId);
+            }
+
+            await MedsenseDocumentationTemplates.updateOne(
+                { _id: templateId },
+                { $set: { status: 'active', _updatedAt: new Date() } },
+            );
+
+            const updated = await MedsenseDocumentationTemplates.findOneById(templateId);
+            return API.v1.success({ template: updated ? await hydrateTemplateDrugFieldOptions(updated as IMedsenseDocumentationTemplate) : updated });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/documentation.templates.deactivate',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
+
+            check(this.bodyParams, Match.ObjectIncluding({ templateId: String }));
+            const templateId = String(this.bodyParams.templateId);
+
+            await MedsenseDocumentationTemplates.updateOne(
+                { _id: templateId },
+                { $set: { status: 'inactive', _updatedAt: new Date() } },
+            );
+
+            const updated = await MedsenseDocumentationTemplates.findOneById(templateId);
+            return API.v1.success({ template: updated ? await hydrateTemplateDrugFieldOptions(updated as IMedsenseDocumentationTemplate) : updated });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/documentation.templates.duplicate',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'manage-medsense-documentation-templates'))) {
+                return API.v1.forbidden();
+            }
+
+            check(this.bodyParams, Match.ObjectIncluding({ templateId: String, newKey: String }));
+            const { templateId, newKey } = this.bodyParams as any;
+
+            const template = await MedsenseDocumentationTemplates.findOneById(templateId);
+            if (!template) {
+                return API.v1.failure('Template not found');
+            }
+
+            const existing = await MedsenseDocumentationTemplates.findOne({ key: newKey });
+            if (existing) {
+                return API.v1.failure('Template with this key already exists');
+            }
+
+            const { _id, _updatedAt, updatedAt, createdAt, status, ...baseData } = template;
+            const insertResult = await MedsenseDocumentationTemplates.insertOne({
+                ...baseData,
+                key: newKey,
+                label: `${template.label} (Copy)`,
+                status: 'draft',
+                version: 1,
+                createdAt: new Date(),
+                _updatedAt: new Date(),
+            });
+
+            const duplicated = await MedsenseDocumentationTemplates.findOneById(insertResult.insertedId);
+            return API.v1.success({ template: duplicated ? await hydrateTemplateDrugFieldOptions(duplicated as IMedsenseDocumentationTemplate) : duplicated });
+        },
+    },
+);
+
+// --- Documentation Templates Runtime APIs ---
+
+API.v1.addRoute(
+    'medsense/interventions.documentation.launch',
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                interventionId: String,
+                templateId: Match.Optional(String),
+                roomId: Match.Optional(String),
+                appContextId: Match.Optional(String),
+            }));
+
+            const interventionId = String(this.bodyParams.interventionId);
+            const requestedTemplateId = typeof this.bodyParams.templateId === 'string' ? String(this.bodyParams.templateId) : undefined;
+            const requestedRoomId = typeof this.bodyParams.roomId === 'string' ? String(this.bodyParams.roomId) : '';
+            const appContextId = typeof this.bodyParams.appContextId === 'string' ? String(this.bodyParams.appContextId) : '';
+            const intervention = await MedsenseInterventions.findOneById(interventionId);
+            if (!intervention) {
+                return API.v1.failure('Intervention not found');
+            }
+
+            if (!(await canAccessInterventionDocumentation(this.userId, intervention))) {
+                return API.v1.forbidden();
+            }
+
+            let template = intervention.documentationTemplateSnapshot || (intervention.documentationTemplateId ? await MedsenseDocumentationTemplates.findOneById(intervention.documentationTemplateId) : null);
+            if (!template && requestedTemplateId) {
+                const selectedTemplate = await MedsenseDocumentationTemplates.findOneById(requestedTemplateId);
+                if (!selectedTemplate || selectedTemplate.status !== 'active') {
+                    return API.v1.failure('Template not found or inactive');
+                }
+                if (Array.isArray(selectedTemplate.interventionTypes) && selectedTemplate.interventionTypes.length && !selectedTemplate.interventionTypes.includes(intervention.type)) {
+                    return API.v1.failure('Selected template is not available for this intervention type');
+                }
+
+                await MedsenseInterventions.updateOne(
+                    { _id: interventionId },
+                    {
+                        $set: {
+                            documentationTemplateId: selectedTemplate._id,
+                            documentationTemplateVersion: selectedTemplate.version,
+                            documentationTemplateSnapshot: selectedTemplate,
+                            documentationStatus: intervention.documentationStatus || 'draft',
+                            _updatedAt: new Date(),
+                        },
+                    },
+                );
+                template = selectedTemplate;
+            }
+
+            if (!template) {
+                return API.v1.failure('No documentation template selected for this intervention');
+            }
+
+            const hydratedTemplate = await hydrateTemplateDrugFieldOptions(template);
+            const updated = await MedsenseInterventions.findOneById(interventionId);
+            let routePath = `/medsense/documentation/${interventionId}`;
+
+            if (requestedRoomId) {
+                const room = await Rooms.findOneById(requestedRoomId, {
+                    projection: {
+                        _id: 1,
+                        t: 1,
+                        name: 1,
+                    },
+                });
+
+                if (room) {
+                    if (room.t === 'd') {
+                        routePath = `/direct/${encodeURIComponent(room._id)}/medsense-documentation/${encodeURIComponent(interventionId)}`;
+                    } else if (room.t === 'c' && room.name) {
+                        routePath = `/channel/${encodeURIComponent(room.name)}/medsense-documentation/${encodeURIComponent(interventionId)}`;
+                    } else if (room.t === 'p' && room.name) {
+                        routePath = `/group/${encodeURIComponent(room.name)}/medsense-documentation/${encodeURIComponent(interventionId)}`;
+                    }
+                }
+
+                notifications.notifyRoom(requestedRoomId, 'medsense-documentation-handoff', {
+                    interventionId,
+                    returnTab: 'app',
+                    returnContext: appContextId,
+                });
+            }
+
+            return API.v1.success({
+                intervention: await hydrateInterventionDocumentationTemplate(updated),
+                template: hydratedTemplate,
+                lockedTemplateId: template._id,
+                routePath,
+            });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/interventions.documentation.info',
+    { authRequired: true },
+    {
+        async get() {
+            check(this.queryParams, Match.ObjectIncluding({ interventionId: String }));
+            const interventionId = String(this.queryParams.interventionId);
+
+            const intervention = await MedsenseInterventions.findOneById(interventionId);
+            if (!intervention) {
+                return API.v1.failure('Intervention not found');
+            }
+
+            if (!(await canAccessInterventionDocumentation(this.userId, intervention))) {
+                return API.v1.forbidden();
+            }
+
+            return API.v1.success({ intervention: await hydrateInterventionDocumentationTemplate(intervention) });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/interventions.documentation.prefill',
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                interventionId: String,
+                roomId: Match.Optional(String),
+                forceRefresh: Match.Optional(Boolean),
+            }));
+            const { interventionId, roomId, forceRefresh } = this.bodyParams as any;
+
+            const intervention = await MedsenseInterventions.findOneById(interventionId);
+            if (!intervention) {
+                return API.v1.failure('Intervention not found');
+            }
+
+            if (!(await canAccessInterventionDocumentation(this.userId, intervention))) {
+                return API.v1.forbidden();
+            }
+
+            const template = intervention.documentationTemplateSnapshot
+                || (intervention.documentationTemplateId
+                    ? await MedsenseDocumentationTemplates.findOneById(intervention.documentationTemplateId)
+                    : null);
+            if (!template) {
+                return API.v1.failure('No documentation template selected for this intervention');
+            }
+            const hydratedTemplate = await hydrateTemplateDrugFieldOptions(template);
+
+            if (!forceRefresh && Array.isArray(intervention.documentationPrefill?.fields) && intervention.documentationPrefill.fields.length) {
+                return API.v1.success({
+                    intervention: await hydrateInterventionDocumentationTemplate(intervention),
+                    template: hydratedTemplate,
+                    prefill: {
+                        model: intervention.documentationPrefill?.model,
+                        fields: intervention.documentationPrefill?.fields,
+                        requestedAt: intervention.documentationPrefill?.requestedAt,
+                    },
+                });
+            }
+
+            const draftValues = buildTemplateDraftValues(
+                hydratedTemplate,
+                intervention.documentationValues,
+                intervention.prescriptions,
+                intervention.followUp,
+            );
+            const context = await buildDocumentationContext(intervention, typeof roomId === 'string' ? roomId : undefined);
+            const requestId = typeof context.request?._id === 'string' ? context.request._id : undefined;
+            const prefillResponse = await callDocumentationPrefillWebhook({
+                roomId: typeof roomId === 'string' ? roomId : context.roomId,
+                requestId,
+                intervention,
+                template: hydratedTemplate,
+                context,
+                forceRefresh: Boolean(forceRefresh),
+            });
+            const appliedDraft = applyDocumentationPrefillResults({
+                template: hydratedTemplate,
+                baseDocumentationValues: draftValues.documentationValues,
+                basePrescriptions: draftValues.prescriptions,
+                baseFollowUp: draftValues.followUp,
+                prefillResponse,
+            });
+
+            const updateSet: Record<string, any> = {
+                _updatedAt: new Date(),
+            };
+
+            if (!intervention.documentationTemplateId) {
+                updateSet.documentationTemplateId = template._id;
+            }
+
+            if (!intervention.documentationTemplateVersion) {
+                updateSet.documentationTemplateVersion = hydratedTemplate.version;
+            }
+
+            if (!intervention.documentationTemplateSnapshot) {
+                updateSet.documentationTemplateSnapshot = hydratedTemplate;
+            }
+
+            if (!intervention.documentationStatus) {
+                updateSet.documentationStatus = 'draft';
+            }
+
+            updateSet.documentationValues = intervention.documentationValues ?? appliedDraft.documentationValues;
+            updateSet.prescriptions = intervention.prescriptions ?? appliedDraft.prescriptions;
+            updateSet.followUp = intervention.followUp ?? appliedDraft.followUp;
+            updateSet.documentationPrefill = {
+                requestedAt: new Date(),
+                completedAt: new Date(),
+                model: appliedDraft.prefill.model,
+                fields: appliedDraft.prefill.fields,
+            };
+
+            if (Object.keys(updateSet).length > 1) {
+                await MedsenseInterventions.updateOne(
+                    { _id: interventionId },
+                    {
+                        $set: updateSet,
+                    },
+                );
+            }
+
+            const updated = await MedsenseInterventions.findOneById(interventionId);
+            return API.v1.success({
+                intervention: await hydrateInterventionDocumentationTemplate(updated),
+                template: updated?.documentationTemplateSnapshot ? await hydrateTemplateDrugFieldOptions(updated.documentationTemplateSnapshot) : hydratedTemplate,
+                prefill: {
+                    model: appliedDraft.prefill.model,
+                    fields: appliedDraft.prefill.fields,
+                    requestedAt: new Date(),
+                },
+            });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/interventions.documentation.saveDraft',
+    { authRequired: true },
+    {
+        async post() {
+            check(this.bodyParams, Match.ObjectIncluding({
+                interventionId: String,
+                documentationValues: Match.Optional(Object),
+                prescriptions: Match.Optional([Object]),
+                followUp: Match.Optional(Object),
+                documentationPrefill: Match.Optional(Object),
+            }));
+
+            const { interventionId, documentationValues, prescriptions, followUp, documentationPrefill } = this.bodyParams as any;
+            const intervention = await MedsenseInterventions.findOneById(interventionId);
+            if (!intervention) {
+                return API.v1.failure('Intervention not found');
+            }
+
+            if (!(await canAccessInterventionDocumentation(this.userId, intervention))) {
+                return API.v1.forbidden();
+            }
+
+            if (intervention.documentationStatus && intervention.documentationStatus !== 'draft') {
+                return API.v1.failure('Documentation can only be edited while in draft status');
+            }
+
+            await MedsenseInterventions.updateOne(
+                { _id: interventionId },
+                {
+                    $set: {
+                        documentationValues: documentationValues ?? intervention.documentationValues ?? {},
+                        prescriptions: prescriptions ?? intervention.prescriptions ?? [],
+                        followUp: followUp ?? intervention.followUp ?? {},
+                        documentationPrefill: documentationPrefill ?? intervention.documentationPrefill ?? {},
+                        documentationStatus: 'draft',
+                        _updatedAt: new Date(),
+                    },
+                },
+            );
+
+            const updated = await MedsenseInterventions.findOneById(interventionId);
+            return API.v1.success({ intervention: updated });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/interventions.documentation.finalize',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'complete-medsense-documentation'))) {
+                return API.v1.forbidden();
+            }
+
+            check(this.bodyParams, Match.ObjectIncluding({ interventionId: String }));
+            const { interventionId } = this.bodyParams as any;
+
+            const intervention = await MedsenseInterventions.findOneById(interventionId);
+            if (!intervention) {
+                return API.v1.failure('Intervention not found');
+            }
+
+            if (!(await canAccessInterventionDocumentation(this.userId, intervention))) {
+                return API.v1.forbidden();
+            }
+
+            if (!intervention.documentationTemplateSnapshot) {
+                return API.v1.failure('Needs a resolved template first (call prefill)');
+            }
+
+            const hasPendingSuggestions = Array.isArray(intervention.documentationPrefill?.fields)
+                && intervention.documentationPrefill.fields.some((field: any) => field?.reviewStatus === 'pending');
+            if (hasPendingSuggestions) {
+                return API.v1.failure('Resolve all pending prefill suggestions before finalizing');
+            }
+
+            const user = await Users.findOneById(this.userId);
+
+            await MedsenseInterventions.updateOne(
+                { _id: interventionId },
+                {
+                    $set: {
+                        documentationStatus: 'ready_for_review',
+                        documentationTemplateVersion: intervention.documentationTemplateSnapshot.version,
+                        finalizedAt: new Date(),
+                        finalizedBy: {
+                            _id: this.userId,
+                            username: user?.username || '',
+                        },
+                        _updatedAt: new Date(),
+                    },
+                },
+            );
+
+            const updated = await MedsenseInterventions.findOneById(interventionId);
+            return API.v1.success({ intervention: updated });
+        },
+    },
+);
+
+API.v1.addRoute(
+    'medsense/interventions.documentation.sign',
+    { authRequired: true },
+    {
+        async post() {
+            if (!(await hasPermissionAsync(this.userId, 'complete-medsense-documentation'))) {
+                return API.v1.forbidden();
+            }
+
+            check(this.bodyParams, Match.ObjectIncluding({
+                interventionId: String,
+                role: String,
+                signatureImageData: String,
+                signerName: Match.Optional(String),
+            }));
+
+            const { interventionId, role, signatureImageData, signerName } = this.bodyParams as any;
+            if (role !== 'pharmacist' && role !== 'patient') {
+                return API.v1.failure('Invalid signer role');
+            }
+
+            const intervention = await MedsenseInterventions.findOneById(interventionId);
+            if (!intervention) {
+                return API.v1.failure('Intervention not found');
+            }
+
+            if (!(await canAccessInterventionDocumentation(this.userId, intervention))) {
+                return API.v1.forbidden();
+            }
+
+            const templateSnapshot = intervention.documentationTemplateSnapshot;
+            if (!templateSnapshot) {
+                return API.v1.failure('Finalize documentation before signing');
+            }
+
+            if (role === 'patient' && !templateSnapshot.signatureRules.allowPatientSignature) {
+                return API.v1.failure('Patient signatures are not enabled for this template');
+            }
+
+            if (role === 'patient' && (!signerName || !String(signerName).trim())) {
+                return API.v1.failure('Patient signer name is required');
+            }
+
+            const user = await Users.findOneById(this.userId);
+            const nextSignatures = {
+                ...(intervention.signatures || {}),
+                [role]: {
+                    name: role === 'patient' ? String(signerName).trim() : (user?.name || user?.username || 'Unknown'),
+                    role,
+                    signedAt: new Date(),
+                    signatureImageData,
+                },
+            };
+
+            const pharmacistSigned = Boolean(nextSignatures.pharmacist);
+            const patientSigned = Boolean(nextSignatures.patient);
+            const documentationStatus = (!templateSnapshot.signatureRules.requirePharmacistSignature || pharmacistSigned)
+                && (!templateSnapshot.signatureRules.requirePatientSignature || patientSigned)
+                ? 'signed'
+                : 'ready_for_review';
+
+            await MedsenseInterventions.updateOne(
+                { _id: interventionId },
+                {
+                    $set: {
+                        signatures: nextSignatures,
+                        documentationStatus,
+                        _updatedAt: new Date(),
+                    },
+                },
+            );
+
+            const updated = await MedsenseInterventions.findOneById(interventionId);
+            return API.v1.success({ intervention: updated });
+        },
+    },
 );

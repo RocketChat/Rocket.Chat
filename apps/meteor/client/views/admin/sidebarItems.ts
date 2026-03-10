@@ -43,6 +43,17 @@ export const {
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['medsense-manage-all-pharmacies', 'medsense-manage-individual-pharmacy']),
 	},
 	{
+		href: '/admin/medsense',
+		i18nLabel: 'Medsense',
+		iconElement: createElement(MedicalIcon, { width: '20px', height: '20px' }),
+		permissionGranted: (): boolean =>
+			hasAtLeastOnePermission([
+				'manage-medsense-documentation-templates',
+				'medsense-manage-all-pharmacies',
+				'medsense-manage-individual-pharmacy',
+			]),
+	},
+	{
 		href: '/admin/rooms',
 		i18nLabel: 'Rooms',
 		icon: 'hashtag',

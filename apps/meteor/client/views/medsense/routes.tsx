@@ -8,6 +8,10 @@ declare module '@rocket.chat/ui-contexts' {
             pattern: '/medsense/queue';
             pathname: '/medsense/queue';
         };
+        'medsense-documentation': {
+            pattern: '/medsense/documentation/:interventionId';
+            pathname: '/medsense/documentation/:interventionId';
+        };
         'medsense-manage-all-pharmacies': {
             pattern: '/medsense/manage-pharmacies/:tab?';
             pathname: '/medsense/manage-pharmacies';
@@ -28,6 +32,17 @@ export const registerQueueRoute = createRouteGroup(
 registerQueueRoute('/', {
     name: 'medsense-queue',
     component: lazy(() => import('./queue/QueueRoute')),
+});
+
+export const registerDocumentationRoute = createRouteGroup(
+    'medsense-documentation',
+    '/medsense/documentation',
+    lazy(() => import('./documentation/DocumentationReviewRoute')),
+);
+
+registerDocumentationRoute('/:interventionId', {
+    name: 'medsense-documentation',
+    component: lazy(() => import('./documentation/DocumentationReviewRoute')),
 });
 
 export const registerPharmacyRoute = createRouteGroup(

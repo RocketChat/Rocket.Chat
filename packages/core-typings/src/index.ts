@@ -156,3 +156,5 @@ export { schemas } from './Ajv';
 export * from './IMedsenseIntervention';
 export * from './IMedsenseInterventionNote';
 export * from './IMedsensePatientContext';
+export * from './IMedsenseDocumentationTemplate';
+export * from './IMedsenseDrugCatalogEntry';

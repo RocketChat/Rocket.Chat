@@ -112,6 +112,10 @@ declare module '@rocket.chat/ui-contexts' {
 			pattern: '/admin/pharmacies/:context?/:id?/:tab?';
 			pathname: `/admin/pharmacies${`/${string}` | ''}${`/${string}` | ''}${`/${string}` | ''}`;
 		};
+		'medsense-admin': {
+			pattern: '/admin/medsense';
+			pathname: '/admin/medsense';
+		};
 	}
 }
 
@@ -254,4 +258,9 @@ registerAdminRoute('/ABAC/:tab?/:context?/:id?', {
 registerAdminRoute('/pharmacies/:context?/:id?/:tab?', {
 	name: 'medsense-pharmacies',
 	component: lazy(() => import('../medsense/pharmacy/PharmacyRoute')),
+});
+
+registerAdminRoute('/medsense', {
+	name: 'medsense-admin',
+	component: lazy(() => import('./medsense/MedsenseAdminRoute')),
 });

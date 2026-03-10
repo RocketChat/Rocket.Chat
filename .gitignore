@@ -64,3 +64,5 @@ storybook-static
 development/tempo-data/
 
 .env
+
+/docs/

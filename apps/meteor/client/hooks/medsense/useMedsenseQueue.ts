@@ -8,7 +8,7 @@ export const useMedsenseQueue = () => {
     const { data: pharmacyData, isLoading: isLoadingPharmacies } = useQuery({
         queryKey: ['home-pharmacies'],
         queryFn: async () => getPharmacies({}),
-        enabled: true,
+        enabled: canViewQueuePermission,
         retry: false,
     });
 

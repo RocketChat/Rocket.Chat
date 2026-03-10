@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 export const useSettingsGroups = (filter: string): ISetting[] => {
 	const settings = useSettings();
 	const { t } = useTranslation();
+	const hiddenCustomGroups = new Set(['Medsense']);
 
 	const filterPredicate = useMemo(() => {
 		if (!filter) {
@@ -27,18 +28,21 @@ export const useSettingsGroups = (filter: string): ISetting[] => {
 	return useMemo(() => {
 		const groupIds = Array.from(
 			new Set(
-				settings.filter(filterPredicate).map((setting) => {
+				settings
+					.filter((setting) => !hiddenCustomGroups.has(setting.group || setting._id))
+					.filter(filterPredicate)
+					.map((setting) => {
 					if (setting.type === 'group') {
 						return setting._id;
 					}
 
 					return setting.group;
-				}),
+					}),
 			),
 		);
 
 		return settings
-			.filter(({ type, group, _id }) => type === 'group' && groupIds.includes(group || _id))
+			.filter(({ type, group, _id }) => type === 'group' && !hiddenCustomGroups.has(_id) && groupIds.includes(group || _id))
 			.sort((a, b) => t((a.i18nLabel || a._id) as TranslationKey).localeCompare(t((b.i18nLabel || b._id) as TranslationKey)));
 	}, [settings, filterPredicate, t]);
 };

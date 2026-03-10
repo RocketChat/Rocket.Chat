@@ -183,14 +183,14 @@ export const WaitingQueueContent = ({
 				const username = room.usernames?.[0];
 				if (username) directRoute.push({ username });
 			}
-		} catch {}
+		} catch { }
 	};
 
 	const handleTake = async (requestId: string, roomId: string) => {
 		try {
 			await takeMutation.mutateAsync({ requestId });
 			await openRoom(roomId);
-		} catch {}
+		} catch { }
 	};
 
 	if (isLoading) {
@@ -389,7 +389,7 @@ export const FollowedQueueContent = ({
 				const username = room.usernames?.[0];
 				if (username) directRoute.push({ username });
 			}
-		} catch {}
+		} catch { }
 	};
 
 	if (isLoading) {
@@ -784,6 +784,8 @@ const InterventionDetailsModal = ({
 		);
 	}
 
+	const docStatus = intervention.documentationStatus;
+
 	return (
 		<Modal>
 			<ModalHeader>
@@ -801,6 +803,11 @@ const InterventionDetailsModal = ({
 					<Box>
 						<b>{t('Created_At')}:</b> {formatDate(intervention.createdAt)}
 					</Box>
+					{docStatus && (
+						<Box>
+							<b>{t('Documentation Status')}:</b> <Tag>{docStatus.toUpperCase()}</Tag>
+						</Box>
+					)}
 					<Box mt='x8'>
 						<b>{t('Initial_Notes')}:</b>
 					</Box>

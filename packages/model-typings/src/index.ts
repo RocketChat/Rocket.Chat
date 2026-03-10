@@ -93,3 +93,5 @@ export * from './models/IMedsensePatientContextModel';
 export * from './models/IMedsensePharmacyInvitesModel';
 export * from './models/IMedsenseInterventionsModel';
 export * from './models/IMedsenseInterventionNotesModel';
+export * from './models/IMedsenseDocumentationTemplatesModel';
+export * from './models/IMedsenseDrugCatalogModel';

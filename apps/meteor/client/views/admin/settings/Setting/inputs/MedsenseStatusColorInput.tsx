@@ -1,4 +1,4 @@
-import { Box, Table, TableBody, TableCell, TableHead, TableRow, Select, Tag } from '@rocket.chat/fuselage';
+import { Box, Select } from '@rocket.chat/fuselage';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,6 +19,15 @@ const COLOR_OPTIONS: [string, string][] = [
     ['secondary', 'Secondary (Grey)'],
     ['default', 'Default (Neutral)'],
 ];
+
+const COLOR_PREVIEW_STYLES: Record<string, { background: string; color: string; border: string }> = {
+    primary: { background: '#1d74f5', color: '#ffffff', border: '#1d74f5' },
+    danger: { background: '#d64541', color: '#ffffff', border: '#d64541' },
+    warning: { background: '#f5a623', color: '#1f2329', border: '#f5a623' },
+    featured: { background: '#7c3aed', color: '#ffffff', border: '#7c3aed' },
+    secondary: { background: '#6b7280', color: '#ffffff', border: '#6b7280' },
+    default: { background: '#e5e7eb', color: '#1f2329', border: '#cbd5e1' },
+};
 
 const formatStatus = (status: string) => {
     const map: Record<string, string> = {
@@ -52,32 +61,53 @@ const MedsenseStatusColorInput = ({ value, onChangeValue }: { value?: any; onCha
 
     return (
         <Box display='flex' flexDirection='column' w='full'>
-            <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell>{t('Status')}</TableCell>
-                        <TableCell>{t('Color')}</TableCell>
-                        <TableCell>{t('Preview')}</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {STATUS_KEYS.map((status) => (
-                        <TableRow key={status}>
-                            <TableCell>{formatStatus(status)}</TableCell>
-                            <TableCell>
-                                <Select
-                                    options={COLOR_OPTIONS}
-                                    value={colors[status] || 'default'}
-                                    onChange={(val) => handleColorChange(status, String(val))}
-                                />
-                            </TableCell>
-                            <TableCell>
-                                <Tag variant={colors[status] as any}>{formatStatus(status)}</Tag>
-                            </TableCell>
-                        </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+            <Box display='flex' flexDirection='column' borderWidth='default' borderColor='extra-light' borderRadius='x4'>
+                {STATUS_KEYS.map((status, index) => (
+                    <Box
+                        key={status}
+                        display='flex'
+                        justifyContent='space-between'
+                        alignItems='center'
+                        pi='x16'
+                        pb='x12'
+                        pt='x12'
+                        flexWrap='wrap'
+                        borderBlockEndWidth={index === STATUS_KEYS.length - 1 ? 'none' : 'default'}
+                        borderColor='extra-light'
+                    >
+                        <Box display='flex' flexDirection='column' mie='x16'>
+                            <Box fontScale='p2m'>{formatStatus(status)}</Box>
+                            <Box display='flex' alignItems='center' flexWrap='wrap'>
+                                <Box fontScale='c1' color='hint' mie='x8'>
+                                    {t('Color')}: {colors[status] || 'default'}
+                                </Box>
+                                <Box
+                                    is='span'
+                                    fontScale='c1'
+                                    pi='x8'
+                                    pb='x2'
+                                    pt='x2'
+                                    borderRadius='x999'
+                                    style={{
+                                        background: COLOR_PREVIEW_STYLES[colors[status] || 'default']?.background || COLOR_PREVIEW_STYLES.default.background,
+                                        color: COLOR_PREVIEW_STYLES[colors[status] || 'default']?.color || COLOR_PREVIEW_STYLES.default.color,
+                                        border: `1px solid ${COLOR_PREVIEW_STYLES[colors[status] || 'default']?.border || COLOR_PREVIEW_STYLES.default.border}`,
+                                    }}
+                                >
+                                    {formatStatus(status)}
+                                </Box>
+                            </Box>
+                        </Box>
+                        <Box minWidth='x180'>
+                            <Select
+                                options={COLOR_OPTIONS}
+                                value={colors[status] || 'default'}
+                                onChange={(val) => handleColorChange(status, String(val))}
+                            />
+                        </Box>
+                    </Box>
+                ))}
+            </Box>
         </Box>
     );
 };
