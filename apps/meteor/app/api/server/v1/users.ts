@@ -911,7 +911,7 @@ const usersEndpoints = API.v1
 					_id: user?._id,
 					connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 					status: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-					message: user?.statusText,
+					...(user?.statusText && { message: user.statusText }),
 				});
 			}
 
@@ -920,7 +920,7 @@ const usersEndpoints = API.v1
 			return API.v1.success({
 				_id: user._id,
 				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-				message: user?.statusText,
+				...(user?.statusText && { message: user.statusText }),
 			});
 		},
 	);
