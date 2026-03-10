@@ -38,7 +38,7 @@ export async function applyStatusChange({
 	logger.debug({
 		msg: 'Applying status change for event',
 		eventId,
-		user: { _id: uid, status: user?.status, statusDefault: user?.statusDefault },
+		user: { _id: uid, statusDefault: user?.statusDefault },
 		startTime,
 		endTime,
 		newStatus,
