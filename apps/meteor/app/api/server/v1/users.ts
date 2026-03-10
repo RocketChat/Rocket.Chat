@@ -889,6 +889,7 @@ const usersEndpoints = API.v1
 					_id?: string;
 					status: 'online' | 'offline' | 'away' | 'busy';
 					connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
+					message?: string;
 				}>({
 					type: 'object',
 					properties: {
@@ -896,6 +897,7 @@ const usersEndpoints = API.v1
 						_id: { type: 'string' },
 						status: { type: 'string', enum: ['online', 'offline', 'away', 'busy'] },
 						connectionStatus: { type: 'string', enum: ['online', 'offline', 'away', 'busy'] },
+						message: { type: 'string' },
 					},
 					required: ['success', 'status'],
 					additionalProperties: false,
@@ -909,6 +911,7 @@ const usersEndpoints = API.v1
 					_id: user?._id,
 					connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 					status: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					message: user?.statusText,
 				});
 			}
 
@@ -917,6 +920,7 @@ const usersEndpoints = API.v1
 			return API.v1.success({
 				_id: user._id,
 				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+				message: user?.statusText,
 			});
 		},
 	);
