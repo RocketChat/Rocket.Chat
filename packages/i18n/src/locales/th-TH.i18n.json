@@ -925,7 +925,6 @@
   "FileUpload_S3_Proxy_Uploads": "การอัปโหลดพร็อกซี",
   "FileUpload_S3_Proxy_Uploads_Description": "พร็อกซีอัพโหลดไฟล์ผ่านเซิร์ฟเวอร์ของคุณแทนที่จะเข้าถึง URL ของเนื้อหาโดยตรง",
   "FileUpload_S3_Region": "ภูมิภาค",
-  "FileUpload_S3_SignatureVersion": "ฉบับลายเซ็น",
   "FileUpload_S3_URLExpiryTimeSpan": "URL เวลาหมดอายุ",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "เวลาหลังจากที่ Amazon S3 สร้าง URL จะไม่ถูกต้อง (เป็นวินาที) หากตั้งค่าไว้ไม่ถึง 5 วินาทีฟิลด์นี้จะถูกละเว้น",
   "FileUpload_Storage_Type": "ประเภทพื้นที่เก็บข้อมูล",
