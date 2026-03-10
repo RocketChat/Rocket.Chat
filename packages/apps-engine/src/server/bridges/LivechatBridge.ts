@@ -1,6 +1,6 @@
 import { BaseBridge } from './BaseBridge';
 import type { IExtraRoomParams } from '../../definition/accessors/ILivechatCreator';
-import type { IDepartment, ILivechatMessage, ILivechatRoom, ILivechatTransferData, IVisitor } from '../../definition/livechat';
+import type { IDepartment, IVisitorExternalIdentifier, ILivechatMessage, ILivechatRoom, ILivechatTransferData, IVisitor } from '../../definition/livechat';
 import type { IMessage } from '../../definition/messages';
 import type { IUser } from '../../definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
@@ -92,6 +92,12 @@ export abstract class LivechatBridge extends BaseBridge {
 	public async doFindVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined> {
 		if (this.hasReadPermission(appId, 'livechat-visitor')) {
 			return this.findVisitorByPhoneNumber(phoneNumber, appId);
+		}
+	}
+
+	public async doResolveVisitor(externalId: IVisitorExternalIdentifier, phone: string | undefined, appId: string): Promise<IVisitor | undefined> {
+		if (this.hasReadPermission(appId, 'livechat-visitor')) {
+			return this.resolveVisitor(externalId, phone, appId);
 		}
 	}
 
@@ -194,6 +200,8 @@ export abstract class LivechatBridge extends BaseBridge {
 	protected abstract findVisitorByToken(token: string, appId: string): Promise<IVisitor | undefined>;
 
 	protected abstract findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined>;
+
+	protected abstract resolveVisitor(externalId: IVisitorExternalIdentifier, phone: string | undefined, appId: string): Promise<IVisitor | undefined>;
 
 	protected abstract transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean>;
 
