@@ -952,7 +952,6 @@
   "FileUpload_S3_Proxy_Uploads": "Proxy Uploads",
   "FileUpload_S3_Proxy_Uploads_Description": "ຕົວແທນສົ່ງໄຟລ໌ສົ່ງໄຟລ໌ຜ່ານເຄື່ອງແມ່ຂ່າຍຂອງທ່ານແທນທີ່ຈະເຂົ້າເຖິງໂດຍກົງກັບ URL ຂອງຊັບສິນ",
   "FileUpload_S3_Region": "ພູມິພາກ",
-  "FileUpload_S3_SignatureVersion": "Signature Version",
   "FileUpload_S3_URLExpiryTimeSpan": "URLs Expiration Timespan",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "ເວລາຫຼັງຈາກທີ່ Amazon S3 ສ້າງ URL ຈະບໍ່ຖືກຕ້ອງ (ໃນວິນາທີ). ຖ້າຕັ້ງຄ່ານ້ອຍກວ່າ 5 ວິນາທີ, ພາກນີ້ຈະຖືກຍົກເລີກ.",
   "FileUpload_Storage_Type": "ປະເພດການເກັບຮັກສາ",

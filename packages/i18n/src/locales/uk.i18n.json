@@ -1251,7 +1251,6 @@
   "FileUpload_S3_Proxy_Uploads": "Проксі завантажень",
   "FileUpload_S3_Proxy_Uploads_Description": "Проксі-сервер завантажує файли через ваш сервер замість прямого доступу до URL-адреси ресурсу",
   "FileUpload_S3_Region": "Область",
-  "FileUpload_S3_SignatureVersion": "Версія підпису",
   "FileUpload_S3_URLExpiryTimeSpan": "URL-адреси терміну дії",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Час, після якого створені URL-адреси Amazon S3, більше не будуть дійсними (у секундах). Якщо встановлено менше 5 секунд, це поле буде проігноровано.",
   "FileUpload_Storage_Type": "Спосіб зберігання",

@@ -174,7 +174,7 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 		}
 
 		return {
-			...current.value,
+			type: 'PLAIN_TEXT',
 			value: `:${current.value.value}:`,
 		};
 	}
@@ -183,19 +183,55 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 };
 
 export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] => {
-	const flattenedValues = values.flat();
 	const result: Paragraph['value'] = [];
+	const flattenableValues = values as Array<Inlines | Inlines[]>;
 
-	for (let index = 0; index < flattenedValues.length; index++) {
-		const current = joinEmoji(flattenedValues[index], flattenedValues[index - 1], flattenedValues[index + 1]);
+	let previousInline = undefined as Inlines | undefined;
+	let pendingInline = undefined as Inlines | undefined;
+
+	const appendJoinedInline = (inline: Inlines, nextInline: Inlines | undefined): void => {
+		const current = joinEmoji(inline, previousInline, nextInline);
 		const previous = result[result.length - 1];
 
 		if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
 			previous.value += current.value;
+		} else {
+			result.push(current);
+		}
+
+		previousInline = inline;
+	};
+
+	for (let index = 0; index < flattenableValues.length; index++) {
+		const entry = flattenableValues[index];
+
+		if (Array.isArray(entry)) {
+			for (let nestedIndex = 0; nestedIndex < entry.length; nestedIndex++) {
+				const currentInline = entry[nestedIndex];
+
+				if (pendingInline === undefined) {
+					pendingInline = currentInline;
+					continue;
+				}
+
+				appendJoinedInline(pendingInline, currentInline);
+				pendingInline = currentInline;
+			}
+
 			continue;
 		}
 
-		result.push(current);
+		if (pendingInline === undefined) {
+			pendingInline = entry;
+			continue;
+		}
+
+		appendJoinedInline(pendingInline, entry);
+		pendingInline = entry;
+	}
+
+	if (pendingInline !== undefined) {
+		appendJoinedInline(pendingInline, undefined);
 	}
 
 	return result;

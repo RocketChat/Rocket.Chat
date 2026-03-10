@@ -2321,7 +2321,6 @@
   "FileUpload_S3_Proxy_UserDataFiles": "Proxy User Data Files",
   "FileUpload_S3_Proxy_UserDataFiles_Description": "Proxy user data file transmissions through your server instead of direct access to the asset's URL",
   "FileUpload_S3_Region": "Region",
-  "FileUpload_S3_SignatureVersion": "Signature Version",
   "FileUpload_S3_URLExpiryTimeSpan": "URLs Expiration Timespan",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Time after which Amazon S3 generated URLs will no longer be valid (in seconds). If set to less than 5 seconds, this field will be ignored.",
   "FileUpload_Storage_Type": "Storage Type",
@@ -5422,6 +5421,8 @@
   "UI_Use_Real_Name": "Use Real Name",
   "URL": "URL",
   "URLs": "URLs",
+  "URL_is_required": "URL is required",
+  "URL_must_start_with_'http://'_or_'https://'": "URL must start with 'http://' or 'https://'",
   "UTC_Timezone": "UTC Timezone",
   "UTF8_Channel_Names_Validation": "UTF8 Channel Names Validation",
   "UTF8_Channel_Names_Validation_Description": "RegExp that will be used to validate channel names",
@@ -7108,5 +7109,8 @@
   "Message_composer": "Message composer",
   "Thread_composer": "Thread composer",
   "Room_composer": "Room composer",
-  "Date_range_presets": "Date range presets"
+  "Date_range_presets": "Date range presets",
+  "message_body": "message body",
+  "message_attachment": "message attachment",
+  "system_message_body": "system message body"
 }

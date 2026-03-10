@@ -2124,7 +2124,6 @@
   "FileUpload_S3_Proxy_UserDataFiles": "Bruk proxy for brukerdatafiler",
   "FileUpload_S3_Proxy_UserDataFiles_Description": "Proxy brukerdatafiloverføringer gjennom serveren din i stedet for direkte til ressursens URL",
   "FileUpload_S3_Region": "Region",
-  "FileUpload_S3_SignatureVersion": "Signaturversjon",
   "FileUpload_S3_URLExpiryTimeSpan": "Nettadresser for utløpsdato",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Tid etterpå vil Amazon S3 genererte nettadresser ikke lenger være gyldige (i sekunder). Hvis innstilt til mindre enn 5 sekunder, ignoreres dette feltet.",
   "FileUpload_Storage_Type": "Lagringstype",

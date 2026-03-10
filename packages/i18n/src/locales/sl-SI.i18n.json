@@ -924,7 +924,6 @@
   "FileUpload_S3_Proxy_Uploads": "Nalaganje proxy",
   "FileUpload_S3_Proxy_Uploads_Description": "Prenos datotek prek posrednika prek strežnika namesto neposrednega dostopa do URL-ja sredstva",
   "FileUpload_S3_Region": "Kraj",
-  "FileUpload_S3_SignatureVersion": "Podpisna različica",
   "FileUpload_S3_URLExpiryTimeSpan": "Časovni razpon poteka URL-ja",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Čas, po katerem ustvarjeni URL-ji Amazon S3 ne bodo več veljavni (v nekaj sekundah). To polje bo prezrto, če je nastavljeno na manj kot 5 sekund.",
   "FileUpload_Storage_Type": "Vrsta pomnilnika",
