@@ -1,24 +1,24 @@
+/* Global emoji styles */
+.emoji {
+	/* custom emojis */
+	&--custom {
+		height: 1.375rem;
+		width: 1.375rem;
+		overflow: hidden;
+		position: relative;
+		text-indent: 100%;
+		vertical-align: bottom;
+		display: inline-block;
+		margin: 0 .15em;
+		background-position: 50%;
+		background-repeat: no-repeat;
+		background-size: contain;
+	}
+}
+
 /* emoji picker */
 .rcx-button .emoji {
 	font-size: 1.375rem;
-}
-
-.emojipicker {
-	&--custom {
-		& .emoji {
-			height: 1.375rem;
-			width: 1.375rem;
-			overflow: hidden;
-			position: relative;
-			text-indent: 100%;
-			vertical-align: bottom;
-			display: inline-block;
-			margin: 0 .15em;
-			background-position: 50%;
-			background-repeat: no-repeat;
-			background-size: contain;
-		}
-	}
 }
 
 .rcx-message {
@@ -31,20 +31,14 @@
 		/* big emojis (messages with emojis only) */
 		&--big {
 			font-size: 2.75rem;
-		}
 
-		/* custom emojis */
-		&--custom {
-			overflow: hidden;
-			position: relative;
-			text-indent: 100%;
-			vertical-align: bottom;
-			display: inline-block;
-			margin: 0 .15em;
-			background-position: 50%;
-			background-repeat: no-repeat;
-			background-size: contain;
-
+			/* big custom emojis need explicit dimensions */
+			&.emoji {
+				&--custom {
+					height: 2.75rem;
+					width: 2.75rem;
+				}
+			}
 		}
 	}
 }
