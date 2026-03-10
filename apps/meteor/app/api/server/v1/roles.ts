@@ -28,7 +28,6 @@ API.v1.addRoute(
 	},
 );
 
-
 API.v1.addRoute(
 	'roles.addUserToRole',
 	{ authRequired: true },
@@ -95,9 +94,9 @@ API.v1.addRoute(
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
-				limit: count as number,
+				limit: count,
 				sort: { username: 1 },
-				skip: offset as number,
+				skip: offset,
 				projection,
 			});
 
@@ -290,6 +289,6 @@ const rolesRoutes = API.v1
 type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
 	interface Endpoints extends RolesEndpoints {}
 }
