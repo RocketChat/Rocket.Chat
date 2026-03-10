@@ -178,6 +178,13 @@ async function handleInvite({
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, inviteeUser._id);
 	if (subscription) {
+		// If the user was banned, treat the invite as an unban
+		if (subscription.status === 'BANNED') {
+			await Subscriptions.unbanByRoomIdAndUserId(room._id, inviteeUser._id);
+			await Users.addRoomByUserId(inviteeUser._id, room._id);
+			await Rooms.incUsersCountById(room._id, 1);
+			logger.info({ msg: 'Unbanned user via federation invite', userId: inviteeUser._id, roomId: room._id });
+		}
 		return;
 	}
 

@@ -7,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../server/lib/callbacks';
+import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/afterUnbanFromRoomCallback';
 import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
@@ -79,6 +80,16 @@ export const addUserToRoom = async (
 				void notifyOnSubscriptionChanged(unbannedSubscription, 'inserted');
 			}
 			void notifyOnRoomChangedById(rid);
+
+			if (inviter) {
+				const inviterUser = await Users.findOneById(inviter._id);
+				if (inviterUser) {
+					setImmediate(() => {
+						void afterUnbanFromRoomCallback.run({ unbannedUser: userToBeAdded, userWhoUnbanned: inviterUser }, room);
+					});
+				}
+			}
+
 			return true;
 		}
 

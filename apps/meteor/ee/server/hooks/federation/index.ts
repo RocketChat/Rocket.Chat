@@ -7,6 +7,7 @@ import { Rooms } from '@rocket.chat/models';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
+import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/afterUnbanFromRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
@@ -197,6 +198,16 @@ afterBanFromRoomCallback.add(
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-ban-from-room',
+);
+
+afterUnbanFromRoomCallback.add(
+	async (data: { unbannedUser: IUser; userWhoUnbanned: IUser }, room: IRoom): Promise<void> => {
+		if (FederationActions.shouldPerformFederationAction(room)) {
+			await FederationMatrix.inviteUsersToRoom(room, [data.unbannedUser.username!], data.userWhoUnbanned);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-unban-from-room',
 );
 
 callbacks.add(
