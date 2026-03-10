@@ -6,10 +6,15 @@ export const detectEmoji = (text: string): { name: string; className: string; im
 		.reduce((html, { render }) => render(html), text);
 	const div = document.createElement('div');
 	div.innerHTML = html;
-	return Array.from(div.querySelectorAll('span')).map((span) => ({
-		name: span.title,
-		className: span.className,
-		image: span.style.backgroundImage || undefined,
-		content: span.innerText,
-	}));
+	return Array.from(div.querySelectorAll('span, img')).map((element) => {
+		const backgroundImage = element instanceof HTMLElement ? element.style.backgroundImage : '';
+		const sourceImage = element.getAttribute('src');
+
+		return {
+			name: element.getAttribute('title') || '',
+			className: element.tagName === 'IMG' ? '' : element.className,
+			image: backgroundImage || (sourceImage ? `url("${sourceImage}")` : undefined),
+			content: element.textContent || element.getAttribute('alt') || '',
+		};
+	});
 };

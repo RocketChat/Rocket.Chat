@@ -8,12 +8,18 @@ import nsg from 'node-sprite-generator';
 import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]
 
-const assetFolder = '../../../node_modules/emojione-assets';
-const emojiJsonFile = `${assetFolder}/emoji.json`;
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const assetFolder = path.join(__dirname, '../../../node_modules/emoji-toolkit');
+const emojiJsonFile = path.join(assetFolder, 'emoji.json');
 
 if (!fs.existsSync(emojiJsonFile)) {
 	console.error(`${emojiJsonFile} doesn't exist.`);
-	console.error("Maybe you need to run 'meteor npm install emojione-assets' or 'meteor npm install'?");
+	console.error("Maybe you need to run 'meteor npm install emoji-toolkit' or 'meteor npm install'?");
 } else {
 	const emojiJson = fs.readFileSync(emojiJsonFile);
 	generateEmojiPicker(emojiJson);
@@ -101,11 +107,11 @@ function generateEmojiPicker(data) {
 	}
 	output += `};\n`;
 
-	fs.writeFileSync('emojiPicker.js', output, {
+	fs.writeFileSync('emojiPicker.ts', output, {
 		encoding: 'utf8',
 		flag: 'w',
 	});
-	console.log('Generated emojiPicker.js!');
+	console.log('Generated emojiPicker.ts!');
 
 	console.log('Generating sprite sheets....');
 
@@ -115,7 +121,7 @@ function generateEmojiPicker(data) {
 		let srcList = [];
 		let diversityList = [];
 		const emojis = _.filter(emojiList, (x) => x.category === category);
-		const spritePath = `../../../public/packages/emojione/${category}-sprites.png`;
+		const spritePath = path.join(__dirname, `../../../public/packages/emojione/${category}-sprites.png`);
 
 		_.each(emojis, function (emoji) {
 			srcList.push(`${assetFolder}/png/64/${emoji.code_points.base}.png`);
@@ -130,8 +136,8 @@ function generateEmojiPicker(data) {
 				src: srcList,
 				spritePath: spritePath,
 				layout: 'packed',
-				stylesheet: 'emojione.tpl',
-				stylesheetPath: `../client/${category}-sprites.css`,
+				stylesheet: path.join(__dirname, './emojione.tpl'),
+				stylesheetPath: path.join(__dirname, `../client/${category}-sprites.css`),
 				compositor: 'gm',
 				layoutOptions: {
 					scaling: 1,
@@ -175,7 +181,7 @@ function generateEmojiPicker(data) {
 	image-rendering: optimizeQuality;
 }
 `;
-	fs.writeFileSync('../client/emojione-sprites.css', spriteCss, {
+	fs.writeFileSync(path.join(__dirname, '../client/emojione-sprites.css'), spriteCss, {
 		encoding: 'utf8',
 		flag: 'w',
 	});

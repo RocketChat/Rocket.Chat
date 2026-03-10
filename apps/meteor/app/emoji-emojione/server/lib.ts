@@ -18,9 +18,9 @@ if (emoji.packages.emojione) {
 	emoji.packages.emojione.renderPicker = config.renderPicker;
 	// TODO: check types
 	// RocketChat.emoji.list is the collection of emojis from all emoji packages
-	for (const key in config.emojione.emojioneList) {
-		if (config.emojione.emojioneList.hasOwnProperty(key)) {
-			const currentEmoji = config.emojione.emojioneList[key];
+	for (const key in config.emojione.emojiList) {
+		if (config.emojione.emojiList.hasOwnProperty(key)) {
+			const currentEmoji = config.emojione.emojiList[key];
 			currentEmoji.emojiPackage = 'emojione';
 			emoji.list[key] = currentEmoji;
 

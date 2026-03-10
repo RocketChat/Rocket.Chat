@@ -196,7 +196,7 @@ const MessageBox = ({
 
 		const input = event.target as HTMLTextAreaElement;
 
-		const isSubmitKey = keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
+		const isSubmitKey = event.key === 'Enter' || keyCode === keyCodes.CARRIAGE_RETURN || keyCode === keyCodes.NEW_LINE;
 
 		if (isSubmitKey) {
 			const withModifier = event.shiftKey || event.ctrlKey || event.altKey || event.metaKey;
