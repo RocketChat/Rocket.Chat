@@ -3,22 +3,21 @@
 	font-size: 1.375rem;
 }
 
-.emojipicker--custom {
-	& .emoji {
-		height: 1.375rem;
-		width: 1.375rem;
-
-		overflow: hidden;
-		position: relative;
-		text-indent: 100%;
-		vertical-align: bottom;
-
-		display: inline-block;
-		margin: 0 .15em;
-
-		background-position: 50%;
-		background-repeat: no-repeat;
-		background-size: contain;
+.emojipicker {
+	&--custom {
+		& .emoji {
+			height: 1.375rem;
+			width: 1.375rem;
+			overflow: hidden;
+			position: relative;
+			text-indent: 100%;
+			vertical-align: bottom;
+			display: inline-block;
+			margin: 0 .15em;
+			background-position: 50%;
+			background-repeat: no-repeat;
+			background-size: contain;
+		}
 	}
 }
 
@@ -40,11 +39,8 @@
 			position: relative;
 			text-indent: 100%;
 			vertical-align: bottom;
-
-
 			display: inline-block;
 			margin: 0 .15em;
-
 			background-position: 50%;
 			background-repeat: no-repeat;
 			background-size: contain;
