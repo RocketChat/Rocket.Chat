@@ -155,12 +155,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.localCallId;
 	}
 
-	private _screenShareRequested: boolean;
-
-	public get screenShareRequested(): boolean {
-		return this._screenShareRequested;
-	}
-
 	private _activeTimestamp: Date | undefined;
 
 	public get activeTimestamp(): Date | undefined {
@@ -241,7 +235,6 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
 		this.videoTrack = videoTrack || null;
-		this._screenShareRequested = Boolean(videoTrack);
 		this.creationTimestamp = new Date();
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;
@@ -486,11 +479,16 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	public async setVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
 		this.config.logger?.debug('ClientMediaCall.setVideoTrack', Boolean(newVideoTrack));
-		if (newVideoTrack && (this.isOver() || this.hidden)) {
+		if (this.hasVideoTrack()) {
+			this.config.logger?.debug('ClientMediaCall.setVideoTrack.stopOldTrack');
+			this.videoTrack?.stop();
+		}
+
+		if (newVideoTrack && !this.canHaveVideoTrack()) {
 			return;
 		}
 
-		const hadVideoTrack = Boolean(this.videoTrack);
+		const hadVideoTrack = this.hasVideoTrack();
 
 		this.videoTrack = newVideoTrack;
 		if (this.webrtcProcessor) {
@@ -502,16 +500,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public mayNeedVideoTrack(): boolean {
+	public canHaveVideoTrack(): boolean {
 		if (this.isOver() || this._ignored || this.hidden) {
-			return false;
-		}
-
-		return this._screenShareRequested;
-	}
-
-	public needsVideoTrack(): boolean {
-		if (!this.mayNeedVideoTrack()) {
 			return false;
 		}
 
@@ -524,10 +514,6 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	public hasVideoTrack(): boolean {
 		return Boolean(this.videoTrack);
-	}
-
-	public isMissingVideoTrack(): boolean {
-		return !this.hasVideoTrack() && this.mayNeedVideoTrack();
 	}
 
 	public getLocalMediaStream(tag?: string): IMediaStreamWrapper | null {
@@ -732,14 +718,12 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public setScreenShareRequested(requested: boolean): void {
-		if (this.isOver() || this.hidden) {
-			return;
-		}
-		if (!this.webrtcProcessor && !requested) {
+		this.config.logger?.debug('ClientMediaCall.setScreenShareRequested', requested);
+		if (!this.canHaveVideoTrack()) {
 			return;
 		}
 
-		if (this._screenShareRequested === requested) {
+		if (!this.webrtcProcessor && !requested) {
 			return;
 		}
 
@@ -749,8 +733,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this.requireWebRTC();
 
-		this._screenShareRequested = requested;
-		this.emitter.emit('screenShareRequestChange');
+		this.emitter.emit('screenShareRequestChange', requested);
 	}
 
 	public setContractState(state: 'signed' | 'ignored') {

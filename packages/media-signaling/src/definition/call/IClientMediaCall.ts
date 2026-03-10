@@ -105,8 +105,6 @@ export interface IClientMediaCall {
 	/** confirmed indicates if the call exists on the server */
 	readonly confirmed: boolean;
 
-	readonly screenShareRequested: boolean;
-
 	emitter: Emitter<CallEvents>;
 
 	getLocalMediaStream(tag?: string): IMediaStreamWrapper | null;
@@ -118,6 +116,9 @@ export interface IClientMediaCall {
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
 	setScreenShareRequested(requested: boolean): void;
+	setVideoTrack(videoTrack: MediaStreamTrack | null): Promise<void>;
+	hasVideoTrack(): boolean;
+	canHaveVideoTrack(): boolean;
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;

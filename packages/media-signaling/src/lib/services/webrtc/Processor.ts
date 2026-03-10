@@ -144,6 +144,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.stopped = true;
 		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
 		this.streams.stopRemoteStreams();
+		// The screen share local stream is safe to stop here, as currently it shouldn't be used by any other call
+		this.videoTrack?.stop();
 		this.unregisterPeerEvents();
 
 		this.peer.close();

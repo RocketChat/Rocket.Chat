@@ -30,7 +30,7 @@ export type CallEvents = {
 	ended: void;
 
 	/* Triggered when screen share is toggled */
-	screenShareRequestChange: void;
+	screenShareRequestChange: boolean;
 
 	/* Triggered when any of the streams or tracks have changed */
 	streamChange: void;

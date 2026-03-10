@@ -101,7 +101,7 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			}
 
 			try {
-				mainCall.setScreenShareRequested(!mainCall.screenShareRequested);
+				mainCall.setScreenShareRequested(!mainCall.hasVideoTrack());
 			} catch (error) {
 				console.error('Error toggling screen share', error);
 			}
