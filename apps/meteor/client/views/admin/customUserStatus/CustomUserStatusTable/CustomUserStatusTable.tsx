@@ -25,7 +25,7 @@ type CustomUserStatusProps = {
 	onClick: (id: string) => void;
 };
 
-const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElement | null => {
+const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElement => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
@@ -46,7 +46,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 
 	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
 
-	const { data, isLoading, refetch, isFetched, isError } = useQuery({
+	const { data, isLoading, refetch, isFetched, isLoadingError } = useQuery({
 		queryKey: ['custom-user-statuses', query],
 
 		queryFn: async () => {
@@ -65,7 +65,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 	return (
 		<>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
-			{isError && (
+			{isLoadingError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />
 					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
@@ -74,7 +74,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 					</StatesActions>
 				</States>
 			)}
-			{!isError && isLoading && !data && (
+			{!isLoadingError && isLoading && !data && (
 				<GenericTable>
 					<GenericTableHeader>
 						<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
@@ -95,8 +95,8 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 					</GenericTableBody>
 				</GenericTable>
 			)}
-			{!isError && data && data.length === 0 && <GenericNoResult />}
-			{!isError && data && data.length > 0 && (
+			{!isLoadingError && data && data.length === 0 && <GenericNoResult />}
+			{!isLoadingError && data && data.length > 0 && (
 				<>
 					<GenericTable>
 						<GenericTableHeader>
