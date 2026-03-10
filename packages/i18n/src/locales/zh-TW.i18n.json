@@ -1562,7 +1562,6 @@
   "FileUpload_S3_Proxy_Uploads": "代理上傳",
   "FileUpload_S3_Proxy_Uploads_Description": "代理通過您的伺服器上傳檔案傳輸，而不是直接存取資產的網址",
   "FileUpload_S3_Region": "地區",
-  "FileUpload_S3_SignatureVersion": "簽名版本",
   "FileUpload_S3_URLExpiryTimeSpan": "網址過期 Timespan",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "在此之後，Amazon S3生成的網址將不再有效（以秒為單位）。如果設置為小於5秒，則該欄位將被忽略。",
   "FileUpload_Storage_Type": "儲存類型",

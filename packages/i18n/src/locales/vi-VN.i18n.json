@@ -1021,7 +1021,6 @@
   "FileUpload_S3_Proxy_Uploads": "Tải lên proxy",
   "FileUpload_S3_Proxy_Uploads_Description": "Tệp tải lên tệp Proxy qua máy chủ của bạn thay vì truy cập trực tiếp vào URL của nội dung",
   "FileUpload_S3_Region": "Khu vực",
-  "FileUpload_S3_SignatureVersion": "Phiên bản Chữ ký",
   "FileUpload_S3_URLExpiryTimeSpan": "Thời gian hết hạn URL",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Thời gian sau đó Amazon S3 tạo URL sẽ không còn giá trị (tính bằng giây). Nếu đặt dưới 5 giây, trường này sẽ bị bỏ qua.",
   "FileUpload_Storage_Type": "Loại lưu trữ",

@@ -1280,7 +1280,6 @@
   "FileUpload_S3_Proxy_Uploads": "პროქსი ატვირთვები",
   "FileUpload_S3_Proxy_Uploads_Description": "პროქსი ატვირთვა/ფაილების გადაცემა თქვენს სერვერზე, ობიექტის URL– ზე პირდაპირი წვდომის ნაცვლად",
   "FileUpload_S3_Region": "რეგიონი",
-  "FileUpload_S3_SignatureVersion": "ხელმოწერის ვერსია",
   "FileUpload_S3_URLExpiryTimeSpan": "URL- ების ვადის გასვლის დრო",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "დრო, რომლის შემდეგაც Amazon S3- ის წარმოქმნილი მისამართები აღარ იქნება ძალაში (წამში). თუ 5 წამზე ნაკლებია დაყენებული, ეს ველი უგულებელყოფილი იქნება.",
   "FileUpload_Storage_Type": "storage ტიპი",

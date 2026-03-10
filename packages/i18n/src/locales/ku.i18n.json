@@ -924,7 +924,6 @@
   "FileUpload_S3_Proxy_Uploads": "Proxy Uploads",
   "FileUpload_S3_Proxy_Uploads_Description": "Proxy bi rêya veguherandina pelê veguhastina pelê we bi rasterast bi riya gihîştina malpera sîgorteyê",
   "FileUpload_S3_Region": "Herêm",
-  "FileUpload_S3_SignatureVersion": "Vebijêrk Pîroz",
   "FileUpload_S3_URLExpiryTimeSpan": "URLs Expiration Timespan",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Piştî demekê ku kîjan S3-ê URL-ê afirandiye, dê êdî nayê derbas kirin (di sisiyan de). Heke ku ji 5 salan kêmtir vekirî be, dê zeviyê dê bêne guhartin.",
   "FileUpload_Storage_Type": "Type Storage",
