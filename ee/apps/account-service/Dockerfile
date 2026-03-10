@@ -88,6 +88,11 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
+# Build a glibc-compatible bcrypt package to be copied into the FIPS runtime image.
+FROM node:22.22.1-bookworm-slim AS fips-bcrypt
+WORKDIR /tmp/fips-bcrypt
+RUN npm init -y && npm install bcrypt@5.1.1 --omit=dev
+
 FROM node:22.16.0-alpine3.21 AS release-standard
 
 ARG SERVICE
@@ -121,6 +126,8 @@ ARG SERVICE
 ENV NODE_ENV=production \
     PORT=3000
 COPY --chown=node:node --from=builder /app /app
+COPY --chown=node:node --from=fips-bcrypt /tmp/fips-bcrypt/node_modules/bcrypt /app/node_modules/bcrypt
+
 WORKDIR /app/ee/apps/${SERVICE}
 USER node
 EXPOSE 3000 9458
