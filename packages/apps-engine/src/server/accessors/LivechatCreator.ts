@@ -3,7 +3,7 @@ import { randomBytes } from 'crypto';
 import type { ILivechatCreator } from '../../definition/accessors';
 import type { IExtraRoomParams } from '../../definition/accessors/ILivechatCreator';
 import type { ILivechatRoom } from '../../definition/livechat/ILivechatRoom';
-import type { IVisitor } from '../../definition/livechat/IVisitor';
+import type { IVisitorExternalIdentifier, IVisitor } from '../../definition/livechat/IVisitor';
 import type { IUser } from '../../definition/users';
 import type { AppBridges } from '../bridges';
 
@@ -12,6 +12,10 @@ export class LivechatCreator implements ILivechatCreator {
 		private readonly bridges: AppBridges,
 		private readonly appId: string,
 	) {}
+
+	public resolveVisitor(externalId: IVisitorExternalIdentifier, phone?: string): Promise<IVisitor | undefined> {
+		return this.bridges.getLivechatBridge().doResolveVisitor(externalId, phone, this.appId);
+	}
 
 	public createRoom(visitor: IVisitor, agent: IUser, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
 		return this.bridges.getLivechatBridge().doCreateRoom(visitor, agent, this.appId, extraParams);
