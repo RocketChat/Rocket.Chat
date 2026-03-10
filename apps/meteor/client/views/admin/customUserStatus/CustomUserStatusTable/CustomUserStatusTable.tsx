@@ -74,7 +74,27 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 					</StatesActions>
 				</States>
 			)}
-			{!isError && isLoading && <GenericTableLoadingTable headerCells={2} />}
+			{!isError && isLoading && !data && (
+				<GenericTable>
+					<GenericTableHeader>
+						<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
+							{t('Name')}
+						</GenericTableHeaderCell>
+						<GenericTableHeaderCell
+							key='presence'
+							direction={sortDirection}
+							active={sortBy === 'statusType'}
+							onClick={setSort}
+							sort='statusType'
+						>
+							{t('Presence')}
+						</GenericTableHeaderCell>
+					</GenericTableHeader>
+					<GenericTableBody>
+						<GenericTableLoadingTable headerCells={2} />
+					</GenericTableBody>
+				</GenericTable>
+			)}
 			{!isError && data && data.length === 0 && <GenericNoResult />}
 			{!isError && data && data.length > 0 && (
 				<>
