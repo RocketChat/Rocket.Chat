@@ -13,3 +13,8 @@ services:
     build:
       target: release-fips
     image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}-fips
+
+  queue-worker-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}-fips
