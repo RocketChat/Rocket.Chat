@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 
-import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	ajv,
@@ -394,10 +394,20 @@ API.v1.get(
 	},
 );
 
-const directoryResponseSchema = ajv.compile<{ result: (IUser | IRoom)[]; count: number; offset: number; total: number }>({
+const directoryResponseSchema = ajv.compile<{
+	result: (IDirectoryUserResult | IDirectoryChannelResult)[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
 	type: 'object',
 	properties: {
-		result: { type: 'array', items: { oneOf: [{ $ref: '#/components/schemas/IUser' }, { $ref: '#/components/schemas/IRoom' }] } },
+		result: {
+			type: 'array',
+			items: {
+				oneOf: [{ $ref: '#/components/schemas/IDirectoryUserResult' }, { $ref: '#/components/schemas/IDirectoryChannelResult' }],
+			},
+		},
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },
@@ -452,7 +462,7 @@ API.v1.get(
 			return API.v1.failure('Please verify the parameters');
 		}
 		return API.v1.success({
-			result: result.results as (IUser | IRoom)[],
+			result: result.results as (IDirectoryUserResult | IDirectoryChannelResult)[],
 			count: result.results.length,
 			offset,
 			total: result.total,

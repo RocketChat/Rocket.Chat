@@ -12,10 +12,10 @@ import type { IMessage } from './IMessage';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
 import type { IRole } from './IRole';
-import type { IRoom } from './IRoom';
+import type { IRoom, IDirectoryChannelResult } from './IRoom';
 import type { ISubscription } from './ISubscription';
+import type { IUser, IDirectoryUserResult } from './IUser';
 import type { VideoConference, VideoConferenceInstructions } from './IVideoConference';
-import type { IUser } from './IUser';
 import type { SlashCommand } from './SlashCommands';
 import type { VideoConferenceCapabilities } from './VideoConferenceCapabilities';
 import type { IMediaCall } from './mediaCalls/IMediaCall';
@@ -34,7 +34,9 @@ export const schemas = typia.json.schemas<
 			| ICalendarEvent
 			| IRole
 			| IRoom
+			| IDirectoryChannelResult
 			| IUser
+			| IDirectoryUserResult
 			| VideoConference
 			| VideoConferenceCapabilities
 			| VideoConferenceInstructions
