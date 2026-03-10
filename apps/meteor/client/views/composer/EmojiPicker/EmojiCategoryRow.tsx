@@ -46,7 +46,13 @@ const EmojiCategoryRow = ({ item, handleLoadMore, handleSelectEmoji }: EmojiCate
 		<EmojiPickerCategoryWrapper className={[categoryRowStyle /* `emoji-category-${categoryKey}` */].filter(Boolean)}>
 			{item.length === 0 && <EmojiPickerNotFound>{t('No_emojis_found')}</EmojiPickerNotFound>}
 			{item.map(({ emoji, image, category }) => (
-				<EmojiElement key={emoji + category} emoji={emoji} image={image} onClick={handleSelectEmoji} />
+				<EmojiElement
+					key={emoji + category}
+					emoji={emoji}
+					image={image}
+					className={category === 'rocket' ? 'emojipicker--custom' : ''}
+					onClick={handleSelectEmoji}
+				/>
 			))}
 		</EmojiPickerCategoryWrapper>
 	);
