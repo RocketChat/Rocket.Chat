@@ -2,6 +2,7 @@ import { ScanContext, flushText, emit } from '../ScanContext';
 import { TokenKind } from '../Token';
 import { CH_BACKTICK, CH_LF, CH_CR } from '../constants/charCodes';
 
+/** Scanner for `` ` ``: dispatches to fenced-block or inline-code scanning. */
 export function scanBacktick(ctx: ScanContext, pos: number): number {
     flushText(ctx, pos);
     if (
@@ -13,7 +14,7 @@ export function scanBacktick(ctx: ScanContext, pos: number): number {
     return scanInlineCode(ctx, pos);
 }
 
-// ``` fenced code block
+/** Scans a ` ``` ` fenced code block, emitting open/content/close tokens. */
 function scanFencedBlock(ctx: ScanContext, pos: number): number {
     const { input, len } = ctx;
     emit(ctx, TokenKind.TRIPLE_BACKTICK, '```', '```', pos);
@@ -38,7 +39,7 @@ function scanFencedBlock(ctx: ScanContext, pos: number): number {
     return pos;
 }
 
-// single ` inline code (doesn't cross lines)
+/** Scans a single-backtick inline code span that cannot cross a line boundary. */
 function scanInlineCode(ctx: ScanContext, pos: number): number {
     const { input, len } = ctx;
     emit(ctx, TokenKind.BACKTICK, '`', '`', pos);
@@ -65,6 +66,7 @@ function scanInlineCode(ctx: ScanContext, pos: number): number {
     return pos;
 }
 
+/** Emits a {@link TokenKind.CODE_CONTENT} token for the slice `[start, end)` if non-empty. */
 function emitCodeBody(ctx: ScanContext, start: number, end: number): void {
     if (end > start) {
         const body = ctx.input.slice(start, end);
@@ -72,6 +74,7 @@ function emitCodeBody(ctx: ScanContext, start: number, end: number): void {
     }
 }
 
+/** Emits a {@link TokenKind.TEXT} token for the slice `[start, end)` if non-empty. */
 function emitTextBody(ctx: ScanContext, start: number, end: number): void {
     if (end > start) {
         const body = ctx.input.slice(start, end);

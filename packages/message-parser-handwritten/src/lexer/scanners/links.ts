@@ -3,7 +3,10 @@ import { TokenKind } from '../Token';
 import { CH_GT, CH_T_LO, CH_COLON, CH_LBRACKET, CH_LPAREN } from '../constants/charCodes';
 import { TS_INNER } from '../constants/regexes';
 
-// < can be <t:timestamp>, emoticon, or angle bracket
+/**
+ * Scanner for `<`: emits a {@link TokenKind.TIMESTAMP} for `<t:…>` sequences,
+ * falls back to an emoticon, or emits a plain {@link TokenKind.ANGLE_OPEN}.
+ */
 export function scanAngleOpen(ctx: ScanContext, pos: number): number {
     const { input } = ctx;
 
@@ -31,7 +34,10 @@ export function scanAngleOpen(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
-// > can be emoticon, blockquote, or angle bracket
+/**
+ * Scanner for `>`: falls back to an emoticon or emits a {@link TokenKind.BLOCKQUOTE_MARKER}
+ * at line-start, otherwise a {@link TokenKind.ANGLE_CLOSE}.
+ */
 export function scanAngleClose(ctx: ScanContext, pos: number): number {
     const prevCode = pos > 0 ? ctx.input.charCodeAt(pos - 1) : 0;
 
@@ -46,6 +52,7 @@ export function scanAngleClose(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
+/** Scanner for `!`: emits a {@link TokenKind.IMAGE_OPEN} (`![`) when followed by `[`, else plain text. */
 export function scanExclamation(ctx: ScanContext, pos: number): number {
     if (ctx.input.charCodeAt(pos + 1) === CH_LBRACKET) {
         flushText(ctx, pos);
@@ -56,6 +63,7 @@ export function scanExclamation(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
+/** Scanner for `]`: emits a {@link TokenKind.LINK_HREF_OPEN} (`](`) when followed by `(`, else plain text. */
 export function scanCloseBracket(ctx: ScanContext, pos: number): number {
     if (ctx.input.charCodeAt(pos + 1) === CH_LPAREN) {
         flushText(ctx, pos);
@@ -66,12 +74,14 @@ export function scanCloseBracket(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
+/** Scanner for `[`: always emits a {@link TokenKind.LINK_OPEN} token. */
 export function scanBracketOpen(ctx: ScanContext, pos: number): number {
     flushText(ctx, pos);
     emit(ctx, TokenKind.LINK_OPEN, '[', '[', pos);
     return pos + 1;
 }
 
+/** Scanner for `)`: always emits a {@link TokenKind.LINK_HREF_CLOSE} token. */
 export function scanParenClose(ctx: ScanContext, pos: number): number {
     flushText(ctx, pos);
     emit(ctx, TokenKind.LINK_HREF_CLOSE, ')', ')', pos);

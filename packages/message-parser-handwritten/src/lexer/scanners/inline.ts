@@ -4,7 +4,9 @@ import { TokenKind } from '../Token';
 import { CH_SLASH } from '../constants/charCodes';
 import { URL_RE, EMAIL_RE, PHONE_RE, COLOR_RE, TRAIL_PUNCT } from '../constants/regexes';
 
-// : can be URL scheme (://), :emoji:, or emoticon
+/**
+ * Scanner for `:`: handles URL schemes (`://`), emoji shortcodes (`:name:`), emoticons, or plain text.
+ */
 export function scanColon(ctx: ScanContext, pos: number): number {
     // URL scheme check
     if (
@@ -32,7 +34,10 @@ export function scanColon(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
-// handle :// by popping previous TEXT token and rescanning as URL
+/**
+ * Handles `://` by back-patching any preceding TEXT token into a full URL token.
+ * Falls back to plain text when no valid URL can be formed.
+ */
 function tryUrlScheme(ctx: ScanContext, pos: number): number {
     flushText(ctx, pos);
     const lastIdx = ctx.tokens.length - 1;
@@ -55,6 +60,7 @@ function tryUrlScheme(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
+/** Scanner for `@`: emits a {@link TokenKind.MENTION_USER} token or falls back to plain text. */
 export function scanAt(ctx: ScanContext, pos: number): number {
     const name = scanMentionBody(ctx.input, ctx.len, pos + 1);
     if (name.length > 0) {
@@ -66,6 +72,7 @@ export function scanAt(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
+/** Scanner for `+`: tries to match a phone number or e-mail address; falls back to plain text. */
 export function scanPlus(ctx: ScanContext, pos: number): number {
     const { input } = ctx;
 
@@ -89,7 +96,9 @@ export function scanPlus(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
-// c can start color:#hex, URL, or email
+/**
+ * Scanner for `c`: tries to match `color:#hex`, a URL, or an e-mail address; falls back to plain text.
+ */
 export function scanC(ctx: ScanContext, pos: number): number {
     const { input } = ctx;
 
@@ -129,6 +138,7 @@ export function scanC(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
+/** Scanner for characters that can start a text emoticon; falls back to plain text on no match. */
 export function scanEmoticonStarter(ctx: ScanContext, pos: number): number {
     const emResult = tryEmoticon(ctx, pos);
     if (emResult !== false) return emResult;

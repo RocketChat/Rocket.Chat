@@ -8,7 +8,10 @@ import {
 import { DIGIT_ASCII } from '../constants/charSets';
 import { URL_RE, TRAIL_PUNCT } from '../constants/regexes';
 
-// # can be heading, #channel, emoticon, or text
+/**
+ * Scanner for `#`: emits a {@link TokenKind.HEADING_MARKER} at line-start,
+ * falls back to a `#channel` {@link TokenKind.MENTION_CHANNEL}, an emoticon, or plain text.
+ */
 export function scanHash(ctx: ScanContext, pos: number): number {
     const { input } = ctx;
     const prevCode = pos > 0 ? input.charCodeAt(pos - 1) : 0;
@@ -44,7 +47,10 @@ export function scanHash(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
-// - can be task/list bullet, emoticon, or text
+/**
+ * Scanner for `-`: emits a {@link TokenKind.TASK_BULLET} or {@link TokenKind.UL_BULLET} at line-start,
+ * falls back to an emoticon or plain text.
+ */
 export function scanDash(ctx: ScanContext, pos: number): number {
     const { input } = ctx;
     const prevCode = pos > 0 ? input.charCodeAt(pos - 1) : 0;
@@ -86,7 +92,10 @@ export function scanDash(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
-// digits: ordered list, emoticon, URL, or text
+/**
+ * Scanner for ASCII digit characters: emits an {@link TokenKind.OL_BULLET} at line-start,
+ * falls back to an emoticon, a URL, or plain text.
+ */
 export function scanDigit(ctx: ScanContext, pos: number): number {
     const { input, len } = ctx;
     const prevCode = pos > 0 ? input.charCodeAt(pos - 1) : 0;
@@ -127,7 +136,10 @@ export function scanDigit(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
-// | or || for spoiler fence
+/**
+ * Scanner for `|` / `||`: emits a {@link TokenKind.BLOCK_SPOILER_FENCE} when `||` appears alone on a line,
+ * a {@link TokenKind.SPOILER_FENCE} for inline `||`, or a {@link TokenKind.PIPE} for a single `|`.
+ */
 export function scanPipe(ctx: ScanContext, pos: number): number {
     const { input, len } = ctx;
     flushText(ctx, pos);

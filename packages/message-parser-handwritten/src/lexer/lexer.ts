@@ -4,15 +4,21 @@ import { CHAR_CLASS, isUnicodeEmojiStart } from './constants/charSets';
 import { SCANNER_TABLE } from './scanners/index';
 import { scanUnicodeEmoji } from './scanners/emoji';
 
+/** Lexer that tokenizes a Rocket.Chat message string into a flat array of {@link Token} objects. */
 export class Lexer {
     private readonly _input: string;
     private readonly _len: number;
 
+    /** @param input The raw message string to tokenize. */
     constructor(input: string) {
         this._input = input;
         this._len = input.length;
     }
 
+    /**
+     * Scans the input from start to end and returns all tokens in order,
+     * terminated by an {@link TokenKind.EOF} token.
+     */
     tokenize(): Token[] {
         const ctx: ScanContext = {
             input: this._input,

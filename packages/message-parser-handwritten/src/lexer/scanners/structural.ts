@@ -3,6 +3,7 @@ import { TokenKind } from '../Token';
 import { CH_LBRACKET, CH_RBRACKET, CH_LPAREN, CH_RPAREN } from '../constants/charCodes';
 import { ESCAPABLE, WS_ASCII } from '../constants/charSets';
 
+/** Scanner for `\r` / `\n`: flushes pending text and emits a {@link TokenKind.NEWLINE} token (handles CRLF pairs). */
 export function scanNewline(ctx: ScanContext, pos: number): number {
     flushText(ctx, pos);
     const raw = ctx.input[pos] === '\r' && ctx.input[pos + 1] === '\n'
@@ -12,7 +13,10 @@ export function scanNewline(ctx: ScanContext, pos: number): number {
     return pos + raw.length;
 }
 
-// backslash: KaTeX delimiters or escaped chars
+/**
+ * Scanner for `\`: handles KaTeX delimiters (`\[`, `\]`, `\(`, `\)`),
+ * escapable ASCII characters, and falls back to emoticonsOR plain text.
+ */
 export function scanEscape(ctx: ScanContext, pos: number): number {
     const next = ctx.input.charCodeAt(pos + 1);
 
@@ -38,6 +42,7 @@ export function scanEscape(ctx: ScanContext, pos: number): number {
     return pos + 1;
 }
 
+/** Scanner for ASCII whitespace (space, tab): emits a {@link TokenKind.WHITESPACE} token spanning the full run. */
 export function scanWhitespace(ctx: ScanContext, pos: number): number {
     flushText(ctx, pos);
     let end = pos + 1;

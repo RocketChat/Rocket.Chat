@@ -2,6 +2,10 @@ import { ScanContext, emit } from '../ScanContext';
 import { TokenKind } from '../Token';
 import { isUnicodeEmojiStart } from '../constants/charSets';
 
+/**
+ * Scans a Unicode emoji sequence (including variation selectors, skin-tone modifiers, and ZWJ sequences)
+ * starting at `pos`, emits a {@link TokenKind.EMOJI_UNICODE} token, and returns the new position.
+ */
 export function scanUnicodeEmoji(ctx: ScanContext, pos: number): number {
     const { input, len } = ctx;
     let i = pos;

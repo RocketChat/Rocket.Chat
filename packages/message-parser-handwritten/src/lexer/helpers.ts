@@ -1,7 +1,10 @@
 import { SHORTCODE_OK, MENTION_OK } from './constants/charSets';
 import { CH_COLON, CH_AT } from './constants/charCodes';
 
-// Scans @mention or #channel name.
+/**
+ * Scans an `@mention` or `#channel` name starting at `nameStart`.
+ * Returns the matched name string (without the leading sigil), or an empty string if no valid name is found.
+ */
 export function scanMentionBody(input: string, len: number, nameStart: number): string {
     let i = nameStart;
 
@@ -39,7 +42,10 @@ export function scanMentionBody(input: string, len: number, nameStart: number): 
     return input.slice(nameStart, i);
 }
 
-// Scans emoji shortcode like :smile: and returns end position or -1.
+/**
+ * Scans an emoji shortcode in the form `:name:` starting at `start`.
+ * Returns the position just after the closing `:`, or `-1` if no valid shortcode is found.
+ */
 export function scanEmojiShortCode(input: string, len: number, start: number): number {
     let i = start + 1;
 

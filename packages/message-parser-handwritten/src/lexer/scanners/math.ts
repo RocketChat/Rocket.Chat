@@ -4,6 +4,10 @@ import { ScanContext, flushText, emit } from '../ScanContext';
 import { TokenKind } from '../Token';
 import { CH_DOLLAR } from '../constants/charCodes';
 
+/**
+ * Scanner for `$` / `$$`: toggles KaTeX inline (`$`) or block (`$$`) mode,
+ * emitting the appropriate start/end token.
+ */
 export function scanDollar(ctx: ScanContext, pos: number): number {
     flushText(ctx, pos);
 

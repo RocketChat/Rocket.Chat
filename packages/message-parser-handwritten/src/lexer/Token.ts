@@ -61,6 +61,7 @@ export interface Token {
     end: number;
 }
 
+/** Creates a {@link Token} with `end` computed from `start + raw.length`. */
 export function makeToken(
     kind: TokenKind,
     raw: string,

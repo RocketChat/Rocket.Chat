@@ -16,11 +16,12 @@ export interface ScanContext {
 
 export type ScanFn = (ctx: ScanContext, pos: number) => number;
 
+/** Returns `true` when `pos` is at column 0 (start of input or after a newline character). */
 export function isLineStart(pos: number, prevCode: number): boolean {
     return pos === 0 || prevCode === CH_LF || prevCode === CH_CR;
 }
 
-// Flush accumulated text as a TEXT token
+/** Flushes any accumulated plain-text run as a {@link TokenKind.TEXT} token and resets `textStart`. */
 export function flushText(ctx: ScanContext, pos: number): void {
     if (ctx.textStart === -1) return;
     if (ctx.tokens.length >= MAX_TOKENS) { ctx.textStart = -1; return; }
@@ -29,6 +30,7 @@ export function flushText(ctx: ScanContext, pos: number): void {
     ctx.textStart = -1;
 }
 
+/** Appends a new token to the context's token list (no-op if the safety cap is reached). */
 export function emit(
     ctx: ScanContext,
     kind: TokenKind,
@@ -40,13 +42,18 @@ export function emit(
     ctx.tokens.push(makeToken(kind, raw, value, start));
 }
 
+/** Counts how many consecutive occurrences of `charCode` appear starting at `pos` and returns that count. */
 export function consumeRun(input: string, pos: number, charCode: number): number {
     let count = 0;
     while (input.charCodeAt(pos + count) === charCode) count++;
     return count;
 }
 
-// Try to match emoticon at pos using trie. Returns new position or false.
+/**
+ * Tries to match a text emoticon at `pos` using the emoticon trie.
+ * On success, flushes pending text, emits an {@link TokenKind.EMOTICON} token, and returns the new position.
+ * Returns `false` when no emoticon is found.
+ */
 export function tryEmoticon(ctx: ScanContext, pos: number): number | false {
     const { input, len } = ctx;
     let node = EMOTICON_TRIE;
