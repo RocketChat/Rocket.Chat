@@ -19,17 +19,10 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 		return null;
 	}
 
-	const emojiSmallClass = css`
-		> .emoji {
-			font-size: 1.125rem;
-		}
-	`;
-
 	const emojiElement = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} />;
 
 	return (
 		<IconButton
-			{...(small && { className: emojiSmallClass })}
 			small={small}
 			medium={!small}
 			onMouseOver={() => handlePreview(image, emoji)}

@@ -25,7 +25,7 @@ function Emoji({ emojiHandle, className = undefined, fillContainer }: EmojiProps
 
 	return (
 		<EmojiComponent
-			className={[emojiClassName, className].filter(Boolean).join(' ')}
+			className={[emojiClassName, className, image ? 'rcx-message__emoji--custom' : ''].filter(Boolean).join(' ')}
 			style={image?.length ? { backgroundImage: image } : undefined}
 			fillContainer={fillContainer}
 			{...props}
