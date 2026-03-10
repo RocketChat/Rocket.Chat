@@ -8,6 +8,7 @@ import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Calendar Events]', () => {
 	let user2: IUser;
@@ -665,7 +666,7 @@ describe('[Calendar Events]', () => {
 		});
 	});
 
-	describe('[Calendar Events Status Sync]', () => {
+	(IS_EE ? describe : describe.skip)('[Calendar Events Status Sync]', () => {
 		before(async () => {
 			await request.post('/api/v1/users.setStatus').set(userCredentials).send({ status: 'away' }).expect(200);
 		});
@@ -693,7 +694,7 @@ describe('[Calendar Events]', () => {
 			const statusResponseDuring = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
 			expect(statusResponseDuring.body.status).to.equal('busy');
 
-			await sleep(6000);
+			await sleep(5000);
 
 			const statusResponseAfter = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
 			expect(statusResponseAfter.body.status).to.equal('away');
