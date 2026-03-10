@@ -137,6 +137,7 @@ services:
     build:
       dockerfile: ee/apps/queue-worker/Dockerfile
       context: .
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
