@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
+import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -661,6 +662,43 @@ describe('[Calendar Events]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400);
+		});
+	});
+
+	describe('[Calendar Events Status Sync]', () => {
+		before(async () => {
+			await request.post('/api/v1/users.setStatus').set(userCredentials).send({ status: 'away' }).expect(200);
+		});
+
+		it('should set user status to busy during event and restore manual status after event ends', async () => {
+			const now = new Date();
+			const startTime = new Date(now.getTime() + 1000);
+			// Event cannot be less than 5 secs in duration, otherwise `processStatusChangesAtTime` would trigger both start/end status changes at the same time, due to the 5s offset
+			const endTime = new Date(startTime.getTime() + 6000);
+
+			const eventPayload = {
+				startTime: startTime.toISOString(),
+				endTime: endTime.toISOString(),
+				subject: 'Subject',
+				description: 'Description',
+				reminderMinutesBeforeStart: 1,
+				busy: true,
+			};
+
+			const createResponse = await request.post('/api/v1/calendar-events.create').set(userCredentials).send(eventPayload).expect(200);
+			const eventId = createResponse.body.id;
+
+			await sleep(3000);
+
+			const statusResponseDuring = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
+			expect(statusResponseDuring.body.status).to.equal('busy');
+
+			await sleep(5000);
+
+			const statusResponseAfter = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
+			expect(statusResponseAfter.body.status).to.equal('away');
+
+			await request.post('/api/v1/calendar-events.delete').set(userCredentials).send({ eventId }).expect(200);
 		});
 	});
 });
