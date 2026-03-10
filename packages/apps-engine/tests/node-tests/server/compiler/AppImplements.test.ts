@@ -11,9 +11,10 @@ describe('AppImplements', () => {
 		const impls = new AppImplements();
 
 		assert.ok(impls.getValues() !== undefined);
-		assert.doesNotThrow(() => impls.doesImplement(AppInterface.IPreMessageSentPrevent));
+		assert.doesNotThrow(() => impls.setImplements(AppInterface.IPreMessageSentPrevent));
+		assert.strictEqual(impls.doesImplement(AppInterface.IPreMessageSentPrevent), true);
+		assert.strictEqual(impls.doesImplement(AppInterface.IPostMessageDeleted), false);
 		assert.strictEqual(impls.getValues()[AppInterface.IPreMessageSentPrevent], true);
-		assert.doesNotThrow(() => impls.doesImplement('Something'));
-		assert.ok(impls.getValues().Something === undefined);
+		assert.strictEqual(impls.getValues()[AppInterface.IPostMessageDeleted], false);
 	});
 });

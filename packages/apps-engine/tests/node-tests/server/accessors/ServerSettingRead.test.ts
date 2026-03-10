@@ -36,7 +36,7 @@ describe('ServerSettingRead', () => {
 				message: 'No Server Setting found, or it is unaccessible, by the id of "fake".',
 			},
 		);
-		await assert.rejects(() => ssr.getAll(), {
+		assert.throws(() => ssr.getAll(), {
 			name: 'Error',
 			message: 'Method not implemented.',
 		});

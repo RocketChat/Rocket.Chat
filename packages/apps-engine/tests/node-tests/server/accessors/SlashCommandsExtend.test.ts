@@ -38,7 +38,7 @@ describe('SlashCommandsExtend', () => {
 
 		await assert.doesNotReject(() => se.provideSlashCommand(mockCommand));
 		assert.strictEqual(commands.size, 1);
-		await assert.rejects(
+		assert.throws(
 			() => se.provideSlashCommand(mockCommand),
 			{
 				name: 'CommandAlreadyExists',

@@ -39,7 +39,7 @@ describe('RoomExtender', () => {
 		assert.ok(room.usernames === undefined);
 		assert.ok(re.getMembersBeingAdded() !== undefined);
 		assert.ok(re.getMembersBeingAdded().length > 0);
-		assert.ok(re.getMembersBeingAdded()[0].length !== undefined);
+		assert.ok(re.getMembersBeingAdded()[0] !== undefined);
 		assert.strictEqual(re.getMembersBeingAdded()[0].username, 'bradley');
 		assert.throws(
 			() => re.addMember(TestData.getUser('theSameUsername', 'bradley')),
