@@ -1900,7 +1900,6 @@
   "FileUpload_S3_Proxy_Uploads": "प्रॉक्सी अपलोड",
   "FileUpload_S3_Proxy_Uploads_Description": "संपत्ति के यूआरएल तक सीधी पहुंच के बजाय आपके सर्वर के माध्यम से प्रॉक्सी अपलोड फ़ाइल ट्रांसमिशन",
   "FileUpload_S3_Region": "क्षेत्र",
-  "FileUpload_S3_SignatureVersion": "हस्ताक्षर संस्करण",
   "FileUpload_S3_URLExpiryTimeSpan": "यूआरएल समाप्ति समय period",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "वह समय जिसके बाद Amazon S3 द्वारा जेनरेट किए गए URL मान्य नहीं होंगे (सेकंड में)। यदि 5 सेकंड से कम पर सेट किया जाता है, तो इस फ़ील्ड को अनदेखा कर दिया जाएगा।",
   "FileUpload_Storage_Type": "भण्डारण प्रकार",

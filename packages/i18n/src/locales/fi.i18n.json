@@ -1826,7 +1826,6 @@
   "FileUpload_S3_Proxy_Uploads": "Välityspalvelinlataukset",
   "FileUpload_S3_Proxy_Uploads_Description": "Välityspalvelin lataa tiedostonsiirrot palvelimen kautta käyttämättä resurssin URL-osoitetta suoraan",
   "FileUpload_S3_Region": "Alue",
-  "FileUpload_S3_SignatureVersion": "Allekirjoitusversio",
   "FileUpload_S3_URLExpiryTimeSpan": "URL-osoitteiden vanhenemisaika",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Aika, jonka kuluttua Amazon S3:n luomat URL-osoitteet eivät ole enää voimassa (sekunteina). Jos asetus on alle 5 sekuntia, tämä kenttä ohitetaan.",
   "FileUpload_Storage_Type": "Tallennustyyppi",

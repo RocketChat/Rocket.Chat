@@ -18,8 +18,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-import type { PermissionsPayload } from './api.helpers';
-import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
+import { checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
 	ForbiddenResult,
@@ -42,6 +41,7 @@ import type {
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
 import { authenticationMiddlewareForHono } from './middlewares/authenticationHono';
+import { permissionsMiddleware } from './middlewares/permissions';
 import type { APIActionContext } from './router';
 import { RocketChatAPIRouter } from './router';
 import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
@@ -781,7 +781,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 		const operations = endpoints;
 
-		const shouldVerifyPermissions = checkPermissions(options);
+		checkPermissions(options);
 
 		// Allow for more than one route using the same option and endpoints
 		if (!Array.isArray(subpaths)) {
@@ -856,31 +856,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
-							if (shouldVerifyPermissions) {
-								if (!this.userId) {
-									if (applyBreakingChanges) {
-										throw new Meteor.Error('error-unauthorized', 'You must be logged in to do this');
-									}
-									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action');
-								}
-								if (
-									!(await checkPermissionsForInvocation(
-										this.userId,
-										_options.permissionsRequired as PermissionsPayload,
-										this.request.method as Method,
-									))
-								) {
-									if (applyBreakingChanges) {
-										throw new Meteor.Error('error-forbidden', 'User does not have the permissions required for this action', {
-											permissions: _options.permissionsRequired,
-										});
-									}
-									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
-										permissions: _options.permissionsRequired,
-									});
-								}
-							}
-
 							if (
 								this.userId &&
 								(await api.processTwoFactor({
@@ -941,6 +916,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						userWithoutUsername: options.userWithoutUsername,
 						logger,
 					}),
+					permissionsMiddleware(_options as TypedOptions),
 					license(_options as TypedOptions, License),
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action,
 				);

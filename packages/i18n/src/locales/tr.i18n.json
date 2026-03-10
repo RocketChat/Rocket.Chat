@@ -1138,7 +1138,6 @@
   "FileUpload_S3_Proxy_Uploads": "Proxy Yüklemeleri",
   "FileUpload_S3_Proxy_Uploads_Description": "Varlık URL'sine doğrudan erişim yerine sunucu üzerinden proxy yükleme dosya aktarımları",
   "FileUpload_S3_Region": "Bölge",
-  "FileUpload_S3_SignatureVersion": "İmza Sürümü",
   "FileUpload_S3_URLExpiryTimeSpan": "URL'nin zamanaşımına uğrama süresi",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Amazon S3 tarafından üretilen URL'ler artık geçerli olmayacak (saniye olarak). 5 saniyeden az bir değere ayarlanırsa, bu alan yok sayılacaktır.",
   "FileUpload_Storage_Type": "Depolama Türü",

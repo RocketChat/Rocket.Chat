@@ -11,4 +11,5 @@ export interface IPushToken extends IRocketChatRecord {
 	authToken: ILoginToken['hashedToken'];
 	metadata?: Record<string, unknown>;
 	createdAt: Date;
+	voipToken?: string;
 }

@@ -927,7 +927,6 @@
   "FileUpload_S3_Proxy_Uploads": "பதிலாள் பதிவேற்றங்கள்",
   "FileUpload_S3_Proxy_Uploads_Description": "சொத்து URL ஐ நேரடியாக அணுகுவதற்குப் பதிலாக, உங்கள் சர்வரில் பதிலாள் பதிவேற்றும் கோப்பு பரிமாற்றங்கள்",
   "FileUpload_S3_Region": "பகுதி",
-  "FileUpload_S3_SignatureVersion": "கையொப்பம் பதிப்பு",
   "FileUpload_S3_URLExpiryTimeSpan": "URL கள் காலாவதி நேரங்கள்",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "அமேசான் S3 உருவாக்கிய URL களில் இனி நேரம் (நொடிகளில்) செல்லுபடியாகாது. 5 வினாடிகளுக்கு குறைவாக அமைக்கப்பட்டால், இந்த புலம் புறக்கணிக்கப்படும்.",
   "FileUpload_Storage_Type": "சேமிப்பு வகை",
