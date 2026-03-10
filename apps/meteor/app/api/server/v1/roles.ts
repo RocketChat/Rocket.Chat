@@ -1,8 +1,7 @@
 import { api, Authorization } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { ajv, isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
-import { check, Match } from 'meteor/check';
+import { ajv, isRoleSyncProps, isRolesGetUsersInRoleProps, isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
@@ -31,17 +30,19 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.sync',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoleSyncProps },
 	{
 		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					updatedSince: Match.Where((value: unknown): value is string => typeof value === 'string' && !Number.isNaN(Date.parse(value))),
-				}),
-			);
-
 			const { updatedSince } = this.queryParams;
+
+			if (!updatedSince) {
+				return API.v1.success({
+					roles: {
+						update: [],
+						remove: [],
+					},
+				});
+			}
 
 			return API.v1.success({
 				roles: {
@@ -55,13 +56,9 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.addUserToRole',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isRoleAddUserToRoleProps },
 	{
 		async post() {
-			if (!isRoleAddUserToRoleProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-role-properties', isRoleAddUserToRoleProps.errors?.map((error) => error.message).join('\n'));
-			}
-
 			const user = await getUserFromParams(this.bodyParams);
 			const { roleId, roomId } = this.bodyParams;
 
@@ -89,7 +86,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.getUsersInRole',
-	{ authRequired: true, permissionsRequired: ['access-permissions'] },
+	{ authRequired: true, permissionsRequired: ['access-permissions'], validateParams: isRolesGetUsersInRoleProps },
 	{
 		async get() {
 			const { roomId, role } = this.queryParams;
@@ -134,13 +131,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.delete',
-	{ authRequired: true, permissionsRequired: ['access-permissions'] },
+	{ authRequired: true, permissionsRequired: ['access-permissions'], validateParams: isRoleDeleteProps },
 	{
 		async post() {
 			const { bodyParams } = this;
-			if (!isRoleDeleteProps(bodyParams)) {
-				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
-			}
 
 			const role = await Roles.findOneByIdOrName(bodyParams.roleId);
 
@@ -167,14 +161,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'roles.removeUserFromRole',
-	{ authRequired: true, permissionsRequired: ['access-permissions'] },
+	{ authRequired: true, permissionsRequired: ['access-permissions'], validateParams: isRoleRemoveUserFromRoleProps },
 	{
 		async post() {
 			const { bodyParams } = this;
-			if (!isRoleRemoveUserFromRoleProps(bodyParams)) {
-				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
-			}
-
 			const { roleId, username, scope } = bodyParams;
 
 			if (!roleId) {
@@ -262,5 +252,5 @@ type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RolesEndpoints {}
+	interface Endpoints extends RolesEndpoints { }
 }
