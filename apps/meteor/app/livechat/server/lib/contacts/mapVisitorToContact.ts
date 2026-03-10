@@ -24,7 +24,7 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 				blocked: false,
 				verified: false,
 				details: source,
-				lastChat: visitor.lastChat,
+				...(visitor.lastChat && { lastChat: visitor.lastChat }),
 			},
 		],
 		customFields:
@@ -34,7 +34,7 @@ export async function mapVisitorToContact(visitor: ILivechatVisitor, source: IOm
 				ignoreValidationErrors: true,
 			}),
 		shouldValidateCustomFields: false,
-		lastChat: visitor.lastChat,
+		...(visitor.lastChat && { lastChat: visitor.lastChat }),
 		contactManager: visitor.contactManager?.username && (await getContactManagerIdByUsername(visitor.contactManager.username)),
 	};
 }

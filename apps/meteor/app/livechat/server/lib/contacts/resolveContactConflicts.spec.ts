@@ -27,6 +27,7 @@ describe('resolveContactConflicts', () => {
 		modelsMock.LivechatContacts.findOneEnabledById.reset();
 		modelsMock.Settings.incrementValueById.reset();
 		modelsMock.LivechatContacts.updateContact.reset();
+		validateContactManagerMock.reset();
 	});
 
 	it('should update the contact with the resolved custom field', async () => {
@@ -35,25 +36,21 @@ describe('resolveContactConflicts', () => {
 			customFields: { customField: 'newValue' },
 			conflictingFields: [{ field: 'customFields.customField', value: 'oldValue' }],
 		});
-		modelsMock.Settings.incrementValueById.resolves(1);
 		modelsMock.LivechatContacts.updateContact.resolves({
 			_id: 'contactId',
-			customField: { customField: 'newValue' },
-			conflictingFields: [{ field: 'customFields.customField', value: 'oldValue' }],
+			customFields: { customField: 'newValue' },
+			conflictingFields: [],
 		} as Partial<ILivechatContact>);
 
-		const result = await resolveContactConflicts({ contactId: 'contactId', customField: { customField: 'newValue' } });
+		const result = await resolveContactConflicts({ contactId: 'contactId', customFields: { customField: 'newValue' } });
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.getCall(0).args[0]).to.be.equal('contactId');
-
-		expect(modelsMock.Settings.incrementValueById.getCall(0).args[0]).to.be.equal('Livechat_conflicting_fields_counter');
-		expect(modelsMock.Settings.incrementValueById.getCall(0).args[1]).to.be.equal(1);
 
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[1]).to.be.deep.contain({ customFields: { customField: 'newValue' } });
 		expect(result).to.be.deep.equal({
 			_id: 'contactId',
-			customField: { customField: 'newValue' },
+			customFields: { customField: 'newValue' },
 			conflictingFields: [],
 		});
 	});
@@ -65,11 +62,10 @@ describe('resolveContactConflicts', () => {
 			customFields: { customField: 'newValue' },
 			conflictingFields: [{ field: 'name', value: 'Old Name' }],
 		});
-		modelsMock.Settings.incrementValueById.resolves(1);
 		modelsMock.LivechatContacts.updateContact.resolves({
 			_id: 'contactId',
 			name: 'New Name',
-			customField: { customField: 'newValue' },
+			customFields: { customField: 'newValue' },
 			conflictingFields: [],
 		} as Partial<ILivechatContact>);
 
@@ -77,15 +73,12 @@ describe('resolveContactConflicts', () => {
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.getCall(0).args[0]).to.be.equal('contactId');
 
-		expect(modelsMock.Settings.incrementValueById.getCall(0).args[0]).to.be.equal('Livechat_conflicting_fields_counter');
-		expect(modelsMock.Settings.incrementValueById.getCall(0).args[1]).to.be.equal(1);
-
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[1]).to.be.deep.contain({ name: 'New Name' });
 		expect(result).to.be.deep.equal({
 			_id: 'contactId',
 			name: 'New Name',
-			customField: { customField: 'newValue' },
+			customFields: { customField: 'newValue' },
 			conflictingFields: [],
 		});
 	});
@@ -98,28 +91,25 @@ describe('resolveContactConflicts', () => {
 			customFields: { customField: 'value' },
 			conflictingFields: [{ field: 'manager', value: 'newContactManagerId' }],
 		});
-		modelsMock.Settings.incrementValueById.resolves(1);
 		modelsMock.LivechatContacts.updateContact.resolves({
 			_id: 'contactId',
 			name: 'Name',
 			contactManager: 'newContactManagerId',
-			customField: { customField: 'value' },
+			customFields: { customField: 'value' },
 			conflictingFields: [],
 		} as Partial<ILivechatContact>);
 
-		const result = await resolveContactConflicts({ contactId: 'contactId', name: 'New Name' });
+		const result = await resolveContactConflicts({ contactId: 'contactId', contactManager: 'newContactManagerId' });
 
 		expect(modelsMock.LivechatContacts.findOneEnabledById.getCall(0).args[0]).to.be.equal('contactId');
-
-		expect(modelsMock.Settings.incrementValueById.getCall(0).args[0]).to.be.equal('Livechat_conflicting_fields_counter');
-		expect(modelsMock.Settings.incrementValueById.getCall(0).args[1]).to.be.equal(1);
 
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[1]).to.be.deep.contain({ contactManager: 'newContactManagerId' });
 		expect(result).to.be.deep.equal({
 			_id: 'contactId',
-			name: 'New Name',
-			customField: { customField: 'newValue' },
+			name: 'Name',
+			contactManager: 'newContactManagerId',
+			customFields: { customField: 'value' },
 			conflictingFields: [],
 		});
 	});
@@ -147,7 +137,7 @@ describe('resolveContactConflicts', () => {
 
 			expect(modelsMock.LivechatContacts.findOneEnabledById.getCall(0).args[0]).to.be.equal('contactId');
 
-			expect(modelsMock.Settings.incrementValueById.getCall(0).args[0]).to.be.equal('Livechat_conflicting_fields_counter');
+			expect(modelsMock.Settings.incrementValueById.getCall(0).args[0]).to.be.equal('Resolved_Conflicts_Count');
 			expect(modelsMock.Settings.incrementValueById.getCall(0).args[1]).to.be.equal(2);
 
 			expect(modelsMock.LivechatContacts.updateContact.getCall(0).args[0]).to.be.equal('contactId');
@@ -200,7 +190,7 @@ describe('resolveContactConflicts', () => {
 
 	it('should throw an error if the contact does not exist', async () => {
 		modelsMock.LivechatContacts.findOneEnabledById.resolves(undefined);
-		await expect(resolveContactConflicts({ contactId: 'id', customField: { customField: 'newValue' } })).to.be.rejectedWith(
+		await expect(resolveContactConflicts({ contactId: 'id', customFields: { customField: 'newValue' } })).to.be.rejectedWith(
 			'error-contact-not-found',
 		);
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0)).to.be.null;
@@ -214,7 +204,7 @@ describe('resolveContactConflicts', () => {
 			customFields: { customField: 'value' },
 			conflictingFields: [],
 		});
-		await expect(resolveContactConflicts({ contactId: 'id', customField: { customField: 'newValue' } })).to.be.rejectedWith(
+		await expect(resolveContactConflicts({ contactId: 'id', customFields: { customField: 'newValue' } })).to.be.rejectedWith(
 			'error-contact-has-no-conflicts',
 		);
 		expect(modelsMock.LivechatContacts.updateContact.getCall(0)).to.be.null;
@@ -228,6 +218,7 @@ describe('resolveContactConflicts', () => {
 			customFields: { customField: 'value' },
 			conflictingFields: [{ field: 'manager', value: 'newContactManagerId' }],
 		});
+		validateContactManagerMock.rejects(new Error('error-contact-manager-not-found'));
 		await expect(resolveContactConflicts({ contactId: 'id', contactManager: 'invalid' })).to.be.rejectedWith(
 			'error-contact-manager-not-found',
 		);

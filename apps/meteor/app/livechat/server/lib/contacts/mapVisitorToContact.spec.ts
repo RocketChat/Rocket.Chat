@@ -113,7 +113,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			unknown: false,
 			channels: [
 				{
-					name: 'sms',
+					name: 'widget',
 					visitor: {
 						visitorId: 'visitor1',
 						source: {
@@ -161,7 +161,7 @@ const dataMap: [Partial<ILivechatVisitor>, IOmnichannelSource, CreateContactPara
 			unknown: true,
 			channels: [
 				{
-					name: 'sms',
+					name: 'widget',
 					visitor: {
 						visitorId: 'visitor1',
 						source: {
