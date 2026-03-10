@@ -53,7 +53,7 @@ const ModerationConsoleTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
-	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+	const { data, isLoading, isSuccess, isLoadingError, refetch } = useQuery({
 		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
 		queryFn: async () => getReports(query),
 		meta: {
@@ -134,7 +134,7 @@ const ModerationConsoleTable = () => {
 				</>
 			)}
 			{isSuccess && data.reports.length === 0 && <GenericNoResults />}
-			{isError && (
+			{isLoadingError && (
 				<States>
 					<StatesIcon name='warning' variation='danger' />
 					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
