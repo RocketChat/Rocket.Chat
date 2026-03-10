@@ -898,7 +898,7 @@ const usersEndpoints = API.v1
 				type: 'object',
 				properties: {
 					status: { type: 'string', minLength: 1 },
-					message: { type: 'string', minLength: 1 },
+					message: { type: 'string' },
 					userId: { type: 'string' },
 					username: { type: 'string' },
 					user: { type: 'string' },
