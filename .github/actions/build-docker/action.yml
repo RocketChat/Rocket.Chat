@@ -115,23 +115,42 @@ runs:
           LOAD_OR_PUSH="--load"
         fi
 
+        export DOCKER_CLIENT_TIMEOUT=300
+        export COMPOSE_HTTP_TIMEOUT=300
+
         # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
         IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
 
-        docker buildx bake \
-          "${compose_files[@]}" \
-          ${LOAD_OR_PUSH} \
-          --allow=fs.read=/tmp/build \
-          --set "*.tags+=${IMAGE}-gha-run-${{ github.run_id }}" \
-          --set "*.labels.org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-          --set "*.labels.org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" \
-          --set *.platform=linux/${{ inputs.arch }} \
-          --set *.cache-from=type=gha \
-          --set *.cache-to=type=gha,mode=max \
-          --provenance=false \
-          --sbom=false \
-          --metadata-file "/tmp/meta.json" \
+        buildx_bake_cmd=(
+          docker buildx bake
+          "${compose_files[@]}"
+          ${LOAD_OR_PUSH}
+          --allow=fs.read=/tmp/build
+          --set "*.tags+=${IMAGE}-gha-run-${{ github.run_id }}"
+          --set "*.labels.org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          --set "*.labels.org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}"
+          --set *.platform=linux/${{ inputs.arch }}
+          --set *.cache-from=type=gha
+          --set *.cache-to=type=gha,mode=max
+          --provenance=false
+          --sbom=false
+          --metadata-file "/tmp/meta.json"
           "${{ inputs.service }}"
+        )
+
+        attempts=1
+        max_attempts=3
+        until "${buildx_bake_cmd[@]}"; do
+          if [[ "${{ inputs.publish-image }}" != 'true' || $attempts -ge $max_attempts ]]; then
+            echo "docker buildx bake failed after ${attempts} attempt(s)."
+            exit 1
+          fi
+
+          attempts=$((attempts + 1))
+          sleep_seconds=$((15 * attempts))
+          echo "docker buildx bake failed (likely transient push error). Retrying in ${sleep_seconds}s... (attempt ${attempts}/${max_attempts})"
+          sleep ${sleep_seconds}
+        done
 
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
