@@ -8,9 +8,12 @@ import type { ICustomSound } from './ICustomSound';
 import type { ICustomUserStatus } from './ICustomUserStatus';
 import type { IEmailInbox } from './IEmailInbox';
 import type { IInvite } from './IInvite';
+import type { ILivechatAgent } from './ILivechatAgent';
+import type { ILivechatVisitor } from './ILivechatVisitor';
 import type { IMessage } from './IMessage';
 import type { IModerationAudit, IModerationReport } from './IModerationReport';
 import type { IOAuthApps } from './IOAuthApps';
+import type { IOmnichannelRoom } from './IRoom';
 import type { IPermission } from './IPermission';
 import type { IRole } from './IRole';
 import type { IRoom, IDirectoryChannelResult } from './IRoom';
@@ -49,6 +52,9 @@ export const schemas = typia.json.schemas<
 			| IModerationAudit
 			| IModerationReport
 			| IBanner
+			| IOmnichannelRoom
+			| ILivechatAgent
+			| ILivechatVisitor
 		),
 		CallHistoryItem,
 		ICustomUserStatus,
