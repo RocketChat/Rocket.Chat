@@ -1,7 +1,7 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { IOutboundMessageProviders } from '../../../../src/definition/outboundComunication';
+import type { IOutboundMessageProviders } from '../../../../src/definition/outboundCommunication';
 import type { ProxiedApp } from '../../../../src/server/ProxiedApp';
 import { OutboundMessageProvider } from '../../../../src/server/managers/AppOutboundCommunicationProvider';
 

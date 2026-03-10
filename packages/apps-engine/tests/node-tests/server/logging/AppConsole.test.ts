@@ -1,5 +1,5 @@
 import * as assert from 'node:assert';
-import { describe, it, mock } from 'node:test';
+import { describe, it } from 'node:test';
 import type * as stackTrace from 'stack-trace';
 
 import { LogMessageSeverity } from '../../../../src/definition/accessors';
@@ -60,9 +60,8 @@ describe('AppConsole', () => {
 		assert.ok(logger.getEndTime() !== undefined);
 		assert.ok(logger.getTotalTime() > 1);
 
-		const getFuncSpy = mock.method(logger, 'getFunc');
-		getFuncSpy.mock.mockImplementationOnce(() => 'anonymous');
-		assert.strictEqual(getFuncSpy.call([{} as stackTrace.StackFrame]), 'anonymous');
+		const getFunc = (logger as any).getFunc.bind(logger);
+		assert.strictEqual(getFunc([{} as stackTrace.StackFrame]), 'anonymous');
 		
 		const mockFrames = [];
 		mockFrames.push({} as stackTrace.StackFrame);
@@ -74,8 +73,7 @@ describe('AppConsole', () => {
 				return null;
 			},
 		} as stackTrace.StackFrame);
-		getFuncSpy.mock.mockImplementationOnce(() => 'testing');
-		assert.strictEqual(getFuncSpy.call(mockFrames), 'testing');
+		assert.strictEqual(getFunc(mockFrames), 'testing');
 
 		assert.ok(AppConsole.toStorageEntry('testing-app', logger) !== undefined); // TODO: better test this
 	});
