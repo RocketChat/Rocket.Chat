@@ -48,6 +48,7 @@ services:
     build:
       dockerfile: ee/apps/authorization-service/Dockerfile
       context: .
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
