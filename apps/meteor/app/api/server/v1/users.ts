@@ -897,8 +897,8 @@ const usersEndpoints = API.v1
 			}>({
 				type: 'object',
 				properties: {
-					status: { type: 'string' },
-					message: { type: 'string' },
+					status: { type: 'string', minLength: 1 },
+					message: { type: 'string', minLength: 1 },
 					userId: { type: 'string' },
 					username: { type: 'string' },
 					user: { type: 'string' },
@@ -949,7 +949,12 @@ const usersEndpoints = API.v1
 				statusText = this.bodyParams.message;
 			}
 
-			if (this.bodyParams.status) {
+			if ('status' in this.bodyParams) {
+				if (!this.bodyParams.status) {
+					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+						method: 'users.setStatus',
+					});
+				}
 				const validStatus = ['online', 'away', 'offline', 'busy'];
 				if (validStatus.includes(this.bodyParams.status)) {
 					status = this.bodyParams.status as UserStatus;
