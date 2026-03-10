@@ -48,7 +48,6 @@ import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory
 import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
-import { getUserMentionsByChannel } from '../../../mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -64,12 +63,12 @@ async function findChannelByIdOrName({
 	userId,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	userId?: string;
 	checkedArchived?: boolean;
 }): Promise<IRoom> {
@@ -432,19 +431,29 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const mentions = await getUserMentionsByChannel(this.userId, roomId, {
+			if (!this.user?.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			const findResult = await findChannelByIdOrName({ params: { roomId } });
+
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
+			const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(this.user.username, roomId, {
 				sort: sort || { ts: 1 },
 				skip: offset,
 				limit: count,
 			});
 
-			const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
+			const [mentions, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			return API.v1.success({
 				mentions,
 				count: mentions.length,
 				offset,
-				total: allMentions.length,
+				total,
 			});
 		},
 	},
