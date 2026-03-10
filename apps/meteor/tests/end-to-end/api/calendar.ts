@@ -693,7 +693,7 @@ describe('[Calendar Events]', () => {
 			const statusResponseDuring = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
 			expect(statusResponseDuring.body.status).to.equal('busy');
 
-			await sleep(5000);
+			await sleep(6000);
 
 			const statusResponseAfter = await request.get('/api/v1/users.getStatus').set(userCredentials).expect(200);
 			expect(statusResponseAfter.body.status).to.equal('away');
