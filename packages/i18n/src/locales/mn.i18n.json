@@ -927,7 +927,6 @@
   "FileUpload_S3_Proxy_Uploads": "Прокси байршуулах",
   "FileUpload_S3_Proxy_Uploads_Description": "Хөрөнгийн URL руу шууд нэвтрэхийн оронд серверт байршуулах файлын дамжуулалт",
   "FileUpload_S3_Region": "Бүс нутаг",
-  "FileUpload_S3_SignatureVersion": "Гарын үсгийн хувилбар",
   "FileUpload_S3_URLExpiryTimeSpan": "URLууд хугацаа дуусна",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Амазоны S3 URL-үүдийг үүсгэсний дараах цаг хугацааны дараа хүчинтэй байх болно (секундээр). Хэрэв 5 секундын дотор тавигдсан бол энэ талбарыг орхигдуулах болно.",
   "FileUpload_Storage_Type": "Хадгалалтын төрөл",

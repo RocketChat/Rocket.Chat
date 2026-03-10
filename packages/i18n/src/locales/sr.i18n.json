@@ -823,7 +823,6 @@
   "FileUpload_S3_Proxy_Uploads": "Проки Уплоадс",
   "FileUpload_S3_Proxy_Uploads_Description": "Проки уплоад фајлова преко вашег сервера уместо директног приступа УРЛ-у средства",
   "FileUpload_S3_Region": "област",
-  "FileUpload_S3_SignatureVersion": "Верзија потписа",
   "FileUpload_S3_URLExpiryTimeSpan": "УРЛ-ови Екпиратион Тимеспан",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Након којег Амазон С3 генерисани УРЛ-ови више неће бити важећи (у секундама). Ако је постављено на мање од 5 секунди, ово поље ће бити занемарено.",
   "FileUpload_Storage_Type": "Тип складиштења",

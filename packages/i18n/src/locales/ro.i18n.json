@@ -928,7 +928,6 @@
   "FileUpload_S3_Proxy_Uploads": "Încărcări proxy",
   "FileUpload_S3_Proxy_Uploads_Description": "Încărcați fișierele de transmisie prin serverul dvs. în loc de acces direct la adresa URL a acestuia",
   "FileUpload_S3_Region": "Regiune",
-  "FileUpload_S3_SignatureVersion": "Versiune de semnătură",
   "FileUpload_S3_URLExpiryTimeSpan": "Perioada de expirare a adreselor URL",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Timpul după care adresele URL generate de Amazon S3 nu vor mai fi valide (în câteva secunde). Dacă este setat la mai puțin de 5 secunde, acest câmp va fi ignorat.",
   "FileUpload_Storage_Type": "Tip de stocare",

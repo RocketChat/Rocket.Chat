@@ -2321,7 +2321,6 @@
   "FileUpload_S3_Proxy_UserDataFiles": "Proxy User Data Files",
   "FileUpload_S3_Proxy_UserDataFiles_Description": "Proxy user data file transmissions through your server instead of direct access to the asset's URL",
   "FileUpload_S3_Region": "Region",
-  "FileUpload_S3_SignatureVersion": "Signature Version",
   "FileUpload_S3_URLExpiryTimeSpan": "URLs Expiration Timespan",
   "FileUpload_S3_URLExpiryTimeSpan_Description": "Time after which Amazon S3 generated URLs will no longer be valid (in seconds). If set to less than 5 seconds, this field will be ignored.",
   "FileUpload_Storage_Type": "Storage Type",
