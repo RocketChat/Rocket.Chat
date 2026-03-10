@@ -69,6 +69,7 @@ services:
     build:
       dockerfile: ee/apps/account-service/Dockerfile
       context: .
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
