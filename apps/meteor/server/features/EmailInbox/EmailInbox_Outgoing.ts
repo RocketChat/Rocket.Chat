@@ -89,6 +89,8 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			...mail,
 		})
 		.then((info) => {
+			// Nodemailer doesn't return an error if the email fails to send, 
+			// so we need to check the response for a messageId to confirm it was sent successfully.
 			if (!info) {
 				throw new Error('smtp-send-failed');
 			}
@@ -151,6 +153,8 @@ slashCommands.add({
 				.filter(Boolean)
 				.join('\n\n') || '';
 
+		// we await here because we need to make sure the email is sent before we update the message with the email info, otherwise we might
+		// end up with a message that has the info but the message was not sent successfully
 		const info = await sendEmail(
 			inbox,
 			{
@@ -272,7 +276,8 @@ callbacks.add(
 		if (!replyToMessage || !isIMessageInbox(replyToMessage) || !replyToMessage.email?.messageId) {
 			return message;
 		}
-
+		// we await here because we need to make sure the email is sent before we update the message with the email info, otherwise we might
+		// end up with a message that has the info but the message was not sent successfully
 		const info = await sendEmail(
 			inbox,
 			{
@@ -351,6 +356,7 @@ export async function sendTestEmailToInbox(emailInboxRecord: IEmailInbox, user: 
 		subject: 'Test of inbox configuration',
 		text: 'Test of inbox configuration successful',
 	});
+	// Nodemailer doesn't return an error if the email fails to send, so we need to check the response for a messageId to confirm it was sent successfully.
 	if (!info?.messageId) {
 		throw new Error('smtp-send-failed');
 	}
