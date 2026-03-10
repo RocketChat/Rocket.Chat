@@ -2286,32 +2286,7 @@ const GETAgentNextTokenSchema = {
 
 export const isGETAgentNextToken = ajv.compile<GETAgentNextToken>(GETAgentNextTokenSchema);
 
-type GETLivechatConfigParams = {
-	token?: string;
-	department?: string;
-	businessUnit?: string;
-};
 
-const GETLivechatConfigParamsSchema = {
-	type: 'object',
-	properties: {
-		token: {
-			type: 'string',
-			nullable: true,
-		},
-		department: {
-			type: 'string',
-			nullable: true,
-		},
-		businessUnit: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	additionalProperties: false,
-};
-
-export const isGETLivechatConfigParams = ajv.compile<GETLivechatConfigParams>(GETLivechatConfigParamsSchema);
 
 export const GETLivechatConfigRoutingSchema = {
 	type: 'object',
@@ -2848,14 +2823,14 @@ type POSTLivechatRoomCloseByUserParams = {
 	generateTranscriptPdf?: boolean;
 	forceClose?: boolean;
 	transcriptEmail?:
-		| {
-				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
-				sendToVisitor: false;
-		  }
-		| {
-				sendToVisitor: true;
-				requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
-		  };
+	| {
+		// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
+		sendToVisitor: false;
+	}
+	| {
+		sendToVisitor: true;
+		requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
+	};
 };
 
 const POSTLivechatRoomCloseByUserParamsSchema = {
@@ -4369,8 +4344,8 @@ export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWeb
 
 type POSTLivechatRoomsCloseAll =
 	| {
-			departmentIds?: string[];
-	  }
+		departmentIds?: string[];
+	}
 	| undefined;
 
 const POSTLivechatRoomsCloseAllSchema = {
@@ -4898,11 +4873,7 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/agent.next/:token': {
 		GET: (params: GETAgentNextToken) => { agent: ILivechatAgent | { hiddenInfo: true } } | void;
 	};
-	'/v1/livechat/config': {
-		GET: (params: GETLivechatConfigParams) => {
-			config: { [k: string]: string | boolean } & { room?: IOmnichannelRoom; agent?: ILivechatAgent };
-		};
-	};
+
 	'/v1/livechat/custom.field': {
 		POST: (params: POSTLivechatCustomFieldParams) => { field: { key: string; value: string; overwrite: boolean } };
 	};
@@ -5005,9 +4976,7 @@ export type OmnichannelEndpoints = {
 			}[];
 		}>;
 	};
-	'/v1/livechat/integrations.settings': {
-		GET: () => { settings: ISetting[]; success: boolean };
-	};
+
 	'/v1/livechat/upload/:rid': {
 		POST: (params: { file: File }) => IMessage & { newRoom: boolean; showConnecting: boolean };
 	};
@@ -5209,7 +5178,5 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/analytics/dashboards/conversations-by-agent': {
 		GET: (params: GETDashboardConversationsByType) => ReportWithUnmatchingElements;
 	};
-	'/v1/livechat/webhook.test': {
-		POST: () => void;
-	};
+
 };
