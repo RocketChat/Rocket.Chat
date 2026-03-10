@@ -3433,8 +3433,6 @@
   "Message_GlobalSearch": "Global Search",
   "Message_GroupingPeriod": "Grouping Period (in seconds)",
   "Message_GroupingPeriodDescription": "Messages will be grouped with previous message if both are from the same user and the elapsed time was less than the informed time in seconds.",
-  "Message_VirtualList_MaxRendered": "Message list maximum rendered messages",
-  "Message_VirtualList_MaxRendered_Description": "Maximum number of message DOM nodes to render at once in the virtualized message list. Lower values reduce performance impact when scrolled up or when many new messages are loaded; higher values may reduce blank areas while scrolling.",
   "Message_HideType_added_user_to_team": "User added to team",
   "Message_HideType_au": "User added",
   "Message_HideType_ui": "User invited to room",

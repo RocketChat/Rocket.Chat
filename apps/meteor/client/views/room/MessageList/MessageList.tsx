@@ -20,7 +20,6 @@ export const MessageList = function MessageList({ rid, messageListRef, scrollCon
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
-	const maxRenderedMessages = useSetting('Message_VirtualList_MaxRendered', 50);
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
 	return (
@@ -34,7 +33,6 @@ export const MessageList = function MessageList({ rid, messageListRef, scrollCon
 					firstUnreadMessageId={firstUnreadMessageId}
 					showUserAvatar={showUserAvatar}
 					subscription={subscription}
-					maxRenderedMessages={maxRenderedMessages}
 				/>
 			</SelectedMessagesProvider>
 		</MessageListProvider>

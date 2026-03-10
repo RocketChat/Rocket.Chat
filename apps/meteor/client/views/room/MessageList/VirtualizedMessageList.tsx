@@ -22,7 +22,6 @@ type VirtualizedMessageListProps = {
 	firstUnreadMessageId: string | undefined;
 	showUserAvatar: boolean;
 	subscription: ISubscription | undefined;
-	maxRenderedMessages?: number;
 };
 
 export function VirtualizedMessageList({
@@ -33,13 +32,10 @@ export function VirtualizedMessageList({
 	firstUnreadMessageId,
 	showUserAvatar,
 	subscription,
-	maxRenderedMessages = DEFAULT_MAX_RENDERED,
 }: VirtualizedMessageListProps) {
 	const hasRestoredScrollRef = useRef(false);
-	// Use setting to limit overscan so we rarely render more than maxRenderedMessages; avoid slicing
-	// virtualItems so we never unmount rows (unmount clears measurements and causes scroll jump).
-	const maxRendered = Math.max(1, Math.floor(Number(maxRenderedMessages)));
-	const overscan = Math.min(OVERSCAN, Math.max(0, Math.floor(maxRendered / 2) - 2));
+	// Limit overscan to cap how many rows render; avoid slicing virtualItems (causes scroll jump on unmount).
+	const overscan = Math.min(OVERSCAN, Math.max(0, Math.floor(DEFAULT_MAX_RENDERED / 2) - 2));
 
 	const virtualizer = useVirtualizer({
 		count: messages.length,
