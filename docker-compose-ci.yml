@@ -62,6 +62,7 @@ services:
     build:
       dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
       context: out/authorization-service
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64

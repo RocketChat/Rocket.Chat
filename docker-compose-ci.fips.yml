@@ -1,4 +1,9 @@
 services:
+  authorization-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}-fips
+
   presence-service:
     build:
       target: release-fips
