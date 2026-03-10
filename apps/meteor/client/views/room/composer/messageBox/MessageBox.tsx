@@ -158,7 +158,7 @@ const MessageBox = ({
 		const ref = messageComposerRef.current as HTMLElement;
 		chat.emojiPicker.open(ref, (emojiName: string) => {
 			const emojiEntry = emoji.list[`:${emojiName}:`];
-			const text = emojiEntry?.unicode ? ` ${emojiEntry.unicode} ` : ` :${emojiName}: `;
+			const text = emojiEntry && 'unicode' in emojiEntry && emojiEntry.unicode ? ` ${emojiEntry.unicode} ` : ` :${emojiName}: `;
 			chat.composer?.insertText(text);
 		});
 	});

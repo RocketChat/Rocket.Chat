@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';

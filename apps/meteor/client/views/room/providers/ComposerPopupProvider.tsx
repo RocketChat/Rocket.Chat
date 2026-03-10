@@ -242,7 +242,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					},
 					getValue: (item) => {
 						const emojiEntry = emoji.list[item._id];
-						return emojiEntry?.unicode ?? item._id;
+						return emojiEntry && 'unicode' in emojiEntry ? (emojiEntry.unicode ?? item._id) : item._id;
 					},
 					renderItem: ({ item }) => <ComposerBoxPopupEmoji {...item} />,
 				}),
