@@ -51,19 +51,26 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	}
 
 	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null> {
-		const query = {
-			'externalIds.source': source,
-			'externalIds.userId': externalUserId,
-		};
-
-		return this.findOne(query);
+		return this.findOne({
+			externalIds: { $elemMatch: { source, userId: externalUserId } },
+		});
 	}
 
 	addExternalId(_id: string, externalId: IVisitorExternalIdentifier): Promise<UpdateResult> {
 		return this.updateOne({ _id }, [
 			{
 				$set: {
-					externalIds: { $setUnion: [{ $ifNull: ['$externalIds', []] }, [externalId]] },
+					externalIds: {
+						$concatArrays: [
+							{
+								$filter: {
+									input: { $ifNull: ['$externalIds', []] },
+									cond: { $ne: ['$$this.source', externalId.source] },
+								},
+							},
+							[externalId],
+						],
+					},
 				},
 			},
 		]);
