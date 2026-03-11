@@ -4,6 +4,7 @@ import { resolve, join, relative } from 'node:path';
 import type { Locator, Page } from '@playwright/test';
 
 import { RoomComposer, ThreadComposer } from './composer';
+import { createMediaResponsePromise } from '../../fixtures/responses/mediaResponse';
 import { expect } from '../../utils/test';
 
 const FIXTURES_PATH = relative(process.cwd(), resolve(__dirname, '../../fixtures/files'));
@@ -15,7 +16,7 @@ export function getFilePath(fileName: string): string {
 export class HomeContent {
 	protected readonly page: Page;
 
-	protected readonly composer: RoomComposer;
+	readonly composer: RoomComposer;
 
 	protected readonly threadComposer: ThreadComposer;
 
@@ -67,6 +68,10 @@ export class HomeContent {
 
 	get lastThreadMessagePreview(): Locator {
 		return this.page.getByRole('listitem').locator('[role="link"][aria-roledescription="thread message preview"]').last();
+	}
+
+	get lastUserMessageDownloadLink(): Locator {
+		return this.lastUserMessage.getByRole('link', { name: 'Download' });
 	}
 
 	nthMessage(index: number): Locator {
@@ -154,7 +159,7 @@ export class HomeContent {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
 	}
 
-	get fileUploadModal(): Locator {
+	private get fileUploadModal(): Locator {
 		return this.page.getByRole('dialog', { name: 'File Upload' });
 	}
 
@@ -170,12 +175,6 @@ export class HomeContent {
 		return this.createDiscussionModal.getByRole('button', { name: 'Create' });
 	}
 
-	get modalFilePreview(): Locator {
-		return this.page.locator(
-			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
-		);
-	}
-
 	get btnModalConfirm(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
@@ -188,16 +187,20 @@ export class HomeContent {
 		return this.page.getByRole('button', { name: 'Dismiss quoted message' });
 	}
 
-	get descriptionInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
-	}
-
 	get getFileDescription(): Locator {
 		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
-	get fileNameInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
+	get inputFileUploadName(): Locator {
+		return this.fileUploadModal.getByRole('textbox', { name: 'File name' });
+	}
+
+	get btnUpdateFileUpload(): Locator {
+		return this.fileUploadModal.getByRole('button', { name: 'Update' });
+	}
+
+	get btnCancelUpdateFileUpload(): Locator {
+		return this.fileUploadModal.getByRole('button', { name: 'Cancel' });
 	}
 
 	// -----------------------------------------
@@ -374,7 +377,7 @@ export class HomeContent {
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
-	async dragAndDropLstFile(): Promise<void> {
+	async dragAndDropLstFile({ waitForLoad = true }: { waitForLoad?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('lst-test.lst'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -385,12 +388,15 @@ export class HomeContent {
 			return data;
 		}, contract);
 
+		const responsePromise = waitForLoad ? createMediaResponsePromise(this.page) : null;
 		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		if (responsePromise) {
+			await responsePromise;
+		}
 	}
 
-	async dragAndDropTxtFileToThread(): Promise<void> {
+	async dragAndDropTxtFileToThread({ waitForResponse = true } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -401,13 +407,29 @@ export class HomeContent {
 			return data;
 		}, contract);
 
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.threadComposer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		if (responsePromise) {
+			await responsePromise;
+		}
 	}
 
-	async sendFileMessage(fileName: string): Promise<void> {
-		await this.page.locator('input[type=file]').setInputFiles(getFilePath(fileName));
+	async sendFileMessage(fileName: string, { waitForResponse = true } = {}): Promise<void> {
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
+		await this.page.getByLabel('Room composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
+		if (responsePromise) {
+			await responsePromise;
+		}
+	}
+
+	async sendFileMessageToThread(fileName: string, { waitForResponse = true } = {}): Promise<void> {
+		await this.threadComposer.inputMessage.click();
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
+		await this.page.getByLabel('Thread composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
+		if (responsePromise) {
+			await responsePromise;
+		}
 	}
 
 	async openLastMessageMenu(): Promise<void> {
