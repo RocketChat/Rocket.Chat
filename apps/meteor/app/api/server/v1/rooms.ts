@@ -33,10 +33,10 @@ import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOf
 import { openRoom } from '../../../../server/lib/openRoom';
 import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { banUserFromRoomMethod } from '../../../../server/methods/banUserFromRoom';
-import { unbanUserFromRoomMethod } from '../../../../server/methods/unbanUserFromRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
+import { unbanUserFromRoomMethod } from '../../../../server/methods/unbanUserFromRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { roomsGetMethod } from '../../../../server/publications/room';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
