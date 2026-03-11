@@ -126,31 +126,49 @@ const createUnsupportedSha1Method = (method: string) => {
 	};
 };
 
+type Sha1UpdateCall = { type: 'string'; chunk: string; encoding?: BufferEncoding } | { type: 'buffer'; chunk: Buffer };
+
 crypto.createHash = function (algorithm: string, options?: crypto.HashOptions) {
 	if (algorithm.toLowerCase() === 'sha1') {
-		let inputData = '';
+		const updates: Sha1UpdateCall[] = [];
+		let wsProbeInput = '';
 
 		const mockHash = {
 			update(data: string | Buffer | NodeJS.ArrayBufferView, inputEncoding?: crypto.Encoding) {
 				if (typeof data === 'string') {
-					if (inputEncoding) {
-						inputData += Buffer.from(data, inputEncoding as BufferEncoding).toString('latin1');
-					} else {
-						inputData += data;
-					}
+					const encoding = inputEncoding as BufferEncoding | undefined;
+					updates.push({ type: 'string', chunk: data, encoding });
+					wsProbeInput += Buffer.from(data, encoding ?? 'utf8').toString('latin1');
 				} else if (Buffer.isBuffer(data)) {
-					inputData += data.toString('latin1');
+					const chunk = Buffer.from(data);
+					updates.push({ type: 'buffer', chunk });
+					wsProbeInput += chunk.toString('latin1');
 				} else {
-					inputData += Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString('latin1');
+					const chunk = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+					updates.push({ type: 'buffer', chunk: Buffer.from(chunk) });
+					wsProbeInput += chunk.toString('latin1');
 				}
 				return this;
 			},
 			digest(encoding?: crypto.BinaryToTextEncoding) {
-				if (encoding === 'base64' && inputData.length === 60) {
-					return generateWebSocketAccept(inputData);
+				if (encoding === 'base64' && wsProbeInput.length === 60) {
+					return generateWebSocketAccept(wsProbeInput);
 				}
 				// If it's not the exact WS handshake, pass it back to native (which will throw FIPS error)
-				const hash = originalCreateHash(algorithm, options).update(Buffer.from(inputData, 'latin1'));
+				const hash = originalCreateHash(algorithm, options);
+
+				for (const updateCall of updates) {
+					if (updateCall.type === 'string') {
+						if (updateCall.encoding) {
+							hash.update(updateCall.chunk, updateCall.encoding);
+						} else {
+							hash.update(updateCall.chunk);
+						}
+					} else {
+						hash.update(updateCall.chunk);
+					}
+				}
+
 				return encoding ? hash.digest(encoding) : hash.digest();
 			},
 			copy: createUnsupportedSha1Method('copy'),
