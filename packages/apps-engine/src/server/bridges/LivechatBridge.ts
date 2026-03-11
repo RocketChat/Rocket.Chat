@@ -96,7 +96,7 @@ export abstract class LivechatBridge extends BaseBridge {
 	}
 
 	public async doResolveVisitor(externalId: IVisitorExternalIdentifier, phone: string | undefined, appId: string): Promise<IVisitor | undefined> {
-		if (this.hasReadPermission(appId, 'livechat-visitor')) {
+		if (this.hasWritePermission(appId, 'livechat-visitor')) {
 			return this.resolveVisitor(externalId, phone, appId);
 		}
 	}
