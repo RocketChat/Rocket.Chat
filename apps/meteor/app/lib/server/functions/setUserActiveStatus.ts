@@ -1,6 +1,6 @@
 import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -12,12 +12,7 @@ import { relinquishRoomOwnerships } from './relinquishRoomOwnerships';
 import { callbacks } from '../../../../server/lib/callbacks';
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
-import {
-	notifyOnRoomChangedById,
-	notifyOnRoomChangedByUserDM,
-	notifyOnSubscriptionChangedByUserId,
-	notifyOnUserChange,
-} from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnRoomChangedByUserDM, notifyOnUserChange } from '../lib/notifyListener';
 
 async function reactivateDirectConversations(userId: string) {
 	// since both users can be deactivated at the same time, we should just reactivate rooms if both users are active
@@ -110,20 +105,6 @@ export async function setUserActiveStatus(
 
 	if (!active && user.active) {
 		await callbacks.run('afterDeactivateUser', user);
-	}
-
-	if (user.username) {
-		if (active === false) {
-			const { modifiedCount } = await Subscriptions.setArchivedByUsername(user.username, true);
-			if (modifiedCount) {
-				void notifyOnSubscriptionChangedByUserId(userId);
-			}
-		} else if (active === true && !user.active) {
-			if (await Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId(userId)) {
-				await Subscriptions.unarchiveByUserIdExceptForArchivedRooms(userId);
-				void notifyOnSubscriptionChangedByUserId(userId);
-			}
-		}
 	}
 
 	if (active === false) {

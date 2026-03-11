@@ -1312,12 +1312,11 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	async unarchiveByRoomId(roomId: string): Promise<boolean> {
-		const hasArchived = await this.col.countDocuments({ rid: roomId, archived: true }, { limit: 1 });
-		if (!hasArchived) {
-			return false;
-		}
+	async hasArchivedSubscriptionsByRoomId(roomId: string): Promise<boolean> {
+		return !!(await this.col.findOne({ rid: roomId, archived: true }, { projection: { _id: 1 } }));
+	}
 
+	async unarchiveByRoomId(roomId: string): Promise<void> {
 		await this.col
 			.aggregate(
 				[
@@ -1325,14 +1324,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					{ $project: { '_id': 1, 'u._id': 1 } },
 					{
 						$lookup: {
-							from: Users.getCollectionName(),
-							localField: 'u._id',
-							foreignField: '_id',
+							from: 'users',
+							let: { userId: '$u._id' },
+							pipeline: [
+								{ $match: { $expr: { $and: [{ $eq: ['$_id', '$$userId'] }, { $eq: ['$active', true] }] } } },
+								{ $limit: 1 },
+								{ $project: { _id: 1 } },
+							],
 							as: '_user',
-							pipeline: [{ $project: { active: 1 } }],
 						},
 					},
-					{ $match: { '_user.active': true } },
+					{ $match: { '_user.0': { $exists: true } } },
 					{
 						$project: {
 							_id: 1,
@@ -1352,8 +1354,6 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				{ allowDiskUse: true },
 			)
 			.toArray();
-
-		return true;
 	}
 
 	async hasArchivedSubscriptionsInNonArchivedRoomsByUserId(userId: string): Promise<boolean> {
@@ -1813,9 +1813,9 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	setArchivedByUsername(username: string, archived: boolean): Promise<UpdateResult | Document> {
+	setArchivedByUserId(userId: string, archived: boolean): Promise<UpdateResult | Document> {
 		const query: Filter<ISubscription> = {
-			'u.username': username,
+			'u._id': userId,
 		};
 
 		const update: UpdateFilter<ISubscription> = {

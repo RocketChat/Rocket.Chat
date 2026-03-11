@@ -16,11 +16,6 @@ describe('setUserActiveStatus', () => {
 			unsetReason: sinon.stub(),
 			findActiveByUserIds: sinon.stub(),
 		},
-		Subscriptions: {
-			setArchivedByUsername: sinon.stub(),
-			hasArchivedSubscriptionsInNonArchivedRoomsByUserId: sinon.stub(),
-			unarchiveByUserIdExceptForArchivedRooms: sinon.stub(),
-		},
 		Rooms: {
 			setDmReadOnlyByUserId: sinon.stub(),
 			getDirectConversationsByUserId: sinon.stub(),
@@ -33,7 +28,6 @@ describe('setUserActiveStatus', () => {
 			get: sinon.stub(),
 		},
 		notifyOnUserChange: sinon.stub(),
-		notifyOnSubscriptionChangedByUserId: sinon.stub(),
 		notifyOnRoomChangedByUserDM: sinon.stub(),
 		notifyOnRoomChangedById: sinon.stub(),
 		getSubscribedRoomsForUserWithDetails: sinon.stub(),
@@ -60,7 +54,7 @@ describe('setUserActiveStatus', () => {
 		'meteor/meteor': { Meteor: { Error } },
 		'meteor/accounts-base': { Accounts: stubs.Accounts },
 		'@rocket.chat/core-typings': { isUserFederated: stubs.isUserFederated, isDirectMessageRoom: sinon.stub() },
-		'@rocket.chat/models': { Users: stubs.Users, Subscriptions: stubs.Subscriptions, Rooms: stubs.Rooms },
+		'@rocket.chat/models': { Users: stubs.Users, Rooms: stubs.Rooms },
 		'./closeOmnichannelConversations': { closeOmnichannelConversations: stubs.closeOmnichannelConversations },
 		'./getRoomsWithSingleOwner': {
 			shouldRemoveOrChangeOwner: stubs.shouldRemoveOrChangeOwner,
@@ -74,7 +68,6 @@ describe('setUserActiveStatus', () => {
 		'../lib/notifyListener': {
 			notifyOnRoomChangedById: stubs.notifyOnRoomChangedById,
 			notifyOnRoomChangedByUserDM: stubs.notifyOnRoomChangedByUserDM,
-			notifyOnSubscriptionChangedByUserId: stubs.notifyOnSubscriptionChangedByUserId,
 			notifyOnUserChange: stubs.notifyOnUserChange,
 		},
 	});
@@ -99,7 +92,6 @@ describe('setUserActiveStatus', () => {
 		stubs.notifyOnRoomChangedById.returns(undefined);
 		stubs.notifyOnUserChange.returns(undefined);
 		stubs.notifyOnRoomChangedByUserDM.returns(undefined);
-		stubs.notifyOnSubscriptionChangedByUserId.returns(undefined);
 	});
 
 	afterEach(() => {
@@ -116,73 +108,6 @@ describe('setUserActiveStatus', () => {
 		});
 	});
 
-	describe('Subscription archiving on deactivation', () => {
-		it('should archive all user subscriptions when user is deactivated', async () => {
-			stubs.Subscriptions.setArchivedByUsername.resolves({ modifiedCount: 5 });
-
-			await setUserActiveStatus(userId, false);
-
-			expect(stubs.Subscriptions.setArchivedByUsername.calledOnce).to.be.true;
-			expect(stubs.Subscriptions.setArchivedByUsername.calledWith(username, true)).to.be.true;
-			expect(stubs.notifyOnSubscriptionChangedByUserId.calledWith(userId)).to.be.true;
-		});
-
-		it('should not notify if no subscriptions were modified', async () => {
-			stubs.Subscriptions.setArchivedByUsername.resolves({ modifiedCount: 0 });
-
-			await setUserActiveStatus(userId, false);
-
-			expect(stubs.Subscriptions.setArchivedByUsername.calledOnce).to.be.true;
-			expect(stubs.notifyOnSubscriptionChangedByUserId.called).to.be.false;
-		});
-	});
-
-	describe('Subscription unarchiving on reactivation', () => {
-		beforeEach(() => {
-			stubs.Users.findOneById.resolves({ _id: userId, username, active: false });
-		});
-
-		it('should unarchive subscriptions excluding archived rooms when user is reactivated', async () => {
-			stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.resolves(true);
-			stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.resolves();
-
-			await setUserActiveStatus(userId, true);
-
-			expect(stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.calledOnceWith(userId)).to.be.true;
-			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.calledOnceWith(userId)).to.be.true;
-			expect(stubs.notifyOnSubscriptionChangedByUserId.calledWith(userId)).to.be.true;
-		});
-
-		it('should not unarchive or notify if no archived subscriptions in non-archived rooms', async () => {
-			stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.resolves(false);
-
-			await setUserActiveStatus(userId, true);
-
-			expect(stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.calledOnceWith(userId)).to.be.true;
-			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.called).to.be.false;
-			expect(stubs.notifyOnSubscriptionChangedByUserId.called).to.be.false;
-		});
-	});
-
-	describe('User without username', () => {
-		it('should not archive subscriptions for user without username', async () => {
-			stubs.Users.findOneById.resolves({ _id: userId, username: undefined, active: true });
-
-			await setUserActiveStatus(userId, false);
-
-			expect(stubs.Subscriptions.setArchivedByUsername.called).to.be.false;
-		});
-
-		it('should not unarchive subscriptions for user without username', async () => {
-			stubs.Users.findOneById.resolves({ _id: userId, username: undefined, active: false });
-
-			await setUserActiveStatus(userId, true);
-
-			expect(stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.called).to.be.false;
-			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.called).to.be.false;
-		});
-	});
-
 	describe('Error handling and validation', () => {
 		it('should return false if user is not found', async () => {
 			stubs.Users.findOneById.resolves(null);
@@ -190,7 +115,6 @@ describe('setUserActiveStatus', () => {
 			const result = await setUserActiveStatus(userId, false);
 
 			expect(result).to.be.false;
-			expect(stubs.Subscriptions.setArchivedByUsername.called).to.be.false;
 		});
 
 		it('should throw error for federated users', async () => {

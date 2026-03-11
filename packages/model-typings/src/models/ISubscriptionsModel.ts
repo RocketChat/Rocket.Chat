@@ -242,7 +242,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findUnreadByUserId(userId: string): FindCursor<ISubscription>;
 
 	archiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
-	unarchiveByRoomId(roomId: string): Promise<boolean>;
+	hasArchivedSubscriptionsByRoomId(roomId: string): Promise<boolean>;
+	unarchiveByRoomId(roomId: string): Promise<void>;
 	hasArchivedSubscriptionsInNonArchivedRoomsByUserId(userId: string): Promise<boolean>;
 	unarchiveByUserIdExceptForArchivedRooms(userId: string): Promise<void>;
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
@@ -286,7 +287,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	removeRoleById(_id: string, role: string): Promise<UpdateResult>;
 	updateDirectFNameByName(name: string, fname: string): Promise<UpdateResult | Document>;
-	setArchivedByUsername(username: string, archived: boolean): Promise<UpdateResult | Document>;
+	setArchivedByUserId(userId: string, archived: boolean): Promise<UpdateResult | Document>;
 	updateUserHighlights(userId: string, userHighlights: any): Promise<UpdateResult | Document>;
 	updateNotificationUserPreferences(
 		userId: string,
