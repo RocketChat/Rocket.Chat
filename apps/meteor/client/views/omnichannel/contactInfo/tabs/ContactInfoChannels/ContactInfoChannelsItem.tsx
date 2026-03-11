@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next';
 import { useBlockChannel } from './useBlockChannel';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
-import { useVisitorInfo } from '../../../directory/hooks/useVisitorInfo';
 import { useOutboundMessageModal } from '../../../components/outboundMessage/modals/OutboundMessageModal';
+import { useVisitorInfo } from '../../../directory/hooks/useVisitorInfo';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 
 type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel> & {

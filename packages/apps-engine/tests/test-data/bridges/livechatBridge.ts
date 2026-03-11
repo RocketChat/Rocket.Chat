@@ -1,5 +1,12 @@
 import type { IExtraRoomParams } from '../../../src/definition/accessors/ILivechatCreator';
-import type { IDepartment, IVisitorExternalIdentifier, ILivechatMessage, ILivechatRoom, ILivechatTransferData, IVisitor } from '../../../src/definition/livechat';
+import type {
+	IDepartment,
+	IVisitorExternalIdentifier,
+	ILivechatMessage,
+	ILivechatRoom,
+	ILivechatTransferData,
+	IVisitor,
+} from '../../../src/definition/livechat';
 import type { IMessage } from '../../../src/definition/messages';
 import type { IUser } from '../../../src/definition/users';
 import { LivechatBridge } from '../../../src/server/bridges/LivechatBridge';

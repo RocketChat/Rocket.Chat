@@ -1,6 +1,12 @@
 import type { IAppServerOrchestrator, IAppsLivechatMessage, IAppsMessage } from '@rocket.chat/apps';
 import type { IExtraRoomParams } from '@rocket.chat/apps-engine/definition/accessors/ILivechatCreator';
-import type { IVisitorExternalIdentifier, IVisitor, ILivechatRoom, ILivechatTransferData, IDepartment } from '@rocket.chat/apps-engine/definition/livechat';
+import type {
+	IVisitorExternalIdentifier,
+	IVisitor,
+	ILivechatRoom,
+	ILivechatTransferData,
+	IDepartment,
+} from '@rocket.chat/apps-engine/definition/livechat';
 import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { LivechatBridge } from '@rocket.chat/apps-engine/server/bridges/LivechatBridge';
@@ -12,11 +18,11 @@ import { registerGuest } from '@rocket.chat/omni-core';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { closeRoom } from '../../../livechat/server/lib/closeRoom';
-import { resolveVisitor } from '../../../livechat/server/lib/resolveVisitor';
 import { setCustomFields } from '../../../livechat/server/lib/custom-fields';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';
 import type { ILivechatMessage } from '../../../livechat/server/lib/localTypes';
 import { updateMessage, sendMessage } from '../../../livechat/server/lib/messages';
+import { resolveVisitor } from '../../../livechat/server/lib/resolveVisitor';
 import { createRoom } from '../../../livechat/server/lib/rooms';
 import { online } from '../../../livechat/server/lib/service-status';
 import { transfer } from '../../../livechat/server/lib/transfer';
@@ -337,7 +343,11 @@ export class AppLivechatBridge extends LivechatBridge {
 			.convertVisitor(await LivechatVisitors.findOneVisitorByPhone(phoneNumber));
 	}
 
-	protected async resolveVisitor(externalId: IVisitorExternalIdentifier, phone: string | undefined, appId: string): Promise<IVisitor | undefined> {
+	protected async resolveVisitor(
+		externalId: IVisitorExternalIdentifier,
+		phone: string | undefined,
+		appId: string,
+	): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is resolving a livechat visitor by external ID.`);
 
 		const visitor = await resolveVisitor({ externalId, phone });
