@@ -1,28 +1,28 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useMethod, useRouter } from '@rocket.chat/ui-contexts';
 
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Subscriptions } from '../../../stores';
 
-export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((rid: IRoom['_id']) => void) => {
-	const getRoomById = useMethod('getRoomById');
+export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((roomId: IRoom['_id']) => Promise<void>) => {
 	const router = useRouter();
+	const getRoomById = useMethod('getRoomById');
 
 	// TODO: remove params recycling
-	return useEffectEvent(async (rid: IRoom['_id']) => {
-		if (!rid) {
+	return useStableCallback(async (roomId: IRoom['_id']) => {
+		if (!roomId) {
 			return;
 		}
 
-		const subscription: ISubscription | undefined = Subscriptions.state.find((record) => record.rid === rid);
+		const subscription: ISubscription | undefined = Subscriptions.state.find((record) => record.rid === roomId);
 
 		if (subscription) {
 			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters(), { replace });
 			return;
 		}
 
-		const room = await getRoomById(rid);
+		const room = await getRoomById(roomId);
 		roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, router.getSearchParameters(), { replace });
 	});
 };
