@@ -1,5 +1,5 @@
 import { isObject } from '@rocket.chat/tools';
-import type { i18n, TOptions } from 'i18next';
+import type { i18n, TFunction, TOptions } from 'i18next';
 
 import type { RocketchatI18nKeys } from './resources.ts';
 
@@ -13,8 +13,8 @@ declare module 'i18next' {
 	}
 }
 
-export const addSprinfToI18n = function (t: any) {
-	return function (key: string, ...replaces: any): string {
+export const addSprinfToI18n = (t: TFunction) => {
+	return (key: string, ...replaces: any): string => {
 		if (replaces[0] === undefined) {
 			return t(key);
 		}
