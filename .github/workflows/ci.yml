@@ -1019,10 +1019,6 @@ jobs:
             [[ -d "$service_dir" ]] || continue
             service="$(basename "$service_dir")"
 
-            if [ "$service" == "rocketchat-cov" ]; then
-              continue
-            fi
-
             echo "Promoting $service"
 
             if [[ "${service}" == 'rocketchat' ]]; then
