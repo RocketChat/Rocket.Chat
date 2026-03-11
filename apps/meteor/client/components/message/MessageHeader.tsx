@@ -60,7 +60,7 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 			>
 				<MessageName
 					title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizeUsername}` : undefined}
-					data-username={normalizeUsername}
+					data-username={normalizedUsername}
 				>
 					{message.alias || displayName}
 				</MessageName>
