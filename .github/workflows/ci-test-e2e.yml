@@ -257,13 +257,8 @@ jobs:
             local service="$1"
             local retries=18
             local delay=10
-            local ready_pattern="NetworkBroker started successfully"
-
-            case "$service" in
-              omnichannel-transcript-service)
-                ready_pattern="Service 'omnichannel-transcript' started."
-                ;;
-            esac
+            local broker_service_name="${service%-service}"
+            local ready_pattern="NetworkBroker started successfully|ServiceBroker with [0-9]+ service\(s\) started successfully|Service '${broker_service_name}' started\."
 
             for attempt in $(seq 1 "$retries"); do
               local container_id
@@ -277,6 +272,8 @@ jobs:
 
               local container_state
               container_state=$(docker inspect -f '{{.State.Status}}' "$container_id" 2>/dev/null || echo "unknown")
+              local health_state
+              health_state=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$container_id" 2>/dev/null || echo "unknown")
 
               if [[ "$container_state" != 'running' ]]; then
                 echo "Service '$service' is not running (state=$container_state)"
@@ -284,7 +281,18 @@ jobs:
                 return 1
               fi
 
-              if docker compose $COMPOSE_FILES logs "$service" | grep -q "$ready_pattern"; then
+              if [[ "$health_state" == 'unhealthy' ]]; then
+                echo "Service '$service' is unhealthy"
+                docker compose $COMPOSE_FILES logs "$service"
+                return 1
+              fi
+
+              if [[ "$health_state" == 'healthy' ]]; then
+                echo "Service '$service' is healthy"
+                return 0
+              fi
+
+              if docker compose $COMPOSE_FILES logs "$service" | grep -Eq "$ready_pattern"; then
                 echo "Service '$service' is ready"
                 return 0
               fi
