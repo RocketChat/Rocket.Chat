@@ -51,8 +51,13 @@ import type {
 } from '../../src/server/managers';
 import type { AppRuntimeManager } from '../../src/server/managers/AppRuntimeManager';
 import type { UIActionButtonManager } from '../../src/server/managers/UIActionButtonManager';
+import type { IMarketplaceInfo, IMarketplaceSubscriptionInfo } from '../../src/server/marketplace';
+import { MarketplacePurchaseType } from '../../src/server/marketplace/MarketplacePurchaseType';
+import { MarketplaceSubscriptionStatus } from '../../src/server/marketplace/MarketplaceSubscriptionStatus';
+import { MarketplaceSubscriptionType } from '../../src/server/marketplace/MarketplaceSubscriptionType';
 import type { IRuntimeController } from '../../src/server/runtime/IRuntimeController';
 import type { AppLogStorage, AppMetadataStorage, AppSourceStorage, IAppStorageItem } from '../../src/server/storage';
+import { AppInstallationSource } from '../../src/server/storage/IAppStorageItem';
 
 export class TestInfastructureSetup {
 	private appStorage: TestsAppStorage;
@@ -100,7 +105,9 @@ export class TestInfastructureSetup {
 				return {} as AppExternalComponentManager;
 			},
 			getOneById(appId: string): ProxiedApp {
-				return appId === 'failMePlease' ? undefined : TestData.getMockApp({ id: appId, name: 'testing' }, this);
+				return appId === 'failMePlease'
+					? undefined
+					: TestData.getMockApp({ info: { id: appId, name: 'testing' } } as IAppStorageItem, this);
 			},
 			getLogStorage(): AppLogStorage {
 				return new TestsAppLogStorage();
@@ -601,12 +608,99 @@ export class TestData {
 		return mock;
 	}
 
-	public static getMockApp({ id, name }: { id: string; name: string }, manager: AppManager): ProxiedApp {
+	public static getMockApp(storageItem: Partial<IAppStorageItem>, manager: AppManager): ProxiedApp {
+		const { id, name } = storageItem.info || { id: 'test-app', name: 'Test App' };
+
 		return new ProxiedApp(
 			manager,
-			{ id, status: AppStatus.AUTO_ENABLED, info: { id, name } } as IAppStorageItem,
+			{ id, status: AppStatus.AUTO_ENABLED, info: { id, name }, ...storageItem } as IAppStorageItem,
 			TestData.getMockRuntimeController(id),
 		);
+	}
+
+	public static getMarketplaceSubscriptionInfo(overrides: Partial<IMarketplaceSubscriptionInfo> = {}): IMarketplaceSubscriptionInfo {
+		return {
+			seats: 10,
+			maxSeats: 100,
+			startDate: '2023-01-01',
+			periodEnd: '2023-12-31',
+			isSubscripbedViaBundle: false,
+			typeOf: MarketplaceSubscriptionType.SubscriptionTypeApp,
+			status: MarketplaceSubscriptionStatus.PurchaseSubscriptionStatusActive,
+			license: {
+				license: 'encrypted-license-data',
+				version: 1,
+				expireDate: new Date('2023-01-01'),
+			},
+			...overrides,
+		};
+	}
+
+	public static getMarketplaceInfo(overrides: Partial<IMarketplaceInfo> = {}): IMarketplaceInfo {
+		return {
+			id: 'test-app',
+			name: 'Test App',
+			nameSlug: 'test-app',
+			version: '1.0.0',
+			description: 'Test app',
+			author: { name: 'Test Author', support: 'https://test.com', homepage: 'https://test.com' },
+			permissions: [],
+			requiredApiVersion: '1.0.0',
+			classFile: 'main.js',
+			iconFile: 'icon.png',
+			implements: [],
+			categories: [],
+			status: 'active',
+			isVisible: true,
+			isPurchased: false,
+			isSubscribed: false,
+			isBundled: false,
+			createdDate: '2023-01-01',
+			modifiedDate: '2023-01-01',
+			price: 0,
+			purchaseType: MarketplacePurchaseType.PurchaseTypeSubscription,
+			subscriptionInfo: TestData.getMarketplaceSubscriptionInfo(),
+			...overrides,
+		};
+	}
+
+	public static getAppStorageItem(overrides: Partial<IAppStorageItem> = {}): IAppStorageItem {
+		return {
+			id: 'test-app',
+			status: AppStatus.AUTO_ENABLED,
+			info: {
+				id: 'test-app',
+				name: 'Test App',
+				nameSlug: 'test-app',
+				version: '1.0.0',
+				description: 'Test app',
+				author: { name: 'Test Author', support: 'https://test.com', homepage: 'https://test.com' },
+				permissions: [],
+				requiredApiVersion: '1.0.0',
+				classFile: 'main.js',
+				iconFile: 'icon.png',
+				implements: [],
+			},
+			marketplaceInfo: [TestData.getMarketplaceInfo()],
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			installationSource: AppInstallationSource.MARKETPLACE,
+			languageContent: {},
+			settings: {},
+			implemented: {},
+			signature: 'default-signature',
+			...overrides,
+		};
+	}
+
+	public static getAppsOverview(subscriptionInfo?: IMarketplaceSubscriptionInfo): Array<{ latest: IMarketplaceInfo }> {
+		return [
+			{
+				latest: TestData.getMarketplaceInfo({
+					subscriptionInfo: subscriptionInfo || TestData.getMarketplaceSubscriptionInfo(),
+				}),
+			},
+		];
 	}
 }
 
