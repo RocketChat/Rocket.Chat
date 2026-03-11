@@ -119,22 +119,27 @@ crypto.createHash = function (algorithm: string, options?: crypto.HashOptions) {
 		let inputData = '';
 
 		return {
-			update(data) {
+			update(data: string | Buffer | NodeJS.ArrayBufferView, inputEncoding?: crypto.Encoding) {
 				if (typeof data === 'string') {
-					inputData += data;
+					if (inputEncoding) {
+						inputData += Buffer.from(data, inputEncoding as BufferEncoding).toString('latin1');
+					} else {
+						inputData += data;
+					}
 				} else if (Buffer.isBuffer(data)) {
-					inputData += data.toString('utf8');
+					inputData += data.toString('latin1');
 				} else {
-					inputData += Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString('utf8');
+					inputData += Buffer.from(data.buffer, data.byteOffset, data.byteLength).toString('latin1');
 				}
 				return this;
 			},
-			digest(encoding) {
+			digest(encoding?: crypto.BinaryToTextEncoding) {
 				if (encoding === 'base64' && inputData.length === 60) {
 					return generateWebSocketAccept(inputData);
 				}
 				// If it's not the exact WS handshake, pass it back to native (which will throw FIPS error)
-				return originalCreateHash(algorithm, options).update(inputData).digest(encoding);
+				const hash = originalCreateHash(algorithm, options).update(Buffer.from(inputData, 'latin1'));
+				return encoding ? hash.digest(encoding) : hash.digest();
 			},
 		} as crypto.Hash;
 	}
