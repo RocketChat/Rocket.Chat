@@ -114,11 +114,23 @@ const generateWebSocketAccept = (message: string): string => {
 
 const originalCreateHash = crypto.createHash;
 
+const createUnsupportedSha1MethodError = (method: string): Error =>
+	new Error(
+		`Unsupported SHA-1 hash API in FIPS mode: crypto.createHash('sha1').${method}. ` +
+			`Only update() and digest('base64') for the WebSocket handshake are supported.`,
+	);
+
+const createUnsupportedSha1Method = (method: string) => {
+	return () => {
+		throw createUnsupportedSha1MethodError(method);
+	};
+};
+
 crypto.createHash = function (algorithm: string, options?: crypto.HashOptions) {
 	if (algorithm.toLowerCase() === 'sha1') {
 		let inputData = '';
 
-		return {
+		const mockHash = {
 			update(data: string | Buffer | NodeJS.ArrayBufferView, inputEncoding?: crypto.Encoding) {
 				if (typeof data === 'string') {
 					if (inputEncoding) {
@@ -141,7 +153,23 @@ crypto.createHash = function (algorithm: string, options?: crypto.HashOptions) {
 				const hash = originalCreateHash(algorithm, options).update(Buffer.from(inputData, 'latin1'));
 				return encoding ? hash.digest(encoding) : hash.digest();
 			},
-		} as crypto.Hash;
+			copy: createUnsupportedSha1Method('copy'),
+			on: createUnsupportedSha1Method('on'),
+			once: createUnsupportedSha1Method('once'),
+			emit: createUnsupportedSha1Method('emit'),
+			pipe: createUnsupportedSha1Method('pipe'),
+		} as Record<PropertyKey, unknown>;
+
+		const guardedHash = new Proxy(mockHash, {
+			get(target, prop, receiver) {
+				if (typeof prop === 'string' && !(prop in target)) {
+					throw createUnsupportedSha1MethodError(prop);
+				}
+				return Reflect.get(target, prop, receiver);
+			},
+		});
+
+		return guardedHash as unknown as crypto.Hash;
 	}
 	return originalCreateHash(algorithm, options);
 };
