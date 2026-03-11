@@ -29,7 +29,6 @@ describe('[Chat]', () => {
 	let testChannel: IRoom;
 	let message: { _id: IMessage['_id'] };
 	let protectedChannel: IRoom;
-	let protectedMessage: { _id: IMessage['_id'] };
 
 	before((done) => getCredentials(done));
 
