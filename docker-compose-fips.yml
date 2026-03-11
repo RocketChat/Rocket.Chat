@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  rocketchat:
+    image: rocketchat:fips
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - MONGO_OPLOG_URL=mongodb://mongo:27017/local?replicaSet=rs0
+      - ROOT_URL=http://localhost:3000
+      - PORT=3000
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongodb/mongodb-community-server:8.2-ubi8
+    restart: on-failure
+    ports:
+      - "27017:27017"
+    command: mongod --replSet rs0 --oplogSize 128 --bind_ip_all
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  # Service to initialize the replica set
+  mongo-init-replica:
+    image: mongodb/mongodb-community-server:8.2-ubi8
+    command: >
+      bash -c "for i in `seq 1 30`; do
+          mongosh mongo/test --quiet --eval 'rs.initiate({ _id: \"rs0\", members: [ { _id: 0, host: \"mongo:27017\" } ] })' && break
+          sleep 1
+        done"
+    depends_on:
+      mongo:
+        condition: service_healthy

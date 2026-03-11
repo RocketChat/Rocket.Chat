@@ -12,7 +12,7 @@ export function getWebAppHash(arch: string): string | undefined {
 		const program = WebApp.clientPrograms[arch] as (typeof WebApp.clientPrograms)[string] & {
 			meteorRuntimeConfig: string;
 		};
-		webAppHashes[arch] = createHash('sha1')
+		webAppHashes[arch] = createHash('sha256')
 			.update(JSON.stringify(encodeURIComponent(program.meteorRuntimeConfig)))
 			.digest('hex');
 	}

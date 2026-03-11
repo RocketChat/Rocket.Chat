@@ -1,0 +1,61 @@
+FROM node:22.16.0-alpine3.20 AS builder
+
+ENV LANG=C.UTF-8
+
+# Install build tools
+RUN apk add --no-cache python3 make g++ py3-setuptools libc6-compat
+
+# Copy the bundle (assumes build context contains the 'bundle' directory)
+COPY . /app
+
+ENV NODE_ENV=production
+
+# Install npm dependencies for the app
+RUN cd /app/bundle/programs/server \
+    # Force installation of sharp for linux-musl-arm64
+    && npm install --omit=dev \
+    && npm install --cpu=arm64 --os=linux --libc=musl sharp@0.33.5
+
+# Final Stage: FIPS Base
+FROM ghcr.io/nginx/alpine-fips:latest
+
+LABEL maintainer="buildmaster@rocket.chat"
+
+ENV LANG=C.UTF-8
+
+# Environment setup for Rocket.Chat
+ENV DEPLOY_METHOD=docker \
+    NODE_ENV=production \
+    MONGO_URL=mongodb://mongo:27017/rocketchat \
+    HOME=/tmp \
+    PORT=3000 \
+    ROOT_URL=http://localhost:3000 \
+    Accounts_AvatarStorePath=/app/uploads
+
+# Install runtime dependencies
+# We enable Alpine 3.21 repositories to ensure we get Node.js 22 LTS (dynamically linked against system libraries)
+# We avoid upgrading system packages (like openssl) to maintain FIPS compliance from the base image
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/v3.21/main" > /etc/apk/repositories \
+    && echo "https://dl-cdn.alpinelinux.org/alpine/v3.21/community" >> /etc/apk/repositories \
+    && apk update \
+    && apk add --no-cache shadow libstdc++ ttf-dejavu deno libc6-compat nodejs npm \
+    # Create rocketchat user consistent with standard image
+    && groupmod -n rocketchat nogroup 2>/dev/null || groupadd -r rocketchat \
+    && useradd -u 65533 -r -g rocketchat rocketchat
+
+USER rocketchat
+
+COPY --from=builder --chown=rocketchat:rocketchat /app /app
+
+ENV OPENSSL_MODULES="/usr/lib/ossl-modules"
+ENV OPENSSL_CONF="/app/nodejs.cnf"
+
+RUN printf "openssl_conf = openssl_init\nnodejs_conf = openssl_init\n\n.include /usr/ssl/fipsmodule.cnf\n\n[openssl_init]\nproviders = provider_sect\nalg_section = algorithm_sect\n\n[provider_sect]\nfips = fips_sect\nbase = base_sect\n\n[base_sect]\nactivate = 1\n\n[algorithm_sect]\ndefault_properties = fips=yes\n" > /app/nodejs.cnf
+
+RUN echo "const crypto = require('crypto'); try { crypto.setFips(1); console.log('FIPS mode enabled', crypto.getHashes()); } catch (e) { console.error('Failed to enable FIPS mode:', e.message); process.exit(1); }" > /app/enable-fips.js
+
+ENV NODE_OPTIONS="--tls-cipher-list=HIGH:!aNULL:!MD5:!SHA1 -r /app/enable-fips.js"
+
+WORKDIR /app/bundle
+
+CMD ["node", "main.js"]
