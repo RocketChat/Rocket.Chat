@@ -178,17 +178,7 @@ class MediaCallDirector {
 	}
 
 	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const {
-			caller,
-			callee,
-			requestedCallId,
-			requestedService,
-			callerAgent,
-			calleeAgent,
-			parentCallId,
-			requestedBy,
-			features = DEFAULT_CALL_FEATURES,
-		} = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features } = params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
