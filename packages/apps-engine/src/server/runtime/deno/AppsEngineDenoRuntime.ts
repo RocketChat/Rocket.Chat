@@ -1,4 +1,7 @@
 import * as child_process from 'child_process';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
 import { inspect as utilInspect } from 'util';
@@ -85,6 +88,49 @@ export function getDenoWrapperPath(): string {
 	}
 }
 
+let symlinkedRuntimePath: string | undefined;
+
+function getSymlinkedDenoRuntimePath(denoWrapperPath: string): string {
+	if (!denoWrapperPath.includes('node_modules')) {
+		return denoWrapperPath;
+	}
+
+	if (symlinkedRuntimePath) {
+		return symlinkedRuntimePath;
+	}
+
+	const denoRuntimeDir = path.dirname(denoWrapperPath);
+	const pathHash = crypto.createHash('md5').update(denoRuntimeDir).digest('hex').substring(0, 8);
+	const symlinkName = `${pathHash}-deno-runtime`;
+	const symlinkPath = path.join(os.tmpdir(), symlinkName);
+
+	try {
+		try {
+			const existingTarget = fs.readlinkSync(symlinkPath);
+			if (existingTarget !== denoRuntimeDir) {
+				fs.unlinkSync(symlinkPath);
+			}
+		} catch (e: any) {
+			if (e.code !== 'ENOENT') {
+				fs.unlinkSync(symlinkPath);
+			}
+		}
+
+		if (!fs.existsSync(symlinkPath)) {
+			fs.symlinkSync(denoRuntimeDir, symlinkPath, 'junction');
+		}
+
+		symlinkedRuntimePath = path.join(symlinkPath, 'main.ts');
+		return symlinkedRuntimePath;
+	} catch (e) {
+		console.warn(
+			`[Apps-Engine] Failed to create symlink for deno-runtime at ${symlinkPath}: ${e}. ` +
+				`This may cause apps to malfunction when using Deno 2.x due to node_modules restrictions.`,
+		);
+		return denoWrapperPath;
+	}
+}
+
 type AbortFunction = (reason?: any) => void;
 
 export class DenoRuntimeSubprocessController extends EventEmitter implements IRuntimeController {
@@ -147,6 +193,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const denoExePath = 'deno';
 
 			const denoWrapperPath = getDenoWrapperPath();
+			const runtimePath = getSymlinkedDenoRuntimePath(denoWrapperPath);
 			// During development, the appsEngineDir is enough to run the deno process
 			const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
 			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
@@ -155,6 +202,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
 
 			const allowedDirs = [appsEngineDir, parentNodeModulesDir];
+
+			if (runtimePath !== denoWrapperPath) {
+				allowedDirs.push(path.dirname(runtimePath));
+			}
 
 			// If the app handles file upload events, it needs to be able to read the temp dir
 			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload)) {
@@ -166,7 +217,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				'--cached-only',
 				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
-				denoWrapperPath,
+				runtimePath,
 				'--subprocess',
 				this.appPackage.info.id,
 				'--spawnId',
