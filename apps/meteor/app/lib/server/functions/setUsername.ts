@@ -2,7 +2,7 @@ import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
-import { Invites, Users, Subscriptions } from '@rocket.chat/models';
+import { Invites, Users, Subscriptions, Messages } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
@@ -20,6 +20,13 @@ import { callbacks } from '../../../../server/lib/callbacks';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { settings } from '../../../settings/server';
 import { notifyOnUserChange } from '../lib/notifyListener';
+
+interface MessageReaction {
+	usernames?: string[];
+	[key: string]: unknown;
+}
+
+type MessageReactions = Record<string, MessageReaction>;
 
 const isUserInFederatedRooms = async (userId: string): Promise<boolean> => {
 	const cursor = Subscriptions.findUserFederatedRoomIds(userId);
@@ -80,6 +87,45 @@ export const setUsernameWithValidation = async (userId: string, username: string
 
 	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 };
+async function migrateReactionUsernames(oldUsername: string, newUsername: string) {
+	if (!oldUsername || oldUsername === newUsername) {
+		return;
+	}
+
+	const message_list = Messages.find(
+		{ 'reactions.usernames': oldUsername },
+		{ projection: { reactions: 1 } },
+	);
+
+	for await (const message of message_list) {
+		if (!message.reactions) {
+			continue;
+		}
+
+		const updatedReactions = Object.fromEntries(
+			Object.entries(message.reactions as MessageReactions).map(([emoji, reaction]) => {
+				if (!reaction?.usernames) {
+					return [emoji, reaction];
+				}
+
+				return [
+					emoji,
+					{
+						...reaction,
+						usernames: reaction.usernames.map((username) =>
+							username === oldUsername ? newUsername : username,
+						),
+					},
+				];
+			}),
+		);
+
+		await Messages.updateOne(
+			{ _id: message._id },
+			{ $set: { reactions: updatedReactions } },
+		);
+	}
+}
 
 export const _setUsername = async function (
 	userId: string,
@@ -131,6 +177,7 @@ export const _setUsername = async function (
 	// Set new username*
 	// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
 	await Users.setUsername(user._id, username, { session });
+	await migrateReactionUsernames(previousUsername, username);
 	user.username = username;
 
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
