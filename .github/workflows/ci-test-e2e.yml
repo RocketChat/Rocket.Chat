@@ -261,6 +261,13 @@ jobs:
             local service="$1"
             local retries=18
             local delay=10
+            local ready_pattern="NetworkBroker started successfully"
+
+            case "$service" in
+              omnichannel-transcript-service)
+                ready_pattern="Service 'omnichannel-transcript' started."
+                ;;
+            esac
 
             for attempt in $(seq 1 "$retries"); do
               local container_id
@@ -281,7 +288,7 @@ jobs:
                 return 1
               fi
 
-              if docker compose $COMPOSE_FILES logs "$service" | grep -q "NetworkBroker started successfully"; then
+              if docker compose $COMPOSE_FILES logs "$service" | grep -q "$ready_pattern"; then
                 echo "Service '$service' is ready"
                 return 0
               fi
