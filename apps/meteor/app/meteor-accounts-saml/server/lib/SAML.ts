@@ -295,7 +295,7 @@ export class SAML {
 			}
 
 			let timeoutHandler: NodeJS.Timeout | undefined = undefined;
-			const redirect = (url?: string | undefined): void => {
+			const redirect = (url?: string): void => {
 				if (!timeoutHandler) {
 					// If the handler is null, then we already ended the response;
 					return;
@@ -493,7 +493,7 @@ export class SAML {
 	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): Promise<void> {
 		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
-			for await (let roomName of channels) {
+			for (let roomName of channels) {
 				roomName = roomName.trim();
 				if (!roomName) {
 					continue;

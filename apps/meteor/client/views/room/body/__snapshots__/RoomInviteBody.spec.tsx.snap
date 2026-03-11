@@ -40,7 +40,7 @@ exports[`RoomInvite renders Default without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
               >
                 <img
-                  alt=""
+                  alt="Avatar"
                   aria-hidden="true"
                   class="rcx-avatar__element rcx-avatar__element--x16"
                   data-username="rocket.cat"
@@ -124,7 +124,7 @@ exports[`RoomInvite renders Loading without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
               >
                 <img
-                  alt=""
+                  alt="Avatar"
                   aria-hidden="true"
                   class="rcx-avatar__element rcx-avatar__element--x16"
                   data-username="rocket.cat"
@@ -222,7 +222,7 @@ exports[`RoomInvite renders WithInfoLink without crashing 1`] = `
                 class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x16"
               >
                 <img
-                  alt=""
+                  alt="Avatar"
                   aria-hidden="true"
                   class="rcx-avatar__element rcx-avatar__element--x16"
                   data-username="rocket.cat"

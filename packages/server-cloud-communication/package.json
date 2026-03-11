@@ -9,12 +9,12 @@
 	],
 	"scripts": {
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "eslint --ext .js,.jsx,.ts,.tsx .",
-		"lint:fix": "eslint --ext .js,.jsx,.ts,.tsx . --fix"
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix ."
 	},
 	"devDependencies": {
 		"@rocket.chat/license": "workspace:^",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
