@@ -916,80 +916,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms.banUser',
-	{ authRequired: true, validateParams: isRoomsBanUserProps },
-	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await banUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.unbanUser',
-	{ authRequired: true, validateParams: isRoomsUnbanUserProps },
-	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await unbanUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.bannedUsers',
-	{ authRequired: true, validateParams: isRoomsBannedUsersProps },
-	{
-		async get() {
-			const { roomId } = this.queryParams;
-
-			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-				return API.v1.unauthorized();
-			}
-
-			if (!(await hasPermissionAsync(this.userId, 'ban-user', roomId))) {
-				return API.v1.unauthorized();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			const bannedSubscriptions = Subscriptions.findBannedByRoomId(roomId);
-			const total = await bannedSubscriptions.clone().count();
-
-			const bannedSubs = await bannedSubscriptions.skip(offset).limit(count).toArray();
-
-			const userIds = bannedSubs.map((sub) => sub.u._id);
-			const users = await Users.find(
-				{ _id: { $in: userIds } },
-				{ projection: { username: 1, name: 1, status: 1, avatarETag: 1 } },
-			).toArray();
-
-			return API.v1.success({
-				bannedUsers: users,
-				count: users.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'rooms.open',
 	{ authRequired: true, validateParams: isRoomsOpenProps },
 	{
@@ -1104,6 +1030,29 @@ const isRoomsLeavePropsSchema = {
 
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+const roomsBannedUsersResponseSchema = ajv.compile<{
+	bannedUsers: { username?: string; name?: string; status?: string; avatarETag?: string }[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		bannedUsers: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: { username: { type: 'string' }, name: { type: 'string' }, status: { type: 'string' }, avatarETag: { type: 'string' } },
+				additionalProperties: false,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+	},
+	required: ['bannedUsers', 'count', 'offset', 'total'],
+	additionalProperties: false,
+});
 
 export const roomEndpoints = API.v1
 	.get(
@@ -1311,8 +1260,105 @@ export const roomEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	);
+	)
+	.post(
+		'rooms.banUser',
+		{
+			authRequired: true,
+			body: isRoomsBanUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
 
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await banUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.unbanUser',
+		{
+			authRequired: true,
+			body: isRoomsUnbanUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await unbanUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	)
+	.get(
+		'rooms.bannedUsers',
+		{
+			authRequired: true,
+			query: isRoomsBannedUsersProps,
+			response: {
+				200: roomsBannedUsersResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.queryParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			if (!(await hasPermissionAsync(this.userId, 'ban-user', roomId))) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const bannedSubscriptions = Subscriptions.findBannedByRoomId(roomId);
+			const total = await bannedSubscriptions.clone().count();
+
+			const bannedSubs = await bannedSubscriptions.skip(offset).limit(count).toArray();
+
+			const userIds = bannedSubs.map((sub: { u: { _id: string } }) => sub.u._id);
+			const users = await Users.find(
+				{ _id: { $in: userIds } },
+				{ projection: { username: 1, name: 1, status: 1, avatarETag: 1 } },
+			).toArray();
+
+			return API.v1.success({
+				bannedUsers: users,
+				count: users.length,
+				offset,
+				total,
+			});
+		},
+	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
 	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
