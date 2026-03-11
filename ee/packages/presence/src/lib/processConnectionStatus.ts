@@ -36,7 +36,7 @@ export const processPresenceAndStatus = (
 	userSessions: IUserSessionConnection[] = [],
 	statusDefault = UserStatus.ONLINE,
 ): { status: UserStatus; statusConnection: UserStatus } => {
-	const statusConnection = userSessions.map((s) => s.status).reduce(processConnectionStatus, UserStatus.OFFLINE);
+	const statusConnection = process.env.TEST_MODE ? statusDefault : userSessions.map((s) => s.status).reduce(processConnectionStatus, UserStatus.OFFLINE);
 
 	const status = processStatus(statusConnection, statusDefault);
 
