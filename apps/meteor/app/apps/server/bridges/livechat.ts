@@ -205,6 +205,10 @@ export class AppLivechatBridge extends LivechatBridge {
 		return Promise.all(result.map((room) => this.orch.getConverters()?.get('rooms').convertRoom(room) as Promise<ILivechatRoom>));
 	}
 
+	/**
+	 * @deprecated Use `createAndReturnVisitor` instead.
+	 * Note: This method does not support `externalIds`.
+	 */
 	protected async createVisitor(visitor: IVisitor, appId: string): Promise<string> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat visitor.`);
 
