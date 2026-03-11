@@ -1,4 +1,4 @@
-import type { AtLeast, FileAttachmentProps, IMessage, IUploadToConfirm } from '@rocket.chat/core-typings';
+import type { AtLeast, FileAttachmentProps, IE2EEMessage, IMessage, IUploadToConfirm } from '@rocket.chat/core-typings';
 import { imperativeModal, GenericModal } from '@rocket.chat/ui-client';
 
 import { sdk } from '../../../../app/utils/client/lib/SDKClient';
@@ -92,66 +92,56 @@ const getEncryptedContent = async (filesToUpload: readonly EncryptedUpload[], e2
 
 async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message: IMessage) {
 	const { msg, rid, tmid } = message;
-	// const room = await chat.data.getRoom();
 	const e2eRoom = await e2e.getInstanceByRoomId(rid);
+	const shouldConvertSentMessages = await e2eRoom?.shouldConvertSentMessages({ msg });
 	const filesToUpload = store.get();
 
-	const fileUrls: string[] = [];
-	const filesToConfirm: IUploadToConfirm[] = [];
+	const confirmFilesQueue: (IUploadToConfirm & {
+		composedMessage: AtLeast<IMessage, 'msg' | 'tmid' | 't' | 'content'> & { fileName?: string; fileContent?: IE2EEMessage['content'] };
+	})[] = [];
 
-	for await (const upload of filesToUpload) {
+	for (const upload of filesToUpload) {
 		if (!upload.url || !upload.id) {
 			continue;
 		}
 
+		/**
+		 * The first message will keep the composedMessage,
+		 * subsequent messages will have a empty text
+		 * */
+		const currentMsg = upload === filesToUpload[0] ? msg : '';
+
 		let content;
-		if (e2eRoom && isEncryptedUpload(upload)) {
-			content = await e2eRoom.encryptMessageContent(upload.metadataForEncryption);
+		if (!e2eRoom || !isEncryptedUpload(upload)) {
+			confirmFilesQueue.push({
+				_id: upload.id,
+				name: upload.file.name,
+				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name },
+			});
+			continue;
 		}
 
-		fileUrls.push(upload.url);
-		filesToConfirm.push({ _id: upload.id, name: upload.file.name, content });
-	}
+		const fileContent = await e2eRoom.encryptMessageContent(upload.metadataForEncryption);
 
-	const shouldConvertSentMessages = await e2eRoom?.shouldConvertSentMessages({ msg });
-
-	let content;
-	const hasEncryptedUploads = filesToUpload.some((upload) => isEncryptedUpload(upload));
-
-	if (e2eRoom && shouldConvertSentMessages) {
-		const encryptedUploads = filesToUpload.filter((upload): upload is EncryptedUpload => isEncryptedUpload(upload));
-
-		if (encryptedUploads.length > 0) {
-			content = await getEncryptedContent(encryptedUploads, e2eRoom, msg);
+		if (shouldConvertSentMessages) {
+			content = await getEncryptedContent([upload], e2eRoom, currentMsg);
 		}
-	}
 
-	const shouldMarkAsE2E = e2eRoom && (content || hasEncryptedUploads);
-
-	const composedMessage: AtLeast<IMessage, 'msg' | 'tmid' | 't' | 'content'> = {
-		tmid,
-		msg,
-		content,
-		...(shouldMarkAsE2E && {
+		const composedMessage = {
+			tmid,
+			content,
 			t: 'e2e',
 			msg: '',
-		}),
-	} as const;
+			fileContent,
+		} as const;
+
+		confirmFilesQueue.push({ _id: upload.id, name: upload.file.name, content: fileContent, composedMessage });
+	}
 
 	try {
-		await Promise.all(
-			filesToConfirm.map(async (fileToConfirm, index) => {
-				/**
-				 * The first message will keep the composedMessage,
-				 * subsequent messages will have a new ID with empty text
-				 * */
-				const messageToSend = index === 0 ? composedMessage : { ...composedMessage, msg: '' };
-				await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileToConfirm._id}`, {
-					...messageToSend,
-					...(shouldMarkAsE2E ? { fileContent: fileToConfirm.content } : { fileName: fileToConfirm.name }),
-				});
-			}),
-		);
+		for (const fileToConfirm of confirmFilesQueue) {
+			await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileToConfirm._id}`, fileToConfirm.composedMessage);
+		}
 		store.clear();
 	} catch (error: unknown) {
 		dispatchToastMessage({ type: 'error', message: error });
