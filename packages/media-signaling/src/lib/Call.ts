@@ -1214,6 +1214,9 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private onWebRTCStreamChanged(): void {
 		this.config.logger?.debug('ClientMediaCall.onWebRTCStreamChanged');
+		if (!this.webrtcProcessor?.streams.screenShareLocal.hasVideo() && this.hasVideoTrack()) {
+			void this.setVideoTrack(null);
+		}
 		this.emitter.emit('streamChange');
 	}
 
