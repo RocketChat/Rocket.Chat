@@ -5,24 +5,22 @@ import { useMethod, useRouter } from '@rocket.chat/ui-contexts';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { Subscriptions } from '../../../stores';
 
-export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((roomId: IRoom['_id']) => Promise<void>) => {
+export const useGoToRoom = (): ((roomId: IRoom['_id']) => Promise<void>) => {
 	const router = useRouter();
 	const getRoomById = useMethod('getRoomById');
 
 	// TODO: remove params recycling
 	return useStableCallback(async (roomId: IRoom['_id']) => {
-		if (!roomId) {
-			return;
-		}
+		if (!roomId) return;
 
 		const subscription: ISubscription | undefined = Subscriptions.state.find((record) => record.rid === roomId);
 
 		if (subscription) {
-			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters(), { replace });
+			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters());
 			return;
 		}
 
 		const room = await getRoomById(roomId);
-		roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, router.getSearchParameters(), { replace });
+		roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, router.getSearchParameters());
 	});
 };
