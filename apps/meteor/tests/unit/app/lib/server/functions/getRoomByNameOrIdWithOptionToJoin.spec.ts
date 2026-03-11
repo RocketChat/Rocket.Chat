@@ -27,7 +27,7 @@ type GetRoomByNameOrIdWithOptionToJoinFn = (params: {
 	errorOnEmpty?: boolean;
 }) => Promise<IRoom | null>;
 
-describe.only('getRoomByNameOrIdWithOptionToJoin', () => {
+describe('getRoomByNameOrIdWithOptionToJoin', () => {
 	let RoomsStub: {
 		findOneByIdOrName: Sinon.SinonStub;
 		findOneDirectRoomContainingAllUserIDs: Sinon.SinonStub;
