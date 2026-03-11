@@ -846,7 +846,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 	}
 
-	async notifyRoomRead({ room, userId, threadId }: { room: IRoomNativeFederated; userId: string; threadId: string }): Promise<void> {
+	async notifyRoomRead({ room, userId, threadId }: { room: IRoomNativeFederated; userId: string; threadId?: string }): Promise<void> {
 		if (!this.processEDUReceipt) {
 			return;
 		}
