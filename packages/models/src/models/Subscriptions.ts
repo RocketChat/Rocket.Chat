@@ -1356,6 +1356,26 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return true;
 	}
 
+	async hasArchivedSubscriptionsInNonArchivedRoomsByUserId(userId: string): Promise<boolean> {
+		const result = await this.col
+			.aggregate([
+				{ $match: { 'u._id': userId, 'archived': true } },
+				{
+					$lookup: {
+						from: Rooms.getCollectionName(),
+						localField: 'rid',
+						foreignField: '_id',
+						as: 'room',
+					},
+				},
+				{ $match: { 'room.0.archived': { $ne: true } } },
+				{ $limit: 1 },
+			])
+			.toArray();
+
+		return result.length > 0;
+	}
+
 	async unarchiveByUserIdExceptForArchivedRooms(userId: string): Promise<void> {
 		await this.col
 			.aggregate([

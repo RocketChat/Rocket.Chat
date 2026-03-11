@@ -119,8 +119,10 @@ export async function setUserActiveStatus(
 				void notifyOnSubscriptionChangedByUserId(userId);
 			}
 		} else if (active === true && !user.active) {
-			await Subscriptions.unarchiveByUserIdExceptForArchivedRooms(userId);
-			void notifyOnSubscriptionChangedByUserId(userId);
+			if (await Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId(userId)) {
+				await Subscriptions.unarchiveByUserIdExceptForArchivedRooms(userId);
+				void notifyOnSubscriptionChangedByUserId(userId);
+			}
 		}
 	}
 

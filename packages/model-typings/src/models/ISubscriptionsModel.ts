@@ -243,6 +243,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	archiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
 	unarchiveByRoomId(roomId: string): Promise<boolean>;
+	hasArchivedSubscriptionsInNonArchivedRoomsByUserId(userId: string): Promise<boolean>;
 	unarchiveByUserIdExceptForArchivedRooms(userId: string): Promise<void>;
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
 	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;

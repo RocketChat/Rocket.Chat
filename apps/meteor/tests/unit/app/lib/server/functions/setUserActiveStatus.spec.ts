@@ -18,6 +18,7 @@ describe('setUserActiveStatus', () => {
 		},
 		Subscriptions: {
 			setArchivedByUsername: sinon.stub(),
+			hasArchivedSubscriptionsInNonArchivedRoomsByUserId: sinon.stub(),
 			unarchiveByUserIdExceptForArchivedRooms: sinon.stub(),
 		},
 		Rooms: {
@@ -142,12 +143,24 @@ describe('setUserActiveStatus', () => {
 		});
 
 		it('should unarchive subscriptions excluding archived rooms when user is reactivated', async () => {
+			stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.resolves(true);
 			stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.resolves();
 
 			await setUserActiveStatus(userId, true);
 
+			expect(stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.calledOnceWith(userId)).to.be.true;
 			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.calledOnceWith(userId)).to.be.true;
 			expect(stubs.notifyOnSubscriptionChangedByUserId.calledWith(userId)).to.be.true;
+		});
+
+		it('should not unarchive or notify if no archived subscriptions in non-archived rooms', async () => {
+			stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.resolves(false);
+
+			await setUserActiveStatus(userId, true);
+
+			expect(stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.calledOnceWith(userId)).to.be.true;
+			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.called).to.be.false;
+			expect(stubs.notifyOnSubscriptionChangedByUserId.called).to.be.false;
 		});
 	});
 
@@ -165,6 +178,7 @@ describe('setUserActiveStatus', () => {
 
 			await setUserActiveStatus(userId, true);
 
+			expect(stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.called).to.be.false;
 			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.called).to.be.false;
 		});
 	});
