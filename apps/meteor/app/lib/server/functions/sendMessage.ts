@@ -24,6 +24,7 @@ import { validateCustomMessageFields } from '../lib/validateCustomMessageFields'
 type SendMessageOptions = {
 	upsert?: boolean;
 	previewUrls?: string[];
+	parseUrls?: boolean;
 };
 
 // TODO: most of the types here are wrong, but I don't want to change them now
@@ -243,8 +244,8 @@ export function prepareMessageObject(
  * Caller of the function should verify the Message_MaxAllowedSize if needed.
  * There might be same use cases which needs to override this setting. Example - sending error logs.
  */
-export const sendMessage = async function (user: any, message: any, room: any, options: SendMessageOptions = {}) {
-	const { upsert = false, previewUrls } = options;
+export const sendMessage = async function (user: IUser, message: IMessage, room: IRoom, options: SendMessageOptions = {}) {
+	const { upsert = false, previewUrls, parseUrls } = options;
 
 	if (!user || !message || !room._id) {
 		return false;
@@ -278,7 +279,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 		}
 	}
 
-	message = await Message.beforeSave({ message, room, user, previewUrls, parseUrls: message.parseUrls });
+	message = await Message.beforeSave({ message, room, user, previewUrls, parseUrls });
 
 	if (!message) {
 		return;
@@ -286,7 +287,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 
 	if (message._id && upsert) {
 		const { _id } = message;
-		delete message._id;
+		delete (message as Partial<IMessage>)._id;
 		await Messages.updateOne(
 			{
 				_id,
