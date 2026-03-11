@@ -9,6 +9,8 @@ import {
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
 	isRoomsBanUserProps,
+	isRoomsUnbanUserProps,
+	isRoomsBannedUsersProps,
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
@@ -31,6 +33,7 @@ import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOf
 import { openRoom } from '../../../../server/lib/openRoom';
 import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { banUserFromRoomMethod } from '../../../../server/methods/banUserFromRoom';
+import { unbanUserFromRoomMethod } from '../../../../server/methods/unbanUserFromRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
@@ -926,6 +929,62 @@ API.v1.addRoute(
 			await banUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
 
 			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.unbanUser',
+	{ authRequired: true, validateParams: isRoomsUnbanUserProps },
+	{
+		async post() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await unbanUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'rooms.bannedUsers',
+	{ authRequired: true, validateParams: isRoomsBannedUsersProps },
+	{
+		async get() {
+			const { roomId } = this.queryParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			if (!(await hasPermissionAsync(this.userId, 'ban-user', roomId))) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const bannedSubscriptions = Subscriptions.findBannedByRoomId(roomId);
+			const total = await bannedSubscriptions.clone().count();
+
+			const bannedSubs = await bannedSubscriptions.skip(offset).limit(count).toArray();
+
+			const userIds = bannedSubs.map((sub) => sub.u._id);
+			const users = await Users.find(
+				{ _id: { $in: userIds } },
+				{ projection: { username: 1, name: 1, status: 1, avatarETag: 1 } },
+			).toArray();
+
+			return API.v1.success({
+				bannedUsers: users,
+				count: users.length,
+				offset,
+				total,
+			});
 		},
 	},
 );

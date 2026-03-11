@@ -339,6 +339,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null>;
 	acceptInvitationById(subscriptionId: ISubscription['_id']): Promise<UpdateResult>;
 	findBannedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null>;
+	findBannedByRoomId(roomId: ISubscription['rid']): FindCursor<ISubscription>;
 	banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	unbanByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult>;

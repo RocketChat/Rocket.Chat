@@ -2122,6 +2122,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		});
 	}
 
+	findBannedByRoomId(roomId: ISubscription['rid']) {
+		return this.find({
+			rid: roomId,
+			status: 'BANNED',
+		});
+	}
+
 	async banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
 		return this.updateOne(
 			{ 'rid': roomId, 'u._id': userId },
