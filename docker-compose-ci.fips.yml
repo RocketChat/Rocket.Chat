@@ -23,3 +23,8 @@ services:
     build:
       target: release-fips
     image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}-fips
+
+  omnichannel-transcript-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}-fips
