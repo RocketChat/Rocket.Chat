@@ -159,6 +159,7 @@ services:
     build:
       dockerfile: ee/apps/omnichannel-transcript/Dockerfile
       context: .
+      target: release-standard
       x-bake:
         platforms:
           - linux/amd64
