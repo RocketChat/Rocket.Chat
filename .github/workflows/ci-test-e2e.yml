@@ -198,8 +198,8 @@ jobs:
           mkdir -p "$COVERAGE_DIR"
           chmod 777 "$COVERAGE_DIR"
 
-      - name: Pull FIPS images
-        if: inputs.release == 'fips' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+      - name: Pull EE/FIPS images
+        if: (inputs.release == 'ee' || inputs.release == 'fips') && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         run: |
           read -r -a compose_files <<< "$COMPOSE_FILES"
           docker compose "${compose_files[@]}" pull
@@ -219,11 +219,7 @@ jobs:
           COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
         run: |
           read -r -a compose_files <<< "$COMPOSE_FILES"
-          if [[ '${{ inputs.release }}' == 'fips' ]]; then
-            DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose "${compose_files[@]}" up -d --wait --no-build
-          else
-            DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose "${compose_files[@]}" up -d --wait
-          fi
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose "${compose_files[@]}" up -d --wait --no-build
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
