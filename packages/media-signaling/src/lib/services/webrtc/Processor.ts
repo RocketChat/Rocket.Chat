@@ -22,7 +22,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 	private inputTrack: MediaStreamTrack | null;
 
-	private videoTrack: MediaStreamTrack | null;
+	private screenVideoTrack: MediaStreamTrack | null;
 
 	private _muted = false;
 
@@ -51,7 +51,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	constructor(private readonly config: WebRTCProcessorConfig) {
 		this.iceGatheringWaiters = new Set();
 		this.inputTrack = config.inputTrack;
-		this.videoTrack = config.videoTrack || null;
+		this.screenVideoTrack = config.screenVideoTrack || null;
 		this._dataChannel = null;
 		this.emitter = new Emitter();
 
@@ -82,7 +82,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await this.loadInputTrack();
 	}
 
-	public async setVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
+	public async setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.setVideoTrack');
 		if (newVideoTrack && newVideoTrack.kind !== 'video') {
 			throw new Error('Unsupported track kind');
@@ -90,8 +90,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		await this.initialization;
 
-		this.videoTrack = newVideoTrack;
-		await this.loadVideoTrack();
+		this.screenVideoTrack = newVideoTrack;
+		await this.loadScreenVideoTrack();
 
 		this.updateDirectionForVideoTrackChanged();
 	}
@@ -145,7 +145,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		// Stop only the remote stream; the track of the local stream may still be in use by another call so it's up to the session to stop it.
 		this.streams.stopRemoteStreams();
 		// The screen share local stream is safe to stop here, as currently it shouldn't be used by any other call
-		this.videoTrack?.stop();
+		this.screenVideoTrack?.stop();
 		this.unregisterPeerEvents();
 
 		this.peer.close();
@@ -334,8 +334,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			await this.loadInputTrack();
 		}
 
-		if (this.videoTrack) {
-			await this.loadVideoTrack();
+		if (this.screenVideoTrack) {
+			await this.loadScreenVideoTrack();
 		}
 	}
 
@@ -371,14 +371,14 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private updateVideoDirectionBeforeNegotiation(): void {
-		const desiredDirection = this.videoTrack ? 'sendrecv' : 'recvonly';
+		const desiredDirection = this.screenVideoTrack ? 'sendrecv' : 'recvonly';
 
 		this.updateDirectionBeforeNegotiation('video', desiredDirection);
 	}
 
 	private updateVideoDirectionAfterNegotiation(): void {
-		const desiredDirection = this.videoTrack ? 'sendrecv' : 'recvonly';
-		const acceptableDirection = this.videoTrack ? 'sendonly' : 'inactive';
+		const desiredDirection = this.screenVideoTrack ? 'sendrecv' : 'recvonly';
+		const acceptableDirection = this.screenVideoTrack ? 'sendonly' : 'inactive';
 
 		this.updateDirectionAfterNegotiation('video', desiredDirection, acceptableDirection);
 	}
@@ -443,8 +443,8 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	private updateDirectionForVideoTrackChanged(): void {
-		const desiredDirection = this.videoTrack ? 'sendrecv' : 'recvonly';
-		const acceptableDirection = this.videoTrack ? 'sendonly' : 'inactive';
+		const desiredDirection = this.screenVideoTrack ? 'sendrecv' : 'recvonly';
+		const acceptableDirection = this.screenVideoTrack ? 'sendonly' : 'inactive';
 
 		this.requestDirection('video', desiredDirection, acceptableDirection);
 	}
@@ -728,13 +728,13 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		await this.streams.mainLocal.setTrack('audio', this.inputTrack);
 	}
 
-	private async loadVideoTrack(): Promise<void> {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.loadVideoTrack');
-		await this.streams.screenShareLocal.setTrack('video', this.videoTrack);
+	private async loadScreenVideoTrack(): Promise<void> {
+		this.config.logger?.debug('MediaCallWebRTCProcessor.loadScreenVideoTrack');
+		await this.streams.screenShareLocal.setTrack('video', this.screenVideoTrack);
 
-		this.streams.screenShareLocal.setActive(Boolean(this.videoTrack));
+		this.streams.screenShareLocal.setActive(Boolean(this.screenVideoTrack));
 
-		if (this.videoTrack) {
+		if (this.screenVideoTrack) {
 			this.sendP2PCommand('screen-share.start');
 		} else {
 			this.sendP2PCommand('screen-share.stop');

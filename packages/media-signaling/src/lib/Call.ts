@@ -191,7 +191,7 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private inputTrack: MediaStreamTrack | null;
 
-	private videoTrack: MediaStreamTrack | null;
+	private screenVideoTrack: MediaStreamTrack | null;
 
 	/** localCallId will only be different on calls initiated by this session */
 	private localCallId: string;
@@ -215,7 +215,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
-		{ inputTrack, videoTrack }: { inputTrack?: MediaStreamTrack | null; videoTrack?: MediaStreamTrack | null } = {},
+		{ inputTrack, screenVideoTrack }: { inputTrack?: MediaStreamTrack | null; screenVideoTrack?: MediaStreamTrack | null } = {},
 	) {
 		this.emitter = new Emitter<CallEvents>();
 
@@ -234,7 +234,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
-		this.videoTrack = videoTrack || null;
+		this.screenVideoTrack = screenVideoTrack || null;
 		this.creationTimestamp = new Date();
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;
@@ -477,22 +477,22 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public async setVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
-		this.config.logger?.debug('ClientMediaCall.setVideoTrack', Boolean(newVideoTrack));
-		if (this.hasVideoTrack()) {
-			this.config.logger?.debug('ClientMediaCall.setVideoTrack.stopOldTrack');
-			this.videoTrack?.stop();
+	public async setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
+		this.config.logger?.debug('ClientMediaCall.setScreenVideoTrack', Boolean(newVideoTrack));
+		if (this.hasScreenVideoTrack()) {
+			this.config.logger?.debug('ClientMediaCall.setScreenVideoTrack.stopOldTrack');
+			this.screenVideoTrack?.stop();
 		}
 
-		if (newVideoTrack && !this.canHaveVideoTrack()) {
+		if (newVideoTrack && !this.canHaveScreenVideoTrack()) {
 			return;
 		}
 
-		const hadVideoTrack = this.hasVideoTrack();
+		const hadVideoTrack = this.hasScreenVideoTrack();
 
-		this.videoTrack = newVideoTrack;
+		this.screenVideoTrack = newVideoTrack;
 		if (this.webrtcProcessor) {
-			await this.webrtcProcessor.setVideoTrack(newVideoTrack);
+			await this.webrtcProcessor.setScreenVideoTrack(newVideoTrack);
 		}
 
 		if (newVideoTrack && !hadVideoTrack) {
@@ -500,7 +500,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public canHaveVideoTrack(): boolean {
+	public canHaveScreenVideoTrack(): boolean {
 		if (this.isOver() || this._ignored || this.hidden) {
 			return false;
 		}
@@ -512,8 +512,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.busy;
 	}
 
-	public hasVideoTrack(): boolean {
-		return Boolean(this.videoTrack);
+	public hasScreenVideoTrack(): boolean {
+		return Boolean(this.screenVideoTrack);
 	}
 
 	public getLocalMediaStream(tag?: string): IMediaStreamWrapper | null {
@@ -717,9 +717,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	public setScreenShareRequested(requested: boolean): void {
+	public requestScreenShare(requested: boolean): void {
 		this.config.logger?.debug('ClientMediaCall.setScreenShareRequested', requested);
-		if (!this.canHaveVideoTrack()) {
+		if (!this.canHaveScreenVideoTrack()) {
 			return;
 		}
 
@@ -1214,8 +1214,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private onWebRTCStreamChanged(): void {
 		this.config.logger?.debug('ClientMediaCall.onWebRTCStreamChanged');
-		if (!this.webrtcProcessor?.streams.screenShareLocal.hasVideo() && this.hasVideoTrack()) {
-			void this.setVideoTrack(null);
+		if (!this.webrtcProcessor?.streams.screenShareLocal.hasVideo() && this.hasScreenVideoTrack()) {
+			void this.setScreenVideoTrack(null);
 		}
 		this.emitter.emit('streamChange');
 	}
@@ -1349,7 +1349,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			iceGatheringTimeout,
 			call: this,
 			inputTrack: this.inputTrack,
-			videoTrack: this.videoTrack,
+			screenVideoTrack: this.screenVideoTrack,
 			...(this.config.iceServers.length && { rtc: { iceServers: this.config.iceServers } }),
 		});
 		this.webrtcProcessor.emitter.on('internalStateChange', (stateName) => this.onWebRTCInternalStateChange(stateName));

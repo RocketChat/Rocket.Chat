@@ -115,10 +115,10 @@ export interface IClientMediaCall {
 	hangup(): void;
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
-	setScreenShareRequested(requested: boolean): void;
-	setVideoTrack(videoTrack: MediaStreamTrack | null): Promise<void>;
-	hasVideoTrack(): boolean;
-	canHaveVideoTrack(): boolean;
+	requestScreenShare(requested: boolean): void;
+	setScreenVideoTrack(videoTrack: MediaStreamTrack | null): Promise<void>;
+	hasScreenVideoTrack(): boolean;
+	canHaveScreenVideoTrack(): boolean;
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;
