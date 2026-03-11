@@ -1,7 +1,13 @@
 import { api, Authorization } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { ajv, isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isRoleAddUserToRoleProps,
+	isRoleDeleteProps,
+	isRoleRemoveUserFromRoleProps,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -16,18 +22,6 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
-
-API.v1.addRoute(
-	'roles.list',
-	{ authRequired: true },
-	{
-		async get() {
-			const roles = await Roles.find({}, { projection: { _updatedAt: 0 } }).toArray();
-
-			return API.v1.success({ roles });
-		},
-	},
-);
 
 API.v1.addRoute(
 	'roles.sync',
@@ -119,9 +113,9 @@ API.v1.addRoute(
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
-				limit: count as number,
+				limit: count,
 				sort: { username: 1 },
-				skip: offset as number,
+				skip: offset,
 				projection,
 			});
 
@@ -225,42 +219,88 @@ API.v1.addRoute(
 	},
 );
 
-const rolesRoutes = API.v1.get(
-	'roles.getUsersInPublicRoles',
-	{
-		authRequired: true,
-		response: {
-			200: ajv.compile<{
-				users: {
-					_id: string;
-					username: string;
-					roles: string[];
-				}[];
-			}>({
-				type: 'object',
-				properties: {
-					users: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+const rolesRoutes = API.v1
+	.get(
+		'roles.list',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{
+					roles: IRole[];
+				}>({
+					type: 'object',
+					properties: {
+						roles: {
+							type: 'array',
+							items: {
+								$ref: '#/components/schemas/IRole',
+							},
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
 						},
 					},
-				},
-			}),
+					required: ['roles', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-	},
+		async function action() {
+			const roles = await Roles.find({}, { projection: { _updatedAt: 0 } }).toArray();
 
-	async () => {
-		return API.v1.success({
-			users: await Authorization.getUsersFromPublicRoles(),
-		});
-	},
-);
+			return API.v1.success({ roles });
+		},
+	)
+	.get(
+		'roles.getUsersInPublicRoles',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{
+					users: {
+						_id: string;
+						username: string;
+						roles: string[];
+					}[];
+				}>({
+					type: 'object',
+					properties: {
+						users: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+									username: { type: 'string' },
+									roles: { type: 'array', items: { type: 'string' } },
+								},
+								required: ['_id', 'username', 'roles'],
+								additionalProperties: false,
+							},
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['users', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success({
+				users: await Authorization.getUsersFromPublicRoles(),
+			});
+		},
+	);
 
 type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RolesEndpoints {}
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
+	interface Endpoints extends RolesEndpoints { }
 }
