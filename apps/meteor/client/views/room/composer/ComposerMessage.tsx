@@ -20,7 +20,6 @@ export type ComposerMessageProps = {
 	onSend?: () => void;
 	onNavigateToNextMessage?: () => void;
 	onNavigateToPreviousMessage?: () => void;
-	onUploadFiles?: (files: readonly File[]) => void;
 	onClickSelectAll?: () => void;
 };
 
@@ -58,6 +57,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 						tshow,
 						previewUrls,
 						isSlashCommandAllowed,
+						tmid,
 					});
 					if (newMessageSent) onSend?.();
 				} catch (error) {
@@ -73,11 +73,8 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 			},
 			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
-			onUploadFiles: (files: readonly File[]) => {
-				return chat?.flows.uploadFiles(files);
-			},
 		}),
-		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, onSend],
+		[chat?.data, chat?.action, chat?.flows, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, tmid, onSend],
 	);
 
 	const { subscribe, getSnapshotValue } = useMemo(() => {

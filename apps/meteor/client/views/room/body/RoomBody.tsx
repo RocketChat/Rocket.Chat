@@ -12,9 +12,15 @@ import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import LoadingMessagesIndicator from './LoadingMessagesIndicator';
 import RetentionPolicyWarning from './RetentionPolicyWarning';
+import RoomForeword from './RoomForeword/RoomForeword';
+import UnreadMessagesIndicator from './UnreadMessagesIndicator';
+import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
+import { UploadProgressIndicator } from './UploadProgress';
 import ComposerContainer from '../composer/ComposerContainer';
+import { useFileUpload } from './hooks/useFileUpload';
+import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
@@ -23,15 +29,10 @@ import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomC
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
-import RoomForeword from './RoomForeword/RoomForeword';
-import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
-import { useFileUpload } from './hooks/useFileUpload';
+import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGetMore } from './hooks/useGetMore';
-import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
-import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
@@ -116,12 +117,8 @@ const RoomBody = (): ReactElement => {
 		surroundingMessagesJumpTpRef,
 	);
 
-	const {
-		uploads,
-		handleUploadFiles,
-		handleUploadProgressClose,
-		targeDrop: [fileUploadTriggerProps, fileUploadOverlayProps],
-	} = useFileUpload();
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(chat.uploads);
+	const { uploads, isUploading } = useFileUpload(chat.uploads);
 
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
@@ -203,19 +200,10 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' ref={wrapperRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
-								{uploads.length > 0 && (
-									<UploadProgressContainer>
-										{uploads.map((upload) => (
-											<UploadProgressIndicator
-												key={upload.id}
-												id={upload.id}
-												name={upload.name}
-												percentage={upload.percentage}
-												error={upload.error instanceof Error ? upload.error.message : undefined}
-												onClose={handleUploadProgressClose}
-											/>
-										))}
-									</UploadProgressContainer>
+								{isUploading && (
+									// <UploadProgressContainer>
+									<UploadProgressIndicator uploads={uploads} />
+									// </UploadProgressContainer>
 								)}
 								{Boolean(unread) && (
 									<UnreadMessagesIndicator
@@ -224,10 +212,8 @@ const RoomBody = (): ReactElement => {
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
 								)}
-
 								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
-
 							<div className={['messages-box'].filter(isTruthy).join(' ')}>
 								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
 								<JumpToRecentMessageButton
@@ -280,7 +266,6 @@ const RoomBody = (): ReactElement => {
 									onResize={handleComposerResize}
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
-									onUploadFiles={handleUploadFiles}
 									onClickSelectAll={selectAllAndScrollToTop}
 									// TODO: send previewUrls param
 									// previewUrls={}

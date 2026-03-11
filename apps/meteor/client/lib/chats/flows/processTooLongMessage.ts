@@ -7,7 +7,7 @@ import { dispatchToastMessage } from '../../toast';
 import { getUser } from '../../user';
 import type { ChatAPI } from '../ChatAPI';
 
-export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
+export const processTooLongMessage = async (chat: ChatAPI, { msg, tmid }: Pick<IMessage, 'msg' | 'tmid'>): Promise<boolean> => {
 	const maxAllowedSize = settings.peek('Message_MaxAllowedSize');
 
 	if (msg.length <= maxAllowedSize) {
@@ -33,7 +33,7 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 			});
 
 			imperativeModal.close();
-			await chat.flows.uploadFiles([file]);
+			await chat.flows.uploadFiles({ files: [file], uploadsStore: tmid ? chat.threadUploads : chat.uploads });
 
 			resolve();
 		};
