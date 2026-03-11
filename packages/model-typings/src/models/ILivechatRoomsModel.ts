@@ -289,6 +289,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		options?: FindOptions;
 	}): FindPaginated<FindCursor<IOmnichannelRoom>>;
 	countLivechatRoomsWithDepartment(): Promise<number>;
+	countLivechatRoomsWithPriority(): Promise<number>;
 	updateContactDataByContactId(
 		oldContactId: ILivechatContact['_id'],
 		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,

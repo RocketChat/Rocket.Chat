@@ -2608,6 +2608,10 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.countDocuments({ departmentId: { $exists: true } });
 	}
 
+	countLivechatRoomsWithPriority(): Promise<number> {
+		return this.countDocuments({ priorityId: { $exists: true } });
+	}
+
 	async unsetAllPredictedVisitorAbandonment(): Promise<void> {
 		throw new Error('Method not implemented.');
 	}

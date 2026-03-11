@@ -27,6 +27,8 @@ import {
 	Users,
 	LivechatRooms,
 	AbacAttributes,
+	FederationRoomEvents,
+	VideoConference,
 } from '@rocket.chat/models';
 import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
@@ -44,6 +46,11 @@ import { getMatrixFederationStatistics } from '../../../../server/services/feder
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
 import { getMongoInfo } from '../../../utils/server/functions/getMongoInfo';
+
+const formatDate = (date: any): string | undefined => {
+	if (!date) return undefined;
+	return (date instanceof Date ? date : new Date(date)).toString();
+};
 
 const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: number }> => {
 	const result = await Users.getUserLanguages();
@@ -100,8 +107,8 @@ export const statistics = {
 			statistics.installedAt = uniqueID.createdAt.toISOString();
 		}
 
-		statistics.deploymentFingerprintHash = settings.get('Deployment_FingerPrint_Hash');
-		statistics.deploymentFingerprintVerified = settings.get('Deployment_FingerPrint_Verified');
+		statistics.deploymentFingerprintHash = settings.get('Deployment_FingerPrint_Hash') || '';
+		statistics.deploymentFingerprintVerified = settings.get('Deployment_FingerPrint_Verified') || false;
 
 		if (Info) {
 			statistics.version = Info.version;
@@ -143,7 +150,7 @@ export const statistics = {
 		statistics.totalLivechatManagers = await Users.countDocuments({ roles: 'livechat-manager' });
 
 		// livechat enabled
-		statistics.livechatEnabled = settings.get('Livechat_enabled');
+		statistics.livechatEnabled = settings.get('Livechat_enabled') || false;
 
 		// Count and types of omnichannel rooms
 		statsPms.push(
@@ -166,6 +173,13 @@ export const statistics = {
 			}),
 		);
 
+		// Number of livechat rooms with priority
+		statsPms.push(
+			LivechatRooms.countLivechatRoomsWithPriority().then((count) => {
+				statistics.totalLivechatRoomsWithPriority = count;
+			}),
+		);
+
 		// Number of departments
 		statsPms.push(
 			LivechatDepartment.estimatedDocumentCount().then((count) => {
@@ -181,7 +195,7 @@ export const statistics = {
 		);
 
 		// Workspace allows dpeartment removal
-		statistics.isDepartmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal');
+		statistics.isDepartmentRemovalEnabled = settings.get('Omnichannel_enable_department_removal') || false;
 
 		// Number of triggers
 		statsPms.push(
@@ -203,7 +217,7 @@ export const statistics = {
 		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method') || '';
 
 		// is on-hold active
-		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
+		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold') || false;
 
 		// Number of Email Inboxes
 		statsPms.push(
@@ -223,20 +237,14 @@ export const statistics = {
 			}),
 		);
 
-		// Type of routing algorithm used on omnichannel
-		statistics.routingAlgorithm = settings.get('Livechat_Routing_Method');
-
-		// is on-hold active
-		statistics.onHoldEnabled = settings.get('Livechat_allow_manual_on_hold');
-
 		// Last-Chatted Agent Preferred (enabled/disabled)
-		statistics.lastChattedAgentPreferred = settings.get('Livechat_last_chatted_agent_routing');
+		statistics.lastChattedAgentPreferred = settings.get('Livechat_last_chatted_agent_routing') || false;
 
 		// Assign new conversations to the contact manager (enabled/disabled)
-		statistics.assignNewConversationsToContactManager = settings.get('Omnichannel_contact_manager_routing');
+		statistics.assignNewConversationsToContactManager = settings.get('Omnichannel_contact_manager_routing') || false;
 
 		// How to handle Visitor Abandonment setting
-		statistics.visitorAbandonment = settings.get('Livechat_abandoned_rooms_action');
+		statistics.visitorAbandonment = settings.get('Livechat_abandoned_rooms_action') || '';
 
 		// Amount of chats placed on hold
 		statsPms.push(
@@ -319,7 +327,7 @@ export const statistics = {
 			statistics.totalLivechatMessages;
 
 		statistics.lastLogin = (await Users.getLastLogin())?.toString() || '';
-		statistics.lastMessageSentAt = await Messages.getLastTimestamp();
+		statistics.lastMessageSentAt = (await Messages.getLastTimestamp())?.toString();
 		statistics.lastSeenSubscription = (await Subscriptions.getLastSeen())?.toString() || '';
 
 		statistics.os = {
@@ -345,8 +353,8 @@ export const statistics = {
 			platform: process.env.DEPLOY_PLATFORM || 'selfinstall',
 		};
 
-		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled');
-		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users');
+		statistics.readReceiptsEnabled = settings.get('Message_Read_Receipt_Enabled') || false;
+		statistics.readReceiptsDetailed = settings.get('Message_Read_Receipt_Store_Users') || false;
 
 		statistics.enterpriseReady = true;
 		statsPms.push(
@@ -371,9 +379,14 @@ export const statistics = {
 				}),
 		);
 
-		statistics.fileStoreType = settings.get('FileUpload_Storage_Type');
+		statistics.fileStoreType = settings.get('FileUpload_Storage_Type') || '';
 
-		statistics.migration = await getControl();
+		const migration = await getControl();
+		statistics.migration = {
+			...migration,
+			buildAt: formatDate(migration.buildAt),
+			lockedAt: formatDate(migration.lockedAt),
+		};
 		statsPms.push(
 			InstanceStatus.countDocuments({ _updatedAt: { $gt: new Date(Date.now() - process.uptime() * 1000 - 2000) } }).then((count) => {
 				statistics.instanceCount = count;
@@ -431,11 +444,29 @@ export const statistics = {
 				statistics.uniqueOSOfLastMonth = result;
 			}),
 		);
-
-		statistics.apps = await getAppsStatistics();
+		const appsStatistics = await getAppsStatistics();
+		statistics.apps = {
+			engineVersion: appsStatistics.engineVersion,
+			// TODO: Refactor to return 'false' instead of -1 when data is unavailable.
+			// Note: This requires updating IStats.apps to handle boolean types.
+			// Currently restricted because AJV validation treats 0 as falsy, causing schema conflicts.
+			totalInstalled: !appsStatistics.totalInstalled ? -1 : appsStatistics.totalInstalled,
+			totalActive: !appsStatistics.totalActive ? -1 : appsStatistics.totalActive,
+			totalFailed: !appsStatistics.totalFailed ? -1 : appsStatistics.totalFailed,
+		};
 		statistics.services = await getServicesStatistics();
 		statistics.importer = getImporterStatistics();
-		statistics.videoConf = await VideoConf.getStatistics();
+		const videoConfStatistics = await VideoConf.getStatistics();
+		statistics.videoConf = {
+			...videoConfStatistics,
+			settings: {
+				dms: videoConfStatistics.settings.dms || false,
+				channels: videoConfStatistics.settings.channels || false,
+				groups: videoConfStatistics.settings.groups || false,
+				teams: videoConfStatistics.settings.teams || false,
+				provider: videoConfStatistics.settings.provider || '',
+			},
+		};
 		statistics.contactVerification = await getContactVerificationStatistics();
 
 		// If getSettingsStatistics() returns an error, save as empty object.
@@ -500,13 +531,13 @@ export const statistics = {
 
 		// TODO: Is that the best way to do this? maybe we should use a promise.all()
 
-		statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count');
-		statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count');
-		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count');
-		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count');
-		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count');
+		statistics.dashboardCount = settings.get('Engagement_Dashboard_Load_Count') || 0;
+		statistics.messageAuditApply = settings.get('Message_Auditing_Apply_Count') || 0;
+		statistics.messageAuditLoad = settings.get('Message_Auditing_Panel_Load_Count') || 0;
+		statistics.joinJitsiButton = settings.get('Jitsi_Click_To_Join_Count') || 0;
+		statistics.slashCommandsJitsi = settings.get('Jitsi_Start_SlashCommands_Count') || 0;
 		statistics.totalBroadcastRooms = await Rooms.countByBroadcast({ readPreference });
-		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count');
+		statistics.totalTriggeredEmails = settings.get('Triggered_Emails_Count') || 0;
 		statistics.totalRoomsWithStarred = await Messages.countRoomsWithStarredMessages({ readPreference });
 		statistics.totalRoomsWithPinned = await Messages.countRoomsWithPinnedMessages({ readPreference });
 		statistics.totalUserTOTP = await Users.countActiveUsersTOTPEnable({ readPreference });
@@ -515,17 +546,17 @@ export const statistics = {
 		statistics.totalStarred = await Messages.countStarred({ readPreference });
 		statistics.totalLinkInvitation = await Invites.estimatedDocumentCount();
 		statistics.totalLinkInvitationUses = await Invites.countUses();
-		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count');
+		statistics.totalEmailInvitation = settings.get('Invitation_Email_Count') || 0;
 		statistics.totalE2ERooms = await Rooms.countByE2E({ readPreference });
 		statistics.logoChange = Object.keys(settings.get('Assets_logo') || {}).includes('url');
-		statistics.showHomeButton = settings.get('Layout_Show_Home_Button');
+		statistics.showHomeButton = settings.get('Layout_Show_Home_Button') || false;
 		statistics.totalEncryptedMessages = await Messages.countByType('e2e', { readPreference });
-		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count');
+		statistics.totalManuallyAddedUsers = settings.get('Manual_Entry_User_Count') || 0;
 		statistics.totalSubscriptionRoles = await RolesRaw.countByScope('Subscriptions', { readPreference });
 		statistics.totalUserRoles = await RolesRaw.countByScope('Users', { readPreference });
 		statistics.totalCustomRoles = await RolesRaw.countCustomRoles({ readPreference });
-		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count');
-		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count');
+		statistics.totalWebRTCCalls = settings.get('WebRTC_Calls_Count') || 0;
+		statistics.uncaughtExceptionsCount = settings.get('Uncaught_Exceptions_Count') || 0;
 
 		const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
 
@@ -536,7 +567,7 @@ export const statistics = {
 		const pushGatewayChanged = settings.get('Push_gateway') !== defaultGateway ? 4 : 0;
 
 		statistics.push = pushEnabled | pushGatewayEnabled | pushGatewayChanged;
-		statistics.pushSecured = settings.get<boolean>('Push_request_content_from_server');
+		statistics.pushSecured = settings.get<boolean>('Push_request_content_from_server') || false;
 
 		const defaultHomeTitle = (await Settings.findOneById('Layout_Home_Title'))?.packageValue;
 		statistics.homeTitleChanged = settings.get('Layout_Home_Title') !== defaultHomeTitle;
@@ -567,9 +598,35 @@ export const statistics = {
 
 		statistics.matrixFederation = await getMatrixFederationStatistics();
 
+		// Federation stats
+		statistics.federatedServers = 0; // TODO: Implement when federation is properly implemented
+		statistics.federatedUsers = await Users.countFederatedExternalUsers();
+		statistics.federationOverviewData = {
+			numberOfEvents: await FederationRoomEvents.estimatedDocumentCount(),
+			numberOfFederatedUsers: await Users.countFederatedExternalUsers(),
+			numberOfServers: 0, // TODO: Implement when federation is properly implemented
+		};
+
+		// VoIP stats
+		statistics.voipEnabled = settings.get('VoIP_Enabled') || false;
+		statistics.voipCalls = await VideoConference.countDocuments({ type: 'voip' });
+		statistics.voipExtensions = await Users.countDocuments({ freeSwitchExtension: { $type: 'string' } });
+		statistics.voipSuccessfulCalls = await VideoConference.countDocuments({ type: 'voip', endedAt: { $exists: true } });
+		statistics.voipErrorCalls = 0; // TODO: Implement error tracking for VoIP calls
+		statistics.voipOnHoldCalls = 0; // TODO: Implement on-hold tracking for VoIP calls
+
+		// WebRTC stats
+		statistics.webRTCEnabled =
+			settings.get('WebRTC_Enable_Channel') || settings.get('WebRTC_Enable_Private') || settings.get('WebRTC_Enable_Direct') || false;
+		statistics.webRTCEnabledForOmnichannel = settings.get('Omnichannel_call_provider') === 'WebRTC' || false;
+		statistics.omnichannelWebRTCCalls = await VideoConference.countDocuments({ type: 'livechat' });
+
+		// Teams stats
+		statistics.roomsInsideTeams = 0; // This will be populated by Team.getStatistics() in the teams field
+
 		// ABAC stats
 		if (License.hasModule('abac')) {
-			statistics.abacEnabled = settings.get('ABAC_Enabled');
+			statistics.abacEnabled = settings.get('ABAC_Enabled') || false;
 			statsPms.push(
 				AbacAttributes.estimatedDocumentCount().then((result) => {
 					statistics.abacTotalAttributes = result;
@@ -595,7 +652,7 @@ export const statistics = {
 	},
 	async save(): Promise<IStats> {
 		const rcStatistics = await statistics.get();
-		rcStatistics.createdAt = new Date();
+		rcStatistics.createdAt = new Date().toString();
 		const { insertedId } = await Statistics.insertOne(rcStatistics);
 		rcStatistics._id = insertedId;
 

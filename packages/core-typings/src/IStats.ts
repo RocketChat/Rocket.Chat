@@ -74,7 +74,7 @@ export interface IStats {
 	federatedServers: number;
 	federatedUsers: number;
 	lastLogin: string;
-	lastMessageSentAt: Date | undefined;
+	lastMessageSentAt: string | undefined;
 	lastSeenSubscription: string;
 	os: {
 		type: string;
@@ -123,7 +123,7 @@ export interface IStats {
 	routingAlgorithm: string;
 	onHoldEnabled: boolean;
 	emailInboxes: number;
-	BusinessHours: { [key: string]: number | string };
+	BusinessHours: { total: number; strategy: string };
 	lastChattedAgentPreferred: boolean;
 	assignNewConversationsToContactManager: boolean;
 	visitorAbandonment: string;
