@@ -235,12 +235,52 @@ jobs:
         run: |
           docker ps
 
+          wait_for_mongo_primary() {
+            local retries=36
+            local delay=5
+
+            for attempt in $(seq 1 "$retries"); do
+              local is_primary
+              is_primary=$(docker compose $COMPOSE_FILES exec -T mongo mongosh --quiet --eval "try { const hello = db.hello(); print((hello.isWritablePrimary || hello.ismaster) ? '1' : '0'); } catch (e) { print('0'); }" 2>/dev/null | tail -n1)
+
+              if [[ "$is_primary" == '1' ]]; then
+                echo "Mongo replica set primary is ready"
+                return 0
+              fi
+
+              echo "Waiting for Mongo primary (attempt ${attempt}/${retries})"
+              sleep "$delay"
+            done
+
+            echo "Mongo primary was not ready in time"
+            docker compose $COMPOSE_FILES logs mongo
+            return 1
+          }
+
           wait_for_service() {
             local service="$1"
             local retries=18
             local delay=10
 
             for attempt in $(seq 1 "$retries"); do
+              local container_id
+              container_id=$(docker compose $COMPOSE_FILES ps -q "$service")
+
+              if [[ -z "$container_id" ]]; then
+                echo "Service '$service' has no container ID"
+                docker compose $COMPOSE_FILES ps
+                return 1
+              fi
+
+              local container_state
+              container_state=$(docker inspect -f '{{.State.Status}}' "$container_id" 2>/dev/null || echo "unknown")
+
+              if [[ "$container_state" != 'running' ]]; then
+                echo "Service '$service' is not running (state=$container_state)"
+                docker compose $COMPOSE_FILES logs "$service"
+                return 1
+              fi
+
               if docker compose $COMPOSE_FILES logs "$service" | grep -q "NetworkBroker started successfully"; then
                 echo "Service '$service' is ready"
                 return 0
@@ -255,12 +295,19 @@ jobs:
             return 1
           }
 
-          wait_for_service ddp-streamer-service
-          wait_for_service account-service
-          wait_for_service authorization-service
-          wait_for_service queue-worker-service
-          wait_for_service presence-service
-          wait_for_service omnichannel-transcript-service
+          mapfile -t services_to_wait < <(
+            docker compose $COMPOSE_FILES config --format json \
+              | jq -r '.services | keys[] | select(endswith("-service"))' \
+              | sort
+          )
+
+          wait_for_mongo_primary
+
+          echo "Waiting for services: ${services_to_wait[*]}"
+
+          for service in "${services_to_wait[@]}"; do
+            wait_for_service "$service"
+          done
 
       - name: Remove unused Docker images
         run: docker system prune -af
