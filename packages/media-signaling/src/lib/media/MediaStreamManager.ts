@@ -81,6 +81,10 @@ export class MediaStreamManager implements IMediaStreamManager {
 		return this.getRemoteStreams().find((stream) => stream.tag === tag) || null;
 	}
 
+	public hasAllRequiredTracks(): boolean {
+		return this.mainLocal.hasAudio();
+	}
+
 	private findStreamWrappersForRemoteTrack(track: MediaStreamTrack, streams: readonly MediaStream[]): MediaStreamWrapper[] {
 		const streamWrappers = streams
 			.map((stream) => this.getRemoteStreamById(stream.id))
