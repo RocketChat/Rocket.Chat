@@ -31,6 +31,8 @@ console.log('🔒 FIPS 140-3 mode detected. Applying WebSocket Handshake Patch..
 const blocks = new Uint32Array(32);
 const w = new Uint32Array(80);
 const hashBuffer = Buffer.alloc(20);
+const WEBSOCKET_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
+const SEC_WEBSOCKET_KEY_BASE64_PATTERN = /^[A-Za-z0-9+/]{22}==$/;
 
 const generateWebSocketAccept = (message: string): string => {
 	if (message.length !== 60) {
@@ -128,6 +130,17 @@ const createUnsupportedSha1Method = (method: string) => {
 
 type Sha1UpdateCall = { type: 'string'; chunk: string; encoding?: BufferEncoding } | { type: 'buffer'; chunk: Buffer };
 
+const isWebSocketHandshakeSha1Input = (input: string): boolean => {
+	if (input.length !== 60) {
+		return false;
+	}
+
+	const secWebSocketKey = input.slice(0, 24);
+	const guid = input.slice(24);
+
+	return guid === WEBSOCKET_GUID && SEC_WEBSOCKET_KEY_BASE64_PATTERN.test(secWebSocketKey);
+};
+
 crypto.createHash = function (algorithm: string, options?: crypto.HashOptions) {
 	if (algorithm.toLowerCase() === 'sha1') {
 		const updates: Sha1UpdateCall[] = [];
@@ -151,7 +164,7 @@ crypto.createHash = function (algorithm: string, options?: crypto.HashOptions) {
 				return this;
 			},
 			digest(encoding?: crypto.BinaryToTextEncoding) {
-				if (encoding === 'base64' && wsProbeInput.length === 60) {
+				if (encoding === 'base64' && isWebSocketHandshakeSha1Input(wsProbeInput)) {
 					return generateWebSocketAccept(wsProbeInput);
 				}
 				// If it's not the exact WS handshake, pass it back to native (which will throw FIPS error)
