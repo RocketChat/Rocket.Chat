@@ -5,8 +5,6 @@ import { useLoadSurroundingMessages } from './useLoadSurroundingMessages';
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { RoomManager } from '../../../../lib/RoomManager';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { callWithErrorHandling } from '../../../../lib/utils/callWithErrorHandling';
-import { router } from '../../../../providers/RouterProvider';
 import { Subscriptions } from '../../../../stores';
 
 jest.mock('../../../../../app/ui-utils/client', () => ({
@@ -30,10 +28,6 @@ jest.mock('../../../../lib/rooms/roomCoordinator', () => ({
 	},
 }));
 
-jest.mock('../../../../lib/utils/callWithErrorHandling', () => ({
-	callWithErrorHandling: jest.fn(),
-}));
-
 jest.mock('../../../../providers/RouterProvider', () => ({
 	router: {
 		getSearchParameters: jest.fn().mockReturnValue({}),
@@ -50,16 +44,16 @@ jest.mock('../../../../stores', () => ({
 }));
 
 const mockUseSearchParameter = jest.fn<string | undefined, []>().mockReturnValue(undefined);
+const mockUseRouteParameter = jest.fn<string | undefined, [string]>().mockReturnValue(undefined);
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
 	useSearchParameter: (..._args: unknown[]) => mockUseSearchParameter(),
+	useRouteParameter: (param: string) => mockUseRouteParameter(param),
 }));
 
-const mockedCallWithErrorHandling = jest.mocked(callWithErrorHandling);
 const mockedRoomHistoryManager = jest.mocked(RoomHistoryManager);
 const mockedRoomCoordinator = jest.mocked(roomCoordinator);
-const mockedRouter = jest.mocked(router);
 const mockedSubscriptions = jest.mocked(Subscriptions);
 
 afterEach(() => {
@@ -133,8 +127,6 @@ describe('useLoadSurroundingMessages', () => {
 
 		(RoomManager as { opened: string | undefined }).opened = 'room-1';
 
-		mockedCallWithErrorHandling.mockResolvedValue({ _id: 'room-2', t: 'c', name: 'general' } as any);
-
 		renderHook(() => useLoadSurroundingMessages(), {
 			wrapper: mockAppRoot()
 				.withEndpoint(
@@ -145,6 +137,7 @@ describe('useLoadSurroundingMessages', () => {
 							message,
 						}) as any,
 				)
+				.withMethod('getRoomById', () => ({ _id: 'room-2', t: 'c', name: 'general' }) as any)
 				.build(),
 		});
 
@@ -186,7 +179,7 @@ describe('useLoadSurroundingMessages', () => {
 		});
 
 		await waitFor(() => {
-			expect(mockedRoomCoordinator.openRouteLink).toHaveBeenCalledWith('c', subscription, {}, {});
+			expect(mockedRoomCoordinator.openRouteLink).toHaveBeenCalledWith('c', subscription, {}, undefined);
 		});
 	});
 
@@ -202,9 +195,6 @@ describe('useLoadSurroundingMessages', () => {
 			msg: 'Thread reply',
 			_updatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
 		};
-
-		mockedCallWithErrorHandling.mockResolvedValue({ _id: 'room-4', t: 'c', name: 'general' } as any);
-		mockedRouter.getRouteParameters.mockReturnValue({} as any);
 
 		renderHook(() => useLoadSurroundingMessages(), {
 			wrapper: mockAppRoot()
@@ -233,6 +223,10 @@ describe('useLoadSurroundingMessages', () => {
 
 	it('should skip navigation when already viewing the thread', async () => {
 		mockUseSearchParameter.mockReturnValue('msg-5');
+		mockUseRouteParameter.mockImplementation((param) => {
+			if (param === 'tab') return 'thread';
+			if (param === 'context') return 'parent-msg';
+		});
 
 		const message = {
 			_id: 'msg-5',
@@ -244,8 +238,6 @@ describe('useLoadSurroundingMessages', () => {
 			_updatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
 		};
 
-		mockedRouter.getRouteParameters.mockReturnValue({ tab: 'thread', context: 'parent-msg' } as any);
-
 		renderHook(() => useLoadSurroundingMessages(), {
 			wrapper: mockAppRoot()
 				.withEndpoint(
@@ -256,6 +248,7 @@ describe('useLoadSurroundingMessages', () => {
 							message,
 						}) as any,
 				)
+				.withMethod('getRoomById', () => ({ _id: 'room-5', t: 'c', name: 'general' }) as any)
 				.build(),
 		});
 
@@ -278,9 +271,6 @@ describe('useLoadSurroundingMessages', () => {
 			msg: 'Thread root',
 			_updatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
 		};
-
-		mockedCallWithErrorHandling.mockResolvedValue({ _id: 'room-6', t: 'c', name: 'general' } as any);
-		mockedRouter.getRouteParameters.mockReturnValue({} as any);
 
 		renderHook(() => useLoadSurroundingMessages(), {
 			wrapper: mockAppRoot()
@@ -313,8 +303,6 @@ describe('useLoadSurroundingMessages', () => {
 			_updatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
 		};
 
-		mockedCallWithErrorHandling.mockResolvedValue({ _id: 'room-7', t: 'c', name: 'general' } as any);
-		mockedRouter.getRouteParameters.mockReturnValue({} as any);
 		mockedRoomHistoryManager.isLoaded.mockReturnValue(false);
 
 		renderHook(() => useLoadSurroundingMessages(), {
@@ -348,8 +336,6 @@ describe('useLoadSurroundingMessages', () => {
 			_updatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
 		};
 
-		mockedCallWithErrorHandling.mockResolvedValue({ _id: 'room-8', t: 'c', name: 'general' } as any);
-		mockedRouter.getRouteParameters.mockReturnValue({} as any);
 		mockedRoomHistoryManager.isLoaded.mockReturnValue(true);
 
 		renderHook(() => useLoadSurroundingMessages(), {

@@ -187,3 +187,8 @@ export const videoConferenceQueryKeys = {
 	all: ['video-conference'] as const,
 	fromRoom: (roomId: IRoom['_id']) => [...videoConferenceQueryKeys.all, 'rooms', roomId] as const,
 } as const;
+
+export const messagesQueryKeys = {
+	all: ['messages'] as const,
+	message: (messageId: IMessage['_id']) => [...messagesQueryKeys.all, messageId] as const,
+};
