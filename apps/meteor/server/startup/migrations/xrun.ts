@@ -65,5 +65,9 @@ export const performMigrationProcedure = async (): Promise<void> => {
 		await ensureCloudWorkspaceRegistered();
 		await moveRetentionSetting();
 	});
-	await runDataMigrations();
+
+	// Only run data migrations if the version is 'latest'
+	if (version === 'latest') {
+		await runDataMigrations();
+	}
 };

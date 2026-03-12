@@ -47,6 +47,17 @@ export class SystemLocksRaw extends BaseRaw<ISystemLock> implements ISystemLocks
 		}
 	}
 
+	async renewLockThreshold(key: string): Promise<void> {
+		await this.col.updateOne(
+			{ _id: key, locked: true },
+			{
+				$set: {
+					lockedAt: new Date(),
+				},
+			},
+		);
+	}
+
 	async releaseLock(key: string, extraData?: Record<string, unknown>): Promise<void> {
 		await this.col.updateOne(
 			{ _id: key },

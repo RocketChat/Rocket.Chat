@@ -73,15 +73,15 @@ const maxAttempts = 30;
 const retryInterval = 10;
 let currentAttempt = 0;
 
-function shouldRun(migration: IDataMigration, record: IDataMigrationRecord | undefined, currentHash: string, isUpgrade: boolean): boolean {
+function shouldRun(migration: IDataMigration, record: IDataMigrationRecord | undefined, isUpgrade: boolean): boolean {
 	const direction = migration.direction ?? 'upgrade';
-	if (direction !== 'both') {
-		if (isUpgrade && direction !== 'upgrade') {
-			return false;
-		}
-		if (!isUpgrade && direction !== 'downgrade') {
-			return false;
-		}
+
+	if (direction === 'upgrade' && !isUpgrade) {
+		return false;
+	}
+
+	if (direction === 'downgrade' && isUpgrade) {
+		return false;
 	}
 
 	if (!record) {
@@ -93,13 +93,24 @@ function shouldRun(migration: IDataMigration, record: IDataMigrationRecord | und
 	if (migration.strategy === 'once') {
 		return false;
 	}
-	return record.lastRunHash !== currentHash;
+
+	return true;
 }
 
-async function acquireLock(): Promise<ISystemLock | undefined> {
+type LockReleaseFunction = (extraData?: Record<string, unknown>) => Promise<void>;
+
+async function acquireLock(): Promise<{ record: ISystemLock; releaseLock: LockReleaseFunction }> {
 	const result = await SystemLocks.acquireLock(LOCK_KEY);
 	if (result.acquired) {
-		return result.record;
+		const renewInterval = setInterval(() => SystemLocks.renewLockThreshold(LOCK_KEY), 60 * 1000);
+
+		return {
+			record: result.record,
+			releaseLock: async (extraData?: Record<string, unknown>) => {
+				clearInterval(renewInterval);
+				await SystemLocks.releaseLock(LOCK_KEY, extraData);
+			},
+		};
 	}
 
 	if (currentAttempt <= maxAttempts) {
@@ -132,7 +143,7 @@ async function acquireLock(): Promise<ISystemLock | undefined> {
 	process.exit(1);
 }
 
-async function checkManualReversions(maxRegisteredOrder: number): Promise<void> {
+async function checkManualReversions(maxRegisteredOrder: number, releaseLock: LockReleaseFunction): Promise<void> {
 	const requireManualReversion = await DataMigrations.find({
 		order: { $gt: maxRegisteredOrder },
 		status: 'completed',
@@ -167,10 +178,15 @@ async function checkManualReversions(maxRegisteredOrder: number): Promise<void> 
 			`Commit: ${Info.commit.hash}`,
 		].join('\n'),
 	);
+
+	await releaseLock();
+
 	process.exit(1);
 }
 
 export async function runDataMigrations(): Promise<void> {
+	currentAttempt = 0;
+
 	const currentHash = Info.commit.hash;
 
 	if (!currentHash) {
@@ -184,7 +200,7 @@ export async function runDataMigrations(): Promise<void> {
 		return;
 	}
 
-	const lockRecord = await acquireLock();
+	const { record: lockRecord, releaseLock } = await acquireLock();
 
 	try {
 		const ids = ordered.map((m) => getRecordId(m));
@@ -202,6 +218,13 @@ export async function runDataMigrations(): Promise<void> {
 		);
 
 		const lastVersion = (lockRecord && isSystemLockMigration(lockRecord) && lockRecord.extraData?.lastVersion) || undefined;
+
+		if (lastVersion === Info.version) {
+			log.startup('Data migrations already ran for this version. Skipping.');
+			await releaseLock();
+			return;
+		}
+
 		const isDowngradeByVersion = lastVersion != null && Info.version != null && isVersionDowngrade(lastVersion, Info.version);
 		const isDowngradeByOrder = !!highestCompletedBeyondRegistered;
 		const isUpgrade = !isDowngradeByOrder && !isDowngradeByVersion;
@@ -213,14 +236,14 @@ export async function runDataMigrations(): Promise<void> {
 				...(isDowngradeByVersion && { lastVersion, currentVersion: Info.version }),
 				maxRegisteredOrder,
 			});
-			await checkManualReversions(maxRegisteredOrder);
+			await checkManualReversions(maxRegisteredOrder, releaseLock);
 		}
 
 		for (const migration of ordered) {
 			const recordId = getRecordId(migration);
 			const record = recordMap.get(recordId);
 
-			if (!shouldRun(migration, record, currentHash, isUpgrade)) {
+			if (!shouldRun(migration, record, isUpgrade)) {
 				continue;
 			}
 
@@ -289,6 +312,6 @@ export async function runDataMigrations(): Promise<void> {
 			}
 		}
 	} finally {
-		await SystemLocks.releaseLock(LOCK_KEY, { lastVersion: Info.version });
+		await releaseLock({ lastVersion: Info.version });
 	}
 }
