@@ -66,8 +66,8 @@ export const addUserToRoom = async (
 		// Not "duplicated": we're moving away from callbacks so this is a patch function. We should migrate the next one to be a patch or use this same patch, instead of calling both
 		await beforeAddUserToRoomPatch([userToBeAdded.username!], room, inviterUser);
 		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: inviterUser }, room);
-	} catch (error) {
-		throw new Meteor.Error((error as any)?.message);
+	} catch (error: unknown) {
+		throw new Meteor.Error(error instanceof Error ? error.message : String(error));
 	}
 
 	// TODO: are we calling this twice?

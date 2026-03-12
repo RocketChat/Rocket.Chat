@@ -152,12 +152,12 @@ export async function setUserActiveStatus(
 	const email = {
 		to: String(destinations),
 		from: String(settings.get('From_Email')),
-		subject: subject({ active } as any),
+		subject: subject({ active }),
 		html: html({
 			active,
-			name: user.name,
-			username: user.username,
-		} as any),
+			name: user.name || '',
+			username: user.username || '',
+		}),
 	};
 
 	void Mailer.sendNoWrap(email);
