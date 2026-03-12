@@ -4,6 +4,8 @@ import { Logger } from '@rocket.chat/logger';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
+import { safeJsonParse } from '@rocket.chat/tools';
+
 import { APIClass } from './ApiClass';
 import { cors } from './middlewares/cors';
 import { loggerMiddleware } from './middlewares/logger';
@@ -80,12 +82,10 @@ settings.watch<string>('Accounts_CustomFields', (value) => {
 	if (!value) {
 		return API.v1?.setLimitedCustomFields([]);
 	}
-	try {
-		const customFields = JSON.parse(value);
+	const customFields = safeJsonParse<Record<string, { public?: boolean }>>(value);
+	if (customFields) {
 		const nonPublicCustomFields = Object.keys(customFields).filter((customFieldKey) => customFields[customFieldKey].public !== true);
 		API.v1.setLimitedCustomFields(nonPublicCustomFields);
-	} catch (error) {
-		console.warn('Invalid Custom Fields', error);
 	}
 });
 
