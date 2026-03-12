@@ -16,35 +16,51 @@ import { getSubscriptions } from '../../../../server/publications/subscription';
 import { unreadMessages } from '../../../message-mark-as-unread/server/unreadMessages';
 import { API } from '../api';
 
-API.v1.addRoute(
+const subscriptionsGetResponseSchema = ajv.compile<{
+	update: ISubscription[];
+	remove: (Pick<ISubscription, '_id'> & { _deletedAt: Date })[];
+}>({
+	type: 'object',
+	properties: {
+		update: { type: 'array' },
+		remove: { type: 'array' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['update', 'remove', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'subscriptions.get',
 	{
 		authRequired: true,
-		validateParams: isSubscriptionsGetProps,
-	},
-	{
-		async get() {
-			const { updatedSince } = this.queryParams;
-
-			let updatedSinceDate: Date | undefined;
-			if (updatedSince) {
-				if (isNaN(Date.parse(updatedSince as string))) {
-					throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
-				}
-				updatedSinceDate = new Date(updatedSince as string);
-			}
-
-			const result = await getSubscriptions(this.userId, updatedSinceDate);
-
-			return API.v1.success(
-				Array.isArray(result)
-					? {
-							update: result,
-							remove: [],
-						}
-					: result,
-			);
+		query: isSubscriptionsGetProps,
+		response: {
+			200: subscriptionsGetResponseSchema,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { updatedSince } = this.queryParams;
+
+		let updatedSinceDate: Date | undefined;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
+			}
+			updatedSinceDate = new Date(updatedSince);
+		}
+
+		const result = await getSubscriptions(this.userId, updatedSinceDate);
+
+		return API.v1.success(
+			Array.isArray(result)
+				? {
+						update: result,
+						remove: [],
+					}
+				: result,
+		);
 	},
 );
 
