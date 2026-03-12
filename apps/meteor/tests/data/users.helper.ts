@@ -209,7 +209,7 @@ export const ddpLogin = (resume: string): Promise<WebSocket> =>
 					break;
 
 				case 'ping':
-					ws.close();
+					ws.send(JSON.stringify({ msg: 'pong' }));
 					break;
 
 				case 'error':
