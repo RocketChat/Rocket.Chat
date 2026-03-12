@@ -27,6 +27,7 @@ module.exports = {
 		'tests/unit/server/**/*.tests.ts',
 		'tests/unit/server/**/*.spec.ts',
 		'app/api/server/lib/**/*.spec.ts',
+		'app/channel-settings/server/**/*.spec.ts',
 		'app/file-upload/server/**/*.spec.ts',
 		'app/statistics/server/**/*.spec.ts',
 		'app/livechat/server/lib/**/*.spec.ts',
