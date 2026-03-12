@@ -2,7 +2,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { PeerInfo } from '@rocket.chat/ui-voip';
-import { MediaCallRoom as MediaCallRoomComponent, usePeekMediaSessionState, usePeekMediaSessionPeerInfo } from '@rocket.chat/ui-voip';
+import { MediaCallRoomActivity, usePeekMediaSessionState, usePeekMediaSessionPeerInfo } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
@@ -22,7 +22,11 @@ const isMediaCallRoom = (room: IRoom, peerInfo?: PeerInfo) => {
 	return room.uids.includes(peerInfo.userId);
 };
 
-const MediaCallRoom = ({ body }: { body: ReactNode }) => {
+type MediaCallRoomProps = {
+	children: ReactNode;
+};
+
+const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	const state = usePeekMediaSessionState();
 	const peerInfo = usePeekMediaSessionPeerInfo();
 	const room = useRoom();
@@ -30,14 +34,14 @@ const MediaCallRoom = ({ body }: { body: ReactNode }) => {
 	const screenShareEnabled = useSetting('VoIP_TeamCollab_Screen_Sharing_Enabled', true);
 
 	if (!screenShareEnabled) {
-		return body;
+		return children;
 	}
 
 	if (state !== 'ongoing' || !isMediaCallRoom(room, peerInfo)) {
-		return body;
+		return children;
 	}
 
-	return <MediaCallRoomComponent body={body} />;
+	return <MediaCallRoomActivity>{children}</MediaCallRoomActivity>;
 };
 
 export default memo(MediaCallRoom);

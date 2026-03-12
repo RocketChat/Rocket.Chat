@@ -5,7 +5,7 @@ export type { PeekMediaSessionStateReturn } from './context';
 export type { PeerInfo } from './context';
 export { useMediaCallAction, useMediaCallOpenRoomTracker } from './hooks';
 
-export { CallHistoryContextualBar, MediaCallRoom } from './views';
+export { CallHistoryContextualBar, MediaCallRoomActivity } from './views';
 export type { InternalCallHistoryContact, ExternalCallHistoryContact, CallHistoryData } from './views';
 
 export { getHistoryMessagePayload } from './ui-kit/getHistoryMessagePayload';

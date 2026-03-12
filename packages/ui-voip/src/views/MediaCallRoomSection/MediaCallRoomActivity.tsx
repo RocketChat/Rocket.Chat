@@ -8,7 +8,11 @@ import { useMemo, useState } from 'react';
 import MediaCallRoomSection from './MediaCallRoomSection';
 import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
 
-const MediaCallRoom = ({ body }: { body: ReactNode }) => {
+type MediaCallRoomActivityProps = {
+	children: ReactNode;
+};
+
+const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 	const [showChat, setShowChat] = useState(true);
 	const user = useUser();
 
@@ -40,11 +44,11 @@ const MediaCallRoom = ({ body }: { body: ReactNode }) => {
 
 			{showChat && (
 				<Box w='full' flexGrow={2} flexShrink={0}>
-					{body}
+					{children}
 				</Box>
 			)}
 		</Box>
 	);
 };
 
-export default MediaCallRoom;
+export default MediaCallRoomActivity;

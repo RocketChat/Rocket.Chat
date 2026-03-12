@@ -55,7 +55,15 @@ const Room = (): ReactElement => {
 							data-qa-rc-room={room._id}
 							aria-label={roomLabel}
 							header={<Header room={room} />}
-							body={shouldDisplayE2EESetup ? <RoomE2EESetup /> : <MediaCallRoom body={<RoomBody />} />}
+							body={
+								shouldDisplayE2EESetup ? (
+									<RoomE2EESetup />
+								) : (
+									<MediaCallRoom>
+										<RoomBody />
+									</MediaCallRoom>
+								)
+							}
 							aside={
 								(toolbox.tab?.tabComponent && (
 									<ErrorBoundary fallback={null}>
