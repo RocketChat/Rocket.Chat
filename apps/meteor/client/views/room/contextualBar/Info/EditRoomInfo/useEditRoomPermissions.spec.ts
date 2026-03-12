@@ -49,7 +49,6 @@ describe('useEditRoomPermissions', () => {
 
 			expect(result.current.canChangeType).toBe(false);
 		});
-
 	});
 
 	describe('canChangeType - team room', () => {

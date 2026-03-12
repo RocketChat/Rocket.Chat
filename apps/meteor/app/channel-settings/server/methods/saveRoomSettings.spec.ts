@@ -24,8 +24,8 @@ describe('saveRoomSettings validators', () => {
 		sandbox = sinon.createSandbox();
 
 		stubs = {
-			hasPermissionAsync: sandbox.stub(),
-			hasAllPermissionAsync: sandbox.stub(),
+			'hasPermissionAsync': sandbox.stub(),
+			'hasAllPermissionAsync': sandbox.stub(),
 			'@rocket.chat/core-services': {
 				Team: { getInfoById: sandbox.stub() },
 			},
