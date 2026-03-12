@@ -1031,6 +1031,7 @@ const isRoomsLeavePropsSchema = {
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
 const roomsBannedUsersResponseSchema = ajv.compile<{
+	success: true;
 	bannedUsers: { username?: string; name?: string; status?: string; avatarETag?: string }[];
 	count: number;
 	offset: number;
@@ -1038,6 +1039,7 @@ const roomsBannedUsersResponseSchema = ajv.compile<{
 }>({
 	type: 'object',
 	properties: {
+		success: { type: 'boolean', enum: [true] },
 		bannedUsers: {
 			type: 'array',
 			items: {
@@ -1050,7 +1052,7 @@ const roomsBannedUsersResponseSchema = ajv.compile<{
 		offset: { type: 'number' },
 		total: { type: 'number' },
 	},
-	required: ['bannedUsers', 'count', 'offset', 'total'],
+	required: ['success', 'bannedUsers', 'count', 'offset', 'total'],
 	additionalProperties: false,
 });
 
