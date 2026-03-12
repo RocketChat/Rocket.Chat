@@ -222,42 +222,56 @@ const pushTokenEndpoints = API.v1
 		},
 	);
 
-API.v1.addRoute(
+const pushGetResponseSchema = ajv.compile<{ data: Record<string, unknown> }>({
+	type: 'object',
+	properties: {
+		data: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['data', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'push.get',
-	{ authRequired: true },
 	{
-		async get() {
-			const params = this.queryParams;
-			check(
-				params,
-				Match.ObjectIncluding({
-					id: String,
-				}),
-			);
-
-			const receiver = await Users.findOneById(this.userId);
-			if (!receiver) {
-				throw new Error('error-user-not-found');
-			}
-
-			const message = await Messages.findOneById(params.id);
-			if (!message) {
-				throw new Error('error-message-not-found');
-			}
-
-			const room = await Rooms.findOneById(message.rid);
-			if (!room) {
-				throw new Error('error-room-not-found');
-			}
-
-			if (!(await canAccessRoomAsync(room, receiver))) {
-				throw new Error('error-not-allowed');
-			}
-
-			const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
-
-			return API.v1.success({ data });
+		authRequired: true,
+		response: {
+			200: pushGetResponseSchema,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const params = this.queryParams as Record<string, string>;
+		check(
+			params,
+			Match.ObjectIncluding({
+				id: String,
+			}),
+		);
+
+		const receiver = await Users.findOneById(this.userId);
+		if (!receiver) {
+			throw new Error('error-user-not-found');
+		}
+
+		const message = await Messages.findOneById(params.id);
+		if (!message) {
+			throw new Error('error-message-not-found');
+		}
+
+		const room = await Rooms.findOneById(message.rid);
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
+
+		if (!(await canAccessRoomAsync(room, receiver))) {
+			throw new Error('error-not-allowed');
+		}
+
+		const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
+
+		return API.v1.success({ data });
 	},
 );
 
