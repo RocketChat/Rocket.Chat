@@ -172,6 +172,89 @@ export const setUserAway = (overrideCredentials = credentials, config?: IRequest
 		});
 };
 
+export const ddpLogin = (resume: string): Promise<WebSocket> =>
+	new Promise((resolve, reject) => {
+		const ws = new WebSocket('ws://localhost:4000/websocket');
+
+		ws.onopen = () => {
+			ws.send(
+				JSON.stringify({
+					msg: 'connect',
+					version: '1',
+					support: ['1'],
+				}),
+			);
+		};
+
+		ws.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+
+			switch (data.msg) {
+				case 'connected':
+					ws.send(
+						JSON.stringify({
+							msg: 'method',
+							id: 'login-1',
+							method: 'login',
+							params: [{ resume }],
+						}),
+					);
+					break;
+
+				case 'result':
+					if (data.id === 'login-1') {
+						// NO cerrar el websocket
+						resolve(ws);
+					}
+					break;
+
+				case 'ping':
+					ws.close();
+					break;
+
+				case 'error':
+					reject(data);
+					break;
+			}
+		};
+
+		ws.onerror = reject;
+	});
+
+export const setUserAwayWS = (ws: WebSocket): Promise<void> =>
+	new Promise((resolve, reject) => {
+		const id = 'away-1';
+
+		const handler = (event: MessageEvent) => {
+			const data = JSON.parse(event.data);
+
+			if (data.msg === 'result' && data.id === id) {
+				ws.removeEventListener('message', handler);
+				resolve();
+			}
+
+			if (data.msg === 'ping') {
+				ws.send(JSON.stringify({ msg: 'pong' }));
+			}
+
+			if (data.msg === 'error') {
+				ws.removeEventListener('message', handler);
+				reject(data);
+			}
+		};
+
+		ws.addEventListener('message', handler);
+
+		ws.send(
+			JSON.stringify({
+				msg: 'method',
+				method: 'UserPresence:away',
+				params: [],
+				id,
+			}),
+		);
+	});
+
 export const setUserOnline = (overrideCredentials = credentials, config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	return requestInstance
