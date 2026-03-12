@@ -123,6 +123,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		this.serverName = (await Settings.get<string>('Federation_Service_Domain')) || '';
 		this.processEDUTyping = (await Settings.get<boolean>('Federation_Service_EDU_Process_Typing')) || false;
 		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
+		this.processEDUReceipt = (await Settings.get<boolean>('Federation_Service_EDU_Process_Receipt')) || false;
 		this.validateUserDomain = (await Settings.get<boolean>('Federation_Service_Validate_User_Domain')) || false;
 	}
 
