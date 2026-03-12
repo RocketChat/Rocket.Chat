@@ -1,4 +1,5 @@
 import 'meteor/http';
+import type { Meteor } from 'meteor/meteor';
 
 declare module 'meteor/http' {
 	namespace HTTP {

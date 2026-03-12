@@ -1,6 +1,6 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { CallHistoryTableExternalContact, CallHistoryTableRowProps } from '@rocket.chat/ui-voip';
-import { CallHistoryTableRow, useMediaCallContext, isCallingBlocked } from '@rocket.chat/ui-voip';
+import { CallHistoryTableRow, usePeekMediaSessionState, useWidgetExternalControls } from '@rocket.chat/ui-voip';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,27 +11,29 @@ type CallHistoryRowExternalUserProps = Omit<CallHistoryTableRowProps<CallHistory
 const CallHistoryRowExternalUser = ({ _id, contact, type, status, duration, timestamp, onClick }: CallHistoryRowExternalUserProps) => {
 	const { t } = useTranslation();
 
-	const { onToggleWidget, state } = useMediaCallContext();
+	const state = usePeekMediaSessionState();
+	const { toggleWidget } = useWidgetExternalControls();
 
 	const handleClick = useCallback(() => {
 		onClick(_id);
 	}, [onClick, _id]);
 
 	const actions = useMemo(() => {
-		if (state === 'unauthorized' || state === 'unlicensed' || !onToggleWidget) {
+		if (state === 'unavailable') {
 			return [];
 		}
+		const disabled = state !== 'available';
 		return [
 			{
 				id: 'voiceCall',
 				icon: 'phone',
 				content: t('Voice_call'),
-				disabled: isCallingBlocked(state),
-				tooltip: isCallingBlocked(state) ? t('Call_in_progress') : undefined,
-				onClick: () => onToggleWidget({ number: contact.number }),
+				disabled,
+				tooltip: disabled ? t('Call_in_progress') : undefined,
+				onClick: () => toggleWidget({ number: contact.number }),
 			} as const,
 		];
-	}, [contact, onToggleWidget, t, state]);
+	}, [contact, toggleWidget, t, state]);
 
 	return (
 		<CallHistoryTableRow
