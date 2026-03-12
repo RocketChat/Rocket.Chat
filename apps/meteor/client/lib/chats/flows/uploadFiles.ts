@@ -67,5 +67,4 @@ export const uploadFiles = async (
 	chat?.action.performContinuously('uploading');
 
 	await Promise.allSettled(files.map((file) => uploadFile(file)));
-	chat.composer?.dismissAllQuotedMessages();
 };
