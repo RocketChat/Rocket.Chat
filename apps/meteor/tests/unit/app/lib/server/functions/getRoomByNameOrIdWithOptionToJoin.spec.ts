@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe, it, beforeEach, afterEach } from 'mocha';
-import mock from 'proxyquire';
+import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
 
 type RoomType = 'c' | 'p' | 'd' | 'l';
@@ -27,92 +27,90 @@ type GetRoomByNameOrIdWithOptionToJoinFn = (params: {
 	errorOnEmpty?: boolean;
 }) => Promise<IRoom | null>;
 
+const RoomsStub = {
+	findOneByIdOrName: Sinon.stub(),
+	findOneDirectRoomContainingAllUserIDs: Sinon.stub(),
+	findOneById: Sinon.stub(),
+};
+
+const SubscriptionsStub = {
+	findOneByRoomIdAndUserId: Sinon.stub(),
+};
+
+const UsersStub = {
+	findOneById: Sinon.stub(),
+	findOne: Sinon.stub(),
+};
+
+const RoomServiceStub = {
+	join: Sinon.stub().resolves(),
+};
+
+const MeteorStub = {
+	Meteor: {
+		Error: Sinon.stub().callsFake(function (this: any, code: string) {
+			this.error = code;
+			this.errorType = 'Meteor.Error';
+		} as any),
+	},
+};
+
+const createDirectMessageStub = Sinon.stub().resolves({ rid: 'newDirectRoomId' });
+
+const isObjectMock = {
+	isObject(obj: unknown) {
+		return obj !== null && typeof obj === 'object';
+	},
+};
+
+const {
+	getRoomByNameOrIdWithOptionToJoin,
+}: {
+	getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
+} = proxyquire.noCallThru().load('../../../../../../../meteor/app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin.ts', {
+	'@rocket.chat/models': {
+		Rooms: RoomsStub,
+		Subscriptions: SubscriptionsStub,
+		Users: UsersStub,
+	},
+	'@rocket.chat/core-services': {
+		Room: RoomServiceStub,
+	},
+	'../../../../lib/utils/isObject': isObjectMock,
+	'../../../../server/methods/createDirectMessage': {
+		createDirectMessage: createDirectMessageStub,
+	},
+	'meteor/meteor': MeteorStub,
+}) as any;
+
 describe('getRoomByNameOrIdWithOptionToJoin', () => {
-	let RoomsStub: {
-		findOneByIdOrName: Sinon.SinonStub;
-		findOneDirectRoomContainingAllUserIDs: Sinon.SinonStub;
-		findOneById: Sinon.SinonStub;
-	};
-	let SubscriptionsStub: {
-		findOneByRoomIdAndUserId: Sinon.SinonStub;
-	};
-	let UsersStub: {
-		findOneById: Sinon.SinonStub;
-		findOne: Sinon.SinonStub;
-	};
-	let RoomServiceStub: {
-		join: Sinon.SinonStub;
-	};
-	let MeteorStub: {
-		Meteor: {
-			Error: Sinon.SinonStub;
-		};
-	};
-	let createDirectMessageStub: Sinon.SinonStub;
-
-	let getRoomByNameOrIdWithOptionToJoin: GetRoomByNameOrIdWithOptionToJoinFn;
-
 	const baseUser: IUser = {
 		_id: 'userId',
 		username: 'user',
 	};
 
-	const makeStubs = () => {
-		RoomsStub = {
-			findOneByIdOrName: Sinon.stub(),
-			findOneDirectRoomContainingAllUserIDs: Sinon.stub(),
-			findOneById: Sinon.stub(),
-		};
-
-		SubscriptionsStub = {
-			findOneByRoomIdAndUserId: Sinon.stub(),
-		};
-
-		UsersStub = {
-			findOneById: Sinon.stub(),
-			findOne: Sinon.stub(),
-		};
-
-		RoomServiceStub = {
-			join: Sinon.stub().resolves(),
-		};
-
-		MeteorStub = {
-			Meteor: {
-				Error: Sinon.stub().callsFake(function (this: any, code: string) {
-					this.error = code;
-					this.errorType = 'Meteor.Error';
-				} as any),
-			},
-		};
-
-		createDirectMessageStub = Sinon.stub().resolves({ rid: 'newDirectRoomId' });
-	};
-
 	beforeEach(() => {
-		makeStubs();
+		RoomsStub.findOneByIdOrName.reset();
+		RoomsStub.findOneDirectRoomContainingAllUserIDs.reset();
+		RoomsStub.findOneById.reset();
 
-		const mod = mock.noCallThru().load('../../../../../../../meteor/app/lib/server/functions/getRoomByNameOrIdWithOptionToJoin.ts', {
-			'@rocket.chat/models': {
-				Rooms: RoomsStub,
-				Subscriptions: SubscriptionsStub,
-				Users: UsersStub,
-			},
-			'@rocket.chat/core-services': {
-				Room: RoomServiceStub,
-			},
-			'../../../../lib/utils/isObject': {
-				isObject(obj: unknown) {
-					return obj !== null && typeof obj === 'object';
-				},
-			},
-			'../../../../server/methods/createDirectMessage': {
-				createDirectMessage: createDirectMessageStub,
-			},
-			'meteor/meteor': MeteorStub,
-		}) as any;
+		SubscriptionsStub.findOneByRoomIdAndUserId.reset();
 
-		getRoomByNameOrIdWithOptionToJoin = mod.getRoomByNameOrIdWithOptionToJoin as GetRoomByNameOrIdWithOptionToJoinFn;
+		UsersStub.findOneById.reset();
+		UsersStub.findOne.reset();
+
+		RoomServiceStub.join.reset();
+		RoomServiceStub.join.resolves();
+
+		MeteorStub.Meteor.Error.resetBehavior();
+		MeteorStub.Meteor.Error.resetHistory();
+		MeteorStub.Meteor.Error.callsFake(function (this: any, code: string) {
+			this.error = code;
+			this.errorType = 'Meteor.Error';
+		} as any);
+
+		createDirectMessageStub.reset();
+		createDirectMessageStub.resolves({ rid: 'newDirectRoomId' });
 	});
 
 	afterEach(() => {
@@ -267,7 +265,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(SubscriptionsStub.findOneByRoomIdAndUserId, 'room6', baseUser._id);
+			Sinon.assert.calledOnceWithExactly(SubscriptionsStub.findOneByRoomIdAndUserId, 'room6', baseUser._id, { projection: { _id: 1 } });
 			Sinon.assert.calledOnceWithExactly(RoomServiceStub.join, {
 				room,
 				user: baseUser,
@@ -325,7 +323,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(SubscriptionsStub.findOneByRoomIdAndUserId, 'room9', baseUser._id);
+			Sinon.assert.calledOnceWithExactly(SubscriptionsStub.findOneByRoomIdAndUserId, 'room9', baseUser._id, { projection: { _id: 1 } });
 			Sinon.assert.notCalled(RoomServiceStub.join);
 			expect(result).to.equal(room);
 		});
@@ -352,6 +350,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				$or: [{ _id: 'other' }, { username: 'other' }],
 			});
 			Sinon.assert.calledOnce(RoomsStub.findOneDirectRoomContainingAllUserIDs);
+
 			const callArgs = RoomsStub.findOneDirectRoomContainingAllUserIDs.getCall(0).args[0];
 			expect(callArgs).to.be.an('array');
 			expect(callArgs.sort()).to.deep.equal(['otherId', 'userId'].sort());
