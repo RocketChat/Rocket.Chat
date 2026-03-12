@@ -202,7 +202,7 @@ export function prepareMessageObject(
 	const { _id, username, name } = user;
 	message.u = {
 		_id,
-		username: username as string, // FIXME: this is wrong but I don't want to change it now
+		username: username || '',
 		name,
 	};
 	message.rid = rid;
@@ -221,7 +221,12 @@ export function prepareMessageObject(
  * Caller of the function should verify the Message_MaxAllowedSize if needed.
  * There might be same use cases which needs to override this setting. Example - sending error logs.
  */
-export const sendMessage = async function (user: any, message: any, room: any, options: SendMessageOptions = {}) {
+export const sendMessage = async function (
+	user: { _id: string; username?: string; name?: string },
+	message: Partial<IMessage>,
+	room: Pick<IRoom, '_id'>,
+	options: SendMessageOptions = {},
+) {
 	const { upsert = false, previewUrls } = options;
 
 	if (!user || !message || !room._id) {
