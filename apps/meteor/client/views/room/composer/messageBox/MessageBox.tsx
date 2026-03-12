@@ -162,6 +162,10 @@ const MessageBox = ({
 	const { uploads, hasUploads, handleUploadFiles, isUploading } = useFileUpload(uploadsStore);
 
 	const handleSendMessage = useEffectEvent(() => {
+		if (isUploading) {
+			return;
+		}
+
 		const text = chat.composer?.text ?? '';
 		chat.composer?.clear();
 		popup.clear();
@@ -386,7 +390,6 @@ const MessageBox = ({
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
-	const canSendUploads = hasUploads && !isUploading;
 
 	return (
 		<>
@@ -488,10 +491,10 @@ const MessageBox = ({
 								<MessageComposerAction
 									aria-label={t('Send')}
 									icon='send'
-									disabled={!canSend || (!typing && !isEditing && !canSendUploads)}
+									disabled={!canSend || isUploading || (!typing && !isEditing && !hasUploads)}
 									onClick={handleSendMessage}
-									secondary={typing || isEditing || canSendUploads}
-									info={typing || isEditing || canSendUploads}
+									secondary={typing || isEditing || hasUploads}
+									info={typing || isEditing || hasUploads}
 								/>
 							</>
 						)}
