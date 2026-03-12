@@ -21,8 +21,8 @@ const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps): Rea
 			return { percentage: 0, count: 0 };
 		}
 
-		const totalPercentage = validUploads.reduce((sum, upload) => sum + upload.percentage, 0);
-		const avgPercentage = Math.round(totalPercentage / validUploads.length);
+		const totalPercentage = activeUploads.reduce((sum, upload) => sum + upload.percentage, 0);
+		const avgPercentage = Math.round(totalPercentage / activeUploads.length);
 
 		return {
 			percentage: avgPercentage,
@@ -59,21 +59,13 @@ const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps): Rea
 		[percentage],
 	);
 
-	const uploadProgressTitle = useMemo(() => {
-		if (count === 1) {
-			return `(${percentage}%) ${t('Uploading_file', { defaultValue: 'Uploading 1 file' })}`;
-		}
-
-		return `(${percentage}%) ${t('Uploading_files_count', { count, defaultValue: `Uploading ${count} files` })}`;
-	}, [count, percentage, t]);
-
 	if (count === 0) {
 		return null;
 	}
 
 	return (
 		<Box className={customClass} mbs={8}>
-			<Bubble role='status'>{uploadProgressTitle}</Bubble>
+			<Bubble role='status'>{`${percentage}% ${t('Uploading__count__file', { count })}`}</Bubble>
 		</Box>
 	);
 };
