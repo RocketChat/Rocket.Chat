@@ -18,7 +18,7 @@ export type ErrorStatusCodes = Exclude<Exclude<Range<511>, Range<500>>, 509>;
 
 export type SuccessResult<T, TStatusCode extends SuccessStatusCodes = 200> = {
 	statusCode: TStatusCode;
-	body: T extends object ? { success: true } & T : T;
+	body: T extends Record<string, unknown> ? { success: true } & T : T;
 };
 
 export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
