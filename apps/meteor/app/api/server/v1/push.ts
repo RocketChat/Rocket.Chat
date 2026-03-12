@@ -261,18 +261,33 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const pushInfoResponseSchema = ajv.compile<{ pushGatewayEnabled: boolean; defaultPushGateway: boolean }>({
+	type: 'object',
+	properties: {
+		pushGatewayEnabled: { type: 'boolean' },
+		defaultPushGateway: { type: 'boolean' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['pushGatewayEnabled', 'defaultPushGateway', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'push.info',
-	{ authRequired: true },
 	{
-		async get() {
-			const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
-			const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
-			return API.v1.success({
-				pushGatewayEnabled: settings.get('Push_enable'),
-				defaultPushGateway,
-			});
+		authRequired: true,
+		response: {
+			200: pushInfoResponseSchema,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
+		const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
+		return API.v1.success({
+			pushGatewayEnabled: Boolean(settings.get('Push_enable')),
+			defaultPushGateway,
+		});
 	},
 );
 
