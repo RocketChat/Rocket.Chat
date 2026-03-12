@@ -141,6 +141,7 @@ async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message:
 	}
 
 	try {
+		store.setProcessingUploads(true);
 		for (const fileToConfirm of confirmFilesQueue) {
 			await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileToConfirm._id}`, fileToConfirm.composedMessage);
 		}
@@ -148,6 +149,7 @@ async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message:
 	} catch (error: unknown) {
 		dispatchToastMessage({ type: 'error', message: error });
 	} finally {
+		store.setProcessingUploads(false);
 		chat.action.stop('uploading');
 	}
 
@@ -173,7 +175,6 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 	const allUploadsFailed = failedUploads.length === filesToUpload.length;
 
 	return new Promise((resolve) => {
-		chat.composer?.insertText(message.msg);
 		imperativeModal.open({
 			component: GenericModal,
 			props: {
@@ -195,7 +196,7 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 					cancelText: t('Cancel'),
 					onConfirm: () => {
 						imperativeModal.close();
-						chat.composer?.clear();
+						failedUploads.forEach((upload) => store.removeUpload(upload.id));
 						resolve(continueSendingMessage(chat, store, message));
 					},
 					onCancel: () => {

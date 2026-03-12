@@ -29,6 +29,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	}
 
 	if (await processMessageUploads(chat, message)) {
+		chat.composer?.clear();
 		return;
 	}
 
@@ -42,6 +43,7 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 		return;
 	}
 
+	chat.composer?.clear();
 	await sdk.call('sendMessage', message, previewUrls);
 
 	// after the request is complete we can go ahead and mark as sent

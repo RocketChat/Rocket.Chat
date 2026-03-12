@@ -32,6 +32,7 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg, tmid }: Pick<I
 				lastModified: Date.now(),
 			});
 
+			chat.composer?.clear();
 			imperativeModal.close();
 			await chat.flows.uploadFiles({ files: [file], uploadsStore: tmid ? chat.threadUploads : chat.uploads });
 
@@ -39,8 +40,6 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg, tmid }: Pick<I
 		};
 
 		const onClose = (): void => {
-			chat.composer?.setText(msg);
-
 			imperativeModal.close();
 			resolve();
 		};
