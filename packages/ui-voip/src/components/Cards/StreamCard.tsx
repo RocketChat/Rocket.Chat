@@ -1,6 +1,6 @@
+import Card from './Card';
 import CardSlotPin from './CardSlotPin';
 import CardSlotStopSharing from './CardSlotStopSharing';
-import GenericCard from './GenericCard';
 
 type StreamCardProps = {
 	children: React.ReactNode;
@@ -21,7 +21,7 @@ const alternateSizeProps = {
 
 const StreamCard = ({ children, own, onClickFocusStream, onClickStopSharing, focused, autoHeight, maxHeight }: StreamCardProps) => {
 	return (
-		<GenericCard
+		<Card
 			variant={own ? 'highlighted' : 'default'}
 			{...(focused ? alternateSizeProps : {})}
 			height={focused || autoHeight ? 'fit-content' : undefined}
@@ -31,7 +31,7 @@ const StreamCard = ({ children, own, onClickFocusStream, onClickStopSharing, foc
 			{onClickFocusStream && <CardSlotPin focused={focused} onClick={onClickFocusStream} position='bottomRight' />}
 			{own && onClickStopSharing && <CardSlotStopSharing onClick={onClickStopSharing} />}
 			{children}
-		</GenericCard>
+		</Card>
 	);
 };
 

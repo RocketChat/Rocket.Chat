@@ -1,6 +1,6 @@
 export { default as PeerCard } from './PeerCard';
 export { default as StreamCard } from './StreamCard';
-export { default as GenericCard } from './GenericCard';
+export { default as Card } from './Card';
 export { default as CardWidgetContainer } from './CardWidgetContainer';
 
 export { default as CardSlotAudioState } from './CardSlotAudioState';

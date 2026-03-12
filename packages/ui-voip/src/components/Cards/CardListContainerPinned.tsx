@@ -3,8 +3,8 @@ import { Box } from '@rocket.chat/fuselage';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { CSSProperties, ReactNode } from 'react';
 
+import { CARD_MARGIN, CARD_MIN_WIDTH } from './Card';
 import CardListContainer from './CardListContainer';
-import { CARD_MARGIN, CARD_MIN_WIDTH } from './GenericCard';
 
 type CardListContainerPinnedProps = {
 	children: ReactNode;

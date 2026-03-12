@@ -1,7 +1,7 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 
+import { CARD_TOTAL_HEIGHT } from './Card';
 import { SECTION_MAX_HEIGHT } from './CardListSection';
-import { CARD_TOTAL_HEIGHT } from './GenericCard';
 import { ACTION_STRIP_TOTAL_HEIGHT } from '../Actions/ActionStrip';
 
 // The minimun height that will fit 2 cards on top of eachother

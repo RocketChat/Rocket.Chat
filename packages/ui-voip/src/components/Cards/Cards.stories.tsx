@@ -1,18 +1,18 @@
 import type { Meta, StoryFn } from '@storybook/react';
 
+import Card from './Card';
 import CardSlotAudioState from './CardSlotAudioState';
 import CardSlotContainer from './CardSlotContainer';
-import GenericCard from './GenericCard';
 import PeerCard from './PeerCard';
 
 export default {
 	title: 'V2/Views/MediaCallRoomSection/Cards',
-	component: GenericCard,
+	component: Card,
 	args: {
 		title: 'Generic Card',
 		children: 'This is the content.',
 	},
-} satisfies Meta<typeof GenericCard>;
+} satisfies Meta<typeof Card>;
 
 const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
               4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
@@ -26,8 +26,8 @@ const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBg
               SuvjQ/FFJayjDWrCTepAQ2vUH0oo/Jk3ovpwJJeVCP5CN+lFFaaMqy+nAyuChvrTI2kN9JAsi2ZOy4IBHMnkSCP+iqBexSWdxLazoUljJVlP
               UH2oorkV10pRc7b1zXb/hZOzuJvM86QWEXeELxOzHSIPcmiiiunVlF2RNTpRkrs//Z`;
 
-export const GenericCardStory: StoryFn<typeof GenericCard> = (args) => (
-	<GenericCard {...args}>
+export const GenericCardStory: StoryFn<typeof Card> = (args) => (
+	<Card {...args}>
 		<CardSlotContainer position='bottomLeft'>
 			<span>John Doe</span>
 			<CardSlotAudioState muted={false} held={true} />
@@ -41,9 +41,9 @@ export const GenericCardStory: StoryFn<typeof GenericCard> = (args) => (
 		<CardSlotContainer position='topRight'>
 			<span>Top Right</span>
 		</CardSlotContainer>
-	</GenericCard>
+	</Card>
 );
 
-export const PeerCardStory: StoryFn<typeof GenericCard> = (args) => (
+export const PeerCardStory: StoryFn<typeof Card> = (args) => (
 	<PeerCard displayName='John Doe' avatarUrl={avatarUrl} muted={false} held={false} {...args} />
 );
