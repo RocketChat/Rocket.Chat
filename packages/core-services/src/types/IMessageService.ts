@@ -1,8 +1,21 @@
 import type { IMessage, MessageTypesValues, IUser, IRoom, AtLeast, MessageUrl } from '@rocket.chat/core-typings';
 
 export interface IMessageService {
+	/**
+	 * Sends a message from a user to a room.
+	 */
 	sendMessage({ fromId, rid, msg }: { fromId: string; rid: string; msg: string }): Promise<IMessage>;
+
+	/**
+	 * Saves a system message to a room.
+	 * @param type The type of system message (e.g., 'room_changed_name').
+	 * @param rid The room ID.
+	 * @param message The message text.
+	 * @param user The user who triggered the system message.
+	 * @param extraData Additional message data.
+	 */
 	saveSystemMessage<T = IMessage>(
+
 		type: MessageTypesValues,
 		rid: string,
 		message: string,

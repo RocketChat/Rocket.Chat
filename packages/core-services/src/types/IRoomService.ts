@@ -22,9 +22,21 @@ export interface ICreateRoomParams<T extends IRoom = IRoom> {
 	options?: ICreateRoomOptions;
 }
 export interface IRoomService {
+	/**
+	 * Adds a user to a room by their UID.
+	 */
 	addMember(uid: string, rid: string): Promise<boolean>;
+
+	/**
+	 * Creates a new room.
+	 */
 	create<T extends IRoom = IRoom>(uid: string, params: ICreateRoomParams<T>): Promise<IRoom>;
+
+	/**
+	 * Creates a direct message room between two users.
+	 */
 	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
+
 	createDirectMessageWithMultipleUsers(members: string[], creatorId: string): Promise<{ rid: string }>;
 	addUserToRoom(
 		roomId: string,
