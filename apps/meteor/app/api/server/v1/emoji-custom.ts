@@ -1,7 +1,13 @@
 import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
-import { ajv, isEmojiCustomList, isEmojiCustomDelete, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isEmojiCustomList,
+	isEmojiCustomDelete,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -30,47 +36,69 @@ function validateDateParam(paramName: string, paramValue: string | undefined): D
 	return date;
 }
 
-API.v1.addRoute(
+const emojiCustomListResponseSchema = ajv.compile<{ emojis: { update: IEmojiCustom[]; remove: IEmojiCustom[] } }>({
+	type: 'object',
+	properties: {
+		emojis: {
+			type: 'object',
+			properties: {
+				update: { type: 'array' },
+				remove: { type: 'array' },
+			},
+			required: ['update', 'remove'],
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['emojis', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'emoji-custom.list',
-	{ authRequired: true, validateParams: isEmojiCustomList },
 	{
-		async get() {
-			const { query } = await this.parseJsonQuery();
-			const { updatedSince, _updatedAt, _id } = this.queryParams;
+		authRequired: true,
+		query: isEmojiCustomList,
+		response: {
+			200: emojiCustomListResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { query } = await this.parseJsonQuery();
+		const { updatedSince, _updatedAt, _id } = this.queryParams;
 
-			const updatedSinceDate = validateDateParam('updatedSince', updatedSince);
-			const _updatedAtDate = validateDateParam('_updatedAt', _updatedAt);
+		const updatedSinceDate = validateDateParam('updatedSince', updatedSince);
+		const _updatedAtDate = validateDateParam('_updatedAt', _updatedAt);
 
-			if (updatedSinceDate) {
-				const [update, remove] = await Promise.all([
-					EmojiCustom.find({
-						...query,
-						...(_id ? { _id } : {}),
-						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
-						_updatedAt: { $gt: updatedSinceDate },
-					}).toArray(),
-					EmojiCustom.trashFindDeletedAfter(updatedSinceDate).toArray(),
-				]);
-
-				return API.v1.success({
-					emojis: {
-						update,
-						remove,
-					},
-				});
-			}
+		if (updatedSinceDate) {
+			const [update, remove] = await Promise.all([
+				EmojiCustom.find({
+					...query,
+					...(_id ? { _id } : {}),
+					...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
+					_updatedAt: { $gt: updatedSinceDate },
+				}).toArray(),
+				EmojiCustom.trashFindDeletedAfter(updatedSinceDate).toArray(),
+			]);
 
 			return API.v1.success({
 				emojis: {
-					update: await EmojiCustom.find({
-						...query,
-						...(_id ? { _id } : {}),
-						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
-					}).toArray(),
-					remove: [],
+					update,
+					remove,
 				},
 			});
-		},
+		}
+
+		return API.v1.success({
+			emojis: {
+				update: await EmojiCustom.find({
+					...query,
+					...(_id ? { _id } : {}),
+					...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
+				}).toArray(),
+				remove: [],
+			},
+		});
 	},
 );
 
