@@ -1,4 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 
 import { FlexTab } from './flextab';
 import { Listbox } from './listbox';
@@ -72,7 +73,14 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 		return this.tagsListbox.getOption(name);
 	}
 
+	async waitForTagsToLoad(): Promise<void> {
+		await this.inputTags.click();
+		await this.tagsListbox.root.waitFor({ state: 'visible' });
+		await expect(this.tagsListbox.root.getByRole('option').first()).toBeVisible({ timeout: 10000 });
+	}
+
 	async selectTag(name: string) {
+		await this.tagsListbox.root.waitFor({ state: 'visible' });
 		await this.tagsListbox.selectOption(name);
 	}
 

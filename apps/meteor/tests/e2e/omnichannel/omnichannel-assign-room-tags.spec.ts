@@ -26,32 +26,24 @@ test.describe('OC - Tags Visibility', () => {
 	let globalTag: Awaited<ReturnType<typeof createTag>>;
 	let sharedTag: Awaited<ReturnType<typeof createTag>>;
 
-	test.beforeAll('Create departments', async ({ api }) => {
+	test.beforeAll(async ({ api }) => {
 		departmentA = await createDepartment(api, { name: 'Department A' });
 		departmentB = await createDepartment(api, { name: 'Department B' });
-	});
 
-	test.beforeAll('Create agent', async ({ api }) => {
 		agent = await createAgent(api, 'user1');
-	});
 
-	test.beforeAll('Add agents to departments', async ({ api }) => {
 		await Promise.all([
 			addAgentToDepartment(api, { department: departmentA.data, agentId: 'user1' }),
 			addAgentToDepartment(api, { department: departmentB.data, agentId: 'user1' }),
 		]);
-	});
 
-	test.beforeAll('Create tags', async ({ api }) => {
 		tagA = await createTag(api, { departments: [departmentA.data._id] });
 		tagB = await createTag(api, { departments: [departmentB.data._id] });
 		globalTag = await createTag(api, { departments: [] });
 		sharedTag = await createTag(api, {
 			departments: [departmentA.data._id, departmentB.data._id],
 		});
-	});
 
-	test.beforeAll('Create conversations', async ({ api }) => {
 		conversations = await Promise.all([
 			createConversation(api, { visitorName: visitorA.name, agentId: 'user1', departmentId: departmentA.data._id }),
 			createConversation(api, { visitorName: visitorB.name, agentId: 'user1', departmentId: departmentB.data._id }),
@@ -83,7 +75,7 @@ test.describe('OC - Tags Visibility', () => {
 		await test.step('check available tags', async () => {
 			await poOmnichannel.roomInfo.btnEdit.click();
 			await expect(poOmnichannel.editRoomInfo.root).toBeVisible();
-			await poOmnichannel.editRoomInfo.inputTags.click();
+			await poOmnichannel.editRoomInfo.waitForTagsToLoad();
 		});
 
 		await test.step('Should see TagA (department A specific)', async () => {
@@ -120,7 +112,7 @@ test.describe('OC - Tags Visibility', () => {
 			await poOmnichannel.sidebar.getSidebarItemByName(visitorB.name).click();
 			await poOmnichannel.roomInfo.btnEdit.click();
 			await expect(poOmnichannel.editRoomInfo.root).toBeVisible();
-			await poOmnichannel.editRoomInfo.inputTags.click();
+			await poOmnichannel.editRoomInfo.waitForTagsToLoad();
 		});
 
 		await test.step('Agent associated with DepartmentB should be able to see tags for Department B', async () => {
