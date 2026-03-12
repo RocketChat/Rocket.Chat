@@ -15,7 +15,7 @@ const MessageComposerFileError = ({ fileTitle, error, actionIcon, onClick, ...pr
 
 	return (
 		<MessageComposerFile
-			error={Boolean(error)}
+			error={true}
 			fileTitle={fileTitle}
 			fileSubtitle={t('Upload_failed')}
 			actionIcon={actionIcon}
