@@ -1,6 +1,5 @@
 import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
-import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
+import { type IRoom, type IUpload, type RequiredField, isPrivateRoom, isPublicRoom, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
@@ -1032,7 +1031,7 @@ const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
 const roomsBannedUsersResponseSchema = ajv.compile<{
 	success: true;
-	bannedUsers: { username?: string; name?: string; status?: string; avatarETag?: string }[];
+	bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>[];
 	count: number;
 	offset: number;
 	total: number;
@@ -1044,7 +1043,14 @@ const roomsBannedUsersResponseSchema = ajv.compile<{
 			type: 'array',
 			items: {
 				type: 'object',
-				properties: { username: { type: 'string' }, name: { type: 'string' }, status: { type: 'string' }, avatarETag: { type: 'string' } },
+				properties: {
+					_id: { type: 'string' },
+					username: { type: 'string' },
+					name: { type: 'string' },
+					status: { type: 'string' },
+					avatarETag: { type: 'string' },
+				},
+				required: ['_id', 'username'],
 				additionalProperties: false,
 			},
 		},
@@ -1348,9 +1354,9 @@ export const roomEndpoints = API.v1
 			const bannedSubs = await bannedSubscriptions.skip(offset).limit(count).toArray();
 
 			const userIds = bannedSubs.map((sub: { u: { _id: string } }) => sub.u._id);
-			const users = await Users.find(
+			const users = await Users.find<RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>>(
 				{ _id: { $in: userIds } },
-				{ projection: { username: 1, name: 1, status: 1, avatarETag: 1 } },
+				{ projection: { username: 1, name: 1 } },
 			).toArray();
 
 			return API.v1.success({
