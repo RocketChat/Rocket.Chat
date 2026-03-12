@@ -52,7 +52,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null>;
 
-	addExternalId(_id: string, externalId: IVisitorExternalIdentifier): Promise<UpdateResult>;
+	addExternalId(_id: string, source: string, externalId: IVisitorExternalIdentifier): Promise<UpdateResult>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 
