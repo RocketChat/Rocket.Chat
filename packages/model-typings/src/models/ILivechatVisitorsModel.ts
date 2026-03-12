@@ -50,9 +50,13 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	findOneVisitorByPhone(phone: string): Promise<ILivechatVisitor | null>;
 
-	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null>;
+	findOneVisitorByPhoneAndAddExternalId(
+		phone: string,
+		source: string,
+		externalId: IVisitorExternalIdentifier,
+	): Promise<ILivechatVisitor | null>;
 
-	addExternalId(_id: string, source: string, externalId: IVisitorExternalIdentifier): Promise<UpdateResult>;
+	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 

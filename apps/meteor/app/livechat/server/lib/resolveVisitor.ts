@@ -14,17 +14,9 @@ export async function resolveVisitor({ source, externalId, phone }: ResolveVisit
 	}
 
 	if (phone) {
-		const visitorByPhone = await LivechatVisitors.findOneVisitorByPhone(phone);
+		const visitorByPhone = await LivechatVisitors.findOneVisitorByPhoneAndAddExternalId(phone, source, externalId);
 		if (visitorByPhone) {
-			// Enrich existing visitor with external ID (progressive enrichment)
-			await LivechatVisitors.addExternalId(visitorByPhone._id, source, externalId);
-			return {
-				...visitorByPhone,
-				externalIds: {
-					...(visitorByPhone.externalIds ?? {}),
-					[source]: externalId,
-				},
-			};
+			return visitorByPhone;
 		}
 	}
 

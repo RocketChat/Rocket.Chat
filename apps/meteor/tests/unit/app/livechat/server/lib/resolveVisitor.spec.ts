@@ -5,8 +5,7 @@ import sinon from 'sinon';
 const modelsMock = {
 	LivechatVisitors: {
 		findOneByExternalId: sinon.stub(),
-		findOneVisitorByPhone: sinon.stub(),
-		addExternalId: sinon.stub(),
+		findOneVisitorByPhoneAndAddExternalId: sinon.stub(),
 	},
 };
 
@@ -20,8 +19,7 @@ const appId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
 describe('resolveVisitor', () => {
 	beforeEach(() => {
 		modelsMock.LivechatVisitors.findOneByExternalId.reset();
-		modelsMock.LivechatVisitors.findOneVisitorByPhone.reset();
-		modelsMock.LivechatVisitors.addExternalId.reset();
+		modelsMock.LivechatVisitors.findOneVisitorByPhoneAndAddExternalId.reset();
 	});
 
 	it('should return visitor when found by external ID without phone fallback', async () => {
@@ -42,50 +40,43 @@ describe('resolveVisitor', () => {
 
 		expect(result).to.deep.equal(existingVisitor);
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnceWith(appId, 'bsuid-123')).to.be.true;
-		expect(modelsMock.LivechatVisitors.findOneVisitorByPhone.called).to.be.false;
-		expect(modelsMock.LivechatVisitors.addExternalId.called).to.be.false;
+		expect(modelsMock.LivechatVisitors.findOneVisitorByPhoneAndAddExternalId.called).to.be.false;
 	});
 
 	it('should find by phone, enrich with external ID, and return visitor when not found by external ID', async () => {
-		const existingVisitor = {
+		const externalId = { userId: 'bsuid-456', username: '@johndoe' };
+		const updatedVisitor = {
 			_id: 'visitor-456',
 			token: 'token-456',
 			username: 'guest-2',
+			externalIds: { [appId]: externalId },
 		};
-		const externalId = { userId: 'bsuid-456', username: '@johndoe' };
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
-		modelsMock.LivechatVisitors.findOneVisitorByPhone.resolves(existingVisitor);
-		modelsMock.LivechatVisitors.addExternalId.resolves({ modifiedCount: 1 });
+		modelsMock.LivechatVisitors.findOneVisitorByPhoneAndAddExternalId.resolves(updatedVisitor);
 
 		const result = await resolveVisitor({ source: appId, externalId, phone: '9876543210' });
 
-		expect(result).to.deep.equal({ ...existingVisitor, externalIds: { [appId]: externalId } });
+		expect(result).to.deep.equal(updatedVisitor);
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnce).to.be.true;
-		expect(modelsMock.LivechatVisitors.findOneVisitorByPhone.calledOnceWith('9876543210')).to.be.true;
-		expect(modelsMock.LivechatVisitors.addExternalId.calledOnceWith('visitor-456', appId, externalId)).to.be.true;
+		expect(modelsMock.LivechatVisitors.findOneVisitorByPhoneAndAddExternalId.calledOnceWith('9876543210', appId, externalId)).to.be.true;
 	});
 
 	it('should update existing externalIds when visitor already has some', async () => {
-		const existingExternalId = { userId: 'bsuid-old' };
-		const existingVisitor = {
+		const newExternalId = { userId: 'bsuid-789', username: '@newuser' };
+		const updatedVisitor = {
 			_id: 'visitor-789',
 			token: 'token-789',
 			username: 'guest-3',
-			externalIds: { [appId]: existingExternalId },
+			externalIds: { [appId]: newExternalId },
 		};
-		const newExternalId = { userId: 'bsuid-789', username: '@newuser' };
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
-		modelsMock.LivechatVisitors.findOneVisitorByPhone.resolves(existingVisitor);
-		modelsMock.LivechatVisitors.addExternalId.resolves({ modifiedCount: 1 });
+		modelsMock.LivechatVisitors.findOneVisitorByPhoneAndAddExternalId.resolves(updatedVisitor);
 
 		const result = await resolveVisitor({ source: appId, externalId: newExternalId, phone: '5555555555' });
 
-		expect(result).to.deep.equal({
-			...existingVisitor,
-			externalIds: { [appId]: newExternalId },
-		});
+		expect(result).to.deep.equal(updatedVisitor);
 	});
 
 	it('should return null when not found by external ID and no phone provided', async () => {
@@ -95,12 +86,12 @@ describe('resolveVisitor', () => {
 
 		expect(result).to.be.null;
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnce).to.be.true;
-		expect(modelsMock.LivechatVisitors.findOneVisitorByPhone.called).to.be.false;
+		expect(modelsMock.LivechatVisitors.findOneVisitorByPhoneAndAddExternalId.called).to.be.false;
 	});
 
 	it('should return null when not found by external ID or phone', async () => {
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
-		modelsMock.LivechatVisitors.findOneVisitorByPhone.resolves(null);
+		modelsMock.LivechatVisitors.findOneVisitorByPhoneAndAddExternalId.resolves(null);
 
 		const result = await resolveVisitor({
 			source: appId,
@@ -110,8 +101,7 @@ describe('resolveVisitor', () => {
 
 		expect(result).to.be.null;
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnce).to.be.true;
-		expect(modelsMock.LivechatVisitors.findOneVisitorByPhone.calledOnce).to.be.true;
-		expect(modelsMock.LivechatVisitors.addExternalId.called).to.be.false;
+		expect(modelsMock.LivechatVisitors.findOneVisitorByPhoneAndAddExternalId.calledOnce).to.be.true;
 	});
 
 	it('should not attempt phone lookup when phone is empty string', async () => {
@@ -124,6 +114,6 @@ describe('resolveVisitor', () => {
 		});
 
 		expect(result).to.be.null;
-		expect(modelsMock.LivechatVisitors.findOneVisitorByPhone.called).to.be.false;
+		expect(modelsMock.LivechatVisitors.findOneVisitorByPhoneAndAddExternalId.called).to.be.false;
 	});
 });
