@@ -1,6 +1,10 @@
 import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 import { CustomUserStatus } from '@rocket.chat/models';
-import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+} from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -150,20 +154,34 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const customUserStatusDeleteResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'custom-user-status.delete',
-	{ authRequired: true },
 	{
-		async post() {
-			const { customUserStatusId } = this.bodyParams;
-			if (!customUserStatusId) {
-				return API.v1.failure('The "customUserStatusId" params is required!');
-			}
-
-			await deleteCustomUserStatus(this.userId, customUserStatusId);
-
-			return API.v1.success();
+		authRequired: true,
+		response: {
+			200: customUserStatusDeleteResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { customUserStatusId } = this.bodyParams;
+		if (!customUserStatusId) {
+			return API.v1.failure('The "customUserStatusId" params is required!');
+		}
+
+		await deleteCustomUserStatus(this.userId, customUserStatusId);
+
+		return API.v1.success();
 	},
 );
 

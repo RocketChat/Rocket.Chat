@@ -5,6 +5,8 @@ import {
 	isUseInviteTokenProps,
 	isValidateInviteTokenProps,
 	isSendInvitationEmailParams,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -184,54 +186,89 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const useInviteTokenResponseSchema = ajv.compile<Record<string, unknown>>({
+	type: 'object',
+	properties: {
+		room: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['room', 'success'],
+	additionalProperties: false,
+});
+
+const validateInviteTokenResponseSchema = ajv.compile<{ valid: boolean }>({
+	type: 'object',
+	properties: {
+		valid: { type: 'boolean' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['valid', 'success'],
+	additionalProperties: false,
+});
+
+const sendInvitationEmailResponseSchema = ajv.compile<{ success: boolean }>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: true,
+});
+
+API.v1.post(
 	'useInviteToken',
 	{
 		authRequired: true,
-		validateParams: isUseInviteTokenProps,
-	},
-	{
-		async post() {
-			const { token } = this.bodyParams;
-			// eslint-disable-next-line react-hooks/rules-of-hooks
-			return API.v1.success(await useInviteToken(this.userId, token));
+		body: isUseInviteTokenProps,
+		response: {
+			200: useInviteTokenResponseSchema,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { token } = this.bodyParams;
+		// eslint-disable-next-line react-hooks/rules-of-hooks
+		return API.v1.success(await useInviteToken(this.userId, token));
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'validateInviteToken',
 	{
 		authRequired: false,
-		validateParams: isValidateInviteTokenProps,
-	},
-	{
-		async post() {
-			const { token } = this.bodyParams;
-			try {
-				return API.v1.success({ valid: Boolean(await validateInviteToken(token)) });
-			} catch (_) {
-				return API.v1.success({ valid: false });
-			}
+		body: isValidateInviteTokenProps,
+		response: {
+			200: validateInviteTokenResponseSchema,
 		},
+	},
+	async function action() {
+		const { token } = this.bodyParams;
+		try {
+			return API.v1.success({ valid: Boolean(await validateInviteToken(token)) });
+		} catch (_) {
+			return API.v1.success({ valid: false });
+		}
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'sendInvitationEmail',
 	{
 		authRequired: true,
-		validateParams: isSendInvitationEmailParams,
-	},
-	{
-		async post() {
-			const { emails } = this.bodyParams;
-			try {
-				return API.v1.success({ success: Boolean(await sendInvitationEmail(this.userId, emails)) });
-			} catch (e: any) {
-				return API.v1.failure({ error: e.message });
-			}
+		body: isSendInvitationEmailParams,
+		response: {
+			200: sendInvitationEmailResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { emails } = this.bodyParams;
+		try {
+			return API.v1.success({ success: Boolean(await sendInvitationEmail(this.userId, emails)) });
+		} catch (e: any) {
+			return API.v1.failure({ error: e.message });
+		}
 	},
 );
 
