@@ -4,6 +4,8 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import {
 	isCustomSoundsGetOneProps,
 	isCustomSoundsListProps,
+	isCustomSoundsCreateProps,
+	isCustomSoundsUpdateProps,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateNotFoundErrorResponse,
@@ -12,9 +14,14 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { insertOrUpdateSound } from '../../../custom-sounds/server/lib/insertOrUpdateSound';
+import { uploadCustomSound } from '../../../custom-sounds/server/lib/uploadCustomSound';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+import { getUploadFormData } from '../lib/getUploadFormData';
 
 const customSoundsEndpoints = API.v1
 	.get(
@@ -69,7 +76,7 @@ const customSoundsEndpoints = API.v1
 
 			const filter = {
 				...query,
-				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+				...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			};
 
 			const { cursor, totalCount } = CustomSounds.findPaginated(filter, {
@@ -123,6 +130,130 @@ const customSoundsEndpoints = API.v1
 			}
 
 			return API.v1.success({ sound });
+		},
+	)
+	.post(
+		'custom-sounds.create',
+		{
+			response: {
+				200: ajv.compile<{ sound: Pick<ICustomSound, '_id'>; success: boolean }>({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+						sound: {
+							type: 'object',
+							properties: {
+								_id: {
+									type: 'string',
+									description: 'The ID of the sound.',
+								},
+							},
+							required: ['_id'],
+						},
+					},
+					required: ['success', 'sound'],
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['manage-sounds'],
+		},
+		async function action() {
+			const sound = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{
+					field: 'sound',
+					sizeLimit: MAX_CUSTOM_SOUND_SIZE_BYTES,
+					validate: isCustomSoundsCreateProps,
+				},
+			);
+
+			const { fields, fileBuffer, mimetype } = sound;
+
+			let _id;
+
+			try {
+				_id = await insertOrUpdateSound({
+					name: fields.name,
+					extension: 'mp3',
+				});
+				await uploadCustomSound(fileBuffer, mimetype, { _id, name: fields.name, extension: 'mp3' });
+			} catch (error) {
+				SystemLogger.error({ error });
+				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
+			}
+			return API.v1.success({ sound: { _id } });
+		},
+	)
+	.post(
+		'custom-sounds.update',
+		{
+			response: {
+				200: ajv.compile<{ success: boolean }>({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+			authRequired: true,
+			permissionsRequired: ['manage-sounds'],
+		},
+		async function action() {
+			const sound = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{
+					field: 'sound',
+					fileOptional: true,
+					sizeLimit: MAX_CUSTOM_SOUND_SIZE_BYTES,
+					validate: isCustomSoundsUpdateProps,
+				},
+			);
+
+			const { fields, fileBuffer, mimetype } = sound;
+
+			const soundToUpdate = await CustomSounds.findOneById<Pick<ICustomSound, '_id' | 'name' | 'extension'>>(fields._id, {
+				projection: { _id: 1, name: 1, extension: 1 },
+			});
+			if (!soundToUpdate) {
+				return API.v1.failure('Custom Sound not found.');
+			}
+
+			try {
+				await insertOrUpdateSound({
+					_id: fields._id,
+					name: fields.name,
+					extension: 'mp3',
+					newFile: Boolean(fields.newFile),
+					previousName: soundToUpdate.name,
+					previousExtension: soundToUpdate.extension,
+				});
+				if (fileBuffer) {
+					await uploadCustomSound(fileBuffer, mimetype, { _id: fields._id, name: fields.name, extension: 'mp3' });
+				}
+			} catch (error) {
+				SystemLogger.error({ error });
+				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
+			}
+			return API.v1.success({});
 		},
 	);
 
