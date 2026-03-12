@@ -50,14 +50,22 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
+	findOneVisitorByPhoneAndAddExternalId(
+		phone: string,
+		source: string,
+		externalId: IVisitorExternalIdentifier,
+	): Promise<ILivechatVisitor | null> {
+		return this.findOneAndUpdate(
+			{ 'phone.phoneNumber': phone },
+			{ $set: { [`externalIds.${source}`]: externalId } },
+			{ returnDocument: 'after' },
+		);
+	}
+
 	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null> {
 		return this.findOne({
 			[`externalIds.${source}.userId`]: externalUserId,
 		});
-	}
-
-	addExternalId(_id: string, source: string, externalId: IVisitorExternalIdentifier): Promise<UpdateResult> {
-		return this.updateOne({ _id }, { $set: { [`externalIds.${source}`]: externalId } });
 	}
 
 	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
