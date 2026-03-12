@@ -52,7 +52,7 @@ const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps): Rea
 					width: ${percentage}%;
 					height: 100%;
 					transition: width 0.3s ease-out;
-					background-color: #103162;
+					background-color: var(--rcx-color-button-background-primary-press, #10529e);
 				}
 			}
 		`,

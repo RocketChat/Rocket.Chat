@@ -17,7 +17,7 @@ import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
-import { UploadProgressIndicator } from './UploadProgress';
+import UploadProgressIndicator from './UploadProgress';
 import ComposerContainer from '../composer/ComposerContainer';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
@@ -200,11 +200,7 @@ const RoomBody = (): ReactElement => {
 						<div className='messages-container-main' ref={wrapperRef} {...fileUploadTriggerProps}>
 							<DropTargetOverlay {...fileUploadOverlayProps} />
 							<Box position='absolute' w='full'>
-								{isUploading && (
-									// <UploadProgressContainer>
-									<UploadProgressIndicator uploads={uploads} />
-									// </UploadProgressContainer>
-								)}
+								{isUploading && <UploadProgressIndicator uploads={uploads} />}
 								{Boolean(unread) && (
 									<UnreadMessagesIndicator
 										count={unread}
