@@ -1,4 +1,4 @@
-import { type CSSProperties } from 'preact/compat';
+import type { CSSProperties } from 'preact/compat';
 
 export type Theme = {
 	color: CSSProperties['backgroundColor'];

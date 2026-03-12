@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { inlineKatex, katex, paragraph, plain } from '../src/utils';
+import { inlineKatex, katex, paragraph, plain } from './helpers';
 
 test.each([
 	[
