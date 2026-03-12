@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 
 const ajv = new Ajv({
-	coerceTypes: true,
+	coerceTypes: false,
 	allowUnionTypes: true,
 	code: { source: true },
 	discriminator: true,
