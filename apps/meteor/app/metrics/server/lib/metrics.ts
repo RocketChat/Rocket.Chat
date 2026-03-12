@@ -4,7 +4,7 @@ import client from 'prom-client';
 
 const percentiles = [0.01, 0.1, 0.5, 0.9, 0.95, 0.99, 1];
 
-const latencyBuckets = [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10];
+const latencyBuckets = [0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0, 7.5, 10.0];
 const queueWaitBuckets = [1, 5, 10, 30, 60, 120, 300, 600, 900, 1800, 3600];
 
 export const metrics = {
@@ -89,7 +89,7 @@ export const metrics = {
 		name: 'rocketchat_rest_api_response_size_bytes',
 		help: 'histogram of rocketchat rest api response sizes in bytes',
 		labelNames: ['method', 'entrypoint', 'status'],
-		buckets: [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000],
+		buckets: [0, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000],
 	}),
 	rocketchatRestApiActiveRequests: new client.Gauge({
 		name: 'rocketchat_rest_api_active_requests',
