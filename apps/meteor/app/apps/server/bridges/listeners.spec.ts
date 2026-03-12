@@ -1,7 +1,6 @@
+import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 import { expect } from 'chai';
 import sinon from 'sinon';
-
-import { AppInterface } from '@rocket.chat/apps-engine/definition/metadata';
 
 import { AppListenerBridge } from './listeners';
 
