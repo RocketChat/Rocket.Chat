@@ -22,6 +22,8 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	private uploads: readonly Upload[] = [];
 
+	private processingUploads: boolean = false;
+
 	set = (uploads: Upload[]): void => {
 		this.uploads = uploads;
 		this.emit('update');
@@ -30,6 +32,13 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 	get = (): readonly Upload[] => this.uploads;
 
 	subscribe = (callback: () => void): (() => void) => this.on('update', callback);
+
+	setProcessingUploads = (processing: boolean): void => {
+		this.processingUploads = processing;
+		this.emit('update');
+	};
+
+	getProcessingUploads = (): boolean => this.processingUploads;
 
 	cancel = (id: Upload['id']): void => {
 		this.emit(`cancelling-${id}`);

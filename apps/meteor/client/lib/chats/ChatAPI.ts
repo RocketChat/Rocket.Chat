@@ -111,6 +111,8 @@ export type UploadsAPI = {
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
 	clear(): void;
+	getProcessingUploads(): boolean;
+	setProcessingUploads(processing: boolean): void;
 	cancel(id: Upload['id']): void;
 	removeUpload(id: Upload['id']): void;
 	editUploadFileName: (id: Upload['id'], fileName: string) => void;

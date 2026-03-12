@@ -16,6 +16,7 @@ export const useFileUpload = (store: UploadsAPI) => {
 	}, [store]);
 
 	const uploads = useSyncExternalStore(store.subscribe, store.get);
+	const isProcessingUploads = useSyncExternalStore(store.subscribe, store.getProcessingUploads);
 
 	const stopUploadingAction = useCallback(() => {
 		if (uploads.length === 1) {
@@ -55,11 +56,12 @@ export const useFileUpload = (store: UploadsAPI) => {
 			uploads,
 			hasUploads: uploads.length > 0,
 			isUploading,
+			isProcessingUploads,
 			handleRemoveUpload,
 			handleEditUpload,
 			handleCancelUpload,
 			handleUploadFiles,
 		}),
-		[uploads, isUploading, handleRemoveUpload, handleEditUpload, handleCancelUpload, handleUploadFiles],
+		[uploads, isUploading, isProcessingUploads, handleRemoveUpload, handleEditUpload, handleCancelUpload, handleUploadFiles],
 	);
 };
