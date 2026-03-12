@@ -6694,7 +6694,7 @@
   "registration.component.form.emailPlaceholder": "example@example.com",
   "registration.component.form.invalidConfirmPass": "The password confirmation does not match password",
   "registration.component.form.invalidEmail": "The email entered is invalid",
-  "registration.component.form.invalidEmailDomain":"The entered email has invalid email domain",
+  "registration.component.form.invalidEmailDomain": "The entered email has invalid email domain",
   "registration.component.form.joinYourTeam": "Join your team",
   "registration.component.form.name": "Name",
   "registration.component.form.nameContainsInvalidChars": "Name contains invalid characters",
