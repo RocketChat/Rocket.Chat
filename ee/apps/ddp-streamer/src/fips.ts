@@ -145,9 +145,14 @@ crypto.createHash = function (algorithm: string, options?: crypto.HashOptions) {
 	if (algorithm.toLowerCase() === 'sha1') {
 		const updates: Sha1UpdateCall[] = [];
 		let wsProbeInput = '';
+		let finalized = false;
 
 		const mockHash = {
 			update(data: string | Buffer | NodeJS.ArrayBufferView, inputEncoding?: crypto.Encoding) {
+				if (finalized) {
+					throw new Error('Digest already called');
+				}
+
 				if (typeof data === 'string') {
 					const encoding = inputEncoding as BufferEncoding | undefined;
 					updates.push({ type: 'string', chunk: data, encoding });
@@ -164,6 +169,12 @@ crypto.createHash = function (algorithm: string, options?: crypto.HashOptions) {
 				return this;
 			},
 			digest(encoding?: crypto.BinaryToTextEncoding) {
+				if (finalized) {
+					throw new Error('Digest already called');
+				}
+
+				finalized = true;
+
 				if (encoding === 'base64' && isWebSocketHandshakeSha1Input(wsProbeInput)) {
 					return generateWebSocketAccept(wsProbeInput);
 				}
