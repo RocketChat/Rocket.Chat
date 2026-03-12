@@ -8,10 +8,10 @@ type ActionButtonProps = {
 	icon: Keys;
 	disabled?: boolean;
 	onClick?: () => void;
-} & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
+} & Omit<ComponentProps<typeof IconButton>, 'icon' | 'aria-label' | 'disabled' | 'onClick'>;
 
 const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(function ActionButton(
-	{ disabled, label, icon, onClick, secondary = true, ...props },
+	{ disabled, label, icon, onClick, title, secondary = true, ...props },
 	ref,
 ) {
 	return (
@@ -20,7 +20,7 @@ const ActionButton = forwardRef<HTMLButtonElement, ActionButtonProps>(function A
 			medium
 			secondary={secondary}
 			icon={<Icon size={16} name={icon} />}
-			title={label}
+			title={title || label}
 			aria-label={label}
 			disabled={disabled}
 			onClick={onClick}
