@@ -940,9 +940,11 @@ API.v1.addRoute(
 			if (!thread?.rid) {
 				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
 			}
-			// TODO: promise.all? this.user?
-			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
-			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
+
+			const [user, room] = await Promise.all([
+				Users.findOneById(this.userId, { projection: { _id: 1 } }),
+				Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } }),
+			]);
 
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
