@@ -137,9 +137,8 @@ export class GlobalSignalProcessor {
 
 		// If this user's side of the call has already been signed
 		if (actor.contractId) {
-			// If it's signed to the same session that is now registering
-			// Or it was signed by a session that the current session is replacing (as in a browser refresh)
-			if (actor.contractId === signal.contractId || actor.contractId === signal.oldContractId) {
+			// If it was signed by a session that the current session is replacing (as in a browser refresh)
+			if (actor.contractId === signal.oldContractId) {
 				logger.info({ msg: 'Server detected a client refresh for a session with an active call.', callId: call._id });
 				await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
 				return;
