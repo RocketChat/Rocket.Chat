@@ -127,6 +127,7 @@ USER rocketchat
 EXPOSE 3000 9458
 
 CMD ["node", "src/service.js"]
+
 # FIPS RELEASE STAGE
 FROM rocketchatfips140/dhi-node:22-fips AS release-fips
 ARG SERVICE
