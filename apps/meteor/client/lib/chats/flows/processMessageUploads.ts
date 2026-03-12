@@ -100,7 +100,9 @@ async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message:
 		composedMessage: AtLeast<IMessage, 'msg' | 'tmid' | 't' | 'content'> & { fileName?: string; fileContent?: IE2EEMessage['content'] };
 	})[] = [];
 
-	for (const upload of filesToUpload) {
+	const validFiles = filesToUpload.filter((file) => !file.error);
+
+	for (const upload of validFiles) {
 		if (!upload.url || !upload.id) {
 			continue;
 		}
@@ -109,7 +111,7 @@ async function continueSendingMessage(chat: ChatAPI, store: UploadsAPI, message:
 		 * The first message will keep the composedMessage,
 		 * subsequent messages will have a empty text
 		 * */
-		const currentMsg = upload === filesToUpload[0] ? msg : '';
+		const currentMsg = upload === validFiles[0] ? msg : '';
 
 		let content;
 		if (!e2eRoom || !isEncryptedUpload(upload)) {
@@ -171,6 +173,7 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 	const allUploadsFailed = failedUploads.length === filesToUpload.length;
 
 	return new Promise((resolve) => {
+		chat.composer?.insertText(message.msg);
 		imperativeModal.open({
 			component: GenericModal,
 			props: {
@@ -184,7 +187,6 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 					confirmText: t('Ok'),
 					onConfirm: () => {
 						imperativeModal.close();
-						resolve(true);
 					},
 				}),
 				...(!allUploadsFailed && {
@@ -193,16 +195,15 @@ export const processMessageUploads = async (chat: ChatAPI, message: IMessage): P
 					cancelText: t('Cancel'),
 					onConfirm: () => {
 						imperativeModal.close();
+						chat.composer?.clear();
 						resolve(continueSendingMessage(chat, store, message));
 					},
 					onCancel: () => {
 						imperativeModal.close();
-						resolve(true);
 					},
 				}),
 				onClose: () => {
 					imperativeModal.close();
-					resolve(true);
 				},
 			},
 		});
