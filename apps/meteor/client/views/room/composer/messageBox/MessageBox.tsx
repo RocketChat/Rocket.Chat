@@ -159,7 +159,8 @@ const MessageBox = ({
 	});
 
 	const uploadsStore = tmid ? chat.threadUploads : chat.uploads;
-	const { uploads, hasUploads, handleUploadFiles, isUploading } = useFileUpload(uploadsStore);
+	const { uploads, hasUploads, handleUploadFiles, handleEditUpload, handleRemoveUpload, handleCancelUpload, isUploading } =
+		useFileUpload(uploadsStore);
 
 	const handleSendMessage = useEffectEvent(() => {
 		if (isUploading) {
@@ -446,9 +447,9 @@ const MessageBox = ({
 				{hasUploads && (
 					<MessageComposerFileGroup
 						uploads={uploads}
-						onEdit={uploadsStore.editUploadFileName}
-						onRemove={uploadsStore.removeUpload}
-						onCancel={uploadsStore.cancel}
+						onEdit={handleEditUpload}
+						onRemove={handleRemoveUpload}
+						onCancel={handleCancelUpload}
 					/>
 				)}
 				<MessageComposerToolbar>

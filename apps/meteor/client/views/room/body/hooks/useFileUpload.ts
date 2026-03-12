@@ -17,12 +17,29 @@ export const useFileUpload = (store: UploadsAPI) => {
 
 	const uploads = useSyncExternalStore(store.subscribe, store.get);
 
-	const handleUploadProgressClose = useCallback(
+	const stopUploadingAction = useCallback(() => {
+		if (uploads.length === 1) {
+			chat.action.stop('uploading');
+		}
+	}, [chat.action, uploads.length]);
+
+	const handleRemoveUpload = useCallback(
+		(id: Upload['id']) => {
+			store.removeUpload(id);
+			stopUploadingAction();
+		},
+		[stopUploadingAction, store],
+	);
+
+	const handleCancelUpload = useCallback(
 		(id: Upload['id']) => {
 			store.cancel(id);
+			stopUploadingAction();
 		},
-		[store],
+		[stopUploadingAction, store],
 	);
+
+	const handleEditUpload = useCallback((id: Upload['id'], fileName: string) => store.editUploadFileName(id, fileName), [store]);
 
 	const handleUploadFiles = useCallback(
 		(files: readonly File[]): void => {
@@ -38,9 +55,11 @@ export const useFileUpload = (store: UploadsAPI) => {
 			uploads,
 			hasUploads: uploads.length > 0,
 			isUploading,
-			handleUploadProgressClose,
+			handleRemoveUpload,
+			handleEditUpload,
+			handleCancelUpload,
 			handleUploadFiles,
 		}),
-		[uploads, isUploading, handleUploadProgressClose, handleUploadFiles],
+		[uploads, isUploading, handleRemoveUpload, handleEditUpload, handleCancelUpload, handleUploadFiles],
 	);
 };
