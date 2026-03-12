@@ -278,7 +278,6 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 		it('should not call Room.join when joinChannel=false', async () => {
 			const room: IRoom = { _id: 'room7', t: 'c', name: 'nojoin' };
 			RoomsStub.findOneByIdOrName.resolves(room);
-			SubscriptionsStub.findOneByRoomIdAndUserId.resolves(null);
 
 			const result = await getRoomByNameOrIdWithOptionToJoin({
 				user: baseUser,
@@ -289,7 +288,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(SubscriptionsStub.findOneByRoomIdAndUserId, 'room7', baseUser._id);
+			Sinon.assert.notCalled(SubscriptionsStub.findOneByRoomIdAndUserId);
 			Sinon.assert.notCalled(RoomServiceStub.join);
 			expect(result).to.equal(room);
 		});
@@ -297,7 +296,6 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 		it('should not call Room.join when room type is not channel', async () => {
 			const room: IRoom = { _id: 'room8', t: 'p', name: 'private' };
 			RoomsStub.findOneByIdOrName.resolves(room);
-			SubscriptionsStub.findOneByRoomIdAndUserId.resolves(null);
 
 			const result = await getRoomByNameOrIdWithOptionToJoin({
 				user: baseUser,
@@ -308,7 +306,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(SubscriptionsStub.findOneByRoomIdAndUserId, 'room8', baseUser._id);
+			Sinon.assert.notCalled(SubscriptionsStub.findOneByRoomIdAndUserId);
 			Sinon.assert.notCalled(RoomServiceStub.join);
 			expect(result).to.equal(room);
 		});

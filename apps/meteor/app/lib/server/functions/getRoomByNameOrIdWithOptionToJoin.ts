@@ -87,10 +87,11 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 
 	// If the room type is channel and joinChannel has been passed, try to join them
 	// if they can't join the room, this will error out!
-	// If the user is already in the channel, this will do nothing.
-	const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
-	if (room.t === 'c' && joinChannel && !sub) {
-		await Room.join({ room, user });
+	if (room.t === 'c' && joinChannel) {
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+		if (!sub) {
+			await Room.join({ room, user });
+		}
 	}
 
 	return room;
