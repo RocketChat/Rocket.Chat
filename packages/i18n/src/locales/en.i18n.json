@@ -172,6 +172,7 @@
   "Accounts_Admin_Email_Approval_Needed_With_Reason_Default": "<p>The user <b>[name] ([email])</b> has been registered.</p><p>Reason: <b>[reason]</b></p><p>Please check \"Administration -> Users\" to activate or delete it.</p>",
   "Accounts_AllowAnonymousRead": "Allow Anonymous Read",
   "Accounts_AllowAnonymousWrite": "Allow Anonymous Write",
+  "Accounts_AllowAnonymousWrite_Deprecation_Alert": "This feature is deprecated and will be removed in version 9.0.0.",
   "Accounts_AllowDeleteOwnAccount": "Allow Users to Delete Own Account",
   "Accounts_AllowEmailChange": "Allow Email Change",
   "Accounts_AllowEmailNotifications": "Allow Email Notifications",
