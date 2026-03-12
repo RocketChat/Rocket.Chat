@@ -152,7 +152,7 @@ const isDmListProps = ajv.compile<DmListProps>({
 
 API.v1.addRoute(
 	['dm.list', 'im.list'],
-	{ authRequired: true },
+	{ authRequired: true, query: isDmListProps },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
