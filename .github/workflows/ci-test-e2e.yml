@@ -164,7 +164,7 @@ jobs:
         uses: actions/download-artifact@v8
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
-          pattern: ${{ inputs.release == 'ce' && 'docker-image-rocketchat-amd64-coverage' || (inputs.release == 'fips' && 'docker-image-*-amd64-*' || 'docker-image-*-amd64-coverage') }}
+          pattern: ${{ inputs.release == 'ce' && 'docker-image-rocketchat-amd64-coverage' || (inputs.release == 'fips' && 'docker-image-*-amd64-fips' || 'docker-image-*-amd64-coverage') }}
           path: /tmp/docker-images
           merge-multiple: true
 
