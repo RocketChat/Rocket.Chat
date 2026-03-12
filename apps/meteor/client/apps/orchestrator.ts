@@ -69,8 +69,11 @@ class AppClientOrchestrator {
 			}
 		}
 
-		if (Array.isArray(result) && Array.isArray(result[0])) {
-			result = result[0];
+		if (Array.isArray(result) && !result.every((item) => 'latest' in item)) {
+			const valid = result.find((item) => Array.isArray(item));
+			if (valid) {
+				result = valid;
+			}
 		}
 
 		if (!Array.isArray(result)) {
