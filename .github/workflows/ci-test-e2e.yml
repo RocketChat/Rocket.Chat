@@ -81,6 +81,8 @@ jobs:
       COVERAGE_DIR: '/tmp/coverage/${{ startsWith(inputs.type, ''api'') && ''api'' || inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
       COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
+      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
     strategy:
       fail-fast: false
@@ -129,9 +131,6 @@ jobs:
       - name: Login to DockerHub for FIPS base images
         if: inputs.release == 'fips' && env.TEMP_DOCKERHUB_FIPS_USER != '' && env.TEMP_DOCKERHUB_FIPS_PASS != ''
         uses: docker/login-action@v3
-        env:
-          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
-          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
         with:
           username: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
           password: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
