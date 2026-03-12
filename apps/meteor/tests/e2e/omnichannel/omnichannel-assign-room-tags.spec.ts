@@ -26,28 +26,50 @@ test.describe('OC - Tags Visibility', () => {
 	let globalTag: Awaited<ReturnType<typeof createTag>>;
 	let sharedTag: Awaited<ReturnType<typeof createTag>>;
 
-	test.beforeAll(async ({ api }) => {
+	test.beforeAll('Create departments', async ({ api }) => {
 		departmentA = await createDepartment(api, { name: 'Department A' });
+		console.log('[DEBUG] Created departmentA:', departmentA.data);
 		departmentB = await createDepartment(api, { name: 'Department B' });
+		console.log('[DEBUG] Created departmentB:', departmentB.data);
+	});
 
+	test.beforeAll('Create agent', async ({ api }) => {
 		agent = await createAgent(api, 'user1');
+		console.log('[DEBUG] Created agent:', agent.data);
+	});
 
+	test.beforeAll('Add agents to departments', async ({ api }) => {
 		await Promise.all([
 			addAgentToDepartment(api, { department: departmentA.data, agentId: 'user1' }),
 			addAgentToDepartment(api, { department: departmentB.data, agentId: 'user1' }),
 		]);
+		console.log('[DEBUG] Added agent to departments');
+	});
 
+	test.beforeAll('Create tags', async ({ api }) => {
 		tagA = await createTag(api, { departments: [departmentA.data._id] });
+		console.log('[DEBUG] Created tagA:', tagA.data);
 		tagB = await createTag(api, { departments: [departmentB.data._id] });
+		console.log('[DEBUG] Created tagB:', tagB.data);
 		globalTag = await createTag(api, { departments: [] });
+		console.log('[DEBUG] Created globalTag:', globalTag.data);
 		sharedTag = await createTag(api, {
 			departments: [departmentA.data._id, departmentB.data._id],
 		});
+		console.log('[DEBUG] Created sharedTag:', sharedTag.data);
+	});
 
+	test.beforeAll('Create conversations', async ({ api }) => {
 		conversations = await Promise.all([
 			createConversation(api, { visitorName: visitorA.name, agentId: 'user1', departmentId: departmentA.data._id }),
 			createConversation(api, { visitorName: visitorB.name, agentId: 'user1', departmentId: departmentB.data._id }),
 		]);
+		console.log('[DEBUG] Created conversations:', {
+			visitorA: visitorA.name,
+			roomA: conversations[0].data.room,
+			visitorB: visitorB.name,
+			roomB: conversations[1].data.room,
+		});
 	});
 
 	test.beforeEach(async ({ page }) => {
@@ -79,18 +101,22 @@ test.describe('OC - Tags Visibility', () => {
 		});
 
 		await test.step('Should see TagA (department A specific)', async () => {
+			console.log('[DEBUG] Looking for tagA:', tagA.data.name);
 			await expect(poOmnichannel.editRoomInfo.optionTag(tagA.data.name)).toBeVisible();
 		});
 
 		await test.step('Should see SharedTag (both departments)', async () => {
+			console.log('[DEBUG] Looking for sharedTag:', sharedTag.data.name);
 			await expect(poOmnichannel.editRoomInfo.optionTag(sharedTag.data.name)).toBeVisible();
 		});
 
 		await test.step('Should see Public Tags for all chats (no department restriction)', async () => {
+			console.log('[DEBUG] Looking for globalTag:', globalTag.data.name);
 			await expect(poOmnichannel.editRoomInfo.optionTag(globalTag.data.name)).toBeVisible();
 		});
 
 		await test.step('Should not see TagB (department B specific)', async () => {
+			console.log('[DEBUG] Checking tagB NOT visible:', tagB.data.name);
 			await expect(poOmnichannel.editRoomInfo.optionTag(tagB.data.name)).not.toBeVisible();
 		});
 
@@ -116,10 +142,12 @@ test.describe('OC - Tags Visibility', () => {
 		});
 
 		await test.step('Agent associated with DepartmentB should be able to see tags for Department B', async () => {
+			console.log('[DEBUG] Looking for tagB:', tagB.data.name);
 			await expect(poOmnichannel.editRoomInfo.optionTag(tagB.data.name)).toBeVisible();
 		});
 
 		await test.step('Agent associated with DepartmentB should not be able to see tags for DepartmentA', async () => {
+			console.log('[DEBUG] Checking tagA NOT visible:', tagA.data.name);
 			await expect(poOmnichannel.editRoomInfo.optionTag(tagA.data.name)).not.toBeVisible();
 		});
 	});
