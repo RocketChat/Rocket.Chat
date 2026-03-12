@@ -69,7 +69,7 @@ class AppClientOrchestrator {
 			}
 		}
 
-		if (Array.isArray(result) && !result.every((item) => 'latest' in item)) {
+		if (Array.isArray(result) && !result.every((item) => item !== null && typeof item === 'object' && 'latest' in item))  {
 			const valid = result.find((item) => Array.isArray(item));
 			if (valid) {
 				result = valid;
