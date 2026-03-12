@@ -66,7 +66,6 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 		formState: { errors },
 	} = useForm<{ usernameOrEmail: string; password: string }>({
 		mode: 'onSubmit',
-		reValidateMode: 'onChange',
 	});
 
 	const watchUsernameOrEmail = watch('usernameOrEmail');

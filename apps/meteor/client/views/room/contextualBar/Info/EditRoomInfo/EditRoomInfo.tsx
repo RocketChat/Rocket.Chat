@@ -106,7 +106,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		handleSubmit,
 		getFieldState,
 		formState: { isDirty, dirtyFields, errors, isSubmitting },
-	} = useForm<EditRoomInfoFormData>({ mode: 'onBlur', defaultValues });
+	} = useForm<EditRoomInfoFormData>({ mode: 'onSubmit', defaultValues });
 
 	const sysMesOptions: SelectOption[] = useMemo(
 		() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel as TranslationKey)]),

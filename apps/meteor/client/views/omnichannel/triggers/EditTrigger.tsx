@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
+import { useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -90,12 +90,8 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 		control,
 		handleSubmit,
 		trigger,
-		formState: { isDirty, isSubmitting, errors },
-	} = useForm<TriggersPayload>({ mode: 'onBlur', reValidateMode: 'onBlur', values: initValues });
-
-	// Alternative way of checking isValid in order to not trigger validation on every render
-	// https://github.com/react-hook-form/documentation/issues/944
-	const isValid = useMemo(() => Object.keys(errors).length === 0, [errors]);
+		formState: { isSubmitting, errors, isDirty },
+	} = useForm<TriggersPayload>({ mode: 'onSubmit', values: initValues });
 
 	const { fields: conditionsFields } = useFieldArray({
 		control,
@@ -211,7 +207,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary disabled={!isDirty || !isValid} loading={isSubmitting}>
+					<Button form={formId} type='submit' primary disabled={triggerData?._id ? !isDirty : false} loading={isSubmitting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

@@ -89,13 +89,12 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const initialValue = getInitialValues(contactData);
 
 	const {
-		formState: { errors, isSubmitting },
+		formState: { errors, isSubmitting, isDirty },
 		control,
 		watch,
 		handleSubmit,
 	} = useForm<ContactFormData>({
-		mode: 'onBlur',
-		reValidateMode: 'onBlur',
+		mode: 'onSubmit',
 		defaultValues: initialValue,
 	});
 
@@ -325,7 +324,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} loading={isSubmitting} primary>
+					<Button type='submit' form={formId} loading={isSubmitting} disabled={contactData ? !isDirty : false} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

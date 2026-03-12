@@ -38,7 +38,7 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 		control,
 		handleSubmit,
 		formState: { isSubmitting, isValidating, errors },
-	} = useForm({ mode: 'onBlur', defaultValues: { users: [] } });
+	} = useForm({ mode: 'onSubmit', defaultValues: { users: [] } });
 
 	const mutateDirectMessage = useMutation({
 		mutationFn: createDirectAction,
