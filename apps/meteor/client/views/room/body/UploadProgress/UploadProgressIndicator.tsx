@@ -21,8 +21,8 @@ const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps): Rea
 			return { percentage: 0, count: 0 };
 		}
 
-		const totalPercentage = activeUploads.reduce((sum, upload) => sum + upload.percentage, 0);
-		const avgPercentage = Math.round(totalPercentage / activeUploads.length);
+		const totalPercentage = validUploads.reduce((sum, upload) => sum + upload.percentage, 0);
+		const avgPercentage = Math.round(totalPercentage / validUploads.length);
 
 		return {
 			percentage: avgPercentage,
