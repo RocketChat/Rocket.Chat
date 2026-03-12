@@ -639,7 +639,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			// The federation SDK does not have a native banUser method.
 			// We use kickUser to propagate the removal to the Matrix side.
 			// The ban state is maintained locally via the subscription status.
-			await federationSDK.kickUser(
+			await federationSDK.banUser(
 				roomIdSchema.parse(room.federation.mrid),
 				userIdSchema.parse(actualBannedMatrixUserId),
 				userIdSchema.parse(actualSenderMatrixUserId),
