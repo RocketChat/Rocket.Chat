@@ -306,12 +306,18 @@ jobs:
           }
 
           mapfile -t services_to_wait < <(
-            docker compose $COMPOSE_FILES config --format json \
-              | jq -r '.services | keys[] | select(endswith("-service"))' \
+            docker compose $COMPOSE_FILES ps --services --status running \
+              | grep -- '-service$' \
               | sort
           )
 
           wait_for_mongo_primary
+
+          if (( ${#services_to_wait[@]} == 0 )); then
+            echo "No running -service containers found to wait for"
+            docker compose $COMPOSE_FILES ps
+            exit 1
+          fi
 
           echo "Waiting for services: ${services_to_wait[*]}"
 
