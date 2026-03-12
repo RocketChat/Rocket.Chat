@@ -74,7 +74,7 @@ const ComposerMessage = ({ tmid, onSend, ...props }: ComposerMessageProps): Reac
 			onNavigateToPreviousMessage: () => chat?.messageEditing.toPreviousMessage(),
 			onNavigateToNextMessage: () => chat?.messageEditing.toNextMessage(),
 		}),
-		[chat?.data, chat?.action, chat?.flows, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, tmid, onSend],
+		[chat?.data, chat?.flows, chat?.action, chat?.composer?.text, chat?.messageEditing, dispatchToastMessage, tmid, onSend],
 	);
 
 	const { subscribe, getSnapshotValue } = useMemo(() => {
