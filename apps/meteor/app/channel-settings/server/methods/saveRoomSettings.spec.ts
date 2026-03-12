@@ -4,6 +4,8 @@ import * as sinon from 'sinon';
 
 const proxyquire = proxyquireRaw.noCallThru();
 
+type Stubbed = { [k: string]: any };
+
 class MeteorError extends Error {
 	constructor(
 		public error: string,
@@ -15,34 +17,36 @@ class MeteorError extends Error {
 
 describe('saveRoomSettings validators', () => {
 	let sandbox: sinon.SinonSandbox;
-	let hasPermissionAsync: sinon.SinonStub;
-	let hasAllPermissionAsync: sinon.SinonStub;
-	let getInfoById: sinon.SinonStub;
-	let settingsGet: sinon.SinonStub;
+	let stubs: Stubbed;
 	let validators: any;
 
 	beforeEach(() => {
 		sandbox = sinon.createSandbox();
-		hasPermissionAsync = sandbox.stub();
-		hasAllPermissionAsync = sandbox.stub();
-		getInfoById = sandbox.stub();
-		settingsGet = sandbox.stub().returns(false);
+
+		stubs = {
+			hasPermissionAsync: sandbox.stub(),
+			hasAllPermissionAsync: sandbox.stub(),
+			'@rocket.chat/core-services': {
+				Team: { getInfoById: sandbox.stub() },
+			},
+			'../../../settings/server': {
+				settings: { get: sandbox.stub().returns(false) },
+			},
+		};
 
 		({ validators } = proxyquire('./saveRoomSettings', {
 			'meteor/meteor': { Meteor: { Error: MeteorError, methods: sandbox.stub(), userId: sandbox.stub() } },
 			'meteor/check': { Match: { test: () => true, Optional: {} } },
-			'@rocket.chat/core-services': {
-				Team: { getInfoById },
-			},
+			'@rocket.chat/core-services': stubs['@rocket.chat/core-services'],
 			'@rocket.chat/models': { Rooms: {}, Users: {} },
 			'../../../../server/lib/rooms/roomCoordinator': {
 				roomCoordinator: { getRoomDirectives: () => ({ allowRoomSettingChange: () => true }) },
 			},
 			'../../../authorization/server/functions/hasPermission': {
-				hasPermissionAsync,
-				hasAllPermissionAsync,
+				hasPermissionAsync: stubs.hasPermissionAsync,
+				hasAllPermissionAsync: stubs.hasAllPermissionAsync,
 			},
-			'../../../settings/server': { settings: { get: settingsGet } },
+			'../../../settings/server': stubs['../../../settings/server'],
 			'../../../lib/server/functions/setRoomAvatar': { setRoomAvatar: sandbox.stub() },
 			'../../../lib/server/lib/notifyListener': { notifyOnRoomChangedById: sandbox.stub() },
 			'../../../../definition/IRoomTypeConfig': { RoomSettingsEnum: {} },
@@ -68,11 +72,11 @@ describe('saveRoomSettings validators', () => {
 
 			it('should do nothing when the type is unchanged', async () => {
 				await expect(validators.roomType({ userId, room, value: 'p' })).to.not.be.rejected;
-				sinon.assert.notCalled(hasPermissionAsync);
+				expect(stubs.hasPermissionAsync.called).to.be.false;
 			});
 
 			it('should throw when changing p → c without create-c', async () => {
-				hasPermissionAsync.resolves(false);
+				stubs.hasPermissionAsync.resolves(false);
 
 				await expect(validators.roomType({ userId, room, value: 'c' })).to.be.rejectedWith(
 					MeteorError,
@@ -81,13 +85,13 @@ describe('saveRoomSettings validators', () => {
 			});
 
 			it('should not throw when changing p → c with create-c', async () => {
-				hasPermissionAsync.resolves(true);
+				stubs.hasPermissionAsync.resolves(true);
 
 				await expect(validators.roomType({ userId, room, value: 'c' })).to.not.be.rejected;
 			});
 
 			it('should throw when changing c → p without create-p', async () => {
-				hasPermissionAsync.resolves(false);
+				stubs.hasPermissionAsync.resolves(false);
 				const channelRoom = { _id: 'room1', t: 'c' };
 
 				await expect(validators.roomType({ userId, room: channelRoom, value: 'p' })).to.be.rejectedWith(
@@ -97,7 +101,7 @@ describe('saveRoomSettings validators', () => {
 			});
 
 			it('should not throw when changing c → p with create-p', async () => {
-				hasPermissionAsync.resolves(true);
+				stubs.hasPermissionAsync.resolves(true);
 				const channelRoom = { _id: 'room1', t: 'c' };
 
 				await expect(validators.roomType({ userId, room: channelRoom, value: 'p' })).to.not.be.rejected;
@@ -110,20 +114,20 @@ describe('saveRoomSettings validators', () => {
 			const room = { _id: 'room1', t: 'p', teamId: 'team1' };
 
 			beforeEach(() => {
-				hasPermissionAsync.resolves(true);
-				getInfoById.resolves({ _id: 'team1', roomId: teamRoomId });
+				stubs.hasPermissionAsync.resolves(true);
+				stubs['@rocket.chat/core-services'].Team.getInfoById.resolves({ _id: 'team1', roomId: teamRoomId });
 			});
 
 			it('should not throw when changing p → c with both create-team-channel and create-c', async () => {
-				hasAllPermissionAsync.resolves(true);
+				stubs.hasAllPermissionAsync.resolves(true);
 
 				await expect(validators.roomType({ userId, room, value: 'c' })).to.not.be.rejected;
 
-				sinon.assert.calledWith(hasAllPermissionAsync, userId, ['create-team-channel', 'create-c'], teamRoomId);
+				expect(stubs.hasAllPermissionAsync.calledWith(userId, ['create-team-channel', 'create-c'], teamRoomId)).to.be.true;
 			});
 
 			it('should throw when changing p → c without create-team-channel or create-c', async () => {
-				hasAllPermissionAsync.resolves(false);
+				stubs.hasAllPermissionAsync.resolves(false);
 
 				await expect(validators.roomType({ userId, room, value: 'c' })).to.be.rejectedWith(
 					MeteorError,
@@ -132,16 +136,16 @@ describe('saveRoomSettings validators', () => {
 			});
 
 			it('should not throw when changing c → p with both create-team-group and create-p', async () => {
-				hasAllPermissionAsync.resolves(true);
+				stubs.hasAllPermissionAsync.resolves(true);
 				const channelRoom = { _id: 'room1', t: 'c', teamId: 'team1' };
 
 				await expect(validators.roomType({ userId, room: channelRoom, value: 'p' })).to.not.be.rejected;
 
-				sinon.assert.calledWith(hasAllPermissionAsync, userId, ['create-team-group', 'create-p'], teamRoomId);
+				expect(stubs.hasAllPermissionAsync.calledWith(userId, ['create-team-group', 'create-p'], teamRoomId)).to.be.true;
 			});
 
 			it('should throw when changing c → p without create-team-group or create-p', async () => {
-				hasAllPermissionAsync.resolves(false);
+				stubs.hasAllPermissionAsync.resolves(false);
 				const channelRoom = { _id: 'room1', t: 'c', teamId: 'team1' };
 
 				await expect(validators.roomType({ userId, room: channelRoom, value: 'p' })).to.be.rejectedWith(
