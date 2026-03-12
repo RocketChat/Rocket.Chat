@@ -246,7 +246,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			id: visitor.id,
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
-			...(visitor.externalIds?.length && { externalIds: visitor.externalIds }),
+			...(visitor.externalIds && { externalIds: visitor.externalIds }),
 		};
 
 		const livechatVisitor = await registerGuest(registerData, {
@@ -354,7 +354,11 @@ export class AppLivechatBridge extends LivechatBridge {
 	): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is resolving a livechat visitor by external ID.`);
 
-		const visitor = await resolveVisitor({ externalId, phone });
+		const visitor = await resolveVisitor({
+			source: appId,
+			externalId,
+			phone,
+		});
 
 		return this.orch.getConverters()?.get('visitors').convertVisitor(visitor);
 	}

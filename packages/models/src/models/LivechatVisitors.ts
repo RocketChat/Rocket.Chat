@@ -31,7 +31,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
-			{ key: { 'externalIds.source': 1, 'externalIds.userId': 1 }, sparse: true },
+			{ key: { 'externalIds.$**': 1 }, sparse: true },
 			{ key: { name: 1 }, sparse: true },
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
@@ -52,28 +52,12 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null> {
 		return this.findOne({
-			externalIds: { $elemMatch: { source, userId: externalUserId } },
+			[`externalIds.${source}.userId`]: externalUserId,
 		});
 	}
 
-	addExternalId(_id: string, externalId: IVisitorExternalIdentifier): Promise<UpdateResult> {
-		return this.updateOne({ _id }, [
-			{
-				$set: {
-					externalIds: {
-						$concatArrays: [
-							{
-								$filter: {
-									input: { $ifNull: ['$externalIds', []] },
-									cond: { $ne: ['$$this.source', externalId.source] },
-								},
-							},
-							[externalId],
-						],
-					},
-				},
-			},
-		]);
+	addExternalId(_id: string, source: string, externalId: IVisitorExternalIdentifier): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $set: { [`externalIds.${source}`]: externalId } });
 	}
 
 	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {

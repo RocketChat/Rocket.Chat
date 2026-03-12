@@ -14,6 +14,9 @@ const { resolveVisitor } = proxyquire.noCallThru().load('../../../../../../app/l
 	'@rocket.chat/models': modelsMock,
 });
 
+// Mock app ID (UUID format as used by Rocket.Chat apps)
+const appId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+
 describe('resolveVisitor', () => {
 	beforeEach(() => {
 		modelsMock.LivechatVisitors.findOneByExternalId.reset();
@@ -26,18 +29,19 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-123',
 			token: 'token-123',
 			username: 'guest-1',
-			externalIds: [{ source: 'whatsapp', userId: 'bsuid-123' }],
+			externalIds: { [appId]: { userId: 'bsuid-123' } },
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(existingVisitor);
 
 		const result = await resolveVisitor({
-			externalId: { source: 'whatsapp', userId: 'bsuid-123' },
+			source: appId,
+			externalId: { userId: 'bsuid-123' },
 			phone: '1234567890',
 		});
 
 		expect(result).to.deep.equal(existingVisitor);
-		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnceWith('whatsapp', 'bsuid-123')).to.be.true;
+		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnceWith(appId, 'bsuid-123')).to.be.true;
 		expect(modelsMock.LivechatVisitors.findOneVisitorByPhone.called).to.be.false;
 		expect(modelsMock.LivechatVisitors.addExternalId.called).to.be.false;
 	});
@@ -48,43 +52,46 @@ describe('resolveVisitor', () => {
 			token: 'token-456',
 			username: 'guest-2',
 		};
-		const externalId = { source: 'whatsapp', userId: 'bsuid-456', username: '@johndoe' };
+		const externalId = { userId: 'bsuid-456', username: '@johndoe' };
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 		modelsMock.LivechatVisitors.findOneVisitorByPhone.resolves(existingVisitor);
 		modelsMock.LivechatVisitors.addExternalId.resolves({ modifiedCount: 1 });
 
-		const result = await resolveVisitor({ externalId, phone: '9876543210' });
+		const result = await resolveVisitor({ source: appId, externalId, phone: '9876543210' });
 
-		expect(result).to.deep.equal({ ...existingVisitor, externalIds: [externalId] });
+		expect(result).to.deep.equal({ ...existingVisitor, externalIds: { [appId]: externalId } });
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnce).to.be.true;
 		expect(modelsMock.LivechatVisitors.findOneVisitorByPhone.calledOnceWith('9876543210')).to.be.true;
-		expect(modelsMock.LivechatVisitors.addExternalId.calledOnceWith('visitor-456', externalId)).to.be.true;
+		expect(modelsMock.LivechatVisitors.addExternalId.calledOnceWith('visitor-456', appId, externalId)).to.be.true;
 	});
 
-	it('should append to existing externalIds when visitor already has some', async () => {
-		const existingExternalId = { source: 'telegram', userId: 'tg-123' };
+	it('should update existing externalIds when visitor already has some', async () => {
+		const existingExternalId = { userId: 'bsuid-old' };
 		const existingVisitor = {
 			_id: 'visitor-789',
 			token: 'token-789',
 			username: 'guest-3',
-			externalIds: [existingExternalId],
+			externalIds: { [appId]: existingExternalId },
 		};
-		const newExternalId = { source: 'whatsapp', userId: 'bsuid-789' };
+		const newExternalId = { userId: 'bsuid-789', username: '@newuser' };
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 		modelsMock.LivechatVisitors.findOneVisitorByPhone.resolves(existingVisitor);
 		modelsMock.LivechatVisitors.addExternalId.resolves({ modifiedCount: 1 });
 
-		const result = await resolveVisitor({ externalId: newExternalId, phone: '5555555555' });
+		const result = await resolveVisitor({ source: appId, externalId: newExternalId, phone: '5555555555' });
 
-		expect(result).to.deep.equal({ ...existingVisitor, externalIds: [existingExternalId, newExternalId] });
+		expect(result).to.deep.equal({
+			...existingVisitor,
+			externalIds: { [appId]: newExternalId },
+		});
 	});
 
 	it('should return null when not found by external ID and no phone provided', async () => {
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 
-		const result = await resolveVisitor({ externalId: { source: 'whatsapp', userId: 'bsuid-unknown' } });
+		const result = await resolveVisitor({ source: appId, externalId: { userId: 'bsuid-unknown' } });
 
 		expect(result).to.be.null;
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnce).to.be.true;
@@ -96,7 +103,8 @@ describe('resolveVisitor', () => {
 		modelsMock.LivechatVisitors.findOneVisitorByPhone.resolves(null);
 
 		const result = await resolveVisitor({
-			externalId: { source: 'whatsapp', userId: 'bsuid-unknown' },
+			source: appId,
+			externalId: { userId: 'bsuid-unknown' },
 			phone: '0000000000',
 		});
 
@@ -110,7 +118,8 @@ describe('resolveVisitor', () => {
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 
 		const result = await resolveVisitor({
-			externalId: { source: 'whatsapp', userId: 'bsuid-123' },
+			source: appId,
+			externalId: { userId: 'bsuid-123' },
 			phone: '',
 		});
 

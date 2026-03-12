@@ -34,13 +34,11 @@ const ContactInfoChannelsItem = ({
 
 	const channelLabel = useMemo(() => {
 		const phone = getSourceLabel(details);
-		const externalId = visitorData?.externalIds?.find(
-			(id) => id.source === details?.type || id.source === details?.id || id.source === details?.defaultIcon,
-		);
+		const externalId = details?.id ? visitorData?.externalIds?.[details.id] : undefined;
 		const username = externalId?.username;
 
 		if (username && phone) {
-			return `${username} · ${phone}`;
+			return `${username} - ${phone}`;
 		}
 		return username || phone;
 	}, [visitorData?.externalIds, details, getSourceLabel]);

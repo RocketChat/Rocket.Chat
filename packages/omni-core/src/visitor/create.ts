@@ -11,7 +11,7 @@ type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'depa
 	connectionData?: any;
 	email?: string;
 	phone?: { number: string };
-	externalIds?: IVisitorExternalIdentifier[];
+	externalIds?: Record<string, IVisitorExternalIdentifier>;
 };
 
 export const registerGuest = makeFunction(
@@ -30,7 +30,7 @@ export const registerGuest = makeFunction(
 			status,
 			...(phone?.number && { phone: [{ phoneNumber: phone.number }] }),
 			...(name && { name }),
-			...(externalIds?.length && { externalIds }),
+			...(externalIds && { externalIds }),
 		};
 
 		if (email) {
