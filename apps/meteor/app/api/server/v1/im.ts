@@ -131,25 +131,6 @@ API.v1.addRoute(
 
 type DmListProps = PaginatedRequest<{ fields?: string }>;
 
-const isDmListProps = ajv.compile<DmListProps>({
-	type: 'object',
-	properties: {
-		fields: {
-			type: 'string',
-		},
-		offset: {
-			type: 'number',
-		},
-		count: {
-			type: 'number',
-		},
-		sort: {
-			type: 'string',
-		},
-	},
-	additionalProperties: false,
-});
-
 API.v1.addRoute(
 	['dm.list', 'im.list'],
 	{ authRequired: true, query: isDmListProps },
