@@ -49,6 +49,7 @@ export default {
 				'<rootDir>/app/api/server/helpers/**.spec.ts',
 				'<rootDir>/app/api/server/middlewares/**.spec.ts',
 				'<rootDir>/app/version-check/server/**/*.spec.ts',
+				'<rootDir>/server/lib/dataMigrations.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},
