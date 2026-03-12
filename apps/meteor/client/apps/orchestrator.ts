@@ -69,6 +69,10 @@ class AppClientOrchestrator {
 			}
 		}
 
+		if (Array.isArray(result) && Array.isArray(result[0])) {
+			result = result[0];
+		}
+
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
 			return { apps: [], error: 'Invalid response from API' };
