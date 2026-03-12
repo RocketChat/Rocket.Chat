@@ -132,7 +132,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(RoomsStub.findOneByIdOrName, 'general');
+			expect(RoomsStub.findOneByIdOrName.calledOnceWithExactly('general')).to.equal(true);
 			expect(result).to.equal(room);
 		});
 
@@ -150,7 +150,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(RoomsStub.findOneByIdOrName, 'random');
+			expect(RoomsStub.findOneByIdOrName.calledOnceWithExactly('random')).to.equal(true);
 			expect(result).to.equal(room);
 		});
 
@@ -265,11 +265,15 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(SubscriptionsStub.findOneByRoomIdAndUserId, 'room6', baseUser._id, { projection: { _id: 1 } });
-			Sinon.assert.calledOnceWithExactly(RoomServiceStub.join, {
-				room,
-				user: baseUser,
-			});
+			expect(SubscriptionsStub.findOneByRoomIdAndUserId.calledOnceWithExactly('room6', baseUser._id, { projection: { _id: 1 } })).to.equal(
+				true,
+			);
+			expect(
+				RoomServiceStub.join.calledOnceWithExactly({
+					room,
+					user: baseUser,
+				}),
+			).to.equal(true);
 			expect(result).to.equal(room);
 		});
 
@@ -286,8 +290,8 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.notCalled(SubscriptionsStub.findOneByRoomIdAndUserId);
-			Sinon.assert.notCalled(RoomServiceStub.join);
+			expect(SubscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.equal(true);
+			expect(RoomServiceStub.join.notCalled).to.equal(true);
 			expect(result).to.equal(room);
 		});
 
@@ -304,8 +308,8 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.notCalled(SubscriptionsStub.findOneByRoomIdAndUserId);
-			Sinon.assert.notCalled(RoomServiceStub.join);
+			expect(SubscriptionsStub.findOneByRoomIdAndUserId.notCalled).to.equal(true);
+			expect(RoomServiceStub.join.notCalled).to.equal(true);
 			expect(result).to.equal(room);
 		});
 
@@ -323,8 +327,10 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(SubscriptionsStub.findOneByRoomIdAndUserId, 'room9', baseUser._id, { projection: { _id: 1 } });
-			Sinon.assert.notCalled(RoomServiceStub.join);
+			expect(SubscriptionsStub.findOneByRoomIdAndUserId.calledOnceWithExactly('room9', baseUser._id, { projection: { _id: 1 } })).to.equal(
+				true,
+			);
+			expect(RoomServiceStub.join.notCalled).to.equal(true);
 			expect(result).to.equal(room);
 		});
 	});
@@ -346,10 +352,12 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(UsersStub.findOne, {
-				$or: [{ _id: 'other' }, { username: 'other' }],
-			});
-			Sinon.assert.calledOnce(RoomsStub.findOneDirectRoomContainingAllUserIDs);
+			expect(
+				UsersStub.findOne.calledOnceWithExactly({
+					$or: [{ _id: 'other' }, { username: 'other' }],
+				}),
+			).to.equal(true);
+			expect(RoomsStub.findOneDirectRoomContainingAllUserIDs.calledOnce).to.equal(true);
 
 			const callArgs = RoomsStub.findOneDirectRoomContainingAllUserIDs.getCall(0).args[0];
 			expect(callArgs).to.be.an('array');
@@ -372,9 +380,11 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(UsersStub.findOne, {
-				$or: [{ _id: 'other2' }, { username: 'other2' }],
-			});
+			expect(
+				UsersStub.findOne.calledOnceWithExactly({
+					$or: [{ _id: 'other2' }, { username: 'other2' }],
+				}),
+			).to.equal(true);
 			expect(result).to.equal(dmRoom);
 		});
 
@@ -393,9 +403,11 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(UsersStub.findOne, {
-				$or: [{ _id: 'plain' }, { username: 'plain' }],
-			});
+			expect(
+				UsersStub.findOne.calledOnceWithExactly({
+					$or: [{ _id: 'plain' }, { username: 'plain' }],
+				}),
+			).to.equal(true);
 			expect(result).to.equal(dmRoom);
 		});
 	});
@@ -416,8 +428,8 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(UsersStub.findOneById, 'idOnly');
-			Sinon.assert.notCalled(UsersStub.findOne);
+			expect(UsersStub.findOneById.calledOnceWithExactly('idOnly')).to.equal(true);
+			expect(UsersStub.findOne.notCalled).to.equal(true);
 			expect(result).to.equal(dmRoom);
 		});
 
@@ -435,7 +447,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(RoomsStub.findOneById, 'idRoom');
+			expect(RoomsStub.findOneById.calledOnceWithExactly('idRoom')).to.equal(true);
 			expect(result).to.equal(dmRoom);
 		});
 	});
@@ -462,7 +474,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 
 			expect(caught).to.be.an('object');
 			expect(caught.error).to.equal('invalid-channel');
-			Sinon.assert.notCalled(createDirectMessageStub);
+			expect(createDirectMessageStub.notCalled).to.equal(true);
 		});
 
 		it('should return null when roomUser not found and errorOnEmpty=false', async () => {
@@ -480,7 +492,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 			});
 
 			expect(result).to.equal(null);
-			Sinon.assert.notCalled(createDirectMessageStub);
+			expect(createDirectMessageStub.notCalled).to.equal(true);
 		});
 
 		it('should create a new direct message when roomUser exists and room is not found', async () => {
@@ -498,8 +510,8 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				errorOnEmpty: true,
 			});
 
-			Sinon.assert.calledOnceWithExactly(createDirectMessageStub, ['createMe'], baseUser._id);
-			Sinon.assert.calledWith(RoomsStub.findOneById, 'newDirectRoomId');
+			expect(createDirectMessageStub.calledOnceWithExactly(['createMe'], baseUser._id)).to.equal(true);
+			expect(RoomsStub.findOneById.calledWith('newDirectRoomId')).to.equal(true);
 			expect(result).to.deep.equal({ _id: 'newDirectRoomId', t: 'd' });
 		});
 	});
