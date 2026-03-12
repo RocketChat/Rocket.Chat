@@ -55,7 +55,19 @@ export class RoomSidebar extends Sidebar {
 	}
 
 	getSidebarItemByName(name: string) {
-		return this.channelsList.getByRole('link', { name }).filter({ has: this.page.getByText(name, { exact: true }) });
+		/**
+		 * Virtuoso virtualizes/recycles rows, so avoid role-name matching on the link.
+		 *
+		 * Deterministic strategy:
+		 * - Find the exact visible name text inside the sidebar list
+		 * - Click the closest ancestor anchor for that exact text
+		 *
+		 * This keeps selection generic (works for /live, /channel, /direct, etc.) and avoids
+		 * ambiguous unions that can violate strict mode.
+		 */
+		const text = this.channelsList.getByText(name, { exact: true }).first();
+
+		return text.locator('xpath=ancestor::a[1]');
 	}
 
 	getFilterItemByName(name: string): Locator {

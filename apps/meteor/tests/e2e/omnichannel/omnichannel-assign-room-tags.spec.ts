@@ -27,6 +27,7 @@ test.describe('OC - Tags Visibility', () => {
 	let sharedTag: Awaited<ReturnType<typeof createTag>>;
 
 	test.beforeAll('Create departments', async ({ api }) => {
+		await api.post('/settings/Omnichannel_enable_department_removal', { value: true }).then((res) => expect(res.status()).toBe(200));
 		departmentA = await createDepartment(api, { name: 'Department A' });
 		console.log('[DEBUG] Created departmentA:', departmentA.data);
 		departmentB = await createDepartment(api, { name: 'Department B' });
@@ -77,12 +78,14 @@ test.describe('OC - Tags Visibility', () => {
 		await page.goto('/');
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await Promise.all(conversations.map((conversation) => conversation.delete()));
 		await Promise.all([tagA, tagB, globalTag, sharedTag].map((tag) => tag.delete()));
 		await agent.delete();
 		await departmentA.delete();
 		await departmentB.delete();
+
+		await api.post('/settings/Omnichannel_enable_department_removal', { value: false }).then((res) => expect(res.status()).toBe(200));
 	});
 
 	test('Verify agent should see correct tags based on department association', async () => {
