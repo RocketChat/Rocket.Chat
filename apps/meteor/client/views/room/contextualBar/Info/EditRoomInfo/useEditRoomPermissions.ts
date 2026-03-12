@@ -22,8 +22,8 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 
 	const canChangeType = getCanChangeType(
 		room,
-		teamId ? canCreateTeamChannel : canCreateChannel,
-		teamId ? canCreateTeamGroup : canCreateGroup,
+		teamId ? (canCreateTeamChannel && canCreateChannel) : canCreateChannel,
+		teamId ? (canCreateTeamGroup && canCreateGroup) : canCreateGroup,
 		isAdmin,
 	);
 	const canSetReadOnly = usePermission('set-readonly', room._id);
