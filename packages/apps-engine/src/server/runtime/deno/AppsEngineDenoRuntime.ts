@@ -194,6 +194,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			const denoWrapperPath = getDenoWrapperPath();
 			const runtimePath = getSymlinkedDenoRuntimePath(denoWrapperPath);
+			const denoJsonPath = path.join(path.dirname(denoWrapperPath), 'deno.jsonc');
 			// During development, the appsEngineDir is enough to run the deno process
 			const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
 			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
@@ -212,9 +213,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				allowedDirs.push(this.tempFilePath);
 			}
 
-			const options = [
+			const args = [
 				'run',
 				'--cached-only',
+				`--config`,
+				denoJsonPath,
 				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
 				runtimePath,
@@ -227,10 +230,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			// If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
 			// If the app requests specific permissions, we need to check whether it requests "networking" or not
 			if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking') !== -1) {
-				options.splice(1, 0, '--allow-net');
+				args.splice(1, 0, '--allow-net');
 			}
 
-			const environment = {
+			const options = {
 				env: {
 					// We need to pass the PATH, otherwise the shell won't find the deno executable
 					// But the runtime itself won't have access to the env var because of the parameters
@@ -239,11 +242,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				},
 			};
 
-			this.deno = child_process.spawn(denoExePath, options, environment);
+			this.deno = child_process.spawn(denoExePath, args, options);
 			this.messenger.setReceiver(this.deno);
 			this.livenessManager.attach(this.deno);
 
-			this.debug('Started subprocess %d with options %s and env %s', this.deno.pid, inspect(options), inspect(environment));
+			this.debug('Started subprocess %d with args %s and options %s', this.deno.pid, inspect(args), inspect(options));
 
 			this.setupListeners();
 		} catch (e) {
