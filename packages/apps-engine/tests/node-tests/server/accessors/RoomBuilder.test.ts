@@ -33,9 +33,11 @@ describe('RoomBuilder', () => {
 		assert.deepStrictEqual(room.type, RoomType.CHANNEL);
 		assert.deepStrictEqual(rb.getType(), RoomType.CHANNEL);
 
-		assert.strictEqual(rb.setCreator(TestData.getUser()), rb);
-		assert.deepStrictEqual(room.creator, TestData.getUser());
-		assert.deepStrictEqual(rb.getCreator(), TestData.getUser());
+		const creator = TestData.getUser();
+
+		assert.strictEqual(rb.setCreator(creator), rb);
+		assert.deepStrictEqual(room.creator, creator);
+		assert.deepStrictEqual(rb.getCreator(), creator);
 
 		assert.strictEqual(rb.addUsername('testing.username'), rb);
 		assert.strictEqual(room.usernames, undefined);
