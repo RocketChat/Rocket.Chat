@@ -84,6 +84,29 @@ export interface IRoom extends IRocketChatRecord {
 	rolePrioritiesCreated?: number | boolean;
 }
 
+export type IDirectoryChannelResult = Pick<
+	IRoom,
+	| '_id'
+	| 't'
+	| 'usersCount'
+	| 'name'
+	| 'fname'
+	| 'description'
+	| 'topic'
+	| 'lastMessage'
+	| 'ts'
+	| 'archived'
+	| 'default'
+	| 'featured'
+	| 'prid'
+	| 'teamId'
+	| 'teamMain'
+	| 'federated'
+> & {
+	belongsTo?: string;
+	roomsCount?: number;
+};
+
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
 	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
 
