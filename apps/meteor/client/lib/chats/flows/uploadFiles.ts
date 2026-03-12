@@ -19,6 +19,13 @@ export const uploadFiles = async (
 
 	const room = await chat.data.getRoom();
 
+	if (room.encrypted && !settings.peek('E2E_Allow_Unencrypted_Messages') && !settings.peek('E2E_Enable_Encrypt_Files')) {
+		return dispatchToastMessage({
+			type: 'error',
+			message: t('You_cant_send_unencrypted_files_in_an_encrypted_room'),
+		});
+	}
+
 	const uploadFile = async (file: File) => {
 		Object.defineProperty(file, 'name', {
 			writable: true,
@@ -27,14 +34,14 @@ export const uploadFiles = async (
 
 		const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
-		if (!e2eRoom?.isReady() || !settings.peek('E2E_Enable_Encrypt_Files')) {
+		if (!e2eRoom || !settings.peek('E2E_Enable_Encrypt_Files')) {
 			await uploadsStore.send(file);
 			return;
 		}
 
 		const encryptedFile = await e2eRoom.encryptFile(file);
 
-		if (!encryptedFile) {
+		if (!e2eRoom.isReady() || !encryptedFile) {
 			dispatchToastMessage({
 				type: 'error',
 				message: t('Error_encrypting_file'),
