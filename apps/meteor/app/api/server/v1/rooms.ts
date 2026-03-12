@@ -104,20 +104,31 @@ export async function findRoomByIdOrName({
 	return room;
 }
 
-API.v1.addRoute(
+const RoomNameExistsEndpoint = API.v1.get(
 	'rooms.nameExists',
 	{
 		authRequired: true,
-		validateParams: isGETRoomsNameExists,
-	},
-	{
-		async get() {
-			const { roomName } = this.queryParams;
-
-			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
-
-			return API.v1.success({ exists: !!room });
+		query: isGETRoomsNameExists,
+		response: {
+			200: ajv.compile({
+				type: 'object',
+				properties: {
+					exists: { type: 'boolean' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['exists', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomName } = this.queryParams;
+
+		const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
+
+		return API.v1.success({ exists: !!room });
 	},
 );
 
@@ -1238,7 +1249,8 @@ export const roomEndpoints = API.v1
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
+	ExtractRoutesFromAPI<typeof RoomNameExistsEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
