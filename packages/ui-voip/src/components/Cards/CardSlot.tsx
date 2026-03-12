@@ -7,17 +7,19 @@ const slotPositionStyles = {
 	topRight: 'top: 0; right: 0;',
 	bottomLeft: 'bottom: 0; left: 0;',
 	bottomRight: 'bottom: 0; right: 0;',
+	middle: 'top: 50%; left: 50%; transform: translate(-50%, -50%);',
 };
 
 export type SlotPosition = keyof typeof slotPositionStyles;
 
-export type CardSlotContainerProps = {
+export type CardSlotProps = {
 	position: SlotPosition;
 	margin?: number;
 	children: ReactNode;
+	variant?: 'default' | 'transparent';
 };
 
-const CardSlotContainerBase = styled('div', ({ position: _position, margin: _margin, ...props }: CardSlotContainerProps) => props)`
+const CardSlotBase = styled('div', ({ position: _position, margin: _margin, variant: _variant, ...props }: CardSlotProps) => props)`
 	position: absolute;
 	display: flex;
 	flex-direction: row;
@@ -29,20 +31,20 @@ const CardSlotContainerBase = styled('div', ({ position: _position, margin: _mar
 	padding-inline: 8px;
 	${({ position }) => slotPositionStyles[position]}
 	border-radius: 4px;
-	background-color: ${Palette.surface['surface-tint'].toString()};
+	${({ variant }) => (variant === 'default' ? `background-color: ${Palette.surface['surface-tint'].toString()};` : '')}
 	color: ${Palette.text['font-default'].toString()};
 	overflow: hidden;
-	z-index: 1;
+	z-index: 3;
 `;
 
-const CardSlotContainer = ({ children, position, margin }: CardSlotContainerProps) => {
+const CardSlot = ({ children, position, margin, variant = 'default' }: CardSlotProps) => {
 	return (
-		<CardSlotContainerBase position={position} margin={margin}>
+		<CardSlotBase position={position} margin={margin} variant={variant}>
 			<Box is='span' fontScale='c2'>
 				{children}
 			</Box>
-		</CardSlotContainerBase>
+		</CardSlotBase>
 	);
 };
 
-export default CardSlotContainer;
+export default CardSlot;

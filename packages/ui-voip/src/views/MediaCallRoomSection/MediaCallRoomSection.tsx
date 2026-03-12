@@ -7,7 +7,7 @@ import {
 	Timer,
 	DevicePicker,
 	ActionButton,
-	CardListContainerWrapper,
+	CardListContainer,
 	CardListSection,
 	PeerCard,
 	StreamCard,
@@ -20,7 +20,7 @@ import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRoomView from '../../context/useRoomView';
 import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
 
-type RoomCallSectionProps = {
+type MediaCallRoomSectionProps = {
 	showChat: boolean;
 	onToggleChat: () => void;
 	user: {
@@ -44,7 +44,7 @@ const getSplitStyles = (showChat?: boolean) => {
 	};
 };
 
-const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: RoomCallSectionProps) => {
+const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }: MediaCallRoomSectionProps) => {
 	const { t } = useTranslation();
 
 	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>('remote');
@@ -114,12 +114,12 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 			{...getSplitStyles(showChat)}
 		>
 			<CardListSection>
-				<CardListContainerWrapper focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
+				<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
 					<PeerCard displayName={user.displayName} avatarUrl={user.avatarUrl} muted={muted} held={held} />
 					<PeerCard displayName={peerInfo.displayName} avatarUrl={peerInfo.avatarUrl} muted={remoteMuted} held={remoteHeld} />
 					{focusedCard !== 'remote' && remoteStreamCard}
 					{focusedCard !== 'local' && localStreamCard}
-				</CardListContainerWrapper>
+				</CardListContainer>
 			</CardListSection>
 			<ActionStrip
 				leftSlot={
@@ -156,4 +156,4 @@ const RoomCallSection = ({ showChat, onToggleChat, user, containerHeight }: Room
 	);
 };
 
-export default memo(RoomCallSection);
+export default memo(MediaCallRoomSection);

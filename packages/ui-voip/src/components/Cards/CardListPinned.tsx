@@ -4,9 +4,9 @@ import { CustomScrollbars } from '@rocket.chat/ui-client';
 import type { CSSProperties, ReactNode } from 'react';
 
 import { CARD_MARGIN, CARD_MIN_WIDTH } from './Card';
-import CardListContainer from './CardListContainer';
+import CardListContainer from './CardList';
 
-type CardListContainerPinnedProps = {
+type CardListPinnedProps = {
 	children: ReactNode;
 	focusedCard: ReactNode;
 	flexDirection?: CSSProperties['flexDirection'];
@@ -19,7 +19,7 @@ const scrollbarContainerStyle = css`
 	}
 `;
 
-const CardListContainerPinned = ({ children, focusedCard, flexDirection = 'row' }: CardListContainerPinnedProps) => {
+const CardListPinned = ({ children, focusedCard, flexDirection = 'row' }: CardListPinnedProps) => {
 	return (
 		<Box display='flex' flexDirection={flexDirection} justifyContent='center' alignItems='center' height='100%' width='100%'>
 			<Box
@@ -56,4 +56,4 @@ const CardListContainerPinned = ({ children, focusedCard, flexDirection = 'row' 
 	);
 };
 
-export default CardListContainerPinned;
+export default CardListPinned;

@@ -2,10 +2,10 @@ import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 import type { ComponentType } from 'react';
 
-import CardListContainer from './CardListContainer';
+import CardList from './CardList';
 import CardListSection from './CardListSection';
-import PeerCard from './PeerCard';
-import StreamCard from './StreamCard';
+import { PeerCard } from './PeerCard';
+import { StreamCard } from './StreamCard';
 
 const avatarUrl = `data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC
               4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMj
@@ -37,8 +37,8 @@ type StoryComponentType = ComponentType<{
 }>;
 
 export default {
-	title: 'V2/Views/MediaCallRoomSection/CardContainers',
-	component: CardListContainer,
+	title: 'V2/Components/CardContainers',
+	component: CardList,
 	args: {
 		getPeerCardProps: (index: number) => ({
 			displayName: `John Doe ${index}`,
@@ -72,24 +72,24 @@ export default {
 	],
 } satisfies Meta<StoryComponentType>;
 
-export const CardListContainerStory: StoryFn<StoryComponentType> = (args) => {
+export const CardListStory: StoryFn<StoryComponentType> = (args) => {
 	return (
-		<CardListContainer {...args}>
+		<CardList {...args}>
 			<PeerCard {...args.getPeerCardProps(0)} />
 			<PeerCard {...args.getPeerCardProps(1)} />
 			<PeerCard {...args.getPeerCardProps(2)} />
 			<PeerCard {...args.getPeerCardProps(3)} />
-		</CardListContainer>
+		</CardList>
 	);
 };
 
-export const StreamCardListContainerStory: StoryFn<StoryComponentType> = (args) => {
+export const StreamCardListStory: StoryFn<StoryComponentType> = (args) => {
 	return (
-		<CardListContainer {...args}>
+		<CardList {...args}>
 			<StreamCard {...args.getStreamCardProps(0)} />
 			<StreamCard {...args.getStreamCardProps(1)} />
 			<StreamCard {...args.getStreamCardProps(2)} />
 			<StreamCard {...args.getStreamCardProps(3)} />
-		</CardListContainer>
+		</CardList>
 	);
 };

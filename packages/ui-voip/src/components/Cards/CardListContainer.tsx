@@ -1,42 +1,27 @@
-import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type CardContainerProps = {
+import CardList from './CardList';
+import CardListPinned from './CardListPinned';
+
+type CardListContainerProps = {
 	children: ReactNode;
+	focusedCard?: ReactNode;
 	shouldWrapCards?: boolean;
-	direction?: 'row' | 'column';
-	height?: number;
-	marginInline?: 'auto' | number;
-	justifyContent?: 'center' | 'start';
-	overflow?: 'hidden' | 'scroll' | 'auto';
-	autoMargin?: boolean;
 };
 
-const CardContainer = ({
-	children,
-	shouldWrapCards,
-	direction = 'row',
-	height,
-	marginInline = 'auto',
-	overflow,
-	autoMargin = false,
-}: CardContainerProps) => {
+const CardListContainer = ({ children, focusedCard, shouldWrapCards }: CardListContainerProps) => {
+	if (focusedCard) {
+		return (
+			<CardListPinned focusedCard={focusedCard} flexDirection='row'>
+				{children}
+			</CardListPinned>
+		);
+	}
 	return (
-		<Box
-			display='flex'
-			mb={autoMargin ? 'auto' : undefined}
-			mi={marginInline}
-			flexDirection={direction}
-			flexWrap={shouldWrapCards ? 'wrap' : 'nowrap'}
-			flexGrow={1}
-			justifyContent='center'
-			alignItems='center'
-			height={height}
-			overflow={overflow}
-		>
+		<CardList shouldWrapCards={shouldWrapCards} marginInline='auto'>
 			{children}
-		</Box>
+		</CardList>
 	);
 };
 
-export default CardContainer;
+export default CardListContainer;

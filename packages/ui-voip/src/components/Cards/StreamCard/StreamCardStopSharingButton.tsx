@@ -1,7 +1,7 @@
 import { Button } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import CardSlotMiddle from './CardSlotMiddle';
+import CardSlotContainer from '../CardSlot';
 
 type CardSlotStopSharingProps = {
 	onClick: () => void;
@@ -10,11 +10,11 @@ type CardSlotStopSharingProps = {
 const CardSlotStopSharing = ({ onClick }: CardSlotStopSharingProps) => {
 	const { t } = useTranslation();
 	return (
-		<CardSlotMiddle>
+		<CardSlotContainer position='middle' variant='transparent'>
 			<Button danger small icon='desktop-cross' onClick={onClick}>
 				{t('Stop_sharing')}
 			</Button>
-		</CardSlotMiddle>
+		</CardSlotContainer>
 	);
 };
 

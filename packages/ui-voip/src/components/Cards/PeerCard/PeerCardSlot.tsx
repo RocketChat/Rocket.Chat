@@ -1,17 +1,21 @@
 import { Icon } from '@rocket.chat/fuselage';
 
-type CardSlotAudioStateProps = {
+import CardSlot from '../CardSlot';
+
+type PeerCardSlotProps = {
 	muted: boolean;
 	held: boolean;
+	displayName: string;
 };
 
-const CardSlotAudioState = ({ muted, held }: CardSlotAudioStateProps) => {
+const PeerCardSlot = ({ muted, held, displayName }: PeerCardSlotProps) => {
 	return (
-		<>
+		<CardSlot position='bottomLeft'>
+			{displayName}
 			{muted && <Icon name='mic-off' size='x12' color='danger' mis={4} />}
 			{held && <Icon name='pause-shape-unfilled' size='x12' color='danger' mis={4} />}
-		</>
+		</CardSlot>
 	);
 };
 
-export default CardSlotAudioState;
+export default PeerCardSlot;
