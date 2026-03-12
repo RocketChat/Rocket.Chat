@@ -174,15 +174,28 @@ const invites = API.v1
 		},
 	);
 
-API.v1.addRoute(
-	'removeInvite/:_id',
-	{ authRequired: true },
-	{
-		async delete() {
-			const { _id } = this.urlParams;
+const removeInviteResponseSchema = ajv.compile<boolean>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: true,
+});
 
-			return API.v1.success(await removeInvite(this.userId, { _id }));
+API.v1.delete(
+	'removeInvite/:_id',
+	{
+		authRequired: true,
+		response: {
+			200: removeInviteResponseSchema,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { _id } = this.urlParams;
+
+		return API.v1.success(await removeInvite(this.userId, { _id }));
 	},
 );
 
