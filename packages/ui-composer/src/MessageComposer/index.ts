@@ -25,3 +25,5 @@ export {
 	MessageComposerHint,
 	MessageComposerButton,
 };
+
+export { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader } from './MessageComposerFile';

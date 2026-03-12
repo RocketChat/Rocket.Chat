@@ -1,7 +1,7 @@
 import type { AllHTMLAttributes, ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MessageComposerFileComponent from './MessageComposerFileComponent';
+import MessageComposerFile from './MessageComposerFile';
 
 type MessageComposerFileErrorProps = {
 	fileTitle: string;
@@ -14,7 +14,7 @@ const MessageComposerFileError = ({ fileTitle, error, actionIcon, onClick, ...pr
 	const { t } = useTranslation();
 
 	return (
-		<MessageComposerFileComponent
+		<MessageComposerFile
 			error={Boolean(error)}
 			fileTitle={fileTitle}
 			fileSubtitle={t('Upload_failed')}

@@ -1,17 +1,17 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
-import MessageComposerFile from './MessageComposerFile';
+import MessageComposerFileItem from './MessageComposerFileItem';
 import type { Upload } from '../../../../lib/chats/Upload';
 
-type MessageComposerFileAreaProps = {
+type MessageComposerFileGroupProps = {
 	uploads?: readonly Upload[];
 	onRemove: (id: Upload['id']) => void;
 	onEdit: (id: Upload['id'], fileName: string) => void;
 	onCancel: (id: Upload['id']) => void;
 };
 
-const MessageComposerFileArea = ({ uploads, onRemove, onEdit, onCancel }: MessageComposerFileAreaProps) => {
+const MessageComposerFileGroup = ({ uploads, onRemove, onEdit, onCancel }: MessageComposerFileGroupProps) => {
 	const { t } = useTranslation();
 	return (
 		<Box
@@ -27,10 +27,10 @@ const MessageComposerFileArea = ({ uploads, onRemove, onEdit, onCancel }: Messag
 			style={{ whiteSpace: 'nowrap' }}
 		>
 			{uploads?.map((upload) => (
-				<MessageComposerFile key={upload.id} upload={upload} onRemove={onRemove} onEdit={onEdit} onCancel={onCancel} />
+				<MessageComposerFileItem key={upload.id} upload={upload} onRemove={onRemove} onEdit={onEdit} onCancel={onCancel} />
 			))}
 		</Box>
 	);
 };
 
-export default MessageComposerFileArea;
+export default MessageComposerFileGroup;

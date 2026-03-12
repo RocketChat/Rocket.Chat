@@ -3,7 +3,7 @@ import { Box, Palette } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { AllHTMLAttributes, ReactElement } from 'react';
 
-type MessageComposerFileComponentProps = {
+type MessageComposerFileProps = {
 	fileTitle: string;
 	fileSubtitle: string;
 	actionIcon: ReactElement;
@@ -11,15 +11,7 @@ type MessageComposerFileComponentProps = {
 	onClick: () => void;
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-// TODO: This component will live in `ui-composer`
-const MessageComposerFileComponent = ({
-	fileTitle,
-	fileSubtitle,
-	actionIcon,
-	error,
-	onClick,
-	...props
-}: MessageComposerFileComponentProps) => {
+const MessageComposerFile = ({ fileTitle, fileSubtitle, actionIcon, error, onClick, ...props }: MessageComposerFileProps) => {
 	const closeWrapperStyle = css`
 		position: absolute;
 		right: 0.5rem;
@@ -70,4 +62,4 @@ const MessageComposerFileComponent = ({
 	);
 };
 
-export default MessageComposerFileComponent;
+export default MessageComposerFile;

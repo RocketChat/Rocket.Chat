@@ -1,26 +1,24 @@
 import { IconButton } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader } from '@rocket.chat/ui-composer';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MessageComposerFileComponent from './MessageComposerFileComponent';
-import MessageComposerFileError from './MessageComposerFileError';
-import MessageComposerFileLoader from './MessageComposerFileLoader';
 import { getMimeType } from '../../../../../app/utils/lib/mimeTypes';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { formatBytes } from '../../../../lib/utils/formatBytes';
 import FileUploadModal from '../../modals/FileUploadModal';
 
-type MessageComposerFileProps = {
+type MessageComposerFileItemProps = {
 	upload: Upload;
 	onRemove: (id: string) => void;
 	onEdit: (id: Upload['id'], fileName: string) => void;
 	onCancel: (id: Upload['id']) => void;
 };
 
-const MessageComposerFile = ({ upload, onRemove, onEdit, onCancel, ...props }: MessageComposerFileProps) => {
+const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, ...props }: MessageComposerFileItemProps) => {
 	const { t } = useTranslation();
 	const [isActive, setIsActive] = useState(false);
 	const setModal = useSetModal();
@@ -61,7 +59,7 @@ const MessageComposerFile = ({ upload, onRemove, onEdit, onCancel, ...props }: M
 	}
 
 	return (
-		<MessageComposerFileComponent
+		<MessageComposerFile
 			aria-label={upload.file.name}
 			onClick={handleOpenFilePreview}
 			onPointerLeave={() => setIsActive(false)}
@@ -77,4 +75,4 @@ const MessageComposerFile = ({ upload, onRemove, onEdit, onCancel, ...props }: M
 	);
 };
 
-export default MessageComposerFile;
+export default MessageComposerFileItem;

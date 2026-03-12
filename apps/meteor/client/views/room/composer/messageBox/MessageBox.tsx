@@ -20,7 +20,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
-import MessageComposerFileArea from './MessageComposerFileArea';
+import MessageComposerFileGroup from './MessageComposerFileGroup';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -444,7 +444,7 @@ const MessageBox = ({
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
 				{hasUploads && (
-					<MessageComposerFileArea
+					<MessageComposerFileGroup
 						uploads={uploads}
 						onEdit={uploadsStore.editUploadFileName}
 						onRemove={uploadsStore.removeUpload}
