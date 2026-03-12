@@ -5,16 +5,17 @@ import { useTranslation } from 'react-i18next';
 
 
 const PageSkeleton = (): ReactElement => {
-	const { t } = useTranslation();
+	const { t } = useTranslation(undefined, { useSuspense: false });
 	return (
-		<Page>
+		<Page aria-busy='true'>
 			<PageHeader title={<Skeleton width='x320' maxWidth='full' />}>
 				<ButtonGroup>
-					<Button disabled aria-label={t('Loading')}>
+					<Button disabled aria-hidden='true'>
 						<Skeleton width='x80' />
 					</Button>
 				</ButtonGroup>
 			</PageHeader>
+
 
 		<PageContent>
 			<Box marginBlock='none' marginInline='auto' width='full' maxWidth='x580'>
