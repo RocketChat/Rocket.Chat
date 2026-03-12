@@ -70,7 +70,11 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 
-				{ignored ? <IgnoredContent onShowMessageIgnored={toggleIgnoring} /> : <ThreadMessageContent message={message} />}
+				{ignored ? (
+					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleIgnoring} />
+				) : (
+					<ThreadMessageContent message={message} />
+				)}
 			</MessageContainer>
 			{!message.private && <MessageToolbarHolder message={message} context={messageContext} />}
 		</Message>
