@@ -1,4 +1,5 @@
 import { IconButton } from '@rocket.chat/fuselage';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +22,7 @@ type MessageComposerFileProps = {
 
 const MessageComposerFile = ({ upload, onRemove, onEdit, onCancel, ...props }: MessageComposerFileProps) => {
 	const { t } = useTranslation();
-	const [isHover, setIsHover] = useState(false);
+	const [isActive, setIsActive] = useState(false);
 	const setModal = useSetModal();
 
 	const fileSize = formatBytes(upload.file.size, 2);
@@ -48,13 +49,10 @@ const MessageComposerFile = ({ upload, onRemove, onEdit, onCancel, ...props }: M
 
 	const dismissAction = isLoading ? () => onCancel(upload.id) : () => onRemove(upload.id);
 	const handleDismiss = usePreventPropagation(dismissAction);
+	const buttonProps = useButtonPattern(handleDismiss);
 
 	const actionIcon =
-		isLoading && !isHover ? (
-			<MessageComposerFileLoader />
-		) : (
-			<IconButton aria-label={t('Close')} onClick={handleDismiss} mini icon='cross' />
-		);
+		isLoading && !isActive ? <MessageComposerFileLoader /> : <IconButton {...buttonProps} aria-label={t('Close')} mini icon='cross' />;
 
 	if (upload.error) {
 		return (
@@ -66,8 +64,10 @@ const MessageComposerFile = ({ upload, onRemove, onEdit, onCancel, ...props }: M
 		<MessageComposerFileComponent
 			aria-label={upload.file.name}
 			onClick={handleOpenFilePreview}
-			onMouseLeave={() => setIsHover(false)}
-			onMouseEnter={() => setIsHover(true)}
+			onPointerLeave={() => setIsActive(false)}
+			onPointerEnter={() => setIsActive(true)}
+			onFocus={() => setIsActive(true)}
+			onBlur={(e) => !e.currentTarget.contains(e.relatedTarget) && setIsActive(false)}
 			fileTitle={upload.file.name}
 			fileSubtitle={`${fileSize} - ${fileExtension}`}
 			actionIcon={actionIcon}
