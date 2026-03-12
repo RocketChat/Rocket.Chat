@@ -9,7 +9,7 @@ import { useChat } from '../../../../contexts/ChatContext';
 import AddWebdavAccountModal from '../../../../webdav/AddWebdavAccountModal';
 import WebdavFilePickerModal from '../../../../webdav/WebdavFilePickerModal';
 
-export const useWebdavActions = (uploadsStore: UploadsAPI): GenericMenuItemProps[] => {
+export const useWebdavActions = (disabled: boolean, uploadsStore: UploadsAPI): GenericMenuItemProps[] => {
 	const enabled = useSetting('Webdav_Integration_Enabled', false);
 
 	const { isSuccess, data } = useWebDAVAccountIntegrationsQuery({ enabled });
@@ -38,6 +38,7 @@ export const useWebdavActions = (uploadsStore: UploadsAPI): GenericMenuItemProps
 					id: account._id,
 					content: account.name,
 					icon: 'cloud-plus' as const,
+					disabled,
 					onClick: () => handleOpenWebdav(account),
 				}))
 			: []),

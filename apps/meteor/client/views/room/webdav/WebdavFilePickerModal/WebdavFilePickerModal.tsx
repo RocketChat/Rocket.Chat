@@ -16,7 +16,7 @@ import FilterByText from '../../../../components/FilterByText';
 export type WebdavSortOptions = 'name' | 'size' | 'dataModified';
 
 type WebdavFilePickerModalProps = {
-	onUpload: (file: File, description?: string) => Promise<void>;
+	onUpload: (file: File) => Promise<void>;
 	onClose: () => void;
 	account: IWebdavAccountIntegration;
 };
@@ -128,9 +128,9 @@ const WebdavFilePickerModal = ({ onUpload, onClose, account }: WebdavFilePickerM
 	const handleUpload = async (webdavNode: IWebdavNode): Promise<void> => {
 		setIsLoading(true);
 
-		const uploadFile = async (file: File, description?: string): Promise<void> => {
+		const uploadFile = async (file: File): Promise<void> => {
 			try {
-				await onUpload?.(file, description);
+				await onUpload?.(file);
 			} catch (error) {
 				return dispatchToastMessage({ type: 'error', message: error });
 			} finally {
