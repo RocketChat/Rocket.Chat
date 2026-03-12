@@ -1,17 +1,18 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
-import type { AllHTMLAttributes, ReactElement } from 'react';
+import { useMemo, type KeyboardEvent, type MouseEvent, type AllHTMLAttributes, type ReactElement } from 'react';
 
 type MessageComposerFileProps = {
 	fileTitle: string;
 	fileSubtitle: string;
 	actionIcon: ReactElement;
 	error?: boolean;
+	disabled?: boolean;
 	onClick: () => void;
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const MessageComposerFile = ({ fileTitle, fileSubtitle, actionIcon, error, onClick, ...props }: MessageComposerFileProps) => {
+const MessageComposerFile = ({ fileTitle, fileSubtitle, actionIcon, error, disabled, onClick, ...props }: MessageComposerFileProps) => {
 	const closeWrapperStyle = css`
 		position: absolute;
 		right: 0.5rem;
@@ -20,18 +21,37 @@ const MessageComposerFile = ({ fileTitle, fileSubtitle, actionIcon, error, onCli
 
 	const previewWrapperStyle = css`
 		background-color: ${Palette.surface['surface-tint']};
+		cursor: ${error || disabled ? 'not-allowed' : 'pointer'};
 
 		&:hover {
-			cursor: ${error ? 'unset' : 'pointer'};
-			background-color: ${Palette.surface['surface-hover']};
+			background-color: ${!error && !disabled ? Palette.surface['surface-hover'] : Palette.surface['surface-tint']};
 		}
 	`;
 
-	const buttonProps = useButtonPattern(onClick);
+	const handleClick = (e: MouseEvent<Element> | KeyboardEvent<Element>) => {
+		e.stopPropagation();
+		if (!error && !disabled) {
+			onClick();
+		}
+	};
+
+	const buttonProps = useButtonPattern(handleClick);
+
+	const subtitleColor = useMemo(() => {
+		if (error) {
+			return 'danger';
+		}
+
+		if (disabled) {
+			return 'disabled';
+		}
+
+		return 'hint';
+	}, [disabled, error]);
 
 	return (
 		<Box
-			rcx-input-box__wrapper
+			rcx-input-box__wrapper={!error && !disabled}
 			readOnly={error}
 			className={previewWrapperStyle}
 			display='flex'
@@ -46,18 +66,18 @@ const MessageComposerFile = ({ fileTitle, fileSubtitle, actionIcon, error, onCli
 			height='x56'
 			width='x200'
 			mie={8}
-			{...buttonProps}
+			onClick={handleClick}
 			{...props}
 		>
 			<Box width='x160' mis={4} display='flex' flexDirection='column'>
-				<Box fontScale='p2' color='info' withTruncatedText>
+				<Box {...buttonProps} fontScale='p2' color={disabled ? 'disabled' : 'info'} withTruncatedText>
 					{fileTitle}
 				</Box>
-				<Box fontScale='c1' color={error ? 'danger' : 'hint'} textTransform={!error ? 'uppercase' : 'none'} withTruncatedText>
+				<Box fontScale='c1' color={subtitleColor} textTransform={!error ? 'uppercase' : 'none'} withTruncatedText>
 					{fileSubtitle}
 				</Box>
 			</Box>
-			<Box className={closeWrapperStyle}>{actionIcon}</Box>
+			{!disabled && <Box className={closeWrapperStyle}>{actionIcon}</Box>}
 		</Box>
 	);
 };

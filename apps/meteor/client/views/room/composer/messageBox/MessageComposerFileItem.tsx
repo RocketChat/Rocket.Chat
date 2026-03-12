@@ -16,9 +16,10 @@ type MessageComposerFileItemProps = {
 	onRemove: (id: string) => void;
 	onEdit: (id: Upload['id'], fileName: string) => void;
 	onCancel: (id: Upload['id']) => void;
+	disabled: boolean;
 };
 
-const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, ...props }: MessageComposerFileItemProps) => {
+const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled, ...props }: MessageComposerFileItemProps) => {
 	const { t } = useTranslation();
 	const [isActive, setIsActive] = useState(false);
 	const setModal = useSetModal();
@@ -70,6 +71,7 @@ const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, ...props 
 			fileSubtitle={`${fileSize} - ${fileExtension}`}
 			actionIcon={actionIcon}
 			aria-busy={isLoading}
+			disabled={disabled}
 			{...props}
 		/>
 	);

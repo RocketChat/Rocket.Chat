@@ -26,4 +26,4 @@ export {
 	MessageComposerButton,
 };
 
-export { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader } from './MessageComposerFile';
+export { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader, MessageComposerFileGroup } from './MessageComposerFile';
