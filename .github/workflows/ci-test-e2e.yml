@@ -160,11 +160,27 @@ jobs:
           tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       # Download Docker images from build artifacts
-      - name: Download Docker images
+      - name: Download Docker images (CE)
         uses: actions/download-artifact@v8
-        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop' && inputs.release == 'ce'
         with:
-          pattern: ${{ inputs.release == 'ce' && 'docker-image-rocketchat-amd64-coverage' || (inputs.release == 'fips' && 'docker-image-*-amd64-fips' || 'docker-image-*-amd64-coverage') }}
+          pattern: docker-image-rocketchat-amd64-coverage
+          path: /tmp/docker-images
+          merge-multiple: true
+
+      - name: Download Docker images (FIPS)
+        uses: actions/download-artifact@v8
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop' && inputs.release == 'fips'
+        with:
+          pattern: docker-image-*-amd64-fips
+          path: /tmp/docker-images
+          merge-multiple: true
+
+      - name: Download Docker images (EE coverage)
+        uses: actions/download-artifact@v8
+        if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop' && inputs.release != 'ce' && inputs.release != 'fips'
+        with:
+          pattern: docker-image-*-amd64-coverage
           path: /tmp/docker-images
           merge-multiple: true
 

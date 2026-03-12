@@ -366,6 +366,7 @@ jobs:
           sparse-checkout: |
             docker-compose-ci.yml
             docker-compose-ci.fips.yml
+            scripts/resolve-compose-image.sh
           sparse-checkout-cone-mode: false
           ref: ${{ github.ref }}
 
@@ -404,15 +405,7 @@ jobs:
 
             echo "Digest for ${service}: ${refs[@]}"
 
-            # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-            if [ "$service" == "rocketchat-cov" ]; then
-              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
-            elif [[ "$service" == *"-fips" ]]; then
-              base_service="${service%-fips}"
-              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$base_service" '.services[$s].image')-fips
-            else
-              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
-            fi
+            IMAGE=$(bash scripts/resolve-compose-image.sh "$service")
 
             echo $IMAGE
 
@@ -949,6 +942,7 @@ jobs:
           sparse-checkout: |
             docker-compose-ci.yml
             docker-compose-ci.fips.yml
+            scripts/resolve-compose-image.sh
           sparse-checkout-cone-mode: false
           ref: ${{ github.ref }}
 
@@ -1027,15 +1021,7 @@ jobs:
               IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${service}"
             fi
 
-            # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
-            if [ "$service" == "rocketchat-cov" ]; then
-              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
-            elif [[ "$service" == *"-fips" ]]; then
-              base_service="${service%-fips}"
-              SRC=$(docker compose -f docker-compose-ci.yml -f docker-compose-ci.fips.yml config --format json 2>/dev/null | jq -r --arg s "$base_service" '.services[$s].image')
-            else
-              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${service}" '.services[$s].image')
-            fi
+            SRC=$(bash scripts/resolve-compose-image.sh "$service")
             DEST_REPO="docker.io/${IMAGE_NAME}"
 
             echo "Copying $SRC to ${DEST_REPO}:${PRIMARY}"
