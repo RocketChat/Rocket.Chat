@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
 import CardList from './CardList';
 import CardListSection from './CardListSection';
@@ -28,7 +28,7 @@ type StoryComponentType = ComponentType<{
 		sharing: boolean;
 	};
 	getStreamCardProps: (index: number) => {
-		children: React.ReactNode;
+		children: ReactNode;
 		own: boolean;
 		onClickFocusStream: () => void;
 		focused: boolean;

@@ -1,9 +1,11 @@
+import type { ReactNode } from 'react';
+
 import Card from '../Card';
 import StreamCardPin from './StreamCardPin';
 import StreamCardStopSharingButton from './StreamCardStopSharingButton';
 
 type StreamCardProps = {
-	children: React.ReactNode;
+	children: ReactNode;
 	own?: boolean;
 	onClickFocusStream?: () => void;
 	onClickStopSharing?: () => void;
