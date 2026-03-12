@@ -291,38 +291,6 @@ const ChatReactSchema = {
 
 export const isChatReactProps = ajv.compile<ChatReact>(ChatReactSchema);
 
-/**
- * The param `ignore` cannot be boolean, since this is a GET method. Use strings 'true' or 'false' instead.
- * @param {string} ignore
- */
-type ChatIgnoreUser = {
-	rid: string;
-	userId: string;
-	ignore: string;
-};
-
-const ChatIgnoreUserSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-			minLength: 1,
-		},
-		userId: {
-			type: 'string',
-			minLength: 1,
-		},
-		ignore: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['rid', 'userId', 'ignore'],
-	additionalProperties: false,
-};
-
-export const isChatIgnoreUserProps = ajv.compile<ChatIgnoreUser>(ChatIgnoreUserSchema);
-
 type ChatSearch = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	searchText: string;
@@ -929,9 +897,6 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.react': {
 		POST: (params: ChatReact) => void;
-	};
-	'/v1/chat.ignoreUser': {
-		GET: (params: ChatIgnoreUser) => void;
 	};
 	'/v1/chat.search': {
 		GET: (params: ChatSearch) => {
