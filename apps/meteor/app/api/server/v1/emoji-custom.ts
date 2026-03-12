@@ -1,7 +1,7 @@
 import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
-import { ajv, isEmojiCustomList } from '@rocket.chat/rest-typings';
+import { ajv, isEmojiCustomList, isEmojiCustomDelete, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -74,33 +74,50 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'emoji-custom.all',
-	{ authRequired: true },
-	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
-			const { name } = this.queryParams;
+const emojiCustomAllResponseSchema = ajv.compile<{ emojis: IEmojiCustom[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		emojis: { type: 'array' },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['emojis', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
 
-			return API.v1.success(
-				await findEmojisCustom({
-					query: name
-						? {
-								name: {
-									$regex: escapeRegExp(name),
-									$options: 'i',
-								},
-							}
-						: query,
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+API.v1.get(
+	'emoji-custom.all',
+	{
+		authRequired: true,
+		response: {
+			200: emojiCustomAllResponseSchema,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, query } = await this.parseJsonQuery();
+		const { name } = this.queryParams;
+
+		return API.v1.success(
+			await findEmojisCustom({
+				query: name
+					? {
+							name: {
+								$regex: escapeRegExp(name),
+								$options: 'i',
+							},
+						}
+					: query,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			}),
+		);
 	},
 );
 
@@ -232,20 +249,35 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const emojiCustomDeleteResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'emoji-custom.delete',
-	{ authRequired: true },
 	{
-		async post() {
-			const { emojiId } = this.bodyParams;
-			if (!emojiId) {
-				return API.v1.failure('The "emojiId" params is required!');
-			}
-
-			await deleteEmojiCustom(this.userId, emojiId);
-
-			return API.v1.success();
+		authRequired: true,
+		body: isEmojiCustomDelete,
+		response: {
+			200: emojiCustomDeleteResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { emojiId } = this.bodyParams;
+		if (!emojiId) {
+			return API.v1.failure('The "emojiId" params is required!');
+		}
+
+		await deleteEmojiCustom(this.userId, emojiId);
+
+		return API.v1.success();
 	},
 );
 
