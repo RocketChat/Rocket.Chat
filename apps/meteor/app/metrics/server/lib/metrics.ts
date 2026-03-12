@@ -331,8 +331,8 @@ export const metrics = {
 let eluBase = performance.eventLoopUtilization();
 
 new client.Gauge({
-	name: 'nodejs_event_loop_utilization',
-	help: 'Event Loop Utilization (ELU) as reported by Node',
+	name: 'nodejs_event_loop_utilization_ratio',
+	help: 'Event Loop Utilization (ELU) as reported by NodeJS',
 	collect() {
 		this.set(performance.eventLoopUtilization(eluBase).utilization);
 		eluBase = performance.eventLoopUtilization();
