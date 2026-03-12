@@ -18,7 +18,16 @@ import {
 } from '../../../data/livechat/rooms';
 import { updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import { createUser, deleteUser, login, setUserActiveStatus, setUserAway, setUserStatus } from '../../../data/users.helper';
+import {
+	createUser,
+	deleteUser,
+	login,
+	ddpLogin,
+	setUserAwayWS,
+	setUserActiveStatus,
+	setUserAway,
+	setUserStatus,
+} from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Omnichannel - Routing', () => {
@@ -358,10 +367,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
 		it('should not route to an idle user', async () => {
+			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			await setUserAway(testUser.credentials);
+			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			await setUserAwayWS(ws1);
 			await setUserStatus(testUser3.credentials, UserStatus.AWAY);
-			await setUserAway(testUser3.credentials);
+			const ws2 = await ddpLogin(testUser3.credentials['X-Auth-Token']);
+			await setUserAwayWS(ws2);
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
 
