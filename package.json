@@ -70,7 +70,7 @@
 		"eslint": "~9.39.3",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"ts-node": "^10.9.2",
-		"turbo": "~2.8.11",
+		"turbo": "2.8.12",
 		"typescript": "~5.9.3"
 	},
 	"packageManager": "yarn@4.12.0",

@@ -207,10 +207,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -236,16 +232,14 @@ const e2eEndpoints = API.v1
 					properties: {
 						public_key: { type: 'string' },
 						private_key: { type: 'string' },
-						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['success'],
 				}),
 			},
 		},
 		async function action() {
 			const result = await Users.fetchKeysByUserId(this.userId);
 
-			return API.v1.success(result);
+			return API.v1.success(result as { public_key?: string; private_key?: string });
 		},
 	)
 	.get(
@@ -278,9 +272,8 @@ const e2eEndpoints = API.v1
 								required: ['_id'],
 							},
 						},
-						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['users', 'success'],
+					required: ['users'],
 				}),
 			},
 		},
@@ -303,10 +296,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -360,10 +349,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -403,9 +388,8 @@ const e2eEndpoints = API.v1
 								},
 							},
 						},
-						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['usersWaitingForE2EKeys', 'success'],
+					required: ['usersWaitingForE2EKeys'],
 				}),
 			},
 		},
@@ -436,10 +420,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -461,10 +441,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -491,10 +467,6 @@ const e2eEndpoints = API.v1
 				403: validateForbiddenErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -524,7 +496,37 @@ const e2eEndpoints = API.v1
 				LockMap.delete(rid);
 			}
 		},
+	)
+	.post(
+		'e2e.setUserPublicAndPrivateKeys',
+		{
+			authRequired: true,
+			body: ise2eSetUserPublicAndPrivateKeysParamsPOST,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+				400: validateBadRequestErrorResponse,
+			},
+		},
+		async function action() {
+			// eslint-disable-next-line @typescript-eslint/naming-convention
+			const { public_key, private_key, force } = this.bodyParams;
+
+			await setUserPublicAndPrivateKeysMethod(this.userId, {
+				public_key,
+				private_key,
+				force,
+			});
+
+			return API.v1.success();
+		},
 	);
+
 
 type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
 
