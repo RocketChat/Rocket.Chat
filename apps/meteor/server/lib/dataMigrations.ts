@@ -101,7 +101,7 @@ type LockReleaseFunction = (extraData?: Record<string, unknown>) => Promise<void
 
 async function acquireLock(): Promise<{ record: ISystemLock; releaseLock: LockReleaseFunction }> {
 	const result = await SystemLocks.acquireLock(LOCK_KEY);
-	if (result.acquired) {
+	if (result.acquired && result.record) {
 		const renewInterval = setInterval(() => SystemLocks.renewLockThreshold(LOCK_KEY), 60 * 1000);
 
 		return {
