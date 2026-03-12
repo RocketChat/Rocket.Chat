@@ -1,4 +1,4 @@
-export { Messages } from './Messages';
+export { Messages, type MessageRecord } from './Messages';
 export { Permissions } from './Permissions';
 export { PrivateSettings, PublicSettings } from './Settings';
 export { Roles } from './Roles';

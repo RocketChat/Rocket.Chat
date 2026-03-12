@@ -41,12 +41,43 @@ export const Accounts = {
 	onLogout: jest.fn(),
 };
 
-export const Tracker = { autorun: jest.fn() };
+export const Tracker = {
+	afterFlush: (cb: () => void) => cb(),
+	nonreactive: <T>(fn: () => T): T => fn(),
+	autorun: jest.fn((fn: () => void) => {
+		fn();
+		return { stop: () => undefined };
+	}),
+};
 
-export const ReactiveVar = class ReactiveVar {};
+export class ReactiveVar<T = any> {
+	private value: T;
+
+	constructor(initialValue: T) {
+		this.value = initialValue;
+	}
+
+	get(): T {
+		return this.value;
+	}
+
+	set(v: T): void {
+		this.value = v;
+	}
+}
 
 export const EJSON = {
 	isBinary: jest.fn(() => false),
 	clone: jest.fn((obj) => obj),
 	equals: jest.fn((a, b) => JSON.stringify(a) === JSON.stringify(b)),
+};
+
+export const DDPCommon = {
+	parseDDP: (raw: string) => {
+		try {
+			return JSON.parse(raw);
+		} catch {
+			return {} as any;
+		}
+	},
 };

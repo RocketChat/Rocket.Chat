@@ -10,7 +10,7 @@ import { getUserId } from '../../../../client/lib/user';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
 import { waitForElement } from '../../../../client/lib/utils/waitForElement';
-import { Messages, Subscriptions } from '../../../../client/stores';
+import { Messages, Subscriptions, type MessageRecord } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
 
 const waitAfterFlush = () => new Promise((resolve) => Tracker.afterFlush(() => resolve(void 0)));
@@ -285,9 +285,9 @@ class RoomHistoryManagerClass extends Emitter {
 		delete this.histories[rid];
 	}
 
-	public clear(rid: IRoom['_id']) {
+	public clear(rid: IRoom['_id'], shouldRemove?: (record: MessageRecord) => boolean) {
 		const room = this.getRoom(rid);
-		Messages.state.remove((record) => record.rid === rid);
+		Messages.state.remove((record) => record.rid === rid && (!shouldRemove || shouldRemove(record)));
 		room.isLoading.set(false);
 		room.hasMore.set(true);
 		room.hasMoreNext.set(false);
