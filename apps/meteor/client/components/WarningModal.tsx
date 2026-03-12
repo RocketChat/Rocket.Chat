@@ -22,7 +22,7 @@ export type WarningModalProps = {
 };
 
 const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, ...props }: WarningModalProps) => {
-	const { t } = useTranslation();
+	const { t } = useTranslation(undefined, { useSuspense: false });
 	return (
 		<Modal open {...props}>
 			<ModalHeader>
