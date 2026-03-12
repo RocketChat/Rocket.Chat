@@ -420,6 +420,7 @@ API.v1.addRoute(
 	},
 );
 
+
 API.v1.addRoute(
 	'channels.getAllUserMentionsByChannel',
 	{
@@ -432,6 +433,10 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
+			if (!this.user?.username) {
+				return API.v1.failure('Invalid user');
+			}
+
 			const findResult = await findChannelByIdOrName({
 				params: { roomId },
 				checkedArchived: false,
@@ -441,7 +446,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const { mentions, total } = await getUserMentionsByChannelPaginated(this.userId, roomId, {
+			const { mentions, total } = await getUserMentionsByChannelPaginated(this.user.username, roomId, {
 				sort: sort || { ts: 1 },
 				skip: offset,
 				limit: count,
