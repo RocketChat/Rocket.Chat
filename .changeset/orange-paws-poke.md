@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Adds deprecation warning for Anonymous write setting. These features will be removed in version 9.0.0.
+Deprecates `Anonymous write`. Feature will be removed in version 9.0.0.
