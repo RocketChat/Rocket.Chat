@@ -1,6 +1,7 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import type {} from '../../../../../apps/meteor/app/api/server/v1/rooms.ts';
+import type { IRoomNativeFederated, IUser } from '@rocket.chat/core-typings';
+import { Visibility } from 'matrix-js-sdk';
 
+import type {} from '../../../../../apps/meteor/app/api/server/v1/rooms.ts';
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
 import { createRoom, acceptRoomInvite, getRoomMembers } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { type IRequestConfig, getRequestConfig, createUser } from '../../../../../apps/meteor/tests/data/users.helper';
@@ -164,22 +165,27 @@ import { SynapseClient } from '../helper/synapse-client';
 
 		beforeAll(async () => {
 			channelName = `fed-ban-synapse-${Date.now()}`;
+			synapseRoomId = await hs1AdminApp.createRoom(channelName, Visibility.Private);
 
-			const createResponse = await createRoom({
-				type: 'p',
-				name: channelName,
-				members: [federationConfig.hs1.adminMatrixUserId, federationConfig.rc1.additionalUser1.username],
-				extraData: { federated: true },
-				config: rc1AdminRequestConfig,
-			});
+			await hs1AdminApp.inviteUserToRoom(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId);
+			await hs1AdminApp.inviteUserToRoom(synapseRoomId, federationConfig.rc1.adminMatrixUserId);
 
-			federatedChannelId = createResponse.body.group._id;
+			const roomsResponse = await rc1AdminRequestConfig.request.get(api('rooms.get')).set(rc1AdminRequestConfig.credentials).expect(200);
 
-			// Accept invitation on Synapse side
-			synapseRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+			expect(roomsResponse.body).toHaveProperty('success', true);
+			expect(roomsResponse.body).toHaveProperty('update');
+
+			const rcRoom = roomsResponse.body.update.find(
+				(room: IRoomNativeFederated) => room.federation?.mrid === synapseRoomId,
+			) as IRoomNativeFederated | null;
+
+			expect(rcRoom).not.toBeNull();
+
+			federatedChannelId = rcRoom!._id;
 
 			// Accept invitation for the local RC user
 			await acceptRoomInvite(federatedChannelId, rc1User1RequestConfig);
+			await acceptRoomInvite(federatedChannelId, rc1AdminRequestConfig);
 
 			// Wait for Synapse to see the RC user
 			await retry(

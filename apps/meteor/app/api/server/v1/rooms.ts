@@ -1342,10 +1342,6 @@ export const roomEndpoints = API.v1
 				return API.v1.unauthorized();
 			}
 
-			if (!(await hasPermissionAsync(this.userId, 'ban-user', roomId))) {
-				return API.v1.unauthorized();
-			}
-
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			const bannedSubscriptions = Subscriptions.findBannedByRoomId(roomId);
