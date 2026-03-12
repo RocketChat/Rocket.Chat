@@ -951,90 +951,6 @@ const LivechatDepartmentsByUnitIdSchema = {
 
 export const isLivechatDepartmentsByUnitIdProps = ajv.compile<LivechatDepartmentsByUnitIdProps>(LivechatDepartmentsByUnitIdSchema);
 
-type LivechatUsersManagerGETProps = PaginatedRequest<{
-	text?: string;
-	fields?: string;
-	onlyAvailable?: boolean;
-	excludeId?: string;
-	showIdleAgents?: boolean;
-}>;
-
-const LivechatUsersManagerGETSchema = {
-	type: 'object',
-	properties: {
-		text: {
-			type: 'string',
-			nullable: true,
-		},
-		onlyAvailable: {
-			type: 'boolean',
-			nullable: true,
-		},
-		excludeId: {
-			type: 'string',
-			nullable: true,
-		},
-		showIdleAgents: {
-			type: 'boolean',
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: [],
-	additionalProperties: false,
-};
-
-export const isLivechatUsersManagerGETProps = ajv.compile<LivechatUsersManagerGETProps>(LivechatUsersManagerGETSchema);
-
-type LivechatUsersManagerPOSTProps = PaginatedRequest<{ username: string }>;
-
-const LivechatUsersManagerPOSTSchema = {
-	type: 'object',
-	properties: {
-		username: {
-			type: 'string',
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['username'],
-	additionalProperties: false,
-};
-
-export const isLivechatUsersManagerPOSTProps = ajv.compile<LivechatUsersManagerPOSTProps>(LivechatUsersManagerPOSTSchema);
 
 type LivechatQueueProps = {
 	agentId?: string;
@@ -3041,23 +2957,6 @@ const DELETECannedResponsesPropsSchema = {
 
 export const isDELETECannedResponsesProps = ajv.compile<DELETECannedResponsesProps>(DELETECannedResponsesPropsSchema);
 
-type POSTLivechatUsersTypeProps = {
-	username: string;
-};
-
-const POSTLivechatUsersTypePropsSchema = {
-	type: 'object',
-	properties: {
-		username: {
-			type: 'string',
-		},
-	},
-	required: ['username'],
-	additionalProperties: false,
-};
-
-export const isPOSTLivechatUsersTypeProps = ajv.compile<POSTLivechatUsersTypeProps>(POSTLivechatUsersTypePropsSchema);
-
 type GETLivechatVisitorsPagesVisitedRoomIdParams = PaginatedRequest;
 
 const GETLivechatVisitorsPagesVisitedRoomIdParamsSchema = {
@@ -4729,32 +4628,24 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	'/v1/livechat/users/:type': {
-		GET: (params: LivechatUsersManagerGETProps) => PaginatedResult<{
-			users: (ILivechatAgent & { departments: string[] })[];
-		}>;
-		POST: (params: POSTLivechatUsersTypeProps) => { success: boolean };
-	};
-
-	'/v1/livechat/users/:type/:_id': {
-		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
-		DELETE: () => void;
-	};
-
 	// For some reason, when using useEndpointData with POST, it's not able to detect the actual type of a path with path params
 	// So, we need to define the type of the path params here
 	'/v1/livechat/users/manager': {
-		GET: (params: LivechatUsersManagerGETProps) => PaginatedResult<{
+		GET: (
+			params: PaginatedRequest<{ text?: string; fields?: string; onlyAvailable?: boolean; excludeId?: string; showIdleAgents?: boolean }>,
+		) => PaginatedResult<{
 			users: ILivechatAgent[];
 		}>;
-		POST: (params: POSTLivechatUsersTypeProps) => { success: boolean };
+		POST: (params: { username: string }) => { user: ILivechatAgent };
 	};
 
 	'/v1/livechat/users/user': {
-		GET: (params: LivechatUsersManagerGETProps) => PaginatedResult<{
+		GET: (
+			params: PaginatedRequest<{ text?: string; fields?: string; onlyAvailable?: boolean; excludeId?: string; showIdleAgents?: boolean }>,
+		) => PaginatedResult<{
 			users: ILivechatAgent[];
 		}>;
-		POST: (params: POSTLivechatUsersTypeProps) => { success: boolean };
+		POST: (params: { username: string }) => { user: ILivechatAgent };
 	};
 	'/v1/livechat/users/manager/:_id': {
 		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
@@ -4771,7 +4662,7 @@ export type OmnichannelEndpoints = {
 		) => PaginatedResult<{
 			users: (ILivechatAgent & { departments: string[] })[];
 		}>;
-		POST: (params: LivechatUsersManagerPOSTProps) => { success: boolean };
+		POST: (params: { username: string }) => { user: ILivechatAgent };
 	};
 
 	'/v1/livechat/users/agent/:_id': {
@@ -4779,7 +4670,7 @@ export type OmnichannelEndpoints = {
 			params?: PaginatedRequest<{
 				text: string;
 			}>,
-		) => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> };
+		) => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
 		DELETE: () => { success: boolean };
 	};
 
