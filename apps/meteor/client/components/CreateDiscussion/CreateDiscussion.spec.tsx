@@ -8,10 +8,6 @@ import CreateDiscussion from './CreateDiscussion';
 import * as stories from './CreateDiscussion.stories';
 import { createFakeRoom } from '../../../tests/mocks/data';
 
-jest.mock('../../lib/utils/goToRoomById', () => ({
-	goToRoomById: jest.fn(),
-}));
-
 jest.mock('../../lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
 		getRoomDirectives: () => ({
