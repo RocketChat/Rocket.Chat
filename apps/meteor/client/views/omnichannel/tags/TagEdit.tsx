@@ -44,7 +44,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 		formState: { isDirty, errors },
 		handleSubmit,
 	} = useForm<TagEditPayload>({
-		mode: 'onBlur',
+		mode: 'onSubmit',
 		values: {
 			name: name || '',
 			description: description || '',
@@ -130,7 +130,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} disabled={!isDirty} type='submit' primary>
+					<Button form={formId} disabled={_id ? !isDirty : false} type='submit' primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

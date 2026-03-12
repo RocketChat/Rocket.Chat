@@ -61,7 +61,7 @@ const ExportMessages = () => {
 
 	const {
 		control,
-		formState: { errors, isSubmitting, isDirty },
+		formState: { errors, isSubmitting, isDirty, isSubmitted },
 		watch,
 		register,
 		setValue,
@@ -69,7 +69,7 @@ const ExportMessages = () => {
 		clearErrors,
 		reset,
 	} = useForm<ExportMessagesFormValues>({
-		mode: 'onBlur',
+		mode: 'onSubmit',
 		defaultValues: {
 			type: isE2ERoom ? 'download' : 'email',
 			dateFrom: '',
@@ -146,8 +146,9 @@ const ExportMessages = () => {
 	}, [type, selectedMessageStore]);
 
 	useEffect(() => {
-		setValue('messagesCount', messageCount, { shouldDirty: true });
-	}, [messageCount, setValue]);
+		const shouldValidate = isSubmitted;
+		setValue('messagesCount', messageCount, { shouldDirty: true, shouldValidate });
+	}, [messageCount, setValue, isSubmitted]);
 
 	const { mutateAsync: exportAsPDF } = useExportMessagesAsPDFMutation();
 
@@ -298,6 +299,17 @@ const ExportMessages = () => {
 										<Controller
 											name='toUsers'
 											control={control}
+											rules={{
+												validate: {
+													validateRecipient: (toUsers) => {
+														const additionalEmails = watch('additionalEmails');
+														if (toUsers?.length > 0 || additionalEmails !== '') {
+															return undefined;
+														}
+														return t('Mail_Message_Missing_to');
+													},
+												},
+											}}
 											render={({ field: { value, onChange, onBlur, name } }) => (
 												<UserAutoCompleteMultiple
 													id={toUsersField}
@@ -308,10 +320,18 @@ const ExportMessages = () => {
 													}}
 													onBlur={onBlur}
 													name={name}
+													aria-describedby={`${toUsersField}-error`}
+													aria-invalid={Boolean(errors?.toUsers?.message)}
+													error={errors?.toUsers?.message}
 												/>
 											)}
 										/>
 									</FieldRow>
+									{errors?.toUsers && (
+										<FieldError role='alert' id={`${toUsersField}-error`}>
+											{errors.toUsers.message}
+										</FieldError>
+									)}
 								</Field>
 								<Field>
 									<FieldLabel htmlFor={additionalEmailsField}>{t('To_additional_emails')}</FieldLabel>
@@ -333,7 +353,7 @@ const ExportMessages = () => {
 
 														return t('Mail_Message_Invalid_emails', { postProcess: 'sprintf', sprintf: [additionalEmails] });
 													},
-													validateToUsers: (additionalEmails) => {
+													validateRecipient: (additionalEmails) => {
 														if (additionalEmails !== '' || toUsers?.length > 0) {
 															return undefined;
 														}
@@ -342,10 +362,16 @@ const ExportMessages = () => {
 													},
 												},
 											}}
-											render={({ field }) => (
+											render={({ field: { value, onChange, onBlur, name } }) => (
 												<TextInput
 													id={additionalEmailsField}
-													{...field}
+													value={value}
+													onChange={(e) => {
+														onChange(e);
+														clearErrors('toUsers');
+													}}
+													onBlur={onBlur}
+													name={name}
 													placeholder={t('Email_Placeholder_any')}
 													addon={<Icon name='mail' size='x20' />}
 													aria-describedby={`${additionalEmailsField}-error`}
@@ -400,7 +426,7 @@ const ExportMessages = () => {
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button disabled={!isDirty} loading={isSubmitting} form={formId} primary type='submit'>
+					<Button loading={isSubmitting} form={formId} primary type='submit'>
 						{type === 'download' ? t('Download') : t('Send')}
 					</Button>
 				</ButtonGroup>

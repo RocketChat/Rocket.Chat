@@ -54,7 +54,7 @@ const RegisterUsername = () => {
 		control,
 		formState: { errors },
 	} = useForm<RegisterUsernamePayload>({
-		mode: 'onBlur',
+		mode: 'onSubmit',
 	});
 
 	useEffect(() => {
