@@ -28,7 +28,7 @@ const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, .
 			<ModalHeader>
 				<ModalIcon color='danger' name='modal-warning' />
 				<ModalTitle>{t('Are_you_sure')}</ModalTitle>
-				<ModalClose onClick={close} />
+				<ModalClose onClick={close} aria-label={t('Close')} />
 			</ModalHeader>
 			<ModalContent fontScale='p2'>{text}</ModalContent>
 			<ModalFooter>
