@@ -1,6 +1,8 @@
+```json
 {
   "name": "@rocket.chat/uikit-playground",
   "version": "0.7.6",
+  "description": "UIKit interactive playground for Rocket.Chat",
   "private": true,
   "type": "module",
   "scripts": {

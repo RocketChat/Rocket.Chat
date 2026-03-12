@@ -2,6 +2,8 @@
 	"name": "@rocket.chat/favicon",
 	"version": "0.0.4",
 	"private": true,
+	"description": "Favicon management for Rocket.Chat",
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
