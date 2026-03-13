@@ -128,6 +128,8 @@ type ChatPostMessage =
 			avatar?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
+			tmid?: string;
+			parseUrls?: boolean;
 	  }
 	| {
 			channel: string | string[];
@@ -137,6 +139,8 @@ type ChatPostMessage =
 			avatar?: string;
 			attachments?: MessageAttachment[];
 			customFields?: IMessage['customFields'];
+			tmid?: string;
+			parseUrls?: boolean;
 	  };
 
 const ChatPostMessageSchema = {
