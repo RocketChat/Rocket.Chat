@@ -5,4 +5,5 @@ export { usePeerAutocomplete, isFirstPeerAutocompleteOption } from './usePeerAut
 export { useWidgetExternalControls } from './useWidgetExternalControls';
 export { usePeekMediaSessionState } from './usePeekMediaSessionState';
 export { usePeekMediaSessionPeerInfo } from './usePeekMediaSessionPeerInfo';
+export { usePeekMediaSessionFeatures } from './usePeekMediaSessionFeatures';
 export type { PeekMediaSessionStateReturn } from './usePeekMediaSessionState';
