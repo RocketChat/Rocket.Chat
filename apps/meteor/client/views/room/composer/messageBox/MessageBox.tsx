@@ -159,7 +159,7 @@ const MessageBox = ({
 	});
 
 	const handleSendMessage = useEffectEvent(() => {
-		const text = chat.composer?.text ?? '';
+		const text = (chat.composer?.text ?? '').replace(/\n(?:\d+\.\s+|-\s+)$/, '');
 		chat.composer?.clear();
 		popup.clear();
 
@@ -204,6 +204,36 @@ const MessageBox = ({
 
 			event.preventDefault();
 			if (!isSending) {
+				const { value, selectionStart } = input;
+				const textBefore = value.slice(0, selectionStart);
+				const currentLine = textBefore.split('\n').pop() || '';
+
+				const olMatch = currentLine.match(/^(\d+)\.\s/);
+				const ulMatch = currentLine.match(/^-\s/);
+				const textAfter = value.slice(selectionStart).split('\n')[0] || '';
+				if (((olMatch && currentLine.trim() === `${olMatch[1]}.`) || (ulMatch && currentLine.trim() === '-')) && textAfter.trim() === '') {
+					const lineStart = selectionStart - currentLine.length;
+					const newValue = value.slice(0, lineStart) + value.slice(selectionStart);
+					chat.composer?.setText(newValue);
+					setTimeout(() => {
+						input.selectionStart = lineStart;
+						input.selectionEnd = lineStart;
+						input.focus();
+					}, 0);
+					return false;
+				}
+				if (olMatch) {
+					const nextNum = parseInt(olMatch[1], 10) + 1;
+					chat.composer?.insertNewLine();
+					chat.composer?.insertText(`${nextNum}. `);
+					return false;
+				}
+				if (ulMatch) {
+					chat.composer?.insertNewLine();
+					chat.composer?.insertText('- ');
+					return false;
+				}
+
 				chat.composer?.insertNewLine();
 				return false;
 			}
