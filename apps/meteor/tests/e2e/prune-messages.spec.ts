@@ -42,6 +42,7 @@ test.describe('prune-messages', () => {
 			} = poHomeChannel;
 
 			await content.sendFileMessage('any_file.txt');
+			await expect(content.composer.getFileByName('any_file.txt')).toBeVisible();
 			await poHomeChannel.composer.btnSend.click();
 			await expect(content.getLastMessageByFileName('any_file.txt')).toBeVisible();
 
