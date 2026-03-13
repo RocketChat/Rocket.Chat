@@ -51,61 +51,69 @@ describe('useEditRoomPermissions', () => {
 		});
 	});
 
-	describe('canChangeType - team room', () => {
+	describe('canChangeType - team main room', () => {
 		const teamRoomId = 'team-room-id';
 
 		beforeEach(() => {
 			mockUseTeamInfoQuery.mockReturnValue({ data: { roomId: teamRoomId } } as ReturnType<typeof useTeamInfoQuery>);
 		});
 
-		it('should allow changing type from private to channel when user has both create-team-channel and create-c', () => {
-			const room = createFakeRoom({ t: 'p', default: false, teamId: 'team1' });
-			const wrapper = mockAppRoot().withPermission('create-team-channel').withPermission('create-c').build();
+		it('should allow changing type from private to channel when user has create-c', () => {
+			const room = createFakeRoom({ t: 'p', default: false, teamId: 'team1', teamMain: true });
+			const wrapper = mockAppRoot().withPermission('create-c').build();
 
 			const { result } = renderHook(() => useEditRoomPermissions(room), { wrapper });
 
 			expect(result.current.canChangeType).toBe(true);
 		});
 
-		it('should not allow changing type from private to channel when user has only create-team-channel', () => {
+		it('should not allow changing type from private to channel when user lacks create-c', () => {
+			const room = createFakeRoom({ t: 'p', default: false, teamId: 'team1', teamMain: true });
+			const wrapper = mockAppRoot().build();
+
+			const { result } = renderHook(() => useEditRoomPermissions(room), { wrapper });
+
+			expect(result.current.canChangeType).toBe(false);
+		});
+	});
+
+	describe('canChangeType - team channel room', () => {
+		const teamRoomId = 'team-room-id';
+
+		beforeEach(() => {
+			mockUseTeamInfoQuery.mockReturnValue({ data: { roomId: teamRoomId } } as ReturnType<typeof useTeamInfoQuery>);
+		});
+
+		it('should allow changing type from private to channel when user has create-team-channel', () => {
 			const room = createFakeRoom({ t: 'p', default: false, teamId: 'team1' });
 			const wrapper = mockAppRoot().withPermission('create-team-channel').build();
 
 			const { result } = renderHook(() => useEditRoomPermissions(room), { wrapper });
 
-			expect(result.current.canChangeType).toBe(false);
+			expect(result.current.canChangeType).toBe(true);
 		});
 
-		it('should not allow changing type from private to channel when user has only create-c', () => {
+		it('should not allow changing type from private to channel when user lacks create-team-channel', () => {
 			const room = createFakeRoom({ t: 'p', default: false, teamId: 'team1' });
-			const wrapper = mockAppRoot().withPermission('create-c').build();
+			const wrapper = mockAppRoot().build();
 
 			const { result } = renderHook(() => useEditRoomPermissions(room), { wrapper });
 
 			expect(result.current.canChangeType).toBe(false);
 		});
 
-		it('should allow changing type from channel to private when user has both create-team-group and create-p', () => {
+		it('should allow changing type from channel to private when user has create-team-group', () => {
 			const room = createFakeRoom({ t: 'c', default: false, teamId: 'team1' });
-			const wrapper = mockAppRoot().withPermission('create-team-group').withPermission('create-p').build();
+			const wrapper = mockAppRoot().withPermission('create-team-group').build();
 
 			const { result } = renderHook(() => useEditRoomPermissions(room), { wrapper });
 
 			expect(result.current.canChangeType).toBe(true);
 		});
 
-		it('should not allow changing type from channel to private when user has only create-team-group', () => {
+		it('should not allow changing type from channel to private when user lacks create-team-group', () => {
 			const room = createFakeRoom({ t: 'c', default: false, teamId: 'team1' });
-			const wrapper = mockAppRoot().withPermission('create-team-group').build();
-
-			const { result } = renderHook(() => useEditRoomPermissions(room), { wrapper });
-
-			expect(result.current.canChangeType).toBe(false);
-		});
-
-		it('should not allow changing type from channel to private when user has only create-p', () => {
-			const room = createFakeRoom({ t: 'c', default: false, teamId: 'team1' });
-			const wrapper = mockAppRoot().withPermission('create-p').build();
+			const wrapper = mockAppRoot().build();
 
 			const { result } = renderHook(() => useEditRoomPermissions(room), { wrapper });
 

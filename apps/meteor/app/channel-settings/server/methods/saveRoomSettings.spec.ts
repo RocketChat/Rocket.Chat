@@ -25,7 +25,6 @@ describe('saveRoomSettings validators', () => {
 
 		stubs = {
 			'hasPermissionAsync': sandbox.stub(),
-			'hasAllPermissionAsync': sandbox.stub(),
 			'@rocket.chat/core-services': {
 				Team: { getInfoById: sandbox.stub() },
 			},
@@ -44,7 +43,6 @@ describe('saveRoomSettings validators', () => {
 			},
 			'../../../authorization/server/functions/hasPermission': {
 				hasPermissionAsync: stubs.hasPermissionAsync,
-				hasAllPermissionAsync: stubs.hasAllPermissionAsync,
 			},
 			'../../../settings/server': stubs['../../../settings/server'],
 			'../../../lib/server/functions/setRoomAvatar': { setRoomAvatar: sandbox.stub() },
@@ -72,7 +70,7 @@ describe('saveRoomSettings validators', () => {
 
 			it('should do nothing when the type is unchanged', async () => {
 				await expect(validators.roomType({ userId, room, value: 'p' })).to.not.be.rejected;
-				expect(stubs.hasPermissionAsync.called).to.be.false;
+				expect(stubs.hasPermissionAsync.called).to.equal(false);
 			});
 
 			it('should throw when changing p → c without create-c', async () => {
@@ -108,26 +106,48 @@ describe('saveRoomSettings validators', () => {
 			});
 		});
 
-		describe('team room', () => {
+		describe('team main room', () => {
+			const userId = 'user1';
+
+			it('should not throw when changing p → c with create-c', async () => {
+				stubs.hasPermissionAsync.resolves(true);
+				const teamMainRoom = { _id: 'room1', t: 'p', teamId: 'team1', teamMain: true };
+
+				await expect(validators.roomType({ userId, room: teamMainRoom, value: 'c' })).to.not.be.rejected;
+
+				expect(stubs.hasPermissionAsync.calledWith(userId, 'create-c')).to.equal(true);
+			});
+
+			it('should throw when changing p → c without create-c', async () => {
+				stubs.hasPermissionAsync.resolves(false);
+				const teamMainRoom = { _id: 'room1', t: 'p', teamId: 'team1', teamMain: true };
+
+				await expect(validators.roomType({ userId, room: teamMainRoom, value: 'c' })).to.be.rejectedWith(
+					MeteorError,
+					'Changing a private group to a public channel is not allowed',
+				);
+			});
+		});
+
+		describe('team channel room', () => {
 			const userId = 'user1';
 			const teamRoomId = 'team-room-id';
 			const room = { _id: 'room1', t: 'p', teamId: 'team1' };
 
 			beforeEach(() => {
-				stubs.hasPermissionAsync.resolves(true);
 				stubs['@rocket.chat/core-services'].Team.getInfoById.resolves({ _id: 'team1', roomId: teamRoomId });
 			});
 
-			it('should not throw when changing p → c with both create-team-channel and create-c', async () => {
-				stubs.hasAllPermissionAsync.resolves(true);
+			it('should not throw when changing p → c with create-team-channel', async () => {
+				stubs.hasPermissionAsync.resolves(true);
 
 				await expect(validators.roomType({ userId, room, value: 'c' })).to.not.be.rejected;
 
-				expect(stubs.hasAllPermissionAsync.calledWith(userId, ['create-team-channel', 'create-c'], teamRoomId)).to.be.true;
+				expect(stubs.hasPermissionAsync.calledWith(userId, 'create-team-channel', teamRoomId)).to.equal(true);
 			});
 
-			it('should throw when changing p → c without create-team-channel or create-c', async () => {
-				stubs.hasAllPermissionAsync.resolves(false);
+			it('should throw when changing p → c without create-team-channel', async () => {
+				stubs.hasPermissionAsync.resolves(false);
 
 				await expect(validators.roomType({ userId, room, value: 'c' })).to.be.rejectedWith(
 					MeteorError,
@@ -135,17 +155,17 @@ describe('saveRoomSettings validators', () => {
 				);
 			});
 
-			it('should not throw when changing c → p with both create-team-group and create-p', async () => {
-				stubs.hasAllPermissionAsync.resolves(true);
+			it('should not throw when changing c → p with create-team-group', async () => {
+				stubs.hasPermissionAsync.resolves(true);
 				const channelRoom = { _id: 'room1', t: 'c', teamId: 'team1' };
 
 				await expect(validators.roomType({ userId, room: channelRoom, value: 'p' })).to.not.be.rejected;
 
-				expect(stubs.hasAllPermissionAsync.calledWith(userId, ['create-team-group', 'create-p'], teamRoomId)).to.be.true;
+				expect(stubs.hasPermissionAsync.calledWith(userId, 'create-team-group', teamRoomId)).to.equal(true);
 			});
 
-			it('should throw when changing c → p without create-team-group or create-p', async () => {
-				stubs.hasAllPermissionAsync.resolves(false);
+			it('should throw when changing c → p without create-team-group', async () => {
+				stubs.hasPermissionAsync.resolves(false);
 				const channelRoom = { _id: 'room1', t: 'c', teamId: 'team1' };
 
 				await expect(validators.roomType({ userId, room: channelRoom, value: 'p' })).to.be.rejectedWith(
