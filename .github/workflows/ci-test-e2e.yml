@@ -263,12 +263,14 @@ jobs:
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           CI: true
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
+          E2E_SHARD: ${{ matrix.shard }}
+          E2E_TOTAL_SHARD: ${{ inputs.total-shard }}
         working-directory: ./apps/meteor
         run: |
           set -o xtrace
 
           yarn prepare
-          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+          yarn test:e2e --shard="$E2E_SHARD/$E2E_TOTAL_SHARD"
 
       - name: Merge ui coverage files
         if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
