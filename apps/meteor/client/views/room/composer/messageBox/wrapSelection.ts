@@ -9,8 +9,9 @@ const wrapSelectionPatterns: Record<string, string> = {
 	'{': '{{{text}}}',
 	'[': '[{{text}}]',
 	'*': '*{{text}}*',
-	'_': '_{{{text}}}_',
+	'_': '_{{text}}_',
 	'~': '~{{text}}~',
+	'˜': '~{{text}}~',
 };
 
 const once = (target: EventTarget, eventName: string, callback: (event: Event) => void) => {
@@ -22,6 +23,7 @@ const once = (target: EventTarget, eventName: string, callback: (event: Event) =
 };
 
 export const handleSelectionWrapping = (event: InputEvent, chat: ChatAPI): boolean => {
+	console.log('event', event);
 	const { composer } = chat;
 	if (!composer) {
 		return false;
@@ -37,7 +39,6 @@ export const handleSelectionWrapping = (event: InputEvent, chat: ChatAPI): boole
 	if (!key) {
 		return false;
 	}
-
 	const pattern = wrapSelectionPatterns[key];
 	if (!pattern) {
 		return false;
@@ -45,7 +46,7 @@ export const handleSelectionWrapping = (event: InputEvent, chat: ChatAPI): boole
 
 	const selection = composer.wrapSelection(pattern);
 	// this is a workaround when we are using MAC
-	if (event.isComposing && navigator.userAgent.includes('Mac') && ['`', '"', "'"].includes(key)) {
+	if (event.isComposing) {
 		once(input, 'input', (event) => {
 			input.value = selection.value;
 			input.setSelectionRange(selection.selectionStart, selection.selectionEnd);
