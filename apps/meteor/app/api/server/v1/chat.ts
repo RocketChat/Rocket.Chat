@@ -558,6 +558,60 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.get(
+		'chat.search',
+		{
+			authRequired: true,
+			query: isChatSearchProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						messages: {
+							type: 'array',
+							items: { $ref: '#/components/schemas/IMessage' },
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['messages', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { roomId, searchText } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			if (!roomId) {
+				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+			}
+
+			if (!searchText) {
+				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
+			}
+
+			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
+
+			if (searchResult === false) {
+				return API.v1.failure();
+			}
+
+			if (!searchResult.message) {
+				return API.v1.failure();
+			}
+
+			const result = searchResult.message.docs;
+
+			return API.v1.success({
+				messages: await normalizeMessagesForUser(result, this.userId),
+			});
+		},
 	);
 
 API.v1.addRoute(
@@ -592,38 +646,6 @@ API.v1.addRoute(
 				ts: Date.now(),
 				channel: messageReturn.channel,
 				message,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.search',
-	{ authRequired: true, validateParams: isChatSearchProps },
-	{
-		async get() {
-			const { roomId, searchText } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-			}
-
-			if (!searchText) {
-				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
-			}
-
-			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
-			if (searchResult === false) {
-				return API.v1.failure();
-			}
-			if (!searchResult.message) {
-				return API.v1.failure();
-			}
-			const result = searchResult.message.docs;
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
 	},
