@@ -1,4 +1,4 @@
-import { type ILicenseTag, type LicenseModule } from '@rocket.chat/core-typings';
+import type { ILicenseTag, LicenseModule } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { License } from '@rocket.chat/license';
 import { check } from 'meteor/check';

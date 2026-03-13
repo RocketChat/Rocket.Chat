@@ -3,7 +3,7 @@ import { toChildArray } from 'preact';
 import type { JSXInternal } from 'preact/src/jsx';
 
 import styles from './styles.scss';
-import { type Theme } from '../../Theme';
+import type { Theme } from '../../Theme';
 import { createClassName } from '../../helpers/createClassName';
 
 type HeaderProps = {
