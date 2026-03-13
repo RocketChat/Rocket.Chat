@@ -1,15 +1,7 @@
 #!/usr/bin/env -S npx ts-node
-/**
- * Benchmark suite for the Lexer.
- *
- * Measures tokenization performance (ops/sec) across various message categories.
- * Run with: `yarn bench` from packages/message-parser-handwritten/
- *
- */
 
 import { Bench, type Task } from 'tinybench';
 import { Lexer } from '../src/lexer/lexer';
-// ── Fixture type ───────────────────────────────────────────────────────────
 
 type Fixture = {
     name: string;
@@ -22,8 +14,6 @@ type BenchCategory = {
     warmupTime?: number;
     fixtures: Fixture[];
 };
-
-// ── Categories ─────────────────────────────────────────────────────────────
 
 const categories: BenchCategory[] = [
     {
@@ -171,8 +161,6 @@ const categories: BenchCategory[] = [
     },
 ];
 
-// ── Helpers ────────────────────────────────────────────────────────────────
-
 function formatResults(tasks: Task[]) {
     return tasks.map((task) => {
         const r = task.result as any;
@@ -189,8 +177,6 @@ function formatResults(tasks: Task[]) {
         };
     });
 }
-
-// ── Runner ─────────────────────────────────────────────────────────────────
 
 async function run() {
     console.log('='.repeat(72));
