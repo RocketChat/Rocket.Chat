@@ -1,4 +1,4 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, Team } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -39,6 +39,11 @@ export const performUserBan = async function (room: IRoom, user: IUser, options?
 	// Remove room-scoped roles (moderator, owner, leader)
 	if (['c', 'p'].includes(room.t)) {
 		await removeUserFromRolesAsync(user._id, ['moderator', 'owner', 'leader'], room._id);
+	}
+
+	// Remove from team when banning from main team room so roster stays in sync with subscription state
+	if (room.teamId && room.teamMain) {
+		await Team.removeMember(room.teamId, user._id);
 	}
 
 	// Save system message
