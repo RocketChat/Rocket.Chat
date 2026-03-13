@@ -1,9 +1,9 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
+import { useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
 type SlaEditProps = {
@@ -13,6 +13,12 @@ type SlaEditProps = {
 	data?: Serialized<IOmnichannelServiceLevelAgreements>;
 };
 
+type SlaEditFormData = {
+	name: string;
+	description?: string;
+	dueTimeInMinutes: number;
+};
+
 function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactElement {
 	const slasRoute = useRoute('omnichannel-sla-policies');
 	const saveSLA = useEndpoint('POST', '/v1/livechat/sla');
@@ -20,16 +26,18 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	const dispatchToastMessage = useToastMessageDispatch();
 	const t = useTranslation();
 
-	const { name, description, dueTimeInMinutes } = data || {};
-
 	const {
 		control,
-		getValues,
-		formState: { errors, isValid, isDirty },
+		formState: { errors, isDirty },
+		handleSubmit,
 		reset,
-	} = useForm({
-		mode: 'onChange',
-		defaultValues: { name, description, dueTimeInMinutes },
+	} = useForm<SlaEditFormData>({
+		mode: 'onSubmit',
+		defaultValues: {
+			name: data?.name || '',
+			description: data?.description || '',
+			dueTimeInMinutes: data?.dueTimeInMinutes || 0,
+		},
 	});
 
 	const { field: nameField } = useController({
@@ -50,13 +58,11 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 
 	const { field: descField } = useController({ control, name: 'description' });
 
-	const handleSave = useEffectEvent(async () => {
-		const { name, description, dueTimeInMinutes } = getValues();
+	const nameFieldId = useId();
+	const descFieldId = useId();
+	const dueTimeFieldId = useId();
 
-		if (!isValid || !name || dueTimeInMinutes === undefined) {
-			return dispatchToastMessage({ type: 'error', message: t('Required_field') });
-		}
-
+	const handleSave = async ({ name, description, dueTimeInMinutes }: SlaEditFormData) => {
 		try {
 			const payload = { name, description, dueTimeInMinutes: Number(dueTimeInMinutes) };
 			if (slaId) {
@@ -71,34 +77,53 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
-	});
+	};
 
 	return (
-		<ContextualbarScrollableContent is='form' {...props}>
+		<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} {...props}>
 			<Field>
-				<FieldLabel>{t('Name')}*</FieldLabel>
+				<FieldLabel htmlFor={nameFieldId}>{t('Name')}*</FieldLabel>
 				<FieldRow>
-					<TextInput placeholder={t('Name')} flexGrow={1} {...nameField} error={errors.name?.message} />
+					<TextInput
+						id={nameFieldId}
+						placeholder={t('Name')}
+						flexGrow={1}
+						{...nameField}
+						aria-describedby={`${nameFieldId}-error`}
+						aria-invalid={Boolean(errors.name?.message)}
+						error={errors.name?.message}
+					/>
 				</FieldRow>
-				<FieldError role='alert'>{errors.name?.message}</FieldError>
+				{errors.name && (
+					<FieldError role='alert' id={`${nameFieldId}-error`}>
+						{errors.name.message}
+					</FieldError>
+				)}
 			</Field>
 			<Field>
-				<FieldLabel>{t('Description')}</FieldLabel>
+				<FieldLabel htmlFor={descFieldId}>{t('Description')}</FieldLabel>
 				<FieldRow>
-					<TextInput placeholder={t('Description')} flexGrow={1} {...descField} />
+					<TextInput id={descFieldId} placeholder={t('Description')} flexGrow={1} {...descField} />
 				</FieldRow>
 			</Field>
 			<Field>
-				<FieldLabel>{t('Estimated_wait_time_in_minutes')}*</FieldLabel>
+				<FieldLabel htmlFor={dueTimeFieldId}>{t('Estimated_wait_time_in_minutes')}*</FieldLabel>
 				<FieldRow>
 					<NumberInput
+						id={dueTimeFieldId}
 						placeholder={t('Estimated_wait_time_in_minutes')}
 						flexGrow={1}
 						{...dueTimeField}
+						aria-describedby={`${dueTimeFieldId}-error`}
+						aria-invalid={Boolean(errors.dueTimeInMinutes?.message)}
 						error={errors.dueTimeInMinutes?.message}
 					/>
 				</FieldRow>
-				<FieldError role='alert'>{errors.dueTimeInMinutes?.message}</FieldError>
+				{errors.dueTimeInMinutes && (
+					<FieldError role='alert' id={`${dueTimeFieldId}-error`}>
+						{errors.dueTimeInMinutes.message}
+					</FieldError>
+				)}
 			</Field>
 			<Field>
 				<FieldRow>
@@ -109,7 +134,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 									{t('Reset')}
 								</Button>
 							)}
-							<Button primary mie='none' flexGrow={1} disabled={!isDirty || !isValid} onClick={handleSave}>
+							<Button primary mie='none' type='submit' flexGrow={1} disabled={isNew ? false : !isDirty}>
 								{t('Save')}
 							</Button>
 						</Margins>
