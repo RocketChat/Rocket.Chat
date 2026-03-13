@@ -23,7 +23,11 @@ export type ComposerAPI = {
 				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
 		},
 	): void;
-	wrapSelection(pattern: string): void;
+	wrapSelection(pattern: string): {
+		selectionStart: number;
+		selectionEnd: number;
+		value: string;
+	};
 	insertText(text: string): void;
 	insertNewLine(): void;
 	clear(): void;

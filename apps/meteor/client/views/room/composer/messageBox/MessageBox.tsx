@@ -20,6 +20,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import { handleSelectionWrapping } from './wrapSelection';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -373,6 +374,20 @@ const MessageBox = ({
 		),
 	);
 
+	const beforeInputHandlerCallbackRef = useSafeRefCallback(
+		useCallback(
+			(node: HTMLTextAreaElement) => {
+				const eventHandler = (e: Event) => handleSelectionWrapping(e as InputEvent, chat);
+				node.addEventListener('beforeinput', eventHandler);
+
+				return () => {
+					node.removeEventListener('beforeinput', eventHandler);
+				};
+			},
+			[chat],
+		),
+	);
+
 	const mergedRefs = useMessageComposerMergedRefs(
 		popup.callbackRef,
 		textareaRef,
@@ -380,6 +395,7 @@ const MessageBox = ({
 		callbackRef,
 		autofocusRef,
 		keyDownHandlerCallbackRef,
+		beforeInputHandlerCallbackRef,
 	);
 
 	const shouldPopupPreview = useEnablePopupPreview(popup.filter, popup.option);
