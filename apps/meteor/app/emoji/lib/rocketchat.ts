@@ -32,6 +32,7 @@ export type EmojiPackages = {
 					aliasOf?: undefined;
 					extension?: string;
 					etag?: string;
+					unicode?: string;
 			  }
 			| {
 					emojiPackage: string;

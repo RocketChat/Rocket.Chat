@@ -57,6 +57,25 @@ test.each([
 	['👆🏽👆🏽👆🏽', [bigEmoji([emojiUnicode('👆🏽'), emojiUnicode('👆🏽'), emojiUnicode('👆🏽')])]],
 	['👆🏺', [bigEmoji([emojiUnicode('👆'), emojiUnicode('🏺')])]],
 	['Hi 👍', [paragraph([plain('Hi '), emojiUnicode('👍')])]],
+	// Symbols and Pictographs Extended-A (U+1FA00–U+1FAFF) — Unicode 13+/14+
+	['🫠', [bigEmoji([emojiUnicode('🫠')])]],
+	['🫡', [bigEmoji([emojiUnicode('🫡')])]],
+	['🫶', [bigEmoji([emojiUnicode('🫶')])]],
+	['Hi 🫠', [paragraph([plain('Hi '), emojiUnicode('🫠')])]],
+	// ZWJ sequences involving Dingbats (❤️ U+2764) — couple/kiss emojis
+	['👨‍❤️‍💋‍👨', [bigEmoji([emojiUnicode('👨‍❤️‍💋‍👨')])]],
+	['👩‍❤️‍💋‍👩', [bigEmoji([emojiUnicode('👩‍❤️‍💋‍👩')])]],
+	['👨‍❤️‍👨', [bigEmoji([emojiUnicode('👨‍❤️‍👨')])]],
+	['💑', [bigEmoji([emojiUnicode('💑')])]],
+	['Hi 👨‍❤️‍💋‍👨', [paragraph([plain('Hi '), emojiUnicode('👨‍❤️‍💋‍👨')])]],
+	// ZWJ sequences involving Misc Symbols (⚕️, ⚖️, ✈️) — profession emojis
+	['👨‍⚕️', [bigEmoji([emojiUnicode('👨‍⚕️')])]],
+	['👩‍⚖️', [bigEmoji([emojiUnicode('👩‍⚖️')])]],
+	['👨‍✈️', [bigEmoji([emojiUnicode('👨‍✈️')])]],
+	['🩷', [bigEmoji([emojiUnicode('🩷')])]], // v15
+	['🫱🏿‍🫲🏻', [bigEmoji([emojiUnicode('🫱🏿‍🫲🏻')])]], // v14
+	['🫩', [bigEmoji([emojiUnicode('🫩')])]], // v16
+	['🇨🇶', [bigEmoji([emojiUnicode('🇨🇶')])]], // v16
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });

@@ -119,7 +119,7 @@ export const customRender = (html: string) => {
 			dataCheck = emoji.list[`:${emojiAlias}:`];
 		}
 
-		return `<span class="emoji" style="background-image:url(${getEmojiUrlFromName(
+		return `<span class="emoji emoji--custom" style="background-image:url(${getEmojiUrlFromName(
 			emojiAlias,
 			dataCheck.extension!,
 			dataCheck.etag,

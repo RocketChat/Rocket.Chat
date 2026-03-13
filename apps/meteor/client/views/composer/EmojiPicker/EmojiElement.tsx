@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
@@ -19,19 +18,10 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 		return null;
 	}
 
-	const emojiSmallClass = css`
-		> .emoji,
-		.emojione {
-			width: 1.125rem;
-			height: 1.125rem;
-		}
-	`;
-
 	const emojiElement = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} />;
 
 	return (
 		<IconButton
-			{...(small && { className: emojiSmallClass })}
 			small={small}
 			medium={!small}
 			onMouseOver={() => handlePreview(image, emoji)}

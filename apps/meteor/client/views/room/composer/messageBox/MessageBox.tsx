@@ -20,6 +20,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import { emoji } from '../../../../../app/emoji/client';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
@@ -155,7 +156,11 @@ const MessageBox = ({
 		}
 
 		const ref = messageComposerRef.current as HTMLElement;
-		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
+		chat.emojiPicker.open(ref, (emojiName: string) => {
+			const emojiEntry = emoji.list[`:${emojiName}:`];
+			const text = emojiEntry && 'unicode' in emojiEntry && emojiEntry.unicode ? ` ${emojiEntry.unicode} ` : ` :${emojiName}: `;
+			chat.composer?.insertText(text);
+		});
 	});
 
 	const handleSendMessage = useEffectEvent(() => {

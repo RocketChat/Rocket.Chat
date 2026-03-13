@@ -187,6 +187,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 			useEmoji &&
 				createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
 					trigger: ':',
+					prefix: '',
 					title: t('Emoji'),
 					triggerLength: 2,
 					getItemsFromLocal: async (filter: string) => {
@@ -240,7 +241,10 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					getItemsFromServer: async () => {
 						return [];
 					},
-					getValue: (item) => `${item._id.substring(1)}`,
+					getValue: (item) => {
+						const emojiEntry = emoji.list[item._id];
+						return emojiEntry && 'unicode' in emojiEntry ? (emojiEntry.unicode ?? item._id) : item._id;
+					},
 					renderItem: ({ item }) => <ComposerBoxPopupEmoji {...item} />,
 				}),
 			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({

@@ -12,13 +12,13 @@ import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationReq
 import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
-import emojione from 'emojione';
 
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
 import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { validateFederatedUsername } from './helpers/validateFederatedUsername';
 import { MatrixMediaService } from './services/MatrixMediaService';
+import { shortnameToUnicode } from './utils/emojiConverter';
 
 export const fileTypes: Record<string, FileMessageType> = {
 	image: 'm.image',
@@ -464,7 +464,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
 			}
 
-			const reactionKey = emojione.shortnameToUnicode(reaction);
+			const reactionKey = shortnameToUnicode(reaction);
 
 			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
@@ -504,7 +504,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const reactionKey = emojione.shortnameToUnicode(reaction);
+			const reactionKey = shortnameToUnicode(reaction);
 
 			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
