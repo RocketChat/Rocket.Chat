@@ -4,6 +4,7 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import type { UserLabel } from './UserAutoCompleteMultipleOptions';
+import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
 type UserAutoCompleteMultipleOptionProps = {
 	label: UserLabel;
@@ -14,8 +15,9 @@ type UserAutoCompleteMultipleOptionProps = {
 };
 
 const UserAutoCompleteMultipleOption = ({ label, ...props }: UserAutoCompleteMultipleOptionProps) => {
-	const { name, username, _federated } = label;
+	const { name, _federated } = label;
 	const useRealName = useSetting('UI_Use_Real_Name');
+	const username = normalizeUsername(label.username);
 
 	const optionLabel = useMemo(() => {
 		if (!useRealName || !name) {
