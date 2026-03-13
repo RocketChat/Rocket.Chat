@@ -51,7 +51,6 @@ export const schemas = typia.json.schemas<
 			| IBanner
 		),
 		CallHistoryItem,
-		ICalendarEvent,
 		ICustomUserStatus,
 		SlashCommand,
 	],
