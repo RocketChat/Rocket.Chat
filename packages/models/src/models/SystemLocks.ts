@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import type { ISystemLock } from '@rocket.chat/core-typings';
 import type { ISystemLocksModel } from '@rocket.chat/model-typings';
 import type { Db } from 'mongodb';
@@ -17,6 +19,7 @@ export class SystemLocksRaw extends BaseRaw<ISystemLock> implements ISystemLocks
 		const now = new Date();
 		const staleThreshold = new Date();
 		staleThreshold.setMinutes(staleThreshold.getMinutes() - staleLockThresholdMinutes);
+		const lockKey = randomUUID();
 
 		try {
 			const record = await this.col.findOneAndUpdate(
@@ -27,6 +30,7 @@ export class SystemLocksRaw extends BaseRaw<ISystemLock> implements ISystemLocks
 				{
 					$set: {
 						locked: true,
+						lockKey,
 						lockedAt: now,
 					},
 				},
@@ -47,9 +51,9 @@ export class SystemLocksRaw extends BaseRaw<ISystemLock> implements ISystemLocks
 		}
 	}
 
-	async renewLockThreshold(key: string): Promise<void> {
+	async renewLockThreshold(key: string, lockKey: string): Promise<void> {
 		await this.col.updateOne(
-			{ _id: key, locked: true },
+			{ _id: key, locked: true, lockKey },
 			{
 				$set: {
 					lockedAt: new Date(),
@@ -58,13 +62,16 @@ export class SystemLocksRaw extends BaseRaw<ISystemLock> implements ISystemLocks
 		);
 	}
 
-	async releaseLock(key: string, extraData?: Record<string, unknown>): Promise<void> {
+	async releaseLock(key: string, lockKey: string, extraData?: Record<string, unknown>): Promise<void> {
 		await this.col.updateOne(
-			{ _id: key },
+			{ _id: key, lockKey },
 			{
 				$set: {
 					locked: false,
 					...(extraData && { extraData }),
+				},
+				$unset: {
+					lockKey: 1 as const,
 				},
 			},
 		);

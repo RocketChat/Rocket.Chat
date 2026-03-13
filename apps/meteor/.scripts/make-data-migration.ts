@@ -47,6 +47,7 @@ function main(id: string, description: string): void {
 	const existingWithId = fileList.find((f) => f.replace(/^\d{5}_/, '') === `${normalizedId}.ts`);
 	if (existingWithId) {
 		console.error(`Data migration with id "${id}" already exists as ${existingWithId}`);
+		process.exitCode = 1;
 		return;
 	}
 

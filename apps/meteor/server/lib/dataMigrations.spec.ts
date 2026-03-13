@@ -113,7 +113,7 @@ describe('Data Migrations', () => {
 		// Use a different lastVersion to avoid the early return (lastVersion === Info.version)
 		mockAcquireLock.mockResolvedValue({
 			acquired: true,
-			record: { _id: 'data_migrations', locked: true, extraData: { lastVersion: '8.2.0' } },
+			record: { _id: 'data_migrations', locked: true, lockKey: 'test-lock-key', extraData: { lastVersion: '8.2.0' } },
 		});
 		mockReleaseLock.mockResolvedValue(undefined);
 		mockRenewLockThreshold.mockResolvedValue(undefined);
@@ -170,7 +170,7 @@ describe('Data Migrations', () => {
 			await runDataMigrations();
 
 			expect(mockAcquireLock).toHaveBeenCalledWith('data_migrations');
-			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', { lastVersion: '8.3.0' });
+			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', 'test-lock-key', { lastVersion: '8.3.0' });
 		});
 
 		it('should release lock even if migration throws', async () => {
@@ -181,7 +181,7 @@ describe('Data Migrations', () => {
 
 			await runDataMigrations();
 
-			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', { lastVersion: '8.3.0' });
+			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', 'test-lock-key', { lastVersion: '8.3.0' });
 		});
 
 		it('should run a new migration that has no record', async () => {
@@ -247,7 +247,7 @@ describe('Data Migrations', () => {
 			const runFn = jest.fn();
 			mockAcquireLock.mockResolvedValue({
 				acquired: true,
-				record: { _id: 'data_migrations', locked: true, extraData: { lastVersion: '8.3.0' } },
+				record: { _id: 'data_migrations', locked: true, lockKey: 'skip-lock-key', extraData: { lastVersion: '8.3.0' } },
 			});
 			mockFind.mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
 
@@ -256,7 +256,7 @@ describe('Data Migrations', () => {
 			await runDataMigrations();
 
 			expect(runFn).not.toHaveBeenCalled();
-			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', undefined);
+			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', 'skip-lock-key', undefined);
 		});
 
 		it('should record failure when migration throws', async () => {
@@ -356,7 +356,7 @@ describe('Data Migrations', () => {
 			const runFn = jest.fn();
 			mockAcquireLock.mockResolvedValue({
 				acquired: true,
-				record: { _id: 'data_migrations', locked: true, extraData: { lastVersion: '8.5.0' } },
+				record: { _id: 'data_migrations', locked: true, lockKey: 'test-lock-key', extraData: { lastVersion: '8.5.0' } },
 			});
 			mockFind.mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
 			mockInfoObj.version = '8.3.0';
@@ -372,7 +372,7 @@ describe('Data Migrations', () => {
 			const runFn = jest.fn();
 			mockAcquireLock.mockResolvedValue({
 				acquired: true,
-				record: { _id: 'data_migrations', locked: true, extraData: { lastVersion: '8.5.0-rc.1' } },
+				record: { _id: 'data_migrations', locked: true, lockKey: 'test-lock-key', extraData: { lastVersion: '8.5.0-rc.1' } },
 			});
 			mockFind.mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
 			mockInfoObj.version = '8.3.0-develop';
@@ -388,7 +388,7 @@ describe('Data Migrations', () => {
 			const runFn = jest.fn();
 			mockAcquireLock.mockResolvedValue({
 				acquired: true,
-				record: { _id: 'data_migrations', locked: true, extraData: { lastVersion: '8.2.0' } },
+				record: { _id: 'data_migrations', locked: true, lockKey: 'test-lock-key', extraData: { lastVersion: '8.2.0' } },
 			});
 			mockFind.mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
 			mockInfoObj.version = '8.3.0';
@@ -404,7 +404,7 @@ describe('Data Migrations', () => {
 			const runFn = jest.fn();
 			mockAcquireLock.mockResolvedValue({
 				acquired: true,
-				record: { _id: 'data_migrations', locked: true },
+				record: { _id: 'data_migrations', locked: true, lockKey: 'test-lock-key' },
 			});
 			mockFind.mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
 
@@ -440,7 +440,7 @@ describe('Data Migrations', () => {
 				'ERROR! SERVER STOPPED - MANUAL DATA REVERSION REQUIRED',
 				expect.stringContaining('manual reversion'),
 			);
-			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', undefined);
+			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', 'test-lock-key', undefined);
 			expect(processExitSpy).toHaveBeenCalledWith(1);
 		});
 
@@ -470,7 +470,7 @@ describe('Data Migrations', () => {
 
 			await runDataMigrations();
 
-			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', { lastVersion: '9.0.0' });
+			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', 'test-lock-key', { lastVersion: '9.0.0' });
 		});
 	});
 });

@@ -1,6 +1,7 @@
 interface ISystemLockBase {
 	_id: string;
 	locked: boolean;
+	lockKey?: string;
 	lockedAt?: Date;
 	buildAt?: string | Date;
 	extraData?: Record<string, unknown>;

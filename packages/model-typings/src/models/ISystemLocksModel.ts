@@ -9,6 +9,6 @@ export interface ISystemLockResult {
 
 export interface ISystemLocksModel extends IBaseModel<ISystemLock> {
 	acquireLock(key: string, staleLockThresholdMinutes?: number): Promise<ISystemLockResult>;
-	renewLockThreshold(key: string): Promise<void>;
-	releaseLock(key: string, extraData?: Record<string, unknown>): Promise<void>;
+	renewLockThreshold(key: string, lockKey: string): Promise<void>;
+	releaseLock(key: string, lockKey: string, extraData?: Record<string, unknown>): Promise<void>;
 }

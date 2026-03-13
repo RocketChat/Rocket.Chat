@@ -102,13 +102,18 @@ type LockReleaseFunction = (extraData?: Record<string, unknown>) => Promise<void
 async function acquireLock(): Promise<{ record: ISystemLock; releaseLock: LockReleaseFunction }> {
 	const result = await SystemLocks.acquireLock(LOCK_KEY);
 	if (result.acquired && result.record) {
-		const renewInterval = setInterval(() => SystemLocks.renewLockThreshold(LOCK_KEY), 60 * 1000);
+		const { lockKey } = result.record;
+		if (!lockKey) {
+			throw new Error('Lock acquired but lockKey is missing');
+		}
+
+		const renewInterval = setInterval(() => void SystemLocks.renewLockThreshold(LOCK_KEY, lockKey), 60 * 1000);
 
 		return {
 			record: result.record,
 			releaseLock: async (extraData?: Record<string, unknown>) => {
 				clearInterval(renewInterval);
-				await SystemLocks.releaseLock(LOCK_KEY, extraData);
+				await SystemLocks.releaseLock(LOCK_KEY, lockKey, extraData);
 			},
 		};
 	}
@@ -301,6 +306,7 @@ export async function runDataMigrations(): Promise<void> {
 						'DATA MIGRATION FAILED (FATAL)',
 						[`Migration "${recordId}" failed:`, errorMsg, '', 'Server cannot continue.'].join('\n'),
 					);
+					await releaseLock();
 					process.exit(1);
 				}
 
