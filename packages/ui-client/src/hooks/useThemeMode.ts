@@ -8,7 +8,11 @@ import { useCallback, useState } from 'react';
  * @param defaultThemeMode The default theme mode to use if the user has not set any.
  * @returns [currentThemeMode, setThemeMode, resolvedThemeMode]
  */
-export const useThemeMode = (): [ThemeMode, (value: ThemeMode) => () => void, Themes] => {
+export const useThemeMode = (): [
+	currentThemeMode: ThemeMode,
+	setThemeMode: (value: ThemeMode) => () => void,
+	resolvedThemeMode: Themes,
+] => {
 	const themeMode = useUserPreference<ThemeMode>('themeAppearence') || 'auto';
 
 	const saveUserPreferences = useEndpoint('POST', '/v1/users.setPreferences');
