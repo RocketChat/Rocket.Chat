@@ -23,7 +23,6 @@ const once = (target: EventTarget, eventName: string, callback: (event: Event) =
 };
 
 export const handleSelectionWrapping = (event: InputEvent, chat: ChatAPI): boolean => {
-	console.log('event', event);
 	const { composer } = chat;
 	if (!composer) {
 		return false;
