@@ -28,7 +28,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		return Messages.findVisibleByRoomIdAfterTimestamp(rid, start, {
+		return Messages.findVisibleByRoomIdAfterTimestamp(rid, start, true, {
 			sort: {
 				ts: -1,
 			},
