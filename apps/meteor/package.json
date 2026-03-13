@@ -321,9 +321,9 @@
 		"@rocket.chat/livechat": "workspace:^",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@storybook/addon-a11y": "^8.6.17",
-		"@storybook/addon-essentials": "^8.6.17",
-		"@storybook/addon-interactions": "^8.6.17",
+		"@storybook/addon-a11y": "^8.6.15",
+		"@storybook/addon-essentials": "^8.6.15",
+		"@storybook/addon-interactions": "^8.6.15",
 		"@storybook/addon-styling-webpack": "^1.0.1",
 		"@storybook/addon-webpack5-compiler-swc": "~3.0.0",
 		"@storybook/react": "^8.6.17",
@@ -400,6 +400,7 @@
 		"@types/underscore": "^1.13.0",
 		"@types/xml-crypto": "~1.4.6",
 		"@types/xml-encryption": "~1.2.4",
+		"@vitejs/plugin-react": "~6.0.0",
 		"autoprefixer": "^9.8.8",
 		"babel-loader": "~10.0.0",
 		"babel-plugin-array-includes": "^2.0.3",
@@ -448,6 +449,8 @@
 		"ts-node": "^10.9.2",
 		"tsx": "~4.20.6",
 		"typescript": "~5.9.3",
+		"vite": "^8.0.0",
+		"vite-plugin-istanbul": "^7.2.1",
 		"webpack": "~5.99.9"
 	},
 	"volta": {
@@ -458,7 +461,7 @@
 	},
 	"meteor": {
 		"mainModule": {
-			"client": "client/main.ts",
+			"client": "client/noop.ts",
 			"server": "server/main.ts"
 		}
 	},

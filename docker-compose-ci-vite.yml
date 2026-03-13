@@ -1,0 +1,252 @@
+# docker-compose-ci-vite.yml
+x-microservice-defaults: &microservice-defaults
+  environment:
+    - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+    - 'TRANSPORTER=${TRANSPORTER:-}'
+    - MOLECULER_LOG_LEVEL=info
+  extra_hosts:
+    - 'host.docker.internal:host-gateway'
+  depends_on:
+    - nats
+
+services:
+  rocketchat:
+    volumes:
+      - ${COVERAGE_DIR:-/tmp/coverage}:${COVERAGE_DIR:-/tmp/coverage}
+    build:
+      context: /tmp/build
+      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.backend
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat-backend:${DOCKER_TAG}${DOCKER_TAG_SUFFIX_ROCKETCHAT:-}
+    environment:
+      - TEST_MODE=true
+      - DEBUG=${DEBUG:-}
+      - EXIT_UNHANDLEDPROMISEREJECTION=true
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL:-}'
+      - 'TRANSPORTER=${TRANSPORTER:-}'
+      - MOLECULER_LOG_LEVEL=info
+      - 'ROCKETCHAT_LICENSE=${ENTERPRISE_LICENSE:-}'
+      - 'COVERAGE_DIR=${COVERAGE_DIR:-}'
+      - 'COVERAGE_REPORTER=${COVERAGE_REPORTER:-}'
+      - 'COVERAGE_FILE_NAME=${COVERAGE_FILE_NAME:-}'
+      - OVERWRITE_SETTING_Log_Level=${DEBUG_LOG_LEVEL:-0}
+      - Federation_Service_Enabled=true
+      - 'Federation_Service_Domain=rc.host'
+      - HEAP_USAGE_PERCENT=99
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - traefik
+      - mongo
+    labels:
+      traefik.enable: true
+      traefik.http.services.rocketchat-backend.loadbalancer.server.port: 3000
+      traefik.http.routers.rocketchat-backend.service: rocketchat-backend
+      traefik.http.routers.rocketchat-backend.entrypoints: http
+      traefik.http.routers.rocketchat-backend.rule: PathPrefix(`/api`) || PathPrefix(`/livechat`) || PathPrefix(`/_timesync`) || PathPrefix(`/__cordova`) || PathPrefix(`/websocket`) || PathPrefix(`/sockjs`) || PathPrefix(`/assets`) || PathPrefix(`/avatar`) || PathPrefix(`/file-upload`) || PathPrefix(`/emoji-custom`) || PathPrefix(`/custom-sounds`) || PathPrefix(`/layout`) || PathPrefix(`/_saml`)
+      traefik.http.routers.rocketchat-backend.priority: 50
+      traefik.http.middlewares.test-retry.retry.attempts: 4
+    healthcheck:
+      interval: 2s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/livez || exit 1
+
+  frontend:
+    build:
+      context: /tmp/build
+      dockerfile: ${GITHUB_WORKSPACE:-}/apps/meteor/.docker/Dockerfile.frontend
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/rocket.chat-frontend:${DOCKER_TAG}
+    environment:
+      - VITE_TEST_MODE=true
+      - TEST_MODE=true
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
+      - MOLECULER_LOG_LEVEL=info
+    depends_on:
+      rocketchat:
+        condition: service_healthy
+      traefik:
+        condition: service_started
+    labels:
+      traefik.enable: true
+      traefik.http.services.rocketchat-frontend.loadbalancer.server.port: 80
+      traefik.http.routers.rocketchat-frontend.service: rocketchat-frontend
+      traefik.http.routers.rocketchat-frontend.entrypoints: http
+      traefik.http.routers.rocketchat-frontend.rule: PathPrefix(`/`)
+      traefik.http.routers.rocketchat-frontend.priority: 1
+    healthcheck:
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+      test: wget --no-verbose --tries=1 --spider http://127.0.0.1:80/ || exit 1
+
+  authorization-service:
+    <<: *microservice-defaults
+    build:
+      context: .
+      dockerfile: ee/apps/authorization-service/Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+      args:
+        SERVICE: authorization-service
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
+
+  account-service:
+    <<: *microservice-defaults
+    build:
+      context: .
+      dockerfile: ee/apps/account-service/Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+      args:
+        SERVICE: account-service
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
+
+  presence-service:
+    <<: *microservice-defaults
+    build:
+      context: .
+      dockerfile: ee/apps/presence-service/Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+      args:
+        SERVICE: presence-service
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
+
+  ddp-streamer-service:
+    <<: *microservice-defaults
+    build:
+      context: .
+      dockerfile: ee/apps/ddp-streamer/Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+      args:
+        SERVICE: ddp-streamer
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}
+    depends_on:
+      - nats
+      - traefik
+    labels:
+      traefik.enable: true
+      traefik.http.services.ddp-streamer-service.loadbalancer.server.port: 3000
+      traefik.http.routers.ddp-streamer-service.service: ddp-streamer-service
+      traefik.http.routers.ddp-streamer-service.entrypoints: http
+      traefik.http.routers.ddp-streamer-service.rule: PathPrefix(`/websocket`) || PathPrefix(`/sockjs`)
+      traefik.http.routers.ddp-streamer-service.priority: 100
+
+  queue-worker-service:
+    <<: *microservice-defaults
+    build:
+      context: .
+      dockerfile: ee/apps/queue-worker/Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+      args:
+        SERVICE: queue-worker
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}
+
+  omnichannel-transcript-service:
+    <<: *microservice-defaults
+    build:
+      context: .
+      dockerfile: ee/apps/omnichannel-transcript/Dockerfile
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+      args:
+        SERVICE: omnichannel-transcript
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
+    environment:
+      - TEST_MODE=true
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
+      - MOLECULER_LOG_LEVEL=info
+
+  nats:
+    image: nats:2.6-alpine
+
+  mongo:
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
+    container_name: mongo
+    restart: on-failure
+    ports:
+      - 27017:27017
+    environment:
+      MONGODB_REPLICA_SET_NAME: ${MONGODB_REPLICA_SET_NAME:-rs0}
+      MONGODB_PORT_NUMBER: ${MONGODB_PORT_NUMBER:-27017}
+      MONGODB_INITIAL_PRIMARY_HOST: ${MONGODB_INITIAL_PRIMARY_HOST:-mongo}
+    entrypoint: |
+      bash -c
+        "mongod --replSet $$MONGODB_REPLICA_SET_NAME --bind_ip_all &
+          sleep 2;
+          until mongosh --quiet --eval \"db.adminCommand('ping')\"; do
+            echo '=====> Waiting for Mongo...';
+            sleep 1;
+          done;
+          if ! mongosh --quiet --eval \"rs.status().ok\" | grep -q 1; then
+            echo \"=====> Initiating ReplSet $$MONGODB_REPLICA_SET_NAME...\";
+            mongosh --eval \"rs.initiate({_id: '$$MONGODB_REPLICA_SET_NAME', members: [{ _id: 0, host: '$$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER' }]})\";
+          else
+            echo '=====> ReplSet already initialized';
+          fi
+          echo '=====> Mongo Ready';
+        wait"
+
+  httpbin:
+    image: kong/httpbin
+
+  traefik:
+    image: traefik:v3.6.6
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.http.address=:80
+      - --entrypoints.traefik.address=:8081
+      - --api=true
+      - --api.dashboard=true
+      - --api.insecure=true
+      - '--serverstransport.maxidleconnsperhost=-1'
+      - --log.level=DEBUG
+    ports:
+      - 3000:80
+      - 8081:8081
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  openldap:
+    image: bitnamilegacy/openldap:latest
+    volumes:
+      - ./development/ldap:/opt/bitnami/openldap/data/
+    environment:
+      - LDAP_ADMIN_USERNAME=admin
+      - LDAP_ADMIN_PASSWORD=adminpassword
+      - LDAP_ROOT=dc=space,dc=air
+      - LDAP_ADMIN_DN=cn=admin,dc=space,dc=air
+      - LDAP_CUSTOM_LDIF_DIR=/opt/bitnami/openldap/data
+      - LDAP_LOGLEVEL=-1
+      - BITNAMI_DEBUG=false
+    ports:
+      - 1389:1389
+      - 1636:1636

@@ -1,0 +1,242 @@
+import path from 'node:path';
+
+import react from '@vitejs/plugin-react';
+import { defineConfig, esmExternalRequirePlugin, type BuildEnvironmentOptions } from 'vite';
+import istanbul from 'vite-plugin-istanbul';
+
+import info from './vite/plugins/info';
+import meteor from './vite/plugins/meteor';
+import nginx from './vite/plugins/nginx';
+
+process.env.TEST_MODE ??= process.env.VITE_TEST_MODE;
+process.env.E2E_COVERAGE ??= process.env.VITE_E2E_COVERAGE;
+
+const isTestMode = process.env.TEST_MODE === 'true';
+const isCoverageMode = process.env.E2E_COVERAGE === 'true';
+
+if (isTestMode) {
+	console.warn('Running in TEST_MODE: source maps enabled');
+}
+
+if (isCoverageMode) {
+	console.warn('Running in E2E_COVERAGE mode: code instrumentation enabled');
+}
+
+const build = {
+	emptyOutDir: true,
+	assetsDir: 'static',
+	manifest: true,
+	target: 'esnext',
+	sourcemap: isTestMode || isCoverageMode ? 'inline' : false,
+	rolldownOptions: {
+		optimization: {
+			inlineConst: true,
+			pifeForModuleWrappers: true,
+		},
+		context: 'globalThis',
+		checks: {
+			circularDependency: true,
+			pluginTimings: false, // Suppress vite:istanbul timing warnings
+		},
+		output: {
+			format: 'esm',
+			minify: true,
+			cleanDir: true,
+			externalLiveBindings: true,
+			generatedCode: {
+				preset: 'es2015',
+			},
+		},
+	},
+} as const satisfies BuildEnvironmentOptions;
+
+export default defineConfig(async () => {
+	const ROOT_URL = await getDefaultHostUrl();
+
+	console.log(`Using ROOT_URL: ${ROOT_URL.toString()}`);
+
+	return defineConfig({
+		appType: 'spa',
+		plugins: [
+			info(),
+			esmExternalRequirePlugin({
+				external: ['react', 'react-dom'],
+			}),
+			meteor({
+				rootUrl: ROOT_URL.toString(),
+			}),
+			react(),
+			nginx(),
+			isCoverageMode &&
+				istanbul({
+					include: 'client/**/*',
+					exclude: [
+						'node_modules/**',
+						'tests/**',
+						'**/*.spec.ts',
+						'**/*.test.ts',
+						'**/*.spec.js',
+						'**/*.test.js',
+						'**/*.stories.tsx',
+						'**/*.stories.ts',
+						'**/mocks/**',
+						'**/fixtures/**',
+						'**/__mocks__/**',
+						'**/*.d.ts',
+						'**/vite/**',
+						'client/lib/chatra/**', // Third-party integrations
+						'client/lib/2fa/**', // Vendor code
+					],
+					extension: ['.ts', '.tsx', '.js', '.jsx'],
+					requireEnv: false,
+					forceBuildInstrument: true,
+					cypress: false,
+					checkProd: false,
+				}),
+		].filter(Boolean),
+		build,
+		define: {
+			'process.env.TEST_MODE': JSON.stringify(process.env.TEST_MODE),
+			'process.platform': JSON.stringify(process.platform),
+		},
+		resolve: {
+			dedupe: [
+				'@rocket.chat/core-typings',
+				'@rocket.chat/emitter',
+				'@rocket.chat/fuselage-forms',
+				'@rocket.chat/fuselage-tokens',
+				'@rocket.chat/fuselage',
+				'@rocket.chat/ui-client',
+				'@rocket.chat/ui-contexts',
+				'@tanstack/react-query',
+				'react-aria',
+				'react-dom',
+				'react-hook-form',
+				'react-i18next',
+				'react-stately',
+				'react',
+			],
+			alias: {
+				// Meteor packages
+				'meteor': path.resolve('./src/meteor'),
+				'typia': path.resolve('./src/typia'),
+				// Third-party packages
+				'react-aria': path.resolve('./node_modules/react-aria'),
+				// Rocket.Chat Packages
+				'@rocket.chat/api-client': path.resolve('../../packages/api-client/src/index.ts'),
+				'@rocket.chat/apps-engine': path.resolve('../../packages/apps-engine/src'),
+				'@rocket.chat/base64': path.resolve('../../packages/base64/src/base64.ts'),
+				'@rocket.chat/core-typings': path.resolve('../../packages/core-typings/src/index.ts'),
+				'@rocket.chat/favicon': path.resolve('../../packages/favicon/src/index.ts'),
+				'@rocket.chat/fuselage-ui-kit': path.resolve('../../packages/fuselage-ui-kit/src/index.ts'),
+				'@rocket.chat/gazzodown': path.resolve('../../packages/gazzodown/src/index.ts'),
+				'@rocket.chat/message-types': path.resolve('../../packages/message-types/src/index.ts'),
+				'@rocket.chat/password-policies': path.resolve('../../packages/password-policies/src/index.ts'),
+				'@rocket.chat/random': path.resolve('../../packages/random/src/main.client.ts'),
+				'@rocket.chat/sha256': path.resolve('../../packages/sha256/src/sha256.ts'),
+				'@rocket.chat/tools': path.resolve('../../packages/tools/src/index.ts'),
+				'@rocket.chat/ui-avatar': path.resolve('../../packages/ui-avatar/src/index.ts'),
+				'@rocket.chat/ui-client': path.resolve('../../packages/ui-client/src/index.ts'),
+				'@rocket.chat/ui-composer': path.resolve('../../packages/ui-composer/src/index.ts'),
+				'@rocket.chat/ui-contexts': path.resolve('../../packages/ui-contexts/src/index.ts'),
+				'@rocket.chat/ui-video-conf': path.resolve('../../packages/ui-video-conf/src/index.ts'),
+				'@rocket.chat/ui-voip': path.resolve('../../packages/ui-voip/src/index.ts'),
+				'@rocket.chat/web-ui-registration': path.resolve('../../packages/web-ui-registration/src/index.ts'),
+				'@rocket.chat/mongo-adapter': path.resolve('../../packages/mongo-adapter/src/index.ts'),
+				'@rocket.chat/media-signaling': path.resolve('../../packages/media-signaling/src/index.ts'),
+				// Rocket.Chat Enterprise Packages
+				'@rocket.chat/ui-theming': path.resolve('../../ee/packages/ui-theming/src/index.ts'),
+			},
+		},
+		server: {
+			cors: true,
+			origin: ROOT_URL.origin,
+			allowedHosts: [ROOT_URL.hostname, 's3.amazonaws.com'],
+			watch: {
+				ignored: ['**/tests/**'],
+			},
+			proxy: {
+				'/api': { target: ROOT_URL.origin, changeOrigin: true },
+				'/avatar': { target: ROOT_URL.origin, changeOrigin: true },
+				'/assets': { target: ROOT_URL.origin, changeOrigin: true },
+				'/images': { target: ROOT_URL.origin, changeOrigin: true },
+				'/emoji-custom': { target: ROOT_URL.origin, changeOrigin: true },
+				'/sockjs': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
+				'/websocket': { target: ROOT_URL.origin, ws: true, rewriteWsOrigin: true, changeOrigin: true, autoRewrite: true },
+				'/packages': { target: ROOT_URL.origin, changeOrigin: true },
+				'/_oauth': { target: ROOT_URL.origin, changeOrigin: true },
+				'/custom-sounds': { target: ROOT_URL.origin, changeOrigin: true },
+				'/i18n': { target: ROOT_URL.origin, changeOrigin: true },
+				'/file-decrypt': { target: ROOT_URL.origin, changeOrigin: true },
+				'/robots.txt': { target: ROOT_URL.origin, changeOrigin: true },
+				'/livechat': { target: ROOT_URL.origin, changeOrigin: true },
+				'/health': { target: ROOT_URL.origin, changeOrigin: true },
+				'/livez': { target: ROOT_URL.origin, changeOrigin: true },
+				'/readyz': { target: ROOT_URL.origin, changeOrigin: true },
+				'/requestSeats': { target: ROOT_URL.origin, changeOrigin: true },
+				'/data-export': { target: ROOT_URL.origin, changeOrigin: true },
+				'/_saml': { target: ROOT_URL.origin, changeOrigin: true },
+				'/meteor_runtime_config.js': { target: ROOT_URL.origin, changeOrigin: true, followRedirects: true },
+
+				'/file-upload': {
+					target: ROOT_URL.origin,
+					changeOrigin: true,
+					configure: (proxy) => {
+						proxy.on('proxyReq', (proxyReq) => {
+							proxyReq.setHeader('Host', ROOT_URL.hostname);
+							proxyReq.setHeader('Origin', ROOT_URL.origin);
+							proxyReq.setHeader('Referer', `${ROOT_URL.origin}/`);
+						});
+
+						proxy.on('proxyRes', (proxyRes) => {
+							if (proxyRes.headers.location) {
+								try {
+									const locationUrl = new URL(proxyRes.headers.location);
+									if (locationUrl.hostname === ROOT_URL.hostname) {
+										proxyRes.headers.location = locationUrl.pathname + locationUrl.search;
+									}
+								} catch (e) {
+									// location is relative or invalid, ignore
+								}
+							}
+						});
+					},
+				},
+			},
+		},
+	});
+});
+
+async function checkUrl(url: string | Request | URL): Promise<boolean> {
+	try {
+		const response = await fetch(url, { method: 'HEAD' });
+		return response.ok;
+	} catch {
+		return false;
+	}
+}
+
+async function getDefaultHostUrl() {
+	if (process.env.ROOT_URL) {
+		return new URL(process.env.ROOT_URL);
+	}
+
+	// Check if http://localhost:3000 is reachable
+	if (await checkUrl('http://localhost:3000/api/info')) {
+		return new URL('http://localhost:3000');
+	}
+
+	if (await checkUrl('https://unstable.qa.rocket.chat/api/info')) {
+		return new URL('https://unstable.qa.rocket.chat');
+	}
+
+	if (await checkUrl('https://candidate.qa.rocket.chat/api/info')) {
+		return new URL('https://candidate.qa.rocket.chat');
+	}
+
+	if (await checkUrl('https://open.rocket.chat/api/info')) {
+		return new URL('https://open.rocket.chat');
+	}
+
+	throw new Error('Unable to determine ROOT_URL. Please set the ROOT_URL environment variable.');
+}

@@ -26,6 +26,8 @@
 		},
 		"preserveSymlinks": true,
 
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true
 		// "sourceMap": true,
 		// "declaration": true,
 		// "removeComments": false,

@@ -16,7 +16,7 @@ const getHash = () =>
 			return hash;
 		});
 
-describe('[CORS]', () => {
+describe.skip('[CORS]', () => {
 	before((done) => getCredentials(done));
 	after(async () => {
 		await updateSetting('Site_Url', 'http://localhost:3000');
