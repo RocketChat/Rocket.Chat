@@ -25,13 +25,20 @@ export const registerGuest = makeFunction(
 
 		logger.debug({ msg: 'New incoming conversation', id, token });
 
-		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
+		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } & Record<string, unknown> = {
 			token,
 			status,
 			...(phone?.number && { phone: [{ phoneNumber: phone.number }] }),
 			...(name && { name }),
-			...(externalIds && { externalIds }),
 		};
+
+		// Use dot notation for `externalIds` to merge with existing entries
+		// instead of overwriting.
+		if (externalIds) {
+			for (const [source, externalId] of Object.entries(externalIds)) {
+				visitorDataToUpdate[`externalIds.${source}`] = externalId;
+			}
+		}
 
 		if (email) {
 			const visitorEmail = email.trim().toLowerCase();

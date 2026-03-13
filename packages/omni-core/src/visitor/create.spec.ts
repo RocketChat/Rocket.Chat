@@ -765,4 +765,21 @@ describe('registerGuest', () => {
 			);
 		});
 	});
+
+	describe('externalIds handling', () => {
+		it('should use dot notation for externalIds to allow merging with existing entries', async () => {
+			const token = 'test-token';
+			const externalIds = {
+				whatsapp: { userId: 'wa-123', username: '@john' },
+				telegram: { userId: 'tg-456' },
+			};
+
+			await registerGuest({ token, externalIds }, { shouldConsiderIdleAgent: false });
+
+			const callArgs = updateOneByIdOrTokenSpy.mock.calls[0][0];
+			expect(callArgs['externalIds.whatsapp']).toEqual({ userId: 'wa-123', username: '@john' });
+			expect(callArgs['externalIds.telegram']).toEqual({ userId: 'tg-456' });
+			expect(callArgs.externalIds).toBeUndefined();
+		});
+	});
 });
