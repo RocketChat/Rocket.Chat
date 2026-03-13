@@ -119,14 +119,13 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test('should respect the maximum number of files allowed per message: 10', async () => {
-		const file11 = 'number6.png';
 		const files = new Array(10).fill('number1.png');
 
 		await Promise.all(files.map((file) => poHomeChannel.content.sendFileMessage(file)));
 		await poHomeChannel.content.dragAndDropTxtFile();
 
 		await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
-		await expect(poHomeChannel.composer.getFileByName(file11)).not.toBeVisible();
+		await expect(poHomeChannel.composer.getFileByName('any_file.txt')).not.toBeVisible();
 	});
 
 	test.describe.serial('thread multiple file upload', () => {
