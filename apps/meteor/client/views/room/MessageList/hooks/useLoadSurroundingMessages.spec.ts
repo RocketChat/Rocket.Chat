@@ -59,6 +59,7 @@ const mockedSubscriptions = jest.mocked(Subscriptions);
 afterEach(() => {
 	jest.clearAllMocks();
 	mockUseSearchParameter.mockReturnValue(undefined);
+	mockUseRouteParameter.mockReturnValue(undefined);
 	(RoomManager as { opened: string | undefined }).opened = undefined;
 });
 
@@ -252,9 +253,6 @@ describe('useLoadSurroundingMessages', () => {
 				.build(),
 		});
 
-		// Give enough time for the async flow to resolve
-		await new Promise((resolve) => setTimeout(resolve, 100));
-
 		expect(mockedRoomCoordinator.openRouteLink).not.toHaveBeenCalled();
 		expect(mockedRoomHistoryManager.getSurroundingChannelMessages).not.toHaveBeenCalled();
 	});
@@ -270,6 +268,7 @@ describe('useLoadSurroundingMessages', () => {
 			u: { _id: 'user-1', username: 'john' },
 			msg: 'Thread root',
 			_updatedAt: new Date('2024-01-01T00:00:00Z').toISOString(),
+			tlm: new Date('2024-01-01T00:00:00Z').toISOString(),
 		};
 
 		renderHook(() => useLoadSurroundingMessages(), {
