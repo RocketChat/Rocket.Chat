@@ -17,11 +17,15 @@ export type CardSlotProps = {
 	margin?: number;
 	children: ReactNode;
 	variant?: 'default' | 'transparent';
+	showOnHover?: boolean;
 };
 
-const CardSlotBase = styled('div', ({ position: _position, margin: _margin, variant: _variant, ...props }: CardSlotProps) => props)`
+const CardSlotBase = styled(
+	'div',
+	({ position: _position, margin: _margin, variant: _variant, showOnHover: _showOnHover, ...props }: CardSlotProps) => props,
+)`
 	position: absolute;
-	display: flex;
+	display: ${({ showOnHover }) => (showOnHover ? 'none' : 'flex')};
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
@@ -37,9 +41,15 @@ const CardSlotBase = styled('div', ({ position: _position, margin: _margin, vari
 	z-index: 3;
 `;
 
-const CardSlot = ({ children, position, margin, variant = 'default' }: CardSlotProps) => {
+const CardSlot = ({ children, position, margin, variant = 'default', showOnHover = false }: CardSlotProps) => {
 	return (
-		<CardSlotBase position={position} margin={margin} variant={variant}>
+		<CardSlotBase
+			position={position}
+			margin={margin}
+			variant={variant}
+			showOnHover={showOnHover}
+			className={showOnHover ? 'rcx-card-slot--onHover' : undefined}
+		>
 			<Box is='span' fontScale='c2'>
 				{children}
 			</Box>

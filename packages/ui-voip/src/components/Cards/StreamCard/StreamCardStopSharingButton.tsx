@@ -5,12 +5,13 @@ import CardSlotContainer from '../CardSlot';
 
 type CardSlotStopSharingProps = {
 	onClick: () => void;
+	showOnHover?: boolean;
 };
 
-const CardSlotStopSharing = ({ onClick }: CardSlotStopSharingProps) => {
+const CardSlotStopSharing = ({ onClick, showOnHover = false }: CardSlotStopSharingProps) => {
 	const { t } = useTranslation();
 	return (
-		<CardSlotContainer position='middle' variant='transparent'>
+		<CardSlotContainer position='middle' variant='transparent' showOnHover={showOnHover}>
 			<Button danger small icon='desktop-cross' onClick={onClick}>
 				{t('Stop_sharing')}
 			</Button>

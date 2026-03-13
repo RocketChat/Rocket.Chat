@@ -94,7 +94,13 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	) : null;
 
 	const localStreamCard = localScreen?.active ? (
-		<StreamCard own onClickFocusStream={onClickFocusLocalCard} onClickStopSharing={onToggleScreenSharing} focused={focusedCard === 'local'}>
+		<StreamCard
+			own
+			onClickFocusStream={onClickFocusLocalCard}
+			onClickStopSharing={onToggleScreenSharing}
+			focused={focusedCard === 'local'}
+			showStopSharingOnHover
+		>
 			<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
 				<track kind='captions' />
 			</video>
