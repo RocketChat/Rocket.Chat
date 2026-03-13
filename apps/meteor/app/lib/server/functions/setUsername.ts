@@ -105,22 +105,27 @@ async function migrateReactionUsernames(
 								in: {
 									k: "$$reaction.k",
 									v: {
-										usernames: {
-											$map: {
-												input: "$$reaction.v.usernames",
-												as: "u",
-												in: {
-													$cond: [
-														{ $eq: ["$$u", oldUsername] },
-														newUsername,
-														"$$u"
-													]
-												}
-											}
-										}
+										$cond: [
+											{ $isArray: "$$reaction.v.usernames" },
+											{
+												$mergeObjects: [
+													"$$reaction.v",
+													{
+														usernames: {
+															$map: {
+																input: "$$reaction.v.usernames",
+																as: "u",
+																in: {
+																	$cond: [{ $eq: ["$$u", oldUsername] }, newUsername, "$$u"]
+																}
+															}
+														}
+													}
+												]
+											},
+											"$$reaction.v"
+										]
 									}
-								}
-							}
 						}
 					}
 				}
