@@ -65,6 +65,10 @@ export class HomeContent {
 		return this.messageListItems.last();
 	}
 
+	get lastUserThreadMessage(): Locator {
+		return this.threadMessageListItems.last();
+	}
+
 	get lastThreadMessagePreview(): Locator {
 		return this.page.getByRole('listitem').locator('[role="link"][aria-roledescription="thread message preview"]').last();
 	}
@@ -269,10 +273,6 @@ export class HomeContent {
 		return this.threadMessageListItems.first();
 	}
 
-	get lastThreadMessageText(): Locator {
-		return this.threadMessageListItems.last();
-	}
-
 	get lastThreadMessagePreviewText(): Locator {
 		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
 	}
@@ -417,9 +417,9 @@ export class HomeContent {
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.threadMessageList.last().hover();
-		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).waitFor();
-		await this.threadMessageList.last().getByRole('button', { name: 'More', exact: true }).click();
+		await this.lastUserThreadMessage.hover();
+		await this.lastUserThreadMessage.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastUserThreadMessage.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	async toggleAlsoSendThreadToChannel(isChecked: boolean): Promise<void> {
