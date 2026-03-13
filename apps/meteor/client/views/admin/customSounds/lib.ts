@@ -38,7 +38,7 @@ export const createSoundData = (
 	if (!previousData) {
 		return {
 			name: name.trim(),
-			extension: soundFile?.name.split('.').pop() || '',
+			extension: soundFile?.name?.split('.').pop() || '',
 			newFile: true,
 		};
 	}
@@ -46,7 +46,7 @@ export const createSoundData = (
 	return {
 		_id: previousData._id,
 		name,
-		extension: soundFile?.name.split('.').pop() || '',
+		extension: soundFile?.name?.split('.').pop() || '',
 		previousName: previousData.previousName,
 		previousExtension: previousData.previousSound?.extension,
 		previousSound: previousData.previousSound,

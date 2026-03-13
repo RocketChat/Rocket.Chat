@@ -51,7 +51,7 @@ const CustomSoundsListSchema = {
 
 export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
 
-type CustomSoundsCreate = { _id: ICustomSound['_id']; extension: ICustomSound['extension'] };
+type CustomSoundsCreate = Pick<ICustomSound, 'name' | 'extension'>;
 
 const CustomSoundsCreateSchema = {
 	type: 'object',
@@ -71,7 +71,9 @@ const CustomSoundsCreateSchema = {
 
 export const isCustomSoundsCreateProps = ajv.compile<CustomSoundsCreate>(CustomSoundsCreateSchema);
 
-type CustomSoundsUpdate = { _id: ICustomSound['_id']; extension: ICustomSound['extension'] };
+type CustomSoundsUpdate = Pick<ICustomSound, '_id' | 'name' | 'extension'> & {
+	newFile?: boolean;
+};
 
 const CustomSoundsUpdateSchema = {
 	type: 'object',

@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { validate, createSoundData } from './lib';
 import { MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
+import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type EditSoundProps = {
@@ -16,7 +17,7 @@ type EditSoundProps = {
 	data: {
 		_id: string;
 		name: string;
-		extension?: string;
+		extension: string;
 	};
 };
 
@@ -29,78 +30,57 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const previousSound = useMemo(() => data || {}, [data]);
 
 	const [name, setName] = useState(() => data?.name ?? '');
-	const [sound, setSound] = useState<
-		| {
-				_id: string;
-				name: string;
-				extension?: string;
-		  }
-		| File
-	>(() => data);
+	const [file, setFile] = useState<File | undefined>();
 
 	useEffect(() => {
 		setName(previousName || '');
-		setSound(previousSound || '');
-	}, [previousName, previousSound, _id]);
+	}, [previousName]);
 
 	const deleteCustomSound = useMethod('deleteCustomSound');
-	const uploadCustomSound = useMethod('uploadCustomSound');
-	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
+
+	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.update', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			close();
+		},
+	});
 
 	const handleChangeFile = useCallback((soundFile: File) => {
-		setSound(soundFile);
+		setFile(soundFile);
 	}, []);
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
-
-	const saveAction = useCallback(
-		// FIXME
-		async (sound: any) => {
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
-			const validation = validate(soundData, sound);
-			if (validation.length === 0) {
-				let soundId: string;
-				try {
-					soundId = await insertOrUpdateSound(soundData);
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-					return;
-				}
-
-				soundData._id = soundId;
-				soundData.random = Math.round(Math.random() * 1000);
-
-				if (sound && sound !== previousSound) {
-					dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
-
-					const reader = new FileReader();
-					reader.readAsBinaryString(sound);
-					reader.onloadend = (): void => {
-						try {
-							uploadCustomSound(reader.result as string, sound.type, { ...soundData, _id: soundId });
-							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
-						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
-						}
-					};
-				}
-				close();
-			}
-
-			validation.forEach((invalidFieldName) =>
-				dispatchToastMessage({
-					type: 'error',
-					message: t('Required_field', { field: t(invalidFieldName) }),
-				}),
-			);
-		},
-		[_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
-	);
+	const hasUnsavedChanges = useMemo(() => previousName !== name || !!file, [name, previousName, file]);
 
 	const handleSave = useCallback(async () => {
-		await saveAction(sound);
+		const soundData = createSoundData(file, name, {
+			previousName,
+			previousSound,
+			_id,
+			extension: data.extension,
+		});
+		const validation = validate(soundData, file);
+		validation.forEach((invalidFieldName) => {
+			dispatchToastMessage({ type: 'error', message: t('Required_field', { field: t(invalidFieldName) }) });
+			throw new Error(t('Required_field', { field: t(invalidFieldName) }));
+		});
+
+		const formData = new FormData();
+
+		formData.append('_id', _id);
+		formData.append('name', name);
+
+		if (file) {
+			formData.append('extension', soundData.extension);
+			formData.append('newFile', 'true');
+			formData.append('sound', file);
+		} else {
+			formData.append('extension', data.extension);
+			formData.append('newFile', 'false');
+		}
+
+		await saveAction(formData);
 		onChange();
-	}, [saveAction, sound, onChange]);
+	}, [_id, dispatchToastMessage, name, previousName, previousSound, saveAction, file, t, onChange, data.extension]);
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleDelete = async (): Promise<void> => {
@@ -150,7 +130,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />
-							{sound?.name || 'none'}
+							{data.name || 'none'}
 						</Margins>
 					</Box>
 				</Field>
