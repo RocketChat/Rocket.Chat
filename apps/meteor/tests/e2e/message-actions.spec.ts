@@ -38,7 +38,7 @@ test.describe.serial('message-actions', () => {
 		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
 		await page.keyboard.press('Enter');
 
-		await expect(poHomeChannel.content.lastThreadMessageText).toHaveText('this is a reply message');
+		await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 	});
 
 	// with thread open we listen to the subscription and update the collection from there
@@ -48,7 +48,7 @@ test.describe.serial('message-actions', () => {
 			await poHomeChannel.content.openReplyInThread();
 			await page.getByRole('dialog').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
 			await page.keyboard.press('Enter');
-			await expect(poHomeChannel.content.lastThreadMessageText).toHaveText('this is a reply message');
+			await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 		});
 
 		await test.step('unfollow thread', async () => {
@@ -73,7 +73,7 @@ test.describe.serial('message-actions', () => {
 			await poHomeChannel.content.openReplyInThread();
 			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
 			await page.keyboard.press('Enter');
-			await expect(poHomeChannel.content.lastThreadMessageText).toHaveText('this is a reply message');
+			await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 		});
 
 		// close thread before testing because the behavior changes

@@ -80,7 +80,7 @@ test.describe.parallel('Quote Attachment', () => {
 		});
 
 		await test.step('Quote the message with attachment in thread', async () => {
-			await poHomeChannel.content.lastThreadMessageText.hover();
+			await poHomeChannel.content.lastUserThreadMessage.hover();
 			await poHomeChannel.content.btnQuoteMessage.click();
 
 			// Verify the quote preview shows both file and description
@@ -94,10 +94,10 @@ test.describe.parallel('Quote Attachment', () => {
 		});
 
 		await test.step('Verify the quoted message appears correctly in thread', async () => {
-			await expect(poHomeChannel.content.lastThreadMessageText).toBeVisible();
+			await expect(poHomeChannel.content.lastUserThreadMessage).toBeVisible();
 			await expect(poHomeChannel.content.threadMessageQuotedFileDescription(fileDescription)).toBeVisible();
 			await expect(poHomeChannel.content.threadMessageQuotedFileName(textFileName)).toBeVisible();
-			await expect(poHomeChannel.content.lastThreadMessageText).toContainText(threadQuoteMessage);
+			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText(threadQuoteMessage);
 		});
 	});
 
