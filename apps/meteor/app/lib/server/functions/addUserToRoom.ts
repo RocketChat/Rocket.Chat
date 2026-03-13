@@ -1,18 +1,18 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team, Room } from '@rocket.chat/core-services';
+import { Team, Room } from '@rocket.chat/core-services';
 import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { performUnbanSideEffects } from './unbanUserFromRoom';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../server/lib/callbacks';
-import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/afterUnbanFromRoomCallback';
 import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
 /**
  * This function adds user to the given room.
@@ -60,40 +60,10 @@ export const addUserToRoom = async (
 				return true;
 			}
 
-			// Re-add the room to the user's __rooms array for member listing
-			await Users.addRoomByUserId(userToBeAdded._id, rid);
-
-			// Increment the room's user count
-			await Rooms.incUsersCountById(rid, 1);
-
-			// Save system message for unban
-			if (!skipSystemMessage && userToBeAdded.username) {
-				if (inviter) {
-					await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username, userToBeAdded, {
-						u: { _id: inviter._id, username: inviter.username },
-					});
-				} else {
-					await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username, userToBeAdded);
-				}
-			}
-
-			// Send 'inserted' so the client re-subscribes to the room stream
-			// (the ban sent 'removed' which caused the client to drop it)
-			const unbannedSubscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-			if (unbannedSubscription) {
-				void notifyOnSubscriptionChanged(unbannedSubscription, 'inserted');
-			}
-			void notifyOnRoomChangedById(rid);
-
-			if (inviter) {
-				const inviterUser = await Users.findOneById(inviter._id);
-				if (inviterUser) {
-					setImmediate(() => {
-						void afterUnbanFromRoomCallback.run({ unbannedUser: userToBeAdded, userWhoUnbanned: inviterUser }, room);
-					});
-				}
-			}
-
+			await performUnbanSideEffects(rid, room, userToBeAdded, {
+				byUser: inviter,
+				skipSystemMessage,
+			});
 			return true;
 		}
 
