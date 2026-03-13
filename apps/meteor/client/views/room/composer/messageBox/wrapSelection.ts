@@ -9,6 +9,8 @@ const wrapSelectionPatterns: Record<string, string> = {
 	'{': '{{{text}}}',
 	'[': '[{{text}}]',
 	'*': '*{{text}}*',
+	'_': '_{{{text}}}_',
+	'~': '~{{text}}~',
 };
 
 const once = (target: EventTarget, eventName: string, callback: (event: Event) => void) => {
