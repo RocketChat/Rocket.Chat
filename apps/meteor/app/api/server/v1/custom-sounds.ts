@@ -183,9 +183,9 @@ const customSoundsEndpoints = API.v1
 			try {
 				_id = await insertOrUpdateSound({
 					name: fields.name,
-					extension: 'mp3',
+					extension: fields.extension,
 				});
-				await uploadCustomSound(fileBuffer, mimetype, { _id, name: fields.name, extension: 'mp3' });
+				await uploadCustomSound(fileBuffer, mimetype, { _id, name: fields.name, extension: fields.extension });
 			} catch (error) {
 				SystemLogger.error({ error });
 				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
@@ -241,13 +241,13 @@ const customSoundsEndpoints = API.v1
 				await insertOrUpdateSound({
 					_id: fields._id,
 					name: fields.name,
-					extension: 'mp3',
+					extension: fields.extension,
 					newFile: Boolean(fields.newFile),
 					previousName: soundToUpdate.name,
 					previousExtension: soundToUpdate.extension,
 				});
 				if (fileBuffer) {
-					await uploadCustomSound(fileBuffer, mimetype, { _id: fields._id, name: fields.name, extension: 'mp3' });
+					await uploadCustomSound(fileBuffer, mimetype, { _id: fields._id, name: fields.name, extension: fields.extension });
 				}
 			} catch (error) {
 				SystemLogger.error({ error });

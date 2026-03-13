@@ -51,23 +51,27 @@ const CustomSoundsListSchema = {
 
 export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
 
-type CustomSoundsCreate = { _id: ICustomSound['_id'] };
+type CustomSoundsCreate = { _id: ICustomSound['_id']; extension: ICustomSound['extension'] };
 
 const CustomSoundsCreateSchema = {
 	type: 'object',
 	properties: {
-    name: {
+		name: {
+			type: 'string',
+			minLength: 1,
+		},
+		extension: {
 			type: 'string',
 			minLength: 1,
 		},
 	},
-	required: ['name'],
+	required: ['name', 'extension'],
 	additionalProperties: false,
 };
 
 export const isCustomSoundsCreateProps = ajv.compile<CustomSoundsCreate>(CustomSoundsCreateSchema);
 
-type CustomSoundsUpdate = { _id: ICustomSound['_id'] };
+type CustomSoundsUpdate = { _id: ICustomSound['_id']; extension: ICustomSound['extension'] };
 
 const CustomSoundsUpdateSchema = {
 	type: 'object',
@@ -76,17 +80,20 @@ const CustomSoundsUpdateSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-    name: {
+		name: {
 			type: 'string',
 			minLength: 1,
 		},
-    newFile: {
-      type: 'boolean',
-    }
+		extension: {
+			type: 'string',
+			minLength: 1,
+		},
+		newFile: {
+			type: 'boolean',
+		},
 	},
-	required: ['_id', 'name'],
+	required: ['_id', 'name', 'extension'],
 	additionalProperties: false,
 };
 
 export const isCustomSoundsUpdateProps = ajv.compile<CustomSoundsUpdate>(CustomSoundsUpdateSchema);
-

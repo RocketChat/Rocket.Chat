@@ -1,11 +1,13 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import fileSize from 'filesize';
 import type { ReactElement, SyntheticEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { validate, createSoundData } from './lib';
+import { MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type EditSoundProps = {
@@ -123,7 +125,12 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		);
 	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
 
-	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/*', 'audio', MAX_CUSTOM_SOUND_SIZE_BYTES, () => {
+		dispatchToastMessage({
+			type: 'error',
+			message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(MAX_CUSTOM_SOUND_SIZE_BYTES, { base: 2, standard: 'jedec' }) }),
+		});
+	});
 
 	return (
 		<>
