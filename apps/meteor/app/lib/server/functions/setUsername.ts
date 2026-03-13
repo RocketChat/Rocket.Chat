@@ -87,44 +87,47 @@ export const setUsernameWithValidation = async (userId: string, username: string
 
 	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 };
-async function migrateReactionUsernames(oldUsername: string, newUsername: string) {
-	if (!oldUsername || oldUsername === newUsername) {
-		return;
-	}
-
-	const message_list = Messages.find(
-		{ 'reactions.usernames': oldUsername },
-		{ projection: { reactions: 1 } },
-	);
-
-	for await (const message of message_list) {
-		if (!message.reactions) {
-			continue;
-		}
-
-		const updatedReactions = Object.fromEntries(
-			Object.entries(message.reactions as MessageReactions).map(([emoji, reaction]) => {
-				if (!reaction?.usernames) {
-					return [emoji, reaction];
+async function migrateReactionUsernames(
+	oldUsername: string,
+	newUsername: string,
+	session?: ClientSession
+): Promise<void> {
+	await Messages.updateMany(
+		{ reactions: { $exists: true } },
+		[
+			{
+				$set: {
+					reactions: {
+						$arrayToObject: {
+							$map: {
+								input: { $objectToArray: "$reactions" },
+								as: "reaction",
+								in: {
+									k: "$$reaction.k",
+									v: {
+										usernames: {
+											$map: {
+												input: "$$reaction.v.usernames",
+												as: "u",
+												in: {
+													$cond: [
+														{ $eq: ["$$u", oldUsername] },
+														newUsername,
+														"$$u"
+													]
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
 				}
-
-				return [
-					emoji,
-					{
-						...reaction,
-						usernames: reaction.usernames.map((username) =>
-							username === oldUsername ? newUsername : username,
-						),
-					},
-				];
-			}),
-		);
-
-		await Messages.updateOne(
-			{ _id: message._id },
-			{ $set: { reactions: updatedReactions } },
-		);
-	}
+			}
+		],
+		{ session }
+	);
 }
 
 export const _setUsername = async function (
@@ -173,11 +176,14 @@ export const _setUsername = async function (
 				SystemLogger.error({ err });
 			}
 		}, session);
+		
 	}
 	// Set new username*
 	// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
 	await Users.setUsername(user._id, username, { session });
-	await migrateReactionUsernames(previousUsername, username);
+	if (previousUsername) {
+		await migrateReactionUsernames(previousUsername, username, session);
+	}
 	user.username = username;
 
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
@@ -216,3 +222,4 @@ export const _setUsername = async function (
 
 	return user;
 };
+
