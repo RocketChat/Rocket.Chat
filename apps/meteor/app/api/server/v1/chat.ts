@@ -118,7 +118,7 @@ const ChatUnfollowMessageLocalSchema = {
 	additionalProperties: false,
 };
 
-//chect.postMessage starts
+//chat.postMessage starts
 type ChatPostMessage =
 	| {
 			roomId: string | string[];
@@ -705,7 +705,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						ts: { type: 'number' },
-						channel: { type: 'object' },
+						channel: { type: 'string' },
 						message: { $ref: '#/components/schemas/IMessage' },
 						success: { type: 'boolean', enum: [true] },
 					},
