@@ -23,3 +23,6 @@ export {
 	/** @deprecated */
 	Root as MarkdownAST,
 };
+
+// Handwritten lexer
+export { Lexer, Token, TokenKind, makeToken } from './lexer';
