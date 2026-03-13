@@ -293,7 +293,7 @@ const isChatReportMessageLocalProps = ajv.compile<ChatReportMessage>(ChatReportM
 type ChatIgnoreUser = {
 	rid: string;
 	userId: string;
-	ignore: string;
+	ignore?: 'true' | 'false' | '1' | '0';
 };
 
 const ChatIgnoreUserSchema = {
@@ -309,10 +309,10 @@ const ChatIgnoreUserSchema = {
 		},
 		ignore: {
 			type: 'string',
-			minLength: 1,
+			enum: ['true', 'false', '1', '0'],
 		},
 	},
-	required: ['rid', 'userId', 'ignore'],
+	required: ['rid', 'userId'],
 	additionalProperties: false,
 };
 
@@ -645,7 +645,7 @@ const chatEndpoints = API.v1
 			const { rid, userId } = this.queryParams;
 			const { ignore = 'true' } = this.queryParams;
 
-			const ignoreBool = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
+			const ignoreBool = ignore === 'true' || ignore === '1';
 
 			await ignoreUser(this.userId, { rid, userId, ignore: ignoreBool });
 
