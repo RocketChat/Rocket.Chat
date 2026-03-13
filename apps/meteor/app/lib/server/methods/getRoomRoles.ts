@@ -1,4 +1,4 @@
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -15,10 +15,10 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
-export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUserId?: string | null) => {
+export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUser?: IUser | null) => {
 	check(rid, String);
 
-	if (!fromUserId && settings.get('Accounts_AllowAnonymousRead') === false) {
+	if (!fromUser && settings.get('Accounts_AllowAnonymousRead') === false) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
 	}
 
@@ -27,7 +27,7 @@ export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUserId?: string
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomRoles' });
 	}
 
-	if (fromUserId && !(await canAccessRoomAsync(room, { _id: fromUserId }))) {
+	if (fromUser && !(await canAccessRoomAsync(room, fromUser))) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
 	}
 
