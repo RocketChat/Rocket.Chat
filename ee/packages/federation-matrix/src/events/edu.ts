@@ -93,6 +93,16 @@ export const edus = async () => {
 					return;
 				}
 
+				if (msg.rid !== matrixRoom._id) {
+					logger.warn({
+						msg: 'Message thread_id does not belong to the expected room',
+						threadId: data.thread_id,
+						expectedRoomId: matrixRoom._id,
+						actualRoomId: msg.rid,
+					});
+					return;
+				}
+
 				await Room.readThread({ room: matrixRoom, user: matrixUser, tmid: msg._id });
 			} else {
 				await Room.markAsRead(matrixRoom, matrixUser._id);
