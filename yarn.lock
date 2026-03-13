@@ -9850,7 +9850,6 @@ __metadata:
     "@rocket.chat/ui-composer": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
-    "@rocket.chat/ui-theming": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/ui-voip": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
@@ -10948,35 +10947,6 @@ __metadata:
     typia: "npm:~9.7.2"
   peerDependencies:
     "@rocket.chat/icons": "*"
-  languageName: unknown
-  linkType: soft
-
-"@rocket.chat/ui-theming@workspace:^, @rocket.chat/ui-theming@workspace:ee/packages/ui-theming":
-  version: 0.0.0-use.local
-  resolution: "@rocket.chat/ui-theming@workspace:ee/packages/ui-theming"
-  dependencies:
-    "@rocket.chat/css-in-js": "npm:~0.31.25"
-    "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/fuselage": "npm:^0.73.0"
-    "@rocket.chat/fuselage-hooks": "npm:^0.40.0"
-    "@rocket.chat/fuselage-tokens": "npm:~0.33.2"
-    "@rocket.chat/icons": "npm:~0.47.0"
-    "@rocket.chat/ui-contexts": "workspace:~"
-    "@types/react": "npm:~18.3.27"
-    "@types/react-dom": "npm:~18.3.7"
-    eslint: "npm:~9.39.3"
-    react: "npm:~18.3.1"
-    react-docgen-typescript-plugin: "npm:~1.0.8"
-    react-dom: "npm:~18.3.1"
-    react-virtuoso: "npm:^4.12.0"
-    typescript: "npm:~5.9.3"
-    webpack: "npm:~5.99.9"
-  peerDependencies:
-    "@rocket.chat/css-in-js": "*"
-    "@rocket.chat/fuselage": "*"
-    "@rocket.chat/fuselage-hooks": "*"
-    "@rocket.chat/icons": "*"
-    react: "*"
   languageName: unknown
   linkType: soft
 
@@ -32490,7 +32460,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-docgen-typescript-plugin@npm:^1.0.8, react-docgen-typescript-plugin@npm:~1.0.8":
+"react-docgen-typescript-plugin@npm:^1.0.8":
   version: 1.0.8
   resolution: "react-docgen-typescript-plugin@npm:1.0.8"
   dependencies:
