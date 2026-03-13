@@ -1,5 +1,7 @@
 import type { Root } from './definitions';
 import * as grammar from './grammar.pegjs';
+import { tokenize } from './lexer';
+import type { Token } from './lexer';
 
 export type * from './definitions';
 
@@ -13,21 +15,29 @@ export type Options = {
 		parenthesisSyntax?: boolean;
 	};
 	customDomains?: string[];
+	// Which parser to use. Defaults to 'peggy'.
+	engine?: 'peggy' | 'handwritten';
 };
 
-export const parse = (input: string, options?: Options): Root => grammar.parse(input, options);
+export function parse(input: string, options?: Options): Root | Token[] {
+	if (options?.engine === 'handwritten') {
+		const tokens = tokenize(input);
+		// TODO: once the handwritten parser is ready, pass tokens through it instead of returning them raw
+		return tokens;
+	}
 
-<<<<<<< feat/handwritten-parser-prototype
+	return grammar.parse(input, options);
+}
+
 export {
 	/** @deprecated */
 	parse as parser,
+};
+
+export type {
 	/** @deprecated */
 	Root as MarkdownAST,
 };
 
 // Handwritten lexer
-export { Lexer, Token, TokenKind, makeToken } from './lexer';
-=======
-export type { Root as MarkdownAST };
-export { parse as parser };
->>>>>>> develop
+export { Lexer, Token, TokenKind, makeToken, tokenize } from './lexer';
