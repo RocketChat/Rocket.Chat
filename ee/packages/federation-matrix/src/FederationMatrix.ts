@@ -419,6 +419,23 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Promise.all(
 				matrixUsersUsername.map(async (username) => {
+					if (username === inviter.username) {
+						const matrixUserId = `@${username}:${this.serverName}`;
+						this.logger.debug({ msg: 'Detected self-join, calling roomService.joinUser', matrixUserId, roomId: room.federation.mrid });
+						try {
+							// RoomService.joinUser is not exposed in the top-level SDK but exists in the internal RoomService.
+							const result = await (federationSDK as any).roomService.joinUser(
+								roomIdSchema.parse(room.federation.mrid),
+								userIdSchema.parse(matrixUserId),
+							);
+							this.logger.debug({ msg: 'Successfully joined Matrix room via joinUser', matrixUserId, result });
+							return result;
+						} catch (error) {
+							this.logger.error({ msg: 'Failed to join Matrix room via joinUser', matrixUserId, error });
+							throw error;
+						}
+					}
+
 					if (validateFederatedUsername(username)) {
 						return federationSDK.inviteUserToRoom(
 							userIdSchema.parse(username),
