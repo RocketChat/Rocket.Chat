@@ -122,6 +122,22 @@ describe('URLs', () => {
     });
 });
 
+describe('emails', () => {
+    test('trailing punctuation gets stripped', () => {
+        expect(kv('cory@example.com.')).toEqual([
+            ['EMAIL', 'cory@example.com'],
+            ['TEXT', '.'],
+        ]);
+    });
+
+    test('multiple trailing punctuation chars get stripped', () => {
+        expect(kv('+alias@example.com...')).toEqual([
+            ['EMAIL', '+alias@example.com'],
+            ['TEXT', '...'],
+        ]);
+    });
+});
+
 // ── colors ──────────────────────────────────────────────────────────────────
 
 describe('color tokens', () => {

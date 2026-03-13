@@ -87,9 +87,12 @@ export function scanPlus(ctx: ScanContext, pos: number): number {
     EMAIL_RE.lastIndex = pos;
     const em = EMAIL_RE.exec(input);
     if (em) {
-        flushText(ctx, pos);
-        emit(ctx, TokenKind.EMAIL, em[0], em[0], pos);
-        return pos + em[0].length;
+        const raw = em[0].replace(TRAIL_PUNCT, '');
+        if (raw.length > 0) {
+            flushText(ctx, pos);
+            emit(ctx, TokenKind.EMAIL, raw, raw, pos);
+            return pos + raw.length;
+        }
     }
 
     if (ctx.textStart === -1) ctx.textStart = pos;
@@ -129,9 +132,12 @@ export function scanC(ctx: ScanContext, pos: number): number {
     EMAIL_RE.lastIndex = pos;
     const em = EMAIL_RE.exec(input);
     if (em) {
-        flushText(ctx, pos);
-        emit(ctx, TokenKind.EMAIL, em[0], em[0], pos);
-        return pos + em[0].length;
+        const raw = em[0].replace(TRAIL_PUNCT, '');
+        if (raw.length > 0) {
+            flushText(ctx, pos);
+            emit(ctx, TokenKind.EMAIL, raw, raw, pos);
+            return pos + raw.length;
+        }
     }
 
     if (ctx.textStart === -1) ctx.textStart = pos;
