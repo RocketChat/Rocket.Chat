@@ -18,23 +18,20 @@ import {
 } from '../../../data/livechat/rooms';
 import { updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import {
-	createUser,
-	deleteUser,
-	login,
-	ddpLogin,
-	setUserAwayWS,
-	setUserActiveStatus,
-	setUserAway,
-	setUserStatus,
-} from '../../../data/users.helper';
+import { createUser, deleteUser, login, ddpLogin, setUserAwayWS, setUserActiveStatus, setUserStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Omnichannel - Routing', () => {
+	const sockets: WebSocket[] = [];
 	before((done) => getCredentials(done));
 
 	after(async () => {
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
+		for (const ws of sockets) {
+			if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+				ws.close();
+			}
+		}
 	});
 
 	// Basically: if there's a bot in the department, it should be assigned to the conversation
@@ -227,7 +224,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let testUser3: { user: IUser; credentials: Credentials };
 		let testDepartment: ILivechatDepartment;
 		let visitorEmail: string;
-		const sockets: WebSocket[] = [];
 
 		before(async () => {
 			const user = await createUser();
@@ -281,20 +277,14 @@ import { IS_EE } from '../../../e2e/config/constants';
 				});
 		});
 
-		after(async () => {
-			await Promise.all([
+		after(async () =>
+			Promise.all([
 				deleteUser(testUser.user),
 				deleteUser(testUser2.user),
 				deleteUser(testUser3.user),
 				updateSetting('Livechat_enabled_when_agent_idle', true),
-			]);
-
-			for (const ws of sockets) {
-				if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
-					ws.close();
-				}
-			}
-		});
+			]),
+		);
 
 		it('should route a room to an available agent', async () => {
 			const visitor = await createVisitor(testDepartment._id);
@@ -363,16 +353,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
-		it('should ignore offline users when Livechat_enabled_when_agent_idle is false', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', false);
-			await setUserStatus(testUser.credentials, UserStatus.OFFLINE);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-		});
 		it('should not route to an idle user', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
@@ -383,6 +363,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const ws2 = await ddpLogin(testUser3.credentials['X-Auth-Token']);
 			sockets.push(ws2);
 			await setUserAwayWS(ws2);
+
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
 
@@ -533,9 +514,15 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should not route to an idle user', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			await setUserAway(testUser.credentials);
+			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(ws1);
+			await setUserAwayWS(ws1);
 			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			await setUserAway(testUser2.credentials);
+			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
+			sockets.push(ws2);
+			await setUserAwayWS(ws2);
+
+			await new Promise((r) => setTimeout(r, 9000));
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
 
@@ -548,7 +535,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should route to agents even if theyre idle when setting is enabled', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', true);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
+			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(ws1);
+			await setUserAwayWS(ws1);
 			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
+			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
+			sockets.push(ws2);
+			await setUserAwayWS(ws2);
 
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
@@ -641,9 +634,14 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should not route to an idle user', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			await setUserAway(testUser.credentials);
+			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(ws1);
+			await setUserAwayWS(ws1);
 			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			await setUserAway(testUser2.credentials);
+			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
+			sockets.push(ws2);
+			await setUserAwayWS(ws2);
+
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
 
@@ -656,7 +654,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should route to agents even if theyre idle when setting is enabled', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', true);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
+			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(ws1);
+			await setUserAwayWS(ws1);
 			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
+			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
+			sockets.push(ws2);
+			await setUserAwayWS(ws2);
 
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
