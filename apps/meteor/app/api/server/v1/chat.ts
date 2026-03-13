@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -12,7 +12,6 @@ import {
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
 	isChatPostMessageProps,
-	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
@@ -26,6 +25,7 @@ import {
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	type PaginatedRequest,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -119,6 +119,35 @@ const ChatUnfollowMessageLocalSchema = {
 	additionalProperties: false,
 };
 
+//chat.search starts
+type ChatSearch = PaginatedRequest<{
+	roomId: IRoom['_id'];
+	searchText: string;
+}>;
+
+const ChatSearchSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		searchText: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+	},
+	required: ['roomId', 'searchText'],
+	additionalProperties: false,
+};
+//chat.search ends
+
 const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
 
 const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
@@ -126,6 +155,8 @@ const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUn
 const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
+
+const isChatSearchLocalProps = ajv.compile<ChatSearch>(ChatSearchSchema);
 
 API.v1.addRoute(
 	'chat.delete',
@@ -563,7 +594,7 @@ const chatEndpoints = API.v1
 		'chat.search',
 		{
 			authRequired: true,
-			query: isChatSearchProps,
+			query: isChatSearchLocalProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
