@@ -38,18 +38,22 @@ const createGetEmojiClassNameAndDataTitle =
 			return { 'className': '', 'data-title': '', 'children': '', 'name': '', 'image': '' };
 		}
 
-		const image =
+		const styleBackgroundImage =
 			emojiElement instanceof HTMLElement
 				? emojiElement.style.backgroundImage
 				: (Object.fromEntries((emojiElement.getAttribute('style') || '')?.split(';').map((s) => s.split(':'))) as Record<string, string>)[
 						'background-image'
 					];
 
+		const imageSource = emojiElement.getAttribute('src');
+		const image = styleBackgroundImage || (imageSource ? `url("${imageSource}")` : '');
+		const isImageTag = emojiElement.tagName === 'IMG';
+
 		return {
-			'className': emojiElement.getAttribute('class') || '',
-			'data-title': emojiElement.getAttribute('data-title') || '',
-			'name': emojiElement.getAttribute('name') || '',
-			'children': emojiElement.innerHTML,
+			'className': isImageTag ? '' : emojiElement.getAttribute('class') || '',
+			'data-title': emojiElement.getAttribute('data-title') || emojiElement.getAttribute('title') || '',
+			'name': emojiElement.getAttribute('name') || emojiElement.getAttribute('title') || '',
+			'children': emojiElement.innerHTML || emojiElement.getAttribute('alt') || '',
 			image,
 		};
 	};
