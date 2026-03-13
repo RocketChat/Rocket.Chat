@@ -29,7 +29,7 @@ const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled,
 	const isLoading = upload.percentage !== 100 && !upload.error;
 
 	const handleOpenFilePreview = () => {
-		if (upload.error) {
+		if (isLoading || upload.error) {
 			return;
 		}
 
@@ -51,7 +51,11 @@ const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled,
 	const buttonProps = useButtonPattern(handleDismiss);
 
 	const actionIcon =
-		isLoading && !isActive ? <MessageComposerFileLoader /> : <IconButton {...buttonProps} aria-label={t('Close')} mini icon='cross' />;
+		isLoading && !isActive ? (
+			<MessageComposerFileLoader />
+		) : (
+			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} mini icon='cross' />
+		);
 
 	if (upload.error) {
 		return (
