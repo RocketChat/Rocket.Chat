@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-voip",
-	"version": "17.0.1",
+	"version": "18.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -30,11 +30,11 @@
 		"@react-spectrum/test-utils": "~1.0.0-alpha.8",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/css-in-js": "~0.31.25",
-		"@rocket.chat/fuselage": "^0.71.0",
-		"@rocket.chat/fuselage-hooks": "^0.39.0",
+		"@rocket.chat/fuselage": "^0.73.0",
+		"@rocket.chat/fuselage-hooks": "^0.40.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
-		"@rocket.chat/icons": "~0.46.0",
+		"@rocket.chat/icons": "~0.47.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:~",
 		"@rocket.chat/styled": "~0.32.0",
@@ -83,7 +83,7 @@
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"date-fns": "*",
 		"react": "*",
-		"react-aria": "~3.23.1",
+		"react-aria": "*",
 		"react-dom": "*"
 	},
 	"volta": {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import type { Updater, SetProps, UnsetProps, IncProps, AddToSetProps } from '@rocket.chat/model-typings';
 import type { UpdateFilter } from 'mongodb';
 
@@ -76,4 +75,4 @@ export class UpdaterImpl<T extends { _id: string }> implements Updater<T> {
 	}
 }
 
-export { Updater };
+export type { Updater };

@@ -1,6 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
+import { Tracker } from 'meteor/tracker';
 import type { RefObject } from 'react';
 
 import { limitQuoteChain } from './limitQuoteChain';

@@ -800,10 +800,6 @@ export type RoomsEndpoints = {
 		}) => { message: IMessage | null };
 	};
 
-	'/v1/rooms.saveNotification': {
-		POST: (params: { roomId: string; notifications: Notifications }) => void;
-	};
-
 	'/v1/rooms.nameExists': {
 		GET: (params: { roomName: string }) => {
 			exists: boolean;
