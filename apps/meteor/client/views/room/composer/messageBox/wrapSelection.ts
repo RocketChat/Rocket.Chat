@@ -1,4 +1,4 @@
-import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
+import type { ChatAPI } from '../../../../lib/chats/ChatAPI';
 
 const wrapSelectionPatterns: Record<string, string> = {
 	'`': '`{{text}}`',
@@ -11,11 +11,19 @@ const wrapSelectionPatterns: Record<string, string> = {
 	'*': '*{{text}}*',
 };
 
-export const handleSelectionWrapping = (event: InputEvent, composer: ComposerAPI): boolean => {
-	if (event.inputType !== 'insertText' || event.isComposing) {
+const once = (target: EventTarget, eventName: string, callback: (event: Event) => void) => {
+	const handleEvent = (e: Event) => {
+		callback(e);
+		target.removeEventListener(eventName, handleEvent);
+	};
+	target.addEventListener(eventName, handleEvent);
+};
+
+export const handleSelectionWrapping = (event: InputEvent, chat: ChatAPI): boolean => {
+	const { composer } = chat;
+	if (!composer) {
 		return false;
 	}
-
 	const input = event.target as HTMLTextAreaElement;
 	const { selectionStart, selectionEnd } = input;
 
@@ -33,7 +41,16 @@ export const handleSelectionWrapping = (event: InputEvent, composer: ComposerAPI
 		return false;
 	}
 
-	event.preventDefault();
-	composer.wrapSelection(pattern);
+	// this is a workaround when we are using MAC
+	if (event.isComposing && navigator.userAgent.includes('Mac') && ['`', '"', "'"].includes(key)) {
+		const selection = composer.wrapSelection(pattern);
+		once(input, 'input', (event) => {
+			// restore selection
+			input.value = selection.value;
+			input.setSelectionRange(selection.selectionStart, selection.selectionEnd);
+			event.preventDefault();
+		});
+	}
+
 	return true;
 };

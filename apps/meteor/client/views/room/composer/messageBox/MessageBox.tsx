@@ -374,23 +374,17 @@ const MessageBox = ({
 		),
 	);
 
-	const beforeInputHandler = useEffectEvent((event: InputEvent) => {
-		if (chat.composer && handleSelectionWrapping(event, chat.composer)) {
-			return;
-		}
-	});
-
 	const beforeInputHandlerCallbackRef = useSafeRefCallback(
 		useCallback(
 			(node: HTMLTextAreaElement) => {
-				const eventHandler = (e: Event) => beforeInputHandler(e as InputEvent);
+				const eventHandler = (e: Event) => handleSelectionWrapping(e as InputEvent, chat);
 				node.addEventListener('beforeinput', eventHandler);
 
 				return () => {
 					node.removeEventListener('beforeinput', eventHandler);
 				};
 			},
-			[beforeInputHandler],
+			[chat],
 		),
 	);
 
