@@ -1,8 +1,8 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import type { AllHTMLAttributes } from 'react';
 
-const MessageComposerFileLoader = ({ className, ...props }: ComponentProps<typeof Box>) => {
+const MessageComposerFileLoader = ({ className, ...props }: Omit<AllHTMLAttributes<HTMLOrSVGElement>, 'is'>) => {
 	const customCSS = css`
 		animation: spin-animation 0.8s linear infinite;
 
@@ -19,7 +19,7 @@ const MessageComposerFileLoader = ({ className, ...props }: ComponentProps<typeo
 
 	return (
 		<Box
-			className={[customCSS, ...(Array.isArray(className) ? className : [className])].filter(Boolean)}
+			className={[customCSS, className].filter(Boolean)}
 			is='svg'
 			size='x24'
 			viewBox='0 0 24 24'

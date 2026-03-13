@@ -12,7 +12,16 @@ type MessageComposerFileProps = {
 	onClick: () => void;
 } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const MessageComposerFile = ({ fileTitle, fileSubtitle, actionIcon, error, disabled, onClick, ...props }: MessageComposerFileProps) => {
+const MessageComposerFile = ({
+	fileTitle,
+	fileSubtitle,
+	actionIcon,
+	error,
+	disabled,
+	onClick,
+	className,
+	...props
+}: MessageComposerFileProps) => {
 	const closeWrapperStyle = css`
 		position: absolute;
 		right: 0.5rem;
@@ -53,7 +62,7 @@ const MessageComposerFile = ({ fileTitle, fileSubtitle, actionIcon, error, disab
 		<Box
 			rcx-input-box__wrapper={!error && !disabled}
 			readOnly={error}
-			className={previewWrapperStyle}
+			className={[previewWrapperStyle, className].filter(Boolean)}
 			role='group'
 			aria-label={fileTitle}
 			display='flex'

@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
-const MessageComposerFileGroup = ({ children, ...props }: ComponentProps<typeof Box>) => {
+const MessageComposerFileGroup = ({ children, style, ...props }: ComponentProps<typeof Box>) => {
 	return (
 		<Box
 			role='group'
@@ -12,7 +12,7 @@ const MessageComposerFileGroup = ({ children, ...props }: ComponentProps<typeof 
 			pbe={8}
 			pbs={2}
 			overflowX='auto'
-			style={{ whiteSpace: 'nowrap', ...props.style }}
+			style={{ whiteSpace: 'nowrap', ...style }}
 			{...props}
 		>
 			{children}
