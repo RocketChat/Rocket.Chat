@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-throw error when livechst user is not found
+throw error when livechat user is not found
