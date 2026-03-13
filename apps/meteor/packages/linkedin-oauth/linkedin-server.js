@@ -1,3 +1,4 @@
+import { Accounts } from 'meteor/accounts-base';
 import { fetch } from 'meteor/fetch';
 import { OAuth } from 'meteor/oauth';
 import { ServiceConfiguration } from 'meteor/service-configuration';
