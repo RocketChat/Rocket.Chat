@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -16,7 +16,6 @@ import {
 	isChatSendMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
-	isChatGetMentionedMessagesProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
@@ -274,6 +273,39 @@ const ChatUnpinMessageSchema = {
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+type GetMentionedMessages = {
+	roomId: IRoom['_id'];
+	count?: number;
+	offset?: number;
+	sort?: string;
+};
+
+const GetMentionedMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+const isChatGetMentionedMessagesLocalProps = ajv.compile<GetMentionedMessages>(GetMentionedMessagesSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -557,6 +589,51 @@ const chatEndpoints = API.v1
 			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
+		},
+	)
+	.get(
+		'chat.getMentionedMessages',
+		{
+			authRequired: true,
+			query: isChatGetMentionedMessagesLocalProps,
+			response: {
+				200: ajv.compile<{
+					messages: IMessage[];
+					count: number;
+					offset: number;
+					total: number;
+					success: boolean;
+				}>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array' },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.queryParams;
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const messages = await findMentionedMessages({
+				uid: this.userId,
+				roomId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
+			return API.v1.success(messages);
 		},
 	);
 
@@ -953,30 +1030,6 @@ API.v1.addRoute(
 					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { projection: fields, sort }).toArray(),
 				},
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getMentionedMessages',
-	{ authRequired: true, validateParams: isChatGetMentionedMessagesProps },
-	{
-		async get() {
-			const { roomId } = this.queryParams;
-			const { sort } = await this.parseJsonQuery();
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			const messages = await findMentionedMessages({
-				uid: this.userId,
-				roomId,
-				pagination: {
-					offset,
-					count,
-					sort,
-				},
-			});
-
-			return API.v1.success(messages);
 		},
 	},
 );
