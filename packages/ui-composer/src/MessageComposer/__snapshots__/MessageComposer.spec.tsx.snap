@@ -609,7 +609,9 @@ exports[`renders WithFiles without crashing 1`] = `
         style="white-space: nowrap;"
       >
         <div
+          aria-label="file.png"
           class="rcx-box rcx-box--full rcx-input-box__wrapper rcx-css-1pkbwz2 rcx-css-11v39ac"
+          role="group"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-rr1a1d"
@@ -645,7 +647,9 @@ exports[`renders WithFiles without crashing 1`] = `
           </div>
         </div>
         <div
+          aria-label="file.png"
           class="rcx-box rcx-box--full rcx-css-1racx6p rcx-css-11v39ac"
+          role="group"
         >
           <div
             class="rcx-box rcx-box--full rcx-css-rr1a1d"
@@ -665,8 +669,10 @@ exports[`renders WithFiles without crashing 1`] = `
           </div>
         </div>
         <div
+          aria-label="file.png"
           class="rcx-box rcx-box--full rcx-css-1racx6p rcx-css-3mzx0u"
           readonly=""
+          role="group"
           title="Something went wrong"
         >
           <div
