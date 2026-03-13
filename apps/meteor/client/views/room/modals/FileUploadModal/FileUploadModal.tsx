@@ -49,7 +49,7 @@ const FileUploadModal = ({
 		register,
 		handleSubmit,
 		formState: { errors, isSubmitting },
-	} = useForm({ mode: 'onSubmit', defaultValues: { name: fileName, description: fileDescription } });
+	} = useForm({ mode: 'onChange', defaultValues: { name: fileName, description: fileDescription } });
 
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
