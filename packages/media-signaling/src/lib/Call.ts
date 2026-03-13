@@ -212,6 +212,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._flags;
 	}
 
+	public get features(): CallFeature[] {
+		return [...(this.enabledFeatures || [])];
+	}
+
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,

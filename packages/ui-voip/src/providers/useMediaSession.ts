@@ -19,10 +19,8 @@ const defaultSessionInfo: SessionState = {
 	remoteHeld: false,
 	startedAt: undefined,
 	hidden: false,
-	supportedFeatures: ['audio'],
+	supportedFeatures: ['audio', 'transfer', 'hold'],
 };
-
-const availableFeatures = ['audio', 'screen-share'] as const;
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
 	if (contact.type === 'sip') {
@@ -138,6 +136,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				remoteMute,
 				callId,
 				activeTimestamp: startedAt,
+				features: supportedFeatures,
 			} = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
 
@@ -145,8 +144,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				dispatch({ type: 'reset' });
 				return;
 			}
-
-			const supportedFeatures = availableFeatures.filter((feature) => mainCall.isFeatureAvailable(feature));
 
 			const connectionState = deriveConnectionStateFromCallState(callState);
 

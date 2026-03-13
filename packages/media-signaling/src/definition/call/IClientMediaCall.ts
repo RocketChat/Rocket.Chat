@@ -19,7 +19,7 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
-export const callFeatureList = ['audio', 'screen-share'] as const;
+export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold'] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
 
@@ -80,6 +80,7 @@ export interface IClientMediaCall {
 	role: CallRole;
 	service: CallService | null;
 	flags: readonly CallFlag[];
+	features: readonly CallFeature[];
 
 	state: CallState;
 	ignored: boolean;

@@ -140,7 +140,7 @@ const MockedMediaCallProvider = ({
 		remoteMuted,
 		remoteHeld,
 		callId: undefined,
-		supportedFeatures: ['audio', 'screen-share'],
+		supportedFeatures: ['audio', 'screen-share', 'transfer', 'hold'],
 	} as SessionState;
 
 	const contextValue = {
