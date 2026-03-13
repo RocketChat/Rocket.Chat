@@ -1547,7 +1547,7 @@ describe('LIVECHAT - rooms', () => {
 				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 				await updateSetting('Livechat_enabled_when_agent_idle', false);
 				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({
+				const { department: forwardToOfflineDepartment, ws } = await createDepartmentWithAnAwayAgent({
 					allowReceiveForwardOffline: true,
 				});
 
@@ -1581,6 +1581,8 @@ describe('LIVECHAT - rooms', () => {
 						expect(res.body).to.have.property('total');
 						expect(res.body).to.have.property('count');
 					});
+
+				ws.close();
 
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
@@ -1675,7 +1677,7 @@ describe('LIVECHAT - rooms', () => {
 			async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: true });
+				const { department: forwardToOfflineDepartment, ws } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: true });
 
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
@@ -1698,6 +1700,8 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry.status).to.equal('queued');
 				expect(inquiry.department).to.equal(forwardToOfflineDepartment._id);
 
+				ws.close();
+
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(forwardToOfflineDepartment._id),
@@ -1714,7 +1718,7 @@ describe('LIVECHAT - rooms', () => {
 			async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: false });
+				const { department: forwardToOfflineDepartment, ws } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: false });
 
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
@@ -1734,6 +1738,8 @@ describe('LIVECHAT - rooms', () => {
 
 				expect(res.status).to.equal(400);
 				expect(res.body).to.have.property('error', 'error-no-agents-available-for-service-on-department');
+
+				ws.close();
 
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
@@ -1791,7 +1797,11 @@ describe('LIVECHAT - rooms', () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				await updateSetting('Livechat_enabled_when_agent_idle', true);
 				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToOfflineDepartment, agent } = await createDepartmentWithAnAwayAgent({
+				const {
+					department: forwardToOfflineDepartment,
+					agent,
+					ws,
+				} = await createDepartmentWithAnAwayAgent({
 					allowReceiveForwardOffline: true,
 				});
 
@@ -1813,6 +1823,8 @@ describe('LIVECHAT - rooms', () => {
 
 				expect(roomInfo.servedBy).to.have.property('_id', agent.user._id);
 				expect(roomInfo.departmentId).to.be.equal(forwardToOfflineDepartment._id);
+
+				ws.close();
 
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),

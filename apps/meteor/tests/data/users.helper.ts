@@ -175,6 +175,42 @@ export const setUserAway = (overrideCredentials = credentials, config?: IRequest
 export const ddpLogin = (resume: string): Promise<WebSocket> =>
 	new Promise((resolve, reject) => {
 		const ws = new WebSocket('ws://localhost:4000/websocket');
+		const loginId = `login-${Date.now()}-${Math.random()}`;
+
+		const handler = (event: MessageEvent) => {
+			const data = JSON.parse(event.data);
+
+			switch (data.msg) {
+				case 'connected':
+					ws.send(
+						JSON.stringify({
+							msg: 'method',
+							id: loginId,
+							method: 'login',
+							params: [{ resume }],
+						}),
+					);
+					break;
+
+				case 'result':
+					if (data.id === loginId) {
+						ws.removeEventListener('message', handler);
+						resolve(ws);
+					}
+					break;
+
+				case 'ping':
+					ws.send(JSON.stringify({ msg: 'pong' }));
+					break;
+
+				case 'error':
+					ws.removeEventListener('message', handler);
+					reject(data);
+					break;
+			}
+		};
+
+		ws.addEventListener('message', handler);
 
 		ws.onopen = () => {
 			ws.send(
@@ -186,44 +222,12 @@ export const ddpLogin = (resume: string): Promise<WebSocket> =>
 			);
 		};
 
-		ws.onmessage = (event) => {
-			const data = JSON.parse(event.data);
-
-			switch (data.msg) {
-				case 'connected':
-					ws.send(
-						JSON.stringify({
-							msg: 'method',
-							id: 'login-1',
-							method: 'login',
-							params: [{ resume }],
-						}),
-					);
-					break;
-
-				case 'result':
-					if (data.id === 'login-1') {
-						// NO cerrar el websocket
-						resolve(ws);
-					}
-					break;
-
-				case 'ping':
-					ws.send(JSON.stringify({ msg: 'pong' }));
-					break;
-
-				case 'error':
-					reject(data);
-					break;
-			}
-		};
-
 		ws.onerror = reject;
 	});
 
 export const setUserAwayWS = (ws: WebSocket): Promise<void> =>
 	new Promise((resolve, reject) => {
-		const id = 'away-1';
+		const id = `away-${Date.now()}-${Math.random()}`;
 
 		const handler = (event: MessageEvent) => {
 			const data = JSON.parse(event.data);

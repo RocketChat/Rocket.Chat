@@ -93,6 +93,7 @@ export const createAnOfflineAgent = async (): Promise<{
 export const createAnAwayAgent = async (): Promise<{
 	credentials: Credentials;
 	user: IUser & { username: string };
+	ws: WebSocket;
 }> => {
 	const username = `user.test.${Date.now()}.away`;
 	const email = `${username}.offline@rocket.chat`;
@@ -108,6 +109,7 @@ export const createAnAwayAgent = async (): Promise<{
 	return {
 		credentials: createdUserCredentials,
 		user: agent,
+		ws,
 	};
 };
 

@@ -227,6 +227,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		let testUser3: { user: IUser; credentials: Credentials };
 		let testDepartment: ILivechatDepartment;
 		let visitorEmail: string;
+		const sockets: WebSocket[] = [];
 
 		before(async () => {
 			const user = await createUser();
@@ -280,14 +281,20 @@ import { IS_EE } from '../../../e2e/config/constants';
 				});
 		});
 
-		after(async () =>
-			Promise.all([
+		after(async () => {
+			await Promise.all([
 				deleteUser(testUser.user),
 				deleteUser(testUser2.user),
 				deleteUser(testUser3.user),
 				updateSetting('Livechat_enabled_when_agent_idle', true),
-			]),
-		);
+			]);
+
+			for (const ws of sockets) {
+				if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+					ws.close();
+				}
+			}
+		});
 
 		it('should route a room to an available agent', async () => {
 			const visitor = await createVisitor(testDepartment._id);
@@ -370,9 +377,11 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
 			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(ws1);
 			await setUserAwayWS(ws1);
 			await setUserStatus(testUser3.credentials, UserStatus.AWAY);
 			const ws2 = await ddpLogin(testUser3.credentials['X-Auth-Token']);
+			sockets.push(ws2);
 			await setUserAwayWS(ws2);
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
