@@ -1,7 +1,7 @@
 import type { Root } from './definitions';
 import * as grammar from './grammar.pegjs';
 
-export * from './definitions';
+export type * from './definitions';
 
 export { isNodeOfType } from './guards';
 
@@ -17,6 +17,7 @@ export type Options = {
 
 export const parse = (input: string, options?: Options): Root => grammar.parse(input, options);
 
+<<<<<<< feat/handwritten-parser-prototype
 export {
 	/** @deprecated */
 	parse as parser,
@@ -26,3 +27,7 @@ export {
 
 // Handwritten lexer
 export { Lexer, Token, TokenKind, makeToken } from './lexer';
+=======
+export type { Root as MarkdownAST };
+export { parse as parser };
+>>>>>>> develop

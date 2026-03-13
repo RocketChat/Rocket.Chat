@@ -1,11 +1,11 @@
-import { ActionTypes } from "../reducer";
+import { ActionTypes } from '../reducer';
 
 export type DeleteProjectAction = {
-  type: ActionTypes.DeleteProject,
-  payload: string,
+	type: ActionTypes.DeleteProject;
+	payload: string;
 };
 
 export const deleteProjectAction = (payload: string): DeleteProjectAction => ({
-  type: ActionTypes.DeleteProject,
-  payload,
+	type: ActionTypes.DeleteProject,
+	payload,
 });
