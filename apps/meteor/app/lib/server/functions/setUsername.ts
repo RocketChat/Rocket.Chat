@@ -87,6 +87,8 @@ export const setUsernameWithValidation = async (userId: string, username: string
 
 	void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { username } });
 };
+
+	
 async function migrateReactionUsernames(
 	oldUsername: string,
 	newUsername: string,
@@ -96,7 +98,26 @@ async function migrateReactionUsernames(
 		return;
 	}
 	await Messages.updateMany(
-		{ reactions: { $exists: true } },
+		{
+						$expr: {
+							$in: [
+								oldUsername,
+								{
+									$reduce: {
+										input: {
+											$map: {
+												input: { $objectToArray: { $ifNull: ['$reactions', {}] } },
+												as: 'reaction',
+												in: { $ifNull: ['$$reaction.v.usernames', []] },
+											},
+										},
+										initialValue: [],
+										in: { $concatArrays: ['$$value', '$$this'] },
+									},
+								},
+						],
+						},
+					},
 		[
 			{
 				$set: {
