@@ -68,8 +68,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		register,
 		control,
 		handleSubmit,
-		formState: { errors, isValid, isDirty, isSubmitting },
-	} = useForm<EditDepartmentFormData>({ mode: 'onChange', defaultValues: initialValues });
+		formState: { errors, isDirty, isSubmitting },
+	} = useForm<EditDepartmentFormData>({ mode: 'onSubmit', defaultValues: initialValues });
 
 	const [fallbackFilter, setFallbackFilter] = useState<string>('');
 	const [isUnitRequired, setUnitRequired] = useState(false);
@@ -117,8 +117,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		}
 	});
 
-	const isFormValid = isValid && isDirty;
-
 	const formId = useId();
 	const enabledField = useId();
 	const nameField = useId();
@@ -140,7 +138,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			<Page>
 				<PageHeader title={title} onClickBack={() => router.navigate('/omnichannel/departments')}>
 					<ButtonGroup>
-						<Button type='submit' form={formId} primary disabled={!isFormValid} loading={isSubmitting}>
+						<Button type='submit' form={formId} primary disabled={id ? !isDirty : false} loading={isSubmitting}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
