@@ -92,6 +92,9 @@ async function migrateReactionUsernames(
 	newUsername: string,
 	session?: ClientSession
 ): Promise<void> {
+	if (!oldUsername || oldUsername === newUsername) {
+		return;
+	}
 	await Messages.updateMany(
 		{ reactions: { $exists: true } },
 		[
@@ -105,27 +108,24 @@ async function migrateReactionUsernames(
 								in: {
 									k: "$$reaction.k",
 									v: {
-										$cond: [
-											{ $isArray: "$$reaction.v.usernames" },
+										$mergeObjects: [
+											'$$reaction.v',
 											{
-												$mergeObjects: [
-													"$$reaction.v",
-													{
-														usernames: {
-															$map: {
-																input: "$$reaction.v.usernames",
-																as: "u",
-																in: {
-																	$cond: [{ $eq: ["$$u", oldUsername] }, newUsername, "$$u"]
-																}
-															}
-														}
-													}
-												]
+												usernames: {
+													$map: {
+														input: { $ifNull: ['$$reaction.v.usernames', []] },
+														as: 'u',
+														in: {
+															$cond: [{ $eq: ['$$u', oldUsername] }, newUsername, '$$u'],
+														},
+													},
+												},
 											},
-											"$$reaction.v"
-										]
+										],
+
 									}
+								}
+							}
 						}
 					}
 				}
@@ -181,7 +181,7 @@ export const _setUsername = async function (
 				SystemLogger.error({ err });
 			}
 		}, session);
-		
+
 	}
 	// Set new username*
 	// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
