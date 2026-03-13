@@ -48,7 +48,7 @@ test.describe('OC - Manage Tags', () => {
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelTags.createNew();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
-			await expect(poOmnichannelTags.editTag.btnSave).toBeDisabled();
+			await expect(poOmnichannelTags.editTag.btnSave).toBeEnabled();
 			await expect(poOmnichannelTags.editTag.btnCancel).toBeEnabled();
 			await poOmnichannelTags.editTag.btnCancel.click();
 			await expect(poOmnichannelTags.editTag.root).not.toBeVisible();
