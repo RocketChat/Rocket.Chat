@@ -70,8 +70,11 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					imperativeModal.close();
 					uploadNextFile();
 				},
-				onSubmit: async (fileName, description): Promise<void> => {
-					Object.defineProperty(file, 'name', {
+
+				onSubmit: async (fileName: string, description?: string, croppedFile?: File): Promise<void> => {
+					const fileToUpload = croppedFile ?? file;
+
+					Object.defineProperty(fileToUpload, 'name', {
 						writable: true,
 						value: fileName,
 					});
@@ -80,30 +83,30 @@ export const uploadFiles = async (chat: ChatAPI, files: readonly File[], resetFi
 					const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
 					if (!e2eRoom) {
-						uploadFile(file, { description });
+						uploadFile(fileToUpload, { description });
 						return;
 					}
 
 					if (!settings.peek('E2E_Enable_Encrypt_Files')) {
-						uploadFile(file, { description });
+						uploadFile(fileToUpload, { description });
 						return;
 					}
 
 					const shouldConvertSentMessages = await e2eRoom.shouldConvertSentMessages({ msg });
 
 					if (!shouldConvertSentMessages) {
-						uploadFile(file, { description });
+						uploadFile(fileToUpload, { description });
 						return;
 					}
 
-					const encryptedFile = await e2eRoom.encryptFile(file);
+					const encryptedFile = await e2eRoom.encryptFile(fileToUpload);
 
 					if (encryptedFile) {
 						const getContent = async (_id: string, fileUrl: string): Promise<IE2EEMessage['content']> => {
 							const attachments = [];
 
 							const attachment: FileAttachmentProps = {
-								title: file.name,
+								title: fileToUpload.name,
 								type: 'file',
 								description,
 								title_link: fileUrl,
