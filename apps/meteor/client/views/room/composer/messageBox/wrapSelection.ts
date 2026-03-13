@@ -53,5 +53,6 @@ export const handleSelectionWrapping = (event: InputEvent, chat: ChatAPI): boole
 		});
 	}
 
+	event.preventDefault();
 	return true;
 };
