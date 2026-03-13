@@ -57,6 +57,14 @@ export class ExportMessagesTab extends FlexTab {
 		return this.root.page().getByRole('listitem').filter({ hasText: messageText }).getByRole('checkbox');
 	}
 
+	get inputUsers() {
+		return this.root.getByLabel('To users');
+	}
+
+	get inputAdditionalEmails() {
+		return this.root.getByRole('textbox', { name: 'To additional emails' });
+	}
+
 	get method() {
 		return this.root.getByTestId('export-messages-method');
 	}

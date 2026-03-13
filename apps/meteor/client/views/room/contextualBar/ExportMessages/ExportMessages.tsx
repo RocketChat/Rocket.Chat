@@ -320,6 +320,7 @@ const ExportMessages = () => {
 													}}
 													onBlur={onBlur}
 													name={name}
+													aria-label={t('To_users')}
 													aria-describedby={`${toUsersField}-error`}
 													aria-invalid={Boolean(errors?.toUsers?.message)}
 													error={errors?.toUsers?.message}
