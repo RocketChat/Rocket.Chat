@@ -6,8 +6,6 @@ import ImageAttachment from './file/ImageAttachment';
 import VideoAttachment from './file/VideoAttachment';
 
 const FileAttachment = (attachment: FileAttachmentProps) => {
-	console.log(attachment);
-	console.log(new Error().stack);
 	if (isFileImageAttachment(attachment)) {
 		return <ImageAttachment {...attachment} />;
 	}
