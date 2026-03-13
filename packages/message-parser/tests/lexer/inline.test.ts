@@ -147,14 +147,18 @@ describe('color tokens', () => {
         expect(kv('color:#ABCDEF')).toEqual([['COLOR', 'ABCDEF']]);
     });
 
-    test('8-digit hex matches 6 digits first (greedy alternation)', () => {
+    test('8-digit hex is matched atomically', () => {
         const result = kv('color:#ff0000ff');
-        expect(result[0]).toEqual(['COLOR', 'ff0000']);
+        expect(result[0]).toEqual(['COLOR', 'ff0000ff']);
     });
 
-    test('4-digit hex matches 3 first', () => {
+    test('4-digit hex is matched atomically', () => {
         const result = kv('color:#f00f');
-        expect(result[0]).toEqual(['COLOR', 'f00']);
+        expect(result[0]).toEqual(['COLOR', 'f00f']);
+    });
+
+    test('hex boundary prevents partial color match', () => {
+        expect(kinds('color:#ff0000fff')).toEqual(['TEXT', 'EMOTICON', 'TEXT']);
     });
 
     test('invalid hex after color:# falls through', () => {
