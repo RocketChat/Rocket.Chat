@@ -54,7 +54,11 @@ export const addUserToRoom = async (
 	if (subscription) {
 		// If the user is banned, unban them via re-invite
 		if (subscription.status === 'BANNED') {
-			await Subscriptions.unbanByRoomIdAndUserId(rid, userToBeAdded._id);
+			const unbanResult = await Subscriptions.unbanByRoomIdAndUserId(rid, userToBeAdded._id);
+			if (unbanResult.modifiedCount !== 1) {
+				// Another concurrent re-invite already unbanned; avoid overcounting and duplicate messages
+				return true;
+			}
 
 			// Re-add the room to the user's __rooms array for member listing
 			await Users.addRoomByUserId(userToBeAdded._id, rid);
