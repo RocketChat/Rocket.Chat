@@ -82,7 +82,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 		handleSubmit,
 		watch,
 	} = useForm<UnitEditFormData>({
-		mode: 'onBlur',
+		mode: 'onSubmit',
 		values: {
 			name: unitData?.name || '',
 			visibility: unitData?.visibility || '',
@@ -263,7 +263,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} disabled={!isDirty} type='submit' primary>
+					<Button form={formId} disabled={_id ? !isDirty : false} type='submit' primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

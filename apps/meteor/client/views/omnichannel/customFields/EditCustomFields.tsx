@@ -66,7 +66,10 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 
 	const handleDelete = useRemoveCustomField();
 
-	const methods = useForm<EditCustomFieldsFormData>({ mode: 'onBlur', values: getInitialValues(customFieldData) });
+	const methods = useForm<EditCustomFieldsFormData>({
+		mode: 'onSubmit',
+		values: getInitialValues(customFieldData),
+	});
 	const {
 		control,
 		handleSubmit,
@@ -221,7 +224,7 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit' disabled={!isDirty}>
+					<Button form={formId} primary type='submit' disabled={customFieldData?._id ? !isDirty : false}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

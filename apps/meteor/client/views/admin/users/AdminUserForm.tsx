@@ -120,7 +120,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			isNewUserPage,
 			isVerificationNeeded: !!isVerificationNeeded,
 		}),
-		mode: 'onBlur',
+		mode: 'onSubmit',
 	});
 
 	const showVoipExtension = useShowVoipExtension();

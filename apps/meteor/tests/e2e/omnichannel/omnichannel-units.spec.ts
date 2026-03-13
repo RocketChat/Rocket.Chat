@@ -60,7 +60,7 @@ test.describe('OC - Manage Units', () => {
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelUnits.createNew();
 			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
-			await expect(poOmnichannelUnits.manageUnit.btnSave).toBeDisabled();
+			await expect(poOmnichannelUnits.manageUnit.btnSave).toBeEnabled();
 			await expect(poOmnichannelUnits.manageUnit.btnCancel).toBeEnabled();
 			await poOmnichannelUnits.manageUnit.btnCancel.click();
 			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();

@@ -1,10 +1,8 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
-import { Field, FieldError, Button, Box, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Field, FieldError, Button, Box, ButtonGroup, ContextualbarFooter } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -21,32 +19,29 @@ export type PriorityEditFormProps = {
 type PrioritySaveException = { success: false; error: TranslationKey | undefined };
 
 const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): ReactElement => {
-	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 	const [isSaving, setSaving] = useState(false);
 
 	const { name, i18n, dirty } = data;
 	const defaultName = t(i18n);
 
+	const defaultNameValue = data && dirty ? name : defaultName;
+
 	const {
 		control,
-		getValues,
 		setValue,
-		formState: { errors, isValid, isDirty },
+		formState: { errors, isDirty },
 		setError,
 		handleSubmit,
 	} = useForm<PriorityFormData>({
-		mode: 'onChange',
-		defaultValues: data ? { name: dirty ? name : defaultName } : {},
+		mode: 'onSubmit',
+		reValidateMode: 'onChange',
+		defaultValues: { name: defaultNameValue || '' },
 	});
 
-	const handleSave = useEffectEvent(async () => {
-		const { name } = getValues();
+	const nameFieldId = useId();
 
-		if (!isValid) {
-			return dispatchToastMessage({ type: 'error', message: t('Required_field', { field: t('Name') }) });
-		}
-
+	const handleSave = async ({ name }: { name: string }) => {
 		try {
 			setSaving(true);
 			await onSave({ name, reset: name === defaultName });
@@ -59,7 +54,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		} finally {
 			setSaving(false);
 		}
-	});
+	};
 
 	const onReset = (): void => {
 		setValue('name', defaultName, {
@@ -74,10 +69,12 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 				<Controller
 					name='name'
 					control={control}
-					rules={{ required: t('Required_field', { field: t('Name') }), validate: (v) => v?.trim() !== '' }}
+					rules={{
+						required: t('Required_field', { field: t('Name') }),
+					}}
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput
-							_id=''
+							_id={nameFieldId}
 							packageValue={defaultName}
 							disabled={isSaving}
 							error={errors.name?.message}
@@ -88,19 +85,27 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 							hasResetButton={value !== t(i18n)}
 							onResetButtonClick={onReset}
 							onChangeValue={onChange}
+							aria-describedby={`${nameFieldId}-error`}
+							aria-invalid={Boolean(errors.name?.message)}
 						/>
 					)}
 				/>
-				<FieldError role='alert'>{errors.name?.message}</FieldError>
+				{errors.name && (
+					<FieldError role='alert' id={`${nameFieldId}-error`}>
+						{errors.name.message}
+					</FieldError>
+				)}
 			</Field>
-			<ButtonGroup stretch>
-				<Button onClick={() => onCancel()} disabled={isSaving}>
-					{t('Cancel')}
-				</Button>
-				<Button primary disabled={!isDirty || !isValid} loading={isSaving} onClick={handleSave}>
-					{t('Save')}
-				</Button>
-			</ButtonGroup>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					<Button onClick={() => onCancel()} disabled={isSaving}>
+						{t('Cancel')}
+					</Button>
+					<Button primary type='submit' disabled={!isDirty} loading={isSaving}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
 		</Box>
 	);
 };

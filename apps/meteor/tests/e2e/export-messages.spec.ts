@@ -73,7 +73,9 @@ test.describe('export-messages', () => {
 		await expect(exportMessagesTab.getOutputFormatOptionByName('pdf')).toBeVisible();
 	});
 
-	test('should display an error when trying to send email without filling to users or to additional emails', async ({ page }) => {
+	test('when trying to send email without filling to users or to additional emails, should mark both fields as invalid', async ({
+		page,
+	}) => {
 		const exportMessagesTab = new ExportMessagesTab(page);
 		const testMessage = uniqueMessage();
 
@@ -87,11 +89,16 @@ test.describe('export-messages', () => {
 		await poHomeChannel.content.getMessageByText(testMessage).click();
 		await exportMessagesTab.send();
 
-		await expect(
-			page.locator('[role="alert"]', {
-				hasText: 'You must select one or more users or provide one or more email addresses, separated by commas',
-			}),
-		).toBeVisible();
+		const usersField = exportMessagesTab.inputUsers;
+		const additionalEmailsField = exportMessagesTab.inputAdditionalEmails;
+
+		await expect(usersField).toHaveAttribute('aria-invalid', 'true');
+		await expect(additionalEmailsField).toHaveAttribute('aria-invalid', 'true');
+
+		const errorMessages = exportMessagesTab.errorMessage(
+			'You must select one or more users or provide one or more email addresses, separated by commas',
+		);
+		await expect(errorMessages).toHaveCount(2);
 	});
 
 	test('should display an error when trying to send email without selecting any message', async ({ page }) => {

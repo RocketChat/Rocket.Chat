@@ -57,7 +57,7 @@ const ResetPasswordPage = (): ReactElement => {
 		password: string;
 		passwordConfirmation: string;
 	}>({
-		mode: 'onBlur',
+		mode: 'onSubmit',
 	});
 
 	const password = watch('password');
