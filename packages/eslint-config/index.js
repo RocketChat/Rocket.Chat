@@ -231,7 +231,6 @@ export default defineConfig(
 		rules: {
 			'getter-return': ['error', { allowImplicit: true }],
 			'no-async-promise-executor': 'warn',
-			'no-await-in-loop': 'error',
 			'no-case-declarations': 'warn',
 			'no-constant-binary-expression': 'warn',
 			'no-debugger': 'error',
@@ -275,7 +274,6 @@ export default defineConfig(
 			'one-var': ['error', 'never'],
 			'operator-assignment': ['error', 'always'],
 			'prefer-object-spread': 'off',
-			'spaced-comment': 'error',
 		},
 	},
 	{
@@ -398,13 +396,8 @@ export default defineConfig(
 				},
 			],
 			'@typescript-eslint/ban-ts-comment': 'warn',
-			'@typescript-eslint/consistent-type-imports': [
-				'warn',
-				{
-					disallowTypeAnnotations: false,
-					fixStyle: 'inline-type-imports',
-				},
-			],
+			'@typescript-eslint/consistent-type-exports': 'error',
+			'@typescript-eslint/consistent-type-imports': ['error', { disallowTypeAnnotations: false }],
 			'@typescript-eslint/naming-convention': [
 				'error',
 				{ selector: 'variableLike', format: ['camelCase'], leadingUnderscore: 'allow' },
@@ -414,7 +407,7 @@ export default defineConfig(
 					leadingUnderscore: 'allowSingleOrDouble',
 				},
 				{
-					selector: ['function'],
+					selector: 'function',
 					format: ['camelCase', 'PascalCase'],
 					leadingUnderscore: 'allowSingleOrDouble',
 				},
@@ -423,6 +416,14 @@ export default defineConfig(
 					format: null,
 					filter: {
 						regex: '^Story$',
+						match: true,
+					},
+				},
+				{
+					selector: 'parameter',
+					format: ['PascalCase'],
+					filter: {
+						regex: 'Component$',
 						match: true,
 					},
 				},
@@ -541,6 +542,7 @@ export default defineConfig(
 				{
 					checksVoidReturn: {
 						arguments: false,
+						attributes: false,
 						inheritedMethods: false,
 					},
 				},

@@ -1,4 +1,4 @@
-import { type IOmnichannelSourceFromApp } from '@rocket.chat/core-typings';
+import type { IOmnichannelSourceFromApp } from '@rocket.chat/core-typings';
 import { Icon, Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
