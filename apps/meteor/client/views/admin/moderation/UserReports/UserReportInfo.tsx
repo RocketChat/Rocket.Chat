@@ -17,6 +17,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserContextFooter from './UserContextFooter';
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import GenericNoResults from '../../../../components/GenericNoResults';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
@@ -47,7 +48,8 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		}
 
 		const { username, name } = report.user;
-		return <UserColumn key={dataUpdatedAt} username={username} name={name} fontSize='p2' size='x48' />;
+		const normalizedUsername = username ? normalizeUsername(username) : undefined;
+		return <UserColumn key={dataUpdatedAt} username={normalizedUsername} name={name} fontSize='p2' size='x48' />;
 	}, [report?.user, dataUpdatedAt]);
 
 	const userEmails = useMemo(() => {
