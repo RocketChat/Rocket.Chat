@@ -82,19 +82,31 @@ runs:
           }
 
     - name: Build Docker images
+      env:
+        INPUT_DENO_VERSION: ${{ inputs.deno-version }}
+        INPUT_TYPE: ${{ inputs.type }}
+        INPUT_SERVICE: ${{ inputs.service }}
+        INPUT_ARCH: ${{ inputs.arch }}
+        INPUT_PUBLISH_IMAGE: ${{ inputs.publish-image }}
+        GH_RUN_ID: ${{ github.run_id }}
+        GH_SERVER_URL: ${{ github.server_url }}
+        GH_REPOSITORY: ${{ github.repository }}
+        GH_EVENT_NAME: ${{ github.event_name }}
+        GH_REF: ${{ github.ref }}
+        SERVICE_SUFFIX_FROM_CONTEXT: ${{ (inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop')) && '-cov' || (inputs.type == 'fips' && '-fips' || '') }}
       shell: bash
       run: |
         set -o xtrace
-        export DENO_VERSION="${{ inputs.deno-version }}"
+        export DENO_VERSION="$INPUT_DENO_VERSION"
         compose_files=(-f docker-compose-ci.yml)
-        if [[ "${{ inputs.type }}" == 'fips' ]]; then
+        if [[ "$INPUT_TYPE" == 'fips' ]]; then
           compose_files+=(-f docker-compose-ci.fips.yml)
         fi
 
         # Removes unnecessary swc cores and sharp binaries to reduce image size
         swc_arch='x64'
-        if [[ "${{ inputs.service }}" == 'rocketchat' ]]; then
-          if [[ "${{ inputs.arch }}" == 'arm64' ]]; then
+        if [[ "$INPUT_SERVICE" == 'rocketchat' ]]; then
+          if [[ "$INPUT_ARCH" == 'arm64' ]]; then
             swc_arch='arm64'
           fi
 
@@ -109,7 +121,7 @@ runs:
           find /tmp/build/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/node_modules/@esbuild -type d -name 'linux-*' -not -name "*-${swc_arch}" -exec rm -rf {} +
         fi
 
-        if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
+        if [[ "$INPUT_PUBLISH_IMAGE" == 'true' ]]; then
           LOAD_OR_PUSH="--push"
         else
           LOAD_OR_PUSH="--load"
@@ -119,29 +131,32 @@ runs:
         export COMPOSE_HTTP_TIMEOUT=300
 
         # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
-        IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
+        IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
+
+        BUILD_RUN_URL="${GH_SERVER_URL}/${GH_REPOSITORY}/actions/runs/${GH_RUN_ID}"
+        BUILD_SOURCE_URL="${GH_SERVER_URL}/${GH_REPOSITORY}"
 
         buildx_bake_cmd=(
           docker buildx bake
           "${compose_files[@]}"
           ${LOAD_OR_PUSH}
           --allow=fs.read=/tmp/build
-          --set "*.tags+=${IMAGE}-gha-run-${{ github.run_id }}"
-          --set "*.labels.org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          --set "*.labels.org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}"
-          --set *.platform=linux/${{ inputs.arch }}
+          --set "*.tags+=${IMAGE}-gha-run-${GH_RUN_ID}"
+          --set "*.labels.org.opencontainers.image.description=Build run: ${BUILD_RUN_URL}"
+          --set "*.labels.org.opencontainers.image.source=${BUILD_SOURCE_URL}"
+          --set "*.platform=linux/${INPUT_ARCH}"
           --set *.cache-from=type=gha
           --set *.cache-to=type=gha,mode=max
           --provenance=false
           --sbom=false
           --metadata-file "/tmp/meta.json"
-          "${{ inputs.service }}"
+          "$INPUT_SERVICE"
         )
 
         attempts=1
         max_attempts=3
         until "${buildx_bake_cmd[@]}"; do
-          if [[ "${{ inputs.publish-image }}" != 'true' || $attempts -ge $max_attempts ]]; then
+          if [[ "$INPUT_PUBLISH_IMAGE" != 'true' || $attempts -ge $max_attempts ]]; then
             echo "docker buildx bake failed after ${attempts} attempt(s)."
             exit 1
           fi
@@ -155,45 +170,49 @@ runs:
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
 
-        if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
-          SERVICE_SUFFIX=${{ (inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop')) && '-cov' || (inputs.type == 'fips' && '-fips' || '') }}
+        if [[ "$INPUT_PUBLISH_IMAGE" == 'true' ]]; then
+          SERVICE_SUFFIX="$SERVICE_SUFFIX_FROM_CONTEXT"
 
-          mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
+          mkdir -p "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}"
 
           # Get digest and image info
-          DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
+          DIGEST=$(jq -r --arg service "$INPUT_SERVICE" '.[$service].["containerimage.digest"]' "/tmp/meta.json")
           IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
           FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
 
           echo "Inspecting image: $FULL_IMAGE"
 
           # Inspect the image and save complete manifest with sizes (using -v for verbose)
-          docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+          docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}/manifest.json"
 
-          echo "Saved manifest to /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
-          cat "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json" | jq '.'
+          echo "Saved manifest to /tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}/manifest.json"
+          cat "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}/manifest.json" | jq '.'
         fi
 
     - name: Save Docker image as artifact
       if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
+      env:
+        INPUT_TYPE: ${{ inputs.type }}
+        INPUT_SERVICE: ${{ inputs.service }}
+        INPUT_ARCH: ${{ inputs.arch }}
       shell: bash
       run: |
         set -o xtrace
         compose_files=(-f docker-compose-ci.yml)
-        if [[ "${{ inputs.type }}" == 'fips' ]]; then
+        if [[ "$INPUT_TYPE" == 'fips' ]]; then
           compose_files+=(-f docker-compose-ci.fips.yml)
         fi
 
         # Get image name from compose config
-        IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
+        IMAGE=$(docker compose "${compose_files[@]}" config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
 
         # Create directory for image archives
         mkdir -p /tmp/docker-images
 
         # Save the image to a tar file
-        docker save "${IMAGE}" -o "/tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar"
+        docker save "${IMAGE}" -o "/tmp/docker-images/${INPUT_SERVICE}-${INPUT_ARCH}-${INPUT_TYPE}.tar"
 
-        echo "Saved image to /tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar"
+        echo "Saved image to /tmp/docker-images/${INPUT_SERVICE}-${INPUT_ARCH}-${INPUT_TYPE}.tar"
         ls -lh /tmp/docker-images/
 
     - name: Upload Docker image artifact

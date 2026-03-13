@@ -94,8 +94,10 @@ jobs:
 
     steps:
       - name: Set compose files
+        env:
+          INPUT_RELEASE: ${{ inputs.release }}
         run: |
-          if [[ '${{ inputs.release }}' == 'fips' ]]; then
+          if [[ "$INPUT_RELEASE" == 'fips' ]]; then
             echo 'COMPOSE_FILES=-f docker-compose-ci.yml -f docker-compose-ci.fips.yml' >> $GITHUB_ENV
             echo 'COMPOSE_FILES_METEOR=-f ../../docker-compose-ci.yml -f ../../docker-compose-ci.fips.yml' >> $GITHUB_ENV
           else
@@ -363,6 +365,8 @@ jobs:
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
         env:
+          E2E_SHARD: ${{ matrix.shard }}
+          E2E_TOTAL_SHARD: ${{ inputs.total-shard }}
           E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
           IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
@@ -385,7 +389,7 @@ jobs:
           set -o xtrace
 
           yarn prepare
-          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+          yarn test:e2e --shard="${E2E_SHARD}/${E2E_TOTAL_SHARD}"
 
       - name: Merge ui coverage files
         if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
