@@ -1345,7 +1345,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 					},
 					{
 						$merge: {
-							into: this.getCollectionName(),
+							into: 'rocketchat_subscription',
 							whenMatched: 'merge',
 							whenNotMatched: 'discard',
 						},
