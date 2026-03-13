@@ -19,6 +19,7 @@ const defaultSessionInfo: SessionState = {
 	remoteHeld: false,
 	startedAt: new Date(),
 	hidden: false,
+	supportedFeatures: ['audio', 'transfer', 'hold'],
 };
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
@@ -135,6 +136,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				remoteHeld,
 				remoteMute,
 				callId,
+				features: supportedFeatures,
 			} = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
 
@@ -161,6 +163,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						remoteHeld,
 						remoteMuted: remoteMute,
 						callId,
+						supportedFeatures,
 					},
 				});
 				return;
@@ -182,7 +185,19 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 			dispatch({
 				type: 'instance_updated',
-				payload: { state, peerInfo, transferredBy, muted, held, connectionState, hidden, remoteHeld, remoteMuted: remoteMute, callId },
+				payload: {
+					state,
+					peerInfo,
+					transferredBy,
+					muted,
+					held,
+					connectionState,
+					hidden,
+					remoteHeld,
+					remoteMuted: remoteMute,
+					callId,
+					supportedFeatures,
+				},
 			});
 		};
 
