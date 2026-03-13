@@ -178,7 +178,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				this.once(`cancelling-${id}`, () => {
 					xhr.abort();
 					this.set(this.uploads.filter((upload) => upload.id !== id));
-					reject(new Error(i18n.t('FileUpload_Cancelled')));
+					reject(new Error(i18n.t('FileUpload_Canceled')));
 				});
 			});
 		} catch (error: unknown) {

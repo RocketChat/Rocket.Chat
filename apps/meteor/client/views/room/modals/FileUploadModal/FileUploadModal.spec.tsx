@@ -17,7 +17,6 @@ const defaultProps = {
 };
 
 const defaultWrapper = mockAppRoot().withTranslations('en', 'core', {
-	Cannot_upload_file_character_limit: 'Cannot upload file, description is over the {{count}} character limit',
 	Update: 'Update',
 	Upload_file_name: 'File name',
 	FileUpload_MediaType_NotAccepted__type__: 'Media type not accepted: {{type}}',
