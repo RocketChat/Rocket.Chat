@@ -136,11 +136,26 @@ describe('RoomHeader', () => {
 			expect(screen.getByText('Pre Content Slot')).toBeInTheDocument();
 		});
 
-	it('should render nothing for slots when not provided', () => {
-    render(<RoomHeader room={mockedRoom} />, { wrapper: appRoot });
-    expect(screen.queryByText('Start Slot')).not.toBeInTheDocument();
-    expect(screen.queryByText('End Slot')).not.toBeInTheDocument();
-    expect(screen.queryByText('Pre Content Slot')).not.toBeInTheDocument();
-});
+		it('should render nothing for slots when not provided', () => {
+			const { rerender } = render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{
+						start: <div>Start Slot</div>,
+						end: <div>End Slot</div>,
+						preContent: <div>Pre Content Slot</div>,
+					}}
+				/>,
+				{ wrapper: appRoot },
+			);
+			expect(screen.getByText('Start Slot')).toBeInTheDocument();
+			expect(screen.getByText('End Slot')).toBeInTheDocument();
+			expect(screen.getByText('Pre Content Slot')).toBeInTheDocument();
+
+			rerender(<RoomHeader room={mockedRoom} slots={{}} />);
+			expect(screen.queryByText('Start Slot')).not.toBeInTheDocument();
+			expect(screen.queryByText('End Slot')).not.toBeInTheDocument();
+			expect(screen.queryByText('Pre Content Slot')).not.toBeInTheDocument();
+		});
 	});
 });
