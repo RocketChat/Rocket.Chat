@@ -5,9 +5,10 @@ import { useEndpoint, useTranslation, useToastMessageDispatch, useUser } from '@
 import moment from 'moment';
 import { useCallback, useEffect, useState, useRef } from 'react';
 
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
+
 import DeleteScheduledMessageModal from './DeleteScheduledMessageModal';
 import EditScheduledMessageModal from './EditScheduledMessageModal';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 
 interface IRoomInfo {
 	t: string;
