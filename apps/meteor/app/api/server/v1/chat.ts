@@ -11,7 +11,6 @@ import {
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
-	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatIgnoreUserProps,
@@ -229,6 +228,9 @@ const ChatPostMessageSchema = {
 						type: 'object',
 					},
 					nullable: true,
+				},
+				tmid: {
+					type: 'string',
 				},
 				customFields: {
 					type: 'object',
