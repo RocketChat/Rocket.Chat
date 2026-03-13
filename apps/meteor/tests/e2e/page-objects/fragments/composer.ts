@@ -30,15 +30,19 @@ export abstract class Composer {
 	}
 
 	getFileByName(fileName: string): Locator {
-		return this.root.getByRole('button', { name: fileName });
+		return this.root.getByRole('group', { name: fileName, exact: true });
+	}
+
+	get groupUploads() {
+		return this.root.getByRole('group', { name: 'Uploads', exact: true });
 	}
 
 	getFilesInComposer(): Locator {
-		return this.root.getByRole('group', { name: 'Uploads' }).getByRole('button', { name: /^(?!Close$)/ });
+		return this.groupUploads.getByRole('group', { name: /^(?!Close$)/ });
 	}
 
 	async removeFileByName(fileName: string): Promise<void> {
-		return this.getFileByName(fileName).getByRole('button', { name: 'Close' }).click();
+		return this.getFileByName(fileName).getByRole('button', { name: 'Remove', exact: true }).click();
 	}
 
 	get btnSend(): Locator {
