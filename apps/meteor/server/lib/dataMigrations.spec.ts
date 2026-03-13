@@ -140,6 +140,13 @@ describe('Data Migrations', () => {
 			expect(() => addDataMigration(createMigration({ run: undefined as any }))).toThrow('Data migration run() is required');
 		});
 
+		it('should throw if id is already registered', () => {
+			addDataMigration(createMigration({ id: 'duplicate-test', order: 1 }));
+			expect(() => addDataMigration(createMigration({ id: 'duplicate-test', order: 2 }))).toThrow(
+				'Data migration with id "duplicate-test" is already registered',
+			);
+		});
+
 		it('should register a valid migration without throwing', () => {
 			expect(() => addDataMigration(createMigration({ id: 'valid-add-test', order: 9990 }))).not.toThrow();
 		});

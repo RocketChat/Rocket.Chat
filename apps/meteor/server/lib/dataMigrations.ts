@@ -37,7 +37,7 @@ const isSystemLockMigration = (lock: ISystemLock): lock is ISystemLockMigration 
 
 const log = new Logger('DataMigrations');
 
-const dataMigrations = new Set<IDataMigration>();
+const dataMigrations = new Map<string, IDataMigration>();
 
 function getRecordId(migration: IDataMigration): string {
 	return `${String(migration.order).padStart(5, '0')}_${migration.id}`;
@@ -53,8 +53,15 @@ export function addDataMigration(migration: IDataMigration): void {
 	if (!migration.run) {
 		throw new Error('Data migration run() is required');
 	}
+	if (migration.order < 0) {
+		throw new Error('Data migration order must be a positive integer');
+	}
 
-	dataMigrations.add(migration);
+	if (dataMigrations.has(migration.id)) {
+		throw new Error(`Data migration with id "${migration.id}" is already registered`);
+	}
+
+	dataMigrations.set(migration.id, migration);
 }
 
 function isVersionDowngrade(previousVersion: string, currentVersion: string): boolean {
@@ -153,7 +160,7 @@ async function checkManualReversions(maxRegisteredOrder: number, releaseLock: Lo
 		order: { $gt: maxRegisteredOrder },
 		status: 'completed',
 		requiresManualReversion: true,
-	} as any).toArray();
+	}).toArray();
 
 	if (requireManualReversion.length === 0) {
 		return;
@@ -199,7 +206,7 @@ export async function runDataMigrations(): Promise<void> {
 		return;
 	}
 
-	const ordered = Array.from(dataMigrations).sort((a, b) => a.order - b.order);
+	const ordered = Array.from(dataMigrations.values()).sort((a, b) => a.order - b.order);
 
 	if (ordered.length === 0) {
 		return;
@@ -218,7 +225,7 @@ export async function runDataMigrations(): Promise<void> {
 			{
 				order: { $gt: maxRegisteredOrder },
 				status: 'completed',
-			} as any,
+			},
 			{ sort: { order: -1 } },
 		);
 
