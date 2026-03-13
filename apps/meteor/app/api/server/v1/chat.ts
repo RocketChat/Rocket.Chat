@@ -119,6 +119,132 @@ const ChatUnfollowMessageLocalSchema = {
 	additionalProperties: false,
 };
 
+//chect.postMessage starts
+type ChatPostMessage =
+	| {
+			roomId: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  }
+	| {
+			channel: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  };
+
+const ChatPostMessageSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				tmid: {
+					type: 'string',
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				channel: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
+				},
+			},
+			required: ['channel'],
+			additionalProperties: false,
+		},
+	],
+};
+//chat.postMessage ends
+
 const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
 
 const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
@@ -126,6 +252,8 @@ const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUn
 const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
+
+const isChatPostMessageLocalProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
 
 API.v1.addRoute(
 	'chat.delete',
@@ -559,63 +687,58 @@ const chatEndpoints = API.v1
 			return API.v1.success();
 		},
 	)
-    .post('chat.postMessage', {
-      authRequired: true,
-      body: isChatPostMessageProps,
-      response: {
-        400: validateBadRequestErrorResponse,
-        401: validateUnauthorizedErrorResponse,
-        200: ajv.compile({
-          type: 'object',
-          properties: {
-            ts: { type: 'number' },
-            channel: { type: 'string' },
-            message: { $ref: '#/components/schemas/IMessage' },
-            success: { type: 'boolean', enum: [true] },
-          },
-          required: ['ts', 'channel', 'message', 'success'],
-          additionalProperties: false,
-        }),
-      },
-    },
-    async function action() {
-        const { text, attachments } = this.bodyParams;
-        const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
-  
-        if (text && text.length > maxAllowedSize) {
-          return API.v1.failure('error-message-size-exceeded');
-        }
-  
-        if (attachments && attachments.length > 0) {
-          for (const attachment of attachments) {
-            if (attachment.text && attachment.text.length > maxAllowedSize) {
-              return API.v1.failure('error-message-size-exceeded');
-            }
-          }
-        }
-  
-        const messageReturn = (
-          await applyAirGappedRestrictionsValidation(() =>
-            processWebhookMessage(this.bodyParams, this.user),
-          )
-        )[0];
-  
-        if (!messageReturn?.message) {
-          return API.v1.failure('unknown-error');
-        }
-  
-        const [message] = await normalizeMessagesForUser(
-          [messageReturn.message],
-          this.userId,
-        );
-  
-        return API.v1.success({
-          ts: Date.now(),
-          channel: messageReturn.channel,
-          message,
-        });
-      },
-    );
+	.post(
+		'chat.postMessage',
+		{
+			authRequired: true,
+			body: isChatPostMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						ts: { type: 'number' },
+						channel: { type: 'object' },
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['ts', 'channel', 'message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { text, attachments } = this.bodyParams;
+			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
+
+			if (text && text.length > maxAllowedSize) {
+				return API.v1.failure('error-message-size-exceeded');
+			}
+
+			if (attachments && attachments.length > 0) {
+				for (const attachment of attachments) {
+					if (attachment.text && attachment.text.length > maxAllowedSize) {
+						return API.v1.failure('error-message-size-exceeded');
+					}
+				}
+			}
+
+			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+
+			if (!messageReturn?.message) {
+				return API.v1.failure('unknown-error');
+			}
+
+			const [message] = await normalizeMessagesForUser([messageReturn.message], this.userId);
+
+			return API.v1.success({
+				ts: Date.now(),
+				channel: messageReturn.channel,
+				message,
+			});
+		},
+	);
 
 API.v1.addRoute(
 	'chat.search',
