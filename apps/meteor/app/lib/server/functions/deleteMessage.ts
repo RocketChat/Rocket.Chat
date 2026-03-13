@@ -19,6 +19,10 @@ export const deleteMessageValidatingPermission = async (message: AtLeast<IMessag
 	}
 
 	const user = await Users.findOneById(userId);
+
+if (!user || !user.username || !user.name) {
+	throw new Meteor.Error('error-invalid-user', 'Invalid user');
+}
 	const originalMessage = await Messages.findOneById(message._id);
 
 	if (!originalMessage || !user || !(await canDeleteMessageAsync(user, originalMessage))) {
@@ -55,8 +59,12 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 
 	if (keepHistory) {
 		if (showDeletedStatus) {
-			// TODO is there a better way to tell TS "IUser[username]" is not undefined?
-			await Messages.cloneAndSaveAsHistoryById(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
+			
+			await Messages.cloneAndSaveAsHistoryById(message._id, {
+	_id: user._id,
+	username: user.username,
+	name: user.name,
+});
 		} else {
 			await Messages.setHiddenById(message._id, true);
 		}
@@ -75,8 +83,12 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 		}
 	}
 	if (showDeletedStatus) {
-		// TODO is there a better way to tell TS "IUser[username]" is not undefined?
-		await Messages.setAsDeletedByIdAndUser(message._id, user as Required<Pick<IUser, '_id' | 'username' | 'name'>>);
+		
+		await Messages.setAsDeletedByIdAndUser(message._id, {
+	_id: user._id,
+	username: user.username,
+	name: user.name,
+});
 	} else {
 		void api.broadcast('notify.deleteMessage', message.rid, { _id: message._id });
 	}
