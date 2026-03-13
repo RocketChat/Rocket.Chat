@@ -377,7 +377,7 @@ export class HomeContent {
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 	}
 
-	async dragAndDropLstFile({ waitForLoad = true }: { waitForLoad?: boolean } = {}): Promise<void> {
+	async dragAndDropLstFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('lst-test.lst'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -388,7 +388,7 @@ export class HomeContent {
 			return data;
 		}, contract);
 
-		const responsePromise = waitForLoad ? createMediaResponsePromise(this.page) : null;
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
 		if (responsePromise) {
@@ -396,7 +396,7 @@ export class HomeContent {
 		}
 	}
 
-	async dragAndDropTxtFileToThread({ waitForResponse = true } = {}): Promise<void> {
+	async dragAndDropTxtFileToThread({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -415,7 +415,7 @@ export class HomeContent {
 		}
 	}
 
-	async sendFileMessage(fileName: string, { waitForResponse = true } = {}): Promise<void> {
+	async sendFileMessage(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.page.getByLabel('Room composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
 		if (responsePromise) {
@@ -423,7 +423,7 @@ export class HomeContent {
 		}
 	}
 
-	async sendFileMessageToThread(fileName: string, { waitForResponse = true } = {}): Promise<void> {
+	async sendFileMessageToThread(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		await this.threadComposer.inputMessage.click();
 		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.page.getByLabel('Thread composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));
