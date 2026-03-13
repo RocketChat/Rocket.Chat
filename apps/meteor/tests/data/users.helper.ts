@@ -174,7 +174,7 @@ export const setUserAway = (overrideCredentials = credentials, config?: IRequest
 
 export const ddpLogin = (resume: string): Promise<WebSocket> =>
 	new Promise((resolve, reject) => {
-		const ws = new WebSocket('ws://localhost:4000/websocket');
+		const ws = new WebSocket('ws://localhost:3000/websocket');
 		const loginId = `login-${Date.now()}-${Math.random()}`;
 
 		const handler = (event: MessageEvent) => {
