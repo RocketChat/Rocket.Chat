@@ -105,7 +105,7 @@ API.v1.addRoute(
 			});
 
 			if (!user) {
-				throw new Error('User not found');
+				return API.v1.notFound('User not found');
 			}
 			return API.v1.success({ user });
 		},

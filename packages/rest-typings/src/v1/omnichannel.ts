@@ -4737,7 +4737,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/users/:type/:_id': {
-		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
+		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> };
 		DELETE: () => void;
 	};
 
@@ -4757,11 +4757,11 @@ export type OmnichannelEndpoints = {
 		POST: (params: POSTLivechatUsersTypeProps) => { success: boolean };
 	};
 	'/v1/livechat/users/manager/:_id': {
-		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
+		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> };
 		DELETE: () => void;
 	};
 	'/v1/livechat/users/user/:_id': {
-		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
+		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> };
 		DELETE: () => void;
 	};
 
