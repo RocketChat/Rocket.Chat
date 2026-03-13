@@ -309,10 +309,6 @@ export interface IOmnichannelRoom extends IOmnichannelGenericRoom {
 	autoTransferOngoing?: boolean;
 
 	verified?: boolean;
-
-	// marker field for unique index on v.token - prevents race condition creating duplicate rooms
-	// only new rooms have this field, allowing index creation even if old duplicates exist
-	_enforceSingleRoom?: boolean;
 }
 
 export type IOmnichannelRoomClosingInfo = Pick<IOmnichannelGenericRoom, 'closer' | 'closedBy' | 'closedAt' | 'tags'> & {
