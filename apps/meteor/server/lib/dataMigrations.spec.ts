@@ -5,6 +5,7 @@ const mockFindOne = jest.fn();
 const mockUpdateOne = jest.fn();
 const mockAcquireLock = jest.fn();
 const mockReleaseLock = jest.fn();
+const mockRenewLockThreshold = jest.fn();
 const mockShowErrorBox = jest.fn();
 const mockShowWarningBox = jest.fn();
 
@@ -23,6 +24,7 @@ jest.mock('@rocket.chat/models', () => ({
 	SystemLocks: {
 		acquireLock: (...args: any[]) => mockAcquireLock(...args),
 		releaseLock: (...args: any[]) => mockReleaseLock(...args),
+		renewLockThreshold: (...args: any[]) => mockRenewLockThreshold(...args),
 	},
 }));
 
@@ -108,11 +110,13 @@ describe('Data Migrations', () => {
 		mockInfoObj.version = '8.3.0';
 		mockInfoObj.commit.hash = 'abc123';
 
+		// Use a different lastVersion to avoid the early return (lastVersion === Info.version)
 		mockAcquireLock.mockResolvedValue({
 			acquired: true,
-			record: { _id: 'data_migrations', locked: true, extraData: { lastVersion: '8.3.0' } },
+			record: { _id: 'data_migrations', locked: true, extraData: { lastVersion: '8.2.0' } },
 		});
 		mockReleaseLock.mockResolvedValue(undefined);
+		mockRenewLockThreshold.mockResolvedValue(undefined);
 		mockUpdateOne.mockResolvedValue({ modifiedCount: 1 });
 		mockFindOne.mockResolvedValue(null);
 
@@ -226,12 +230,10 @@ describe('Data Migrations', () => {
 			expect(runFn).toHaveBeenCalled();
 		});
 
-		it('should run every-upgrade migration when hash changes', async () => {
+		it('should run every-upgrade migration even when record exists', async () => {
 			const runFn = jest.fn();
 			mockFind.mockReturnValue({
-				toArray: jest
-					.fn()
-					.mockResolvedValue([createRecord({ _id: '00105_upgrade-migration', status: 'completed', lastRunHash: 'old-hash', order: 105 })]),
+				toArray: jest.fn().mockResolvedValue([createRecord({ _id: '00105_upgrade-migration', status: 'completed', order: 105 })]),
 			});
 
 			addDataMigration(createMigration({ id: 'upgrade-migration', order: 105, strategy: 'every-upgrade', run: runFn }));
@@ -241,19 +243,20 @@ describe('Data Migrations', () => {
 			expect(runFn).toHaveBeenCalled();
 		});
 
-		it('should skip every-upgrade migration when hash is the same', async () => {
+		it('should skip when lastVersion matches current version', async () => {
 			const runFn = jest.fn();
-			mockFind.mockReturnValue({
-				toArray: jest
-					.fn()
-					.mockResolvedValue([createRecord({ _id: '00106_same-hash', status: 'completed', lastRunHash: 'abc123', order: 106 })]),
+			mockAcquireLock.mockResolvedValue({
+				acquired: true,
+				record: { _id: 'data_migrations', locked: true, extraData: { lastVersion: '8.3.0' } },
 			});
+			mockFind.mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
 
-			addDataMigration(createMigration({ id: 'same-hash', order: 106, strategy: 'every-upgrade', run: runFn }));
+			addDataMigration(createMigration({ id: 'same-version-skip', order: 106, run: runFn }));
 
 			await runDataMigrations();
 
 			expect(runFn).not.toHaveBeenCalled();
+			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', undefined);
 		});
 
 		it('should record failure when migration throws', async () => {
@@ -415,23 +418,18 @@ describe('Data Migrations', () => {
 
 	describe('manual reversion check', () => {
 		it('should call process.exit when downgrade has migrations requiring manual reversion', async () => {
-			// First call: find records for registered migrations
-			mockFind
-				.mockReturnValueOnce({ toArray: jest.fn().mockResolvedValue([]) })
-				// Second call: checkManualReversions
-				.mockReturnValueOnce({
-					toArray: jest.fn().mockResolvedValue([
-						createRecord({
-							_id: '99998_manual-revert',
-							order: 99998,
-							status: 'completed',
-							requiresManualReversion: true,
-							manualReversionInstructions: 'Drop the xyz collection',
-						}),
-					]),
-				});
+			mockFind.mockReturnValueOnce({ toArray: jest.fn().mockResolvedValue([]) }).mockReturnValueOnce({
+				toArray: jest.fn().mockResolvedValue([
+					createRecord({
+						_id: '99998_manual-revert',
+						order: 99998,
+						status: 'completed',
+						requiresManualReversion: true,
+						manualReversionInstructions: 'Drop the xyz collection',
+					}),
+				]),
+			});
 
-			// highestCompletedBeyondRegistered triggers downgrade
 			mockFindOne.mockResolvedValue(createRecord({ _id: '99999_future', order: 99999, status: 'completed' }));
 
 			addDataMigration(createMigration({ id: 'manual-revert-check', order: 400 }));
@@ -442,6 +440,7 @@ describe('Data Migrations', () => {
 				'ERROR! SERVER STOPPED - MANUAL DATA REVERSION REQUIRED',
 				expect.stringContaining('manual reversion'),
 			);
+			expect(mockReleaseLock).toHaveBeenCalledWith('data_migrations', undefined);
 			expect(processExitSpy).toHaveBeenCalledWith(1);
 		});
 
