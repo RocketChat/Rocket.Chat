@@ -68,7 +68,7 @@ const CustomSoundsPage = () => {
 						<ContextualbarClose onClick={handleClose} />
 					</ContextualbarHeader>
 					{context === 'edit' && <EditCustomSound _id={id} close={handleClose} onChange={handleReload} />}
-					{context === 'new' && <AddCustomSound goToNew={handleItemClick} close={handleClose} onChange={handleReload} />}
+					{context === 'new' && <AddCustomSound _goToNew={handleItemClick} close={handleClose} onChange={handleReload} />}
 				</ContextualbarDialog>
 			)}
 		</Page>
