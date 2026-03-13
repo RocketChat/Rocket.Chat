@@ -1312,8 +1312,8 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
-	async hasArchivedSubscriptionsByRoomId(roomId: string): Promise<boolean> {
-		return !!(await this.col.findOne({ rid: roomId, archived: true }, { projection: { _id: 1 } }));
+	hasArchivedSubscriptionsByRoomId(roomId: string): Promise<ISubscription | null> {
+		return this.findOne({ rid: roomId, archived: true }, { projection: { _id: 1 } });
 	}
 
 	async unarchiveByRoomId(roomId: string): Promise<void> {
@@ -1362,14 +1362,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				{ $match: { 'u._id': userId, 'archived': true } },
 				{
 					$lookup: {
-						from: Rooms.getCollectionName(),
+						from: 'rocketchat_room',
 						localField: 'rid',
 						foreignField: '_id',
 						as: 'room',
-						pipeline: [{ $project: { archived: 1 } }],
+						pipeline: [{ $project: { archived: 1 } }, { $match: { archived: { $ne: true } } }],
 					},
 				},
-				{ $match: { 'room.0.archived': { $ne: true } } },
+				{ $match: { 'room.0': { $exists: true } } },
 				{ $limit: 1 },
 			])
 			.toArray();
@@ -1383,18 +1383,18 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 				{ $match: { 'u._id': userId, 'archived': true } },
 				{
 					$lookup: {
-						from: Rooms.getCollectionName(),
+						from: 'rocketchat_room',
 						localField: 'rid',
 						foreignField: '_id',
 						as: 'room',
-						pipeline: [{ $project: { archived: 1 } }],
+						pipeline: [{ $project: { archived: 1 } }, { $match: { archived: { $ne: true } } }],
 					},
 				},
-				{ $match: { 'room.0.archived': { $ne: true } } },
+				{ $match: { 'room.0': { $exists: true } } },
 				{
 					$merge: {
 						on: '_id',
-						into: this.getCollectionName(),
+						into: 'rocketchat_subscription',
 						whenMatched: [{ $set: { archived: false } }],
 						whenNotMatched: 'discard',
 					},
