@@ -113,7 +113,7 @@ async function migrateReactionUsernames(
 											{
 												usernames: {
 													$map: {
-														input: { $ifNull: ['$$reaction.v.usernames', []] },
+														input: { $cond: [{ $isArray: '$$reaction.v.usernames' }, '$$reaction.v.usernames', []] },
 														as: 'u',
 														in: {
 															$cond: [{ $eq: ['$$u', oldUsername] }, newUsername, '$$u'],
