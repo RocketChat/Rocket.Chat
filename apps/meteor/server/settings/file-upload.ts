@@ -173,13 +173,6 @@ export const createFileUploadSettings = () =>
 				i18nDescription: 'Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given.',
 				secret: true,
 			});
-			await this.add('FileUpload_S3_SignatureVersion', 'v4', {
-				type: 'string',
-				enableQuery: {
-					_id: 'FileUpload_Storage_Type',
-					value: 'AmazonS3',
-				},
-			});
 			await this.add('FileUpload_S3_ForcePathStyle', false, {
 				type: 'boolean',
 				enableQuery: {
