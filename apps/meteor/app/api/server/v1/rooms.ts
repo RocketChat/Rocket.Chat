@@ -1047,8 +1047,6 @@ const roomsBannedUsersResponseSchema = ajv.compile<{
 					_id: { type: 'string' },
 					username: { type: 'string' },
 					name: { type: 'string' },
-					status: { type: 'string' },
-					avatarETag: { type: 'string' },
 				},
 				required: ['_id', 'username'],
 				additionalProperties: false,
