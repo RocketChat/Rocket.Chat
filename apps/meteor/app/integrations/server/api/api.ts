@@ -16,6 +16,7 @@ import type { FailureResult, GenericRouteExecutionContext, SuccessResult, Unavai
 import { loggerMiddleware } from '../../../api/server/middlewares/logger';
 import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
 import { tracerSpanMiddleware } from '../../../api/server/middlewares/tracer';
+import type { APIActionContext } from '../../../api/server/router';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { metrics } from '../../../metrics/server';
@@ -357,7 +358,7 @@ function integrationInfoRest(): { statusCode: number; body: { success: boolean }
 }
 
 class WebHookAPI extends APIClass<'/hooks'> {
-	override async authenticatedRoute(routeContext: IntegrationThis): Promise<IUser | null> {
+	override async authenticatedRoute(routeContext: APIActionContext): Promise<IUser | null> {
 		const { integrationId, token } = routeContext.urlParams;
 		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, decodeURIComponent(token));
 
@@ -369,9 +370,10 @@ class WebHookAPI extends APIClass<'/hooks'> {
 
 		routeContext.request.headers.set('x-auth-token', token);
 
-		routeContext.request.integration = integration;
+		const req = routeContext.request as Request & { integration?: IIncomingIntegration };
+		req.integration = integration;
 
-		return Users.findOneById(routeContext.request.integration.userId);
+		return Users.findOneById(req.integration.userId);
 	}
 
 	override shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {
