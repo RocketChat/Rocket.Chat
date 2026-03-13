@@ -85,7 +85,6 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 					open: true,
 					_enforceSingleRoom: true,
 				},
-				name: 'v.token_1_unique_open_livechat',
 			},
 		];
 	}
