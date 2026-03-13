@@ -43,11 +43,10 @@ export const handleSelectionWrapping = (event: InputEvent, chat: ChatAPI): boole
 		return false;
 	}
 
+	const selection = composer.wrapSelection(pattern);
 	// this is a workaround when we are using MAC
 	if (event.isComposing && navigator.userAgent.includes('Mac') && ['`', '"', "'"].includes(key)) {
-		const selection = composer.wrapSelection(pattern);
 		once(input, 'input', (event) => {
-			// restore selection
 			input.value = selection.value;
 			input.setSelectionRange(selection.selectionStart, selection.selectionEnd);
 			event.preventDefault();
