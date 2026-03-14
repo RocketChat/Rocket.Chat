@@ -64,6 +64,12 @@ export interface IUpload {
 		serverName: string;
 		mediaId: string;
 	};
+	resumable?: {
+		uploadId: string;
+		chunkSize: number;
+		totalChunks: number;
+		uploadedChunks: number[];
+	};
 }
 
 export interface IUploadWithUser extends IUpload {

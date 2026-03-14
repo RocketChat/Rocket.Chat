@@ -1,4 +1,4 @@
-import { IconButton } from '@rocket.chat/fuselage';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader } from '@rocket.chat/ui-composer';
 import { useSetModal } from '@rocket.chat/ui-contexts';
@@ -16,10 +16,21 @@ type MessageComposerFileItemProps = {
 	onRemove: (id: string) => void;
 	onEdit: (id: Upload['id'], fileName: string) => void;
 	onCancel: (id: Upload['id']) => void;
+	onPause: (id: Upload['id']) => void;
+	onResume: (id: Upload['id']) => void;
 	disabled: boolean;
 };
 
-const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled, ...props }: MessageComposerFileItemProps) => {
+const MessageComposerFileItem = ({
+	upload,
+	onRemove,
+	onEdit,
+	onCancel,
+	onPause,
+	onResume,
+	disabled,
+	...props
+}: MessageComposerFileItemProps) => {
 	const { t } = useTranslation();
 	const [isActive, setIsActive] = useState(false);
 	const setModal = useSetModal();
@@ -50,12 +61,21 @@ const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled,
 	const handleDismiss = usePreventPropagation(dismissAction);
 	const buttonProps = useButtonPattern(handleDismiss);
 
-	const actionIcon =
-		isLoading && !isActive ? (
-			<MessageComposerFileLoader />
-		) : (
+	const handlePause = usePreventPropagation(() => onPause(upload.id));
+	const handleResume = usePreventPropagation(() => onResume(upload.id));
+
+	const actionIcon = (
+		<Box display='flex' alignItems='center'>
+			{isLoading && (
+				upload.status === 'paused' ? (
+					<IconButton mini icon='play' onClick={handleResume} title={t('Resume')} />
+				) : (
+					<IconButton mini icon='pause' onClick={handlePause} title={t('Pause')} />
+				)
+			)}
 			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} mini icon='cross' />
-		);
+		</Box>
+	);
 
 	if (upload.error) {
 		return (
