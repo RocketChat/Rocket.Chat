@@ -21,6 +21,10 @@ import {
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	isUsersGetAvatarProps,
+	isUsersDeleteOwnAccountProps,
+	isUsersResetAvatarProps,
+	isUsersForgotPasswordProps,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -83,7 +87,10 @@ import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields
 
 API.v1.addRoute(
 	'users.getAvatar',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isUsersGetAvatarProps,
+	},
 	{
 		async get() {
 			const user = await getUserFromParams(this.queryParams);
@@ -172,9 +179,9 @@ API.v1.addRoute(
 			const twoFactorOptions = !userData.typedPassword
 				? null
 				: {
-						twoFactorCode: userData.typedPassword,
-						twoFactorMethod: 'password',
-					};
+					twoFactorCode: userData.typedPassword,
+					twoFactorMethod: 'password',
+				};
 
 			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
@@ -362,18 +369,17 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.deleteOwnAccount',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isUsersDeleteOwnAccountProps,
+	},
 	{
 		async post() {
-			const { password } = this.bodyParams;
-			if (!password) {
-				return API.v1.failure('Body parameter "password" is required.');
-			}
+			const { password, confirmRelinquish = false } = this.bodyParams;
+
 			if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
-
-			const { confirmRelinquish = false } = this.bodyParams;
 
 			await deleteUserOwnAccount(this.userId, password, confirmRelinquish);
 
@@ -537,13 +543,18 @@ API.v1.addRoute(
 			const limit =
 				count !== 0
 					? [
-							{
-								$limit: count,
-							},
-						]
+						{
+							$limit: count,
+						},
+					]
 					: [];
 
-			const result = await Users.col
+			const [
+				{
+					sortedResults: users,
+					totalCount: [{ total } = { total: 0 }],
+				} = { sortedResults: [], totalCount: [] },
+			] = await Users.col
 				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
 					{
 						$match: nonEmptyQuery,
@@ -574,11 +585,6 @@ API.v1.addRoute(
 					},
 				])
 				.toArray();
-
-			const {
-				sortedResults: users,
-				totalCount: [{ total } = { total: 0 }],
-			} = result[0];
 
 			return API.v1.success({
 				users,
@@ -730,7 +736,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.resetAvatar',
-	{ authRequired: true },
+	{
+		authRequired: true,
+		validateParams: isUsersResetAvatarProps,
+	},
 	{
 		async post() {
 			const user = await getUserFromParams(this.bodyParams);
@@ -901,7 +910,10 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.forgotPassword',
-	{ authRequired: false },
+	{
+		authRequired: false,
+		validateParams: isUsersForgotPasswordProps,
+	},
 	{
 		async post() {
 			const isPasswordResetEnabled = settings.get('Accounts_PasswordReset');
@@ -911,9 +923,6 @@ API.v1.addRoute(
 			}
 
 			const { email } = this.bodyParams;
-			if (!email) {
-				return API.v1.failure("The 'email' param is required");
-			}
 
 			await sendForgotPasswordEmail(email.toLowerCase());
 			return API.v1.success();
@@ -1559,5 +1568,5 @@ type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends UsersEndpoints {}
+	interface Endpoints extends UsersEndpoints { }
 }

@@ -9,6 +9,9 @@ import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
 import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
+import type { UsersDeleteOwnAccountParamsPOST } from './users/UsersDeleteOwnAccountParamsPOST';
+import type { UsersForgotPasswordParamsPOST } from './users/UsersForgotPasswordParamsPOST';
+import type { UsersGetAvatarParamsGET } from './users/UsersGetAvatarParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
 import type { UsersListStatusParamsGET } from './users/UsersListStatusParamsGET';
 import type { UsersListTeamsParamsGET } from './users/UsersListTeamsParamsGET';
@@ -17,6 +20,48 @@ import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEm
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
+
+export const isUsersGetAvatarProps = ajv.compile<UsersGetAvatarParamsGET>({
+	oneOf: [
+		{
+			type: 'object',
+			properties: { userId: { type: 'string' } },
+			required: ['userId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: { username: { type: 'string' } },
+			required: ['username'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: { user: { type: 'string' } },
+			required: ['user'],
+			additionalProperties: false,
+		},
+	],
+});
+
+export const isUsersDeleteOwnAccountProps = ajv.compile<UsersDeleteOwnAccountParamsPOST>({
+	type: 'object',
+	properties: {
+		password: { type: 'string', minLength: 1 },
+		confirmRelinquish: { type: 'boolean' },
+	},
+	required: ['password'],
+	additionalProperties: false,
+});
+
+export const isUsersForgotPasswordProps = ajv.compile<UsersForgotPasswordParamsPOST>({
+	type: 'object',
+	properties: {
+		email: { type: 'string', minLength: 1 },
+	},
+	required: ['email'],
+	additionalProperties: false,
+});
 
 type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
 
@@ -356,7 +401,7 @@ export type UsersEndpoints = {
 	};
 
 	'/v1/users.getAvatar': {
-		GET: (params: { userId?: string; username?: string; user?: string }) => void;
+		GET: (params: UsersGetAvatarParamsGET) => void;
 	};
 
 	'/v1/users.updateOwnBasicInfo': {
@@ -380,3 +425,6 @@ export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';
 export * from './users/UsersAutocompleteParamsGET';
+export * from './users/UsersGetAvatarParamsGET';
+export * from './users/UsersDeleteOwnAccountParamsPOST';
+export * from './users/UsersForgotPasswordParamsPOST';
