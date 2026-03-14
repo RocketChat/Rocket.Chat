@@ -1,7 +1,8 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useThemeMode } from '@rocket.chat/ui-theming';
 import type { Editor, EditorFromTextArea } from 'codemirror';
 import type { ReactElement } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 const defaultGutters = ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'];
 
@@ -43,13 +44,37 @@ function CodeMirror({
 	onChange,
 	...props
 }: CodeMirrorProps): ReactElement {
+	const [, , resolvedTheme] = useThemeMode();
+
+	const codeMirrorTheme = useMemo(() => {
+		if (resolvedTheme === 'dark' || resolvedTheme === 'high-contrast') {
+			return 'base16-dark';
+		}
+
+		return 'default';
+	}, [resolvedTheme]);
 	const [value, setValue] = useState(valueProp || defaultValue);
 	const handleChange = useEffectEvent(onChange);
 
 	const editorRef = useRef<EditorFromTextArea | null>(null);
+	const themeRef = useRef(codeMirrorTheme);
+	const [editorReady, setEditorReady] = useState(false);
+
+	const ensureThemeStyle = useCallback((theme: string) => {
+		if (theme === 'base16-dark') {
+			return import('codemirror/theme/base16-dark.css');
+		}
+
+		return Promise.resolve();
+	}, []);
+
+	useEffect(() => {
+		themeRef.current = codeMirrorTheme;
+	}, [codeMirrorTheme]);
 	const textAreaRef = useCallback(
 		async (node: HTMLTextAreaElement | null) => {
 			if (!node) return;
+			setEditorReady(false);
 
 			try {
 				const { default: CodeMirror } = await import('codemirror');
@@ -63,6 +88,15 @@ function CodeMirror({
 					import('codemirror/lib/codemirror.css'),
 				]);
 
+				const latestTheme = themeRef.current;
+				let themeLoaded = false;
+				try {
+					await ensureThemeStyle(latestTheme);
+					themeLoaded = true;
+				} catch (error) {
+					console.error('Failed to load CodeMirror theme CSS during init:', error);
+				}
+
 				editorRef.current = CodeMirror.fromTextArea(node, {
 					lineNumbers,
 					lineWrapping,
@@ -75,7 +109,9 @@ function CodeMirror({
 					showTrailingSpace,
 					highlightSelectionMatches,
 					readOnly,
+					theme: themeLoaded ? latestTheme : undefined,
 				});
+				setEditorReady(true);
 
 				editorRef.current.on('change', (doc: Editor) => {
 					const newValue = doc.getValue();
@@ -92,21 +128,21 @@ function CodeMirror({
 				console.error('CodeMirror initialization failed:', error);
 			}
 		},
-		[
-			autoCloseBrackets,
-			foldGutter,
-			gutters,
-			highlightSelectionMatches,
-			lineNumbers,
-			lineWrapping,
-			matchBrackets,
-			matchTags,
-			mode,
-			handleChange,
-			readOnly,
-			showTrailingSpace,
-		],
-	);
+			[
+				autoCloseBrackets,
+				foldGutter,
+				gutters,
+				highlightSelectionMatches,
+				lineNumbers,
+				lineWrapping,
+				matchBrackets,
+				matchTags,
+				mode,
+				handleChange,
+				readOnly,
+				showTrailingSpace,
+			],
+		);
 
 	useEffect(() => {
 		setValue(valueProp);
@@ -121,6 +157,23 @@ function CodeMirror({
 			editorRef.current.setValue(value ?? '');
 		}
 	}, [textAreaRef, value]);
+
+	useEffect(() => {
+		if (!editorRef.current) {
+			return;
+		}
+
+		const applyTheme = async (): Promise<void> => {
+			try {
+				await ensureThemeStyle(codeMirrorTheme);
+				editorRef.current?.setOption('theme', codeMirrorTheme);
+			} catch (error) {
+				console.error('Failed to load CodeMirror theme CSS:', error);
+			}
+		};
+
+		void applyTheme();
+	}, [codeMirrorTheme, ensureThemeStyle, editorReady]);
 
 	return <textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />;
 }
