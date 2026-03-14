@@ -140,7 +140,7 @@ export class PasswordPolicy {
 		if (this.forbidRepeatingCharacters) {
 			validationReturn.push({
 				name: 'get-password-policy-forbidRepeatingCharactersCount',
-				isValid: !this.regex.forbiddingRepeatingCharacters.test(password),
+				isValid: password.length > 0 && !this.regex.forbiddingRepeatingCharacters.test(password),
 				limit: this.forbidRepeatingCharactersCount,
 			});
 		}
