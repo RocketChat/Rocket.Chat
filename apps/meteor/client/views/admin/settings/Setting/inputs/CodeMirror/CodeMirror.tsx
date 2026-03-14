@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useEffectEvent, useDarkMode } from '@rocket.chat/fuselage-hooks';
 import type { Editor, EditorFromTextArea } from 'codemirror';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -45,14 +45,22 @@ function CodeMirror({
 }: CodeMirrorProps): ReactElement {
 	const [value, setValue] = useState(valueProp || defaultValue);
 	const handleChange = useEffectEvent(onChange);
+	const isDark = useDarkMode();
 
 	const editorRef = useRef<EditorFromTextArea | null>(null);
+
+	// Capture initial theme once
+	const initialThemeRef = useRef(
+		isDark ? 'material-darker' : 'default',
+	);
+
 	const textAreaRef = useCallback(
 		async (node: HTMLTextAreaElement | null) => {
 			if (!node) return;
 
 			try {
 				const { default: CodeMirror } = await import('codemirror');
+
 				await Promise.all([
 					import('../../../../../../../app/ui/client/lib/codeMirror/codeMirror'),
 					import('codemirror/addon/edit/matchbrackets'),
@@ -61,6 +69,7 @@ function CodeMirror({
 					import('codemirror/addon/edit/trailingspace'),
 					import('codemirror/addon/search/match-highlighter'),
 					import('codemirror/lib/codemirror.css'),
+					import('codemirror/theme/material-darker.css'), // added
 				]);
 
 				editorRef.current = CodeMirror.fromTextArea(node, {
@@ -75,6 +84,7 @@ function CodeMirror({
 					showTrailingSpace,
 					highlightSelectionMatches,
 					readOnly,
+					theme: initialThemeRef.current, // added
 				});
 
 				editorRef.current.on('change', (doc: Editor) => {
@@ -82,12 +92,6 @@ function CodeMirror({
 					setValue(newValue);
 					handleChange(newValue);
 				});
-
-				return () => {
-					if (node.parentNode) {
-						editorRef.current?.toTextArea();
-					}
-				};
 			} catch (error) {
 				console.error('CodeMirror initialization failed:', error);
 			}
@@ -108,21 +112,49 @@ function CodeMirror({
 		],
 	);
 
+	// Sync external value → state
 	useEffect(() => {
 		setValue(valueProp);
 	}, [valueProp]);
 
+	// Sync state → editor
 	useEffect(() => {
-		if (!editorRef.current) {
-			return;
-		}
+		if (!editorRef.current) return;
 
 		if (value !== editorRef.current.getValue()) {
 			editorRef.current.setValue(value ?? '');
 		}
-	}, [textAreaRef, value]);
+	}, [value]);
 
-	return <textarea readOnly ref={textAreaRef} style={{ display: 'none' }} value={value} {...props} />;
+	// Update theme dynamically (no re-init)
+	useEffect(() => {
+		if (!editorRef.current) return;
+
+		editorRef.current.setOption(
+			'theme',
+			isDark ? 'material-darker' : 'default',
+		);
+	}, [isDark]);
+
+	
+	useEffect(() => {
+		return () => {
+			if (editorRef.current) {
+				editorRef.current.toTextArea();
+				editorRef.current = null;
+			}
+		};
+	}, []);
+
+	return (
+		<textarea
+			readOnly
+			ref={textAreaRef}
+			style={{ display: 'none' }}
+			value={value}
+			{...props}
+		/>
+	);
 }
 
 export default CodeMirror;
