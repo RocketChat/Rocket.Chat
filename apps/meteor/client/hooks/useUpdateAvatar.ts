@@ -12,6 +12,20 @@ const isServiceObject = (avatarObj: AvatarObject): avatarObj is AvatarServiceObj
 const isAvatarUrl = (avatarObj: AvatarObject): avatarObj is AvatarUrlObj =>
 	!isAvatarReset(avatarObj) && typeof avatarObj === 'object' && 'service' && 'avatarUrl' in avatarObj;
 
+const dataUriToFile = (dataUri: string): File => {
+	const [header, base64Data] = dataUri.split(',');
+	const mimeMatch = header.match(/data:(.*?);/);
+	const mime = mimeMatch ? mimeMatch[1] : 'image/png';
+	const byteString = atob(base64Data);
+	const ab = new ArrayBuffer(byteString.length);
+	const ia = new Uint8Array(ab);
+	for (let i = 0; i < byteString.length; i++) {
+		ia[i] = byteString.charCodeAt(i);
+	}
+
+	return new File([ab], 'avatar.png', { type: mime });
+};
+
 export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) => {
 	const { t } = useTranslation();
 	const avatarUrl = isAvatarUrl(avatarObj) ? avatarObj.avatarUrl : '';
@@ -46,6 +60,21 @@ export const useUpdateAvatar = (avatarObj: AvatarObject, userId: IUser['_id']) =
 		}
 
 		if (isAvatarUrl(avatarObj)) {
+			if (avatarUrl.startsWith('data:')) {
+				try {
+					const file = dataUriToFile(avatarUrl);
+
+					const formData = new FormData();
+					formData.append('image', file, 'avatar.png');
+					formData.set('userId', userId);
+
+					await saveAvatarAction(formData);
+				} catch (error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+				return;
+			}
+
 			await saveAvatarUrlAction({
 				userId,
 				...(avatarUrl && { avatarUrl }),
