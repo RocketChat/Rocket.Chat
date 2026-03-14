@@ -386,7 +386,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												</FieldHint>
 											</Field>
 										)}
-										{readOnly && (
+										{readOnly && !room.broadcast && (
 											<Field>
 												<FieldRow>
 													<FieldLabel htmlFor={reactWhenReadOnlyField}>{t('React_when_read_only')}</FieldLabel>
