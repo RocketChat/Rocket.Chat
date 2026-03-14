@@ -13,5 +13,5 @@ export const parseUriList = (userUri: string) => {
 		uriList.push(uri);
 	});
 
-	return uriList.join(','); // TODO: This is a hack because the original code was returning a string or an array of strings
+	return uriList.join(','); // Normalize to a comma-delimited string for consistent storage.
 };
