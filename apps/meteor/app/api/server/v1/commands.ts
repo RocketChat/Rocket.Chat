@@ -2,7 +2,12 @@ import { Apps } from '@rocket.chat/apps';
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -26,63 +31,107 @@ const CommandsGetParamsSchema = {
 
 const isCommandsGetParams = ajv.compile<CommandsGetParams>(CommandsGetParamsSchema);
 
-const commandsEndpoints = API.v1.get(
-	'commands.get',
-	{
-		authRequired: true,
-		query: isCommandsGetParams,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{
-				command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
-				success: true;
-			}>({
-				type: 'object',
-				properties: {
-					command: {
-						type: 'object',
-						properties: {
-							clientOnly: { type: 'boolean' },
-							command: { type: 'string' },
-							description: { type: 'string' },
-							params: { type: 'string' },
-							providesPreview: { type: 'boolean' },
-						},
-						required: ['command', 'providesPreview'],
-						additionalProperties: false,
-					},
-					success: {
-						type: 'boolean',
-						enum: [true],
-					},
-				},
-				required: ['command', 'success'],
-				additionalProperties: false,
-			}),
-		},
+type CommandsListParams = {
+	count?: number;
+	offset?: number;
+	sort?: string;
+	query?: string;
+	fields?: string;
+};
+
+const CommandsListParamsSchema = {
+	type: 'object',
+	properties: {
+		count: { type: 'number', nullable: true },
+		offset: { type: 'number', nullable: true },
+		sort: { type: 'string', nullable: true },
+		query: { type: 'string', nullable: true },
 	},
+	required: [],
+	additionalProperties: false,
+};
 
-	async function action() {
-		const params = this.queryParams;
+const isCommandsListParams = ajv.compile<CommandsListParams>(CommandsListParamsSchema);
 
-		const cmd = slashCommands.commands[params.command.toLowerCase()];
+type CommandsRunBody = {
+	command: string;
+	params?: string;
+	roomId: string;
+	tmid?: string;
+	triggerId?: string;
+};
 
-		if (!cmd) {
-			return API.v1.failure(`There is no command in the system by the name of: ${params.command}`);
-		}
+const CommandsRunBodySchema = {
+	type: 'object',
+	properties: {
+		command: { type: 'string' },
+		params: { type: 'string', nullable: true },
+		roomId: { type: 'string' },
+		tmid: { type: 'string', nullable: true },
+		triggerId: { type: 'string', nullable: true },
+	},
+	required: ['command', 'roomId'],
+	additionalProperties: false,
+};
 
-		return API.v1.success({
-			command: {
-				command: cmd.command,
-				description: cmd.description,
-				params: cmd.params,
-				clientOnly: cmd.clientOnly,
-				providesPreview: cmd.providesPreview,
+const isCommandsRunBody = ajv.compile<CommandsRunBody>(CommandsRunBodySchema);
+
+type CommandsPreviewQuery = {
+	command: string;
+	params?: string;
+	roomId: string;
+};
+
+const CommandsPreviewQuerySchema = {
+	type: 'object',
+	properties: {
+		command: { type: 'string' },
+		params: { type: 'string', nullable: true },
+		roomId: { type: 'string' },
+	},
+	required: ['command', 'roomId'],
+	additionalProperties: false,
+};
+
+const isCommandsPreviewQuery = ajv.compile<CommandsPreviewQuery>(CommandsPreviewQuerySchema);
+
+type CommandsPreviewBody = {
+	command: string;
+	params?: string;
+	roomId: string;
+	previewItem: {
+		id: string;
+		type: string;
+		value: string;
+	};
+	triggerId?: string;
+	tmid?: string;
+};
+
+const CommandsPreviewBodySchema = {
+	type: 'object',
+	properties: {
+		command: { type: 'string' },
+		params: { type: 'string', nullable: true },
+		roomId: { type: 'string' },
+		previewItem: {
+			type: 'object',
+			properties: {
+				id: { type: 'string' },
+				type: { type: 'string' },
+				value: { type: 'string' },
 			},
-		});
+			required: ['id', 'type', 'value'],
+			additionalProperties: false,
+		},
+		triggerId: { type: 'string', nullable: true },
+		tmid: { type: 'string', nullable: true },
 	},
-);
+	required: ['command', 'roomId', 'previewItem'],
+	additionalProperties: false,
+};
+
+const isCommandsPreviewBody = ajv.compile<CommandsPreviewBody>(CommandsPreviewBodySchema);
 
 /* @deprecated */
 const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string, any>, F extends keyof T>(
@@ -190,16 +239,121 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 	return result;
 };
 
-API.v1.addRoute(
-	'commands.list',
-	{ authRequired: true },
-	{
-		async get() {
+const commandsEndpoints = API.v1
+	.get(
+		'commands.get',
+		{
+			authRequired: true,
+			query: isCommandsGetParams,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
+					success: true;
+				}>({
+					type: 'object',
+					properties: {
+						command: {
+							type: 'object',
+							properties: {
+								clientOnly: { type: 'boolean' },
+								command: { type: 'string' },
+								description: { type: 'string' },
+								params: { type: 'string' },
+								providesPreview: { type: 'boolean' },
+							},
+							required: ['command', 'providesPreview'],
+							additionalProperties: false,
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['command', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+
+		async function action() {
+			const params = this.queryParams;
+
+			const cmd = slashCommands.commands[params.command.toLowerCase()];
+
+			if (!cmd) {
+				return API.v1.failure(`There is no command in the system by the name of: ${params.command}`);
+			}
+
+			return API.v1.success({
+				command: {
+					command: cmd.command,
+					description: cmd.description,
+					params: cmd.params,
+					clientOnly: cmd.clientOnly,
+					providesPreview: cmd.providesPreview,
+				},
+			});
+		},
+	)
+	.get(
+		'commands.list',
+		{
+			authRequired: true,
+			query: isCommandsListParams,
+			response: {
+				200: ajv.compile<{
+					commands: object[];
+					appsLoaded: boolean;
+					offset: number;
+					count: number;
+					total: number;
+					success: true;
+				}>({
+					type: 'object',
+					properties: {
+						commands: { type: 'array', items: { type: 'object', additionalProperties: true } },
+						appsLoaded: { type: 'boolean' },
+						offset: { type: 'number' },
+						count: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['commands', 'appsLoaded', 'offset', 'count', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				202: ajv.compile<{
+					commands: object[];
+					appsLoaded: boolean;
+					offset: number;
+					count: number;
+					total: number;
+					success: true;
+				}>({
+					type: 'object',
+					properties: {
+						commands: { type: 'array', items: { type: 'object', additionalProperties: true } },
+						appsLoaded: { type: 'boolean' },
+						offset: { type: 'number' },
+						count: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['commands', 'appsLoaded', 'offset', 'count', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (!Apps.self?.isLoaded()) {
 				return {
-					statusCode: 202, // Accepted - apps are not ready, so the list is incomplete. Retry later
+					statusCode: 202 as const,
 					body: {
-						commands: [],
+						success: true as const,
+						commands: [] as object[],
 						appsLoaded: false,
 						offset: 0,
 						count: 0,
@@ -232,32 +386,29 @@ API.v1.addRoute(
 				total: totalCount,
 			});
 		},
-	},
-);
-
-// Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
-API.v1.addRoute(
-	'commands.run',
-	{ authRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'commands.run',
+		{
+			authRequired: true,
+			body: isCommandsRunBody,
+			response: {
+				200: ajv.compile<{ result: unknown; success: true }>({
+					type: 'object',
+					properties: {
+						result: {},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: true,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const body = this.bodyParams;
-
-			if (typeof body.command !== 'string') {
-				return API.v1.failure('You must provide a command to run.');
-			}
-
-			if (body.params && typeof body.params !== 'string') {
-				return API.v1.failure('The parameters for the command must be a single string.');
-			}
-
-			if (typeof body.roomId !== 'string') {
-				return API.v1.failure("The room's id where to execute this command must be provided and be a string.");
-			}
-
-			if (body.tmid && typeof body.tmid !== 'string') {
-				return API.v1.failure('The tmid parameter when provided must be a string.');
-			}
 
 			const cmd = body.command.toLowerCase();
 			if (!slashCommands.commands[cmd]) {
@@ -265,7 +416,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-				return API.v1.forbidden();
+				return API.v1.forbidden('User does not have access to this room');
 			}
 
 			const params = body.params ? body.params : '';
@@ -289,28 +440,29 @@ API.v1.addRoute(
 
 			return API.v1.success({ result });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'commands.preview',
-	{ authRequired: true },
-	{
-		// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
-		async get() {
+	)
+	.get(
+		'commands.preview',
+		{
+			authRequired: true,
+			query: isCommandsPreviewQuery,
+			response: {
+				200: ajv.compile<{ preview: object; success: true }>({
+					type: 'object',
+					properties: {
+						preview: { type: 'object', additionalProperties: true },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['preview', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const query = this.queryParams;
-
-			if (typeof query.command !== 'string') {
-				return API.v1.failure('You must provide a command to get the previews from.');
-			}
-
-			if (query.params && typeof query.params !== 'string') {
-				return API.v1.failure('The parameters for the command must be a single string.');
-			}
-
-			if (typeof query.roomId !== 'string') {
-				return API.v1.failure("The room's id where the previews are being displayed must be provided and be a string.");
-			}
 
 			const cmd = query.command.toLowerCase();
 			if (!slashCommands.commands[cmd]) {
@@ -318,7 +470,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await canAccessRoomIdAsync(query.roomId, this.userId))) {
-				return API.v1.forbidden();
+				return API.v1.forbidden('User does not have access to this room');
 			}
 
 			const params = query.params ? query.params : '';
@@ -330,40 +482,30 @@ API.v1.addRoute(
 				userId: this.userId,
 			});
 
-			return API.v1.success({ preview });
+			return API.v1.success({ preview: preview ?? { i18nTitle: '', items: [] } });
 		},
-
-		// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', tmid: 'value', triggerId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif' } }
-		async post() {
+	)
+	.post(
+		'commands.preview',
+		{
+			authRequired: true,
+			body: isCommandsPreviewBody,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const body = this.bodyParams;
-
-			if (typeof body.command !== 'string') {
-				return API.v1.failure('You must provide a command to run the preview item on.');
-			}
-
-			if (body.params && typeof body.params !== 'string') {
-				return API.v1.failure('The parameters for the command must be a single string.');
-			}
-
-			if (typeof body.roomId !== 'string') {
-				return API.v1.failure("The room's id where the preview is being executed in must be provided and be a string.");
-			}
-
-			if (typeof body.previewItem === 'undefined') {
-				return API.v1.failure('The preview item being executed must be provided.');
-			}
-
-			if (!body.previewItem.id || !body.previewItem.type || typeof body.previewItem.value === 'undefined') {
-				return API.v1.failure('The preview item being executed is in the wrong format.');
-			}
-
-			if (body.tmid && typeof body.tmid !== 'string') {
-				return API.v1.failure('The tmid parameter when provided must be a string.');
-			}
-
-			if (body.triggerId && typeof body.triggerId !== 'string') {
-				return API.v1.failure('The triggerId parameter when provided must be a string.');
-			}
 
 			const cmd = body.command.toLowerCase();
 			if (!slashCommands.commands[cmd]) {
@@ -371,7 +513,7 @@ API.v1.addRoute(
 			}
 
 			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-				return API.v1.forbidden();
+				return API.v1.forbidden('User does not have access to this room');
 			}
 
 			const { params = '' } = body;
@@ -394,14 +536,13 @@ API.v1.addRoute(
 					msg,
 					triggerId: body.triggerId,
 				},
-				body.previewItem,
+				body.previewItem as import('@rocket.chat/core-typings').SlashCommandPreviewItem,
 				this.userId,
 			);
 
 			return API.v1.success();
 		},
-	},
-);
+	);
 
 export type CommandsEndpoints = ExtractRoutesFromAPI<typeof commandsEndpoints>;
 
