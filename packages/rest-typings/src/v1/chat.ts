@@ -125,27 +125,6 @@ const ChatGetDiscussionsSchema = {
 
 export const isChatGetDiscussionsProps = ajv.compile<ChatGetDiscussions>(ChatGetDiscussionsSchema);
 
-type ChatReportMessage = {
-	messageId: IMessage['_id'];
-	description: string;
-};
-
-const ChatReportMessageSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
-		},
-		description: {
-			type: 'string',
-		},
-	},
-	required: ['messageId', 'description'],
-	additionalProperties: false,
-};
-
-export const isChatReportMessageProps = ajv.compile<ChatReportMessage>(ChatReportMessageSchema);
-
 type ChatGetThreadsList = PaginatedRequest<{
 	rid: IRoom['_id'];
 	type?: 'unread' | 'following';
@@ -896,9 +875,6 @@ export type ChatEndpoints = {
 		GET: (params: ChatGetMessage) => {
 			message: IMessage;
 		};
-	};
-	'/v1/chat.reportMessage': {
-		POST: (params: ChatReportMessage) => void;
 	};
 	'/v1/chat.getDiscussions': {
 		GET: (params: ChatGetDiscussions) => {
