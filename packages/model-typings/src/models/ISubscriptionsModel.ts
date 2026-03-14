@@ -38,6 +38,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	countUnarchivedByRoomId(rid: string): Promise<number>;
 
+	countUnarchivedByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
+
 	isUserInRole(uid: IUser['_id'], roleId: IRole['_id'], rid?: IRoom['_id']): Promise<boolean>;
 
 	setAsReadByRoomIdAndUserId(
@@ -240,7 +242,10 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findUnreadByUserId(userId: string): FindCursor<ISubscription>;
 
 	archiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
-	unarchiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
+	hasArchivedSubscriptionsByRoomId(roomId: string): Promise<ISubscription | null>;
+	unarchiveByRoomId(roomId: string): Promise<void>;
+	hasArchivedSubscriptionsInNonArchivedRoomsByUserId(userId: string): Promise<boolean>;
+	unarchiveByUserIdExceptForArchivedRooms(userId: string): Promise<void>;
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
 	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document>;
@@ -282,7 +287,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	removeRoleById(_id: string, role: string): Promise<UpdateResult>;
 	updateDirectFNameByName(name: string, fname: string): Promise<UpdateResult | Document>;
-	setArchivedByUsername(username: string, archived: boolean): Promise<UpdateResult | Document>;
+	setArchivedByUserId(userId: string, archived: boolean): Promise<UpdateResult | Document>;
 	updateUserHighlights(userId: string, userHighlights: any): Promise<UpdateResult | Document>;
 	updateNotificationUserPreferences(
 		userId: string,
@@ -331,7 +336,6 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	countByRoomId(roomId: string, options?: CountDocumentsOptions): Promise<number>;
 	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number>;
 	openByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
-	countByRoomIdAndNotUserId(rid: string, uid: string): Promise<number>;
 	countByRoomIdWhenUsernameExists(rid: string): Promise<number>;
 	setE2EKeyByUserIdAndRoomId(userId: string, rid: string, key: string): Promise<null | WithId<ISubscription>>;
 	countUsersInRoles(roles: IRole['_id'][], rid: IRoom['_id'] | undefined): Promise<number>;
