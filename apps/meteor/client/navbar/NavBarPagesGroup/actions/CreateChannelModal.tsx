@@ -178,9 +178,11 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		try {
 			if (isPrivate) {
 				roomData = await createPrivateChannel(params);
+				onClose();
 				!teamId && goToRoomById(roomData.group._id);
 			} else {
 				roomData = await createChannel(params);
+				onClose();
 				!teamId && goToRoomById(roomData.channel._id);
 			}
 
