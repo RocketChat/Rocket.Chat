@@ -110,3 +110,7 @@ button {
 	max-width: 100%;
 	cursor: pointer;
 }
+
+[dir] [class~='rcx-accordion-item__bar'] {
+	text-align: start;
+}
