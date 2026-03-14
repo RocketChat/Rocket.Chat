@@ -18,6 +18,7 @@ export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
 const PUSH_TITLE_LIMIT = 65;
 const PUSH_MESSAGE_BODY_LIMIT = 240;
+const PUSH_GATEWAY_MAX_RETRIES = 5;
 
 type FCMCredentials = {
 	type: string;
@@ -78,9 +79,9 @@ export const isFCMCredentials = ajv.compile<FCMCredentials>(FCMCredentialsValida
 // This type must match the type defined in the push gateway
 type GatewayNotification = {
 	uniqueId: string;
-	from: string;
-	title: string;
-	text: string;
+	from?: string;
+	title?: string;
+	text?: string;
 	badge?: number;
 	sound?: string;
 	notId?: number;
@@ -123,8 +124,7 @@ type GatewayNotification = {
 export type NativeNotificationParameters = {
 	userTokens: string | string[];
 	notification: PendingPushNotification;
-	_replaceToken: (currentToken: IPushToken['token'], newToken: IPushToken['token']) => void;
-	_removeToken: (token: IPushToken['token']) => void;
+	_removeToken: (token: string) => void;
 	options: RequiredField<PushOptions, 'gcm'>;
 };
 
@@ -167,12 +167,10 @@ class PushClass {
 		}
 	}
 
-	private replaceToken(currentToken: IPushToken['token'], newToken: IPushToken['token']): void {
-		void PushToken.updateMany({ token: currentToken }, { $set: { token: newToken } });
-	}
-
-	private removeToken(token: IPushToken['token']): void {
-		void PushToken.deleteOne({ token });
+	private removeToken(token: string): void {
+		void PushToken.removeOrUnsetByTokenString(token).catch((err) => {
+			logger.error({ msg: 'Failed to remove push token', err });
+		});
 	}
 
 	private shouldUseGateway(): boolean {
@@ -188,10 +186,13 @@ class PushClass {
 		logger.debug({ msg: 'send to token', token: app.token });
 
 		if ('apn' in app.token && app.token.apn) {
-			countApn.push(app._id);
+			const userToken = notification.useVoipToken ? app.voipToken : app.token.apn;
+			const topic = notification.useVoipToken ? `${app.appName}.voip` : app.appName;
+
 			// Send to APN
-			if (this.options.apn) {
-				sendAPN({ userToken: app.token.apn, notification: { topic: app.appName, ...notification }, _removeToken: this.removeToken });
+			if (this.options.apn && userToken) {
+				countApn.push(app._id);
+				sendAPN({ userToken, notification: { topic, ...notification }, _removeToken: this.removeToken });
 			}
 		} else if ('gcm' in app.token && app.token.gcm) {
 			countGcm.push(app._id);
@@ -210,7 +211,6 @@ class PushClass {
 			sendFCM({
 				userTokens: app.token.gcm,
 				notification,
-				_replaceToken: this.replaceToken,
 				_removeToken: this.removeToken,
 				options: sendGCMOptions as RequiredField<PushOptions, 'gcm'>,
 			});
@@ -255,7 +255,7 @@ class PushClass {
 		service: 'apn' | 'gcm',
 		token: string,
 		notification: Optional<GatewayNotification, 'uniqueId'>,
-		tries = 0,
+		retryOptions: { tries: number; maxRetries: number } = { tries: 0, maxRetries: PUSH_GATEWAY_MAX_RETRIES },
 	): Promise<void> {
 		notification.uniqueId = this.options.uniqueId;
 
@@ -275,16 +275,7 @@ class PushClass {
 
 		if (result.status === 406) {
 			logger.info({ msg: 'removing push token', token });
-			await PushToken.deleteMany({
-				$or: [
-					{
-						'token.apn': token,
-					},
-					{
-						'token.gcm': token,
-					},
-				],
-			});
+			this.removeToken(token);
 			return;
 		}
 
@@ -302,22 +293,24 @@ class PushClass {
 			return;
 		}
 
+		const { tries, maxRetries } = retryOptions;
+
 		logger.error({ msg: 'Error sending push to gateway', tries, err: response });
 
-		if (tries <= 4) {
+		if (tries < maxRetries) {
 			// [1, 2, 4, 8, 16] minutes (total 31)
 			const ms = 60000 * Math.pow(2, tries);
 
 			logger.log({ msg: 'Retrying push to gateway', tries: tries + 1, in: ms });
 
-			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, tries + 1), ms);
+			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, { tries: tries + 1, maxRetries }), ms);
 		}
 	}
 
 	private getGatewayNotificationData(notification: PendingPushNotification): Omit<GatewayNotification, 'uniqueId'> {
-		// Gateway currently accepts every attribute from the PendingPushNotification type, except for the priority
+		// Gateway currently accepts every attribute from the PendingPushNotification type, except for the priority and useVoipToken
 		// If new attributes are added to the PendingPushNotification type, they'll need to be removed here as well.
-		const { priority: _priority, ...notifData } = notification;
+		const { priority: _priority, useVoipToken: _useVoipToken, ...notifData } = notification;
 
 		return {
 			...notifData,
@@ -335,35 +328,47 @@ class PushClass {
 		}
 
 		const gatewayNotification = this.getGatewayNotificationData(notification);
+		const retryOptions = {
+			tries: 0,
+			maxRetries: notification.useVoipToken ? 0 : PUSH_GATEWAY_MAX_RETRIES,
+		};
 
 		for (const gateway of this.options.gateways) {
 			logger.debug({ msg: 'send to token', token: app.token });
 
 			if ('apn' in app.token && app.token.apn) {
-				countApn.push(app._id);
-				return this.sendGatewayPush(gateway, 'apn', app.token.apn, { topic: app.appName, ...gatewayNotification });
+				const token = notification.useVoipToken ? app.voipToken : app.token.apn;
+				const topic = notification.useVoipToken ? `${app.appName}.voip` : app.appName;
+
+				if (token) {
+					countApn.push(app._id);
+					return this.sendGatewayPush(gateway, 'apn', token, { topic, ...gatewayNotification }, retryOptions);
+				}
 			}
 
 			if ('gcm' in app.token && app.token.gcm) {
 				countGcm.push(app._id);
-				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, gatewayNotification);
+				return this.sendGatewayPush(gateway, 'gcm', app.token.gcm, gatewayNotification, retryOptions);
 			}
 		}
 	}
 
-	private async sendNotification(notification: PendingPushNotification): Promise<{ apn: string[]; gcm: string[] }> {
+	private async sendNotification(
+		notification: PendingPushNotification,
+		options: { skipTokenId?: IPushToken['_id'] } = {},
+	): Promise<{ apn: string[]; gcm: string[] }> {
 		logger.debug({ msg: 'Sending notification', notification });
 
 		const countApn: string[] = [];
 		const countGcm: string[] = [];
 
-		if (notification.from !== String(notification.from)) {
+		if (notification.from && notification.from !== String(notification.from)) {
 			throw new Error('Push.send: option "from" not a string');
 		}
-		if (notification.title !== String(notification.title)) {
+		if (notification.title && notification.title !== String(notification.title)) {
 			throw new Error('Push.send: option "title" not a string');
 		}
-		if (notification.text !== String(notification.text)) {
+		if (notification.text && notification.text !== String(notification.text)) {
 			throw new Error('Push.send: option "text" not a string');
 		}
 
@@ -373,12 +378,9 @@ class PushClass {
 			userId: notification.userId,
 		});
 
-		const query = {
-			userId: notification.userId,
-			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
-		};
-
-		const appTokens = PushToken.find(query);
+		const appTokens = options.skipTokenId
+			? PushToken.findTokensByUserIdExceptId(notification.userId, options.skipTokenId)
+			: PushToken.findAllTokensByUserId(notification.userId);
 
 		for await (const app of appTokens) {
 			logger.debug({ msg: 'send to token', token: app.token });
@@ -427,9 +429,9 @@ class PushClass {
 	private _validateDocument(notification: PendingPushNotification): void {
 		// Check the general notification
 		check(notification, {
-			from: String,
-			title: String,
-			text: String,
+			from: Match.Optional(String),
+			title: Match.Optional(String),
+			text: Match.Optional(String),
 			sent: Match.Optional(Boolean),
 			sending: Match.Optional(Match.Integer),
 			badge: Match.Optional(Match.Integer),
@@ -448,6 +450,7 @@ class PushClass {
 			createdAt: Date,
 			createdBy: Match.OneOf(String, null),
 			priority: Match.Optional(Match.Integer),
+			useVoipToken: Match.Optional(Boolean),
 		});
 
 		if (!notification.userId) {
@@ -470,10 +473,10 @@ class PushClass {
 			createdBy: '<SERVER>',
 			sent: false,
 			sending: 0,
-			title: truncateString(options.title, PUSH_TITLE_LIMIT),
-			text: truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT),
+			...(options.title && { title: truncateString(options.title, PUSH_TITLE_LIMIT) }),
+			...(options.text && { text: truncateString(options.text, PUSH_MESSAGE_BODY_LIMIT) }),
 
-			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority'),
+			...pick(options, 'from', 'userId', 'payload', 'badge', 'sound', 'notId', 'priority', 'useVoipToken'),
 
 			...(this.hasApnOptions(options)
 				? {
@@ -495,7 +498,7 @@ class PushClass {
 		this._validateDocument(notification);
 
 		try {
-			await this.sendNotification(notification);
+			await this.sendNotification(notification, pick(options, 'skipTokenId'));
 		} catch (error: any) {
 			logger.debug({
 				msg: 'Could not send notification to user',

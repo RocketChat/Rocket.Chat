@@ -7,18 +7,17 @@ import type {
 	CallHistoryItemState,
 	IExternalMediaCallHistoryItem,
 } from '@rocket.chat/core-typings';
-import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
 import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
 import { getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
+import { logger } from './logger';
+import { sendVoipPushNotification } from './push/sendVoipPushNotification';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
 import { createDirectMessage } from '../../methods/createDirectMessage';
-
-const logger = new Logger('media-call service');
 
 export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
 	protected name = 'media-call';
@@ -28,6 +27,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		callServer.emitter.on('signalRequest', ({ toUid, signal }) => this.sendSignal(toUid, signal));
 		callServer.emitter.on('callUpdated', (params) => api.broadcast('media-call.updated', params));
 		callServer.emitter.on('historyUpdate', ({ callId }) => setImmediate(() => this.saveCallToHistory(callId)));
+		callServer.emitter.on('pushNotificationRequest', ({ callId, event }) => sendVoipPushNotification(callId, event));
 		this.onEvent('media-call.updated', (params) => callServer.receiveCallUpdate(params));
 
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {

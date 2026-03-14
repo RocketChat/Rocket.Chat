@@ -18,9 +18,9 @@ export type PushOptions = {
 };
 
 export type PendingPushNotification = {
-	from: string;
-	title: string;
-	text: string;
+	from?: string;
+	title?: string;
+	text?: string;
 	badge?: number;
 	sound?: string;
 	notId?: number;
@@ -42,4 +42,5 @@ export type PendingPushNotification = {
 	priority?: number;
 
 	contentAvailable?: 1 | 0;
+	useVoipToken?: boolean;
 };

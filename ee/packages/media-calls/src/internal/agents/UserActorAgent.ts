@@ -33,6 +33,8 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			return;
 		}
 
+		getMediaCallServer().sendPushNotification({ callId, event: 'answer' });
+
 		const negotiation = await MediaCallNegotiations.findLatestByCallId(callId);
 		if (!negotiation?.offer) {
 			logger.debug('The call was accepted but the webrtc offer is not yet available.');
@@ -50,6 +52,10 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
+		if (this.role === 'callee') {
+			getMediaCallServer().sendPushNotification({ callId, event: 'end' });
+		}
+
 		return this.sendSignal({
 			callId,
 			type: 'notification',
@@ -72,6 +78,10 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		}
 
 		await this.sendSignal(buildNewCallSignal(call, this.role));
+
+		if (this.role === 'callee') {
+			getMediaCallServer().sendPushNotification({ callId: call._id, event: 'new' });
+		}
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {

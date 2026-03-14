@@ -1,6 +1,6 @@
 import type { IPushToken, IUser, AtLeast } from '@rocket.chat/core-typings';
 import type { IPushTokenModel } from '@rocket.chat/model-typings';
-import type { Db, DeleteResult, FindOptions, IndexDescription, InsertOneResult, UpdateResult } from 'mongodb';
+import type { Db, DeleteResult, FindOptions, IndexDescription, InsertOneResult, UpdateResult, FindCursor } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -44,6 +44,31 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 
 	async findFirstByUserId<T extends IPushToken>(userId: IUser['_id'], options: FindOptions<IPushToken> = {}): Promise<T | null> {
 		return this.findOne<T>({ userId }, options);
+	}
+
+	findAllTokensByUserId<T extends IPushToken>(userId: IUser['_id'], options?: FindOptions<IPushToken>): FindCursor<T> {
+		return this.find<T>(
+			{
+				userId,
+				$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
+			},
+			options,
+		);
+	}
+
+	findTokensByUserIdExceptId<T extends IPushToken>(
+		userId: IUser['_id'],
+		idToIgnore: IPushToken['_id'],
+		options?: FindOptions<IPushToken>,
+	): FindCursor<T> {
+		return this.find<T>(
+			{
+				_id: { $ne: idToIgnore },
+				userId,
+				$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
+			},
+			options,
+		);
 	}
 
 	async insertToken(data: AtLeast<IPushToken, 'token' | 'authToken' | 'appName' | 'userId'>): Promise<InsertOneResult<IPushToken>> {
@@ -117,8 +142,35 @@ export class PushTokenRaw extends BaseRaw<IPushToken> implements IPushTokenModel
 				{
 					'token.gcm': token,
 				},
+				{
+					voipToken: token,
+				},
 			],
 			userId,
 		});
+	}
+
+	async removeOrUnsetByTokenString(token: string): Promise<void> {
+		await this.deleteMany({
+			$or: [
+				{
+					'token.apn': token,
+				},
+				{
+					'token.gcm': token,
+				},
+			],
+		});
+
+		await this.updateMany(
+			{
+				voipToken: token,
+			},
+			{
+				$unset: {
+					voipToken: 1,
+				},
+			},
+		);
 	}
 }

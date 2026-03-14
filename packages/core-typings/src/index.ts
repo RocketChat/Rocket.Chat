@@ -27,7 +27,7 @@ export type * from './ICustomSound';
 export type * from './ICloud';
 export * from './IServerEvent';
 export type * from './IRocketChatAssets';
-export type * from './IPushToken';
+export * from './IPushToken';
 export type * from './IPushNotificationConfig';
 export type * from './SlashCommands';
 export * from './license';

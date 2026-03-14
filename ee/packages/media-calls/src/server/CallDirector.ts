@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto';
+
 import type {
 	IMediaCall,
 	IMediaCallNegotiation,
@@ -203,7 +205,9 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
+		const call: Omit<IMediaCall, '_updatedAt'> = {
+			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
+			_id: randomUUID(),
 			service,
 			kind: 'direct',
 			state: 'none',
