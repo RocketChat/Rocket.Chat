@@ -75,33 +75,30 @@ const ThreadList = () => {
 	const uid = useUserId();
 	const tunread = subscription?.tunread?.sort().join(',');
 	const text = useDebouncedValue(searchText, 400);
-	const options = useDebouncedValue(
-		useMemo(() => {
-			if (type === 'all' || !subscribed || !uid) {
+	const options = useMemo(() => {
+		if (type === 'all' || !subscribed || !uid) {
+			return {
+				rid,
+				text,
+			};
+		}
+		switch (type) {
+			case 'following':
 				return {
 					rid,
 					text,
+					type,
+					uid,
 				};
-			}
-			switch (type) {
-				case 'following':
-					return {
-						rid,
-						text,
-						type,
-						uid,
-					};
-				case 'unread':
-					return {
-						rid,
-						text,
-						type,
-						tunread: tunread?.split(','),
-					};
-			}
-		}, [rid, subscribed, text, tunread, type, uid]),
-		300,
-	);
+			case 'unread':
+				return {
+					rid,
+					text,
+					type,
+					tunread: tunread?.split(','),
+				};
+		}
+	}, [rid, subscribed, text, tunread, type, uid]);
 
 	const { isPending, error, isSuccess, data, fetchNextPage } = useThreadsList(options);
 
