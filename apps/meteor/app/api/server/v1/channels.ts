@@ -39,6 +39,7 @@ import { removeRoomOwner } from '../../../../server/methods/removeRoomOwner';
 import { removeUserFromRoomMethod } from '../../../../server/methods/removeUserFromRoom';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { getUserMentionsByChannelPaginated } from '../../../mentions/server/methods/getUserMentionsByChannel';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { mountIntegrationQueryBasedOnPermissions } from '../../../integrations/server/lib/mountQueriesBasedOnPermission';
 import { addUsersToRoomMethod } from '../../../lib/server/methods/addUsersToRoom';
@@ -48,7 +49,6 @@ import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory
 import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
-import { getUserMentionsByChannel } from '../../../mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
@@ -64,12 +64,12 @@ async function findChannelByIdOrName({
 	userId,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	userId?: string;
 	checkedArchived?: boolean;
 }): Promise<IRoom> {
@@ -420,6 +420,7 @@ API.v1.addRoute(
 	},
 );
 
+
 API.v1.addRoute(
 	'channels.getAllUserMentionsByChannel',
 	{
@@ -432,19 +433,26 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const mentions = await getUserMentionsByChannel(this.userId, roomId, {
+			const findResult = await findChannelByIdOrName({
+				params: { roomId },
+				checkedArchived: false,
+			});
+
+			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+				return API.v1.forbidden();
+			}
+
+			const { mentions, total } = await getUserMentionsByChannelPaginated(this.userId, roomId, {
 				sort: sort || { ts: 1 },
 				skip: offset,
 				limit: count,
 			});
 
-			const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
-
 			return API.v1.success({
 				mentions,
 				count: mentions.length,
 				offset,
-				total: allMentions.length,
+				total,
 			});
 		},
 	},
