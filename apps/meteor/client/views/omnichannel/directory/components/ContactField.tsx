@@ -31,7 +31,7 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 	});
 
 	if (isPending) {
-		return <FormSkeleton />;
+		return <FormSkeleton pi={24} />;
 	}
 
 	if (isError || !data?.visitor) {
