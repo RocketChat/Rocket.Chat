@@ -35,10 +35,15 @@ const VideoConfContextProvider = ({ children }: { children: ReactNode }): ReactE
 		[dispatchToastMessage, t],
 	);
 
-	useEffect(() => {
-		VideoConfManager.on('direct/stopped', () => setOutgoing(undefined));
-		VideoConfManager.on('calling/ended', () => setOutgoing(undefined));
-	}, []);
+		useEffect(() => {
+			const stopDirect = VideoConfManager.on('direct/stopped', () => setOutgoing(undefined));
+			const stopCalling = VideoConfManager.on('calling/ended', () => setOutgoing(undefined));
+
+			return () => {
+				stopDirect();
+				stopCalling();
+			};
+		}, []);
 
 	const contextValue = useMemo<VideoConfContextValue>(
 		() => ({
