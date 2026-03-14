@@ -1,7 +1,6 @@
 import type { IDiscussionBuilder as _IDiscussionBuilder } from '@rocket.chat/apps-engine/definition/accessors/IDiscussionBuilder.ts';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
-import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder.ts';
 
 import type { RocketChatAssociationModel as _RocketChatAssociationModel } from '@rocket.chat/apps-engine/definition/metadata/RocketChatAssociations.ts';
 import type { RoomType as _RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.ts';
@@ -15,7 +14,7 @@ const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definit
 
 const { RoomType } = require('@rocket.chat/apps-engine/definition/rooms/RoomType.js') as { RoomType: typeof _RoomType };
 
-export interface IDiscussionBuilder extends _IDiscussionBuilder, IRoomBuilder {}
+export interface IDiscussionBuilder extends _IDiscussionBuilder {}
 
 export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder {
 	public kind: _RocketChatAssociationModel.DISCUSSION;

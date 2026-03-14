@@ -1,11 +1,11 @@
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
 
 import type { IMessageBuilder } from '../../definition/accessors';
+import type { SerializableValue } from '../../definition/JsonValue';
 import type { IMessage, IMessageAttachment } from '../../definition/messages';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import type { IRoom } from '../../definition/rooms';
-import type { IBlock } from '../../definition/uikit';
-import { BlockBuilder } from '../../definition/uikit';
+import { BlockBuilder, type IBlock } from '../../definition/uikit';
 import type { IUser } from '../../definition/users';
 
 export class MessageBuilder implements IMessageBuilder {
@@ -205,12 +205,12 @@ export class MessageBuilder implements IMessageBuilder {
 		return this.msg.blocks;
 	}
 
-	public addCustomField(key: string, value: any): IMessageBuilder {
+	public addCustomField(key: string, value: SerializableValue): IMessageBuilder {
 		if (!this.msg.customFields) {
 			this.msg.customFields = {};
 		}
 
-		if (this.msg.customFields[key]) {
+		if (key in this.msg.customFields) {
 			throw new Error(`The message already contains a custom field by the key: ${key}`);
 		}
 

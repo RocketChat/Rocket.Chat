@@ -1,4 +1,5 @@
 import type { IMessageExtender } from '../../definition/accessors';
+import type { SerializableValue } from '../../definition/JsonValue';
 import type { IMessage, IMessageAttachment } from '../../definition/messages';
 import { RocketChatAssociationModel } from '../../definition/metadata';
 import { Utilities } from '../misc/Utilities';
@@ -14,12 +15,12 @@ export class MessageExtender implements IMessageExtender {
 		}
 	}
 
-	public addCustomField(key: string, value: any): IMessageExtender {
+	public addCustomField(key: string, value: SerializableValue): IMessageExtender {
 		if (!this.msg.customFields) {
 			this.msg.customFields = {};
 		}
 
-		if (this.msg.customFields[key]) {
+		if (key in this.msg.customFields) {
 			throw new Error(`The message already contains a custom field by the key: ${key}`);
 		}
 
