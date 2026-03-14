@@ -1,0 +1,12 @@
+{
+	"debug": false,
+	"testops": {
+		"api": {
+			"token": "<app-token>"
+		},
+		"project": "RC",
+		"run": {
+			"complete": true
+		}
+	}
+}
