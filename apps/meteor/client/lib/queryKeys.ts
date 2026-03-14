@@ -119,7 +119,9 @@ export const usersQueryKeys = {
 	all: ['users'] as const,
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
-	userAutoComplete: (filter: string, federated: boolean) => [...usersQueryKeys.all, 'autocomplete', filter, federated] as const,
+	userAutoComplete: (filter: string, federated: boolean, exceptions: string[] = []) =>
+		// Expects exceptions to be pre-sorted in the calling component for cache efficiency
+		[...usersQueryKeys.all, 'autocomplete', filter, federated, exceptions] as const,
 };
 
 export const teamsQueryKeys = {

@@ -250,6 +250,28 @@ describe('[Channels]', () => {
 			});
 	});
 
+	it('/channels.invite should still succeed when inviting a user already in the channel', async () => {
+		const roomInfo = await getRoomInfo(channel._id);
+
+		return request
+			.post(api('channels.invite'))
+			.set(credentials)
+			.send({
+				roomId: channel._id,
+				userId: 'rocket.cat',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('channel._id');
+				expect(res.body).to.have.nested.property('channel.name', apiPublicChannelName);
+				expect(res.body).to.have.nested.property('channel.t', 'c');
+				// When adding an already-existing user, no new system message is created
+				expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs);
+			});
+	});
+
 	it('/channels.addOwner', (done) => {
 		void request
 			.post(api('channels.addOwner'))
