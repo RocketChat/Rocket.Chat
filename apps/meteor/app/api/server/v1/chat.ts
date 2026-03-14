@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -12,7 +12,6 @@ import {
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
 	isChatPostMessageProps,
-	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
@@ -26,6 +25,7 @@ import {
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	type PaginatedRequest,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -119,6 +119,35 @@ const ChatUnfollowMessageLocalSchema = {
 	additionalProperties: false,
 };
 
+//chat.search starts
+type ChatSearch = PaginatedRequest<{
+	roomId: IRoom['_id'];
+	searchText: string;
+}>;
+
+const ChatSearchSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		searchText: {
+			type: 'string',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+	},
+	required: ['roomId', 'searchText'],
+	additionalProperties: false,
+};
+//chat.search ends
+
 const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
 
 const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
@@ -126,6 +155,8 @@ const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUn
 const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
+
+const isChatSearchLocalProps = ajv.compile<ChatSearch>(ChatSearchSchema);
 
 API.v1.addRoute(
 	'chat.delete',
@@ -558,6 +589,60 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.get(
+		'chat.search',
+		{
+			authRequired: true,
+			query: isChatSearchLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						messages: {
+							type: 'array',
+							items: { $ref: '#/components/schemas/IMessage' },
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['messages', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { roomId, searchText } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			if (!roomId) {
+				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+			}
+
+			if (!searchText) {
+				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
+			}
+
+			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
+
+			if (searchResult === false) {
+				return API.v1.failure();
+			}
+
+			if (!searchResult.message) {
+				return API.v1.failure();
+			}
+
+			const result = searchResult.message.docs;
+
+			return API.v1.success({
+				messages: await normalizeMessagesForUser(result, this.userId),
+			});
+		},
 	);
 
 API.v1.addRoute(
@@ -592,38 +677,6 @@ API.v1.addRoute(
 				ts: Date.now(),
 				channel: messageReturn.channel,
 				message,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.search',
-	{ authRequired: true, validateParams: isChatSearchProps },
-	{
-		async get() {
-			const { roomId, searchText } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-			}
-
-			if (!searchText) {
-				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
-			}
-
-			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
-			if (searchResult === false) {
-				return API.v1.failure();
-			}
-			if (!searchResult.message) {
-				return API.v1.failure();
-			}
-			const result = searchResult.message.docs;
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
 	},

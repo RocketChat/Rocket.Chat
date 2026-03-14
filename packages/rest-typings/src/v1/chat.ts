@@ -323,35 +323,6 @@ const ChatIgnoreUserSchema = {
 
 export const isChatIgnoreUserProps = ajv.compile<ChatIgnoreUser>(ChatIgnoreUserSchema);
 
-type ChatSearch = PaginatedRequest<{
-	roomId: IRoom['_id'];
-	searchText: string;
-}>;
-
-const ChatSearchSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-		},
-		searchText: {
-			type: 'string',
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-	},
-	required: ['roomId', 'searchText'],
-	additionalProperties: false,
-};
-
-export const isChatSearchProps = ajv.compile<ChatSearch>(ChatSearchSchema);
-
 interface IChatUpdate {
 	roomId: IRoom['_id'];
 	msgId: string;
@@ -932,11 +903,6 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.ignoreUser': {
 		GET: (params: ChatIgnoreUser) => void;
-	};
-	'/v1/chat.search': {
-		GET: (params: ChatSearch) => {
-			messages: IMessage[];
-		};
 	};
 	'/v1/chat.update': {
 		POST: (params: ChatUpdate) => {
