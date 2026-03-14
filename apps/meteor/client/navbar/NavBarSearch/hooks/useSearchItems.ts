@@ -19,8 +19,9 @@ const options = {
 // FIXME: the return type is UTTERLY wrong, but I'm not sure what it should be
 export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionWithRoom[] | undefined, Error> => {
 	const [, mention, name] = useMemo(() => filterText.match(/(@|#)?(.*)/i) || [], [filterText]);
+	const normalizedName = name.trim();
 	const query = useMemo(() => {
-		const filterRegex = new RegExp(escapeRegExp(name), 'i');
+		const filterRegex = new RegExp(escapeRegExp(normalizedName), 'i');
 
 		return {
 			$or: [{ name: filterRegex }, { fname: filterRegex }],
@@ -28,7 +29,7 @@ export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionW
 				t: mention === '@' ? 'd' : { $ne: 'd' },
 			}),
 		};
-	}, [name, mention]);
+	}, [normalizedName, mention]);
 
 	const localRooms = useUserSubscriptions(query, options);
 
@@ -50,14 +51,18 @@ export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionW
 	const getSpotlight = useMethod('spotlight');
 
 	return useQuery({
-		queryKey: ['sidebar/search/spotlight', name, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
+		queryKey: ['sidebar/search/spotlight', normalizedName, usernamesFromClient, type, localRooms.map(({ _id, name }) => _id + name)],
 
 		queryFn: async () => {
+			if (normalizedName.length === 0) {
+				return localRooms;
+			}
+
 			if (localRooms.length === LIMIT) {
 				return localRooms;
 			}
 
-			const spotlight = await getSpotlight(name, usernamesFromClient, type);
+			const spotlight = await getSpotlight(normalizedName, usernamesFromClient, type);
 
 			const filterUsersUnique = ({ _id }: { _id: string }, index: number, arr: { _id: string }[]): boolean =>
 				index === arr.findIndex((user) => _id === user._id);
@@ -104,7 +109,7 @@ export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionW
 			resultsFromServer.push(...spotlight.users.filter(filterUsersUnique).filter(usersFilter).map(userMap));
 			resultsFromServer.push(...spotlight.rooms.filter(roomFilter));
 
-			const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(name));
+			const exact = resultsFromServer?.filter((item) => [item.name, item.fname].includes(normalizedName));
 			return Array.from(new Set([...exact, ...localRooms, ...resultsFromServer]));
 		},
 
