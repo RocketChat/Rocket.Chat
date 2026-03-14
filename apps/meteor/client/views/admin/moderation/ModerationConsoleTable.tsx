@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -19,7 +19,6 @@ import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 import ModerationFilter from './helpers/ModerationFilter';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-// TODO: Missing error state
 const ModerationConsoleTable = () => {
 	const [text, setText] = useState('');
 	const router = useRouter();
@@ -54,7 +53,7 @@ const ModerationConsoleTable = () => {
 
 	const getReports = useEndpoint('GET', '/v1/moderation.reportsByUsers');
 
-	const { data, isLoading, isSuccess } = useQuery({
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
 		queryKey: ['moderation', 'msgReports', 'fetchAll', query],
 		queryFn: async () => getReports(query),
 		meta: {
@@ -135,6 +134,15 @@ const ModerationConsoleTable = () => {
 				</>
 			)}
 			{isSuccess && data.reports.length === 0 && <GenericNoResults />}
+			{isError && (
+				<States>
+					<StatesIcon name='warning' variation='danger' />
+					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+					<StatesActions>
+						<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+					</StatesActions>
+				</States>
+			)}
 		</>
 	);
 };
