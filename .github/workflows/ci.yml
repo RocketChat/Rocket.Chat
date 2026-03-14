@@ -20,6 +20,10 @@ concurrency:
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  DOCKER_BUILD_ARCHES_JSON: '["arm64","amd64"]'
+  DOCKER_BUILD_SERVICES_JSON: '["authorization-service","queue-worker-service","ddp-streamer-service","account-service","presence-service","omnichannel-transcript-service","rocketchat"]'
+  DOCKER_BUILD_EXTRA_COVERAGE_JSON: '[{"arch":"amd64","service":"rocketchat","type":"coverage"},{"arch":"arm64","service":"rocketchat","type":"coverage"}]'
+  DOCKER_BUILD_FIPS_SERVICES_JSON: '["authorization-service","queue-worker-service","ddp-streamer-service","account-service","presence-service","omnichannel-transcript-service"]'
 
 jobs:
   release-versions:
@@ -262,9 +266,48 @@ jobs:
           source-hash: ${{ needs.release-versions.outputs.source-hash }}
           type: ${{ matrix.type }}
 
+  build-gh-docker-matrix:
+    name: ⚙️ Build Docker Matrix
+    needs: [build]
+    runs-on: ubuntu-24.04-arm
+    outputs:
+      matrix: ${{ steps.generate.outputs.matrix }}
+    steps:
+      - id: generate
+        env:
+          DOCKER_BUILD_ARCHES_JSON: ${{ env.DOCKER_BUILD_ARCHES_JSON }}
+          DOCKER_BUILD_SERVICES_JSON: ${{ env.DOCKER_BUILD_SERVICES_JSON }}
+          DOCKER_BUILD_EXTRA_COVERAGE_JSON: ${{ env.DOCKER_BUILD_EXTRA_COVERAGE_JSON }}
+          DOCKER_BUILD_FIPS_SERVICES_JSON: ${{ env.DOCKER_BUILD_FIPS_SERVICES_JSON }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+
+          const baseType = '${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}';
+          const arches = JSON.parse(process.env.DOCKER_BUILD_ARCHES_JSON);
+          const services = JSON.parse(process.env.DOCKER_BUILD_SERVICES_JSON);
+          const extraCoverageRows = JSON.parse(process.env.DOCKER_BUILD_EXTRA_COVERAGE_JSON);
+          const fipsServices = JSON.parse(process.env.DOCKER_BUILD_FIPS_SERVICES_JSON);
+
+          const include = [];
+          for (const arch of arches) {
+            for (const service of services) {
+              include.push({ arch, service, type: baseType });
+            }
+          }
+
+          if (baseType === 'production') {
+            include.push(...extraCoverageRows);
+          }
+
+          include.push(...fipsServices.map((service) => ({ arch: 'amd64', service, type: 'fips' })));
+
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, `matrix=${JSON.stringify({ include })}\n`);
+          NODE
+
   build-gh-docker:
-    name: 🚢 Build Docker
-    needs: [build, release-versions]
+    name: 🚢 Build Docker (${{ matrix.service }}-${{ matrix.arch }}-${{ matrix.type }})
+    needs: [build, build-gh-docker-matrix, release-versions]
     runs-on: ubuntu-24.04${{ matrix.arch == 'arm64' && '-arm' || '' }}
 
     env:
@@ -273,25 +316,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        arch: [arm64, amd64]
-        service:
-          [
-            [authorization-service, queue-worker-service, ddp-streamer-service],
-            [account-service, presence-service, omnichannel-transcript-service],
-            [rocketchat],
-          ]
-        type:
-          # if running in a PR build with coverage
-          - ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || 'production' }}
-        include:
-          # if not, build with coverage for tests
-          - arch: amd64
-            service: [rocketchat]
-            type: coverage
-          - arch: arm64
-            service: [rocketchat]
-            type: coverage
+      matrix: ${{ fromJSON(needs.build-gh-docker-matrix.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v6
@@ -308,7 +333,7 @@ jobs:
           tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       # we only build and publish the actual docker images if not a PR from a fork
-      - name: Image ${{ matrix.service[0] }}
+      - name: Image ${{ matrix.service }}
         uses: ./.github/actions/build-docker
         if: github.actor != 'dependabot[bot]'
         env:
@@ -317,56 +342,13 @@ jobs:
         with:
           CR_USER: ${{ secrets.CR_USER }}
           CR_PAT: ${{ secrets.CR_PAT }}
+          TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+          TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
           arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[0] }}
+          service: ${{ matrix.service }}
           type: ${{ matrix.type }}
           publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-
-      - name: Image ${{ matrix.service[1] || '"skipped"' }}
-        uses: ./.github/actions/build-docker
-        if: matrix.service[1] && github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[1] }}
-          type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-          setup-docker: false
-
-      - name: Image ${{ matrix.service[2] || '"skipped"' }}
-        uses: ./.github/actions/build-docker
-        if: matrix.service[2] && github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[2] }}
-          type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-          setup-docker: false
-
-      - name: Image ${{ matrix.service[3] || '"skipped"' }}
-        uses: ./.github/actions/build-docker
-        if: matrix.service[3] && github.actor != 'dependabot[bot]'
-        env:
-          DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ matrix.type == 'coverage' && '-cov' || '' }}
-        with:
-          CR_USER: ${{ secrets.CR_USER }}
-          CR_PAT: ${{ secrets.CR_PAT }}
-          deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          arch: ${{ matrix.arch }}
-          service: ${{ matrix.service[3] }}
-          type: ${{ matrix.type }}
-          publish-image: ${{ github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop' }}
-          setup-docker: false
 
   build-gh-docker-publish:
     name: 🚢 Publish Docker Images (ghcr.io)
@@ -383,6 +365,7 @@ jobs:
         with:
           sparse-checkout: |
             docker-compose-ci.yml
+            docker-compose-ci.fips.yml
           sparse-checkout-cone-mode: false
           ref: ${{ github.ref }}
 
@@ -424,6 +407,9 @@ jobs:
             # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
             if [ "$service" == "rocketchat-cov" ]; then
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
+            elif [[ "$service" == *"-fips" ]]; then
+              base_service="${service%-fips}"
+              IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$base_service" '.services[$s].image')-fips
             else
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
             fi
@@ -619,6 +605,76 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
 
+  test-api-fips:
+    name: 🔨 Test API (FIPS)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api
+      release: fips
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      mongodb-version: "['8.0']"
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
+
+  test-api-livechat-fips:
+    name: 🔨 Test API Livechat (FIPS)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api-livechat
+      release: fips
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      mongodb-version: "['8.0']"
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
+
+  test-ui-fips:
+    name: 🔨 Test UI (FIPS)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: ui
+      release: fips
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      shard: '[1, 2, 3, 4, 5]'
+      total-shard: 5
+      mongodb-version: "['8.0']"
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+      retries: ${{ (github.event_name == 'release' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
+      QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
+      REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
+      REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
+      REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
+
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
     needs: [checks, build-gh-docker-publish, packages-build, release-versions]
@@ -769,7 +825,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-federation-matrix]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-api-fips, test-api-livechat-fips, test-ui-fips, test-federation-matrix]
     if: always()
     steps:
       - name: Test finish aggregation
@@ -803,6 +859,18 @@ jobs:
           fi
 
           if [[ '${{ needs.test-api-livechat-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-fips.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-livechat-fips.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-ui-fips.result }}' != 'success' ]]; then
             exit 1
           fi
 
@@ -880,6 +948,7 @@ jobs:
         with:
           sparse-checkout: |
             docker-compose-ci.yml
+            docker-compose-ci.fips.yml
           sparse-checkout-cone-mode: false
           ref: ${{ github.ref }}
 
@@ -950,10 +1019,6 @@ jobs:
             [[ -d "$service_dir" ]] || continue
             service="$(basename "$service_dir")"
 
-            if [ "$service" == "rocketchat-cov" ]; then
-              continue
-            fi
-
             echo "Promoting $service"
 
             if [[ "${service}" == 'rocketchat' ]]; then
@@ -962,8 +1027,15 @@ jobs:
               IMAGE_NAME="${{ needs.release-versions.outputs.lowercase-repo }}/${service}"
             fi
 
-            # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-            SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${service}" '.services[$s].image')
+            # Get image name from compose config since rocketchat image is different from service name (rocket.chat)
+            if [ "$service" == "rocketchat-cov" ]; then
+              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "rocketchat" '.services[$s].image')-cov
+            elif [[ "$service" == *"-fips" ]]; then
+              base_service="${service%-fips}"
+              SRC=$(docker compose -f docker-compose-ci.yml -f docker-compose-ci.fips.yml config --format json 2>/dev/null | jq -r --arg s "$base_service" '.services[$s].image')
+            else
+              SRC=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${service}" '.services[$s].image')
+            fi
             DEST_REPO="docker.io/${IMAGE_NAME}"
 
             echo "Copying $SRC to ${DEST_REPO}:${PRIMARY}"

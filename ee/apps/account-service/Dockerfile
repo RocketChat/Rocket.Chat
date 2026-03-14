@@ -88,7 +88,14 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
-FROM node:22.16.0-alpine3.21
+# Build a glibc-compatible bcrypt package to be copied into the FIPS runtime image.
+FROM node:22.22.1-bookworm-slim AS fips-bcrypt
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends g++ make python3 && rm -rf /var/lib/apt/lists/*
+COPY --from=builder /app/node_modules ./node_modules
+RUN npm rebuild bcrypt --build-from-source
+
+FROM node:22.16.0-alpine3.21 AS release-standard
 
 ARG SERVICE
 
@@ -114,3 +121,16 @@ USER rocketchat
 EXPOSE 3000 9458
 
 CMD ["node", "src/service.js"]
+
+# FIPS RELEASE STAGE
+FROM rocketchatfips140/dhi-node:22-fips AS release-fips
+ARG SERVICE
+ENV NODE_ENV=production \
+    PORT=3000
+COPY --chown=node:node --from=builder /app /app
+COPY --chown=node:node --from=fips-bcrypt /app/node_modules/bcrypt /app/node_modules/bcrypt
+
+WORKDIR /app/ee/apps/${SERVICE}
+USER node
+EXPOSE 3000 9458
+CMD ["node", "--require", "./src/fips.js", "src/service.js"]

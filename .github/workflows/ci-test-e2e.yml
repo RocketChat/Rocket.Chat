@@ -49,6 +49,10 @@ on:
         required: true
       CR_PAT:
         required: true
+      TEMP_DOCKERHUB_FIPS_USER:
+        required: false
+      TEMP_DOCKERHUB_FIPS_PASS:
+        required: false
       QASE_API_TOKEN:
         required: false
       REPORTER_ROCKETCHAT_URL:
@@ -77,6 +81,8 @@ jobs:
       COVERAGE_DIR: '/tmp/coverage/${{ startsWith(inputs.type, ''api'') && ''api'' || inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
       COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
+      TEMP_DOCKERHUB_FIPS_USER: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+      TEMP_DOCKERHUB_FIPS_PASS: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
     strategy:
       fail-fast: false
@@ -87,6 +93,18 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
+      - name: Set compose files
+        env:
+          INPUT_RELEASE: ${{ inputs.release }}
+        run: |
+          if [[ "$INPUT_RELEASE" == 'fips' ]]; then
+            echo 'COMPOSE_FILES=-f docker-compose-ci.yml -f docker-compose-ci.fips.yml' >> $GITHUB_ENV
+            echo 'COMPOSE_FILES_METEOR=-f ../../docker-compose-ci.yml -f ../../docker-compose-ci.fips.yml' >> $GITHUB_ENV
+          else
+            echo 'COMPOSE_FILES=-f docker-compose-ci.yml' >> $GITHUB_ENV
+            echo 'COMPOSE_FILES_METEOR=-f ../../docker-compose-ci.yml' >> $GITHUB_ENV
+          fi
+
       - name: Collect Workflow Telemetry
         if: inputs.type == 'perf'
         uses: catchpoint/workflow-telemetry-action@v2
@@ -111,6 +129,13 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
           password: ${{ secrets.CR_PAT }}
+
+      - name: Login to DockerHub for FIPS base images
+        if: inputs.release == 'fips' && env.TEMP_DOCKERHUB_FIPS_USER != '' && env.TEMP_DOCKERHUB_FIPS_PASS != ''
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.TEMP_DOCKERHUB_FIPS_USER }}
+          password: ${{ secrets.TEMP_DOCKERHUB_FIPS_PASS }}
 
       - uses: actions/checkout@v6
 
@@ -141,7 +166,7 @@ jobs:
         uses: actions/download-artifact@v8
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
-          pattern: ${{ inputs.release == 'ce' &&  'docker-image-rocketchat-amd64-coverage' || 'docker-image-*-amd64-coverage' }}
+          pattern: ${{ inputs.release == 'ce' && 'docker-image-rocketchat-amd64-coverage' || (inputs.release == 'fips' && 'docker-image-*-amd64-*' || 'docker-image-*-amd64-coverage') }}
           path: /tmp/docker-images
           merge-multiple: true
 
@@ -171,7 +196,7 @@ jobs:
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api' || inputs.type == 'api-livechat'
         run: |
-          docker compose -f docker-compose-ci.yml up -d httpbin
+          docker compose $COMPOSE_FILES up -d httpbin
 
       - name: Prepare code coverage directory
         run: |
@@ -180,33 +205,127 @@ jobs:
           mkdir -p $COVERAGE_DIR
           chmod 777 $COVERAGE_DIR
 
+      - name: Pull EE/FIPS images
+        if: (inputs.release == 'ee' || inputs.release == 'fips') && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
+        run: |
+          docker compose $COMPOSE_FILES pull
+
       - name: Start containers for CE
         if: inputs.release == 'ce'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d rocketchat --wait
 
       - name: Start containers for EE
-        if: inputs.release == 'ee'
+        if: inputs.release == 'ee' || inputs.release == 'fips'
         env:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
         run: |
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --wait --no-build
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
 
       - name: Wait services to start up
-        if: inputs.release == 'ee'
+        if: inputs.release == 'ee' || inputs.release == 'fips'
         run: |
           docker ps
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
-            echo "Waiting 'ddp-streamer' to start up"
-            ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
-            sleep 10
-          done;
+          wait_for_mongo_primary() {
+            local retries=36
+            local delay=5
+
+            for attempt in $(seq 1 "$retries"); do
+              local is_primary
+              is_primary=$(docker compose $COMPOSE_FILES exec -T mongo mongosh --quiet --eval "try { const hello = db.hello(); print((hello.isWritablePrimary || hello.ismaster) ? '1' : '0'); } catch (e) { print('0'); }" 2>/dev/null | tail -n1)
+
+              if [[ "$is_primary" == '1' ]]; then
+                echo "Mongo replica set primary is ready"
+                return 0
+              fi
+
+              echo "Waiting for Mongo primary (attempt ${attempt}/${retries})"
+              sleep "$delay"
+            done
+
+            echo "Mongo primary was not ready in time"
+            docker compose $COMPOSE_FILES logs mongo
+            return 1
+          }
+
+          wait_for_service() {
+            local service="$1"
+            local retries=18
+            local delay=10
+            local broker_service_name="${service%-service}"
+            local ready_pattern="NetworkBroker started successfully|ServiceBroker with [0-9]+ service\(s\) started successfully|Service '${broker_service_name}' started\."
+
+            for attempt in $(seq 1 "$retries"); do
+              local container_id
+              container_id=$(docker compose $COMPOSE_FILES ps -q "$service")
+
+              if [[ -z "$container_id" ]]; then
+                echo "Service '$service' has no container ID"
+                docker compose $COMPOSE_FILES ps
+                return 1
+              fi
+
+              local container_state
+              container_state=$(docker inspect -f '{{.State.Status}}' "$container_id" 2>/dev/null || echo "unknown")
+              local health_state
+              health_state=$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$container_id" 2>/dev/null || echo "unknown")
+
+              if [[ "$container_state" != 'running' ]]; then
+                echo "Service '$service' is not running (state=$container_state)"
+                docker compose $COMPOSE_FILES logs "$service"
+                return 1
+              fi
+
+              if [[ "$health_state" == 'unhealthy' ]]; then
+                echo "Service '$service' is unhealthy"
+                docker compose $COMPOSE_FILES logs "$service"
+                return 1
+              fi
+
+              if [[ "$health_state" == 'healthy' ]]; then
+                echo "Service '$service' is healthy"
+                return 0
+              fi
+
+              if docker compose $COMPOSE_FILES logs "$service" | grep -Eq "$ready_pattern"; then
+                echo "Service '$service' is ready"
+                return 0
+              fi
+
+              echo "Waiting '$service' to start up (attempt ${attempt}/${retries})"
+              sleep "$delay"
+            done
+
+            echo "Service '$service' did not become ready in time"
+            docker compose $COMPOSE_FILES logs "$service"
+            return 1
+          }
+
+          mapfile -t services_to_wait < <(
+            docker compose $COMPOSE_FILES ps --services --status running \
+              | grep -- '-service$' \
+              | sort
+          )
+
+          wait_for_mongo_primary
+
+          if (( ${#services_to_wait[@]} == 0 )); then
+            echo "No running -service containers found to wait for"
+            docker compose $COMPOSE_FILES ps
+            exit 1
+          fi
+
+          echo "Waiting for services: ${services_to_wait[*]}"
+
+          for service in "${services_to_wait[@]}"; do
+            wait_for_service "$service"
+          done
 
       - name: Remove unused Docker images
         run: docker system prune -af
@@ -216,13 +335,13 @@ jobs:
         working-directory: ./apps/meteor
         env:
           WEBHOOK_TEST_URL: 'http://httpbin'
-          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
         run: |
           set -o xtrace
 
           npm run testapi
 
-          docker compose -f ../../docker-compose-ci.yml stop
+          docker compose $COMPOSE_FILES_METEOR stop
 
           ls -la $COVERAGE_DIR
           exit $s
@@ -232,13 +351,13 @@ jobs:
         working-directory: ./apps/meteor
         env:
           WEBHOOK_TEST_URL: 'http://httpbin'
-          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
         run: |
           set -o xtrace
 
           npm run testapi:livechat
 
-          docker compose -f ../../docker-compose-ci.yml stop
+          docker compose $COMPOSE_FILES_METEOR stop
 
           ls -la $COVERAGE_DIR
           exit $s
@@ -246,8 +365,10 @@ jobs:
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
         env:
+          E2E_SHARD: ${{ matrix.shard }}
+          E2E_TOTAL_SHARD: ${{ inputs.total-shard }}
           E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
-          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+          IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
           REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
           REPORTER_JIRA_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_JIRA_ROCKETCHAT_API_KEY }}
@@ -268,7 +389,7 @@ jobs:
           set -o xtrace
 
           yarn prepare
-          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+          yarn test:e2e --shard="${E2E_SHARD}/${E2E_TOTAL_SHARD}"
 
       - name: Merge ui coverage files
         if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
@@ -287,11 +408,11 @@ jobs:
 
       - name: Show server logs if E2E test failed
         if: failure()
-        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
+        run: docker compose $COMPOSE_FILES logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
 
       - name: Show mongo logs if E2E test failed
         if: failure()
-        run: docker compose -f docker-compose-ci.yml logs mongo
+        run: docker compose $COMPOSE_FILES logs mongo
 
       - name: Store coverage
         if: inputs.coverage == matrix.mongodb-version

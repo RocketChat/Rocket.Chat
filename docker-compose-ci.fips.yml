@@ -1,0 +1,30 @@
+services:
+  account-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}-fips
+
+  authorization-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}-fips
+
+  presence-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}-fips
+
+  ddp-streamer-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}-fips
+
+  queue-worker-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}-fips
+
+  omnichannel-transcript-service:
+    build:
+      target: release-fips
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}-fips
