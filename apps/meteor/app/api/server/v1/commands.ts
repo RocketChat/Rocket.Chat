@@ -330,6 +330,7 @@ const commandsEndpoints = API.v1
 					offset: number;
 					count: number;
 					total: number;
+					success: true;
 				}>({
 					type: 'object',
 					properties: {
@@ -338,8 +339,9 @@ const commandsEndpoints = API.v1
 						offset: { type: 'number' },
 						count: { type: 'number' },
 						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['commands', 'appsLoaded', 'offset', 'count', 'total'],
+					required: ['commands', 'appsLoaded', 'offset', 'count', 'total', 'success'],
 					additionalProperties: false,
 				}),
 				401: validateUnauthorizedErrorResponse,
