@@ -30,9 +30,12 @@ function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAg
 			return;
 		}
 
-		const {
-			user: { _id, username, name },
-		} = await getAgent();
+		const { user } = await getAgent();
+		if (!user) {
+			dispatchToastMessage({ type: 'error', message: t('User_not_found') });
+			return;
+		}
+		const { _id, username, name } = user;
 
 		if (!agentList.some(({ agentId }) => agentId === _id)) {
 			setUserId('');

@@ -1,4 +1,3 @@
-import type { ILivechatAgent, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +33,7 @@ export const useAgentsList = (options: AgentsListOptions) => {
 		limit = DEFAULT_QUERY_LIMIT,
 	} = options;
 
-	const formatAgentItem = (agent: Serialized<ILivechatAgent>) => ({
+	const formatAgentItem = (agent: { _id: string; name?: string; username?: string }) => ({
 		_id: agent._id,
 		label: `${agent.name || agent._id} (@${agent.username})`,
 		value: agent._id,
@@ -55,7 +54,7 @@ export const useAgentsList = (options: AgentsListOptions) => {
 
 			return {
 				...data,
-				users: users.map(formatAgentItem),
+				users: users.map((u: any) => formatAgentItem(u)),
 			};
 		},
 		select: (data) => {
