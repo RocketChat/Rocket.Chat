@@ -19,4 +19,12 @@ export const createMobileSettings = () =>
 				public: true,
 			});
 		});
+		await this.section('Apple_Watch', async function () {
+			await this.add('Apple_Watch_Quick_Actions', 'OK,Yes,No,On my way,Will follow up shortly', {
+				type: 'string',
+				i18nLabel: 'Apple_Watch_Quick_Replies_Default',
+				i18nDescription: 'Apple_Watch_Quick_Actions_Description',
+				public: true,
+			});
+		});
 	});
