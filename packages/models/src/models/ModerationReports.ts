@@ -240,11 +240,11 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 
 		const fuzzyQuery = selector
 			? {
-					'message.msg': {
-						$regex: selector,
-						$options: 'i',
-					},
-				}
+				'message.msg': {
+					$regex: selector,
+					$options: 'i',
+				},
+			}
 			: {};
 
 		const params = {
