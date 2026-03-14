@@ -104,10 +104,6 @@ export class Presence extends ServiceClass implements IPresence {
 		const fulfilled = results.filter((result) => result.status === 'fulfilled');
 		const rejected = results.filter((result) => result.status === 'rejected');
 
-		if (fulfilled.length > 0) {
-			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
-		}
-
 		if (rejected.length > 0) {
 			console.error(
 				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
