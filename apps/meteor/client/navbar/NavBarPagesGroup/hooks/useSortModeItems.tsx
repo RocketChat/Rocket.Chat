@@ -1,8 +1,8 @@
-import { RadioButton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useEndpoint, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Box, RadioButton } from '@rocket.chat/fuselage';
 
 import {
 	OmnichannelSortingDisclaimer,
@@ -22,20 +22,20 @@ export const useSortModeItems = (): GenericMenuItemProps[] => {
 	const setToAlphabetical = useHandleChange('alphabetical');
 	const setToActivity = useHandleChange('activity');
 
-	return [
-		{
-			id: 'activity',
-			content: t('Activity'),
-			icon: 'clock',
-			addon: <RadioButton onChange={setToActivity} checked={sidebarSortBy === 'activity'} />,
-			description: sidebarSortBy === 'activity' && isOmnichannelEnabled && <OmnichannelSortingDisclaimer />,
-		},
-		{
-			id: 'name',
-			content: t('Name'),
-			icon: 'sort-az',
-			addon: <RadioButton onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />,
-			description: sidebarSortBy === 'alphabetical' && isOmnichannelEnabled && <OmnichannelSortingDisclaimer />,
-		},
-	];
+return [ 
+  { 
+    id: 'activity', 
+    content: <Box mie="x24" flexGrow={1}>{t('Activity')}</Box>, 
+    icon: 'clock', 
+    addon: <RadioButton onChange={setToActivity} checked={sidebarSortBy === 'activity'} />, 
+    description: sidebarSortBy === 'activity' && isOmnichannelEnabled && <OmnichannelSortingDisclaimer />, 
+  }, 
+  { 
+    id: 'name', 
+    content: <Box mie="x24" flexGrow={1}>{t('Name')}</Box>, 
+    icon: 'sort-az', 
+    addon: <RadioButton onChange={setToAlphabetical} checked={sidebarSortBy === 'alphabetical'} />, 
+    description: sidebarSortBy === 'alphabetical' && isOmnichannelEnabled && <OmnichannelSortingDisclaimer />, 
+  }, 
+];
 };
