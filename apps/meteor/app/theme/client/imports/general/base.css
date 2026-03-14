@@ -110,3 +110,7 @@ button {
 	max-width: 100%;
 	cursor: pointer;
 }
+
+html.rtl [role='group'] > div:has(input[aria-orientation='horizontal'])::before {
+	transform: translateY(-50%) scaleX(-1);
+}
