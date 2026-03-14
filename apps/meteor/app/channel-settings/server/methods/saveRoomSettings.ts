@@ -75,7 +75,7 @@ const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolea
 	);
 };
 
-const validators: RoomSettingsValidators = {
+export const validators: RoomSettingsValidators = {
 	async default({ userId, room, value }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
@@ -104,14 +104,14 @@ const validators: RoomSettingsValidators = {
 			return;
 		}
 
-		if (value === 'c' && !room.teamId && !(await hasPermissionAsync(userId, 'create-c'))) {
+		if (value === 'c' && (!room.teamId || room.teamMain) && !(await hasPermissionAsync(userId, 'create-c'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (value === 'p' && !room.teamId && !(await hasPermissionAsync(userId, 'create-p'))) {
+		if (value === 'p' && (!room.teamId || room.teamMain) && !(await hasPermissionAsync(userId, 'create-p'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
@@ -125,7 +125,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (!room.teamId) {
+		if (!room.teamId || room.teamMain) {
 			return;
 		}
 		const team = await Team.getInfoById(room.teamId);
