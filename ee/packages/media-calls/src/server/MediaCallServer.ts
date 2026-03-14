@@ -37,7 +37,9 @@ export class MediaCallServer implements IMediaCallServer {
 			this.sendSignal(toUid, signal);
 		});
 		this.signalProcessor.emitter.on('callRequest', ({ params }) => {
-			this.requestCall(params).catch(() => null);
+			this.requestCall(params).catch((err) => {
+				logger.warn({ msg: 'Failed to process incoming call request', err });
+			});
 		});
 	}
 

@@ -206,7 +206,9 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug({ msg: 'IncomingSipCall.cancel', res: this.session.stripDrachtioServerDetails(res) });
 
 		logger.info({ msg: 'The incoming SIP call was canceled by the caller', callId: this.callId });
-		void mediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
+		void mediaCallDirector.hangup(this.call, this.agent, 'remote').catch((err) => {
+			logger.warn({ msg: 'Failed to hangup call after incoming SIP cancellation', callId: this.callId, err });
+		});
 	}
 
 	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {

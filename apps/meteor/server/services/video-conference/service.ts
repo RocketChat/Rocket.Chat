@@ -578,7 +578,10 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 	private async validateProvider(providerName: string): Promise<void> {
 		const manager = await this.getProviderManager();
-		const configured = await manager.isFullyConfigured(providerName).catch(() => false);
+		const configured = await manager.isFullyConfigured(providerName).catch((err) => {
+			logger.warn({ msg: 'Failed to validate video conference provider configuration', providerName, err });
+			return false;
+		});
 		if (!configured) {
 			throw new Error(availabilityErrors.NOT_CONFIGURED);
 		}
