@@ -19,6 +19,8 @@ import {
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
 	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -98,20 +100,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'users.getAvatarSuggestion',
-	{
-		authRequired: true,
-	},
-	{
-		async get() {
-			const suggestions = await getAvatarSuggestionForUser(this.user);
-
-			return API.v1.success({ suggestions });
-		},
-	},
-);
-
-API.v1.addRoute(
 	'users.update',
 	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
 	{
@@ -125,7 +113,7 @@ API.v1.addRoute(
 				_id: this.user._id,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
-				username: this.user.username || '',
+				username: this.user.username,
 			});
 
 			await saveUser(this.userId, userData, { auditStore });
@@ -155,6 +143,7 @@ API.v1.addRoute(
 	'users.updateOwnBasicInfo',
 	{
 		authRequired: true,
+		userWithoutUsername: true,
 		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
 		rateLimiterOptions: {
 			numRequestsAllowed: 1,
@@ -764,72 +753,132 @@ API.v1.addRoute(
 	},
 );
 
-const usersEndpoints = API.v1.post(
-	'users.createToken',
-	{
-		authRequired: true,
-		body: ajv.compile<{ userId: string; secret: string }>({
-			type: 'object',
-			properties: {
-				userId: {
-					type: 'string',
-					minLength: 1,
-				},
-				secret: {
-					type: 'string',
-					minLength: 1,
-				},
-			},
-			required: ['userId', 'secret'],
-			additionalProperties: false,
-		}),
-		response: {
-			200: ajv.compile<{ data: { userId: string; authToken: string } }>({
+const usersEndpoints = API.v1
+	.post(
+		'users.createToken',
+		{
+			authRequired: true,
+			body: ajv.compile<{ userId: string; secret: string }>({
 				type: 'object',
 				properties: {
-					data: {
-						type: 'object',
-						properties: {
-							userId: {
-								type: 'string',
-								minLength: 1,
+					userId: {
+						type: 'string',
+						minLength: 1,
+					},
+					secret: {
+						type: 'string',
+						minLength: 1,
+					},
+				},
+				required: ['userId', 'secret'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ data: { userId: string; authToken: string } }>({
+					type: 'object',
+					properties: {
+						data: {
+							type: 'object',
+							properties: {
+								userId: {
+									type: 'string',
+									minLength: 1,
+								},
+								authToken: {
+									type: 'string',
+									minLength: 1,
+								},
 							},
-							authToken: {
-								type: 'string',
-								minLength: 1,
+							required: ['userId'],
+							additionalProperties: false,
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['data', 'success'],
+					additionalProperties: false,
+				}),
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [false] },
+						error: { type: 'string' },
+						errorType: { type: 'string' },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			const data = await generateAccessToken(user._id, this.bodyParams.secret);
+
+			return API.v1.success({ data });
+		},
+	)
+	.get(
+		'users.getAvatarSuggestion',
+		{
+			authRequired: true,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					suggestions: Record<
+						string,
+						{
+							blob: string;
+							contentType: string;
+							service: string;
+							url: string;
+						}
+					>;
+				}>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+						suggestions: {
+							type: 'object',
+							additionalProperties: {
+								type: 'object',
+								properties: {
+									blob: {
+										type: 'string',
+									},
+									contentType: {
+										type: 'string',
+									},
+									service: {
+										type: 'string',
+									},
+									url: {
+										type: 'string',
+										format: 'uri',
+									},
+								},
+								required: ['blob', 'contentType', 'service', 'url'],
+								additionalProperties: false,
 							},
 						},
-						required: ['userId'],
-						additionalProperties: false,
 					},
-					success: {
-						type: 'boolean',
-						enum: [true],
-					},
-				},
-				required: ['data', 'success'],
-				additionalProperties: false,
-			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: {
-					success: { type: 'boolean', enum: [false] },
-					error: { type: 'string' },
-					errorType: { type: 'string' },
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
+					required: ['success', 'suggestions'],
+					additionalProperties: false,
+				}),
+			},
 		},
-	},
-	async function action() {
-		const user = await getUserFromParams(this.bodyParams);
+		async function action() {
+			const suggestions = await getAvatarSuggestionForUser(this.user);
 
-		const data = await generateAccessToken(user._id, this.bodyParams.secret);
-
-		return API.v1.success({ data });
-	},
-);
+			return API.v1.success({ suggestions });
+		},
+	);
 
 API.v1.addRoute(
 	'users.getPreferences',
@@ -874,7 +923,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.getUsernameSuggestion',
-	{ authRequired: true },
+	{ authRequired: true, userWithoutUsername: true },
 	{
 		async get() {
 			const result = await generateUsernameSuggestion(this.user);
