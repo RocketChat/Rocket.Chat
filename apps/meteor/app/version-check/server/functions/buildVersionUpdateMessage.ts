@@ -1,4 +1,5 @@
-import { Settings } from '@rocket.chat/models';
+import type { IUser } from '@rocket.chat/core-typings';
+import { Settings, Users } from '@rocket.chat/models';
 import semver from 'semver';
 
 import { i18n } from '../../../../server/lib/i18n';
@@ -7,6 +8,39 @@ import { updateAuditedBySystem } from '../../../../server/settings/lib/auditedSe
 import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
 import { Info } from '../../../utils/rocketchat.info';
+
+const cleanupOutdatedVersionUpdateBanners = async (): Promise<void> => {
+	const admins = Users.findUsersInRolesWithQuery('admin', { banners: { $exists: true } }, { projection: { _id: 1, banners: 1 } });
+
+	const updates: { userId: IUser['_id']; banners: NonNullable<IUser['banners']> }[] = [];
+
+	for await (const admin of admins) {
+		if (!admin.banners) {
+			continue;
+		}
+
+		const filteredBanners = Object.fromEntries(
+			Object.entries(admin.banners).filter(([bannerId]) => {
+				if (!bannerId.startsWith('versionUpdate-')) {
+					return true;
+				}
+				const version = bannerId.replace('versionUpdate-', '').replace(/_/g, '.');
+				if (!semver.valid(version) || semver.lte(version, Info.version)) {
+					return false;
+				}
+				return true;
+			}),
+		);
+
+		if (Object.keys(filteredBanners).length !== Object.keys(admin.banners).length) {
+			updates.push({ userId: admin._id, banners: filteredBanners });
+		}
+	}
+
+	if (updates.length > 0) {
+		await Users.setBannersInBulk(updates);
+	}
+};
 
 export const buildVersionUpdateMessage = async (
 	versions: {
@@ -25,8 +59,11 @@ export const buildVersionUpdateMessage = async (
 		return;
 	}
 
-	for await (const version of versions) {
-		// Ignore prerelease versions
+	const sortedVersions = [...versions].sort((a, b) => semver.rcompare(a.version, b.version));
+
+	await cleanupOutdatedVersionUpdateBanners();
+
+	for await (const version of sortedVersions) {
 		if (semver.prerelease(version.version)) {
 			continue;
 		}

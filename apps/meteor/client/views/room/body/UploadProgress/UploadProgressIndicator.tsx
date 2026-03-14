@@ -1,71 +1,71 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Palette } from '@rocket.chat/fuselage';
+import { Box, Bubble } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { Upload } from '../../../../lib/chats/Upload';
 
 type UploadProgressIndicatorProps = {
-	id: Upload['id'];
-	name: string;
-	percentage: number;
-	error?: string;
-	onClose?: (id: Upload['id']) => void;
+	uploads: readonly Upload[];
 };
 
-const UploadProgressIndicator = ({ id, name, percentage, error, onClose }: UploadProgressIndicatorProps): ReactElement | null => {
+const UploadProgressIndicator = ({ uploads }: UploadProgressIndicatorProps): ReactElement | null => {
 	const { t } = useTranslation();
 
-	const customClass = css`
-		&::after {
-			content: '';
-			position: absolute;
-			z-index: 1;
-			left: 0;
-			width: ${percentage}%;
-			height: 100%;
-			transition: width, 1s, ease-out;
-			background-color: ${Palette.surface['surface-neutral']};
-		}
-	`;
+	const { percentage, count } = useMemo(() => {
+		const validUploads = uploads.filter((upload) => !upload.error);
+		const activeUploads = validUploads.filter((upload) => upload.percentage < 100);
 
-	const handleCloseClick = useCallback(() => {
-		onClose?.(id);
-	}, [id, onClose]);
-
-	const uploadProgressTitle = useMemo(() => {
-		if (error) {
-			return `${error} ${name}`;
+		if (activeUploads.length === 0) {
+			return { percentage: 0, count: 0 };
 		}
 
-		return `[${percentage}%] ${t('Uploading_file__fileName__', { fileName: name })}`;
-	}, [error, name, percentage, t]);
+		const totalPercentage = validUploads.reduce((sum, upload) => sum + upload.percentage, 0);
+		const avgPercentage = Math.round(totalPercentage / validUploads.length);
+
+		return {
+			percentage: avgPercentage,
+			count: activeUploads.length,
+		};
+	}, [uploads]);
+
+	const customClass = useMemo(
+		() => css`
+			position: relative;
+			display: flex;
+			justify-content: center;
+			z-index: 3;
+
+			& .rcx-bubble__item {
+				position: relative;
+
+				> span {
+					z-index: 2;
+				}
+
+				&::after {
+					content: '';
+					position: absolute;
+					left: 0;
+					top: 0;
+					width: ${percentage}%;
+					height: 100%;
+					transition: width 0.3s ease-out;
+					background-color: var(--rcx-color-button-background-primary-press, #10529e);
+				}
+			}
+		`,
+		[percentage],
+	);
+
+	if (count === 0) {
+		return null;
+	}
 
 	return (
-		<Box
-			pb={4}
-			pi={8}
-			mbe={4}
-			borderRadius={4}
-			borderWidth={1}
-			border='1px solid'
-			color={error ? 'danger' : 'info'}
-			overflow='hidden'
-			position='relative'
-			display='flex'
-			elevation='1'
-			alignItems='center'
-			justifyContent='space-between'
-			bg='surface-tint'
-			className={customClass}
-		>
-			<Box role='status' withTruncatedText zIndex={2} borderRadius={4}>
-				{uploadProgressTitle}
-			</Box>
-			<Button zIndex={3} small onClick={handleCloseClick}>
-				{t('Cancel')}
-			</Button>
+		<Box className={customClass} mbs={8}>
+			<Bubble role='status'>{`${percentage}% ${t('Uploading__count__file', { count })}`}</Bubble>
 		</Box>
 	);
 };

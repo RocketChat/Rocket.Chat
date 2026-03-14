@@ -105,7 +105,7 @@ export const transformMappedData = async <
 	const originalData: DataType = structuredClone(data);
 	const transformedData: Record<string, any> = {};
 
-	for await (const [to, from] of Object.entries(map)) {
+	for (const [to, from] of Object.entries(map)) {
 		if (typeof from === 'function') {
 			const result = await from(originalData);
 
