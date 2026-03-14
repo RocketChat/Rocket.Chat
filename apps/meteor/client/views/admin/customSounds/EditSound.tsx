@@ -8,14 +8,16 @@ import { useTranslation } from 'react-i18next';
 import { validate, createSoundData } from './lib';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
+type SoundData = {
+	_id: string;
+	name: string;
+	extension?: string;
+};
+
 type EditSoundProps = {
 	close: () => void;
 	onChange: () => void;
-	data: {
-		_id: string;
-		name: string;
-		extension?: string;
-	};
+	data: SoundData;
 };
 
 function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactElement {
@@ -27,18 +29,11 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const previousSound = useMemo(() => data || {}, [data]);
 
 	const [name, setName] = useState(() => data?.name ?? '');
-	const [sound, setSound] = useState<
-		| {
-				_id: string;
-				name: string;
-				extension?: string;
-		  }
-		| File
-	>(() => data);
+	const [sound, setSound] = useState<SoundData | File>(() => data);
 
 	useEffect(() => {
 		setName(previousName || '');
-		setSound(previousSound || '');
+		setSound(previousSound);
 	}, [previousName, previousSound, _id]);
 
 	const deleteCustomSound = useMethod('deleteCustomSound');
@@ -52,10 +47,12 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
 
 	const saveAction = useCallback(
-		// FIXME
-		async (sound: any) => {
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
-			const validation = validate(soundData, sound);
+		async (currentSound: SoundData | File) => {
+			const isFile = currentSound instanceof File;
+			const extension = isFile ? undefined : currentSound.extension;
+			const soundFile = isFile ? currentSound : undefined;
+			const soundData = createSoundData(soundFile, name, { previousName, previousSound, _id, extension });
+			const validation = validate(soundData, soundFile);
 			if (validation.length === 0) {
 				let soundId: string;
 				try {
@@ -68,14 +65,14 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				soundData._id = soundId;
 				soundData.random = Math.round(Math.random() * 1000);
 
-				if (sound && sound !== previousSound) {
+				if (soundFile) {
 					dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
 
 					const reader = new FileReader();
-					reader.readAsBinaryString(sound);
+					reader.readAsBinaryString(soundFile);
 					reader.onloadend = (): void => {
 						try {
-							uploadCustomSound(reader.result as string, sound.type, { ...soundData, _id: soundId });
+							uploadCustomSound(reader.result as string, soundFile.type, { ...soundData, _id: soundId });
 							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
 						} catch (error) {
 							dispatchToastMessage({ type: 'error', message: error });
@@ -92,7 +89,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				}),
 			);
 		},
-		[_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
+		[_id, close, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
 	);
 
 	const handleSave = useCallback(async () => {

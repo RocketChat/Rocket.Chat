@@ -30,11 +30,11 @@ export function validate(soundData: ICustomSoundData, soundFile?: ICustomSoundFi
 }
 
 export const createSoundData = (
-	soundFile: ICustomSoundFile,
+	soundFile: ICustomSoundFile | undefined,
 	name: string,
 	previousData?: {
 		_id: string;
-		extension: string;
+		extension?: string;
 		previousName: string;
 		previousSound: {
 			extension?: string;
@@ -52,10 +52,10 @@ export const createSoundData = (
 	return {
 		_id: previousData._id,
 		name,
-		extension: soundFile?.name.split('.').pop() || '',
+		extension: soundFile?.name.split('.').pop() || previousData.extension || '',
 		previousName: previousData.previousName,
 		previousExtension: previousData.previousSound?.extension,
 		previousSound: previousData.previousSound,
-		newFile: false,
+		newFile: !!soundFile,
 	};
 };
