@@ -22,15 +22,17 @@ export const createEmojiListByCategorySubscription = (
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
 	setQuickReactions: () => void,
+	isAdmin: boolean,
+	restrictedEmojis: string[],
 ): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ReturnType<typeof createPickerEmojis>] => {
 	let result: ReturnType<typeof createPickerEmojis> = [[], []];
 	updateRecent(recentEmojis);
 
 	const sub = (cb: () => void) => {
-		result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+		result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, isAdmin, restrictedEmojis);
 		setQuickReactions();
 		return emojiEmitter.on('updated', () => {
-			result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis);
+			result = createPickerEmojis(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, isAdmin, restrictedEmojis);
 			setQuickReactions();
 			cb();
 		});
@@ -44,6 +46,8 @@ export const createPickerEmojis = (
 	actualTone: number,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
+	isAdmin: boolean,
+	restrictedEmojis: string[],
 ): [EmojiPickerItem[], CategoriesIndexes] => {
 	const categories = getCategoriesList();
 	const categoriesIndexes: CategoriesIndexes = [];
@@ -51,7 +55,7 @@ export const createPickerEmojis = (
 	const mappedCategories = categories.reduce<EmojiPickerItem[]>((acc, category) => {
 		categoriesIndexes.push({ key: category.key, index: acc.length });
 		acc.push({ category: category.key, i18n: category.i18n });
-		acc.push(...createEmojiList(customItemsLimit, category.key, actualTone, recentEmojis, setRecentEmojis));
+		acc.push(...createEmojiList(customItemsLimit, category.key, actualTone, recentEmojis, setRecentEmojis, isAdmin, restrictedEmojis));
 		return acc;
 	}, []);
 
@@ -64,6 +68,8 @@ export const createEmojiList = (
 	actualTone: number | null,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
+	isAdmin: boolean,
+	restrictedEmojis: string[],
 ): (RowItem | LoadMoreItem)[] => {
 	const items: RowItem = [];
 	const emojiPackages = Object.values(emoji.packages);
@@ -78,6 +84,10 @@ export const createEmojiList = (
 		const total = category === CUSTOM_CATEGORY ? customItemsLimit - count : _total;
 		for (let i = 0; i < total; i++) {
 			const current = emojiPackage.emojisByCategory[category][i];
+
+			if (!isAdmin && restrictedEmojis.length > 0 && restrictedEmojis.includes(current)) {
+				continue;
+			}
 
 			const tone = actualTone && actualTone > 0 && emojiPackage.toneList.hasOwnProperty(current) ? `_tone${actualTone}` : '';
 
@@ -145,6 +155,8 @@ export const getEmojisBySearchTerm = (
 	actualTone: number,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
+	isAdmin: boolean,
+	restrictedEmojis: string[],
 ) => {
 	const emojis = [];
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
@@ -159,6 +171,11 @@ export const getEmojisBySearchTerm = (
 			const { emojiPackage, shortnames = [] } = emojiObject;
 			let tone = '';
 			current = current.replace(/:/g, '');
+
+			if (!isAdmin && restrictedEmojis.length > 0 && restrictedEmojis.includes(current)) {
+				continue;
+			}
+
 			const alias = shortnames[0] !== undefined ? shortnames[0].replace(/:/g, '') : shortnames[0];
 
 			if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(current)) {

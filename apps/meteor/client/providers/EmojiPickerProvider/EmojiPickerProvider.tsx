@@ -1,4 +1,5 @@
 import { useDebouncedState, useEffectEvent, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { useRole, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactNode, ReactElement, ContextType } from 'react';
 import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
 
@@ -23,14 +24,30 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }): ReactElemen
 
 	const [customItemsLimit, setCustomItemsLimit] = useState(DEFAULT_ITEMS_LIMIT);
 
+	const isAdmin = useRole('admin');
+
+	const restrictedEmojisString = useSetting<string>('Emoji_Restricted_For_Users', '');
+	const restrictedEmojis = useMemo(() => {
+		if (!restrictedEmojisString) return [];
+		return restrictedEmojisString.split(',').map((emoji) => emoji.trim()).filter(Boolean);
+	}, [restrictedEmojisString]);
+
 	const [quickReactions, _setQuickReactions] = useState<{ emoji: string; image: string }[]>(() =>
 		getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji)),
 	);
 
 	const setQuickReactions = useEffectEvent(() => _setQuickReactions(getFrequentEmoji(frequentEmojis.map(([emoji]) => emoji))));
 	const [sub, getSnapshot] = useMemo(() => {
-		return createEmojiListByCategorySubscription(customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions);
-	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions]);
+		return createEmojiListByCategorySubscription(
+			customItemsLimit,
+			actualTone,
+			recentEmojis,
+			setRecentEmojis,
+			setQuickReactions,
+			isAdmin,
+			restrictedEmojis,
+		);
+	}, [customItemsLimit, actualTone, recentEmojis, setRecentEmojis, setQuickReactions, isAdmin, restrictedEmojis]);
 
 	const [emojiListByCategory, categoriesIndexes] = useSyncExternalStore(sub, getSnapshot);
 
