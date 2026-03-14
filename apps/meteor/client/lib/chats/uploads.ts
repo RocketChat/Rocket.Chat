@@ -172,7 +172,14 @@ class UploadsStore extends Emitter<{
 				chunkSize: CHUNK_SIZE,
 			})) as any;
 
-			if (cancelled) return;
+			if (cancelled) {
+				try {
+					await sdk.rest.post('/v1/uploads/cancel', { uploadId: initResponse.uploadId });
+				} catch (e) {
+					// ignore
+				}
+				return;
+			}
 			uploadId = initResponse.uploadId;
 
 			for (let i = 0; i < totalChunks; i++) {
@@ -217,6 +224,7 @@ class UploadsStore extends Emitter<{
 					};
 
 					currentXhr.onerror = () => reject(new Error('Network error'));
+					currentXhr.onabort = () => reject(new Error('cancelled'));
 				});
 
 				this.updateUpload(id, { percentage: Math.round(((i + 1) / totalChunks) * 100) });

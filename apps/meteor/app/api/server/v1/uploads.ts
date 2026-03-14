@@ -276,7 +276,6 @@ const uploadsCompleteEndpoint = API.v1.post(
 				if (!canContinue) {
 					await new Promise((resolve) => writeStream.once('drain', resolve));
 				}
-				await unlink(chunkPath);
 			}
 			writeStream.end();
 			await new Promise<void>((resolve, reject) => {
@@ -303,23 +302,23 @@ const uploadsCompleteEndpoint = API.v1.post(
 			uploadedAt: new Date(),
 		} as any;
 
-		let uploadedFile;
+		const uploadedFile = await fileStore.insert(details, file);
+
+		// Cleanup on success
 		try {
-			uploadedFile = await fileStore.insert(details, file);
-		} finally {
-			// Cleanup
-			try {
-				if (fs.existsSync(finalPath)) {
-					await unlink(finalPath);
-				}
-				if (fs.existsSync(sessionDir)) {
-					await rmdir(sessionDir);
-				}
-			} catch (e) {
-				console.error('Error during cleanup:', e);
+			if (fs.existsSync(finalPath)) {
+				await unlink(finalPath);
 			}
-			await Uploads.deleteOne({ _id: uploadId });
+			if (fs.existsSync(sessionDir)) {
+				for (const chunkFile of chunkFiles) {
+					await unlink(path.join(sessionDir, chunkFile));
+				}
+				await rmdir(sessionDir);
+			}
+		} catch (e) {
+			console.error('Error during cleanup:', e);
 		}
+		await Uploads.deleteOne({ _id: uploadId });
 
 		return API.v1.success({
 			file: uploadedFile as any,
