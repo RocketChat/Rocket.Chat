@@ -1,4 +1,7 @@
 import * as child_process from 'child_process';
+import * as crypto from 'crypto';
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
 import { inspect as utilInspect } from 'util';
@@ -85,6 +88,49 @@ export function getDenoWrapperPath(): string {
 	}
 }
 
+let symlinkedRuntimePath: string | undefined;
+
+function getSymlinkedDenoRuntimePath(denoWrapperPath: string): string {
+	if (!denoWrapperPath.includes('node_modules')) {
+		return denoWrapperPath;
+	}
+
+	if (symlinkedRuntimePath) {
+		return symlinkedRuntimePath;
+	}
+
+	const denoRuntimeDir = path.dirname(denoWrapperPath);
+	const pathHash = crypto.createHash('md5').update(denoRuntimeDir).digest('hex').substring(0, 8);
+	const symlinkName = `${pathHash}-deno-runtime`;
+	const symlinkPath = path.join(os.tmpdir(), symlinkName);
+
+	try {
+		try {
+			const existingTarget = fs.readlinkSync(symlinkPath);
+			if (existingTarget !== denoRuntimeDir) {
+				fs.unlinkSync(symlinkPath);
+			}
+		} catch (e: any) {
+			if (e.code !== 'ENOENT') {
+				fs.unlinkSync(symlinkPath);
+			}
+		}
+
+		if (!fs.existsSync(symlinkPath)) {
+			fs.symlinkSync(denoRuntimeDir, symlinkPath, 'junction');
+		}
+
+		symlinkedRuntimePath = path.join(symlinkPath, 'main.ts');
+		return symlinkedRuntimePath;
+	} catch (e) {
+		console.warn(
+			`[Apps-Engine] Failed to create symlink for deno-runtime at ${symlinkPath}: ${e}. ` +
+				`This may cause apps to malfunction when using Deno 2.x due to node_modules restrictions.`,
+		);
+		return denoWrapperPath;
+	}
+}
+
 type AbortFunction = (reason?: any) => void;
 
 export class DenoRuntimeSubprocessController extends EventEmitter implements IRuntimeController {
@@ -147,6 +193,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const denoExePath = 'deno';
 
 			const denoWrapperPath = getDenoWrapperPath();
+			const runtimePath = getSymlinkedDenoRuntimePath(denoWrapperPath);
+			const denoJsonPath = path.join(path.dirname(denoWrapperPath), 'deno.jsonc');
 			// During development, the appsEngineDir is enough to run the deno process
 			const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
 			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
@@ -156,17 +204,23 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			const allowedDirs = [appsEngineDir, parentNodeModulesDir];
 
+			if (runtimePath !== denoWrapperPath) {
+				allowedDirs.push(path.dirname(runtimePath));
+			}
+
 			// If the app handles file upload events, it needs to be able to read the temp dir
 			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload)) {
 				allowedDirs.push(this.tempFilePath);
 			}
 
-			const options = [
+			const args = [
 				'run',
 				'--cached-only',
+				`--config`,
+				denoJsonPath,
 				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
-				denoWrapperPath,
+				runtimePath,
 				'--subprocess',
 				this.appPackage.info.id,
 				'--spawnId',
@@ -176,10 +230,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			// If the app doesn't request any permissions, it gets the default set of permissions, which includes "networking"
 			// If the app requests specific permissions, we need to check whether it requests "networking" or not
 			if (!this.appPackage.info.permissions || this.appPackage.info.permissions.findIndex((p) => p.name === 'networking') !== -1) {
-				options.splice(1, 0, '--allow-net');
+				args.splice(1, 0, '--allow-net');
 			}
 
-			const environment = {
+			const options = {
 				env: {
 					// We need to pass the PATH, otherwise the shell won't find the deno executable
 					// But the runtime itself won't have access to the env var because of the parameters
@@ -188,11 +242,11 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				},
 			};
 
-			this.deno = child_process.spawn(denoExePath, options, environment);
+			this.deno = child_process.spawn(denoExePath, args, options);
 			this.messenger.setReceiver(this.deno);
 			this.livenessManager.attach(this.deno);
 
-			this.debug('Started subprocess %d with options %s and env %s', this.deno.pid, inspect(options), inspect(environment));
+			this.debug('Started subprocess %d with args %s and options %s', this.deno.pid, inspect(args), inspect(options));
 
 			this.setupListeners();
 		} catch (e) {
