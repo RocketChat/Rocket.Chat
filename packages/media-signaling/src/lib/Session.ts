@@ -23,6 +23,7 @@ export type MediaSignalingEvents = {
 
 export type MediaSignalingSessionConfig = {
 	userId: string;
+	mobileDeviceId?: string;
 	oldSessionId?: string;
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
@@ -74,7 +75,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	constructor(private config: MediaSignalingSessionConfig) {
 		super();
 		this._userId = config.userId;
-		this._sessionId = config.randomStringFactory();
+		this._sessionId = config.mobileDeviceId || config.randomStringFactory();
 		this.recurringStateReportHandler = null;
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
@@ -336,7 +337,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.inputTrack = newInputTrack;
 
-		for await (const call of this.knownCalls.values()) {
+		for (const call of this.knownCalls.values()) {
 			await call.setInputTrack(newInputTrack).catch((error) => {
 				if (newInputTrack) {
 					throw error;
@@ -504,6 +505,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ended', () => this.onEndedCall(call));
+		call.emitter.on('streamChange', () => this.onSessionStateChange());
 
 		return call;
 	}

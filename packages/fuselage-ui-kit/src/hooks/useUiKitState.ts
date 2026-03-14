@@ -138,10 +138,11 @@ export const useUiKitState = <TElement extends UiKit.ActionableElement>(
 		return [result, noLoadStateActionFunction];
 	}
 
-	if (
-		(context && [UiKit.BlockContext.SECTION, UiKit.BlockContext.ACTION].includes(context)) ||
-		(Array.isArray(element?.dispatchActionConfig) && element.dispatchActionConfig.includes('on_item_selected'))
-	) {
+	if (context === UiKit.BlockContext.SECTION || context === UiKit.BlockContext.ACTION) {
+		return [result, actionFunction];
+	}
+
+	if (Array.isArray(element?.dispatchActionConfig) && element.dispatchActionConfig.includes('on_item_selected')) {
 		return [result, actionFunction];
 	}
 

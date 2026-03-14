@@ -37,7 +37,7 @@ Meteor.methods<ServerMethods>({
 
 		let records;
 		if (end) {
-			records = await Messages.findVisibleByRoomIdAfterTimestamp(rid, end, {
+			records = await Messages.findVisibleByRoomIdAfterTimestamp(rid, end, true, {
 				sort: {
 					ts: 1,
 				},

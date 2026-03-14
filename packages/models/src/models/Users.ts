@@ -26,6 +26,7 @@ import type {
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,
+	AnyBulkWriteOperation,
 } from 'mongodb';
 
 import { Rooms, Subscriptions } from '../index';
@@ -583,10 +584,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.findOne<Pick<IUser, 'roles' | '_id'>>(query, { projection: { roles: 1 } });
-	}
-
-	getDistinctFederationDomains() {
-		return this.col.distinct('federation.origin', { federation: { $exists: true } });
 	}
 
 	async getNextLeastBusyAgent(
@@ -3157,6 +3154,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.updateOne({ _id }, update);
+	}
+
+	async setBannersInBulk(updates: { userId: IUser['_id']; banners: NonNullable<IUser['banners']> }[]) {
+		const ops: AnyBulkWriteOperation<IUser>[] = updates.map(({ userId, banners }) => ({
+			updateOne: {
+				filter: { _id: userId },
+				update: { $set: { banners } },
+			},
+		}));
+
+		return this.col.bulkWrite(ops);
 	}
 
 	removeSamlServiceSession(_id: IUser['_id']) {
