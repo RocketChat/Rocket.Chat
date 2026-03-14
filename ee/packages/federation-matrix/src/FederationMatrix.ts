@@ -328,25 +328,29 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async sendMessage(message: IMessage, room: IRoomNativeFederated, user: IUser): Promise<void> {
+		this.logger.info({ msg: 'Attempting to send message to Matrix', messageId: message._id, roomId: room._id, username: user.username });
 		try {
 			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 			let result;
 			if (message.files && message.files.length > 0) {
+				this.logger.debug({ msg: 'Handling file message bridging' });
 				result = await this.handleFileMessage(message, room.federation.mrid, userMui, this.serverName);
 			} else {
+				this.logger.debug({ msg: 'Handling text message bridging' });
 				result = await this.handleTextMessage(message, room.federation.mrid, userMui, this.serverName);
 			}
 
 			if (!result) {
+				this.logger.error({ msg: 'No result returned from handleTextMessage/handleFileMessage' });
 				throw new Error('Failed to send message to Matrix - no result returned');
 			}
 
 			await Messages.setFederationEventIdById(message._id, result.eventId);
 
-			this.logger.debug({ msg: 'Message sent to Matrix successfully', eventId: result.eventId });
+			this.logger.info({ msg: 'Message sent to Matrix successfully', eventId: result.eventId, messageId: message._id });
 		} catch (err) {
-			this.logger.error({ msg: 'Failed to send message to Matrix', err });
+			this.logger.error({ msg: 'Failed to send message to Matrix', err, messageId: message._id });
 			throw err;
 		}
 	}
@@ -419,6 +423,23 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Promise.all(
 				matrixUsersUsername.map(async (username) => {
+					if (username === inviter.username) {
+						const matrixUserId = `@${username}:${this.serverName}`;
+						this.logger.debug({ msg: 'Detected self-join, calling roomService.joinUser', matrixUserId, roomId: room.federation.mrid });
+						try {
+							// RoomService.joinUser is not exposed in the top-level SDK but exists in the internal RoomService.
+							const result = await (federationSDK as any).roomService.joinUser(
+								roomIdSchema.parse(room.federation.mrid),
+								userIdSchema.parse(matrixUserId),
+							);
+							this.logger.debug({ msg: 'Successfully joined Matrix room via joinUser', matrixUserId, result });
+							return result;
+						} catch (error) {
+							this.logger.error({ msg: 'Failed to join Matrix room via joinUser', matrixUserId, error });
+							throw error;
+						}
+					}
+
 					if (validateFederatedUsername(username)) {
 						return federationSDK.inviteUserToRoom(
 							userIdSchema.parse(username),
