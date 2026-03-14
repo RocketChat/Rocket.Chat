@@ -87,7 +87,7 @@
 		"@opentelemetry/sdk-node": "^0.54.2",
 		"@parse/node-apn": "^7.0.1",
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
-		"@react-pdf/renderer": "^3.4.5",
+		"@react-pdf/renderer": "^4.3.2",
 		"@rocket.chat/abac": "workspace:^",
 		"@rocket.chat/account-utils": "workspace:^",
 		"@rocket.chat/agenda": "workspace:^",
@@ -305,6 +305,7 @@
 		"xml-encryption": "~3.1.0",
 		"xml2js": "~0.6.2",
 		"yaqrcode": "^0.2.1",
+		"yoga-layout": "patch:yoga-layout@npm%3A3.2.1#~/.yarn/patches/yoga-layout-npm-3.2.1-51ec934670.patch",
 		"zod": "~4.3.6",
 		"zustand": "~5.0.10"
 	},
