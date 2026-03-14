@@ -703,42 +703,6 @@ const ChatGetThreadMessagesSchema = {
 
 export const isChatGetThreadMessagesProps = ajv.compile<ChatGetThreadMessages>(ChatGetThreadMessagesSchema);
 
-type ChatGetDeletedMessages = PaginatedRequest<{
-	roomId: IRoom['_id'];
-	since: string;
-}>;
-
-const ChatGetDeletedMessagesSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-		since: {
-			type: 'string',
-			minLength: 1,
-			format: 'iso-date-time',
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['roomId', 'since'],
-	additionalProperties: false,
-};
-
-export const isChatGetDeletedMessagesProps = ajv.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
-
 type ChatPostMessage =
 	| {
 			roomId: string | string[];
@@ -999,14 +963,6 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.getThreadMessages': {
 		GET: (params: ChatGetThreadMessages) => {
-			messages: IMessage[];
-			count: number;
-			offset: number;
-			total: number;
-		};
-	};
-	'/v1/chat.getDeletedMessages': {
-		GET: (params: ChatGetDeletedMessages) => {
 			messages: IMessage[];
 			count: number;
 			offset: number;

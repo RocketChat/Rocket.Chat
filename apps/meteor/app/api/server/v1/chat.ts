@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -18,7 +18,6 @@ import {
 	isChatGetPinnedMessagesProps,
 	isChatGetMentionedMessagesProps,
 	isChatReactProps,
-	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
 	isChatGetThreadMessagesProps,
 	isChatSyncThreadMessagesProps,
@@ -26,6 +25,7 @@ import {
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	type PaginatedRequest,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -119,6 +119,42 @@ const ChatUnfollowMessageLocalSchema = {
 	additionalProperties: false,
 };
 
+//chat.getDeletedMessages starts
+type ChatGetDeletedMessages = PaginatedRequest<{
+	roomId: IRoom['_id'];
+	since: string;
+}>;
+
+const ChatGetDeletedMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		since: {
+			type: 'string',
+			minLength: 1,
+			format: 'iso-date-time',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId', 'since'],
+	additionalProperties: false,
+};
+//chat.getDeletedMessages ends
+
 const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
 
 const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
@@ -126,6 +162,8 @@ const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUn
 const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
+
+const isChatGetDeletedMessagesLocalProps = ajv.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
 
 API.v1.addRoute(
 	'chat.delete',
@@ -558,6 +596,71 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.get(
+		'chat.getDeletedMessages',
+		{
+			authRequired: true,
+			query: isChatGetDeletedMessagesLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						messages: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									_id: { type: 'string' },
+								},
+								required: ['_id'],
+								additionalProperties: false,
+							},
+						},
+						count: {
+							type: 'number',
+						},
+						offset: {
+							type: 'number',
+						},
+						total: {
+							type: 'number',
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { roomId, since } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const { cursor, totalCount } = Messages.trashFindPaginatedDeletedAfter(
+				new Date(since),
+				{ rid: roomId },
+				{
+					skip: offset,
+					limit: count,
+					projection: { _id: 1 },
+				},
+			);
+
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				messages,
+				count: messages.length,
+				offset,
+				total,
+			});
+		},
 	);
 
 API.v1.addRoute(
@@ -719,36 +822,6 @@ API.v1.addRoute(
 			await ignoreUser(this.userId, { rid, userId, ignore });
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getDeletedMessages',
-	{ authRequired: true, validateParams: isChatGetDeletedMessagesProps },
-	{
-		async get() {
-			const { roomId, since } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			const { cursor, totalCount } = Messages.trashFindPaginatedDeletedAfter(
-				new Date(since),
-				{ rid: roomId },
-				{
-					skip: offset,
-					limit: count,
-					projection: { _id: 1 },
-				},
-			);
-
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				messages,
-				count: messages.length,
-				offset,
-				total,
-			});
 		},
 	},
 );
