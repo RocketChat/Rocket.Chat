@@ -3,7 +3,7 @@ import { addOAuthService } from './addOAuthService';
 export async function initCustomOAuthServices(): Promise<void> {
 	// Add settings for custom OAuth providers to the settings so they get
 	// automatically added when they are defined in ENV variables
-	for await (const key of Object.keys(process.env)) {
+	for (const key of Object.keys(process.env)) {
 		if (/Accounts_OAuth_Custom_[a-zA-Z0-9_-]+$/.test(key)) {
 			// Most all shells actually prohibit the usage of - in environment variables
 			// So this will allow replacing - with _ and translate it back to the setting name
@@ -16,6 +16,8 @@ export async function initCustomOAuthServices(): Promise<void> {
 			const serviceKey = `Accounts_OAuth_Custom_${name}`;
 
 			if (key === serviceKey) {
+				const showButtonEnv = process.env[`${serviceKey}_show_button`];
+
 				const values = {
 					enabled: process.env[`${serviceKey}`] === 'true',
 					clientId: process.env[`${serviceKey}_id`],
@@ -45,7 +47,7 @@ export async function initCustomOAuthServices(): Promise<void> {
 					mapChannels: process.env[`${serviceKey}_map_channels`],
 					mergeRoles: process.env[`${serviceKey}_merge_roles`] === 'true',
 					rolesToSync: process.env[`${serviceKey}_roles_to_sync`],
-					showButton: process.env[`${serviceKey}_show_button`] === 'true',
+					showButton: showButtonEnv === undefined ? undefined : showButtonEnv === 'true',
 					avatarField: process.env[`${serviceKey}_avatar_field`],
 				};
 
