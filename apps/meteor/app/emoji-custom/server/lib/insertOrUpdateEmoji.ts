@@ -1,4 +1,5 @@
 import { api } from '@rocket.chat/core-services';
+import { EmojiCustomNameSchema } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import limax from 'limax';
 import { Meteor } from 'meteor/meteor';
@@ -50,6 +51,8 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 		});
 	}
 
+	const validatedName = EmojiCustomNameSchema.parse(emojiData.name);
+
 	let aliases: string[] = [];
 	if (emojiData.aliases) {
 		if (aliasValidation.test(emojiData.aliases)) {
@@ -97,7 +100,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 	if (!emojiData._id) {
 		// insert emoji
 		const createEmoji = {
-			name: emojiData.name,
+			name: validatedName,
 			aliases,
 			extension: emojiData.extension,
 		};
@@ -136,7 +139,7 @@ export async function insertOrUpdateEmoji(userId: string | null, emojiData: Emoj
 	}
 
 	if (emojiData.name !== emojiData.previousName) {
-		await EmojiCustom.setName(emojiData._id, emojiData.name);
+		await EmojiCustom.setName(emojiData._id, validatedName);
 	}
 
 	if (emojiData.aliases) {
