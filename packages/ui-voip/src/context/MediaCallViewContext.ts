@@ -28,6 +28,7 @@ const defaultSessionState: SessionState = {
 	remoteMuted: false,
 	remoteHeld: false,
 	callId: undefined,
+	supportedFeatures: ['audio', 'transfer', 'hold'],
 };
 
 export const defaultMediaCallContextValue: MediaCallViewContextValue = {
