@@ -198,6 +198,91 @@ describe('parseMessageSearchQuery', () => {
 			query: { $text: { $search: 'hello world' } },
 			options: { projection: { score: { $meta: 'textScore' } }, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
+		{
+			text: 'field-title:status',
+			query: { 'attachments.fields.title': { $regex: 'status', $options: 'i' } },
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
+			text: 'field-value:completed',
+			query: { 'attachments.fields.value': { $regex: 'completed', $options: 'i' } },
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
+			text: 'field:"urgent"',
+			query: {
+				$or: [
+					{ 'attachments.fields.title': { $regex: 'urgent', $options: 'i' } },
+					{ 'attachments.fields.value': { $regex: 'urgent', $options: 'i' } },
+				],
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
+			text: 'field-title:"Alert Type" field-value:"Critical"',
+			query: {
+				'attachments.fields.title': { $regex: 'Alert Type', $options: 'i' },
+				'attachments.fields.value': { $regex: 'Critical', $options: 'i' },
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
+			text: 'field:production from:gitlab',
+			query: {
+				$or: [
+					{ 'attachments.fields.title': { $regex: 'production', $options: 'i' } },
+					{ 'attachments.fields.value': { $regex: 'production', $options: 'i' } },
+				],
+				'u.username': { $regex: 'gitlab', $options: 'i' },
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
+			text: 'field:"urgent" field:"critical"',
+			query: {
+				$and: [
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'urgent', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'urgent', $options: 'i' } },
+						],
+					},
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'critical', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'critical', $options: 'i' } },
+						],
+					},
+				],
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
+		{
+			text: 'field:"urgent" field:"critical" field:"production"',
+			query: {
+				$and: [
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'urgent', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'urgent', $options: 'i' } },
+						],
+					},
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'critical', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'critical', $options: 'i' } },
+						],
+					},
+					{
+						$or: [
+							{ 'attachments.fields.title': { $regex: 'production', $options: 'i' } },
+							{ 'attachments.fields.value': { $regex: 'production', $options: 'i' } },
+						],
+					},
+				],
+			},
+			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
+		},
 	].forEach(({ text, query: expectedQuery, options: expectedOptions }) => {
 		it(`should parse ${JSON.stringify(text)}`, () => {
 			const { query, options } = parseMessageSearchQuery(text, params);
