@@ -12,24 +12,27 @@ import {
 import { validateEmail } from '@rocket.chat/tools';
 import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent } from '@rocket.chat/ui-client';
 import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent } from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
 import { useSendInvitationEmailMutation } from './hooks/useSendInvitationEmailMutation';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-// TODO: Replace using RHF
 const AdminInviteUsers = () => {
 	const t = useTranslation();
-	const [text, setText] = useState('');
 	const getEmails = useCallback((text: string) => text.split(/[\ ,;]+/i).filter((val: string) => validateEmail(val)), []);
 	const adminRouter = useRoute('admin-settings');
 	const sendInvitationMutation = useSendInvitationEmailMutation();
 	const { data, isLoading } = useSmtpQuery();
 
-	const handleClick = () => {
-		sendInvitationMutation.mutate({ emails: getEmails(text) });
+	const { control, handleSubmit, formState: { isValid } } = useForm({
+		defaultValues: { emails: '' },
+		mode: 'onChange',
+	});
+
+	const onSubmit = ({ emails }: { emails: string }) => {
+		sendInvitationMutation.mutate({ emails: getEmails(emails) });
 	};
 
 	if (isLoading) {
@@ -65,11 +68,16 @@ const AdminInviteUsers = () => {
 				<Box fontScale='p2' mb={8}>
 					{t('Send_invitation_email_info')}
 				</Box>
-				<TextAreaInput rows={5} flexGrow={0} onChange={(e: ChangeEvent<HTMLInputElement>): void => setText(e.currentTarget.value)} />
+				<Controller
+					control={control}
+					name='emails'
+					rules={{ validate: (value) => getEmails(value).length > 0 || t('Send_invitation_email_info') }}
+					render={({ field }) => <TextAreaInput {...field} rows={5} flexGrow={0} />}
+				/>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' mb={8}>
+					<Button icon='send' primary onClick={handleSubmit(onSubmit)} disabled={!isValid} alignItems='stretch' mb={8}>
 						{t('Send')}
 					</Button>
 				</ButtonGroup>
