@@ -1,4 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
+import { isThreadMainMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ModalBackdrop, Skeleton } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
@@ -49,7 +50,10 @@ const Thread = ({ tmid }: ThreadProps) => {
 	const [expanded, setExpanded] = useLocalStorage('expand-threads', false);
 
 	const uid = useUserId();
-	const following = uid ? (mainMessageQueryResult.data?.replies?.includes(uid) ?? false) : false;
+	const following =
+		uid && mainMessageQueryResult.data && isThreadMainMessage(mainMessageQueryResult.data)
+			? mainMessageQueryResult.data.replies.includes(uid)
+			: false;
 	const toggleFollowingMutation = useToggleFollowingThreadMutation({
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });

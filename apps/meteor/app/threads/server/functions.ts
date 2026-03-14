@@ -1,5 +1,5 @@
-import type { IMessage } from '@rocket.chat/core-typings';
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocket.chat/models';
 
 import {
@@ -8,7 +8,7 @@ import {
 } from '../../lib/server/lib/notifyListener';
 import { getMentions, getUserIdsFromHighlights } from '../../lib/server/lib/notifyUsersOnMessage';
 
-export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
+export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage | IThreadMainMessage, followers: string[]) {
 	if (!tmid || isEditedMessage(message)) {
 		return false;
 	}
@@ -21,7 +21,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		...new Set([
 			...followers,
 			...mentionIds,
-			...(Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id]),
+			...(isThreadMainMessage(parentMessage) && parentMessage.replies.length > 0 ? [u._id] : [parentMessage.u._id, u._id]),
 		]),
 	];
 

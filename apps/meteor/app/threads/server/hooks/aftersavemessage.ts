@@ -1,5 +1,5 @@
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
-import { isEditedMessage } from '@rocket.chat/core-typings';
+import { isEditedMessage, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -53,7 +53,7 @@ export async function processThreads(message: IMessage, room: IRoom) {
 
 	const replies = [
 		...new Set([
-			...((!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || []),
+			...((!parentMessage.tcount ? [parentMessage.u._id] : (isThreadMainMessage(parentMessage) ? parentMessage.replies : [])) || []),
 			...(!parentMessage.tcount && room.t === 'd' && room.uids ? room.uids : []),
 			...mentionIds,
 		]),
