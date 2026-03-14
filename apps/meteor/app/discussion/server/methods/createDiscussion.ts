@@ -141,8 +141,18 @@ const create = async ({
 
 	const name = Random.id();
 
-	// auto invite the replied message owner
-	const invitedUsers = message ? [message.u.username, ...users] : users;
+	// auto invite the replied message owner, excluding deactivated users
+	const candidateInvitedUsers = [...new Set((message ? [message.u.username, ...users] : users).filter(Boolean))];
+	const activeUsers = await Users.findUsersByUsernames<Pick<IUser, 'username' | 'active'>>(candidateInvitedUsers, {
+		projection: { username: 1, active: 1 },
+	}).toArray();
+	const activeUsernames = new Set(
+		activeUsers
+			.filter((user) => user.active !== false)
+			.map((user) => user.username)
+			.filter(Boolean),
+	);
+	const invitedUsers = candidateInvitedUsers.filter((username) => activeUsernames.has(username));
 
 	const type = await roomCoordinator.getRoomDirectives(parentRoom.t).getDiscussionType(parentRoom);
 	const description = parentRoom.encrypted ? '' : message?.msg;
@@ -158,7 +168,7 @@ const create = async ({
 		type,
 		name,
 		user,
-		[...new Set(invitedUsers)].filter(Boolean),
+		invitedUsers,
 		false,
 		false,
 		{
