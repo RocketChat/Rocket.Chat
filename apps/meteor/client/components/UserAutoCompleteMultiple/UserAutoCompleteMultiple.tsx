@@ -1,9 +1,9 @@
 import { MultiSelectFiltered } from '@rocket.chat/fuselage';
-import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactElement, AllHTMLAttributes } from 'react';
-import { memo, useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { memo, useState, useCallback, useMemo, useRef } from 'react';
 
 import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';
 import UserAvatarChip from './UserAvatarChip';
@@ -90,15 +90,9 @@ const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, ...
 
 	const containerRef = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-				setFilter('');
-			}
-		};
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => document.removeEventListener('mousedown', handleClickOutside);
-	}, [setFilter]);
+	useOutsideClick(containerRef, () => {
+		setFilter('');
+	});
 
 	return (
 		<OptionsContext.Provider value={{ options }}>
