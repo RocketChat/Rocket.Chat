@@ -54,9 +54,9 @@ export class ListenersModule {
 			if (!isMessageParserDisabled && message.msg) {
 				const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
 					? settings
-							.get<string>('Message_CustomDomain_AutoLink')
-							.split(',')
-							.map((domain) => domain.trim())
+						.get<string>('Message_CustomDomain_AutoLink')
+						.split(',')
+						.map((domain) => domain.trim())
 					: [];
 
 				message.md = parse(message.msg, {
@@ -179,6 +179,33 @@ export class ListenersModule {
 			if (_id) {
 				notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
 			}
+		});
+
+		service.onEvent('presence.status.batch', (batch) => {
+			batch.forEach(({ user }) => {
+				const { _id, username, name, status, statusText, roles } = user;
+				if (!status || !username) {
+					return;
+				}
+
+				notifications.notifyUserInThisInstance(_id, 'userData', {
+					type: 'updated',
+					id: _id,
+					diff: {
+						status,
+						...(statusText && { statusText }),
+					},
+					unset: {
+						...(!statusText && { statusText: 1 }),
+					},
+				});
+
+				notifications.notifyLoggedInThisInstance('user-status', [_id, username, STATUS_MAP[status], statusText, name, roles]);
+
+				if (_id) {
+					notifications.sendPresence(_id, username, STATUS_MAP[status], statusText);
+				}
+			});
 		});
 
 		service.onEvent('user.updateCustomStatus', (userStatus) => {

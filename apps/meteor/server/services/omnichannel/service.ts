@@ -1,6 +1,6 @@
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IOmnichannelService } from '@rocket.chat/core-services';
-import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import type { AtLeast, IOmnichannelQueue, IOmnichannelRoom, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import moment from 'moment';
 
@@ -21,15 +21,25 @@ export class OmnichannelService extends ServiceClassInternal implements IOmnicha
 
 	override async created() {
 		this.onEvent('presence.status', async ({ user }): Promise<void> => {
-			if (!user?._id) {
-				return;
-			}
-			const hasRole = user.roles.some((role) => ['livechat-manager', 'livechat-monitor', 'livechat-agent'].includes(role));
-			if (hasRole) {
-				// TODO change `Livechat.notifyAgentStatusChanged` to a service call
-				await notifyAgentStatusChanged(user._id, user.status);
+			await this.handlePresenceUpdate(user);
+		});
+
+		this.onEvent('presence.status.batch', async (batch): Promise<void> => {
+			for (const { user } of batch) {
+				await this.handlePresenceUpdate(user);
 			}
 		});
+	}
+
+	private async handlePresenceUpdate(user: Pick<IUser, '_id' | 'username' | 'status' | 'statusText' | 'name' | 'roles'>): Promise<void> {
+		if (!user?._id) {
+			return;
+		}
+		const hasRole = user.roles.some((role) => ['livechat-manager', 'livechat-monitor', 'livechat-agent'].includes(role));
+		if (hasRole) {
+			// TODO change `Livechat.notifyAgentStatusChanged` to a service call
+			await notifyAgentStatusChanged(user._id, user.status as UserStatus);
+		}
 	}
 
 	override async started() {
