@@ -91,29 +91,6 @@ exports[`renders Default without crashing 1`] = `
                     />
                   </span>
                 </div>
-                <div
-                  class="rcx-box rcx-box--full rcx-field rcx-field-group__item"
-                >
-                  <label
-                    class="rcx-box rcx-box--full rcx-field__label rcx-label"
-                    for=":r2:"
-                  >
-                    Upload_file_description
-                  </label>
-                  <span
-                    class="rcx-box rcx-box--full rcx-field__row"
-                  >
-                    <input
-                      aria-describedby=":r2:-error"
-                      aria-invalid="false"
-                      class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
-                      id=":r2:"
-                      name="description"
-                      size="1"
-                      type="text"
-                    />
-                  </span>
-                </div>
               </fieldset>
             </div>
           </div>
@@ -141,7 +118,7 @@ exports[`renders Default without crashing 1`] = `
                 <span
                   class="rcx-button--content"
                 >
-                  Send
+                  Update
                 </span>
               </button>
             </div>

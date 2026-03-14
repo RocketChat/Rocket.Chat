@@ -1,4 +1,5 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Button, IconButton } from '@rocket.chat/fuselage';
+import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -13,6 +14,9 @@ import {
 	MessageComposerSkeleton,
 	MessageComposerHint,
 	MessageComposerInputExpandable,
+	MessageComposerFile,
+	MessageComposerFileGroup,
+	MessageComposerFileError,
 } from '.';
 
 export default {
@@ -93,6 +97,42 @@ export const WithHints: StoryFn<typeof MessageComposer> = () => (
 export const WithSubmit: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
+		<MessageComposerToolbar>
+			<MessageToolbarActions />
+			<MessageComposerToolbarSubmit>
+				<Button small>Preview</Button>
+				<Button primary small>
+					Send
+				</Button>
+			</MessageComposerToolbarSubmit>
+		</MessageComposerToolbar>
+	</MessageComposer>
+);
+
+export const WithFiles: StoryFn<typeof MessageComposer> = () => (
+	<MessageComposer>
+		<MessageComposerInput placeholder='Text' />
+		<MessageComposerFileGroup>
+			<MessageComposerFile
+				fileTitle='file.png'
+				fileSubtitle='2 MB'
+				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+				onClick={action('click')}
+			/>
+			<MessageComposerFile
+				disabled
+				fileTitle='file.png'
+				fileSubtitle='2 MB'
+				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+				onClick={action('click')}
+			/>
+			<MessageComposerFileError
+				fileTitle='file.png'
+				error={new Error('Something went wrong')}
+				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+				onClick={action('click')}
+			/>
+		</MessageComposerFileGroup>
 		<MessageComposerToolbar>
 			<MessageToolbarActions />
 			<MessageComposerToolbarSubmit>
