@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout } from '@rocket.chat/fuselage';
+import { InputBox, Field, MultiSelect, FieldGroup, Box, SelectFiltered, FieldLabel, FieldRow, Callout } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useId, useMemo } from 'react';
 import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
@@ -33,7 +33,7 @@ export type BusinessHoursFormData = {
 	}[];
 };
 
-// TODO: replace `Select` in favor `SelectFiltered`
+
 // TODO: add time validation for start and finish not be equal on UI
 // TODO: add time validation for start not be higher than finish on UI
 const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
@@ -66,7 +66,7 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 					<Controller
 						name='timezoneName'
 						control={control}
-						render={({ field }) => <Select id={timezoneField} {...field} options={timeZonesOptions} />}
+						render={({ field }) => <SelectFiltered id={timezoneField} {...field} options={timeZonesOptions} />}
 					/>
 				</FieldRow>
 				<Callout title={t('Daylight_savings_time')} type='info' mbs='x8'>
