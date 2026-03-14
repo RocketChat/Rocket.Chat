@@ -92,7 +92,8 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const [mentions, highlightIds] = await Promise.all([getMentions(message), getUserIdsFromHighlights(room._id, message)]);
 
 	const { toAll, toHere, mentionIds } = mentions;
-	const userIds = [...new Set([...mentionIds, ...highlightIds])];
+	const userIdSet = new Set([...mentionIds, ...highlightIds]);
+	const userIds = [...userIdSet];
 	const unreadCount = getUnreadSettingCount(room.t);
 	const unreadAllMessages = unreadCount === 'all_messages';
 
@@ -126,7 +127,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	]);
 
 	subs.forEach((sub) => {
-		const hasUserMention = userIds.includes(sub.u._id);
+		const hasUserMention = userIdSet.has(sub.u._id);
 		const shouldIncUnread = hasUserMention || toAll || toHere || unreadAllMessages;
 		void notifyOnSubscriptionChanged(
 			{
