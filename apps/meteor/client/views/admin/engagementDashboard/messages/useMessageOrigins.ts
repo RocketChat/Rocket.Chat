@@ -1,13 +1,17 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { Period } from '../../../../components/dashboards/periods';
 import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseMessageOriginsOptions = { period: Period['key'] };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
+type UseMessageOriginsData = Awaited<ReturnType<ReturnType<typeof useEndpoint<'GET', '/v1/engagement-dashboard/messages/origin'>>>> & {
+	start: Date;
+	end: Date;
+};
+
+export const useMessageOrigins = ({ period }: UseMessageOriginsOptions): UseQueryResult<UseMessageOriginsData | undefined, Error> => {
 	const getMessageOrigins = useEndpoint('GET', '/v1/engagement-dashboard/messages/origin');
 
 	return useQuery({
@@ -23,10 +27,10 @@ export const useMessageOrigins = ({ period }: UseMessageOriginsOptions) => {
 
 			return response
 				? {
-						...response,
-						start,
-						end,
-					}
+					...response,
+					start,
+					end,
+				}
 				: undefined;
 		},
 

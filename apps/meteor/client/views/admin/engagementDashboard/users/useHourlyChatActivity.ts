@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import moment from 'moment';
 
 type UseHourlyChatActivityOptions = {
@@ -7,8 +7,13 @@ type UseHourlyChatActivityOptions = {
 	utc: boolean;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivityOptions) => {
+type UseHourlyChatActivityData = Awaited<
+	ReturnType<ReturnType<typeof useEndpoint<'GET', '/v1/engagement-dashboard/users/chat-busier/hourly-data'>>>
+> & {
+	day: Date;
+};
+
+export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivityOptions): UseQueryResult<UseHourlyChatActivityData | undefined, Error> => {
 	const getHourlyChatActivity = useEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/hourly-data');
 
 	return useQuery({
@@ -32,9 +37,9 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 
 			return response
 				? {
-						...response,
-						day,
-					}
+					...response,
+					day,
+				}
 				: undefined;
 		},
 
