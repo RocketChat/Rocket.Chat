@@ -1,9 +1,10 @@
-import type { ILivechatVisitor, ILivechatVisitorDTO, Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatTrigger, ILivechatVisitor, ILivechatVisitorDTO, IMessage, Serialized } from '@rocket.chat/core-typings';
 import type { ComponentChildren } from 'preact';
 import { Component, createContext } from 'preact';
 import { useContext } from 'preact/hooks';
 
 import Store from './Store';
+import type { Alert, FileUploadConfig, IncomingCallAlert, LivechatConfigMessages, LivechatResource, QueueInfo } from './types';
 import type { CustomField } from '../components/Form/CustomFields';
 import type { Agent } from '../definitions/agents';
 import type { Department } from '../definitions/departments';
@@ -11,7 +12,7 @@ import type { TriggerMessage } from '../definitions/triggerMessage';
 import { parentCall } from '../lib/parentCall';
 import { createToken } from '../lib/random';
 
-export type LivechatHiddenSytemMessageType =
+export type LivechatHiddenSystemMessageType =
 	| 'uj' // User joined
 	| 'ul' // User left
 	| 'livechat-close' // Chat closed
@@ -22,7 +23,7 @@ export type StoreState = {
 	token: string;
 	typing: string[];
 	config: {
-		messages: any;
+		messages: LivechatConfigMessages;
 		theme: {
 			title?: string;
 			color?: string;
@@ -38,19 +39,19 @@ export type StoreState = {
 				}[];
 			};
 		};
-		triggers: any[];
-		resources: any;
+		triggers: ILivechatTrigger[];
+		resources: LivechatResource;
 		settings: {
 			registrationForm?: boolean;
 			nameFieldRegistrationForm?: boolean;
 			emailFieldRegistrationForm?: boolean;
 			forceAcceptDataProcessingConsent?: boolean;
-			fileUpload?: any;
-			allowSwitchingDepartments?: any;
-			showConnecting?: any;
-			limitTextLength?: any;
+			fileUpload?: FileUploadConfig;
+			allowSwitchingDepartments?: boolean;
+			showConnecting?: boolean;
+			limitTextLength?: number | boolean;
 			displayOfflineForm?: boolean;
-			hiddenSystemMessages?: LivechatHiddenSytemMessageType[];
+			hiddenSystemMessages?: LivechatHiddenSystemMessageType[];
 			hideWatermark?: boolean;
 			livechatLogo?: { url: string };
 			transcript?: boolean;
@@ -61,7 +62,7 @@ export type StoreState = {
 		customFields?: CustomField[];
 		enabled?: boolean;
 	};
-	messages: any[];
+	messages: (Serialized<IMessage> & { token?: string })[];
 	user?: Serialized<ILivechatVisitor>;
 	guest?: Serialized<ILivechatVisitorDTO>;
 	sound: {
@@ -90,29 +91,29 @@ export type StoreState = {
 		department?: string;
 		language?: string;
 		defaultDepartment?: string;
-		hiddenSystemMessages?: LivechatHiddenSytemMessageType[];
+		hiddenSystemMessages?: LivechatHiddenSystemMessageType[];
 	};
 	gdpr: {
 		accepted: boolean;
 	};
-	alerts: any[];
+	alerts: Alert[];
 	visible: boolean;
 	minimized: boolean;
-	unread: any;
-	incomingCallAlert: any;
-	businessUnit: any;
+	unread: number | null;
+	incomingCallAlert: IncomingCallAlert | null;
+	businessUnit: string | null;
 	openSessionIds?: string[];
 	triggered?: boolean;
 	undocked?: boolean;
 	expanded?: boolean;
-	modal?: any;
-	agent?: any;
+	modal: boolean;
+	agent?: Agent;
 	room?: { _id: string };
 	noMoreMessages?: boolean;
 	loading?: boolean;
-	lastReadMessageId?: any;
-	triggerAgent?: any;
-	queueInfo?: any;
+	lastReadMessageId?: string | number;
+	triggerAgent?: Agent;
+	queueInfo?: QueueInfo;
 	defaultAgent?: Agent;
 	parentUrl?: string;
 	connecting?: boolean;
@@ -155,6 +156,7 @@ export const initialState = (): StoreState => ({
 	alerts: [],
 	visible: true,
 	minimized: true,
+	modal: false,
 	unread: null,
 	incomingCallAlert: null,
 	businessUnit: null,

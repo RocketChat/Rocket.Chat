@@ -1,18 +1,9 @@
 import { getAvatarUrl } from './baseUrl';
+import type { Agent } from '../definitions/agents';
 
-type AgentType = {
-	_id: string;
-	name: string;
-	status: string;
-	emails: [{ address: string }];
-	username: string;
-	phone: [{ phoneNumber: string }];
-	customFields: { phone: string };
-};
-
-export const formatAgent = (agent: AgentType) => {
+export const formatAgent = (agent: Agent | undefined) => {
 	if (!agent) {
-		return;
+		return undefined;
 	}
 
 	return {
@@ -21,7 +12,7 @@ export const formatAgent = (agent: AgentType) => {
 		status: agent.status,
 		email: agent.emails?.[0]?.address,
 		username: agent.username,
-		phone: agent.phone?.[0]?.phoneNumber || agent.customFields?.phone,
+		phone: typeof agent.phone === 'string' ? agent.phone : agent.phone?.[0]?.phoneNumber || agent.customFields?.phone,
 		avatar: agent.username
 			? {
 					description: agent.username,
