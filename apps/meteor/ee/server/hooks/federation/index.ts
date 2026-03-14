@@ -58,8 +58,6 @@ callbacks.add(
 		}
 
 		try {
-			// Skip if message was already federated — presence of eventId means it came from Matrix
-			// and was already processed; resending would create a loop.
 			if (!message.federation?.eventId) {
 				await FederationMatrix.sendMessage(message, room, user);
 			}
@@ -137,10 +135,6 @@ beforeAddUserToRoom.add(
 	'native-federation-on-before-add-users-to-room',
 );
 
-// Handle self-join: when a user joins a federated room via channels.join (no inviter),
-// the beforeAddUserToRoom hook above skips because inviter is undefined.
-// This afterJoinRoom callback catches that case and sends the Matrix invite
-// so the user is properly registered on the Matrix homeserver.
 callbacks.add(
 	'afterJoinRoom',
 	async (user: IUser, room: IRoom): Promise<void> => {
@@ -152,14 +146,10 @@ callbacks.add(
 			return;
 		}
 
-		// Skip if the user is a native federated user (external Matrix user) —
-		// their join was already handled by an incoming federation event.
 		if (isUserNativeFederated(user)) {
 			return;
 		}
 
-		// Handle self-join: user joined via channels.join (no inviter).
-		// Invite them to the Matrix room so messages can be bridged.
 		try {
 			await FederationMatrix.inviteUsersToRoom(room, [user.username], user);
 		} catch (error) {
