@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout } from '@rocket.chat/fuselage';
+import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout, FieldError } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useId, useMemo } from 'react';
 import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
@@ -33,9 +33,6 @@ export type BusinessHoursFormData = {
 	}[];
 };
 
-// TODO: replace `Select` in favor `SelectFiltered`
-// TODO: add time validation for start and finish not be equal on UI
-// TODO: add time validation for start not be higher than finish on UI
 const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 	const { t } = useTranslation();
 	const timeZones = useTimezoneNameList();
@@ -105,14 +102,42 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 							<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.start.time`}
-								render={({ field }) => <InputBox id={`${daysTimeField + index}-start`} type='time' {...field} />}
+								control={control}
+								rules={{
+									validate: (value) => {
+										const finishTime = watch(`daysTime.${index}.finish.time`);
+										if (value >= finishTime && daysTime[index].open) {
+											return t('Open_time_must_be_before_close_time');
+										}
+									},
+								}}
+								render={({ field, fieldState: { error } }) => (
+									<>
+										<InputBox id={`${daysTimeField + index}-start`} type='time' {...field} error={error?.message} />
+										<FieldError>{error?.message}</FieldError>
+									</>
+								)}
 							/>
 						</Box>
 						<Box display='flex' flexDirection='column' flexGrow={1} mis={2}>
 							<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.finish.time`}
-								render={({ field }) => <InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} />}
+								control={control}
+								rules={{
+									validate: (value) => {
+										const startTime = watch(`daysTime.${index}.start.time`);
+										if (value <= startTime && daysTime[index].open) {
+											return t('Close_time_must_be_after_open_time');
+										}
+									},
+								}}
+								render={({ field, fieldState: { error } }) => (
+									<>
+										<InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} error={error?.message} />
+										<FieldError>{error?.message}</FieldError>
+									</>
+								)}
 							/>
 						</Box>
 					</FieldRow>
