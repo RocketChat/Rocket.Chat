@@ -171,7 +171,11 @@ export const getEmojisBySearchTerm = (
 				if (emoji.packages[emojiPackage].emojisByCategory.hasOwnProperty(key)) {
 					const contents = emoji.packages[emojiPackage].emojisByCategory[key];
 					const searchValArray = alias !== undefined ? alias.replace(/:/g, '').split('_') : alias;
-					if (contents.indexOf(current) !== -1 || searchValArray?.includes(searchTerm)) {
+					if (
+						contents.indexOf(current) !== -1 ||
+						searchValArray?.includes(searchTerm) ||
+						(emojiObject.aliasOf && contents.indexOf(emojiObject.aliasOf) !== -1)
+					) {
 						emojiFound = true;
 						break;
 					}
