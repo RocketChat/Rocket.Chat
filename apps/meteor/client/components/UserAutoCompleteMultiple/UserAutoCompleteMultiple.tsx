@@ -3,7 +3,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactElement, AllHTMLAttributes } from 'react';
-import { memo, useState, useCallback, useMemo } from 'react';
+import { memo, useState, useCallback, useMemo, useRef, useEffect } from 'react';
 
 import AutocompleteOptions, { OptionsContext } from './UserAutoCompleteMultipleOptions';
 import UserAvatarChip from './UserAvatarChip';
@@ -43,8 +43,6 @@ const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, ...
 			const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter }) });
 			const options = users.items.map((item): [string, UserAutoCompleteOptionType] => [item.username, item]);
 
-			// Add extra option if filter text matches `username:server`
-			// Used to add federated users that do not exist yet
 			if (federated && matrixRegex.test(debouncedFilter)) {
 				options.unshift([debouncedFilter, { name: debouncedFilter, username: debouncedFilter, _federated: true }]);
 			}
@@ -90,33 +88,46 @@ const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, ...
 		[onChange, setFilter, onAddUser, onRemoveUser, value],
 	);
 
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+				setFilter('');
+			}
+		};
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, [setFilter]);
+
 	return (
 		<OptionsContext.Provider value={{ options }}>
-			<MultiSelectFiltered
-				{...props}
-				placeholder={placeholder}
-				value={value}
-				onChange={handleOnChange}
-				filter={filter}
-				setFilter={setFilter}
-				renderSelected={({ value: username, onMouseDown }: { value: string; onMouseDown: () => void }) => {
-					const currentCachedOption = selectedCache[username] || {};
-
-					return (
-						<UserAvatarChip
-							mie={4}
-							mb={2}
-							key={username}
-							federated={currentCachedOption._federated}
-							name={currentCachedOption.name}
-							username={currentCachedOption.username || username}
-							onMouseDown={onMouseDown}
-						/>
-					);
-				}}
-				renderOptions={AutocompleteOptions}
-				options={options.concat(Object.entries(selectedCache)).map(([, item]) => [item.username, item.name || item.username])}
-			/>
+			<div ref={containerRef}>
+				<MultiSelectFiltered
+					{...props}
+					placeholder={placeholder}
+					value={value}
+					onChange={handleOnChange}
+					filter={filter}
+					setFilter={setFilter}
+					renderSelected={({ value: username, onMouseDown }: { value: string; onMouseDown: () => void }) => {
+						const currentCachedOption = selectedCache[username] || {};
+						return (
+							<UserAvatarChip
+								mie={4}
+								mb={2}
+								key={username}
+								federated={currentCachedOption._federated}
+								name={currentCachedOption.name}
+								username={currentCachedOption.username || username}
+								onMouseDown={onMouseDown}
+							/>
+						);
+					}}
+					renderOptions={AutocompleteOptions}
+					options={options.concat(Object.entries(selectedCache)).map(([, item]) => [item.username, item.name || item.username])}
+				/>
+			</div>
 		</OptionsContext.Provider>
 	);
 };
