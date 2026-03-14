@@ -145,6 +145,9 @@ export const prepareLivechatRoom = async (
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 		...extraRoomInfo,
+		// marker field for unique index - only new rooms have this field (see #39087)
+		// allows index creation to succeed even if old duplicates exist
+		_enforceSingleRoom: true,
 	} as InsertionModel<IOmnichannelRoom>;
 };
 
