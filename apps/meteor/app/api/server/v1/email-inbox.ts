@@ -5,17 +5,30 @@ import {
 	isEmailInboxList,
 	isEmailInbox,
 	isEmailInboxSearch,
-	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
-import { insertOneEmailInbox, findEmailInboxes, updateEmailInbox, removeEmailInbox } from '../lib/emailInbox';
+import { findEmailInboxes, insertOneEmailInbox, removeEmailInbox, updateEmailInbox } from '../lib/emailInbox';
+
+const paginatedEmailInboxesResponseSchema = ajv.compile<{ emailInboxes: IEmailInbox[]; total: number; count: number; offset: number }>({
+	type: 'object',
+	properties: {
+		emailInboxes: { type: 'array', items: { $ref: '#/components/schemas/IEmailInbox' } },
+		total: { type: 'number' },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['emailInboxes', 'total', 'count', 'offset', 'success'],
+	additionalProperties: false,
+});
 
 const emailInboxEndpoints = API.v1
 	.get(
@@ -25,18 +38,8 @@ const emailInboxEndpoints = API.v1
 			permissionsRequired: ['manage-email-inbox'],
 			query: isEmailInboxList,
 			response: {
-				200: ajv.compile<{ emailInboxes: IEmailInbox[]; count: number; offset: number; total: number; success: true }>({
-					type: 'object',
-					properties: {
-						emailInboxes: { type: 'array', items: { type: 'object', additionalProperties: true } },
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['emailInboxes', 'count', 'offset', 'total', 'success'],
-					additionalProperties: false,
-				}),
+				200: paginatedEmailInboxesResponseSchema,
+				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
 			},
@@ -56,22 +59,35 @@ const emailInboxEndpoints = API.v1
 			permissionsRequired: ['manage-email-inbox'],
 			body: isEmailInbox,
 			response: {
-				200: ajv.compile<{ _id: string; success: true }>({
+				200: ajv.compile<{ _id: string }>({
 					type: 'object',
-					properties: {
-						_id: { type: 'string' },
-						success: { type: 'boolean', enum: [true] },
-					},
+					properties: { _id: { type: 'string' }, success: { type: 'boolean', enum: [true] } },
 					required: ['_id', 'success'],
 					additionalProperties: false,
 				}),
-				400: validateBadRequestErrorResponse,
+				400: ajv.compile({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [false] }, error: { type: 'string' } },
+					required: ['success', 'error'],
+					additionalProperties: false,
+				}),
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
-			const emailInboxParams = this.bodyParams;
+			const body = this.bodyParams;
+			const maxRetries =
+				'maxRetries' in body.imap && typeof (body.imap as { maxRetries?: number }).maxRetries === 'number'
+					? (body.imap as { maxRetries: number }).maxRetries
+					: 5;
+			const emailInboxParams = {
+				...body,
+				imap: {
+					...body.imap,
+					maxRetries,
+				},
+			};
 
 			let _id: string;
 
@@ -102,13 +118,22 @@ const emailInboxEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['manage-email-inbox'],
 			response: {
-				200: ajv.compile<IEmailInbox & { success: true }>({
-					type: 'object',
-					additionalProperties: true,
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
+				200: ajv.compile<IEmailInbox | null>({
+					oneOf: [
+						{
+							allOf: [
+								{ $ref: '#/components/schemas/IEmailInbox' },
+								{
+									type: 'object',
+									properties: {
+										success: { type: 'boolean', enum: [true] },
+									},
+									required: ['success'],
+								},
+							],
+						},
+						{ type: 'null' },
+					],
 				}),
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
@@ -135,12 +160,9 @@ const emailInboxEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['manage-email-inbox'],
 			response: {
-				200: ajv.compile<{ _id: string; success: true }>({
+				200: ajv.compile<{ _id: string }>({
 					type: 'object',
-					properties: {
-						_id: { type: 'string' },
-						success: { type: 'boolean', enum: [true] },
-					},
+					properties: { _id: { type: 'string' }, success: { type: 'boolean', enum: [true] } },
 					required: ['_id', 'success'],
 					additionalProperties: false,
 				}),
@@ -171,10 +193,10 @@ const emailInboxEndpoints = API.v1
 			permissionsRequired: ['manage-email-inbox'],
 			query: isEmailInboxSearch,
 			response: {
-				200: ajv.compile<{ emailInbox: IEmailInbox | null; success: true }>({
+				200: ajv.compile<{ emailInbox: IEmailInbox | null }>({
 					type: 'object',
 					properties: {
-						emailInbox: { type: 'object', additionalProperties: true, nullable: true },
+						emailInbox: { oneOf: [{ $ref: '#/components/schemas/IEmailInbox' }, { type: 'null' }] },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['emailInbox', 'success'],
@@ -188,8 +210,6 @@ const emailInboxEndpoints = API.v1
 		async function action() {
 			const { email } = this.queryParams;
 
-			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
-			// TODO: Chapter day: Remove this endpoint and move search to GET /email-inbox
 			const emailInbox = await EmailInbox.findByEmail(email);
 
 			return API.v1.success({ emailInbox });
@@ -201,12 +221,9 @@ const emailInboxEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['manage-email-inbox'],
 			response: {
-				200: ajv.compile<{ _id: string; success: true }>({
+				200: ajv.compile<{ _id: string }>({
 					type: 'object',
-					properties: {
-						_id: { type: 'string' },
-						success: { type: 'boolean', enum: [true] },
-					},
+					properties: { _id: { type: 'string' }, success: { type: 'boolean', enum: [true] } },
 					required: ['_id', 'success'],
 					additionalProperties: false,
 				}),

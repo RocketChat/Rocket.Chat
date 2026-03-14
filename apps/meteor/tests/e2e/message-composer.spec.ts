@@ -116,6 +116,62 @@ test.describe.serial('message-composer', () => {
 		});
 	});
 
+	test('should close mention popup when canceling a message edit via "Cancel" button', async ({ page }) => {
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+
+		await test.step('expect to edit last message', async () => {
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
+			await poHomeChannel.content.openLastMessageMenu();
+			await poHomeChannel.content.btnOptionEditMessage.click();
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer');
+		});
+
+		await test.step('expect to open popup on mention', async () => {
+			await page.keyboard.type(' @');
+			await expect(poHomeChannel.composer.boxPopup).toBeVisible();
+		});
+
+		await test.step('expect popup to close after the first edit is cancelled', async () => {
+			await poHomeChannel.composer.btnCancel.click();
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer');
+			await expect(poHomeChannel.composer.boxPopup).not.toBeVisible();
+		});
+
+		await test.step('expect to leave editing mode', async () => {
+			await poHomeChannel.composer.btnCancel.click();
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
+		});
+	});
+
+	test('should close mention popup when canceling a message edit via keyboard', async ({ page }) => {
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage('hello composer');
+
+		await test.step('expect to edit last message', async () => {
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
+			await poHomeChannel.content.openLastMessageMenu();
+			await poHomeChannel.content.btnOptionEditMessage.click();
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer');
+		});
+
+		await test.step('expect to open popup on mention', async () => {
+			await page.keyboard.type(' @');
+			await expect(poHomeChannel.composer.boxPopup).toBeVisible();
+		});
+
+		await test.step('expect popup to close after the first edit is cancelled', async () => {
+			await page.keyboard.press('Escape');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('hello composer');
+			await expect(poHomeChannel.composer.boxPopup).not.toBeVisible();
+		});
+
+		await test.step('expect to leave editing mode', async () => {
+			await page.keyboard.press('Escape');
+			await expect(poHomeChannel.composer.inputMessage).toHaveValue('');
+		});
+	});
+
 	test.describe('audio recorder', () => {
 		test('should open audio recorder', async () => {
 			await poHomeChannel.navbar.openChat(targetChannel);
@@ -133,14 +189,14 @@ test.describe.serial('message-composer', () => {
 			await expect(poHomeChannel.audioRecorder).not.toBeVisible();
 		});
 
-		test('should open file modal when clicking on "Finish recording"', async ({ page }) => {
+		test('should attach file to the composer when clicking on "Finish recording"', async ({ page }) => {
 			await poHomeChannel.navbar.openChat(targetChannel);
 			await poHomeChannel.composer.btnAudioMessage.click();
 			await expect(poHomeChannel.audioRecorder).toBeVisible();
 
 			await page.waitForTimeout(1000);
 			await poHomeChannel.audioRecorder.getByRole('button', { name: 'Finish Recording', exact: true }).click();
-			await expect(poHomeChannel.content.fileUploadModal).toBeVisible();
+			await expect(poHomeChannel.composer.getFileByName('Audio record.mp3')).toBeVisible();
 		});
 	});
 });
