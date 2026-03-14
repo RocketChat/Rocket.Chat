@@ -53,6 +53,7 @@ type EmailInboxProps = {
 		secure: boolean;
 		server: string;
 		username: string;
+		maxRetries?: number;
 	};
 };
 
@@ -123,13 +124,16 @@ const EmailInboxPropsSchema = {
 				username: {
 					type: 'string',
 				},
+				maxRetries: {
+					type: 'number',
+				},
 			},
 			required: ['password', 'port', 'secure', 'server', 'username'],
 			additionalProperties: false,
 		},
 	},
 
-	required: ['name', 'email', 'active', 'description', 'senderInfo', 'department', 'smtp', 'imap'],
+	required: ['name', 'email', 'active', 'smtp', 'imap'],
 	additionalProperties: false,
 };
 
