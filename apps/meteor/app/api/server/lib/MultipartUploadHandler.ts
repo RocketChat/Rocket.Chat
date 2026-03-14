@@ -106,7 +106,10 @@ export class MultipartUploadHandler {
 		});
 
 		bb.on('file', (fieldname, file, info) => {
-			const { filename, mimeType } = info;
+			const { filename: rawFilename, mimeType } = info;
+			// The HTML5 multipart/form-data encoding algorithm percent-encodes `"` as `%22` in filenames.
+			// Busboy does not decode this for regular `filename=` parameters, so we reverse it here.
+			const filename = rawFilename.replace(/%22/gi, '"');
 
 			++filePendingCount;
 
