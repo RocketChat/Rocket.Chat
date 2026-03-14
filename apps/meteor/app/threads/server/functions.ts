@@ -1,12 +1,12 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocket.chat/models';
+import { Messages, Subscriptions, ReadReceipts, NotificationQueue, Rooms } from '@rocket.chat/models';
 
 import {
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
 } from '../../lib/server/lib/notifyListener';
-import { getMentions, getUserIdsFromHighlights } from '../../lib/server/lib/notifyUsersOnMessage';
+import { getMentions, getUserIdsFromHighlights, getUnreadSettingCount, getGroupMentions } from '../../lib/server/lib/notifyUsersOnMessage';
 
 export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
 	if (!tmid || isEditedMessage(message)) {
@@ -35,10 +35,24 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIds.includes(userId)) || [];
 
 	// Notify everyone involved in the thread
-	const notifyOptions = toAll || toHere ? { groupMention: true } : {};
 
 	// Notify message mentioned users and highlights
 	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
+
+	// FIX: When @all or @here is used, fetch ALL room members (not just thread followers)
+	// This ensures all room members get notifications, highlights, and unread counts
+	let allRoomMemberIds: string[] = [];
+	if (toAll || toHere) {
+		const roomSubscriptions = await Subscriptions.findByRoomId(rid, {
+			projection: { 'u._id': 1 },
+		}).toArray();
+		allRoomMemberIds = roomSubscriptions.map((sub) => sub.u._id).filter((userId) => userId !== u._id); // Exclude sender
+	}
+
+	// FIX: Include all room members in affected users when @all/@here is used
+	const allAffectedUserIds = [...new Set([...threadFollowersUids, ...mentionedUsers, ...(toAll || toHere ? allRoomMemberIds : [])])];
+
+	const notifyOptions = toAll || toHere ? { groupMention: true } : {};
 
 	const promises = [
 		ReadReceipts.setAsThreadById(tmid),
@@ -49,6 +63,12 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, mentionedUsers, tmid, { userMention: true }));
 	}
 
+	// FIX: Mark thread as unread for ALL room members when @all/@here is used
+	// This ensures thread badge appears for all users, not just thread followers
+	if (toAll || toHere) {
+		promises.push(Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, allRoomMemberIds, tmid, notifyOptions));
+	}
+
 	if (highlightsUids.length) {
 		promises.push(
 			Subscriptions.setAlertForRoomIdAndUserIds(rid, highlightsUids),
@@ -56,9 +76,31 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		);
 	}
 
+	// FIX: Set channel alert/open and increment unread counts for ALL room members when @all/@here is used
+	// This ensures channel highlighting and unread counts work for all users, not just thread followers
+	if (toAll || toHere) {
+		const room = await Rooms.findOneById(rid);
+		if (room) {
+			const unreadCount = getUnreadSettingCount(room.t);
+			const groupMentionInc = getGroupMentions(
+				room.t,
+				unreadCount as Exclude<
+					'all_messages' | 'user_mentions_only' | 'group_mentions_only' | 'user_and_group_mentions_only',
+					'user_mentions_only'
+				>,
+			);
+
+			promises.push(
+				Subscriptions.setAlertForRoomIdExcludingUserId(rid, u._id),
+				Subscriptions.setOpenForRoomIdExcludingUserId(rid, u._id),
+				Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(rid, u._id, 1, groupMentionInc),
+			);
+		}
+	}
+
 	await Promise.allSettled(promises);
 
-	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, [...threadFollowersUids, ...mentionedUsers, ...highlightsUids]);
+	void notifyOnSubscriptionChangedByRoomIdAndUserIds(rid, allAffectedUserIds);
 }
 
 export async function follow({ tmid, uid }: { tmid: string; uid: string }) {
