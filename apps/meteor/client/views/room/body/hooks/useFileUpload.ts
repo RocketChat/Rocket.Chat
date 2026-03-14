@@ -49,7 +49,10 @@ export const useFileUpload = (store: UploadsAPI) => {
 		[chat, store],
 	);
 
-	const isUploading = uploads.length > 0 && uploads.some((upload) => upload.percentage < 100 && !upload.error);
+	const handlePauseUpload = useCallback((id: Upload['id']) => store.pause(id), [store]);
+	const handleResumeUpload = useCallback((id: Upload['id']) => store.resume(id), [store]);
+
+	const isUploading = uploads.length > 0 && uploads.some((upload) => upload.percentage < 100 && !upload.error && upload.status !== 'paused');
 
 	return useMemo(
 		() => ({
@@ -61,7 +64,19 @@ export const useFileUpload = (store: UploadsAPI) => {
 			handleEditUpload,
 			handleCancelUpload,
 			handleUploadFiles,
+			handlePauseUpload,
+			handleResumeUpload,
 		}),
-		[uploads, isUploading, isProcessingUploads, handleRemoveUpload, handleEditUpload, handleCancelUpload, handleUploadFiles],
+		[
+			uploads,
+			isUploading,
+			isProcessingUploads,
+			handleRemoveUpload,
+			handleEditUpload,
+			handleCancelUpload,
+			handleUploadFiles,
+			handlePauseUpload,
+			handleResumeUpload,
+		],
 	);
 };

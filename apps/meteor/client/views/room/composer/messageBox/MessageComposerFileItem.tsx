@@ -1,4 +1,4 @@
-import { IconButton } from '@rocket.chat/fuselage';
+import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerFile, MessageComposerFileError, MessageComposerFileLoader } from '@rocket.chat/ui-composer';
 import { useSetModal } from '@rocket.chat/ui-contexts';
@@ -16,20 +16,35 @@ type MessageComposerFileItemProps = {
 	onRemove: (id: string) => void;
 	onEdit: (id: Upload['id'], fileName: string) => void;
 	onCancel: (id: Upload['id']) => void;
+	onPause: (id: Upload['id']) => void;
+	onResume: (id: Upload['id']) => void;
 	disabled: boolean;
 };
 
-const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled, ...props }: MessageComposerFileItemProps) => {
+const MessageComposerFileItem = ({
+	upload,
+	onRemove,
+	onEdit,
+	onCancel,
+	onPause,
+	onResume,
+	disabled,
+	...props
+}: MessageComposerFileItemProps) => {
 	const { t } = useTranslation();
 	const [isActive, setIsActive] = useState(false);
 	const setModal = useSetModal();
 
 	const fileSize = formatBytes(upload.file.size, 2);
 	const fileExtension = getMimeType(upload.file.type, upload.file.name);
-	const isLoading = upload.percentage !== 100 && !upload.error;
+	const isPaused = upload.status === 'paused';
+	const isLoading = upload.status === 'uploading';
+
+	const handlePause = usePreventPropagation(() => onPause(upload.id));
+	const handleResume = usePreventPropagation(() => onResume(upload.id));
 
 	const handleOpenFilePreview = () => {
-		if (isLoading || upload.error) {
+		if (isLoading || isPaused || upload.error) {
 			return;
 		}
 
@@ -46,16 +61,30 @@ const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled,
 		);
 	};
 
-	const dismissAction = isLoading ? () => onCancel(upload.id) : () => onRemove(upload.id);
+	const dismissAction = isLoading || isPaused ? () => onCancel(upload.id) : () => onRemove(upload.id);
 	const handleDismiss = usePreventPropagation(dismissAction);
-	const buttonProps = useButtonPattern(handleDismiss);
 
-	const actionIcon =
-		isLoading && !isActive ? (
-			<MessageComposerFileLoader />
+	let actionIcon;
+	if (isLoading) {
+		actionIcon = isActive ? (
+			<Box display='flex'>
+				<IconButton mini icon='pause' onClick={handlePause} title={t('Pause')} mxe={4} />
+				<IconButton mini icon='cross' onClick={handleDismiss} title={t('Cancel')} />
+			</Box>
 		) : (
-			<IconButton {...buttonProps} aria-label={isLoading ? t('Cancel') : t('Remove')} mini icon='cross' />
+			<MessageComposerFileLoader />
 		);
+	} else if (isPaused) {
+		actionIcon = (
+			<Box display='flex'>
+				<IconButton mini icon='play' onClick={handleResume} title={t('Resume')} mxe={4} />
+				<IconButton mini icon='cross' onClick={handleDismiss} title={t('Cancel')} />
+			</Box>
+		);
+	} else {
+		const buttonProps = useButtonPattern(handleDismiss);
+		actionIcon = <IconButton {...buttonProps} aria-label={t('Remove')} mini icon='cross' />;
+	}
 
 	if (upload.error) {
 		return (

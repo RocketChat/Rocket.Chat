@@ -63,7 +63,7 @@ export class MultipartUploadHandler {
 
 	static async parseRequest(
 		request: IncomingMessage | Request,
-		options: ParseOptions,
+		options: ParseOptions & { fileId?: string; offset?: number },
 	): Promise<{ file: ParsedUpload | null; fields: Record<string, string> }> {
 		const limits: BusboyConfig['limits'] = { files: 1 };
 
@@ -120,10 +120,14 @@ export class MultipartUploadHandler {
 				return reject(new MeteorError('error-invalid-file-type', `File type ${mimeType} not allowed`));
 			}
 
-			const fileId = Random.id();
+			const fileId = options.fileId || Random.id();
 			const tempFilePath = UploadFS.getTempFilePath(fileId);
 
-			const writeStream = fs.createWriteStream(tempFilePath);
+			const offset = options.offset || 0;
+			const writeStream = fs.createWriteStream(tempFilePath, {
+				flags: offset > 0 ? 'r+' : 'w',
+				start: offset,
+			});
 
 			let currentStream: Stream = file;
 			if (options.transforms?.length) {

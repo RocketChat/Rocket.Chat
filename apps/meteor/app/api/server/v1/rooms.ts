@@ -221,10 +221,24 @@ API.v1.addRoute(
 			const { file, fields } = await MultipartUploadHandler.parseRequest(this.incoming, {
 				field: 'file',
 				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+				fileId: this.queryParams.fileId,
+				offset: this.queryParams.offset ? parseInt(this.queryParams.offset) : 0,
 			});
 
 			if (!file) {
 				throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
+			}
+
+			const totalSize = this.queryParams.totalSize ? parseInt(this.queryParams.totalSize) : file.size;
+			const isLastChunk = file.size === totalSize || (this.queryParams.offset && parseInt(this.queryParams.offset) + file.size === totalSize);
+
+			if (!isLastChunk) {
+				return API.v1.success({
+					file: {
+						_id: file.tempFilePath.split('/').pop()?.split('\\').pop(), // This is the fileId (temp file name)
+						waiting: true,
+					},
+				});
 			}
 
 			const expiresAt = new Date();
@@ -243,7 +257,7 @@ API.v1.addRoute(
 
 			const details = {
 				name: file.filename,
-				size: file.size,
+				size: totalSize,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
