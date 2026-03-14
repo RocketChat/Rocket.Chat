@@ -1,5 +1,5 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
+import { Box, Button, Avatar, TextInput, IconButton, Label, FieldError } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
@@ -21,6 +21,15 @@ type UserAvatarEditorProps = {
 	name: IUser['name'];
 };
 
+function isUrl(myUrlString: string) {
+	try {
+		new URL(myUrlString);
+		return true;
+	} catch {
+		return false;
+	}
+}
+
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
@@ -29,6 +38,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
 	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const [avatarUrlError, setAvatarUrlError] = useState<string | undefined>(undefined);
 
 	const setUploadedPreview = useCallback(
 		async (file: File, avatarObj: AvatarObject) => {
@@ -49,8 +59,12 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
 	const handleAddUrl = (): void => {
-		setNewAvatarSource(avatarFromUrl);
-		setAvatarObj({ avatarUrl: avatarFromUrl });
+		if (isUrl(avatarFromUrl)) {
+			setNewAvatarSource(avatarFromUrl);
+			setAvatarObj({ avatarUrl: avatarFromUrl });
+		} else {
+			setAvatarUrlError(t('error-invalid-image-url'));
+		}
 	};
 
 	const clickReset = (): void => {
@@ -61,7 +75,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const url = newAvatarSource;
 
 	const handleAvatarFromUrlChange = (event: ChangeEvent<HTMLInputElement>): void => {
-		setAvatarFromUrl(event.currentTarget.value);
+		if (avatarUrlError) {
+			setAvatarUrlError(undefined);
+		}
+		const { value } = event.currentTarget;
+		setAvatarFromUrl(value);
 	};
 
 	const handleSelectSuggestion = useCallback(
@@ -87,7 +105,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						imageOrientation: rotateImages ? 'from-image' : 'none',
 						objectFit: 'contain',
 					}}
-					onError={() => dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') })}
+					onError={() => setAvatarUrlError(t('error-invalid-image-url'))}
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
@@ -98,7 +116,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<IconButton
 							icon='permalink'
 							secondary
-							disabled={disabled || !avatarFromUrl}
+							disabled={disabled || !avatarFromUrl || !!avatarUrlError}
 							title={t('Add_URL')}
 							mi={4}
 							onClick={handleAddUrl}
@@ -116,6 +134,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						mis={4}
 						onChange={handleAvatarFromUrlChange}
 					/>
+					{avatarUrlError && (
+						<FieldError aria-live='assertive' id={`${imageUrlField}-error`}>
+							{avatarUrlError}
+						</FieldError>
+					)}
 				</Box>
 			</Box>
 		</Box>
