@@ -328,25 +328,29 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async sendMessage(message: IMessage, room: IRoomNativeFederated, user: IUser): Promise<void> {
+		this.logger.info({ msg: 'Attempting to send message to Matrix', messageId: message._id, roomId: room._id, username: user.username });
 		try {
 			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 			let result;
 			if (message.files && message.files.length > 0) {
+				this.logger.debug({ msg: 'Handling file message bridging' });
 				result = await this.handleFileMessage(message, room.federation.mrid, userMui, this.serverName);
 			} else {
+				this.logger.debug({ msg: 'Handling text message bridging' });
 				result = await this.handleTextMessage(message, room.federation.mrid, userMui, this.serverName);
 			}
 
 			if (!result) {
+				this.logger.error({ msg: 'No result returned from handleTextMessage/handleFileMessage' });
 				throw new Error('Failed to send message to Matrix - no result returned');
 			}
 
 			await Messages.setFederationEventIdById(message._id, result.eventId);
 
-			this.logger.debug({ msg: 'Message sent to Matrix successfully', eventId: result.eventId });
+			this.logger.info({ msg: 'Message sent to Matrix successfully', eventId: result.eventId, messageId: message._id });
 		} catch (err) {
-			this.logger.error({ msg: 'Failed to send message to Matrix', err });
+			this.logger.error({ msg: 'Failed to send message to Matrix', err, messageId: message._id });
 			throw err;
 		}
 	}

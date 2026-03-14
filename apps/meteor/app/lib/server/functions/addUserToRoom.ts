@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Team, Room } from '@rocket.chat/core-services';
-import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
+import { type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -84,10 +84,10 @@ export const addUserToRoom = async (
 		throw error;
 	}
 
-	// for federation rooms we stop here since everything else will be handled by the federation invite flow
-	if (isRoomNativeFederated(room)) {
+	// for federation rooms we allow local join to ensure bridging hooks trigger
+	/* if (isRoomNativeFederated(room)) {
 		return;
-	}
+	} */
 
 	// TODO: are we calling this twice?
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
