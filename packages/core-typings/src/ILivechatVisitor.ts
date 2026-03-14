@@ -14,6 +14,11 @@ export interface IVisitorEmail {
 	address: string;
 }
 
+export interface IVisitorExternalIdentifier {
+	userId: string;
+	username?: string;
+}
+
 export interface ILivechatVisitor extends IRocketChatRecord {
 	username: string;
 	ts: Date;
@@ -26,6 +31,7 @@ export interface ILivechatVisitor extends IRocketChatRecord {
 	ip?: string;
 	host?: string;
 	visitorEmails?: IVisitorEmail[];
+	externalIds?: Record<string, IVisitorExternalIdentifier>;
 	status?: UserStatus;
 	lastAgent?: {
 		username: string;

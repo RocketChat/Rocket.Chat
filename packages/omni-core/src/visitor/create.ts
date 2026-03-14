@@ -1,4 +1,4 @@
-import { type ILivechatVisitor, UserStatus } from '@rocket.chat/core-typings';
+import { type ILivechatVisitor, type IVisitorExternalIdentifier, UserStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatContacts, LivechatDepartment, LivechatVisitors, Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
@@ -11,11 +11,12 @@ type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'depa
 	connectionData?: any;
 	email?: string;
 	phone?: { number: string };
+	externalIds?: Record<string, IVisitorExternalIdentifier>;
 };
 
 export const registerGuest = makeFunction(
 	async (
-		{ id, token, name, phone, email, department, username, connectionData, status = UserStatus.ONLINE }: RegisterGuestType,
+		{ id, token, name, phone, email, department, username, connectionData, status = UserStatus.ONLINE, externalIds }: RegisterGuestType,
 		{ shouldConsiderIdleAgent }: { shouldConsiderIdleAgent: boolean },
 	): Promise<ILivechatVisitor | null> => {
 		if (!token) {
@@ -24,12 +25,20 @@ export const registerGuest = makeFunction(
 
 		logger.debug({ msg: 'New incoming conversation', id, token });
 
-		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
+		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } & Record<string, unknown> = {
 			token,
 			status,
 			...(phone?.number && { phone: [{ phoneNumber: phone.number }] }),
 			...(name && { name }),
 		};
+
+		// Use dot notation for `externalIds` to merge with existing entries
+		// instead of overwriting.
+		if (externalIds) {
+			for (const [source, externalId] of Object.entries(externalIds)) {
+				visitorDataToUpdate[`externalIds.${source}`] = externalId;
+			}
+		}
 
 		if (email) {
 			const visitorEmail = email.trim().toLowerCase();

@@ -10,6 +10,7 @@ import { useBlockChannel } from './useBlockChannel';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import { useOutboundMessageModal } from '../../../components/outboundMessage/modals/OutboundMessageModal';
+import { useVisitorInfo } from '../../../directory/hooks/useVisitorInfo';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 
 type ContactInfoChannelsItemProps = Serialized<ILivechatContactChannel> & {
@@ -28,6 +29,19 @@ const ContactInfoChannelsItem = ({
 	const { t } = useTranslation();
 	const { getSourceLabel, getSourceName } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
+
+	const { data: visitorData } = useVisitorInfo(visitor.visitorId);
+
+	const channelLabel = useMemo(() => {
+		const phone = getSourceLabel(details);
+		const externalId = details?.id ? visitorData?.externalIds?.[details.id] : undefined;
+		const username = externalId?.username;
+
+		if (username && phone) {
+			return `${username} - ${phone}`;
+		}
+		return username || phone;
+	}, [visitorData?.externalIds, details, getSourceLabel]);
 
 	const [showButton, setShowButton] = useState(false);
 	const handleBlockContact = useBlockChannel({ association: visitor, blocked });
@@ -94,7 +108,7 @@ const ContactInfoChannelsItem = ({
 				)}
 			</Box>
 			<Box minHeight='x24' alignItems='center' mbs={4} display='flex' justifyContent='space-between'>
-				<Box>{getSourceLabel(details)}</Box>
+				<Box>{channelLabel}</Box>
 				{showButton && <GenericMenu detached title={t('Options')} sections={[{ items: menuItems }]} tiny />}
 			</Box>
 		</Box>
