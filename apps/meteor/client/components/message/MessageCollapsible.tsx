@@ -5,17 +5,21 @@ import AttachmentDownload from './content/attachments/structure/AttachmentDownlo
 import AttachmentSize from './content/attachments/structure/AttachmentSize';
 import { useCollapse } from './hooks/useCollapse';
 
+
 type MessageCollapsibleProps = {
 	children?: ReactNode;
 	title?: string;
 	hasDownload?: boolean;
 	link?: string;
 	size?: number;
+	// initial collapsed state coming from the attachment payload
 	isCollapsed?: boolean;
+	// optional storage id to persist per-item collapsed state (e.g. attachment id)
+	storageId?: string;
 };
 
-const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed }: MessageCollapsibleProps): ReactElement => {
-	const [collapsed, collapse] = useCollapse(isCollapsed);
+const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollapsed, storageId }: MessageCollapsibleProps): ReactElement => {
+	const [collapsed, collapse] = useCollapse(isCollapsed, storageId);
 
 	return (
 		<>
