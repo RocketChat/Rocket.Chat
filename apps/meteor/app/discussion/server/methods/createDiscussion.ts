@@ -16,7 +16,8 @@ import { createRoom } from '../../../lib/server/functions/createRoom';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { afterSaveMessageAsync } from '../../../lib/server/lib/afterSaveMessage';
 import { settings } from '../../../settings/server';
-
+mport { Subscriptions } from '../../../models/server/raw';
+import { addUserToRoom } from '../../../../server/services/rooms/addUserToRoom';
 const getParentRoom = async (rid: IRoom['_id']) => {
 	const room = await Rooms.findOne(rid);
 	return room && (room.prid ? Rooms.findOne(room.prid, { projection: { _id: 1 } }) : room);
@@ -172,6 +173,22 @@ const create = async ({
 			creator: user._id,
 		},
 	);
+const parentMembers = Subscriptions.findByRoomId(roomld ,
+ { field: {'u._id':1}}).fetch();
+  
+ for(const member of parentMembers){
+	try{
+		if(member.u_id !== Meteor.userId()){
+			await addUserToRoom({
+				rid:discussion._id,
+				uid:member.u.username,
+			});
+		}
+	}.catch(e){
+		console.error(failed to add user ${member.u_id} to disussion${discussion._id}, e);
+	}
+ }
+
 
 	let discussionMsg;
 	if (message) {
@@ -232,6 +249,22 @@ export const createDiscussion = async (
 		});
 	}
 
+const parentMembers = Subscriptions.findByRoomId(roomId,
+	{fields: {'u.id': 1 , 'u.username':1}}).fetch();
+
+	for(const member of parentMembers){
+		try{
+			if(member.u_id !== owner._id){
+				await addUserToRoom({
+					rid:discussion._id,
+					uid: member.u._id,
+					username: member.username ,
+				});
+			}
+		}catch(error){
+			console.error(Failed adding user ${member.u._id} to disussion , error);
+		}
+	}
 	return create({ prid, pmid, t_name: discussionName, reply, users, user, encrypted, topic });
 };
 
