@@ -27,6 +27,7 @@ function MultiSelectSettingInput({
 	autocomplete,
 }: MultiSelectSettingInputProps): ReactElement {
 	const { t } = useTranslation();
+	const labelId = `${_id}-label`;
 
 	const handleChange = (value: string[]): void => {
 		onChangeValue?.(value);
@@ -36,7 +37,7 @@ function MultiSelectSettingInput({
 	return (
 		<Field>
 			<FieldRow>
-				<FieldLabel htmlFor={_id} title={_id} required={required}>
+				<FieldLabel id={labelId} htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
@@ -52,7 +53,7 @@ function MultiSelectSettingInput({
 					// autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}
-					aria-label={_id} // FIXME: Multiselect (fuselage) should be associating the FieldLabel automatically. This is a workaround for accessibility and test locators.
+					aria-labelledby={labelId}
 				/>
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}
