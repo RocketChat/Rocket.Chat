@@ -1,4 +1,4 @@
-import { type Node, type Viewport } from 'reactflow';
+import type { Node, Viewport } from 'reactflow';
 
 import { ActionTypes } from '../reducer';
 
