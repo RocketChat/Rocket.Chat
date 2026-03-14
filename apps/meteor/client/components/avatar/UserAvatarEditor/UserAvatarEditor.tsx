@@ -3,7 +3,7 @@ import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import { useId, useState, useCallback } from 'react';
+import { useId, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
@@ -19,9 +19,18 @@ type UserAvatarEditorProps = {
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
 	name: IUser['name'];
+	avatarValue?: AvatarObject;
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
+function UserAvatarEditor({
+	currentUsername,
+	username,
+	setAvatarObj,
+	name,
+	disabled,
+	etag,
+	avatarValue,
+}: UserAvatarEditorProps): ReactElement {
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
@@ -33,6 +42,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const setUploadedPreview = useCallback(
 		async (file: File, avatarObj: AvatarObject) => {
 			setAvatarObj(avatarObj);
+			setAvatarFromUrl('');
 			try {
 				const dataURL = await readFileAsDataURL(file);
 
@@ -46,7 +56,26 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 		[setAvatarObj, t, dispatchToastMessage],
 	);
 
-	const [clickUpload] = useSingleFileInput(setUploadedPreview);
+	const [clickUpload, resetFileInput] = useSingleFileInput(setUploadedPreview);
+
+	const clearAvatarInputs = useCallback(() => {
+		setNewAvatarSource(undefined);
+		setAvatarFromUrl('');
+		resetFileInput();
+	}, [resetFileInput]);
+
+	useEffect(() => {
+		if (!avatarValue) {
+			clearAvatarInputs();
+		}
+	}, [avatarValue, clearAvatarInputs]);
+
+	useEffect(() => {
+		if (!etag) {
+			return;
+		}
+		clearAvatarInputs();
+	}, [etag, clearAvatarInputs]);
 
 	const handleAddUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);
@@ -56,6 +85,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const clickReset = (): void => {
 		setNewAvatarSource(`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`);
 		setAvatarObj('reset');
+		setAvatarFromUrl('');
 	};
 
 	const url = newAvatarSource;
@@ -68,6 +98,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 		(suggestion: UserAvatarSuggestion) => {
 			setAvatarObj(suggestion as unknown as AvatarObject);
 			setNewAvatarSource(suggestion.blob);
+			setAvatarFromUrl('');
 		},
 		[setAvatarObj, setNewAvatarSource],
 	);

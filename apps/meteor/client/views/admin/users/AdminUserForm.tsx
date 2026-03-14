@@ -1,4 +1,4 @@
-import type { AvatarObject, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { AvatarObject, AvatarUnchanged, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
 import {
 	Field,
 	FieldLabel,
@@ -87,7 +87,7 @@ const getInitialValue = ({
 	freeSwitchExtension: data?.freeSwitchExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
-	avatar: '' as AvatarObject,
+	avatar: '' satisfies AvatarUnchanged as AvatarObject,
 	passwordConfirmation: '',
 });
 
@@ -210,13 +210,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller
 								name='avatar'
 								control={control}
-								render={({ field: { onChange } }) => (
+								render={({ field: { onChange, value } }) => (
 									<UserAvatarEditor
 										currentUsername={userData?.username}
 										username={username}
 										etag={userData?.avatarETag}
 										setAvatarObj={onChange}
 										name={userFullName}
+										avatarValue={value}
 									/>
 								)}
 							/>

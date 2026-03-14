@@ -1,4 +1,4 @@
-import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
+import type { AvatarObject, AvatarUnchanged, IUser } from '@rocket.chat/core-typings';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 
@@ -19,7 +19,7 @@ export const getProfileInitialValues = (user: IUser | null): AccountProfileFormV
 	email: user ? getUserEmailAddress(user) || '' : '',
 	name: user?.name ?? '',
 	username: user?.username ?? '',
-	avatar: '' as AvatarObject,
+	avatar: '' satisfies AvatarUnchanged as AvatarObject,
 	url: '',
 	statusText: user?.statusText ?? '',
 	statusType: user?.status ?? '',

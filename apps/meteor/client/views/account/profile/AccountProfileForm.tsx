@@ -129,7 +129,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		} finally {
-			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
+			reset({ email, name, username, statusType, statusText, nickname, bio, customFields, avatar });
 		}
 	};
 
@@ -150,7 +150,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					<Controller
 						control={control}
 						name='avatar'
-						render={({ field: { onChange } }) => (
+						render={({ field: { onChange, value } }) => (
 							<UserAvatarEditor
 								etag={user?.avatarETag}
 								currentUsername={user?.username}
@@ -158,6 +158,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 								username={username}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
+								avatarValue={value}
 							/>
 						)}
 					/>
