@@ -11,7 +11,8 @@ export const validateInviteToken = async (token: string) => {
 		});
 	}
 
-	const inviteData = await Invites.findOneById(token);
+	const inviteData = await Invites.findOneByInviteToken(token);
+
 	if (!inviteData) {
 		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', {
 			method: 'validateInviteToken',
