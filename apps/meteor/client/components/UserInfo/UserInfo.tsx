@@ -127,6 +127,13 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
+					{name && name !== username && (
+						<InfoPanelField>
+							<InfoPanelLabel>{t('Name')}</InfoPanelLabel>
+							<InfoPanelText data-qa='UserInfoName'>{name}</InfoPanelText>
+						</InfoPanelField>
+					)}
+
 					{username && username !== name && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Username')}</InfoPanelLabel>
