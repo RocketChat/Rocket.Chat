@@ -111,6 +111,12 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if (/Name contains invalid characters/.test(error.error)) {
 						setError('name', { type: 'name-contains-invalid-chars', message: t('registration.component.form.nameContainsInvalidChars') });
 					}
+					if (error.error === 'user_password_invalid_complexity_length') {
+						setError('password', {
+							type: 'password-complexity-length',
+							message: t('registration.component.form.passwordTooShort'),
+						});
+					}
 					if (/error-too-many-requests/.test(error.error)) {
 						dispatchToastMessage({ type: 'error', message: error.error });
 					}
