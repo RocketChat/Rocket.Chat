@@ -1,4 +1,6 @@
-import { Component, type ComponentChildren } from 'preact';
+import type { ComponentChildren } from 'preact';
+import { Component } from 'preact';
+import { forwardRef } from 'preact/compat';
 import type { HTMLAttributes, TargetedEvent } from 'preact/compat';
 
 import { createClassName } from '../../helpers/createClassName';
@@ -9,14 +11,13 @@ import styles from './styles.scss';
 type MenuProps = {
 	hidden?: boolean;
 	placement?: string;
-	ref?: any; // FIXME: remove this
-} & Omit<HTMLAttributes<HTMLDivElement>, 'ref'>;
+} & HTMLAttributes<HTMLDivElement>;
 
-export const Menu = ({ children, hidden, placement = '', ...props }: MenuProps) => (
-	<div className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
+export const Menu = forwardRef<HTMLDivElement, MenuProps>(({ children, hidden, placement = '', ...props }, ref) => (
+	<div ref={ref} className={createClassName(styles, 'menu', { hidden, placement })} {...props}>
 		{children}
 	</div>
-);
+));
 
 type GroupProps = {
 	title?: string;
@@ -63,9 +64,9 @@ type PopoverMenuWrapperState = {
 class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuWrapperState> {
 	override state: PopoverMenuWrapperState = {};
 
-	menuRef: (Component & { base: Element }) | null = null;
+	menuRef: HTMLDivElement | null = null;
 
-	handleRef = (ref: (Component & { base: Element }) | null) => {
+	handleRef = (ref: HTMLDivElement | null) => {
 		this.menuRef = ref;
 	};
 
@@ -80,7 +81,7 @@ class PopoverMenuWrapper extends Component<PopoverMenuWrapperProps, PopoverMenuW
 
 	override componentDidMount() {
 		const { triggerBounds, overlayBounds } = this.props;
-		const menuBounds = normalizeDOMRect(this.menuRef?.base?.getBoundingClientRect());
+		const menuBounds = normalizeDOMRect(this.menuRef?.getBoundingClientRect());
 
 		const menuWidth = menuBounds.right - menuBounds.left;
 		const menuHeight = menuBounds.bottom - menuBounds.top;
