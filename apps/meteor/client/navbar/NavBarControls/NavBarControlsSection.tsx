@@ -18,16 +18,19 @@ const NavBarControlsSection = () => {
 	const callAction = useMediaCallAction();
 
 	if (isMobile) {
-		return (
-			<NavBarSection>
-				{(showOmnichannel || callAction) && <NavBarControlsWithData />}
-				<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
-					<NavBarItemAdministrationMenu />
-					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
-				</NavBarGroup>
-			</NavBarSection>
-		);
-	}
+	return (
+		<NavBarSection>
+			{callAction && <NavBarVoipGroup />}
+			{showOmnichannel && <NavBarOmnichannelGroup />}
+			{(showOmnichannel || callAction) && <NavBarControlsWithData />}
+			<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
+				<NavBarItemAdministrationMenu />
+				{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
+			</NavBarGroup>
+		</NavBarSection>
+	);
+}
+
 
 	return (
 		<NavBarSection>
