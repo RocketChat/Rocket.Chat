@@ -76,7 +76,7 @@ export const getMatrixSendLeaveRoutes = () => {
 		isAuthenticatedMiddleware(),
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
-			const body = await c.req.json();
+			const body = c.get('bodyParams');
 			try {
 				await federationSDK.sendLeave(roomId, eventId, body);
 				return {

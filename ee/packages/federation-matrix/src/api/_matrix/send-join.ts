@@ -239,7 +239,7 @@ export const getMatrixSendJoinRoutes = () => {
 		canAccessResourceMiddleware('room'),
 		async (c) => {
 			const { roomId, stateKey } = c.req.param();
-			const body = await c.req.json();
+			const body = c.get('bodyParams');
 
 			const response = await federationSDK.sendJoin(roomId, stateKey as EventID, body);
 
