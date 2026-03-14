@@ -1,11 +1,11 @@
 import type { IReadReceipt, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IReadReceiptsModel } from '@rocket.chat/model-typings';
-import { BaseRaw } from '@rocket.chat/models';
+import { BaseRaw, readSecondaryPreferred } from '@rocket.chat/models';
 import type { Collection, FindCursor, Db, IndexDescription, DeleteResult } from 'mongodb';
 
-export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadReceiptsModel {
+export class ReadReceiptsArchiveRaw extends BaseRaw<IReadReceipt> implements IReadReceiptsModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IReadReceipt>>) {
-		super(db, 'read_receipts', trash);
+		super(db, 'read_receipts_archive', trash);
 	}
 
 	protected override modelIndexes(): IndexDescription[] {
@@ -13,9 +13,12 @@ export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadRecei
 	}
 
 	findByMessageId(messageId: string): FindCursor<IReadReceipt> {
-		return this.find({ messageId });
+		// Pass read preference directly to the find query to prefer reading from secondary replicas
+		return this.find({ messageId }, { readPreference: readSecondaryPreferred() });
 	}
 
+	// Archive doesn't need all the delete methods from hot storage
+	// But we implement them to satisfy the interface
 	removeByUserId(userId: string): Promise<DeleteResult> {
 		return this.deleteMany({ userId });
 	}
@@ -37,6 +40,7 @@ export class ReadReceiptsRaw extends BaseRaw<IReadReceipt> implements IReadRecei
 	}
 
 	findOlderThan(date: Date): FindCursor<IReadReceipt> {
-		return this.find({ ts: { $lt: date } });
+		// Pass read preference directly to the find query to prefer reading from secondary replicas
+		return this.find({ ts: { $lt: date } }, { readPreference: readSecondaryPreferred() });
 	}
 }

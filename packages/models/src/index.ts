@@ -122,6 +122,7 @@ export * from './dummy/ReadReceipts';
 
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
+export { readSecondaryPreferred } from './readSecondaryPreferred';
 
 export const Apps = proxify<IAppsModel>('IAppsModel');
 export const AppsPersistence = proxify<IAppsPersistenceModel>('IAppsPersistenceModel');
@@ -177,6 +178,7 @@ export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');
 export const Permissions = proxify<IPermissionsModel>('IPermissionsModel');
 export const ReadReceipts = proxify<IReadReceiptsModel>('IReadReceiptsModel');
+export const ReadReceiptsArchive = proxify<IReadReceiptsModel>('IReadReceiptsArchiveModel');
 export const MessageReads = proxify<IMessageReadsModel>('IMessageReadsModel');
 export const Reports = proxify<IReportsModel>('IReportsModel');
 export const Roles = proxify<IRolesModel>('IRolesModel');

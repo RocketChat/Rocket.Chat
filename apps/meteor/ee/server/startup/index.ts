@@ -5,6 +5,7 @@ import './engagementDashboard';
 import './maxRoomsPerGuest';
 import './upsell';
 import './services';
+import './readReceiptsArchive';
 import { api } from '@rocket.chat/core-services';
 
 import { isRunningMs } from '../../../server/lib/isRunningMs';

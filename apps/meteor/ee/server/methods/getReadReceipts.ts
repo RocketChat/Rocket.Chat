@@ -21,7 +21,7 @@ export const getReadReceiptsFunction = async function (messageId: IMessage['_id'
 	}
 	check(messageId, String);
 
-	const message = await Messages.findOneById(messageId);
+	const message = await Messages.findOneById(messageId, { projection: { _id: 1, rid: 1, receiptsArchived: 1 } });
 	if (!message) {
 		throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 			method: 'getReadReceipts',
