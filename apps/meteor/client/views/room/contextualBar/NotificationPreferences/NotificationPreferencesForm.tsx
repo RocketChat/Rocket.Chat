@@ -84,7 +84,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 									optionValue={value}
 									onChange={onChange}
 								>
-									<IconButton icon='play' mis={4} onClick={handlePlaySound} />
+									<IconButton icon='play' mis={4} title={t('Play_sound')} onClick={handlePlaySound} />
 								</NotificationPreference>
 							)}
 						/>
