@@ -187,6 +187,11 @@ export class AppListenerBridge {
 
 	// eslint-disable-next-line complexity
 	async handleEvent(args: HandleEvent): Promise<any> {
+		const listenerManager = this.orch.getManager().getListenerManager();
+		if (!listenerManager.hasListeners(args.event as AppInterface)) {
+			return undefined;
+		}
+
 		switch (args.event) {
 			case AppInterface.IPreFileUpload:
 				return this.uploadEvent(args);
