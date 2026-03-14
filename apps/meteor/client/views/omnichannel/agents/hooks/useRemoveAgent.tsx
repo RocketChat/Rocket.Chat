@@ -13,7 +13,7 @@ export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const deleteAction = useEndpoint('DELETE', '/v1/livechat/users/agent/:_id', { _id: uid });
+	const deleteAction = useEndpoint('DELETE', '/v1/livechat/users/:type/:_id', { type: 'agent', _id: uid });
 
 	const handleDelete = useEffectEvent(() => {
 		const onDeleteAgent = async () => {

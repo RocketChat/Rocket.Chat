@@ -4628,34 +4628,6 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	// Concrete path aliases for useEndpoint() compatibility
-	'/v1/livechat/users/manager': {
-		GET: (
-			params: PaginatedRequest<{ text?: string; fields?: string; onlyAvailable?: boolean; excludeId?: string; showIdleAgents?: boolean }>,
-		) => PaginatedResult<{
-			users: ILivechatAgent[];
-		}>;
-		POST: (params: { username: string }) => { success: boolean };
-	};
-
-	'/v1/livechat/users/agent': {
-		GET: (
-			params: PaginatedRequest<{ text?: string; onlyAvailable?: boolean; excludeId?: string; showIdleAgents?: boolean }>,
-		) => PaginatedResult<{
-			users: (ILivechatAgent & { departments: string[] })[];
-		}>;
-		POST: (params: { username: string }) => { success: boolean };
-	};
-
-	'/v1/livechat/users/manager/:_id': {
-		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
-		DELETE: () => void;
-	};
-	'/v1/livechat/users/agent/:_id': {
-		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> };
-		DELETE: () => { success: boolean };
-	};
-
 	'/v1/livechat/visitor': {
 		POST: (params: { visitor: ILivechatVisitorDTO }) => {
 			visitor: ILivechatVisitor;
