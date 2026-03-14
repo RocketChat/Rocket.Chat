@@ -7,15 +7,19 @@ type SidebarGenericItemProps = {
 	active?: boolean;
 	featured?: boolean;
 	children: ReactNode;
+	onClick?: () => void;
 	externalUrl?: boolean;
 };
 
-const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: SidebarGenericItemProps): ReactElement => (
+const SidebarGenericItem = ({ href, active, externalUrl, onClick , children, ...props }: SidebarGenericItemProps): ReactElement => {
+	
+	return(
 	<SidebarItem
 		selected={active}
 		clickable
 		is='a'
 		href={href}
+		onClick={onClick}
 		{...(externalUrl && { target: '_blank', rel: 'noopener noreferrer' })}
 		{...props}
 	>
@@ -23,6 +27,7 @@ const SidebarGenericItem = ({ href, active, externalUrl, children, ...props }: S
 			{children}
 		</Box>
 	</SidebarItem>
-);
+	);
+};
 
 export default memo(SidebarGenericItem);
