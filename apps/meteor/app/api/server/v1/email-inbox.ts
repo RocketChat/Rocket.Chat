@@ -1,55 +1,76 @@
+import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { EmailInbox, Users } from '@rocket.chat/models';
-import { check, Match } from 'meteor/check';
+import {
+	ajv,
+	isEmailInboxList,
+	isEmailInbox,
+	isEmailInboxSearch,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { sendTestEmailToInbox } from '../../../../server/features/EmailInbox/EmailInbox_Outgoing';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { insertOneEmailInbox, findEmailInboxes, updateEmailInbox, removeEmailInbox } from '../lib/emailInbox';
 
-API.v1.addRoute(
-	'email-inbox.list',
-	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
-	{
-		async get() {
+const emailInboxEndpoints = API.v1
+	.get(
+		'email-inbox.list',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-email-inbox'],
+			query: isEmailInboxList,
+			response: {
+				200: ajv.compile<{ emailInboxes: IEmailInbox[]; count: number; offset: number; total: number; success: true }>({
+					type: 'object',
+					properties: {
+						emailInboxes: { type: 'array', items: { type: 'object', additionalProperties: true } },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['emailInboxes', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
 			const emailInboxes = await findEmailInboxes({ query, pagination: { offset, count, sort } });
 
 			return API.v1.success(emailInboxes);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'email-inbox',
-	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
-	{
-		async post() {
-			check(this.bodyParams, {
-				_id: Match.Maybe(String),
-				active: Boolean,
-				name: String,
-				email: String,
-				description: Match.Maybe(String),
-				senderInfo: Match.Maybe(String),
-				department: Match.Maybe(String),
-				smtp: Match.ObjectIncluding({
-					server: String,
-					port: Number,
-					username: String,
-					password: String,
-					secure: Boolean,
+	)
+	.post(
+		'email-inbox',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-email-inbox'],
+			body: isEmailInbox,
+			response: {
+				200: ajv.compile<{ _id: string; success: true }>({
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['_id', 'success'],
+					additionalProperties: false,
 				}),
-				imap: Match.ObjectIncluding({
-					server: String,
-					port: Number,
-					username: String,
-					password: String,
-					secure: Boolean,
-					maxRetries: Number,
-				}),
-			});
-
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const emailInboxParams = this.bodyParams;
 
 			let _id: string;
@@ -74,18 +95,27 @@ API.v1.addRoute(
 
 			return API.v1.success({ _id });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'email-inbox/:_id',
-	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
-	{
-		async get() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
+	)
+	.get(
+		'email-inbox/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-email-inbox'],
+			response: {
+				200: ajv.compile<IEmailInbox & { success: true }>({
+					type: 'object',
+					additionalProperties: true,
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+				}),
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+		},
+		async function action() {
 			const { _id } = this.urlParams;
 			if (!_id) {
 				throw new Error('error-invalid-param');
@@ -98,11 +128,28 @@ API.v1.addRoute(
 
 			return API.v1.success(emailInbox);
 		},
-		async delete() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
+	)
+	.delete(
+		'email-inbox/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-email-inbox'],
+			response: {
+				200: ajv.compile<{ _id: string; success: true }>({
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['_id', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+		},
+		async function action() {
 			const { _id } = this.urlParams;
 			if (!_id) {
 				throw new Error('error-invalid-param');
@@ -116,18 +163,29 @@ API.v1.addRoute(
 
 			return API.v1.success({ _id });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'email-inbox.search',
-	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
-	{
-		async get() {
-			check(this.queryParams, {
-				email: String,
-			});
-
+	)
+	.get(
+		'email-inbox.search',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-email-inbox'],
+			query: isEmailInboxSearch,
+			response: {
+				200: ajv.compile<{ emailInbox: IEmailInbox | null; success: true }>({
+					type: 'object',
+					properties: {
+						emailInbox: { type: 'object', additionalProperties: true, nullable: true },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['emailInbox', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const { email } = this.queryParams;
 
 			// TODO: Chapter day backend - check if user has permission to view this email inbox instead of null values
@@ -136,18 +194,28 @@ API.v1.addRoute(
 
 			return API.v1.success({ emailInbox });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'email-inbox.send-test/:_id',
-	{ authRequired: true, permissionsRequired: ['manage-email-inbox'] },
-	{
-		async post() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
+	)
+	.post(
+		'email-inbox.send-test/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['manage-email-inbox'],
+			response: {
+				200: ajv.compile<{ _id: string; success: true }>({
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['_id', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+		},
+		async function action() {
 			const { _id } = this.urlParams;
 			if (!_id) {
 				throw new Error('error-invalid-param');
@@ -167,5 +235,11 @@ API.v1.addRoute(
 
 			return API.v1.success({ _id });
 		},
-	},
-);
+	);
+
+export type EmailInboxApiEndpoints = ExtractRoutesFromAPI<typeof emailInboxEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends EmailInboxApiEndpoints {}
+}
