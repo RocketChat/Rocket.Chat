@@ -1,21 +1,22 @@
 import type { RoomAccessValidator } from '@rocket.chat/core-services';
 import { Authorization } from '@rocket.chat/core-services';
-import { Subscriptions } from '@rocket.chat/models';
+import { Subscriptions, Users } from '@rocket.chat/models';
 
-import { canAccessRoom } from './canAccessRoom';
+import { canAccessRoom, isPartialUser } from './canAccessRoom';
 
 export const canReadRoom: RoomAccessValidator = async (...args) => {
+	const [room, user] = args;
+	const userArgument = isPartialUser(user) ? await Users.findOneById(user._id) : user;
+
 	if (!(await canAccessRoom(...args))) {
 		return false;
 	}
 
-	const [room, user] = args;
-
 	if (
-		user?._id &&
+		userArgument &&
 		room?.t === 'c' &&
-		!(await Authorization.hasPermission(user._id, 'preview-c-room')) &&
-		!(await Subscriptions.findOneByRoomIdAndUserId(room?._id, user._id, { projection: { _id: 1 } }))
+		!(await Authorization.hasPermission(userArgument, 'preview-c-room')) &&
+		!(await Subscriptions.findOneByRoomIdAndUserId(room?._id, userArgument._id, { projection: { _id: 1 } }))
 	) {
 		return false;
 	}
