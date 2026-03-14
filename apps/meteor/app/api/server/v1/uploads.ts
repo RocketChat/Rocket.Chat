@@ -19,6 +19,7 @@ import { API } from '../api';
 import { Random } from '@rocket.chat/random';
 import { FileUpload } from '../../../file-upload/server';
 import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
+import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 
 const mkdir = fs.promises.mkdir;
 const readdir = fs.promises.readdir;
@@ -147,6 +148,10 @@ const uploadsInitEndpoint = API.v1.post(
 			return API.v1.failure('Missing required parameters');
 		}
 
+		if (!(await canAccessRoomIdAsync(this.userId, rid))) {
+			return API.v1.failure('Unauthorized');
+		}
+
 		const uploadId = Random.id();
 		const totalChunks = Math.ceil(fileSize / chunkSize);
 
@@ -162,7 +167,7 @@ const uploadsInitEndpoint = API.v1.post(
 					complete: false,
 					uploading: true,
 					resumable: {
-						uploadId,
+					uploadId,
 						chunkSize,
 						totalChunks,
 						uploadedChunks: [],
@@ -206,21 +211,52 @@ const uploadsChunkEndpoint = API.v1.post(
 			return API.v1.failure('Missing required parameters');
 		}
 
-		const session = await Uploads.findOneById(uploadId as string);
-		if (!session || session.userId !== this.userId) {
+		const session = (await Uploads.findOneById(uploadId as string)) as any;
+		if (!session || session.userId !== this.userId || !session.resumable) {
 			return API.v1.notFound();
 		}
 
-		const { file } = await MultipartUploadHandler.parseRequest(this.request, { field: 'chunkData' });
+		const normalizedChunkIndex = Number(chunkIndex);
+		if (!Number.isInteger(normalizedChunkIndex) || normalizedChunkIndex < 0 || normalizedChunkIndex >= session.resumable.totalChunks) {
+			return API.v1.failure('Invalid chunk index');
+		}
+
+		const { file } = await MultipartUploadHandler.parseRequest(this.request, {
+			field: 'chunkData',
+			maxSize: session.resumable.chunkSize,
+		});
 
 		if (!file) {
 			return API.v1.failure('No file uploaded');
 		}
 
-		const chunkPath = path.join(TEMP_UPLOAD_DIR, uploadId as string, String(chunkIndex));
+		if (file.size > session.resumable.chunkSize) {
+			await MultipartUploadHandler.cleanup(file.tempFilePath);
+			return API.v1.failure('Chunk size exceeds limit');
+		}
+
+		const chunkPath = path.resolve(TEMP_UPLOAD_DIR, uploadId as string, String(normalizedChunkIndex));
+		if (!chunkPath.startsWith(path.resolve(TEMP_UPLOAD_DIR, uploadId as string))) {
+			await MultipartUploadHandler.cleanup(file.tempFilePath);
+			return API.v1.failure('Invalid path');
+		}
+
 		await rename(file.tempFilePath, chunkPath);
 
-		await Uploads.updateOne({ _id: uploadId }, { $addToSet: { 'resumable.uploadedChunks': Number(chunkIndex) } });
+		// Validate cumulative size
+		const chunkFiles = await readdir(path.join(TEMP_UPLOAD_DIR, uploadId as string));
+		let cumulativeSize = 0;
+		for (const cf of chunkFiles) {
+			const chunkStat = await stat(path.join(TEMP_UPLOAD_DIR, uploadId as string, cf));
+			cumulativeSize += chunkStat.size;
+		}
+
+		if (cumulativeSize > session.size) {
+			await unlink(chunkPath);
+			return API.v1.failure('Cumulative chunk size exceeds total file size');
+		}
+
+		await Uploads.updateOne({ _id: uploadId }, { $addToSet: { 'resumable.uploadedChunks': normalizedChunkIndex } });
 
 		return API.v1.success();
 	},
@@ -256,6 +292,10 @@ const uploadsCompleteEndpoint = API.v1.post(
 			return API.v1.notFound();
 		}
 
+		if (!(await canAccessRoomIdAsync(this.userId, session.rid))) {
+			return API.v1.failure('Unauthorized');
+		}
+
 		const sessionDir = path.join(TEMP_UPLOAD_DIR, uploadId);
 		const finalPath = path.join(TEMP_UPLOAD_DIR, `${uploadId}.final`);
 
@@ -266,7 +306,6 @@ const uploadsCompleteEndpoint = API.v1.post(
 			return API.v1.failure('Missing chunks');
 		}
 
-		// Merge chunks
 		const writeStream = fs.createWriteStream(finalPath);
 		try {
 			for (const chunkFile of chunkFiles) {
@@ -290,8 +329,7 @@ const uploadsCompleteEndpoint = API.v1.post(
 			throw error;
 		}
 
-		// Insert into FileUpload
-		const file = await readFile(finalPath);
+		const fileStream = fs.createReadStream(finalPath);
 		const fileStore = FileUpload.getStore('Uploads');
 		const details = {
 			rid: session.rid,
@@ -302,9 +340,8 @@ const uploadsCompleteEndpoint = API.v1.post(
 			uploadedAt: new Date(),
 		} as any;
 
-		const uploadedFile = await fileStore.insert(details, file);
+		const uploadedFile = await fileStore.insert(details, fileStream);
 
-		// Cleanup on success
 		try {
 			if (fs.existsSync(finalPath)) {
 				await unlink(finalPath);
@@ -350,8 +387,8 @@ const uploadsCancelEndpoint = API.v1.post(
 			return API.v1.failure('Missing required parameters');
 		}
 
-		const session = await Uploads.findOneById(uploadId);
-		if (!session || session.userId !== this.userId) {
+		const session = (await Uploads.findOneById(uploadId)) as any;
+		if (!session || session.userId !== this.userId || !session.resumable) {
 			return API.v1.notFound();
 		}
 

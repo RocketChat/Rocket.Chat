@@ -126,7 +126,7 @@ class UploadsStore extends Emitter<{
 			},
 		]);
 
-		const CHUNK_SIZE = 1024 * 1024; // 1MB
+		const CHUNK_SIZE = 1024 * 1024;
 
 		const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
 		let uploadId: string | undefined;
@@ -163,7 +163,6 @@ class UploadsStore extends Emitter<{
 				throw new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type }));
 			}
 
-			// Init resumable upload
 			const initResponse = (await sdk.rest.post('/v1/uploads/init', {
 				rid: this.rid,
 				fileName: file.name,
@@ -172,20 +171,19 @@ class UploadsStore extends Emitter<{
 				chunkSize: CHUNK_SIZE,
 			})) as any;
 
+			uploadId = initResponse.uploadId;
 			if (cancelled) {
 				try {
-					await sdk.rest.post('/v1/uploads/cancel', { uploadId: initResponse.uploadId });
+					await sdk.rest.post('/v1/uploads/cancel', { uploadId });
 				} catch (e) {
 					// ignore
 				}
 				return;
 			}
-			uploadId = initResponse.uploadId;
 
 			for (let i = 0; i < totalChunks; i++) {
 				if (cancelled) return;
 
-				// Wait if paused
 				const currentUpload = this.uploads.find((u) => u.id === id);
 				if (currentUpload?.status === 'paused') {
 					await new Promise<void>((resolve) => {
@@ -232,7 +230,6 @@ class UploadsStore extends Emitter<{
 
 			if (cancelled) return;
 
-			// Complete upload
 			const { file: finalFile } = (await sdk.rest.post('/v1/uploads/complete', { uploadId })) as any;
 			this.updateUpload(id, { id: finalFile._id, url: finalFile.url, status: 'complete' });
 		} catch (error: unknown) {
