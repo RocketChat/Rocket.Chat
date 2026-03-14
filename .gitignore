@@ -62,3 +62,7 @@ storybook-static
 development/tempo-data/
 
 .env
+ 
+# Antigravity local folders
+.agent/
+.optimization/
