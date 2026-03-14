@@ -3,9 +3,9 @@ import { useUser } from '@rocket.chat/ui-contexts';
 import { useMemo, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
+import { useAudioStream } from './useAudioStream';
 import { useGetAutocompleteOptions } from './useGetAutocompleteOptions';
 import { useMediaSessionInstance } from './useMediaSessionInstance';
-import useMediaStream from './useMediaStream';
 import { MediaCallInstanceContext } from '../context/MediaCallInstanceContext';
 import type { Signals } from '../context/MediaCallInstanceContext';
 
@@ -15,17 +15,18 @@ type MediaCallInstanceProviderProps = {
 
 const MediaCallInstanceProvider = ({ children }: MediaCallInstanceProviderProps) => {
 	const [openRoomId, setOpenRoomId] = useState<string | undefined>(undefined);
+	const [inRoomView, setInRoomView] = useState(false);
 	const user = useUser();
 	const instance = useMediaSessionInstance(user?._id);
 	const [signalEmitter] = useState(() => new Emitter<Signals>());
 
-	const [remoteStreamRefCallback, audioElement] = useMediaStream(instance);
+	const [remoteStreamRefCallback, audioElement] = useAudioStream(instance);
 
 	const getAutocompleteOptions = useGetAutocompleteOptions(instance);
 
 	const value = useMemo(
-		() => ({ instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions }),
-		[instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions],
+		() => ({ instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions, inRoomView, setInRoomView }),
+		[instance, signalEmitter, audioElement, openRoomId, setOpenRoomId, getAutocompleteOptions, inRoomView],
 	);
 
 	return (

@@ -85,15 +85,18 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 
 		this.sessionInstance = new MediaSignalingSession({
 			userId,
-			transport: (signal: ClientMediaSignal) => this.sendSignal(signal),
+			transport: (signal: ClientMediaSignal) => {
+				void this.sendSignal(signal);
+			},
 			processorFactories: {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
+			displayMediaFactory: (...args) => navigator.mediaDevices.getDisplayMedia(...args),
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: new MediaCallLogger(),
-			features: ['audio', 'transfer', 'hold'],
+			features: ['audio', 'screen-share', 'transfer', 'hold'],
 		});
 
 		if (window.sessionStorage) {

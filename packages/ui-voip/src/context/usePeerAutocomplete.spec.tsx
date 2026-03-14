@@ -24,6 +24,8 @@ const appRoot = () =>
 		.wrap((children) => (
 			<MediaCallInstanceContext.Provider
 				value={{
+					inRoomView: false,
+					setInRoomView: () => undefined,
 					instance: undefined,
 					signalEmitter: new Emitter<Signals>(),
 					audioElement: undefined,

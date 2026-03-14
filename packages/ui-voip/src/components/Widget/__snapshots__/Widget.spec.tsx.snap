@@ -50,7 +50,7 @@ exports[`renders FullWidget without crashing 1`] = `
         </div>
       </header>
       <span
-        class="rcx-box rcx-box--full rcx-css-65g3x"
+        class="rcx-box rcx-box--full rcx-css-1k2ffyh"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-1gd28qh"
@@ -66,7 +66,7 @@ exports[`renders FullWidget without crashing 1`] = `
         </div>
       </span>
       <section
-        class="rcx-box rcx-box--full rcx-css-1mjdwp7"
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
       >
         The content of the widget
       </section>

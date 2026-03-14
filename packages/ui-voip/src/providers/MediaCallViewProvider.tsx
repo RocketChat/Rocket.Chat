@@ -15,7 +15,9 @@ import { useCallSounds } from './useCallSounds';
 import { useDesktopNotifications } from './useDesktopNotifications';
 import { useMediaSession } from './useMediaSession';
 import { useMediaSessionControls } from './useMediaSessionControls';
+import { useScreenShareStreams } from './useScreenShareStreams';
 import { useWidgetExternalControlSignalListener } from './useWidgetExternalControlSignalListener';
+import useWidgetPositionTracker from './useWidgetPositionTracker';
 import { useMediaCallInstance } from '../context/MediaCallInstanceContext';
 import MediaCallViewContext from '../context/MediaCallViewContext';
 import type { PeerInfo } from '../context/definitions';
@@ -203,6 +205,12 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		selectPeer(peerInfo);
 	};
 
+	const onToggleScreenSharing = () => {
+		controls.toggleScreenSharing();
+	};
+
+	const streams = useScreenShareStreams(instance);
+
 	useWidgetExternalControlSignalListener(
 		'toggleWidget',
 		useCallback(
@@ -212,6 +220,14 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 			[toggleWidget],
 		),
 	);
+
+	const { onChangePosition, getRestorePosition } = useWidgetPositionTracker();
+
+	useEffect(() => {
+		return instance?.on('endedCall', () => {
+			onChangePosition(null);
+		});
+	}, [instance, onChangePosition]);
 
 	const contextValue = {
 		sessionState,
@@ -225,6 +241,12 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		onCall,
 		onAccept,
 		onSelectPeer,
+		onToggleScreenSharing,
+		streams,
+		widgetPositionTracker: {
+			onChangePosition,
+			getRestorePosition,
+		},
 	};
 
 	return (

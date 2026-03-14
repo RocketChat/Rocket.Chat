@@ -12,6 +12,8 @@ const createWrapper = () => {
 	const wrapper = ({ children }: { children?: ReactNode }) => (
 		<MediaCallInstanceContext.Provider
 			value={{
+				inRoomView: false,
+				setInRoomView: () => undefined,
 				instance: undefined,
 				signalEmitter: new Emitter<Signals>(),
 				audioElement: undefined,
