@@ -71,7 +71,13 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 						<MessageSystemName data-username={message.u.username} data-qa-type='username'>
 							@{message.u.username}
 						</MessageSystemName>
-						<MessageSystemBody title={message.msg}>{t('Conversation_closed', { comment: message.msg })}</MessageSystemBody>
+						<MessageSystemBody
+							title={message.msg}
+							style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+						>
+							{t('Conversation_closed', { comment: message.msg })}
+						</MessageSystemBody>
+					
 						<MessageSystemTimestamp title={formatTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
 					</MessageSystemBlock>
 				</MessageSystemContainer>
