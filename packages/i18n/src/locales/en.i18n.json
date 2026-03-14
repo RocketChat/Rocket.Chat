@@ -6262,6 +6262,7 @@
   "error-invalid-subscription": "Invalid subscription",
   "error-invalid-token": "Invalid token",
   "error-invalid-triggerWords": "Invalid triggerWords",
+  "error-invalid-url": "Please enter a valid URL starting with http:// or https://",
   "error-invalid-urls": "Invalid URLs",
   "error-invalid-user": "Invalid user",
   "error-invalid-username": "Invalid username",

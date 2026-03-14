@@ -787,11 +787,15 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_AvatarExternalProviderUrl', '', {
 				type: 'string',
 				public: true,
+				validationPattern: '^https?://',
+				i18nValidation: 'error-invalid-url',
 			});
 
 			await this.add('Accounts_RoomAvatarExternalProviderUrl', '', {
 				type: 'string',
 				public: true,
+				validationPattern: '^https?://',
+				i18nValidation: 'error-invalid-url',
 			});
 
 			await this.add('Accounts_AvatarCacheTime', 3600, {
