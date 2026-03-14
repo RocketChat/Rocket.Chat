@@ -257,5 +257,7 @@ export * from './v1/cloud';
 export * from './v1/banners';
 export * from './default';
 
+export * from './v1/statistics';
+
 // Export the ajv instance for use in other packages
 export * from './v1/Ajv';
