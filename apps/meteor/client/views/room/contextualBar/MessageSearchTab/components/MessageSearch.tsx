@@ -14,6 +14,7 @@ import { isMessageNewDay } from '../../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../../MessageList/providers/MessageListProvider';
 import LoadingMessagesIndicator from '../../../body/LoadingMessagesIndicator';
 import { useRoomSubscription } from '../../../contexts/RoomContext';
+import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { useMessageSearchQuery } from '../hooks/useMessageSearchQuery';
 
 type MessageSearchProps = {
@@ -61,7 +62,12 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 														{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
 
 														{system ? (
-															<SystemMessage message={message} showUserAvatar={showUserAvatar} />
+															<SystemMessage
+																message={message}
+																showUserAvatar={showUserAvatar}
+																onClick={() => setMessageJumpQueryStringParameter(message._id)}
+																style={{ cursor: 'pointer' }}
+															/>
 														) : (
 															<RoomMessage
 																message={message}
@@ -72,6 +78,8 @@ const MessageSearch = ({ searchText, globalSearch }: MessageSearchProps): ReactE
 																context='search'
 																searchText={searchText}
 																showUserAvatar={showUserAvatar}
+																onClick={() => setMessageJumpQueryStringParameter(message._id)}
+																style={{ cursor: 'pointer' }}
 															/>
 														)}
 													</Fragment>
