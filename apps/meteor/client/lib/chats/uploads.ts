@@ -128,6 +128,28 @@ class UploadsStore extends Emitter<{
 
 		const CHUNK_SIZE = 1024 * 1024; // 1MB
 
+		const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+		let uploadId: string | undefined;
+		let xhr: { abort: () => void } | undefined;
+		let cancelled = false;
+
+		const cancelHandler = async () => {
+			cancelled = true;
+			if (xhr) {
+				xhr.abort();
+			}
+			if (uploadId) {
+				try {
+					await sdk.rest.post('/v1/uploads/cancel', { uploadId });
+				} catch (e) {
+					// ignore
+				}
+			}
+			this.set(this.uploads.filter((upload) => upload.id !== id));
+		};
+
+		this.once(`cancelling-${id}`, cancelHandler);
+
 		try {
 			if (file.size === 0) {
 				throw new Error(i18n.t('FileUpload_File_Empty'));
@@ -142,7 +164,7 @@ class UploadsStore extends Emitter<{
 			}
 
 			// Init resumable upload
-			const { uploadId } = (await sdk.rest.post('/v1/uploads/init', {
+			const initResponse = (await sdk.rest.post('/v1/uploads/init', {
 				rid: this.rid,
 				fileName: file.name,
 				fileSize: file.size,
@@ -150,18 +172,8 @@ class UploadsStore extends Emitter<{
 				chunkSize: CHUNK_SIZE,
 			})) as any;
 
-			const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-			let cancelled = false;
-
-			this.once(`cancelling-${id}`, async () => {
-				cancelled = true;
-				try {
-					await sdk.rest.post('/v1/uploads/cancel', { uploadId });
-				} catch (e) {
-					// ignore
-				}
-				this.set(this.uploads.filter((upload) => upload.id !== id));
-			});
+			if (cancelled) return;
+			uploadId = initResponse.uploadId;
 
 			for (let i = 0; i < totalChunks; i++) {
 				if (cancelled) return;
@@ -172,44 +184,39 @@ class UploadsStore extends Emitter<{
 					await new Promise<void>((resolve) => {
 						const resumeHandler = () => {
 							this.off(`resuming-${id}`, resumeHandler);
-							this.off(`cancelling-${id}`, cancelHandler);
+							this.off(`cancelling-${id}`, cancelHandlerInLoop);
 							resolve();
 						};
-						const cancelHandler = () => {
+						const cancelHandlerInLoop = () => {
 							this.off(`resuming-${id}`, resumeHandler);
-							this.off(`cancelling-${id}`, cancelHandler);
+							this.off(`cancelling-${id}`, cancelHandlerInLoop);
 							resolve();
 						};
 						this.on(`resuming-${id}`, resumeHandler);
-						this.on(`cancelling-${id}`, cancelHandler);
+						this.on(`cancelling-${id}`, cancelHandlerInLoop);
 					});
 				}
 
 				if (cancelled) return;
 
 				const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
-				const formData = new FormData();
-				formData.append('chunkData', chunk, file.name);
 
 				await new Promise((resolve, reject) => {
-					const xhr = sdk.rest.upload(`/v1/uploads/chunk?uploadId=${uploadId}&chunkIndex=${i}`, {
+					xhr = sdk.rest.upload(`/v1/uploads/chunk?uploadId=${uploadId}&chunkIndex=${i}`, {
 						chunkData: chunk,
 					});
 
-					xhr.onload = () => {
-						if (xhr.status === 200) {
-							resolve(xhr.response);
+					const currentXhr = xhr as XMLHttpRequest;
+
+					currentXhr.onload = () => {
+						if (currentXhr.status === 200) {
+							resolve(currentXhr.response);
 						} else {
-							reject(new Error(xhr.statusText));
+							reject(new Error(currentXhr.statusText));
 						}
 					};
 
-					xhr.onerror = () => reject(new Error('Network error'));
-
-					this.once(`cancelling-${id}`, () => {
-						xhr.abort();
-						reject(new Error('cancelled'));
-					});
+					currentXhr.onerror = () => reject(new Error('Network error'));
 				});
 
 				this.updateUpload(id, { percentage: Math.round(((i + 1) / totalChunks) * 100) });
@@ -221,7 +228,11 @@ class UploadsStore extends Emitter<{
 			const { file: finalFile } = (await sdk.rest.post('/v1/uploads/complete', { uploadId })) as any;
 			this.updateUpload(id, { id: finalFile._id, url: finalFile.url, status: 'complete' });
 		} catch (error: unknown) {
-			this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)), status: 'error' });
+			if (!cancelled) {
+				this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)), status: 'error' });
+			}
+		} finally {
+			this.off(`cancelling-${id}`, cancelHandler);
 		}
 	}
 }

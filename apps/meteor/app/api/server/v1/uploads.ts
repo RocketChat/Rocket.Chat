@@ -35,8 +35,11 @@ const TEMP_UPLOAD_DIR = path.join(os.tmpdir(), 'rocketchat-resumable-uploads');
 const ensureTempDir = async () => {
 	try {
 		await mkdir(TEMP_UPLOAD_DIR, { recursive: true });
-	} catch (e) {
-		// handle error if needed
+	} catch (e: any) {
+		if (e.code !== 'EEXIST') {
+			console.error(`Failed to create temporary upload directory: ${TEMP_UPLOAD_DIR}`, e);
+			throw new Error(`Failed to create temporary upload directory: ${e.message}`);
+		}
 	}
 };
 
@@ -265,14 +268,28 @@ const uploadsCompleteEndpoint = API.v1.post(
 
 		// Merge chunks
 		const writeStream = fs.createWriteStream(finalPath);
-		for (const chunkFile of chunkFiles) {
-			const chunkContent = await readFile(path.join(sessionDir, chunkFile));
-			writeStream.write(chunkContent);
-			await unlink(path.join(sessionDir, chunkFile));
+		try {
+			for (const chunkFile of chunkFiles) {
+				const chunkPath = path.join(sessionDir, chunkFile);
+				const chunkContent = await readFile(chunkPath);
+				const canContinue = writeStream.write(chunkContent);
+				if (!canContinue) {
+					await new Promise((resolve) => writeStream.once('drain', resolve));
+				}
+				await unlink(chunkPath);
+			}
+			writeStream.end();
+			await new Promise<void>((resolve, reject) => {
+				writeStream.on('finish', resolve);
+				writeStream.on('error', (err) => {
+					console.error('Error writing final file:', err);
+					reject(err);
+				});
+			});
+		} catch (error) {
+			writeStream.destroy();
+			throw error;
 		}
-		writeStream.end();
-
-		await new Promise((resolve) => writeStream.on('finish', resolve));
 
 		// Insert into FileUpload
 		const file = await readFile(finalPath);
@@ -286,12 +303,23 @@ const uploadsCompleteEndpoint = API.v1.post(
 			uploadedAt: new Date(),
 		} as any;
 
-		const uploadedFile = await fileStore.insert(details, file);
-
-		// Cleanup
-		await unlink(finalPath);
-		await rmdir(sessionDir);
-		await Uploads.deleteOne({ _id: uploadId });
+		let uploadedFile;
+		try {
+			uploadedFile = await fileStore.insert(details, file);
+		} finally {
+			// Cleanup
+			try {
+				if (fs.existsSync(finalPath)) {
+					await unlink(finalPath);
+				}
+				if (fs.existsSync(sessionDir)) {
+					await rmdir(sessionDir);
+				}
+			} catch (e) {
+				console.error('Error during cleanup:', e);
+			}
+			await Uploads.deleteOne({ _id: uploadId });
+		}
 
 		return API.v1.success({
 			file: uploadedFile as any,
