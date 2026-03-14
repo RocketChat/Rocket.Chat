@@ -3,7 +3,7 @@ import { Box, Button, Tag, Margins, Icon } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
-import { useCallback, useState, memo } from 'react';
+import { useCallback, useEffect, useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
@@ -26,7 +26,7 @@ type AppStatusProps = {
 
 const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps): ReactElement => {
 	const { t } = useTranslation();
-	const [endUserRequested, setEndUserRequested] = useState(false);
+	const [hasEndUserRequest, setHasEndUserRequest] = useState(app?.requestedEndUser ?? false);
 	const [loading, setLoading] = useSafely(useState(false));
 	const [isAppPurchased, setPurchased] = useSafely(useState(!!app?.isPurchased));
 	const setModal = useSetModal();
@@ -34,7 +34,11 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	const context = useRouteParameter('context');
 	const { price, purchaseType, pricingPlans } = app;
 
-	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
+	useEffect(() => {
+		setHasEndUserRequest(app?.requestedEndUser ?? false);
+	}, [app?.requestedEndUser]);
+
+	const button = appButtonProps({ ...app, isAdminUser, hasEndUserRequest });
 	const isAppRequestsPage = context === 'requested';
 	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
@@ -60,7 +64,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 				if (action !== 'request') {
 					await marketplaceActions[action]({ ...app, permissionsGranted });
 				} else {
-					setEndUserRequested(true);
+					setHasEndUserRequest(true);
 				}
 			}
 
@@ -152,7 +156,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						primary
 						small
 						loading={loading}
-						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
+						disabled={action === 'request' && hasEndUserRequest}
 						onClick={handleAcquireApp}
 						mie={8}
 					>
