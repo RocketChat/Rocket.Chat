@@ -78,12 +78,19 @@ export abstract class AbstractRouter<TActionCallback = (c: Context) => Promise<R
 	protected abstract convertActionToHandler(action: TActionCallback, logger: Logger): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
 }
 
+export type AuthContextVariables = {
+	user?: unknown;
+	userId?: string;
+	token?: string;
+	authContextSet?: boolean;
+};
+
 type InnerRouter = Hono<{
 	Variables: {
 		remoteAddress: string;
 		bodyParams: Record<string, unknown>;
 		queryParams: Record<string, unknown>;
-	};
+	} & AuthContextVariables;
 }>;
 
 export class Router<

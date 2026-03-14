@@ -6,6 +6,7 @@ import './addRoomLeader';
 import './addRoomModerator';
 import './addRoomOwner';
 import './afterVerifyEmail';
+import './banUserFromRoom';
 import './browseChannels';
 import './channelsList';
 import './createDirectMessage';

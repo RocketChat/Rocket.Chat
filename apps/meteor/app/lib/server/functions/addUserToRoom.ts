@@ -5,6 +5,7 @@ import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
+import { performUnbanSideEffects } from './unbanUserFromRoom';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
@@ -51,6 +52,22 @@ export const addUserToRoom = async (
 	// Check if user is already in room
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
 	if (subscription) {
+		// If the user is banned, unban them via re-invite
+		if (subscription.status === 'BANNED') {
+			const unbanResult = await Subscriptions.unbanByRoomIdAndUserId(rid, userToBeAdded._id);
+			if (unbanResult.modifiedCount !== 1) {
+				// Another concurrent re-invite already unbanned; avoid overcounting and duplicate messages
+				return true;
+			}
+
+			await performUnbanSideEffects(rid, room, userToBeAdded, {
+				byUser: inviter,
+				skipSystemMessage,
+			});
+			return true;
+		}
+
+		// User already has an active subscription — nothing to do
 		return;
 	}
 

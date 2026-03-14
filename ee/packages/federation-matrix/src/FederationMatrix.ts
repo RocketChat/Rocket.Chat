@@ -595,6 +595,69 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 	}
 
+	async unbanUser(room: IRoomNativeFederated, unbannedUser: IUser, userWhoUnbanned: IUser): Promise<void> {
+		try {
+			const actualUnbannedMatrixUserId = isUserNativeFederated(unbannedUser)
+				? unbannedUser.federation.mui
+				: `@${unbannedUser.username}:${this.serverName}`;
+
+			const actualSenderMatrixUserId = isUserNativeFederated(userWhoUnbanned)
+				? userWhoUnbanned.federation.mui
+				: `@${userWhoUnbanned.username}:${this.serverName}`;
+
+			// In Matrix, unban is a membership: leave event for the banned user.
+			// We use kickUser (which sends a leave) to propagate the unban.
+			await federationSDK.kickUser(
+				roomIdSchema.parse(room.federation.mrid),
+				userIdSchema.parse(actualUnbannedMatrixUserId),
+				userIdSchema.parse(actualSenderMatrixUserId),
+				`Unbanned by ${userWhoUnbanned.username}`,
+			);
+
+			this.logger.info({
+				msg: 'User was unbanned from Matrix room (propagated as leave)',
+				unbannedUsername: unbannedUser.username,
+				roomId: room.federation.mrid,
+				performedBy: userWhoUnbanned.username,
+			});
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to unban user from Matrix room', err });
+			throw err;
+		}
+	}
+
+	async banUser(room: IRoomNativeFederated, bannedUser: IUser, userWhoBanned: IUser): Promise<void> {
+		try {
+			const actualBannedMatrixUserId = isUserNativeFederated(bannedUser)
+				? bannedUser.federation.mui
+				: `@${bannedUser.username}:${this.serverName}`;
+
+			const actualSenderMatrixUserId = isUserNativeFederated(userWhoBanned)
+				? userWhoBanned.federation.mui
+				: `@${userWhoBanned.username}:${this.serverName}`;
+
+			// The federation SDK does not have a native banUser method.
+			// We use kickUser to propagate the removal to the Matrix side.
+			// The ban state is maintained locally via the subscription status.
+			await federationSDK.banUser(
+				roomIdSchema.parse(room.federation.mrid),
+				userIdSchema.parse(actualBannedMatrixUserId),
+				userIdSchema.parse(actualSenderMatrixUserId),
+				`Banned by ${userWhoBanned.username}`,
+			);
+
+			this.logger.info({
+				msg: 'User was banned from Matrix room (propagated as kick)',
+				bannedUsername: bannedUser.username,
+				roomId: room.federation.mrid,
+				performedBy: userWhoBanned.username,
+			});
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to ban user from Matrix room', err });
+			throw err;
+		}
+	}
+
 	async updateMessage(room: IRoomNativeFederated, message: IMessage): Promise<void> {
 		try {
 			const matrixEventId = message.federation?.eventId;

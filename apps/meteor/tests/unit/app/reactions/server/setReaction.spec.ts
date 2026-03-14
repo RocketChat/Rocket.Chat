@@ -22,6 +22,9 @@ const modelsMock = {
 		unsetReactionsInLastMessage: sinon.stub(),
 		setReactionsInLastMessage: sinon.stub(),
 	},
+	Subscriptions: {
+		findOneByRoomIdAndUserId: sinon.stub(),
+	},
 };
 const canAccessRoomAsyncMock = sinon.stub();
 const isTheLastMessageMock = sinon.stub();
@@ -119,6 +122,7 @@ describe('Reactions', () => {
 	describe('executeSetReaction', () => {
 		beforeEach(() => {
 			modelsMock.EmojiCustom.countByNameOrAlias.reset();
+			modelsMock.Subscriptions.findOneByRoomIdAndUserId.reset();
 		});
 		it('should throw an error if reaction is not on emojione list', async () => {
 			modelsMock.EmojiCustom.countByNameOrAlias.resolves(0);
@@ -166,6 +170,28 @@ describe('Reactions', () => {
 			modelsMock.Messages.findOneById.resolves({ reactions: { ':test:': { usernames: ['test'] } } });
 			modelsMock.Rooms.findOneById.resolves({ t: 'c' });
 			canAccessRoomAsyncMock.resolves(true);
+			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves(null);
+
+			const res = await executeSetReaction('test', 'test', 'test');
+			expect(res).to.be.undefined;
+		});
+		it('should throw error-user-banned if user subscription has BANNED status', async () => {
+			modelsMock.EmojiCustom.countByNameOrAlias.resolves(1);
+			modelsMock.Users.findOneById.resolves({ _id: 'user1', username: 'test' });
+			modelsMock.Messages.findOneById.resolves({ rid: 'room1', reactions: { ':test:': { usernames: ['test'] } } });
+			modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+			canAccessRoomAsyncMock.resolves(true);
+			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves({ _id: 'sub1', status: 'BANNED' });
+
+			await expect(executeSetReaction('test', 'test', 'test')).to.be.rejectedWith('error-user-banned');
+		});
+		it('should not throw banned error if subscription has no status', async () => {
+			modelsMock.EmojiCustom.countByNameOrAlias.resolves(1);
+			modelsMock.Users.findOneById.resolves({ _id: 'user1', username: 'test' });
+			modelsMock.Messages.findOneById.resolves({ rid: 'room1', reactions: { ':test:': { usernames: ['test'] } } });
+			modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+			canAccessRoomAsyncMock.resolves(true);
+			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves({ _id: 'sub1' });
 
 			const res = await executeSetReaction('test', 'test', 'test');
 			expect(res).to.be.undefined;

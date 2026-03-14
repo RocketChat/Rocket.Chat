@@ -4258,4 +4258,177 @@ describe('[Rooms]', () => {
 			expect(response.body.roles[0].roles).to.include('owner');
 		});
 	});
+
+	describe('/rooms.banUser', () => {
+		let testChannel: IRoom;
+		let bannableUser: TestUser<IUser>;
+		let bannableUserCredentials: Credentials;
+
+		before(async () => {
+			bannableUser = await createUser();
+			bannableUserCredentials = await login(bannableUser.username, password);
+
+			const result = await createRoom({ type: 'c', name: `ban-test-${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			// Invite the user to the channel
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect(200);
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+			await deleteUser(bannableUser);
+		});
+
+		it('should fail if not authenticated', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401);
+		});
+
+		it('should fail if roomId is missing', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should fail if userId and username are both missing', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should ban a user from the room', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should fail if user is already banned', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-user-already-banned');
+				});
+		});
+
+		it('should prevent banned user from sending messages', () => {
+			return request
+				.post(api('chat.sendMessage'))
+				.set(bannableUserCredentials)
+				.send({
+					message: {
+						rid: testChannel._id,
+						msg: 'This should fail',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should not list the banned user in channel members', () => {
+			return request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const usernames = res.body.members.map((m: IUser) => m.username);
+					expect(usernames).to.not.include(bannableUser.username);
+				});
+		});
+
+		describe('unban via re-invite', () => {
+			it('should unban the user when re-invited', () => {
+				return request
+					.post(api('channels.invite'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						userId: bannableUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			it('should allow the unbanned user to send messages again', () => {
+				return request
+					.post(api('chat.sendMessage'))
+					.set(bannableUserCredentials)
+					.send({
+						message: {
+							rid: testChannel._id,
+							msg: 'I am back!',
+						},
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			it('should list the unbanned user in channel members again', () => {
+				return request
+					.get(api('channels.members'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const usernames = res.body.members.map((m: IUser) => m.username);
+						expect(usernames).to.include(bannableUser.username);
+					});
+			});
+		});
+	});
 });

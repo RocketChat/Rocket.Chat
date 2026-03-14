@@ -1,6 +1,5 @@
 import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
-import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
+import { type IRoom, type IUpload, type RequiredField, isPrivateRoom, isPublicRoom, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
@@ -8,6 +7,9 @@ import {
 	isGETRoomsNameExists,
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
+	isRoomsBanUserProps,
+	isRoomsUnbanUserProps,
+	isRoomsBannedUsersProps,
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
@@ -29,9 +31,11 @@ import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
 import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
+import { banUserFromRoomMethod } from '../../../../server/methods/banUserFromRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
+import { unbanUserFromRoomMethod } from '../../../../server/methods/unbanUserFromRoom';
 import { unmuteUserInRoom } from '../../../../server/methods/unmuteUserInRoom';
 import { roomsGetMethod } from '../../../../server/publications/room';
 import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -455,7 +459,6 @@ API.v1.addRoute(
 	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
 		async post() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
 			if (!prid) {
 				return API.v1.failure('Body parameter "prid" is required.');
@@ -550,7 +553,7 @@ API.v1.addRoute(
 			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			// If the initial image was not returned in the query, insert it as the first element of the list
-			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
+			if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
 				files.splice(0, 0, initialImage);
 			}
 
@@ -767,7 +770,7 @@ API.v1.addRoute(
 				void dataExport.sendFile(
 					{
 						rid,
-						format: format as 'html' | 'json',
+						format,
 						dateFrom: convertedDateFrom,
 						dateTo: convertedDateTo,
 					},
@@ -815,7 +818,7 @@ API.v1.addRoute(
 			const [room, user] = await Promise.all([
 				findRoomByIdOrName({
 					params: { roomId },
-				}) as Promise<IRoom>,
+				}),
 				Users.findOneByIdOrUsername(userId || username),
 			]);
 
@@ -1036,6 +1039,36 @@ const isRoomsLeavePropsSchema = {
 
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+const roomsBannedUsersResponseSchema = ajv.compile<{
+	success: true;
+	bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		bannedUsers: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					username: { type: 'string' },
+					name: { type: 'string' },
+				},
+				required: ['_id', 'username'],
+				additionalProperties: false,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+	},
+	required: ['success', 'bannedUsers', 'count', 'offset', 'total'],
+	additionalProperties: false,
+});
 
 export const roomEndpoints = API.v1
 	.get(
@@ -1243,10 +1276,102 @@ export const roomEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	);
+	)
+	.post(
+		'rooms.banUser',
+		{
+			authRequired: true,
+			body: isRoomsBanUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
 
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await banUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.unbanUser',
+		{
+			authRequired: true,
+			body: isRoomsUnbanUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await unbanUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	)
+	.get(
+		'rooms.bannedUsers',
+		{
+			authRequired: true,
+			query: isRoomsBannedUsersProps,
+			response: {
+				200: roomsBannedUsersResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.queryParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const bannedSubscriptions = Subscriptions.findBannedByRoomId(roomId);
+			const total = await bannedSubscriptions.clone().count();
+
+			const bannedSubs = await bannedSubscriptions.skip(offset).limit(count).toArray();
+
+			const userIds = bannedSubs.map((sub: { u: { _id: string } }) => sub.u._id);
+			const users = await Users.find<RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>>(
+				{ _id: { $in: userIds } },
+				{ projection: { username: 1, name: 1 } },
+			).toArray();
+
+			return API.v1.success({
+				bannedUsers: users,
+				count: users.length,
+				offset,
+				total,
+			});
+		},
+	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
 	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
 

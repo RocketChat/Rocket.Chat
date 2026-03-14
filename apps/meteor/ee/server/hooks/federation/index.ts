@@ -5,8 +5,10 @@ import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
+import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
+import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/afterUnbanFromRoomCallback';
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
 import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
@@ -186,6 +188,26 @@ afterRemoveFromRoomCallback.add(
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-remove-from-room',
+);
+
+afterBanFromRoomCallback.add(
+	async (data: { bannedUser: IUser; userWhoBanned: IUser }, room: IRoom): Promise<void> => {
+		if (FederationActions.shouldPerformFederationAction(room)) {
+			await FederationMatrix.banUser(room, data.bannedUser, data.userWhoBanned);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-ban-from-room',
+);
+
+afterUnbanFromRoomCallback.add(
+	async (data: { unbannedUser: IUser; userWhoUnbanned: IUser }, room: IRoom): Promise<void> => {
+		if (FederationActions.shouldPerformFederationAction(room)) {
+			await FederationMatrix.unbanUser(room, data.unbannedUser, data.userWhoUnbanned);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-unban-from-room',
 );
 
 callbacks.add(
