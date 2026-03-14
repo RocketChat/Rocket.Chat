@@ -31,8 +31,7 @@ export const WrapCannedResponseList = () => {
 
 	const debouncedText = useDebouncedValue(text, 400);
 
-	// TODO: handle pending and error states
-	const { data, fetchNextPage, refetch } = useCannedResponseList({ filter: debouncedText, type });
+	const { data, fetchNextPage, refetch, isPending, error } = useCannedResponseList({ filter: debouncedText, type });
 
 	const onClickItem = useEffectEvent(
 		(
@@ -72,6 +71,8 @@ export const WrapCannedResponseList = () => {
 			loadMoreItems={fetchNextPage}
 			cannedItems={data?.cannedItems ?? []}
 			itemCount={data?.total ?? 0}
+			loading={isPending}
+			error={error}
 			onClose={closeTab}
 			options={options}
 			text={text}

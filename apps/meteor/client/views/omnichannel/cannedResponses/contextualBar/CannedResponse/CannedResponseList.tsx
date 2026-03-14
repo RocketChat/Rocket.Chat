@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, ContextualbarEmptyContent, Icon, Margins, Select, TextInput, Throbber } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -24,6 +24,8 @@ type CannedResponseListProps = {
 	loadMoreItems: () => void;
 	cannedItems: (IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] })[];
 	itemCount: number;
+	loading: boolean;
+	error: unknown;
 	onClose: () => void;
 	options: [string, string][];
 	text: string;
@@ -41,6 +43,8 @@ const CannedResponseList = ({
 	loadMoreItems,
 	cannedItems,
 	itemCount,
+	loading,
+	error,
 	onClose,
 	options,
 	text,
@@ -101,7 +105,19 @@ const CannedResponseList = ({
 						</Margins>
 					</Box>
 				</Box>
-				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
+				{loading && (
+					<Box pi={24} pb={12}>
+						<Throbber size='x12' />
+					</Box>
+				)}
+
+				{!!error && (
+					<Callout mi={24} type='danger'>
+						{error instanceof Error ? error.message : t('Something_went_wrong')}
+					</Callout>
+				)}
+
+				{!loading && !error && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
 					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 						<VirtualizedScrollbars>
