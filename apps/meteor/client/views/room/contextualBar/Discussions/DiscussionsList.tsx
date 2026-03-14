@@ -1,8 +1,7 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
-import { useResizeObserver, useAutoFocus } from '@rocket.chat/fuselage-hooks';
+import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
-	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarContent,
@@ -16,15 +15,15 @@ import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent, RefObject } from 'react';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
 
 import DiscussionsListRow from './DiscussionsListRow';
+import { VirtualList } from '../../../../components/VirtualList';
 import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 
 type DiscussionsListProps = {
 	total: number;
 	discussions: Array<IDiscussionMessage>;
-	loadMoreItems: (start: number, end: number) => void;
+	loadMoreItems: () => void;
 	loading: boolean;
 	onClose: () => void;
 	error: unknown;
@@ -51,10 +50,6 @@ function DiscussionsList({
 		if (drid) goToRoomById(drid);
 	}, []);
 
-	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
-		debounceDelay: 200,
-	});
-
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
@@ -71,7 +66,7 @@ function DiscussionsList({
 					addon={<Icon name='magnifier' size='x20' />}
 				/>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent paddingInline={0}>
 				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
@@ -88,19 +83,15 @@ function DiscussionsList({
 
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
 					{!error && total > 0 && discussions.length > 0 && (
-						<VirtualizedScrollbars>
-							<Virtuoso
-								style={{
-									height: blockSize,
-									width: inlineSize,
-								}}
-								totalCount={total}
-								endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
-								overscan={25}
-								data={discussions}
-								itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
-							/>
-						</VirtualizedScrollbars>
+						<VirtualList
+							items={discussions}
+							totalCount={total}
+							estimateSize={() => 120}
+							onEndReached={loading ? undefined : loadMoreItems}
+							renderItem={(discussion) => (
+								<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
+							)}
+						/>
 					)}
 				</Box>
 			</ContextualbarContent>
