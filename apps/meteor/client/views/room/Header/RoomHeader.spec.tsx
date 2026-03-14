@@ -62,4 +62,100 @@ describe('RoomHeader', () => {
 			expect(screen.getByText('Slotted Toolbox')).toBeInTheDocument();
 		});
 	});
+
+	describe('Slots', () => {
+		it('should render content provided in slots.start', () => {
+			render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{ start: <div>Start Slot</div> }}
+				/>,
+				{ wrapper: appRoot },
+			);
+			expect(screen.getByText('Start Slot')).toBeInTheDocument();
+		});
+
+		it('should render content provided in slots.end', () => {
+			render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{ end: <div>End Slot</div> }}
+				/>,
+				{ wrapper: appRoot },
+			);
+			expect(screen.getByText('End Slot')).toBeInTheDocument();
+		});
+
+		it('should render content provided in slots.preContent', () => {
+			render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{ preContent: <div>Pre Content Slot</div> }}
+				/>,
+				{ wrapper: appRoot },
+			);
+			expect(screen.getByText('Pre Content Slot')).toBeInTheDocument();
+		});
+
+		it('should render content provided in slots.posContent', () => {
+			render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{ posContent: <div>Pos Content Slot</div> }}
+				/>,
+				{ wrapper: appRoot },
+			);
+			expect(screen.getByText('Pos Content Slot')).toBeInTheDocument();
+		});
+
+		it('should render content provided in slots.insideContent', () => {
+			render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{ insideContent: <div>Inside Content Slot</div> }}
+				/>,
+				{ wrapper: appRoot },
+			);
+			expect(screen.getByText('Inside Content Slot')).toBeInTheDocument();
+		});
+
+		it('should render multiple slots simultaneously', () => {
+			render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{
+						start: <div>Start Slot</div>,
+						end: <div>End Slot</div>,
+						preContent: <div>Pre Content Slot</div>,
+					}}
+				/>,
+				{ wrapper: appRoot },
+			);
+			expect(screen.getByText('Start Slot')).toBeInTheDocument();
+			expect(screen.getByText('End Slot')).toBeInTheDocument();
+			expect(screen.getByText('Pre Content Slot')).toBeInTheDocument();
+		});
+
+		it('should render nothing for slots when not provided', () => {
+			const { rerender } = render(
+				<RoomHeader
+					room={mockedRoom}
+					slots={{
+						start: <div>Start Slot</div>,
+						end: <div>End Slot</div>,
+						preContent: <div>Pre Content Slot</div>,
+					}}
+				/>,
+				{ wrapper: appRoot },
+			);
+			expect(screen.getByText('Start Slot')).toBeInTheDocument();
+			expect(screen.getByText('End Slot')).toBeInTheDocument();
+			expect(screen.getByText('Pre Content Slot')).toBeInTheDocument();
+
+			rerender(<RoomHeader room={mockedRoom} slots={{}} />);
+			expect(screen.queryByText('Start Slot')).not.toBeInTheDocument();
+			expect(screen.queryByText('End Slot')).not.toBeInTheDocument();
+			expect(screen.queryByText('Pre Content Slot')).not.toBeInTheDocument();
+		});
+	});
 });
