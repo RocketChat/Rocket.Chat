@@ -43,6 +43,8 @@ import {
 	MessageReadsRaw,
 	MessagesRaw,
 	MigrationsRaw,
+	DataMigrationsRaw,
+	SystemLocksRaw,
 	ModerationReportsRaw,
 	NotificationQueueRaw,
 	NpsRaw,
@@ -130,6 +132,8 @@ registerModel('IMediaCallNegotiationsModel', new MediaCallNegotiationsRaw(db));
 registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
 registerModel('IMigrationsModel', new MigrationsRaw(db));
+registerModel('IDataMigrationsModel', new DataMigrationsRaw(db));
+registerModel('ISystemLocksModel', new SystemLocksRaw(db));
 registerModel('IModerationReportsModel', new ModerationReportsRaw(db));
 registerModel('INotificationQueueModel', new NotificationQueueRaw(db));
 registerModel('INpsModel', new NpsRaw(db));

@@ -73,6 +73,8 @@ import type {
 	IAuditLogModel,
 	ICronHistoryModel,
 	IMigrationsModel,
+	IDataMigrationsModel,
+	ISystemLocksModel,
 	IModerationReportsModel,
 	IWorkspaceCredentialsModel,
 	IMediaCallsModel,
@@ -200,6 +202,8 @@ export const OmnichannelServiceLevelAgreements = proxify<IOmnichannelServiceLeve
 export const AuditLog = proxify<IAuditLogModel>('IAuditLogModel');
 export const CronHistory = proxify<ICronHistoryModel>('ICronHistoryModel');
 export const Migrations = proxify<IMigrationsModel>('IMigrationsModel');
+export const DataMigrations = proxify<IDataMigrationsModel>('IDataMigrationsModel');
+export const SystemLocks = proxify<ISystemLocksModel>('ISystemLocksModel');
 export const ModerationReports = proxify<IModerationReportsModel>('IModerationReportsModel');
 export const WorkspaceCredentials = proxify<IWorkspaceCredentialsModel>('IWorkspaceCredentialsModel');
 export const AbacAttributes = proxify<IAbacAttributesModel>('IAbacAttributesModel');

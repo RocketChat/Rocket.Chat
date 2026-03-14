@@ -66,6 +66,8 @@ export * from './models/CredentialTokens';
 export * from './models/MessageReads';
 export * from './models/CronHistoryModel';
 export * from './models/Migrations';
+export * from './models/DataMigrations';
+export * from './models/SystemLocks';
 export * from './models/ModerationReports';
 export * from './models/MediaCalls';
 export * from './models/MediaCallChannels';
