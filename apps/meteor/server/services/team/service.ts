@@ -209,7 +209,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	async search<P extends Document>(
 		userId: string,
 		term: string | RegExp,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<ITeam[] | P[]> {
 		if (typeof term === 'string') {
 			term = new RegExp(`^${escapeRegExp(term)}`, 'i');
@@ -301,7 +301,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	async listByNames<P extends Document>(
 		names: Array<string>,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P[] | ITeam[]> {
 		if (options === undefined) {
 			return Team.findByNames(names).toArray();
@@ -502,7 +502,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	listTeamsBySubscriberUserId<P extends Document>(
 		uid: string,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P[] | ITeamMember[]> {
 		if (options) {
 			return TeamMember.findByUserId(uid, options).toArray();
@@ -902,7 +902,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	getAllPublicTeams(options: FindOptions<ITeam>): Promise<ITeam[]>;
 
-	async getAllPublicTeams(options?: undefined | FindOptions<ITeam>): Promise<ITeam[]> {
+	async getAllPublicTeams(options?: FindOptions<ITeam>): Promise<ITeam[]> {
 		return options ? Team.findByType(TeamType.PUBLIC, options).toArray() : Team.findByType(TeamType.PUBLIC).toArray();
 	}
 
@@ -917,7 +917,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	async getOneByName(teamName: string | RegExp, options: FindOptions<ITeam>): Promise<ITeam | null>;
 
-	async getOneByName(teamName: string | RegExp, options?: undefined | FindOptions<ITeam>): Promise<ITeam | null> {
+	async getOneByName(teamName: string | RegExp, options?: FindOptions<ITeam>): Promise<ITeam | null> {
 		if (!options) {
 			return Team.findOneByName(teamName);
 		}
@@ -1009,7 +1009,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 		for (const room of defaultRooms) {
 			// at this point, users are already part of the team so we won't check for membership
-			// eslint-disable-next-line no-await-in-loop
 			await Promise.all(users.map((user) => addUserToRoom(room._id, user, inviter, { skipSystemMessage: false })));
 		}
 	}

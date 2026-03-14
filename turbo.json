@@ -34,7 +34,8 @@
 			"cache": false
 		},
 		"ms": {
-			"dependsOn": ["^build"]
+			"dependsOn": ["^build"],
+			"cache": false
 		},
 		"@rocket.chat/meteor#build": {
 			"dependsOn": ["^build"],

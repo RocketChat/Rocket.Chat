@@ -63,7 +63,7 @@ async function createUsersSubscriptions({
 
 		await FederationMatrix.ensureFederatedUsersExistLocally(membersToInvite);
 
-		for await (const memberUsername of membersToInvite) {
+		for (const memberUsername of membersToInvite) {
 			const member = await Users.findOneByUsername(memberUsername);
 			if (!member) {
 				throw new Error('Federated user not found locally');
@@ -139,7 +139,6 @@ async function createUsersSubscriptions({
 	await Rooms.incUsersCountById(room._id, subs.length);
 }
 
-// eslint-disable-next-line complexity
 export const createRoom = async <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
@@ -193,7 +192,9 @@ export const createRoom = async <T extends RoomType>(
 		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?._id });
 	}
 
-	if (!onlyUsernames(members)) {
+	const memberList = [...members];
+
+	if (!onlyUsernames(memberList)) {
 		throw new Meteor.Error(
 			'error-invalid-members',
 			'members should be an array of usernames if provided for rooms other than direct messages',
@@ -218,8 +219,8 @@ export const createRoom = async <T extends RoomType>(
 		});
 	}
 
-	if (!excludeSelf && owner.username && !members.includes(owner.username)) {
-		members.push(owner.username);
+	if (!excludeSelf && owner.username && !memberList.includes(owner.username)) {
+		memberList.push(owner.username);
 	}
 
 	if (extraData.broadcast) {
@@ -258,7 +259,7 @@ export const createRoom = async <T extends RoomType>(
 
 	const tmp = {
 		...roomProps,
-		_USERNAMES: members,
+		_USERNAMES: memberList,
 	};
 
 	const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
@@ -299,10 +300,10 @@ export const createRoom = async <T extends RoomType>(
 	if (shouldBeHandledByFederation) {
 		// Reusing unused callback to create Matrix room.
 		// We should discuss the opportunity to rename it to something with "before" prefix.
-		await callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: members, options });
+		await callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: memberList, options });
 	}
 
-	await createUsersSubscriptions({ room, members, now, owner, options, shouldBeHandledByFederation });
+	await createUsersSubscriptions({ room, members: memberList, now, owner, options, shouldBeHandledByFederation });
 
 	if (type === 'c') {
 		if (room.teamId) {
