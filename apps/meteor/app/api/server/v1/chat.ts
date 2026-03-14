@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -11,7 +11,6 @@ import {
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
-	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatIgnoreUserProps,
@@ -119,6 +118,132 @@ const ChatUnfollowMessageLocalSchema = {
 	additionalProperties: false,
 };
 
+//chat.postMessage starts
+type ChatPostMessage =
+	| {
+			roomId: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  }
+	| {
+			channel: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  };
+
+const ChatPostMessageSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				tmid: {
+					type: 'string',
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				channel: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
+				},
+			},
+			required: ['channel'],
+			additionalProperties: false,
+		},
+	],
+};
+//chat.postMessage ends
+
 const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
 
 const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
@@ -126,6 +251,8 @@ const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUn
 const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
+
+const isChatPostMessageLocalProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
 
 API.v1.addRoute(
 	'chat.delete',
@@ -558,13 +685,29 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	);
-
-API.v1.addRoute(
-	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.postMessage',
+		{
+			authRequired: true,
+			body: isChatPostMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						ts: { type: 'number' },
+						channel: { type: 'string' },
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['ts', 'channel', 'message', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
 			const { text, attachments } = this.bodyParams;
 			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
@@ -594,8 +737,7 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.search',
