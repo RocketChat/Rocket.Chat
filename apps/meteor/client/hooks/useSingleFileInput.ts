@@ -3,10 +3,13 @@ import { useRef, useEffect } from 'react';
 
 export const useSingleFileInput = (
 	onSetFile: (file: File, formData: FormData) => void,
-	fileType = 'image/*',
 	fileField = 'image',
+	options?: {
+		fileType?: string;
+	},
 ): [onClick: () => void, reset: () => void] => {
 	const ref = useRef<HTMLInputElement>();
+	const fileType = options?.fileType || 'image/*';
 
 	useEffect(() => {
 		const fileInput = document.createElement('input');
