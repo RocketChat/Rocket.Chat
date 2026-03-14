@@ -56,7 +56,7 @@ export const useFilesList = ({ rid, type, text }: { rid: Required<IUpload>['rid'
 								type: decrypted.type,
 							}),
 						);
-						decrypted.path = `/file-decrypt${decrypted.path}?key=${key}`;
+						decrypted.path = `/file-decrypt${decrypted.path}?key=${encodeURIComponent(key)}`;
 						Object.assign(file, decrypted);
 					}
 				}
