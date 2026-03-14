@@ -37,22 +37,15 @@ const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdl
 	roles: 'livechat-agent',
 	// ignore deactivated users
 	active: true,
-	...(!isLivechatEnabledWhenAgentIdle && {
-		$or: [
-			{
-				status: {
-					$exists: true,
-					$ne: UserStatus.OFFLINE,
-				},
-				roles: {
-					$ne: 'bot',
-				},
+	$or: [
+		{ roles: 'bot' },
+		{
+			status: {
+				$exists: true,
+				$ne: UserStatus.OFFLINE,
 			},
-			{
-				roles: 'bot',
-			},
-		],
-	}),
+		},
+	],
 	...extraFilters,
 	...(isLivechatEnabledWhenAgentIdle === false && {
 		statusConnection: { $ne: 'away' },

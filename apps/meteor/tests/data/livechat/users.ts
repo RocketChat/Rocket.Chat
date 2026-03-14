@@ -5,7 +5,7 @@ import { Random } from '@rocket.chat/random';
 
 import { api, credentials, request } from '../api-data';
 import { password } from '../user';
-import { createUser, login, setUserAway, setUserStatus } from '../users.helper';
+import { createUser, login, setUserAwayWS, ddpLogin, setUserStatus } from '../users.helper';
 import { createAgent, makeAgentAvailable, makeAgentUnavailable } from './rooms';
 
 export const createBotAgent = async (): Promise<{
@@ -93,20 +93,23 @@ export const createAnOfflineAgent = async (): Promise<{
 export const createAnAwayAgent = async (): Promise<{
 	credentials: Credentials;
 	user: IUser & { username: string };
+	ws: WebSocket;
 }> => {
 	const username = `user.test.${Date.now()}.away`;
 	const email = `${username}.offline@rocket.chat`;
 	const { body } = await request.post(api('users.create')).set(credentials).send({ email, name: username, username, password });
 	const agent = body.user;
 	const createdUserCredentials = await login(agent.username, password);
+	const ws = await ddpLogin(createdUserCredentials['X-Auth-Token']);
 	await createAgent(agent.username);
 	await makeAgentAvailable(createdUserCredentials);
 	await setUserStatus(createdUserCredentials, UserStatus.AWAY);
-	await setUserAway(createdUserCredentials);
+	await setUserAwayWS(ws);
 
 	return {
 		credentials: createdUserCredentials,
 		user: agent,
+		ws,
 	};
 };
 
