@@ -81,6 +81,19 @@ describe('#serveAvatarFile()', () => {
 		expect(response.setHeader.getCall(3).calledWith('Content-Length', file.size)).to.be.true;
 		expect(mocks.fileUploadGet.calledWith(file, request, response, next)).to.be.true;
 	});
+
+	it('should serve avatar and set Content-Length 0 when file size is exactly 0', () => {
+		const zeroSizeFile = { uploadedAt: new Date(0), type: 'image/png', size: 0 };
+		const request = { headers: { 'if-modified-since': new Date(200000).toUTCString() } };
+		serveAvatarFile(zeroSizeFile, request, response, next);
+
+		const contentLengthCall = response.setHeader.getCalls().find(
+			(c) => c.args[0] === 'Content-Length'
+		);
+
+		expect(contentLengthCall).to.exist;
+		expect(contentLengthCall?.args[1]).to.equal(0);
+	});
 });
 
 describe('#serveSvgAvatarInRequestedFormat()', () => {
