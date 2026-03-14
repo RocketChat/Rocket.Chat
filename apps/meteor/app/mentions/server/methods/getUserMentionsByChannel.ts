@@ -37,11 +37,11 @@ export const getUserMentionsByChannel = async (
 };
 
 export async function getUserMentionsByChannelPaginated(
-	username: string,
+	userId: string,
 	roomId: string,
 	options: { limit: number; skip: number; sort: Record<string, 1 | -1> },
 ): Promise<{ mentions: IMessage[]; total: number }> {
-	const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(username, roomId, options);
+	const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(userId, roomId, options);
 	const [mentions, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 	return { mentions, total };
