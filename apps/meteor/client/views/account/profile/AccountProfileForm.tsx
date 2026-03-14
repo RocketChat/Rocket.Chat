@@ -30,6 +30,7 @@ import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';
+import { getProfileInitialValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import UserStatusMenu from '../../../components/UserStatusMenu';
@@ -111,7 +112,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 	const handleSave = async ({ email, name, username, statusType, statusText, nickname, bio, customFields }: AccountProfileFormValues) => {
 		try {
-			await updateOwnBasicInfo({
+			const { user: updatedUser } = await updateOwnBasicInfo({
 				data: {
 					name,
 					...(user ? getUserEmailAddress(user) !== email && { email } : {}),
@@ -126,10 +127,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 
 			await updateAvatar();
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
+			reset(getProfileInitialValues(updatedUser));
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			reset({ email, name, username, statusType, statusText, nickname, bio, customFields });
 		}
 	};
 

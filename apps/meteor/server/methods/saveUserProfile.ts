@@ -95,12 +95,13 @@ async function saveUserProfile(
 				method: 'saveUserProfile',
 			});
 		}
-		if (settings.bio.length > MAX_BIO_LENGTH) {
+		const trimmedBio = settings.bio.trim();
+		if (trimmedBio.length > MAX_BIO_LENGTH) {
 			throw new Meteor.Error('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
-		await Users.setBio(user._id, settings.bio.trim());
+		await Users.setBio(user._id, trimmedBio);
 	}
 
 	if (user && (settings.nickname || settings.nickname === '')) {
@@ -109,12 +110,13 @@ async function saveUserProfile(
 				method: 'saveUserProfile',
 			});
 		}
-		if (settings.nickname.length > MAX_NICKNAME_LENGTH) {
+		const trimmedNickname = settings.nickname.trim();
+		if (trimmedNickname.length > MAX_NICKNAME_LENGTH) {
 			throw new Meteor.Error('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
-		await Users.setNickname(user._id, settings.nickname.trim());
+		await Users.setNickname(user._id, trimmedNickname);
 	}
 
 	if (user && settings.email) {
