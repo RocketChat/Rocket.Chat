@@ -57,17 +57,11 @@ callbacks.add(
 			return;
 		}
 
-		console.log(`[federation] afterSaveMessage hook triggered for message ${message._id} in room ${room._id} by user ${user.username}`);
-
 		try {
-			// TODO: Check if message already exists in the database, if it does, don't send it to the federation to avoid loops
-			// If message is federated, it will save external_message_id like into the message object
-			// if this prop exists here it should not be sent to the federation to avoid loops
+			// Skip if message was already federated — presence of eventId means it came from Matrix
+			// and was already processed; resending would create a loop.
 			if (!message.federation?.eventId) {
-				console.log(`[federation] Forwarding message ${message._id} to FederationMatrix.sendMessage`);
 				await FederationMatrix.sendMessage(message, room, user);
-			} else {
-				console.log(`[federation] Skipping message ${message._id} - already has federation eventId: ${message.federation.eventId}`);
 			}
 		} catch (error) {
 			// Log the error but don't prevent the message from being sent locally
@@ -158,20 +152,15 @@ callbacks.add(
 			return;
 		}
 
-		console.log(`[federation] afterJoinRoom hook triggered for user ${user.username} in room ${room._id}`);
-
 		// Skip if the user is a native federated user (external Matrix user) —
 		// their join was already handled by an incoming federation event.
 		if (isUserNativeFederated(user)) {
 			return;
 		}
 
-		// Only handle self-join (no inviter). Invited users are already
-		// handled by the beforeAddUserToRoom hook above.
-		// We use the joining user as both the invitee and the "inviter"
-		// since there is no explicit inviter in the self-join flow.
+		// Handle self-join: user joined via channels.join (no inviter).
+		// Invite them to the Matrix room so messages can be bridged.
 		try {
-			console.log(`[federation] Calling FederationMatrix.inviteUsersToRoom for self-join of ${user.username}`);
 			await FederationMatrix.inviteUsersToRoom(room, [user.username], user);
 		} catch (error) {
 			console.error('[federation] Failed to send Matrix invite for self-join:', error);

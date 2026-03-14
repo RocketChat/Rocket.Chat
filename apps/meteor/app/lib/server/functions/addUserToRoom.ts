@@ -84,10 +84,9 @@ export const addUserToRoom = async (
 		throw error;
 	}
 
-	// for federation rooms we allow local join to ensure bridging hooks trigger
-	/* if (isRoomNativeFederated(room)) {
-		return;
-	} */
+	// Note: we intentionally allow local users to join federated rooms here so that
+	// the afterJoinRoom hook fires and triggers a Matrix invite for the user.
+	// Returning early would skip subscription creation and break message bridging.
 
 	// TODO: are we calling this twice?
 	if (room.t === 'c' || room.t === 'p' || room.t === 'l') {
