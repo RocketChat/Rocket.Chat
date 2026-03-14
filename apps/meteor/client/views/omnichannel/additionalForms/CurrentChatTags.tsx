@@ -8,16 +8,17 @@ type CurrentChatTagsProps = Pick<ComponentProps<typeof AutoCompleteTagsMultiple>
 	handler: NonNullable<ComponentProps<typeof AutoCompleteTagsMultiple>['onChange']>;
 	department?: string;
 	viewAll?: boolean;
+	error?: string;
 };
 
-const CurrentChatTags = ({ value, handler, department, viewAll, ...props }: CurrentChatTagsProps) => {
+const CurrentChatTags = ({ value, handler, department, viewAll, error, ...props }: CurrentChatTagsProps) => {
 	const { data: hasLicense = false } = useHasLicenseModule('livechat-enterprise');
 
 	if (!hasLicense) {
 		return null;
 	}
 
-	return <AutoCompleteTagsMultiple {...props} onChange={handler} value={value} department={department} viewAll={viewAll} />;
+	return <AutoCompleteTagsMultiple {...props} onChange={handler} value={value} department={department} viewAll={viewAll} error={!!error} />;
 };
 
 export default CurrentChatTags;

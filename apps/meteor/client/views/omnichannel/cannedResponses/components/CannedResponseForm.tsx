@@ -99,7 +99,18 @@ const CannedResponseForm = () => {
 				)}
 			</Field>
 			<Field>
-				<Controller name='tags' control={control} render={({ field: { value, onChange } }) => <Tags handler={onChange} tags={value} />} />
+				<Controller
+					name='tags'
+					control={control}
+					render={({ field: { value, onChange } }) => (
+						<Tags handler={onChange} tags={value} error={errors.tags?.message} />
+					)}
+				/>
+				{errors.tags && (
+					<FieldError aria-live='assertive' id='tags-error'>
+						{errors.tags.message}
+					</FieldError>
+				)}
 			</Field>
 			{(hasManagerPermission || hasMonitorPermission) && (
 				<>
