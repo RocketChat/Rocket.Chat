@@ -225,7 +225,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward text file to channel', async () => {
 		const filename = 'any_file.txt';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -237,7 +237,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward image file to channel', async () => {
 		const filename = 'test-image.jpeg';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -249,7 +249,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward pdf file to channel', async () => {
 		const filename = 'test_pdf_file.pdf';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -261,7 +261,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward audio message to channel', async () => {
 		const filename = 'sample-audio.mp3';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -273,7 +273,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward video message to channel', async () => {
 		const filename = 'test_video.mp4';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
