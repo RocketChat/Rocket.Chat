@@ -1,6 +1,7 @@
 {
   "name": "@rocket.chat/uikit-playground",
   "version": "0.7.5",
+  "description": "Development playground for testing and previewing Rocket.Chat UI Kit components.",
   "private": true,
   "type": "module",
   "scripts": {
