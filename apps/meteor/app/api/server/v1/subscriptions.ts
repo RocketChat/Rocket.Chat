@@ -13,35 +13,50 @@ import { unreadMessages } from '../../../message-mark-as-unread/server/unreadMes
 import { API } from '../api';
 
 API.v1.addRoute(
-	'subscriptions.get',
-	{
-		authRequired: true,
-		validateParams: isSubscriptionsGetProps,
-	},
-	{
-		async get() {
-			const { updatedSince } = this.queryParams;
+  'subscriptions.get',
+  {
+    authRequired: true,
+    validateParams: isSubscriptionsGetProps,
+  },
+  {
+    async get() {
+      const { updatedSince } = this.queryParams;
 
-			let updatedSinceDate: Date | undefined;
-			if (updatedSince) {
-				if (isNaN(Date.parse(updatedSince as string))) {
-					throw new Meteor.Error('error-roomId-param-invalid', 'The "lastUpdate" query parameter must be a valid date.');
-				}
-				updatedSinceDate = new Date(updatedSince as string);
-			}
+      let updatedSinceDate: Date | undefined;
+      if (updatedSince) {
+        if (isNaN(Date.parse(updatedSince as string))) {
+          throw new Meteor.Error(
+            'error-invalid-date',
+            'The "updatedSince" query parameter must be a valid date.'
+          );
+        }
+        updatedSinceDate = new Date(updatedSince as string);
+      }
 
-			const result = await getSubscriptions(this.userId, updatedSinceDate);
+      const result = await getSubscriptions(this.userId, updatedSinceDate);
+	  const isArrayResult = Array.isArray(result);
+      const subscriptionsWithUnread = isArrayResult
+        ? await Promise.all(
+            result.map(async (sub) => {
+              const unreadCount = await unreadMessages.countByRoomIdAndUserId(sub.rid, this.userId);
+              return {
+                ...sub,
+                unread: unreadCount,
+              };
+            })
+          )
+        : result;
 
-			return API.v1.success(
-				Array.isArray(result)
-					? {
-							update: result,
-							remove: [],
-						}
-					: result,
-			);
-		},
-	},
+      return API.v1.success(
+		  isArrayResult
+          ? {
+              update: subscriptionsWithUnread,
+              remove: [],
+            }
+          : subscriptionsWithUnread
+      );
+    },
+  }
 );
 
 API.v1.addRoute(
