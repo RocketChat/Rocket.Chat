@@ -9,10 +9,12 @@ type MessageComposerFileGroupProps = {
 	onRemove: (id: Upload['id']) => void;
 	onEdit: (id: Upload['id'], fileName: string) => void;
 	onCancel: (id: Upload['id']) => void;
+	onPause: (id: Upload['id']) => void;
+	onResume: (id: Upload['id']) => void;
 	disabled: boolean;
 };
 
-const MessageComposerFiles = ({ uploads, onRemove, onEdit, onCancel, disabled }: MessageComposerFileGroupProps) => {
+const MessageComposerFiles = ({ uploads, onRemove, onEdit, onCancel, onPause, onResume, disabled }: MessageComposerFileGroupProps) => {
 	const { t } = useTranslation();
 	return (
 		<MessageComposerFileGroup aria-label={t('Uploads')}>
@@ -23,6 +25,8 @@ const MessageComposerFiles = ({ uploads, onRemove, onEdit, onCancel, disabled }:
 					onRemove={onRemove}
 					onEdit={onEdit}
 					onCancel={onCancel}
+					onPause={onPause}
+					onResume={onResume}
 					disabled={disabled}
 				/>
 			))}

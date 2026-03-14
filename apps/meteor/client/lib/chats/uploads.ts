@@ -11,7 +11,12 @@ import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { i18n } from '../../../app/utils/lib/i18n';
 import { settings } from '../settings';
 
-class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id']}`]: void }> implements UploadsAPI {
+class UploadsStore extends Emitter<{
+	update: void;
+	[x: `cancelling-${Upload['id']}`]: void;
+	[x: `pausing-${Upload['id']}`]: void;
+	[x: `resuming-${Upload['id']}`]: void;
+}> implements UploadsAPI {
 	private rid: string;
 
 	constructor({ rid }: { rid: string }) {
@@ -42,6 +47,16 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	cancel = (id: Upload['id']): void => {
 		this.emit(`cancelling-${id}`);
+	};
+
+	pause = (id: Upload['id']): void => {
+		this.updateUpload(id, { status: 'paused' });
+		this.emit(`pausing-${id}`);
+	};
+
+	resume = (id: Upload['id']): void => {
+		this.updateUpload(id, { status: 'uploading' });
+		this.emit(`resuming-${id}`);
 	};
 
 	wipeFailedOnes = (): void => {
@@ -103,6 +118,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 				id,
 				file: encrypted ? encrypted.rawFile : file,
 				percentage: 0,
+				status: 'uploading',
 				...(encrypted && {
 					encryptedFile: encrypted.encryptedFile,
 					metadataForEncryption: encrypted.fileContent.raw,
@@ -110,79 +126,118 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 			},
 		]);
 
+		const CHUNK_SIZE = 1024 * 1024;
+
+		const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+		let uploadId: string | undefined;
+		let xhr: { abort: () => void } | undefined;
+		let cancelled = false;
+
+		const cancelHandler = async () => {
+			cancelled = true;
+			if (xhr) {
+				xhr.abort();
+			}
+			if (uploadId) {
+				try {
+					await sdk.rest.post('/v1/uploads/cancel', { uploadId });
+				} catch (e) {
+					// ignore
+				}
+			}
+			this.set(this.uploads.filter((upload) => upload.id !== id));
+		};
+
+		this.once(`cancelling-${id}`, cancelHandler);
+
 		try {
-			await new Promise((resolve, reject) => {
-				if (file.size === 0) {
-					return reject(new Error(i18n.t('FileUpload_File_Empty')));
+			if (file.size === 0) {
+				throw new Error(i18n.t('FileUpload_File_Empty'));
+			}
+
+			if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
+				throw new Error(i18n.t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) }));
+			}
+
+			if (invalidContentType) {
+				throw new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type }));
+			}
+
+			const initResponse = (await sdk.rest.post('/v1/uploads/init', {
+				rid: this.rid,
+				fileName: file.name,
+				fileSize: file.size,
+				fileType: file.type,
+				chunkSize: CHUNK_SIZE,
+			})) as any;
+
+			uploadId = initResponse.uploadId;
+			if (cancelled) {
+				try {
+					await sdk.rest.post('/v1/uploads/cancel', { uploadId });
+				} catch (e) {
+					// ignore
+				}
+				return;
+			}
+
+			for (let i = 0; i < totalChunks; i++) {
+				if (cancelled) return;
+
+				const currentUpload = this.uploads.find((u) => u.id === id);
+				if (currentUpload?.status === 'paused') {
+					await new Promise<void>((resolve) => {
+						const resumeHandler = () => {
+							this.off(`resuming-${id}`, resumeHandler);
+							this.off(`cancelling-${id}`, cancelHandlerInLoop);
+							resolve();
+						};
+						const cancelHandlerInLoop = () => {
+							this.off(`resuming-${id}`, resumeHandler);
+							this.off(`cancelling-${id}`, cancelHandlerInLoop);
+							resolve();
+						};
+						this.on(`resuming-${id}`, resumeHandler);
+						this.on(`cancelling-${id}`, cancelHandlerInLoop);
+					});
 				}
 
-				// -1 maxFileSize means there is no limit
-				if (maxFileSize > -1 && (file.size || 0) > maxFileSize) {
-					return reject(new Error(i18n.t('File_exceeds_allowed_size_of_bytes', { size: fileSize(maxFileSize) })));
-				}
+				if (cancelled) return;
 
-				if (invalidContentType) {
-					return reject(new Error(i18n.t('FileUpload_MediaType_NotAccepted__type__', { type: file.type })));
-				}
+				const chunk = file.slice(i * CHUNK_SIZE, (i + 1) * CHUNK_SIZE);
 
-				const xhr = sdk.rest.upload(
-					`/v1/rooms.media/${this.rid}`,
-					{
-						file,
-						...(encrypted && {
-							content: JSON.stringify(encrypted.fileContent.encrypted),
-						}),
-					},
-					{
-						load: (event) => {
-							resolve(event);
-						},
-						progress: (event) => {
-							if (!event.lengthComputable) {
-								return;
-							}
-							const progress = (event.loaded / event.total) * 100;
-							this.updateUpload(id, { percentage: Math.round(progress) || 0 });
-						},
-						error: (event) => {
-							this.updateUpload(id, { percentage: 0, error: new Error(xhr.responseText) });
-							reject(event);
-						},
-					},
-				);
+				await new Promise((resolve, reject) => {
+					xhr = sdk.rest.upload(`/v1/uploads/chunk?uploadId=${uploadId}&chunkIndex=${i}`, {
+						chunkData: chunk,
+					});
 
-				xhr.onload = () => {
-					try {
-						if (xhr.readyState !== xhr.DONE) {
-							return;
+					const currentXhr = xhr as XMLHttpRequest;
+
+					currentXhr.onload = () => {
+						if (currentXhr.status === 200) {
+							resolve(currentXhr.response);
+						} else {
+							reject(new Error(currentXhr.statusText));
 						}
+					};
 
-						if (xhr.status === 400) {
-							const error = JSON.parse(xhr.responseText);
-							this.updateUpload(id, { percentage: 0, error: new Error(error.error) });
-							return;
-						}
-
-						if (xhr.status === 200) {
-							const result = JSON.parse(xhr.responseText);
-							this.updateUpload(id, { id: result.file._id, url: result.file.url });
-							return;
-						}
-
-						this.updateUpload(id, { percentage: 0, error: new Error(i18n.t('FileUpload_Error')) });
-					} catch (error) {
-						this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
-					}
-				};
-
-				this.once(`cancelling-${id}`, () => {
-					xhr.abort();
-					this.set(this.uploads.filter((upload) => upload.id !== id));
-					reject(new Error(i18n.t('FileUpload_Canceled')));
+					currentXhr.onerror = () => reject(new Error('Network error'));
+					currentXhr.onabort = () => reject(new Error('cancelled'));
 				});
-			});
+
+				this.updateUpload(id, { percentage: Math.round(((i + 1) / totalChunks) * 100) });
+			}
+
+			if (cancelled) return;
+
+			const { file: finalFile } = (await sdk.rest.post('/v1/uploads/complete', { uploadId })) as any;
+			this.updateUpload(id, { id: finalFile._id, url: finalFile.url, status: 'complete' });
 		} catch (error: unknown) {
-			this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)) });
+			if (!cancelled) {
+				this.updateUpload(id, { percentage: 0, error: new Error(getErrorMessage(error)), status: 'error' });
+			}
+		} finally {
+			this.off(`cancelling-${id}`, cancelHandler);
 		}
 	}
 }
