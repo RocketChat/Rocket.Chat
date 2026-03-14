@@ -139,6 +139,7 @@ const MockedMediaCallProvider = ({
 		remoteMuted,
 		remoteHeld,
 		callId: undefined,
+		supportedFeatures: ['audio', 'transfer', 'hold'],
 	} as SessionState;
 
 	const contextValue = {

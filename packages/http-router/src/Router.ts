@@ -267,30 +267,30 @@ export class Router<
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
 				if (responseValidatorFn && !responseValidatorFn(coerceDatesToStrings(body))) {
+					const errorMessage = responseValidatorFn.errors
+						?.map((error: any) => {
+							const pathDesc = error.instancePath ? `at path '${error.instancePath}'` : "at path '(root)'";
+							const paramsStr = Object.keys(error.params || {}).length
+								? ` (${Object.entries(error.params)
+										.map(([key, value]) => `${key}: ${value}`)
+										.join(', ')})`
+								: '';
+							return `${pathDesc}: ${error.message}${paramsStr}`;
+						})
+						.join('\n');
 					logger.warn({
 						msg: 'Response validation failed - response does not match route spec',
 						method: req.method,
 						path: req.url,
-						error: responseValidatorFn.errors?.map((error: any) => error.message).join('\n '),
+						error: errorMessage,
 						originalResponse: body,
 					});
 					return c.json(
 						{
 							success: false,
+							body,
 							errorType: 'error-invalid-body',
-							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors
-								?.map(
-									(error: any) =>
-										`${error.message} (${[
-											error.instancePath,
-											Object.entries(error.params)
-												.map(([key, value]) => `${key}: ${value}`)
-												.join(', '),
-										]
-											.filter(Boolean)
-											.join(' - ')})`,
-								)
-								.join('\n')}`,
+							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${errorMessage}`,
 						},
 						400,
 					);
