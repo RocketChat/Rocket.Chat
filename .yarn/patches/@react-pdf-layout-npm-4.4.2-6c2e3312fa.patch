@@ -1,0 +1,15 @@
+diff --git a/lib/index.js b/lib/index.js
+index c64bdf2d5f7e704a65be4e9a7116c5ee6a582701..ce6641d0b63daf7c5d3f8a1de773f290c0e9d51c 100644
+--- a/lib/index.js
++++ b/lib/index.js
+@@ -2,8 +2,8 @@ import { upperFirst, capitalize, parseFloat as parseFloat$1, without, pick, comp
+ import * as P from '@react-pdf/primitives';
+ import resolveStyle, { transformColor, flatten } from '@react-pdf/stylesheet';
+ import layoutEngine, { fontSubstitution, wordHyphenation, scriptItemizer, textDecoration, justification, linebreaker, bidi, fromFragments } from '@react-pdf/textkit';
+-import * as Yoga from 'yoga-layout/load';
+-import { loadYoga as loadYoga$1 } from 'yoga-layout/load';
++import * as Yoga from 'yoga-layout/dist/src/load.js';
++import { loadYoga as loadYoga$1 } from 'yoga-layout/dist/src/load.js';
+ import emojiRegex from 'emoji-regex-xs';
+ import resolveImage from '@react-pdf/image';
+ 
