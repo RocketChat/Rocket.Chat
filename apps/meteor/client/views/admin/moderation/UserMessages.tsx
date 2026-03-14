@@ -1,6 +1,6 @@
 import { Box, Callout, Message, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarFooter } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { Fragment } from 'react';
@@ -10,7 +10,7 @@ import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
 import GenericNoResults from '../../../components/GenericNoResults';
 
-// TODO: We should use Contextualbar components here
+
 const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }) => {
 	const { t } = useTranslation();
 	const getUserMessages = useEndpoint('GET', '/v1/moderation.user.reportedMessages');
@@ -38,7 +38,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 
 	return (
 		<>
-			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
+			<ContextualbarScrollableContent>
 				{isLoading && <Message>{t('Loading')}</Message>}
 				{isSuccess && (
 					<Box padding={24}>
@@ -77,7 +77,7 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 						</StatesActions>
 					</Box>
 				)}
-			</Box>
+			</ContextualbarScrollableContent>
 			{isSuccess && report.messages.length > 0 && (
 				<ContextualbarFooter>
 					<MessageContextFooter userId={userId} deleted={!report.user} />
