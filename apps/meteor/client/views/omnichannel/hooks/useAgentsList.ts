@@ -1,4 +1,3 @@
-import type { ILivechatAgent, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -23,7 +22,7 @@ const DEFAULT_QUERY_LIMIT = 25;
 
 export const useAgentsList = (options: AgentsListOptions) => {
 	const { t } = useTranslation();
-	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
+	const getAgents = useEndpoint('GET', '/v1/livechat/users/:type', { type: 'agent' });
 	const {
 		filter,
 		onlyAvailable = false,
@@ -34,14 +33,14 @@ export const useAgentsList = (options: AgentsListOptions) => {
 		limit = DEFAULT_QUERY_LIMIT,
 	} = options;
 
-	const formatAgentItem = (agent: Serialized<ILivechatAgent>) => ({
+	const formatAgentItem = (agent: { _id: string; name?: string; username?: string }) => ({
 		_id: agent._id,
 		label: `${agent.name || agent._id} (@${agent.username})`,
 		value: agent._id,
 	});
 
 	return useInfiniteQuery({
-		queryKey: ['/v1/livechat/users/agent', { filter, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
+		queryKey: ['/v1/livechat/users/:type', { type: 'agent', filter, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { users, ...data } = await getAgents({
 				...(filter && { text: filter }),
@@ -55,7 +54,7 @@ export const useAgentsList = (options: AgentsListOptions) => {
 
 			return {
 				...data,
-				users: users.map(formatAgentItem),
+				users: users.map((u: any) => formatAgentItem(u)),
 			};
 		},
 		select: (data) => {
