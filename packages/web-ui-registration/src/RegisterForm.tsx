@@ -90,6 +90,13 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 					if ([error.error, error.errorType].includes('error-invalid-email')) {
 						setError('email', { type: 'invalid-email', message: t('registration.component.form.invalidEmail') });
 					}
+					if ([error.error, error.errorType].includes('error-blocked-username')) {
+						setError('username', {
+							type: 'error-blocked-username',
+							message: t('error-blocked-username', { field: getValues('username') }),
+						});
+						return;
+					}
 					if (error.errorType === 'error-user-already-exists') {
 						setError('username', { type: 'user-already-exists', message: t('registration.component.form.usernameAlreadyExists') });
 					}
