@@ -10,6 +10,7 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
+import RoomListFilters from './RoomListFilters'; 
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
@@ -24,6 +25,7 @@ const RoomList = () => {
 
 	const { collapsedGroups, handleClick, handleKeyDown } = useCollapsedGroups();
 	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useRoomList({ collapsedGroups });
+	
 	const avatarTemplate = useAvatarTemplate();
 	const sideBarItemTemplate = useTemplateByViewMode();
 	const { ref } = useResizeObserver<HTMLElement>({ debounceDelay: 100 });
@@ -64,7 +66,11 @@ const RoomList = () => {
 					{...(roomList.length > 0 && {
 						itemContent: (index) => roomList[index] && <RoomListRow data={itemData} item={roomList[index]} />,
 					})}
-					components={{ Item: RoomListRowWrapper, List: RoomListWrapper }}
+					components={{ 
+						Item: RoomListRowWrapper, 
+						List: RoomListWrapper,
+						Header: RoomListFilters 
+					}}
 				/>
 			</VirtualizedScrollbars>
 		</Box>
