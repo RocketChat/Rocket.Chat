@@ -1,6 +1,14 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import {
+	isOmnichannelRoom,
+	type IMessage,
+	type IRoom,
+	type IUser,
+	type MessageAttachment,
+	type MessageAttachmentAction,
+	type MessageAttachmentDefault,
+} from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 
@@ -16,6 +24,7 @@ import { validateCustomMessageFields } from '../lib/validateCustomMessageFields'
 type SendMessageOptions = {
 	upsert?: boolean;
 	previewUrls?: string[];
+	parseUrls?: boolean;
 };
 
 // TODO: most of the types here are wrong, but I don't want to change them now
@@ -73,7 +82,9 @@ const objectMaybeIncluding = (types: any) =>
 		return true;
 	});
 
-const validateAttachmentsFields = (attachmentField: any) => {
+const validateAttachmentsFields = (
+	attachmentField: NonNullable<MessageAttachmentDefault['fields']>[number]
+) => {
 	check(
 		attachmentField,
 		objectMaybeIncluding({
@@ -88,9 +99,11 @@ const validateAttachmentsFields = (attachmentField: any) => {
 	}
 };
 
-const validateAttachmentsActions = (attachmentActions: any) => {
+const validateAttachmentsActions = (
+	attachmentAction: MessageAttachmentAction['actions'][number]
+) => {
 	check(
-		attachmentActions,
+		attachmentAction,
 		objectMaybeIncluding({
 			type: String,
 			text: String,
@@ -104,7 +117,9 @@ const validateAttachmentsActions = (attachmentActions: any) => {
 	);
 };
 
-const validateAttachment = (attachment: any) => {
+const validateAttachment = (
+	attachment: MessageAttachment
+) => {
 	check(
 		attachment,
 		objectMaybeIncluding({
@@ -137,18 +152,22 @@ const validateAttachment = (attachment: any) => {
 		}),
 	);
 
-	if (attachment.fields?.length) {
+	if ('fields' in attachment && attachment.fields?.length) {
 		attachment.fields.map(validateAttachmentsFields);
 	}
 
-	if (attachment.actions?.length) {
+	if ('actions' in attachment && attachment.actions?.length) {
 		attachment.actions.map(validateAttachmentsActions);
 	}
 };
 
-const validateBodyAttachments = (attachments: any[]) => attachments.map(validateAttachment);
+const validateBodyAttachments = (attachments: NonNullable<IMessage['attachments']>) => attachments.map(validateAttachment);
 
-export const validateMessage = async (message: any, room: any, user: any) => {
+export const validateMessage = async (
+	message: Partial<IMessage>,
+	room: IRoom,
+	user: IUser
+) => {
 	check(
 		message,
 		objectMaybeIncluding({
@@ -166,7 +185,11 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 	);
 
 	if (message.alias || message.avatar) {
-		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
+		const isLiveChatGuest =
+			!message.avatar &&
+			'token' in user &&
+			isOmnichannelRoom(room) &&
+			user.token === room.v?.token;
 
 		if (!isLiveChatGuest && !(await hasPermissionAsync(user._id, 'message-impersonate', room._id))) {
 			throw new Error('Not enough permission');
@@ -221,8 +244,8 @@ export function prepareMessageObject(
  * Caller of the function should verify the Message_MaxAllowedSize if needed.
  * There might be same use cases which needs to override this setting. Example - sending error logs.
  */
-export const sendMessage = async function (user: any, message: any, room: any, options: SendMessageOptions = {}) {
-	const { upsert = false, previewUrls } = options;
+export const sendMessage = async function (user: IUser, message: IMessage, room: IRoom, options: SendMessageOptions = {}) {
+	const { upsert = false, previewUrls, parseUrls } = options;
 
 	if (!user || !message || !room._id) {
 		return false;
@@ -256,7 +279,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 		}
 	}
 
-	message = await Message.beforeSave({ message, room, user, previewUrls, parseUrls: message.parseUrls });
+	message = await Message.beforeSave({ message, room, user, previewUrls, parseUrls });
 
 	if (!message) {
 		return;
@@ -264,7 +287,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 
 	if (message._id && upsert) {
 		const { _id } = message;
-		delete message._id;
+		delete (message as Partial<IMessage>)._id;
 		await Messages.updateOne(
 			{
 				_id,
