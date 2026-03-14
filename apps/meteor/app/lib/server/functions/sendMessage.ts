@@ -189,7 +189,7 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 export function prepareMessageObject(
 	message: Partial<IMessage>,
 	rid: IRoom['_id'],
-	user: { _id: string; username?: string; name?: string },
+	user: { _id: string; username: string; name?: string },
 ): asserts message is IMessage {
 	if (!message.ts) {
 		message.ts = new Date();
@@ -202,7 +202,7 @@ export function prepareMessageObject(
 	const { _id, username, name } = user;
 	message.u = {
 		_id,
-		username: username as string, // FIXME: this is wrong but I don't want to change it now
+		username,
 		name,
 	};
 	message.rid = rid;
