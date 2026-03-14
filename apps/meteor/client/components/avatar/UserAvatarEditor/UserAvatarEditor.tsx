@@ -19,9 +19,10 @@ type UserAvatarEditorProps = {
 	disabled?: boolean;
 	etag: IUser['avatarETag'];
 	name: IUser['name'];
+	isDefaultAvatar?: boolean;
 };
 
-function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
+function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag, isDefaultAvatar }: UserAvatarEditorProps): ReactElement {
 	const { t } = useTranslation();
 	const useFullNameForDefaultAvatar = useSetting('UI_Use_Name_Avatar');
 	const rotateImages = useSetting('FileUpload_RotateImages');
@@ -91,7 +92,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
-						<Button square disabled={disabled} mi={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
+						<Button square disabled={disabled || isDefaultAvatar} mi={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
 							<Avatar url={`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`} />
 						</Button>
 						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} mi={4} onClick={clickUpload} />
