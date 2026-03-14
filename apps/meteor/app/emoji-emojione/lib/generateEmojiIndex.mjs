@@ -8,8 +8,10 @@ import nsg from 'node-sprite-generator';
 import _ from 'underscore';
 import gm from 'gm'; // lgtm[js/unused-local-variable]
 
-const assetFolder = '../../../node_modules/emojione-assets';
-const emojiJsonFile = `${assetFolder}/emoji.json`;
+const assetFolder = '../../../node_modules/emoji-assets';
+const emoji_package = '../../../node_modules/emoji-toolkit'; //emoji-toolkit is used instead of emojione.
+const emojiJsonFile = `${emoji_package}/emoji.json`;
+
 
 if (!fs.existsSync(emojiJsonFile)) {
 	console.error(`${emojiJsonFile} doesn't exist.`);
