@@ -27,8 +27,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Threads Disabled', { method: 'getThreadsList' });
 		}
 
-		const user = await Meteor.userAsync();
-		const room = await Rooms.findOneById(rid);
+		const [user, room] = await Promise.all([Meteor.userAsync(), Rooms.findOneById(rid)]);
 
 		if (!user || !room || !(await canAccessRoomAsync(room, user))) {
 			throw new Meteor.Error('error-not-allowed', 'Not Allowed', { method: 'getThreadsList' });
