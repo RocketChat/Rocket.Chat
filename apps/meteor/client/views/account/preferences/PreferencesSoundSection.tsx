@@ -16,6 +16,7 @@ const PreferencesSoundSection = () => {
 	const newRoomNotificationId = useId();
 	const newMessageNotificationId = useId();
 	const muteFocusedConversationsId = useId();
+	const askConfirmMentionAllId = useId();
 	const masterVolumeId = useId();
 	const notificationsSoundVolumeId = useId();
 	const voipRingerVolumeId = useId();
@@ -155,6 +156,18 @@ const PreferencesSoundSection = () => {
 							control={control}
 							render={({ field: { ref, value, onChange } }) => (
 								<ToggleSwitch id={muteFocusedConversationsId} ref={ref} checked={value} onChange={onChange} />
+							)}
+						/>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={askConfirmMentionAllId}>{t('Ask_confirmation_before_mention_all')}</FieldLabel>
+						<Controller
+							name='askConfirmMentionAll'
+							control={control}
+							render={({ field: { ref, value, onChange } }) => (
+								<ToggleSwitch id={askConfirmMentionAllId} ref={ref} checked={value} onChange={onChange} />
 							)}
 						/>
 					</FieldRow>

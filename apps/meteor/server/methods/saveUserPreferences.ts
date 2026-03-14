@@ -45,6 +45,7 @@ type UserPreferences = {
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
 	muteFocusedConversations: boolean;
+	askConfirmMentionAll: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 	themeAppearence: ThemePreference;
 	fontSize?: FontSize;
@@ -119,6 +120,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarDisplayAvatar: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
 		muteFocusedConversations: Match.Optional(Boolean),
+		askConfirmMentionAll: Match.Optional(Boolean),
 		themeAppearence: Match.Optional(String),
 		fontSize: Match.Optional(String),
 		omnichannelTranscriptEmail: Match.Optional(Boolean),

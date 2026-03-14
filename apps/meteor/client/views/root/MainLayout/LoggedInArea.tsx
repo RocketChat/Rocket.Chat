@@ -7,6 +7,7 @@ import { useFingerprintChange } from '../hooks/loggedIn/useFingerprintChange';
 import { useFontStylePreference } from '../hooks/loggedIn/useFontStylePreference';
 import { useForceLogout } from '../hooks/loggedIn/useForceLogout';
 import { useLogoutCleanup } from '../hooks/loggedIn/useLogoutCleanup';
+import { useMentionAllConfirmation } from '../hooks/loggedIn/useMentionAllConfirmation';
 import { useNotificationUserCalendar } from '../hooks/loggedIn/useNotificationUserCalendar';
 import { useNotifyUser } from '../hooks/loggedIn/useNotifyUser';
 import { useRestrictedRoles } from '../hooks/loggedIn/useRestrictedRoles';
@@ -40,6 +41,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	//
 	useLogoutCleanup();
 	useE2EEncryption();
+	useMentionAllConfirmation();
 
 	return children;
 };
