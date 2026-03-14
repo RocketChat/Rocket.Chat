@@ -3,6 +3,7 @@ import type { IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
 	ajv,
+	isPushGetProps,
 	validateNotFoundErrorResponse,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -10,7 +11,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { executePushTest } from '../../../../server/lib/pushConfig';
@@ -220,27 +220,43 @@ const pushTokenEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	);
-
-API.v1.addRoute(
-	'push.get',
-	{ authRequired: true },
-	{
-		async get() {
-			const params = this.queryParams;
-			check(
-				params,
-				Match.ObjectIncluding({
-					id: String,
+	)
+	.get(
+		'push.get',
+		{
+			authRequired: true,
+			query: isPushGetProps,
+			response: {
+				200: ajv.compile<{ data: { message: object; notification: object }; success: true }>({
+					type: 'object',
+					properties: {
+						data: {
+							type: 'object',
+							properties: {
+								message: { type: 'object', additionalProperties: true },
+								notification: { type: 'object', additionalProperties: true },
+							},
+							required: ['message', 'notification'],
+							additionalProperties: false,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['data', 'success'],
+					additionalProperties: false,
 				}),
-			);
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { id } = this.queryParams;
 
 			const receiver = await Users.findOneById(this.userId);
 			if (!receiver) {
 				throw new Error('error-user-not-found');
 			}
 
-			const message = await Messages.findOneById(params.id);
+			const message = await Messages.findOneById(id);
 			if (!message) {
 				throw new Error('error-message-not-found');
 			}
@@ -258,23 +274,34 @@ API.v1.addRoute(
 
 			return API.v1.success({ data });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'push.info',
-	{ authRequired: true },
-	{
-		async get() {
+	)
+	.get(
+		'push.info',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{ pushGatewayEnabled: boolean; defaultPushGateway: boolean; success: true }>({
+					type: 'object',
+					properties: {
+						pushGatewayEnabled: { type: 'boolean' },
+						defaultPushGateway: { type: 'boolean' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['pushGatewayEnabled', 'defaultPushGateway', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
 			const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
 			return API.v1.success({
-				pushGatewayEnabled: settings.get('Push_enable'),
+				pushGatewayEnabled: settings.get<boolean>('Push_enable'),
 				defaultPushGateway,
 			});
 		},
-	},
-);
+	);
 
 const pushTestEndpoints = API.v1.post(
 	'push.test',
