@@ -1957,6 +1957,42 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
+		it(`should allow bio with leading/trailing spaces if trimmed length <= ${MAX_BIO_LENGTH}`, async () => {
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						bio: `   ${Random.hexString(MAX_BIO_LENGTH)}   `,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+		});
+
+		it(`should return error when trimmed bio exceeds ${MAX_BIO_LENGTH}`, async () => {
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						bio: `   ${Random.hexString(MAX_BIO_LENGTH + 1)}   `,
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property(
+				'error',
+				`Bio size exceeds ${MAX_BIO_LENGTH} characters [error-bio-size-exceeded]`,
+			);
+		});
+
 		it('should return an error when trying to upsert a user by sending an empty userId', () => {
 			return request
 				.post(api('users.update'))

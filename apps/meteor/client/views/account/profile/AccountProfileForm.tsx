@@ -298,7 +298,17 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						<Controller
 							control={control}
 							name='bio'
-							rules={{ maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', BIO_TEXT_MAX_LENGTH) } }}
+							rules={{
+								validate: (value: string) => {
+									if (!value) return true;
+
+									if (value.trim().length > BIO_TEXT_MAX_LENGTH) {
+										return t('Max_length_is', BIO_TEXT_MAX_LENGTH);
+									}
+
+									return true;
+								},
+							}}
 							render={({ field }) => (
 								<TextAreaInput
 									{...field}
