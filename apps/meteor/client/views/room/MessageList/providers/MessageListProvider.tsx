@@ -1,4 +1,4 @@
-import { isRoomFederated, isThreadMainMessage } from '@rocket.chat/core-typings';
+import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ReactNode, RefCallback } from 'react';
 import { useMemo, memo } from 'react';
@@ -39,8 +39,10 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 
 	const { isMobile } = useLayout();
 
+	const federationReadReceipts = useSetting('Federation_Service_EDU_Process_Receipt', false);
+
 	const autoLinkDomains = useSetting('Message_CustomDomain_AutoLink', '');
-	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false) && !isRoomFederated(room);
+	const readReceiptsEnabled = useSetting('Message_Read_Receipt_Enabled', false) && (!isRoomFederated(room) || federationReadReceipts);
 	const readReceiptsStoreUsers = useSetting('Message_Read_Receipt_Store_Users', false);
 	const apiEmbedEnabled = useSetting('API_Embed', false);
 	const showRealName = useSetting('UI_Use_Real_Name', false);

@@ -30,6 +30,7 @@ const configureFederation = async () => {
 			allowedNonPrivateRooms: settings.get('Federation_Service_Join_Non_Private_Rooms'),
 			processEDUTyping: settings.get('Federation_Service_EDU_Process_Typing'),
 			processEDUPresence: settings.get('Federation_Service_EDU_Process_Presence'),
+			processEDUReceipt: settings.get('Federation_Service_EDU_Process_Receipt'),
 		});
 	} catch (err) {
 		logger.error({ msg: 'Failed to start federation-matrix service', err });
@@ -60,6 +61,7 @@ export const startFederationService = async (): Promise<void> => {
 			'Federation_Service_Domain',
 			'Federation_Service_EDU_Process_Typing',
 			'Federation_Service_EDU_Process_Presence',
+			'Federation_Service_EDU_Process_Receipt',
 			'Federation_Service_Matrix_Signing_Key',
 			'Federation_Service_Matrix_Signing_Algorithm',
 			'Federation_Service_Matrix_Signing_Version',

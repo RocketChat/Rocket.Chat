@@ -1,7 +1,8 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, ReadReceipts, NotificationQueue } from '@rocket.chat/models';
 
+import { callbacks } from '../../../server/lib/callbacks';
 import {
 	notifyOnSubscriptionChangedByRoomIdAndUserIds,
 	notifyOnSubscriptionChangedByRoomIdAndUserId,
@@ -82,8 +83,8 @@ export async function unfollow({ tmid, rid, uid }: { tmid: string; rid: string; 
 	await Messages.removeThreadFollowerByThreadId(tmid, uid);
 }
 
-export const readThread = async ({ userId, rid, tmid }: { userId: string; rid: string; tmid: string }) => {
-	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection: { tunread: 1 } });
+export const readThread = async ({ user, room, tmid }: { user: IUser; room: IRoom; tmid: string }) => {
+	const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { tunread: 1 } });
 	if (!sub) {
 		return;
 	}
@@ -91,10 +92,12 @@ export const readThread = async ({ userId, rid, tmid }: { userId: string; rid: s
 	// if the thread being marked as read is the last one unread also clear the unread subscription flag
 	const clearAlert = sub.tunread && sub.tunread?.length <= 1 && sub.tunread.includes(tmid);
 
-	const removeUnreadThreadResponse = await Subscriptions.removeUnreadThreadByRoomIdAndUserId(rid, userId, tmid, clearAlert);
+	const removeUnreadThreadResponse = await Subscriptions.removeUnreadThreadByRoomIdAndUserId(room._id, user._id, tmid, clearAlert);
 	if (removeUnreadThreadResponse.modifiedCount) {
-		void notifyOnSubscriptionChangedByRoomIdAndUserId(rid, userId);
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, user._id);
 	}
 
-	await NotificationQueue.clearQueueByUserId(userId);
+	await NotificationQueue.clearQueueByUserId(user._id);
+
+	callbacks.runAsync('afterReadMessages', room, { uid: user._id, tmid });
 };

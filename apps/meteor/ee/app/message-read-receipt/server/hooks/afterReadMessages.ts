@@ -1,5 +1,5 @@
 import { MessageReads } from '@rocket.chat/core-services';
-import { type IUser, type IRoom, type IMessage, isRoomFederated } from '@rocket.chat/core-typings';
+import { type IUser, type IRoom, type IMessage } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../../app/settings/server';
 import { callbacks } from '../../../../../server/lib/callbacks';
@@ -11,10 +11,7 @@ callbacks.add(
 		if (!settings.get('Message_Read_Receipt_Enabled')) {
 			return;
 		}
-		// Rooms federated are not supported yet
-		if (isRoomFederated(room)) {
-			return;
-		}
+
 		const { uid, lastSeen, tmid } = params;
 
 		if (tmid) {

@@ -21,10 +21,12 @@ import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
+import { readThread } from '../../../app/threads/server/functions';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+import { readMessages } from '../../lib/readMessages';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { addRoomLeader } from '../../methods/addRoomLeader';
 import { addRoomModerator } from '../../methods/addRoomModerator';
@@ -329,5 +331,17 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return insertedId;
+	}
+
+	async markAsRead(room: IRoom, userId: string, readThreads = false): Promise<void> {
+		await readMessages(room, userId, readThreads);
+	}
+
+	async readThread({ user, room, tmid }: { user: IUser; room: IRoom; tmid: string }): Promise<void> {
+		await readThread({
+			user,
+			room,
+			tmid,
+		});
 	}
 }
