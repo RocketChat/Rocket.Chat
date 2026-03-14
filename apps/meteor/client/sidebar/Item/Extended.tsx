@@ -20,7 +20,7 @@ type ExtendedProps = {
 	avatar?: ReactNode;
 	actions?: ReactNode;
 	href?: string;
-	time?: any;
+	time?: Date;
 	menu?: () => ReactNode;
 	subtitle?: ReactNode;
 	badges?: ReactNode;
