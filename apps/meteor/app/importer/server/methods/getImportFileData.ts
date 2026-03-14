@@ -34,11 +34,17 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 		ProgressStep.PREPARING_CONTACTS,
 		ProgressStep.PREPARING_STARTED,
 	];
-
 	if (waitingSteps.indexOf(instance.progress.step) >= 0) {
-		if (instance.importRecord?.valid) {
+		const validCsvContentTypes = ['text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel'];
+		const isInvalidCSV = operation.importerKey === 'csv' && !validCsvContentTypes.includes(operation.contentType ?? '');
+
+		if (instance.importRecord?.valid && !isInvalidCSV) {
 			return { waiting: true };
 		}
+		await Imports.updateOne(
+			{ _id: operation._id },
+			{ $set: { status: ProgressStep.ERROR, valid: false } }
+		);
 		throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', 'getImportFileData');
 	}
 
