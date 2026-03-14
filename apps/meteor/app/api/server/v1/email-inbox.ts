@@ -118,21 +118,16 @@ const emailInboxEndpoints = API.v1
 			authRequired: true,
 			permissionsRequired: ['manage-email-inbox'],
 			response: {
-				200: ajv.compile<IEmailInbox | null>({
-					oneOf: [
+				200: ajv.compile<IEmailInbox>({
+					allOf: [
+						{ $ref: '#/components/schemas/IEmailInbox' },
 						{
-							allOf: [
-								{ $ref: '#/components/schemas/IEmailInbox' },
-								{
-									type: 'object',
-									properties: {
-										success: { type: 'boolean', enum: [true] },
-									},
-									required: ['success'],
-								},
-							],
+							type: 'object',
+							properties: {
+								success: { type: 'boolean', enum: [true] },
+							},
+							required: ['success'],
 						},
-						{ type: 'null' },
 					],
 				}),
 				401: validateUnauthorizedErrorResponse,
