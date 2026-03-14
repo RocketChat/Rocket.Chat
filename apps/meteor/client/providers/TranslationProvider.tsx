@@ -189,50 +189,9 @@ type TranslationProviderProps = {
 };
 
 const TranslationProvider = ({ children }: TranslationProviderProps): ReactElement => {
-	const loadLocale = useMethod('loadLocale');
-
 	const language = useAutoLanguage();
 	const i18nextInstance = useI18next(language);
 	useCustomTranslations(i18nextInstance);
-
-	const availableLanguages = useMemo(
-		() => [
-			{
-				en: 'Default',
-				name: i18nextInstance.t('Default'),
-				ogName: i18nextInstance.t('Default'),
-				key: '',
-			},
-			...[...new Set([...i18nextInstance.languages, ...languages])]
-				.map((key) => ({
-					en: key,
-					name: getLanguageName(key, language),
-					ogName: getLanguageName(key, key),
-					key,
-				}))
-				.sort(({ name: nameA }, { name: nameB }) => nameA.localeCompare(nameB)),
-		],
-		[language, i18nextInstance],
-	);
-
-	useEffect(() => {
-		if (moment.locales().includes(language.toLowerCase())) {
-			moment.locale(language);
-			return;
-		}
-
-		const locale = !availableLanguages.find((lng) => lng.key === language) ? language.split('-').shift() : language;
-
-		loadLocale(locale ?? language)
-			.then((localeSrc) => {
-				localeSrc && Function(localeSrc).call({ moment });
-				moment.locale(language);
-			})
-			.catch((error) => {
-				moment.locale('en');
-				console.error('Error loading moment locale:', error);
-			});
-	}, [language, loadLocale, availableLanguages]);
 
 	useEffect(
 		() =>
@@ -245,7 +204,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 
 	return (
 		<I18nextProvider i18n={i18nextInstance}>
-			<TranslationProviderInner availableLanguages={availableLanguages}>{children}</TranslationProviderInner>
+			<TranslationProviderInner>{children}</TranslationProviderInner>
 		</I18nextProvider>
 	);
 };
@@ -258,19 +217,48 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
  * and invalidating the provider content
  */
 // eslint-disable-next-line react/no-multi-comp
-const TranslationProviderInner = ({
-	children,
-	availableLanguages,
-}: {
-	children: ReactNode;
-	availableLanguages: {
-		en: string;
-		name: string;
-		ogName: string;
-		key: string;
-	}[];
-}): ReactElement => {
+const TranslationProviderInner = ({ children }: { children: ReactNode }): ReactElement => {
 	const { t, i18n } = useTranslation();
+	const loadLocale = useMethod('loadLocale');
+
+	const availableLanguages = useMemo(
+		() => [
+			{
+				en: 'Default',
+				name: t('Default'),
+				ogName: t('Default'),
+				key: '',
+			},
+			...[...new Set([...i18n.languages, ...languages])]
+				.map((key) => ({
+					en: key,
+					name: getLanguageName(key, i18n.language),
+					ogName: getLanguageName(key, key),
+					key,
+				}))
+				.sort(({ name: nameA }, { name: nameB }) => nameA.localeCompare(nameB)),
+		],
+		[i18n.language, i18n.languages, t],
+	);
+
+	useEffect(() => {
+		if (moment.locales().includes(i18n.language.toLowerCase())) {
+			moment.locale(i18n.language);
+			return;
+		}
+
+		const locale = !availableLanguages.find((lng) => lng.key === i18n.language) ? i18n.language.split('-').shift() : i18n.language;
+
+		loadLocale(locale ?? i18n.language)
+			.then((localeSrc) => {
+				localeSrc && Function(localeSrc).call({ moment });
+				moment.locale(i18n.language);
+			})
+			.catch((error) => {
+				moment.locale('en');
+				console.error('Error loading moment locale:', error);
+			});
+	}, [i18n.language, loadLocale, availableLanguages]);
 
 	const value: TranslationContextValue = useMemo(
 		() => ({
