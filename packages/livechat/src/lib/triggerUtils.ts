@@ -8,7 +8,7 @@ import { processUnread } from './main';
 
 type AgentPromise = { username: string } | Serialized<ILivechatAgent> | null;
 
-let agentPromise: Promise<AgentPromise> | null = null;
+const agentPromiseCache = new Map<string, Promise<AgentPromise>>();
 
 const agentCacheExpiry = 3600000;
 
@@ -43,32 +43,36 @@ const getNextAgentFromQueue = async () => {
 };
 
 export const getAgent = async (triggerAction: ILivechatTriggerAction): Promise<AgentPromise> => {
-	if (agentPromise) {
-		return agentPromise;
+	const {
+		iframe: { defaultDepartment, guest: { department } = {} },
+	} = store.state;
+	const sender = triggerAction.params?.sender || 'queue';
+	const cacheKey = sender === 'custom' ? `custom:${triggerAction.params?.name || ''}` : `queue:${department || defaultDepartment || ''}`;
+
+	const cachedAgentPromise = agentPromiseCache.get(cacheKey);
+	if (cachedAgentPromise) {
+		return cachedAgentPromise;
 	}
 
-	agentPromise = new Promise(async (resolve, reject) => {
-		const { sender, name = '' } = triggerAction.params || {};
-
+	const agentPromise = (async (): Promise<AgentPromise> => {
 		if (sender === 'custom') {
-			resolve({ username: name });
+			return { username: triggerAction.params?.name || '' };
 		}
 
-		if (sender === 'queue') {
-			try {
-				const agent = await getNextAgentFromQueue();
-				resolve(agent);
-			} catch (_) {
-				resolve({ username: 'rocket.cat' });
-			}
+		try {
+			return await getNextAgentFromQueue();
+		} catch (_) {
+			return { username: 'rocket.cat' };
 		}
+	})();
 
-		return reject('Unknown sender type.');
-	});
+	agentPromiseCache.set(cacheKey, agentPromise);
 
 	// expire the promise cache as well
 	setTimeout(() => {
-		agentPromise = null;
+		if (agentPromiseCache.get(cacheKey) === agentPromise) {
+			agentPromiseCache.delete(cacheKey);
+		}
 	}, agentCacheExpiry);
 
 	return agentPromise;
