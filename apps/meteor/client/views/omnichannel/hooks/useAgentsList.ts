@@ -23,7 +23,7 @@ const DEFAULT_QUERY_LIMIT = 25;
 
 export const useAgentsList = (options: AgentsListOptions) => {
 	const { t } = useTranslation();
-	const getAgents = useEndpoint('GET', '/v1/livechat/users/:type', { type: 'agent' });
+	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
 	const {
 		filter,
 		onlyAvailable = false,
@@ -41,7 +41,7 @@ export const useAgentsList = (options: AgentsListOptions) => {
 	});
 
 	return useInfiniteQuery({
-		queryKey: ['/v1/livechat/users/:type', { filter, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
+		queryKey: ['/v1/livechat/users/agent', { filter, onlyAvailable, showIdleAgents, excludeId, haveAll, haveNoAgentsSelectedOption }],
 		queryFn: async ({ pageParam: offset = 0 }) => {
 			const { users, ...data } = await getAgents({
 				...(filter && { text: filter }),

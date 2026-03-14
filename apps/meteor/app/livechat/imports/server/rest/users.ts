@@ -8,7 +8,7 @@ import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/f
 import { findAgents, findManagers } from '../../../server/api/lib/users';
 import { addManager, addAgent, removeAgent, removeManager } from '../../../server/lib/omni-users';
 
-type LivechatUsersManagerGETLocal = {
+type LivechatUsersManagerGETProps = {
 	text?: string;
 	fields?: string;
 	onlyAvailable?: boolean;
@@ -20,7 +20,7 @@ type LivechatUsersManagerGETLocal = {
 	query?: string;
 };
 
-const LivechatUsersManagerGETLocalSchema = {
+const LivechatUsersManagerGETSchema = {
 	type: 'object',
 	properties: {
 		text: { type: 'string', nullable: true },
@@ -37,13 +37,13 @@ const LivechatUsersManagerGETLocalSchema = {
 	additionalProperties: false,
 };
 
-const isLivechatUsersManagerGETLocal = ajv.compile<LivechatUsersManagerGETLocal>(LivechatUsersManagerGETLocalSchema);
+const isLivechatUsersManagerGETProps = ajv.compile<LivechatUsersManagerGETProps>(LivechatUsersManagerGETSchema);
 
-type POSTLivechatUsersTypeLocal = {
+type POSTLivechatUsersTypeProps = {
 	username: string;
 };
 
-const POSTLivechatUsersTypeLocalSchema = {
+const POSTLivechatUsersTypePropsSchema = {
 	type: 'object',
 	properties: {
 		username: { type: 'string' },
@@ -52,7 +52,7 @@ const POSTLivechatUsersTypeLocalSchema = {
 	additionalProperties: false,
 };
 
-const isPOSTLivechatUsersTypeLocal = ajv.compile<POSTLivechatUsersTypeLocal>(POSTLivechatUsersTypeLocalSchema);
+const isPOSTLivechatUsersTypeProps = ajv.compile<POSTLivechatUsersTypeProps>(POSTLivechatUsersTypePropsSchema);
 
 const paginatedUsersResponseSchema = ajv.compile<{
 	users: object[];
@@ -62,7 +62,7 @@ const paginatedUsersResponseSchema = ajv.compile<{
 }>({
 	type: 'object',
 	properties: {
-		users: { type: 'array', items: { type: 'object' } },
+		users: { type: 'array', items: { $ref: '#/components/schemas/IUser' } },
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },
@@ -75,7 +75,7 @@ const paginatedUsersResponseSchema = ajv.compile<{
 const postUserResponseSchema = ajv.compile<{ user: object }>({
 	type: 'object',
 	properties: {
-		user: { type: 'object' },
+		user: { $ref: '#/components/schemas/IUser' },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['user', 'success'],
@@ -94,7 +94,7 @@ const successOnlyResponseSchema = ajv.compile<void>({
 const getUserByIdResponseSchema = ajv.compile<{ user: object | null }>({
 	type: 'object',
 	properties: {
-		user: { type: ['object', 'null'] },
+		user: { oneOf: [{ $ref: '#/components/schemas/IUser' }, { type: 'null' }] },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['user', 'success'],
@@ -109,7 +109,7 @@ const livechatUsersEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: emptyStringArray,
-			query: isLivechatUsersManagerGETLocal,
+			query: isLivechatUsersManagerGETProps,
 			response: {
 				200: paginatedUsersResponseSchema,
 				400: validateBadRequestErrorResponse,
@@ -124,10 +124,10 @@ const livechatUsersEndpoints = API.v1
 
 			if (this.urlParams.type === 'agent') {
 				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
-					return API.v1.forbidden('error-not-authorized');
+					return API.v1.forbidden();
 				}
 
-				const { onlyAvailable = false, excludeId, showIdleAgents } = this.queryParams;
+				const { onlyAvailable, excludeId, showIdleAgents } = this.queryParams;
 				return API.v1.success(
 					await findAgents({
 						text,
@@ -144,7 +144,7 @@ const livechatUsersEndpoints = API.v1
 			}
 			if (this.urlParams.type === 'manager') {
 				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager']))) {
-					return API.v1.forbidden('error-not-authorized');
+					return API.v1.forbidden();
 				}
 
 				return API.v1.success(
@@ -166,7 +166,7 @@ const livechatUsersEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['view-livechat-manager'],
-			body: isPOSTLivechatUsersTypeLocal,
+			body: isPOSTLivechatUsersTypeProps,
 			response: {
 				200: postUserResponseSchema,
 				400: validateBadRequestErrorResponse,
@@ -245,7 +245,7 @@ const livechatUsersEndpoints = API.v1
 				throw new Error('Invalid type');
 			}
 
-			return API.v1.failure('error-removing-user');
+			return API.v1.failure();
 		},
 	);
 

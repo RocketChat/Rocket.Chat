@@ -46,9 +46,9 @@ const mockDepartmentAgent = {
 
 const AppRoot = mockAppRoot()
 	.withEndpoint('GET', '/v1/livechat/department', () => ({ departments: [mockDepartment], count: 1, offset: 0, total: 1 }))
-	.withEndpoint('GET', '/v1/livechat/users/:type', () => ({ users: [{ ...mockAgent, departments: [] }], count: 1, offset: 0, total: 1 }))
+	.withEndpoint('GET', '/v1/livechat/users/agent', () => ({ users: [{ ...mockAgent, departments: [] }], count: 1, offset: 0, total: 1 }))
 	.withEndpoint('GET', '/v1/livechat/department/:_id', () => ({ department: mockDepartment, agents: [mockDepartmentAgent] }))
-	.withEndpoint('GET', '/v1/livechat/users/:type/:_id', () => ({ user: mockAgent }))
+	.withEndpoint('GET', '/v1/livechat/users/agent/:_id', () => ({ user: mockAgent }))
 	.withEndpoint('GET', '/v1/omnichannel/outbound/providers', () => ({ providers: [providerMock] }))
 	.withEndpoint('GET', '/v1/omnichannel/outbound/providers/:id/metadata', () => ({ metadata: providerMock }))
 	.withEndpoint('GET', '/v1/omnichannel/contacts.get', () => ({ contact: contactMock }))

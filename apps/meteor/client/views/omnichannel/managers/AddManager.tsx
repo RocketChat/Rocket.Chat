@@ -19,8 +19,7 @@ const AddManager = (): ReactElement => {
 
 	const queryClient = useQueryClient();
 
-	const { mutateAsync: saveAction } = useEndpointMutation('POST', '/v1/livechat/users/:type', {
-		keys: { type: 'manager' },
+	const { mutateAsync: saveAction } = useEndpointMutation('POST', '/v1/livechat/users/manager', {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.managers() });
 			setUsername('');

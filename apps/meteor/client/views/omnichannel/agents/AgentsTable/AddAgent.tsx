@@ -17,8 +17,7 @@ const AddAgent = () => {
 
 	const usernameFieldId = useId();
 
-	const { mutateAsync: saveAction } = useEndpointMutation('POST', '/v1/livechat/users/:type', {
-		keys: { type: 'agent' },
+	const { mutateAsync: saveAction } = useEndpointMutation('POST', '/v1/livechat/users/agent', {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.agents() });
 			setUsername('');
