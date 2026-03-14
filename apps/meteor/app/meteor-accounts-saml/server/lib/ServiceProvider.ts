@@ -25,6 +25,8 @@ const signatureAlgorithms = {
 	'RSA-SHA512': 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha512',
 } as const;
 
+const deflateRawAsync = util.promisify(zlib.deflateRaw);
+
 export class SAMLServiceProvider {
 	serviceProviderOptions: IServiceProviderOptions;
 
@@ -92,44 +94,22 @@ export class SAMLServiceProvider {
 		This method will generate the response URL with all the query string params and pass it to the callback
 	*/
 	public logoutResponseToUrl(response: string, callback: (err: string | object | null, url?: string) => void): void {
-		zlib.deflateRaw(response, (err, buffer) => {
-			if (err) {
-				return callback(err);
-			}
-
+		void (async (): Promise<void> => {
 			try {
-				const base64 = buffer.toString('base64');
-				let target = this.serviceProviderOptions.idpSLORedirectURL;
-
-				if (target.indexOf('?') > 0) {
-					target += '&';
-				} else {
-					target += '?';
-				}
-
-				// TBD. We should really include a proper RelayState here
-				const relayState = Meteor.absoluteUrl();
-
-				const samlResponse = this.maybeSignRequest({
-					SAMLResponse: base64,
-					RelayState: relayState,
-				});
-
-				target += querystring.stringify(samlResponse);
-
-				return callback(null, target);
+				const target = await this.buildLogoutResponseUrl(response);
+				callback(null, target);
 			} catch (error) {
-				return callback(error instanceof Error ? error : String(error));
+				callback(error instanceof Error ? error : String(error));
 			}
-		});
+		})();
 	}
 
 	/*
 		This method will generate the request URL with all the query string params and pass it to the callback
 	*/
 	public async requestToUrl(request: string, operation: string): Promise<string | undefined> {
-		const buffer = await util.promisify(zlib.deflateRaw)(request);
 		try {
+			const buffer = await deflateRawAsync(request);
 			const base64 = buffer.toString('base64');
 			let target = this.serviceProviderOptions.entryPoint;
 
@@ -171,6 +151,29 @@ export class SAMLServiceProvider {
 		} catch (error) {
 			throw error instanceof Error ? error : String(error);
 		}
+	}
+
+	private async buildLogoutResponseUrl(response: string): Promise<string> {
+		const buffer = await deflateRawAsync(response);
+		const base64 = buffer.toString('base64');
+		let target = this.serviceProviderOptions.idpSLORedirectURL;
+
+		if (target.indexOf('?') > 0) {
+			target += '&';
+		} else {
+			target += '?';
+		}
+
+		const relayState = Meteor.absoluteUrl();
+
+		const samlResponse = this.maybeSignRequest({
+			SAMLResponse: base64,
+			RelayState: relayState,
+		});
+
+		target += querystring.stringify(samlResponse);
+
+		return target;
 	}
 
 	public async getAuthorizeUrl(credentialToken: string): Promise<string | undefined> {
