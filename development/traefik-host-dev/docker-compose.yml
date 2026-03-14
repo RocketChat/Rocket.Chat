@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  traefik:
+    image: traefik:v3.1
+    container_name: traefik_dev_load_balancer
+    # Use host networking to easily connect to services on the host machine (localhost)
+    # This allows Traefik to access services running with 'yarn dev' on the host
+    network_mode: "host"
+    volumes:
+      # Mount the static configuration file
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
+      # Mount the directory with dynamic configuration files
+      - ./config:/etc/traefik/config:ro
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=false"  # Don't auto-discover this container

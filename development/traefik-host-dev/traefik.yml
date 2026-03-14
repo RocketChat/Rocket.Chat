@@ -1,0 +1,50 @@
+# Traefik Static Configuration
+# This file defines the global configuration for Traefik
+# Reference: https://doc.traefik.io/traefik/reference/static-configuration/file/
+
+# API and Dashboard configuration
+api:
+  dashboard: true
+  debug: true
+  insecure: true  # Enable insecure mode for development (dashboard accessible without auth)
+
+# Entry points define the ports Traefik listens on
+entryPoints:
+  web:
+    address: ":3000"  # Main HTTP entry point for Rocket.Chat
+  websocket:
+    address: ":3001"  # Dedicated entry point for WebSocket connections
+  traefik:
+    address: ":8080"  # Traefik dashboard
+
+# Providers configuration
+providers:
+  # File provider for static configuration
+  file:
+    directory: /etc/traefik/config
+    watch: true  # Watch for file changes and reload automatically
+
+# Logging configuration
+log:
+  level: INFO  # Change to DEBUG for more verbose logging
+
+# Access logs (optional, useful for debugging)
+accessLog:
+  format: json
+  fields:
+    defaultMode: keep
+    names:
+      ClientUsername: drop
+    headers:
+      defaultMode: keep
+      names:
+        User-Agent: redact
+        Authorization: drop
+        Content-Type: keep
+
+# Metrics (optional, useful for monitoring)
+metrics:
+  prometheus:
+    addEntryPointsLabels: true
+    addServicesLabels: true
+    addRoutersLabels: true
