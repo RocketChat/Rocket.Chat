@@ -43,9 +43,6 @@ let skipBold = false;
 let skipItalic = false;
 let skipStrikethrough = false;
 let skipReferences = false;
-let skipBoldEmoji = false;
-let skipItalicEmoji = false;
-let skipInlineEmoji = false;
 }}
 
 Start
@@ -97,20 +94,20 @@ BlockSpoiler = "||" EndOfLine first:(&(! "||") @Paragraph) rest:(&(! "||") @Para
 
 TimestampType = "t" / "T" / "d" / "D" / "f" / "F" / "R"
 
-Unixtime = d:Digit |10| { return d.join(''); }
+Unixtime = $(Digit |10|)
 
-TimestampHoursMinutesSeconds = hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''), seconds.join(''), tz); }
+TimestampHoursMinutesSeconds = hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) tz:Timezone? { return timestampFromHours(hours, minutes, seconds, tz); }
 
-TimestampHoursMinutes = hours:Digit |2| ":" minutes:Digit|2| tz:Timezone? { return timestampFromHours(hours.join(''), minutes.join(''),undefined,  tz); }
+TimestampHoursMinutes = hours:$(Digit |2|) ":" minutes:$(Digit |2|) tz:Timezone? { return timestampFromHours(hours, minutes, undefined, tz); }
 
 
 Timestamp = TimestampHoursMinutesSeconds / TimestampHoursMinutes
 
-Timezone = offset:('+'/'-') tzHour: Digit |2| ':' tzMinute: Digit |2| { return `${offset}${tzHour.join('')}:${tzMinute.join('')}`  }
+Timezone = offset:('+'/'-') tzHour:$(Digit |2|) ":" tzMinute:$(Digit |2|) { return offset + tzHour + ':' + tzMinute; }
 
-ISO8601Date = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| "." milliseconds:Digit |3| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), milliseconds: milliseconds.join(''), timezone: tz}) }
+ISO8601Date = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) "." milliseconds:$(Digit |3|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, milliseconds, timezone: tz }); }
 
-ISO8601DateWithoutMilliseconds = year:Digit |4| "-" month:Digit |2| "-" day:Digit |2| "T" hours:Digit |2| ":" minutes:Digit|2| ":" seconds:Digit |2| tz:Timezone? { return timestampFromIsoTime({year: year.join(''), month: month.join(''), day: day.join(''), hours: hours.join(''), minutes: minutes.join(''), seconds: seconds.join(''), timezone: tz}) }
+ISO8601DateWithoutMilliseconds = year:$(Digit |4|) "-" month:$(Digit |2|) "-" day:$(Digit |2|) "T" hours:$(Digit |2|) ":" minutes:$(Digit |2|) ":" seconds:$(Digit |2|) tz:Timezone? { return timestampFromIsoTime({ year, month, day, hours, minutes, seconds, timezone: tz }); }
 
 
 TimestampRules = "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" { return timestamp(date, format); } / "<t:" date:(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" { return timestamp(date); }
@@ -132,7 +129,9 @@ CodeLine
   / "\n" chunk:CodeChunk { return codeLine(chunk); }
   / "\n" !"```" { return codeLine(plain('')); }
 
-CodeChunk = text:$(!EndOfLine !"```" .)+ { return plain(text); }
+// Charclass avoids per-char lookahead; never consume start of "```"
+CodeChunkChar = [^\r\n`] / "`" [^`\r\n] / "`" "`" [^`\r\n]
+CodeChunk = text:$(CodeChunkChar)+ { return plain(text); }
 
 /**
  *
@@ -148,7 +147,7 @@ Heading = count:HeadingStart [ \t]+ text:HeadingChunk { return heading([text], c
 
 HeadingStart = value:"#" |1..4| { return value.length; }
 
-HeadingChunk = text:$(!EndOfLine .)+ { return plain(text); }
+HeadingChunk = text:$([^\r\n]+) { return plain(text); }
 
 /**
  *
@@ -196,7 +195,7 @@ UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return li
 
 UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
 
-UnorderedListItemContentItem = & {skipInlineEmoji = false; return true} item:(InlineItemPattern / !"*" @Any) { skipInlineEmoji = false; return item }
+UnorderedListItemContentItem = item:(InlineItemPattern / !"*" @Any) { return item }
 
 /**
  *
@@ -251,36 +250,44 @@ Paragraph = value:Inline { return paragraph(value); }
  * Inline
  *
 */
-Inline = & {skipInlineEmoji = false; return true; } value:InlinePattern+ EndOfLine? { skipInlineEmoji = false; return reducePlainTexts(value); }
+Inline = value:InlinePattern+ EndOfLine? { return reducePlainTexts(value); }
 
 InlinePattern = InlineItem / InlineItemFallback
 
-InlineItem = item:InlineItemPattern { skipInlineEmoji = false; return item; }
+InlineItem = item:InlineItemPattern { return item; }
 
-InlineItemFallback = item:Any { skipInlineEmoji = true; return item; }
+InlineEmoji = emo:Emoji { return emo; }
 
-InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
+InlineEmoticon = emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { return emo; }
 
-InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
+// Match "-" only when "-_-" is followed by more (so "-_-italic" → plain+italic); don't match when "-_-" is the full emoticon
+PlainRunBeforeEmoticon = "-" &("_" "-" .) { return plain('-'); }
+
+PlainRun = run:[^*_~`:\n<\[\]! \t()\\|]+ { return plain(run.join('')); }
 
 InlineItemPattern = Whitespace
-  / TimestampRules
-  / MaybeReferences
-  / AutolinkedPhone
-  / AutolinkedEmail
-  / AutolinkedURL
-  / Spoiler
-  / EmphasisWithWhitespace
-  / Emphasis
+  / Escaped
+  / InlineCode
+  / InlineEmoji
   / UserMention
   / ChannelMention
-  / InlineEmoji
-  / InlineCode
-  / Image
+  / AutolinkedEmail
+  / AutolinkedPhone
+  / PlainUnderscoreThenDomain
+  / AutolinkedURL
+  / EmphasisWithWhitespace
+  / Emphasis
+  / PlainRunBeforeEmoticon
   / InlineEmoticon
+  / MaybeReferences
+  / TimestampRules
+  / Image
   / Color
   / KatexInline
-  / Escaped
+  / Spoiler
+  / PlainRun
+
+InlineItemFallback = item:Any { return item; }
 
 /**
  *
@@ -288,16 +295,16 @@ InlineItemPattern = Whitespace
  * e.g: ||spoiler||, ||spoiler **bold**||
  *
  */
-Spoiler = "||" &{ skipInlineEmoji = false; return true; } text:SpoilerContentItems "||" { return spoiler(text); }
+Spoiler = "||" text:SpoilerContentItems "||" { return spoiler(text); }
 
 SpoilerContentItems = text:SpoilerContentItem+ { return reducePlainTexts(text); }
 
 // Ensure we consume at least one character and do not accidentally match the closing "||"
 SpoilerContentItem = !"||" item:SpoilerInlineItem { return item; } / !"||" item:SpoilerInlineItemFallback { return item; }
 
-SpoilerInlineItem = &{ skipInlineEmoji = false; return true; } item:InlineItemPattern { return item; }
+SpoilerInlineItem = item:InlineItemPattern { return item; }
 
-SpoilerInlineItemFallback = &{ skipInlineEmoji = true; return true; } item:Any { return item; }
+SpoilerInlineItemFallback = item:Any { return item; }
 
 /**
  *
@@ -311,6 +318,7 @@ References
   = "[" title:LinkTitle* "](" href:MarkdownLinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
+// Hot path: complex negative lookahead for ]( and ] [ ... ](
 LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
@@ -326,8 +334,7 @@ MarkdownLinkFilePath = $(URLScheme MarkdownLinkURLBody+)
 
 // MarkdownLinkURL allows parentheses in URLs when inside markdown link syntax [title](url)
 MarkdownLinkURL
-  = $(URLScheme URLAuthority MarkdownLinkURLBody*)
-  / $(URLAuthorityHost MarkdownLinkURLBody*)
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(MarkdownLinkURLBody*) { return head + tail; }
 
 MarkdownLinkURLBody
   = (
@@ -344,8 +351,7 @@ MarkdownLinkExtra = [.,!%*\"':;=]
 Image = "![" title:Line? "](" href:MarkdownLinkRef ")" { return title ? image(href, title) : image(href); }
 
 URL
-  = $(URLScheme URLAuthority URLBody*)
-  / $(URLAuthorityHost URLBody*)
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(URLBody*) { return head + tail; }
 
 URLScheme = $([A-Za-z0-9+-] |1..32| ":")
 
@@ -378,6 +384,7 @@ DomainName
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
+// Hot path: multiple negative lookaheads per character; consider post-validate if profiling shows cost
 DomainChar = !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`\[\]] .
 
 /**
@@ -429,11 +436,13 @@ AutolinkedEmail = e:Email { return autoEmail(e); }
  * with customDomains options as intranet: protocol://internaltool.intranet
  *
  */
+// _example.com (underscore + domain without closing _) → plain
+PlainUnderscoreThenDomain = "_" d:DomainName &(EndOfLine / !. / [^\x5F]) { return plain('_' + d); }
+
 AutolinkedURL = u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
-  = $(URLScheme URLAuthority AutoLinkURLBody*)
-  / $(URLAuthorityHost AutoLinkURLBody*)
+  = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
 
 AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine / !.)) .
 
@@ -451,9 +460,7 @@ Emphasis = MaybeBold / MaybeItalic / MaybeStrikethrough
  *
  */
 
-// This rule is used inside expressions that have a JS code ensuring they always fail,
-// Without any pattern to match, peggy will think the rule may end up succedding without consuming any input, which could cause infinite loops
-// So this unreachable rule is added to them to satisfy peggy's requirement.
+// Prevent re-entrant emphasis (infinite recursion); reset on backtrack via second branch
 BlockedByJavascript = 'unreachable'
 
 MaybeBold
@@ -520,13 +527,13 @@ Italic
   / [\x5F] [\x5F] @ItalicContent [\x5F] [\x5F]
   / [\x5F] @ItalicContent [\x5F]
 
-ItalicContent = & { skipItalicEmoji = false; return true; } text:ItalicContentItems { skipItalicEmoji = false; return italic(text); }
+ItalicContent = text:ItalicContentItems { return italic(text); }
 
 ItalicContentItems = text:ItalicContentItem+ { return reducePlainTexts(text); }
 
 ItalicContentItem = ItalicContentPreferentialItem / ItalicContentFallbackItem
 
-ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { skipItalicEmoji = false; return item; }
+ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { return item; }
 
 ItalicContentPreferentialItemPattern = Whitespace
   / InlineCode
@@ -538,45 +545,51 @@ ItalicContentPreferentialItemPattern = Whitespace
   / ItalicEmoji
   / ItalicEmoticon
 
-ItalicContentFallbackItem = item:ItalicContentFallbackItemPattern { skipItalicEmoji = true; return item; }
+ItalicContentFallbackItem = item:ItalicContentFallbackItemPattern { return item; }
 
-ItalicContentFallbackItemPattern = AnyItalic / Line
+ItalicContentFallbackItemPattern = ItalicPlainRun / AnyItalic / Line
 
-ItalicEmoji = & { return !skipItalicEmoji; } emo:Emoji { return emo; }
+ItalicEmoji = emo:Emoji { return emo; }
 
-ItalicEmoticon = & { return !skipItalicEmoji; } emo:Emoticon & (EmoticonNeighbor / ItalicContentPreferentialItem / [\x5F]) { skipItalicEmoji = false; return emo; }
+ItalicEmoticon = emo:Emoticon & (EmoticonNeighbor / ItalicContentPreferentialItem / [\x5F]) { return emo; }
 
 /* Bold */
 Bold = [\x2A] [\x2A] @BoldContent [\x2A] [\x2A] / [\x2A] @BoldContent [\x2A]
 
-BoldContent = & { skipBoldEmoji = false; return true; } text:BoldContentItem+ { skipBoldEmoji = false; return bold(reducePlainTexts(text)); }
+BoldContent = text:BoldContentItem+ { return bold(reducePlainTexts(text)); }
 
-BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { skipBoldEmoji = false; return item; }
+BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { return item; }
 
 BoldContentPreferentialItemPattern = Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
 
-BoldContentFallbackItem = item:BoldContentFallbackItemPattern { skipBoldEmoji = true; return item; }
+BoldContentFallbackItem = item:BoldContentFallbackItemPattern { return item; }
 
-BoldContentFallbackItemPattern = AnyBold / Line
+BoldContentFallbackItemPattern = BoldPlainRun / AnyBold / Line
 
 BoldContentItem = BoldContentPreferentialItem / BoldContentFallbackItem
 
-BoldEmoji = & { return !skipBoldEmoji; } emo:Emoji { return emo; }
+BoldEmoji = emo:Emoji { return emo; }
 
-BoldEmoticon = & { return !skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / BoldContentPreferentialItem) { skipBoldEmoji = false; return emo; }
+BoldEmoticon = emo:Emoticon & (EmoticonNeighbor / BoldContentPreferentialItem) { return emo; }
 
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / StrikePlainRun / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 
+// Exclude _ and ~ so nested italic/strike can be parsed
+BoldPlainRun = run:[^\x0a\* _~ ]+ { return plain(run.join('')); }
 AnyBold = t:[^\x0a\* ] { return plain(t); }
 
-AnyStrike = t:[^\x0a\~ ] { return plain(t); }
-
+// Exclude * and ~ so nested bold/strike can be parsed
+ItalicPlainRun = run:[^\x0a\_ *~]+ { return plain(run.join('')); }
 AnyItalic = t:[^\x0a\_ ] { return plain(t); }
+
+// Exclude * and _ so nested bold/italic can be parsed
+StrikePlainRun = run:[^\x0a\~ *_]+ { return plain(run.join('')); }
+AnyStrike = t:[^\x0a\~ ] { return plain(t); }
 
 /**
  * Emphasis with only whitespaces return plain text
@@ -613,7 +626,7 @@ UserMention
   = t:Text "@"+ user:AlphaNumericChar {
       return reducePlainTexts([t, plain('@' + user)])[0];
     }
-  / "@"+ user:$(UTF8NamesValidation ([:@] UTF8NamesValidation)?) {
+  / "@"+ user:$(UTF8NamesValidation ([:@] UTF8NamesValidation)?) & { return !user.endsWith('__'); } {
       return mentionUser(user);
     }
 
@@ -765,9 +778,7 @@ UnicodeEmojiFlags = $([\uD83C] [\uDD00-\uDDFF] [\uD83C] [\uDD00-\uDDFF])
  * e.g: `console.log('hello world')`
  *
  */
-InlineCode = "`" text:$InlineCode__+ "`" { return inlineCode(plain(text)); }
-
-InlineCode__ = $(!"`" !"\n" .)
+InlineCode = "`" text:$([^`\n]+) "`" { return inlineCode(plain(text)); }
 
 /**
  *
@@ -794,7 +805,7 @@ Space = " " / "\t"
 
 Escaped = "\\" t:[*_~`#.] { return plain(t); }
 
-Any = !EndOfLine t:. p:$AutolinkedPhone? u:$URL? { return plain(t + p + u); }
+Any = !EndOfLine t:. { return plain(t); }
 
 AnyText = [\x20-\x27\x2B-\x40\x41-\x5A\x61-\x7A] / NonASCII
 
