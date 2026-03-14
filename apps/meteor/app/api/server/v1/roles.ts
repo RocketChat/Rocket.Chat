@@ -1,5 +1,5 @@
 import { api, Authorization } from '@rocket.chat/core-services';
-import type { IRole } from '@rocket.chat/core-typings';
+import type { IRole, IUserInRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -7,10 +7,9 @@ import {
 	isRoleDeleteProps,
 	isRoleRemoveUserFromRoleProps,
 	isRolesGetUsersInRoleProps,
-	isRoleSyncProps,
-	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
@@ -26,16 +25,22 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 
-const rolesEndpoints = API.v1
+const rolesSyncQuerySchema = ajv.compile<{ updatedSince?: string }>({
+	type: 'object',
+	properties: { updatedSince: { type: 'string' } },
+	additionalProperties: false,
+});
+
+const rolesRoutes = API.v1
 	.get(
 		'roles.list',
 		{
 			authRequired: true,
 			response: {
-				200: ajv.compile<{ roles: IRole[]; success: true }>({
+				200: ajv.compile<{ roles: IRole[] }>({
 					type: 'object',
 					properties: {
-						roles: { type: 'array', items: { type: 'object', additionalProperties: true } },
+						roles: { type: 'array', items: { $ref: '#/components/schemas/IRole' } },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['roles', 'success'],
@@ -54,19 +59,18 @@ const rolesEndpoints = API.v1
 		'roles.sync',
 		{
 			authRequired: true,
-			query: isRoleSyncProps,
+			query: rolesSyncQuerySchema,
 			response: {
-				200: ajv.compile<{ roles: { update: IRole[]; remove: IRole[] }; success: true }>({
+				200: ajv.compile<{ roles: { update: IRole[]; remove: IRole[] } }>({
 					type: 'object',
 					properties: {
 						roles: {
 							type: 'object',
 							properties: {
-								update: { type: 'array', items: { type: 'object', additionalProperties: true } },
-								remove: { type: 'array', items: { type: 'object', additionalProperties: true } },
+								update: { type: 'array', items: { $ref: '#/components/schemas/IRole' } },
+								remove: { type: 'array', items: { $ref: '#/components/schemas/IRole' } },
 							},
 							required: ['update', 'remove'],
-							additionalProperties: false,
 						},
 						success: { type: 'boolean', enum: [true] },
 					},
@@ -80,14 +84,14 @@ const rolesEndpoints = API.v1
 		async function action() {
 			const { updatedSince } = this.queryParams;
 
-			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			if (updatedSince && Number.isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-invalid-param', 'updatedSince must be a valid date string');
 			}
 
 			return API.v1.success({
 				roles: {
-					update: await Roles.findByUpdatedDate(new Date(updatedSince)).toArray(),
-					remove: await Roles.trashFindDeletedAfter(new Date(updatedSince)).toArray(),
+					update: await Roles.findByUpdatedDate(new Date(updatedSince || 0)).toArray(),
+					remove: await Roles.trashFindDeletedAfter(new Date(updatedSince || 0)).toArray(),
 				},
 			});
 		},
@@ -98,12 +102,9 @@ const rolesEndpoints = API.v1
 			authRequired: true,
 			body: isRoleAddUserToRoleProps,
 			response: {
-				200: ajv.compile<{ role: IRole; success: true }>({
+				200: ajv.compile<{ role: IRole }>({
 					type: 'object',
-					properties: {
-						role: { type: 'object', additionalProperties: true },
-						success: { type: 'boolean', enum: [true] },
-					},
+					properties: { role: { $ref: '#/components/schemas/IRole' }, success: { type: 'boolean', enum: [true] } },
 					required: ['role', 'success'],
 					additionalProperties: false,
 				}),
@@ -142,10 +143,10 @@ const rolesEndpoints = API.v1
 			permissionsRequired: ['access-permissions'],
 			query: isRolesGetUsersInRoleProps,
 			response: {
-				200: ajv.compile<{ users: object[]; total: number; success: true }>({
+				200: ajv.compile<{ users: IUserInRole[]; total: number }>({
 					type: 'object',
 					properties: {
-						users: { type: 'array', items: { type: 'object', additionalProperties: true } },
+						users: { type: 'array', items: { type: 'object' } },
 						total: { type: 'number' },
 						success: { type: 'boolean', enum: [true] },
 					},
@@ -202,9 +203,7 @@ const rolesEndpoints = API.v1
 			response: {
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
+					properties: { success: { type: 'boolean', enum: [true] } },
 					required: ['success'],
 					additionalProperties: false,
 				}),
@@ -244,12 +243,9 @@ const rolesEndpoints = API.v1
 			permissionsRequired: ['access-permissions'],
 			body: isRoleRemoveUserFromRoleProps,
 			response: {
-				200: ajv.compile<{ role: IRole; success: true }>({
+				200: ajv.compile<{ role: IRole }>({
 					type: 'object',
-					properties: {
-						role: { type: 'object', additionalProperties: true },
-						success: { type: 'boolean', enum: [true] },
-					},
+					properties: { role: { $ref: '#/components/schemas/IRole' }, success: { type: 'boolean', enum: [true] } },
 					required: ['role', 'success'],
 					additionalProperties: false,
 				}),
@@ -327,14 +323,20 @@ const rolesEndpoints = API.v1
 							type: 'array',
 							items: {
 								type: 'object',
-								properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+								properties: {
+									_id: { type: 'string' },
+									username: { type: 'string' },
+									roles: { type: 'array', items: { type: 'string' } },
+								},
 							},
 						},
+						success: { type: 'boolean', enum: [true] },
 					},
+					required: ['users', 'success'],
+					additionalProperties: false,
 				}),
 			},
 		},
-
 		async () => {
 			return API.v1.success({
 				users: await Authorization.getUsersFromPublicRoles(),
@@ -342,7 +344,7 @@ const rolesEndpoints = API.v1
 		},
 	);
 
-type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesEndpoints>;
+type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

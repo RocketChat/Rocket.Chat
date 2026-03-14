@@ -103,7 +103,7 @@ async function generateTable({ owner, repo } = {}) {
 		minorDate.setDate(1);
 		supportDateStart = minorDate;
 		supportDate = new Date(minorDate);
-		supportDate.setMonth(supportDate.getMonth() + (lts ? 9 : 6));
+		supportDate.setMonth(supportDate.getMonth() + (lts ? 12 : 6));
 
 		releaseData.push({
 			release: {
