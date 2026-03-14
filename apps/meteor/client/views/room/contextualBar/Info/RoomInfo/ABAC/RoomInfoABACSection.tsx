@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 
 import { RoomIcon } from '../../../../../../components/RoomIcon';
 
-// TODO: Remove type union when ABAC is implemented
 type RoomInfoABACSectionProps = {
 	room: IRoom & {
 		abacAttributes?: {
