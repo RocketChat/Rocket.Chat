@@ -56,6 +56,9 @@ export const useSearchItems = (filterText: string): UseQueryResult<SubscriptionW
 			if (localRooms.length === LIMIT) {
 				return localRooms;
 			}
+			if (!name.trim()) {
+				return localRooms;
+			}
 
 			const spotlight = await getSpotlight(name, usernamesFromClient, type);
 
