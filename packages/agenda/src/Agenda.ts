@@ -906,7 +906,7 @@ export class Agenda extends EventEmitter {
 		// Get the next job that is not blocked by concurrency
 		const job = this._jobQueue.returnNextConcurrencyFreeJob(this._definitions);
 
-		if (!job.attrs.nextRunAt) {
+		if (!job || !job.attrs.nextRunAt) {
 			return;
 		}
 
