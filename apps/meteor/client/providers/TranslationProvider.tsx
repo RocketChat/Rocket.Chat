@@ -195,12 +195,15 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 	const i18nextInstance = useI18next(language);
 	useCustomTranslations(i18nextInstance);
 
-	const availableLanguages = useMemo(
-		() => [
+	const availableLanguages = useMemo(() => {
+		const translateInLanguage = i18nextInstance.getFixedT(language);
+		const defaultTranslation = translateInLanguage('Default');
+
+		return [
 			{
 				en: 'Default',
-				name: i18nextInstance.t('Default'),
-				ogName: i18nextInstance.t('Default'),
+				name: defaultTranslation,
+				ogName: defaultTranslation,
 				key: '',
 			},
 			...[...new Set([...i18nextInstance.languages, ...languages])]
@@ -211,9 +214,8 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 					key,
 				}))
 				.sort(({ name: nameA }, { name: nameB }) => nameA.localeCompare(nameB)),
-		],
-		[language, i18nextInstance],
-	);
+		];
+	}, [language, i18nextInstance]);
 
 	useEffect(() => {
 		if (moment.locales().includes(language.toLowerCase())) {
