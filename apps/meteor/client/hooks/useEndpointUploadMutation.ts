@@ -15,7 +15,7 @@ export const useEndpointUploadMutation = <TPathPattern extends PathPattern>(endp
 			const result = await promise;
 
 			if (!result.success) {
-				throw new Error(String(result.status));
+				throw new Error(String(result.error || result.message || result.status));
 			}
 		},
 		onError: (error) => {
