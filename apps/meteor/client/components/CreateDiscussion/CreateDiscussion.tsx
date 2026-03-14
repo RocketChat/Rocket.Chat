@@ -174,7 +174,7 @@ const CreateDiscussion = ({
 						<Controller
 							name='name'
 							control={control}
-							rules={{ required: t('Required_field', { field: t('Name') }) }}
+							rules={{ required: t('Required_field', { field: t('Name') }),validate: (value) => value.trim().length > 0 || t('Required_field', { field: t('Name') }) }}
 							render={({ field }) => (
 								<TextInput
 									id={discussionNameId}

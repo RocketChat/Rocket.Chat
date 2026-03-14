@@ -191,8 +191,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 										error={errors.name?.message}
 										disabled={!allowRealNameChange}
 										aria-required='true'
-										aria-invalid={errors.username ? 'true' : 'false'}
-										aria-describedby={`${nameId}-error ${nameId}-hint`}
+										aria-invalid={errors.name ? 'true' : 'false'}
+										aria-describedby={[errors.name ? `${nameId}-error` : '',!allowRealNameChange ? `${nameId}-hint` : '',].filter(Boolean).join(' ') || undefined}
 									/>
 								)}
 							/>
@@ -307,8 +307,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 									rows={3}
 									flexGrow={1}
 									addon={<Icon name='edit' size='x20' alignSelf='center' />}
-									aria-invalid={errors.statusText ? 'true' : 'false'}
-									aria-describedby={`${bioId}-error`}
+									aria-invalid={errors.bio ? 'true' : 'false'}
+									aria-describedby={errors.bio ? `${bioId}-error` : undefined}
 								/>
 							)}
 						/>
@@ -349,7 +349,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 									disabled={!allowEmailChange}
 									aria-required='true'
 									aria-invalid={errors.email ? 'true' : 'false'}
-									aria-describedby={`${emailId}-error ${emailId}-hint`}
+									aria-describedby={[errors.email ? `${emailId}-error` : '',!allowEmailChange ? `${emailId}-hint` : '',].filter(Boolean).join(' ') || undefined}
 								/>
 							)}
 						/>
