@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { api, MessageReads } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
 import { LivechatVisitors, ReadReceipts, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -52,14 +52,57 @@ class ReadReceiptClass {
 		}
 
 		void this.storeReadReceipts(
-			() => {
-				return Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray();
+			async () => {
+				const messages = await Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray();
+				return messages.filter((msg) => msg.unread);
 			},
 			roomId,
 			userId,
 		);
 
 		updateMessages(room);
+	}
+
+	async markMessageAsReadByDeactivatedMembers(message: IMessage, { _id: roomId, t }: { _id: string; t: string }) {
+		if (!settings.get('Message_Read_Receipt_Enabled')) {
+			return;
+		}
+
+		if (!message.unread) {
+			return;
+		}
+
+		const deactivatedUsers = await (await Users.findInactiveUsersByRoomId(roomId, { projection: { _id: 1 } })).toArray();
+		const extraData = roomCoordinator.getRoomDirectives(t).getReadReceiptsExtraData(message);
+
+		await Promise.all(
+			deactivatedUsers.map(async (user) => {
+				if (message.tmid) {
+					await MessageReads.readThread(user._id, message.tmid);
+				} else {
+					const result = await Subscriptions.setAsReadByRoomIdAndUserId(roomId, user._id);
+
+					if (result.modifiedCount > 0) {
+						void notifyOnMessageChange({
+							id: message._id,
+						});
+					}
+
+					void this.storeReadReceipts(
+						async () => {
+							return Promise.resolve([message]);
+						},
+						roomId,
+						user._id,
+						extraData,
+					);
+				}
+			}),
+		);
+
+		if (!message.tmid) {
+			updateMessages({ _id: roomId });
+		}
 	}
 
 	async markMessageAsReadBySender(message: IMessage, { _id: roomId, t }: { _id: string; t: string }, userId: string) {
