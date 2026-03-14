@@ -2,12 +2,11 @@ import { Users } from '@rocket.chat/models';
 import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
 import { addManager, addAgent, removeAgent, removeManager } from '../../../server/lib/omni-users';
-
-// --- Local types and AJV schemas (moved from rest-typings) ---
 
 type LivechatUsersManagerGETLocal = {
 	text?: string;
@@ -55,8 +54,6 @@ const POSTLivechatUsersTypeLocalSchema = {
 
 const isPOSTLivechatUsersTypeLocal = ajv.compile<POSTLivechatUsersTypeLocal>(POSTLivechatUsersTypeLocalSchema);
 
-// --- Response schemas ---
-
 const paginatedUsersResponseSchema = ajv.compile<{
 	users: object[];
 	count: number;
@@ -65,8 +62,6 @@ const paginatedUsersResponseSchema = ajv.compile<{
 }>({
 	type: 'object',
 	properties: {
-		// ILivechatAgent is not registered in typia (extends IUser with livechat-specific fields),
-		// so we use { type: 'object' } as a fallback.
 		users: { type: 'array', items: { type: 'object' } },
 		count: { type: 'number' },
 		offset: { type: 'number' },
@@ -108,7 +103,7 @@ const getUserByIdResponseSchema = ajv.compile<{ user: object | null }>({
 
 const emptyStringArray: string[] = [];
 
-API.v1
+const livechatUsersEndpoints = API.v1
 	.get(
 		'livechat/users/:type',
 		{
@@ -253,4 +248,11 @@ API.v1
 			return API.v1.failure('error-removing-user');
 		},
 	);
+
+type LivechatUsersEndpoints = ExtractRoutesFromAPI<typeof livechatUsersEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatUsersEndpoints {}
+}
 

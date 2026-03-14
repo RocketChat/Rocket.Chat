@@ -12,8 +12,8 @@ import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 const RemoveManagerButton = ({ _id }: { _id: string }): ReactElement => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
-	const { mutateAsync: deleteAction } = useEndpointMutation('DELETE', '/v1/livechat/users/manager/:_id', {
-		keys: { _id },
+	const { mutateAsync: deleteAction } = useEndpointMutation('DELETE', '/v1/livechat/users/:type/:_id', {
+		keys: { type: 'manager', _id },
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.managers() });
 		},

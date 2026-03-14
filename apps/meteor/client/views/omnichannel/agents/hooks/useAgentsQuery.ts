@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 
 export const useAgentsQuery = (query: PaginatedRequest = {}) => {
-	const getAgents = useEndpoint('GET', '/v1/livechat/users/agent');
+	const getAgents = useEndpoint('GET', '/v1/livechat/users/:type', { type: 'agent' });
 
 	return useQuery({
 		queryKey: omnichannelQueryKeys.agents(query),

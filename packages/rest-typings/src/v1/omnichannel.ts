@@ -4628,52 +4628,6 @@ export type OmnichannelEndpoints = {
 		}>;
 	};
 
-	// For some reason, when using useEndpointData with POST, it's not able to detect the actual type of a path with path params
-	// So, we need to define the type of the path params here
-	'/v1/livechat/users/manager': {
-		GET: (
-			params: PaginatedRequest<{ text?: string; fields?: string; onlyAvailable?: boolean; excludeId?: string; showIdleAgents?: boolean }>,
-		) => PaginatedResult<{
-			users: ILivechatAgent[];
-		}>;
-		POST: (params: { username: string }) => { user: ILivechatAgent };
-	};
-
-	'/v1/livechat/users/user': {
-		GET: (
-			params: PaginatedRequest<{ text?: string; fields?: string; onlyAvailable?: boolean; excludeId?: string; showIdleAgents?: boolean }>,
-		) => PaginatedResult<{
-			users: ILivechatAgent[];
-		}>;
-		POST: (params: { username: string }) => { user: ILivechatAgent };
-	};
-	'/v1/livechat/users/manager/:_id': {
-		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
-		DELETE: () => void;
-	};
-	'/v1/livechat/users/user/:_id': {
-		GET: () => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
-		DELETE: () => void;
-	};
-
-	'/v1/livechat/users/agent': {
-		GET: (
-			params: PaginatedRequest<{ text?: string; onlyAvailable?: boolean; excludeId?: string; showIdleAgents?: boolean }>,
-		) => PaginatedResult<{
-			users: (ILivechatAgent & { departments: string[] })[];
-		}>;
-		POST: (params: { username: string }) => { user: ILivechatAgent };
-	};
-
-	'/v1/livechat/users/agent/:_id': {
-		GET: (
-			params?: PaginatedRequest<{
-				text: string;
-			}>,
-		) => { user: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'> | null };
-		DELETE: () => { success: boolean };
-	};
-
 	'/v1/livechat/visitor': {
 		POST: (params: { visitor: ILivechatVisitorDTO }) => {
 			visitor: ILivechatVisitor;

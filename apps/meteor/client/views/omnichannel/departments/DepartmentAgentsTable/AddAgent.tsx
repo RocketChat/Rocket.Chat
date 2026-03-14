@@ -19,7 +19,7 @@ function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAg
 
 	const [userId, setUserId] = useState('');
 
-	const { mutateAsync: getAgent } = useEndpointMutation('GET', '/v1/livechat/users/agent/:_id', { keys: { _id: userId } });
+	const { mutateAsync: getAgent } = useEndpointMutation('GET', '/v1/livechat/users/:type/:_id', { keys: { type: 'agent', _id: userId } });
 
 	const dispatchToastMessage = useToastMessageDispatch();
 
