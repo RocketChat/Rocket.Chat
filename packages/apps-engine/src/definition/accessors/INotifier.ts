@@ -41,6 +41,22 @@ export interface INotifier {
 	notifyUser(user: IUser, message: IMessage): Promise<void>;
 
 	/**
+	 * Deletes the provided notification message.
+	 *
+	 * @param user The user who received the notification
+	 * @param message The message to delete
+	 */
+	deleteNotifyUser(user: IUser, message: IMessage): Promise<void>;
+
+	/**
+	 * Deletes the provided notification message from the room.
+	 *
+	 * @param room The room which to delete the notification in
+	 * @param message The message to delete
+	 */
+	deleteNotifyRoom(room: IRoom, message: IMessage): Promise<void>;
+
+	/**
 	 * Notifies all of the users in the provided room.
 	 *
 	 * **Note**: Notifications only are shown to those online
