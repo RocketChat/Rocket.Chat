@@ -1,8 +1,17 @@
 import { api, Authorization } from '@rocket.chat/core-services';
 import type { IRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { ajv, isRoleAddUserToRoleProps, isRoleDeleteProps, isRoleRemoveUserFromRoleProps } from '@rocket.chat/rest-typings';
-import { check, Match } from 'meteor/check';
+import {
+	ajv,
+	isRoleAddUserToRoleProps,
+	isRoleDeleteProps,
+	isRoleRemoveUserFromRoleProps,
+	isRolesGetUsersInRoleProps,
+	isRoleSyncProps,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 
 import { removeUserFromRolesAsync } from '../../../../server/lib/roles/removeUserFromRoles';
@@ -17,31 +26,63 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 
-API.v1.addRoute(
-	'roles.list',
-	{ authRequired: true },
-	{
-		async get() {
+const rolesEndpoints = API.v1
+	.get(
+		'roles.list',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{ roles: IRole[]; success: true }>({
+					type: 'object',
+					properties: {
+						roles: { type: 'array', items: { type: 'object', additionalProperties: true } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['roles', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const roles = await Roles.find({}, { projection: { _updatedAt: 0 } }).toArray();
 
 			return API.v1.success({ roles });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'roles.sync',
-	{ authRequired: true },
-	{
-		async get() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					updatedSince: Match.Where((value: unknown): value is string => typeof value === 'string' && !Number.isNaN(Date.parse(value))),
+	)
+	.get(
+		'roles.sync',
+		{
+			authRequired: true,
+			query: isRoleSyncProps,
+			response: {
+				200: ajv.compile<{ roles: { update: IRole[]; remove: IRole[] }; success: true }>({
+					type: 'object',
+					properties: {
+						roles: {
+							type: 'object',
+							properties: {
+								update: { type: 'array', items: { type: 'object', additionalProperties: true } },
+								remove: { type: 'array', items: { type: 'object', additionalProperties: true } },
+							},
+							required: ['update', 'remove'],
+							additionalProperties: false,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['roles', 'success'],
+					additionalProperties: false,
 				}),
-			);
-
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { updatedSince } = this.queryParams;
+
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			}
 
 			return API.v1.success({
 				roles: {
@@ -50,18 +91,27 @@ API.v1.addRoute(
 				},
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'roles.addUserToRole',
-	{ authRequired: true },
-	{
-		async post() {
-			if (!isRoleAddUserToRoleProps(this.bodyParams)) {
-				throw new Meteor.Error('error-invalid-role-properties', isRoleAddUserToRoleProps.errors?.map((error) => error.message).join('\n'));
-			}
-
+	)
+	.post(
+		'roles.addUserToRole',
+		{
+			authRequired: true,
+			body: isRoleAddUserToRoleProps,
+			response: {
+				200: ajv.compile<{ role: IRole; success: true }>({
+					type: 'object',
+					properties: {
+						role: { type: 'object', additionalProperties: true },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['role', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const user = await getUserFromParams(this.bodyParams);
 			const { roleId, roomId } = this.bodyParams;
 
@@ -84,14 +134,30 @@ API.v1.addRoute(
 				role,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'roles.getUsersInRole',
-	{ authRequired: true, permissionsRequired: ['access-permissions'] },
-	{
-		async get() {
+	)
+	.get(
+		'roles.getUsersInRole',
+		{
+			authRequired: true,
+			permissionsRequired: ['access-permissions'],
+			query: isRolesGetUsersInRoleProps,
+			response: {
+				200: ajv.compile<{ users: object[]; total: number; success: true }>({
+					type: 'object',
+					properties: {
+						users: { type: 'array', items: { type: 'object', additionalProperties: true } },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['users', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, role } = this.queryParams;
 			const { offset, count = 50 } = await getPaginationItems(this.queryParams);
 
@@ -104,9 +170,6 @@ API.v1.addRoute(
 				_updatedAt: 1,
 			};
 
-			if (!role) {
-				throw new Meteor.Error('error-param-not-provided', 'Query param "role" is required');
-			}
 			if (roomId && !(await hasPermissionAsync(this.userId, 'view-other-user-channels'))) {
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
@@ -129,18 +192,29 @@ API.v1.addRoute(
 
 			return API.v1.success({ users, total });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'roles.delete',
-	{ authRequired: true, permissionsRequired: ['access-permissions'] },
-	{
-		async post() {
+	)
+	.post(
+		'roles.delete',
+		{
+			authRequired: true,
+			permissionsRequired: ['access-permissions'],
+			body: isRoleDeleteProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const { bodyParams } = this;
-			if (!isRoleDeleteProps(bodyParams)) {
-				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
-			}
 
 			const role = await Roles.findOneByIdOrName(bodyParams.roleId);
 
@@ -162,18 +236,30 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'roles.removeUserFromRole',
-	{ authRequired: true, permissionsRequired: ['access-permissions'] },
-	{
-		async post() {
+	)
+	.post(
+		'roles.removeUserFromRole',
+		{
+			authRequired: true,
+			permissionsRequired: ['access-permissions'],
+			body: isRoleRemoveUserFromRoleProps,
+			response: {
+				200: ajv.compile<{ role: IRole; success: true }>({
+					type: 'object',
+					properties: {
+						role: { type: 'object', additionalProperties: true },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['role', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const { bodyParams } = this;
-			if (!isRoleRemoveUserFromRoleProps(bodyParams)) {
-				throw new Meteor.Error('error-invalid-role-properties', 'The role properties are invalid.');
-			}
 
 			const { roleId, username, scope } = bodyParams;
 
@@ -222,43 +308,41 @@ API.v1.addRoute(
 				role,
 			});
 		},
-	},
-);
-
-const rolesRoutes = API.v1.get(
-	'roles.getUsersInPublicRoles',
-	{
-		authRequired: true,
-		response: {
-			200: ajv.compile<{
-				users: {
-					_id: string;
-					username: string;
-					roles: string[];
-				}[];
-			}>({
-				type: 'object',
-				properties: {
+	)
+	.get(
+		'roles.getUsersInPublicRoles',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{
 					users: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+						_id: string;
+						username: string;
+						roles: string[];
+					}[];
+				}>({
+					type: 'object',
+					properties: {
+						users: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: { _id: { type: 'string' }, username: { type: 'string' }, roles: { type: 'array', items: { type: 'string' } } },
+							},
 						},
 					},
-				},
-			}),
+				}),
+			},
 		},
-	},
 
-	async () => {
-		return API.v1.success({
-			users: await Authorization.getUsersFromPublicRoles(),
-		});
-	},
-);
+		async () => {
+			return API.v1.success({
+				users: await Authorization.getUsersFromPublicRoles(),
+			});
+		},
+	);
 
-type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
+type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
