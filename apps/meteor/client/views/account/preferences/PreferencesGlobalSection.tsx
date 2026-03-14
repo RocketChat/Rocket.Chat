@@ -1,7 +1,8 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Field, FieldGroup, FieldLabel, FieldRow, MultiSelect } from '@rocket.chat/fuselage';
+import { AccordionItem, Box, Field, FieldGroup, FieldLabel, FieldRow, MultiSelect } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +18,11 @@ const PreferencesGlobalSection = () => {
 	return (
 		<AccordionItem title={t('Global')}>
 			<FieldGroup>
+				<VisuallyHidden>
+					<Box is='legend' aria-hidden={true}>
+						{t('Global')}
+					</Box>
+				</VisuallyHidden>
 				<Field>
 					<FieldLabel is='span' htmlFor={dontAskAgainListId}>
 						{t('Dont_ask_me_again_list')}

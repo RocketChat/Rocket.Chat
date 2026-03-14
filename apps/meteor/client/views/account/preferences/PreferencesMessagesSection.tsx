@@ -1,6 +1,18 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Field, FieldGroup, FieldHint, FieldLabel, FieldLink, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
+import {
+	AccordionItem,
+	Box,
+	Field,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldLink,
+	FieldRow,
+	Select,
+	ToggleSwitch,
+} from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -47,6 +59,11 @@ const PreferencesMessagesSection = () => {
 	return (
 		<AccordionItem title={t('Messages')}>
 			<FieldGroup>
+				<VisuallyHidden>
+					<Box is='legend' aria-hidden={true}>
+						{t('Messages')}
+					</Box>
+				</VisuallyHidden>
 				<Field>
 					<FieldRow>
 						<FieldLabel htmlFor={unreadAlertId}>{t('Unread_Tray_Icon_Alert')}</FieldLabel>
