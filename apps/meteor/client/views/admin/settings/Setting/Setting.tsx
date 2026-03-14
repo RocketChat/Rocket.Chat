@@ -1,4 +1,4 @@
-import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
+import type { SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
 import { Box, Button, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
@@ -63,14 +63,17 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const [value, setValue] = useState(setting.value);
 	const [editor, setEditor] = useState(isSettingColor(setting) ? setting.editor : undefined);
 
+	const editorValue = useMemo(() => {
+		return isSettingColor(setting) ? setting.editor : undefined;
+	}, [setting]);
+
 	useEffect(() => {
 		setValue(setting.value);
 	}, [setting.value]);
 
 	useEffect(() => {
-		setEditor(isSettingColor(setting) ? setting.editor : undefined);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [(setting as ISettingColor).editor]);
+		setEditor(editorValue);
+	}, [editorValue]);
 
 	const onChangeValue = useCallback(
 		(value: SettingValue) => {
@@ -90,13 +93,12 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const onResetButtonClick = useCallback(() => {
 		setValue(setting.value);
-		setEditor(isSettingColor(setting) ? setting.editor : undefined);
+		setEditor(editorValue);
 		update({
 			value: persistedSetting.packageValue,
 			...(isSettingColor(persistedSetting) && { editor: persistedSetting.packageEditor }),
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting]);
+	}, [setting.value, editorValue, update, persistedSetting]);
 
 	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
 
