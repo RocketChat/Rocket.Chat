@@ -1,4 +1,3 @@
-// TO-DO: import Ajv instance instead of creating a new one
 import { ajv } from '../Ajv';
 
 export type UsersSendConfirmationEmailParamsPOST = {

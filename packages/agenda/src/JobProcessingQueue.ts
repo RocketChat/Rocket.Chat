@@ -58,15 +58,17 @@ export class JobProcessingQueue {
 	 * Returns (does not pop, element remains in queue) first element (always from the right)
 	 * that can be processed (not blocked by concurrency execution)
 	 */
-	returnNextConcurrencyFreeJob(agendaDefinitions: Record<string, JobDefinition>): Job {
-		let next;
-		for (next = this._queue.length - 1; next > 0; next -= 1) {
+	returnNextConcurrencyFreeJob(agendaDefinitions: Record<string, JobDefinition>): Job | undefined {
+		for (let next = this._queue.length - 1; next >= 0; next -= 1) {
 			const def = agendaDefinitions[this._queue[next].attrs.name];
+			if (!def) {
+				continue;
+			}
 			if (def.concurrency > def.running) {
-				break;
+				return this._queue[next];
 			}
 		}
 
-		return this._queue[next];
+		return undefined;
 	}
 }

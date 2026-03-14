@@ -654,7 +654,7 @@ export class Agenda extends EventEmitter {
 
 	private async _findAndLockNextJob(jobName: string, definition: JobDefinition): Promise<Job | undefined> {
 		const now = new Date();
-		const lockDeadline = new Date(Date.now().valueOf() - definition.lockLifetime);
+		const lockDeadline = new Date(Date.now() - definition.lockLifetime);
 		debug('_findAndLockNextJob(%s, [Function])', jobName);
 
 		// Don't try and access MongoDB if we've lost connection to it.
@@ -826,7 +826,7 @@ export class Agenda extends EventEmitter {
 		}
 
 		// Set the date of the next time we are going to run _processEvery function
-		this._nextScanAt = new Date(Date.now() + this._processEvery || defaultInterval);
+		this._nextScanAt = new Date(Date.now() + (this._processEvery || defaultInterval));
 
 		// For this job name, find the next job to run and lock it!
 		try {
@@ -906,7 +906,7 @@ export class Agenda extends EventEmitter {
 		// Get the next job that is not blocked by concurrency
 		const job = this._jobQueue.returnNextConcurrencyFreeJob(this._definitions);
 
-		if (!job.attrs.nextRunAt) {
+		if (!job || !job.attrs.nextRunAt) {
 			return;
 		}
 

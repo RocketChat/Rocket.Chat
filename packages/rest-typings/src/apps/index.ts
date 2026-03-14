@@ -219,7 +219,7 @@ export type AppsEndpoints = {
 	};
 
 	'/apps/app-request/markAsSeen': {
-		POST: (params: { unseenRequests: Array<string> }) => { succes: boolean };
+		POST: (params: { unseenRequests: Array<string> }) => { success: boolean };
 	};
 
 	'/apps/notify-admins': {
