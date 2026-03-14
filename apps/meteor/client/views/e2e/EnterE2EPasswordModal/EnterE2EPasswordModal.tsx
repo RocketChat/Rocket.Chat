@@ -1,6 +1,5 @@
 import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError, FieldLink } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import DOMPurify from 'dompurify';
 import { useEffect, useId, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -62,7 +61,7 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 			onClose={onClose}
 			onCancel={onCancel}
 		>
-			<Box dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('E2E_password_request_text')) }} />
+			<Box>{t('E2E_password_request_text')}</Box>
 			<FieldGroup mbs={24} w='full'>
 				<Field>
 					<FieldRow>

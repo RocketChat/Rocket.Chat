@@ -477,6 +477,7 @@ const commandsEndpoints = API.v1
 				cmd,
 				params,
 				msg: { rid: query.roomId },
+				userId: this.userId,
 			});
 
 			return API.v1.success({ preview: preview ?? { i18nTitle: '', items: [] } });
@@ -534,6 +535,7 @@ const commandsEndpoints = API.v1
 					triggerId: body.triggerId,
 				},
 				body.previewItem as import('@rocket.chat/core-typings').SlashCommandPreviewItem,
+				this.userId,
 			);
 
 			return API.v1.success();
