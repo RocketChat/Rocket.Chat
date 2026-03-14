@@ -74,7 +74,7 @@ export class SAML {
 			case 'logout':
 				return this.processLogoutAction(req, res, service);
 			case 'sloRedirect':
-				return this.processSLORedirectAction(req, res);
+				return this.processSLORedirectAction(req, res, service);
 			case 'authorize':
 				return this.processAuthorizeAction(res, service, samlObject);
 			case 'validate':
@@ -391,11 +391,51 @@ export class SAML {
 		});
 	}
 
-	private static processSLORedirectAction(req: IIncomingMessage, res: ServerResponse): void {
+	private static processSLORedirectAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
+		const { idpSLORedirectURL } = service;
+		const userRedirect = req.query.redirect as string;
+
+		if (!idpSLORedirectURL) {
+			res.writeHead(500);
+			res.end('SLO redirect not configured');
+			return;
+		}
+
+		if (!userRedirect || typeof userRedirect !== 'string') {
+			res.writeHead(400);
+			res.end('Missing redirect parameter');
+			return;
+		}
+
+		let configuredURL: URL;
+		let requestURL: URL;
+
+		try {
+			configuredURL = new URL(idpSLORedirectURL);
+			requestURL = new URL(userRedirect);
+		} catch {
+			res.writeHead(400);
+			res.end('Invalid URL format');
+			return;
+		}
+
+		if (configuredURL.origin !== requestURL.origin) {
+			res.writeHead(403);
+			res.end('Unauthorized redirect origin');
+			return;
+		}
+
+		const normalizePath = (p: string): string => p.replace(/\/+$/, '') || '/';
+		if (normalizePath(configuredURL.pathname) !== normalizePath(requestURL.pathname)) {
+			res.writeHead(403);
+			res.end('Unauthorized redirect path');
+			return;
+		}
+
 		res.writeHead(302, {
-			// credentialToken here is the SAML LogOut Request that we'll send back to IDP
-			Location: req.query.redirect,
+			Location: requestURL.toString(),
 		});
+
 		res.end();
 	}
 
