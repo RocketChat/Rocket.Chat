@@ -46,7 +46,6 @@ const CommandsListParamsSchema = {
 		offset: { type: 'number', nullable: true },
 		sort: { type: 'string', nullable: true },
 		query: { type: 'string', nullable: true },
-		fields: { type: 'string', nullable: true },
 	},
 	required: [],
 	additionalProperties: false,
@@ -344,13 +343,14 @@ const commandsEndpoints = API.v1
 					required: ['commands', 'appsLoaded', 'offset', 'count', 'total', 'success'],
 					additionalProperties: false,
 				}),
+				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 			},
 		},
 		async function action() {
 			if (!Apps.self?.isLoaded()) {
 				return {
-					statusCode: 202 as const, // Accepted - apps are not ready, so the list is incomplete. Retry later
+					statusCode: 202 as const,
 					body: {
 						success: true as const,
 						commands: [] as object[],
