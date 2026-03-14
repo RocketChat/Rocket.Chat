@@ -42,7 +42,7 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 	const timeZonesOptions: SelectOption[] = useMemo(() => timeZones.map((name) => [name, t(name as TranslationKey)]), [t, timeZones]);
 	const daysOptions: SelectOption[] = useMemo(() => DAYS_OF_WEEK.map((day) => [day, t(day as TranslationKey)]), [t]);
 
-	const { watch, control } = useFormContext<BusinessHoursFormData>();
+	const { watch, control, trigger } = useFormContext<BusinessHoursFormData>();
 	const { daysTime } = watch();
 	const { fields: daysTimeFields, replace } = useFieldArray({ control, name: 'daysTime' });
 
@@ -105,14 +105,40 @@ const BusinessHoursForm = ({ type }: { type?: 'default' | 'custom' }) => {
 							<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.start.time`}
-								render={({ field }) => <InputBox id={`${daysTimeField + index}-start`} type='time' {...field} />}
+								control={control}
+								render={({ field: { onChange, value, ...field } }) => (
+									<InputBox
+										id={`${daysTimeField + index}-start`}
+										type='time'
+										{...field}
+										value={value}
+										onChange={(e) => {
+											onChange(e);
+											trigger(`daysTime.${index}.finish.time`);
+										}}
+									/>
+								)}
 							/>
 						</Box>
 						<Box display='flex' flexDirection='column' flexGrow={1} mis={2}>
 							<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
 							<Controller
 								name={`daysTime.${index}.finish.time`}
-								render={({ field }) => <InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} />}
+								control={control}
+								rules={{
+									validate: (value) => {
+										const startTime = watch(`daysTime.${index}.start.time`);
+										if (value <= startTime) {
+											return t('Business_hours_finish_must_be_greater_than_start');
+										}
+									},
+								}}
+								render={({ field, fieldState: { error } }) => (
+									<>
+										<InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} error={error?.message} />
+										<Field.Error>{error?.message}</Field.Error>
+									</>
+								)}
 							/>
 						</Box>
 					</FieldRow>

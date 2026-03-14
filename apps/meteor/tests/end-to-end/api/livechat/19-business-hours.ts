@@ -148,6 +148,29 @@ describe('LIVECHAT - business hours', () => {
 			expect(workHours[0].finish.utc.dayOfWeek).to.be.equal('Sunday');
 		});
 
+
+		it('should fail if finish is before start time', async () => {
+			const { _updatedAt, ts, ...cleanedBusinessHour } = defaultBhId;
+			await request.post(api('livechat/business-hour'))
+				.set(credentials)
+				.send({
+					...cleanedBusinessHour,
+					workHours: [
+						{
+							day: 'Monday',
+							open: true,
+							start: '10:00',
+							finish: '08:00',
+						},
+					],
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body.error).to.include('error-business-hour-finish-time-before-start-time');
+				});
+		});
+
 		it('should allow agents to be available', async () => {
 			const { body } = await makeAgentAvailable(credentials);
 			expect(body).to.have.property('success', true);
