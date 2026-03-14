@@ -93,7 +93,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 		i18nLabel: 'Accounts_OAuth_Custom_Secret',
 		persistent: true,
 	});
-	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-login_style`, values.loginStyle || 'popup', {
+	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-login_style`, values.loginStyle || 'redirect', {
 		type: 'select',
 		group: 'OAuth',
 		section: `Custom OAuth: ${name}`,
@@ -102,7 +102,6 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 		values: [
 			{ key: 'redirect', i18nLabel: 'Redirect' },
 			{ key: 'popup', i18nLabel: 'Popup' },
-			{ key: '', i18nLabel: 'Default' },
 		],
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-button_label_text`, values.buttonLabelText || '', {
