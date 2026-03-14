@@ -440,6 +440,7 @@ export function createFakeTag(overrides?: Partial<Serialized<ILivechatTag>>): Se
 		description: 'description',
 		numDepartments: 0,
 		departments: [],
+		_updatedAt: new Date().toISOString(),
 		...overrides,
 	};
 }

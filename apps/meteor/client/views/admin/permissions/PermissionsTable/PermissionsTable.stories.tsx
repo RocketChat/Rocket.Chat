@@ -24,6 +24,7 @@ const roles: IRole[] = [
 		protected: true,
 		scope: 'Users',
 		_id: 'owner',
+		_updatedAt: new Date(),
 	},
 	{
 		description: 'Administrator',
@@ -31,6 +32,7 @@ const roles: IRole[] = [
 		protected: true,
 		scope: 'Users',
 		_id: 'admin',
+		_updatedAt: new Date(),
 	},
 	{
 		description: 'Leader',
@@ -38,6 +40,7 @@ const roles: IRole[] = [
 		protected: false,
 		scope: 'Subscriptions',
 		_id: 'leader',
+		_updatedAt: new Date(),
 	},
 	{
 		description: 'Moderator',
@@ -45,6 +48,7 @@ const roles: IRole[] = [
 		protected: false,
 		scope: 'Subscriptions',
 		_id: 'moderator',
+		_updatedAt: new Date(),
 	},
 	{
 		description: 'User',
@@ -52,6 +56,7 @@ const roles: IRole[] = [
 		protected: true,
 		scope: 'Users',
 		_id: 'user',
+		_updatedAt: new Date(),
 	},
 	{
 		description: 'Guest',
@@ -59,6 +64,7 @@ const roles: IRole[] = [
 		protected: true,
 		scope: 'Users',
 		_id: 'guest',
+		_updatedAt: new Date(),
 	},
 	{
 		description: 'Bot',
@@ -66,6 +72,7 @@ const roles: IRole[] = [
 		protected: true,
 		scope: 'Users',
 		_id: 'bot',
+		_updatedAt: new Date(),
 	},
 	{
 		description: 'App',
@@ -73,6 +80,7 @@ const roles: IRole[] = [
 		protected: true,
 		scope: 'Users',
 		_id: 'app',
+		_updatedAt: new Date(),
 	},
 ];
 

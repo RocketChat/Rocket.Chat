@@ -33,7 +33,7 @@ export class UserStatuses implements Iterable<UserStatusDescriptor> {
 		this.store.set(customUserStatus.id, customUserStatus);
 	}
 
-	public createFromCustom(customUserStatus: ICustomUserStatus): UserStatusDescriptor {
+	public createFromCustom(customUserStatus: Omit<ICustomUserStatus, '_updatedAt'>): UserStatusDescriptor {
 		if (!this.isValidType(customUserStatus.statusType)) {
 			throw new Error('Invalid user status type');
 		}

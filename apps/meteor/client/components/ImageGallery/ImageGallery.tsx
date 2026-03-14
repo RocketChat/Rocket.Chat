@@ -98,7 +98,15 @@ const swiperStyle = css`
 	}
 `;
 
-export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
+export const ImageGallery = ({
+	images,
+	onClose,
+	loadMore,
+}: {
+	images: Pick<IUpload, '_id' | 'path' | 'url'>[];
+	onClose: () => void;
+	loadMore?: () => void;
+}) => {
 	const { t } = useTranslation();
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();

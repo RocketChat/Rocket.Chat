@@ -13,7 +13,6 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { check } from 'meteor/check';
-import type { OptionalId } from 'mongodb';
 import _ from 'underscore';
 
 import { SystemLogger } from '../../../../server/lib/logger/system';
@@ -27,11 +26,11 @@ export type S3Options = StoreOptions & {
 		ACL: string;
 	};
 	URLExpiryTimeSpan: number;
-	getPath: (file: OptionalId<IUpload>) => string;
+	getPath: (file: Omit<IUpload, '_updatedAt'>) => string;
 };
 
 class AmazonS3Store extends UploadFS.Store {
-	protected getPath: (file: IUpload) => string;
+	protected getPath: (file: Omit<IUpload, '_updatedAt'>) => string;
 
 	constructor(options: S3Options) {
 		// Default options
@@ -105,7 +104,7 @@ class AmazonS3Store extends UploadFS.Store {
 			}
 
 			file.AmazonS3 = {
-				path: classOptions.getPath(file),
+				path: classOptions.getPath(file as Omit<IUpload, '_updatedAt'>),
 			};
 
 			file.store = this.options.name; // assign store to file
