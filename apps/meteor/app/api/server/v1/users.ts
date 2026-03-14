@@ -21,6 +21,9 @@ import {
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	PaginatedRequest,
+	PaginatedResult,
+	DefaultUserInfo,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -477,120 +480,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'users.list',
-	{
-		authRequired: true,
-		queryOperations: ['$or', '$and'],
-		permissionsRequired: ['view-d-room'],
-	},
-	{
-		async get() {
-			if (
-				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
-			) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const nonEmptyFields = getNonEmptyFields(fields);
-
-			const inclusiveFields = getInclusiveFields(nonEmptyFields);
-
-			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
-
-			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
-
-			// if user provided a query, validate it with their allowed operators
-			// otherwise we use the default query (with $regex and $options)
-			if (
-				!isValidQuery(
-					nonEmptyQuery,
-					[
-						...inclusiveFieldsKeys,
-						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
-						inclusiveFieldsKeys.includes('username') && 'username.*',
-						inclusiveFieldsKeys.includes('name') && 'name.*',
-						inclusiveFieldsKeys.includes('type') && 'type.*',
-						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
-					].filter(Boolean) as string[],
-					// At this point, we have already validated the user query not containing malicious fields
-					// On here we are using our own query so we can allow some extra fields
-					[...this.queryOperations, '$regex', '$options'],
-				)
-			) {
-				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
-			}
-
-			const actualSort = sort || { username: 1 };
-
-			if (sort?.status) {
-				actualSort.active = sort.status;
-			}
-
-			if (sort?.name) {
-				actualSort.nameInsensitive = sort.name;
-			}
-
-			const limit =
-				count !== 0
-					? [
-							{
-								$limit: count,
-							},
-						]
-					: [];
-
-			const result = await Users.col
-				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
-					{
-						$match: nonEmptyQuery,
-					},
-					{
-						$project: inclusiveFields,
-					},
-					{
-						$addFields: {
-							nameInsensitive: {
-								$toLower: '$name',
-							},
-						},
-					},
-					{
-						$facet: {
-							sortedResults: [
-								{
-									$sort: actualSort,
-								},
-								{
-									$skip: offset,
-								},
-								...limit,
-							],
-							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-						},
-					},
-				])
-				.toArray();
-
-			const {
-				sortedResults: users,
-				totalCount: [{ total } = { total: 0 }],
-			} = result[0];
-
-			return API.v1.success({
-				users,
-				count: users.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'users.listByStatus',
 	{
 		authRequired: true,
@@ -840,43 +729,147 @@ const usersEndpoints = API.v1
 				}>({
 					type: 'object',
 					properties: {
-						success: {
-							type: 'boolean',
-							enum: [true],
-						},
 						suggestions: {
 							type: 'object',
 							additionalProperties: {
 								type: 'object',
 								properties: {
-									blob: {
-										type: 'string',
-									},
-									contentType: {
-										type: 'string',
-									},
-									service: {
-										type: 'string',
-									},
-									url: {
-										type: 'string',
-										format: 'uri',
-									},
+									blob: { type: 'string' },
+									contentType: { type: 'string' },
+									service: { type: 'string' },
+									url: { type: 'string', format: 'uri' },
 								},
 								required: ['blob', 'contentType', 'service', 'url'],
 								additionalProperties: false,
 							},
 						},
 					},
-					required: ['success', 'suggestions'],
+					required: ['suggestions'],
 					additionalProperties: false,
 				}),
 			},
 		},
 		async function action() {
 			const suggestions = await getAvatarSuggestionForUser(this.user);
-
 			return API.v1.success({ suggestions });
+		},
+	)
+	.get(
+		'users.list',
+		{
+			authRequired: true,
+			queryOperations: ['$or', '$and'],
+			permissionsRequired: ['view-d-room'],
+			query: ajv.compile<PaginatedRequest<{ fields?: string; query?: string }>>({
+				type: 'object',
+				properties: {
+					offset: { type: 'string', nullable: true },
+					count: { type: 'string', nullable: true },
+					sort: { type: 'string', nullable: true },
+					fields: { type: 'string', nullable: true },
+					query: { type: 'string', nullable: true },
+				},
+				required: [],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<PaginatedResult<{ users: DefaultUserInfo[] }>>({
+					type: 'object',
+					properties: {
+						users: {
+							type: 'array',
+							items: { type: 'object' },
+						},
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+					},
+					required: ['users', 'count', 'offset', 'total'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				403: ajv.compile({
+					type: 'object',
+					properties: {
+						error: { type: 'string' },
+						errorType: { type: 'string' },
+					},
+					required: ['error'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			if (
+				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+			) {
+				return API.v1.forbidden();
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
+
+			const nonEmptyFields = getNonEmptyFields(fields);
+			const inclusiveFields = getInclusiveFields(nonEmptyFields);
+			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
+
+			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
+
+			if (
+				!isValidQuery(
+					nonEmptyQuery,
+					[
+						...inclusiveFieldsKeys,
+						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
+						inclusiveFieldsKeys.includes('username') && 'username.*',
+						inclusiveFieldsKeys.includes('name') && 'name.*',
+						inclusiveFieldsKeys.includes('type') && 'type.*',
+						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
+					].filter(Boolean) as string[],
+					['$or', '$and', '$regex', '$options'],
+				)
+			) {
+				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
+			}
+
+			const actualSort = sort || { username: 1 };
+
+			if (sort?.status) {
+				actualSort.active = sort.status;
+			}
+
+			if (sort?.name) {
+				actualSort.nameInsensitive = sort.name;
+			}
+
+			const limit = count !== 0 ? [{ $limit: count }] : [];
+
+			const result = await Users.col
+				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
+					{ $match: nonEmptyQuery },
+					{ $project: inclusiveFields },
+					{ $addFields: { nameInsensitive: { $toLower: '$name' } } },
+					{
+						$facet: {
+							sortedResults: [{ $sort: actualSort }, { $skip: offset }, ...limit],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+						},
+					},
+				])
+				.toArray();
+
+			const {
+				sortedResults: users,
+				totalCount: [{ total } = { total: 0 }],
+			} = result[0];
+
+			return API.v1.success({
+				users,
+				count: users.length,
+				offset,
+				total,
+			});
 		},
 	);
 

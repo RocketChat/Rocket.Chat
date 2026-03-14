@@ -1,7 +1,6 @@
 import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
-import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
 import type { UserDeactivateIdleParamsPOST } from './users/UserDeactivateIdleParamsPOST';
@@ -149,12 +148,6 @@ export type UsersEndpoints = {
 		GET: (params: UsersAutocompleteParamsGET) => {
 			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
 		};
-	};
-
-	'/v1/users.list': {
-		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
-			users: DefaultUserInfo[];
-		}>;
 	};
 
 	'/v1/users.listByStatus': {
