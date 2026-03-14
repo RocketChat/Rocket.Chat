@@ -1,7 +1,9 @@
 {
   "translation": {
+    "are_you_sure_you_want_to_remove_all_of_your_person": "Er du sikker på at du vil fjerne alle dine personlige data?",
     "are_you_sure_you_want_to_switch_the_department": "Er du sikker på at du vil bytte avdeling?",
     "cancel": "Avbryt",
+    "chat_started": "Chat startet",
     "conversation_finished": "Samtalen er avsluttet",
     "department_switched": "Avdeling skiftet",
     "no": "Nei",
