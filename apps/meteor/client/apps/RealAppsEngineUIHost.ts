@@ -8,8 +8,6 @@ import { baseURI } from '../lib/baseURI';
 import { getUser } from '../lib/user';
 import { Rooms } from '../stores';
 
-// FIXME: replace non-null assertions with proper error handling
-
 export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	private _baseURL: string;
 
@@ -20,7 +18,11 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	}
 
 	private getUserAvatarUrl(username: string) {
-		const avatarUrl = getUserAvatarURL(username)!;
+		const avatarUrl = getUserAvatarURL(username);
+
+		if (!avatarUrl) {
+			return '';
+		}
 
 		if (!avatarUrl.startsWith('http') && !avatarUrl.startsWith('data')) {
 			return `${this._baseURL}${avatarUrl}`;
@@ -40,31 +42,40 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		try {
 			const { members } = await sdk.rest.get('/v1/groups.members', { roomId: id });
 
-			cachedMembers = members.map(
-				({ _id, username }): IExternalComponentUserInfo => ({
-					id: _id,
-					username: username!,
-					avatarUrl: this.getUserAvatarUrl(username!),
-				}),
-			);
+			cachedMembers = members
+				.filter((member): member is (typeof members)[number] & { username: string } => !!member.username)
+				.map(
+					({ _id, username }): IExternalComponentUserInfo => ({
+						id: _id,
+						username,
+						avatarUrl: this.getUserAvatarUrl(username),
+					}),
+				);
 		} catch (error) {
 			console.warn(error);
 		}
 
 		return {
 			id,
-			slugifiedName: slugifiedName!,
+			slugifiedName: slugifiedName ?? id,
 			members: cachedMembers,
 		};
 	}
 
 	async getClientUserInfo(): Promise<IExternalComponentUserInfo> {
-		const { username, _id } = getUser()!;
+		const user = getUser();
+		if (!user) {
+			throw new Error('User is not logged in');
+		}
+		const { username, _id } = user;
+		if (!username) {
+			throw new Error('Username is not available');
+		}
 
 		return {
 			id: _id,
-			username: username!,
-			avatarUrl: this.getUserAvatarUrl(username!) || '',
+			username,
+			avatarUrl: this.getUserAvatarUrl(username),
 		};
 	}
 }
