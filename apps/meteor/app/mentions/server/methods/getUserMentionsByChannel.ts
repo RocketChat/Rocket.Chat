@@ -9,7 +9,10 @@ import { canAccessRoomAsync } from '../../../authorization/server';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getUserMentionsByChannel(params: { roomId: string; options: { limit: number; skip: number; sort: { ts: -1 | 1 } } }): IMessage[];
+		getUserMentionsByChannel(params: {
+			roomId: string;
+			options: { limit: number; skip: number; sort: { ts: -1 | 1 } };
+		}): { mentions: IMessage[]; total: number };
 	}
 }
 
@@ -33,7 +36,11 @@ export const getUserMentionsByChannel = async (
 		});
 	}
 
-	return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).toArray();
+	const { cursor, totalCount } = Messages.findPaginatedVisibleByMentionAndRoomId(user.username, roomId, options);
+
+	const [mentions, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+	return { mentions, total };
 };
 
 Meteor.methods<ServerMethods>({
