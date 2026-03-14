@@ -149,7 +149,7 @@ test.describe.serial('teams-management', () => {
 		await poHomeTeam.content.openReplyInThread();
 		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetTeam}"]`).type('any-reply-message');
 		await page.keyboard.press('Enter');
-		await expect(poHomeTeam.content.lastThreadMessageText).toHaveText('any-reply-message');
+		await expect(poHomeTeam.content.lastUserThreadMessage).toHaveText('any-reply-message');
 	});
 
 	test('should set targetTeam as readonly', async () => {

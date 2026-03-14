@@ -625,7 +625,7 @@ describe('Router', () => {
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toHaveProperty(
 			'error',
-			'Invalid response for endpoint GET - http://localhost/api/test. Error: must NOT have additional properties (additionalProperty: asda)',
+			"Invalid response for endpoint GET - http://localhost/api/test. Error: at path '(root)': must NOT have additional properties (additionalProperty: asda)",
 		);
 	});
 
