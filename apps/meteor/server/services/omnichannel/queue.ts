@@ -269,7 +269,9 @@ export class OmnichannelQueue implements IOmnichannelQueue {
 				void dispatchAgentDelegated(rid, agentId);
 			}, 1000);
 
-			metrics.timeToQueueProcessingByQueue.observe({ queue }, (Date.now() - inquiry.ts.getTime()) / 1000);
+			const waitTimeSeconds = (Date.now() - inquiry.ts.getTime()) / 1000;
+			metrics.timeToQueueProcessingByQueue.observe({ queue }, waitTimeSeconds);
+			metrics.timeToQueueProcessingByQueueHistogram.observe({ queue }, waitTimeSeconds);
 			metrics.totalItemsProcessedByQueue.inc({ queue });
 			return true;
 		}
