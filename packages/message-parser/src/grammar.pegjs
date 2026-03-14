@@ -263,7 +263,16 @@ InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
 
 InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
 
+EscapedTimestampRules
+  = "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" {
+      return plain(`<t:${rawDate}:${format}>`);
+    }
+  / "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ">" {
+      return plain(`<t:${rawDate}>`);
+    }
+
 InlineItemPattern = Whitespace
+  / EscapedTimestampRules
   / TimestampRules
   / MaybeReferences
   / AutolinkedPhone
@@ -568,7 +577,7 @@ BoldEmoticon = & { return !skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / B
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(EscapedTimestampRules / TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
 
