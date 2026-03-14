@@ -176,6 +176,13 @@ export const sendNoWrap = async ({
 
 	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
 
+	const smtpHost=settings.get<string>('SMTP_Host');
+	if(!smtpHost){
+		throw new Meteor.Error(
+			'smtp not configured',
+			'SMTP is not configured. PLease configure it in Administration -> Settings -> Email -> SMTP before sending emails.'
+		)
+	}
 	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
 };
 
