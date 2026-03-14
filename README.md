@@ -104,6 +104,28 @@ Join [#support](https://open.rocket.chat/channel/support) and [#general](https:/
 
 Rocket.Chat is an open-source project, and we are very happy to accept community contributions. Refer to the [Contribution guide](https://developer.rocket.chat/docs/contribute-to-rocketchat) for more details.
 
+# 🚀 CodeBase guide
+
+To make contributing to Rocket.Chat easier for new developers, we've introduced RC.Guided.Tours.
+
+<b>About RC.Guided.Tours:</b>
+
+• Purpose: Simplify the onboarding process for new contributors to the Rocket.Chat codebase.
+
+• Target Audience: Developers who are new to the Rocket.Chat project.
+
+• Benefits:
+
+1. Provides an interactive, step-by-step tour of the codebase.
+
+2. Helps contributors quickly understand crucial parts of the code, empowering them to make impactful contributions sooner.
+
+<b>Powered by CodeTour</b>: RC.Guided.Tours leverages the CodeTour extension for Visual Studio Code, enabling guided walkthroughs of files and workflows directly in the IDE.
+
+<b>Get Started</b>
+
+Explore RC.Guided.Tours today to enhance your onboarding experience:
+<b>[RC.Guided.Tours](https://github.com/RocketChat/RC.Guided.Tours)</b>
 
 # 💼 Become a Rocketeer
 
