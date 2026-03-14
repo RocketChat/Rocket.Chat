@@ -65,7 +65,16 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 						{t('Enter_the_code_we_just_emailed_you')}
 					</FieldLabel>
 					<FieldRow>
-						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_code_here')} />
+						<TextInput
+						id={id}
+						ref={ref}
+						value={code}
+						onChange={onChange}
+						placeholder={t('Enter_code_here')}
+						inputMode='numeric'
+						autoComplete='one-time-code'
+						aria-label={t('Enter_authentication_code')}
+						/>
 					</FieldRow>
 					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
 				</Field>
