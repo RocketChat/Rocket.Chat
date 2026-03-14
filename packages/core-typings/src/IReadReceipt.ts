@@ -6,7 +6,7 @@ export interface IReadReceipt {
 	token?: string;
 	messageId: IMessage['_id'];
 	roomId: IRoom['_id'];
-	ts: Date;
+	ts?: Date;
 	t?: IMessage['t'];
 	pinned?: IMessage['pinned'];
 	drid?: IMessage['drid'];

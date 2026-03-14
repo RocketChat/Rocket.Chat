@@ -28,6 +28,8 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	findByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
+	findByRoomIdAndLastSeenAtOrAfter(roomId: string, lastSeen: Date, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+
 	findUnarchivedByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 
 	findByRoomIdAndNotUserId(roomId: string, userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;

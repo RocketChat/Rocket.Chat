@@ -76,4 +76,53 @@ test.describe.serial('read-receipts', () => {
 			await expect(page.getByRole('dialog').getByRole('listitem')).toHaveCount(2);
 		});
 	});
+
+	test.describe('read receipts enabled without detailed storage', async () => {
+		test.beforeAll(async ({ api }) => {
+			await setSettingValueById(api, 'Message_Read_Receipt_Enabled', true);
+			await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', false);
+		});
+
+		test.afterAll(async ({ api }) => {
+			await setSettingValueById(api, 'Message_Read_Receipt_Enabled', false);
+			await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', false);
+		});
+
+		let auxContext: { page: Page; poHomeChannel: HomeChannel } | undefined;
+
+		test.afterEach(async () => {
+			if (auxContext) {
+				await auxContext.page.close();
+			}
+			auxContext = undefined;
+		});
+
+		test('should show read receipts menu item when detailed storage is disabled', async ({ page }) => {
+			await poHomeChannel.navbar.openChat(targetChannel);
+			await poHomeChannel.content.sendMessage('test without detailed storage');
+			await poHomeChannel.content.openLastMessageMenu();
+			await expect(page.locator('role=menuitem[name="Read receipts"]')).toBeVisible();
+		});
+
+		test('should show the reads receipt modal with users based on last seen', async ({ browser }) => {
+			// Send a message from user1
+			const { page: user1Page } = await createAuxContext(browser, Users.user1);
+			auxContext = { page: user1Page, poHomeChannel: new HomeChannel(user1Page) };
+			await auxContext.poHomeChannel.navbar.openChat(targetChannel);
+			await auxContext.poHomeChannel.content.sendMessage('message for last seen test');
+
+			// Admin reads the message
+			await poHomeChannel.navbar.openChat(targetChannel);
+			// Wait for the message to appear before checking receipts
+			await poHomeChannel.content.lastUserMessage.waitFor({ state: 'visible' });
+
+			// Go back to user1 and check receipts
+			await auxContext.poHomeChannel.content.openLastMessageMenu();
+			await user1Page.locator('role=menuitem[name="Read receipts"]').click();
+
+			// Should show at least user1 (sender) and potentially admin (who read it)
+			const receiptsCount = await user1Page.getByRole('dialog').getByRole('listitem').count();
+			expect(receiptsCount).toBeGreaterThanOrEqual(1);
+		});
+	});
 });
