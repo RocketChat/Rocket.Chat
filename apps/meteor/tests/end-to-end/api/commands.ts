@@ -124,7 +124,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('You must provide a command to run.');
+					expect(res.body.error).to.be.equal("must have required property 'command'");
 				})
 				.end(done);
 		});
@@ -139,7 +139,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The parameters for the command must be a single string.');
+					expect(res.body.error).to.be.equal("must have required property 'roomId'");
 				})
 				.end(done);
 		});
@@ -154,7 +154,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The room's id where to execute this command must be provided and be a string.");
+					expect(res.body.error).to.be.equal("must have required property 'roomId'");
 				})
 				.end(done);
 		});
@@ -171,7 +171,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The tmid parameter when provided must be a string.');
+					expect(res.body.error).to.be.equal('Invalid thread.');
 				})
 				.end(done);
 		});
@@ -477,7 +477,7 @@ describe('[Commands]', () => {
 				})
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('error', 'unauthorized');
+					expect(res.body).to.have.a.property('error', 'forbidden');
 				});
 		});
 
