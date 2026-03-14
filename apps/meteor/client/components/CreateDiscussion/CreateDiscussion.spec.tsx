@@ -98,4 +98,62 @@ describe('CreateDiscussion', () => {
 			expect(firstMessageField).toBeDisabled();
 		});
 	});
+
+	it('should send encrypted=true when creating an encrypted discussion', async () => {
+		const createDiscussionMock = jest.fn(() => ({
+			success: true,
+			discussion: {
+				...createFakeRoom({
+					_id: 'discussion-id',
+					t: 'p' as const,
+					name: 'discussion-name',
+					fname: 'Discussion Name',
+					prid: 'parent-room-id',
+				}),
+				rid: 'discussion-id',
+			} as any,
+		}));
+
+		const wrapper = mockAppRoot()
+			.withEndpoint('POST', '/v1/rooms.createDiscussion', createDiscussionMock)
+			.withEndpoint(
+				'GET',
+				'/v1/rooms.autocomplete.channelAndPrivate',
+				() =>
+					({
+						items: [room1, room2],
+					}) as any,
+			)
+			.withTranslations('en', 'core', {
+				Encrypted: 'Encrypted',
+				Discussion_target_channel: 'Parent channel or team',
+				Name: 'Name',
+				Create: 'Create',
+			})
+			.build();
+
+		render(<CreateDiscussion onClose={jest.fn()} />, { wrapper });
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'Encrypted Discussion');
+
+		const parentRoomSelect = screen.getByRole('textbox', { name: 'Parent channel or team' });
+		await userEvent.click(parentRoomSelect);
+		await waitFor(() => {
+			expect(screen.getByText('Unencrypted Room 2')).toBeInTheDocument();
+		});
+		await userEvent.click(screen.getByText('Unencrypted Room 2'));
+
+		await userEvent.click(screen.getByRole('checkbox', { name: 'Encrypted' }));
+		await userEvent.click(screen.getByRole('button', { name: 'Create' }));
+
+		await waitFor(() => {
+			expect(createDiscussionMock).toHaveBeenCalled();
+		});
+
+		expect(createDiscussionMock).toHaveBeenCalledWith(
+			expect.objectContaining({
+				encrypted: true,
+			}),
+		);
+	});
 });
