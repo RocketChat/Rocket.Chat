@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import {
@@ -25,7 +25,6 @@ type CustomUserStatusProps = {
 	onClick: (id: string) => void;
 };
 
-// TODO: Missing error state
 const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElement | null => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
@@ -47,7 +46,7 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 
 	const getCustomUserStatus = useEndpoint('GET', '/v1/custom-user-status.list');
 
-	const { data, isLoading, refetch, isFetched } = useQuery({
+	const { data, isLoading, refetch, isFetched, isError } = useQuery({
 		queryKey: ['custom-user-statuses', query],
 
 		queryFn: async () => {
@@ -62,6 +61,18 @@ const CustomUserStatus = ({ reload, onClick }: CustomUserStatusProps): ReactElem
 	useEffect(() => {
 		reload.current = refetch;
 	}, [reload, refetch]);
+
+	if (isError && !data) {
+		return (
+			<States>
+				<StatesIcon name='warning' variation='danger' />
+				<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
+				<StatesActions>
+					<StatesAction onClick={() => refetch()}>{t('Reload_page')}</StatesAction>
+				</StatesActions>
+			</States>
+		);
+	}
 
 	if (!data) {
 		return null;
