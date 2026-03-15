@@ -7,7 +7,6 @@ import {
 	ajv,
 	isGETRoomsNameExists,
 	isRoomsImagesProps,
-	isRoomsMuteUnmuteUserProps,
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
@@ -118,61 +117,6 @@ API.v1.addRoute(
 
 			return API.v1.success({ exists: !!room });
 		},
-	},
-);
-
-const roomDeleteEndpoint = API.v1.post(
-	'rooms.delete',
-	{
-		authRequired: true,
-		body: ajv.compile<{ roomId: string }>({
-			type: 'object',
-			properties: {
-				roomId: {
-					type: 'string',
-					description: 'The ID of the room to delete.',
-				},
-			},
-			required: ['roomId'],
-			additionalProperties: false,
-		}),
-		response: {
-			200: ajv.compile<void>({
-				type: 'object',
-				properties: {
-					success: {
-						type: 'boolean',
-						enum: [true],
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['success'],
-				additionalProperties: false,
-			}),
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-		},
-	},
-	async function action() {
-		const { roomId } = this.bodyParams;
-
-		const room = await Rooms.findOneById(roomId);
-
-		if (!room) {
-			throw new MeteorError('error-invalid-room', 'Invalid room', {
-				method: 'eraseRoom',
-			});
-		}
-
-		if (room.teamMain) {
-			throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
-				method: 'eraseRoom',
-			});
-		}
-
-		await eraseRoom(room, this.user);
-
-		return API.v1.success();
 	},
 );
 
@@ -313,56 +257,6 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
-
-const saveNotificationBodySchema = ajv.compile<{
-	roomId: string;
-	notifications: Record<string, string>;
-}>({
-	type: 'object',
-	properties: {
-		roomId: { type: 'string', minLength: 1 },
-		notifications: {
-			type: 'object',
-			minProperties: 1,
-			additionalProperties: { type: 'string' },
-		},
-	},
-	required: ['roomId', 'notifications'],
-	additionalProperties: false,
-});
-
-const saveNotificationResponseSchema = ajv.compile({
-	type: 'object',
-	properties: {
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['success'],
-	additionalProperties: false,
-});
-
-const roomsSaveNotificationEndpoint = API.v1.post(
-	'rooms.saveNotification',
-	{
-		authRequired: true,
-		body: saveNotificationBodySchema,
-		response: {
-			200: saveNotificationResponseSchema,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-		},
-	},
-	async function action() {
-		const { roomId, notifications } = this.bodyParams;
-
-		await Promise.all(
-			Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
-				saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
-			),
-		);
-
-		return API.v1.success({ success: true });
 	},
 );
 
@@ -886,42 +780,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms.muteUser',
-	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
-	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.unmuteUser',
-	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
-	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
 	'rooms.open',
 	{ authRequired: true, validateParams: isRoomsOpenProps },
 	{
@@ -1036,6 +894,74 @@ const isRoomsLeavePropsSchema = {
 
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+
+type RoomsMuteUnmuteUser = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsMuteUnmuteUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isRoomsMuteUnmuteUserProps = ajv.compile<RoomsMuteUnmuteUser>(RoomsMuteUnmuteUserSchema);
+
+type SaveNotificationBody = {
+	roomId: string;
+	notifications: Record<string, string>;
+};
+
+const saveNotificationBodySchema = {
+	type: 'object',
+	properties: {
+		roomId: { type: 'string', minLength: 1 },
+		notifications: {
+			type: 'object',
+			minProperties: 1,
+			additionalProperties: { type: 'string' },
+		},
+	},
+	required: ['roomId', 'notifications'],
+	additionalProperties: false,
+};
+
+const isSaveNotificationBodyProps = ajv.compile<SaveNotificationBody>(saveNotificationBodySchema);
+
+const saveNotificationResponseSchema = ajv.compile({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
 
 export const roomEndpoints = API.v1
 	.get(
@@ -1181,6 +1107,29 @@ export const roomEndpoints = API.v1
 		},
 	)
 	.post(
+		'rooms.saveNotification',
+		{
+			authRequired: true,
+			body: isSaveNotificationBodyProps,
+			response: {
+				200: saveNotificationResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId, notifications } = this.bodyParams;
+
+			await Promise.all(
+				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
+				),
+			);
+
+			return API.v1.success({ success: true });
+		},
+	)
+	.post(
 		'rooms.favorite',
 		{
 			authRequired: true,
@@ -1208,6 +1157,60 @@ export const roomEndpoints = API.v1
 			const room = await findRoomByIdOrName({ params: this.bodyParams });
 
 			await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.delete',
+		{
+			authRequired: true,
+			body: ajv.compile<{ roomId: string }>({
+				type: 'object',
+				properties: {
+					roomId: {
+						type: 'string',
+						description: 'The ID of the room to delete.',
+					},
+				},
+				required: ['roomId'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.bodyParams;
+
+			const room = await Rooms.findOneById(roomId);
+
+			if (!room) {
+				throw new MeteorError('error-invalid-room', 'Invalid room', {
+					method: 'eraseRoom',
+				});
+			}
+
+			if (room.teamMain) {
+				throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
+					method: 'eraseRoom',
+				});
+			}
+
+			await eraseRoom(room, this.user);
 
 			return API.v1.success();
 		},
@@ -1243,12 +1246,69 @@ export const roomEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.post(
+		'rooms.muteUser',
+		{
+			authRequired: true,
+			body: isRoomsMuteUnmuteUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.unmuteUser',
+		{
+			authRequired: true,
+			body: isRoomsMuteUnmuteUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
 	);
 
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
