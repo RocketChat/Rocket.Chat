@@ -690,6 +690,7 @@ describe('[Rooms]', () => {
 		it('should return 401 unauthorized when user is not logged in', (done) => {
 			void request
 				.get(api('rooms.nameExists'))
+				.query({ roomName: 'test' })
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {

@@ -441,23 +441,6 @@ const RoomsSaveRoomSettingsSchema = {
 
 export const isRoomsSaveRoomSettingsProps = ajv.compile<RoomsSaveRoomSettingsProps>(RoomsSaveRoomSettingsSchema);
 
-type GETRoomsNameExists = {
-	roomName: string;
-};
-
-const GETRoomsNameExistsSchema = {
-	type: 'object',
-	properties: {
-		roomName: {
-			type: 'string',
-		},
-	},
-	required: ['roomName'],
-	additionalProperties: false,
-};
-
-export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
-
 type RoomsIsMemberProps = { roomId: string } & ({ username: string } | { userId: string });
 
 const RoomsIsMemberPropsSchema = {
@@ -801,12 +784,6 @@ export type RoomsEndpoints = {
 			fileContent?: IE2EEMessage['content'];
 		}) => {
 			message: IMessage | null;
-		};
-	};
-
-	'/v1/rooms.nameExists': {
-		GET: (params: { roomName: string }) => {
-			exists: boolean;
 		};
 	};
 
