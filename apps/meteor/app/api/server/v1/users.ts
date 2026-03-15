@@ -920,6 +920,7 @@ const usersEndpoints = API.v1
 								nickname: { type: 'string' },
 								status: { type: 'string' },
 								avatarETag: { type: 'string' },
+								freeSwitchExtension: { type: 'string' },
 							},
 							required: ['_id', 'name', 'username', 'status'],
 							additionalProperties: false,
