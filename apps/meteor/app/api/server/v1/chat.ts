@@ -298,6 +298,9 @@ const ChatGetDiscussionsSchema = {
 		count: {
 			type: 'number',
 		},
+		sort: {
+			type: 'string',
+		},
 	},
 	required: ['roomId'],
 	additionalProperties: false,
