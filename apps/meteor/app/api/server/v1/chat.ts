@@ -326,6 +326,19 @@ const isChatSearchResponse = ajv.compile<{ messages: IMessage[] }>({
 	additionalProperties: false,
 });
 
+const isChatReportMessageResponse = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+	
+
 const chatEndpoints = API.v1
 	.post(
 		'chat.pinMessage',
@@ -604,39 +617,9 @@ const chatEndpoints = API.v1
 			if (!mid) {
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
-
+			
 			await unfollowMessage(this.user, { mid });
-
-			return API.v1.success();
-		},
-	)
-	.get(
-		'chat.ignoreUser',
-		{
-			authRequired: true,
-			query: isChatIgnoreUserProps,
-			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: isIgnoreUserResponse,
-			},
-		},
-		async function action() {
-			const { rid, userId } = this.queryParams;
-			let { ignore = true } = this.queryParams;
-
-			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
-
-			if (!rid?.trim()) {
-				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
-			}
-
-			if (!userId?.trim()) {
-				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
-			}
-
-			await ignoreUser(this.userId, { rid, userId, ignore });
-
+			
 			return API.v1.success();
 		},
 	)
@@ -680,6 +663,55 @@ const chatEndpoints = API.v1
 				channel: messageReturn.channel,
 				message,
 			});
+		},
+	)
+	.post(
+		'chat.reportMessage',
+		{
+			authRequired: true, 
+			validateParams: isChatReportMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isChatReportMessageResponse,
+			}
+		}, 
+		async function action() {
+			const { messageId, description } = this.bodyParams;
+
+			await reportMessage(messageId, description, this.userId);
+
+			return API.v1.success();
+		}
+	)
+	.get(
+		'chat.ignoreUser',
+		{
+			authRequired: true,
+			query: isChatIgnoreUserProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isIgnoreUserResponse,
+			},
+		},
+		async function action() {
+			const { rid, userId } = this.queryParams;
+			let { ignore = true } = this.queryParams;
+
+			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
+
+			if (!rid?.trim()) {
+				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
+			}
+
+			if (!userId?.trim()) {
+				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
+			}
+
+			await ignoreUser(this.userId, { rid, userId, ignore });
+
+			return API.v1.success();
 		},
 	)
 	.get(
@@ -770,26 +802,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'chat.reportMessage',
-	{ authRequired: true, validateParams: isChatReportMessageProps },
-	{
-		async post() {
-			const { messageId, description } = this.bodyParams;
-			if (!messageId) {
-				return API.v1.failure('The required "messageId" param is missing.');
-			}
-
-			if (!description) {
-				return API.v1.failure('The required "description" param is missing.');
-			}
-
-			await reportMessage(messageId, description, this.userId);
-
-			return API.v1.success();
-		},
-	},
-);
 
 API.v1.addRoute(
 	'chat.getDeletedMessages',
