@@ -1,7 +1,7 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { TeamType } from '@rocket.chat/core-typings';
 import { Users, Rooms } from '@rocket.chat/models';
+import type { TeamsCreateProps } from '@rocket.chat/rest-typings';
 import {
 	isTeamsConvertToChannelProps,
 	isTeamsRemoveRoomProps,
@@ -12,6 +12,7 @@ import {
 	isTeamsLeaveProps,
 	isTeamsUpdateProps,
 	isTeamsListChildrenProps,
+	isTeamsCreateProps,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -66,28 +67,31 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'teams.create',
-	{ authRequired: true, permissionsRequired: ['create-team'] },
+	{ authRequired: true, permissionsRequired: ['create-team'], validateParams: isTeamsCreateProps },
 	{
 		async post() {
-			check(
-				this.bodyParams,
-				Match.ObjectIncluding({
-					name: String,
-					type: Match.OneOf(TeamType.PRIVATE, TeamType.PUBLIC),
-					members: Match.Maybe([String]),
-					room: Match.Maybe(Match.Any),
-					owner: Match.Maybe(String),
-				}),
-			);
+			const { name, type, members, room, owner } = this.bodyParams as TeamsCreateProps;
 
-			const { name, type, members, room, owner } = this.bodyParams;
+			const sanitizedRoom = room
+				? {
+						...room,
+						options: room.options
+							? {
+									...room.options,
+									subscriptionExtra: room.options.subscriptionExtra
+										? {
+												...room.options.subscriptionExtra,
+												ls: room.options.subscriptionExtra.ls ? new Date(room.options.subscriptionExtra.ls) : undefined,
+											}
+										: undefined,
+								}
+							: undefined,
+					}
+				: undefined;
 
 			const team = await Team.create(this.userId, {
-				team: {
-					name,
-					type,
-				},
-				room,
+				team: { name, type },
+				room: sanitizedRoom,
 				members,
 				owner,
 			});

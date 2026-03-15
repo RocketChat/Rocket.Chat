@@ -56,8 +56,6 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-user');
 		}
 
-		// TODO add validations to `data` and `members`
-
 		const membersResult =
 			!members || !Array.isArray(members) || members.length === 0
 				? []
@@ -134,6 +132,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				...teamData,
 			};
 		} catch (e) {
+			console.error('TEAM CREATE ERROR:', e);
 			throw new Error('error-team-creation');
 		}
 	}
