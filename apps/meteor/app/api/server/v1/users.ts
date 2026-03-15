@@ -934,38 +934,55 @@ const usersEndpoints = API.v1
 		},
 	},
 	async function action() {
-    const { selector: selectorRaw } = this.queryParams;
-    let selector: {
-        exceptions: string[];
-        conditions: Filter<IUser>;
-        term: string;
-    };
+		const { selector: selectorRaw } = this.queryParams;
+		let selector: unknown;
 
-    try {
-        selector = JSON.parse(selectorRaw);
-    } catch {
-        return API.v1.failure('Invalid JSON in selector parameter');
-    }
+		try {
+			selector = JSON.parse(selectorRaw);
+		} catch {
+			return API.v1.failure('Invalid JSON in selector parameter');
+		}
 
-    try {
-        if (selector?.conditions) {
-            const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
-            const allowedFields = canViewFullInfo
-                ? [...Object.keys(defaultFields), ...Object.keys(fullFields)]
-                : Object.keys(defaultFields);
-            if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
-                throw new Error('error-invalid-query');
-            }
-        }
-    } catch (e) {
-        return API.v1.failure(e instanceof Error ? e.message : String(e));
-    }
+		if (
+			!selector ||
+			typeof selector !== 'object' ||
+			typeof (selector as { term?: unknown }).term !== 'string' ||
+			('exceptions' in (selector as Record<string, unknown>) &&
+				!Array.isArray((selector as { exceptions?: unknown }).exceptions))
+		) {
+			return API.v1.failure('Invalid selector parameter');
+		}
 
-    const result = await findUsersToAutocomplete({
-        uid: this.userId,
-        selector,
-    });
-	return API.v1.success(result);
+		const parsedSelector = selector as {
+			exceptions?: string[];
+			conditions?: Filter<IUser>;
+			term: string;
+		};
+
+		try {
+			if (parsedSelector.conditions) {
+				const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+				const allowedFields = canViewFullInfo
+					? [...Object.keys(defaultFields), ...Object.keys(fullFields)]
+					: Object.keys(defaultFields);
+				if (!isValidQuery(parsedSelector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
+					throw new Error('error-invalid-query');
+				}
+			}
+		} catch (e) {
+			return API.v1.failure(e instanceof Error ? e.message : String(e));
+		}
+
+		const result = await findUsersToAutocomplete({
+			uid: this.userId,
+			selector: {
+				exceptions: parsedSelector.exceptions ?? [],
+				conditions: parsedSelector.conditions ?? {},
+				term: parsedSelector.term,
+			},
+		});
+
+		return API.v1.success(result);
 	},
 );
 
