@@ -878,7 +878,113 @@ const usersEndpoints = API.v1
 
 			return API.v1.success({ suggestions });
 		},
-	);
+	)
+	.get(
+	'users.autocomplete',
+	{
+		authRequired: true,
+		query: ajv.compile<{
+			selector: string;
+		}>({
+			type: 'object',
+			properties: {
+				selector: { type: 'string' },
+			},
+			required: ['selector'],
+			additionalProperties: false,
+		}),
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<{
+				items: {
+					_id: string;
+					name: string;
+					username: string;
+					nickname?: string;
+					status: string;
+					avatarETag?: string;
+					freeSwitchExtension?: string;
+				}[];
+			}>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+					items: {
+						type: 'array',
+						items: {
+							type: 'object',
+							properties: {
+								_id: { type: 'string' },
+								name: { type: 'string' },
+								username: { type: 'string' },
+								nickname: { type: 'string' },
+								status: { type: 'string' },
+								avatarETag: { type: 'string' },
+								freeSwitchExtension: { type: 'string' },
+							},
+							required: ['_id', 'name', 'username', 'status'],
+							additionalProperties: false,
+						},
+					},
+				},
+				required: ['success', 'items'],
+				additionalProperties: false,
+			}),
+		},
+	},
+	async function action() {
+		const { selector: selectorRaw } = this.queryParams;
+		let selector: unknown;
+
+		try {
+			selector = JSON.parse(selectorRaw);
+		} catch {
+			return API.v1.failure('Invalid JSON in selector parameter');
+		}
+
+		if (
+			!selector ||
+			typeof selector !== 'object' ||
+			typeof (selector as { term?: unknown }).term !== 'string' ||
+			('exceptions' in (selector as Record<string, unknown>) &&
+				!Array.isArray((selector as { exceptions?: unknown }).exceptions))
+		) {
+			return API.v1.failure('Invalid selector parameter');
+		}
+
+		const parsedSelector = selector as {
+			exceptions?: string[];
+			conditions?: Filter<IUser>;
+			term: string;
+		};
+
+		try {
+			if (parsedSelector.conditions) {
+				const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+				const allowedFields = canViewFullInfo
+					? [...Object.keys(defaultFields), ...Object.keys(fullFields)]
+					: Object.keys(defaultFields);
+				if (!isValidQuery(parsedSelector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
+					throw new Error('error-invalid-query');
+				}
+			}
+		} catch (e) {
+			return API.v1.failure(e instanceof Error ? e.message : String(e));
+		}
+
+		const result = await findUsersToAutocomplete({
+			uid: this.userId,
+			selector: {
+				exceptions: parsedSelector.exceptions ?? [],
+				conditions: parsedSelector.conditions ?? {},
+				term: parsedSelector.term,
+			},
+		});
+
+		return API.v1.success(result);
+	},
+);
 
 API.v1.addRoute(
 	'users.getPreferences',
@@ -1245,38 +1351,6 @@ API.v1.addRoute(
 				token: xAuthToken,
 				tokenExpires: tokenExpires?.toISOString() || '',
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.autocomplete',
-	{ authRequired: true, validateParams: isUsersAutocompleteProps },
-	{
-		async get() {
-			const { selector: selectorRaw } = this.queryParams;
-
-			const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
-
-			try {
-				if (selector?.conditions) {
-					const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
-					const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
-
-					if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
-						throw new Error('error-invalid-query');
-					}
-				}
-			} catch (e) {
-				return API.v1.failure(e);
-			}
-
-			return API.v1.success(
-				await findUsersToAutocomplete({
-					uid: this.userId,
-					selector,
-				}),
-			);
 		},
 	},
 );
