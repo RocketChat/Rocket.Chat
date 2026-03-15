@@ -20,7 +20,6 @@ import {
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
-	isChatGetThreadMessagesProps,
 	isChatSyncThreadMessagesProps,
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
@@ -274,6 +273,39 @@ const ChatUnpinMessageSchema = {
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+type ChatGetThreadMessages = {
+	tmid: string;
+	count?: number;
+	offset?: number;
+	sort?: string;
+};
+
+const ChatGetThreadMessagesSchema = {
+	type: 'object',
+	properties: {
+		tmid: {
+			type: 'string',
+			minLength: 1,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['tmid'],
+	additionalProperties: false,
+};
+
+const isChatGetThreadMessagesLocalProps = ajv.compile<ChatGetThreadMessages>(ChatGetThreadMessagesSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -557,6 +589,73 @@ const chatEndpoints = API.v1
 			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
+		},
+	)
+	.get(
+		'chat.getThreadMessages',
+		{
+			authRequired: true,
+			query: isChatGetThreadMessagesLocalProps,
+			response: {
+				200: ajv.compile<{
+					messages: IMessage[];
+					count: number;
+					offset: number;
+					total: number;
+					success: boolean;
+				}>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array' },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { tmid } = this.queryParams;
+			const { query, fields, sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			if (!settings.get('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+
+			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
+			if (!thread?.rid) {
+				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+			}
+			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
+			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
+
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
+			const { cursor, totalCount } = Messages.findPaginated(
+				{ ...query, tmid },
+				{
+					sort: sort || { ts: 1 },
+					skip: offset,
+					limit: count,
+					projection: fields,
+				},
+			);
+
+			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				messages,
+				count: messages.length,
+				offset,
+				total,
+			});
 		},
 	);
 
@@ -868,51 +967,6 @@ API.v1.addRoute(
 						projection: fields,
 					}).toArray(),
 				},
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getThreadMessages',
-	{ authRequired: true, validateParams: isChatGetThreadMessagesProps },
-	{
-		async get() {
-			const { tmid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			if (!settings.get('Threads_enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
-			}
-
-			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
-			if (!thread?.rid) {
-				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
-			}
-			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
-			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
-
-			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-			}
-			const { cursor, totalCount } = Messages.findPaginated(
-				{ ...query, tmid },
-				{
-					sort: sort || { ts: 1 },
-					skip: offset,
-					limit: count,
-					projection: fields,
-				},
-			);
-
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				messages,
-				count: messages.length,
-				offset,
-				total,
 			});
 		},
 	},
