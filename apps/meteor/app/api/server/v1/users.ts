@@ -964,7 +964,7 @@ const usersEndpoints = API.v1
         selector,
     });
 	return API.v1.success(result);
-	};
+	},
 };
 
 API.v1.addRoute(
