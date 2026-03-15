@@ -145,6 +145,12 @@ export type UsersEndpoints = {
 		GET: (params: UsersListTeamsParamsGET) => { teams: ITeam[] };
 	};
 
+	'/v1/users.autocomplete': {
+		GET: (params: UsersAutocompleteParamsGET) => {
+			items: Required<Pick<IUser, '_id' | 'name' | 'username' | 'nickname' | 'status' | 'avatarETag'>>[];
+		};
+	};
+
 	'/v1/users.list': {
 		GET: (params: PaginatedRequest<{ fields: string }>) => PaginatedResult<{
 			users: DefaultUserInfo[];
