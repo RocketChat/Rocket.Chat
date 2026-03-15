@@ -6,6 +6,8 @@ const paragraph = (value: Array<Record<string, unknown>>) => ({ type: 'PARAGRAPH
 
 const bold = (value: Array<Record<string, unknown>>) => ({ type: 'BOLD' as const, value });
 
+const italic = (value: Array<Record<string, unknown>>) => ({ type: 'ITALIC' as const, value });
+
 const strike = (value: Array<Record<string, unknown>>) => ({ type: 'STRIKE' as const, value });
 
 const timestampNode = (value: string, format: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R' = 't') => ({
@@ -34,7 +36,18 @@ test.each([
 
 test.each([
 	['~<t:1708551317>~', [paragraph([strike([timestampNode('1708551317')])])]],
-	['*<t:1708551317>*', [paragraph([bold([plain('<t:1708551317>')])])]],
+	['**<t:1708551317>**', [paragraph([bold([timestampNode('1708551317')])])]],
+	['_<t:1708551317>_', [paragraph([italic([timestampNode('1708551317')])])]],
+
+	['**hello <t:1708551317> world**', [
+		paragraph([
+			bold([
+				plain('hello '),
+				timestampNode('1708551317'),
+				plain(' world'),
+			]),
+		]),
+	]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });
