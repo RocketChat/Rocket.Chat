@@ -337,7 +337,37 @@ const isChatReportMessageResponse = ajv.compile<void>({
 	required: ['success'],
 	additionalProperties: false,
 });
-	
+
+const isChatSyncThreadsListResponse = ajv.compile<{ threads: { update: IMessage[]; remove: IMessage[] } }>({
+	type: 'object',
+	properties: {
+		threads: {
+			type: 'object',
+			properties: {
+				update: {
+					type: 'array',
+					items: {
+						$ref: '#/components/schemas/IMessage',
+					},
+				},
+				remove: {
+					type: 'array',
+					items: {
+						$ref: '#/components/schemas/IMessage',
+					},
+				},
+			},
+			required: ['update', 'remove'],
+			additionalProperties: false,
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['threads', 'success'],
+	additionalProperties: false,
+});
 
 const chatEndpoints = API.v1
 	.post(
@@ -617,9 +647,9 @@ const chatEndpoints = API.v1
 			if (!mid) {
 				throw new Meteor.Error('The required "mid" body param is missing.');
 			}
-			
+
 			await unfollowMessage(this.user, { mid });
-			
+
 			return API.v1.success();
 		},
 	)
@@ -665,24 +695,24 @@ const chatEndpoints = API.v1
 			});
 		},
 	)
-	.post(	
+	.post(
 		'chat.reportMessage',
 		{
-			authRequired: true, 
+			authRequired: true,
 			body: isChatReportMessageProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				200: isChatReportMessageResponse,
-			}
-		}, 
+			},
+		},
 		async function action() {
 			const { messageId, description } = this.bodyParams;
 
 			await reportMessage(messageId, description, this.userId);
 
 			return API.v1.success();
-		}
+		},
 	)
 	.get(
 		'chat.ignoreUser',
@@ -750,9 +780,56 @@ const chatEndpoints = API.v1
 				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
+	)
+	.get(
+		'chat.syncThreadsList',
+		{
+			authRequired: true,
+			query: isChatSyncThreadsListProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isChatSyncThreadsListResponse,
+			},
+		},
+		async function action() {
+			const { rid } = this.queryParams;
+			const { query, fields, sort } = await this.parseJsonQuery();
+			const { updatedSince } = this.queryParams;
+			let updatedSinceDate;
+			if (!settings.get<boolean>('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
+			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
+
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
+			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+			return API.v1.success({
+				threads: {
+					update: await Messages.find(
+						{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
+						{
+							sort,
+							projection: fields,
+						},
+					).toArray(),
+					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
+						sort,
+						projection: fields,
+					}).toArray(),
+				},
+			});
+		},
 	);
-
-
 
 // The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
 // for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
@@ -801,7 +878,6 @@ API.v1.addRoute(
 		},
 	},
 );
-
 
 API.v1.addRoute(
 	'chat.getDeletedMessages',
@@ -904,50 +980,6 @@ API.v1.addRoute(
 				count: threads.length,
 				offset,
 				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.syncThreadsList',
-	{ authRequired: true, validateParams: isChatSyncThreadsListProps },
-	{
-		async get() {
-			const { rid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
-			const { updatedSince } = this.queryParams;
-			let updatedSinceDate;
-			if (!settings.get<boolean>('Threads_enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
-			}
-
-			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-			} else {
-				updatedSinceDate = new Date(updatedSince);
-			}
-			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
-			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
-
-			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-			}
-			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
-			return API.v1.success({
-				threads: {
-					update: await Messages.find(
-						{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
-						{
-							sort,
-							projection: fields,
-						},
-					).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
-						sort,
-						projection: fields,
-					}).toArray(),
-				},
 			});
 		},
 	},
