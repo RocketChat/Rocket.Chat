@@ -62,8 +62,10 @@ const NavBarSearch = () => {
 				setFocus('filterText');
 			},
 			'Escape': (event) => {
-				event.preventDefault();
-				handleEscSearch();
+				if (state.isOpen || document.activeElement === triggerRef.current) {
+					event.preventDefault();
+					handleEscSearch();
+				}
 			},
 		});
 
