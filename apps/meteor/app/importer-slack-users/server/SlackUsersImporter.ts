@@ -44,7 +44,25 @@ export class SlackUsersImporter extends Importer {
 		await super.updateProgress(ProgressStep.PREPARING_USERS);
 		const uriResult = RocketChatFile.dataURIParse(dataURI);
 		const buf = Buffer.from(uriResult.image, 'base64');
-		const parsed = this.csvParser(buf.toString());
+		const fileContent = buf.toString('utf8');
+		const isPDF = buf[0] === 0x25 && buf[1] === 0x50 && buf[2] === 0x44 && buf[3] === 0x46;
+		const nullByteIndex = fileContent.indexOf('\0');
+		const hasBinaryContent = nullByteIndex !== -1 && nullByteIndex < 1000;
+		if (isPDF || hasBinaryContent) {
+			this.logger.error('Invalid file type uploaded. Expected CSV file.');
+			await super.updateProgress(ProgressStep.ERROR);
+			throw new Error('Invalid file type. Please upload a valid CSV file.');
+		}
+
+		let parsed;
+		try {
+			parsed = this.csvParser(fileContent);
+		} catch (error) {
+			const message = error instanceof Error ? String(error) : error.message ? String(error.message) : 'Unknown error';
+			this.logger.error(`Failed to parse CSV file: ${message}`);
+			await super.updateProgress(ProgressStep.ERROR);
+			throw new Error('Invalid CSV file format. Please upload a valid Slack Users export CSV file.');
+		}
 
 		let userCount = 0;
 		for (const [index, user] of parsed.entries()) {
