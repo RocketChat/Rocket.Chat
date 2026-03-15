@@ -4,10 +4,10 @@ import type { LayoutBlock } from '@rocket.chat/ui-kit';
 import { useContext, useMemo } from 'react';
 
 import { context, templatesToggleAction, updatePayloadAction } from '../../../Context';
-import { type ILayoutBlock } from '../../../Context/initialState';
+import type { ILayoutBlock } from '../../../Context/initialState';
 import getUniqueId from '../../../utils/getUniqueId';
 import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
-import { type SurfaceOptions } from '../../Preview/Display/Surface/constant';
+import type { SurfaceOptions } from '../../Preview/Display/Surface/constant';
 import RenderPayload from '../../RenderPayload/RenderPayload';
 
 const Payload = ({ blocks, surface }: { surface: SurfaceOptions; blocks: LayoutBlock[] }) => {
