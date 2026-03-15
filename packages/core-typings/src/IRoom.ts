@@ -10,6 +10,10 @@ import type { RoomType } from './RoomType';
 import type { Branded } from './utils';
 
 export interface IRoom extends IRocketChatRecord {
+		/**
+		 * Enable or disable link previews for this room. If undefined, falls back to global setting.
+		 */
+		linksEmbed?: boolean;
 	t: RoomType;
 	name?: string;
 	fname?: string;
@@ -387,6 +391,10 @@ export type RoomAdminFieldsType =
 	| 'abacAttributes';
 
 export interface IRoomWithRetentionPolicy extends IRoom {
+		/**
+		 * Enable or disable link previews for this room. If undefined, falls back to global setting.
+		 */
+		linksEmbed?: boolean;
 	retention: {
 		enabled?: boolean;
 		maxAge: number;
