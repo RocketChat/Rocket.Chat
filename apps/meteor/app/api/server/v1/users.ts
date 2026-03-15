@@ -932,38 +932,40 @@ const usersEndpoints = API.v1
 		},
 	},
 	async function action() {
-		const { selector: selectorRaw } = this.queryParams;
+    const { selector: selectorRaw } = this.queryParams;
+    let selector: {
+        exceptions: string[];
+        conditions: Filter<IUser>;
+        term: string;
+    };
 
-		const selector: {
-			exceptions: string[];
-			conditions: Filter<IUser>;
-			term: string;
-		} = JSON.parse(selectorRaw);
+    try {
+        selector = JSON.parse(selectorRaw);
+    } catch {
+        return API.v1.failure('Invalid JSON in selector parameter');
+    }
 
-		try {
-			if (selector?.conditions) {
-				const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+    try {
+        if (selector?.conditions) {
+            const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+            const allowedFields = canViewFullInfo
+                ? [...Object.keys(defaultFields), ...Object.keys(fullFields)]
+                : Object.keys(defaultFields);
+            if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
+                throw new Error('error-invalid-query');
+            }
+        }
+    } catch (e) {
+        return API.v1.failure(e instanceof Error ? e.message : String(e));
+    }
 
-				const allowedFields = canViewFullInfo
-					? [...Object.keys(defaultFields), ...Object.keys(fullFields)]
-					: Object.keys(defaultFields);
-
-				if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
-					throw new Error('error-invalid-query');
-				}
-			}
-		} catch (e) {
-			return API.v1.failure(e instanceof Error ? e.message : String(e));
-		}
-
-		const result = await findUsersToAutocomplete({
-			uid: this.userId,
-			selector,
-		});
-
-		return API.v1.success(result);
-	},
-);
+    const result = await findUsersToAutocomplete({
+        uid: this.userId,
+        selector,
+    });
+	return API.v1.success(result);
+	};
+};
 
 API.v1.addRoute(
 	'users.getPreferences',
