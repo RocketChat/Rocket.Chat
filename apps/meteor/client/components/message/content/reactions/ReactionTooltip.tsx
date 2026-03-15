@@ -20,6 +20,7 @@ const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 		if (mine) {
 			return 'You_reacted_with';
 		}
+		return 'Users_reacted_with';
 	}
 
 	if (users.length > 10) {
