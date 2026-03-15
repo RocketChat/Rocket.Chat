@@ -97,34 +97,6 @@ const ChatGetMessageSchema = {
 
 export const isChatGetMessageProps = ajv.compile<ChatGetMessage>(ChatGetMessageSchema);
 
-type ChatGetDiscussions = PaginatedRequest<{
-	roomId: IRoom['_id'];
-	text?: string;
-}>;
-
-const ChatGetDiscussionsSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-		text: {
-			type: 'string',
-		},
-		offset: {
-			type: 'number',
-		},
-		count: {
-			type: 'number',
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isChatGetDiscussionsProps = ajv.compile<ChatGetDiscussions>(ChatGetDiscussionsSchema);
-
 type ChatReportMessage = {
 	messageId: IMessage['_id'];
 	description: string;
@@ -899,12 +871,6 @@ export type ChatEndpoints = {
 	};
 	'/v1/chat.reportMessage': {
 		POST: (params: ChatReportMessage) => void;
-	};
-	'/v1/chat.getDiscussions': {
-		GET: (params: ChatGetDiscussions) => {
-			messages: IMessage[];
-			total: number;
-		};
 	};
 	'/v1/chat.getThreadsList': {
 		GET: (params: ChatGetThreadsList) => {
