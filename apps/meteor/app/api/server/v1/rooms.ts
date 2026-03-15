@@ -14,7 +14,6 @@ import {
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsChangeArchivationStateProps,
-	isRoomsHideProps,
 	isRoomsInviteProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -935,33 +934,22 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.hide',
-	{ authRequired: true, validateParams: isRoomsHideProps },
-	{
-		async post() {
-			const { roomId } = this.bodyParams;
+type RoomsHideProps = {
+	roomId: string;
+};
 
-			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-				return API.v1.unauthorized();
-			}
-
-			const user = await Users.findOneById(this.userId, { projections: { _id: 1 } });
-
-			if (!user) {
-				return API.v1.failure('error-invalid-user');
-			}
-
-			const modCount = await hideRoomMethod(this.userId, roomId);
-
-			if (!modCount) {
-				return API.v1.failure('error-room-already-hidden');
-			}
-
-			return API.v1.success();
+const roomsHideSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
 		},
 	},
-);
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
 
 type RoomsFavorite =
 	| {
@@ -1036,6 +1024,7 @@ const isRoomsLeavePropsSchema = {
 
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
 
 export const roomEndpoints = API.v1
 	.get(
@@ -1243,7 +1232,42 @@ export const roomEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	);
+	)
+	.post(
+		'rooms.hide',
+		{
+			authRequired: true, 
+			body: isRoomsHideProps,
+			response: {
+				200: ajv.compile<void>({
+					type:'object',
+					properties:{
+						success:{type:'boolean', enum:[true]},
+					},
+					required:['success'],
+					additionalProperties:false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action(){
+			const { roomId } = this.bodyParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized('You do not have access to this room');
+			}
+
+			const modCount = await hideRoomMethod(this.userId, roomId);
+
+			if (!modCount) {
+				return API.v1.failure('error-room-already-hidden');
+			}
+
+			return API.v1.success();
+
+		}
+	)
 
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomEndpoints> &

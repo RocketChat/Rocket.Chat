@@ -669,24 +669,6 @@ const membersOrderedByRoleRolePropsSchema = {
 
 export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
 
-type RoomsHideProps = {
-	roomId: string;
-};
-
-const roomsHideSchema = {
-	type: 'object',
-	properties: {
-		roomId: {
-			type: 'string',
-			minLength: 1,
-		},
-	},
-	required: ['roomId'],
-	additionalProperties: false,
-};
-
-export const isRoomsHideProps = ajv.compile<RoomsHideProps>(roomsHideSchema);
-
 type RoomsInviteProps = {
 	roomId: string;
 	action: 'accept' | 'reject';
@@ -849,10 +831,6 @@ export type RoomsEndpoints = {
 		GET: (params: RoomsMembersOrderedByRoleProps) => PaginatedResult<{
 			members: (IUser & { subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'> })[];
 		}>;
-	};
-
-	'/v1/rooms.hide': {
-		POST: (params: RoomsHideProps) => void;
 	};
 
 	'/v1/rooms.invite': {
