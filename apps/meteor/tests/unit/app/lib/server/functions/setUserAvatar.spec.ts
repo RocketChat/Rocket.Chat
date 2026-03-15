@@ -290,6 +290,25 @@ describe('setUserAvatar — URL fetch security', () => {
 			expect(fileStoreInsert.calledOnce).to.be.true;
 		});
 
+		it('treats FileUpload_MaxFileSize = -1 as unlimited', async () => {
+			settingsGetStub.callsFake((key: string) => {
+				if (key === 'SSRF_Allowlist') return '';
+				if (key === 'FileUpload_MaxFileSize') return -1;
+				return undefined;
+			});
+
+			fetchStub.resolves(
+				makeFetchResponse({
+					contentLength: null,
+					chunks: [Buffer.alloc(64), Buffer.alloc(64), Buffer.alloc(64)],
+				}),
+			);
+
+			await setUserAvatar(testUser, 'https://example.com/avatar', undefined, 'url');
+
+			expect(fileStoreInsert.calledOnce).to.be.true;
+		});
+
 		it('aborts mid-stream as soon as the limit is crossed (does not buffer all chunks first)', async () => {
 			const maxSize = 10;
 			let chunksYielded = 0;

@@ -174,10 +174,11 @@ export async function setUserAvatar(
 				}
 
 				const maxSize = settings.get<number>('FileUpload_MaxFileSize') ?? 104857600;
+				const isUnlimitedMaxSize = maxSize <= -1;
 
 				// Reject early if Content-Length header already exceeds the limit
 				const contentLengthHeader = response.headers.get('content-length');
-				if (contentLengthHeader) {
+				if (!isUnlimitedMaxSize && contentLengthHeader) {
 					const declaredSize = parseInt(contentLengthHeader, 10);
 					if (!Number.isNaN(declaredSize) && declaredSize > maxSize) {
 						void (response.body as any)?.cancel?.();
@@ -201,7 +202,7 @@ export async function setUserAvatar(
 				for await (const chunk of response.body) {
 					const part = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as unknown as Uint8Array);
 					downloaded += part.length;
-					if (downloaded > maxSize) {
+					if (!isUnlimitedMaxSize && downloaded > maxSize) {
 						void (response.body as any)?.cancel?.();
 						throw new Meteor.Error('error-avatar-image-too-large', 'Avatar image exceeds the maximum allowed file size', {
 							function: 'setUserAvatar',
