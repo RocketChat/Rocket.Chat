@@ -794,14 +794,14 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
-			customFields?: string;
+			customFields?: Record<string, any>;
 			t?: IMessage['t'];
 			content?: IE2EEMessage['content'];
-		}) => { message: IMessage | null };
-	};
-
-	'/v1/rooms.saveNotification': {
-		POST: (params: { roomId: string; notifications: Notifications }) => void;
+			fileName?: string;
+			fileContent?: IE2EEMessage['content'];
+		}) => {
+			message: IMessage | null;
+		};
 	};
 
 	'/v1/rooms.nameExists': {

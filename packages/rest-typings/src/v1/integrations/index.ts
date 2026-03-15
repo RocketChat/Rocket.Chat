@@ -1,4 +1,4 @@
-export * from './integrations';
+export type * from './integrations';
 
 export * from './IntegrationsCreateProps';
 export * from './IntegrationsHistoryProps';
