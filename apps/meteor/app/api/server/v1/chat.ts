@@ -22,7 +22,6 @@ import {
 	isChatSyncThreadsListProps,
 	isChatGetThreadMessagesProps,
 	isChatSyncThreadMessagesProps,
-	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -558,6 +557,78 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.get(
+		'chat.getStarredMessages',
+		{
+			authRequired: true,
+			query: ajv.compile<{ roomId: string; count?: number; offset?: number; sort?: string }>({
+				type: 'object',
+				properties: {
+					roomId: {
+						type: 'string',
+						minLength: 1,
+					},
+					count: {
+						type: 'number',
+						nullable: true,
+					},
+					offset: {
+						type: 'number',
+						nullable: true,
+					},
+					sort: {
+						type: 'string',
+						nullable: true,
+					},
+				},
+				required: ['roomId'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						messages: {
+							type: 'array',
+							items: {
+								$ref: '#/components/schemas/IMessage',
+							},
+						},
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.queryParams;
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const messages = await findStarredMessages({
+				uid: this.userId,
+				roomId,
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
+
+			messages.messages = await normalizeMessagesForUser(messages.messages, this.userId);
+
+			return API.v1.success(messages);
+		},
 	);
 
 API.v1.addRoute(
@@ -975,32 +1046,6 @@ API.v1.addRoute(
 					sort,
 				},
 			});
-
-			return API.v1.success(messages);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getStarredMessages',
-	{ authRequired: true, validateParams: isChatGetStarredMessagesProps },
-	{
-		async get() {
-			const { roomId } = this.queryParams;
-			const { sort } = await this.parseJsonQuery();
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			const messages = await findStarredMessages({
-				uid: this.userId,
-				roomId,
-				pagination: {
-					offset,
-					count,
-					sort,
-				},
-			});
-
-			messages.messages = await normalizeMessagesForUser(messages.messages, this.userId);
 
 			return API.v1.success(messages);
 		},

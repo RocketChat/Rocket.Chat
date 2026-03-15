@@ -3475,7 +3475,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
 				})
 				.end(done);
 		});
