@@ -967,7 +967,7 @@ const usersEndpoints = API.v1
     });
 	return API.v1.success(result);
 	},
-};
+);
 
 API.v1.addRoute(
 	'users.getPreferences',
