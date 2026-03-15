@@ -366,4 +366,31 @@ describe('setUserAvatar — URL fetch security', () => {
 		expect(err).to.be.instanceof(MeteorError);
 		expect((err as MeteorError).error).to.equal('error-avatar-invalid-url');
 	});
+
+	it('throws error-avatar-url-timeout when fetch times out after 30 s', async () => {
+		const clock = sinon.useFakeTimers();
+		fetchStub.callsFake(async (_url: string, opts: any) => {
+			// Synchronously advance past the 30-second AbortController timer
+			clock.tick(31_000);
+			// controller.signal is now aborted; simulate what node-fetch throws on abort
+			if (opts?.signal?.aborted) {
+				const abortErr = new Error('The operation was aborted');
+				(abortErr as any).name = 'AbortError';
+				throw abortErr;
+			}
+			return makeFetchResponse();
+		});
+
+		try {
+			const err = await setUserAvatar(testUser, 'https://example.com/avatar', undefined, 'url').then(
+				() => null,
+				(e: unknown) => e,
+			);
+
+			expect(err).to.be.instanceof(MeteorError);
+			expect((err as MeteorError).error).to.equal('error-avatar-url-timeout');
+		} finally {
+			clock.restore();
+		}
+	});
 });

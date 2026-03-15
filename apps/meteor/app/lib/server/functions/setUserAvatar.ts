@@ -132,6 +132,7 @@ export async function setUserAvatar(
 				}
 
 				if (response.status !== 200) {
+					void (response.body as any)?.cancel?.();
 					if (response.status !== 404) {
 						SystemLogger.info({
 							msg: 'Error while handling the setting of the avatar from a url',
@@ -160,6 +161,7 @@ export async function setUserAvatar(
 				const ALLOWED_AVATAR_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 				const contentType = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
 				if (!ALLOWED_AVATAR_MIME_TYPES.includes(contentType)) {
+					void (response.body as any)?.cancel?.();
 					SystemLogger.info({
 						msg: 'Not a valid content-type from the provided avatar url',
 						contentType: response.headers.get('content-type'),
@@ -171,13 +173,14 @@ export async function setUserAvatar(
 					});
 				}
 
-				const maxSize = settings.get<number>('FileUpload_MaxFileSize') || 104857600;
+				const maxSize = settings.get<number>('FileUpload_MaxFileSize') ?? 104857600;
 
 				// Reject early if Content-Length header already exceeds the limit
 				const contentLengthHeader = response.headers.get('content-length');
 				if (contentLengthHeader) {
 					const declaredSize = parseInt(contentLengthHeader, 10);
 					if (!Number.isNaN(declaredSize) && declaredSize > maxSize) {
+						void (response.body as any)?.cancel?.();
 						throw new Meteor.Error('error-avatar-image-too-large', 'Avatar image exceeds the maximum allowed file size', {
 							function: 'setUserAvatar',
 							url: dataURI,
@@ -199,6 +202,7 @@ export async function setUserAvatar(
 					const part = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk as unknown as Uint8Array);
 					downloaded += part.length;
 					if (downloaded > maxSize) {
+						void (response.body as any)?.cancel?.();
 						throw new Meteor.Error('error-avatar-image-too-large', 'Avatar image exceeds the maximum allowed file size', {
 							function: 'setUserAvatar',
 							url: dataURI,
@@ -209,7 +213,7 @@ export async function setUserAvatar(
 
 				return {
 					buffer: Buffer.concat(chunks),
-					type: response.headers.get('content-type') || '',
+					type: contentType,
 				};
 			} catch (e) {
 				// Convert a mid-stream abort (timer fired during body read) to a clean error
