@@ -19,7 +19,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [name, setName] = useState('');
-	const [sound, setSound] = useState<{ name: string }>();
+	const [sound, setSound] = useState<File>();
 
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
@@ -31,10 +31,9 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
 	const saveAction = useCallback(
-		// FIXME
-		async (name: string, soundFile: any) => {
+		async (name: string, soundFile: File) => {
 			const soundData = createSoundData(soundFile, name);
-			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
+			const validation = validate(soundData, soundFile);
 
 			validation.forEach((invalidFieldName) => {
 				throw new Error(t('Required_field', { field: t(invalidFieldName) }));
@@ -73,6 +72,10 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	);
 
 	const handleSave = useCallback(async () => {
+		if (!sound) {
+			return;
+		}
+
 		try {
 			const result = await saveAction(name, sound);
 			if (result) {
