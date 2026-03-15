@@ -298,7 +298,7 @@ export const isChatReactProps = ajv.compile<ChatReact>(ChatReactSchema);
 type ChatIgnoreUser = {
 	rid: string;
 	userId: string;
-	ignore: string;
+	ignore?: string;
 };
 
 const ChatIgnoreUserSchema = {
@@ -317,7 +317,7 @@ const ChatIgnoreUserSchema = {
 			minLength: 1,
 		},
 	},
-	required: ['rid', 'userId', 'ignore'],
+	required: ['rid', 'userId'],
 	additionalProperties: false,
 };
 
