@@ -134,7 +134,7 @@ const ModerationConsoleTable = () => {
 				</>
 			)}
 			{isSuccess && data.reports.length === 0 && <GenericNoResults />}
-		{isError && (
+		{isError && !data && (
 			<States>
 				<StatesIcon name='warning' variation='danger' />
 				<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
