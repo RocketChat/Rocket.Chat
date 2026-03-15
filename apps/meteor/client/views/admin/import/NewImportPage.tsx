@@ -17,7 +17,7 @@ import {
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ChangeEvent, DragEvent, FormEvent, Key, SyntheticEvent } from 'react';
 import { useState, useMemo, useEffect, useId } from 'react';
@@ -25,11 +25,16 @@ import { useTranslation } from 'react-i18next';
 
 import { useErrorHandler } from './useErrorHandler';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
+import { dispatchToastMessage } from '../../../../client/lib/toast';
 
+const allowedExtensions: Record<string, string[]> = {
+	csv: ['.zip'],
+	slack: ['.zip'],
+	'slack-users': ['.csv']
+};
 // TODO: review inner logic
 function NewImportPage() {
 	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
 	const handleError = useErrorHandler();
 
 	const [isLoading, setLoading] = useSafely(useState(false));
@@ -96,8 +101,38 @@ function NewImportPage() {
 				files = event.dataTransfer.files;
 			}
 		}
+		if (!files) return;
 
-		setFiles(Array.from(files ?? []));
+		if (importerKey) {
+			const validExts = allowedExtensions[importerKey] || [];
+			if (validExts.length === 0) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t("FileType_NotAllowed")
+				});
+
+				return;
+			}
+			const filteredFiles = Array.from(files).filter((file) =>
+				validExts.some((ext) => file.name.toLowerCase().endsWith(ext))
+			);
+			if (filteredFiles.length === 0) {
+				dispatchToastMessage({
+					type: 'error',
+					message: t("FileType_Invalid", { validExts: validExts.join(', ') })
+				});
+				return;
+			}
+			setFiles(Array.from(filteredFiles ?? []));
+		} else {
+			dispatchToastMessage({
+				type: 'error',
+				message: t("Import_Invalid_Key")
+			});
+
+
+			return;
+		}
 	};
 
 	const handleFileUploadChipClick = (file: File) => () => {
@@ -108,7 +143,14 @@ function NewImportPage() {
 		if (!importerKey) {
 			return;
 		}
+		if (files.length === 0) {
+			dispatchToastMessage({
+				type: 'error',
+				message: t("File_NotSelectedOrCorrupted")
+			});
 
+			return;
+		}
 		setLoading(true);
 
 		try {
