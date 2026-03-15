@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -23,7 +23,6 @@ import {
 	isChatGetThreadMessagesProps,
 	isChatSyncThreadMessagesProps,
 	isChatGetStarredMessagesProps,
-	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
@@ -274,6 +273,37 @@ const ChatUnpinMessageSchema = {
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+type ChatGetDiscussions = {
+	roomId: IRoom['_id'];
+	text?: string;
+	count?: number;
+	offset?: number;
+	sort?: string;
+};
+
+const ChatGetDiscussionsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		text: {
+			type: 'string',
+		},
+		offset: {
+			type: 'number',
+		},
+		count: {
+			type: 'number',
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+const isChatGetDiscussionsLocalProps = ajv.compile<ChatGetDiscussions>(ChatGetDiscussionsSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -557,6 +587,52 @@ const chatEndpoints = API.v1
 			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
+		},
+	)
+	.get(
+		'chat.getDiscussions',
+		{
+			authRequired: true,
+			query: isChatGetDiscussionsLocalProps,
+			response: {
+				200: ajv.compile<{
+					messages: IMessage[];
+					count: number;
+					offset: number;
+					total: number;
+					success: boolean;
+				}>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array' },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId, text } = this.queryParams;
+			const { sort } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const messages = await findDiscussionsFromRoom({
+				uid: this.userId,
+				roomId,
+				text: text || '',
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			});
+			return API.v1.success(messages);
 		},
 	);
 
@@ -1002,30 +1078,6 @@ API.v1.addRoute(
 
 			messages.messages = await normalizeMessagesForUser(messages.messages, this.userId);
 
-			return API.v1.success(messages);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.getDiscussions',
-	{ authRequired: true, validateParams: isChatGetDiscussionsProps },
-	{
-		async get() {
-			const { roomId, text } = this.queryParams;
-			const { sort } = await this.parseJsonQuery();
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			const messages = await findDiscussionsFromRoom({
-				uid: this.userId,
-				roomId,
-				text: text || '',
-				pagination: {
-					offset,
-					count,
-					sort,
-				},
-			});
 			return API.v1.success(messages);
 		},
 	},
