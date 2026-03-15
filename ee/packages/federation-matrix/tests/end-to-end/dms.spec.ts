@@ -402,7 +402,9 @@ const waitForRoomEvent = async (
 						const room = await hs1User.matrixClient.getRoom(rcRoom.federation.mrid);
 
 						expect(room).toBeDefined();
-						expect(room!.getMyMembership()).toBe('invite');
+						if (room) {
+							expect(room.getMyMembership()).toBe('invite');
+						}
 					});
 
 					// Accept the invitation
