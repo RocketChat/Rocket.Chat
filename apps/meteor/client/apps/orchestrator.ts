@@ -49,6 +49,9 @@ class AppClientOrchestrator {
 	public async getInstalledApps(): Promise<App[]> {
 		const result = await sdk.rest.get<'/apps/installed'>('/apps/installed', { includeClusterStatus: 'true' });
 
+		if(Array.isArray(result)){
+			return result[0]?.apps ?? [];
+		}
 		if ('apps' in result) {
 			// TODO: chapter day: multiple results are returned, but we only need one
 			return result.apps as App[];
