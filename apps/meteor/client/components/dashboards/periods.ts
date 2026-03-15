@@ -97,11 +97,6 @@ export const getPeriodRange = (
 	start: Date;
 	end: Date;
 } => {
-	const period = periods.find((period) => period.key === key);
-
-	if (!period) {
-		return periods[0].range(utc);
-	}
-
+	const period = getPeriod(key);
 	return period.range(utc);
 };
