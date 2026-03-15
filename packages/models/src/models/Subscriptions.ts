@@ -1848,13 +1848,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	// INSERT
 	async createWithRoomAndUser(room: IRoom, user: IUser, extraData: Partial<ISubscription> = {}): Promise<InsertOneResult<ISubscription>> {
+		const now = new Date();
 		const subscription = {
 			open: false,
 			alert: false,
 			unread: 0,
 			userMentions: 0,
 			groupMentions: 0,
-			ts: room.ts,
+			ts: room.ts ?? now,
+			ls: extraData.ls ?? extraData.lr ?? room.ts ?? now,
+			lr: extraData.lr ?? extraData.ls ?? room.ts ?? now,
+			_updatedAt: extraData._updatedAt ?? now,
 			rid: room._id,
 			name: room.name,
 			fname: room.fname,
@@ -1885,13 +1889,17 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		room: IRoom,
 		users: { user: AtLeast<IUser, '_id' | 'username' | 'name' | 'settings'>; extraData: Record<string, any> }[] = [],
 	): Promise<InsertManyResult<ISubscription>> {
+		const now = new Date();
 		const subscriptions = users.map(({ user, extraData }) => ({
 			open: false,
 			alert: false,
 			unread: 0,
 			userMentions: 0,
 			groupMentions: 0,
-			ts: room.ts,
+			ts: room.ts ?? now,
+			ls: extraData.ls ?? extraData.lr ?? room.ts ?? now,
+			lr: extraData.lr ?? extraData.ls ?? room.ts ?? now,
+			_updatedAt: extraData._updatedAt ?? now,
 			rid: room._id,
 			name: room.name,
 			fname: room.fname,

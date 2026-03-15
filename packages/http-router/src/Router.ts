@@ -221,7 +221,7 @@ export class Router<
 						{
 							success: false,
 							errorType: 'error-invalid-params',
-							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
+							error: `${validatorFn.errors?.map((error: any) => error.message).join('\n ')} [invalid-params]`,
 						},
 						400,
 					);

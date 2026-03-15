@@ -1,7 +1,10 @@
+import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
 	isSubscriptionsGetProps,
-	isSubscriptionsGetOneProps,
 	isSubscriptionsReadProps,
 	isSubscriptionsUnreadProps,
 } from '@rocket.chat/rest-typings';
@@ -10,6 +13,7 @@ import { Meteor } from 'meteor/meteor';
 import { readMessages } from '../../../../server/lib/readMessages';
 import { getSubscriptions } from '../../../../server/publications/subscription';
 import { unreadMessages } from '../../../message-mark-as-unread/server/unreadMessages';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -44,24 +48,53 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+type SubscriptionsGetOne = { roomId: IRoom['_id'] };
+
+const SubscriptionsGetOneSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+const isSubscriptionsGetOneProps = ajv.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
+
+const subscriptionsEndpoints = API.v1.get(
 	'subscriptions.getOne',
 	{
 		authRequired: true,
-		validateParams: isSubscriptionsGetOneProps,
-	},
-	{
-		async get() {
-			const { roomId } = this.queryParams;
-
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
-
-			return API.v1.success({
-				subscription: await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId),
-			});
+		query: isSubscriptionsGetOneProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<{ subscription: ISubscription | null }>({
+				type: 'object',
+				properties: {
+					subscription: {
+						anyOf: [{ type: 'null' }, { $ref: '#/components/schemas/ISubscription' }],
+					},
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['subscription', 'success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+
+	async function action() {
+		const { roomId } = this.queryParams;
+
+		return API.v1.success({
+			subscription: await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId),
+		});
 	},
 );
 
@@ -115,3 +148,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type SubscriptionsEndpoints = ExtractRoutesFromAPI<typeof subscriptionsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends SubscriptionsEndpoints {}
+}

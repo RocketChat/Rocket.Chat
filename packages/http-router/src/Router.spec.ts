@@ -552,7 +552,7 @@ describe('Router', () => {
 		app.use(api.use(test).router);
 		const response = await request(app).get('/api/test');
 		expect(response.statusCode).toBe(400);
-		expect(response.body).toHaveProperty('error', "must have required property 'customProperty'");
+		expect(response.body).toHaveProperty('error', "must have required property 'customProperty' [invalid-params]");
 	});
 	it('should fail if the body request is not valid', async () => {
 		const ajv = new Ajv();
