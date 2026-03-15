@@ -9,7 +9,6 @@ import {
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
 	isRoomsExportProps,
-	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
@@ -18,6 +17,7 @@ import {
 	isRoomsInviteProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -802,34 +802,60 @@ API.v1.addRoute(
 		},
 	},
 );
-
-API.v1.addRoute(
+const isMemeberEndpoint = API.v1.get(
 	'rooms.isMember',
 	{
 		authRequired: true,
-		validateParams: isRoomsIsMemberProps,
-	},
-	{
-		async get() {
-			const { roomId, userId, username } = this.queryParams;
-			const [room, user] = await Promise.all([
-				findRoomByIdOrName({
-					params: { roomId },
-				}) as Promise<IRoom>,
-				Users.findOneByIdOrUsername(userId || username),
-			]);
-
-			if (!user?._id) {
-				return API.v1.failure('error-user-not-found');
-			}
-
-			if (await canAccessRoomAsync(room, { _id: this.user._id })) {
-				return API.v1.success({
-					isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
-				});
-			}
-			return API.v1.forbidden();
+		query: ajv.compile<{ roomId: string; userId?: string; username?: string }>({
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+				userId: { type: 'string' },
+				username: { type: 'string' },
+			},
+			oneOf: [{ required: ['roomId', 'userId'] }, { required: ['roomId', 'username'] }],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ isMember: boolean }>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+						description: 'Indicates if the request was successful.',
+					},
+					isMember: {
+						type: 'boolean',
+					},
+				},
+				required: ['success', 'isMember'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId, userId, username } = this.queryParams;
+		const room = await findRoomByIdOrName({
+			params: { roomId },
+		});
+
+		if (!(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.forbidden('unauthorized');
+		}
+
+		const user = await Users.findOneByIdOrUsername((userId || username)!);
+
+		if (!user?._id) {
+			return API.v1.failure('error-user-not-found');
+		}
+
+		return API.v1.success({
+			isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
+		});
 	},
 );
 
@@ -1246,9 +1272,9 @@ export const roomEndpoints = API.v1
 	);
 
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
+	ExtractRoutesFromAPI<typeof isMemeberEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
