@@ -1,12 +1,12 @@
 import { api } from '@rocket.chat/core-services';
 import type { StreamNames } from '@rocket.chat/ddp-client';
-import type { DDPSubscription, Connection, TransformMessage } from 'meteor/rocketchat:streamer';
 import WebSocket from 'ws';
 
 import { server } from './configureServer';
 import { DDP_EVENTS } from './constants';
 import { isEmpty } from './lib/utils';
 import { Streamer, StreamerCentral } from '../../../../apps/meteor/server/modules/streamer/streamer.module';
+import type { DDPSubscription, Connection, TransformMessage } from '../../../../apps/meteor/server/modules/streamer/types';
 
 StreamerCentral.on('broadcast', (name, eventName, args) => {
 	void api.broadcast('stream', [name, eventName, args]);
@@ -57,7 +57,7 @@ export class Stream<N extends StreamNames> extends Streamer<N> {
 			normal: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(getMsg), options))],
 		};
 
-		for await (const { subscription } of subscriptions) {
+		for (const { subscription } of subscriptions) {
 			// if the connection state is not open anymore, it somehow got to a weird state,
 			// we'll emit close so it can clean up the weird state, and so we stop emitting to it
 			if (subscription.client.ws.readyState !== WebSocket.OPEN) {

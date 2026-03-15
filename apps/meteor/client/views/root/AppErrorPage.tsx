@@ -1,5 +1,5 @@
 import { Box, PaletteStyleTag, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { useThemeMode } from '@rocket.chat/ui-theming';
+import { useThemeMode } from '@rocket.chat/ui-client';
 import type { ErrorInfo, ReactElement } from 'react';
 
 type AppErrorPageProps = {

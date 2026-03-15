@@ -42,7 +42,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore packages build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: packages-build
           path: /tmp
@@ -53,7 +53,7 @@ jobs:
           tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       - name: Unit Test
-        run: yarn testunit
+        run: yarn testunit --concurrency=1
 
       - uses: codecov/codecov-action@v5
         with:

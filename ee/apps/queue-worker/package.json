@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/queue-worker",
-	"version": "0.4.49",
+	"version": "0.4.51",
 	"private": true,
 	"description": "Rocket.Chat service",
 	"keywords": [
@@ -13,7 +13,7 @@
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
-		"lint": "eslint src",
+		"lint": "eslint .",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
@@ -40,14 +40,14 @@
 		"nats": "^2.28.2",
 		"pino": "^8.21.0",
 		"polka": "^0.5.2",
+		"prom-client": "^14.2.0",
 		"prometheus-gc-stats": "^1.1.0"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"ts-node": "^10.9.2",
 		"typescript": "~5.9.3"
 	},
