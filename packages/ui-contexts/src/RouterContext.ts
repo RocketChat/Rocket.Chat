@@ -74,6 +74,8 @@ export type RouterContextValue = {
 	): {
 		path: LocationPathname;
 	};
+	getCanGoBack(): boolean;
+	getCanGoForward(): boolean;
 };
 
 export const RouterContext = createContext<RouterContextValue>({
@@ -104,4 +106,6 @@ export const RouterContext = createContext<RouterContextValue>({
 	getRoomRoute: () => {
 		throw new Error('not implemented');
 	},
+	getCanGoBack: () => false,
+	getCanGoForward: () => false,
 });
