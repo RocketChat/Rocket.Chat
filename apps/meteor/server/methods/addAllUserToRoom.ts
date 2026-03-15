@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IRoom } from '@rocket.chat/core-typings';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
@@ -36,14 +36,7 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 	if (activeUsersOnly === true) {
 		userFilter.active = true;
 	}
-
-	const users = await Users.find(userFilter).toArray();
-	if (users.length > settings.get<number>('API_User_Limit')) {
-		throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
-			method: 'addAllToRoom',
-		});
-	}
-
+	
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
@@ -51,15 +44,31 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 		});
 	}
 
+	const count = await Users.countDocuments(userFilter); 
+	if (count > settings.get<number>('API_User_Limit')) {
+		throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
+			method: 'addAllToRoom',
+		});
+	}
+	const usersCursor = Users.find(userFilter).batchSize(100)
+
+	const collectedUsers: IUser[] = [];
+	const usernames: string[] = [];
+	for await(const user of usersCursor){
+		collectedUsers.push(user);
+		if(user.username){
+			usernames.push(user.username)
+		}
+	}
 	await beforeAddUserToRoom(
-		users.map((u) => u.username!),
-		room,
+		usernames,
+		room
 	);
 
 	const now = new Date();
-	for await (const user of users) {
+	for  (const user of collectedUsers) {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
-		if (subscription != null) {
+		if (subscription) {
 			continue;
 		}
 		await callbacks.run('beforeJoinRoom', user, room);
