@@ -1209,7 +1209,7 @@ export class ClientMediaCall implements IClientMediaCall {
 					break;
 			}
 		} catch (e) {
-			this.config.logger?.error('An error occured while reviewing the webrtc connection state change', e);
+			this.config.logger?.error('An error occurred while reviewing the webrtc connection state change', e);
 		}
 	}
 

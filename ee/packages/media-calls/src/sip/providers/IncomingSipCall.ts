@@ -175,7 +175,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 				logger.debug({ msg: 'modify', method: 'IncomingSipCall.createDialog', req: this.session.stripDrachtioServerDetails(req) });
 			} catch (err) {
-				logger.error({ msg: 'An unexpected error occured while processing a modify event on an IncomingSipCall dialog', err });
+				logger.error({ msg: 'An unexpected error occurred while processing a modify event on an IncomingSipCall dialog', err });
 
 				try {
 					res.send(SipErrorCodes.INTERNAL_SERVER_ERROR);
