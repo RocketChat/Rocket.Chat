@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IUser, IThreadMainMessage, MessageAttachment, RequiredField } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -11,7 +11,6 @@ import {
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
-	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
 	isChatIgnoreUserProps,
@@ -247,6 +246,26 @@ type ChatUnpinMessage = {
 	messageId: IMessage['_id'];
 };
 
+type ChatPostMessage =
+	| {
+			roomId: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  }
+	| {
+			channel: string | string[];
+			text?: string;
+			alias?: string;
+			emoji?: string;
+			avatar?: string;
+			attachments?: MessageAttachment[];
+			customFields?: IMessage['customFields'];
+	  };
+
 const ChatPinMessageSchema = {
 	type: 'object',
 	properties: {
@@ -271,9 +290,115 @@ const ChatUnpinMessageSchema = {
 	additionalProperties: false,
 };
 
+const ChatPostMessageSchema = {
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				tmid: {
+					type: 'string',
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				channel: {
+					oneOf: [
+						{ type: 'string' },
+						{
+							type: 'array',
+							items: {
+								type: 'string',
+							},
+						},
+					],
+				},
+				text: {
+					type: 'string',
+					nullable: true,
+				},
+				alias: {
+					type: 'string',
+					nullable: true,
+				},
+				emoji: {
+					type: 'string',
+					nullable: true,
+				},
+				avatar: {
+					type: 'string',
+					nullable: true,
+				},
+				attachments: {
+					type: 'array',
+					items: {
+						type: 'object',
+					},
+					nullable: true,
+				},
+				customFields: {
+					type: 'object',
+					nullable: true,
+				},
+				parseUrls: {
+					type: 'boolean',
+				},
+			},
+			required: ['channel'],
+			additionalProperties: false,
+		},
+	],
+};
+
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+const isChatPostMessageProps = ajv.compile<ChatPostMessage>(ChatPostMessageSchema);
 
 const chatEndpoints = API.v1
 	.post(
@@ -420,6 +545,30 @@ const chatEndpoints = API.v1
 		},
 	)
 	.post(
+		'chat.postMessage',
+		{
+			authRequired: true,
+			body: isChatPostMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					ts: number;
+					channel: string;
+					message: IMessage;
+				}>({
+					type: 'object',
+					properties: {
+						ts: { type: 'number' },
+						channel: { type: 'string' },
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['ts', 'channel', 'message', 'success'],
 		'chat.starMessage',
 		{
 			authRequired: true,
@@ -580,7 +729,15 @@ API.v1.addRoute(
 				}
 			}
 
-			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+			if (!this.user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			const messageReturn = (
+				await applyAirGappedRestrictionsValidation(() =>
+					processWebhookMessage({ ...this.bodyParams, separateResponse: true }, this.user as RequiredField<IUser, 'username'>),
+				)
+			)[0];
 
 			if (!messageReturn?.message) {
 				return API.v1.failure('unknown-error');
@@ -594,8 +751,7 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.search',
