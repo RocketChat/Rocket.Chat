@@ -69,6 +69,13 @@ class AppClientOrchestrator {
 			}
 		}
 
+		if (Array.isArray(result) && !result.every((item) => item !== null && typeof item === 'object' && 'latest' in item))  {
+			const valid = result.find((item) => Array.isArray(item));
+			if (valid) {
+				result = valid;
+			}
+		}
+
 		if (!Array.isArray(result)) {
 			// TODO: chapter day: multiple results are returned, but we only need one
 			return { apps: [], error: 'Invalid response from API' };
