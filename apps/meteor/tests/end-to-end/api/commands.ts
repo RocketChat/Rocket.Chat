@@ -124,22 +124,24 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('You must provide a command to run.');
+					expect(res.body.error).to.be.equal("must have required property 'command'");
 				})
 				.end(done);
 		});
+
 		it('should return an error when call the endpoint with the param "params" and it is not a string', (done) => {
 			void request
 				.post(api('commands.run'))
 				.set(credentials)
 				.send({
 					command: 'help',
+					roomId: 'GENERAL',
 					params: true,
 				})
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The parameters for the command must be a single string.');
+					expect(res.body.error).to.include('must be string');
 				})
 				.end(done);
 		});
@@ -154,7 +156,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The room's id where to execute this command must be provided and be a string.");
+					expect(res.body.error).to.be.equal("must have required property 'roomId'");
 				})
 				.end(done);
 		});
@@ -171,7 +173,7 @@ describe('[Commands]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The tmid parameter when provided must be a string.');
+					expect(res.body.error).to.include('must be string');
 				})
 				.end(done);
 		});

@@ -1,8 +1,13 @@
 import { Apps } from '@rocket.chat/apps';
-import type { SlashCommand } from '@rocket.chat/core-typings';
+import type { SlashCommand, SlashCommandPreviewItem } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -235,171 +240,225 @@ API.v1.addRoute(
 	},
 );
 
-// Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
-API.v1.addRoute(
-	'commands.run',
-	{ authRequired: true },
-	{
-		async post() {
-			const body = this.bodyParams;
+const isCommandsRunProps = ajv.compile<{ command: string; params?: string; roomId: string; tmid?: string; triggerId?: string }>({
+	type: 'object',
+	properties: {
+		command: { type: 'string' },
+		params: { type: 'string', nullable: true },
+		roomId: { type: 'string' },
+		tmid: { type: 'string', nullable: true },
+		triggerId: { type: 'string', nullable: true },
+	},
+	required: ['command', 'roomId'],
+	additionalProperties: false,
+});
 
-			if (typeof body.command !== 'string') {
-				return API.v1.failure('You must provide a command to run.');
-			}
+const commandsRunResponseSchema = ajv.compile<{ result: unknown }>({
+	type: 'object',
+	properties: {
+		result: {},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: true,
+});
 
-			if (body.params && typeof body.params !== 'string') {
-				return API.v1.failure('The parameters for the command must be a single string.');
-			}
+const isCommandsPreviewGetProps = ajv.compile<{ command: string; params?: string; roomId: string }>({
+	type: 'object',
+	properties: {
+		command: { type: 'string' },
+		params: { type: 'string', nullable: true },
+		roomId: { type: 'string' },
+	},
+	required: ['command', 'roomId'],
+	additionalProperties: false,
+});
 
-			if (typeof body.roomId !== 'string') {
-				return API.v1.failure("The room's id where to execute this command must be provided and be a string.");
-			}
+const commandsPreviewGetResponseSchema = ajv.compile<{ preview: Record<string, unknown> | undefined }>({
+	type: 'object',
+	properties: {
+		preview: { type: 'object', nullable: true },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
 
-			if (body.tmid && typeof body.tmid !== 'string') {
-				return API.v1.failure('The tmid parameter when provided must be a string.');
-			}
-
-			const cmd = body.command.toLowerCase();
-			if (!slashCommands.commands[cmd]) {
-				return API.v1.failure('The command provided does not exist (or is disabled).');
-			}
-
-			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-				return API.v1.forbidden();
-			}
-
-			const params = body.params ? body.params : '';
-			if (typeof body.tmid === 'string') {
-				const thread = await Messages.findOneById(body.tmid);
-				if (!thread || thread.rid !== body.roomId) {
-					return API.v1.failure('Invalid thread.');
-				}
-			}
-
-			const message = {
-				_id: Random.id(),
-				rid: body.roomId,
-				msg: `/${cmd} ${params}`,
-				...(body.tmid && { tmid: body.tmid }),
-			};
-
-			const { triggerId } = body;
-
-			const result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
-
-			return API.v1.success({ result });
+const isCommandsPreviewPostProps = ajv.compile<{
+	command: string;
+	params?: string;
+	roomId: string;
+	tmid?: string;
+	triggerId?: string;
+	previewItem: SlashCommandPreviewItem;
+}>({
+	type: 'object',
+	properties: {
+		command: { type: 'string' },
+		params: { type: 'string', nullable: true },
+		roomId: { type: 'string' },
+		tmid: { type: 'string', nullable: true },
+		triggerId: { type: 'string', nullable: true },
+		previewItem: {
+			type: 'object',
+			properties: {
+				id: { type: 'string' },
+				type: { type: 'string', enum: ['image', 'video', 'audio', 'text', 'other'] },
+				value: { type: 'string' },
+			},
+			required: ['id', 'type', 'value'],
+			additionalProperties: false,
 		},
+	},
+	required: ['command', 'roomId', 'previewItem'],
+	additionalProperties: false,
+});
+
+const commandsPreviewPostResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+// Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
+API.v1.post(
+	'commands.run',
+	{
+		authRequired: true,
+		body: isCommandsRunProps,
+		response: {
+			200: commandsRunResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const body = this.bodyParams;
+
+		const cmd = body.command.toLowerCase();
+		if (!slashCommands.commands[cmd]) {
+			return API.v1.failure('The command provided does not exist (or is disabled).');
+		}
+
+		if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
+			return API.v1.forbidden('Not allowed');
+		}
+
+		const params = body.params ? body.params : '';
+		if (body.tmid) {
+			const thread = await Messages.findOneById(body.tmid);
+			if (thread?.rid !== body.roomId) {
+				return API.v1.failure('Invalid thread.');
+			}
+		}
+
+		const message = {
+			_id: Random.id(),
+			rid: body.roomId,
+			msg: `/${cmd} ${params}`,
+			...(body.tmid && { tmid: body.tmid }),
+		};
+
+		const { triggerId } = body;
+
+		const result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
+
+		return API.v1.success({ result });
 	},
 );
 
-API.v1.addRoute(
+// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
+API.v1.get(
 	'commands.preview',
-	{ authRequired: true },
 	{
-		// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
-		async get() {
-			const query = this.queryParams;
+		authRequired: true,
+		query: isCommandsPreviewGetProps,
+		response: {
+			200: commandsPreviewGetResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const query = this.queryParams;
 
-			if (typeof query.command !== 'string') {
-				return API.v1.failure('You must provide a command to get the previews from.');
+		const cmd = query.command.toLowerCase();
+		if (!slashCommands.commands[cmd]) {
+			return API.v1.failure('The command provided does not exist (or is disabled).');
+		}
+
+		if (!(await canAccessRoomIdAsync(query.roomId, this.userId))) {
+			return API.v1.forbidden('Not allowed');
+		}
+
+		const params = query.params ? query.params : '';
+
+		const preview = await getSlashCommandPreviews({
+			cmd,
+			params,
+			msg: { rid: query.roomId },
+			userId: this.userId,
+		});
+
+		return API.v1.success({ preview });
+	},
+);
+
+// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', tmid: 'value', triggerId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif' } }
+API.v1.post(
+	'commands.preview',
+	{
+		authRequired: true,
+		body: isCommandsPreviewPostProps,
+		response: {
+			200: commandsPreviewPostResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const body = this.bodyParams;
+
+		const cmd = body.command.toLowerCase();
+		if (!slashCommands.commands[cmd]) {
+			return API.v1.failure('The command provided does not exist (or is disabled).');
+		}
+
+		if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
+			return API.v1.forbidden('Not allowed');
+		}
+
+		const { params = '' } = body;
+		if (body.tmid) {
+			const thread = await Messages.findOneById(body.tmid);
+			if (thread?.rid !== body.roomId) {
+				return API.v1.failure('Invalid thread.');
 			}
+		}
 
-			if (query.params && typeof query.params !== 'string') {
-				return API.v1.failure('The parameters for the command must be a single string.');
-			}
+		const msg = {
+			rid: body.roomId,
+			...(body.tmid && { tmid: body.tmid }),
+		};
 
-			if (typeof query.roomId !== 'string') {
-				return API.v1.failure("The room's id where the previews are being displayed must be provided and be a string.");
-			}
-
-			const cmd = query.command.toLowerCase();
-			if (!slashCommands.commands[cmd]) {
-				return API.v1.failure('The command provided does not exist (or is disabled).');
-			}
-
-			if (!(await canAccessRoomIdAsync(query.roomId, this.userId))) {
-				return API.v1.forbidden();
-			}
-
-			const params = query.params ? query.params : '';
-
-			const preview = await getSlashCommandPreviews({
+		await executeSlashCommandPreview(
+			{
 				cmd,
 				params,
-				msg: { rid: query.roomId },
-				userId: this.userId,
-			});
+				msg,
+				triggerId: body.triggerId,
+			},
+			body.previewItem,
+			this.userId,
+		);
 
-			return API.v1.success({ preview });
-		},
-
-		// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', tmid: 'value', triggerId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif' } }
-		async post() {
-			const body = this.bodyParams;
-
-			if (typeof body.command !== 'string') {
-				return API.v1.failure('You must provide a command to run the preview item on.');
-			}
-
-			if (body.params && typeof body.params !== 'string') {
-				return API.v1.failure('The parameters for the command must be a single string.');
-			}
-
-			if (typeof body.roomId !== 'string') {
-				return API.v1.failure("The room's id where the preview is being executed in must be provided and be a string.");
-			}
-
-			if (typeof body.previewItem === 'undefined') {
-				return API.v1.failure('The preview item being executed must be provided.');
-			}
-
-			if (!body.previewItem.id || !body.previewItem.type || typeof body.previewItem.value === 'undefined') {
-				return API.v1.failure('The preview item being executed is in the wrong format.');
-			}
-
-			if (body.tmid && typeof body.tmid !== 'string') {
-				return API.v1.failure('The tmid parameter when provided must be a string.');
-			}
-
-			if (body.triggerId && typeof body.triggerId !== 'string') {
-				return API.v1.failure('The triggerId parameter when provided must be a string.');
-			}
-
-			const cmd = body.command.toLowerCase();
-			if (!slashCommands.commands[cmd]) {
-				return API.v1.failure('The command provided does not exist (or is disabled).');
-			}
-
-			if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-				return API.v1.forbidden();
-			}
-
-			const { params = '' } = body;
-			if (body.tmid) {
-				const thread = await Messages.findOneById(body.tmid);
-				if (!thread || thread.rid !== body.roomId) {
-					return API.v1.failure('Invalid thread.');
-				}
-			}
-
-			const msg = {
-				rid: body.roomId,
-				...(body.tmid && { tmid: body.tmid }),
-			};
-
-			await executeSlashCommandPreview(
-				{
-					cmd,
-					params,
-					msg,
-					triggerId: body.triggerId,
-				},
-				body.previewItem,
-				this.userId,
-			);
-
-			return API.v1.success();
-		},
+		return API.v1.success();
 	},
 );
 
