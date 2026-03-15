@@ -300,6 +300,14 @@ const ChatGetThreadMessagesSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+		fields: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['tmid'],
 	additionalProperties: false,
