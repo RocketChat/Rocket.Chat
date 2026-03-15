@@ -417,28 +417,9 @@ For these cases, keep using `{ type: 'object' }` as a placeholder.
 
 ### Known Pitfall: `Date | string` unions
 
-Some core-typings define timestamp fields as `Date | string` (e.g., `IModerationAudit.ts`, `IModerationReport.ts`). When typia generates the JSON Schema for these fields, it creates a `oneOf` with two branches: one for `Date` (which maps to `{ type: "string", format: "date-time" }`) and one for `string` (which maps to `{ type: "string" }`).
+When core-typings define timestamp fields as `Date | string`, typia generates a JSON Schema `oneOf` with two branches: `{ type: "string", format: "date-time" }` and `{ type: "string" }`. An ISO date string satisfies **both** schemas simultaneously, causing AJV to fail with `passingSchemas: 0,1`.
 
-The problem: an ISO date string like `"2026-03-11T16:07:21.755Z"` satisfies **both** schemas simultaneously, causing AJV to fail with:
-
-```
-must match exactly one schema in oneOf (passingSchemas: 0,1)
-```
-
-This happens because `oneOf` requires **exactly one** match, but the value is both a valid `date-time` string and a valid `string`.
-
-**Workaround**: Use a relaxed inline schema instead of `$ref` for these types, defining `ts` as `{ type: 'string' }`. Add a `TODO` comment referencing this issue so it can be tracked:
-
-```typescript
-// TODO: IModerationAudit defines `ts` as `Date | string` which generates a oneOf in JSON Schema.
-// When the aggregation returns `ts` as an ISO date string, it matches both `Date` (format: "date-time")
-// and `string` schemas simultaneously, causing AJV oneOf validation to fail with "passingSchemas: 0,1".
-// Until the core-typings type is revised (either narrowing `ts` to `string` to match what MongoDB
-// aggregation actually returns, or adjusting the AJV schema generation for union types), we use a
-// relaxed inline schema here that accepts `ts` as a string.
-```
-
-**Long-term fix**: Revise the core-typings to narrow `ts` to `string` (which is what MongoDB aggregation pipelines and `JSON.stringify` actually return), or adjust the AJV/typia schema generation to handle `Date | string` unions correctly (e.g., using `anyOf` instead of `oneOf`, or collapsing `Date` into `string`).
+**Fix**: Narrow the type to `Date` in core-typings. MongoDB stores timestamps as `Date` objects, and JSON serialization produces ISO date strings that correctly match the `date-time` format schema. This was applied to `IModerationReport.ts` in [#39551](https://github.com/RocketChat/Rocket.Chat/issues/39551).
 
 ### Adding a new type to typia
 
