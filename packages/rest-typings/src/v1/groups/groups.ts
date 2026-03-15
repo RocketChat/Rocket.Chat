@@ -9,7 +9,6 @@ import type { GroupsCloseProps } from './GroupsCloseProps';
 import type { GroupsConvertToTeamProps } from './GroupsConvertToTeamProps';
 import type { GroupsCountersProps } from './GroupsCountersProps';
 import type { GroupsCreateProps } from './GroupsCreateProps';
-import type { GroupsDeleteProps } from './GroupsDeleteProps';
 import type { GroupsFilesProps } from './GroupsFilesProps';
 import type { GroupsGetIntegrationsProps } from './GroupsGetIntegrationsProps';
 import type { GroupsHistoryProps } from './GroupsHistoryProps';
@@ -89,9 +88,6 @@ export type GroupsEndpoints = {
 	};
 	'/v1/groups.kick': {
 		POST: (params: GroupsKickProps) => void;
-	};
-	'/v1/groups.delete': {
-		POST: (params: GroupsDeleteProps) => void;
 	};
 	'/v1/groups.leave': {
 		POST: (params: GroupsLeaveProps) => void;
