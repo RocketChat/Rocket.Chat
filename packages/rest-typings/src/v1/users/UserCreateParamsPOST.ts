@@ -1,7 +1,5 @@
 import type { IUserSettings } from '@rocket.chat/core-typings';
 
-import { ajv } from '../Ajv';
-
 export type UserCreateParamsPOST = {
 	email: string;
 	name: string;
@@ -23,30 +21,3 @@ export type UserCreateParamsPOST = {
 	/* @deprecated */
 	fields: string;
 };
-
-const userCreateParamsPostSchema = {
-	type: 'object',
-	properties: {
-		email: { type: 'string' },
-		name: { type: 'string' },
-		password: { type: 'string' },
-		username: { type: 'string' },
-		active: { type: 'boolean', nullable: true },
-		bio: { type: 'string', nullable: true },
-		nickname: { type: 'string', nullable: true },
-		statusText: { type: 'string', nullable: true },
-		roles: { type: 'array', items: { type: 'string' } },
-		joinDefaultChannels: { type: 'boolean', nullable: true },
-		requirePasswordChange: { type: 'boolean', nullable: true },
-		setRandomPassword: { type: 'boolean', nullable: true },
-		sendWelcomeEmail: { type: 'boolean', nullable: true },
-		verified: { type: 'boolean', nullable: true },
-		customFields: { type: 'object' },
-		fields: { type: 'string', nullable: true },
-		freeSwitchExtension: { type: 'string', nullable: true },
-	},
-	additionalProperties: false,
-	required: ['email', 'name', 'password', 'username'],
-};
-
-export const isUserCreateParamsPOST = ajv.compile<UserCreateParamsPOST>(userCreateParamsPostSchema);

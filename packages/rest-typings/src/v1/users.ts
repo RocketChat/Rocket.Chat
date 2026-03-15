@@ -3,7 +3,6 @@ import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToke
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
-import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
 import type { UserDeactivateIdleParamsPOST } from './users/UserDeactivateIdleParamsPOST';
 import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
 import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
@@ -268,12 +267,6 @@ export type UsersEndpoints = {
 	'/v1/users.getPreferences': {
 		GET: () => {
 			preferences: Required<IUser>['settings']['preferences'];
-		};
-	};
-
-	'/v1/users.create': {
-		POST: (params: UserCreateParamsPOST) => {
-			user: IUser;
 		};
 	};
 
