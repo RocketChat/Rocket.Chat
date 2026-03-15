@@ -311,7 +311,7 @@ const ChatIgnoreUserSchema = {
 		userId: {
 			type: 'string',
 			minLength: 1,
-		},
+		},	
 		ignore: {
 			type: 'string',
 			minLength: 1,

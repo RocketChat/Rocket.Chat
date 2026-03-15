@@ -665,11 +665,11 @@ const chatEndpoints = API.v1
 			});
 		},
 	)
-	.post(
+	.post(	
 		'chat.reportMessage',
 		{
 			authRequired: true, 
-			validateParams: isChatReportMessageProps,
+			body: isChatReportMessageProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
