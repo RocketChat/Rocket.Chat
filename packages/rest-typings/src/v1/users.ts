@@ -6,7 +6,6 @@ import type { PaginatedResult } from '../helpers/PaginatedResult';
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
 import type { UserDeactivateIdleParamsPOST } from './users/UserDeactivateIdleParamsPOST';
 import type { UserLogoutParamsPOST } from './users/UserLogoutParamsPOST';
-import type { UserRegisterParamsPOST } from './users/UserRegisterParamsPOST';
 import type { UserSetActiveStatusParamsPOST } from './users/UserSetActiveStatusParamsPOST';
 import type { UsersAutocompleteParamsGET } from './users/UsersAutocompleteParamsGET';
 import type { UsersInfoParamsGet } from './users/UsersInfoParamsGet';
@@ -333,12 +332,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.register': {
-		POST: (params: UserRegisterParamsPOST) => {
-			user: Partial<IUser>;
-		};
-	};
-
 	'/v1/users.logout': {
 		POST: (params: UserLogoutParamsPOST) => {
 			message: string;
@@ -376,7 +369,6 @@ export * from './users/UserDeactivateIdleParamsPOST';
 export * from './users/UsersInfoParamsGet';
 export * from './users/UsersListStatusParamsGET';
 export * from './users/UsersSendWelcomeEmailParamsPOST';
-export * from './users/UserRegisterParamsPOST';
 export * from './users/UserLogoutParamsPOST';
 export * from './users/UsersListTeamsParamsGET';
 export * from './users/UsersAutocompleteParamsGET';

@@ -8,7 +8,6 @@ import {
 	isUsersInfoParamsGetProps,
 	isUsersListStatusProps,
 	isUsersSendWelcomeEmailProps,
-	isUserRegisterParamsPOST,
 	isUserLogoutParamsPOST,
 	isUsersListTeamsProps,
 	isUsersAutocompleteProps,
@@ -660,73 +659,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'users.register',
-	{
-		authRequired: false,
-		rateLimiterOptions: {
-			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
-			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
-		},
-		validateParams: isUserRegisterParamsPOST,
-	},
-	{
-		async post() {
-			const { secret: secretURL, ...params } = this.bodyParams;
-
-			if (this.userId) {
-				return API.v1.failure('Logged in users can not register again.');
-			}
-
-			if (params.name && !validateNameChars(params.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-
-			if (!validateUsername(this.bodyParams.username)) {
-				return API.v1.failure(`The username provided is not valid`);
-			}
-
-			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
-				return API.v1.failure('Username is already in use');
-			}
-			if (!(await checkEmailAvailability(this.bodyParams.email))) {
-				return API.v1.failure('Email already exists');
-			}
-			if (this.bodyParams.customFields) {
-				try {
-					await validateCustomFields(this.bodyParams.customFields);
-				} catch (e) {
-					return API.v1.failure(e);
-				}
-			}
-
-			// Register the user
-			const userId = await registerUser({
-				...params,
-				...(secretURL && { secretURL }),
-			});
-
-			if (typeof userId !== 'string') {
-				return API.v1.failure('Error creating user');
-			}
-
-			// Now set their username
-			const { fields } = await this.parseJsonQuery();
-			await setUsernameWithValidation(userId, this.bodyParams.username);
-
-			const user = await Users.findOneById(userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			if (this.bodyParams.customFields) {
-				await saveCustomFields(userId, this.bodyParams.customFields);
-			}
-
-			return API.v1.success({ user });
-		},
-	},
-);
 
 API.v1.addRoute(
 	'users.resetAvatar',
@@ -752,6 +684,52 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type UserRegisterParamsPOST = {
+	username: string;
+	name?: string;
+	email: string;
+	pass: string;
+	secret?: string;
+	reason?: string;
+	customFields?: object;
+};
+
+const UserRegisterParamsPostSchema = {
+	type: 'object',
+	properties: {
+		username: {
+			type: 'string',
+		},
+
+		name: {
+			type: 'string',
+			nullable: true,
+		},
+		email: {
+			type: 'string',
+		},
+		pass: {
+			type: 'string',
+		},
+		secret: {
+			type: 'string',
+			nullable: true,
+		},
+		reason: {
+			type: 'string',
+			nullable: true,
+		},
+		customFields: {
+			type: 'object',
+			nullable: true,
+		},
+	},
+	required: ['username', 'email', 'pass'],
+	additionalProperties: false,
+};
+
+const isUserRegisterParamsPOST = ajv.compile<UserRegisterParamsPOST>(UserRegisterParamsPostSchema);
 
 const usersEndpoints = API.v1
 	.post(
@@ -877,6 +855,81 @@ const usersEndpoints = API.v1
 			const suggestions = await getAvatarSuggestionForUser(this.user);
 
 			return API.v1.success({ suggestions });
+		},
+	)
+	.post(
+		'users.register',
+		{
+			authRequired: false,
+			rateLimiterOptions: {
+				numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
+				intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
+			},
+			body: isUserRegisterParamsPOST,
+			response: {
+				200: ajv.compile<{ user: IUser }>({
+					type: 'object',
+					properties: {
+						user: { $ref: '#/components/schemas/IUser' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['user', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+			},
+		},
+		async function action() {
+			const { secret: secretURL, ...params } = this.bodyParams;
+
+			if (this.userId) {
+				return API.v1.failure('Logged in users can not register again.');
+			}
+
+			if (params.name && !validateNameChars(params.name)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
+
+			if (!validateUsername(this.bodyParams.username)) {
+				return API.v1.failure(`The username provided is not valid`);
+			}
+
+			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
+				return API.v1.failure('Username is already in use');
+			}
+			if (!(await checkEmailAvailability(this.bodyParams.email))) {
+				return API.v1.failure('Email already exists');
+			}
+			if (this.bodyParams.customFields) {
+				try {
+					await validateCustomFields(this.bodyParams.customFields);
+				} catch (e) {
+					return API.v1.failure(e instanceof Error ? e.message : String(e));
+				}
+			}
+
+			// Register the user
+			const userId = await registerUser({
+				...params,
+				...(secretURL && { secretURL }),
+			});
+
+			if (typeof userId !== 'string') {
+				return API.v1.failure('Error creating user');
+			}
+
+			await setUsernameWithValidation(userId, this.bodyParams.username);
+
+			const user = await Users.findOneById(userId, { projection: { services: 0, inviteToken: 0 } });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			if (this.bodyParams.customFields) {
+				await saveCustomFields(userId, this.bodyParams.customFields);
+			}
+
+			return API.v1.success({ user });
 		},
 	);
 
