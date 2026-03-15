@@ -24,6 +24,7 @@ import type { IMediaCall } from './mediaCalls/IMediaCall';
 
 export const schemas = typia.json.schemas<
 	[
+		ISubscription | IInvite | ICustomSound | IMessage | IOAuthApps | IPermission | IMediaCall | IRoom | IUser,
 		(
 			| ISubscription
 			| IInvite
