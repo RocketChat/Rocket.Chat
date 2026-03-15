@@ -22,7 +22,7 @@
 	},
 	"dependencies": {
 		"date-fns": "~4.1.0",
-		"dompurify": "~3.3.1",
+		"dompurify": "~3.3.2",
 		"highlight.js": "11.8.0",
 		"react-error-boundary": "^3.1.4",
 		"react-stately": "~3.17.0"
@@ -34,7 +34,7 @@
 		"@rocket.chat/fuselage": "^0.73.0",
 		"@rocket.chat/fuselage-hooks": "^0.40.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"@rocket.chat/icons": "~0.46.0",
+		"@rocket.chat/icons": "~0.47.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/styled": "~0.32.0",

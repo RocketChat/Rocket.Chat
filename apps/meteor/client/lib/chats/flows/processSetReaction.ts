@@ -21,6 +21,7 @@ export const processSetReaction = async (chat: ChatAPI, { msg }: Pick<IMessage, 
 		return false;
 	}
 
+	chat.composer?.clear();
 	await callWithErrorHandling('setReaction', reaction, lastMessage._id);
 	return true;
 };
