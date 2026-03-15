@@ -341,30 +341,20 @@ describe('LIVECHAT - Agents', () => {
 					});
 			});
 
-			it('should return { user: null } when user is not an agent', async () => {
+			it('should return 404 when user is not an agent', async () => {
 				await request
 					.get(api(`livechat/users/agent/${user._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('user');
-						expect(res.body.user).to.be.null;
-					});
+					.expect(404);
 			});
 
-			it('should return { user: null } when user is not a manager', async () => {
+			it('should return 404 when user is not a manager', async () => {
 				await request
 					.get(api(`livechat/users/manager/${user._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.property('user');
-						expect(res.body.user).to.be.null;
-					});
+					.expect(404);
 			});
 		});
 	});
