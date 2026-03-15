@@ -24,7 +24,6 @@ import type { GroupsModeratorsProps } from './GroupsModeratorsProps';
 import type { GroupsOnlineProps } from './GroupsOnlineProps';
 import type { GroupsOpenProps } from './GroupsOpenProps';
 import type { GroupsRemoveLeaderProps } from './GroupsRemoveLeaderProps';
-import type { GroupsRemoveModeratorProps } from './GroupsRemoveModeratorProps';
 import type { GroupsRemoveOwnerProps } from './GroupsRemoveOwnerProps';
 import type { GroupsRenameProps } from './GroupsRenameProps';
 import type { GroupsRolesProps } from './GroupsRolesProps';
@@ -107,9 +106,7 @@ export type GroupsEndpoints = {
 	'/v1/groups.addModerator': {
 		POST: (params: GroupsAddModeratorProps) => void;
 	};
-	'/v1/groups.removeModerator': {
-		POST: (params: GroupsRemoveModeratorProps) => void;
-	};
+
 	'/v1/groups.addOwner': {
 		POST: (params: GroupsAddOwnerProps) => void;
 	};

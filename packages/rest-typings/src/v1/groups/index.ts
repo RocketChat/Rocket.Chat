@@ -25,7 +25,6 @@ export * from './GroupsOnlineProps';
 export * from './GroupsOpenProps';
 export * from './GroupsRenameProps';
 export * from './GroupsRemoveLeaderProps';
-export * from './GroupsRemoveModeratorProps';
 export * from './GroupsRemoveOwnerProps';
 export * from './GroupsSetAnnouncementProps';
 export * from './GroupsSetCustomFieldsProps';
