@@ -104,6 +104,25 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		return this.findPaginated(query, options);
 	}
+    
+    findPaginatedVisibleByMention(
+    username: IUser['username'],
+    roomIds: IRoom['_id'][],                 
+    options?: FindOptions<IMessage>,
+    ): FindPaginated<AggregationCursor<WithId<IMessage>>> {
+    const pipeline: Document[] = [
+        {
+            $match: {
+                '_hidden': { $ne: true },
+                'mentions.username': username,
+                'rid': { $in: roomIds },      
+            },
+        },
+    ];
+
+    return this.aggregatePaginated<IMessage>(pipeline, options);
+    }
+
 
 	findStarredByUserAtRoom(
 		userId: IUser['_id'],
@@ -118,7 +137,24 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		return this.findPaginated(query, options);
 	}
+    
+	findStarredByUser(
+    userId: IUser['_id'],
+    roomIds: IRoom['_id'][],                 
+    options?: FindOptions<IMessage>,
+    ): FindPaginated<AggregationCursor<WithId<IMessage>>> {
+    const pipeline: Document[] = [
+        {
+            $match: {
+                '_hidden': { $ne: true },
+                'starred._id': userId,
+                'rid': { $in: roomIds },      
+            },
+        },
+    ];
 
+    return this.aggregatePaginated<IMessage>(pipeline, options);
+    }
 	findPaginatedByRoomIdAndType(
 		roomId: IRoom['_id'],
 		type: IMessage['t'],

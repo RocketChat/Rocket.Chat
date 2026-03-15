@@ -3,6 +3,7 @@ import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionM
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
 import type {
+	AggregationCursor,
 	BulkWriteOptions,
 	ChangeStream,
 	Collection,
@@ -232,6 +233,32 @@ export abstract class BaseRaw<
 		return {
 			cursor,
 			totalCount,
+		};
+	}
+
+	protected aggregatePaginated<P extends Document = T>(
+		pipeline: Document[],
+		options: FindOptions<P> = {},
+	): FindPaginated<AggregationCursor<WithId<P>>> {
+		const countPipeline = [...pipeline, { $count: 'total' }];
+
+		const paginationPipeline = [...pipeline];
+		if (options.sort) {
+			paginationPipeline.push({ $sort: options.sort });
+		}
+		if (options.skip) {
+			paginationPipeline.push({ $skip: options.skip });
+		}
+		if (options.limit) {
+			paginationPipeline.push({ $limit: options.limit });
+		}
+
+		return {
+			cursor: this.col.aggregate<WithId<P>>(paginationPipeline),
+			totalCount: this.col
+				.aggregate<{ total: number }>(countPipeline)
+				.next()
+				.then((res) => res?.total || 0),
 		};
 	}
 
