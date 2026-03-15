@@ -732,7 +732,7 @@ const chatEndpoints = API.v1
 			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
 
 			if (!rid?.trim()) {
-				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
+				throw new Meteor.Error('error-rid-param-not-provided', 'The required "rid" param is missing.');
 			}
 
 			if (!userId?.trim()) {
