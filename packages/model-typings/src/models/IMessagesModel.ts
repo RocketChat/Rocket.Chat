@@ -37,9 +37,21 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: FindOptions<IMessage>,
 	): FindPaginated<FindCursor<IMessage>>;
 
+	findPaginatedVisibleByMention(
+		username: IUser['username'],
+		roomIds: IRoom['_id'][],
+		options?: FindOptions<IMessage>,
+	): FindPaginated<AggregationCursor<WithId<IMessage>>>;
+
 	findVisibleByMentionAndRoomId(username: IUser['username'], rid: IRoom['_id'], options?: FindOptions<IMessage>): FindCursor<IMessage>;
 
 	findStarredByUserAtRoom(userId: IUser['_id'], roomId: IRoom['_id'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>>;
+
+	findStarredByUser(
+		userId: IUser['_id'],
+		roomIds: IRoom['_id'][],
+		options?: FindOptions<IMessage>,
+	): FindPaginated<AggregationCursor<WithId<IMessage>>>;
 
 	findPaginatedByRoomIdAndType(
 		roomId: IRoom['_id'],
