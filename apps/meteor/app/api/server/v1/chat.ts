@@ -275,6 +275,100 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+const isIgnoreUserResponse = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const isChatPostMessageResponse = ajv.compile<{ ts: number; channel: string; message: IMessage }>({
+	type: 'object',
+	properties: {
+		ts: {
+			type: 'number',
+		},
+		channel: {
+			type: 'string',
+		},
+		message: {
+			$ref: '#/components/schemas/IMessage',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['ts', 'channel', 'message', 'success'],
+	additionalProperties: false,
+});
+
+const isChatSearchResponse = ajv.compile<{ messages: IMessage[] }>({
+	type: 'object',
+	properties: {
+		messages: {
+			type: 'array',
+			items: {
+				$ref: '#/components/schemas/IMessage',
+			},
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['messages', 'success'],
+	additionalProperties: false,
+});
+
+const isChatReportMessageResponse = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const isChatSyncThreadsListResponse = ajv.compile<{ threads: { update: IMessage[]; remove: IMessage[] } }>({
+	type: 'object',
+	properties: {
+		threads: {
+			type: 'object',
+			properties: {
+				update: {
+					type: 'array',
+					items: {
+						$ref: '#/components/schemas/IMessage',
+					},
+				},
+				remove: {
+					type: 'array',
+					items: {
+						$ref: '#/components/schemas/IMessage',
+					},
+				},
+			},
+			required: ['update', 'remove'],
+			additionalProperties: false,
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['threads', 'success'],
+	additionalProperties: false,
+});
+
 const chatEndpoints = API.v1
 	.post(
 		'chat.pinMessage',
@@ -558,13 +652,19 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	);
-
-API.v1.addRoute(
-	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.postMessage',
+		{
+			authRequired: true,
+			body: isChatPostMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isChatPostMessageResponse,
+			},
+		},
+		async function action() {
 			const { text, attachments } = this.bodyParams;
 			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
@@ -594,14 +694,68 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
+	)
+	.post(
+		'chat.reportMessage',
+		{
+			authRequired: true,
+			body: isChatReportMessageProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isChatReportMessageResponse,
+			},
+		},
+		async function action() {
+			const { messageId, description } = this.bodyParams;
 
-API.v1.addRoute(
-	'chat.search',
-	{ authRequired: true, validateParams: isChatSearchProps },
-	{
-		async get() {
+			await reportMessage(messageId, description, this.userId);
+
+			return API.v1.success();
+		},
+	)
+	.get(
+		'chat.ignoreUser',
+		{
+			authRequired: true,
+			query: isChatIgnoreUserProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isIgnoreUserResponse,
+			},
+		},
+		async function action() {
+			const { rid, userId } = this.queryParams;
+			let { ignore = true } = this.queryParams;
+
+			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
+
+			if (!rid?.trim()) {
+				throw new Meteor.Error('error-rid-param-not-provided', 'The required "rid" param is missing.');
+			}
+
+			if (!userId?.trim()) {
+				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
+			}
+
+			await ignoreUser(this.userId, { rid, userId, ignore });
+
+			return API.v1.success();
+		},
+	)
+	.get(
+		'chat.search',
+		{
+			authRequired: true,
+			query: isChatSearchProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isChatSearchResponse,
+			},
+		},
+		async function action() {
 			const { roomId, searchText } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -615,10 +769,10 @@ API.v1.addRoute(
 
 			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
 			if (searchResult === false) {
-				return API.v1.failure();
+				throw new Meteor.Error('error-search-failed');
 			}
 			if (!searchResult.message) {
-				return API.v1.failure();
+				throw new Meteor.Error('error-search-no-results');
 			}
 			const result = searchResult.message.docs;
 
@@ -626,8 +780,56 @@ API.v1.addRoute(
 				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
-	},
-);
+	)
+	.get(
+		'chat.syncThreadsList',
+		{
+			authRequired: true,
+			query: isChatSyncThreadsListProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isChatSyncThreadsListResponse,
+			},
+		},
+		async function action() {
+			const { rid } = this.queryParams;
+			const { query, fields, sort } = await this.parseJsonQuery();
+			const { updatedSince } = this.queryParams;
+			let updatedSinceDate;
+			if (!settings.get<boolean>('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
+			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
+
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
+			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+			return API.v1.success({
+				threads: {
+					update: await Messages.find(
+						{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
+						{
+							sort,
+							projection: fields,
+						},
+					).toArray(),
+					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
+						sort,
+						projection: fields,
+					}).toArray(),
+				},
+			});
+		},
+	);
 
 // The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
 // for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
@@ -671,52 +873,6 @@ API.v1.addRoute(
 			}
 
 			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.reportMessage',
-	{ authRequired: true, validateParams: isChatReportMessageProps },
-	{
-		async post() {
-			const { messageId, description } = this.bodyParams;
-			if (!messageId) {
-				return API.v1.failure('The required "messageId" param is missing.');
-			}
-
-			if (!description) {
-				return API.v1.failure('The required "description" param is missing.');
-			}
-
-			await reportMessage(messageId, description, this.userId);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.ignoreUser',
-	{ authRequired: true, validateParams: isChatIgnoreUserProps },
-	{
-		async get() {
-			const { rid, userId } = this.queryParams;
-			let { ignore = true } = this.queryParams;
-
-			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
-
-			if (!rid?.trim()) {
-				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
-			}
-
-			if (!userId?.trim()) {
-				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
-			}
-
-			await ignoreUser(this.userId, { rid, userId, ignore });
 
 			return API.v1.success();
 		},
@@ -824,50 +980,6 @@ API.v1.addRoute(
 				count: threads.length,
 				offset,
 				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.syncThreadsList',
-	{ authRequired: true, validateParams: isChatSyncThreadsListProps },
-	{
-		async get() {
-			const { rid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
-			const { updatedSince } = this.queryParams;
-			let updatedSinceDate;
-			if (!settings.get<boolean>('Threads_enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
-			}
-
-			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-			} else {
-				updatedSinceDate = new Date(updatedSince);
-			}
-			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
-			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
-
-			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-			}
-			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
-			return API.v1.success({
-				threads: {
-					update: await Messages.find(
-						{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
-						{
-							sort,
-							projection: fields,
-						},
-					).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
-						sort,
-						projection: fields,
-					}).toArray(),
-				},
 			});
 		},
 	},
