@@ -1,8 +1,7 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, IUserSettings, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
-	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
 	isUsersInfoParamsGetProps,
@@ -296,51 +295,6 @@ API.v1.addRoute(
 			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
 
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.create',
-	{ authRequired: true, validateParams: isUserCreateParamsPOST },
-	{
-		async post() {
-			// New change made by pull request #5152
-			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
-				this.bodyParams.joinDefaultChannels = true;
-			}
-
-			if (this.bodyParams.name && !validateNameChars(this.bodyParams.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-
-			if (this.bodyParams.customFields) {
-				validateCustomFields(this.bodyParams.customFields);
-			}
-
-			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.bodyParams.freeSwitchExtension))) {
-				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
-			}
-
-			const newUserId = await saveUser(this.userId, this.bodyParams);
-			const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
-
-			if (this.bodyParams.customFields) {
-				await saveCustomFieldsWithoutValidation(userId, this.bodyParams.customFields);
-			}
-
-			if (typeof this.bodyParams.active !== 'undefined') {
-				await executeSetUserActiveStatus(this.userId, userId, this.bodyParams.active);
-			}
-
-			const { fields } = await this.parseJsonQuery();
-
-			const user = await Users.findOneById(userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			return API.v1.success({ user });
 		},
 	},
 );
@@ -753,6 +707,55 @@ API.v1.addRoute(
 	},
 );
 
+type UserCreateParamsPOST = {
+	email: string;
+	name: string;
+	password: string;
+	username: string;
+	active?: boolean;
+	bio?: string;
+	nickname?: string;
+	statusText?: string;
+	roles?: string[];
+	joinDefaultChannels?: boolean;
+	requirePasswordChange?: boolean;
+	setRandomPassword?: boolean;
+	sendWelcomeEmail?: boolean;
+	verified?: boolean;
+	customFields?: Record<string, any>;
+	settings?: IUserSettings;
+	freeSwitchExtension?: string;
+	/* @deprecated */
+	fields: string;
+};
+
+const userCreateParamsPostSchema = {
+	type: 'object',
+	properties: {
+		email: { type: 'string' },
+		name: { type: 'string' },
+		password: { type: 'string' },
+		username: { type: 'string' },
+		active: { type: 'boolean', nullable: true },
+		bio: { type: 'string', nullable: true },
+		nickname: { type: 'string', nullable: true },
+		statusText: { type: 'string', nullable: true },
+		roles: { type: 'array', items: { type: 'string' } },
+		joinDefaultChannels: { type: 'boolean', nullable: true },
+		requirePasswordChange: { type: 'boolean', nullable: true },
+		setRandomPassword: { type: 'boolean', nullable: true },
+		sendWelcomeEmail: { type: 'boolean', nullable: true },
+		verified: { type: 'boolean', nullable: true },
+		customFields: { type: 'object' },
+		fields: { type: 'string', nullable: true },
+		freeSwitchExtension: { type: 'string', nullable: true },
+	},
+	additionalProperties: false,
+	required: ['email', 'name', 'password', 'username'],
+};
+
+const isUserCreateParamsPOST = ajv.compile<UserCreateParamsPOST>(userCreateParamsPostSchema);
+
 const usersEndpoints = API.v1
 	.post(
 		'users.createToken',
@@ -877,6 +880,64 @@ const usersEndpoints = API.v1
 			const suggestions = await getAvatarSuggestionForUser(this.user);
 
 			return API.v1.success({ suggestions });
+		},
+	)
+	.post(
+		'users.create',
+		{
+			authRequired: true,
+			body: isUserCreateParamsPOST,
+			response: {
+				200: ajv.compile<{ user: IUser }>({
+					type: 'object',
+					properties: {
+						user: { $ref: '#/components/schemas/IUser' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['user', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			// New change made by pull request #5152
+			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
+				this.bodyParams.joinDefaultChannels = true;
+			}
+
+			if (this.bodyParams.name && !validateNameChars(this.bodyParams.name)) {
+				return API.v1.failure('Name contains invalid characters');
+			}
+
+			if (this.bodyParams.customFields) {
+				validateCustomFields(this.bodyParams.customFields);
+			}
+
+			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.bodyParams.freeSwitchExtension))) {
+				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
+			}
+
+			const newUserId = await saveUser(this.userId, this.bodyParams);
+			const userId = typeof newUserId !== 'string' ? this.userId : newUserId;
+
+			if (this.bodyParams.customFields) {
+				await saveCustomFieldsWithoutValidation(userId, this.bodyParams.customFields);
+			}
+
+			if (typeof this.bodyParams.active !== 'undefined') {
+				await executeSetUserActiveStatus(this.userId, userId, this.bodyParams.active);
+			}
+
+			const { fields } = await this.parseJsonQuery();
+
+			const user = await Users.findOneById(userId, { projection: fields });
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			return API.v1.success({ user });
 		},
 	);
 

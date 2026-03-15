@@ -18,7 +18,7 @@ import {
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
+import type { OperationParams } from '@rocket.chat/rest-typings';
 import { validateEmail } from '@rocket.chat/tools';
 import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
@@ -55,7 +55,7 @@ type AdminUserFormProps = {
 };
 
 export type UserFormProps = Omit<
-	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
+	OperationParams<'POST', '/v1/users.create'> & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
 	'fields'
 >;
 
