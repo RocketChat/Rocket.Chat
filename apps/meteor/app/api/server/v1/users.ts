@@ -904,6 +904,7 @@ const usersEndpoints = API.v1
 					nickname?: string;
 					status: string;
 					avatarETag?: string;
+					freeSwitchExtension?: string;
 				}[];
 			}>({
 				type: 'object',
