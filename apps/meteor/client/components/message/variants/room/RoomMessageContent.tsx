@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
+import { useUserId, useUserPresence, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +43,7 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const chat = useChat();
 	const { t } = useTranslation();
 
+	const enableEmojis = useUserPreference<boolean>('useEmojis');
 	const normalizedMessage = useNormalizedMessage(message);
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
 
@@ -93,7 +94,9 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 				/>
 			)}
 
-			{normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && <Reactions message={normalizedMessage} />}
+			{enableEmojis && normalizedMessage.reactions && Object.keys(normalizedMessage.reactions).length && (
+				<Reactions message={normalizedMessage} />
+			)}
 
 			{chat && isThreadMainMessage(normalizedMessage) && (
 				<ThreadMetrics
