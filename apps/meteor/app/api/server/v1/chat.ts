@@ -275,6 +275,18 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+const isChatReportMessageResponse = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
 const chatEndpoints = API.v1
 	.post(
 		'chat.pinMessage',
@@ -558,7 +570,26 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	);
+	)
+	.post(
+		'chat.reportMessage',
+	{
+		authRequired: true,
+		body: isChatReportMessageProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: isChatReportMessageResponse,
+		},
+	},
+	async function action() {
+		const { messageId, description } = this.bodyParams;
+
+		await reportMessage(messageId, description, this.userId);
+
+		return API.v1.success();
+	},
+	)
 
 API.v1.addRoute(
 	'chat.postMessage',
