@@ -456,7 +456,7 @@ const GETRoomsNameExistsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
+export const isGETRoomsNameExists = ajvQuery.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
 
 type RoomsIsMemberProps = { roomId: string } & ({ username: string } | { userId: string });
 
