@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { link, paragraph, plain, bold, strike, italic, quote, lineBreak, unorderedList, listItem, orderedList } from '../src/utils';
+import { link, paragraph, plain, bold, strike, italic, quote, lineBreak, unorderedList, listItem, orderedList } from './helpers';
 
 test.each([
 	['<https://domain.com|Test>', [paragraph([link('https://domain.com', [plain('Test')])])]],
@@ -405,6 +405,13 @@ Text after line break`,
 			]),
 		],
 	],
+	// Test case for brackets/parentheses in URL parameters
+	[
+		'[link](https://example.com/query?this=(is)&a=problem)',
+		[paragraph([link('https://example.com/query?this=(is)&a=problem', [plain('link')])])],
+	],
+	['[link](https://example.com/path/to/func(param))', [paragraph([link('https://example.com/path/to/func(param)', [plain('link')])])]],
+	['[link](https://example.com/path/(section)/page)', [paragraph([link('https://example.com/path/(section)/page', [plain('link')])])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });

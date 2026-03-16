@@ -115,7 +115,7 @@ We're hiring developers, technical support, and product managers all the time. C
 - [Twitter](https://twitter.com/RocketChat)
 - [Facebook](https://www.facebook.com/RocketChatApp)
 - [LinkedIn](https://www.linkedin.com/company/rocket-chat)
-- [Youtube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
+- [YouTube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
 
 # 🗒️ Credits
 

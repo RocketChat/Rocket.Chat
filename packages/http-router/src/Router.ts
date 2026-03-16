@@ -75,7 +75,7 @@ export type Route = {
 };
 
 export abstract class AbstractRouter<TActionCallback = (c: Context) => Promise<ResponseSchema<TypedOptions>>> {
-	protected abstract convertActionToHandler(action: TActionCallback): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
+	protected abstract convertActionToHandler(action: TActionCallback, logger: Logger): (c: Context) => Promise<ResponseSchema<TypedOptions>>;
 }
 
 type InnerRouter = Hono<{
@@ -109,7 +109,7 @@ export class Router<
 	>(method: Method, subpath: TSubPathPattern, options: TOptions): void {
 		const path = `/${this.base}/${subpath}`.replaceAll('//', '/') as TPathPattern;
 		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[subpath] || {};
+		this.typedRoutes[path] = this.typedRoutes[path] || {};
 		const { query, response = {}, authRequired, body, tags, ...rest } = options;
 		this.typedRoutes[path][method.toLowerCase()] = {
 			responses: Object.fromEntries(
@@ -118,7 +118,7 @@ export class Router<
 					{
 						description: '',
 						content: {
-							'application/json': { schema: ('schema' in schema ? schema.schema : schema) as AnySchema },
+							'application/json': { schema: 'schema' in schema ? schema.schema : schema },
 						},
 					},
 				]),
@@ -185,9 +185,15 @@ export class Router<
 		...actions: MiddlewareHandlerListAndActionHandler<TOptions, TActionCallback>
 	): Router<TBasePath, TOperations, TActionCallback> {
 		const [middlewares, action] = splitArray<MiddlewareHandler, TActionCallback>(actions);
-		const convertedAction = this.convertActionToHandler(action);
+		const convertedAction = this.convertActionToHandler(action, logger);
 
-		this.innerRouter[method.toLowerCase() as Lowercase<Method>](`/${subpath}`.replace('//', '/'), ...middlewares, async (c) => {
+		const path = `/${subpath}`.replace('//', '/');
+		(
+			this.innerRouter[method.toLowerCase() as Lowercase<Method>] as (
+				path: string,
+				...handlers: Array<MiddlewareHandler | ((c: Context) => Promise<ResponseSchema<TypedOptions>>)>
+			) => InnerRouter
+		)(path, ...middlewares, async (c: Context) => {
 			const { req, res } = c;
 
 			let queryParams: Record<string, any>;
@@ -261,30 +267,30 @@ export class Router<
 					throw new Error(`Missing response validator for endpoint ${req.method} - ${req.url} with status code ${statusCode}`);
 				}
 				if (responseValidatorFn && !responseValidatorFn(coerceDatesToStrings(body))) {
+					const errorMessage = responseValidatorFn.errors
+						?.map((error: any) => {
+							const pathDesc = error.instancePath ? `at path '${error.instancePath}'` : "at path '(root)'";
+							const paramsStr = Object.keys(error.params || {}).length
+								? ` (${Object.entries(error.params)
+										.map(([key, value]) => `${key}: ${value}`)
+										.join(', ')})`
+								: '';
+							return `${pathDesc}: ${error.message}${paramsStr}`;
+						})
+						.join('\n');
 					logger.warn({
 						msg: 'Response validation failed - response does not match route spec',
 						method: req.method,
 						path: req.url,
-						error: responseValidatorFn.errors?.map((error: any) => error.message).join('\n '),
+						error: errorMessage,
 						originalResponse: body,
 					});
 					return c.json(
 						{
 							success: false,
+							body,
 							errorType: 'error-invalid-body',
-							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${responseValidatorFn.errors
-								?.map(
-									(error: any) =>
-										`${error.message} (${[
-											error.instancePath,
-											Object.entries(error.params)
-												.map(([key, value]) => `${key}: ${value}`)
-												.join(', '),
-										]
-											.filter(Boolean)
-											.join(' - ')})`,
-								)
-								.join('\n')}`,
+							error: `Invalid response for endpoint ${req.method} - ${req.url}. Error: ${errorMessage}`,
 						},
 						400,
 					);
@@ -308,7 +314,7 @@ export class Router<
 			};
 
 			if (isContentLess(statusCode)) {
-				return c.status(statusCode as 101 | 204 | 205 | 304);
+				return c.status(statusCode);
 			}
 			Object.entries(responseHeaders).forEach(([key, value]) => {
 				if (value) {
@@ -316,13 +322,13 @@ export class Router<
 				}
 			});
 
-			return c.body((contentType?.match(/json|javascript/) ? JSON.stringify(body) : body) as any, statusCode as StatusCode);
+			return c.body(contentType?.match(/json|javascript/) ? JSON.stringify(body) : body, statusCode as StatusCode);
 		});
 		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}
 
-	protected convertActionToHandler(action: TActionCallback): (c: Context) => Promise<ResponseSchema<TypedOptions>> {
+	protected convertActionToHandler(action: TActionCallback, _logger: Logger): (c: Context) => Promise<ResponseSchema<TypedOptions>> {
 		// Default implementation simply passes through the action
 		// Subclasses can override this to provide custom handling
 		return action as (c: Context) => Promise<ResponseSchema<TypedOptions>>;

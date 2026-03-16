@@ -3,6 +3,7 @@ import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 export default async function handleOnUninstall(request: RequestContext): Promise<boolean> {
 	const { params } = request;
@@ -20,7 +21,8 @@ export default async function handleOnUninstall(request: RequestContext): Promis
 
 	const [context] = params as [Record<string, unknown>];
 
-	await app.onUninstall(
+	await app.onUninstall.call(
+		wrapAppForRequest(app, request),
 		context,
 		AppAccessorsInstance.getReader(),
 		AppAccessorsInstance.getHttp(),

@@ -2,6 +2,7 @@ import type {
 	IMediaCall,
 	IMediaCallChannel,
 	MediaCallActorType,
+	MediaCallNegotiationStream,
 	MediaCallSignedActor,
 	MediaCallSignedContact,
 } from '@rocket.chat/core-typings';
@@ -19,6 +20,7 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
+import { DEFAULT_CALL_FEATURES } from '../../constants';
 import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import type { SignalProcessingOptions } from '../../definition/common';
 import { logger } from '../../logger';
@@ -103,7 +105,7 @@ export class UserActorSignalProcessor {
 		// 4. It's a hangup request with reason = 'another-client' and the request came from any valid client of either user
 		switch (signal.type) {
 			case 'local-sdp':
-				return this.saveLocalDescription(signal.sdp, signal.negotiationId);
+				return this.saveLocalDescription(signal.sdp, signal.negotiationId, signal.streams);
 			case 'answer':
 				return this.processAnswer(signal);
 			case 'hangup':
@@ -125,12 +127,16 @@ export class UserActorSignalProcessor {
 		return mediaCallDirector.hangup(this.call, this.agent, reason);
 	}
 
-	protected async saveLocalDescription(sdp: RTCSessionDescriptionInit, negotiationId: string): Promise<void> {
+	protected async saveLocalDescription(
+		sdp: RTCSessionDescriptionInit,
+		negotiationId: string,
+		streams?: MediaCallNegotiationStream[],
+	): Promise<void> {
 		if (!this.signed) {
 			return;
 		}
 
-		await mediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId }, this.contractId);
+		await mediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId, streams }, this.contractId);
 	}
 
 	private async processAnswer(signal: ClientMediaSignalAnswer): Promise<void> {
@@ -138,7 +144,7 @@ export class UserActorSignalProcessor {
 			case 'ack':
 				return this.clientIsReachable();
 			case 'accept':
-				return this.clientHasAccepted(signal.supportedFeatures || ['audio']);
+				return this.clientHasAccepted(signal.supportedFeatures || DEFAULT_CALL_FEATURES);
 			case 'unavailable':
 				return this.clientIsUnavailable();
 			case 'reject':

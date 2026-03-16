@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/i18n",
-	"version": "2.0.1",
+	"version": "2.1.0",
 	"private": true,
 	"type": "module",
 	"exports": {
@@ -26,8 +26,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json && node --experimental-transform-types ./src/scripts/build.mts",
 		"check": "node --experimental-transform-types ./src/scripts/check.mts",
-		"lint": "eslint . && node --experimental-transform-types ./src/scripts/check.mts",
-		"lint:fix": "eslint . --fix && node --experimental-transform-types ./src/scripts/check.mts --fix",
+		"lint": "eslint && node --experimental-transform-types ./src/scripts/check.mts",
+		"lint:fix": "eslint --fix && node --experimental-transform-types ./src/scripts/check.mts --fix",
 		"replace-sprintf": "node --experimental-transform-types ./src/scripts/replace-sprintf.mts",
 		"test": "jest",
 		"testunit": "jest"
@@ -36,7 +36,7 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tools": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"i18next": "~23.4.9",
 		"jest": "~30.2.0",
 		"typescript": "~5.9.3"

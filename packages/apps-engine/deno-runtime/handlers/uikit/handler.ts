@@ -5,6 +5,8 @@ import { require } from '../../lib/require.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 import { RequestContext } from '../../lib/requestContext.ts';
+import { isOneOf } from '../lib/assertions.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 export const uikitInteractions = [
 	'executeBlockActionHandler',
@@ -12,7 +14,7 @@ export const uikitInteractions = [
 	'executeViewClosedHandler',
 	'executeActionButtonHandler',
 	'executeLivechatBlockActionHandler',
-];
+] as const;
 
 export const {
 	UIKitBlockInteractionContext,
@@ -27,7 +29,7 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 	const { method: reqMethod, params } = request;
 	const [, method] = reqMethod.split(':');
 
-	if (!uikitInteractions.includes(method)) {
+	if (!isOneOf(method, uikitInteractions)) {
 		return JsonRpcError.methodNotFound(null);
 	}
 
@@ -73,7 +75,7 @@ export default async function handleUIKitInteraction(request: RequestContext): P
 
 	try {
 		return await interactionHandler.call(
-			app,
+			wrapAppForRequest(app, request),
 			context,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getHttp(),

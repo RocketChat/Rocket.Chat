@@ -16,12 +16,12 @@ import { useTranslation } from 'react-i18next';
 import AddAgent from './AddAgent';
 import AgentsTableRow from './AgentsTableRow';
 import FilterByText from '../../../../components/FilterByText';
+import GenericError from '../../../../components/GenericError';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../../lib/links';
 import { useAgentsQuery } from '../hooks/useAgentsQuery';
 import { useQuery } from '../hooks/useQuery';
 
-// TODO: missing error state
 const AgentsTable = () => {
 	const { t } = useTranslation();
 
@@ -35,7 +35,7 @@ const AgentsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
-	const { data, isSuccess, isLoading } = useAgentsQuery(query);
+	const { data, isSuccess, isLoading, isError, refetch } = useAgentsQuery(query);
 
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
@@ -113,6 +113,7 @@ const AgentsTable = () => {
 					/>
 				</>
 			)}
+			{isError && <GenericError buttonAction={refetch} />}
 		</>
 	);
 };

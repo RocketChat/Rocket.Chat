@@ -1,1 +1,1 @@
-export {default} from './ControlButtons';
+export { default } from './ControlButtons';

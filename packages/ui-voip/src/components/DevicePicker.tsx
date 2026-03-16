@@ -8,7 +8,7 @@ import { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionButton } from '.';
-import { useMediaCallContext } from '../context';
+import { useMediaCallView } from '../context/MediaCallViewContext';
 import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermissionPrompt';
 
 type DevicePickerButtonProps = {
@@ -39,7 +39,7 @@ const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 	const { t } = useTranslation();
 
-	const { onDeviceChange } = useMediaCallContext();
+	const { onDeviceChange } = useMediaCallView();
 
 	const availableDevices = useAvailableDevices();
 	const selectedAudioDevices = useSelectedDevices();
