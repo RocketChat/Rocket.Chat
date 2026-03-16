@@ -100,8 +100,11 @@ test.describe('E2EE File Encryption', () => {
 		const UNICODE_FILE_NAME = 'Новый текстовый документ.txt';
 
 		await test.step('upload file with Unicode filename', async () => {
-			await poHomeChannel.content.dragAndDropFile(UNICODE_FILE_NAME);
-			await poHomeChannel.content.btnModalConfirm.click();
+			await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
+			await poHomeChannel.composer.getFileByName(TEST_FILE_TXT).click();
+			await poHomeChannel.content.inputFileUploadName.fill(UNICODE_FILE_NAME);
+			await poHomeChannel.content.btnUpdateFileUpload.click();
+			await poHomeChannel.composer.btnSend.click();
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
 			await expect(poHomeChannel.content.getLastMessageByFileName(UNICODE_FILE_NAME)).toBeVisible();
