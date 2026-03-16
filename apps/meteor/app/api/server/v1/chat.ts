@@ -290,10 +290,6 @@ const isSyncThreadMessagesResponse = ajv.compile<{
           type: 'array',
           items: {
             type: 'object',
-            properties: {
-              _id: { type: 'string' },
-            },
-            required: ['_id'],
             additionalProperties: true,
           },
         },
@@ -301,10 +297,6 @@ const isSyncThreadMessagesResponse = ajv.compile<{
           type: 'array',
           items: {
             type: 'object',
-            properties: {
-              _id: { type: 'string' },
-            },
-            required: ['_id'],
             additionalProperties: true,
           },
         },
