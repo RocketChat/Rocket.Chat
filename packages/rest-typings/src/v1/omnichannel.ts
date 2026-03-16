@@ -2818,7 +2818,7 @@ const GETLivechatRoomParamsSchema = {
 	additionalProperties: true,
 };
 
-export const isGETLivechatRoomParams = ajv.compile<GETLivechatRoomParams>(GETLivechatRoomParamsSchema);
+export const isGETLivechatRoomParams = ajvQuery.compile<GETLivechatRoomParams>(GETLivechatRoomParamsSchema);
 
 type POSTLivechatRoomCloseParams = {
 	token: string;
