@@ -160,7 +160,7 @@ const LivechatDepartmentDepartmentIdAgentsGETSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajv.compile<LivechatDepartmentDepartmentIdAgentsGET>(
+export const isLivechatDepartmentDepartmentIdAgentsGETProps = ajvQuery.compile<LivechatDepartmentDepartmentIdAgentsGET>(
 	LivechatDepartmentDepartmentIdAgentsGETSchema,
 );
 
@@ -248,7 +248,7 @@ const LivechatVisitorTokenGetSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatVisitorTokenGetProps = ajv.compile<LivechatVisitorTokenGet>(LivechatVisitorTokenGetSchema);
+export const isLivechatVisitorTokenGetProps = ajvQuery.compile<LivechatVisitorTokenGet>(LivechatVisitorTokenGetSchema);
 
 type LivechatVisitorTokenDelete = {
 	token: string;
@@ -481,7 +481,7 @@ const LivechatMonitorsListSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatMonitorsListProps = ajv.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
+export const isLivechatMonitorsListProps = ajvQuery.compile<LivechatMonitorsListProps>(LivechatMonitorsListSchema);
 
 type POSTLivechatMonitorCreateRequest = {
 	username: string;
@@ -687,7 +687,7 @@ const LivechatTagsListSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatTagsListProps = ajv.compile<LivechatTagsListProps>(LivechatTagsListSchema);
+export const isLivechatTagsListProps = ajvQuery.compile<LivechatTagsListProps>(LivechatTagsListSchema);
 
 type LivechatDepartmentProps = PaginatedRequest<{
 	text?: string;
@@ -741,7 +741,7 @@ const LivechatDepartmentSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatDepartmentProps = ajv.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
+export const isGETLivechatDepartmentProps = ajvQuery.compile<LivechatDepartmentProps>(LivechatDepartmentSchema);
 
 type POSTLivechatDepartmentProps = {
 	department: LivechatDepartmentDTO;
@@ -888,7 +888,7 @@ const LivechatDepartmentsAvailableByUnitIdSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentsAvailableByUnitIdProps = ajv.compile<LivechatDepartmentsAvailableByUnitIdProps>(
+export const isLivechatDepartmentsAvailableByUnitIdProps = ajvQuery.compile<LivechatDepartmentsAvailableByUnitIdProps>(
 	LivechatDepartmentsAvailableByUnitIdSchema,
 );
 
@@ -921,7 +921,7 @@ const LivechatDepartmentsByUnitSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentsByUnitProps = ajv.compile<LivechatDepartmentsByUnitProps>(LivechatDepartmentsByUnitSchema);
+export const isLivechatDepartmentsByUnitProps = ajvQuery.compile<LivechatDepartmentsByUnitProps>(LivechatDepartmentsByUnitSchema);
 
 type LivechatDepartmentsByUnitIdProps = PaginatedRequest;
 
@@ -949,7 +949,7 @@ const LivechatDepartmentsByUnitIdSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatDepartmentsByUnitIdProps = ajv.compile<LivechatDepartmentsByUnitIdProps>(LivechatDepartmentsByUnitIdSchema);
+export const isLivechatDepartmentsByUnitIdProps = ajvQuery.compile<LivechatDepartmentsByUnitIdProps>(LivechatDepartmentsByUnitIdSchema);
 
 type LivechatUsersManagerGETProps = PaginatedRequest<{
 	text?: string;
@@ -1003,7 +1003,7 @@ const LivechatUsersManagerGETSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatUsersManagerGETProps = ajv.compile<LivechatUsersManagerGETProps>(LivechatUsersManagerGETSchema);
+export const isLivechatUsersManagerGETProps = ajvQuery.compile<LivechatUsersManagerGETProps>(LivechatUsersManagerGETSchema);
 
 type LivechatUsersManagerPOSTProps = PaginatedRequest<{ username: string }>;
 
@@ -1074,7 +1074,7 @@ const LivechatQueuePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatQueueProps = ajv.compile<LivechatQueueProps>(LivechatQueuePropsSchema);
+export const isLivechatQueueProps = ajvQuery.compile<LivechatQueueProps>(LivechatQueuePropsSchema);
 
 type CannedResponsesProps = PaginatedRequest<{
 	scope?: string;
@@ -1131,7 +1131,7 @@ const CannedResponsesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isCannedResponsesProps = ajv.compile<CannedResponsesProps>(CannedResponsesPropsSchema);
+export const isCannedResponsesProps = ajvQuery.compile<CannedResponsesProps>(CannedResponsesPropsSchema);
 
 type LivechatCustomFieldsProps = PaginatedRequest<{ text?: string }>;
 
@@ -1162,7 +1162,7 @@ const LivechatCustomFieldsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatCustomFieldsProps = ajv.compile<LivechatCustomFieldsProps>(LivechatCustomFieldsSchema);
+export const isLivechatCustomFieldsProps = ajvQuery.compile<LivechatCustomFieldsProps>(LivechatCustomFieldsSchema);
 
 export type LivechatRoomsProps = {
 	roomName?: string;
@@ -1276,7 +1276,7 @@ const LivechatRidMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatRidMessagesProps = ajv.compile<LivechatRidMessagesProps>(LivechatRidMessagesSchema);
+export const isLivechatRidMessagesProps = ajvQuery.compile<LivechatRidMessagesProps>(LivechatRidMessagesSchema);
 
 type LivechatUsersAgentProps = PaginatedRequest<{ text?: string }>;
 
@@ -1308,7 +1308,7 @@ const LivechatUsersAgentSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatUsersAgentProps = ajv.compile<LivechatUsersAgentProps>(LivechatUsersAgentSchema);
+export const isLivechatUsersAgentProps = ajvQuery.compile<LivechatUsersAgentProps>(LivechatUsersAgentSchema);
 
 type LivechatPrioritiesProps = PaginatedRequest<{ text?: string }>;
 
@@ -1344,7 +1344,7 @@ const LivechatPrioritiesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatPrioritiesProps = ajv.compile<LivechatPrioritiesProps>(LivechatPrioritiesPropsSchema);
+export const isLivechatPrioritiesProps = ajvQuery.compile<LivechatPrioritiesProps>(LivechatPrioritiesPropsSchema);
 
 type CreateOrUpdateLivechatSlaProps = {
 	name: string;
@@ -1808,7 +1808,7 @@ const LivechatAnalyticsAgentsAverageServiceTimeSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsAgentsAverageServiceTimeProps = ajv.compile<LivechatAnalyticsAgentsAverageServiceTimeProps>(
+export const isLivechatAnalyticsAgentsAverageServiceTimeProps = ajvQuery.compile<LivechatAnalyticsAgentsAverageServiceTimeProps>(
 	LivechatAnalyticsAgentsAverageServiceTimeSchema,
 );
 
@@ -1929,7 +1929,7 @@ const LivechatAnalyticsAgentsTotalServiceTimeSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsAgentsTotalServiceTimeProps = ajv.compile<LivechatAnalyticsAgentsTotalServiceTimeProps>(
+export const isLivechatAnalyticsAgentsTotalServiceTimeProps = ajvQuery.compile<LivechatAnalyticsAgentsTotalServiceTimeProps>(
 	LivechatAnalyticsAgentsTotalServiceTimeSchema,
 );
 
@@ -1966,7 +1966,7 @@ const LivechatAnalyticsAgentsAvailableForServiceHistorySchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsAgentsAvailableForServiceHistoryProps = ajv.compile<LivechatAnalyticsAgentsAvailableForServiceHistoryProps>(
+export const isLivechatAnalyticsAgentsAvailableForServiceHistoryProps = ajvQuery.compile<LivechatAnalyticsAgentsAvailableForServiceHistoryProps>(
 	LivechatAnalyticsAgentsAvailableForServiceHistorySchema,
 );
 
@@ -2008,7 +2008,7 @@ const LivechatAnalyticsDepartmentsAmountOfChatsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsDepartmentsAmountOfChatsProps = ajv.compile<LivechatAnalyticsDepartmentsAmountOfChatsProps>(
+export const isLivechatAnalyticsDepartmentsAmountOfChatsProps = ajvQuery.compile<LivechatAnalyticsDepartmentsAmountOfChatsProps>(
 	LivechatAnalyticsDepartmentsAmountOfChatsSchema,
 );
 
@@ -2045,7 +2045,7 @@ const LivechatAnalyticsDepartmentsAverageServiceTimeSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsDepartmentsAverageServiceTimeProps = ajv.compile<LivechatAnalyticsDepartmentsAverageServiceTimeProps>(
+export const isLivechatAnalyticsDepartmentsAverageServiceTimeProps = ajvQuery.compile<LivechatAnalyticsDepartmentsAverageServiceTimeProps>(
 	LivechatAnalyticsDepartmentsAverageServiceTimeSchema,
 );
 
@@ -2083,7 +2083,7 @@ const LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema = {
 };
 
 export const isLivechatAnalyticsDepartmentsAverageChatDurationTimeProps =
-	ajv.compile<LivechatAnalyticsDepartmentsAverageChatDurationTimeProps>(LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema);
+	ajvQuery.compile<LivechatAnalyticsDepartmentsAverageChatDurationTimeProps>(LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema);
 
 type LivechatAnalyticsDepartmentsTotalServiceTimeProps = PaginatedRequest<{
 	start: string;
@@ -2118,7 +2118,7 @@ const LivechatAnalyticsDepartmentsTotalServiceTimeSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsDepartmentsTotalServiceTimeProps = ajv.compile<LivechatAnalyticsDepartmentsTotalServiceTimeProps>(
+export const isLivechatAnalyticsDepartmentsTotalServiceTimeProps = ajvQuery.compile<LivechatAnalyticsDepartmentsTotalServiceTimeProps>(
 	LivechatAnalyticsDepartmentsTotalServiceTimeSchema,
 );
 
@@ -2155,7 +2155,7 @@ const LivechatAnalyticsDepartmentsAverageWaitingTimeSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsDepartmentsAverageWaitingTimeProps = ajv.compile<LivechatAnalyticsDepartmentsAverageWaitingTimeProps>(
+export const isLivechatAnalyticsDepartmentsAverageWaitingTimeProps = ajvQuery.compile<LivechatAnalyticsDepartmentsAverageWaitingTimeProps>(
 	LivechatAnalyticsDepartmentsAverageWaitingTimeSchema,
 );
 
@@ -2192,7 +2192,7 @@ const LivechatAnalyticsDepartmentsTotalTransferredChatsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsDepartmentsTotalTransferredChatsProps = ajv.compile<LivechatAnalyticsDepartmentsTotalTransferredChatsProps>(
+export const isLivechatAnalyticsDepartmentsTotalTransferredChatsProps = ajvQuery.compile<LivechatAnalyticsDepartmentsTotalTransferredChatsProps>(
 	LivechatAnalyticsDepartmentsTotalTransferredChatsSchema,
 );
 
@@ -2229,7 +2229,7 @@ const LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps = ajv.compile<LivechatAnalyticsDepartmentsTotalAbandonedChatsProps>(
+export const isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps = ajvQuery.compile<LivechatAnalyticsDepartmentsTotalAbandonedChatsProps>(
 	LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema,
 );
 
@@ -2267,7 +2267,7 @@ const LivechatAnalyticsDepartmentsPercentageAbandonedChatsSchema = {
 };
 
 export const isLivechatAnalyticsDepartmentsPercentageAbandonedChatsProps =
-	ajv.compile<LivechatAnalyticsDepartmentsPercentageAbandonedChatsProps>(LivechatAnalyticsDepartmentsPercentageAbandonedChatsSchema);
+	ajvQuery.compile<LivechatAnalyticsDepartmentsPercentageAbandonedChatsProps>(LivechatAnalyticsDepartmentsPercentageAbandonedChatsSchema);
 
 type GETAgentNextToken = {
 	department?: string;
@@ -4249,7 +4249,7 @@ const LivechatAnalyticsAgentOverviewPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsAgentOverviewProps = ajv.compile<LivechatAnalyticsAgentOverviewProps>(
+export const isLivechatAnalyticsAgentOverviewProps = ajvQuery.compile<LivechatAnalyticsAgentOverviewProps>(
 	LivechatAnalyticsAgentOverviewPropsSchema,
 );
 
@@ -4281,7 +4281,7 @@ const LivechatAnalyticsOverviewPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsOverviewProps = ajv.compile<LivechatAnalyticsOverviewProps>(LivechatAnalyticsOverviewPropsSchema);
+export const isLivechatAnalyticsOverviewProps = ajvQuery.compile<LivechatAnalyticsOverviewProps>(LivechatAnalyticsOverviewPropsSchema);
 
 type LivechatTriggerWebhookTestParams = {
 	webhookUrl: string;
