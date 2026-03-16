@@ -1712,7 +1712,7 @@ const GETOmnichannelContactsCheckExistenceSchema = {
 	],
 };
 
-export const isGETOmnichannelContactsCheckExistenceProps = ajv.compile<GETOmnichannelContactsCheckExistenceProps>(
+export const isGETOmnichannelContactsCheckExistenceProps = ajvQuery.compile<GETOmnichannelContactsCheckExistenceProps>(
 	GETOmnichannelContactsCheckExistenceSchema,
 );
 
