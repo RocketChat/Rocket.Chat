@@ -1,5 +1,5 @@
-import { Box, Button, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
+import { Box, Button, CodeSnippet, TextInput, Margins, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
+import { useClipboard, useEffectEvent, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useMethod } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ComponentPropsWithoutRef, FormEvent } from 'react';
 import { useState, useCallback, useEffect, useId } from 'react';
@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import qrcode from 'yaqrcode';
 
 import BackupCodesModal from './BackupCodesModal';
-import TextCopy from '../../../components/TextCopy';
 import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
 
 type TwoFactorTOTPFormData = {
@@ -35,6 +34,8 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 	const [codesRemaining, setCodesRemaining] = useSafely(useState(0));
 
 	const { register, handleSubmit } = useForm<TwoFactorTOTPFormData>({ defaultValues: { authCode: '' } });
+
+	const { copy, hasCopied } = useClipboard(totpSecret || '');
 
 	const totpEnabled = user?.services?.totp?.enabled;
 
@@ -153,7 +154,13 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 					<>
 						<Box>{t('Scan_QR_code')}</Box>
 						<Box>{t('Scan_QR_code_alternative_s')}</Box>
-						<TextCopy text={totpSecret || ''} />
+						<CodeSnippet
+							buttonText={hasCopied ? t('Copied') : t('Copy')}
+							buttonDisabled={hasCopied || !totpSecret}
+							onClick={() => totpSecret && copy()}
+						>
+							{totpSecret || ''}
+						</CodeSnippet>
 						<Box mis='-16px' mb='-16px' is='img' size='x200' src={qrCode} aria-hidden='true' />
 						<Field>
 							<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
