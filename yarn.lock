@@ -9705,6 +9705,7 @@ __metadata:
     ajv-formats: "npm:^3.0.1"
     autoprefixer: "npm:^9.8.8"
     babel-loader: "npm:~10.0.0"
+    core-js: "npm:^2.6.12"
     cross-env: "npm:^7.0.3"
     css-loader: "npm:^4.3.0"
     css-vars-ponyfill: "npm:^2.4.9"
@@ -19195,6 +19196,13 @@ __metadata:
   dependencies:
     browserslist: "npm:^4.25.3"
   checksum: 10/a6eb757ccf5091ee4cf7756c4f2ddefb506b049d89526e8150221e6d9150dc2685c34cbed42f4b15a27a92dd300fd56f75c9502cd57cfe928c1bd7a8ed961a42
+  languageName: node
+  linkType: hard
+
+"core-js@npm:^2.6.12":
+  version: 2.6.12
+  resolution: "core-js@npm:2.6.12"
+  checksum: 10/7c624eb00a59c74c769d5d80f751f3bf1fc6201205b6562f27286ad5e00bbca1483f2f7eb0c2854b86f526ef5c7dc958b45f2ff536f8a31b8e9cb1a13a96efca
   languageName: node
   linkType: hard
 
