@@ -172,11 +172,26 @@ export const setUserAway = (overrideCredentials = credentials, config?: IRequest
 		});
 };
 
-export const ddpLogin = (resume: string): Promise<WebSocket> =>
+const connectWS = (port: number): Promise<WebSocket> =>
 	new Promise((resolve, reject) => {
-		const ws = new WebSocket('ws://localhost:3000/websocket');
-		const loginId = `login-${Date.now()}-${Math.random()}`;
+		const ws = new WebSocket(`ws://localhost:${port}/websocket`);
 
+		ws.onopen = () => resolve(ws);
+		ws.onerror = () => reject(new Error(`WS connection failed on ${port}`));
+	});
+
+export const ddpLogin = async (resume: string): Promise<WebSocket> => {
+	let ws: WebSocket;
+
+	if (process.env.CI) {
+		ws = await connectWS(3000);
+	} else if (process.env.IS_EE) {
+		ws = await connectWS(4000);
+	}
+
+	const loginId = `login-${Date.now()}-${Math.random()}`;
+
+	return new Promise((resolve, reject) => {
 		const handler = (event: MessageEvent) => {
 			const data = JSON.parse(event.data);
 
@@ -212,18 +227,15 @@ export const ddpLogin = (resume: string): Promise<WebSocket> =>
 
 		ws.addEventListener('message', handler);
 
-		ws.onopen = () => {
-			ws.send(
-				JSON.stringify({
-					msg: 'connect',
-					version: '1',
-					support: ['1'],
-				}),
-			);
-		};
-
-		ws.onerror = reject;
+		ws.send(
+			JSON.stringify({
+				msg: 'connect',
+				version: '1',
+				support: ['1'],
+			}),
+		);
 	});
+};
 
 export const setUserAwayWS = (ws: WebSocket): Promise<void> =>
 	new Promise((resolve, reject) => {
