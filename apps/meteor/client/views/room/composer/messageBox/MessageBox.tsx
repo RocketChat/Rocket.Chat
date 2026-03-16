@@ -75,7 +75,7 @@ const handleFormattingShortcut = (event: KeyboardEvent, formattingButtons: Forma
 
 const emptySubscribe = () => () => undefined;
 const getEmptyFalse = () => false;
-const a: any[] = [];
+const a: never[] = [];
 const getEmptyArray = () => a;
 
 type MessageBoxProps = {
