@@ -36,7 +36,7 @@ exports[`renders IncomingCall without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
@@ -194,7 +194,7 @@ exports[`renders IncomingCallTransfer without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
@@ -510,7 +510,7 @@ exports[`renders NewCall without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
@@ -592,7 +592,7 @@ exports[`renders OngoingCall without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
@@ -786,7 +786,7 @@ exports[`renders OutgoingCall without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
@@ -927,7 +927,7 @@ exports[`renders OutgoingCallTransfer without crashing 1`] = `
         >
           <button
             aria-label="customize"
-            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
+            class="rcx-box rcx-box--full rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button rcx-css-1wk08i8"
             disabled=""
             label="customize"
             title="Device_settings_not_supported_by_browser"
