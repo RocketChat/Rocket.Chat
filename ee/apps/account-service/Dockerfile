@@ -114,7 +114,6 @@ EXPOSE 3000 9458
 
 CMD ["node", "src/service.js"]
 
-# FIPS RELEASE STAGE
 FROM rocketchatfips140/dhi-node:22-fips AS release-fips
 ARG SERVICE
 ENV NODE_ENV=production \
@@ -123,4 +122,4 @@ COPY --chown=node:node --from=builder /app /app
 WORKDIR /app/ee/apps/${SERVICE}
 USER node
 EXPOSE 3000 9458
-CMD ["node", "--require", "./src/fips.js", "src/service.js"]
+CMD ["node", "--force-fips", "--require", "./src/fips.js", "src/service.js"]
