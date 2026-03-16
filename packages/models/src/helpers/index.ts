@@ -1,3 +1,1 @@
-import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from './omnichannel';
-
-export { queryAvailableAgentsForSelection, queryStatusAgentOnline };
+export * from './omnichannel';
