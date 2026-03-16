@@ -275,6 +275,7 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+<<<<<<< Updated upstream
 const isIgnoreUserResponse = ajv.compile<void>({
 	type: 'object',
 	properties: {
@@ -342,30 +343,59 @@ const isChatSyncThreadsListResponse = ajv.compile<{ threads: { update: IMessage[
 	type: 'object',
 	properties: {
 		threads: {
+=======
+const isChatSyncThreadsListResponse = ajv.compile<{
+	messages: {
+		update: IMessage[];
+		remove: { _id: string }[];
+	};
+}>({
+	type: 'object',
+	properties: {
+		messages: {
+>>>>>>> Stashed changes
 			type: 'object',
 			properties: {
 				update: {
 					type: 'array',
+<<<<<<< Updated upstream
 					items: {
 						$ref: '#/components/schemas/IMessage',
 					},
+=======
+					items: { $ref: '#/components/schemas/IMessage' },
+>>>>>>> Stashed changes
 				},
 				remove: {
 					type: 'array',
 					items: {
+<<<<<<< Updated upstream
 						$ref: '#/components/schemas/IMessage',
+=======
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+						},
+						required: ['_id'],
+						additionalProperties: true,
+>>>>>>> Stashed changes
 					},
 				},
 			},
 			required: ['update', 'remove'],
 			additionalProperties: false,
 		},
+<<<<<<< Updated upstream
 		success: {
 			type: 'boolean',
 			enum: [true],
 		},
 	},
 	required: ['threads', 'success'],
+=======
+	},
+	required: ['threads'],
+>>>>>>> Stashed changes
 	additionalProperties: false,
 });
 
@@ -653,6 +683,7 @@ const chatEndpoints = API.v1
 			return API.v1.success();
 		},
 	)
+<<<<<<< Updated upstream
 	.post(
 		'chat.postMessage',
 		{
@@ -665,6 +696,59 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
+=======
+	.get(
+		'chat.syncThreadMessages',
+		{
+			authRequired: true,
+			validateParams: isChatSyncThreadMessagesProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isChatSyncThreadsListResponse,
+			},
+		},
+		async function action() {
+			const { tmid } = this.queryParams;
+			const { query, fields, sort } = await this.parseJsonQuery();
+			const { updatedSince } = this.queryParams;
+			let updatedSinceDate;
+			if (!settings.get<boolean>('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
+			if (!thread?.rid) {
+				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+			}
+			const [user, room] = await Promise.all([
+				Users.findOneById(this.userId, { projection: { _id: 1 } }),
+				Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } }),
+			]);
+
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
+			return API.v1.success({
+				messages: {
+					update: await Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
+					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { projection: fields, sort }).toArray(),
+				},
+			});
+		},
+	);
+
+API.v1.addRoute(
+	'chat.postMessage',
+	{ authRequired: true, validateParams: isChatPostMessageProps },
+	{
+		async post() {
+>>>>>>> Stashed changes
 			const { text, attachments } = this.bodyParams;
 			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
@@ -1025,45 +1109,6 @@ API.v1.addRoute(
 				count: messages.length,
 				offset,
 				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.syncThreadMessages',
-	{ authRequired: true, validateParams: isChatSyncThreadMessagesProps },
-	{
-		async get() {
-			const { tmid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
-			const { updatedSince } = this.queryParams;
-			let updatedSinceDate;
-			if (!settings.get<boolean>('Threads_enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
-			}
-
-			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-			} else {
-				updatedSinceDate = new Date(updatedSince);
-			}
-			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
-			if (!thread?.rid) {
-				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
-			}
-			// TODO: promise.all? this.user?
-			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
-			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
-
-			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-			}
-			return API.v1.success({
-				messages: {
-					update: await Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { projection: fields, sort }).toArray(),
-				},
 			});
 		},
 	},
