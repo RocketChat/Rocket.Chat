@@ -3666,7 +3666,7 @@ const GETLivechatInquiriesListParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatInquiriesListParams = ajv.compile<GETLivechatInquiriesListParams>(GETLivechatInquiriesListParamsSchema);
+export const isGETLivechatInquiriesListParams = ajvQuery.compile<GETLivechatInquiriesListParams>(GETLivechatInquiriesListParamsSchema);
 
 type POSTLivechatInquiriesTakeParams = {
 	inquiryId: string;
