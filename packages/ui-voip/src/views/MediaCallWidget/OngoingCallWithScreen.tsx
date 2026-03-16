@@ -97,7 +97,7 @@ const OngoingCall = () => {
 						onToggle={onHold}
 					/>
 					<ToggleButton
-						label={t('Screen_sharing')}
+						label={t('Share_screen')}
 						icons={['desktop-arrow-up', 'desktop-cross']}
 						titles={[t('Share_screen'), t('Stop_sharing_screen')]}
 						pressed={localScreen?.active ?? false}
