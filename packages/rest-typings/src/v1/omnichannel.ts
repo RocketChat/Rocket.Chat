@@ -3747,7 +3747,7 @@ const GETLivechatInquiriesQueuedForUserParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatInquiriesQueuedForUserParams = ajv.compile<GETLivechatInquiriesQueuedForUserParams>(
+export const isGETLivechatInquiriesQueuedForUserParams = ajvQuery.compile<GETLivechatInquiriesQueuedForUserParams>(
 	GETLivechatInquiriesQueuedForUserParamsSchema,
 );
 
@@ -3766,7 +3766,7 @@ const GETLivechatInquiriesGetOneParamsSchema = {
 	required: ['roomId'],
 };
 
-export const isGETLivechatInquiriesGetOneParams = ajv.compile<GETLivechatInquiriesGetOneParams>(GETLivechatInquiriesGetOneParamsSchema);
+export const isGETLivechatInquiriesGetOneParams = ajvQuery.compile<GETLivechatInquiriesGetOneParams>(GETLivechatInquiriesGetOneParamsSchema);
 
 type POSTLivechatInquiriesReturnAsInquiry = {
 	roomId: string;
