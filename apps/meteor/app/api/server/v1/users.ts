@@ -21,6 +21,7 @@ import {
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -878,6 +879,112 @@ const usersEndpoints = API.v1
 
 			return API.v1.success({ suggestions });
 		},
+	)
+	.post(
+		'users.setStatus',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{
+				status?: string;
+				message?: string;
+				userId?: string;
+				username?: string;
+				user?: string;
+			}>({
+				type: 'object',
+				properties: {
+					status: { type: 'string', minLength: 1 },
+					message: { type: 'string' },
+					userId: { type: 'string' },
+					username: { type: 'string' },
+					user: { type: 'string' },
+				},
+				anyOf: [
+					{ required: ['message'] },
+					{ required: ['status'] },
+				],
+				additionalProperties: false,
+			}),
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				200: ajv.compile<{ success: boolean }>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
+				return API.v1.failure('Change status is not allowed [error-not-allowed]', 'error-not-allowed', 400);
+			}
+
+			const user = await (async () => {
+				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
+					return Users.findOneById(this.userId);
+				}
+				if (await hasPermissionAsync(this.userId, 'edit-other-user-info')) {
+					return getUserFromParams(this.bodyParams);
+				}
+			})();
+
+			if (!user) {
+				return API.v1.forbidden();
+			}
+
+			const { _id, username, roles, name } = user;
+			let { statusText, status } = user;
+
+			if (this.bodyParams.message || this.bodyParams.message === '') {
+				await setStatusText(user, this.bodyParams.message, { emit: false });
+				statusText = this.bodyParams.message;
+			}
+
+			if ('status' in this.bodyParams) {
+				if (!this.bodyParams.status) {
+					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+						method: 'users.setStatus',
+					});
+				}
+				const validStatus = ['online', 'away', 'offline', 'busy'];
+				if (validStatus.includes(this.bodyParams.status)) {
+					status = this.bodyParams.status as UserStatus;
+
+					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
+						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+							method: 'users.setStatus',
+						});
+					}
+
+					await Users.updateOne(
+						{ _id: user._id },
+						{ $set: { status, statusDefault: status } },
+					);
+
+					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
+				} else {
+					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
+						method: 'users.setStatus',
+					});
+				}
+			}
+
+			void api.broadcast('presence.status', {
+				user: { status, _id, username, statusText, roles, name },
+				previousStatus: user.status,
+			});
+
+			return API.v1.success();
+		},
 	);
 
 API.v1.addRoute(
@@ -1422,97 +1529,6 @@ API.v1.addRoute(
 			return API.v1.success({
 				presence: user.status || ('offline' as UserStatus),
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.setStatus',
-	{
-		authRequired: true,
-		rateLimiterOptions: {
-			numRequestsAllowed: 5,
-			intervalTimeInMS: 60000,
-		},
-	},
-	{
-		async post() {
-			check(
-				this.bodyParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						status: Match.Maybe(String),
-						message: String,
-					}),
-					Match.ObjectIncluding({
-						status: String,
-						message: Match.Maybe(String),
-					}),
-				),
-			);
-
-			if (!settings.get('Accounts_AllowUserStatusMessageChange')) {
-				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
-					method: 'users.setStatus',
-				});
-			}
-
-			const user = await (async () => {
-				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
-					return Users.findOneById(this.userId);
-				}
-				if (await hasPermissionAsync(this.userId, 'edit-other-user-info')) {
-					return getUserFromParams(this.bodyParams);
-				}
-			})();
-
-			if (!user) {
-				return API.v1.forbidden();
-			}
-
-			const { _id, username, roles, name } = user;
-			let { statusText, status } = user;
-
-			if (this.bodyParams.message || this.bodyParams.message === '') {
-				await setStatusText(user, this.bodyParams.message, { emit: false });
-				statusText = this.bodyParams.message;
-			}
-
-			if (this.bodyParams.status) {
-				const validStatus = ['online', 'away', 'offline', 'busy'];
-				if (validStatus.includes(this.bodyParams.status)) {
-					status = this.bodyParams.status;
-
-					if (status === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-						throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
-							method: 'users.setStatus',
-						});
-					}
-
-					await Users.updateOne(
-						{ _id: user._id },
-						{
-							$set: {
-								status,
-								statusDefault: status,
-							},
-						},
-					);
-
-					void wrapExceptions(() => Calendar.cancelUpcomingStatusChanges(user._id)).suppress();
-				} else {
-					throw new Meteor.Error('error-invalid-status', 'Valid status types include online, away, offline, and busy.', {
-						method: 'users.setStatus',
-					});
-				}
-			}
-
-			void api.broadcast('presence.status', {
-				user: { status, _id, username, statusText, roles, name },
-				previousStatus: user.status,
-			});
-
-			return API.v1.success();
 		},
 	},
 );
