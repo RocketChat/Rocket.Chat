@@ -551,7 +551,7 @@ const roomsImagesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsImagesProps = ajv.compile<RoomsImagesProps>(roomsImagesPropsSchema);
+export const isRoomsImagesProps = ajvQuery.compile<RoomsImagesProps>(roomsImagesPropsSchema);
 
 export type RoomsCleanHistoryProps = {
 	roomId: IRoom['_id'];
