@@ -918,15 +918,17 @@ const usersEndpoints = API.v1
 				return API.v1.failure('Error creating user');
 			}
 
+			// Now set their username
+			const { fields } = await this.parseJsonQuery();
 			await setUsernameWithValidation(userId, this.bodyParams.username);
 
-			const user = await Users.findOneById(userId, { projection: { services: 0, inviteToken: 0 } });
+			const user = await Users.findOneById(userId, { projection: fields });
 			if (!user) {
 				return API.v1.failure('User not found');
 			}
 
-			if ((user as Record<string, unknown>).inactiveReason === null) {
-				delete (user as Record<string, unknown>).inactiveReason;
+			if ((user as unknown as Record<string, unknown>).inactiveReason === null) {
+				delete (user as unknown as Record<string, unknown>).inactiveReason;
 			}
 
 			if (this.bodyParams.customFields) {
