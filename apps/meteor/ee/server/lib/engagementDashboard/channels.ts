@@ -44,7 +44,7 @@ export const findChannelsWithNumberOfMessages = async ({
 		startOfLastWeek: convertDateToInt(startOfLastWeek),
 		endOfLastWeek: convertDateToInt(endOfLastWeek),
 		options,
-	}).toArray();
+	});
 
 	// The aggregation result may be undefined if there are no matching analytics or corresponding rooms in the period
 	if (!aggregationResult.length) {

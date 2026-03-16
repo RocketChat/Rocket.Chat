@@ -2202,16 +2202,16 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	findChildrenOfTeam(
+	async findChildrenOfTeam(
 		teamId: string,
 		teamRoomId: string,
 		userId: string,
 		filter?: string,
 		type?: 'channels' | 'discussions',
 		options?: FindOptions<IRoom>,
-	): AggregationCursor<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }> {
+	): Promise<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }[]> {
 		const nameFilter = filter ? new RegExp(escapeRegExp(filter), 'i') : undefined;
-		return this.col.aggregate<{ totalCount: { count: number }[]; paginatedResults: IRoom[] }>([
+		const baseQuery = [
 			{
 				$match: {
 					$and: [
@@ -2228,36 +2228,22 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			{
 				$lookup: {
 					from: 'rocketchat_subscription',
-					let: {
-						roomId: '$_id',
-					},
-					pipeline: [
-						{
-							$match: {
-								$and: [
-									{
-										$expr: {
-											$eq: ['$rid', '$$roomId'],
-										},
-									},
-									{
-										$expr: {
-											$eq: ['$u._id', userId],
-										},
-									},
-									{
-										$expr: {
-											$ne: ['$t', 'c'],
-										},
-									},
-								],
+					localField: '_id',
+					foreignField: 'rid',
+					as: 'subscription',
+				},
+			},
+			{
+				$addFields: {
+					subscription: {
+						$filter: {
+							input: '$subscription',
+							as: 'sub',
+							cond: {
+								$and: [{ $eq: ['$$sub.u._id', userId] }, { $ne: ['$$sub.t', 'c'] }],
 							},
 						},
-						{
-							$project: { _id: 1 },
-						},
-					],
-					as: 'subscription',
+					},
 				},
 			},
 			{
@@ -2274,13 +2260,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 			{ $project: { subscription: 0 } },
 			{ $sort: options?.sort || { ts: 1 } },
-			{
-				$facet: {
-					totalCount: [{ $count: 'count' }],
-					paginatedResults: [{ $skip: options?.skip || 0 }, { $limit: options?.limit || 50 }],
-				},
-			},
+		];
+
+		const [paginatedResults, countResult] = await Promise.all([
+			this.col.aggregate<IRoom>([...baseQuery, { $skip: options?.skip || 0 }, { $limit: options?.limit || 50 }]).toArray(),
+			this.col.aggregate<{ count: number }>([...baseQuery, { $count: 'count' }]).toArray(),
 		]);
+
+		return [{ totalCount: countResult, paginatedResults }];
 	}
 
 	findAllByTypesAndDiscussionAndTeam(

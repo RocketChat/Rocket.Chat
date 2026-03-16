@@ -46,5 +46,5 @@ export interface IAnalyticsModel extends IBaseModel<IAnalytics> {
 		startOfLastWeek: number;
 		endOfLastWeek: number;
 		options?: any;
-	}): AggregationCursor<{ channels: IChannelsWithNumberOfMessagesBetweenDate[]; total: number }>;
+	}): Promise<{ channels: IChannelsWithNumberOfMessagesBetweenDate[]; total: number }[]>;
 }

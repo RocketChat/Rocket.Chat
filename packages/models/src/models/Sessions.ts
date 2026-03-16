@@ -12,7 +12,7 @@ import type {
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import type { ISessionsModel } from '@rocket.chat/model-typings';
-import type { PaginatedResult, WithItemCount } from '@rocket.chat/rest-typings';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type {
 	AggregationCursor,
 	AnyBulkWriteOperation,
@@ -124,7 +124,7 @@ const matchBasedOnDate = (start: DestructuredDate, end: DestructuredDate): Filte
 
 const getGroupSessionsByHour = (
 	_id: { range: string; day: string; month: string; year: string } | string,
-): { listGroup: object; countGroup: object } => {
+): { listGroup: object; filterNulls: object; countGroup: object } => {
 	const isOpenSession = { $not: ['$session.closedAt'] };
 	const isAfterLoginAt = { $gte: ['$range', { $hour: '$session.loginAt' }] };
 	const isBeforeClosedAt = { $lte: ['$range', { $hour: '$session.closedAt' }] };
@@ -139,10 +139,16 @@ const getGroupSessionsByHour = (
 							$or: [{ $and: [isOpenSession, isAfterLoginAt] }, { $and: [isAfterLoginAt, isBeforeClosedAt] }],
 						},
 						'$session.userId',
-						'$$REMOVE',
+						null,
 					],
 				},
 			},
+		},
+	};
+
+	const filterNulls = {
+		$addFields: {
+			usersList: { $filter: { input: '$usersList', cond: { $ne: ['$$this', null] } } },
 		},
 	};
 
@@ -152,7 +158,7 @@ const getGroupSessionsByHour = (
 		},
 	};
 
-	return { listGroup, countGroup };
+	return { listGroup, filterNulls, countGroup };
 };
 
 const getSortByFullDate = (): { year: number; month: number; day: number } => ({
@@ -827,26 +833,14 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 		};
 
-		const facetOperator = {
-			$facet: {
-				docs: [sortOperator, ...skipOperator, limitOperator, ...customSortOp],
-				count: [
-					{
-						$count: 'total',
-					},
-				],
-			},
-		};
+		const baseQuery = [matchOperator, sortOperator, groupOperator, projectOperator];
 
-		const queryArray = [matchOperator, sortOperator, groupOperator, projectOperator, facetOperator];
+		const [sessions, countResult] = await Promise.all([
+			this.col.aggregate<DeviceManagementSession>([...baseQuery, sortOperator, ...skipOperator, limitOperator, ...customSortOp]).toArray(),
+			this.col.aggregate<{ total: number }>([...baseQuery, { $count: 'total' }]).toArray(),
+		]);
 
-		const [
-			{
-				docs: sessions,
-				count: [{ total } = { total: 0 }],
-			},
-		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementSession[] }>>(queryArray).toArray();
-
+		const total = countResult[0]?.total || 0;
 		return { sessions, total, count, offset };
 	}
 
@@ -953,26 +947,25 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 		};
 
-		const facetOperator = {
-			$facet: {
-				docs: [sortOperator, ...skipOperator, limitOperator, lookupOperator, unwindOperator, projectOperator, ...customSortOp],
-				count: [
-					{
-						$count: 'total',
-					},
-				],
-			},
-		};
+		const baseQuery = [matchOperator, sortOperator, groupOperator];
 
-		const queryArray = [matchOperator, sortOperator, groupOperator, facetOperator];
+		const [sessions, countResult] = await Promise.all([
+			this.col
+				.aggregate<DeviceManagementPopulatedSession>([
+					...baseQuery,
+					sortOperator,
+					...skipOperator,
+					limitOperator,
+					lookupOperator,
+					unwindOperator,
+					projectOperator,
+					...customSortOp,
+				])
+				.toArray(),
+			this.col.aggregate<{ total: number }>([...baseQuery, { $count: 'total' }]).toArray(),
+		]);
 
-		const [
-			{
-				docs: sessions,
-				count: [{ total } = { total: 0 }],
-			},
-		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementPopulatedSession[] }>>(queryArray).toArray();
-
+		const total = countResult[0]?.total || 0;
 		return { sessions, total, count, offset };
 	}
 
@@ -1143,7 +1136,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			.aggregate<{
 				hour: number;
 				users: number;
-			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
+			}>([match, rangeProject, unwind, groups.listGroup, groups.filterNulls, groups.countGroup, presentationProject, sort])
 			.toArray();
 	}
 
@@ -1245,7 +1238,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 				month: number;
 				year: number;
 				users: number;
-			}>([match, rangeProject, unwind, groups.listGroup, groups.countGroup, presentationProject, sort])
+			}>([match, rangeProject, unwind, groups.listGroup, groups.filterNulls, groups.countGroup, presentationProject, sort])
 			.toArray();
 	}
 

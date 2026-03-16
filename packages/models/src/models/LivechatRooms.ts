@@ -95,7 +95,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		return this.findOne(query);
 	}
 
-	getQueueMetrics({
+	async getQueueMetrics({
 		departmentId,
 		agentId,
 		includeOfflineAgents,
@@ -115,23 +115,8 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const departmentsLookup = {
 			$lookup: {
 				from: 'rocketchat_livechat_department',
-				let: {
-					deptId: '$departmentId',
-				},
-				pipeline: [
-					{
-						$match: {
-							$expr: {
-								$eq: ['$_id', '$$deptId'],
-							},
-						},
-					},
-					{
-						$project: {
-							name: 1,
-						},
-					},
-				],
+				localField: 'departmentId',
+				foreignField: '_id',
 				as: 'departments',
 			},
 		};
@@ -145,31 +130,25 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const usersLookup = {
 			$lookup: {
 				from: 'users',
-				let: {
-					servedById: '$servedBy._id',
-				},
-				pipeline: [
-					{
-						$match: {
-							$expr: {
-								$eq: ['$_id', '$$servedById'],
-							},
-							...(!includeOfflineAgents && {
-								status: { $ne: 'offline' },
-								statusLivechat: 'available',
-							}),
-							...(agentId && { _id: agentId }),
-						},
-					},
-					{
-						$project: {
-							_id: 1,
-							username: 1,
-							status: 1,
-						},
-					},
-				],
+				localField: 'servedBy._id',
+				foreignField: '_id',
 				as: 'user',
+			},
+		};
+		const usersFilter = {
+			$addFields: {
+				user: {
+					$filter: {
+						input: '$user',
+						as: 'u',
+						cond: {
+							$and: [
+								...(!includeOfflineAgents ? [{ $ne: ['$$u.status', 'offline'] }, { $eq: ['$$u.statusLivechat', 'available'] }] : []),
+								...(agentId ? [{ $eq: ['$$u._id', agentId] }] : []),
+							],
+						},
+					},
+				},
 			},
 		};
 		const usersUnwind = {
@@ -204,7 +183,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 				chats: 1,
 			},
 		};
-		const firstParams = [match, departmentsLookup, departmentsUnwind, usersLookup, usersUnwind];
+		const firstParams = [match, departmentsLookup, departmentsUnwind, usersLookup, usersFilter, usersUnwind];
 		const sort: Document = { $sort: options.sort || { chats: -1 } };
 		const pagination = [sort];
 
@@ -215,16 +194,16 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 			pagination.push({ $limit: options.count });
 		}
 
-		const facet = {
-			$facet: {
-				sortedResults: pagination,
-				totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-			},
-		};
+		const baseParams = [...firstParams, usersGroup, project];
+		const aggregateOptions = { readPreference: readSecondaryPreferred(), allowDiskUse: true };
 
-		const params = [...firstParams, usersGroup, project, facet];
+		const [sortedResults, countResult] = await Promise.all([
+			this.col.aggregate([...baseParams, ...pagination], aggregateOptions).toArray(),
+			this.col.aggregate<{ total: number }>([...baseParams, { $count: 'total' }], aggregateOptions).toArray(),
+		]);
 
-		return this.col.aggregate(params, { readPreference: readSecondaryPreferred(), allowDiskUse: true }).toArray();
+		const totalCount = countResult.length ? [{ total: countResult[0].total }] : [];
+		return [{ sortedResults, totalCount }];
 	}
 
 	async findAllNumberOfAbandonedRooms({
@@ -1545,7 +1524,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 								if: {
 									$eq: ['$source.type', 'app'],
 								},
-								then: '$$REMOVE',
+								then: null,
 								else: { type: '$source.type' },
 							},
 						},
@@ -1556,7 +1535,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 								if: {
 									$eq: ['$source.type', 'app'],
 								},
-								else: '$$REMOVE',
+								else: null,
 								then: {
 									type: '$source.type',
 									id: '$source.id',
@@ -1567,6 +1546,12 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 							},
 						},
 					},
+				},
+			},
+			{
+				$addFields: {
+					types: { $filter: { input: '$types', cond: { $ne: ['$$this', null] } } },
+					apps: { $filter: { input: '$apps', cond: { $ne: ['$$this', null] } } },
 				},
 			},
 			{
@@ -2161,31 +2146,25 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 						...extraMatchers,
 					},
 				},
-				{ $addFields: { roomId: '$_id' } },
 				{
 					$lookup: {
 						from: 'rocketchat_message',
-						// mongo doesn't like _id as variable name here :(
-						let: { roomId: '$roomId' },
-						pipeline: [
-							{
-								$match: {
-									$expr: {
-										$and: [
-											{
-												$eq: ['$$roomId', '$rid'],
-											},
-											{
-												// this is similar to do { $exists: false }
-												$lte: ['$t', null],
-											},
-											...(extraQuery ? [extraQuery] : []),
-										],
-									},
+						localField: '_id',
+						foreignField: 'rid',
+						as: 'messages',
+					},
+				},
+				{
+					$addFields: {
+						messages: {
+							$filter: {
+								input: '$messages',
+								as: 'msg',
+								cond: {
+									$and: [{ $lte: ['$$msg.t', null] }, ...(extraQuery ? [extraQuery] : [])],
 								},
 							},
-						],
-						as: 'messages',
+						},
 					},
 				},
 				{
@@ -2238,30 +2217,23 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 						...(departmentId && departmentId !== 'undefined' && { departmentId }),
 					},
 				},
-				{ $addFields: { roomId: '$_id' } },
 				{
 					$lookup: {
 						from: 'rocketchat_message',
-						// mongo doesn't like _id as variable name here :(
-						let: { roomId: '$roomId' },
-						pipeline: [
-							{
-								$match: {
-									$expr: {
-										$and: [
-											{
-												$eq: ['$$roomId', '$rid'],
-											},
-											{
-												// this is similar to do { $exists: false }
-												$lte: ['$t', null],
-											},
-										],
-									},
-								},
-							},
-						],
+						localField: '_id',
+						foreignField: 'rid',
 						as: 'messages',
+					},
+				},
+				{
+					$addFields: {
+						messages: {
+							$filter: {
+								input: '$messages',
+								as: 'msg',
+								cond: { $lte: ['$$msg.t', null] },
+							},
+						},
 					},
 				},
 				{
