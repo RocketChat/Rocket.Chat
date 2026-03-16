@@ -3834,7 +3834,7 @@ const GETLivechatAnalyticsDashboardsConversationTotalizersParamsSchema = {
 	required: ['start', 'end'],
 };
 
-export const isGETDashboardTotalizerParams = ajv.compile<GETDashboardTotalizers>(
+export const isGETDashboardTotalizerParams = ajvQuery.compile<GETDashboardTotalizers>(
 	GETLivechatAnalyticsDashboardsConversationTotalizersParamsSchema,
 );
 
