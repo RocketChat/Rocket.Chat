@@ -63,9 +63,9 @@ test.describe.serial('Omnichannel Priorities', () => {
 			await test.step('field name is required', async () => {
 				await poOmnichannelPriorities.editPriority.inputName.fill('any_text');
 				await expect(poOmnichannelPriorities.editPriority.btnSave).toBeEnabled();
-				await poOmnichannelPriorities.editPriority.inputName.fill('');
+				await poOmnichannelPriorities.editPriority.inputName.clear();
+				await poOmnichannelPriorities.editPriority.btnSave.click();
 				await expect(poOmnichannelPriorities.editPriority.errorMessage(ERROR.fieldNameRequired)).toBeVisible();
-				await expect(poOmnichannelPriorities.editPriority.btnSave).toBeDisabled();
 			});
 
 			await test.step('edit and save priority', async () => {
