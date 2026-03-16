@@ -71,4 +71,6 @@ const ServerEventsAuditSettingsParamsGetSchema = {
 	additionalProperties: false,
 };
 
-export const isServerEventsAuditSettingsProps = ajvQuery.compile<ServerEventsAuditSettingsParamsGET>(ServerEventsAuditSettingsParamsGetSchema);
+export const isServerEventsAuditSettingsProps = ajvQuery.compile<ServerEventsAuditSettingsParamsGET>(
+	ServerEventsAuditSettingsParamsGetSchema,
+);
