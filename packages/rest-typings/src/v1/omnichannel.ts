@@ -1632,7 +1632,7 @@ const GETOmnichannelContactsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETOmnichannelContactsProps = ajv.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
+export const isGETOmnichannelContactsProps = ajvQuery.compile<GETOmnichannelContactsProps>(GETOmnichannelContactsSchema);
 
 type GETOmnichannelContactsSearchProps = PaginatedRequest<{
 	searchText: string;
