@@ -1,5 +1,5 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { isOmnichannelRoom } from '@rocket.chat/core-typings';
+import { isOmnichannelRoom, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useSetting, useToastMessageDispatch, useUser } from '@rocket.chat/ui-contexts';
 
 import type { MessageActionContext, MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
@@ -32,19 +32,18 @@ export const useUnFollowMessageAction = (
 		return null;
 	}
 
-	let { replies } = message;
-
-	if (tmid || context) {
-		if (parentMessage) {
-			replies = parentMessage.replies || [];
-		}
+	let replies: string[] = [];
+	if (parentMessage && isThreadMainMessage(parentMessage)) {
+		replies = parentMessage.replies;
+	} else if (isThreadMainMessage(message)) {
+		replies = message.replies;
 	}
 
 	if (!user?._id) {
 		return null;
 	}
 
-	if (!replies?.includes(user._id)) {
+	if (!replies.includes(user._id)) {
 		return null;
 	}
 

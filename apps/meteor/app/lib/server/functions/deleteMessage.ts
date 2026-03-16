@@ -1,6 +1,6 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { api, Message } from '@rocket.chat/core-services';
-import { isThreadMessage, type AtLeast, type IMessage, type IRoom, type IThreadMessage, type IUser } from '@rocket.chat/core-typings';
+import { isThreadMainMessage, isThreadMessage, type AtLeast, type IMessage, type IRoom, type IThreadMessage, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Uploads, Users, ReadReceipts, Subscriptions } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -114,7 +114,9 @@ async function deleteThreadMessage(message: IThreadMessage, user: IUser, room: I
 			// The replies array contains the ids of all the users that are following the thread (everyone that is involved + the ones who are following)
 			// Technically, user._id is already in the message.replies array, but since we don't have any strong
 			// guarantees of it, we are adding again to make sure it is there.
-			const userIdsThatAreWatchingTheThread = [...new Set([user._id, ...(message.replies || [])])];
+			const userIdsThatAreWatchingTheThread = [
+				...new Set([user._id, ...(updatedParentMessage && isThreadMainMessage(updatedParentMessage) ? updatedParentMessage.replies : [])]),
+			];
 			// So they can decrement the unread threads count
 			void notifyOnSubscriptionChangedByRoomIdAndUserIds(room._id, userIdsThatAreWatchingTheThread);
 		}
