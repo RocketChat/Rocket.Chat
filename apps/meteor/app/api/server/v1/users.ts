@@ -753,6 +753,21 @@ API.v1.addRoute(
 	},
 );
 
+const UserPreferencesResponseSchema = {
+	type: 'object',
+	properties: {
+		preferences: {
+			type: 'object',
+			additionalProperties: true,
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['preferences', 'success'],
+	additionalProperties: false,
+};
+
+const isUserPreferencesResponse = ajv.compile(UserPreferencesResponseSchema);
+
 const usersEndpoints = API.v1
 	.post(
 		'users.createToken',
@@ -878,26 +893,32 @@ const usersEndpoints = API.v1
 
 			return API.v1.success({ suggestions });
 		},
-	);
-
-API.v1.addRoute(
-	'users.getPreferences',
-	{ authRequired: true },
-	{
-		async get() {
+	)
+	.get(
+		'users.getPreferences',
+		{
+			authRequired: true,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isUserPreferencesResponse,
+			},
+		},
+		async function action() {
 			const user = await Users.findOneById(this.userId);
+
 			if (user?.settings) {
-				const { preferences = {} } = user?.settings;
-				preferences.language = user?.language;
+				const { preferences = {} } = user.settings;
+				preferences.language = user.language;
 
 				return API.v1.success({
 					preferences,
 				});
 			}
+
 			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'users.forgotPassword',
@@ -1555,7 +1576,7 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
 
-type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
+export type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
