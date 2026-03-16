@@ -1,10 +1,7 @@
 import { MeteorError, Team, api, Calendar } from '@rocket.chat/core-services';
-
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions } from '@rocket.chat/models';
 import {
-
-
 	isUserCreateParamsPOST,
 	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
@@ -174,9 +171,9 @@ API.v1.addRoute(
 			const twoFactorOptions = !userData.typedPassword
 				? null
 				: {
-					twoFactorCode: userData.typedPassword,
-					twoFactorMethod: 'password',
-				};
+						twoFactorCode: userData.typedPassword,
+						twoFactorMethod: 'password',
+					};
 
 			await executeSaveUserProfile.call(this, this.user, userData, this.bodyParams.customFields, twoFactorOptions);
 
@@ -539,10 +536,10 @@ API.v1.addRoute(
 			const limit =
 				count !== 0
 					? [
-						{
-							$limit: count,
-						},
-					]
+							{
+								$limit: count,
+							},
+						]
 					: [];
 
 			const result = await Users.col
@@ -909,20 +906,18 @@ const usersEndpoints = API.v1
 		async function action() {
 			const user = await Users.findOneById(this.userId);
 
-			if (!user) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			if (user?.settings) {
+				const { preferences = {} } = user.settings;
+				preferences.language = user.language;
+
+				return API.v1.success({
+					preferences,
+				});
 			}
 
-			const preferences = {
-				...(user.settings?.preferences ?? {}),
-				language: user.language,
-			};
-
-			return API.v1.success({ preferences });
+			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 		},
 	);
-
-export type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 API.v1.addRoute(
 	'users.forgotPassword',
@@ -1580,7 +1575,9 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	API.v1.updateRateLimiterDictionaryForRoute(userRegisterRoute, value);
 });
 
+export type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
+
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends UsersEndpoints { }
+	interface Endpoints extends UsersEndpoints {}
 }
