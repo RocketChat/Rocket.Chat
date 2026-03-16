@@ -45,18 +45,20 @@ const ImageBlock = ({ className, block, surfaceRenderer }: ImageBlockProps): Rea
 
 	useEffect(() => {
 		const img = document.createElement('img');
+		img.src = block.imageUrl;
 
+		// If image is already cached and loaded, update state immediately
+		if (img.complete) {
+			setState(fetchImageState(img));
+			return;
+		}
+
+		// Otherwise, wait for the load event
 		const handleLoad = () => {
 			setState(fetchImageState(img));
 		};
 
 		img.addEventListener('load', handleLoad);
-		img.src = block.imageUrl;
-
-		if (img.complete) {
-			img.removeEventListener('load', handleLoad);
-			setState(fetchImageState(img));
-		}
 
 		return () => {
 			img.removeEventListener('load', handleLoad);
