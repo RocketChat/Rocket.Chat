@@ -2745,7 +2745,7 @@ const GETLivechatMessagesHistoryRidParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatMessagesHistoryRidParams = ajv.compile<GETLivechatMessagesHistoryRidParams>(
+export const isGETLivechatMessagesHistoryRidParams = ajvQuery.compile<GETLivechatMessagesHistoryRidParams>(
 	GETLivechatMessagesHistoryRidParamsSchema,
 );
 
