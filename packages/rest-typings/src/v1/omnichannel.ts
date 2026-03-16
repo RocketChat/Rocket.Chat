@@ -36,7 +36,7 @@ import type {
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -3522,7 +3522,7 @@ const GETLivechatRoomsParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatRoomsParams = ajv.compile<GETLivechatRoomsParams>(GETLivechatRoomsParamsSchema);
+export const isGETLivechatRoomsParams = ajvQuery.compile<GETLivechatRoomsParams>(GETLivechatRoomsParamsSchema);
 
 export type POSTLivechatRoomPriorityParams = {
 	priorityId: string;
