@@ -2311,7 +2311,7 @@ const GETLivechatConfigParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatConfigParams = ajv.compile<GETLivechatConfigParams>(GETLivechatConfigParamsSchema);
+export const isGETLivechatConfigParams = ajvQuery.compile<GETLivechatConfigParams>(GETLivechatConfigParamsSchema);
 
 export const GETLivechatConfigRoutingSchema = {
 	type: 'object',
