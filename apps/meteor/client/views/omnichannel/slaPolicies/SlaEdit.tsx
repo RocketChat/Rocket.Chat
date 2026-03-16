@@ -82,7 +82,9 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	return (
 		<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} {...props}>
 			<Field>
-				<FieldLabel htmlFor={nameFieldId}>{t('Name')}*</FieldLabel>
+				<FieldLabel required htmlFor={nameFieldId}>
+					{t('Name')}
+				</FieldLabel>
 				<FieldRow>
 					<TextInput
 						id={nameFieldId}
@@ -107,7 +109,9 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 				</FieldRow>
 			</Field>
 			<Field>
-				<FieldLabel htmlFor={dueTimeFieldId}>{t('Estimated_wait_time_in_minutes')}*</FieldLabel>
+				<FieldLabel required htmlFor={dueTimeFieldId}>
+					{t('Estimated_wait_time_in_minutes')}
+				</FieldLabel>
 				<FieldRow>
 					<NumberInput
 						id={dueTimeFieldId}
