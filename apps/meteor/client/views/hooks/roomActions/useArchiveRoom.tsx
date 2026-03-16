@@ -13,7 +13,10 @@ export const useArchiveRoom = (room: Pick<IRoom, RoomAdminFieldsType>) => {
 			await archiveAction({ rid: room._id, action: room.archived ? 'unarchive' : 'archive' });
 			dispatchToastMessage({ type: 'success', message: room.archived ? t('Room_has_been_unarchived') : t('Room_has_been_archived') });
 		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({
+				type: 'error',
+				message: error instanceof Error ? error.message : String(error),
+			});
 		}
 	});
 

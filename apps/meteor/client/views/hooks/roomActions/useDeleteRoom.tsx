@@ -40,7 +40,10 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 			return router.navigate('/home');
 		},
 		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({
+				type: 'error',
+				message: error instanceof Error ? error.message : String(error),
+			});
 		},
 		onSettled: () => {
 			setModal(null);
@@ -59,7 +62,10 @@ export const useDeleteRoom = (room: IRoom | Pick<IRoom, RoomAdminFieldsType>, { 
 			return router.navigate('/home');
 		},
 		onError: (error) => {
-			dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({
+				type: 'error',
+				message: error instanceof Error ? error.message : String(error),
+			});
 		},
 		onSettled: () => {
 			setModal(null);
