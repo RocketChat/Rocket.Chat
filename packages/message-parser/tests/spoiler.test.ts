@@ -8,7 +8,7 @@ describe('spoiler parsing', () => {
 		['||__i__ ~~s~~||', [paragraph([spoiler([italic([plain('i')]), plain(' '), strike([plain('s')])])])]],
 		['||unclosed', [paragraph([plain('||unclosed')])]],
 	])('parses basic spoilers: %p', (input, output) => {
-		expect(parse(input)).toMatchObject(output);
+		expect(parse(input)).toEqual(output);
 	});
 
 	test.each([
@@ -45,6 +45,6 @@ describe('spoiler parsing', () => {
 		// Spoiler at start and end
 		['||start|| middle ||end||', [paragraph([spoiler([plain('start')]), plain(' middle '), spoiler([plain('end')])])]],
 	])('parses edge cases: %p', (input, output) => {
-		expect(parse(input)).toMatchObject(output);
+		expect(parse(input)).toEqual(output);
 	});
 });

@@ -126,5 +126,5 @@ test.each([
 	],
 	['something__ __and italic__', [paragraph([plain('something__ '), italic([plain('and italic')])])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input, { emoticons: false })).toMatchObject(output);
+	expect(parse(input, { emoticons: false })).toEqual(output);
 });

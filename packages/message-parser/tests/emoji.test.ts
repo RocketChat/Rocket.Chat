@@ -31,7 +31,7 @@ test.each([
 	['Hi :+1:', [paragraph([plain('Hi '), emoji('+1')])]],
 	['Hi :+1_tone4:', [paragraph([plain('Hi '), emoji('+1_tone4')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });
 
 // Tests for unicode emojis
@@ -58,5 +58,5 @@ test.each([
 	['👆🏺', [bigEmoji([emojiUnicode('👆'), emojiUnicode('🏺')])]],
 	['Hi 👍', [paragraph([plain('Hi '), emojiUnicode('👍')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });
