@@ -125,4 +125,4 @@ COPY --chown=node:node --from=builder /app /app
 WORKDIR /app/ee/apps/${SERVICE}
 USER node
 EXPOSE 3000 9458
-CMD ["node", "--require", "./src/fips.js", "src/service.js"]
+CMD ["node", "--force-fips", "--require", "./src/fips.js", "src/service.js"]
