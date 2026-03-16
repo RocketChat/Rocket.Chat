@@ -57,7 +57,7 @@ const LivechatVisitorsInfoSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatVisitorsInfoProps = ajv.compile<LivechatVisitorsInfo>(LivechatVisitorsInfoSchema);
+export const isLivechatVisitorsInfoProps = ajvQuery.compile<LivechatVisitorsInfo>(LivechatVisitorsInfoSchema);
 
 type LivechatRoomOnHold = {
 	roomId: IRoom['_id'];
