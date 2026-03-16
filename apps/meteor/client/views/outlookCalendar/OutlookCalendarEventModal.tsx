@@ -9,7 +9,7 @@ import { useOutlookOpenCall } from './hooks/useOutlookOpenCall';
 type OutlookCalendarEventModalProps = ComponentProps<typeof GenericModal> & {
 	id?: string;
 	subject?: string;
-	meetingUrl?: string;
+	meetingUrl?: string | null;
 	description?: string;
 };
 
