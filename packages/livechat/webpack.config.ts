@@ -134,6 +134,7 @@ const config = (_env: any, args: webpack.WebpackOptionsNormalized): webpack.Conf
 				'process.env.NODE_ENV': JSON.stringify(args.mode === 'production' ? 'production' : 'development'),
 			}),
 			new HtmlWebpackPlugin({
+				template: _('./src/index.ejs'),
 				title: 'Livechat - Rocket.Chat',
 				chunks: ['polyfills', 'vendor', 'bundle'],
 				chunksSortMode: 'manual',
