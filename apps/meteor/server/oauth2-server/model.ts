@@ -13,11 +13,15 @@ import { OAuthApps, OAuthAuthCodes, OAuthAccessTokens, OAuthRefreshTokens } from
 export type ModelConfig = {
 	debug?: boolean;
 };
+export enum GrantType {
+	AuthorizationCode = 'authorization_code',
+	RefreshToken = 'refresh_token',
+}
 
 export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 	private debug: boolean;
 
-	private grants = ['authorization_code', 'refresh_token'];
+	private grants = [GrantType.AuthorizationCode, GrantType.RefreshToken];
 
 	constructor(config: ModelConfig = {}) {
 		this.debug = !!config.debug;

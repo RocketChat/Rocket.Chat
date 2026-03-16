@@ -122,7 +122,7 @@ export class CustomOAuth {
 		const params = new URLSearchParams({
 			code: query.code,
 			redirect_uri: OAuth._redirectUri(this.name, config),
-			grant_type: 'authorization_code',
+			grant_type: GrantType.AuthorizationCode,
 			state: query.state,
 		});
 
