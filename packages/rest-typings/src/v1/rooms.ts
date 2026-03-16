@@ -471,7 +471,7 @@ const RoomsIsMemberPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsIsMemberProps = ajv.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
+export const isRoomsIsMemberProps = ajvQuery.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
 
 export type Notifications = {
 	disableNotifications?: string;
