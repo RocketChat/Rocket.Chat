@@ -2351,7 +2351,7 @@ export const GETLivechatConfigRoutingSchema = {
 	additionalProperties: false,
 };
 
-export const GETLivechatConfigRouting = ajv.compile<{ config: OmichannelRoutingConfig | undefined }>(GETLivechatConfigRoutingSchema);
+export const GETLivechatConfigRouting = ajvQuery.compile<{ config: OmichannelRoutingConfig | undefined }>(GETLivechatConfigRoutingSchema);
 
 type POSTLivechatCustomFieldParams = {
 	token: string;
