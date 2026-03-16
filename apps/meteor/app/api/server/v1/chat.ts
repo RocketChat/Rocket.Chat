@@ -769,10 +769,10 @@ const chatEndpoints = API.v1
 
 			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
 			if (searchResult === false) {
-				throw new Meteor.Error('error-search-failed');
+				throw new Meteor.Error('error-search-failed', 'The search operation failed');
 			}
 			if (!searchResult.message) {
-				throw new Meteor.Error('error-search-no-results');
+				throw new Meteor.Error('error-search-no-results','No messages found matching the search query');
 			}
 			const result = searchResult.message.docs;
 
