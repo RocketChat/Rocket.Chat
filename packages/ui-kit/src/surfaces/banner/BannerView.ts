@@ -1,6 +1,7 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import typia from 'typia';
 
+import type { TextObject } from '../../blocks/TextObject';
 import type { View } from '../View';
 import type { BannerSurfaceLayout } from './UiKitParserBanner';
 
@@ -14,6 +15,7 @@ export type BannerView = Omit<View, 'blocks'> & {
 	variant?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
 	icon?: IconName;
 	/** Title as plain string (legacy) or UiKit text object (e.g. { type: 'mrkdwn', text: '...' }). */
+	title?: string | TextObject;
 	blocks: BannerSurfaceLayout;
 };
 
