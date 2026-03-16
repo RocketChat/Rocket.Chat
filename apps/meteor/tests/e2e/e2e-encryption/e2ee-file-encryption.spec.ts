@@ -101,7 +101,6 @@ test.describe('E2EE File Encryption', () => {
 
 		await test.step('upload file with Unicode filename', async () => {
 			await poHomeChannel.content.dragAndDropFile(UNICODE_FILE_NAME);
-			await poHomeChannel.content.fileNameInput.fill(UNICODE_FILE_NAME);
 			await poHomeChannel.content.btnModalConfirm.click();
 
 			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
