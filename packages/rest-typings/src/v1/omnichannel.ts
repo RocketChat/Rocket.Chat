@@ -1761,7 +1761,9 @@ const GETOmnichannelContactsChannelsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETOmnichannelContactsChannelsProps = ajvQuery.compile<GETOmnichannelContactsChannelsProps>(GETOmnichannelContactsChannelsSchema);
+export const isGETOmnichannelContactsChannelsProps = ajvQuery.compile<GETOmnichannelContactsChannelsProps>(
+	GETOmnichannelContactsChannelsSchema,
+);
 
 type GETOmnichannelContactProps = { contactId: string };
 
@@ -1966,9 +1968,8 @@ const LivechatAnalyticsAgentsAvailableForServiceHistorySchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsAgentsAvailableForServiceHistoryProps = ajvQuery.compile<LivechatAnalyticsAgentsAvailableForServiceHistoryProps>(
-	LivechatAnalyticsAgentsAvailableForServiceHistorySchema,
-);
+export const isLivechatAnalyticsAgentsAvailableForServiceHistoryProps =
+	ajvQuery.compile<LivechatAnalyticsAgentsAvailableForServiceHistoryProps>(LivechatAnalyticsAgentsAvailableForServiceHistorySchema);
 
 type LivechatAnalyticsDepartmentsAmountOfChatsProps = PaginatedRequest<{
 	start: string;
@@ -2192,9 +2193,8 @@ const LivechatAnalyticsDepartmentsTotalTransferredChatsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsDepartmentsTotalTransferredChatsProps = ajvQuery.compile<LivechatAnalyticsDepartmentsTotalTransferredChatsProps>(
-	LivechatAnalyticsDepartmentsTotalTransferredChatsSchema,
-);
+export const isLivechatAnalyticsDepartmentsTotalTransferredChatsProps =
+	ajvQuery.compile<LivechatAnalyticsDepartmentsTotalTransferredChatsProps>(LivechatAnalyticsDepartmentsTotalTransferredChatsSchema);
 
 type LivechatAnalyticsDepartmentsTotalAbandonedChatsProps = PaginatedRequest<{
 	start: string;
@@ -2229,9 +2229,8 @@ const LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema = {
 	additionalProperties: false,
 };
 
-export const isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps = ajvQuery.compile<LivechatAnalyticsDepartmentsTotalAbandonedChatsProps>(
-	LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema,
-);
+export const isLivechatAnalyticsDepartmentsTotalAbandonedChatsProps =
+	ajvQuery.compile<LivechatAnalyticsDepartmentsTotalAbandonedChatsProps>(LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema);
 
 type LivechatAnalyticsDepartmentsPercentageAbandonedChatsProps = PaginatedRequest<{
 	start: string;
@@ -3766,7 +3765,9 @@ const GETLivechatInquiriesGetOneParamsSchema = {
 	required: ['roomId'],
 };
 
-export const isGETLivechatInquiriesGetOneParams = ajvQuery.compile<GETLivechatInquiriesGetOneParams>(GETLivechatInquiriesGetOneParamsSchema);
+export const isGETLivechatInquiriesGetOneParams = ajvQuery.compile<GETLivechatInquiriesGetOneParams>(
+	GETLivechatInquiriesGetOneParamsSchema,
+);
 
 type POSTLivechatInquiriesReturnAsInquiry = {
 	roomId: string;
