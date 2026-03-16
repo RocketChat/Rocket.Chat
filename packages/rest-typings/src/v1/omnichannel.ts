@@ -3855,7 +3855,7 @@ const GETLivechatAnalyticsDashboardsAgentStatusParamsSchema = {
 	additionalProperties: true,
 };
 
-export const isGETDashboardsAgentStatusParams = ajv.compile<GETDashboardsAgentStatusParams>(
+export const isGETDashboardsAgentStatusParams = ajvQuery.compile<GETDashboardsAgentStatusParams>(
 	GETLivechatAnalyticsDashboardsAgentStatusParamsSchema,
 );
 
