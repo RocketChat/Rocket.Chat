@@ -106,7 +106,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 
 		it('should return null when phone not found', async () => {
-			const response = await callResolveVisitor({ userId: `id-${Date.now()}` }, '+0000000000');
+			const response = await callResolveVisitor({ userId: `id-${Date.now()}` }, `+00${Date.now()}`);
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor).to.be.null;
