@@ -1,27 +1,23 @@
-import { useSetting } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
+import { useRole, useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
-
-import type { LoginMethods } from '../AuthenticationProvider';
+import { useTranslation } from 'react-i18next';
 
 export function useLDAPAndCrowdCollisionWarning() {
 	const isLdapEnabled = useSetting('LDAP_Enable', false);
 	const isCrowdEnabled = useSetting('CROWD_Enable', false);
-
-	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
+	const isAdmin = useRole('admin');
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
 
 	useEffect(() => {
+		if (!isAdmin) return;
+
 		if (isLdapEnabled && isCrowdEnabled) {
-			if (process.env.NODE_ENV === 'development') {
-				throw new Error('You can not use both LDAP and Crowd at the same time');
-			}
-			console.log('Both LDAP and Crowd are enabled. Please disable one of them.');
+			dispatchToastMessage({
+				type: 'info',
+				message: t('core.LDAP_and_Crowd_cannot_be_enabled_simultaneously'),
+			});
 		}
-		if (!Meteor[loginMethod]) {
-			if (process.env.NODE_ENV === 'development') {
-				throw new Error(`Meteor.${loginMethod} is not defined`);
-			}
-			console.log(`Meteor.${loginMethod} is not defined`);
-		}
-	}, [isLdapEnabled, isCrowdEnabled, loginMethod]);
+	}, [isAdmin, isLdapEnabled, isCrowdEnabled, dispatchToastMessage, t]);
 }
+

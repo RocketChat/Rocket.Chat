@@ -6,7 +6,6 @@ import { Meteor } from 'meteor/meteor';
 import type { ContextType, ReactElement, ReactNode } from 'react';
 import { useMemo } from 'react';
 
-import { useLDAPAndCrowdCollisionWarning } from './hooks/useLDAPAndCrowdCollisionWarning';
 import { useReactiveValue } from '../../hooks/useReactiveValue';
 import { loginServices } from '../../lib/loginServices';
 
@@ -33,8 +32,6 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps): Reac
 	const isCrowdEnabled = useSetting('CROWD_Enable', false);
 
 	const loginMethod: LoginMethods = (isLdapEnabled && 'loginWithLDAP') || (isCrowdEnabled && 'loginWithCrowd') || 'loginWithPassword';
-
-	useLDAPAndCrowdCollisionWarning();
 
 	const isLoggingIn = useReactiveValue(getLoggingIn);
 

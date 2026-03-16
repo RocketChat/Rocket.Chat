@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 import ActionManagerProvider from './ActionManagerProvider';
 import AuthenticationProvider from './AuthenticationProvider/AuthenticationProvider';
 import AuthorizationProvider from './AuthorizationProvider';
+import { useLDAPAndCrowdCollisionWarning } from './AuthenticationProvider/hooks/useLDAPAndCrowdCollisionWarning';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
@@ -27,6 +28,11 @@ type MeteorProviderProps = {
 	children?: ReactNode;
 };
 
+const LDAPAndCrowdCollisionWarning = () => {
+	useLDAPAndCrowdCollisionWarning();
+	return null;
+};
+
 const MeteorProvider = ({ children }: MeteorProviderProps) => (
 	<ServerProvider>
 		<RouterProvider>
@@ -43,6 +49,7 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 													<DeviceProvider>
 														<ModalProvider>
 															<AuthorizationProvider>
+																<LDAPAndCrowdCollisionWarning />
 																<EmojiPickerProvider>
 																	<OmnichannelRoomIconProvider>
 																		<UserPresenceProvider>
