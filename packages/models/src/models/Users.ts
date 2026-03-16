@@ -31,7 +31,7 @@ import type {
 
 import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
-import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../lib/agentOnline';
+import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {

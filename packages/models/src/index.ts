@@ -118,7 +118,7 @@ export * from './modelClasses';
 
 export * from './dummy/ReadReceipts';
 
-export * from './lib/agentOnline';
+export * from './helpers';
 
 export { registerModel } from './proxify';
 export { type Updater, UpdaterImpl } from './updater';
