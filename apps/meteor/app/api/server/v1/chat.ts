@@ -280,6 +280,7 @@ const isChatGetThreadsListResponse = ajv.compile<{
 	count: number;
 	offset: number;
 	total: number;
+	success: boolean;
 }>({
 	type: 'object',
 	properties: {
@@ -595,7 +596,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadsList',
 		{
 			authRequired: true,
-			validateParams: isChatGetThreadsListProps,
+			query: isChatGetThreadsListProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
