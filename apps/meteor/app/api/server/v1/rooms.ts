@@ -18,6 +18,7 @@ import {
 	isRoomsInviteProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -455,7 +456,6 @@ API.v1.addRoute(
 	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
 		async post() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
 			if (!prid) {
 				return API.v1.failure('Body parameter "prid" is required.');
@@ -550,7 +550,7 @@ API.v1.addRoute(
 			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			// If the initial image was not returned in the query, insert it as the first element of the list
-			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
+			if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
 				files.splice(0, 0, initialImage);
 			}
 
@@ -767,7 +767,7 @@ API.v1.addRoute(
 				void dataExport.sendFile(
 					{
 						rid,
-						format: format as 'html' | 'json',
+						format,
 						dateFrom: convertedDateFrom,
 						dateTo: convertedDateTo,
 					},
@@ -815,7 +815,7 @@ API.v1.addRoute(
 			const [room, user] = await Promise.all([
 				findRoomByIdOrName({
 					params: { roomId },
-				}) as Promise<IRoom>,
+				}),
 				Users.findOneByIdOrUsername(userId || username),
 			]);
 
@@ -1070,11 +1070,14 @@ export const roomEndpoints = API.v1
 					},
 					required: ['roles'],
 				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function () {
 			const { rid } = this.queryParams;
-			const roles = await executeGetRoomRoles(rid, this.userId);
+			const roles = await executeGetRoomRoles(rid, this.user);
 
 			return API.v1.success({
 				roles,
@@ -1246,7 +1249,6 @@ export const roomEndpoints = API.v1
 	);
 
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
 	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
 
