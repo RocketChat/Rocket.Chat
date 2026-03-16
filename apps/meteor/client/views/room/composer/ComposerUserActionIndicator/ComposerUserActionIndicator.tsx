@@ -13,28 +13,29 @@ const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string
 		UserAction.subscribe,
 		useCallback(() => UserAction.get(tmid || rid), [rid, tmid]),
 	);
-	const actions = useMemo(
-		() =>
-			Object.entries(roomAction ?? {})
-				.map(([key, _users]) => {
-					const action = key.split('-')[1];
+	const actions = useMemo(() => {
+		const entries = Object.entries(roomAction ?? {})
+			.map(([key, _users]) => {
+				const action = key.split('-')[1];
 
-					const users = Object.keys(_users);
-					if (users.length === 0) {
-						return;
-					}
+				const users = Object.keys(_users);
+				if (users.length === 0) {
+					return;
+				}
 
-					return {
-						action,
-						users,
-					};
-				})
-				.filter(Boolean) as {
-				action: 'typing' | 'recording' | 'uploading' | 'playing';
-				users: string[];
-			}[],
-		[roomAction],
-	);
+				return {
+					action,
+					users,
+				};
+			})
+			.filter(Boolean) as {
+			action: 'typing' | 'recording' | 'uploading' | 'playing';
+			users: string[];
+		}[];
+
+		const hasUploading = entries.some(({ action }) => action === 'uploading');
+		return hasUploading ? entries.filter(({ action }) => action !== 'typing') : entries;
+	}, [roomAction]);
 
 	return (
 		<Box
