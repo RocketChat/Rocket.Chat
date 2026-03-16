@@ -3105,7 +3105,7 @@ const GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParamsSchema = {
 };
 
 export const isGETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams =
-	ajv.compile<GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams>(
+	ajvQuery.compile<GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams>(
 		GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParamsSchema,
 	);
 
