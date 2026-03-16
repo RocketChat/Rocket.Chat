@@ -277,10 +277,9 @@ const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSc
 
 const isSyncThreadMessagesResponse = ajv.compile<{
 	messages: {
-		update: IMessage[];
-		remove: IMessage[];
+		update: Record<string, unknown>[];
+		remove: Record<string, unknown>[];
 	};
-	success: boolean;
 }>({
 	type: 'object',
 	properties: {
@@ -290,13 +289,23 @@ const isSyncThreadMessagesResponse = ajv.compile<{
 				update: {
 					type: 'array',
 					items: {
-						$ref: '#/components/schemas/IMessage',
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+						},
+						required: ['_id'],
+						additionalProperties: true,
 					},
 				},
 				remove: {
 					type: 'array',
 					items: {
-						$ref: '#/components/schemas/IMessage',
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+						},
+						required: ['_id'],
+						additionalProperties: true,
 					},
 				},
 			},
