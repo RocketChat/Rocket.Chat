@@ -41,7 +41,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	public async answerCall(uid: IUser['_id'], params: Omit<ClientMediaSignalAnswer, 'type'>): Promise<IMediaCall> {
-		const { callId } = params;
+		const { callId, answer } = params;
 
 		const call = await MediaCalls.findOneByIdAndCallee<Pick<IMediaCall, '_id'>>(
 			callId,
@@ -64,11 +64,22 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			throw new Error('internal-error');
 		}
 
-		if (updatedCall.callee.contractId !== signal.contractId) {
-			if (updatedCall.callee.contractId) {
-				throw new Error('invalid-call-state');
-			}
-			throw new Error('internal-error');
+		switch (answer) {
+			case 'ack':
+				if (updatedCall.acceptedAt || updatedCall.ended) {
+					throw new Error('invalid-call-state');
+				}
+				break;
+			case 'unavailable':
+				break;
+			default:
+				if (updatedCall.callee.contractId !== signal.contractId) {
+					if (updatedCall.callee.contractId) {
+						throw new Error('invalid-call-state');
+					}
+					throw new Error('internal-error');
+				}
+				break;
 		}
 
 		return updatedCall;
