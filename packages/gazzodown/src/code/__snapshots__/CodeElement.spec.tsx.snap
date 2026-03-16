@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`CodeElement matches snapshot 1`] = `
+<div>
+  <code
+    class="code-colors inline"
+  >
+    const x = 42;
+  </code>
+</div>
+`;

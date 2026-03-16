@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`InlineElements matches snapshot 1`] = `
+<div>
+  Text 
+  <strong>
+    bold
+  </strong>
+  <code
+    class="code-colors inline"
+  >
+    code
+  </code>
+</div>
+`;

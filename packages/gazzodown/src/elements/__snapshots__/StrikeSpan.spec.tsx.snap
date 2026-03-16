@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`StrikeSpan matches snapshot 1`] = `
+<div>
+  <del>
+    Snapshot strike
+  </del>
+</div>
+`;

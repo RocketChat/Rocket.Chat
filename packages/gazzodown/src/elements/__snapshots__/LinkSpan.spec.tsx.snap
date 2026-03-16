@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`LinkSpan matches snapshot for external link 1`] = `
+<div>
+  <a
+    href="https://example.com/"
+    rel="noopener noreferrer"
+    target="_blank"
+    title="https://example.com/"
+  >
+    Snapshot link
+  </a>
+</div>
+`;
+
+exports[`LinkSpan matches snapshot for internal link 1`] = `
+<div>
+  <a
+    href="http://localhost:3000/channel/test"
+    title="Go_to_href: channel/test"
+  >
+    Internal
+  </a>
+</div>
+`;

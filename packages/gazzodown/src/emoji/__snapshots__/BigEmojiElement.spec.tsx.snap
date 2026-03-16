@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`BigEmojiElement matches snapshot 1`] = `
+<div>
+  <span
+    title="🎉"
+  >
+    <span
+      class="rcx-message__emoji emoji rcx-message__emoji--big 🎉"
+    >
+      🎉
+    </span>
+  </span>
+</div>
+`;

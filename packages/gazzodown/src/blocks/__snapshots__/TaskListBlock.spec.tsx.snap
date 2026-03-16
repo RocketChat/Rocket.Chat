@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`TaskListBlock matches snapshot 1`] = `
+<div>
+  <ul
+    class="task-list"
+  >
+    <li>
+      <label
+        class="rcx-box rcx-box--full rcx-check-box"
+      >
+        <input
+          checked=""
+          class="rcx-box rcx-box--full rcx-check-box__input"
+          type="checkbox"
+        />
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-check-box__fake"
+        />
+      </label>
+       
+      Complete
+    </li>
+    <li>
+      <label
+        class="rcx-box rcx-box--full rcx-check-box"
+      >
+        <input
+          class="rcx-box rcx-box--full rcx-check-box__input"
+          type="checkbox"
+        />
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-check-box__fake"
+        />
+      </label>
+       
+      Incomplete
+    </li>
+  </ul>
+</div>
+`;

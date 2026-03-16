@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ChannelMentionElement matches snapshot for resolved channel mention 1`] = `
+<div>
+  <span
+    class="rcx-box rcx-box--full rcx-message__highlight rcx-message__highlight--link rcx-message__highlight--clickable"
+    role="button"
+    tabindex="0"
+    title="Mentions_channel"
+  >
+    General
+  </span>
+</div>
+`;
+
+exports[`ChannelMentionElement matches snapshot for unresolved channel mention 1`] = `
+<div>
+  #
+  unknown
+</div>
+`;
