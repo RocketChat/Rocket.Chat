@@ -2284,7 +2284,7 @@ const GETAgentNextTokenSchema = {
 	additionalProperties: false,
 };
 
-export const isGETAgentNextToken = ajv.compile<GETAgentNextToken>(GETAgentNextTokenSchema);
+export const isGETAgentNextToken = ajvQuery.compile<GETAgentNextToken>(GETAgentNextTokenSchema);
 
 type GETLivechatConfigParams = {
 	token?: string;
