@@ -1,55 +1,37 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
-
+import { Authorization } from '@rocket.chat/core-services';
 import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
-import { TOTP } from '../lib/totp';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'2fa:disable': (code: string) => Promise<boolean>;
-	}
+    interface ServerMethods {
+        '2fa:disable': (code: string) => Promise<boolean>;
+    }
 }
 
-Meteor.methods<ServerMethods>({
-	async '2fa:disable'(code) {
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('not-authorized');
-		}
+Meteor.methods({
+    async '2fa:disable'(code: string) {
+        const userId = Meteor.userId();
+        
+        if (!userId) {
+            throw new Meteor.Error('not-authorized');
+        }
 
-		const user = await Meteor.userAsync();
+        const result = await Authorization.disable2FA(userId, code);
 
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: '2fa:disable',
-			});
-		}
+        if (result) {
+            void notifyOnUserChange({ 
+                clientAction: 'updated', 
+                id: userId, 
+                diff: { 
+                    'services.totp.enabled': false,
+                },
+                unset: {
+                    'services.totp.secret': 1,
+                    'services.totp.hashedBackup': 1,
+                }
+            });
+        }
 
-		if (!user.services?.totp?.enabled) {
-			return false;
-		}
-
-		const verified = await TOTP.verify({
-			secret: user.services.totp.secret,
-			token: code,
-			userId,
-			backupTokens: user.services.totp.hashedBackup,
-		});
-
-		if (!verified) {
-			return false;
-		}
-
-		const { modifiedCount } = await Users.disable2FAByUserId(userId);
-
-		if (!modifiedCount) {
-			return false;
-		}
-
-		void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: { 'services.totp.enabled': false } });
-
-		return true;
-	},
+        return result;
+    },
 });
