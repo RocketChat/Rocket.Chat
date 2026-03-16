@@ -2791,7 +2791,7 @@ const GETLivechatMessagesParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatMessagesParams = ajv.compile<GETLivechatMessagesParams>(GETLivechatMessagesParamsSchema);
+export const isGETLivechatMessagesParams = ajvQuery.compile<GETLivechatMessagesParams>(GETLivechatMessagesParamsSchema);
 
 type GETLivechatRoomParams = {
 	token: string;
