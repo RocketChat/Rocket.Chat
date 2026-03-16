@@ -22,14 +22,18 @@ export type AuthenticationContextValue = {
 
 export const AuthenticationContext = createContext<AuthenticationContextValue>({
 	isLoggingIn: false,
-	loginWithService: () => () => Promise.reject('loginWithService not implemented'),
-	loginWithPassword: async () => Promise.reject('loginWithPassword not implemented'),
-	loginWithToken: async () => Promise.reject('loginWithToken not implemented'),
-	loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),
-	loginWithTokenRoute: async () => Promise.reject('loginWithTokenRoute not implemented'),
-	unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
+	loginWithService: () => () => Promise.reject(new Error('loginWithService not implemented')),
+	loginWithPassword: async () => Promise.reject(new Error('loginWithPassword not implemented')),
+	loginWithToken: async () => Promise.reject(new Error('loginWithToken not implemented')),
+	loginWithIframe: async () => Promise.reject(new Error('loginWithIframe not implemented')),
+	loginWithTokenRoute: async () => Promise.reject(new Error('loginWithTokenRoute not implemented')),
+	unstoreLoginToken: () => {
+		throw new Error('unstoreLoginToken not implemented');
+	},
 	queryLoginServices: {
 		getCurrentValue: () => [],
-		subscribe: (_: () => void) => () => Promise.reject('queryLoginServices not implemented'),
+		subscribe: (_: () => void) => {
+			throw new Error('queryLoginServices not implemented');
+		},
 	},
 });
