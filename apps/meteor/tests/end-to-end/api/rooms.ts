@@ -35,7 +35,7 @@ const lstURL = './tests/e2e/fixtures/files/lst-test.lst';
 const svgLogoURL = './public/images/logo/logo.svg';
 const svgLogoFileName = 'logo.svg';
 
-describe.only('[Rooms]', () => {
+describe('[Rooms]', () => {
 	before((done) => getCredentials(done));
 
 	it('/rooms.get', (done) => {
