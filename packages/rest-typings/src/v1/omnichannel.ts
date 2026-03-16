@@ -3420,7 +3420,7 @@ export const POSTLivechatBusinessHoursRemoveSuccessSchema = {
 
 export const POSTLivechatBusinessHoursRemoveSuccessResponse = ajv.compile<void>(POSTLivechatBusinessHoursRemoveSuccessSchema);
 
-export const isGETLivechatTriggersParams = ajv.compile<GETLivechatTriggersParams>(GETLivechatTriggersParamsSchema);
+export const isGETLivechatTriggersParams = ajvQuery.compile<GETLivechatTriggersParams>(GETLivechatTriggersParamsSchema);
 
 export type GETLivechatRoomsParams = PaginatedRequest<{
 	fields?: string;
