@@ -275,6 +275,34 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+const isChatGetThreadsListResponse = ajv.compile<{
+	threads: IMessage[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		threads: {
+			type: 'array',
+			items: {
+				type: 'object',
+			},
+		},
+		count: {
+			type: 'number',
+		},
+		offset: {
+			type: 'number',
+		},
+		total: {
+			type: 'number',
+		},
+	},
+	required: ['threads', 'count', 'offset', 'total'],
+	additionalProperties: false,
+});
+
 const chatEndpoints = API.v1
 	.post(
 		'chat.pinMessage',
@@ -557,6 +585,58 @@ const chatEndpoints = API.v1
 			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
+		},
+	)
+	.get(
+		'chat.getThreadsList',
+		{
+			authRequired: true,
+			validateParams: isChatGetThreadsListProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isChatGetThreadsListResponse,
+			},
+		},
+		async function action() {
+			const { rid, type, text } = this.queryParams;
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
+
+			if (!settings.get<boolean>('Threads_enabled')) {
+				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+			}
+			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
+			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
+
+			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			}
+
+			const typeThread = {
+				_hidden: { $ne: true },
+				...(type === 'following' && { replies: { $in: [this.userId] } }),
+				...(type === 'unread' && { _id: { $in: (await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id))?.tunread || [] } }),
+				msg: new RegExp(escapeRegExp(text || ''), 'i'),
+			};
+
+			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
+			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
+				sort: sort || { tlm: -1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			});
+
+			const [threads, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				threads: await normalizeMessagesForUser(threads, this.userId),
+				count: threads.length,
+				offset,
+				total,
+			});
 		},
 	);
 
