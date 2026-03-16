@@ -2638,7 +2638,7 @@ const GETLivechatMessageIdParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatMessageIdParams = ajv.compile<GETLivechatMessageIdParams>(GETLivechatMessageIdParamsSchema);
+export const isGETLivechatMessageIdParams = ajvQuery.compile<GETLivechatMessageIdParams>(GETLivechatMessageIdParamsSchema);
 
 type PUTLivechatMessageIdParams = {
 	token: string;
