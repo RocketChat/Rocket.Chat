@@ -54,7 +54,6 @@
 		"@changesets/cli": "^2.27.11",
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/chart.js": "^2.9.41",
-		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.16.5",
 		"eslint": "~9.39.3",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
