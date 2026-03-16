@@ -786,8 +786,11 @@ API.v1.addRoute(
 			const parseIds = (ids: string | undefined, field: string) =>
 				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
+			const userQuery = { ...query };
+			delete userQuery.rid;
+
 			const ourQuery = {
-				...query,
+				...userQuery,
 				rid: findResult.rid,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
