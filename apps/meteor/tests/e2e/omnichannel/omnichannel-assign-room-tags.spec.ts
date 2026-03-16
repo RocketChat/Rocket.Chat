@@ -26,6 +26,7 @@ test.describe('OC - Tags Visibility', () => {
 	let tagB: Awaited<ReturnType<typeof createTag>>;
 	let globalTag: Awaited<ReturnType<typeof createTag>>;
 	let sharedTag: Awaited<ReturnType<typeof createTag>>;
+	let ws: WebSocket;
 
 	test.beforeAll('Create departments', async ({ api }) => {
 		departmentA = await createDepartment(api, { name: 'Department A' });
@@ -34,7 +35,7 @@ test.describe('OC - Tags Visibility', () => {
 
 	test.beforeAll('Create agent', async ({ api }) => {
 		agent = await createAgent(api, 'user1');
-		await ddpLogin(Users.user1.data.loginToken);
+		ws = await ddpLogin(Users.user1.data.loginToken);
 	});
 
 	test.beforeAll('Add agents to departments', async ({ api }) => {
@@ -71,6 +72,7 @@ test.describe('OC - Tags Visibility', () => {
 		await agent.delete();
 		await departmentA.delete();
 		await departmentB.delete();
+		ws.close();
 	});
 
 	test('Verify agent should see correct tags based on department association', async () => {

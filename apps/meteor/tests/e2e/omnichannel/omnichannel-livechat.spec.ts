@@ -265,10 +265,11 @@ test.describe('OC - Livechat - Resume chat after closing', () => {
 test.describe('OC - Livechat - Close chat using widget', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
+	let ws: WebSocket;
 
 	test.beforeAll(async ({ api }) => {
 		agent = await createAgent(api, 'user1');
-		await ddpLogin(Users.user1.data.loginToken);
+		ws = await ddpLogin(Users.user1.data.loginToken);
 	});
 
 	test.beforeEach(async ({ page, api }) => {
@@ -279,6 +280,7 @@ test.describe('OC - Livechat - Close chat using widget', () => {
 
 	test.afterAll(async () => {
 		await agent.delete();
+		ws.close();
 	});
 
 	test('OC - Livechat - Close Chat', async () => {
