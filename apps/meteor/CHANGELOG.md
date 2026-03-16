@@ -1,5 +1,55 @@
 # @rocket.chat/meteor
 
+## 7.12.6
+
+### Patch Changes
+
+- ([#39549](https://github.com/RocketChat/Rocket.Chat/pull/39549) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#39532](https://github.com/RocketChat/Rocket.Chat/pull/39532) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that caused Third-party login to not work properly
+
+- ([#39516](https://github.com/RocketChat/Rocket.Chat/pull/39516) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a bug that would cause apps to go into `invalid_installation_disabled` in some cases
+
+- <details><summary>Updated dependencies [7bab3a176903c22a757a83f13db850187caf32fb]:</summary>
+
+  - @rocket.chat/apps-engine@1.57.2
+  - @rocket.chat/presence@0.2.47
+  - @rocket.chat/apps@0.5.26
+  - @rocket.chat/core-services@0.10.10
+  - @rocket.chat/core-typings@7.12.6
+  - @rocket.chat/fuselage-ui-kit@24.0.6
+  - @rocket.chat/rest-typings@7.12.6
+  - @rocket.chat/federation-matrix@0.0.9
+  - @rocket.chat/license@1.1.7
+  - @rocket.chat/media-calls@0.0.9
+  - @rocket.chat/omnichannel-services@0.3.44
+  - @rocket.chat/pdf-worker@0.3.26
+  - @rocket.chat/api-client@0.2.47
+  - @rocket.chat/cron@0.1.47
+  - @rocket.chat/freeswitch@1.2.34
+  - @rocket.chat/gazzodown@24.0.6
+  - @rocket.chat/http-router@7.9.14
+  - @rocket.chat/message-types@0.0.1
+  - @rocket.chat/model-typings@1.8.7
+  - @rocket.chat/ui-avatar@20.0.6
+  - @rocket.chat/ui-client@24.0.6
+  - @rocket.chat/ui-contexts@24.0.6
+  - @rocket.chat/web-ui-registration@24.0.6
+  - @rocket.chat/models@1.7.7
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.26
+  - @rocket.chat/omni-core-ee@0.0.12
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@24.0.6
+  - @rocket.chat/ui-voip@14.0.6
+  - @rocket.chat/instance-status@0.1.47
+  - @rocket.chat/omni-core@0.0.12
+  </details>
+
 ## 7.12.5
 
 ### Patch Changes

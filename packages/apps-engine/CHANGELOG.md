@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.57.2
+
+### Patch Changes
+
+- ([#39516](https://github.com/RocketChat/Rocket.Chat/pull/39516) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes a bug that would cause apps to go into `invalid_installation_disabled` in some cases
+
 ## 1.57.1
 
 ### Patch Changes
