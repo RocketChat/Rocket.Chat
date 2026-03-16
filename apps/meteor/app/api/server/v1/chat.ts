@@ -276,49 +276,49 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
 const isSyncThreadMessagesResponse = ajv.compile<{
-	messages: {
-		update: Record<string, unknown>[];
-		remove: Record<string, unknown>[];
-	};
+  messages: {
+    update: Partial<IMessage>[];
+    remove: Partial<IMessage>[];
+  };
 }>({
-	type: 'object',
-	properties: {
-		messages: {
-			type: 'object',
-			properties: {
-				update: {
-					type: 'array',
-					items: {
-						type: 'object',
-						properties: {
-							_id: { type: 'string' },
-						},
-						required: ['_id'],
-						additionalProperties: true,
-					},
-				},
-				remove: {
-					type: 'array',
-					items: {
-						type: 'object',
-						properties: {
-							_id: { type: 'string' },
-						},
-						required: ['_id'],
-						additionalProperties: true,
-					},
-				},
-			},
-			required: ['update', 'remove'],
-			additionalProperties: false,
-		},
-		success: {
-			type: 'boolean',
-			enum: [true],
-		},
-	},
-	required: ['messages', 'success'],
-	additionalProperties: false,
+  type: 'object',
+  properties: {
+    messages: {
+      type: 'object',
+      properties: {
+        update: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              _id: { type: 'string' },
+            },
+            required: ['_id'],
+            additionalProperties: true,
+          },
+        },
+        remove: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              _id: { type: 'string' },
+            },
+            required: ['_id'],
+            additionalProperties: true,
+          },
+        },
+      },
+      required: ['update', 'remove'],
+      additionalProperties: false,
+    },
+    success: {
+      type: 'boolean',
+      enum: [true],
+    },
+  },
+  required: ['messages', 'success'],
+  additionalProperties: false,
 });
 
 const chatEndpoints = API.v1
