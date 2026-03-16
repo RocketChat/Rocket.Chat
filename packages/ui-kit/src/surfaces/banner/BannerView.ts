@@ -13,7 +13,7 @@ export type BannerView = Omit<View, 'blocks'> & {
 	inline?: boolean;
 	variant?: 'neutral' | 'info' | 'success' | 'warning' | 'danger';
 	icon?: IconName;
-	title?: string; // TODO: change to plain_text block in the future
+	/** Title as plain string (legacy) or UiKit text object (e.g. { type: 'mrkdwn', text: '...' }). */
 	blocks: BannerSurfaceLayout;
 };
 
