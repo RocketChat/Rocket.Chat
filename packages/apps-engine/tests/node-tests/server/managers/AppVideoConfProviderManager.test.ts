@@ -222,31 +222,17 @@ describe('AppVideoConfProviderManager', () => {
 
 		const call = TestData.getVideoConfData();
 
-		const cases: any = [
-			{
-				name: 'test',
-				call,
-				runGenerateUrl: 'test/first-call',
-				result: 'test/first-call',
-			},
-			{
-				name: 'test2',
-				call,
-				runGenerateUrl: 'test2/first-call',
-				result: 'test2/first-call',
-			},
-			{
-				name: 'differentProvider',
-				call,
-				runGenerateUrl: 'differentProvider/first-call',
-				result: 'differentProvider/first-call',
-			},
-		];
+		const testProvider = (manager as any).videoConfProviders.get('testing').get('test') as AppVideoConfProvider;
+		const test2Provider = (manager as any).videoConfProviders.get('testing').get('test2') as AppVideoConfProvider;
+		const differentProvider = (manager as any).videoConfProviders.get('secondApp').get('differentprovider') as AppVideoConfProvider;
 
-		for (const c of cases) {
-			mock.method(AppVideoConfProvider.prototype, 'runGenerateUrl', () => c.runGenerateUrl);
-			assert.strictEqual(await manager.generateUrl(c.name, c.call), c.result);
-		}
+		mock.method(testProvider, 'runGenerateUrl', () => 'test/first-call');
+		mock.method(test2Provider, 'runGenerateUrl', () => 'test2/first-call');
+		mock.method(differentProvider, 'runGenerateUrl', () => 'differentProvider/first-call');
+
+		assert.strictEqual(await manager.generateUrl('test', call), 'test/first-call');
+		assert.strictEqual(await manager.generateUrl('test2', call), 'test2/first-call');
+		assert.strictEqual(await manager.generateUrl('differentProvider', call), 'differentProvider/first-call');
 	});
 
 	it('failToGenerateUrlWithUnknownProvider', async () => {
@@ -330,61 +316,20 @@ describe('AppVideoConfProviderManager', () => {
 		const call = TestData.getVideoConfDataExtended();
 		const user = TestData.getVideoConferenceUser();
 
-		const cases = [
-			{
-				name: 'test',
-				call,
-				user,
-				options: {},
-				runCustomizeUrl: 'test/first-call#caller',
-				result: 'test/first-call#caller',
-			},
-			{
-				name: 'test',
-				call,
-				user: undefined,
-				options: {},
-				runCustomizeUrl: 'test/first-call#',
-				result: 'test/first-call#',
-			},
-			{
-				name: 'test2',
-				call,
-				user,
-				options: {},
-				runCustomizeUrl: 'test2/first-call#caller',
-				result: 'test2/first-call#caller',
-			},
-			{
-				name: 'test2',
-				call,
-				user: undefined,
-				options: {},
-				runCustomizeUrl: 'test2/first-call#',
-				result: 'test2/first-call#',
-			},
-			{
-				name: 'differentProvider',
-				call,
-				user,
-				options: {},
-				runCustomizeUrl: 'differentProvider/first-call#caller',
-				result: 'differentProvider/first-call#caller',
-			},
-			{
-				name: 'differentProvider',
-				call,
-				user: undefined,
-				options: {},
-				runCustomizeUrl: 'differentProvider/first-call#',
-				result: 'differentProvider/first-call#',
-			},
-		];
+		const testProvider = (manager as any).videoConfProviders.get('testing').get('test') as AppVideoConfProvider;
+		const test2Provider = (manager as any).videoConfProviders.get('testing').get('test2') as AppVideoConfProvider;
+		const differentProvider = (manager as any).videoConfProviders.get('secondApp').get('differentprovider') as AppVideoConfProvider;
 
-		for (const c of cases) {
-			mock.method(AppVideoConfProvider.prototype, 'runCustomizeUrl', () => c.runCustomizeUrl);
-			assert.strictEqual(await manager.customizeUrl(c.name, c.call, c.user, c.options), c.result);
-		}
+		mock.method(testProvider, 'runCustomizeUrl', (_call: any, user: any) => user ? 'test/first-call#caller' : 'test/first-call#');
+		mock.method(test2Provider, 'runCustomizeUrl', (_call: any, user: any) => user ? 'test2/first-call#caller' : 'test2/first-call#');
+		mock.method(differentProvider, 'runCustomizeUrl', (_call: any, user: any) => user ? 'differentProvider/first-call#caller' : 'differentProvider/first-call#');
+
+		assert.strictEqual(await manager.customizeUrl('test', call, user, {}), 'test/first-call#caller');
+		assert.strictEqual(await manager.customizeUrl('test', call, undefined, {}), 'test/first-call#');
+		assert.strictEqual(await manager.customizeUrl('test2', call, user, {}), 'test2/first-call#caller');
+		assert.strictEqual(await manager.customizeUrl('test2', call, undefined, {}), 'test2/first-call#');
+		assert.strictEqual(await manager.customizeUrl('differentProvider', call, user, {}), 'differentProvider/first-call#caller');
+		assert.strictEqual(await manager.customizeUrl('differentProvider', call, undefined, {}), 'differentProvider/first-call#');
 	});
 
 	it('failToCustomizeUrlWithUnknownProvider', async () => {

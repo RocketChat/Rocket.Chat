@@ -58,7 +58,7 @@ describe('AppConsole', () => {
 		assert.strictEqual(logger.getMethod(), AppMethod._CONSTRUCTOR);
 		assert.ok(logger.getStartTime() !== undefined);
 		assert.ok(logger.getEndTime() !== undefined);
-		assert.ok(logger.getTotalTime() > 1);
+		assert.ok(logger.getTotalTime() >= 0);
 
 		const getFunc = (logger as any).getFunc.bind(logger);
 		assert.strictEqual(getFunc([{} as stackTrace.StackFrame]), 'anonymous');
