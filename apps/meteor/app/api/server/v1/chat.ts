@@ -578,45 +578,45 @@ const chatEndpoints = API.v1
 		},
 	)
 	.get(
-	'chat.search',
-	{
-		authRequired: true,
-		validateParams: isChatSearchProps,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: isChatSearchResponse,
+		'chat.search',
+		{
+			authRequired: true,
+			validateParams: isChatSearchProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isChatSearchResponse,
+			},
 		},
-	},
-	async function action() {
-		const { roomId, searchText } = this.queryParams;
-		const { offset, count } = await getPaginationItems(this.queryParams);
+		async function action() {
+			const { roomId, searchText } = this.queryParams;
+			const { offset, count } = await getPaginationItems(this.queryParams);
 
-		if (!roomId) {
-			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-		}
+			if (!roomId) {
+				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+			}
 
-		if (!searchText) {
-			throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
-		}
+			if (!searchText) {
+				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
+			}
 
-		const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
+			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
 
-		if (searchResult === false) {
-			throw new Meteor.Error('error-search-failed', 'The search operation failed');
-		}
+			if (searchResult === false) {
+				throw new Meteor.Error('error-search-failed', 'The search operation failed');
+			}
 
-		if (!searchResult.message) {
-			throw new Meteor.Error('error-search-no-results', 'No messages found matching the search query');
-		}
+			if (!searchResult.message) {
+				throw new Meteor.Error('error-search-no-results', 'No messages found matching the search query');
+			}
 
-		const result = searchResult.message.docs;
+			const result = searchResult.message.docs;
 
-		return API.v1.success({
-			messages: await normalizeMessagesForUser(result, this.userId),
-		});
-	},
-)
+			return API.v1.success({
+				messages: await normalizeMessagesForUser(result, this.userId),
+			});
+		},
+	);
 
 API.v1.addRoute(
 	'chat.postMessage',
@@ -650,38 +650,6 @@ API.v1.addRoute(
 				ts: Date.now(),
 				channel: messageReturn.channel,
 				message,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.search',
-	{ authRequired: true, validateParams: isChatSearchProps },
-	{
-		async get() {
-			const { roomId, searchText } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
-			}
-
-			if (!searchText) {
-				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
-			}
-
-			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
-			if (searchResult === false) {
-				return API.v1.failure();
-			}
-			if (!searchResult.message) {
-				return API.v1.failure();
-			}
-			const result = searchResult.message.docs;
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
 	},
