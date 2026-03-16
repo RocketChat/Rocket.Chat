@@ -3169,7 +3169,7 @@ const GETLivechatVisitorsAutocompleteParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatVisitorsAutocompleteParams = ajv.compile<GETLivechatVisitorsAutocompleteParams>(
+export const isGETLivechatVisitorsAutocompleteParams = ajvQuery.compile<GETLivechatVisitorsAutocompleteParams>(
 	GETLivechatVisitorsAutocompleteParamsSchema,
 );
 
