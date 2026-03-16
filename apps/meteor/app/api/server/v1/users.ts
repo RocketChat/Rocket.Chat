@@ -925,6 +925,10 @@ const usersEndpoints = API.v1
 				return API.v1.failure('User not found');
 			}
 
+			if ((user as Record<string, unknown>).inactiveReason === null) {
+				delete (user as Record<string, unknown>).inactiveReason;
+			}
+
 			if (this.bodyParams.customFields) {
 				await saveCustomFields(userId, this.bodyParams.customFields);
 			}
