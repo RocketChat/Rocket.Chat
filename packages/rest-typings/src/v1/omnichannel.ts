@@ -1776,7 +1776,7 @@ const GETOmnichannelContactSchema = {
 	additionalProperties: false,
 };
 
-export const isGETOmnichannelContactProps = ajv.compile<GETOmnichannelContactProps>(GETOmnichannelContactSchema);
+export const isGETOmnichannelContactProps = ajvQuery.compile<GETOmnichannelContactProps>(GETOmnichannelContactSchema);
 
 type GETOmnichannelContactSearchProps = { email: string } | { phone: string };
 
