@@ -2436,7 +2436,7 @@ const GETWebRTCCallSchema = {
 	additionalProperties: false,
 };
 
-export const isGETWebRTCCall = ajv.compile<GETWebRTCCall>(GETWebRTCCallSchema);
+export const isGETWebRTCCall = ajvQuery.compile<GETWebRTCCall>(GETWebRTCCallSchema);
 
 type PUTWebRTCCallId = { rid: string; status: string };
 
