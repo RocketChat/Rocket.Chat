@@ -3602,7 +3602,7 @@ const GETLivechatPrioritiesParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatPrioritiesParams = ajv.compile<GETLivechatPrioritiesParams>(GETLivechatPrioritiesParamsSchema);
+export const isGETLivechatPrioritiesParams = ajvQuery.compile<GETLivechatPrioritiesParams>(GETLivechatPrioritiesParamsSchema);
 
 type DELETELivechatPriorityParams = {
 	priorityId: string;
