@@ -3079,7 +3079,7 @@ const GETLivechatVisitorsPagesVisitedRoomIdParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatVisitorsPagesVisitedRoomIdParams = ajv.compile<GETLivechatVisitorsPagesVisitedRoomIdParams>(
+export const isGETLivechatVisitorsPagesVisitedRoomIdParams = ajvQuery.compile<GETLivechatVisitorsPagesVisitedRoomIdParams>(
 	GETLivechatVisitorsPagesVisitedRoomIdParamsSchema,
 );
 
