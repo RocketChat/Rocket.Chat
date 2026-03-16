@@ -3234,7 +3234,7 @@ const GETBusinessHourParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETBusinessHourParams = ajv.compile<GETBusinessHourParams>(GETBusinessHourParamsSchema);
+export const isGETBusinessHourParams = ajvQuery.compile<GETBusinessHourParams>(GETBusinessHourParamsSchema);
 
 type GETLivechatTriggersParams = PaginatedRequest;
 
