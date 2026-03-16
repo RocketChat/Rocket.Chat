@@ -25,9 +25,7 @@ export type EmojiPackages = {
 					emojiPackage: string;
 					shortnames: string[];
 					uc_base: string;
-					uc_greedy: string;
-					uc_match: string;
-					uc_output: string;
+					uc_full: string;
 					aliases?: string[];
 					aliasOf?: undefined;
 					extension?: string;

@@ -12,7 +12,7 @@ import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationReq
 import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
-import emojione from 'emojione';
+import emojione from 'emoji-toolkit';
 
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
 import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
