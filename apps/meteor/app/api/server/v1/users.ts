@@ -937,6 +937,10 @@ const usersEndpoints = API.v1
 				return API.v1.failure('User not found');
 			}
 
+			if ((user as unknown as Record<string, unknown>).inactiveReason === null) {
+				delete (user as unknown as Record<string, unknown>).inactiveReason;
+			}
+
 			return API.v1.success({ user });
 		},
 	);
