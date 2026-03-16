@@ -71,9 +71,9 @@ test.describe('OC - Tags Visibility', () => {
 		await departmentB.delete();
 	});
 
-	test('Verify agent should see correct tags based on department association', async () => {
+	test('Verify agent should see correct tags based on department association', async ({ page }) => {
 		await test.step('Agent opens room', async () => {
-			await poOmnichannel.sidebar.getSidebarItemByName(visitorA.name).click();
+			await page.goto(`/live/${conversations[0].data.room._id}`);
 		});
 
 		await test.step('should not be able to see tags field', async () => {
