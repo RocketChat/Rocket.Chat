@@ -3574,7 +3574,7 @@ const GETLivechatQueueParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatQueueParams = ajv.compile<GETLivechatQueueParams>(GETLivechatQueueParamsSchema);
+export const isGETLivechatQueueParams = ajvQuery.compile<GETLivechatQueueParams>(GETLivechatQueueParamsSchema);
 
 type GETLivechatPrioritiesParams = PaginatedRequest<{ text?: string }>;
 
