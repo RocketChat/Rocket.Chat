@@ -8,7 +8,7 @@ export const require = (mod: string) => {
 	// runtime those files are not available
 	if (mod.startsWith('@rocket.chat/apps-engine')) {
 		// Only remove "src/" substring when it comes after "apps-engine/"
-		mod = import.meta.resolve(mod).replace('file://', '').replace('apps-engine/src/, 'apps-engine/');
+		mod = import.meta.resolve(mod).replace('file://', '').replace('apps-engine/src/', 'apps-engine/');
 	}
 
 	return _require(mod);
