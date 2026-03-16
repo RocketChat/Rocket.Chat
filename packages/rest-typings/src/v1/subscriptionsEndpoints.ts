@@ -1,6 +1,6 @@
 import type { ISubscription, IMessage, IRoom } from '@rocket.chat/core-typings';
 
-import { ajvQuery } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 
 type SubscriptionsGet = { updatedSince?: string };
 
@@ -70,7 +70,7 @@ const SubscriptionsReadSchema = {
 	],
 };
 
-export const isSubscriptionsReadProps = ajvQuery.compile<SubscriptionsRead>(SubscriptionsReadSchema);
+export const isSubscriptionsReadProps = ajv.compile<SubscriptionsRead>(SubscriptionsReadSchema);
 
 const SubscriptionsUnreadSchema = {
 	anyOf: [
