@@ -21,3 +21,11 @@ export type MessageAttachmentBase = {
 		sha256: string;
 	};
 };
+
+export type EncryptedMessageAttachment = MessageAttachmentBase & {
+	encryption: Required<MessageAttachmentBase>['encryption'];
+};
+
+export const isEncryptedMessageAttachment = (attachment: MessageAttachmentBase): attachment is EncryptedMessageAttachment => {
+	return attachment?.encryption !== undefined && typeof attachment.encryption === 'object';
+};

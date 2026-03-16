@@ -40,19 +40,22 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		super(db, trash);
 	}
 
-	async removeDepartmentFromForwardListById(departmentId: string): Promise<void> {
+	override async removeDepartmentFromForwardListById(departmentId: string): Promise<void> {
 		await this.updateMany({ departmentsAllowedToForward: departmentId }, { $pull: { departmentsAllowedToForward: departmentId } });
 	}
 
-	unfilteredFind(query: Filter<ILivechatDepartment>, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+	override unfilteredFind(query: Filter<ILivechatDepartment>, options: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		return this.col.find(query, options);
 	}
 
-	unfilteredFindOne(query: Filter<ILivechatDepartment>, options: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null> {
+	override unfilteredFindOne(
+		query: Filter<ILivechatDepartment>,
+		options: FindOptions<ILivechatDepartment>,
+	): Promise<ILivechatDepartment | null> {
 		return this.col.findOne(query, options);
 	}
 
-	unfilteredUpdate(
+	override unfilteredUpdate(
 		query: Filter<ILivechatDepartment>,
 		update: UpdateFilter<ILivechatDepartment>,
 		options: FindOptions<ILivechatDepartment>,
@@ -60,19 +63,19 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.col.updateOne(query, update, options);
 	}
 
-	unfilteredRemove(query: Filter<ILivechatDepartment>): Promise<DeleteResult> {
+	override unfilteredRemove(query: Filter<ILivechatDepartment>): Promise<DeleteResult> {
 		return this.col.deleteOne(query);
 	}
 
-	createOrUpdateDepartment(_id: string | null, data: LivechatDepartmentDTO): Promise<ILivechatDepartment> {
+	override createOrUpdateDepartment(_id: string | null, data: LivechatDepartmentDTO): Promise<ILivechatDepartment> {
 		return super.createOrUpdateDepartment(_id, { ...data, type: 'd' });
 	}
 
-	removeParentAndAncestorById(id: string): Promise<UpdateResult | Document> {
+	override removeParentAndAncestorById(id: string): Promise<UpdateResult | Document> {
 		return this.updateMany({ parentId: id }, { $unset: { parentId: 1 }, $pull: { ancestors: id } });
 	}
 
-	findActiveByUnitIds<T extends Document = ILivechatDepartment>(unitIds: string[], options: FindOptions<T> = {}): FindCursor<T> {
+	override findActiveByUnitIds<T extends Document = ILivechatDepartment>(unitIds: string[], options: FindOptions<T> = {}): FindCursor<T> {
 		const query = {
 			enabled: true,
 			numAgents: { $gt: 0 },
@@ -85,7 +88,7 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.find<T>(query, options);
 	}
 
-	findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
+	override findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		businessUnit?: string,
 		projection?: FindOptions<T>['projection'],
 	): FindCursor<T> {
@@ -96,11 +99,11 @@ export class LivechatDepartmentEE extends LivechatDepartmentRaw implements ILive
 		return this.findActiveByUnitIds<T>([businessUnit], { projection });
 	}
 
-	findByParentId(parentId: string, options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
+	override findByParentId(parentId: string, options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment> {
 		return this.col.find({ parentId }, options);
 	}
 
-	findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }> {
+	override findAgentsByBusinessHourId(businessHourId: string): AggregationCursor<{ agentIds: string[] }> {
 		return this.col.aggregate<{ agentIds: string[] }>([
 			[
 				{

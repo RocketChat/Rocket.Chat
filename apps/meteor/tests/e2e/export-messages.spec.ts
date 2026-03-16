@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
-import { HomeChannel, Utils } from './page-objects';
-import { ExportMessagesTab } from './page-objects/fragments/export-messages-tab';
+import { HomeChannel } from './page-objects';
+import { ExportMessagesTab } from './page-objects/fragments';
 import { createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
 
@@ -12,7 +12,6 @@ const uniqueMessage = (): string => `msg-${faker.string.uuid()}`;
 
 test.describe('export-messages', () => {
 	let poHomeChannel: HomeChannel;
-	let poUtils: Utils;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
@@ -21,7 +20,6 @@ test.describe('export-messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		poUtils = new Utils(page);
 
 		await page.goto('/home');
 	});
@@ -36,7 +34,7 @@ test.describe('export-messages', () => {
 	test('should all export methods be available in targetChannel', async ({ page }) => {
 		const exportMessagesTab = new ExportMessagesTab(page);
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
@@ -49,7 +47,7 @@ test.describe('export-messages', () => {
 	test('should display export output format correctly depending on the selected method', async ({ page }) => {
 		const exportMessagesTab = new ExportMessagesTab(page);
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
@@ -79,7 +77,7 @@ test.describe('export-messages', () => {
 		const exportMessagesTab = new ExportMessagesTab(page);
 		const testMessage = uniqueMessage();
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(testMessage);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
@@ -90,28 +88,34 @@ test.describe('export-messages', () => {
 		await exportMessagesTab.send();
 
 		await expect(
-			poUtils.getAlertByText('You must select one or more users or provide one or more email addresses, separated by commas'),
+			page.locator('[role="alert"]', {
+				hasText: 'You must select one or more users or provide one or more email addresses, separated by commas',
+			}),
 		).toBeVisible();
 	});
 
 	test('should display an error when trying to send email without selecting any message', async ({ page }) => {
 		const exportMessagesTab = new ExportMessagesTab(page);
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
 		await exportMessagesTab.setAdditionalEmail('mail@mail.com');
 		await exportMessagesTab.send();
 
-		await expect(poUtils.getAlertByText(`You haven't selected any messages`)).toBeVisible();
+		await expect(
+			page.locator('[role="alert"]', {
+				hasText: `You haven't selected any messages`,
+			}),
+		).toBeVisible();
 	});
 
 	test('should be able to send messages after closing export messages', async () => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(message1);
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
@@ -128,13 +132,13 @@ test.describe('export-messages', () => {
 		const message1 = uniqueMessage();
 		const message2 = uniqueMessage();
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(message1);
 		await poHomeChannel.content.sendMessage(message2);
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
-		await expect(exportMessagesTab.dialog).toBeVisible();
+		await exportMessagesTab.waitForDisplay();
 
 		await poHomeChannel.content.getMessageByText(message1).click();
 
@@ -155,14 +159,14 @@ test.describe('export-messages', () => {
 
 		const exportMessagesTab = new ExportMessagesTab(page);
 
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 		await poHomeChannel.content.sendMessage(message1);
 		await poHomeChannel.content.sendMessage(message2);
 
 		await poHomeChannel.tabs.kebab.click({ force: true });
 		await poHomeChannel.tabs.btnExportMessages.click();
 
-		await expect(exportMessagesTab.dialog).toBeVisible();
+		await exportMessagesTab.waitForDisplay();
 		await poHomeChannel.content.getMessageByText(message1).click();
 
 		await expect(exportMessagesTab.getMessageCheckbox(message1)).toBeChecked();

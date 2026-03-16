@@ -5,6 +5,7 @@ import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
+import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { OAuth2Server } from '../../../../server/oauth2-server/oauth';
 import { API } from '../../../api/server';
 
@@ -18,14 +19,15 @@ async function getAccessToken(accessToken: string) {
 	return OAuthAccessTokens.findOneByAccessToken(accessToken);
 }
 
-export async function oAuth2ServerAuth(partialRequest: {
-	headers: Record<string, any>;
-	query: Record<string, any>;
-}): Promise<{ user: IUser } | undefined> {
-	const headerToken = partialRequest.headers.authorization?.replace('Bearer ', '');
-	const queryToken = partialRequest.query.access_token;
+export async function oAuth2ServerAuth(partialRequest: { authorization?: string; accessToken?: string }): Promise<IUser | undefined> {
+	const headerToken = partialRequest.authorization?.replace('Bearer ', '');
+	const incomingToken = headerToken || partialRequest.accessToken;
 
-	const accessToken = await getAccessToken(headerToken || queryToken);
+	if (!incomingToken) {
+		return;
+	}
+
+	const accessToken = await getAccessToken(incomingToken);
 
 	// If there is no token available or the token has expired, return undefined
 	if (!accessToken || (accessToken.expires != null && accessToken.expires < new Date())) {
@@ -38,7 +40,7 @@ export async function oAuth2ServerAuth(partialRequest: {
 		return;
 	}
 
-	return { user };
+	return user;
 }
 
 oauth2server.app.disable('x-powered-by');
@@ -69,8 +71,15 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	});
 });
 
-API.v1.addAuthMethod(async function () {
-	return oAuth2ServerAuth(this.request);
+API.v1.addAuthMethod((routeContext) => {
+	const authorization = routeContext.request.headers.get('authorization') ?? undefined;
+	const query = isPlainObject(routeContext.queryParams) ? routeContext.queryParams : {};
+	const accessToken = typeof query.access_token === 'string' ? query.access_token : undefined;
+	if (routeContext.queryParams?.access_token) {
+		delete routeContext.queryParams.access_token;
+	}
+
+	return oAuth2ServerAuth({ authorization, accessToken });
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);

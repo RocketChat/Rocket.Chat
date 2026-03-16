@@ -9,7 +9,7 @@ export class WebdavAccountsRaw extends BaseRaw<IWebdavAccount> implements IWebda
 		super(db, 'webdav_accounts', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { userId: 1 } }];
 	}
 

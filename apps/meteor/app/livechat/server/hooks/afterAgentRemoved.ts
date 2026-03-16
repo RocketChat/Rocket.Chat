@@ -1,6 +1,6 @@
 import { LivechatDepartment, Users, LivechatDepartmentAgents, LivechatVisitors } from '@rocket.chat/models';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnLivechatDepartmentAgentChanged, notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
 
 callbacks.add('livechat.afterAgentRemoved', async ({ agent }) => {
@@ -21,7 +21,6 @@ callbacks.add('livechat.afterAgentRemoved', async ({ agent }) => {
 				operator: false,
 				livechat: null,
 				statusLivechat: null,
-				extension: null,
 				openBusinessHours: null,
 			},
 		});

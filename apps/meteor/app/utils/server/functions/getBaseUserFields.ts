@@ -29,7 +29,7 @@ export const getBaseUserFields = (allowServiceKeys = false): UserFields => ({
 	'oauth.authorizedClients': 1,
 	'_updatedAt': 1,
 	'avatarETag': 1,
-	'extension': 1,
 	'openBusinessHours': 1,
+	'abacAttributes': 1,
 	...(allowServiceKeys && { 'services.totp.enabled': 1, 'services.email2fa.enabled': 1 }),
 });

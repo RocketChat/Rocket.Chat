@@ -23,7 +23,7 @@ import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const AppearanceForm = () => {
 	const { t } = useTranslation();
-	const isEnterprise = useHasLicenseModule('livechat-enterprise');
+	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');
 
 	const { control, watch } = useFormContext();
 	const { Livechat_enable_message_character_limit } = watch();

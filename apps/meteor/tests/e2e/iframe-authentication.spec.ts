@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { Users } from './fixtures/userStates';
-import { Utils, Registration } from './page-objects';
+import { Registration, Authenticated } from './page-objects';
 import { test, expect } from './utils/test';
 
 const IFRAME_URL = 'http://iframe.rocket.chat';
@@ -10,7 +10,7 @@ const API_URL = 'http://auth.rocket.chat/api/login';
 
 test.describe('iframe-authentication', () => {
 	let poRegistration: Registration;
-	let poUtils: Utils;
+	let poAuth: Authenticated;
 
 	test.beforeAll(async ({ api }) => {
 		await api.post('/settings/Accounts_iframe_enabled', { value: true });
@@ -28,7 +28,7 @@ test.describe('iframe-authentication', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
-		poUtils = new Utils(page);
+		poAuth = new Authenticated(page);
 
 		await page.route(API_URL, async (route) => {
 			await route.fulfill({
@@ -77,7 +77,7 @@ test.describe('iframe-authentication', () => {
 		});
 
 		await page.goto('/home');
-		await expect(poUtils.mainContent).toBeVisible();
+		await poAuth.waitForDisplay();
 	});
 
 	test('should show login page when API returns invalid token', async ({ page }) => {
@@ -100,7 +100,7 @@ test.describe('iframe-authentication', () => {
 
 		await poRegistration.loginIframeSubmitButton.click();
 
-		await expect(poUtils.mainContent).toBeVisible();
+		await poAuth.waitForDisplay();
 	});
 
 	test('should return error to iframe when login fails', async ({ page }) => {

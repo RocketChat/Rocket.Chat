@@ -12,6 +12,11 @@ inputs:
     required: false
     description: 'Install dependencies'
     type: boolean
+  type:
+    required: false
+    description: 'development or production'
+    type: string
+    default: 'development'
   deno-version:
     required: true
     description: 'Deno version'
@@ -46,14 +51,15 @@ runs:
           apps/meteor/ee/server/services/node_modules
           packages/apps-engine/node_modules
           packages/apps-engine/.deno-cache
-        key: node-modules-${{ hashFiles('yarn.lock') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
+        key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.yarnrc.yml') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v5
+        # key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('package.json') }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.yarnrc.yml') }}-deno-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}-v${{ github.run_id }}
     #
     # Could use this command to list all paths to save:
     # find . -name 'node_modules' -prune | grep -v "/\.meteor/" | grep -v "/meteor/packages/"
 
     - name: Use Node.js ${{ inputs.node-version }}
       id: node-version
-      uses: actions/setup-node@v4.4.0
+      uses: actions/setup-node@v6.0.0
       with:
         node-version: ${{ inputs.node-version }}
         cache: 'yarn'
@@ -63,13 +69,37 @@ runs:
       with:
         deno-version: ${{ inputs.deno-version }}
 
+    - name: Configure mongodb-memory-server cache
+      shell: bash
+      run: |
+        CACHE_DIR="${GITHUB_WORKSPACE}/node_modules/.cache/mongodb-memory-server"
+        mkdir -p "$CACHE_DIR"
+        echo "MONGOMS_DOWNLOAD_DIR=$CACHE_DIR" >> $GITHUB_ENV
+        echo "MONGOMS_PREFER_GLOBAL_PATH=false" >> $GITHUB_ENV
+
     - name: yarn login
       shell: bash
       if: inputs.NPM_TOKEN
       run: |
         echo "//registry.npmjs.org/:_authToken=${{ inputs.NPM_TOKEN }}" > ~/.npmrc
 
-    - name: yarn install
+    - name: yarn config
       if: inputs.install
       shell: bash
+      run: |
+        yarn config set supportedArchitectures --json '{"os": ["linux"], "cpu": ["arm64", "x64"], "libc": ["glibc", "musl"]}'
+
+    - name: yarn install
+      if: inputs.install && inputs.type == 'development'
+      shell: bash
       run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn
+
+    - name: yarn install production
+      if: inputs.install && inputs.type == 'production'
+      shell: bash
+      run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn workspaces focus --all --production
+
+    - name: restore yarn config file
+      if: inputs.install
+      shell: bash
+      run: git checkout -- .yarnrc.yml

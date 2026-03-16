@@ -1,10 +1,9 @@
-import type { ComponentProps, ReactElement } from 'react';
-
+import type { UserStatusProps } from './UserStatus';
 import UserStatus from './UserStatus';
 
-type OnlineProps = Omit<ComponentProps<typeof UserStatus>, 'status'>;
+type OnlineProps = Omit<UserStatusProps, 'status'>;
 
-function Online(props: OnlineProps): ReactElement {
+function Online(props: OnlineProps) {
 	return <UserStatus status='online' {...props} />;
 }
 

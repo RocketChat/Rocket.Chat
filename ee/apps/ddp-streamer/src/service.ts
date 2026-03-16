@@ -6,7 +6,7 @@ import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
 import { startTracing } from '@rocket.chat/tracing';
 
-(async () => {
+void (async () => {
 	const { db, client } = await getConnection();
 
 	startTracing({ service: 'ddp-streamer', db: client });

@@ -1,10 +1,32 @@
 import type { FrameLocator, Locator, Page } from '@playwright/test';
 
-export class Registration {
-	private readonly page: Page;
+import { expect } from '../utils/test';
 
-	constructor(page: Page) {
-		this.page = page;
+abstract class Main {
+	constructor(protected root: Locator) {}
+
+	waitForDisplay() {
+		return expect(this.root).toBeVisible();
+	}
+
+	waitForDismissal() {
+		return expect(this.root).not.toBeVisible();
+	}
+}
+
+export class Authenticated extends Main {
+	constructor(protected page: Page) {
+		super(page.locator('#main-content'));
+	}
+}
+
+export class Registration extends Main {
+	constructor(protected page: Page) {
+		super(page.getByRole('main'));
+	}
+
+	get loginForm(): Locator {
+		return this.page.getByRole('form', { name: 'Login', exact: true });
 	}
 
 	get btnSendInstructions(): Locator {

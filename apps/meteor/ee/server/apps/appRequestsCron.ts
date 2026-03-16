@@ -1,5 +1,5 @@
 import { cronJobs } from '@rocket.chat/cron';
-import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 
 import { appRequestNotififyForUsers } from './marketplace/appRequestNotifyUsers';
 import { Apps } from './orchestrator';
@@ -21,20 +21,16 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 			return;
 		}
 
-		const baseUrl = Apps.getMarketplaceUrl();
-		if (!baseUrl) {
-			Apps.debugLog(`could not load marketplace base url to send app requests notifications`);
-			return;
-		}
-
 		const options = {
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
-		};
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+		} as ExtendedFetchOptions;
 
-		const pendingSentUrl = `${baseUrl}/v1/app-request/sent/pending`;
-		const result = await fetch(pendingSentUrl, options);
+		const pendingSentUrl = `v1/app-request/sent/pending`;
+		const result = await Apps.getMarketplaceClient().fetch(pendingSentUrl, options);
 		const { data } = await result.json();
 		const filtered = installedApps.filter((app) => data.indexOf(app.getID()) !== -1);
 
@@ -42,10 +38,11 @@ const appsNotifyAppRequests = async function _appsNotifyAppRequests() {
 			const appId = app.getID();
 			const appName = app.getName();
 
-			const usersNotified = await appRequestNotififyForUsers(baseUrl, workspaceUrl, appId, appName)
+			const usersNotified = await appRequestNotififyForUsers(Apps.getMarketplaceClient().getMarketplaceUrl(), workspaceUrl, appId, appName)
 				.then(async (response) => {
 					// Mark all app requests as sent
-					await fetch(`${baseUrl}/v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
+					// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+					await Apps.getMarketplaceClient().fetch(`v1/app-request/markAsSent/${appId}`, { ...options, method: 'POST' });
 					return response;
 				})
 				.catch((err) => {

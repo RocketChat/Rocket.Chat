@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders WithDateObject without crashing 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="false"
+      class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-1p3fsdk"
+      role="status"
+      title="Invited January 1, 2025"
+    >
+      
+    </i>
+  </div>
+</body>
+`;
+
+exports[`renders WithISOStringDate without crashing 1`] = `
+<body>
+  <div>
+    <i
+      aria-hidden="false"
+      class="rcx-box rcx-box--full rcx-icon--name-mail rcx-icon rcx-css-1p3fsdk"
+      role="status"
+      title="Invited January 1, 2025"
+    >
+      
+    </i>
+  </div>
+</body>
+`;

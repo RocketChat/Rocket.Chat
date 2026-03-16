@@ -1,31 +1,6 @@
 import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
-
-type BannersGetNew = {
-	platform: BannerPlatform;
-	bid: IBanner['_id'];
-};
-
-const BannersGetNewSchema = {
-	type: 'object',
-	properties: {
-		platform: {
-			type: 'string',
-			enum: ['web', 'mobile'],
-		},
-		bid: {
-			type: 'string',
-		},
-	},
-	required: ['platform'],
-	additionalProperties: false,
-};
-
-export const isBannersGetNewProps = ajv.compile<BannersGetNew>(BannersGetNewSchema);
+import { ajv } from './Ajv';
 
 type BannersId = {
 	platform: BannerPlatform;
@@ -68,13 +43,6 @@ const BannersDismissSchema = {
 export const isBannersDismissProps = ajv.compile<BannersDismiss>(BannersDismissSchema);
 
 export type BannersEndpoints = {
-	/* @deprecated */
-	'/v1/banners.getNew': {
-		GET: (params: BannersGetNew) => {
-			banners: IBanner[];
-		};
-	};
-
 	'/v1/banners/:id': {
 		GET: (params: BannersId) => {
 			banners: IBanner[];

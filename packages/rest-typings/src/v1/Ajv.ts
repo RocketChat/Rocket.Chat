@@ -5,6 +5,7 @@ const ajv = new Ajv({
 	coerceTypes: true,
 	allowUnionTypes: true,
 	code: { source: true },
+	discriminator: true,
 });
 
 // TODO: keep ajv extension here

@@ -30,15 +30,7 @@ export const useRemoveAgent = (uid: ILivechatAgent['_id']) => {
 			}
 		};
 
-		setModal(
-			<GenericModal
-				data-qa-id='remove-agent-modal'
-				variant='danger'
-				onConfirm={onDeleteAgent}
-				onCancel={() => setModal()}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	});
 
 	return handleDelete;

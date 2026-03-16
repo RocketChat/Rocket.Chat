@@ -1,14 +1,13 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useCurrentModal, useModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { lazy, Suspense } from 'react';
 
 import ModalBackdrop from './ModalBackdrop';
 import ModalPortal from './ModalPortal';
 
-const FocusScope = lazy(() => import('react-aria').then(({ FocusScope }) => ({ default: FocusScope })));
+const FocusScope = lazy(() => import('react-aria').then((module) => ({ default: module.FocusScope })));
 
-const ModalRegion = (): ReactElement | null => {
+const ModalRegion = () => {
 	const currentModal = useCurrentModal();
 	const { setModal } = useModal();
 	const handleDismiss = useEffectEvent(() => {

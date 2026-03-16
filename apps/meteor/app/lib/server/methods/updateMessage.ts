@@ -15,7 +15,7 @@ const allowedEditedFields = ['tshow', 'alias', 'attachments', 'avatar', 'emoji',
 
 export async function executeUpdateMessage(
 	uid: IUser['_id'],
-	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'>,
+	message: AtLeast<IMessage, '_id' | 'rid' | 'msg' | 'customFields'> | AtLeast<IMessage, '_id' | 'rid' | 'content'>,
 	previewUrls?: string[],
 ) {
 	const originalMessage = await Messages.findOneById(message._id);

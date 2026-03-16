@@ -9,6 +9,7 @@ import { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import Chart from './Chart';
+import { useChartContext } from './useChartContext';
 import { useUpdateChartData } from './useUpdateChartData';
 import { drawDoughnutChart } from '../../../../../app/livechat/client/lib/chartHandler';
 import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
@@ -39,40 +40,41 @@ const AgentStatusChart = ({ departmentId, ...props }: AgentStatusChartsProps) =>
 	const { t } = useTranslation();
 
 	const canvas: MutableRefObject<HTMLCanvasElement | null> = useRef(null);
-	const context: MutableRefObject<chartjs.Chart<'doughnut'> | undefined> = useRef();
-
-	const updateChartData = useUpdateChartData({
-		context,
-		canvas,
-		t,
-		init,
-	});
 
 	const getAgentStatus = useEndpoint('GET', '/v1/livechat/analytics/dashboards/charts/agents-status');
 	const { isSuccess, data: { offline = 0, available = 0, away = 0, busy = 0 } = initialData } = useQuery({
 		queryKey: omnichannelQueryKeys.analytics.agentsStatus(departmentId),
 		queryFn: () => getAgentStatus({ departmentId }),
+		gcTime: 0,
+	});
+
+	const context = useChartContext({
+		canvas,
+		init,
+		t,
+	});
+
+	const updateChartData = useUpdateChartData({
+		context,
+		canvas,
+		init,
+		t,
 	});
 
 	useEffect(() => {
-		const initChart = async () => {
-			if (!canvas.current) {
-				return;
-			}
+		if (!context) {
+			return;
+		}
 
-			context.current = await init(canvas.current, context.current, t);
-		};
-		initChart();
-	}, [t]);
-
-	useEffect(() => {
-		if (!isSuccess) return;
+		if (!isSuccess) {
+			return;
+		}
 
 		updateChartData(t('Offline'), [offline]);
 		updateChartData(t('Available'), [available]);
 		updateChartData(t('Away'), [away]);
 		updateChartData(t('Busy'), [busy]);
-	}, [available, away, busy, offline, isSuccess, t, updateChartData]);
+	}, [context, available, away, busy, offline, isSuccess, t, updateChartData]);
 
 	return <Chart canvasRef={canvas} {...props} />;
 };

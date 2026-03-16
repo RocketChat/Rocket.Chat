@@ -100,22 +100,6 @@ export const metrics = {
 		name: 'rocketchat_instance_count',
 		help: 'instances running',
 	}),
-	oplogEnabled: new client.Gauge({
-		name: 'rocketchat_oplog_enabled',
-		labelNames: ['enabled'],
-		help: 'oplog enabled',
-	}),
-	oplogQueue: new client.Gauge({
-		name: 'rocketchat_oplog_queue',
-		labelNames: ['queue'],
-		help: 'oplog queue',
-	}),
-	oplog: new client.Counter({
-		name: 'rocketchat_oplog',
-		help: 'summary of oplog operations',
-		labelNames: ['collection', 'op'],
-	}),
-
 	pushQueue: new client.Gauge({
 		name: 'rocketchat_push_queue',
 		labelNames: ['queue'],
@@ -198,6 +182,12 @@ export const metrics = {
 	totalAppsFailed: new client.Gauge({
 		name: 'rocketchat_apps_failed',
 		help: 'total apps that failed to load',
+	}),
+	appBridgeMethods: new client.Summary({
+		name: 'rocketchat_apps_bridge_methods',
+		help: 'summary of app bridge method calls count and time',
+		labelNames: ['bridge', 'method', 'app_id'],
+		percentiles,
 	}),
 
 	// Meteor Facts

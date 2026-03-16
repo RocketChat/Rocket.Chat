@@ -143,16 +143,7 @@ export interface IDocumentMapStore<T extends { _id: string }> {
 	count(predicate: (record: T) => boolean): number;
 }
 
-/**
- * Factory function to create a Zustand store that holds a map of documents.
- *
- * @param options - Optional callbacks to handle invalidation of documents.
- * @returns the Zustand store with methods to manage the document map.
- */
-export const createDocumentMapStore = <T extends { _id: string }>({
-	onInvalidate,
-	onInvalidateAll,
-}: {
+export interface IDocumentMapStoreHooks<T extends { _id: string }> {
 	/**
 	 * Callback invoked when a document is stored, updated or deleted.
 	 *
@@ -167,7 +158,15 @@ export const createDocumentMapStore = <T extends { _id: string }>({
 	 * @deprecated prefer subscribing to the store
 	 */
 	onInvalidateAll?: () => void;
-} = {}) =>
+}
+
+/**
+ * Factory function to create a Zustand store that holds a map of documents.
+ *
+ * @param options - Optional callbacks to handle invalidation of documents.
+ * @returns the Zustand store with methods to manage the document map.
+ */
+export const createDocumentMapStore = <T extends { _id: string }>({ onInvalidate, onInvalidateAll }: IDocumentMapStoreHooks<T> = {}) =>
 	create<IDocumentMapStore<T>>()((set, get) => ({
 		records: new Map(),
 		has: (id: T['_id']) => get().records.has(id),

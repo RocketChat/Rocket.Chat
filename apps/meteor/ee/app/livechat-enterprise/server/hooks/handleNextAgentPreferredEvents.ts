@@ -6,7 +6,7 @@ import { RoutingManager } from '../../../../../app/livechat/server/lib/RoutingMa
 import { migrateVisitorIfMissingContact } from '../../../../../app/livechat/server/lib/contacts/migrateVisitorIfMissingContact';
 import { checkDefaultAgentOnNewRoom } from '../../../../../app/livechat/server/lib/hooks';
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 const normalizeDefaultAgent = (agent?: Pick<IUser, '_id' | 'username'> | null): SelectedAgent | undefined => {
 	if (!agent) {

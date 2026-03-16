@@ -18,7 +18,7 @@ export class UsersEE extends UsersRaw {
 		super(db, trash);
 	}
 
-	getUnavailableAgents(
+	override getUnavailableAgents(
 		departmentId: string,
 		customFilter: Filter<AvailableAgentsAggregation>,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {

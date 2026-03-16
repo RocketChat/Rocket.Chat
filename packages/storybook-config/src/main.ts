@@ -13,7 +13,7 @@ const baseConfig = (customConfig?: StorybookConfig): StorybookConfig => {
 			getAbsolutePath('@storybook/addon-a11y'),
 			getAbsolutePath('@storybook/addon-essentials'),
 			getAbsolutePath('storybook-dark-mode'),
-			getAbsolutePath('@storybook/addon-webpack5-compiler-babel'),
+			getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 			getAbsolutePath('@storybook/addon-styling-webpack'),
 		],
 		framework: {

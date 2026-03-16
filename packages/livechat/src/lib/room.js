@@ -2,14 +2,12 @@ import i18next from 'i18next';
 import { route } from 'preact-router';
 
 import { Livechat } from '../api';
-import { CallStatus, isCallOngoing } from '../components/Calls/CallStatus';
 import { canRenderMessage } from '../helpers/canRenderMessage';
 import { setCookies } from '../helpers/cookies';
 import { upsert } from '../helpers/upsert';
 import { store, initialState } from '../store';
 import { normalizeAgent } from './api';
 import Commands from './commands';
-import constants from './constants';
 import { loadConfig, processUnread } from './main';
 import { parentCall } from './parentCall';
 import { createToken } from './random';
@@ -49,10 +47,6 @@ const getVideoConfMessageData = (message) =>
 		?.elements?.find(({ actionId }) => actionId === 'joinLivechat');
 
 const isVideoCallMessage = (message) => {
-	if (message.t === constants.webRTCCallStartedMessageType) {
-		return true;
-	}
-
 	if (getVideoConfMessageData(message)) {
 		return true;
 	}
@@ -89,10 +83,6 @@ export const processIncomingCallMessage = async (message) => {
 				callId,
 				url,
 			},
-			ongoingCall: {
-				callStatus: CallStatus.RINGING,
-				time: message.ts,
-			},
 		});
 	} catch (err) {
 		console.error(err);
@@ -106,8 +96,6 @@ const processMessage = async (message) => {
 		await closeChat(message);
 	} else if (message.t === 'command') {
 		commands[message.msg] && commands[message.msg]();
-	} else if (message.webRtcCallEndTs) {
-		await store.setState({ ongoingCall: { callStatus: CallStatus.ENDED, time: message.ts }, incomingCallAlert: null });
 	} else if (isVideoCallMessage(message)) {
 		await processIncomingCallMessage(message);
 	}
@@ -250,13 +238,13 @@ export const getGreetingMessages = (messages) => messages && messages.filter((ms
 export const getLatestCallMessage = (messages) => messages && messages.filter((msg) => isVideoCallMessage(msg)).pop();
 
 export const loadMessages = async () => {
-	const { ongoingCall, messages: storedMessages, room, renderedTriggers } = store.state;
+	const { messages: storedMessages, room, renderedTriggers } = store.state;
 
 	if (!room?._id) {
 		return;
 	}
 
-	const { _id: rid, callStatus } = room;
+	const { _id: rid } = room;
 	const previousMessages = getGreetingMessages(storedMessages);
 	await store.setState({ loading: true });
 
@@ -272,10 +260,6 @@ export const loadMessages = async () => {
 	await initRoom();
 	await store.setState({ messages: (messages || []).reverse(), noMoreMessages: false, loading: false });
 
-	if (ongoingCall && isCallOngoing(ongoingCall.callStatus)) {
-		return;
-	}
-
 	const latestCallMessage = getLatestCallMessage(messages);
 	if (!latestCallMessage) {
 		return;
@@ -283,35 +267,12 @@ export const loadMessages = async () => {
 	const videoConfJoinBlock = getVideoConfMessageData(latestCallMessage);
 	if (videoConfJoinBlock) {
 		await store.setState({
-			ongoingCall: {
-				callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
-				time: latestCallMessage.ts,
-			},
 			incomingCallAlert: {
 				show: false,
 				callProvider: latestCallMessage.t,
 				url: videoConfJoinBlock.url,
 			},
 		});
-		return;
-	}
-	switch (callStatus) {
-		case CallStatus.IN_PROGRESS: {
-			await store.setState({
-				ongoingCall: {
-					callStatus: CallStatus.IN_PROGRESS_DIFFERENT_TAB,
-					time: latestCallMessage.ts,
-				},
-				incomingCallAlert: {
-					show: false,
-					callProvider: latestCallMessage.t,
-				},
-			});
-			break;
-		}
-		case CallStatus.RINGING: {
-			processIncomingCallMessage(latestCallMessage);
-		}
 	}
 };
 

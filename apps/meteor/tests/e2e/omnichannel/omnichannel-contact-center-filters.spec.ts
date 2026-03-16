@@ -1,8 +1,8 @@
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelContacts } from '../page-objects/omnichannel-contacts-list';
-import { OmnichannelSection } from '../page-objects/omnichannel-section';
+import { Navbar } from '../page-objects/fragments';
+import { OmnichannelContactCenterChats } from '../page-objects/omnichannel';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createConversation, updateRoom } from '../utils/omnichannel/rooms';
@@ -26,10 +26,11 @@ test.describe('OC - Contact Center', async () => {
 	let departments: Awaited<ReturnType<typeof createDepartment>>[];
 	let conversations: Awaited<ReturnType<typeof createConversation>>[];
 	let agents: Awaited<ReturnType<typeof createAgent>>[];
-	let tags: Awaited<ReturnType<typeof createTag>>[];
+	let tagA: Awaited<ReturnType<typeof createTag>>;
+	let tagB: Awaited<ReturnType<typeof createTag>>;
 	let units: Awaited<ReturnType<typeof createOrUpdateUnit>>[];
-	let poContacts: OmnichannelContacts;
-	let poOmniSection: OmnichannelSection;
+	let poNavbar: Navbar;
+	let poOmniChats: OmnichannelContactCenterChats;
 
 	// Allow manual on hold
 	test.beforeAll(async ({ api }) => {
@@ -68,9 +69,10 @@ test.describe('OC - Contact Center', async () => {
 
 	// Create tags
 	test.beforeAll(async ({ api }) => {
-		tags = await Promise.all([createTag(api, { name: 'tagA' }), createTag(api, { name: 'tagB' })]);
+		tagA = await createTag(api);
+		tagB = await createTag(api);
 
-		tags.forEach((res) => expect(res.response.status()).toBe(200));
+		[tagA, tagB].forEach((res) => expect(res.response.status()).toBe(200));
 	});
 
 	// Create unit
@@ -118,12 +120,12 @@ test.describe('OC - Contact Center', async () => {
 			updateRoom(api, {
 				roomId: conversationA.room._id,
 				visitorId: conversationA.visitor._id,
-				tags: ['tagA'],
+				tags: [tagA.data.name],
 			}),
 			updateRoom(api, {
 				roomId: conversationB.room._id,
 				visitorId: conversationB.visitor._id,
-				tags: ['tagB'],
+				tags: [tagB.data.name],
 			}),
 		]);
 	});
@@ -132,12 +134,12 @@ test.describe('OC - Contact Center', async () => {
 		await Promise.all([
 			// Delete conversations
 			...conversations.map((conversation) => conversation.delete()),
-			// // Delete departments
+			// Delete departments
 			...departments.map((department) => department.delete()),
 			// Delete agents
 			...agents.map((agent) => agent.delete()),
 			// Delete tags
-			...tags.map((tag) => tag.delete()),
+			...[tagA, tagB].map((tag) => tag.delete()),
 			// Delete units
 			...units.map((unit) => unit.delete()),
 			// Reset setting
@@ -162,11 +164,12 @@ test.describe('OC - Contact Center', async () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
-		poContacts = new OmnichannelContacts(page);
-		poOmniSection = new OmnichannelSection(page);
+		poOmniChats = new OmnichannelContactCenterChats(page);
+		poNavbar = new Navbar(page);
+
 		await page.goto('/');
-		await poOmniSection.btnContactCenter.click();
-		await poContacts.tabChats.click();
+		await poNavbar.btnContactCenter.click();
+		await poOmniChats.tabChats.click();
 		await page.waitForURL(URL.contactCenterChats);
 	});
 
@@ -175,131 +178,131 @@ test.describe('OC - Contact Center', async () => {
 		const [unitA, unitB] = units.map((unit) => unit.data);
 
 		await test.step('expect to filter by guest', async () => {
-			await poContacts.inputSearch.fill(visitorA);
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poContacts.btnSearchChip(visitorA)).toBeVisible();
+			await poOmniChats.inputSearch.fill(visitorA);
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
+			await expect(poOmniChats.btnSearchChip(visitorA)).toBeVisible();
 
-			await poContacts.inputSearch.fill('');
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
+			await poOmniChats.inputSearch.fill('');
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
 		});
 
 		await test.step('expect to filter by Served By', async () => {
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
 
-			await poContacts.btnFilters.click();
+			await poOmniChats.btnFilters.click();
 
 			// Select user1
-			await poContacts.selectServedBy('user1');
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.btnServedByChip('user1')).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
+			await poOmniChats.filters.selectServedBy('user1');
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.btnServedByChip('user1')).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
 
 			// Select user2
-			await poContacts.btnServedByChip('user1').locator('i').click();
-			await poContacts.selectServedBy('user2');
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
-			await expect(poContacts.btnServedByChip('user2')).toBeVisible();
+			await poOmniChats.btnServedByChip('user1').locator('i').click();
+			await poOmniChats.filters.selectServedBy('user2');
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorA)).not.toBeVisible();
+			await expect(poOmniChats.btnServedByChip('user2')).toBeVisible();
 
 			// Select all users
-			await poContacts.btnServedByChip('user2').locator('i').click();
-			await poContacts.selectServedBy('user1');
-			await poContacts.selectServedBy('user2');
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await poContacts.btnServedByChip('user1').locator('i').click();
+			await poOmniChats.btnServedByChip('user2').locator('i').click();
+			await poOmniChats.filters.selectServedBy('user1');
+			await poOmniChats.filters.selectServedBy('user2');
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await poOmniChats.btnServedByChip('user1').locator('i').click();
 		});
 
 		await test.step('expect to filter by status', async () => {
-			await poContacts.selectStatus('closed');
-			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).toBeVisible();
-			await expect(poContacts.btnStatusChip('Closed')).toBeVisible();
+			await poOmniChats.filters.selectStatus('Closed');
+			await expect(poOmniChats.table.findRowByName(visitorA)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).toBeVisible();
+			await expect(poOmniChats.btnStatusChip('Closed')).toBeVisible();
 
-			await poContacts.selectStatus('opened');
-			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await expect(poContacts.btnStatusChip('Open')).toBeVisible();
+			await poOmniChats.filters.selectStatus('Open');
+			await expect(poOmniChats.table.findRowByName(visitorA)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
+			await expect(poOmniChats.btnStatusChip('Open')).toBeVisible();
 
-			await poContacts.selectStatus('all');
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).toBeVisible();
+			await poOmniChats.filters.selectStatus('all');
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).toBeVisible();
 
-			await poContacts.selectStatus('onhold');
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await expect(poContacts.btnStatusChip('On hold')).toBeVisible();
-			await poContacts.btnStatusChip('On hold').locator('i').click();
+			await poOmniChats.filters.selectStatus('On hold');
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
+			await expect(poOmniChats.btnStatusChip('On hold')).toBeVisible();
+			await poOmniChats.btnStatusChip('On hold').locator('i').click();
 		});
 
 		await test.step('expect to filter by department', async () => {
 			// select department A
-			await poContacts.selectDepartment(departmentA.name);
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await expect(poContacts.btnDepartmentChip(departmentA.name)).toBeVisible();
-			await poContacts.btnDepartmentChip(departmentA.name).locator('i').click();
+			await poOmniChats.filters.selectDepartment(departmentA.name);
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
+			await expect(poOmniChats.btnDepartmentChip(departmentA.name)).toBeVisible();
+			await poOmniChats.btnDepartmentChip(departmentA.name).locator('i').click();
 
 			// select department B
-			await poContacts.selectDepartment(departmentB.name);
-			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await expect(poContacts.btnDepartmentChip(departmentB.name)).toBeVisible();
-			await poContacts.btnDepartmentChip(departmentB.name).locator('i').click();
+			await poOmniChats.filters.selectDepartment(departmentB.name);
+			await expect(poOmniChats.table.findRowByName(visitorA)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
+			await expect(poOmniChats.btnDepartmentChip(departmentB.name)).toBeVisible();
+			await poOmniChats.btnDepartmentChip(departmentB.name).locator('i').click();
 
 			// select all departments
-			await poContacts.selectDepartment(departmentA.name);
-			await poContacts.selectDepartment(departmentB.name);
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
+			await poOmniChats.filters.selectDepartment(departmentA.name);
+			await poOmniChats.filters.selectDepartment(departmentB.name);
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
 		});
 
 		await test.step('expect to filter by tags', async () => {
-			await poContacts.selectTag('tagA');
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
+			await poOmniChats.filters.selectTag(tagA.data.name);
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
 
-			await poContacts.selectTag('tagB');
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
+			await poOmniChats.filters.selectTag(tagB.data.name);
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
 
-			await poContacts.removeTag('tagA');
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
+			await poOmniChats.filters.removeTag(tagA.data.name);
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorA)).not.toBeVisible();
 
-			await poContacts.removeTag('tagB');
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
+			await poOmniChats.filters.removeTag(tagB.data.name);
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
 		});
 
 		await test.step('expect to filter by units', async () => {
 			// select unitA
-			await poContacts.selectUnit(unitA.name);
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await poContacts.btnUnitsChip(unitA.name).locator('i').click();
+			await poOmniChats.filters.selectUnit(unitA.name);
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
+			await poOmniChats.btnUnitsChip(unitA.name).locator('i').click();
 
 			// select unitB
-			await poContacts.selectUnit(unitB.name);
-			await expect(poContacts.findRowByName(visitorA)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
-			await poContacts.btnUnitsChip(unitB.name).locator('i').click();
+			await poOmniChats.filters.selectUnit(unitB.name);
+			await expect(poOmniChats.table.findRowByName(visitorA)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
+			await poOmniChats.btnUnitsChip(unitB.name).locator('i').click();
 
 			// no unit selected
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
 		});
 	});
 
@@ -308,32 +311,31 @@ test.describe('OC - Contact Center', async () => {
 		const [unitA] = units.map((unit) => unit.data);
 
 		await test.step('expect to display result as per applied filters ', async () => {
-			await poContacts.btnFilters.click();
-			await poContacts.selectServedBy('user1');
-			await poContacts.selectStatus('onhold');
-			await poContacts.selectDepartment(departmentA.name);
-			await poContacts.selectTag('tagA');
-			await poContacts.selectUnit(unitA.name);
-
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).not.toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).not.toBeVisible();
+			await poOmniChats.btnFilters.click();
+			await poOmniChats.filters.selectServedBy('user1');
+			await poOmniChats.filters.selectStatus('On hold');
+			await poOmniChats.filters.selectDepartment(departmentA.name);
+			await poOmniChats.filters.selectTag(tagA.data.name);
+			await poOmniChats.filters.selectUnit(unitA.name);
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).not.toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).not.toBeVisible();
 		});
 
 		await test.step('expect to clear all filters ', async () => {
-			await poContacts.btnClearFilters.click();
-			await expect(poContacts.findRowByName(visitorA)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorB)).toBeVisible();
-			await expect(poContacts.findRowByName(visitorC)).toBeVisible();
+			await poOmniChats.filters.btnClearFilters.click();
+			await expect(poOmniChats.table.findRowByName(visitorA)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorB)).toBeVisible();
+			await expect(poOmniChats.table.findRowByName(visitorC)).toBeVisible();
 		});
 	});
 
 	test('OC - Contact Center - Close contextual bar with filter screen', async () => {
 		await test.step('expect to close filters contextual bar ', async () => {
-			await poContacts.btnFilters.click();
-			await poContacts.btnClose.click();
-			await expect(poContacts.btnFilters).toBeVisible();
-			await expect(poContacts.btnClearFilters).not.toBeVisible();
+			await poOmniChats.btnFilters.click();
+			await poOmniChats.filters.close();
+			await expect(poOmniChats.btnFilters).toBeVisible();
+			await expect(poOmniChats.filters.btnClearFilters).not.toBeVisible();
 		});
 	});
 });

@@ -64,6 +64,7 @@ export interface INotificationDesktop {
 		message: {
 			msg: IMessage['msg'];
 			t?: IMessage['t'];
+			content?: IMessage['content'];
 		};
 		audioNotificationValue: ISubscription['audioNotificationValue'];
 	};
@@ -74,5 +75,6 @@ export interface ICalendarNotification {
 	text: string;
 	payload: {
 		_id: ICalendarEvent['_id'];
+		startTimeUtc?: string;
 	};
 }

@@ -1,6 +1,5 @@
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 
-import CallsContextualBarDirectory from './CallsContextualBarDirectory';
 import ChatsContextualBar from './ChatsContextualBar';
 import ContactContextualBar from './ContactContextualBar';
 
@@ -12,8 +11,6 @@ const ContextualBarRouter = () => {
 			return <ContactContextualBar />;
 		case 'chats':
 			return <ChatsContextualBar />;
-		case 'calls':
-			return <CallsContextualBarDirectory />;
 		default:
 			return null;
 	}

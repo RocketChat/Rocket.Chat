@@ -1,11 +1,7 @@
 import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type RoleDeleteProps = { roleId: IRole['_id'] };
 
@@ -24,9 +20,7 @@ export const isRoleDeleteProps = ajv.compile<RoleDeleteProps>(roleDeletePropsSch
 
 type RoleAddUserToRoleProps = {
 	username: string;
-	// #ToDo: Make it non-optional on the next major release
-	roleId?: string;
-	roleName?: string;
+	roleId: string;
 	roomId?: string;
 };
 
@@ -38,11 +32,6 @@ const roleAddUserToRolePropsSchema = {
 		},
 		roleId: {
 			type: 'string',
-			nullable: true,
-		},
-		roleName: {
-			type: 'string',
-			nullable: true,
 		},
 		roomId: {
 			type: 'string',
@@ -57,9 +46,7 @@ export const isRoleAddUserToRoleProps = ajv.compile<RoleAddUserToRoleProps>(role
 
 type RoleRemoveUserFromRoleProps = {
 	username: string;
-	// #ToDo: Make it non-optional on the next major release
-	roleId?: string;
-	roleName?: string;
+	roleId: string;
 	roomId?: string;
 	scope?: string;
 };
@@ -72,11 +59,6 @@ const roleRemoveUserFromRolePropsSchema = {
 		},
 		roleId: {
 			type: 'string',
-			nullable: true,
-		},
-		roleName: {
-			type: 'string',
-			nullable: true,
 		},
 		roomId: {
 			type: 'string',

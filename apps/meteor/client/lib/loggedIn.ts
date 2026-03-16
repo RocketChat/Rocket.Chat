@@ -1,10 +1,10 @@
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
-import { Tracker } from 'meteor/tracker';
+
+import { getUserId } from './user';
 
 const isLoggedIn = () => {
-	const uid = Tracker.nonreactive(() => Meteor.userId());
-	return uid !== null;
+	const uid = getUserId();
+	return !!uid;
 };
 
 export const whenLoggedIn = () => {

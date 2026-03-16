@@ -1,6 +1,6 @@
 import type { ISetting } from '@rocket.chat/core-typings';
 
-import { PublicCachedStore } from '../lib/cachedStores';
+import { PublicCachedStore } from '../lib/cachedStores/CachedStore';
 import { PublicSettings } from '../stores';
 
 class PublicSettingsCachedStore extends PublicCachedStore<ISetting> {

@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, FieldHint, FieldDescription, InputBox, Skeleton } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldHint, FieldDescription, Skeleton, InputBoxSkeleton } from '@rocket.chat/fuselage';
 import { Form } from '@rocket.chat/layout';
 import type { ReactElement } from 'react';
 
@@ -19,7 +19,7 @@ const FormSkeleton = (): ReactElement => {
 					<Skeleton />
 				</FieldDescription>
 				<FieldRow>
-					<InputBox.Skeleton />
+					<InputBoxSkeleton />
 				</FieldRow>
 				<FieldHint>
 					<Skeleton />

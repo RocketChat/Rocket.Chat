@@ -7,6 +7,7 @@ import { UserAction } from './UserAction';
 import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
+import { processMessageUploads } from '../../../../client/lib/chats/flows/processMessageUploads';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
@@ -25,7 +26,7 @@ type DeepWritable<T> = T extends (...args: any) => any
 		};
 
 export class ChatMessages implements ChatAPI {
-	public uid: string | null;
+	public uid: string | undefined;
 
 	public tmid?: IMessage['_id'];
 
@@ -43,6 +44,8 @@ export class ChatMessages implements ChatAPI {
 	public readStateManager: ReadStateManager;
 
 	public uploads: UploadsAPI;
+
+	public threadUploads: UploadsAPI;
 
 	public ActionManager: any;
 
@@ -121,6 +124,7 @@ export class ChatMessages implements ChatAPI {
 			await this.currentEditingMessage.stop();
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
+			message.tmid ? this.threadUploads.clear() : this.uploads.clear();
 			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0]?.description || message.msg;
 
 			await this.currentEditingMessage.stop();
@@ -142,12 +146,13 @@ export class ChatMessages implements ChatAPI {
 
 	public flows: DeepWritable<ChatAPI['flows']>;
 
-	public constructor(params: { rid: IRoom['_id']; tmid?: IMessage['_id']; uid: IUser['_id'] | null; actionManager: IActionManager }) {
+	public constructor(params: { rid: IRoom['_id']; tmid?: IMessage['_id']; uid: IUser['_id'] | undefined; actionManager: IActionManager }) {
 		const { rid, tmid } = params;
 		this.tmid = tmid;
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
-		this.uploads = createUploadsAPI({ rid, tmid });
+		this.uploads = createUploadsAPI({ rid });
+		this.threadUploads = createUploadsAPI({ rid });
 		this.ActionManager = params.actionManager;
 		this.currentEditingMessage = new CurrentEditingMessage(this);
 
@@ -180,6 +185,7 @@ export class ChatMessages implements ChatAPI {
 			processSlashCommand: processSlashCommand.bind(null, this),
 			processTooLongMessage: processTooLongMessage.bind(null, this),
 			processMessageEditing: processMessageEditing.bind(null, this),
+			processMessageUploads: processMessageUploads.bind(null, this),
 			processSetReaction: processSetReaction.bind(null, this),
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
 			replyBroadcast: replyBroadcast.bind(null, this),

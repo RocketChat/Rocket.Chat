@@ -1,4 +1,4 @@
-import { Decorator, Parameters } from '@storybook/react';
+import type { Decorator, Parameters } from '@storybook/react';
 import '../../../apps/meteor/app/theme/client/main.css';
 import 'highlight.js/styles/github.css';
 

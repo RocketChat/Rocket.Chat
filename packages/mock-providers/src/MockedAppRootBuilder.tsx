@@ -3,7 +3,6 @@ import type {
 	DirectCallData,
 	IRoom,
 	ISetting,
-	ISubscription,
 	IUser,
 	ProviderCapabilities,
 	Serialized,
@@ -119,9 +118,15 @@ export class MockedAppRootBuilder {
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
-		disconnect: () => Promise.reject(new Error('not implemented')),
-		reconnect: () => Promise.reject(new Error('not implemented')),
-		writeStream: () => Promise.reject(new Error('not implemented')),
+		disconnect: () => {
+			throw new Error('not implemented');
+		},
+		reconnect: () => {
+			throw new Error('not implemented');
+		},
+		writeStream: () => {
+			throw new Error('not implemented');
+		},
 	};
 
 	private router: ContextType<typeof RouterContext> = {
@@ -130,6 +135,7 @@ export class MockedAppRootBuilder {
 		getLocationPathname: () => '/',
 		getLocationSearch: () => '',
 		getRouteName: () => undefined,
+		getPreviousRouteName: () => undefined,
 		getRouteParameters: () => ({}),
 		getSearchParameters: () => ({}),
 		navigate: () => undefined,
@@ -149,10 +155,13 @@ export class MockedAppRootBuilder {
 		onLogout: () => () => undefined,
 		queryPreference: () => [() => () => undefined, () => undefined],
 		queryRoom: () => [() => () => undefined, () => this.room],
-		querySubscription: () => [() => () => undefined, () => this.subscriptions as unknown as ISubscription],
-		querySubscriptions: () => [() => () => undefined, () => this.subscriptions], // apply query and option
+		querySubscription: () => [() => () => undefined, () => this.subscription],
+		querySubscriptions: () => [
+			() => () => undefined,
+			() => (this.subscription ? [this.subscription, ...(this.subscriptions ?? [])] : (this.subscriptions ?? [])),
+		], // apply query and option
 		user: null,
-		userId: null,
+		userId: undefined,
 	};
 
 	private userPresence: ContextType<typeof UserPresenceContext> = {
@@ -203,7 +212,9 @@ export class MockedAppRootBuilder {
 
 	private room: IRoom | undefined = undefined;
 
-	private subscriptions: SubscriptionWithRoom[] = [];
+	private subscriptions: SubscriptionWithRoom[] | undefined = undefined;
+
+	private subscription: SubscriptionWithRoom | undefined = undefined;
 
 	private modal: ModalContextValue = {
 		currentModal: { component: null },
@@ -259,6 +270,20 @@ export class MockedAppRootBuilder {
 		setAudioInputDevice: () => undefined,
 		permissionStatus: undefined,
 	};
+
+	private _providedQueryClient: QueryClient | undefined;
+
+	private get queryClient(): QueryClient {
+		return (
+			this._providedQueryClient ||
+			new QueryClient({
+				defaultOptions: {
+					queries: { retry: false },
+					mutations: { retry: false },
+				},
+			})
+		);
+	}
 
 	wrap(wrapper: (children: ReactNode) => ReactNode): this {
 		this.wrappers.push(wrapper);
@@ -410,7 +435,7 @@ export class MockedAppRootBuilder {
 	}
 
 	withAnonymous(): this {
-		this.user.userId = null;
+		this.user.userId = undefined;
 		this.user.user = null;
 
 		return this;
@@ -433,6 +458,12 @@ export class MockedAppRootBuilder {
 
 	withSubscriptions(subscriptions: SubscriptionWithRoom[]): this {
 		this.subscriptions = subscriptions;
+
+		return this;
+	}
+
+	withSubscription(subscription: SubscriptionWithRoom): this {
+		this.subscription = subscription;
 
 		return this;
 	}
@@ -468,8 +499,9 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	withSetting(id: string, value: SettingValue): this {
+	withSetting(id: string, value: SettingValue, settingStructure?: Partial<ISetting>): this {
 		const setting = {
+			...settingStructure,
 			_id: id,
 			value,
 		} as ISetting;
@@ -617,12 +649,12 @@ export class MockedAppRootBuilder {
 	// To be used with languages other than the default one
 	withDefaultLanguage(lng: string): this {
 		if (this.i18n.isInitialized) {
-			this.i18n.changeLanguage(lng);
+			void this.i18n.changeLanguage(lng);
 			return this;
 		}
 
 		this.i18n.on('initialized', () => {
-			this.i18n.changeLanguage(lng);
+			void this.i18n.changeLanguage(lng);
 		});
 
 		return this;
@@ -633,15 +665,26 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
-	build(): JSXElementConstructor<{ children: ReactNode }> {
-		const queryClient = new QueryClient({
-			defaultOptions: {
-				queries: { retry: false },
-				mutations: { retry: false },
-			},
-		});
+	withQueryClient(client: QueryClient): this {
+		this._providedQueryClient = client;
+		return this;
+	}
 
-		const { server, router, settings, user, userPresence, videoConf, i18n, authorization, wrappers, deviceContext, authentication } = this;
+	build(): JSXElementConstructor<{ children: ReactNode }> {
+		const {
+			queryClient,
+			server,
+			router,
+			settings,
+			user,
+			userPresence,
+			videoConf,
+			i18n,
+			authorization,
+			wrappers,
+			deviceContext,
+			authentication,
+		} = this;
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -684,7 +727,7 @@ export class MockedAppRootBuilder {
 
 		const getModalSnapshot = () => this.modal;
 
-		i18n.init();
+		void i18n.init();
 
 		return function MockedAppRoot({ children }) {
 			const [translation, updateTranslation] = useReducer(reduceTranslation, undefined, () => reduceTranslation());

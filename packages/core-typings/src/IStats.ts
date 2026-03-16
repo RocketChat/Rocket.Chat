@@ -6,7 +6,7 @@ import type { ISettingStatisticsObject } from './ISetting';
 import type { ITeamStats } from './ITeam';
 import type { MACStats } from './omnichannel';
 
-export interface IVoIPPeriodStats {
+interface IVoIPPeriodStats {
 	calls?: number;
 	externalInboundCalls?: number;
 	externalOutboundCalls?: number;
@@ -176,7 +176,6 @@ export interface IStats {
 		priorities?: number;
 		slas?: number;
 		businessUnits?: number;
-		omnichannelPdfTranscriptRequested?: number;
 		omnichannelPdfTranscriptSucceeded?: number;
 		omnichannelRoomsWithSlas?: number;
 		omnichannelRoomsWithPriorities?: number;
@@ -189,8 +188,6 @@ export interface IStats {
 		};
 	};
 	createdAt: Date | string;
-	totalOTR: number;
-	totalOTRRooms: number;
 	slashCommandsJitsi: number;
 	messageAuditApply: number;
 	messageAuditLoad: number;
@@ -271,4 +268,9 @@ export interface IStats {
 		totalUpsellViews: number;
 		totalUpsellClicks: number;
 	};
+	abacEnabled?: boolean;
+	abacTotalAttributes?: number;
+	abacTotalAttributeValues?: number;
+	abacRoomsEnrolled?: number;
+	allowUnsafeQueryAndFieldsApiParamsEnabled?: boolean;
 }

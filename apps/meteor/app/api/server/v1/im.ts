@@ -6,6 +6,7 @@ import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/mod
 import {
 	ajv,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
 	isDmFileProps,
 	isDmMemberProps,
@@ -22,7 +23,7 @@ import { openRoom } from '../../../../server/lib/openRoom';
 import { createDirectMessage } from '../../../../server/methods/createDirectMessage';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
-import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { saveRoomSettings } from '../../../channel-settings/server/methods/saveRoomSettings';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../../lib/server/functions/getRoomByNameOrIdWithOptionToJoin';
 import { getChannelHistory } from '../../../lib/server/methods/getChannelHistory';
@@ -44,7 +45,7 @@ const findDirectMessageRoom = async (
 		throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
 	}
 
-	const user = await Users.findOneById(uid, { projection: { username: 1 } });
+	const user = await Users.findOneById(uid);
 	if (!user) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'findDirectMessageRoom',
@@ -99,6 +100,10 @@ type DmDeleteProps =
 			username: string;
 	  };
 
+type DmCloseProps = {
+	roomId: string;
+};
+
 const isDmDeleteProps = ajv.compile<DmDeleteProps>({
 	oneOf: [
 		{
@@ -144,6 +149,43 @@ const dmDeleteEndpointsProps = {
 	},
 } as const;
 
+const DmClosePropsSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		userId: {
+			type: 'string',
+		},
+	},
+	required: ['roomId', 'userId'],
+	additionalProperties: false,
+};
+
+const isDmCloseProps = ajv.compile<DmCloseProps>(DmClosePropsSchema);
+
+const dmCloseEndpointsProps = {
+	authRequired: true,
+	body: isDmCloseProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+		200: ajv.compile<void>({
+			type: 'object',
+			properties: {
+				success: {
+					type: 'boolean',
+					enum: [true],
+				},
+			},
+			required: ['success'],
+			additionalProperties: false,
+		}),
+	},
+};
+
 const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dmDeleteEndpointsProps, Path> =>
 	async function action() {
 		const { room } = await findDirectMessageRoom(this.bodyParams, this.userId);
@@ -155,56 +197,57 @@ const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 			throw new Meteor.Error('error-not-allowed', 'Not allowed');
 		}
 
-		await eraseRoom(room._id, this.userId);
+		await eraseRoom(room._id, this.user);
+
+		return API.v1.success();
+	};
+
+const dmCloseAction = <Path extends string>(_path: Path): TypedAction<typeof dmCloseEndpointsProps, Path> =>
+	async function action() {
+		const { roomId } = this.bodyParams;
+		if (!roomId) {
+			throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+		}
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				method: 'dm.close',
+			});
+		}
+		let subscription;
+
+		const roomExists = !!(await Rooms.findOneById(roomId));
+		if (!roomExists) {
+			// even if the room doesn't exist, we should allow the user to close the subscription anyways
+			subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
+		} else {
+			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
+			if (!canAccess) {
+				return API.v1.forbidden('error-not-allowed');
+			}
+
+			const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
+
+			subscription = subs;
+		}
+
+		if (!subscription) {
+			return API.v1.failure(`The user is not subscribed to the room`);
+		}
+
+		if (!subscription.open) {
+			return API.v1.failure(`The direct message room, is already closed to the sender`);
+		}
+
+		await hideRoomMethod(this.userId, roomId);
 
 		return API.v1.success();
 	};
 
 const dmEndpoints = API.v1
 	.post('im.delete', dmDeleteEndpointsProps, dmDeleteAction('im.delete'))
-	.post('dm.delete', dmDeleteEndpointsProps, dmDeleteAction('dm.delete'));
-
-API.v1.addRoute(
-	['dm.close', 'im.close'],
-	{ authRequired: true },
-	{
-		async post() {
-			const { roomId } = this.bodyParams;
-			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
-			}
-
-			let subscription;
-
-			const roomExists = !!(await Rooms.findOneById(roomId));
-			if (!roomExists) {
-				// even if the room doesn't exist, we should allow the user to close the subscription anyways
-				subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, this.userId);
-			} else {
-				const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
-				if (!canAccess) {
-					return API.v1.forbidden();
-				}
-
-				const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
-
-				subscription = subs;
-			}
-
-			if (!subscription) {
-				return API.v1.failure(`The user is not subscribed to the room`);
-			}
-
-			if (!subscription.open) {
-				return API.v1.failure(`The direct message room, is already closed to the sender`);
-			}
-
-			await hideRoomMethod(this.userId, roomId);
-
-			return API.v1.success();
-		},
-	},
-);
+	.post('dm.delete', dmDeleteEndpointsProps, dmDeleteAction('dm.delete'))
+	.post('dm.close', dmCloseEndpointsProps, dmCloseAction('dm.close'))
+	.post('im.close', dmCloseEndpointsProps, dmCloseAction('im.close'));
 
 // https://github.com/RocketChat/Rocket.Chat/pull/9679 as reference
 API.v1.addRoute(
@@ -279,7 +322,7 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			const { typeGroup, name, roomId, username } = this.queryParams;
+			const { typeGroup, name, roomId, username, onlyConfirmed } = this.queryParams;
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
@@ -296,6 +339,7 @@ API.v1.addRoute(
 				rid: room._id,
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
+				...(onlyConfirmed && { expiresAt: { $exists: false } }),
 			};
 
 			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(filter, {
@@ -385,12 +429,6 @@ API.v1.addRoute(
 				...(status && { status: { $in: status } }),
 			};
 
-			const canSeeExtension = await hasAtLeastOnePermissionAsync(
-				this.userId,
-				['view-full-other-user-info', 'view-user-voip-extension'],
-				room._id,
-			);
-
 			const options: FindOptions<IUser> = {
 				projection: {
 					_id: 1,
@@ -400,7 +438,7 @@ API.v1.addRoute(
 					statusText: 1,
 					utcOffset: 1,
 					federated: 1,
-					...(canSeeExtension && { freeSwitchExtension: 1 }),
+					freeSwitchExtension: 1,
 				},
 				skip: offset,
 				limit: count,
@@ -416,8 +454,26 @@ API.v1.addRoute(
 
 			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
 
+			// find subscriptions of those users
+			const subs = await Subscriptions.findByRoomIdAndUserIds(
+				room._id,
+				members.map((member) => member._id),
+				{ projection: { u: 1, status: 1, ts: 1, roles: 1 } },
+			).toArray();
+
+			const membersWithSubscriptionInfo = members.map((member) => {
+				const sub = subs.find((sub) => sub.u._id === member._id);
+
+				const { u: _u, ...subscription } = sub || {};
+
+				return {
+					...member,
+					subscription,
+				};
+			});
+
 			return API.v1.success({
-				members,
+				members: membersWithSubscriptionInfo,
 				count: members.length,
 				offset,
 				total,

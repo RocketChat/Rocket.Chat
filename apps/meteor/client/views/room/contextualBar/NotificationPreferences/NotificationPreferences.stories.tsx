@@ -1,8 +1,8 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import NotificationsPreferences from './NotificationPreferences';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
 	component: NotificationsPreferences,

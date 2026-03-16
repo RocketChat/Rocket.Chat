@@ -9,8 +9,8 @@ import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms, LivechatDepartment, Users } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
 
-import { callbacks } from '../../../../lib/callbacks';
 import { deasyncPromise } from '../../../../server/deasync/deasync';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { closeRoom } from '../../../livechat/server/lib/closeRoom';
 import { setCustomFields } from '../../../livechat/server/lib/custom-fields';
 import { getRoomMessages } from '../../../livechat/server/lib/getRoomMessages';

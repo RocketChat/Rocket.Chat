@@ -4,9 +4,10 @@ import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
 import { t } from '../../../../app/utils/lib/i18n';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
+import { getUser } from '../../user';
 import type { ChatAPI } from '../ChatAPI';
 
-export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
+export const processTooLongMessage = async (chat: ChatAPI, { msg, tmid }: Pick<IMessage, 'msg' | 'tmid'>): Promise<boolean> => {
 	const maxAllowedSize = settings.peek('Message_MaxAllowedSize');
 
 	if (msg.length <= maxAllowedSize) {
@@ -25,21 +26,20 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 		const onConfirm = async (): Promise<void> => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${Meteor.user()?.username ?? 'anonymous'} - ${new Date()}.txt`; // TODO: proper naming and formatting
+			const fileName = `${getUser()?.username ?? 'anonymous'} - ${new Date()}.txt`; // TODO: proper naming and formatting
 			const file = new File([messageBlob], fileName, {
 				type: contentType,
 				lastModified: Date.now(),
 			});
 
+			chat.composer?.clear();
 			imperativeModal.close();
-			await chat.flows.uploadFiles([file]);
+			await chat.flows.uploadFiles({ files: [file], uploadsStore: tmid ? chat.threadUploads : chat.uploads });
 
 			resolve();
 		};
 
 		const onClose = (): void => {
-			chat.composer?.setText(msg);
-
 			imperativeModal.close();
 			resolve();
 		};

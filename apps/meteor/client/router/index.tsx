@@ -229,6 +229,8 @@ export class Router implements RouterContextValue {
 
 	readonly getRouteName = () => this.current?.route?.id as RouteName | undefined;
 
+	readonly getPreviousRouteName = () => this.current?.oldRoute?.id as RouteName | undefined;
+
 	private encodeSearchParameters(searchParameters: SearchParameters) {
 		const search = new URLSearchParams();
 

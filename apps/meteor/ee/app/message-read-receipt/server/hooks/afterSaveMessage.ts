@@ -1,6 +1,6 @@
 import { isEditedMessage } from '@rocket.chat/core-typings';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { ReadReceipt } from '../../../../server/lib/message-read-receipt/ReadReceipt';
 
 callbacks.add(

@@ -1016,6 +1016,24 @@ describe('Federation - Infrastructure - Matrix - RocketTextParser', () => {
 					😀
 					😀`);
 		});
+
+		it('should properly sanitize malicious HTML that could bypass regex-based stripping', async () => {
+			const rawMessage = '> <@originalEventSender:localDomain.com> Quoted message\n\n test message';
+			const formattedMessage = `${quotedMessage}<p>test message</p><scr<script>ipt>alert('xss')</script><img src=x onerror=alert(1)>`;
+
+			const result = await toInternalQuoteMessageFormat({
+				homeServerDomain,
+				rawMessage,
+				formattedMessage,
+				messageToReplyToUrl: 'http://localhost:3000/group/1?msg=2354543564',
+				senderExternalId: '@user:externalDomain.com',
+			});
+
+			expect(result).not.toContain('<script>');
+			expect(result).not.toContain('onerror');
+			expect(result).not.toContain('<img');
+			expect(result).toBe('[ ](http://localhost:3000/group/1?msg=2354543564) test message');
+		});
 	});
 });
 

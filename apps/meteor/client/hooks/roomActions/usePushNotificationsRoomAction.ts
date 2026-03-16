@@ -1,7 +1,7 @@
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
 
 import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 const NotificationPreferences = lazy(() => import('../../views/room/contextualBar/NotificationPreferences'));
 

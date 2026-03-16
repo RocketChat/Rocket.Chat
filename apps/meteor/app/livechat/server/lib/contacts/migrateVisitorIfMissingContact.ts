@@ -9,7 +9,7 @@ export async function migrateVisitorIfMissingContact(
 	visitorId: ILivechatVisitor['_id'],
 	source: IOmnichannelSource,
 ): Promise<ILivechatContact['_id'] | null> {
-	logger.debug(`Detecting visitor's contact ID`);
+	logger.debug({ msg: 'Detecting visitor contact ID' });
 	// Check if there is any contact already linking to this visitorId and source
 	const contactId = await getContactIdByVisitor({ visitorId, source });
 	if (contactId) {

@@ -1,5 +1,4 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import type { ReactElement } from 'react';
 
 import TextSeparator from './TextSeparator';
 
@@ -9,7 +8,7 @@ export default {
 	parameters: {
 		layout: 'centered',
 	},
-	decorators: [(fn): ReactElement => <div style={{ minWidth: 400 }}>{fn()}</div>],
+	decorators: [(fn) => <div style={{ minWidth: 400 }}>{fn()}</div>],
 } satisfies Meta<typeof TextSeparator>;
 
 const Template: StoryFn<typeof TextSeparator> = (args) => <TextSeparator {...args} />;

@@ -16,8 +16,11 @@ const JoinRoomsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactE
 		<GenericCard
 			title={t('Join_rooms')}
 			body={t('Discover_public_channels_and_teams_in_the_workspace_directory')}
-			buttons={[<GenericCardButton key={1} onClick={handleDirectory} children={t('Open_directory')} />]}
-			data-qa-id='homepage-join-rooms-card'
+			buttons={[
+				<GenericCardButton key={1} onClick={handleDirectory}>
+					{t('Open_directory')}
+				</GenericCardButton>,
+			]}
 			width='x340'
 			{...props}
 		/>

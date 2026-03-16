@@ -1,6 +1,9 @@
-FROM node:22.16.0-alpine3.21
+FROM node:22.16.0-alpine3.21 AS builder
 
 ARG SERVICE
+
+RUN apk update && \
+    apk --no-cache add g++ python3 make py3-setuptools
 
 WORKDIR /app
 
@@ -25,7 +28,6 @@ COPY ./packages/media-signaling/dist packages/media-signaling/dist
 
 COPY ./packages/message-parser/package.json packages/message-parser/package.json
 COPY ./packages/message-parser/dist packages/message-parser/dist
-COPY ./packages/message-parser/messageParser.js packages/message-parser/messageParser.js
 
 COPY ./packages/peggy-loader/package.json packages/peggy-loader/package.json
 COPY ./packages/peggy-loader/dist packages/peggy-loader/dist
@@ -67,6 +69,9 @@ COPY ./packages/ui-kit/dist packages/ui-kit/dist
 COPY ./packages/http-router/package.json packages/http-router/package.json
 COPY ./packages/http-router/dist packages/http-router/dist
 
+COPY ./ee/packages/abac/package.json ee/packages/abac/package.json
+COPY ./ee/packages/abac/dist ee/packages/abac/dist
+
 COPY ./ee/apps/${SERVICE}/dist .
 
 COPY ./package.json .
@@ -77,19 +82,32 @@ COPY ./.yarn/releases .yarn/releases
 COPY ./.yarn/patches .yarn/patches
 COPY ./ee/apps/${SERVICE}/package.json ee/apps/${SERVICE}/package.json
 
-ENV NODE_ENV=production \
-    PORT=3000
+ENV NODE_ENV=production
 
 WORKDIR /app/ee/apps/${SERVICE}
 
+RUN yarn workspaces focus --production
+
+FROM node:22.16.0-alpine3.21
+
+ARG SERVICE
+
+ENV NODE_ENV=production \
+    PORT=3000
+
 RUN apk update && \
-    apk --no-cache --virtual deps add g++ python3 make py3-setuptools shadow && \
-    yarn workspaces focus --production && \
+    apk --no-cache --virtual deps add shadow && \
+    # Update OpenSSL
+    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
+    apk upgrade --no-cache openssl && \
     rm -rf /var/cache/apk/* && \
     groupmod -n rocketchat nogroup && \
     useradd -u 65533 -r -g rocketchat rocketchat && \
-    apk del deps && \
-    chown -R rocketchat:rocketchat /app
+    apk del deps
+
+COPY --chown=rocketchat:rocketchat --from=builder /app /app
+
+WORKDIR /app/ee/apps/${SERVICE}
 
 USER rocketchat
 
