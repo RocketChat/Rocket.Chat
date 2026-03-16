@@ -3213,7 +3213,7 @@ const GETLivechatAgentsAgentIdDepartmentsParamsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatAgentsAgentIdDepartmentsParams = ajv.compile<GETLivechatAgentsAgentIdDepartmentsParams>(
+export const isGETLivechatAgentsAgentIdDepartmentsParams = ajvQuery.compile<GETLivechatAgentsAgentIdDepartmentsParams>(
 	GETLivechatAgentsAgentIdDepartmentsParamsSchema,
 );
 
