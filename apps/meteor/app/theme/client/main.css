@@ -14,3 +14,17 @@
 @import url('imports/general/theme_old.css');
 @import url('./rocketchat.font.css');
 @import url('../../../node_modules/@rocket.chat/fuselage/dist/fuselage.css');
+
+/* Fix truncation of Livechat transfer comments */
+.rcx-message-system__container,
+.rcx-message-system__body {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  word-break: break-word;
+}
+
+/* Ensure name aligns with top of multiline message */
+.rcx-message-system__block {
+  align-items: flex-start;
+}
