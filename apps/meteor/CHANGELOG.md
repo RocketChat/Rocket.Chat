@@ -1,5 +1,49 @@
 # @rocket.chat/meteor
 
+## 7.10.9
+
+### Patch Changes
+
+- ([#39552](https://github.com/RocketChat/Rocket.Chat/pull/39552) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#39534](https://github.com/RocketChat/Rocket.Chat/pull/39534) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that caused Third-party login to not work properly
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.10.9
+  - @rocket.chat/rest-typings@7.10.9
+  - @rocket.chat/license@1.0.37
+  - @rocket.chat/omnichannel-services@0.3.43
+  - @rocket.chat/pdf-worker@0.3.25
+  - @rocket.chat/presence@0.2.46
+  - @rocket.chat/api-client@0.2.46
+  - @rocket.chat/apps@0.5.25
+  - @rocket.chat/core-services@0.10.9
+  - @rocket.chat/cron@0.1.46
+  - @rocket.chat/freeswitch@1.2.33
+  - @rocket.chat/fuselage-ui-kit@22.0.9
+  - @rocket.chat/gazzodown@22.0.9
+  - @rocket.chat/http-router@7.9.13
+  - @rocket.chat/model-typings@1.7.9
+  - @rocket.chat/ui-avatar@18.0.9
+  - @rocket.chat/ui-client@22.0.9
+  - @rocket.chat/ui-contexts@22.0.9
+  - @rocket.chat/web-ui-registration@22.0.9
+  - @rocket.chat/models@1.6.9
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.25
+  - @rocket.chat/ui-theming@0.4.3
+  - @rocket.chat/ui-video-conf@22.0.9
+  - @rocket.chat/ui-voip@12.0.9
+  - @rocket.chat/omni-core-ee@0.0.11
+  - @rocket.chat/instance-status@0.1.46
+  - @rocket.chat/omni-core@0.0.11
+  </details>
+
 ## 7.10.8
 
 ### Patch Changes
