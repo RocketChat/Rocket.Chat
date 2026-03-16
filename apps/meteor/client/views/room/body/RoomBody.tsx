@@ -3,7 +3,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { CustomScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
@@ -123,6 +123,13 @@ const RoomBody = (): ReactElement => {
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
+	const scrollContainerRef = useRef<HTMLElement | null>(null);
+	const [, setScrollContainerReady] = useState(false);
+	const scrollContainerRefCallback = useCallback((el: HTMLElement | null) => {
+		scrollContainerRef.current = el;
+		setScrollContainerReady((prev) => (el ? true : prev));
+	}, []);
+
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
 		useHasNewMessages(room._id, user?._id, atBottomRef, {
 			sendToBottom,
@@ -140,6 +147,7 @@ const RoomBody = (): ReactElement => {
 		selectAndScrollRef,
 		messageListRef,
 		jumpToRefGetMoreImperativeInnerRef,
+		scrollContainerRefCallback,
 	);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
@@ -247,7 +255,7 @@ const RoomBody = (): ReactElement => {
 														)}
 													</>
 												) : null}
-												<MessageList rid={room._id} messageListRef={jumpToRef} />
+												<MessageList rid={room._id} messageListRef={jumpToRef} scrollContainerRef={scrollContainerRef} />
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
 												) : null}

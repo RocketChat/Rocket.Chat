@@ -1,24 +1,21 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isThreadMessage } from '@rocket.chat/core-typings';
-import { MessageTypes } from '@rocket.chat/message-types';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
-import { Fragment } from 'react';
+import type { ComponentProps, MutableRefObject } from 'react';
 
-import { MessageListItem } from './MessageListItem';
+import { VirtualizedMessageList } from './VirtualizedMessageList';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
-import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
 	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
+	scrollContainerRef?: MutableRefObject<HTMLElement | null>;
 };
 
-export const MessageList = function MessageList({ rid, messageListRef }: MessageListProps) {
+export const MessageList = function MessageList({ rid, messageListRef, scrollContainerRef }: MessageListProps) {
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -28,27 +25,15 @@ export const MessageList = function MessageList({ rid, messageListRef }: Message
 	return (
 		<MessageListProvider messageListRef={messageListRef}>
 			<SelectedMessagesProvider>
-				{messages.map((message, index, { [index - 1]: previous }) => {
-					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
-					const showUnreadDivider = firstUnreadMessageId === message._id;
-					const system = MessageTypes.isSystemMessage(message);
-					const visible = !isThreadMessage(message) && !system;
-
-					return (
-						<Fragment key={message._id}>
-							<MessageListItem
-								message={message}
-								previous={previous}
-								showUnreadDivider={showUnreadDivider}
-								showUserAvatar={showUserAvatar}
-								sequential={sequential}
-								visible={visible}
-								subscription={subscription}
-								system={system}
-							/>
-						</Fragment>
-					);
-				})}
+				<VirtualizedMessageList
+					rid={rid}
+					messages={messages}
+					scrollContainerRef={scrollContainerRef}
+					messageGroupingPeriod={messageGroupingPeriod}
+					firstUnreadMessageId={firstUnreadMessageId}
+					showUserAvatar={showUserAvatar}
+					subscription={subscription}
+				/>
 			</SelectedMessagesProvider>
 		</MessageListProvider>
 	);
