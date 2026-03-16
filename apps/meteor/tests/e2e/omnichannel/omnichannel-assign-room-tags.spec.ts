@@ -1,3 +1,4 @@
+import { ddpLogin } from '../../data/users.helper';
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
@@ -33,6 +34,7 @@ test.describe('OC - Tags Visibility', () => {
 
 	test.beforeAll('Create agent', async ({ api }) => {
 		agent = await createAgent(api, 'user1');
+		await ddpLogin(Users.user1.data.loginToken);
 	});
 
 	test.beforeAll('Add agents to departments', async ({ api }) => {
