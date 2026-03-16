@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam, ISubscription } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -667,7 +667,7 @@ const membersOrderedByRoleRolePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
+export const isRoomsMembersOrderedByRoleProps = ajvQuery.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
 
 type RoomsHideProps = {
 	roomId: string;
