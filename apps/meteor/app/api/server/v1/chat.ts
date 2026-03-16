@@ -298,8 +298,12 @@ const isChatGetThreadsListResponse = ajv.compile<{
 		total: {
 			type: 'number',
 		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		}
 	},
-	required: ['threads', 'count', 'offset', 'total'],
+	required: ['threads', 'count', 'offset', 'total', 'success'],
 	additionalProperties: false,
 });
 
