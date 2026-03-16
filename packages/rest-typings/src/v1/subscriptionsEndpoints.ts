@@ -22,7 +22,7 @@ const SubscriptionsGetSchema = {
 	additionalProperties: false,
 };
 
-export const isSubscriptionsGetProps = ajv.compile<SubscriptionsGet>(SubscriptionsGetSchema);
+export const isSubscriptionsGetProps = ajvQuery.compile<SubscriptionsGet>(SubscriptionsGetSchema);
 
 const SubscriptionsGetOneSchema = {
 	type: 'object',
