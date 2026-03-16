@@ -93,6 +93,7 @@ const integrationsUpdateSchema = {
 				},
 				alias: {
 					type: 'string',
+					maxLength: 60,
 					nullable: true,
 				},
 				avatar: {
@@ -205,6 +206,7 @@ const integrationsUpdateSchema = {
 				},
 				alias: {
 					type: 'string',
+					maxLength: 60,
 					nullable: true,
 				},
 				avatar: {

@@ -9,6 +9,7 @@ import _ from 'underscore';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
+import { validateIntegrationAlias } from '../../../lib/validateAlias';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
@@ -70,6 +71,18 @@ export const updateIncomingIntegration = async (
 			method: 'updateIncomingIntegration',
 		});
 	}
+
+	const hasAliasField = 'alias' in integration;
+	const aliasValidation = hasAliasField ? validateIntegrationAlias(integration.alias) : 'ok';
+	if (aliasValidation === 'too-long') {
+		throw new Meteor.Error('error-invalid-alias-length', 'Invalid alias length', { method: 'updateIncomingIntegration' });
+	}
+
+	if (aliasValidation === 'invalid-characters') {
+		throw new Meteor.Error('error-invalid-alias', 'Invalid alias', { method: 'updateIncomingIntegration' });
+	}
+
+	const sanitizedAlias = hasAliasField ? integration.alias?.trim() : undefined;
 
 	const oldScriptEngine = currentIntegration.scriptEngine;
 	const scriptEngine = integration.scriptEngine ?? oldScriptEngine ?? 'isolated-vm';
@@ -170,30 +183,35 @@ export const updateIncomingIntegration = async (
 
 	await addUserRolesAsync(user._id, ['bot']);
 
+	const setFields = {
+		enabled: integration.enabled,
+		name: integration.name,
+		avatar: integration.avatar,
+		emoji: integration.emoji,
+		channel: channels,
+		...('username' in integration && { username: user.username, userId: user._id }),
+		...(isFrozen
+			? {}
+			: {
+					script: integration.script,
+					scriptEnabled: integration.scriptEnabled,
+					scriptEngine,
+				}),
+		...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
+			overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
+		}),
+		_updatedAt: new Date(),
+		_updatedBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
+	};
+
 	const updatedIntegration = await Integrations.findOneAndUpdate(
 		{ _id: integrationId },
 		{
 			$set: {
-				enabled: integration.enabled,
-				name: integration.name,
-				avatar: integration.avatar,
-				emoji: integration.emoji,
-				alias: integration.alias,
-				channel: channels,
-				...('username' in integration && { username: user.username, userId: user._id }),
-				...(isFrozen
-					? {}
-					: {
-							script: integration.script,
-							scriptEnabled: integration.scriptEnabled,
-							scriptEngine,
-						}),
-				...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
-					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
-				}),
-				_updatedAt: new Date(),
-				_updatedBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
+				...setFields,
+				...(hasAliasField && sanitizedAlias ? { alias: sanitizedAlias } : {}),
 			},
+			...(hasAliasField && !sanitizedAlias ? { $unset: { alias: 1 as const } } : {}),
 		},
 		{ returnDocument: 'after' },
 	);
@@ -209,7 +227,7 @@ Meteor.methods<ServerMethods>({
 	async updateIncomingIntegration(integrationId, integration) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'updateOutgoingIntegration',
+				method: 'updateIncomingIntegration',
 			});
 		}
 
