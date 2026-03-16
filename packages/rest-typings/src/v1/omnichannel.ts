@@ -3886,7 +3886,7 @@ const GETLivechatAnalyticsDashboardsChartDataParamsSchema = {
 	required: ['chartName', 'start', 'end'],
 };
 
-export const isGETLivechatAnalyticsDashboardsChartDataParams = ajv.compile<GETLivechatAnalyticsDashboardsChartDataParams>(
+export const isGETLivechatAnalyticsDashboardsChartDataParams = ajvQuery.compile<GETLivechatAnalyticsDashboardsChartDataParams>(
 	GETLivechatAnalyticsDashboardsChartDataParamsSchema,
 );
 
