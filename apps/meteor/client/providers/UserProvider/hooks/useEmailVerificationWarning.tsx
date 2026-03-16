@@ -14,11 +14,13 @@ export function useEmailVerificationWarning(user: IUser | undefined) {
 	useEffect(() => {
 		const { current: warned } = warnedRef;
 		if (mainEmail && mainEmail.verified !== true && emailVerificationEnabled && !warned) {
-			dispatchToastMessage({
-				type: 'warning',
-				message: t('core.You_have_not_verified_your_email'),
-			});
 			warnedRef.current = true;
+			queueMicrotask(() => {
+				dispatchToastMessage({
+					type: 'info',
+					message: t('core.You_have_not_verified_your_email'),
+				});
+			});
 		}
 	}, [mainEmail, emailVerificationEnabled, dispatchToastMessage, t]);
 }
