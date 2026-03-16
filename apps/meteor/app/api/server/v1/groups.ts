@@ -403,8 +403,10 @@ API.v1.addRoute(
 			const { sort, fields, query } = await this.parseJsonQuery();
 
 			const filter = {
-				...query,
 				rid: findResult.rid,
+				...Object.fromEntries(
+					Object.entries(query).filter(([key]) => key !== 'rid'),
+				),
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 				...(onlyConfirmed && { expiresAt: { $exists: false } }),
@@ -787,8 +789,10 @@ API.v1.addRoute(
 				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
 			const ourQuery = {
-				...query,
 				rid: findResult.rid,
+				...Object.fromEntries(
+					Object.entries(query).filter(([key]) => key !== 'rid'),
+				),
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
