@@ -25,6 +25,7 @@ import {
 	isChatGetStarredMessagesProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	type PaginatedRequest,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
@@ -274,13 +275,10 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
-type ChatGetDiscussions = {
+type ChatGetDiscussions = PaginatedRequest<{
 	roomId: IRoom['_id'];
 	text?: string;
-	count?: number;
-	offset?: number;
-	sort?: string;
-};
+}>;
 
 const ChatGetDiscussionsSchema = {
 	type: 'object',
@@ -607,7 +605,10 @@ const chatEndpoints = API.v1
 				}>({
 					type: 'object',
 					properties: {
-						messages: { type: 'array' },
+						messages: {
+							type: 'array',
+							items: { $ref: '#/components/schemas/IMessage' },
+						},
 						count: { type: 'number' },
 						offset: { type: 'number' },
 						total: { type: 'number' },
