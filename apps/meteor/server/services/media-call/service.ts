@@ -70,9 +70,12 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 					throw new Error('invalid-call-state');
 				}
 				break;
-			case 'unavailable':
+			case 'reject':
+				if (!updatedCall.ended || updatedCall.endedBy?.id !== uid) {
+					throw new Error('invalid-call-state');
+				}
 				break;
-			default:
+			case 'accept':
 				if (updatedCall.callee.contractId !== signal.contractId) {
 					if (updatedCall.callee.contractId) {
 						throw new Error('invalid-call-state');
