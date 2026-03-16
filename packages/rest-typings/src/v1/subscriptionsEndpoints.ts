@@ -70,7 +70,7 @@ const SubscriptionsReadSchema = {
 	],
 };
 
-export const isSubscriptionsReadProps = ajv.compile<SubscriptionsRead>(SubscriptionsReadSchema);
+export const isSubscriptionsReadProps = ajvQuery.compile<SubscriptionsRead>(SubscriptionsReadSchema);
 
 const SubscriptionsUnreadSchema = {
 	anyOf: [
@@ -104,7 +104,7 @@ const SubscriptionsUnreadSchema = {
 	],
 };
 
-export const isSubscriptionsUnreadProps = ajv.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
+export const isSubscriptionsUnreadProps = ajvQuery.compile<SubscriptionsUnread>(SubscriptionsUnreadSchema);
 
 export type SubscriptionsEndpoints = {
 	'/v1/subscriptions.get': {
