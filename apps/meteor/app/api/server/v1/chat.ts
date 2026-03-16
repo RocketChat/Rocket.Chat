@@ -275,39 +275,6 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
-const isIgnoreUserResponse = ajv.compile<void>({
-	type: 'object',
-	properties: {
-		success: {
-			type: 'boolean',
-			enum: [true],
-		},
-	},
-	required: ['success'],
-	additionalProperties: false,
-});
-
-const isChatPostMessageResponse = ajv.compile<{ ts: number; channel: string; message: IMessage }>({
-	type: 'object',
-	properties: {
-		ts: {
-			type: 'number',
-		},
-		channel: {
-			type: 'string',
-		},
-		message: {
-			$ref: '#/components/schemas/IMessage',
-		},
-		success: {
-			type: 'boolean',
-			enum: [true],
-		},
-	},
-	required: ['ts', 'channel', 'message', 'success'],
-	additionalProperties: false,
-});
-
 const isChatSearchResponse = ajv.compile<{ messages: IMessage[] }>({
 	type: 'object',
 	properties: {
@@ -611,47 +578,51 @@ const chatEndpoints = API.v1
 		},
 	)
 	.get(
-		'chat.ignoreUser',
-		{
-			authRequired: true,
-			query: isChatIgnoreUserProps,
-			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: isIgnoreUserResponse,
-			},
+	'chat.search',
+	{
+		authRequired: true,
+		validateParams: isChatSearchProps,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: isChatSearchResponse,
 		},
-		async function action() {
-			const { rid, userId } = this.queryParams;
-			let { ignore = true } = this.queryParams;
+	},
+	async function action() {
+		const { roomId, searchText } = this.queryParams;
+		const { offset, count } = await getPaginationItems(this.queryParams);
 
-			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
+		if (!roomId) {
+			throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+		}
 
-			if (!rid?.trim()) {
-				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
-			}
+		if (!searchText) {
+			throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
+		}
 
-			if (!userId?.trim()) {
-				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
-			}
+		const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
 
-			await ignoreUser(this.userId, { rid, userId, ignore });
+		if (searchResult === false) {
+			throw new Meteor.Error('error-search-failed', 'The search operation failed');
+		}
 
-			return API.v1.success();
-		},
-	)
-	.post(
-		'chat.postMessage',
-		{
-			authRequired: true,
-			body: isChatPostMessageProps,
-			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: isChatPostMessageResponse,
-			},
-		},
-		async function action() {
+		if (!searchResult.message) {
+			throw new Meteor.Error('error-search-no-results', 'No messages found matching the search query');
+		}
+
+		const result = searchResult.message.docs;
+
+		return API.v1.success({
+			messages: await normalizeMessagesForUser(result, this.userId),
+		});
+	},
+)
+
+API.v1.addRoute(
+	'chat.postMessage',
+	{ authRequired: true, validateParams: isChatPostMessageProps },
+	{
+		async post() {
 			const { text, attachments } = this.bodyParams;
 			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
@@ -681,19 +652,14 @@ const chatEndpoints = API.v1
 				message,
 			});
 		},
-	)
-	.get(
-		'chat.search',
-		{
-			authRequired: true,
-			query: isChatSearchProps,
-			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: isChatSearchResponse,
-			},
-		},
-		async function action() {
+	},
+);
+
+API.v1.addRoute(
+	'chat.search',
+	{ authRequired: true, validateParams: isChatSearchProps },
+	{
+		async get() {
 			const { roomId, searchText } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -707,10 +673,10 @@ const chatEndpoints = API.v1
 
 			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
 			if (searchResult === false) {
-				throw new Meteor.Error('error-search-failed');
+				return API.v1.failure();
 			}
 			if (!searchResult.message) {
-				throw new Meteor.Error('error-search-no-results');
+				return API.v1.failure();
 			}
 			const result = searchResult.message.docs;
 
@@ -718,9 +684,8 @@ const chatEndpoints = API.v1
 				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
-	);
-
-
+	},
+);
 
 // The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
 // for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
@@ -785,6 +750,31 @@ API.v1.addRoute(
 			}
 
 			await reportMessage(messageId, description, this.userId);
+
+			return API.v1.success();
+		},
+	},
+);
+
+API.v1.addRoute(
+	'chat.ignoreUser',
+	{ authRequired: true, validateParams: isChatIgnoreUserProps },
+	{
+		async get() {
+			const { rid, userId } = this.queryParams;
+			let { ignore = true } = this.queryParams;
+
+			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
+
+			if (!rid?.trim()) {
+				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
+			}
+
+			if (!userId?.trim()) {
+				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
+			}
+
+			await ignoreUser(this.userId, { rid, userId, ignore });
 
 			return API.v1.success();
 		},
