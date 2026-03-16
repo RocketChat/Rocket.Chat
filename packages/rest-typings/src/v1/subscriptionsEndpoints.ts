@@ -35,7 +35,7 @@ const SubscriptionsGetOneSchema = {
 	additionalProperties: false,
 };
 
-export const isSubscriptionsGetOneProps = ajv.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
+export const isSubscriptionsGetOneProps = ajvQuery.compile<SubscriptionsGetOne>(SubscriptionsGetOneSchema);
 
 const SubscriptionsReadSchema = {
 	anyOf: [
