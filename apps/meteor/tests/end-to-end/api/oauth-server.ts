@@ -197,4 +197,91 @@ describe('[OAuth Server]', () => {
 			});
 		});
 	});
+
+	describe('[PKCE flow]', () => {
+    let pkceAppId: string;
+    let pkceClientId: string;
+    let pkceClientSecret: string;
+    let pkceCode: string;
+    let pkceCodeVerifier: string;
+    let pkceAccessToken: string;
+    const pkceRedirectUri = 'http://asd.com';
+
+    function generateCodeVerifier(): string {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+        let result = '';
+        for (let i = 0; i < 64; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    async function generateCodeChallenge(verifier: string): Promise<string> {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(verifier);
+        const digest = await crypto.subtle.digest('SHA-256', data);
+        const base64 = btoa(String.fromCharCode(...new Uint8Array(digest)));
+        return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    after(async () => {
+    if (pkceAppId) {
+        await request.post(api('oauth-apps.delete')).set(credentials).send({ appId: pkceAppId }).expect(200);
+    }
+});
+
+    it('should create oauth app for PKCE test', async () => {
+        await request
+            .post(api('oauth-apps.create'))
+            .set(credentials)
+            .send({ name: 'pkce-test-app', redirectUri: pkceRedirectUri, active: true })
+            .expect(200)
+            .expect((res: Response) => {
+                expect(res.body).to.have.property('success', true);
+                pkceAppId = res.body.application._id;
+                pkceClientId = res.body.application.clientId;
+                pkceClientSecret = res.body.application.clientSecret;
+            });
+    });
+
+    it('should authorize with PKCE code_challenge and retrieve code', async () => {
+        pkceCodeVerifier = generateCodeVerifier();
+        const pkceCodeChallenge = await generateCodeChallenge(pkceCodeVerifier);
+
+        const params = new URLSearchParams({
+            response_type: 'code',
+            state: 'pkcetest123',
+            code_challenge: pkceCodeChallenge,
+            code_challenge_method: 'S256',
+        });
+
+        await request
+            .post(`/oauth/authorize?${params.toString()}`)
+            .type('form')
+            .send({ token: credentials['X-Auth-Token'], client_id: pkceClientId, response_type: 'code', redirect_uri: pkceRedirectUri, allow: 'yes' })
+            .expect(302)
+            .expect((res: Response) => {
+                const location = new URL(res.headers.location);
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                pkceCode = location.searchParams.get('code')!;
+                expect(pkceCode).to.be.a('string');
+            });
+    });
+
+    it('should exchange code + code_verifier for access token', async () => {
+        await request
+            .post('/oauth/token')
+            .type('form')
+            .send({ grant_type: 'authorization_code', code: pkceCode, client_id: pkceClientId, client_secret: pkceClientSecret, redirect_uri: pkceRedirectUri, code_verifier: pkceCodeVerifier })
+            .expect(200)
+            .expect((res: Response) => {
+                expect(res.body).to.have.property('access_token');
+                pkceAccessToken = res.body.access_token;
+            });
+    });
+
+    it('should access /oauth/userinfo with PKCE access token', async () => {
+        await request.get('/oauth/userinfo').auth(pkceAccessToken, { type: 'bearer' }).expect(200);
+    });
+});
 });
