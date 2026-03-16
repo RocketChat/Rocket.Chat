@@ -13,6 +13,7 @@ import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector, getMediaCallServer } from './injection';
+import { DEFAULT_CALL_FEATURES } from '../constants';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import type { InternalCallParams, MediaCallHeader } from '../definition/common';
@@ -81,7 +82,7 @@ class MediaCallDirector {
 		this.scheduleExpirationCheckByCallId(call._id);
 
 		const updatedCall = await MediaCalls.findOneById(call._id, { projection: { features: 1 } });
-		const features = (updatedCall?.features || ['audio']) as CallFeature[];
+		const features = (updatedCall?.features || DEFAULT_CALL_FEATURES) as CallFeature[];
 
 		await calleeAgent.onCallAccepted(call._id, { signedContractId: data.calleeContractId, features });
 		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, { signedContractId: call.caller.contractId, features });
@@ -179,17 +180,7 @@ class MediaCallDirector {
 	}
 
 	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const {
-			caller,
-			callee,
-			requestedCallId,
-			requestedService,
-			callerAgent,
-			calleeAgent,
-			parentCallId,
-			requestedBy,
-			features = ['audio'],
-		} = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features } = params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
