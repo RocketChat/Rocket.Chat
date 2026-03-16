@@ -11,6 +11,7 @@ import { getCredentials, api, request, credentials, apiUrl } from '../../data/ap
 import { followMessage, sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
+import { preserveSettingValues } from '../../data/settings.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
@@ -2976,46 +2977,39 @@ describe('[Chat]', () => {
 	});
 
 	describe('[/chat.pinMessage]', () => {
-		after(() =>
-			Promise.all([updateSetting('Message_AllowPinning', true), updatePermission('pin-message', ['owner', 'moderator', 'admin'])]),
-		);
+		preserveSettingValues(['Message_AllowPinning']);
 
-		it('should return an error when pinMessage is not allowed in this server', (done) => {
-			void updateSetting('Message_AllowPinning', false).then(() => {
-				void request
-					.post(api('chat.pinMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
+		it('should return an error when pinMessage is not allowed in this server', async () => {
+			await updateSetting('Message_AllowPinning', false);
+			await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
 		});
 
-		it('should return an error when pinMessage is allowed in server but user dont have permission', (done) => {
-			void updateSetting('Message_AllowPinning', true).then(() => {
-				void updatePermission('pin-message', []).then(() => {
-					void request
-						.post(api('chat.pinMessage'))
-						.set(credentials)
-						.send({
-							messageId: message._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
+		it('should return an error when pinMessage is allowed in server but user dont have permission', async () => {
+			await updateSetting('Message_AllowPinning', true);
+			await updatePermission('pin-message', []);
+			await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
 				});
-			});
 		});
 
 		it('should return an error when messageId does not exist', async () => {
@@ -3033,22 +3027,20 @@ describe('[Chat]', () => {
 				});
 		});
 
-		it('should pin Message successfully', (done) => {
-			void updatePermission('pin-message', ['admin']).then(() => {
-				void request
-					.post(api('chat.pinMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.property('error');
-					})
-					.end(done);
-			});
+		it('should pin Message successfully', async () => {
+			await updatePermission('pin-message', ['admin']);
+			await request
+				.post(api('chat.pinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.property('error');
+				});
 		});
 
 		it('should return message when its already pinned', async () => {
@@ -3068,144 +3060,127 @@ describe('[Chat]', () => {
 	});
 
 	describe('[/chat.unPinMessage]', () => {
-		after(() =>
-			Promise.all([updateSetting('Message_AllowPinning', true), updatePermission('pin-message', ['owner', 'moderator', 'admin'])]),
-		);
+		preserveSettingValues(['Message_AllowPinning']);
 
-		it('should return an error when pinMessage is not allowed in this server', (done) => {
-			void updateSetting('Message_AllowPinning', false).then(() => {
-				void request
-					.post(api('chat.unPinMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
-		});
-
-		it('should return an error when pinMessage is allowed in server but users dont have permission', (done) => {
-			void updateSetting('Message_AllowPinning', true).then(() => {
-				void updatePermission('pin-message', []).then(() => {
-					void request
-						.post(api('chat.unPinMessage'))
-						.set(credentials)
-						.send({
-							messageId: message._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(400)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error');
-						})
-						.end(done);
+		it('should return an error when pinMessage is not allowed in this server', async () => {
+			await updateSetting('Message_AllowPinning', false);
+			await request
+				.post(api('chat.unPinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
 				});
-			});
 		});
 
-		it('should unpin Message successfully', (done) => {
-			void updatePermission('pin-message', ['admin']).then(() => {
-				void request
-					.post(api('chat.unPinMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.property('error');
-					})
-					.end(done);
-			});
+		it('should return an error when pinMessage is allowed in server but users dont have permission', async () => {
+			await updateSetting('Message_AllowPinning', true);
+			await updatePermission('pin-message', []);
+			await request
+				.post(api('chat.unPinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
+		});
+
+		it('should unpin Message successfully', async () => {
+			await updatePermission('pin-message', ['admin']);
+			await request
+				.post(api('chat.unPinMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.property('error');
+				});
 		});
 	});
 
 	describe('[/chat.unStarMessage]', () => {
-		after(() => updateSetting('Message_AllowStarring', true));
+		preserveSettingValues(['Message_AllowStarring']);
 
-		it('should return an error when starMessage is not allowed in this server', (done) => {
-			void updateSetting('Message_AllowStarring', false).then(() => {
-				void request
-					.post(api('chat.unStarMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
+		it('should return an error when starMessage is not allowed in this server', async () => {
+			await updateSetting('Message_AllowStarring', false);
+			await request
+				.post(api('chat.unStarMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
 		});
 
-		it('should unstar Message successfully', (done) => {
-			void updateSetting('Message_AllowStarring', true).then(() => {
-				void request
-					.post(api('chat.unStarMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.property('error');
-					})
-					.end(done);
-			});
+		it('should unstar Message successfully', async () => {
+			await updateSetting('Message_AllowStarring', true);
+			await request
+				.post(api('chat.unStarMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.property('error');
+				});
 		});
 	});
 
 	describe('[/chat.starMessage]', () => {
-		after(() => updateSetting('Message_AllowStarring', true));
+		preserveSettingValues(['Message_AllowStarring']);
 
-		it('should return an error when starMessage is not allowed in this server', (done) => {
-			void updateSetting('Message_AllowStarring', false).then(() => {
-				void request
-					.post(api('chat.starMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error');
-					})
-					.end(done);
-			});
+		it('should return an error when starMessage is not allowed in this server', async () => {
+			await updateSetting('Message_AllowStarring', false);
+			await request
+				.post(api('chat.starMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
 		});
 
-		it('should star Message successfully', (done) => {
-			void updateSetting('Message_AllowStarring', true).then(() => {
-				void request
-					.post(api('chat.starMessage'))
-					.set(credentials)
-					.send({
-						messageId: message._id,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(200)
-					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.not.have.property('error');
-					})
-					.end(done);
-			});
+		it('should star Message successfully', async () => {
+			await updateSetting('Message_AllowStarring', true);
+			await request
+				.post(api('chat.starMessage'))
+				.set(credentials)
+				.send({
+					messageId: message._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.not.have.property('error');
+				});
 		});
 	});
 
