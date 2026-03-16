@@ -415,6 +415,23 @@ export class HomeContent {
 		}
 	}
 
+	async dragAndDropFile(fileName: string): Promise<void> {
+		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
+		const dataTransfer = await this.page.evaluateHandle(
+			({ content, name }: { content: string; name: string }) => {
+				const data = new DataTransfer();
+				const file = new File([content], name, { type: 'text/plain' });
+				data.items.add(file);
+				return data;
+			},
+			{ content: contract, name: fileName },
+		);
+
+		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
+
+		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+	}
+
 	async sendFileMessage(fileName: string, { waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.page.getByLabel('Room composer').locator('input[type=file]').setInputFiles(getFilePath(fileName));

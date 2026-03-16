@@ -96,6 +96,33 @@ test.describe('E2EE File Encryption', () => {
 		});
 	});
 
+	test('File with Unicode filename uploads and downloads correctly', async ({ page }) => {
+		const UNICODE_FILE_NAME = 'Новый текстовый документ.txt';
+
+		await test.step('upload file with Unicode filename', async () => {
+			await poHomeChannel.content.dragAndDropFile(UNICODE_FILE_NAME);
+			await poHomeChannel.content.fileNameInput.fill(UNICODE_FILE_NAME);
+			await poHomeChannel.content.btnModalConfirm.click();
+
+			await expect(poHomeChannel.content.lastUserMessage.locator('.rcx-icon--name-key')).toBeVisible();
+			await expect(poHomeChannel.content.getLastMessageByFileName(UNICODE_FILE_NAME)).toBeVisible();
+		});
+
+		await test.step('download the file and verify the Unicode filename is preserved', async () => {
+			await poHomeChannel.roomToolbar.openMoreOptions();
+			await poHomeChannel.roomToolbar.menuItemFiles.click();
+
+			await expect(poHomeChannel.tabs.files.getFileByName(UNICODE_FILE_NAME)).toBeVisible();
+
+			const [download] = await Promise.all([
+				page.waitForEvent('download'),
+				poHomeChannel.tabs.files.getFileByName(UNICODE_FILE_NAME).click(),
+			]);
+
+			expect(download.suggestedFilename()).toBe(UNICODE_FILE_NAME);
+		});
+	});
+
 	test('File encryption with whitelisted and blacklisted media types', async ({ api }) => {
 		await test.step('send a text file in channel', async () => {
 			const updatedFileName = `edited_${TEST_FILE_TXT}`;
