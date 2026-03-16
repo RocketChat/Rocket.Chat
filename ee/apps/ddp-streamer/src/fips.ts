@@ -22,11 +22,7 @@ if (!crypto.getFips()) {
 	throw new Error('FIPS mode was not enabled after crypto.setFips(true)');
 }
 
-console.log('=========================================');
 console.log('FIPS COMPLIANCE CHECK: YES');
-console.log('=========================================');
-
-console.log('🔒 FIPS 140-3 mode detected. Applying WebSocket Handshake Patch...');
 
 const blocks = new Uint32Array(32);
 const w = new Uint32Array(80);
