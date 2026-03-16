@@ -1,0 +1,16 @@
+name: Start next release
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '28 17 20 * *' # run at minute 28 to avoid the chance of delay due to high load on GH
+
+jobs:
+  release:
+    uses: ./.github/workflows/release-manual.yml
+    with:
+      action: next
+      base-ref: develop
+    secrets:
+      CI_PAT: ${{ secrets.CI_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

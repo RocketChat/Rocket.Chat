@@ -1,0 +1,22 @@
+name: Cut release
+
+on:
+  repository_dispatch:
+    types: ['release-cut']
+  # workflow_dispatch:
+  #   inputs:
+  #     base-ref:
+  #       description: Base version
+  #       default: develop
+  #       required: false
+  #       type: string
+
+jobs:
+  release:
+    uses: ./.github/workflows/release-manual.yml
+    with:
+      action: cut
+      base-ref: ${{ github.event.client_payload['base-ref'] || 'develop' }}
+    secrets:
+      CI_PAT: ${{ secrets.CI_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
