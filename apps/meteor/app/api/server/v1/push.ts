@@ -1,5 +1,5 @@
 import { Push } from '@rocket.chat/core-services';
-import type { IPushToken } from '@rocket.chat/core-typings';
+import type { IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
 	ajv,
@@ -23,9 +23,10 @@ import type { SuccessResult } from '../definition';
 
 type PushTokenPOST = {
 	id?: string;
-	type: 'apn' | 'gcm';
+	type: IPushTokenTypes;
 	value: string;
 	appName: string;
+	voipToken?: string;
 };
 
 const PushTokenPOSTSchema: JSONSchemaType<PushTokenPOST> = {
@@ -46,6 +47,10 @@ const PushTokenPOSTSchema: JSONSchemaType<PushTokenPOST> = {
 		appName: {
 			type: 'string',
 			minLength: 1,
+		},
+		voipToken: {
+			type: 'string',
+			nullable: true,
 		},
 	},
 	required: ['type', 'value', 'appName'],
@@ -72,13 +77,13 @@ const PushTokenDELETESchema: JSONSchemaType<PushTokenDELETE> = {
 
 export const isPushTokenDELETEProps = ajv.compile<PushTokenDELETE>(PushTokenDELETESchema);
 
-type PushTokenResult = Pick<IPushToken, '_id' | 'token' | 'appName' | 'userId' | 'enabled' | 'createdAt' | '_updatedAt'>;
+type PushTokenResult = Pick<IPushToken, '_id' | 'token' | 'appName' | 'userId' | 'enabled' | 'createdAt' | '_updatedAt' | 'voipToken'>;
 
 /**
  * Pick only the attributes we actually want to return on the endpoint, ensuring nothing from older schemas get mixed in
  */
 function cleanTokenResult(result: Omit<IPushToken, 'authToken'>): PushTokenResult {
-	const { _id, token, appName, userId, enabled, createdAt, _updatedAt } = result;
+	const { _id, token, appName, userId, enabled, createdAt, _updatedAt, voipToken } = result;
 
 	return {
 		_id,
@@ -88,6 +93,7 @@ function cleanTokenResult(result: Omit<IPushToken, 'authToken'>): PushTokenResul
 		enabled,
 		createdAt,
 		_updatedAt,
+		voipToken,
 	};
 }
 
@@ -140,6 +146,9 @@ const pushTokenEndpoints = API.v1
 								_updatedAt: {
 									type: 'string',
 								},
+								voipToken: {
+									type: 'string',
+								},
 							},
 							additionalProperties: false,
 						},
@@ -154,7 +163,11 @@ const pushTokenEndpoints = API.v1
 			authRequired: true,
 		},
 		async function action() {
-			const { id, type, value, appName } = this.bodyParams;
+			const { id, type, value, appName, voipToken } = this.bodyParams;
+
+			if (voipToken && !id) {
+				return API.v1.failure('voip-tokens-must-specify-device-id');
+			}
 
 			const rawToken = this.request.headers.get('x-auth-token');
 			if (!rawToken) {
@@ -168,6 +181,7 @@ const pushTokenEndpoints = API.v1
 				authToken,
 				appName,
 				userId: this.userId,
+				...(voipToken && { voipToken }),
 			});
 
 			return API.v1.success({ result: cleanTokenResult(result) });

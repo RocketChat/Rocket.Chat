@@ -137,6 +137,8 @@ export class CustomOAuth {
 
 		try {
 			const request = await fetch(`${this.tokenPath}`, {
+				// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
 				method: 'POST',
 				headers,
 				body: params,
@@ -174,7 +176,8 @@ export class CustomOAuth {
 		}
 
 		try {
-			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params });
+			// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
+			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params, ignoreSsrfValidation: true });
 
 			if (!request.ok) {
 				throw new Error(request.statusText);
