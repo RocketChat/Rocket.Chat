@@ -708,26 +708,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'chat.reportMessage',
-	{ authRequired: true, validateParams: isChatReportMessageProps },
-	{
-		async post() {
-			const { messageId, description } = this.bodyParams;
-			if (!messageId) {
-				return API.v1.failure('The required "messageId" param is missing.');
-			}
-
-			if (!description) {
-				return API.v1.failure('The required "description" param is missing.');
-			}
-
-			await reportMessage(messageId, description, this.userId);
-
-			return API.v1.success();
-		},
-	},
-);
 
 API.v1.addRoute(
 	'chat.ignoreUser',
