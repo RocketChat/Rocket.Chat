@@ -3198,7 +3198,7 @@ const GETLivechatVisitorsSearchSchema = {
 	additionalProperties: false,
 };
 
-export const isGETLivechatVisitorsSearch = ajv.compile<GETLivechatVisitorsSearch>(GETLivechatVisitorsSearchSchema);
+export const isGETLivechatVisitorsSearch = ajvQuery.compile<GETLivechatVisitorsSearch>(GETLivechatVisitorsSearchSchema);
 
 type GETLivechatAgentsAgentIdDepartmentsParams = { enabledDepartmentsOnly?: booleanString };
 
