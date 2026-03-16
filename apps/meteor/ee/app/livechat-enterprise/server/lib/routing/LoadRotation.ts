@@ -41,6 +41,7 @@ class LoadRotation {
 			ignoreAgentId,
 			enabledWhenIdle,
 			unavailableUsers.map((user) => user.username),
+			settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 		);
 		if (!nextAgent?.username) {
 			return;

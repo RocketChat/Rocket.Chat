@@ -214,6 +214,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const livechatVisitor = await registerGuest(registerData, {
 			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			shouldConsiderOfflineAgent: settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 		});
 
 		if (!livechatVisitor) {
@@ -239,6 +240,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 		const livechatVisitor = await registerGuest(registerData, {
 			shouldConsiderIdleAgent: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			shouldConsiderOfflineAgent: settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 		});
 
 		return this.orch.getConverters()?.get('visitors').convertVisitor(livechatVisitor);

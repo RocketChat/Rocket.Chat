@@ -41,6 +41,7 @@ class LoadBalancing {
 			ignoreAgentId,
 			enabledWhenIdle,
 			unavailableUsers.map((u) => u.username),
+			settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 		);
 		if (!nextAgent) {
 			return;

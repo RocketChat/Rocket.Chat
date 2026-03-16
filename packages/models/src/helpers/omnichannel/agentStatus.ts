@@ -2,24 +2,23 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Filter } from 'mongodb';
 
-export const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
+export const queryStatusAgentOnline = (
+	extraFilters = {},
+	isLivechatEnabledWhenAgentIdle?: boolean,
+	acceptChatsWithNoAgents?: boolean,
+): Filter<IUser> => ({
 	statusLivechat: 'available',
 	roles: 'livechat-agent',
 	// ignore deactivated users
 	active: true,
-	...(!isLivechatEnabledWhenAgentIdle && {
+	...(!acceptChatsWithNoAgents && {
 		$or: [
+			{ roles: 'bot' },
 			{
 				status: {
 					$exists: true,
 					$ne: UserStatus.OFFLINE,
 				},
-				roles: {
-					$ne: 'bot',
-				},
-			},
-			{
-				roles: 'bot',
 			},
 		],
 	}),
@@ -29,8 +28,12 @@ export const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenA
 	}),
 });
 
-export const queryAvailableAgentsForSelection = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
-	...queryStatusAgentOnline(extraFilters, isLivechatEnabledWhenAgentIdle),
+export const queryAvailableAgentsForSelection = (
+	extraFilters = {},
+	isLivechatEnabledWhenAgentIdle?: boolean,
+	acceptChatsWithNoAgents?: boolean,
+): Filter<IUser> => ({
+	...queryStatusAgentOnline(extraFilters, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents),
 	$and: [
 		{
 			$or: [{ agentLocked: { $exists: false } }, { agentLockedAt: { $lt: new Date(Date.now() - 5000) } }],

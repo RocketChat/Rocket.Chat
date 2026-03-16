@@ -493,7 +493,12 @@ export const forwardRoomToAgent = async (room: IOmnichannelRoom, transferData: T
 	if (!agentId) {
 		throw new Error('error-invalid-agent');
 	}
-	const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+	const user = await Users.findOneOnlineAgentById(
+		agentId,
+		settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+		{},
+		settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+	);
 	if (!user) {
 		logger.debug({
 			msg: 'Agent is offline. Cannot forward',
@@ -654,7 +659,12 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 			departmentId,
 			agentId,
 		});
-		const user = await Users.findOneOnlineAgentById(agentId, settings.get<boolean>('Livechat_enabled_when_agent_idle'));
+		const user = await Users.findOneOnlineAgentById(
+			agentId,
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			{},
+			settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
+		);
 		if (!user) {
 			throw new Error('error-user-is-offline');
 		}
@@ -724,7 +734,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	}
 
 	const { servedBy, chatQueued } = roomTaken;
-	if (!chatQueued && oldServedBy && oldServedBy._id === servedBy?._id) {
+	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug({
 				msg: 'Cannot forward room. Chat assigned to agent instead',
