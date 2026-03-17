@@ -9,5 +9,5 @@ export const SECTION_MIN_HEIGHT_WRAP_COLLAPSED = (CARD_TOTAL_HEIGHT * 2 + ACTION
 
 export const useShouldWrapCards = (showChat: boolean, containerHeight: number) => {
 	const shouldWrapCollapsed = useMediaQuery(`(min-height: ${SECTION_MIN_HEIGHT_WRAP_COLLAPSED}px)`);
-	return showChat ? shouldWrapCollapsed : containerHeight > CARD_TOTAL_HEIGHT * 2;
+	return showChat ? shouldWrapCollapsed : containerHeight > CARD_TOTAL_HEIGHT * 2 + ACTION_STRIP_TOTAL_HEIGHT;
 };
