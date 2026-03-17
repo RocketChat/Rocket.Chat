@@ -6,7 +6,7 @@ import fileSize from 'filesize';
 import { getErrorMessage } from '../errorHandling';
 import type { UploadsAPI, EncryptedFileUploadContent } from './ChatAPI';
 import { isEncryptedUpload, type Upload } from './Upload';
-import { UserAction } from '../../../app/ui/client/lib/UserAction';
+import { USER_ACTIVITIES, UserAction } from '../../../app/ui/client/lib/UserAction';
 import { fileUploadIsValidContentType } from '../../../app/utils/client';
 import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { i18n } from '../../../app/utils/lib/i18n';
@@ -27,7 +27,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	private processingUploads: boolean = false;
 
-	set = (uploads: Upload[]): void => {
+	set = (uploads: Upload[]): void => {		
 		this.uploads = uploads;
 		this.emit('update');
 	};
@@ -57,6 +57,10 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	removeUpload = (id: Upload['id']): void => {
 		this.set(this.uploads.filter((upload) => upload.id !== id));
+
+		if (this.uploads.length === 0) {
+			UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
+		}
 	};
 
 	editUploadFileName = (uploadId: Upload['id'], fileName: Upload['file']['name']) => {
@@ -95,7 +99,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	clear = () => {
 		this.set([]);
-		UserAction.stop(this.rid, 'user-uploading', { tmid: this.tmid });
+		UserAction.stop(this.rid, USER_ACTIVITIES.USER_UPLOADING, { tmid: this.tmid });
 	};
 
 	async send(file: File, encrypted?: EncryptedFileUploadContent): Promise<void> {
@@ -183,7 +187,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 				this.once(`cancelling-${id}`, () => {
 					xhr.abort();
-					this.set(this.uploads.filter((upload) => upload.id !== id));
+					this.removeUpload(id);
 					reject(new Error(i18n.t('FileUpload_Canceled')));
 				});
 			});
