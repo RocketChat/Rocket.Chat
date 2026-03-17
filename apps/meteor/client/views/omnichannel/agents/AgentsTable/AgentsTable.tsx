@@ -16,12 +16,12 @@ import { useTranslation } from 'react-i18next';
 import AddAgent from './AddAgent';
 import AgentsTableRow from './AgentsTableRow';
 import FilterByText from '../../../../components/FilterByText';
+import GenericError from '../../../../components/GenericError';
 import GenericNoResults from '../../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../../lib/links';
 import { useAgentsQuery } from '../hooks/useAgentsQuery';
 import { useQuery } from '../hooks/useQuery';
 
-// TODO: missing error state
 const AgentsTable = () => {
 	const { t } = useTranslation();
 
@@ -35,7 +35,7 @@ const AgentsTable = () => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const query = useQuery({ text, current, itemsPerPage }, debouncedSort);
-	const { data, isSuccess, isLoading } = useAgentsQuery(query);
+	const { data, isSuccess, isLoading, isError, refetch } = useAgentsQuery(query);
 
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
@@ -96,9 +96,9 @@ const AgentsTable = () => {
 			)}
 			{isSuccess && data?.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} data-qa-id='agents-table'>
+					<GenericTable aria-label={t('Agents')} aria-busy={isLoading}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody data-qa='GenericTableAgentInfoBody'>
+						<GenericTableBody>
 							{data?.users.map((user) => <AgentsTableRow key={user._id} user={user} mediaQuery={mediaQuery} />)}
 						</GenericTableBody>
 					</GenericTable>
@@ -113,6 +113,7 @@ const AgentsTable = () => {
 					/>
 				</>
 			)}
+			{isError && <GenericError buttonAction={refetch} />}
 		</>
 	);
 };

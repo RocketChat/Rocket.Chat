@@ -58,7 +58,7 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 	const compactMode = useCompactMode();
 
 	return (
-		<Box display='flex' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
+		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
 			<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
 				<Label id='eventFilterLabel' htmlFor='eventFilter'>
 					{t('Event')}
@@ -70,71 +70,69 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 				/>
 			</Box>
 			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label id='timeFilterLabel' htmlFor='timeFilter'>
-						{t('Time')}
-					</Label>
-					<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
-				</Box>
-			)}
-			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
-						{t('Instance')}
-					</Label>
-					<Controller
-						control={control}
-						name='instance'
-						render={({ field }) => (
-							<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
-						)}
+				<>
+					<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+						<Label id='timeFilterLabel' htmlFor='timeFilter'>
+							{t('Time')}
+						</Label>
+						<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
+					</Box>
+
+					<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+						<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
+							{t('Instance')}
+						</Label>
+						<Controller
+							control={control}
+							name='instance'
+							render={({ field }) => (
+								<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
+							)}
+						/>
+					</Box>
+
+					<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+						<Label>{t('Severity')}</Label>
+						<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
+					</Box>
+
+					<IconButton
+						title={isLoading ? t('Loading') : t('Refresh_logs')}
+						disabled={isLoading}
+						icon='refresh'
+						secondary
+						mie={10}
+						onClick={() => refreshLogs()}
 					/>
-				</Box>
+
+					<IconButton
+						title={noResults ? t('No_data_to_export') : t('Export')}
+						icon='circle-arrow-down'
+						disabled={noResults}
+						secondary
+						mie={10}
+						onClick={() => openExportModal()}
+						aria-label={noResults ? t('No_data_to_export') : t('Export')}
+						aria-disabled={noResults}
+					/>
+
+					<AppsLogsFilterOptions onExpandAll={openAllLogs} onCollapseAll={collapseAll} />
+				</>
 			)}
-			{!compactMode && (
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
-					<Label>{t('Severity')}</Label>
-					<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
-				</Box>
-			)}
-			{!compactMode && (
-				<IconButton
-					title={isLoading ? t('Loading') : t('Refresh_logs')}
-					alignSelf='flex-end'
-					disabled={isLoading}
-					icon='refresh'
-					secondary
-					mie={10}
-					onClick={() => refreshLogs()}
-				/>
-			)}
-			{!compactMode && (
-				<IconButton
-					title={noResults ? t('No_data_to_export') : t('Export')}
-					alignSelf='flex-end'
-					icon='circle-arrow-down'
-					disabled={noResults}
-					secondary
-					mie={10}
-					onClick={() => openExportModal()}
-					aria-label={noResults ? t('No_data_to_export') : t('Export')}
-					aria-disabled={noResults}
-				/>
-			)}
+
 			{compactMode && (
-				<Button alignSelf='flex-end' icon='customize' secondary mie={10} onClick={() => openContextualBar()}>
-					{t('Filters')}
-				</Button>
-			)}
-			{!compactMode && <AppsLogsFilterOptions onExpandAll={openAllLogs} onCollapseAll={collapseAll} />}
-			{compactMode && (
-				<CompactFilterOptions
-					isLoading={isLoading}
-					onExportLogs={openExportModal}
-					onExpandAll={openAllLogs}
-					onCollapseAll={collapseAll}
-					onRefreshLogs={refreshLogs}
-				/>
+				<>
+					<Button alignSelf='flex-end' icon='customize' secondary mie={10} onClick={() => openContextualBar()}>
+						{t('Filters')}
+					</Button>
+					<CompactFilterOptions
+						isLoading={isLoading}
+						onExportLogs={openExportModal}
+						onExpandAll={openAllLogs}
+						onCollapseAll={collapseAll}
+						onRefreshLogs={refreshLogs}
+					/>
+				</>
 			)}
 		</Box>
 	);

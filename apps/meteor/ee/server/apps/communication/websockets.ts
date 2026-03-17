@@ -2,12 +2,12 @@ import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { ISetting as AppsSetting } from '@rocket.chat/apps-engine/definition/settings';
 import { api } from '@rocket.chat/core-services';
-import type { IStreamer } from 'meteor/rocketchat:streamer';
 
+import { AppEvents } from './events';
 import notifications from '../../../../app/notifications/server/lib/Notifications';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import type { IStreamer } from '../../../../server/modules/streamer/types';
 import type { AppServerOrchestrator } from '../orchestrator';
-import { AppEvents } from './events';
 
 export { AppEvents };
 export class AppServerListener {

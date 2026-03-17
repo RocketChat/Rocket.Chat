@@ -1,3 +1,4 @@
+import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 
@@ -34,7 +35,6 @@ import { LogoutResponse } from '../../../../app/meteor-accounts-saml/server/lib/
 import { LogoutRequestParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutRequest';
 import { LogoutResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/LogoutResponse';
 import { ResponseParser } from '../../../../app/meteor-accounts-saml/server/lib/parsers/Response';
-import { isTruthy } from '../../../../lib/isTruthy';
 
 const { ServiceProviderMetadata } = proxyquire
 	.noCallThru()
@@ -82,6 +82,28 @@ describe('SAML', () => {
 				const authorizeRequest = AuthorizeRequest.generate(customOptions, credentialToken);
 				expect(authorizeRequest.id).to.be.equal(credentialToken);
 				expect(authorizeRequest.request).to.be.equal('[callback-url] [entry-point] [issuer]');
+			});
+
+			it('should omit the authn context block when the customAuthnContext setting is empty', () => {
+				const credentialToken = '__credentialToken__';
+				const customOptions = {
+					...serviceProviderOptions,
+					customAuthnContext: '',
+				};
+
+				const authorizeRequest = AuthorizeRequest.generate(customOptions, credentialToken);
+				expect(authorizeRequest.request).to.not.include('<authnContext');
+			});
+
+			it('should treat whitespace-only values as empty custom authn contexts', () => {
+				const credentialToken = '__credentialToken__';
+				const customOptions = {
+					...serviceProviderOptions,
+					customAuthnContext: '   ',
+				};
+
+				const authorizeRequest = AuthorizeRequest.generate(customOptions, credentialToken);
+				expect(authorizeRequest.request).to.not.include('<authnContext');
 			});
 		});
 	});

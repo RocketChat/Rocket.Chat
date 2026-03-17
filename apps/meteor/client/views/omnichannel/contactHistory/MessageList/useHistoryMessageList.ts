@@ -1,61 +1,59 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo, useState } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { useScrollableMessageList } from '../../../../hooks/lists/useScrollableMessageList';
-import { useStreamUpdatesForMessageList } from '../../../../hooks/lists/useStreamUpdatesForMessageList';
-import { useComponentDidUpdate } from '../../../../hooks/useComponentDidUpdate';
-import { MessageList } from '../../../../lib/lists/MessageList';
+import { useInfiniteMessageQueryUpdates } from '../../../../hooks/useInfiniteMessageQueryUpdates';
+import { omnichannelQueryKeys } from '../../../../lib/queryKeys';
 import { getConfig } from '../../../../lib/utils/getConfig';
+import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
 
 type HistoryMessageListOptions = {
 	filter: string;
 	roomId: string;
 };
 
-export const useHistoryMessageList = (
-	options: HistoryMessageListOptions,
-	uid: IUser['_id'] | undefined,
-): {
-	itemsList: MessageList;
-	initialItemCount: number;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
-	const [itemsList, setItemsList] = useState(() => new MessageList());
-	const reload = useCallback(() => setItemsList(new MessageList()), []);
+export const useHistoryMessageList = ({ roomId, filter: searchTerm }: HistoryMessageListOptions) => {
+	const getMessages = useEndpoint('GET', '/v1/livechat/:rid/messages', { rid: roomId });
 
-	const getMessages = useEndpoint('GET', '/v1/livechat/:rid/messages', { rid: options.roomId });
+	const count = parseInt(`${getConfig('historyMessageListSize', 10)}`, 10);
 
-	useComponentDidUpdate(() => {
-		options && reload();
-	}, [options, reload]);
+	useInfiniteMessageQueryUpdates({
+		queryKey: omnichannelQueryKeys.contactMessages(roomId, { searchTerm }),
+		roomId,
+		// Replicates the filtering done server-side
+		filter: (message): message is IMessage =>
+			(!('t' in message) || message.t === 'livechat-close') &&
+			(!searchTerm || new RegExp(escapeRegExp(searchTerm), 'ig').test(message.msg)),
+		// Replicates the sorting forced on server-side
+		compare: (a, b) => a.ts.getTime() - b.ts.getTime(),
+	});
 
-	const fetchMessages = useCallback(
-		async (start: number, end: number) => {
+	return useInfiniteQuery({
+		queryKey: omnichannelQueryKeys.contactMessages(roomId, { searchTerm }),
+		queryFn: async ({ pageParam: offset }) => {
 			const { messages, total } = await getMessages({
-				...(options.filter && { searchTerm: options.filter }),
-				offset: start,
-				count: end,
-				sort: `{ "ts": 1 }`,
+				...(searchTerm && { searchTerm }),
+				offset,
+				count,
+				sort: JSON.stringify({ ts: 1 }),
 			});
+
 			return {
-				items: messages,
+				items: messages.map(mapMessageFromApi),
 				itemCount: total,
 			};
 		},
-		[getMessages, options.filter],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
-		itemsList,
-		fetchMessages,
-		useMemo(() => parseInt(`${getConfig('historyMessageListSize', 10)}`), []),
-	);
-	useStreamUpdatesForMessageList(itemsList, uid, options.roomId);
-
-	return {
-		itemsList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, allPages) => {
+			// FIXME: This is an estimation, as messages can be created or removed while paginating
+			// Ideally, the server should return the next offset to use or the pagination should be done using "createdAt" or "updatedAt"
+			const loadedItemsCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
+			return loadedItemsCount < lastPage.itemCount ? loadedItemsCount : undefined;
+		},
+		select: ({ pages }) => ({
+			items: pages.flatMap((page) => page.items),
+			itemCount: pages.at(-1)?.itemCount ?? 0,
+		}),
+	});
 };

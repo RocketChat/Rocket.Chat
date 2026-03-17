@@ -1,8 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
 
 export type GroupsOnlineProps = { _id?: string; query?: Record<string, any> };
 

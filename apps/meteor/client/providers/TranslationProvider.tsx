@@ -245,7 +245,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 
 	return (
 		<I18nextProvider i18n={i18nextInstance}>
-			<TranslationProviderInner children={children} availableLanguages={availableLanguages} />
+			<TranslationProviderInner availableLanguages={availableLanguages}>{children}</TranslationProviderInner>
 		</I18nextProvider>
 	);
 };
@@ -286,7 +286,7 @@ const TranslationProviderInner = ({
 		[availableLanguages, i18n, t],
 	);
 
-	return <TranslationContext.Provider children={children} value={value} />;
+	return <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>;
 };
 
 export default TranslationProvider;

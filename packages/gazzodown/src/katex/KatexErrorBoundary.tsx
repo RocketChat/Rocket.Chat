@@ -13,7 +13,11 @@ const Fallback = styled('span')`
 
 const KatexErrorBoundary = ({ children, code }: KatexErrorBoundaryProps): ReactElement => {
 	const [error, setError] = useState<Error | null>(null);
-	return <ErrorBoundary children={children} onError={setError} fallback={<Fallback title={error?.message}>{code}</Fallback>} />;
+	return (
+		<ErrorBoundary onError={setError} fallback={<Fallback title={error?.message}>{code}</Fallback>}>
+			{children}
+		</ErrorBoundary>
+	);
 };
 
 export default KatexErrorBoundary;

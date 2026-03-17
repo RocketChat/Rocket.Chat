@@ -74,9 +74,9 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 			active: inboxData?.active ?? true,
 			name: inboxData?.name ?? '',
 			email: inboxData?.email ?? '',
-			description: inboxData?.description,
-			senderInfo: inboxData?.senderInfo,
-			department: inboxData?.department,
+			description: inboxData?.description ?? '',
+			senderInfo: inboxData?.senderInfo ?? '',
+			department: inboxData?.department ?? '',
 			// SMTP
 			smtpServer: inboxData?.smtp.server ?? '',
 			smtpPort: String(inboxData?.smtp.port ?? 587),

@@ -4,10 +4,10 @@ import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues } from 'mongodb';
 
-import { isTruthy } from '../../../../lib/isTruthy';
 import { callbacks } from '../../../../server/lib/callbacks';
 import { getNameForDMs } from '../../../../server/services/room/getNameForDMs';
 import { settings } from '../../../settings/server';
@@ -157,7 +157,7 @@ export async function createDirectRoom(
 
 		const roomNames = getNameForDMs(roomMembers);
 
-		for await (const member of membersWithPreferences) {
+		for (const member of membersWithPreferences) {
 			const subscriptionStatus: Partial<ISubscription> =
 				roomExtraData.federated && options.creator !== member._id && creatorUser
 					? {

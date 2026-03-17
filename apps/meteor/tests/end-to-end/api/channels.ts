@@ -1,5 +1,5 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import { TEAM_TYPE, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
+import { TeamType, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect, assert } from 'chai';
 import { after, before, describe, it } from 'mocha';
@@ -1037,8 +1037,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.info.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [outsiderUser.username as string]),
-					createTeam(insideCredentials, `channels.info.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.info.team.public.${Random.id()}`, TeamType.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.info.team.private.${Random.id()}`, TeamType.PRIVATE, [outsiderUser.username as string]),
 				]);
 
 				const [
@@ -1771,6 +1771,106 @@ describe('[Channels]', () => {
 				})
 				.end(done);
 		});
+
+		describe('inclusive parameter', () => {
+			let testChannel: IRoom;
+			let oldestMessage: IMessage;
+			let middleMessage: IMessage;
+			let latestMessage: IMessage;
+
+			before(async () => {
+				const channelRes = await request
+					.post(api('channels.create'))
+					.set(credentials)
+					.send({ name: `inclusive-test-channel-${Date.now()}` });
+				testChannel = channelRes.body.channel;
+
+				// Send messages with small delays to ensure distinct timestamps
+				const msg1 = await sendMessage({ message: { rid: testChannel._id, msg: 'oldest message' } });
+				oldestMessage = msg1.body.message;
+
+				// Small delay to ensure timestamps are different
+				await new Promise((resolve) => setTimeout(resolve, 50));
+
+				const msg2 = await sendMessage({ message: { rid: testChannel._id, msg: 'middle message' } });
+				middleMessage = msg2.body.message;
+
+				await new Promise((resolve) => setTimeout(resolve, 50));
+
+				const msg3 = await sendMessage({ message: { rid: testChannel._id, msg: 'latest message' } });
+				latestMessage = msg3.body.message;
+			});
+
+			after(async () => {
+				if (testChannel?._id) {
+					await deleteRoom({ type: 'c', roomId: testChannel._id });
+				}
+			});
+
+			it('should include boundary messages when inclusive=true', async () => {
+				const res = await request
+					.get(api('channels.history'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						oldest: oldestMessage.ts,
+						latest: latestMessage.ts,
+						inclusive: 'true',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').that.is.an('array');
+
+				const messageIds = res.body.messages.map((m: IMessage) => m._id);
+				expect(messageIds).to.include(oldestMessage._id, 'oldest message should be included');
+				expect(messageIds).to.include(latestMessage._id, 'latest message should be included');
+			});
+
+			it('should exclude boundary messages when inclusive=false', async () => {
+				const res = await request
+					.get(api('channels.history'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						oldest: oldestMessage.ts,
+						latest: latestMessage.ts,
+						inclusive: 'false',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').that.is.an('array');
+
+				const messageIds = res.body.messages.map((m: IMessage) => m._id);
+				expect(messageIds).to.not.include(oldestMessage._id, 'oldest message should be excluded');
+				expect(messageIds).to.not.include(latestMessage._id, 'latest message should be excluded');
+				// Middle message should still be included if it exists in the range
+				expect(messageIds).to.include(middleMessage._id, 'middle message should be included');
+			});
+
+			it('should exclude boundary messages by default (no inclusive param)', async () => {
+				const res = await request
+					.get(api('channels.history'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+						oldest: oldestMessage.ts,
+						latest: latestMessage.ts,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').that.is.an('array');
+
+				const messageIds = res.body.messages.map((m: IMessage) => m._id);
+				expect(messageIds).to.not.include(oldestMessage._id, 'oldest message should be excluded by default');
+				expect(messageIds).to.not.include(latestMessage._id, 'latest message should be excluded by default');
+			});
+		});
 	});
 
 	describe('/channels.members', () => {
@@ -1887,8 +1987,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.members.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [outsiderUser.username as string]),
-					createTeam(insideCredentials, `channels.members.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.members.team.public.${Random.id()}`, TeamType.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.members.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -2312,10 +2412,10 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.getIntegrations.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
+					createTeam(insideCredentials, `channels.getIntegrations.team.public.${Random.id()}`, TeamType.PUBLIC, [
 						outsiderUser.username as string,
 					]),
-					createTeam(insideCredentials, `channels.getIntegrations.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.getIntegrations.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -3284,10 +3384,10 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.moderators.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
+					createTeam(insideCredentials, `channels.moderators.team.public.${Random.id()}`, TeamType.PUBLIC, [
 						outsiderUser.username as string,
 					]),
-					createTeam(insideCredentials, `channels.moderators.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.moderators.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);
@@ -3650,7 +3750,7 @@ describe('[Channels]', () => {
 				]);
 
 				// Create a private team
-				privateTeam = await createTeam(insideCredentials, `channels.anonymousread.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+				privateTeam = await createTeam(insideCredentials, `channels.anonymousread.team.private.${Random.id()}`, TeamType.PRIVATE, [
 					outsiderUser.username as string,
 				]);
 
@@ -4231,10 +4331,8 @@ describe('[Channels]', () => {
 
 				// Create a public team and a private team
 				[publicTeam, privateTeam] = await Promise.all([
-					createTeam(insideCredentials, `channels.messages.team.public.${Random.id()}`, TEAM_TYPE.PUBLIC, [
-						outsiderUser.username as string,
-					]),
-					createTeam(insideCredentials, `channels.messages.team.private.${Random.id()}`, TEAM_TYPE.PRIVATE, [
+					createTeam(insideCredentials, `channels.messages.team.public.${Random.id()}`, TeamType.PUBLIC, [outsiderUser.username as string]),
+					createTeam(insideCredentials, `channels.messages.team.private.${Random.id()}`, TeamType.PRIVATE, [
 						outsiderUser.username as string,
 					]),
 				]);

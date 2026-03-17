@@ -1,4 +1,4 @@
-import { Box, Icon, Menu } from '@rocket.chat/fuselage';
+import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 type AppsLogsFilterOptionsProps = {
@@ -9,27 +9,22 @@ type AppsLogsFilterOptionsProps = {
 const AppsLogsFilterOptions = ({ onExpandAll, onCollapseAll, ...props }: AppsLogsFilterOptionsProps) => {
 	const { t } = useTranslation();
 
-	const menuOptions = {
-		expandAll: {
-			label: (
-				<Box>
-					<Icon name='arrow-expand' size='x16' marginInlineEnd={4} />
-					{t('Expand_all')}
-				</Box>
-			),
-			action: onExpandAll,
+	const items = [
+		{
+			id: 'expandAll',
+			icon: 'arrow-expand' as const,
+			content: t('Expand_all'),
+			onClick: onExpandAll,
 		},
-		collapseAll: {
-			label: (
-				<Box>
-					<Icon name='arrow-collapse' size='x16' marginInlineEnd={4} />
-					{t('Collapse_all')}
-				</Box>
-			),
-			action: onCollapseAll,
+		{
+			id: 'collapseAll',
+			icon: 'arrow-collapse' as const,
+			content: t('Collapse_all'),
+			onClick: onCollapseAll,
 		},
-	};
-	return <Menu title={t('Options')} small={false} alignSelf='flex-end' options={menuOptions} {...props} />;
+	];
+
+	return <GenericMenu large title={t('Options')} items={items} {...props} />;
 };
 
 export default AppsLogsFilterOptions;

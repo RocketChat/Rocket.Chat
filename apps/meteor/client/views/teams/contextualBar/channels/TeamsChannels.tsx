@@ -28,13 +28,13 @@ type TeamsChannelsProps = {
 	mainRoom: IRoom;
 	text: string;
 	type: 'all' | 'autoJoin';
-	setType: Dispatch<SetStateAction<'all' | 'autoJoin'>>;
 	setText: (e: ChangeEvent<HTMLInputElement>) => void;
+	setType: Dispatch<SetStateAction<'all' | 'autoJoin'>>;
 	onClickClose: () => void;
 	onClickAddExisting: false | ((e: SyntheticEvent) => void);
 	onClickCreateNew: false | ((e: SyntheticEvent) => void);
 	total: number;
-	loadMoreItems: (start: number, end: number) => void;
+	loadMoreItems: () => void;
 	onClickView: (room: IRoom) => void;
 	reload: () => void;
 };
@@ -66,7 +66,7 @@ const TeamsChannels = ({
 		[t],
 	);
 
-	const lm = useEffectEvent((start: number) => !loading && loadMoreItems(start, Math.min(50, total - start)));
+	const lm = useEffectEvent(() => !loading && loadMoreItems());
 
 	const loadMoreChannels = useDebouncedCallback(
 		() => {
@@ -74,7 +74,7 @@ const TeamsChannels = ({
 				return;
 			}
 
-			lm(channels.length);
+			lm();
 		},
 		300,
 		[lm, channels],

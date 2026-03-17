@@ -2,14 +2,7 @@
  * @author Vigneshwaran Odayappan <vickyokrm@gmail.com>
  */
 
-import type {
-	IMessage,
-	IDeepLTranslation,
-	MessageAttachment,
-	IProviderMetadata,
-	ITranslationResult,
-	ISupportedLanguage,
-} from '@rocket.chat/core-typings';
+import type { IMessage, MessageAttachment, IProviderMetadata, ITranslationResult, ISupportedLanguage } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import _ from 'underscore';
 
@@ -20,6 +13,11 @@ import { settings } from '../../settings/server';
 
 const proApiEndpoint = 'https://api.deepl.com/v2/translate';
 const freeApiEndpoint = 'https://api-free.deepl.com/v2/translate';
+
+interface IDeepLTranslation {
+	detected_source_language: string;
+	text: string;
+}
 
 /**
  * DeepL translation service provider class representation.
@@ -103,7 +101,9 @@ class DeeplAutoTranslate extends AutoTranslate {
 		}
 		let result: (ISupportedLanguage & { supports_formality?: boolean })[] = [];
 
+		// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 		const request = await fetch(this.supportedLanguageEndpointUrl, {
+			ignoreSsrfValidation: true,
 			params: { type: 'target' },
 			headers: {
 				Authorization: `DeepL-Auth-Key ${this.apiKey}`,
@@ -137,12 +137,14 @@ class DeeplAutoTranslate extends AutoTranslate {
 		const translations: { [k: string]: string } = {};
 		const msgs = message.msg.split('\n');
 		const supportedLanguages = await this.getSupportedLanguages('en');
-		for await (let language of targetLanguages) {
+		for (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			try {
+				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 				const result = await fetch(this.apiEndPointUrl, {
+					ignoreSsrfValidation: true,
 					params: { target_lang: language, text: msgs },
 					headers: {
 						Authorization: `DeepL-Auth-Key ${this.apiKey}`,
@@ -183,12 +185,14 @@ class DeeplAutoTranslate extends AutoTranslate {
 	async _translateAttachmentDescriptions(attachment: MessageAttachment, targetLanguages: string[]): Promise<ITranslationResult> {
 		const translations: { [k: string]: string } = {};
 		const supportedLanguages = await this.getSupportedLanguages('en');
-		for await (let language of targetLanguages) {
+		for (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.substr(0, 2);
 			}
 			try {
+				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 				const result = await fetch(this.apiEndPointUrl, {
+					ignoreSsrfValidation: true,
 					params: {
 						auth_key: this.apiKey,
 						target_lang: language,

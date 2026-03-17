@@ -12,12 +12,11 @@
 	"types": "./dist/index.d.ts",
 	"scripts": {
 		"build": "rimraf dist && tsc -p tsconfig.json",
-		"lint": "eslint",
+		"lint": "eslint .",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"rimraf": "~6.0.1",
 		"typescript": "~5.9.3"
 	},

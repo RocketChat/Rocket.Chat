@@ -91,14 +91,12 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 						/>
 					)}
 				/>
-				<FieldError>{errors.name?.message}</FieldError>
+				<FieldError role='alert'>{errors.name?.message}</FieldError>
 			</Field>
-
 			<ButtonGroup stretch>
-				<Button onClick={(): void => onCancel()} disabled={isSaving}>
+				<Button onClick={() => onCancel()} disabled={isSaving}>
 					{t('Cancel')}
 				</Button>
-
 				<Button primary disabled={!isDirty || !isValid} loading={isSaving} onClick={handleSave}>
 					{t('Save')}
 				</Button>

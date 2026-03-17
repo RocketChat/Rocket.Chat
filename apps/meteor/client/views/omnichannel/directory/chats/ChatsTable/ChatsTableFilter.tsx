@@ -32,15 +32,7 @@ const ChatsTableFilter = () => {
 			}
 		};
 
-		setModal(
-			<GenericModal
-				variant='danger'
-				data-qa-id='current-chats-modal-remove-all-closed'
-				onConfirm={onDeleteAll}
-				onCancel={() => setModal(null)}
-				confirmText={t('Delete')}
-			/>,
-		);
+		setModal(<GenericModal variant='danger' onConfirm={onDeleteAll} onCancel={() => setModal(null)} confirmText={t('Delete')} />);
 	});
 
 	const menuItems = [

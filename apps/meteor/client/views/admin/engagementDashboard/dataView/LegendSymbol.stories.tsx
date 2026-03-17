@@ -7,7 +7,7 @@ import { monochromaticColors, polychromaticColors } from './colors';
 
 export default {
 	component: LegendSymbol,
-	decorators: [(fn): ReactElement => <Margins children={fn()} all='x16' />],
+	decorators: [(fn): ReactElement => <Margins all='x16'>{fn()}</Margins>],
 } satisfies Meta<typeof LegendSymbol>;
 
 export const withoutColor: StoryFn<typeof LegendSymbol> = () => (

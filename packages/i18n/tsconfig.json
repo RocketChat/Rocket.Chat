@@ -12,7 +12,7 @@
 		"outDir": "./dist",
 		"declaration": true,
 		"allowJs": false,
-		"lib": ["ES2024", "ESNext.Collection"],
+		"lib": ["ES2023"],
 	},
-	"include": ["./src/**/*", "./jest.config.ts"]
+	"include": ["./src/**/*", "./jest.config.ts"],
 }
