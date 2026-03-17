@@ -16,7 +16,6 @@ import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
 import type { E2eEndpoints } from './v1/e2e';
-import type { EmailInboxEndpoints } from './v1/email-inbox';
 import type { EmojiCustomEndpoints } from './v1/emojiCustom';
 import type { FederationEndpoints } from './v1/federation';
 import type { GroupsEndpoints } from './v1/groups';
@@ -80,7 +79,6 @@ export interface Endpoints
 		InvitesEndpoints,
 		E2eEndpoints,
 		AssetsEndpoints,
-		EmailInboxEndpoints,
 		MailerEndpoints,
 		SubscriptionsEndpoints,
 		AutoTranslateEndpoints,
