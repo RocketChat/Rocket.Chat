@@ -15,4 +15,4 @@ export const eventTypes = {
 	ROOM_UNSET_MESSAGE_REACTION: 'room_unset_message_reaction',
 	ROOM_MUTE_USER: 'room_mute_user',
 	ROOM_UNMUTE_USER: 'room_unmute_user',
-};
+} as const;

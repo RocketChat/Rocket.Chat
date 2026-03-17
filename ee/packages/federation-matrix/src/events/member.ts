@@ -4,7 +4,8 @@ import { federationSDK, type HomeserverEventSignatures, type PduForType } from '
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { createOrUpdateFederatedUser, getUsernameServername } from '../FederationMatrix';
+import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
+import { getUsernameServername } from '../helpers/getUsernameServername';
 
 const logger = new Logger('federation-matrix:member');
 
@@ -27,8 +28,8 @@ async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 			name: userId,
 			origin: userServerName,
 		});
-	} catch (error) {
-		logger.error(error, `Error getting or creating federated user ${userId}`);
+	} catch (err) {
+		logger.error({ msg: 'Error getting or creating federated user', err, userId });
 		throw new Error(`Error getting or creating federated user ${userId}`);
 	}
 }
@@ -81,8 +82,8 @@ async function getOrCreateFederatedRoom({
 				...(roomType !== 'd' && { fname: roomFName }), // DMs do not have a fname
 			},
 		});
-	} catch (error) {
-		logger.error(error, `Error getting or creating federated room ${roomName}`);
+	} catch (err) {
+		logger.error({ msg: 'Error getting or creating federated room', err, roomName });
 		throw new Error(`Error getting or creating federated room ${roomName}`);
 	}
 }
@@ -270,10 +271,10 @@ export function member() {
 					break;
 
 				default:
-					logger.warn(`Unknown membership type: ${event.content.membership}`);
+					logger.warn({ msg: 'Unknown membership type', membership: event.content.membership });
 			}
-		} catch (error) {
-			logger.error(error, 'Failed to process Matrix membership event');
+		} catch (err) {
+			logger.error({ msg: 'Failed to process Matrix membership event', err });
 		}
 	});
 }

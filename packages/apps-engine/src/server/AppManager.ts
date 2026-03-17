@@ -54,6 +54,12 @@ export interface IAppManagerDeps {
 	logStorage: AppLogStorage;
 	bridges: AppBridges;
 	sourceStorage: AppSourceStorage;
+	/**
+	 * Path to temporary file storage.
+	 *
+	 * Needs to be accessible for reading and writing.
+	 */
+	tempFilePath: string;
 }
 
 interface IPurgeAppConfigOpts {
@@ -106,9 +112,11 @@ export class AppManager {
 
 	private readonly runtime: AppRuntimeManager;
 
+	private readonly tempFilePath: string;
+
 	private isLoaded: boolean;
 
-	constructor({ metadataStorage, logStorage, bridges, sourceStorage }: IAppManagerDeps) {
+	constructor({ metadataStorage, logStorage, bridges, sourceStorage, tempFilePath }: IAppManagerDeps) {
 		// Singleton style. There can only ever be one AppManager instance
 		if (typeof AppManager.Instance !== 'undefined') {
 			throw new Error('There is already a valid AppManager instance');
@@ -138,6 +146,8 @@ export class AppManager {
 			throw new Error('Invalid instance of the AppSourceStorage');
 		}
 
+		this.tempFilePath = tempFilePath;
+
 		this.apps = new Map<string, ProxiedApp>();
 
 		this.parser = new AppPackageParser();
@@ -158,6 +168,15 @@ export class AppManager {
 
 		this.isLoaded = false;
 		AppManager.Instance = this;
+	}
+
+	/**
+	 * Gets the path to the temporary file storage.
+	 *
+	 * Mainly used for upload events
+	 */
+	public getTempFilePath(): string {
+		return this.tempFilePath;
 	}
 
 	/** Gets the instance of the storage connector. */

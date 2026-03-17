@@ -155,7 +155,7 @@ const ServerProvider = ({ children }: { children: ComponentChildren }) => {
 		return contextValue;
 	}, [sdk, status, token]);
 
-	return <ServerContext.Provider children={children} value={contextValue} />;
+	return <ServerContext.Provider value={contextValue}>{children}</ServerContext.Provider>;
 };
 
 export default ServerProvider;

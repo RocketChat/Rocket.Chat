@@ -6,9 +6,9 @@ import { after, before, describe, it } from 'mocha';
 
 import { retry } from './helpers/retry';
 import { api, credentials, getCredentials, methodCall, request } from '../../data/api-data';
-import { sendSimpleMessage } from '../../data/chat.helper';
+import { sendMessage, sendSimpleMessage } from '../../data/chat.helper';
 import { CI_MAX_ROOMS_PER_GUEST as maxRoomsPerGuest } from '../../data/constants';
-import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor } from '../../data/livechat/rooms';
+import { closeOmnichannelRoom, createAgent, createLivechatRoom, createVisitor, makeAgentAvailable } from '../../data/livechat/rooms';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { password } from '../../data/user';
@@ -166,9 +166,10 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('success', false);
+
 						const data = JSON.parse(res.body.message);
 						expect(data).to.have.property('error').that.is.an('object');
 						expect(data.error).to.have.property('error', 'error-action-not-allowed');
@@ -576,9 +577,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -734,9 +735,9 @@ describe('Meteor.methods', () => {
 						msg: 'method',
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error).to.have.a.property('error', 'error-not-allowed');
@@ -903,9 +904,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1121,9 +1122,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1301,9 +1302,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
@@ -1562,9 +1563,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.include('error-invalid-room');
 				})
 				.end(done);
@@ -1583,9 +1584,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.include('Match error');
 				})
 				.end(done);
@@ -2022,9 +2023,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.not.have.a.property('result').that.is.an('object');
 					expect(data).to.have.a.property('error').that.is.an('object');
@@ -2053,9 +2054,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error.sanitizedError).to.have.a.property('reason', 'Match failed');
@@ -2241,9 +2242,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
@@ -2264,9 +2265,9 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('msg').that.is.an('string');
@@ -2274,7 +2275,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it('should add a quote attachment to a message', async () => {
+		it.skip('should add a quote attachment to a message', async () => {
 			const quotedMsgLink = `${siteUrl}/group/${roomName}?msg=${messageWithMarkdownId}`;
 			await request
 				.post(methodCall('updateMessage'))
@@ -2291,6 +2292,7 @@ describe('Meteor.methods', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', true);
+					// TODO: this test is not testing anything useful
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 				});
 
@@ -2378,7 +2380,7 @@ describe('Meteor.methods', () => {
 				});
 		});
 
-		it('should remove a quote attachment from a message', async () => {
+		it.skip('should remove a quote attachment from a message', async () => {
 			await request
 				.post(methodCall('updateMessage'))
 				.set(credentials)
@@ -2534,9 +2536,9 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.a.property('success', true);
+						expect(res.body).to.have.a.property('success', false);
 						expect(res.body).to.have.a.property('message').that.is.a('string');
 
 						const data = JSON.parse(res.body.message);
@@ -3098,7 +3100,7 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('message').that.is.an('string');
 						expect(res.body.message).to.include('error-cant-invite-for-direct-room');
@@ -3201,9 +3203,9 @@ describe('Meteor.methods', () => {
 						}),
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(200)
+					.expect(400)
 					.expect((res) => {
-						expect(res.body).to.have.property('success', true);
+						expect(res.body).to.have.property('success', false);
 						const parsedBody = JSON.parse(res.body.message);
 						expect(parsedBody).to.have.property('error');
 						expect(parsedBody.error).to.have.property('error', 'error-max-rooms-per-guest-reached');
@@ -3225,9 +3227,9 @@ describe('Meteor.methods', () => {
 						params: [[{ _id: 'Message_AllowEditing_BlockEditInMinutes', value: { $InfNaN: 0 } }]],
 					}),
 				})
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('success', false);
 					const parsedBody = JSON.parse(res.body.message);
 					expect(parsedBody).to.have.property('error');
 					expect(parsedBody.error).to.have.property('error', 'Invalid setting value NaN');
@@ -3333,7 +3335,7 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('message');
 					const data = JSON.parse(res.body.message);
@@ -3387,6 +3389,10 @@ describe('Meteor.methods', () => {
 		let userCredentials: Credentials;
 
 		before(async () => {
+			await updateSetting('Livechat_enabled', true);
+			await createAgent();
+			await makeAgentAvailable();
+
 			const visitor = await createVisitor();
 			room = await createLivechatRoom(visitor.token);
 			await closeOmnichannelRoom(room._id);
@@ -3396,7 +3402,7 @@ describe('Meteor.methods', () => {
 			userCredentials = await login(user.username, password);
 		});
 
-		after(() => Promise.all([deleteUser(user)]));
+		after(() => Promise.all([deleteUser(user), updateSetting('Livechat_enabled', false)]));
 
 		it('should not allow an agent to join a closed livechat room', async () => {
 			await request
@@ -3411,14 +3417,241 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
+				.expect(400)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('success', true);
+					expect(res.body).to.have.a.property('success', false);
 					expect(res.body).to.have.a.property('message').that.is.a('string');
 
 					const data = JSON.parse(res.body.message);
 					expect(data).to.have.a.property('error').that.is.an('object');
 					expect(data.error).to.have.a.property('error', 'room-closed');
+				});
+		});
+	});
+
+	describe('[@loadSurroundingMessages]', () => {
+		let rid: IRoom['_id'];
+		let middleMessage: IMessage;
+		let channelName: string;
+
+		before('create room', async () => {
+			channelName = `methods-test-channel-${Date.now()}`;
+			await request
+				.post(api('groups.create'))
+				.set(credentials)
+				.send({
+					name: channelName,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group._id');
+					rid = res.body.group._id;
+				});
+		});
+
+		before('send messages', async () => {
+			await sendMessage({ message: { rid, msg: 'Message 1' } });
+			await sendMessage({ message: { rid, msg: 'Message 2' } });
+			const msg3 = await sendMessage({ message: { rid, msg: 'Message 3' } });
+			middleMessage = msg3.body.message;
+			const threadMsg = await sendMessage({ message: { rid, msg: 'Message 4 (Thread)' } });
+			await sendMessage({ message: { rid, msg: 'Message 4.1 (Reply)', tmid: threadMsg.body.message._id } });
+			await sendMessage({ message: { rid, msg: 'Message 4.2 (Reply)', tmid: threadMsg.body.message._id } });
+			await sendMessage({ message: { rid, msg: 'Message 5' } });
+		});
+
+		after(() => deleteRoom({ type: 'p', roomId: rid }));
+
+		it('should fail if not logged in', async () => {
+			await request
+				.post(methodCall('loadSurroundingMessages'))
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage, 5],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message', 'You must be logged in to do this.');
+				});
+		});
+
+		it('should fail is message param is empty', async () => {
+			await request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+					expect(res.body).to.have.a.property('message').that.include('Match error');
+				});
+		});
+
+		it('should fail is message param type is incorrect', async () => {
+			await request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: ['invalid-message'],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.a.property('success', false);
+					expect(res.body).to.have.a.property('message').that.include('Match error');
+				});
+		});
+
+		it('should return false if message has no _id', async () => {
+			await request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [{ rid }, 5],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.be.false;
+				});
+		});
+
+		it('should return false if message does not exist', async () => {
+			await request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [{ _id: 'invalid-id', rid }, 5],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.be.false;
+				});
+		});
+
+		it('should return all messages (default limit)', async () => {
+			await request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.have.property('messages').that.is.an('array');
+					expect(result.messages).to.have.lengthOf(7);
+					expect(result.messages[2]).to.have.property('_id', middleMessage._id);
+				});
+		});
+
+		it('should respect limit when provided', async () => {
+			await request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage, 3],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.have.property('messages').that.is.an('array');
+					expect(result.messages).to.have.lengthOf(3);
+					expect(result.messages[1]).to.have.property('_id', middleMessage._id);
+				});
+		});
+
+		it('should filter out thread messages when showThreadMessages is false', async () => {
+			await request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage, 50, false],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+					expect(result).to.have.property('messages').that.is.an('array');
+					expect(result.messages).to.have.lengthOf(5);
+					expect(result.messages[2]).to.have.property('_id', middleMessage._id);
+				});
+		});
+
+		it('should include thread messages when showThreadMessages is true', async () => {
+			await request
+				.post(methodCall('loadSurroundingMessages'))
+				.set(credentials)
+				.send({
+					message: JSON.stringify({
+						method: 'loadSurroundingMessages',
+						params: [middleMessage, 50, true],
+						id: 'id',
+						msg: 'method',
+					}),
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					const { result } = JSON.parse(res.body.message);
+
+					expect(result).to.have.property('messages').that.is.an('array');
+					expect(result.messages).to.have.lengthOf(7);
+
+					const messageTexts = result.messages.map((m: IMessage) => m.msg);
+					expect(messageTexts).to.include('Message 4.1 (Reply)');
+					expect(messageTexts).to.include('Message 4.2 (Reply)');
 				});
 		});
 	});

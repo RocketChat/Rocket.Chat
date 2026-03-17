@@ -38,11 +38,11 @@ const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string
 
 	return (
 		<Box
+			role='status'
 			h='x20'
 			className='rc-message-box__activity-wrapper'
 			fontScale='c1'
 			color='annotation'
-			aria-live='polite'
 			display='flex'
 			alignItems='center'
 		>

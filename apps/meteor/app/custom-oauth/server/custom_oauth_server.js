@@ -25,7 +25,7 @@ const BeforeUpdateOrCreateUserFromExternalService = [];
 
 export class CustomOAuth {
 	constructor(name, options) {
-		logger.debug('Init CustomOAuth', name, options);
+		logger.debug({ msg: 'Init CustomOAuth', name, options });
 
 		this.name = name;
 		if (!Match.test(this.name, String)) {
@@ -137,6 +137,8 @@ export class CustomOAuth {
 
 		try {
 			const request = await fetch(`${this.tokenPath}`, {
+				// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
 				method: 'POST',
 				headers,
 				body: params,
@@ -174,7 +176,8 @@ export class CustomOAuth {
 		}
 
 		try {
-			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params });
+			// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
+			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params, ignoreSsrfValidation: true });
 
 			if (!request.ok) {
 				throw new Error(request.statusText);
@@ -307,7 +310,7 @@ export class CustomOAuth {
 			const value = fromTemplate(this.avatarField, data);
 
 			if (!value) {
-				logger.debug(`Avatar field "${this.avatarField}" not found in data`, data);
+				logger.debug({ msg: 'Avatar field not found in data', avatarField: this.avatarField, data });
 			}
 			return value;
 		} catch (error) {
@@ -479,7 +482,7 @@ export class CustomOAuth {
 const { updateOrCreateUserFromExternalService } = Accounts;
 
 Accounts.updateOrCreateUserFromExternalService = async function (...args /* serviceName, serviceData, options*/) {
-	for await (const hook of BeforeUpdateOrCreateUserFromExternalService) {
+	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		await hook.apply(this, args);
 	}
 

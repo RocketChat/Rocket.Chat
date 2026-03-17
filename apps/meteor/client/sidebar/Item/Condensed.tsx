@@ -24,7 +24,7 @@ const Condensed = ({ icon, title, avatar, actions, unread, menu, badges, ...prop
 	const handlePointerEnter = () => setMenuVisibility(true);
 
 	return (
-		<SidebarV2Item {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
+		<SidebarV2Item title={title} {...props} onFocus={handleFocus} onPointerEnter={handlePointerEnter}>
 			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 			{icon}
 			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>

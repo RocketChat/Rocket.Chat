@@ -1,3 +1,4 @@
+import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
@@ -13,12 +14,8 @@ import {
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
-	isChatStarMessageProps,
-	isChatUnstarMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
-	isChatFollowMessageProps,
-	isChatUnfollowMessageProps,
 	isChatGetMentionedMessagesProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
@@ -48,7 +45,6 @@ import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage'
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { pinMessage, unpinMessage } from '../../../message-pin/server/pinMessage';
 import { starMessage } from '../../../message-star/server/starMessage';
-import { OEmbed } from '../../../oembed/server/server';
 import { executeSetReaction } from '../../../reactions/server/setReaction';
 import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
@@ -58,6 +54,78 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+
+type ChatStarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+type ChatUnstarMessageLocal = {
+	messageId: IMessage['_id'];
+};
+
+const ChatStarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const ChatUnstarMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+type ChatFollowMessageLocal = {
+	mid: string;
+};
+
+const ChatFollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+type ChatUnfollowMessageLocal = {
+	mid: string;
+};
+
+const ChatUnfollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
+
+const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
+
+const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
+
+const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 
 API.v1.addRoute(
 	'chat.delete',
@@ -291,7 +359,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ message: IMessage }>({
 					type: 'object',
 					properties: {
-						message: { $ref: '#/components/schemas/IMessage' },
+						message: { type: 'object' },
 						success: {
 							type: 'boolean',
 							enum: [true],
@@ -349,6 +417,146 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				message,
 			});
+		},
+	)
+	.post(
+		'chat.starMessage',
+		{
+			authRequired: true,
+			body: isChatStarMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await starMessage(this.user, {
+				_id: msg._id,
+				rid: msg.rid,
+				starred: true,
+			});
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.unStarMessage',
+		{
+			authRequired: true,
+			body: isChatUnstarMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			await starMessage(this.user, {
+				_id: msg._id,
+				rid: msg.rid,
+				starred: false,
+			});
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.followMessage',
+		{
+			authRequired: true,
+			body: isChatFollowMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { mid } = this.bodyParams;
+
+			if (!mid) {
+				throw new Meteor.Error('The required "mid" body param is missing.');
+			}
+
+			await followMessage(this.user, { mid });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.unfollowMessage',
+		{
+			authRequired: true,
+			body: isChatUnfollowMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { mid } = this.bodyParams;
+
+			if (!mid) {
+				throw new Meteor.Error('The required "mid" body param is missing.');
+			}
+
+			await unfollowMessage(this.user, { mid });
+
+			return API.v1.success();
 		},
 	);
 
@@ -434,57 +642,13 @@ API.v1.addRoute(
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.userId, this.bodyParams.message as Pick<IMessage, 'rid'>, this.bodyParams.previewUrls),
+				executeSendMessage(this.user, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
 			return API.v1.success({
 				message,
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.starMessage',
-	{ authRequired: true, validateParams: isChatStarMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			await starMessage(this.userId, {
-				_id: msg._id,
-				rid: msg.rid,
-				starred: true,
-			});
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unStarMessage',
-	{ authRequired: true, validateParams: isChatUnstarMessageProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			await starMessage(this.userId, {
-				_id: msg._id,
-				rid: msg.rid,
-				starred: false,
-			});
-
-			return API.v1.success();
 		},
 	},
 );
@@ -794,42 +958,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'chat.followMessage',
-	{ authRequired: true, validateParams: isChatFollowMessageProps },
-	{
-		async post() {
-			const { mid } = this.bodyParams;
-
-			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
-			}
-
-			await followMessage(this.userId, { mid });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unfollowMessage',
-	{ authRequired: true, validateParams: isChatUnfollowMessageProps },
-	{
-		async post() {
-			const { mid } = this.bodyParams;
-
-			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
-			}
-
-			await unfollowMessage(this.userId, { mid });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
 	'chat.getMentionedMessages',
 	{ authRequired: true, validateParams: isChatGetMentionedMessagesProps },
 	{
@@ -914,7 +1042,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { urlPreview } = await OEmbed.parseUrl(url);
+			const { urlPreview } = await Message.parseOEmbedUrl(url);
 			urlPreview.ignoreParse = true;
 
 			return API.v1.success({ urlPreview });

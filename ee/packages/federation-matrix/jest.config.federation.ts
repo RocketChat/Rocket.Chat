@@ -55,7 +55,6 @@ export default {
 									complete: true,
 								},
 							},
-							debug: true,
 						},
 					] as [string, { [x: string]: unknown }],
 				]

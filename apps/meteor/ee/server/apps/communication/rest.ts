@@ -8,8 +8,7 @@ import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Settings, Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { Meteor } from 'meteor/meteor';
-import { ZodError } from 'zod';
+import * as z from 'zod';
 
 import { registerActionButtonsHandler } from './endpoints/actionButtonsHandler';
 import { registerAppGeneralLogsHandler } from './endpoints/appGeneralLogsHandler';
@@ -85,21 +84,21 @@ export class AppsRestApi {
 		const orchestrator = this._orch;
 		const manager = this._manager;
 
-		const handleError = (message: string, e: any) => {
+		const handleError = (message: string, err: any) => {
 			// when there is no `response` field in the error, it means the request
 			// couldn't even make it to the server
-			if (!e.hasOwnProperty('response')) {
-				orchestrator.getRocketChatLogger().warn(message, e.message);
+			if (!err.hasOwnProperty('response')) {
+				orchestrator.getRocketChatLogger().warn({ msg: message, err });
 				return API.v1.internalError('Could not reach the Marketplace');
 			}
 
-			orchestrator.getRocketChatLogger().error(message, e.response.data);
+			orchestrator.getRocketChatLogger().error({ msg: message, err });
 
-			if (e.response.statusCode >= 500 && e.response.statusCode <= 599) {
+			if (err.response.statusCode >= 500 && err.response.statusCode <= 599) {
 				return API.v1.internalError();
 			}
 
-			if (e.response.statusCode === 404) {
+			if (err.response.statusCode === 404) {
 				return API.v1.notFound();
 			}
 
@@ -147,8 +146,8 @@ export class AppsRestApi {
 							return API.v1.failure({ error: err.message });
 						}
 
-						if (err instanceof ZodError) {
-							orchestrator.getRocketChatLogger().error('Error parsing the Marketplace Apps:', err.issues);
+						if (err instanceof z.ZodError) {
+							orchestrator.getRocketChatLogger().error({ msg: 'Error validating the response from Marketplace:', err });
 							return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Apps') });
 						}
 
@@ -167,7 +166,7 @@ export class AppsRestApi {
 						const categories = await fetchMarketplaceCategories();
 						return API.v1.success(categories);
 					} catch (err) {
-						orchestrator.getRocketChatLogger().error('Error getting the categories from the Marketplace:', err);
+						orchestrator.getRocketChatLogger().error({ msg: 'Error fetching categories from Marketplace:', err });
 						if (err instanceof MarketplaceConnectionError) {
 							return handleError('Unable to access Marketplace. Does the server has access to the internet?', err);
 						}
@@ -176,8 +175,8 @@ export class AppsRestApi {
 							return API.v1.failure({ error: err.message });
 						}
 
-						if (err instanceof ZodError) {
-							orchestrator.getRocketChatLogger().error('Error validating the response from the Marketplace:', err.issues);
+						if (err instanceof z.ZodError) {
+							orchestrator.getRocketChatLogger().error({ msg: 'Error validating the response from Marketplace:', err });
 							return API.v1.failure({ error: i18n.t('Marketplace_Failed_To_Fetch_Categories') });
 						}
 
@@ -250,7 +249,7 @@ export class AppsRestApi {
 		// WE NEED TO MOVE EACH ENDPOINT HANDLER TO IT'S OWN FILE
 		this.api.addRoute(
 			'',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{ authRequired: true, permissionsRequired: ['manage-apps'], applyMeteorContext: true },
 			{
 				async post() {
 					let buff;
@@ -259,7 +258,10 @@ export class AppsRestApi {
 
 					if (this.bodyParams.url) {
 						try {
-							const response = await fetch(this.bodyParams.url);
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+							const response = await fetch(this.bodyParams.url, {
+								ignoreSsrfValidation: true,
+							});
 
 							if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
 								return API.v1.failure({
@@ -268,8 +270,8 @@ export class AppsRestApi {
 							}
 
 							buff = await response.buffer();
-						} catch (e: any) {
-							orchestrator.getRocketChatLogger().error('Error getting the app from url:', e.response.data);
+						} catch (err: any) {
+							orchestrator.getRocketChatLogger().error({ msg: 'Error fetching App from URL:', err });
 							return API.v1.internalError();
 						}
 					} else if ('appId' in this.bodyParams && this.bodyParams.appId && this.bodyParams.marketplace && this.bodyParams.version) {
@@ -282,6 +284,8 @@ export class AppsRestApi {
 								Apps.getMarketplaceClient()
 									.fetch(`v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${downloadToken}`, {
 										headers,
+										// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+										ignoreSsrfValidation: true,
 									})
 									.catch((cause) => {
 										throw new Error('App package download failed', { cause });
@@ -292,6 +296,8 @@ export class AppsRestApi {
 											Authorization: `Bearer ${marketplaceToken}`,
 											...headers,
 										},
+										// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+										ignoreSsrfValidation: true,
 									})
 									.catch((cause) => {
 										throw new Error('App metadata download failed', { cause });
@@ -308,7 +314,7 @@ export class AppsRestApi {
 							// Note: marketplace responds with an array of the marketplace info on the app, but it is expected
 							// to always have one element since we are fetching a specific app version.
 							if (!Array.isArray(marketplaceInfo) || marketplaceInfo?.length !== 1) {
-								orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', marketplaceInfo);
+								orchestrator.getRocketChatLogger().error({ msg: 'Error getting app information from marketplace', marketplaceInfo });
 								throw new Error('Invalid response from the Marketplace');
 							}
 
@@ -317,7 +323,7 @@ export class AppsRestApi {
 							let message;
 
 							if (err instanceof Error) {
-								orchestrator.getRocketChatLogger().error('Error installing app from marketplace: ', err.message, err.cause);
+								orchestrator.getRocketChatLogger().error({ msg: 'Error installing app from marketplace:', err });
 								message = err.message;
 							} else {
 								message = err;
@@ -355,10 +361,7 @@ export class AppsRestApi {
 						return API.v1.internalError('private_app_install_disabled');
 					}
 
-					const user = orchestrator
-						?.getConverters()
-						?.get('users')
-						?.convertToApp(await Meteor.userAsync());
+					const user = orchestrator?.getConverters()?.get('users')?.convertToApp(this.user);
 
 					const aff = await manager.add(buff, {
 						...(marketplaceInfo && { marketplaceInfo }),
@@ -391,7 +394,11 @@ export class AppsRestApi {
 						const success = await manager.changeStatus(info.id, AppStatus.MANUALLY_ENABLED);
 						info.status = await success.getStatus();
 					} catch (error) {
-						orchestrator.getRocketChatLogger().warn(`App "${info.id}" was installed but could not be enabled: `, error);
+						orchestrator.getRocketChatLogger().warn({
+							msg: 'App was installed but could not be enabled',
+							appId: info.id,
+							err: error,
+						});
 					}
 
 					void orchestrator.getNotifier().appAdded(info.id);
@@ -449,8 +456,8 @@ export class AppsRestApi {
 								nickname: a.nickname,
 							};
 						});
-					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error getting the admins to request an app be installed:', e);
+					} catch (err) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error fetching admins for app request', err });
 					}
 
 					const queryParams = new URLSearchParams();
@@ -512,7 +519,10 @@ export class AppsRestApi {
 
 						return API.v1.success({ result });
 					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error(`Error triggering external components' events ${e.response.data}`);
+						orchestrator.getRocketChatLogger().error({
+							msg: "Error triggering external components' events",
+							err: e,
+						});
 						return API.v1.internalError();
 					}
 				},
@@ -532,14 +542,23 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/bundles/${this.urlParams.id}/apps`, { headers });
+						const request = await orchestrator
+							.getMarketplaceClient()
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+							.fetch(`v1/bundles/${this.urlParams.id}/apps`, {
+								headers,
+								ignoreSsrfValidation: true,
+							});
 						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", await request.json());
+							orchestrator.getRocketChatLogger().error({
+								msg: "Error getting the Bundle's Apps from the Marketplace",
+								response: await request.json(),
+							});
 							return API.v1.failure();
 						}
 						result = await request.json();
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error("Error getting the Bundle's Apps from the Marketplace:", e.response.data);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: "Error getting the Bundle's Apps from the Marketplace:", err });
 						return API.v1.internalError();
 					}
 
@@ -561,9 +580,15 @@ export class AppsRestApi {
 
 					let result;
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/featured-apps`, { headers });
+						// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+						const request = await orchestrator.getMarketplaceClient().fetch(`v1/featured-apps`, {
+							headers,
+							ignoreSsrfValidation: true,
+						});
 						if (request.status !== 200) {
-							orchestrator.getRocketChatLogger().error('Error getting the Featured Apps from the Marketplace:', await request.json());
+							orchestrator
+								.getRocketChatLogger()
+								.error({ msg: 'Error getting the Featured Apps from the Marketplace:', response: await request.json() });
 							return API.v1.failure();
 						}
 						result = await request.json();
@@ -594,6 +619,8 @@ export class AppsRestApi {
 							.getMarketplaceClient()
 							.fetch(`v1/app-request?appId=${appId}&q=${q}&sort=${sort}&limit=${limit}&offset=${offset}`, {
 								headers,
+								// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+								ignoreSsrfValidation: true,
 							});
 						const result = await request.json();
 
@@ -601,10 +628,10 @@ export class AppsRestApi {
 							throw new Error(result.error);
 						}
 						return API.v1.success(result);
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error getting all non sent app requests from the Marketplace:', e.message);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting the app requests from marketplace', err });
 
-						return API.v1.failure(e.message);
+						return API.v1.failure(err.message);
 					}
 				},
 			},
@@ -623,16 +650,22 @@ export class AppsRestApi {
 					}
 
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/app-request/stats`, { headers });
+						const request = await orchestrator
+							.getMarketplaceClient()
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+							.fetch(`v1/app-request/stats`, {
+								headers,
+								ignoreSsrfValidation: true,
+							});
 						const result = await request.json();
 						if (!request.ok) {
 							throw new Error(result.error);
 						}
 						return API.v1.success(result);
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error getting the app requests stats from marketplace', e.message);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting app request stats from marketplace', err });
 
-						return API.v1.failure(e.message);
+						return API.v1.failure(err.message);
 					}
 				},
 			},
@@ -657,6 +690,8 @@ export class AppsRestApi {
 							method: 'POST',
 							headers,
 							body: { ids: unseenRequests },
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+							ignoreSsrfValidation: true,
 						});
 						const result = await request.json();
 
@@ -665,10 +700,10 @@ export class AppsRestApi {
 						}
 
 						return API.v1.success(result);
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error marking app requests as seen', e.message);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error marking app requests as seen in marketplace', err });
 
-						return API.v1.failure(e.message);
+						return API.v1.failure(err.message);
 					}
 				},
 			},
@@ -703,8 +738,8 @@ export class AppsRestApi {
 						await sendMessagesToAdmins({ msgs });
 
 						return API.v1.success();
-					} catch (e) {
-						orchestrator.getRocketChatLogger().error('Error when notifying admins that an user requested an app:', e);
+					} catch (err) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error notifying admins about app request', err });
 						return API.v1.failure();
 					}
 				},
@@ -713,7 +748,7 @@ export class AppsRestApi {
 
 		this.api.addRoute(
 			':id',
-			{ authRequired: true, permissionsRequired: ['manage-apps'] },
+			{ authRequired: true, permissionsRequired: ['manage-apps'], applyMeteorContext: true },
 			{
 				async get() {
 					if (this.queryParams.marketplace && this.queryParams.version) {
@@ -727,9 +762,15 @@ export class AppsRestApi {
 						try {
 							const request = await orchestrator
 								.getMarketplaceClient()
-								.fetch(`v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, { headers });
+								// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+								.fetch(`v1/apps/${this.urlParams.id}?appVersion=${this.queryParams.version}`, {
+									headers,
+									ignoreSsrfValidation: true,
+								});
 							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the App information from the Marketplace:', await request.json());
+								orchestrator
+									.getRocketChatLogger()
+									.error({ msg: 'Error getting the App from the Marketplace:', response: await request.json() });
 								return API.v1.failure();
 							}
 							result = await request.json();
@@ -753,9 +794,13 @@ export class AppsRestApi {
 								.getMarketplaceClient()
 								.fetch(`v1/apps/${this.urlParams.id}/latest?appVersion=${this.queryParams.appVersion}`, {
 									headers,
+									// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+									ignoreSsrfValidation: true,
 								});
 							if (request.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the App update info from the Marketplace:', await request.json());
+								orchestrator
+									.getRocketChatLogger()
+									.error({ msg: 'Error getting the App update from the Marketplace:', response: await request.json() });
 								return API.v1.failure();
 							}
 							result = await request.json();
@@ -780,7 +825,10 @@ export class AppsRestApi {
 					let isPrivateAppUpload = false;
 
 					if (this.bodyParams.url) {
-						const response = await fetch(this.bodyParams.url);
+						// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+						const response = await fetch(this.bodyParams.url, {
+							ignoreSsrfValidation: true,
+						});
 
 						if (response.status !== 200 || response.headers.get('content-type') !== 'application/zip') {
 							return API.v1.failure({
@@ -798,10 +846,14 @@ export class AppsRestApi {
 								.getMarketplaceClient()
 								.fetch(`v2/apps/${this.bodyParams.appId}/download/${this.bodyParams.version}?token=${token}`, {
 									headers,
+									// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+									ignoreSsrfValidation: true,
 								});
 
 							if (response.status !== 200) {
-								orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', await response.text());
+								orchestrator
+									.getRocketChatLogger()
+									.error({ msg: 'Error getting the App from the Marketplace:', response: await response.json() });
 								return API.v1.failure();
 							}
 
@@ -812,8 +864,8 @@ export class AppsRestApi {
 							}
 
 							buff = Buffer.from(await response.arrayBuffer());
-						} catch (e: any) {
-							orchestrator.getRocketChatLogger().error('Error getting the App from the Marketplace:', e.response.data);
+						} catch (err: any) {
+							orchestrator.getRocketChatLogger().error({ msg: 'Error getting the App from the Marketplace:', err });
 							return API.v1.internalError();
 						}
 
@@ -860,10 +912,7 @@ export class AppsRestApi {
 						return API.v1.failure({ error: 'Cannot_Update_Exempt_App' });
 					}
 
-					const user = orchestrator
-						?.getConverters()
-						?.get('users')
-						?.convertToApp(await Meteor.userAsync());
+					const user = orchestrator?.getConverters()?.get('users')?.convertToApp(this.user);
 
 					const aff = await manager.update(buff, permissionsGranted, { user, loadApp: true });
 					const info: IAppInfo & { status?: AppStatus } = aff.getAppInfo();
@@ -899,10 +948,7 @@ export class AppsRestApi {
 						return API.v1.notFound(`No App found by the id of: ${this.urlParams.id}`);
 					}
 
-					const user = orchestrator
-						?.getConverters()
-						?.get('users')
-						.convertToApp(await Meteor.userAsync());
+					const user = orchestrator?.getConverters()?.get('users').convertToApp(this.user);
 
 					const info: IAppInfo & { status?: AppStatus } = prl.getInfo();
 					try {
@@ -934,7 +980,13 @@ export class AppsRestApi {
 					let result;
 					let statusCode;
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/apps/${this.urlParams.id}`, { headers });
+						const request = await orchestrator
+							.getMarketplaceClient()
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+							.fetch(`v1/apps/${this.urlParams.id}`, {
+								headers,
+								ignoreSsrfValidation: true,
+							});
 						statusCode = request.status;
 						result = await request.json();
 
@@ -946,7 +998,7 @@ export class AppsRestApi {
 					}
 
 					if (!result || statusCode !== 200) {
-						orchestrator.getRocketChatLogger().error('Error getting the App versions from the Marketplace:', result);
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting the App versions from the Marketplace:', result });
 						return API.v1.failure();
 					}
 
@@ -976,7 +1028,11 @@ export class AppsRestApi {
 					try {
 						const request = await orchestrator
 							.getMarketplaceClient()
-							.fetch(`v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, { headers });
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+							.fetch(`v1/workspaces/${workspaceIdSetting.value}/apps/${this.urlParams.id}`, {
+								headers,
+								ignoreSsrfValidation: true,
+							});
 
 						statusCode = request.status;
 						result = await request.json();
@@ -984,13 +1040,13 @@ export class AppsRestApi {
 						if (!request.ok) {
 							throw new Error(result.error);
 						}
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', e);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error syncing the App from the Marketplace:', err });
 						return API.v1.internalError();
 					}
 
 					if (statusCode !== 200) {
-						orchestrator.getRocketChatLogger().error('Error syncing the App from the Marketplace:', result);
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting the App from the Marketplace during sync:', result });
 						return API.v1.failure();
 					}
 
@@ -1041,15 +1097,21 @@ export class AppsRestApi {
 					const headers = getDefaultHeaders();
 
 					try {
-						const request = await orchestrator.getMarketplaceClient().fetch(`v1/apps/${appId}/screenshots`, { headers });
+						const request = await orchestrator
+							.getMarketplaceClient()
+							// SECURITY: user needs specific privileges to send this. Bypassing the SSRF check is okay for now.
+							.fetch(`v1/apps/${appId}/screenshots`, {
+								headers,
+								ignoreSsrfValidation: true,
+							});
 						const data = await request.json();
 
 						return API.v1.success({
 							screenshots: data,
 						});
-					} catch (e: any) {
-						orchestrator.getRocketChatLogger().error('Error getting the screenshots from the Marketplace:', e.message);
-						return API.v1.failure(e.message);
+					} catch (err: any) {
+						orchestrator.getRocketChatLogger().error({ msg: 'Error getting the App screenshots from the Marketplace:', err });
+						return API.v1.failure(err.message);
 					}
 				},
 			},
@@ -1198,7 +1260,7 @@ export class AppsRestApi {
 							response.clusterStatus = clusterStatus[app.getID()];
 						}
 					} catch (e) {
-						orchestrator.getRocketChatLogger().warn('App status endpoint: could not fetch status across cluster', e);
+						orchestrator.getRocketChatLogger().warn({ msg: 'Could not fetch cluster status for app', appId: app.getID(), err: e });
 					}
 
 					return API.v1.success(response);

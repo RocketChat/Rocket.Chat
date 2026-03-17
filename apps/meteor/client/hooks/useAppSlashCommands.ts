@@ -48,10 +48,17 @@ export const useAppSlashCommands = () => {
 		queryKey: appsQueryKeys.slashCommands(),
 		enabled: !!uid,
 		structuralSharing: false,
+		retry: true,
+		// Add a bit of randomness to avoid thundering herd problem
+		retryDelay: (attemptIndex) => Math.min(500 * Math.random() * 10 * 2 ** attemptIndex, 30000),
 		queryFn: async () => {
 			const fetchBatch = async (currentOffset: number, accumulator: SlashCommandBasicInfo[] = []): Promise<SlashCommandBasicInfo[]> => {
 				const count = 50;
-				const { commands, total } = await getSlashCommands({ offset: currentOffset, count });
+				const { commands, appsLoaded, total } = await getSlashCommands({ offset: currentOffset, count });
+
+				if (!appsLoaded) {
+					throw new Error('Apps not loaded, retry later');
+				}
 
 				const newAccumulator = [...accumulator, ...commands];
 

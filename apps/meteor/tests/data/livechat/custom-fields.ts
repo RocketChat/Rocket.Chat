@@ -5,7 +5,7 @@ import { credentials, request, api } from '../api-data';
 
 type ExtendedCustomField = Omit<ILivechatCustomField, '_id' | '_updatedAt'> & { field: string };
 
-export const createCustomField = (customField: ExtendedCustomField): Promise<ExtendedCustomField> =>
+export const createCustomField = (customField: ExtendedCustomField): Promise<ILivechatCustomField> =>
 	new Promise((resolve, reject) => {
 		void request
 			.get(api(`livechat/custom-fields/${customField.label}`))

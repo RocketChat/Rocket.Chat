@@ -129,9 +129,9 @@ export class PendingFileImporter extends Importer {
 							// Update progress more often on large files
 							this.reportProgress();
 						});
-						res.on('error', async (error) => {
+						res.on('error', async (err) => {
 							await completeFile(details);
-							logError(error);
+							logError({ err });
 						});
 
 						res.on('end', async () => {
@@ -145,14 +145,14 @@ export class PendingFileImporter extends Importer {
 								await Messages.setImportFileRocketChatAttachment(_importFile.id, url, attachment);
 								await completeFile(details);
 								importedRoomIds.add(message.rid);
-							} catch (error) {
+							} catch (err) {
 								await completeFile(details);
-								logError(error);
+								logError({ err });
 							}
 						});
 					});
-				} catch (error) {
-					this.logger.error(error);
+				} catch (err) {
+					this.logger.error({ err });
 				}
 			}
 

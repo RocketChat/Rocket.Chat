@@ -130,7 +130,6 @@ export class OrderedDict<TKey extends string, TValue> {
 		let i = 0;
 		let elt = this._first;
 		while (elt !== null) {
-			// eslint-disable-next-line no-await-in-loop
 			const b = await asyncIter.call(context, elt.value, elt.key, i);
 			if (b === OrderedDict.BREAK) return;
 			elt = elt.next;

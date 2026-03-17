@@ -80,7 +80,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 				<FieldRow>
 					<TextInput placeholder={t('Name')} flexGrow={1} {...nameField} error={errors.name?.message} />
 				</FieldRow>
-				<FieldError>{errors.name?.message}</FieldError>
+				<FieldError role='alert'>{errors.name?.message}</FieldError>
 			</Field>
 			<Field>
 				<FieldLabel>{t('Description')}</FieldLabel>
@@ -98,7 +98,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 						error={errors.dueTimeInMinutes?.message}
 					/>
 				</FieldRow>
-				<FieldError>{errors.dueTimeInMinutes?.message}</FieldError>
+				<FieldError role='alert'>{errors.dueTimeInMinutes?.message}</FieldError>
 			</Field>
 			<Field>
 				<FieldRow>

@@ -15,7 +15,9 @@ jest.mock('@rocket.chat/pdf-worker', () => ({
 }));
 
 jest.mock('@rocket.chat/core-services', () => ({
-	ServiceClass: class {},
+	ServiceClass: class {
+		onSettingChanged = jest.fn();
+	},
 	Upload: {
 		getFileBuffer: jest.fn().mockResolvedValue(Buffer.from('')),
 		uploadFile: jest.fn().mockResolvedValue({ _id: 'fileId', name: 'fileName' }),

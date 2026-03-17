@@ -1,4 +1,4 @@
-import type { IImport, IImporterSelection, IImportProgress, IImporterInfo, ImportStatus, IImportUser } from '@rocket.chat/core-typings';
+import type { IImport, IImporterSelection, IImportProgress, ImportStatus, IImportUser } from '@rocket.chat/core-typings';
 
 import type { DownloadPublicImportFileParamsPOST } from './DownloadPublicImportFileParamsPOST';
 import type { StartImportParamsPOST } from './StartImportParamsPOST';
@@ -33,7 +33,10 @@ export type ImportEndpoints = {
 		GET: () => { operation: IImport };
 	};
 	'/v1/importers.list': {
-		GET: () => Array<IImporterInfo>;
+		GET: () => Array<{
+			key: string;
+			name: string;
+		}>;
 	};
 	'/v1/import.clear': {
 		POST: () => void;

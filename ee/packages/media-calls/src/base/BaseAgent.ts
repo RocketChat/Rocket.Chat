@@ -6,7 +6,7 @@ import type {
 	MediaCallContact,
 	MediaCallSignedActor,
 } from '@rocket.chat/core-typings';
-import type { CallRole } from '@rocket.chat/media-signaling';
+import type { CallFeature, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallChannels } from '@rocket.chat/models';
 
@@ -61,7 +61,7 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 		};
 	}
 
-	public abstract onCallAccepted(callId: string, signedContractId: string): Promise<void>;
+	public abstract onCallAccepted(callId: string, data: { signedContractId: string; features: CallFeature[] }): Promise<void>;
 
 	public abstract onCallActive(callId: string): Promise<void>;
 

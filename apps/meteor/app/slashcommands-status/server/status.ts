@@ -1,5 +1,5 @@
 import { api } from '@rocket.chat/core-services';
-import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import type { SlashCommandCallbackParams, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { i18n } from '../../../server/lib/i18n';
@@ -14,11 +14,19 @@ slashCommands.add({
 			return;
 		}
 
-		const user = await Users.findOneById(userId, { projection: { language: 1 } });
+		const user = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'name' | 'status' | 'roles' | 'statusText' | 'language'>>(
+			userId,
+			{
+				projection: { language: 1, username: 1, name: 1, status: 1, roles: 1, statusText: 1 },
+			},
+		);
 		const lng = user?.language || settings.get('Language') || 'en';
 
+		if (!user) {
+			return;
+		}
 		try {
-			await setUserStatusMethod(userId, undefined, params);
+			await setUserStatusMethod(user, undefined, params);
 
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('StatusMessage_Changed_Successfully', { lng }),

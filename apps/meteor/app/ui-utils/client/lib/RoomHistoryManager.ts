@@ -4,7 +4,6 @@ import { differenceInMilliseconds } from 'date-fns';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import type { MutableRefObject } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getUserId } from '../../../../client/lib/user';
@@ -23,7 +22,7 @@ const processMessage = async (msg: IMessage & { ignored?: boolean }, { subscript
 		msg.ignored = true;
 	}
 
-	if (msg.t === 'e2e' && !msg.file) {
+	if (msg.t === 'e2e') {
 		msg.e2e = 'pending';
 	}
 
@@ -86,7 +85,7 @@ class RoomHistoryManagerClass extends Emitter {
 
 	private async queue(): Promise<void> {
 		return new Promise((resolve) => {
-			const requestId = uuidv4();
+			const requestId = crypto.randomUUID();
 			const done = () => {
 				this.lastRequest = new Date();
 				resolve();
@@ -297,6 +296,14 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		return this.loadSurroundingMessages(message, true);
+	}
+
+	public async getSurroundingChannelMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		return this.loadSurroundingMessages(message, false);
+	}
+
+	private async loadSurroundingMessages(message: (Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) | undefined, showThreadMessages: boolean) {
 		if (!message?.rid) {
 			return;
 		}
@@ -310,7 +317,7 @@ class RoomHistoryManagerClass extends Emitter {
 		const room = this.getRoom(message.rid);
 
 		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
-		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
+		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit, showThreadMessages);
 
 		this.clear(message.rid);
 

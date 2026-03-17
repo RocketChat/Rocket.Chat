@@ -129,7 +129,7 @@ export class SlackImporter extends Importer {
 
 		await this.addCountToTotal(data.length);
 
-		for await (const channel of data) {
+		for (const channel of data) {
 			await this.converter.addChannel({
 				_id: channel.is_general ? 'general' : undefined,
 				u: {
@@ -159,7 +159,7 @@ export class SlackImporter extends Importer {
 
 		await this.addCountToTotal(data.length);
 
-		for await (const channel of data) {
+		for (const channel of data) {
 			await this.converter.addChannel({
 				u: {
 					_id: this._replaceSlackUserId(channel.creator),
@@ -190,7 +190,7 @@ export class SlackImporter extends Importer {
 
 		const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
 
-		for await (const channel of data) {
+		for (const channel of data) {
 			await this.converter.addChannel({
 				u: {
 					_id: this._replaceSlackUserId(channel.creator),
@@ -216,7 +216,7 @@ export class SlackImporter extends Importer {
 		this.logger.debug({ msg: 'loaded dms', count: data.length });
 
 		await this.addCountToTotal(data.length);
-		for await (const channel of data) {
+		for (const channel of data) {
 			await this.converter.addChannel({
 				importIds: [channel.id],
 				users: this._replaceSlackUserIds(channel.members),
@@ -238,7 +238,7 @@ export class SlackImporter extends Importer {
 		await this.updateRecord({ 'count.users': data.length });
 		await this.addCountToTotal(data.length);
 
-		for await (const user of data) {
+		for (const user of data) {
 			const newUser: IImportUser = {
 				emails: [],
 				importIds: [user.id],
@@ -290,14 +290,14 @@ export class SlackImporter extends Importer {
 					ImporterWebsocket.progressUpdated({ rate });
 					oldRate = rate;
 				}
-			} catch (e) {
-				this.logger.error(e);
+			} catch (err) {
+				this.logger.error({ msg: 'Error updating progress', err });
 			}
 		};
 
 		try {
 			// we need to iterate the zip file twice so that all channels are loaded before the messages
-			for await (const entry of zip.getEntries()) {
+			for (const entry of zip.getEntries()) {
 				try {
 					if (entry.entryName === 'channels.json') {
 						channelCount += await this.prepareChannelsFile(entry);
@@ -332,8 +332,8 @@ export class SlackImporter extends Importer {
 						increaseProgress();
 						continue;
 					}
-				} catch (e) {
-					this.logger.error(e);
+				} catch (err) {
+					this.logger.error({ msg: 'Error adding missed type', err });
 				}
 			}
 
@@ -348,7 +348,7 @@ export class SlackImporter extends Importer {
 			// If we have no slack message yet, then we can insert them instead of upserting
 			this._useUpsert = !(await Messages.findOne({ _id: /slack\-.*/ }));
 
-			for await (const entry of zip.getEntries()) {
+			for (const entry of zip.getEntries()) {
 				try {
 					if (entry.entryName.includes('__MACOSX') || entry.entryName.includes('.DS_Store')) {
 						count++;
@@ -380,7 +380,7 @@ export class SlackImporter extends Importer {
 							const slackChannelId = await ImportData.findChannelImportIdByNameOrImportId(channel);
 
 							if (slackChannelId) {
-								for await (const message of tempMessages) {
+								for (const message of tempMessages) {
 									await this.prepareMessageObject(message, missedTypes, slackChannelId);
 								}
 							}
@@ -388,19 +388,19 @@ export class SlackImporter extends Importer {
 							this.logger.warn({ msg: 'Entry is not a valid JSON file; unable to import', entryName: entry.entryName, err: error });
 						}
 					}
-				} catch (e) {
-					this.logger.error(e);
+				} catch (err) {
+					this.logger.error({ msg: 'Error processing message entry', err });
 				}
 
 				increaseProgress();
 			}
 
 			if (Object.keys(missedTypes).length > 0) {
-				this.logger.info('Missed import types:', missedTypes);
+				this.logger.info({ msg: 'Missed import types', missedTypes });
 			}
-		} catch (e) {
-			this.logger.error(e);
-			throw e;
+		} catch (err) {
+			this.logger.error({ msg: 'Error preparing import using local file', err });
+			throw err;
 		}
 
 		ImporterWebsocket.progressUpdated({ rate: 100 });

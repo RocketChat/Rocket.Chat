@@ -14,7 +14,7 @@ function validateDomain(domain: string): boolean {
 	}
 
 	if (value.toLowerCase() !== value) {
-		logger.error(`The Federation domain "${value}" cannot have uppercase letters`);
+		logger.error({ msg: 'The Federation domain cannot have uppercase letters', domain: value });
 		return false;
 	}
 
@@ -25,7 +25,7 @@ function validateDomain(domain: string): boolean {
 			throw new Error();
 		}
 	} catch {
-		logger.error(`The configured Federation domain "${value}" is not valid`);
+		logger.error({ msg: 'The configured Federation domain is not valid', domain: value });
 		return false;
 	}
 
@@ -42,6 +42,7 @@ export function configureFederationMatrixSettings(settings: {
 	allowedNonPrivateRooms: boolean;
 	processEDUTyping: boolean;
 	processEDUPresence: boolean;
+	processEDUReceipt: boolean;
 }) {
 	const {
 		instanceId,
@@ -53,6 +54,7 @@ export function configureFederationMatrixSettings(settings: {
 		allowedNonPrivateRooms,
 		processEDUTyping,
 		processEDUPresence,
+		processEDUReceipt,
 	} = settings;
 
 	if (!validateDomain(serverName)) {
@@ -94,6 +96,7 @@ export function configureFederationMatrixSettings(settings: {
 		edu: {
 			processTyping: processEDUTyping,
 			processPresence: processEDUPresence,
+			processReceipt: processEDUReceipt,
 		},
 	});
 }

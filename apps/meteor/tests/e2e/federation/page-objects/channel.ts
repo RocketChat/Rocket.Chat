@@ -78,9 +78,6 @@ export class FederationChannel {
 		for await (const username of usernamesToInvite) {
 			await this.newDMModal.inviteUserToDM(username);
 		}
-		await this.page
-			.locator('//*[@id="modal-root"]//*[contains(@class, "rcx-modal__title") and contains(text(), "Direct messages")]')
-			.click();
 		await this.newDMModal.btnCreate.click();
 	}
 

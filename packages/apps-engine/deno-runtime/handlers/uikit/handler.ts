@@ -1,9 +1,12 @@
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { require } from '../../lib/require.ts';
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
+import { isOneOf } from '../lib/assertions.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 export const uikitInteractions = [
 	'executeBlockActionHandler',
@@ -11,7 +14,7 @@ export const uikitInteractions = [
 	'executeViewClosedHandler',
 	'executeActionButtonHandler',
 	'executeLivechatBlockActionHandler',
-];
+] as const;
 
 export const {
 	UIKitBlockInteractionContext,
@@ -22,8 +25,11 @@ export const {
 
 export const { UIKitLivechatBlockInteractionContext } = require('@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext.js');
 
-export default async function handleUIKitInteraction(method: string, params: unknown): Promise<Defined | JsonRpcError> {
-	if (!uikitInteractions.includes(method)) {
+export default async function handleUIKitInteraction(request: RequestContext): Promise<Defined | JsonRpcError> {
+	const { method: reqMethod, params } = request;
+	const [, method] = reqMethod.split(':');
+
+	if (!isOneOf(method, uikitInteractions)) {
 		return JsonRpcError.methodNotFound(null);
 	}
 
@@ -69,7 +75,7 @@ export default async function handleUIKitInteraction(method: string, params: unk
 
 	try {
 		return await interactionHandler.call(
-			app,
+			wrapAppForRequest(app, request),
 			context,
 			AppAccessorsInstance.getReader(),
 			AppAccessorsInstance.getHttp(),

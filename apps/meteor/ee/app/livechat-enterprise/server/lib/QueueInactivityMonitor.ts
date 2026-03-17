@@ -76,7 +76,7 @@ export class OmnichannelQueueInactivityMonitorClass {
 
 	async scheduleInquiry(inquiryId: string, time: Date): Promise<void> {
 		await this.stopInquiry(inquiryId);
-		this.logger.debug(`Scheduling automatic close of inquiry ${inquiryId} at ${time}`);
+		this.logger.debug({ msg: 'Scheduling automatic close of inquiry', inquiryId, scheduledAt: time });
 		const name = this.getName(inquiryId);
 		this.scheduler.define(name, this.bindedCloseRoom);
 
@@ -118,12 +118,12 @@ export class OmnichannelQueueInactivityMonitorClass {
 
 		const room = await LivechatRooms.findOneById(inquiry.rid);
 		if (!room) {
-			this.logger.error(`Unable to find room ${inquiry.rid} for inquiry ${inquiryId} to close in queue inactivity monitor`);
+			this.logger.error({ msg: 'Unable to find room to close in queue inactivity monitor', inquiryId, roomId: inquiry.rid });
 			return;
 		}
 
 		await Promise.all([this.closeRoomAction(room), this.stopInquiry(inquiryId)]);
-		this.logger.info(`Closed room ${inquiry.rid} for inquiry ${inquiryId} due to inactivity`);
+		this.logger.info({ msg: 'Closed room due to queue inactivity', roomId: inquiry.rid, inquiryId });
 	}
 }
 
