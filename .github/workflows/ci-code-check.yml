@@ -85,9 +85,9 @@ jobs:
           # only install meteor if bin isn't found
           command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
 
-      - name: Show Node.js heap size
+      - name: Show available system memory
         if: matrix.check == 'ts'
-        run: node -e "const v8 = require('v8'); console.log('heap limit:', v8.getHeapStatistics().heap_size_limit / 1024 / 1024, 'MB')"
+        run: free -h
 
       - name: TS TypeCheck
         if: matrix.check == 'ts'
