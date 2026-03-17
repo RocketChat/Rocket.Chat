@@ -117,10 +117,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		// best‑effort: stop capturing audio
 		void this.setInputTrack(null).catch(() => undefined);
-		void this.setScreenVideoTrack(null).catch(() => undefined);
 
 		for (const call of this.knownCalls.values()) {
 			this.ignoredCalls.add(call.callId);
+			void this.setScreenVideoTrack(null, call).catch(() => undefined);
+
 			call.ignore();
 		}
 
@@ -481,16 +482,10 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await this.setInputTrack(null);
 	}
 
-	private async setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
+	private async setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null, call: ClientMediaCall): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.setScreenVideoTrack', Boolean(newVideoTrack));
 
-		const mainCall = this.getMainCall();
-
-		if (!mainCall) {
-			return;
-		}
-
-		await mainCall.setScreenVideoTrack(newVideoTrack);
+		await call.setScreenVideoTrack(newVideoTrack);
 	}
 
 	private async startScreenVideoTrack(): Promise<MediaStreamTrack | void> {
@@ -514,19 +509,19 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return tracks[0];
 	}
 
-	private async endScreenSharing(): Promise<void> {
+	private async endScreenSharing(call: ClientMediaCall): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.endScreenSharing');
-		await this.setScreenVideoTrack(null);
+		await this.setScreenVideoTrack(null, call);
 	}
 
-	private async startScreenSharing(): Promise<void> {
+	private async startScreenSharing(call: ClientMediaCall): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startScreenSharing');
 		const track = await this.startScreenVideoTrack();
 		if (!track) {
 			return;
 		}
 
-		await this.setScreenVideoTrack(track);
+		await this.setScreenVideoTrack(track, call);
 	}
 
 	private createCall(callId: string): ClientMediaCall {
@@ -617,13 +612,13 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.onSessionStateChange();
 	}
 
-	private async onScreenShareRequestChange(_call: ClientMediaCall, requested: boolean): Promise<void> {
+	private async onScreenShareRequestChange(call: ClientMediaCall, requested: boolean): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.onScreenShareRequestChange');
 
 		if (!requested) {
-			await this.endScreenSharing();
+			await this.endScreenSharing(call);
 		} else {
-			await this.startScreenSharing();
+			await this.startScreenSharing(call);
 		}
 
 		this.onSessionStateChange();
