@@ -31,6 +31,8 @@ describe('[File Upload - Image Rotation]', () => {
 	let rotateImagesSetting: SettingValue;
 	let stripExifSetting: SettingValue;
 	let thumbnailsEnabledSetting: SettingValue;
+	let thumbnailsWidthSetting: SettingValue;
+	let thumbnailsHeightSetting: SettingValue;
 
 	before(async () => {
 		user = await createUser({ joinDefaultChannels: false, password: userPassword });
@@ -40,6 +42,8 @@ describe('[File Upload - Image Rotation]', () => {
 		rotateImagesSetting = await getSettingValueById('FileUpload_RotateImages');
 		stripExifSetting = await getSettingValueById('Message_Attachments_Strip_Exif');
 		thumbnailsEnabledSetting = await getSettingValueById('Message_Attachments_Thumbnails_Enabled');
+		thumbnailsWidthSetting = await getSettingValueById('Message_Attachments_Thumbnails_Width');
+		thumbnailsHeightSetting = await getSettingValueById('Message_Attachments_Thumbnails_Height');
 
 		await updateSetting('FileUpload_RotateImages', true, false);
 		await updateSetting('Message_Attachments_Strip_Exif', true, false);
@@ -97,10 +101,18 @@ describe('[File Upload - Image Rotation]', () => {
 		expect(fileUrl).to.be.a('string');
 		expect(thumbUrl).to.be.a('string');
 
+		const originalBuffer = await downloadBuffer(fileUrl as string, userCredentials);
+		const originalMetadata = await sharp(originalBuffer).metadata();
 		const thumbBuffer = await downloadBuffer(thumbUrl as string, userCredentials);
 		const thumbMetadata = await sharp(thumbBuffer).metadata();
+		const thumbWidthSetting = Number(thumbnailsWidthSetting);
+		const thumbHeightSetting = Number(thumbnailsHeightSetting);
+		const originalWidth = originalMetadata.width as number;
+		const originalHeight = originalMetadata.height as number;
+		const resizeFactor = Math.min(thumbWidthSetting / originalWidth, thumbHeightSetting / originalHeight);
 
-		expect(thumbMetadata.width).to.be.lessThan(thumbMetadata.height as number);
+		expect(thumbMetadata.width).to.equal(Math.round(originalWidth * resizeFactor));
+		expect(thumbMetadata.height).to.equal(Math.round(originalHeight * resizeFactor));
 	});
 
 	describe('when FileUpload_RotateImages is disabled', () => {
