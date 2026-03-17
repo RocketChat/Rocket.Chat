@@ -291,6 +291,16 @@ API.v1.addRoute(
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
 
+			if (this.bodyParams.fileName) {
+				file.name = this.bodyParams.fileName;
+				delete this.bodyParams.fileName;
+			}
+
+			if (this.bodyParams.fileContent) {
+				file.content = this.bodyParams.fileContent;
+				delete this.bodyParams.fileContent;
+			}
+
 			await applyAirGappedRestrictionsValidation(() =>
 				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
 			);

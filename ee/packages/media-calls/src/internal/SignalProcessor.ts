@@ -10,6 +10,7 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
+import { DEFAULT_CALL_FEATURES } from '../constants';
 import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
@@ -180,7 +181,7 @@ export class GlobalSignalProcessor {
 
 		const services = signal.supportedServices ?? [];
 		const requestedService = services.includes('webrtc') ? 'webrtc' : services[0];
-		const features = signal.supportedFeatures ?? ['audio'];
+		const features = signal.supportedFeatures ?? DEFAULT_CALL_FEATURES;
 
 		const params: InternalCallParams = {
 			caller: {
