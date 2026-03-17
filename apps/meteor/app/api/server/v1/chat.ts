@@ -302,6 +302,14 @@ const ChatSyncThreadMessagesSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		query: {
+			type: 'object',
+			nullable: true,
+		},
+		fields: {
+			type: 'object',
+			nullable: true,
+		},
 	},
 	required: ['tmid', 'updatedSince'],
 	additionalProperties: false,
