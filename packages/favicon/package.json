@@ -1,6 +1,7 @@
 {
 	"name": "@rocket.chat/favicon",
 	"version": "0.0.4",
+	"description": "Provides favicon assets and utilities used across the Rocket.Chat web interface.",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
