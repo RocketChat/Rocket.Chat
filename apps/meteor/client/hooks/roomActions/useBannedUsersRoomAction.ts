@@ -5,7 +5,6 @@ import { lazy, useMemo } from 'react';
 
 import * as Federation from '../../lib/federation/Federation';
 import { useRoom, useRoomSubscription } from '../../views/room/contexts/RoomContext';
-import { getRoomDirectives } from '../../views/room/lib/getRoomDirectives';
 
 const BannedUsers = lazy(() => import('../../views/room/contextualBar/BannedUsers'));
 
@@ -27,10 +26,8 @@ export const useBannedUsersRoomAction = () => {
 		? !!isRoomNativeFederated(room) && Federation.isEditableByTheUser(user || undefined, room, subscription)
 		: hasPermissionToBan;
 
-	const { roomCanBan } = getRoomDirectives({ room, showingUserId: user._id, userSubscription: subscription });
-
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!userCanBan || !roomCanBan) {
+		if (!userCanBan) {
 			return undefined;
 		}
 
@@ -43,5 +40,5 @@ export const useBannedUsersRoomAction = () => {
 			order: 13,
 			type: 'moderation',
 		};
-	}, [roomCanBan, userCanBan]);
+	}, [userCanBan]);
 };

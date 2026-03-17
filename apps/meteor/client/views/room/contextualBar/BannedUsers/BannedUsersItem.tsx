@@ -6,12 +6,13 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
 type BannedUsersItemProps = {
 	user: BannedUser;
 	useRealName: boolean;
-	onClickUnban: (userId: string) => void;
+	onClickUnban: (username: string) => void;
 };
 
 const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemProps): ReactElement => {
@@ -26,16 +27,16 @@ const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemPro
 				content: <Box color='status-font-on-danger'>{t('Unban_user_from_room')}</Box>,
 				icon: 'ban' as const,
 				iconColor: 'status-font-on-danger',
-				onClick: () => onClickUnban(user._id),
+				onClick: () => onClickUnban(user.username),
 			},
 		],
-		[onClickUnban, t, user._id],
+		[onClickUnban, t, user.username],
 	);
 
 	return (
 		<Option style={{ paddingInline: 24 }}>
 			<OptionAvatar>
-				<UserAvatar size='x40' userId={user._id} />
+				<UserAvatar size='x40' username={normalizeUsername(user.username)} />
 			</OptionAvatar>
 			<OptionContent>
 				<strong>{nameOrUsername}</strong>
