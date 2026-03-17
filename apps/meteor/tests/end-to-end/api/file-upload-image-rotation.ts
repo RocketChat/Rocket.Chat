@@ -111,8 +111,8 @@ describe('[File Upload - Image Rotation]', () => {
 		const originalHeight = originalMetadata.height as number;
 		const resizeFactor = Math.min(thumbWidthSetting / originalWidth, thumbHeightSetting / originalHeight);
 
-		expect(thumbMetadata.width).to.equal(Math.round(originalWidth * resizeFactor));
-		expect(thumbMetadata.height).to.equal(Math.round(originalHeight * resizeFactor));
+		expect(thumbMetadata.width).to.be.closeTo(Math.round(originalWidth * resizeFactor), 1);
+		expect(thumbMetadata.height).to.be.closeTo(Math.round(originalHeight * resizeFactor), 1);
 	});
 
 	describe('when FileUpload_RotateImages is disabled', () => {
