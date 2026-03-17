@@ -2,6 +2,7 @@ import { createFakeDepartment } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelAgents } from '../page-objects/omnichannel';
+import { setSettingValueById } from '../utils';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { test, expect } from '../utils/test';
 
@@ -25,11 +26,11 @@ test.describe.serial('OC - Manage Agents', () => {
 	});
 
 	test.beforeAll(async ({ api }) => {
-		expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: true })).status()).toBe(200);
+		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).status()).toBe(200);
 	});
 
 	test.afterAll(async ({ api }) => {
-		expect((await api.post('/settings/Omnichannel_enable_department_removal', { value: false })).status()).toBe(200);
+		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', false)).status()).toBe(200);
 	});
 
 	// Ensure that there is no leftover data even if test fails
