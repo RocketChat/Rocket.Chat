@@ -27,7 +27,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.a.property('success', false);
-					expect(res.body.error).to.be.equal('You must provide a command to run.');
+					expect(res.body.error).to.be.equal('The command provided does not exist (or is disabled).');
 				})
 				.end(done);
 		});
