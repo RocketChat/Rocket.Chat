@@ -6,6 +6,7 @@ import HeadingBlock from './blocks/HeadingBlock';
 import OrderedListBlock from './blocks/OrderedListBlock';
 import ParagraphBlock from './blocks/ParagraphBlock';
 import QuoteBlock from './blocks/QuoteBlock';
+import SpoilerBlock from './blocks/SpoilerBlock';
 import TaskList from './blocks/TaskListBlock';
 import UnorderedListBlock from './blocks/UnorderedListBlock';
 import BigEmojiBlock from './emoji/BigEmojiBlock';
@@ -26,10 +27,14 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 					return <BigEmojiBlock key={index} emoji={block.value} />;
 
 				case 'PARAGRAPH':
-					return <ParagraphBlock key={index} children={block.value} />;
+					return <ParagraphBlock key={index}>{block.value}</ParagraphBlock>;
 
 				case 'HEADING':
-					return <HeadingBlock key={index} level={block.level} children={block.value} />;
+					return (
+						<HeadingBlock key={index} level={block.level}>
+							{block.value}
+						</HeadingBlock>
+					);
 
 				case 'UNORDERED_LIST':
 					return <UnorderedListBlock key={index} items={block.value} />;
@@ -41,7 +46,10 @@ const Markup = ({ tokens }: MarkupProps): ReactElement => (
 					return <TaskList key={index} tasks={block.value} />;
 
 				case 'QUOTE':
-					return <QuoteBlock key={index} children={block.value} />;
+					return <QuoteBlock key={index}>{block.value}</QuoteBlock>;
+
+				case 'SPOILER_BLOCK':
+					return <SpoilerBlock key={index}>{block.value}</SpoilerBlock>;
 
 				case 'CODE':
 					return <CodeBlock key={index} language={block.language} lines={block.value} />;

@@ -9,7 +9,7 @@ import type {
 	ITeamService,
 	ITeamUpdateData,
 } from '@rocket.chat/core-services';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import type {
 	IRoom,
 	IUser,
@@ -81,7 +81,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 				(
 					await Room.create(owner || uid, {
 						...room,
-						type: team.type === TEAM_TYPE.PRIVATE ? 'p' : 'c',
+						type: team.type === TeamType.PRIVATE ? 'p' : 'c',
 						name: team.name,
 						members: memberUsernames as string[],
 						extraData: {
@@ -158,7 +158,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		}
 
 		if (updateRoom && typeof type !== 'undefined') {
-			await saveRoomType(team.roomId, type === TEAM_TYPE.PRIVATE ? 'p' : 'c', user);
+			await saveRoomType(team.roomId, type === TeamType.PRIVATE ? 'p' : 'c', user);
 		}
 
 		await Team.updateNameAndType(teamId, updateData);
@@ -173,7 +173,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		let teamIds = unfilteredTeamIds;
 
 		if (callerId) {
-			const publicTeams = await Team.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TEAM_TYPE.PUBLIC, {
+			const publicTeams = await Team.findByIdsAndType<Pick<ITeam, '_id'>>(unfilteredTeamIds, TeamType.PUBLIC, {
 				projection: { _id: 1 },
 			}).toArray();
 			const publicTeamIds = publicTeams.map(({ _id }) => _id);
@@ -204,7 +204,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 	async search<P extends Document>(
 		userId: string,
 		term: string | RegExp,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<ITeam[] | P[]> {
 		if (typeof term === 'string') {
 			term = new RegExp(`^${escapeRegExp(term)}`, 'i');
@@ -296,7 +296,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	async listByNames<P extends Document>(
 		names: Array<string>,
-		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
+		options?: FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): Promise<P[] | ITeam[]> {
 		if (options === undefined) {
 			return Team.findByNames(names).toArray();
@@ -497,7 +497,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	listTeamsBySubscriberUserId<P extends Document>(
 		uid: string,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P[] | ITeamMember[]> {
 		if (options) {
 			return TeamMember.findByUserId(uid, options).toArray();
@@ -524,7 +524,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const { getAllRooms, allowPrivateTeam, name, isDefault } = filter;
 
 		const isMember = await TeamMember.findOneByUserIdAndTeamId(uid, teamId);
-		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
+		if (team.type === TeamType.PRIVATE && !allowPrivateTeam && !isMember) {
 			throw new Error('user-not-on-private-team');
 		}
 
@@ -571,7 +571,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 			throw new Error('invalid-team');
 		}
 		const isMember = await TeamMember.findOneByUserIdAndTeamId(uid, teamId);
-		if (team.type === TEAM_TYPE.PRIVATE && !allowPrivateTeam && !isMember) {
+		if (team.type === TeamType.PRIVATE && !allowPrivateTeam && !isMember) {
 			throw new Error('user-not-on-private-team');
 		}
 
@@ -893,8 +893,8 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	getAllPublicTeams(options: FindOptions<ITeam>): Promise<ITeam[]>;
 
-	async getAllPublicTeams(options?: undefined | FindOptions<ITeam>): Promise<ITeam[]> {
-		return options ? Team.findByType(TEAM_TYPE.PUBLIC, options).toArray() : Team.findByType(TEAM_TYPE.PUBLIC).toArray();
+	async getAllPublicTeams(options?: FindOptions<ITeam>): Promise<ITeam[]> {
+		return options ? Team.findByType(TeamType.PUBLIC, options).toArray() : Team.findByType(TeamType.PUBLIC).toArray();
 	}
 
 	async getOneById(teamId: string, options?: FindOptions<ITeam>): Promise<ITeam | null> {
@@ -908,7 +908,7 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 
 	async getOneByName(teamName: string | RegExp, options: FindOptions<ITeam>): Promise<ITeam | null>;
 
-	async getOneByName(teamName: string | RegExp, options?: undefined | FindOptions<ITeam>): Promise<ITeam | null> {
+	async getOneByName(teamName: string | RegExp, options?: FindOptions<ITeam>): Promise<ITeam | null> {
 		if (!options) {
 			return Team.findOneByName(teamName);
 		}
@@ -998,13 +998,10 @@ export class TeamService extends ServiceClassInternal implements ITeamService {
 		const defaultRooms = await Rooms.findDefaultRoomsForTeam(teamId).toArray();
 		const users = await Users.findActiveByIds(members.map((member) => member.userId)).toArray();
 
-		defaultRooms.map(async (room) => {
+		for (const room of defaultRooms) {
 			// at this point, users are already part of the team so we won't check for membership
-			for await (const user of users) {
-				// add each user to the default room
-				await addUserToRoom(room._id, user, inviter, { skipSystemMessage: false });
-			}
-		});
+			await Promise.all(users.map((user) => addUserToRoom(room._id, user, inviter, { skipSystemMessage: false })));
+		}
 	}
 
 	async deleteById(teamId: string): Promise<boolean> {

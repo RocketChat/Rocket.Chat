@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { paragraph, plain, bold, italic, emoticon } from '../src/utils';
+import { paragraph, plain, bold, italic, emoticon } from './helpers';
 
 test.each([
 	['*test:*', [paragraph([bold([plain('test:')])])]],

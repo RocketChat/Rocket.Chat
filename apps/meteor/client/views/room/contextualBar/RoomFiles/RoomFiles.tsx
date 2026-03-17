@@ -25,7 +25,7 @@ type RoomFilesProps = {
 	type: string;
 	text: string;
 	filesItems: IUploadWithUser[];
-	loadMoreItems: (start: number, end: number) => void;
+	loadMoreItems: () => void;
 	setType: (value: any) => void;
 	setText: (e: ChangeEvent<HTMLInputElement>) => void;
 	total: number;
@@ -94,7 +94,7 @@ const RoomFiles = ({
 									width: '100%',
 								}}
 								totalCount={total}
-								endReached={(start) => loadMoreItems(start, Math.min(50, total - start))}
+								endReached={loadMoreItems}
 								overscan={100}
 								data={filesItems}
 								itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}

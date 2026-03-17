@@ -90,7 +90,6 @@ export const isRoomsAutocompleteAdminRoomsPayload = ajv.compile<RoomsAutocomplet
 
 type BaseRoomsProps = { roomId: string } | { roomName: string };
 type RoomsInfoProps = BaseRoomsProps;
-type RoomsLeaveProps = BaseRoomsProps;
 
 const RoomsInfoSchema = {
 	oneOf: [
@@ -795,28 +794,14 @@ export type RoomsEndpoints = {
 			groupable?: boolean;
 			msg?: string;
 			tmid?: string;
-			customFields?: string;
+			customFields?: Record<string, any>;
 			t?: IMessage['t'];
 			content?: IE2EEMessage['content'];
-		}) => { message: IMessage | null };
-	};
-
-	'/v1/rooms.saveNotification': {
-		POST: (params: { roomId: string; notifications: Notifications }) => void;
-	};
-
-	'/v1/rooms.favorite': {
-		POST: (
-			params:
-				| {
-						roomId: string;
-						favorite: boolean;
-				  }
-				| {
-						roomName: string;
-						favorite: boolean;
-				  },
-		) => void;
+			fileName?: string;
+			fileContent?: IE2EEMessage['content'];
+		}) => {
+			message: IMessage | null;
+		};
 	};
 
 	'/v1/rooms.nameExists': {
@@ -825,19 +810,11 @@ export type RoomsEndpoints = {
 		};
 	};
 
-	'/v1/rooms.delete': {
-		POST: (params: { roomId: string }) => void;
-	};
-
 	'/v1/rooms.get': {
 		GET: (params: { updatedSince: string }) => {
 			update: IRoom[];
 			remove: IRoom[];
 		};
-	};
-
-	'/v1/rooms.leave': {
-		POST: (params: RoomsLeaveProps) => void;
 	};
 
 	'/v1/rooms.getDiscussions': {

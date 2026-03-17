@@ -1,6 +1,6 @@
 import type { CustomFieldMetadata } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Field, FieldLabel, FieldRow, FieldError, Select, TextInput } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, Select, TextInput, FieldGroup } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useCallback, useId, useMemo } from 'react';
 import type { Control, FieldValues, FieldError as RHFFieldError } from 'react-hook-form';
@@ -104,10 +104,14 @@ const CustomField = <T extends FieldValues>({
 };
 
 // eslint-disable-next-line react/no-multi-comp
-export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl, metadata }: CustomFieldFormProps<T>) => (
-	<>
-		{metadata.map(({ name: fieldName, label, ...props }) => (
-			<CustomField key={fieldName} name={`${formName}.${fieldName}`} control={formControl} label={label ?? fieldName} {...props} />
-		))}
-	</>
-);
+export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl, metadata }: CustomFieldFormProps<T>) => {
+	const { t } = useTranslation();
+
+	return (
+		<FieldGroup aria-label={t('Custom_Fields')}>
+			{metadata.map(({ name: fieldName, label, ...props }) => (
+				<CustomField key={fieldName} name={`${formName}.${fieldName}`} control={formControl} label={label ?? fieldName} {...props} />
+			))}
+		</FieldGroup>
+	);
+};

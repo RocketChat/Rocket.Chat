@@ -5,12 +5,13 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 
 import { api, credentials, request } from '../api-data';
-import { createAnAwayAgent, createAnOfflineAgent, createAnOnlineAgent } from './users';
+import { makeAgentAvailable } from './rooms';
+import { createAgentAndReLogin, createAnAwayAgent, createAnOfflineAgent } from './users';
 import type { WithRequiredProperty } from './utils';
 
 const NewDepartmentData = ((): Partial<ILivechatDepartment> => ({
 	enabled: true,
-	name: `new department ${Date.now()}`,
+	name: `new department ${Random.id()}`,
 	description: 'created from api',
 	showOnRegistration: true,
 	email: faker.internet.email(),
@@ -50,16 +51,18 @@ export type OnlineAgent = {
 };
 
 export const createDepartmentWithAnOnlineAgent = async (): Promise<{ department: ILivechatDepartment; agent: OnlineAgent }> => {
-	const { user, credentials } = await createAnOnlineAgent();
+	const { user, credentials: agentCredentials } = await createAgentAndReLogin();
 
 	const department = await createDepartment();
 
 	await addOrRemoveAgentFromDepartment(department._id, { agentId: user._id, username: user.username }, true);
 
+	await makeAgentAvailable(agentCredentials);
+
 	return {
 		department,
 		agent: {
-			credentials,
+			credentials: agentCredentials,
 			user,
 		},
 	};
@@ -70,7 +73,7 @@ export const createDepartmentWith2OnlineAgents = async (): Promise<{
 	agent1: OnlineAgent;
 	agent2: OnlineAgent;
 }> => {
-	const [agent1, agent2] = await Promise.all([createAnOnlineAgent(), createAnOnlineAgent()]);
+	const [agent1, agent2] = await Promise.all([createAgentAndReLogin(), createAgentAndReLogin()]);
 
 	const department = await createDepartment(
 		{
@@ -82,6 +85,8 @@ export const createDepartmentWith2OnlineAgents = async (): Promise<{
 		},
 		[{ agentId: agent1.user._id }, { agentId: agent2.user._id }],
 	);
+
+	await Promise.all([makeAgentAvailable(agent1.credentials), makeAgentAvailable(agent2.credentials)]);
 
 	return {
 		department,

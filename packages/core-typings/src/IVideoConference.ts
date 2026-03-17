@@ -94,9 +94,7 @@ export interface ILivechatVideoConference extends IVideoConference {
 	type: 'livechat';
 }
 
-export interface IVoIPVideoConferenceData {}
-
-export type IVoIPVideoConference = IVideoConference & {
+export interface IVoIPVideoConference extends IVideoConference {
 	type: 'voip';
 	externalId: string;
 
@@ -113,11 +111,11 @@ export type IVoIPVideoConference = IVideoConference & {
 		bridge?: boolean;
 		answer?: boolean;
 	};
-};
+}
 
 export type ExternalVideoConference = IDirectVideoConference | IGroupVideoConference | ILivechatVideoConference;
 
-export type InternalVideoConference = IVoIPVideoConference;
+type InternalVideoConference = IVoIPVideoConference;
 
 export type VideoConference = ExternalVideoConference | InternalVideoConference;
 
@@ -133,10 +131,6 @@ export const isGroupVideoConference = (call: VideoConference | undefined | null)
 
 export const isLivechatVideoConference = (call: VideoConference | undefined | null): call is ILivechatVideoConference => {
 	return call?.type === 'livechat';
-};
-
-export const isVoIPVideoConference = (call: VideoConference | undefined | null): call is IVoIPVideoConference => {
-	return call?.type === 'voip';
 };
 
 type GroupVideoConferenceCreateData = Omit<IGroupVideoConference, 'createdBy'> & { createdBy: IUser['_id'] };

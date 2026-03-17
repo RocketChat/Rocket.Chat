@@ -88,7 +88,10 @@ const withDDPOverREST = (_send: (this: Meteor.IMeteorConnection, message: Meteor
 
 				processResult(_message);
 			})
-			.catch((error) => {
+			.catch(async (error) => {
+				if ('message' in error && error.message) {
+					processResult(error.message);
+				}
 				console.error(error);
 			});
 	};

@@ -1,12 +1,12 @@
-import { Authorization, MediaCall, VideoConf } from '@rocket.chat/core-services';
-import type { ISubscription, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
+import { Authorization, MediaCall, VideoConf, Settings } from '@rocket.chat/core-services';
+import type { ISubscription, IOmnichannelRoom, IUser, IUserDataEvent } from '@rocket.chat/core-typings';
 import type { StreamerCallbackArgs, StreamKeys, StreamNames } from '@rocket.chat/ddp-client';
-import { Rooms, Subscriptions, Users, Settings } from '@rocket.chat/models';
-import type { IStreamer, IStreamerConstructor, IPublication } from 'meteor/rocketchat:streamer';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import type { ImporterProgress } from '../../../app/importer/server/classes/ImporterProgress';
 import { emit, StreamPresence } from '../../../app/notifications/server/lib/Presence';
 import { SystemLogger } from '../../lib/logger/system';
+import type { IStreamer, IStreamerConstructor, IPublication } from '../streamer/types';
 
 export class NotificationsModule {
 	public readonly streamLogged: IStreamer<'notify-logged'>;
@@ -98,7 +98,8 @@ export class NotificationsModule {
 				return false;
 			}
 
-			return Authorization.canReadRoom(room, { _id: this.userId || '' }, extraData);
+			const user = this.userId ? { _id: this.userId } : undefined;
+			return Authorization.canReadRoom(room, user, extraData);
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
@@ -201,7 +202,7 @@ export class NotificationsModule {
 				}
 
 				// TODO consider using something to cache settings
-				const key = (await Settings.getValueById('UI_Use_Real_Name')) ? 'name' : 'username';
+				const key = (await Settings.get('UI_Use_Real_Name')) ? 'name' : 'username';
 
 				const user = await Users.findOneById<Pick<IUser, 'name' | 'username'>>(userId, {
 					projection: {
@@ -214,8 +215,8 @@ export class NotificationsModule {
 				}
 
 				return user[key] === username;
-			} catch (e) {
-				SystemLogger.error(e);
+			} catch (err) {
+				SystemLogger.error({ err });
 				return false;
 			}
 		}
@@ -235,8 +236,11 @@ export class NotificationsModule {
 		});
 
 		this.streamRoomUsers.allowRead('none');
-		this.streamRoomUsers.allowWrite(async function (eventName, ...args: any[]) {
-			const [roomId, e] = eventName.split('/');
+		this.streamRoomUsers.allowWrite(async function (
+			eventName: `${string}/video-conference` | `${string}/userData`,
+			...args: [{ action: string; params: { callId: string; uid: string; rid: string } }] | [IUserDataEvent]
+		) {
+			const [roomId, e] = eventName.split('/') as [string, 'video-conference' | 'userData'];
 			if (this.userId && (await Subscriptions.countByRoomIdAndUserId(roomId, this.userId)) > 0) {
 				const subscriptions: ISubscription[] = await Subscriptions.findByRoomIdAndNotUserId(roomId, this.userId, {
 					projection: { 'u._id': 1, '_id': 0 },
@@ -311,7 +315,7 @@ export class NotificationsModule {
 		this.streamCannedResponses.allowRead(async function () {
 			return (
 				!!this.userId &&
-				!!(await Settings.getValueById('Canned_Responses_Enable')) &&
+				!!(await Settings.get('Canned_Responses_Enable')) &&
 				Authorization.hasPermission(this.userId, 'view-canned-responses')
 			);
 		});

@@ -1,6 +1,7 @@
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { useRouter } from '@rocket.chat/ui-contexts';
 import { useMediaCallAction } from '@rocket.chat/ui-voip';
-import type { HTMLAttributes } from 'react';
+import { useCallback, type HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import NavBarControlsMenu from './NavBarControlsMenu';
@@ -13,6 +14,11 @@ type NavBarControlsMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 	const { t } = useTranslation();
 	const callAction = useMediaCallAction();
+
+	const router = useRouter();
+	const openCallHistory = useCallback(() => {
+		router.navigate('/call-history');
+	}, [router]);
 
 	const {
 		isEnabled: queueEnabled,
@@ -49,6 +55,7 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 				id: 'rcx-media-call-history',
 				icon: 'clock' as const,
 				content: t('Call_history'),
+				onClick: openCallHistory,
 			}
 		: undefined;
 

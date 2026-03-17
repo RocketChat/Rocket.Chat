@@ -48,7 +48,6 @@ const AutoCompleteAgent = ({
 			filter={agentsFilter}
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={agentsItems}
-			data-qa='autocomplete-agent'
 			onChange={onChange}
 			endReached={() => fetchNextPage()}
 		/>

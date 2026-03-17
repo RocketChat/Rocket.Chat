@@ -18,21 +18,15 @@ export type AbacAttributeDefinitionChangeType =
 	| 'key-added'
 	| 'key-updated';
 
-export type AbacAttributeDefinitionDiff = {
-	added?: string[];
-	removed?: string[];
-	renamedFrom?: string;
-};
-
 // Since user attributes can grow without limits, we're only logging the diffs
-interface IServerEventAbacSubjectAttributeChanged
+export interface IServerEventAbacSubjectAttributeChanged
 	extends IAuditServerEventType<
 		{ key: 'subject'; value: MinimalUser } | { key: 'reason'; value: AbacAuditReason } | { key: 'diff'; value: IAbacAttributeDefinition[] }
 	> {
 	t: 'abac.subject.attribute.changed';
 }
 
-interface IServerEventAbacObjectAttributeChanged
+export interface IServerEventAbacObjectAttributeChanged
 	extends IAuditServerEventType<
 		| { key: 'room'; value: MinimalRoom }
 		| { key: 'reason'; value: AbacAuditReason }
@@ -43,7 +37,7 @@ interface IServerEventAbacObjectAttributeChanged
 	t: 'abac.object.attribute.changed';
 }
 
-interface IServerEventAbacAttributeChanged
+export interface IServerEventAbacAttributeChanged
 	extends IAuditServerEventType<
 		| { key: 'attributeKey'; value: string }
 		| { key: 'reason'; value: AbacAuditReason }
@@ -54,7 +48,7 @@ interface IServerEventAbacAttributeChanged
 	t: 'abac.attribute.changed';
 }
 
-interface IServerEventAbacActionPerformed
+export interface IServerEventAbacActionPerformed
 	extends IAuditServerEventType<
 		| { key: 'action'; value: AbacActionPerformed }
 		| { key: 'reason'; value: AbacAuditReason }
@@ -64,7 +58,7 @@ interface IServerEventAbacActionPerformed
 	t: 'abac.action.performed';
 }
 
-interface IServerEventAbacObjectAttributesRemoved
+export interface IServerEventAbacObjectAttributesRemoved
 	extends IAuditServerEventType<
 		| { key: 'room'; value: MinimalRoom }
 		| { key: 'reason'; value: AbacAuditReason }
@@ -73,15 +67,6 @@ interface IServerEventAbacObjectAttributesRemoved
 		| { key: 'change'; value: AbacAttributeDefinitionChangeType }
 	> {
 	t: 'abac.object.attributes.removed';
-}
-declare module '../IServerEvent' {
-	interface IServerEvents {
-		'abac.subject.attribute.changed': IServerEventAbacSubjectAttributeChanged;
-		'abac.object.attribute.changed': IServerEventAbacObjectAttributeChanged;
-		'abac.attribute.changed': IServerEventAbacAttributeChanged;
-		'abac.action.performed': IServerEventAbacActionPerformed;
-		'abac.object.attributes.removed': IServerEventAbacObjectAttributesRemoved;
-	}
 }
 
 // Utility type to extract all ABAC-related server event names

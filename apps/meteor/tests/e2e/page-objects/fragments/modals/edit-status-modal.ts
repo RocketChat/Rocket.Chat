@@ -15,8 +15,10 @@ export class EditStatusModal extends Modal {
 		return this.root.getByRole('textbox', { name: 'Status message' });
 	}
 
-	async changeStatusMessage(statusMessage: string): Promise<void> {
-		await this.statusMessageInput.fill(statusMessage);
+	async changeStatusMessage(statusMessage?: string): Promise<void> {
+		if (statusMessage !== undefined) {
+			await this.statusMessageInput.fill(statusMessage);
+		}
 		await this.save();
 		await this.toastMessages.dismissToast();
 	}

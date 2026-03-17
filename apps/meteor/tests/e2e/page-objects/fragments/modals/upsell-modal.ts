@@ -7,3 +7,9 @@ export class VoiceCallsUpsellModal extends Modal {
 		super(page.getByRole('dialog', { name: 'Team voice calls' }));
 	}
 }
+
+export class OmnichannelUpsellDepartmentsModal extends Modal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Departments' }));
+	}
+}

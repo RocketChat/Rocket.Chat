@@ -1,7 +1,6 @@
-import type { IOmnichannelRoom, ISetting } from '@rocket.chat/core-typings';
+import type { ILivechatVisitor, IOmnichannelRoom, ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
-import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import {
@@ -14,6 +13,7 @@ import {
 	startANewLivechatRoomAndTakeIt,
 } from '../../../data/livechat/rooms';
 import { sleep } from '../../../data/livechat/utils';
+import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - Integrations', () => {
@@ -59,7 +59,8 @@ describe('LIVECHAT - Integrations', () => {
 	});
 
 	describe('Incoming SMS', () => {
-		const visitorTokens: string[] = [];
+		let smsVisitor: ILivechatVisitor;
+		let smsRoom: string;
 
 		before(async () => {
 			await updateSetting('SMS_Enabled', true);
@@ -67,9 +68,12 @@ describe('LIVECHAT - Integrations', () => {
 		});
 
 		after(async () => {
+			await closeOmnichannelRoom(smsRoom);
+
+			await deleteVisitor(smsVisitor.token);
+
 			await updateSetting('SMS_Default_Omnichannel_Department', '');
 			await updateSetting('SMS_Service', 'twilio');
-			return Promise.all(visitorTokens.map((token) => deleteVisitor(token)));
 		});
 
 		// Twilio sends the body as a x-www-form-urlencoded, the tests should do the same
@@ -109,15 +113,22 @@ describe('LIVECHAT - Integrations', () => {
 				await updateSetting('SMS_Default_Omnichannel_Department', '');
 				await updateSetting('SMS_Service', 'twilio');
 
-				await request
+				// Create visitor with the phone number that will be used in SMS
+				smsVisitor = await createVisitor(undefined, 'sms-visitor', undefined, '+12345678910');
+
+				const response = await request
 					.post(api('livechat/sms-incoming/twilio'))
 					.set(credentials)
-					.send('From=%2B123456789&To=%2B123456789&Body=Hello')
+					.send('From=%2B12345678910&To=%2B123456789&Body=Hello')
 					.expect('Content-Type', 'text/xml')
-					.expect(200)
-					.expect((res: Response) => {
-						expect(res).to.have.property('text', '<Response></Response>');
-					});
+					.expect(200);
+
+				expect(response).to.have.property('text', '<Response></Response>');
+
+				const lastChat = (await getLivechatVisitorByToken(smsVisitor.token)).lastChat?._id;
+				expect(lastChat).to.exist;
+
+				smsRoom = lastChat as string;
 			});
 		});
 	});
@@ -149,12 +160,17 @@ describe('LIVECHAT - Integrations', () => {
 		});
 
 		describe('Webhook notifications', () => {
+			const visitorsToDelete: ILivechatVisitor[] = [];
+			const roomsToClose: IOmnichannelRoom[] = [];
+
 			before(async () => {
 				await updateSetting('Livechat_webhookUrl', `${webhookUrl}/anything`);
 				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 				await createAgent();
 			});
 			after(async () => {
+				await Promise.allSettled(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+				await Promise.allSettled(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
 				await updateSetting('Livechat_webhookUrl', '');
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				await updateSetting('Livechat_webhook_on_start', false);
@@ -166,7 +182,9 @@ describe('LIVECHAT - Integrations', () => {
 			it('should send a notification on chat start', async () => {
 				await updateSetting('Livechat_webhook_on_start', true);
 
-				const { room } = await startANewLivechatRoomAndTakeIt();
+				const { room, visitor } = await startANewLivechatRoomAndTakeIt();
+				roomsToClose.push(room);
+				visitorsToDelete.push(visitor);
 				await sleep(1000);
 
 				const roomInfo = await getLivechatRoomInfo(room._id);
@@ -176,12 +194,13 @@ describe('LIVECHAT - Integrations', () => {
 					.to.have.property('json')
 					.that.has.property('type', 'LivechatSessionStart');
 				await updateSetting('Livechat_webhook_on_start', false);
-				await closeOmnichannelRoom(room._id);
 			});
 			it('should send a notification on chat taken', async () => {
 				await updateSetting('Livechat_webhook_on_chat_taken', true);
 
-				const { room } = await startANewLivechatRoomAndTakeIt();
+				const { room, visitor } = await startANewLivechatRoomAndTakeIt();
+				roomsToClose.push(room);
+				visitorsToDelete.push(visitor);
 				await sleep(1000);
 
 				const roomInfo = await getLivechatRoomInfo(room._id);
@@ -191,17 +210,19 @@ describe('LIVECHAT - Integrations', () => {
 					.to.have.property('json')
 					.that.has.property('type', 'LivechatSessionTaken');
 				await updateSetting('Livechat_webhook_on_chat_taken', false);
-				await closeOmnichannelRoom(room._id);
 			});
-			let room: IOmnichannelRoom;
+			let queuedRoom: IOmnichannelRoom;
+			let queuedVisitor: ILivechatVisitor;
 			it('should send a notification on chat queued', async () => {
 				await updateSetting('Livechat_webhook_on_chat_queued', true);
 
-				const visitor = await createVisitor();
-				room = await createLivechatRoom(visitor.token);
+				queuedVisitor = await createVisitor();
+				queuedRoom = await createLivechatRoom(queuedVisitor.token);
+				roomsToClose.push(queuedRoom);
+				visitorsToDelete.push(queuedVisitor);
 				await sleep(1000);
 
-				const roomInfo = await getLivechatRoomInfo(room._id);
+				const roomInfo = await getLivechatRoomInfo(queuedRoom._id);
 
 				expect(roomInfo.crmData).to.be.an('string');
 				expect(JSON.parse(roomInfo.crmData as string))
@@ -212,11 +233,15 @@ describe('LIVECHAT - Integrations', () => {
 			it('should send a notification on chat close', async () => {
 				await updateSetting('Livechat_webhook_on_close', true);
 
-				await closeOmnichannelRoom(room._id);
+				await closeOmnichannelRoom(queuedRoom._id);
+				const idx = roomsToClose.indexOf(queuedRoom);
+				if (idx > -1) {
+					roomsToClose.splice(idx, 1);
+				}
 
 				await sleep(1000);
 
-				const roomInfo = await getLivechatRoomInfo(room._id);
+				const roomInfo = await getLivechatRoomInfo(queuedRoom._id);
 
 				expect(roomInfo.crmData).to.be.an('string');
 				expect(JSON.parse(roomInfo.crmData as string))

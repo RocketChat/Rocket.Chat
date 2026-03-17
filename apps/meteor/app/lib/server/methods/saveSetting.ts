@@ -1,4 +1,4 @@
-import type { SettingValue } from '@rocket.chat/core-typings';
+import type { SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
@@ -14,12 +14,12 @@ import { notifyOnSettingChanged } from '../lib/notifyListener';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		saveSetting(_id: string, value: SettingValue, editor?: string): Promise<boolean>;
+		saveSetting(_id: string, value: SettingValue, editor: SettingEditor): Promise<boolean>;
 	}
 }
 
 Meteor.methods<ServerMethods>({
-	saveSetting: twoFactorRequired(async function (_id, value, editor) {
+	saveSetting: twoFactorRequired(async function (_id: string, value: SettingValue, editor: SettingEditor) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {

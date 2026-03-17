@@ -3,6 +3,7 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, ReadReceipts, Users } from '@rocket.chat/models';
 
 import { deleteRoom } from './deleteRoom';
+import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../../lib/constants';
 import { i18n } from '../../../../server/lib/i18n';
 import { FileUpload } from '../../../file-upload/server';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../lib/notifyListener';
@@ -47,7 +48,8 @@ export async function cleanRoomHistory({
 	});
 
 	const targetMessageIdsForAttachmentRemoval = new Set<string>();
-	const pruneMessageAttachment = { color: '#FD745E', text };
+	// Since we remove every file from the messages, we don't need to specify which fileId has been removed.
+	const pruneMessageAttachment = { type: 'removed-file', color: NOTIFICATION_ATTACHMENT_COLOR, text };
 
 	async function performFileAttachmentCleanupBatch() {
 		if (targetMessageIdsForAttachmentRemoval.size === 0) return;

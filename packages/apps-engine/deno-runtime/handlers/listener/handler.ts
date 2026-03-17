@@ -1,8 +1,8 @@
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
 import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages/IMessage.ts';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
 import type { AppsEngineException as _AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.ts';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { MessageExtender } from '../../lib/accessors/extenders/MessageExtender.ts';
@@ -13,17 +13,21 @@ import { AppAccessors, AppAccessorsInstance } from '../../lib/accessors/mod.ts';
 import { require } from '../../lib/require.ts';
 import createRoom from '../../lib/roomFactory.ts';
 import { Room } from '../../lib/room.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 const { AppsEngineException } = require('@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.js') as {
 	AppsEngineException: typeof _AppsEngineException;
 };
 
-export default async function handleListener(evtInterface: string, params: unknown): Promise<Defined | JsonRpcError> {
+export default async function handleListener(request: RequestContext): Promise<Defined | JsonRpcError> {
+	const { method, params } = request;
+	const [, evtInterface] = method.split(':');
 	const app = AppObjectRegistry.get<App>('app');
 
 	const eventExecutor = app?.[evtInterface as keyof App];
 
-	if (typeof eventExecutor !== 'function') {
+	if (!app || typeof eventExecutor !== 'function') {
 		return JsonRpcError.methodNotFound({
 			message: 'Invalid event interface called on app',
 		});
@@ -35,7 +39,7 @@ export default async function handleListener(evtInterface: string, params: unkno
 
 	try {
 		const args = parseArgs({ AppAccessorsInstance }, evtInterface, params);
-		return await (eventExecutor as (...args: unknown[]) => Promise<Defined>).apply(app, args);
+		return await (eventExecutor as (...args: unknown[]) => Promise<Defined>).apply(wrapAppForRequest(app, request), args);
 	} catch (e) {
 		if (e instanceof JsonRpcError) {
 			return e;

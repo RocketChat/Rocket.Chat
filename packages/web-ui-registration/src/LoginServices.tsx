@@ -23,7 +23,11 @@ const LoginServices = ({
 
 	return (
 		<>
-			{showFormLogin && <Divider mb={24} p={0} children={t('registration.component.form.divider')} />}
+			{showFormLogin && (
+				<Divider mb={24} p={0}>
+					{t('registration.component.form.divider')}
+				</Divider>
+			)}
 			<ButtonGroup vertical stretch small>
 				{services.map((service) => (
 					<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />

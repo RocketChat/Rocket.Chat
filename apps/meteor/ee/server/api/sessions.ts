@@ -3,13 +3,11 @@ import type { IUser, ISession, DeviceManagementSession, DeviceManagementPopulate
 import { License } from '@rocket.chat/license';
 import { Users, Sessions } from '@rocket.chat/models';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import Ajv from 'ajv';
 
 import { API } from '../../../app/api/server/api';
 import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
-
-const ajv = new Ajv({ coerceTypes: true });
 
 type SessionsProps = {
 	sessionId: string;
@@ -138,6 +136,8 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
+			await api.broadcast('user.forceLogout', sessionObj.userId, sessionId);
+
 			await Promise.all([
 				Users.unsetOneLoginToken(this.userId, sessionObj.loginToken),
 				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId }),
@@ -241,7 +241,7 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			await api.broadcast('user.forceLogout', sessionObj.userId);
+			await api.broadcast('user.forceLogout', sessionObj.userId, sessionId);
 
 			await Promise.all([
 				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),

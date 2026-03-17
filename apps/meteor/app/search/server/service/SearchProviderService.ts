@@ -29,14 +29,20 @@ export class SearchProviderService {
 
 		if (this.activeProvider) {
 			const provider = this.activeProvider;
-			SearchLogger.debug(`Stopping provider '${provider.key}'`);
+			SearchLogger.debug({
+				msg: 'Stopping provider',
+				providerKey: provider.key,
+			});
 
 			await new Promise<void>((resolve) => provider.stop(resolve));
 		}
 
 		this.activeProvider = undefined;
 
-		SearchLogger.debug(`Start provider '${id}'`);
+		SearchLogger.debug({
+			msg: 'Start provider',
+			providerKey: id,
+		});
 
 		await this.providers[id].run(reason);
 		this.activeProvider = this.providers[id];

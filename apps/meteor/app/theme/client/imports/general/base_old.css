@@ -45,10 +45,6 @@
 		word-wrap: break-word;
 		-webkit-overflow-scrolling: touch;
 	}
-
-	& .footer {
-		flex-shrink: 0;
-	}
 }
 
 .messages-box {
@@ -116,7 +112,6 @@
 }
 
 code {
-	margin: 5px 0;
 	padding: 0.5em;
 	text-align: left;
 	vertical-align: middle;
@@ -238,19 +233,6 @@ blockquote {
 
 		& .messages-box {
 			margin-top: 0;
-		}
-
-		& .footer {
-			min-height: 36px;
-			padding: 0;
-
-			& .users-typing {
-				display: none;
-			}
-
-			& .formatting-tips {
-				display: none;
-			}
 		}
 	}
 }

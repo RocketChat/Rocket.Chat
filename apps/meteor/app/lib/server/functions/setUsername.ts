@@ -123,8 +123,8 @@ export const _setUsername = async function (
 				setImmediate(() => {
 					Accounts.sendEnrollmentEmail(user._id);
 				});
-			} catch (e: any) {
-				SystemLogger.error(e);
+			} catch (err: any) {
+				SystemLogger.error({ err });
 			}
 		}, session);
 	}

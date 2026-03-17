@@ -16,8 +16,9 @@ const AttachmentBlock = ({ pre, color = 'annotation', children }: AttachmentBloc
 			borderInlineStartStyle='solid'
 			borderInlineStartWidth='default'
 			borderInlineStartColor={color}
-			children={children}
-		/>
+		>
+			{children}
+		</Box>
 	</Attachment>
 );
 

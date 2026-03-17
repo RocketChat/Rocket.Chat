@@ -165,7 +165,9 @@ export async function getUploadFormData<
 	});
 
 	// Unclear why typescript complains that the ReadableStream from request.body is incompatible here
-	Readable.fromWeb(request.body satisfies ReadableStream).pipe(bb);
+	Readable.fromWeb(request.body satisfies ReadableStream)
+		.on('error', (err) => reject(err))
+		.pipe(bb);
 
 	return resultPromise;
 }

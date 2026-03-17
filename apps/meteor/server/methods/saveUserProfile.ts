@@ -6,7 +6,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { UpdateFilter } from 'mongodb';
 
-import { twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
+import { type AuthenticatedContext, twoFactorRequired } from '../../app/2fa/server/twoFactorRequired';
 import { getUserInfo } from '../../app/api/server/helpers/getUserInfo';
 import { saveCustomFields } from '../../app/lib/server/functions/saveCustomFields';
 import { validateUserEditing } from '../../app/lib/server/functions/saveUser';
@@ -18,13 +18,12 @@ import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
-import { removeOtherTokens } from '../lib/removeOtherTokens';
 
 const MAX_BIO_LENGTH = 260;
 const MAX_NICKNAME_LENGTH = 120;
 
 async function saveUserProfile(
-	this: Meteor.MethodThisType,
+	this: AuthenticatedContext,
 	settings: {
 		email?: string;
 		username?: string;
@@ -62,6 +61,12 @@ async function saveUserProfile(
 
 	const user = await Users.findOneById(this.userId);
 
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'saveUserProfile',
+		});
+	}
+
 	if (settings.realname || settings.username) {
 		if (
 			!(await saveUserIdentity({
@@ -77,11 +82,11 @@ async function saveUserProfile(
 	}
 
 	if (settings.statusText || settings.statusText === '') {
-		await setUserStatusMethod(this.userId, undefined, settings.statusText);
+		await setUserStatusMethod(user, undefined, settings.statusText);
 	}
 
 	if (settings.statusType) {
-		await setUserStatusMethod(this.userId, settings.statusType as UserStatus, undefined);
+		await setUserStatusMethod(user, settings.statusType as UserStatus, undefined);
 	}
 
 	if (user && (settings.bio || settings.bio === '')) {
@@ -152,7 +157,7 @@ async function saveUserProfile(
 			);
 
 			try {
-				await removeOtherTokens(this.userId, this.connection?.id || '');
+				await Users.removeNonLoginTokensExcept(this.userId, this.token);
 			} catch (e) {
 				Accounts._clearAllLoginTokens(this.userId);
 			}
@@ -210,7 +215,7 @@ declare module '@rocket.chat/ddp-client' {
 }
 
 export function executeSaveUserProfile(
-	this: Meteor.MethodThisType,
+	this: AuthenticatedContext,
 	user: IUser,
 	settings: {
 		email?: string;
