@@ -53,6 +53,7 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+import { object } from 'underscore';
 
 type ChatStarMessageLocal = {
 	messageId: IMessage['_id'];
@@ -294,7 +295,10 @@ const isSyncMessagesResponse = ajv.compile<{
 				},
 				deleted: {
 					type: 'array',
-					items: { $ref: '#/components/schemas/IMessage' },
+					items: {
+						type: 'object',
+						additionalProperties: true,
+					},
 				},
 				cursor: {
 					type: 'object',
