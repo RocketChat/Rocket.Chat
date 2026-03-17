@@ -374,8 +374,6 @@ jobs:
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
         env:
-          E2E_SHARD: ${{ matrix.shard }}
-          E2E_TOTAL_SHARD: ${{ inputs.total-shard }}
           E2E_COVERAGE: ${{ inputs.coverage == matrix.mongodb-version && 'true' || '' }}
           IS_EE: ${{ (inputs.release == 'ee' || inputs.release == 'fips') && 'true' || '' }}
           REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
@@ -393,6 +391,8 @@ jobs:
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           CI: true
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
+          E2E_SHARD: ${{ matrix.shard }}
+          E2E_TOTAL_SHARD: ${{ inputs.total-shard }}
         working-directory: ./apps/meteor
         run: |
           set -o xtrace
