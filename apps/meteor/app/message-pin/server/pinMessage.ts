@@ -109,7 +109,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	}
 
 	// App IPostMessagePinned event hook
-	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, me, originalMessage.pinned);
 
 	const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
 
@@ -189,7 +189,7 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 	}
 
 	// App IPostMessagePinned event hook
-	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, me, originalMessage.pinned);
 
 	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 	if (settings.get('Message_Read_Receipt_Store_Users')) {

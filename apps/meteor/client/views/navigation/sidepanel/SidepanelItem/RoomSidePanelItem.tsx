@@ -12,8 +12,8 @@ import SidePanelItem from './SidepanelItem';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
+import { getMessagePreview } from '../../../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
-import { getNavigationMessagePreview } from '../../lib/getNavigationMessagePreview';
 import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
 
 type RoomSidePanelItemProps = {
@@ -30,7 +30,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 	const { unread = 0, alert, rid, t: type, cl } = room;
 
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
-	const message = getNavigationMessagePreview(room, room.lastMessage, t);
+	const message = getMessagePreview(room, room.lastMessage, t);
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 

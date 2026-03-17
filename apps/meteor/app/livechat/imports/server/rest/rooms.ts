@@ -29,7 +29,7 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields } = await this.parseJsonQuery();
+			const { sort, fields, query } = await this.parseJsonQuery();
 			const { agents, departmentId, open, tags, roomName, onhold, queued, units } = this.queryParams;
 			const { createdAt, customFields, closedAt } = this.queryParams;
 
@@ -71,6 +71,7 @@ API.v1.addRoute(
 					onhold,
 					queued,
 					units,
+					query,
 					options: { offset, count, sort, fields },
 					callerId: this.userId,
 				}),

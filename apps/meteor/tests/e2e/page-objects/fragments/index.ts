@@ -10,5 +10,6 @@ export * from './modals';
 export * from './toast-messages';
 export * from './export-messages-tab';
 export * from './menu';
+export * from './table';
 export * from './toolbar';
 export * from './composer';

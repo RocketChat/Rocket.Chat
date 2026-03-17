@@ -10,9 +10,6 @@ const mockUsersFindOneById = jest.fn();
 const mockRoomRemoveUserFromRoom = jest.fn().mockResolvedValue(undefined);
 
 jest.mock('@rocket.chat/models', () => ({
-	Settings: {
-		getValueById: (...args: any[]) => mockSettingsGetValueById(...args),
-	},
 	Subscriptions: {
 		findOneByRoomIdAndUserId: (...args: any[]) => mockSubscriptionsFindOneByRoomIdAndUserId(...args),
 		setAbacLastTimeCheckedByUserIdAndRoomId: (...args: any[]) => mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId(...args),
@@ -27,9 +24,14 @@ jest.mock('@rocket.chat/models', () => ({
 }));
 
 jest.mock('@rocket.chat/core-services', () => ({
-	ServiceClass: class {},
+	ServiceClass: class {
+		onSettingChanged = jest.fn();
+	},
 	Room: {
 		removeUserFromRoom: (...args: any[]) => mockRoomRemoveUserFromRoom(...args),
+	},
+	Settings: {
+		get: (...args: any[]) => mockSettingsGetValueById(...args),
 	},
 }));
 
@@ -154,9 +156,12 @@ describe('AbacService.canAccessObject (unit)', () => {
 	});
 
 	describe('decision cache behavior', () => {
+		afterAll(() => {
+			service.decisionCacheTimeout = 300;
+		});
+
 		it('uses cached decision (returns true) when within cache TTL and subscription exists', async () => {
 			const ttlSeconds = 120;
-			mockSettingsGetValueById.mockResolvedValue(ttlSeconds);
 
 			const within = new Date(Date.now() - (ttlSeconds * 1000 - 500)); // 500ms before expiry
 			mockSubscriptionsFindOneByRoomIdAndUserId.mockResolvedValue({
@@ -166,6 +171,7 @@ describe('AbacService.canAccessObject (unit)', () => {
 
 			const internalLogger = (service as any).logger;
 			const loggerDebug = jest.spyOn(internalLogger, 'debug').mockImplementation(() => undefined);
+			service.decisionCacheTimeout = ttlSeconds;
 
 			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
 
@@ -181,7 +187,6 @@ describe('AbacService.canAccessObject (unit)', () => {
 
 		it('re-evaluates when cache expired (timestamp older than TTL)', async () => {
 			const ttlSeconds = 60;
-			mockSettingsGetValueById.mockResolvedValue(ttlSeconds);
 
 			const expired = new Date(Date.now() - (ttlSeconds * 1000 + 1000));
 			mockSubscriptionsFindOneByRoomIdAndUserId.mockResolvedValue({
@@ -189,6 +194,7 @@ describe('AbacService.canAccessObject (unit)', () => {
 				abacLastTimeChecked: expired,
 			});
 			mockUsersFindOne.mockResolvedValue({ _id: baseUser._id });
+			service.decisionCacheTimeout = ttlSeconds;
 
 			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
 
@@ -198,13 +204,13 @@ describe('AbacService.canAccessObject (unit)', () => {
 		});
 
 		it('always evaluates when cache TTL is 0 (disabled)', async () => {
-			mockSettingsGetValueById.mockResolvedValue(0);
 			const recent = new Date(); // would be valid if TTL > 0
 			mockSubscriptionsFindOneByRoomIdAndUserId.mockResolvedValue({
 				_id: 'SUB',
 				abacLastTimeChecked: recent,
 			});
 			mockUsersFindOne.mockResolvedValue({ _id: baseUser._id });
+			service.decisionCacheTimeout = 0;
 
 			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
 
@@ -214,7 +220,6 @@ describe('AbacService.canAccessObject (unit)', () => {
 		});
 
 		it('returns false (non-compliant) after cache expiry without updating lastTime', async () => {
-			mockSettingsGetValueById.mockResolvedValue(10); // 10s TTL
 			const expired = new Date(Date.now() - 15_000);
 			mockSubscriptionsFindOneByRoomIdAndUserId.mockResolvedValue({
 				_id: 'SUB',
@@ -222,6 +227,7 @@ describe('AbacService.canAccessObject (unit)', () => {
 			});
 			mockUsersFindOne.mockResolvedValue(null); // not compliant
 			mockUsersFindOneById.mockResolvedValue(null); // user not found path (no removal)
+			service.decisionCacheTimeout = 10;
 
 			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
 			expect(result).toBe(false);

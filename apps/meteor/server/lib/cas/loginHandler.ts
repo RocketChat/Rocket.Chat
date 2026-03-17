@@ -1,11 +1,12 @@
 import { CredentialTokens, Users } from '@rocket.chat/models';
 import { getObjectKeys, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
+import { Meteor } from 'meteor/meteor';
 
 import { createNewUser } from './createNewUser';
 import { findExistingCASUser } from './findExistingCASUser';
 import { logger } from './logger';
-import { _setRealName } from '../../../app/lib/server/functions/setRealName';
+import { setRealName } from '../../../app/lib/server/functions/setRealName';
 import { settings } from '../../../app/settings/server';
 
 export const loginHandlerCAS = async (options: any): Promise<undefined | Accounts.LoginMethodResult> => {
@@ -90,7 +91,7 @@ export const loginHandlerCAS = async (options: any): Promise<undefined | Account
 			logger.debug('Syncing user attributes');
 			// Update name
 			if (internalAttributes.name) {
-				await _setRealName(user._id, internalAttributes.name);
+				await setRealName(user._id, internalAttributes.name);
 			}
 
 			// Update email

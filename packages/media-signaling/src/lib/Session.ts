@@ -10,7 +10,7 @@ import type {
 	RandomStringFactory,
 	ServerMediaSignal,
 } from '../definition';
-import type { IClientMediaCall, CallActorType, CallContact } from '../definition/call';
+import type { IClientMediaCall, CallActorType, CallContact, CallFeature } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
 
 export type MediaSignalingEvents = {
@@ -23,6 +23,7 @@ export type MediaSignalingEvents = {
 
 export type MediaSignalingSessionConfig = {
 	userId: string;
+	mobileDeviceId?: string;
 	oldSessionId?: string;
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
@@ -31,6 +32,7 @@ export type MediaSignalingSessionConfig = {
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
 	iceServers?: RTCIceServer[];
+	features: CallFeature[];
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -73,7 +75,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	constructor(private config: MediaSignalingSessionConfig) {
 		super();
 		this._userId = config.userId;
-		this._sessionId = config.randomStringFactory();
+		this._sessionId = config.mobileDeviceId || config.randomStringFactory();
 		this.recurringStateReportHandler = null;
 		this.knownCalls = new Map<string, ClientMediaCall>();
 		this.ignoredCalls = new Set<string>();
@@ -206,7 +208,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		const callId = this.createTemporaryCallId();
 		const call = this.createCall(callId);
 
-		await call.requestCall({ type: calleeType, id: calleeId }, contactInfo);
+		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
 	}
 
 	public register(): void {
@@ -335,7 +337,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.inputTrack = newInputTrack;
 
-		for await (const call of this.knownCalls.values()) {
+		for (const call of this.knownCalls.values()) {
 			await call.setInputTrack(newInputTrack).catch((error) => {
 				if (newInputTrack) {
 					throw error;
@@ -486,6 +488,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			iceGatheringTimeout: this.config.iceGatheringTimeout || 5000,
 			iceServers: this.config.iceServers || [],
 			sessionId: this._sessionId,
+			supportedFeatures: this.config.features,
 		};
 
 		const call = new ClientMediaCall(config, callId, { inputTrack: this.inputTrack });
@@ -502,6 +505,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ended', () => this.onEndedCall(call));
+		call.emitter.on('streamChange', () => this.onSessionStateChange());
 
 		return call;
 	}

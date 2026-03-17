@@ -61,7 +61,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button"
               type="button"
             >
               <span
@@ -139,7 +139,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button"
               type="button"
             >
               <span
@@ -149,7 +149,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span
@@ -227,7 +227,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--danger rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--danger rcx-button"
               type="button"
             >
               <span
@@ -243,7 +243,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--success rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--success rcx-button"
               type="button"
             >
               <span
@@ -327,7 +327,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button"
               type="button"
             >
               <span
@@ -337,7 +337,7 @@ Allow speaker and microphone access in your browser settings to prevent seeing t
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--success rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--success rcx-button"
               type="button"
             >
               <span

@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps-engine",
-	"version": "1.59.0",
+	"version": "1.60.0",
 	"description": "The engine code for the Rocket.Chat Apps which manages, runs, translates, coordinates and all of that.",
 	"keywords": [
 		"rocket.chat",
@@ -47,7 +47,7 @@
 		".:build:default": "tsc -p tsconfig.json",
 		".:build:deno-cache": "node scripts/deno-cache.js",
 		".:deno-fmt:fix": "cd deno-runtime && deno fmt",
-		".:eslint:fix": "eslint . --fix",
+		".:eslint:fix": "eslint --fix .",
 		".:lint:deno": "deno lint --ignore=deno-runtime/.deno deno-runtime/",
 		".:lint:eslint": "eslint .",
 		".:test:deno": "cd deno-runtime && deno task test",
@@ -91,7 +91,6 @@
 		"uuid": "~11.0.5"
 	},
 	"devDependencies": {
-		"@rocket.chat/eslint-config": "workspace:~",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"@seald-io/nedb": "^4.1.2",
 		"@types/adm-zip": "^0.5.7",
@@ -101,17 +100,15 @@
 		"@types/semver": "^7.5.8",
 		"@types/stack-trace": "0.0.33",
 		"@types/uuid": "~10.0.0",
-		"@typescript-eslint/eslint-plugin": "~5.60.1",
-		"@typescript-eslint/parser": "~5.60.1",
 		"alsatian": "^2.4.0",
 		"browserify": "^16.5.2",
-		"eslint": "~8.45.0",
+		"eslint": "~9.39.3",
 		"npm-run-all": "^4.1.5",
 		"nyc": "^17.1.0",
 		"rimraf": "^6.0.1",
 		"tap-bark": "^1.0.0",
 		"ts-node": "^6.2.0",
-		"typedoc": "~0.28.14",
+		"typedoc": "~0.28.16",
 		"typescript": "~5.9.3",
 		"uglify-es": "^3.3.10"
 	},

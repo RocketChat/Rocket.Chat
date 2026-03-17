@@ -4,7 +4,6 @@
 	"private": true,
 	"main": "./src/index.js",
 	"devDependencies": {
-		"eslint": "~8.45.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

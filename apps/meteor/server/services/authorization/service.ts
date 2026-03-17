@@ -56,21 +56,21 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		}
 	}
 
-	async hasAllPermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
+	async hasAllPermission(userId: string | IUser, permissions: string[], scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
 		return this.all(userId, permissions, scope);
 	}
 
-	async hasPermission(userId: string, permissionId: string, scope?: string): Promise<boolean> {
+	async hasPermission(userId: string | IUser, permissionId: string, scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
 		return this.all(userId, [permissionId], scope);
 	}
 
-	async hasAtLeastOnePermission(userId: string, permissions: string[], scope?: string): Promise<boolean> {
+	async hasAtLeastOnePermission(userId: string | IUser, permissions: string[], scope?: string): Promise<boolean> {
 		if (!userId) {
 			return false;
 		}
@@ -85,7 +85,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return canReadRoom(...args);
 	}
 
-	async canAccessRoomId(rid: IRoom['_id'], uid: IUser['_id']): Promise<boolean> {
+	async canAccessRoomId(rid: IRoom['_id'], user: IUser['_id']): Promise<boolean> {
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>>(rid, {
 			projection: {
 				_id: 1,
@@ -100,7 +100,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 			return false;
 		}
 
-		return this.canAccessRoom(room, { _id: uid });
+		return this.canAccessRoom(room, { _id: user });
 	}
 
 	async addRoleRestrictions(role: IRole['_id'], permissions: string[]): Promise<void> {
@@ -160,17 +160,20 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return !!result;
 	}
 
-	private async getRoles(uid: string, scope?: IRoom['_id']): Promise<string[]> {
-		const { roles: userRoles = [] } = (await Users.findOneById(uid, { projection: { roles: 1 } })) || {};
+	private async getRoles(user: string | IUser, scope?: IRoom['_id']): Promise<string[]> {
+		const { roles: userRoles = [] } = typeof user === 'string' ? (await Users.findOneById(user, { projection: { roles: 1 } })) || {} : user;
 		const { roles: subscriptionsRoles = [] } =
 			(scope &&
-				(await Subscriptions.findOne<Pick<ISubscription, 'roles'>>({ 'rid': scope, 'u._id': uid }, { projection: { roles: 1 } }))) ||
+				(await Subscriptions.findOne<Pick<ISubscription, 'roles'>>(
+					{ 'rid': scope, 'u._id': typeof user === 'string' ? user : user._id },
+					{ projection: { roles: 1 } },
+				))) ||
 			{};
 		return [...userRoles, ...subscriptionsRoles].sort((a, b) => a.localeCompare(b));
 	}
 
-	private async atLeastOne(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRolesCached(uid, scope);
+	private async atLeastOne(user: string | IUser, permissions: string[] = [], scope?: string): Promise<boolean> {
+		const sortedRoles = await this.getRolesCached(user, scope);
 		for await (const permission of permissions) {
 			if (await this.rolesHasPermissionCached(permission, sortedRoles)) {
 				return true;
@@ -180,8 +183,8 @@ export class Authorization extends ServiceClass implements IAuthorization {
 		return false;
 	}
 
-	private async all(uid: string, permissions: string[] = [], scope?: string): Promise<boolean> {
-		const sortedRoles = await this.getRolesCached(uid, scope);
+	private async all(user: string | IUser, permissions: string[] = [], scope?: string): Promise<boolean> {
+		const sortedRoles = await this.getRolesCached(user, scope);
 		for await (const permission of permissions) {
 			if (!(await this.rolesHasPermissionCached(permission, sortedRoles))) {
 				return false;

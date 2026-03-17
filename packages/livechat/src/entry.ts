@@ -15,4 +15,4 @@ if (module.hot) {
 	module.hot.accept();
 }
 
-init();
+void init();
