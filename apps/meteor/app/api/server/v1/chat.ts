@@ -274,6 +274,39 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+type GetStarredMessages = {
+	roomId: string;
+	count?: number;
+	offset?: number;
+	sort?: string;
+};
+
+const GetStarredMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+const isChatGetStarredMessagesProps = ajv.compile<GetStarredMessages>(GetStarredMessagesSchema);
+
 const chatEndpoints = API.v1
 	.post(
 		'chat.pinMessage',
@@ -562,29 +595,7 @@ const chatEndpoints = API.v1
 		'chat.getStarredMessages',
 		{
 			authRequired: true,
-			query: ajv.compile<{ roomId: string; count?: number; offset?: number; sort?: string }>({
-				type: 'object',
-				properties: {
-					roomId: {
-						type: 'string',
-						minLength: 1,
-					},
-					count: {
-						type: 'number',
-						nullable: true,
-					},
-					offset: {
-						type: 'number',
-						nullable: true,
-					},
-					sort: {
-						type: 'string',
-						nullable: true,
-					},
-				},
-				required: ['roomId'],
-				additionalProperties: false,
-			}),
+			query: isChatGetStarredMessagesProps,
 			response: {
 				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
 					type: 'object',
