@@ -1,5 +1,6 @@
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { AccountProfile, Registration, Authenticated } from './page-objects';
+import { setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
 import { createTestUser, type ITestUser } from './utils/user-helpers';
 
@@ -12,8 +13,7 @@ test.describe('Delete Own Account', () => {
 	let userWithoutPermissions: ITestUser;
 
 	test.beforeAll(async ({ api }) => {
-		const response = await api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: true });
-		expect(response.status()).toBe(200);
+		expect((await setSettingValueById(api, 'Accounts_AllowDeleteOwnAccount', true)).status()).toBe(200);
 		userToDelete = await createTestUser(api, { username: 'user-to-delete' });
 		userWithInvalidPassword = await createTestUser(api, { username: 'user-with-invalid-password' });
 		userWithoutPermissions = await createTestUser(api, { username: 'user-without-permissions' });
@@ -27,12 +27,9 @@ test.describe('Delete Own Account', () => {
 	});
 
 	test.afterAll(async ({ api }) => {
-		await Promise.all([
-			api.post('/settings/Accounts_AllowDeleteOwnAccount', { value: false }).then((res) => expect(res.status()).toBe(200)),
-			userToDelete.delete(),
-			userWithInvalidPassword.delete(),
-			userWithoutPermissions.delete(),
-		]);
+		expect((await setSettingValueById(api, 'Accounts_AllowDeleteOwnAccount', false)).status()).toBe(200);
+		await userWithInvalidPassword.delete();
+		await userWithoutPermissions.delete();
 	});
 
 	test('should not delete account when invalid password is provided', async ({ page }) => {
@@ -83,7 +80,7 @@ test.describe('Delete Own Account', () => {
 		await test.step('enter password in the confirmation field and click delete account', async () => {
 			await poAccountProfile.deleteAccountModal.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
 			await expect(poAccountProfile.deleteAccountModal.inputPassword).toHaveValue(DEFAULT_USER_CREDENTIALS.password);
-			await poAccountProfile.deleteAccountModal.confirmDelete();
+			await poAccountProfile.deleteAccountModal.confirmDelete({ waitForDismissal: false });
 		});
 
 		await test.step('verify user is redirected to login page', async () => {
