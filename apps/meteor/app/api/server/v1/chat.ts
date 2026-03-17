@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -9,7 +9,6 @@ import {
 	isChatUpdateProps,
 	isChatGetThreadsListProps,
 	isChatDeleteProps,
-	isChatSyncMessagesProps,
 	isChatGetMessageProps,
 	isChatPostMessageProps,
 	isChatSearchProps,
@@ -50,7 +49,6 @@ import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
@@ -169,50 +167,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'chat.syncMessages',
-	{ authRequired: true, validateParams: isChatSyncMessagesProps },
-	{
-		async get() {
-			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
-
-			if (!roomId) {
-				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
-			}
-
-			if (!lastUpdate && !type) {
-				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
-			}
-
-			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
-				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
-			}
-
-			const getMessagesQuery = {
-				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
-				...(next && { next }),
-				...(previous && { previous }),
-				...(count && { count }),
-				...(type && { type }),
-			};
-
-			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
-
-			if (!result) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({
-				result: {
-					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
-					deleted: 'deleted' in result ? result.deleted : [],
-					cursor: 'cursor' in result ? result.cursor : undefined,
-				},
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'chat.getMessage',
 	{
 		authRequired: true,
@@ -274,6 +228,93 @@ const ChatUnpinMessageSchema = {
 const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
+
+type ChatSyncMessages = {
+	roomId: IRoom['_id'];
+	lastUpdate?: string;
+	count?: number;
+	next?: string;
+	previous?: string;
+	type?: 'UPDATED' | 'DELETED';
+};
+
+const ChatSyncMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		lastUpdate: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		next: {
+			type: 'string',
+			nullable: true,
+		},
+		previous: {
+			type: 'string',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
+			enum: ['UPDATED', 'DELETED'],
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+const isChatSyncMessagesProps = ajv.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
+
+const isSyncMessagesResponse = ajv.compile<{
+	result: {
+		updated: Partial<IMessage>[];
+		deleted: unknown[];
+		cursor?: unknown;
+	};
+}>({
+	type: 'object',
+	properties: {
+		result: {
+			type: 'object',
+			properties: {
+				updated: {
+					type: 'array',
+					items: {
+						type: 'object',
+						additionalProperties: true,
+					},
+				},
+				deleted: {
+					type: 'array',
+					items: {
+						type: 'object',
+						additionalProperties: true,
+					},
+				},
+				cursor: {
+					type: 'object',
+					nullable: true,
+					additionalProperties: true,
+				},
+			},
+			required: ['updated', 'deleted'],
+			additionalProperties: false,
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['result', 'success'],
+	additionalProperties: false,
+});
 
 const chatEndpoints = API.v1
 	.post(
@@ -557,6 +598,55 @@ const chatEndpoints = API.v1
 			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
+		},
+	)
+	.get(
+		'chat.syncMessages',
+		{
+			authRequired: true,
+			query: isChatSyncMessagesProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: isSyncMessagesResponse,
+			},
+		},
+		async function action() {
+			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
+
+			if (!roomId) {
+				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
+			}
+
+			if (!lastUpdate && !type) {
+				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
+			}
+
+			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
+				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
+			}
+
+			const getMessagesQuery = {
+				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(next && { next }),
+				...(previous && { previous }),
+				...(count && { count }),
+				...(type && { type }),
+			};
+
+			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
+
+			if (!result) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success({
+				result: {
+					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
+					deleted: 'deleted' in result ? result.deleted : [],
+					cursor: 'cursor' in result ? result.cursor : undefined,
+				},
+			});
 		},
 	);
 
@@ -1049,10 +1139,4 @@ API.v1.addRoute(
 		},
 	},
 );
-
-export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
-
-declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChatEndpoints {}
-}
+void chatEndpoints;
