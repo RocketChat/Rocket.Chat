@@ -483,16 +483,16 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	public async setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
 		this.config.logger?.debug('ClientMediaCall.setScreenVideoTrack', Boolean(newVideoTrack));
-		if (this.hasScreenVideoTrack()) {
-			this.config.logger?.debug('ClientMediaCall.setScreenVideoTrack.stopOldTrack');
-			this.screenVideoTrack?.stop();
-		}
-
 		if (newVideoTrack && !this.canHaveScreenVideoTrack()) {
-			return;
+			newVideoTrack.stop();
+			newVideoTrack = null;
 		}
 
 		const hadVideoTrack = this.hasScreenVideoTrack();
+		if (hadVideoTrack && newVideoTrack !== this.screenVideoTrack) {
+			this.config.logger?.debug('ClientMediaCall.setScreenVideoTrack.stopOldTrack');
+			this.screenVideoTrack?.stop();
+		}
 
 		this.screenVideoTrack = newVideoTrack;
 		if (this.webrtcProcessor) {
