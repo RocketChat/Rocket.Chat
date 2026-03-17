@@ -195,33 +195,31 @@ export const ddpLogin = async (resume: string): Promise<WebSocket> => {
 		const handler = (event: MessageEvent) => {
 			const data = JSON.parse(event.data);
 
-			switch (data.msg) {
-				case 'connected':
-					ws.send(
-						JSON.stringify({
-							msg: 'method',
-							id: loginId,
-							method: 'login',
-							params: [{ resume }],
-						}),
-					);
-					break;
-
-				case 'result':
-					if (data.id === loginId) {
-						ws.removeEventListener('message', handler);
-						resolve(ws);
-					}
-					break;
-
-				case 'ping':
-					ws.send(JSON.stringify({ msg: 'pong' }));
-					break;
-
-				case 'error':
+			if (data.msg === 'connected') {
+				ws.send(
+					JSON.stringify({
+						msg: 'method',
+						id: loginId,
+						method: 'login',
+						params: [{ resume }],
+					}),
+				);
+			} else if (data.msg === 'result') {
+				if (data.id === loginId) {
 					ws.removeEventListener('message', handler);
-					reject(data);
-					break;
+
+					if (data.error) {
+						reject(data.error);
+						return;
+					}
+
+					resolve(ws);
+				}
+			} else if (data.msg === 'ping') {
+				ws.send(JSON.stringify({ msg: 'pong' }));
+			} else if (data.msg === 'error') {
+				ws.removeEventListener('message', handler);
+				reject(data);
 			}
 		};
 
@@ -246,6 +244,10 @@ export const setUserAwayWS = (ws: WebSocket): Promise<void> =>
 
 			if (data.msg === 'result' && data.id === id) {
 				ws.removeEventListener('message', handler);
+				if (data.error) {
+					reject(data.error);
+					return;
+				}
 				resolve();
 			}
 
