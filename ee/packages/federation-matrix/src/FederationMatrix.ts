@@ -13,6 +13,7 @@ import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/feder
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import emojione from 'emojione';
+import { getMatrixUserId } from './utils/getMatrixUserId';
 
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
 import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
@@ -309,7 +310,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		const latestThreadMessage = !quoteMessageEventId
 			? (await Messages.findLatestFederationThreadMessageByTmid(message.tmid, message._id))?.federation?.eventId ||
-				eventIdSchema.parse(threadRootEventId)
+			eventIdSchema.parse(threadRootEventId)
 			: undefined;
 
 		if (!quoteMessageEventId && !latestThreadMessage) {
@@ -766,13 +767,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					try {
 						const result = await federationSDK.queryProfileRemote<
 							| {
-									avatar_url: string;
-									displayname: string;
-							  }
+								avatar_url: string;
+								displayname: string;
+							}
 							| {
-									errcode: string;
-									error: string;
-							  }
+								errcode: string;
+								error: string;
+							}
 						>({ homeserverUrl, userId: matrixId });
 
 						if ('errcode' in result && result.errcode === 'M_NOT_FOUND') {
@@ -855,9 +856,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		// get last event_id for the room or thread
 		const lastMessage = threadId
 			? await Messages.findVisibleThreadByThreadId(threadId, {
-					sort: { ts: -1 },
-					projection: { federation: 1 },
-				}).next()
+				sort: { ts: -1 },
+				projection: { federation: 1 },
+			}).next()
 			: await Messages.findVisibleByRoomId(room._id, { projection: { federation: 1 }, sort: { ts: -1 } }).next();
 
 		if (!lastMessage?.federation?.eventId) {
@@ -879,7 +880,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		}
 
 		// TODO: should use common function to get matrix user ID
-		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+		const matrixUserId = getMatrixUserId(user, this.serverName);
 
 		await federationSDK.sendReadReceipt({
 			roomId: roomIdSchema.parse(room.federation.mrid),
