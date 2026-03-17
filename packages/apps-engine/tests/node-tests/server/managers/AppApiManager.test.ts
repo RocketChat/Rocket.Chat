@@ -179,6 +179,8 @@ describe('AppApiManager', () => {
 		ascm.addApi('testing', TestData.getApi('api2'));
 		ascm.addApi('testing', TestData.getApi('api3'));
 		await ascm.registerApis('testing');
+
+		const request: IApiRequest = {
 			method: RequestMethod.GET,
 			headers: {},
 			query: {},
