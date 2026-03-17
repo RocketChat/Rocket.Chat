@@ -527,7 +527,7 @@ const GetStarredMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetStarredMessagesProps = ajv.compile<GetStarredMessages>(GetStarredMessagesSchema);
+export const isChatGetStarredMessagesProps = ajvQuery.compile<GetStarredMessages>(GetStarredMessagesSchema);
 
 type GetPinnedMessages = {
 	roomId: IRoom['_id'];
