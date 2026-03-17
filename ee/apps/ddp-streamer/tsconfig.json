@@ -4,6 +4,6 @@
 		"strictPropertyInitialization": false, // TODO: Remove this line
 		"outDir": "./dist"
 	},
-	"include": ["./src/**/*", "./definition", "../../../apps/meteor/definition/externals/meteor/rocketchat-streamer.d.ts"],
+	"include": ["./src/**/*", "./definition"],
 	"exclude": ["./dist", "./ecosystem.config.js"]
 }

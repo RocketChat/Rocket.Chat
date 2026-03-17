@@ -63,9 +63,13 @@ callbacks.add(
 
 		try {
 			await SMSService.send(room.sms.from, visitor.phone[0].phoneNumber, message.msg, extraData);
-			callbackLogger.debug(`SMS message sent to ${visitor.phone[0].phoneNumber} via ${service}`);
-		} catch (e) {
-			callbackLogger.error(e);
+			callbackLogger.debug({
+				msg: 'SMS message sent',
+				phoneNumber: visitor.phone[0].phoneNumber,
+				service,
+			});
+		} catch (err) {
+			callbackLogger.error({ msg: 'Error sending SMS message', err });
 		}
 
 		return message;

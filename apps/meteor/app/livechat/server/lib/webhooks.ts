@@ -27,6 +27,9 @@ export async function sendRequest(
 			},
 			body: postData,
 			timeout,
+			// SECURITY: Webhooks can only be configured by users with enough privileges. It's ok to disable this check here.
+			ignoreSsrfValidation: true,
+			size: 10 * 1024 * 1024,
 		});
 
 		if (result.status === 200) {
@@ -37,7 +40,7 @@ export async function sendRequest(
 
 		if (!isRetryable(result.status)) {
 			webhooksLogger.error({
-				msg: `Non-retryable error response from webhook`,
+				msg: 'Non-retryable error response from webhook',
 				webhookUrl,
 				status: result.status,
 				response: await result.text(),
@@ -50,7 +53,13 @@ export async function sendRequest(
 		throw new Error(await result.text());
 	} catch (err) {
 		const retryAfter = timeout * 4;
-		webhooksLogger.debug({ msg: `Error response on ${6 - attempts} try ->`, err, newAttemptAfterSeconds: retryAfter / 1000, webhookUrl });
+		webhooksLogger.debug({
+			msg: 'Error response on retry',
+			attempt: 6 - attempts,
+			err,
+			newAttemptAfterSeconds: retryAfter / 1000,
+			webhookUrl,
+		});
 		const remainingAttempts = attempts - 1;
 		// try 5 times after 20 seconds each
 		if (!remainingAttempts) {

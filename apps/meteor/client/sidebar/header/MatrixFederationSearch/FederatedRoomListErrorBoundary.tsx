@@ -16,7 +16,6 @@ const FederatedRoomListErrorBoundary = ({ children, resetKeys }: FederatedRoomLi
 		<QueryErrorResetBoundary>
 			{({ reset }) => (
 				<ErrorBoundary
-					children={children}
 					resetKeys={resetKeys}
 					fallbackRender={({ resetErrorBoundary }) => (
 						<States>
@@ -35,7 +34,9 @@ const FederatedRoomListErrorBoundary = ({ children, resetKeys }: FederatedRoomLi
 							</StatesActions>
 						</States>
 					)}
-				/>
+				>
+					{children}
+				</ErrorBoundary>
 			)}
 		</QueryErrorResetBoundary>
 	);

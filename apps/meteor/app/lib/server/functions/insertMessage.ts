@@ -4,6 +4,7 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { validateMessage, prepareMessageObject } from './sendMessage';
 
+// TODO: remove and move to Message.Service
 export const insertMessage = async function (
 	user: Pick<IUser, '_id' | 'username'>,
 	message: IMessage,
@@ -16,7 +17,7 @@ export const insertMessage = async function (
 
 	await validateMessage(message, { _id: rid }, user);
 	prepareMessageObject(message, rid, user);
-	parseUrlsInMessage(message);
+	message.urls = parseUrlsInMessage(message);
 
 	if (message._id && upsert) {
 		const { _id, ...rest } = message;

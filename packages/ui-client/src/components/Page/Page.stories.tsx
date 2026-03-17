@@ -24,7 +24,9 @@ export default {
 const DummyContent = ({ rows = 10 }: { rows?: number }) => (
 	<>
 		{Array.from({ length: rows }, (_, i) => (
-			<Box key={i} children='Content slice' marginBlock={16} />
+			<Box key={i} marginBlock={16}>
+				Content slice
+			</Box>
 		))}
 	</>
 );

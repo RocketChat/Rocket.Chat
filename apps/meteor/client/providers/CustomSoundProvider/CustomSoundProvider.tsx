@@ -126,7 +126,7 @@ const CustomSoundProvider = ({ children }: CustomSoundProviderProps) => {
 		});
 	}, [queryClient, streamAll]);
 
-	return <CustomSoundContext.Provider children={children} value={contextValue} />;
+	return <CustomSoundContext.Provider value={contextValue}>{children}</CustomSoundContext.Provider>;
 };
 
 export default CustomSoundProvider;

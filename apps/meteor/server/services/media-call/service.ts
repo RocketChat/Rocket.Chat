@@ -201,7 +201,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const record = getHistoryMessagePayload(state, duration, call._id);
 
 		try {
-			const message = await sendMessage(user, record, room, false);
+			const message = await sendMessage(user, record, room);
 
 			if ('_id' in message) {
 				await CallHistory.updateMany({ callId: call._id }, { $set: { messageId: message._id } });
@@ -226,6 +226,14 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	private getCallHistoryItemState(call: IMediaCall): CallHistoryItemState {
 		if (call.transferredBy) {
 			return 'transferred';
+		}
+
+		if (call.hangupReason === 'not-answered') {
+			return 'not-answered';
+		}
+
+		if (call.hangupReason?.startsWith('timeout')) {
+			return 'failed';
 		}
 
 		if (call.hangupReason?.includes('error')) {

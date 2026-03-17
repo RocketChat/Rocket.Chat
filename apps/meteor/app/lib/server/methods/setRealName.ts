@@ -16,8 +16,8 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async setRealName(name) {
 		check(name, String);
-
-		if (!Meteor.userId()) {
+		const userId = Meteor.userId();
+		if (!userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setRealName' });
 		}
 
@@ -25,7 +25,7 @@ Meteor.methods<ServerMethods>({
 			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setRealName' });
 		}
 
-		if (!(await setRealName(Meteor.userId(), name))) {
+		if (!(await setRealName(userId, name))) {
 			throw new Meteor.Error('error-could-not-change-name', 'Could not change name', {
 				method: 'setRealName',
 			});

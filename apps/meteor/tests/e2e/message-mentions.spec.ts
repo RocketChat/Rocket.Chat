@@ -109,10 +109,10 @@ test.describe.serial('message-mentions', () => {
 
 	test('expect show "all" and "here" options', async () => {
 		await poHomeChannel.navbar.openChat('general');
-		await poHomeChannel.content.inputMessage.type('@');
+		await poHomeChannel.composer.inputMessage.type('@');
 
-		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="all"')).toBeVisible();
-		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="here"')).toBeVisible();
+		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="@all"')).toBeVisible();
+		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="@here"')).toBeVisible();
 	});
 
 	test.describe('users not in channel', () => {

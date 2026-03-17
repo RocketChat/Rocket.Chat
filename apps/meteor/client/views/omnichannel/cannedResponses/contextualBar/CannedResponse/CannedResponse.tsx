@@ -19,7 +19,7 @@ type CannedResponseProps = {
 	allowEdit: boolean;
 	allowUse: boolean;
 	data: {
-		departmentName: ILivechatDepartment['name'];
+		departmentName?: ILivechatDepartment['name'];
 		shortcut: IOmnichannelCannedResponse['shortcut'];
 		text: IOmnichannelCannedResponse['text'];
 		scope: IOmnichannelCannedResponse['scope'];

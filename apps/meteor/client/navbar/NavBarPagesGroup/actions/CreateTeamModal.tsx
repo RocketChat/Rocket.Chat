@@ -146,10 +146,9 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 			const { team } = await createTeamAction(params);
 			dispatchToastMessage({ type: 'success', message: t('Team_has_been_created') });
 			goToRoomById(team.roomId);
+			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			onClose();
 		}
 	};
 

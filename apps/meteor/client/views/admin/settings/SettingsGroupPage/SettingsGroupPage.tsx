@@ -163,14 +163,9 @@ const SettingsGroupPage = ({
 							{t('Cancel')}
 						</Button>
 					)}
-					<Button
-						children={t('Save_changes')}
-						className='save'
-						disabled={changedEditableSettings.length === 0}
-						primary
-						type='submit'
-						onClick={handleSaveClick}
-					/>
+					<Button className='save' disabled={changedEditableSettings.length === 0} primary type='submit' onClick={handleSaveClick}>
+						{t('Save_changes')}
+					</Button>
 				</ButtonGroup>
 			</PageFooter>
 		</Page>

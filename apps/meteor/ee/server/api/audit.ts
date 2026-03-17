@@ -1,17 +1,12 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
-import { isServerEventsAuditSettingsProps } from '@rocket.chat/rest-typings';
+import { isServerEventsAuditSettingsProps, ajv } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
-import Ajv from 'ajv';
 
 import { API } from '../../../app/api/server/api';
 import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
 import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type AuditRoomMembersParams = PaginatedRequest<{
 	roomId: string;

@@ -5,10 +5,10 @@ export interface ILoginResult {
 	token: string;
 	hashedToken: string;
 	tokenExpires?: Date;
-	type: 'resume' | 'password';
+	type: 'resume';
 }
 
 export interface IAccount extends IServiceClass {
-	login({ resume, user, password }: { resume: string; user: { username: string }; password: string }): Promise<false | ILoginResult>;
+	login({ resume }: { resume: string }): Promise<false | ILoginResult>;
 	logout({ userId, token }: { userId: string; token: string }): Promise<void>;
 }
