@@ -1,6 +1,6 @@
 import { Room } from '@rocket.chat/core-services';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { isObject } from '../../../../lib/utils/isObject';
@@ -88,7 +88,10 @@ export const getRoomByNameOrIdWithOptionToJoin = async ({
 	// If the room type is channel and joinChannel has been passed, try to join them
 	// if they can't join the room, this will error out!
 	if (room.t === 'c' && joinChannel) {
-		await Room.join({ room, user });
+		const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { _id: 1 } });
+		if (!sub) {
+			await Room.join({ room, user });
+		}
 	}
 
 	return room;

@@ -3,12 +3,12 @@ import type { ComponentChild } from 'preact';
 import type { TargetedEvent } from 'preact/compat';
 import { memo, useCallback } from 'preact/compat';
 
+import styles from './styles.scss';
 import { createClassName } from '../../../../helpers/createClassName';
 import KebabIcon from '../../../../icons/kebab.svg';
 import { Button } from '../../../Button';
 import Menu, { PopoverMenu } from '../../../Menu';
 import { usePerformAction } from '../Block';
-import styles from './styles.scss';
 
 type OverflowTriggerProps = {
 	loading: boolean;
@@ -64,7 +64,7 @@ const OverflowOption = ({ confirm, text, value, url, parser, onClick }: Overflow
 		[confirm, onClick, url, value],
 	);
 
-	return <Menu.Item onClick={handleClick}>{parser.text(text)}</Menu.Item>;
+	return <Menu.Item onClick={handleClick}>{parser.renderTextObject(text, 0)}</Menu.Item>;
 };
 
 type OverflowElementProps = uikit.OverflowElement & {

@@ -16,8 +16,6 @@ import {
 	isChatSendMessageProps,
 	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
-	isChatFollowMessageProps,
-	isChatUnfollowMessageProps,
 	isChatGetMentionedMessagesProps,
 	isChatReactProps,
 	isChatGetDeletedMessagesProps,
@@ -89,9 +87,45 @@ const ChatUnstarMessageLocalSchema = {
 	additionalProperties: false,
 };
 
+type ChatFollowMessageLocal = {
+	mid: string;
+};
+
+const ChatFollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
+type ChatUnfollowMessageLocal = {
+	mid: string;
+};
+
+const ChatUnfollowMessageLocalSchema = {
+	type: 'object',
+	properties: {
+		mid: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['mid'],
+	additionalProperties: false,
+};
+
 const isChatStarMessageLocalProps = ajv.compile<ChatStarMessageLocal>(ChatStarMessageLocalSchema);
 
 const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUnstarMessageLocalSchema);
+
+const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
+
+const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 
 API.v1.addRoute(
 	'chat.delete',
@@ -455,6 +489,72 @@ const chatEndpoints = API.v1
 				rid: msg.rid,
 				starred: false,
 			});
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.followMessage',
+		{
+			authRequired: true,
+			body: isChatFollowMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { mid } = this.bodyParams;
+
+			if (!mid) {
+				throw new Meteor.Error('The required "mid" body param is missing.');
+			}
+
+			await followMessage(this.user, { mid });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.unfollowMessage',
+		{
+			authRequired: true,
+			body: isChatUnfollowMessageLocalProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { mid } = this.bodyParams;
+
+			if (!mid) {
+				throw new Meteor.Error('The required "mid" body param is missing.');
+			}
+
+			await unfollowMessage(this.user, { mid });
 
 			return API.v1.success();
 		},
@@ -853,42 +953,6 @@ API.v1.addRoute(
 					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { projection: fields, sort }).toArray(),
 				},
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.followMessage',
-	{ authRequired: true, validateParams: isChatFollowMessageProps },
-	{
-		async post() {
-			const { mid } = this.bodyParams;
-
-			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
-			}
-
-			await followMessage(this.user, { mid });
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.unfollowMessage',
-	{ authRequired: true, validateParams: isChatUnfollowMessageProps },
-	{
-		async post() {
-			const { mid } = this.bodyParams;
-
-			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
-			}
-
-			await unfollowMessage(this.user, { mid });
-
-			return API.v1.success();
 		},
 	},
 );

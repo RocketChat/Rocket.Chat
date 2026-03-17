@@ -390,7 +390,7 @@ export async function addAssetToSetting(asset: string, value: IRocketChatAsset, 
 }
 
 void (async () => {
-	for await (const key of Object.keys(assets)) {
+	for (const key of Object.keys(assets)) {
 		const { wizard, settingOptions, ...value } = getAssetByKey(key);
 		await addAssetToSetting(key, value, { ...settingOptions, wizard });
 	}

@@ -186,10 +186,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 
 			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
 			reload?.();
+			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
-		} finally {
-			onClose();
 		}
 	};
 
