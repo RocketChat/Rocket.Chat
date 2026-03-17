@@ -703,9 +703,9 @@ exports[`renders OngoingCall without crashing 1`] = `
             </i>
           </button>
           <button
-            aria-label="Screen_sharing"
+            aria-label="Share_screen"
             class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-            label="Screen_sharing"
+            label="Share_screen"
             title="Share_screen"
             type="button"
           >
