@@ -29,7 +29,7 @@ const CardSlotBase = styled(
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	margin: ${({ margin }) => (margin ? `${margin}px` : '4px')};
+	margin: ${({ margin }) => (typeof margin === 'number' ? `${margin}px` : '4px')};
 	height: 24px;
 	min-width: 24px;
 	padding-inline: 8px;

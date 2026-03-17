@@ -7,7 +7,6 @@ type CardListProps = {
 	direction?: 'row' | 'column';
 	height?: number;
 	marginInline?: 'auto' | number;
-	justifyContent?: 'center' | 'start';
 	overflow?: 'hidden' | 'scroll' | 'auto';
 	autoMargin?: boolean;
 };

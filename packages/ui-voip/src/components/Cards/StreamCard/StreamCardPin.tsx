@@ -7,7 +7,7 @@ import type { SlotPosition } from '../CardSlot';
 type CardSlotPinProps = {
 	onClick: () => void;
 	focused?: boolean;
-	position: SlotPosition;
+	position?: SlotPosition;
 };
 
 const CardSlotPin = ({ focused, onClick, position = 'bottomRight' }: CardSlotPinProps) => {

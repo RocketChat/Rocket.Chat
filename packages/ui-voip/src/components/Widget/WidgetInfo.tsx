@@ -28,6 +28,7 @@ const WidgetInfo = ({ slots, variant = 'default' }: WidgetInfoProps) => {
 		>
 			{slots.map((slot) => (
 				<Box
+					is='span'
 					color={slot.type === 'warning' ? 'status-font-on-warning' : undefined}
 					fontScale={variant === 'card-content' ? 'c1' : 'p2'}
 					key={slot.text}

@@ -78,11 +78,8 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 		setFocusedCard((prev) => (prev === 'local' ? null : 'local'));
 	};
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	// TODO flter out external peer info
 	if (!peerInfo || 'number' in peerInfo) {
 		return null;
-		// throw new Error('Peer info is required');
 	}
 
 	const remoteStreamCard = remoteScreen?.active ? (
