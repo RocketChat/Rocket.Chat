@@ -3020,14 +3020,46 @@ describe('[Channels]', () => {
 
 	describe('/channels.setType', () => {
 		let testChannel: IRoom;
+		let testRegularChannel: IRoom;
+		let testTeamChannelForFailure: IRoom;
+		let testTeamChannelForSuccess: IRoom;
+		let team: ITeam;
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
 		const name = `setType-${Date.now()}`;
 
 		before(async () => {
 			testChannel = (await createRoom({ type: 'c', name })).body.channel;
+
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+
+			await updatePermission('create-team', ['admin', 'user']);
+			team = await createTeam(credentials, `team-setType-${Date.now()}`, TeamType.PUBLIC, [testUser.username]);
+
+			await request.post(api('channels.addOwner')).set(credentials).send({ roomId: team.roomId, userId: testUser._id });
+
+			testRegularChannel = (await createRoom({ type: 'c', name: `regular-setType-${Date.now()}`, credentials: testUserCredentials })).body
+				.channel;
+
+			testTeamChannelForFailure = (await createRoom({ type: 'c', name: `teamCh-fail-${Date.now()}`, extraData: { teamId: team._id } })).body
+				.channel;
+			testTeamChannelForSuccess = (await createRoom({ type: 'c', name: `teamCh-success-${Date.now()}`, extraData: { teamId: team._id } }))
+				.body.channel;
+
+			await request.post(api('channels.invite')).set(credentials).send({ roomId: testTeamChannelForFailure._id, userId: testUser._id });
+			await request.post(api('channels.addOwner')).set(credentials).send({ roomId: testTeamChannelForFailure._id, userId: testUser._id });
+			await request.post(api('channels.invite')).set(credentials).send({ roomId: testTeamChannelForSuccess._id, userId: testUser._id });
+			await request.post(api('channels.addOwner')).set(credentials).send({ roomId: testTeamChannelForSuccess._id, userId: testUser._id });
 		});
 
 		after(async () => {
 			await deleteRoom({ type: 'c', roomId: testChannel._id });
+			await deleteRoom({ type: 'c', roomId: testRegularChannel._id });
+			await deleteTeam(credentials, team.name);
+			await deleteUser(testUser);
+			await updatePermission('create-p', ['admin', 'user']);
+			await updatePermission('create-team-group', ['admin', 'owner', 'moderator']);
 		});
 
 		it('should change the type public channel to private', async () => {
@@ -3049,6 +3081,86 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.nested.property('channel.t', 'p');
 					expect(res.body).to.have.nested.property('channel.msgs', roomInfo.channel.msgs + 1);
 				});
+		});
+
+		it('should fail to change a regular channel to private when user lacks create-p permission', async () => {
+			await updatePermission('create-p', ['admin']);
+			await request
+				.post(api('channels.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: testRegularChannel._id, type: 'p' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+			await updatePermission('create-p', ['admin', 'user']);
+		});
+
+		it('should fail to change a team main room to private when user lacks create-p permission', async () => {
+			await updatePermission('create-p', ['admin']);
+			await request
+				.post(api('channels.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: team.roomId, type: 'p' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+			await updatePermission('create-p', ['admin', 'user']);
+		});
+
+		it('should fail to change a team main room to private when user has create-team-group but lacks create-p', async () => {
+			await updatePermission('create-p', ['admin']);
+			await updatePermission('create-team-group', ['owner']);
+			await request
+				.post(api('channels.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: team.roomId, type: 'p' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+			await updatePermission('create-p', ['admin', 'user']);
+			await updatePermission('create-team-group', ['admin', 'owner', 'moderator']);
+		});
+
+		it('should fail to change a team channel to private when user lacks create-team-group permission', async () => {
+			await updatePermission('create-team-group', []);
+			await request
+				.post(api('channels.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: testTeamChannelForFailure._id, type: 'p' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+			await updatePermission('create-team-group', ['admin', 'owner', 'moderator']);
+		});
+
+		it('should succeed changing a team channel to private when user has create-team-group but not create-p', async () => {
+			await updatePermission('create-p', ['admin']);
+			await updatePermission('create-team-group', ['owner']);
+			await request
+				.post(api('channels.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: testTeamChannelForSuccess._id, type: 'p' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('channel.t', 'p');
+					expect(res.body).to.have.nested.property('channel.teamId', team._id);
+				});
+			await updatePermission('create-p', ['admin', 'user']);
+			await updatePermission('create-team-group', ['admin', 'owner', 'moderator']);
 		});
 	});
 
