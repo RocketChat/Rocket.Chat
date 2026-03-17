@@ -79,6 +79,13 @@ describe('AppConsole', () => {
 		} as stackTrace.StackFrame);
 		assert.strictEqual(getFunc(mockFrames), 'testing');
 
-		assert.ok(AppConsole.toStorageEntry('testing-app', logger) !== undefined); // TODO: better test this
+		const entry = AppConsole.toStorageEntry('testing-app', logger);
+		assert.strictEqual(entry.appId, 'testing-app');
+		assert.strictEqual(entry.method, AppMethod._CONSTRUCTOR);
+		assert.deepStrictEqual(entry.entries, logger.getEntries());
+		assert.ok(entry.startTime instanceof Date);
+		assert.ok(entry.endTime instanceof Date);
+		assert.strictEqual(entry.totalTime, 1000);
+		assert.ok(entry._createdAt instanceof Date);
 	});
 });

@@ -12,9 +12,25 @@ import { DenoRuntimeSubprocessController } from '../../../../src/server/runtime/
 import type { IAppStorageItem } from '../../../../src/server/storage';
 import { TestInfastructureSetup } from '../../../test-data/utilities';
 
+type MessagePayload = {
+	type: string;
+	payload: {
+		jsonrpc: string;
+		id: string;
+		method: string;
+		params: unknown[];
+		serialize(): string;
+	};
+};
+type HandlerResponse = { id: string; result: unknown };
+type TestableController = DenoRuntimeSubprocessController & {
+	handleAccessorMessage(msg: MessagePayload): Promise<HandlerResponse>;
+	handleBridgeMessage(msg: MessagePayload): Promise<HandlerResponse>;
+};
+
 describe('DenoRuntimeSubprocessController', () => {
 	let manager: AppManager;
-	let controller: DenoRuntimeSubprocessController;
+	let controller: TestableController;
 	let appPackage: IParseAppPackageResult;
 	let appStorageItem: IAppStorageItem;
 
@@ -36,12 +52,12 @@ describe('DenoRuntimeSubprocessController', () => {
 			status: AppStatus.MANUALLY_ENABLED,
 		} as IAppStorageItem;
 
-		controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
+		controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem) as TestableController;
 		await controller.setupApp();
 	});
 
 	afterEach(async () => {
-		await controller.stopApp();
+		await controller?.stopApp();
 		mock.restoreAll();
 	});
 
@@ -49,8 +65,7 @@ describe('DenoRuntimeSubprocessController', () => {
 		const httpBridge = manager.getBridges().getHttpBridge();
 		const doCallSpy = mock.method(httpBridge, 'doCall');
 
-		// eslint-disable-next-line
-		const r = await (controller as any).handleAccessorMessage({
+		const r = await controller.handleAccessorMessage({
 			type: 'request',
 			payload: {
 				jsonrpc: '2.0',
@@ -107,8 +122,7 @@ describe('DenoRuntimeSubprocessController', () => {
 			}),
 		);
 
-		// eslint-disable-next-line
-		const { id, result } = await (controller as any).handleAccessorMessage({
+		const { id, result } = await controller.handleAccessorMessage({
 			type: 'request',
 			payload: {
 				jsonrpc: '2.0',
@@ -123,12 +137,11 @@ describe('DenoRuntimeSubprocessController', () => {
 		assert.deepStrictEqual(doGetByUsernameSpy.mock.calls[0].arguments, ['rocket.cat', '9c1d62ca-e40f-456f-8601-17c823a16c68']);
 
 		assert.strictEqual(id, 'test');
-		assert.strictEqual((result as any).username, 'rocket.cat');
+		assert.partialDeepStrictEqual(result, { username: 'rocket.cat' });
 	});
 
 	it('correctly identifies a call to the IEnvironmentReader accessor via IRead', async () => {
-		// eslint-disable-next-line
-		const { id, result } = await (controller as any).handleAccessorMessage({
+		const { id, result } = await controller.handleAccessorMessage({
 			type: 'request',
 			payload: {
 				jsonrpc: '2.0',
@@ -140,15 +153,14 @@ describe('DenoRuntimeSubprocessController', () => {
 		});
 
 		assert.strictEqual(id, 'requestId');
-		assert.strictEqual((result as any).id, 'setting test id');
+		assert.partialDeepStrictEqual(result, { id: 'setting test id' });
 	});
 
 	it('correctly identifies a call to create a visitor via the LivechatCreator', async () => {
 		const livechatBridge = manager.getBridges().getLivechatBridge();
 		const doCreateVisitorSpy = mock.method(livechatBridge, 'doCreateVisitor', () => Promise.resolve('random id'));
 
-		// eslint-disable-next-line
-		const { id, result } = await (controller as any).handleAccessorMessage({
+		const { id, result } = await controller.handleAccessorMessage({
 			type: 'request',
 			payload: {
 				jsonrpc: '2.0',
@@ -193,8 +205,7 @@ describe('DenoRuntimeSubprocessController', () => {
 			avatarUrl: 'https://avatars.com/123',
 		};
 
-		// eslint-disable-next-line
-		const response = await (controller as any).handleBridgeMessage({
+		const response = await controller.handleBridgeMessage({
 			type: 'request',
 			payload: {
 				jsonrpc: '2.0',
@@ -204,7 +215,7 @@ describe('DenoRuntimeSubprocessController', () => {
 				serialize: () => '',
 			},
 		});
-		const { id, result } = response as any;
+		const { id, result } = response;
 
 		assert.strictEqual(doCreateSpy.mock.calls.length, 1);
 		assert.deepStrictEqual(doCreateSpy.mock.calls[0].arguments, [messageParam, '9c1d62ca-e40f-456f-8601-17c823a16c68']);

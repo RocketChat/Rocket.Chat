@@ -1,5 +1,5 @@
 import * as assert from 'node:assert';
-import { describe, it } from 'node:test';
+import { describe, it, mock } from 'node:test';
 
 import type { IMessage } from '../../../../src/definition/messages';
 import type { IRoom } from '../../../../src/definition/rooms';
@@ -13,7 +13,6 @@ describe('Notifier', () => {
 		const mockUserBridge = {} as UserBridge;
 		const mockMsgBridge = {
 			doNotifyUser(user: IUser, msg: IMessage, appId: string): Promise<void> {
-				// TODO: Spy on these and ensure they're called with the right parameters
 				return Promise.resolve();
 			},
 			doNotifyRoom(room: IRoom, msg: IMessage, appId: string): Promise<void> {
@@ -24,8 +23,27 @@ describe('Notifier', () => {
 		assert.doesNotThrow(() => new Notifier(mockUserBridge, mockMsgBridge, 'testing'));
 
 		const noti = new Notifier(mockUserBridge, mockMsgBridge, 'testing');
-		await assert.doesNotReject(() => noti.notifyRoom(TestData.getRoom(), TestData.getMessage()));
-		await assert.doesNotReject(() => noti.notifyUser(TestData.getUser(), TestData.getMessage()));
+
+		const doNotifyRoomSpy = mock.method(mockMsgBridge, 'doNotifyRoom');
+		const doNotifyUserSpy = mock.method(mockMsgBridge, 'doNotifyUser');
+
+		const room = TestData.getRoom();
+		const user = TestData.getUser();
+		const roomMsg = TestData.getMessage();
+		const userMsg = TestData.getMessage();
+
+		await assert.doesNotReject(() => noti.notifyRoom(room, roomMsg));
+		assert.strictEqual(doNotifyRoomSpy.mock.calls.length, 1);
+		assert.strictEqual(doNotifyRoomSpy.mock.calls[0].arguments[0], room);
+		assert.strictEqual(doNotifyRoomSpy.mock.calls[0].arguments[1], roomMsg);
+		assert.strictEqual(doNotifyRoomSpy.mock.calls[0].arguments[2], 'testing');
+
+		await assert.doesNotReject(() => noti.notifyUser(user, userMsg));
+		assert.strictEqual(doNotifyUserSpy.mock.calls.length, 1);
+		assert.strictEqual(doNotifyUserSpy.mock.calls[0].arguments[0], user);
+		assert.strictEqual(doNotifyUserSpy.mock.calls[0].arguments[1], userMsg);
+		assert.strictEqual(doNotifyUserSpy.mock.calls[0].arguments[2], 'testing');
+
 		assert.ok(noti.getMessageBuilder() instanceof MessageBuilder);
 	});
 });

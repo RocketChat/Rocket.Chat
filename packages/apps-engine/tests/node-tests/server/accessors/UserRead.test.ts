@@ -26,7 +26,7 @@ describe('UserRead', () => {
 		},
 	} as unknown as UserBridge;
 
-	it('expectDataFromMessageRead', async () => {
+	it('expectDataFromUserRead', async () => {
 		assert.doesNotThrow(() => new UserRead(mockUserBridge, 'testing-app'));
 
 		const ur = new UserRead(mockUserBridge, 'testing-app');

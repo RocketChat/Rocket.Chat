@@ -1,18 +1,17 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import type { ISetting } from '../../../../src/definition/settings';
 import { ServerSettingRead } from '../../../../src/server/accessors';
 import type { ServerSettingBridge } from '../../../../src/server/bridges';
 import { TestData } from '../../../test-data/utilities';
 
 describe('ServerSettingRead', () => {
-	it('expectDataFromRoomRead', async () => {
+	it('expectDataFromServerSettingRead', async () => {
 		const setting = TestData.getSetting('testing');
 
 		const theSetting = setting;
 		const mockServerSettingBridge = {
-			doGetOneById(id: string, appId: string): Promise<ISetting> {
+			doGetOneById(id: string, appId: string) {
 				return Promise.resolve(id === 'testing' ? theSetting : undefined);
 			},
 			doIsReadableById(id: string, appId: string): Promise<boolean> {

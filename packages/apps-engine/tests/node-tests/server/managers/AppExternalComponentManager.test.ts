@@ -70,7 +70,9 @@ describe('AppExternalComponentManager', () => {
 
 		assert.strictEqual(aecm.getExternalComponents(component.appId), null);
 		aecm.addExternalComponent(component.appId, component);
-		assert.strictEqual(aecm.getExternalComponents(component.appId).size, 1);
+		const components = aecm.getExternalComponents(component.appId);
+		assert.notStrictEqual(components, null);
+		assert.strictEqual(components!.size, 1);
 	});
 
 	it('verifyGetProvidedComponents', () => {

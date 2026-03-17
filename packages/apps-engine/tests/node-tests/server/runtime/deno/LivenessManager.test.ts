@@ -1,6 +1,6 @@
 import type { ChildProcess } from 'child_process';
 import * as assert from 'node:assert';
-import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import { describe, it, beforeEach, afterEach, mock, type Mock } from 'node:test';
 import { EventEmitter } from 'stream';
 
 import debugFactory from 'debug';
@@ -23,7 +23,7 @@ describe('LivenessManager ping mechanism', () => {
 	let livenessManager: LivenessManager;
 	let controllerEventEmitter: EventEmitter;
 	let subprocessEventEmitter: EventEmitter;
-	let sendMock: it.Mock<ProcessMessenger['send']>;
+	let sendMock: Mock<ProcessMessenger['send']>;
 
 	beforeEach(() => {
 		debug = debugFactory('test:liveness-manager');
