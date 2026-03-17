@@ -33,7 +33,6 @@ import type { MiscEndpoints } from './v1/misc';
 import type { ModerationEndpoints } from './v1/moderation';
 import type { OmnichannelEndpoints } from './v1/omnichannel';
 import type { PresenceEndpoints } from './v1/presence';
-import type { PushEndpoints } from './v1/push';
 import type { RolesEndpoints } from './v1/roles';
 import type { RoomsEndpoints } from './v1/rooms';
 import type { ServerEventsEndpoints } from './v1/server-events';
@@ -62,7 +61,6 @@ export interface Endpoints
 		ImEndpoints,
 		LDAPEndpoints,
 		RoomsEndpoints,
-		PushEndpoints,
 		RolesEndpoints,
 		TeamsEndpoints,
 		SettingsEndpoints,
