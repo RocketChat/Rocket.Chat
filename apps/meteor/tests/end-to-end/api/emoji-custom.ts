@@ -497,13 +497,12 @@ describe('[EmojiCustom]', () => {
 </svg>`);
 
 		before(async () => {
+			await updateSetting('EmojiUpload_FileSystemPath', '', false);
 			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
 			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: fsEmojiName }).expect(200);
 
 			await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
 			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: gridFsEmojiName }).expect(200);
-
-			await updateSetting('EmojiUpload_FileSystemPath', '');
 		});
 
 		after(async () => {

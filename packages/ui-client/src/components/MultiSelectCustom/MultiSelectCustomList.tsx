@@ -4,7 +4,7 @@ import type { FormEvent } from 'react';
 import { Fragment, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { type OptionProp } from './MultiSelectCustom';
+import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
 
 const getIconColor = (color: 'default' | 'danger' | 'warning' | undefined) => {

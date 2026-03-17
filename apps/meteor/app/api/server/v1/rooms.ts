@@ -18,6 +18,7 @@ import {
 	isRoomsInviteProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -291,6 +292,16 @@ API.v1.addRoute(
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
 
+			if (this.bodyParams.fileName) {
+				file.name = this.bodyParams.fileName;
+				delete this.bodyParams.fileName;
+			}
+
+			if (this.bodyParams.fileContent) {
+				file.content = this.bodyParams.fileContent;
+				delete this.bodyParams.fileContent;
+			}
+
 			await applyAirGappedRestrictionsValidation(() =>
 				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
 			);
@@ -306,29 +317,53 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.saveNotification',
-	{ authRequired: true },
-	{
-		async post() {
-			const { roomId, notifications } = this.bodyParams;
-
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
-
-			if (!notifications || Object.keys(notifications).length === 0) {
-				return API.v1.failure("The 'notifications' param is required");
-			}
-
-			await Promise.all(
-				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
-					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
-				),
-			);
-
-			return API.v1.success();
+const saveNotificationBodySchema = ajv.compile<{
+	roomId: string;
+	notifications: Record<string, string>;
+}>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string', minLength: 1 },
+		notifications: {
+			type: 'object',
+			minProperties: 1,
+			additionalProperties: { type: 'string' },
 		},
+	},
+	required: ['roomId', 'notifications'],
+	additionalProperties: false,
+});
+
+const saveNotificationResponseSchema = ajv.compile({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const roomsSaveNotificationEndpoint = API.v1.post(
+	'rooms.saveNotification',
+	{
+		authRequired: true,
+		body: saveNotificationBodySchema,
+		response: {
+			200: saveNotificationResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { roomId, notifications } = this.bodyParams;
+
+		await Promise.all(
+			Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+				saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
+			),
+		);
+
+		return API.v1.success({ success: true });
 	},
 );
 
@@ -421,7 +456,6 @@ API.v1.addRoute(
 	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
 		async post() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
 			if (!prid) {
 				return API.v1.failure('Body parameter "prid" is required.');
@@ -516,7 +550,7 @@ API.v1.addRoute(
 			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			// If the initial image was not returned in the query, insert it as the first element of the list
-			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
+			if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
 				files.splice(0, 0, initialImage);
 			}
 
@@ -733,7 +767,7 @@ API.v1.addRoute(
 				void dataExport.sendFile(
 					{
 						rid,
-						format: format as 'html' | 'json',
+						format,
 						dateFrom: convertedDateFrom,
 						dateTo: convertedDateTo,
 					},
@@ -781,7 +815,7 @@ API.v1.addRoute(
 			const [room, user] = await Promise.all([
 				findRoomByIdOrName({
 					params: { roomId },
-				}) as Promise<IRoom>,
+				}),
 				Users.findOneByIdOrUsername(userId || username),
 			]);
 
@@ -1036,11 +1070,14 @@ export const roomEndpoints = API.v1
 					},
 					required: ['roles'],
 				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function () {
 			const { rid } = this.queryParams;
-			const roles = await executeGetRoomRoles(rid, this.userId);
+			const roles = await executeGetRoomRoles(rid, this.user);
 
 			return API.v1.success({
 				roles,
@@ -1212,8 +1249,8 @@ export const roomEndpoints = API.v1
 	);
 
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomEndpoints> &
-	ExtractRoutesFromAPI<typeof roomDeleteEndpoint>;
+	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

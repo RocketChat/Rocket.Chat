@@ -327,6 +327,7 @@ API.v1.addRoute(
 				cmd,
 				params,
 				msg: { rid: query.roomId },
+				userId: this.userId,
 			});
 
 			return API.v1.success({ preview });
@@ -394,6 +395,7 @@ API.v1.addRoute(
 					triggerId: body.triggerId,
 				},
 				body.previewItem,
+				this.userId,
 			);
 
 			return API.v1.success();

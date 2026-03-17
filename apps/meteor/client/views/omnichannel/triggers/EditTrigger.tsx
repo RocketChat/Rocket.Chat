@@ -1,4 +1,4 @@
-import { type ILivechatTrigger, type ILivechatTriggerAction, type Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatTrigger, ILivechatTriggerAction, Serialized } from '@rocket.chat/core-typings';
 import { FieldGroup, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import {
 	ContextualbarScrollableContent,

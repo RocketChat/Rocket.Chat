@@ -74,7 +74,7 @@ jobs:
       # if building for production on develop branch or release, add suffix for coverage images
       DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
       MONGODB_VERSION: ${{ matrix.mongodb-version }}
-      COVERAGE_DIR: '/tmp/coverage/${{ inputs.type }}'
+      COVERAGE_DIR: '/tmp/coverage/${{ startsWith(inputs.type, ''api'') && ''api'' || inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
       COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
 
@@ -126,7 +126,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore packages build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: packages-build
           path: /tmp
@@ -138,7 +138,7 @@ jobs:
 
       # Download Docker images from build artifacts
       - name: Download Docker images
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
           pattern: ${{ inputs.release == 'ce' &&  'docker-image-rocketchat-amd64-coverage' || 'docker-image-*-amd64-coverage' }}
@@ -169,7 +169,7 @@ jobs:
         run: echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
 
       - name: Start httpbin container and wait for it to be ready
-        if: inputs.type == 'api'
+        if: inputs.type == 'api' || inputs.type == 'api-livechat'
         run: |
           docker compose -f docker-compose-ci.yml up -d httpbin
 
@@ -227,6 +227,22 @@ jobs:
           ls -la $COVERAGE_DIR
           exit $s
 
+      - name: E2E Test API (Livechat)
+        if: inputs.type == 'api-livechat'
+        working-directory: ./apps/meteor
+        env:
+          WEBHOOK_TEST_URL: 'http://httpbin'
+          IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
+        run: |
+          set -o xtrace
+
+          npm run testapi:livechat
+
+          docker compose -f ../../docker-compose-ci.yml stop
+
+          ls -la $COVERAGE_DIR
+          exit $s
+
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
         env:
@@ -247,12 +263,14 @@ jobs:
           QASE_REPORT: ${{ github.ref == 'refs/heads/develop' && 'true' || '' }}
           CI: true
           PLAYWRIGHT_RETRIES: ${{ inputs.retries }}
+          E2E_SHARD: ${{ matrix.shard }}
+          E2E_TOTAL_SHARD: ${{ inputs.total-shard }}
         working-directory: ./apps/meteor
         run: |
           set -o xtrace
 
           yarn prepare
-          yarn test:e2e --shard=${{ matrix.shard }}/${{ inputs.total-shard }}
+          yarn test:e2e --shard="$E2E_SHARD/$E2E_TOTAL_SHARD"
 
       - name: Merge ui coverage files
         if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
@@ -265,7 +283,7 @@ jobs:
         if: inputs.type == 'ui' && always()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}${{ inputs.db-watcher-disabled == 'true' && '-no-watcher' || '' }}
+          name: playwright-test-trace-${{ inputs.release }}-${{ matrix.mongodb-version }}-${{ matrix.shard }}
           path: ./apps/meteor/tests/e2e/.playwright*
           include-hidden-files: true
 

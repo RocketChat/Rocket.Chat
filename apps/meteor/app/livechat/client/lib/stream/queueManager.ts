@@ -1,4 +1,11 @@
-import type { ILivechatDepartment, ILivechatInquiryRecord, IOmnichannelAgent, Serialized } from '@rocket.chat/core-typings';
+import {
+	LivechatInquiryStatus,
+	type ILivechatDepartment,
+	type ILivechatInquiryRecord,
+	type IOmnichannelAgent,
+	type Serialized,
+} from '@rocket.chat/core-typings';
+import { Tracker } from 'meteor/tracker';
 
 import { useLivechatInquiryStore } from '../../../../../client/hooks/useLivechatInquiryStore';
 import { queryClient } from '../../../../../client/lib/queryClient';
@@ -20,7 +27,7 @@ const events = {
 		await invalidateRoomQueries(inquiry.rid);
 	},
 	changed: async (inquiry: ILivechatInquiryRecord) => {
-		if (inquiry.status !== 'queued' || (inquiry.department && !departments.has(inquiry.department))) {
+		if (inquiry.status !== LivechatInquiryStatus.QUEUED || (inquiry.department && !departments.has(inquiry.department))) {
 			return removeInquiry(inquiry);
 		}
 
