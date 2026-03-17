@@ -18,7 +18,7 @@ const clampStyle = css`
 	overflow: hidden;
 	-webkit-line-clamp: 3;
 	-webkit-box-orient: vertical;
-	word-break: break-all;
+	word-break: break-word;
 `;
 
 type UserCardProps = {

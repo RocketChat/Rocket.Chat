@@ -83,7 +83,7 @@ type ServerProviderMockProps = {
 
 const ServerProviderMock = ({ children, callEndpoint }: ServerProviderMockProps) => {
 	const value = useMemo(() => ({ ...contextValue, callEndpoint: callEndpoint ?? contextValue.callEndpoint }), [callEndpoint]);
-	return <ServerContext.Provider children={children} value={value} />;
+	return <ServerContext.Provider value={value}>{children}</ServerContext.Provider>;
 };
 
 export default ServerProviderMock;

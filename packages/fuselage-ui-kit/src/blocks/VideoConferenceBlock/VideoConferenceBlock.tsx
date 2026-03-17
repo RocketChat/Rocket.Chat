@@ -49,7 +49,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 	const result = useVideoConfDataStream({ rid, callId });
 
 	const joinHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
-		action(
+		void action(
 			{
 				blockId: block.blockId || '',
 				appId,
@@ -62,7 +62,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 	};
 
 	const callAgainHandler: MouseEventHandler<HTMLButtonElement> = (e): void => {
-		action(
+		void action(
 			{
 				blockId: rid || '',
 				appId,
@@ -75,7 +75,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 	};
 
 	const openCallInfo: MouseEventHandler<HTMLButtonElement> = (e) => {
-		action(
+		void action(
 			{
 				blockId: callId,
 				appId,

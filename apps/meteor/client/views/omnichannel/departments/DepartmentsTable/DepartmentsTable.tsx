@@ -121,7 +121,7 @@ const DepartmentsTable = ({ archived }: { archived: boolean }) => {
 			)}
 			{isSuccess && data?.departments.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} aria-live='assertive'>
+					<GenericTable aria-label={t('Departments')} aria-busy={isLoading} aria-live='polite'>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.departments.map((department: Omit<ILivechatDepartment, '_updatedAt'>) => (

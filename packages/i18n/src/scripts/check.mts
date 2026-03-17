@@ -111,7 +111,7 @@ const sortKeys = describeTask('sort-keys', async function* () {
 
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -169,7 +169,7 @@ const wipeExtraKeys = describeTask('wipe-extra-keys', async function* () {
 
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -204,7 +204,7 @@ const wipeExtraKeys = describeTask('wipe-extra-keys', async function* () {
 const wipeInvalidPlurals = describeTask('wipe-invalid-plurals', async function* () {
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		const resource = await readResource(language);
 		const plurals = getLanguagePlurals(language).concat(['zero']); // 'zero' is special in i18next
 
@@ -236,7 +236,7 @@ const wipeInvalidPlurals = describeTask('wipe-invalid-plurals', async function* 
 const findMissingPlurals = describeTask('find-missing-plurals', async function* () {
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -286,7 +286,7 @@ const replaceDoubleUnderscorePlaceholders = describeTask('replace-2-underscores'
 	const placeholderRegex = /__(.*?)__/g;
 	const identifierRegex = /^[a-zA-Z_][a-zA-Z0-9_]*$/;
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		const resource = await readResource(language);
 
 		for (const { key, plural, translation } of listTranslations(resource)) {
@@ -336,7 +336,7 @@ const replaceDoubleUnderscorePlaceholders = describeTask('replace-2-underscores'
 const trimEndOfFile = describeTask('trim-eof', async function* () {
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		const content = await readContent(language);
 		const trimmedContent = content.replace(/\s+$/g, '');
 
@@ -379,7 +379,7 @@ const missingPlaceholders = describeTask('missing-placeholders', async function*
 
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -422,7 +422,7 @@ const extraPlaceholders = describeTask('extra-placeholders', async function* () 
 
 	const languages = await getResourceLanguages();
 
-	for await (const language of languages) {
+	for (const language of languages) {
 		if (language === baseLanguage) continue;
 
 		const resource = await readResource(language);
@@ -512,7 +512,7 @@ async function check({ fix, task }: { fix?: boolean; task?: string[] } = {}) {
 		throw new Error('No valid tasks selected.');
 	}
 
-	for await (const taskName of tasks) {
+	for (const taskName of tasks) {
 		const task = tasksByName[taskName];
 		await task({ fix });
 	}

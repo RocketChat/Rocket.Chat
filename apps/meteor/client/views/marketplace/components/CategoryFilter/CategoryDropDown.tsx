@@ -36,7 +36,7 @@ const CategoryDropDown = ({ categories, onSelected, selectedCategories, ...props
 		<>
 			<CategoryDropDownAnchor
 				ref={reference}
-				onClick={toggleCollapsed as any}
+				onClick={() => toggleCollapsed()}
 				selectedCategoriesCount={selectedCategories.length}
 				{...props}
 			/>

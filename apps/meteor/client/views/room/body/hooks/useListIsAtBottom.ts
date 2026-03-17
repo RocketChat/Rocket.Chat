@@ -1,5 +1,4 @@
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { useSafeRefCallback } from '@rocket.chat/ui-client';
+import { useMergedRefs, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import type { MutableRefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
@@ -35,11 +34,7 @@ export const useListIsAtBottom = () => {
 
 	const ref = useSafeRefCallback(
 		useCallback(
-			(node: HTMLElement | null) => {
-				if (!node) {
-					return;
-				}
-
+			(node: HTMLElement) => {
 				const messageList = node.querySelector('ul');
 
 				if (!messageList) {

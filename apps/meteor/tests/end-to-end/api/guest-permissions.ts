@@ -106,9 +106,9 @@ import { IS_EE } from '../../e2e/config/constants';
 					}),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200);
+				.expect(400);
 
-			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('message');
 			const message = JSON.parse(res.body.message);
 			expect(message).to.have.property('error');

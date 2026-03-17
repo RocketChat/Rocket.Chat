@@ -26,37 +26,12 @@ import type {
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,
+	AnyBulkWriteOperation,
 } from 'mongodb';
 
 import { Rooms, Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
-
-const queryStatusAgentOnline = (extraFilters = {}, isLivechatEnabledWhenAgentIdle?: boolean): Filter<IUser> => ({
-	statusLivechat: 'available',
-	roles: 'livechat-agent',
-	// ignore deactivated users
-	active: true,
-	...(!isLivechatEnabledWhenAgentIdle && {
-		$or: [
-			{
-				status: {
-					$exists: true,
-					$ne: UserStatus.OFFLINE,
-				},
-				roles: {
-					$ne: 'bot',
-				},
-			},
-			{
-				roles: 'bot',
-			},
-		],
-	}),
-	...extraFilters,
-	...(isLivechatEnabledWhenAgentIdle === false && {
-		statusConnection: { $ne: 'away' },
-	}),
-});
+import { queryAvailableAgentsForSelection, queryStatusAgentOnline } from '../helpers';
 
 export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IUsersModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IUser>>) {
@@ -576,17 +551,13 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<Pick<IUser, 'roles' | '_id'>>(query, { projection: { roles: 1 } });
 	}
 
-	getDistinctFederationDomains() {
-		return this.col.distinct('federation.origin', { federation: { $exists: true } });
-	}
-
 	async getNextLeastBusyAgent(
 		department?: string,
 		ignoreAgentId?: string,
 		isEnabledWhenAgentIdle?: boolean,
 		ignoreUsernames?: string[],
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; count: number; departments?: any[] }> {
-		const match = queryStatusAgentOnline(
+		const match = queryAvailableAgentsForSelection(
 			{ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }), ...(ignoreUsernames?.length && { username: { $nin: ignoreUsernames } }) },
 			isEnabledWhenAgentIdle,
 		);
@@ -667,7 +638,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		isEnabledWhenAgentIdle?: boolean,
 		ignoreUsernames?: string[],
 	): Promise<{ agentId: string; username?: string; lastRoutingTime?: Date; departments?: any[] }> {
-		const match = queryStatusAgentOnline(
+		const match = queryAvailableAgentsForSelection(
 			{ ...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }), ...(ignoreUsernames?.length && { username: { $nin: ignoreUsernames } }) },
 			isEnabledWhenAgentIdle,
 		);
@@ -825,6 +796,41 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			}>(aggregate)
 			.toArray();
 		return agent;
+	}
+
+	async acquireAgentLock(agentId: IUser['_id'], lockTime: Date, lockTimeoutMs = 5000): Promise<boolean> {
+		const result = await this.updateOne(
+			{
+				_id: agentId,
+				$or: [{ agentLocked: { $exists: false } }, { agentLockedAt: { $lt: new Date(Date.now() - lockTimeoutMs) } }],
+			},
+			{
+				$set: {
+					agentLocked: true,
+					agentLockedAt: lockTime,
+				},
+			},
+		);
+
+		return result.modifiedCount > 0;
+	}
+
+	async releaseAgentLock(agentId: IUser['_id'], lockTime: Date): Promise<boolean> {
+		const result = await this.updateOne(
+			{
+				_id: agentId,
+				agentLocked: true,
+				agentLockedAt: lockTime,
+			},
+			{
+				$unset: {
+					agentLocked: 1,
+					agentLockedAt: 1,
+				},
+			},
+		);
+
+		return result.modifiedCount > 0;
 	}
 
 	findAllResumeTokensByUserId(userId: IUser['_id']): Promise<{ tokens: IMeteorLoginToken[] }[]> {
@@ -1646,6 +1652,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	async getUnavailableAgents(
 		_departmentId?: string,
 		_extraQuery?: Filter<AvailableAgentsAggregation>,
+		_isLivechatEnabledWhenAgentIdle?: boolean,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {
 		return [];
 	}
@@ -1919,14 +1926,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	async getNextAgent(ignoreAgentId?: string, extraQuery?: Filter<AvailableAgentsAggregation>, enabledWhenAgentIdle?: boolean) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
-		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery)).map((u) => u.username);
+		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery, enabledWhenAgentIdle)).map((u) => u.username);
 		const extraFilters = {
 			...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
 			// limit query to remove booked agents
 			username: { $nin: unavailableAgents },
 		};
 
-		const query = queryStatusAgentOnline(extraFilters, enabledWhenAgentIdle);
+		const query = queryAvailableAgentsForSelection(extraFilters, enabledWhenAgentIdle);
 
 		const sort: Record<string, SortDirection> = {
 			livechatCount: 1,
@@ -3113,6 +3120,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		};
 
 		return this.updateOne({ _id }, update);
+	}
+
+	async setBannersInBulk(updates: { userId: IUser['_id']; banners: NonNullable<IUser['banners']> }[]) {
+		const ops: AnyBulkWriteOperation<IUser>[] = updates.map(({ userId, banners }) => ({
+			updateOne: {
+				filter: { _id: userId },
+				update: { $set: { banners } },
+			},
+		}));
+
+		return this.col.bulkWrite(ops);
 	}
 
 	removeSamlServiceSession(_id: IUser['_id']) {

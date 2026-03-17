@@ -94,7 +94,7 @@ class WebdavStore extends UploadFS.Store {
 			try {
 				return client.deleteFile(this.getPath(file));
 			} catch (err: any) {
-				SystemLogger.error(err);
+				SystemLogger.error({ err });
 			}
 		};
 

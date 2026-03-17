@@ -1,6 +1,6 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRole, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
-import { TEAM_TYPE } from '@rocket.chat/core-typings';
+import { TeamType } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
@@ -1179,8 +1179,8 @@ describe('/teams.info', () => {
 	before(async () => {
 		testUser = await createUser();
 		testUserCredentials = await login(testUser.username, password);
-		testTeam = await createTeam(credentials, teamName, TEAM_TYPE.PUBLIC);
-		testTeam2 = await createTeam(credentials, `${teamName}-2`, TEAM_TYPE.PRIVATE);
+		testTeam = await createTeam(credentials, teamName, TeamType.PUBLIC);
+		testTeam2 = await createTeam(credentials, `${teamName}-2`, TeamType.PRIVATE);
 	});
 
 	after(() => Promise.all([deleteTeam(credentials, testTeam.name), deleteTeam(credentials, testTeam2.name), deleteUser(testUser)]));
@@ -1660,8 +1660,8 @@ describe('/teams.addRooms', () => {
 		privateRoom3 = (await createRoom({ type: 'p', name: `community-channel-private-3-${Date.now()}` })).body.group;
 		publicRoom = (await createRoom({ type: 'c', name: `community-channel-public-1-${Date.now()}` })).body.channel;
 		publicRoom2 = (await createRoom({ type: 'c', name: `community-channel-public-2-${Date.now()}` })).body.channel;
-		publicTeam = await createTeam(credentials, `team-name-c-${Date.now()}`, TEAM_TYPE.PUBLIC);
-		privateTeam = await createTeam(credentials, `team-name-p-${Date.now()}`, TEAM_TYPE.PRIVATE);
+		publicTeam = await createTeam(credentials, `team-name-c-${Date.now()}`, TeamType.PUBLIC);
+		privateTeam = await createTeam(credentials, `team-name-p-${Date.now()}`, TeamType.PRIVATE);
 	});
 
 	after(async () => {
@@ -1836,8 +1836,8 @@ describe('/teams.listRooms', () => {
 	before(async () => {
 		testUser = await createUser();
 		testUserCredentials = await login(testUser.username, password);
-		privateTeam = await createTeam(credentials, `teamName-private-${Date.now()}`, TEAM_TYPE.PRIVATE);
-		publicTeam = await createTeam(testUserCredentials, `teamName-public-${Date.now()}`, TEAM_TYPE.PUBLIC);
+		privateTeam = await createTeam(credentials, `teamName-private-${Date.now()}`, TeamType.PRIVATE);
+		publicTeam = await createTeam(testUserCredentials, `teamName-public-${Date.now()}`, TeamType.PUBLIC);
 
 		privateRoom = (await createRoom({ type: 'p', name: `test-p-${Date.now()}` })).body.group;
 		publicRoom = (await createRoom({ type: 'c', name: `test-c-${Date.now()}` })).body.channel;
@@ -2335,7 +2335,7 @@ describe('/teams.updateRoom', () => {
 
 	before(async () => {
 		publicRoom = (await createRoom({ type: 'c', name: `public-update-room-${Date.now()}` })).body.channel;
-		publicTeam = await createTeam(credentials, name, TEAM_TYPE.PUBLIC);
+		publicTeam = await createTeam(credentials, name, TeamType.PUBLIC);
 		await request
 			.post(api('teams.addRooms'))
 			.set(credentials)
@@ -2713,7 +2713,7 @@ describe('/teams.removeRoom', () => {
 
 	before(async () => {
 		publicRoom = (await createRoom({ type: 'c', name: `public-remove-room-${Date.now()}` })).body.channel;
-		publicTeam = await createTeam(credentials, name, TEAM_TYPE.PUBLIC);
+		publicTeam = await createTeam(credentials, name, TeamType.PUBLIC);
 		await request
 			.post(api('teams.addRooms'))
 			.set(credentials)

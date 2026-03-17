@@ -1,10 +1,13 @@
-import { Apps } from '@rocket.chat/apps';
+import { AppEvents, Apps } from '@rocket.chat/apps';
 import type { IMessageService } from '@rocket.chat/core-services';
 import { Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
-import { type IMessage, type MessageTypesValues, type IUser, type IRoom, isEditedMessage, type AtLeast } from '@rocket.chat/core-typings';
+import { isEditedMessage } from '@rocket.chat/core-typings';
+import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 
+import { OEmbed } from './hooks/AfterSaveOEmbed';
 import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
+import { parseUrlsInMessage } from '../../../app/lib/server/functions/parseUrlsInMessage';
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
@@ -23,6 +26,8 @@ import { BeforeSaveMarkdownParser } from './hooks/BeforeSaveMarkdownParser';
 import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
+import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
+import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
 
 const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 
@@ -95,6 +100,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		files,
 		attachments,
 		thread,
+		ts,
 	}: {
 		fromId: string;
 		rid: string;
@@ -108,27 +114,32 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		files?: IMessage['files'];
 		attachments?: IMessage['attachments'];
 		thread?: { tmid: string; tshow: boolean };
+		ts: Date;
 	}): Promise<IMessage> {
-		return executeSendMessage(fromId, {
-			rid,
-			msg,
-			...thread,
-			federation: {
-				eventId: federation_event_id,
-				version: 1,
+		return executeSendMessage(
+			fromId,
+			{
+				rid,
+				msg,
+				...thread,
+				federation: {
+					eventId: federation_event_id,
+					version: 1,
+				},
+				...(file && { file }),
+				...(files && { files }),
+				...(attachments && { attachments }),
+				...(e2e_content && {
+					t: 'e2e',
+					content: e2e_content,
+				}),
 			},
-			...(file && { file }),
-			...(files && { files }),
-			...(attachments && { attachments }),
-			...(e2e_content && {
-				t: 'e2e',
-				content: e2e_content,
-			}),
-		});
+			{ ts },
+		);
 	}
 
 	async sendMessageWithValidation(user: IUser, message: Partial<IMessage>, room: Partial<IRoom>, upsert = false): Promise<IMessage> {
-		return sendMessage(user, message, room, upsert);
+		return sendMessage(user, message, room, { upsert });
 	}
 
 	async deleteMessage(user: IUser, message: IMessage): Promise<void> {
@@ -196,7 +207,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		}
 
 		if (Apps.self?.isLoaded()) {
-			void Apps.getBridges()?.getListenerBridge().messageEvent('IPostSystemMessageSent', createdMessage);
+			void Apps.self?.triggerEvent(AppEvents.IPostSystemMessageSent, createdMessage);
 		}
 
 		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });
@@ -209,10 +220,14 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		message,
 		room,
 		user,
+		previewUrls,
+		parseUrls = true,
 	}: {
 		message: IMessage;
 		room: IRoom;
 		user: Pick<IUser, '_id' | 'username' | 'name' | 'emails' | 'language'>;
+		previewUrls?: string[];
+		parseUrls?: boolean;
 	}): Promise<IMessage> {
 		// TODO looks like this one was not being used (so I'll left it commented)
 		// await this.joinDiscussionOnMessage({ message, room, user });
@@ -221,10 +236,18 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
 		}
 
-		message = await mentionServer.execute(message);
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });
+		// TODO: Auto-close unclosed markdown code blocks for server versions below 9.0.0
+		// In 9.0.0, this behavior is handled on the client side, so this block should be removed.
+		if (!shouldBreakInVersion('9.0.0') && message.msg) {
+			message = { ...message, msg: closeUnclosedCodeBlock(message.msg) };
+		}
 		message = await this.markdownParser.parseMarkdown({ message, config: this.getMarkdownConfig() });
+		message = await mentionServer.execute(message);
+		if (parseUrls) {
+			message.urls = parseUrlsInMessage(message, previewUrls);
+		}
 		message = await this.spotify.convertSpotifyLinks({ message });
 		message = await this.jumpToMessage.createAttachmentForMessageURLs({
 			message,
@@ -245,6 +268,17 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		}
 
 		return message;
+	}
+
+	// The actions made on this event should be asynchronous
+	// That means, caller should not expect to receive updated message
+	// after calling
+	async afterSave({ message }: { message: IMessage }): Promise<void> {
+		await OEmbed.rocketUrlParser(message);
+
+		// Since this will happen after the message is sent and ack on the UI
+		// we'll notify until after these hooks are finished
+		void notifyOnMessageChange({ id: message._id });
 	}
 
 	private getMarkdownConfig() {
@@ -301,5 +335,12 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to delete message');
 		}
+	}
+
+	async parseOEmbedUrl(url: string): Promise<{
+		urlPreview: MessageUrl;
+		foundMeta: boolean;
+	}> {
+		return OEmbed.parseUrl(url);
 	}
 }

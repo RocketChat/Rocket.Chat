@@ -69,7 +69,10 @@ export const unreadMessages = async (userId: string, firstUnreadMessage?: Pick<I
 		return logger.debug('Provided message is already marked as unread');
 	}
 
-	logger.debug(`Updating unread message of ${originalMessage.ts} as the first unread`);
+	logger.debug({
+		msg: 'Updating unread message as the first unread',
+		timestamp: originalMessage.ts,
+	});
 	const setAsUnreadResponse = await Subscriptions.setAsUnreadByRoomIdAndUserId(originalMessage.rid, userId, originalMessage.ts);
 	if (setAsUnreadResponse.modifiedCount) {
 		void notifyOnSubscriptionChangedByRoomIdAndUserId(originalMessage.rid, userId);

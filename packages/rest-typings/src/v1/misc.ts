@@ -1,11 +1,7 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type ShieldSvg = {
 	type?: string;
@@ -197,7 +193,7 @@ export type MiscEndpoints = {
 	'/v1/pw.getPolicy': {
 		GET: () => {
 			enabled: boolean;
-			policy: [name: string, value?: Record<string, number>][];
+			policy: [name: string, value?: Record<string, number | boolean>][];
 		};
 	};
 

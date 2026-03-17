@@ -101,7 +101,7 @@ async function uploadAttachment(attachmentParam: Attachment, rid: string, visito
 }
 
 export async function onEmailReceived(email: ParsedMail, inbox: string, department = ''): Promise<void> {
-	logger.info(`New email conversation received on inbox ${inbox}. Will be assigned to department ${department}`);
+	logger.info({ msg: 'New email conversation received on inbox. Will be assigned to department', inbox, department });
 	if (!email.from?.value?.[0]?.address) {
 		return;
 	}
@@ -112,7 +112,7 @@ export async function onEmailReceived(email: ParsedMail, inbox: string, departme
 	const guest = await getGuestByEmail(email.from.value[0].address, email.from.value[0].name, department);
 
 	if (!guest) {
-		logger.error(`No visitor found for ${email.from.value[0].address}`);
+		logger.error({ msg: 'No visitor found', address: email.from.value[0].address });
 		return;
 	}
 

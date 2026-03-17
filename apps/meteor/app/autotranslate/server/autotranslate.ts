@@ -2,7 +2,6 @@ import type {
 	IMessage,
 	IRoom,
 	MessageAttachment,
-	ISupportedLanguages,
 	IProviderMetadata,
 	ISupportedLanguage,
 	ITranslationResult,
@@ -10,10 +9,10 @@ import type {
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { isTruthy } from '../../../lib/isTruthy';
 import { callbacks } from '../../../server/lib/callbacks';
 import { notifyOnMessageChange } from '../../lib/server/lib/notifyListener';
 import { Markdown } from '../../markdown/server';
@@ -134,7 +133,9 @@ export abstract class AutoTranslate {
 
 	languages: string[];
 
-	supportedLanguages: ISupportedLanguages;
+	supportedLanguages: {
+		[language: string]: ISupportedLanguage[];
+	};
 
 	/**
 	 * Encapsulate the api key and provider settings.
@@ -318,7 +319,7 @@ export abstract class AutoTranslate {
 
 		if (message.attachments && message.attachments.length > 0) {
 			setImmediate(async () => {
-				for await (const [index, attachment] of message.attachments?.entries() ?? []) {
+				for (const [index, attachment] of message.attachments?.entries() ?? []) {
 					if (attachment.description || attachment.text) {
 						// Removes the initial link `[ ](quoterl)` from quote message before translation
 						const translatedText = attachment?.text?.replace(/\[(.*?)\]\(.*?\)/g, '$1') || attachment?.text;

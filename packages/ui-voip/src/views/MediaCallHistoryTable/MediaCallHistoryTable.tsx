@@ -1,4 +1,4 @@
-import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody } from '@rocket.chat/ui-client';
+import { GenericTable, GenericTableHeaderCell, GenericTableHeader, GenericTableBody, GenericTableCell } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -40,7 +40,8 @@ const MediaCallHistoryTable = ({ sort, children }: MediaCallHistoryTableProps) =
 				>
 					{t('Time_slash_Date')}
 				</GenericTableHeaderCell>
-				<GenericTableHeaderCell key='menu' width={44} />
+				{/* This cell has to be `td` because of a11y guidelines (Table header cells cannot be empty) */}
+				<GenericTableCell key='menu' width={44} aria-label={t('Options')} is='td' />
 			</GenericTableHeader>
 			<GenericTableBody>{children}</GenericTableBody>
 		</GenericTable>

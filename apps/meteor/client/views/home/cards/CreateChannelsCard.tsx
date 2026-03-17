@@ -15,7 +15,11 @@ const CreateChannelsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): R
 		<GenericCard
 			title={t('Create_channels')}
 			body={t('Create_a_public_channel_that_new_workspace_members_can_join')}
-			buttons={[<GenericCardButton key={1} onClick={openCreateChannelModal} children={t('Create_channel')} />]}
+			buttons={[
+				<GenericCardButton key={1} onClick={openCreateChannelModal}>
+					{t('Create_channel')}
+				</GenericCardButton>,
+			]}
 			width='x340'
 			{...props}
 		/>
