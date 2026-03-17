@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as fs from 'fs/promises';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
 import { inspect as utilInspect } from 'util';
@@ -75,13 +76,13 @@ export function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACC
 	return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
 
-export function getDenoWrapperPath(): string {
+export function getDenoConfigPath(): string {
 	try {
 		// This path is relative to the compiled version of the Apps-Engine source
-		return require.resolve('../../../deno-runtime/main.ts');
+		return require.resolve('../../../deno-runtime/deno.jsonc');
 	} catch {
 		// This path is relative to the original Apps-Engine files
-		return require.resolve('../../../../deno-runtime/main.ts');
+		return require.resolve('../../../../deno-runtime/deno.jsonc');
 	}
 }
 
@@ -115,7 +116,29 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 	private readonly livenessManager: LivenessManager;
 
-	private readonly tempFilePath: string;
+	private static tempFilePath: string;
+
+	private static denoRuntimePath: string;
+
+	private static denoConfigPath: string;
+
+	public static async setupEnvironment({ tempFilePath }: { tempFilePath: string }): Promise<void> {
+		this.tempFilePath = tempFilePath;
+		this.denoRuntimePath = path.join(tempFilePath, 'deno-runtime', 'main.ts');
+		this.denoConfigPath = getDenoConfigPath();
+
+		/**
+		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
+		 * The temp directory is the same we are given by the host to store temporary upload files
+		 */
+		await fs.symlink(path.dirname(this.denoConfigPath), path.dirname(this.denoRuntimePath), 'dir').catch((reason: unknown) => {
+			if ((reason as NodeJS.ErrnoException).code === 'EEXIST') {
+				return;
+			}
+
+			throw reason;
+		});
+	}
 
 	// We need to keep the appSource around in case the Deno process needs to be restarted
 	constructor(
@@ -124,6 +147,10 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		private readonly storageItem: IAppStorageItem,
 	) {
 		super();
+
+		if (!DenoRuntimeSubprocessController.denoRuntimePath) {
+			throw new Error('Deno runtime path is not set. Make sure to call setupEnvironment()');
+		}
 
 		this.debug = baseDebug.extend(appPackage.info.id);
 		this.messenger = new ProcessMessenger();
@@ -139,16 +166,15 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		this.api = manager.getApiManager();
 		this.logStorage = manager.getLogStorage();
 		this.bridges = manager.getBridges();
-		this.tempFilePath = manager.getTempFilePath();
 	}
 
 	public spawnProcess(): void {
 		try {
 			const denoExePath = 'deno';
 
-			const denoWrapperPath = getDenoWrapperPath();
+			const denoWrapperPath = DenoRuntimeSubprocessController.denoRuntimePath;
 			// During development, the appsEngineDir is enough to run the deno process
-			const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
+			const appsEngineDir = path.dirname(path.join(DenoRuntimeSubprocessController.denoConfigPath, '..'));
 			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
 			// When running in production, we're likely inside a node_modules which the Deno
 			// process must be able to read in order to include files that use NPM packages
@@ -158,12 +184,13 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			// If the app handles file upload events, it needs to be able to read the temp dir
 			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload)) {
-				allowedDirs.push(this.tempFilePath);
+				allowedDirs.push(DenoRuntimeSubprocessController.tempFilePath);
 			}
 
 			const options = [
 				'run',
 				'--cached-only',
+				`--config=${DenoRuntimeSubprocessController.denoConfigPath}`,
 				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
 				denoWrapperPath,

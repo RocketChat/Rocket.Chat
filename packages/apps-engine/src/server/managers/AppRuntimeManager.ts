@@ -27,7 +27,9 @@ export class AppRuntimeManager {
 	constructor(
 		private readonly manager: AppManager,
 		private readonly runtimeFactory = defaultRuntimeFactory,
-	) {}
+	) {
+		DenoRuntimeSubprocessController.setupEnvironment({ tempFilePath: manager.getTempFilePath() });
+	}
 
 	public async startRuntimeForApp(
 		appPackage: IParseAppPackageResult,
