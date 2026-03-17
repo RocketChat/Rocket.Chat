@@ -4,7 +4,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import type { ComponentProps, Dispatch, ReactElement, SetStateAction } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
 import { memo, useMemo, useState } from 'react';
 
 const generateQuery = (
@@ -16,7 +16,7 @@ const generateQuery = (
 type RoomAutoCompleteProps = Omit<ComponentProps<typeof AutoComplete>, 'filter'> & {
 	scope?: 'admin' | 'regular';
 	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactElement | null;
-	setSelectedRoom?: Dispatch<SetStateAction<IRoom | undefined>>;
+	setSelectedRoom?: (room: IRoom | undefined) => void;
 };
 
 const AVATAR_SIZE = 'x20';
@@ -80,7 +80,16 @@ const RoomAutoComplete = ({ value, onChange, scope = 'regular', renderRoomIcon, 
 				</>
 			)}
 			renderItem={({ value, label, ...props }) => (
-				<Option {...props} label={label.name} avatar={<RoomAvatar size={AVATAR_SIZE} room={{ _id: value, ...label }} />} />
+				<Option
+					{...props}
+					label={
+						<>
+							{label?.name}
+							{renderRoomIcon?.({ ...label })}
+						</>
+					}
+					avatar={<RoomAvatar size={AVATAR_SIZE} room={{ _id: value, ...label }} />}
+				/>
 			)}
 			options={options}
 		/>

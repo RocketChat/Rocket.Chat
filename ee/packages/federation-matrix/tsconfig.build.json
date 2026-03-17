@@ -5,14 +5,6 @@
 		"isolatedModules": true,
 		"declaration": true,
 	},
-	"include": [
-		"src/**/*.ts"
-	],
-	"exclude": [
-		"node_modules",
-		"dist",
-		"**/*.spec.ts",
-		"**/*.test.ts",
-		"../../../../**/*",
-	]
+	"include": ["./src/**/*"],
+	"exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.test.ts"],
 }

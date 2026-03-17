@@ -4445,12 +4445,14 @@ const POSTLivechatSaveCustomFieldsSchema = {
 	properties: {
 		customFieldId: {
 			type: 'string',
+			nullable: true,
 		},
 		customFieldData: {
 			type: 'object',
 			properties: {
 				field: {
 					type: 'string',
+					pattern: '^[0-9a-zA-Z_-]+$',
 				},
 				label: {
 					type: 'string',
@@ -4491,13 +4493,14 @@ const POSTLivechatSaveCustomFieldsSchema = {
 					nullable: true,
 				},
 			},
+			required: ['field', 'label', 'scope', 'visibility'],
 		},
 	},
 	additionalProperties: false,
 };
 
 export const isPOSTLivechatSaveCustomFieldsParams = ajv.compile<{
-	customFieldId: string;
+	customFieldId: string | null;
 	customFieldData: Omit<ILivechatCustomField, '_id' | '_updatedAt'> & { field: string };
 }>(POSTLivechatSaveCustomFieldsSchema);
 

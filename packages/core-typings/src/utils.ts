@@ -1,3 +1,5 @@
+import * as z from 'zod';
+
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<T>;
 
 export type ExtractKeys<T, K extends keyof T, U> = T[K] extends U ? K : never;
@@ -46,7 +48,6 @@ export type Branded<T, B> = T & Brand<B>;
 
 type SerializablePrimitive = boolean | number | string | null;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type UnserializablePrimitive = bigint | symbol | undefined;
 
 type CustomSerializable<T> = {
@@ -70,3 +71,8 @@ export type Serialized<T> =
 						: T extends UnserializablePrimitive
 							? undefined
 							: null;
+
+export const TimestampSchema = z.codec(z.iso.datetime(), z.date(), {
+	encode: (date) => date.toISOString(),
+	decode: (str) => new Date(str),
+});

@@ -9,7 +9,7 @@ export const useLogout = (): (() => void) => {
 	const { logout } = useContext(UserContext);
 
 	const handleLogout = useEffectEvent(() => {
-		logout();
+		void logout();
 		router.navigate('/');
 	});
 

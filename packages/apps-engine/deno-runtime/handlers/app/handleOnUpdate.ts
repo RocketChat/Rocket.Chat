@@ -2,8 +2,11 @@ import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../../lib/accessors/mod.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
-export default async function handleOnUpdate(params: unknown): Promise<boolean> {
+export default async function handleOnUpdate(request: RequestContext): Promise<boolean> {
+	const { params } = request;
 	const app = AppObjectRegistry.get<App>('app');
 
 	if (typeof app?.onUpdate !== 'function') {
@@ -18,7 +21,8 @@ export default async function handleOnUpdate(params: unknown): Promise<boolean> 
 
 	const [context] = params as [Record<string, unknown>];
 
-	await app.onUpdate(
+	await app.onUpdate.call(
+		wrapAppForRequest(app, request),
 		context,
 		AppAccessorsInstance.getReader(),
 		AppAccessorsInstance.getHttp(),

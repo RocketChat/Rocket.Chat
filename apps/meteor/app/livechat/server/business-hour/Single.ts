@@ -9,7 +9,7 @@ import { businessHourLogger } from '../lib/logger';
 
 export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior implements IBusinessHourBehavior {
 	async openBusinessHoursByDayAndHour(): Promise<void> {
-		return openBusinessHourDefault();
+		await openBusinessHourDefault();
 	}
 
 	async closeBusinessHoursByDayAndHour(day: string, hour: string): Promise<void> {
@@ -24,7 +24,7 @@ export class SingleBusinessHourBehavior extends AbstractBusinessHourBehavior imp
 	}
 
 	async onStartBusinessHours(): Promise<void> {
-		return openBusinessHourDefault();
+		await openBusinessHourDefault();
 	}
 
 	async onNewAgentCreated(agentId: string): Promise<void> {

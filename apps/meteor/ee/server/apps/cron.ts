@@ -81,19 +81,20 @@ const appsUpdateMarketplaceInfo = async function _appsUpdateMarketplaceInfo() {
 	const currentSeats = await Users.getActiveLocalUserCount();
 
 	const fullUrl = `v1/workspaces/${workspaceIdSetting}/apps`;
-	const options = {
-		headers: {
-			Authorization: `Bearer ${token}`,
-		},
-		params: {
-			seats: currentSeats,
-		},
-	};
 
 	let data = [];
 
 	try {
-		const response = await Apps.getMarketplaceClient().fetch(fullUrl, options);
+		const response = await Apps.getMarketplaceClient().fetch(fullUrl, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			params: {
+				seats: currentSeats,
+			},
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
+		});
 
 		const result = await response.json();
 

@@ -22,25 +22,29 @@ export const filterBusinessHoursThatMustBeOpenedByDay = async (
 };
 
 export const openBusinessHourDefault = async (): Promise<void> => {
-	await Users.removeBusinessHoursFromAllUsers();
-	const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
-	const day = currentTime.format('dddd');
-	const activeBusinessHours = await LivechatBusinessHours.findDefaultActiveAndOpenBusinessHoursByDay(day, {
-		projection: {
-			workHours: 1,
-			timezone: 1,
-			type: 1,
-			active: 1,
-		},
-	});
+	try {
+		await Users.removeBusinessHoursFromAllUsers();
+		const currentTime = moment(moment().format('dddd:HH:mm'), 'dddd:HH:mm');
+		const day = currentTime.format('dddd');
+		const activeBusinessHours = await LivechatBusinessHours.findDefaultActiveAndOpenBusinessHoursByDay(day, {
+			projection: {
+				workHours: 1,
+				timezone: 1,
+				type: 1,
+				active: 1,
+			},
+		});
 
-	const businessHoursToOpenIds = (await filterBusinessHoursThatMustBeOpened(activeBusinessHours)).map((businessHour) => businessHour._id);
-	businessHourLogger.debug({ msg: 'Opening default business hours', businessHoursToOpenIds });
-	await Users.openAgentsBusinessHoursByBusinessHourId(businessHoursToOpenIds);
-	if (businessHoursToOpenIds.length) {
-		await makeOnlineAgentsAvailable();
+		const businessHoursToOpenIds = (await filterBusinessHoursThatMustBeOpened(activeBusinessHours)).map((businessHour) => businessHour._id);
+		businessHourLogger.debug({ msg: 'Opening default business hours', businessHoursToOpenIds });
+		await Users.openAgentsBusinessHoursByBusinessHourId(businessHoursToOpenIds);
+		if (businessHoursToOpenIds.length) {
+			await makeOnlineAgentsAvailable();
+		}
+		await makeAgentsUnavailableBasedOnBusinessHour();
+	} catch (err) {
+		businessHourLogger.error({ msg: 'Error while opening default business hours', err });
 	}
-	await makeAgentsUnavailableBasedOnBusinessHour();
 };
 
 export const createDefaultBusinessHourIfNotExists = async (): Promise<void> => {

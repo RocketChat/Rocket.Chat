@@ -1,7 +1,7 @@
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type * as chartjs from 'chart.js';
 import type { TFunction } from 'i18next';
-import { type MutableRefObject } from 'react';
+import type { MutableRefObject } from 'react';
 
 import { updateChart } from '../../../../../app/livechat/client/lib/chartHandler';
 
