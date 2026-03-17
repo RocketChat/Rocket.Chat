@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { validate, createSoundData } from './lib';
-import { MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
+import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
@@ -36,12 +36,18 @@ const AddCustomSound = ({ _goToNew, close, onChange, ...props }: AddCustomSoundP
 		setSound(soundFile);
 	}, []);
 
-	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/*', 'audio', MAX_CUSTOM_SOUND_SIZE_BYTES, () => {
-		dispatchToastMessage({
-			type: 'error',
-			message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(MAX_CUSTOM_SOUND_SIZE_BYTES, { base: 2, standard: 'jedec' }) }),
-		});
-	});
+	const [clickUpload] = useSingleFileInput(
+		handleChangeFile,
+		CUSTOM_SOUND_ALLOWED_MIME_TYPES.join(','),
+		'audio',
+		MAX_CUSTOM_SOUND_SIZE_BYTES,
+		() => {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(MAX_CUSTOM_SOUND_SIZE_BYTES, { base: 2, standard: 'jedec' }) }),
+			});
+		},
+	);
 
 	const handleSave = useCallback(async () => {
 		const soundData = createSoundData(sound, name);

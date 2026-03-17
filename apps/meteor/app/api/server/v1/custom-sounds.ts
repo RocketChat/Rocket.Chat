@@ -14,7 +14,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
-import { MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
+import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../../lib/constants';
 import { SystemLogger } from '../../../../server/lib/logger/system';
 import { insertOrUpdateSound } from '../../../custom-sounds/server/lib/insertOrUpdateSound';
 import { uploadCustomSound } from '../../../custom-sounds/server/lib/uploadCustomSound';
@@ -76,7 +76,7 @@ const customSoundsEndpoints = API.v1
 
 			const filter = {
 				...query,
-				...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
+				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
 			};
 
 			const { cursor, totalCount } = CustomSounds.findPaginated(filter, {
@@ -178,6 +178,10 @@ const customSoundsEndpoints = API.v1
 
 			const { fields, fileBuffer, mimetype } = sound;
 
+			if (!CUSTOM_SOUND_ALLOWED_MIME_TYPES.includes(mimetype)) {
+				return API.v1.failure('MIME type not allowed');
+			}
+
 			let _id;
 
 			try {
@@ -230,6 +234,10 @@ const customSoundsEndpoints = API.v1
 
 			const { fields, fileBuffer, mimetype } = sound;
 
+			if (fileBuffer && !CUSTOM_SOUND_ALLOWED_MIME_TYPES.includes(mimetype)) {
+				return API.v1.failure('MIME type not allowed');
+			}
+
 			const soundToUpdate = await CustomSounds.findOneById<Pick<ICustomSound, '_id' | 'name' | 'extension'>>(fields._id, {
 				projection: { _id: 1, name: 1, extension: 1 },
 			});
@@ -237,21 +245,24 @@ const customSoundsEndpoints = API.v1
 				return API.v1.failure('Custom Sound not found.');
 			}
 
+			const nextExtension = fileBuffer ? fields.extension : soundToUpdate.extension;
+
 			try {
-				await insertOrUpdateSound({
-					_id: fields._id,
-					name: fields.name,
-					extension: fields.extension,
-					previousName: soundToUpdate.name,
-					previousExtension: soundToUpdate.extension,
-				});
 				if (fileBuffer) {
 					await uploadCustomSound(fileBuffer, mimetype, {
 						_id: fields._id,
+						name: fields.name,
 						previousExtension: soundToUpdate.extension,
-						extension: fields.extension,
+						extension: nextExtension,
 					});
 				}
+				await insertOrUpdateSound({
+					_id: fields._id,
+					name: fields.name,
+					extension: nextExtension,
+					previousName: soundToUpdate.name,
+					previousExtension: soundToUpdate.extension,
+				});
 			} catch (error) {
 				SystemLogger.error({ error });
 				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');

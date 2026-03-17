@@ -71,7 +71,9 @@ const CustomSoundsCreateSchema = {
 
 export const isCustomSoundsCreateProps = ajv.compile<CustomSoundsCreate>(CustomSoundsCreateSchema);
 
-type CustomSoundsUpdate = Pick<ICustomSound, '_id' | 'name' | 'extension'>;
+type CustomSoundsUpdate = Pick<ICustomSound, '_id' | 'name'> & {
+	extension?: ICustomSound['extension'];
+};
 
 const CustomSoundsUpdateSchema = {
 	type: 'object',
