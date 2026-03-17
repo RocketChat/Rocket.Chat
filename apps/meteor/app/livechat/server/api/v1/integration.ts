@@ -28,15 +28,15 @@ API.v1.addRoute(
 			const settingsIds = [
 				typeof LivechatWebhookUrl !== 'undefined' && {
 					_id: 'Livechat_webhookUrl',
-					value: trim(LivechatWebhookUrl != null ? String(LivechatWebhookUrl) : ''),
+					value: trim(String(LivechatWebhookUrl ?? '')),
 				},
 				typeof LivechatSecretToken !== 'undefined' && {
 					_id: 'Livechat_secret_token',
-					value: trim(LivechatSecretToken != null ? String(LivechatSecretToken) : ''),
+					value: trim(String(LivechatSecretToken ?? '')),
 				},
 				typeof LivechatHttpTimeout !== 'undefined' && {
 					_id: 'Livechat_http_timeout',
-					value: LivechatHttpTimeout != null ? Number(LivechatHttpTimeout) : undefined,
+					value: Number(LivechatHttpTimeout ?? 0),
 				},
 				typeof LivechatWebhookOnStart !== 'undefined' && { _id: 'Livechat_webhook_on_start', value: !!LivechatWebhookOnStart },
 				typeof LivechatWebhookOnClose !== 'undefined' && { _id: 'Livechat_webhook_on_close', value: !!LivechatWebhookOnClose },
