@@ -2,7 +2,7 @@ import { isUserNativeFederated } from '@rocket.chat/core-typings';
 
 
 export const getMatrixUserId = (user: any, serverName: string): string => {
-    if (isUserNativeFederated(user) && user.federated?.mui) {
+    if (isUserNativeFederated(user) && user.federation?.mui) {
         return user.federation.mui;
     }
     if (!user.username) {
