@@ -55,7 +55,11 @@ describe('ConfigurationExtend', () => {
 		assert.ok(ce.http !== undefined);
 		assert.ok(ce.settings !== undefined);
 		assert.ok(ce.slashCommands !== undefined);
+		assert.ok(ce.api !== undefined);
 		assert.ok(ce.externalComponents !== undefined);
+		assert.ok(ce.scheduler !== undefined);
+		assert.ok(ce.ui !== undefined);
 		assert.ok(ce.videoConfProviders !== undefined);
+		assert.ok(ce.outboundCommunication !== undefined);
 	});
 });

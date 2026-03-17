@@ -19,8 +19,8 @@ describe('PersistenceRead', () => {
 		assert.doesNotThrow(() => new PersistenceRead(mockPersisBridge, 'testing'));
 
 		const pr = new PersistenceRead(mockPersisBridge, 'testing');
-		assert.ok((await pr.read('thing')) !== undefined);
-		assert.ok((await pr.readByAssociation({} as RocketChatAssociationRecord)) !== undefined);
-		assert.ok((await pr.readByAssociations([{} as RocketChatAssociationRecord])) !== undefined);
+		assert.deepStrictEqual(await pr.read('thing'), { id: 'thing', appId: 'testing' });
+		assert.deepStrictEqual(await pr.readByAssociation({} as RocketChatAssociationRecord), [{ appId: 'testing' }]);
+		assert.deepStrictEqual(await pr.readByAssociations([{} as RocketChatAssociationRecord]), [{ appId: 'testing' }]);
 	});
 });

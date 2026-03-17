@@ -178,7 +178,7 @@ describe('AppApiManager', () => {
 		ascm.addApi('testing', TestData.getApi('api1'));
 		ascm.addApi('testing', TestData.getApi('api2'));
 		ascm.addApi('testing', TestData.getApi('api3'));
-		ascm.registerApis('testing');
+		await ascm.registerApis('testing');
 
 		const request: IApiRequest = {
 			method: RequestMethod.GET,
@@ -195,7 +195,7 @@ describe('AppApiManager', () => {
 		await assert.doesNotReject(() => ascm.executeApi('testing', 'api3', request));
 	});
 
-	it('listApis', () => {
+	it('listApis', async () => {
 		mockBridges = new TestsAppBridges();
 		const bri = mockBridges;
 		mockManager.getBridges = function _refreshedGetBridges(): AppBridges {
@@ -207,7 +207,7 @@ describe('AppApiManager', () => {
 		assert.deepStrictEqual(ascm.listApis('testing'), []);
 
 		ascm.addApi('testing', TestData.getApi('api1'));
-		ascm.registerApis('testing');
+		await ascm.registerApis('testing');
 
 		assert.doesNotThrow(() => ascm.listApis('testing'));
 		assert.notDeepStrictEqual(ascm.listApis('testing'), []);

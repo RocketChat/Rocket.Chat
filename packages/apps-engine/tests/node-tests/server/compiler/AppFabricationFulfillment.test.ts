@@ -74,10 +74,8 @@ describe('AppFabricationFulfillment', () => {
 		const aff = new AppFabricationFulfillment();
 		aff.setAppInfo(originalInfo);
 
-		// Verify the stored info is equal to the original
 		assert.deepStrictEqual(aff.getAppInfo(), originalInfo);
 
-		// Verify that modifying the original object doesn't affect the stored copy
 		originalInfo.name = 'Modified Name';
 		originalInfo.author.name = 'Modified Author';
 		originalInfo.implements.push(AppInterface.IPostMessageSent);
@@ -88,7 +86,6 @@ describe('AppFabricationFulfillment', () => {
 		assert.ok(!aff.getAppInfo().implements.includes(AppInterface.IPostMessageSent));
 		assert.ok(!aff.getAppInfo().permissions.includes(AppPermissions.message.write));
 
-		// Verify the stored copy still has original values
 		assert.strictEqual(aff.getAppInfo().name, 'Test App');
 		assert.strictEqual(aff.getAppInfo().author.name, 'Test Author');
 		assert.deepStrictEqual(aff.getAppInfo().implements, [AppInterface.IPreMessageSentPrevent]);
@@ -105,10 +102,8 @@ describe('AppFabricationFulfillment', () => {
 		const aff = new AppFabricationFulfillment();
 		aff.setImplementedInterfaces(originalInterfaces);
 
-		// Verify the stored interfaces are equal to the original
 		assert.deepStrictEqual(aff.getImplementedInferfaces(), originalInterfaces);
 
-		// Verify that modifying the original object doesn't affect the stored copy
 		originalInterfaces[AppInterface.IPreMessageSentPrevent] = false;
 		originalInterfaces[AppInterface.IPostMessageSent] = true;
 		originalInterfaces[AppInterface.IPreMessageSentModify] = true;
@@ -117,7 +112,6 @@ describe('AppFabricationFulfillment', () => {
 		assert.notStrictEqual(aff.getImplementedInferfaces()[AppInterface.IPostMessageSent], true);
 		assert.ok(aff.getImplementedInferfaces()[AppInterface.IPreMessageSentModify] === undefined);
 
-		// Verify the stored copy still has original values
 		assert.strictEqual(aff.getImplementedInferfaces()[AppInterface.IPreMessageSentPrevent], true);
 		assert.strictEqual(aff.getImplementedInferfaces()[AppInterface.IPostMessageSent], false);
 		assert.strictEqual(aff.getImplementedInferfaces()[AppInterface.IPreMessageSentExtend], true);

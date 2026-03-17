@@ -61,7 +61,7 @@ describe('AppSettingsManager', () => {
 		const bri = mockBridges;
 		const app = mockApp;
 		mockManager = {
-			getOneById(appId: string): ProxiedApp {
+			getOneById(appId: string) {
 				return appId === 'testing' ? app : undefined;
 			},
 			getBridges(): AppBridges {
@@ -145,7 +145,6 @@ describe('AppSettingsManager', () => {
 
 		assert.strictEqual(updateSettingSpy.mock.calls.length, 1);
 		assert.strictEqual(updateSettingSpy.mock.calls[0].arguments[0], 'test_underscore_id');
-		// The second argument should match the set object
 		const settingArg = updateSettingSpy.mock.calls[0].arguments[1] as any;
 		assert.ok(Object.keys(set).every((k) => (settingArg as any)[k] === (set as any)[k]));
 

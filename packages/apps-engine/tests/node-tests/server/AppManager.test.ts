@@ -22,6 +22,7 @@ describe('AppManager', () => {
 
 	afterEach(() => {
 		AppManager.Instance = undefined;
+		mock.restoreAll();
 	});
 
 	it('Setup of the AppManager', () => {
