@@ -12,7 +12,7 @@ import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 const AgentEditWithData = ({ uid }: { uid: ILivechatAgent['_id'] }): ReactElement => {
 	const { t } = useTranslation();
 
-	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
+	const getAgentById = useEndpoint('GET', '/v1/livechat/users/:type/:_id', { type: 'agent', _id: uid });
 	const getAgentDepartments = useEndpoint('GET', '/v1/livechat/agents/:agentId/departments', { agentId: uid });
 
 	const { data, isPending, error } = useQuery({

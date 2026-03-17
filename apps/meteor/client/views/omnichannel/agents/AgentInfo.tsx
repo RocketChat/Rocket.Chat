@@ -1,3 +1,4 @@
+import type { ILivechatAgent, Serialized } from '@rocket.chat/core-typings';
 import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
 import {
 	ContextualbarTitle,
@@ -26,7 +27,7 @@ type AgentInfoProps = {
 const AgentInfo = ({ uid }: AgentInfoProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
-	const getAgentById = useEndpoint('GET', '/v1/livechat/users/agent/:_id', { _id: uid });
+	const getAgentById = useEndpoint('GET', '/v1/livechat/users/:type/:_id', { type: 'agent', _id: uid });
 	const { data, isPending, isError } = useQuery({
 		queryKey: ['livechat-getAgentInfoById', uid],
 		queryFn: async () => getAgentById(),
@@ -39,11 +40,12 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 		return <ContextualbarSkeletonBody />;
 	}
 
-	if (isError) {
+	if (isError || !data?.user) {
 		return <Box mbs={16}>{t('User_not_found')}</Box>;
 	}
 
-	const { username, statusLivechat, status: userStatus } = data?.user;
+	const user = data.user as Serialized<ILivechatAgent>;
+	const { username, statusLivechat, status: userStatus } = user;
 
 	return (
 		<>
@@ -77,7 +79,7 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 							<InfoPanelText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</InfoPanelText>
 						</>
 					)}
-					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
+					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={user.livechat?.maxNumberSimultaneousChat} />}
 				</Margins>
 			</ContextualbarScrollableContent>
 		</>

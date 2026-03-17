@@ -15,7 +15,7 @@ const mockGetAgents = jest.fn();
 
 const appRoot = new MockedAppRootBuilder()
 	.withTranslations('en', 'core', { All: 'All', Empty_no_agent_selected: 'Empty, no agent selected' })
-	.withEndpoint('GET', '/v1/livechat/users/agent', mockGetAgents);
+	.withEndpoint('GET', '/v1/livechat/users/:type', mockGetAgents);
 
 afterEach(() => {
 	jest.clearAllMocks();

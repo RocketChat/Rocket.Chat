@@ -1,33 +1,123 @@
 import { Users } from '@rocket.chat/models';
-import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
-import { check } from 'meteor/check';
+import { ajv, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse, validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
+import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { getPaginationItems } from '../../../../api/server/helpers/getPaginationItems';
 import { hasAtLeastOnePermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { findAgents, findManagers } from '../../../server/api/lib/users';
 import { addManager, addAgent, removeAgent, removeManager } from '../../../server/lib/omni-users';
 
+type LivechatUsersManagerGETProps = {
+	text?: string;
+	fields?: string;
+	onlyAvailable?: boolean;
+	excludeId?: string;
+	showIdleAgents?: boolean;
+	count?: number;
+	offset?: number;
+	sort?: string;
+	query?: string;
+};
+
+const LivechatUsersManagerGETSchema = {
+	type: 'object',
+	properties: {
+		text: { type: 'string', nullable: true },
+		onlyAvailable: { type: 'boolean', nullable: true },
+		excludeId: { type: 'string', nullable: true },
+		showIdleAgents: { type: 'boolean', nullable: true },
+		count: { type: 'number', nullable: true },
+		offset: { type: 'number', nullable: true },
+		sort: { type: 'string', nullable: true },
+		query: { type: 'string', nullable: true },
+		fields: { type: 'string', nullable: true },
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+const isLivechatUsersManagerGETProps = ajv.compile<LivechatUsersManagerGETProps>(LivechatUsersManagerGETSchema);
+
+type POSTLivechatUsersTypeProps = {
+	username: string;
+};
+
+const POSTLivechatUsersTypePropsSchema = {
+	type: 'object',
+	properties: {
+		username: { type: 'string' },
+	},
+	required: ['username'],
+	additionalProperties: false,
+};
+
+const isPOSTLivechatUsersTypeProps = ajv.compile<POSTLivechatUsersTypeProps>(POSTLivechatUsersTypePropsSchema);
+
+const paginatedUsersResponseSchema = ajv.compile<{
+	users: object[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		users: { type: 'array', items: { $ref: '#/components/schemas/IUser' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['users', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const postUserResponseSchema = ajv.compile<{ user: object }>({
+	type: 'object',
+	properties: {
+		user: { $ref: '#/components/schemas/IUser' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['user', 'success'],
+	additionalProperties: false,
+});
+
+const successOnlyResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const getUserByIdResponseSchema = ajv.compile<{ user: object | null }>({
+	type: 'object',
+	properties: {
+		user: { oneOf: [{ $ref: '#/components/schemas/IUser' }, { type: 'null' }] },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['user', 'success'],
+	additionalProperties: false,
+});
+
 const emptyStringArray: string[] = [];
 
-API.v1.addRoute(
-	'livechat/users/:type',
-	{
-		authRequired: true,
-		permissionsRequired: {
-			'POST': ['view-livechat-manager'],
-			'*': emptyStringArray,
+const livechatUsersEndpoints = API.v1
+	.get(
+		'livechat/users/:type',
+		{
+			authRequired: true,
+			permissionsRequired: emptyStringArray,
+			query: isLivechatUsersManagerGETProps,
+			response: {
+				200: paginatedUsersResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
 		},
-		validateParams: {
-			GET: isLivechatUsersManagerGETProps,
-			POST: isPOSTLivechatUsersTypeProps,
-		},
-	},
-	{
-		async get() {
-			check(this.urlParams, {
-				type: String,
-			});
+		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
@@ -70,7 +160,21 @@ API.v1.addRoute(
 			}
 			throw new Error('Invalid type');
 		},
-		async post() {
+	)
+	.post(
+		'livechat/users/:type',
+		{
+			authRequired: true,
+			permissionsRequired: ['view-livechat-manager'],
+			body: isPOSTLivechatUsersTypeProps,
+			response: {
+				200: postUserResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			if (this.urlParams.type === 'agent') {
 				const user = await addAgent(this.bodyParams.username);
 				if (user) {
@@ -87,14 +191,21 @@ API.v1.addRoute(
 
 			return API.v1.failure();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/users/:type/:_id',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
-	{
-		async get() {
+	)
+	.get(
+		'livechat/users/:type/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['view-livechat-manager'],
+			query: undefined,
+			response: {
+				200: getUserByIdResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			if (!['agent', 'manager'].includes(this.urlParams.type)) {
 				throw new Error('Invalid type');
 			}
@@ -107,7 +218,21 @@ API.v1.addRoute(
 			// TODO: throw error instead of returning null
 			return API.v1.success({ user });
 		},
-		async delete() {
+	)
+	.delete(
+		'livechat/users/:type/:_id',
+		{
+			authRequired: true,
+			permissionsRequired: ['view-livechat-manager'],
+			query: undefined,
+			response: {
+				200: successOnlyResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			if (this.urlParams.type === 'agent') {
 				if (await removeAgent(this.urlParams._id)) {
 					return API.v1.success();
@@ -122,5 +247,12 @@ API.v1.addRoute(
 
 			return API.v1.failure();
 		},
-	},
-);
+	);
+
+type LivechatUsersEndpoints = ExtractRoutesFromAPI<typeof livechatUsersEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends LivechatUsersEndpoints {}
+}
+
