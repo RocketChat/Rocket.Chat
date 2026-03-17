@@ -12,6 +12,7 @@ on:
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
+  NODE_OPTIONS: ${{ vars.TOOL_NODE_FLAGS }}
 
 jobs:
   code-check:
