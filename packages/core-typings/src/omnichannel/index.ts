@@ -1,6 +1,6 @@
-export * from './sms';
-export * from './routing';
-export * from './queue';
-export * from './reports';
-export * from './mac';
+export type * from './sms';
+export type * from './routing';
+export type * from './queue';
+export type * from './reports';
+export type * from './mac';
 export * from './outbound';

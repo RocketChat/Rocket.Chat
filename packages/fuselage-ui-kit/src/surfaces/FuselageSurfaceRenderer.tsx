@@ -1,5 +1,5 @@
 import * as UiKit from '@rocket.chat/ui-kit';
-import { type ReactElement } from 'react';
+import type { ReactElement } from 'react';
 
 import ActionsBlock from '../blocks/ActionsBlock';
 import CalloutBlock from '../blocks/CalloutBlock';
