@@ -2,7 +2,7 @@ name: Start next release
 
 on:
   repository_dispatch:
-    types: ['release-patch']
+    types: ['release-next']
   schedule:
     - cron: '28 17 20 * *' # run at minute 28 to avoid the chance of delay due to high load on GH
 
