@@ -219,7 +219,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
-		{ inputTrack, screenVideoTrack }: { inputTrack?: MediaStreamTrack | null; screenVideoTrack?: MediaStreamTrack | null } = {},
+		{ inputTrack }: { inputTrack?: MediaStreamTrack | null } = {},
 	) {
 		this.emitter = new Emitter<CallEvents>();
 
@@ -238,7 +238,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.stateReporterTimeoutHandler = null;
 		this.mayReportStates = true;
 		this.inputTrack = inputTrack || null;
-		this.screenVideoTrack = screenVideoTrack || null;
+		this.screenVideoTrack = null;
 		this.creationTimestamp = new Date();
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;

@@ -60,7 +60,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		this.streams = new MediaStreamManager(this.peer, this.config.logger);
 		this.streams.emitter.on('streamChanged', () => {
-			console.log('StreamManager.streamChanged');
+			config.logger?.debug('MediaCallWebRTCProcessor.streamChanged');
 			this.emitter.emit('streamChanged');
 		});
 
