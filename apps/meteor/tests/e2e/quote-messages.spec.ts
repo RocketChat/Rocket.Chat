@@ -3,20 +3,19 @@ import type { Page } from 'playwright-core';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createTargetChannel } from './utils';
-import { expect, test, type BaseTest } from './utils/test';
+import { createTargetChannel, sendMessage, createDiscussion, createDirectMessageRoom } from './utils';
+import { expect, test } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 test.describe.serial('Quote Messages', () => {
 	let poHomeChannel: HomeChannel;
-	let targetChannel: string; // Keeps the name for UI navigation
-	let targetChannelId: string; // NEW: Stores the ID for API calls
+	let targetChannel: string;
+	let targetChannelId: string;
 	let page: Page;
 
 	test.beforeAll(async ({ browser, api }) => {
 		targetChannel = await createTargetChannel(api);
 
-		// NEW: Fetch the channel ID so our API helpers can use it
 		const infoResponse = await api.get(`/channels.info?roomName=${targetChannel}`);
 		const infoData = await infoResponse.json();
 		targetChannelId = infoData.channel._id;
@@ -31,42 +30,16 @@ test.describe.serial('Quote Messages', () => {
 
 	test.afterAll(async ({ api }) => {
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
-		await page.close(); // Clean up our shared page
+		await page.close();
 	});
 
-	// --- API Helpers for Fast Test Setup ---
-	const seedMessageViaApi = async (api: any, roomId: string, text: string, threadId?: string) => {
-		const payload: any = { message: { rid: roomId, msg: text } };
-		if (threadId) payload.message.tmid = threadId;
-		const response = await api.post('/chat.sendMessage', payload);
-		const data = await response.json();
-
-		if (!data.success) throw new Error(`API Error: ${JSON.stringify(data)}`); // Better error logging!
-		return data.message._id;
-	};
-
-	const createDiscussionViaApi = async (api: BaseTest['api'], parentRoomId: string, parentMessageId: string, name: string) => {
-		const response = await api.post('/rooms.createDiscussion', {
-			prid: parentRoomId,
-			pmid: parentMessageId,
-			t_name: name,
-		});
-		const data = await response.json();
-		return data.discussion._id;
-	};
-
-	const createDMViaApi = async (api: BaseTest['api'], username: string) => {
-		const response = await api.post('/im.create', { username });
-		const data = await response.json();
-		return data.room._id;
-	};
-
-	test('should quote a message containing plain text, emoji, markdown, and code blocks', async () => {
+	test('should quote a message containing plain text, emoji, markdown, and code blocks', async ({ api }) => {
 		const messageText = faker.lorem.sentence();
 		const quoteText = `Quote with :smile:, *bold*, _italics_, and \`\`\`javascript\nconsole.log("Hello");\n\`\`\``;
 
-		await test.step('Send initial message and quote it with complex formatting', async () => {
-			await poHomeChannel.content.sendMessage(messageText);
+		await test.step('Send initial message via API and quote it', async () => {
+			await sendMessage(api, targetChannelId, messageText);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
 			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
@@ -74,24 +47,22 @@ test.describe.serial('Quote Messages', () => {
 			const lastMessage = poHomeChannel.content.lastUserMessage;
 			await expect(lastMessage).toBeVisible();
 			await expect(lastMessage.locator('blockquote')).toBeVisible();
-
-			// Verify content and formatting
 			await expect(lastMessage).toContainText('Quote with');
 			await expect(lastMessage.locator('strong')).toBeVisible();
 			await expect(lastMessage.locator('em')).toBeVisible();
 			await expect(lastMessage).toContainText('console.log');
-
 			await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(messageText);
 		});
 	});
 
-	test('should edit a quoted message', async () => {
+	test('should edit a quoted message', async ({ api }) => {
 		const messageText = faker.lorem.sentence();
 		const quoteText = faker.lorem.sentence();
 		const editedQuoteText = faker.lorem.sentence();
 
-		await test.step('Send initial message and quote it', async () => {
-			await poHomeChannel.content.sendMessage(messageText);
+		await test.step('Send initial message via API and quote it', async () => {
+			await sendMessage(api, targetChannelId, messageText);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
 			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
@@ -109,12 +80,13 @@ test.describe.serial('Quote Messages', () => {
 		});
 	});
 
-	test('should delete a quoted message', async () => {
+	test('should delete a quoted message', async ({ api }) => {
 		const messageText = faker.lorem.sentence();
 		const quoteText = faker.lorem.sentence();
 
-		await test.step('Send initial message and quote it', async () => {
-			await poHomeChannel.content.sendMessage(messageText);
+		await test.step('Send initial message via API and quote it', async () => {
+			await sendMessage(api, targetChannelId, messageText);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
 			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
@@ -127,11 +99,11 @@ test.describe.serial('Quote Messages', () => {
 		});
 	});
 
-	test('should cancel quote preview', async () => {
+	test('should cancel quote preview', async ({ api }) => {
 		const messageText = faker.lorem.sentence();
 
-		await test.step('Send initial message', async () => {
-			await poHomeChannel.content.sendMessage(messageText);
+		await test.step('Send initial message via API', async () => {
+			await sendMessage(api, targetChannelId, messageText);
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(messageText);
 		});
 
@@ -152,8 +124,8 @@ test.describe.serial('Quote Messages', () => {
 		const quoteText = faker.lorem.sentence();
 
 		await test.step('Setup DM and initial message via API', async () => {
-			const dmRoomId = await createDMViaApi(api, Users.user1.data.username);
-			await seedMessageViaApi(api, dmRoomId, messageText);
+			const dmRoomId = await createDirectMessageRoom(api, Users.user1.data.username);
+			await sendMessage(api, dmRoomId, messageText);
 		});
 
 		await test.step('Open DM and quote message', async () => {
@@ -178,10 +150,9 @@ test.describe.serial('Quote Messages', () => {
 		const discussionName = `Discussion-${Date.now()}`;
 
 		await test.step('Setup Discussion and messages via API', async () => {
-			// Use targetChannelId instead of targetChannel
-			const parentMsgId = await seedMessageViaApi(api, targetChannelId, originalMessage);
-			const discussionRoomId = await createDiscussionViaApi(api, targetChannelId, parentMsgId, discussionName);
-			await seedMessageViaApi(api, discussionRoomId, discussionMessage);
+			const parentMsgId = await sendMessage(api, targetChannelId, originalMessage);
+			const discussionRoomId = await createDiscussion(api, targetChannelId, parentMsgId, discussionName);
+			await sendMessage(api, discussionRoomId, discussionMessage);
 		});
 
 		await test.step('Open discussion and quote message', async () => {
@@ -205,13 +176,12 @@ test.describe.serial('Quote Messages', () => {
 		const quoteText = faker.lorem.sentence();
 
 		await test.step('Setup DM thread and messages via API', async () => {
-			const dmRoomId = await createDMViaApi(api, Users.user1.data.username);
-			const parentMsgId = await seedMessageViaApi(api, dmRoomId, messageText);
-			await seedMessageViaApi(api, dmRoomId, threadMessage, parentMsgId);
+			const dmRoomId = await createDirectMessageRoom(api, Users.user1.data.username);
+			const parentMsgId = await sendMessage(api, dmRoomId, messageText);
+			await sendMessage(api, dmRoomId, threadMessage, parentMsgId);
 		});
 
 		await test.step('Open DM thread and quote message', async () => {
-			// Re-open chat to ensure clean state and fresh data fetch
 			await poHomeChannel.navbar.openChat(Users.user1.data.username);
 			await poHomeChannel.content.openReplyInThread();
 

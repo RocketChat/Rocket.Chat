@@ -124,3 +124,36 @@ export async function createTargetGroupAndReturnFullRoom(
 	const name = faker.string.uuid();
 	return (await api.post('/groups.create', { name, ...options })).json();
 }
+
+export async function sendMessage(api: BaseTest['api'], roomId: string, msg: string, threadId?: string): Promise<string> {
+	const payload: any = { message: { rid: roomId, msg } };
+	if (threadId) {
+		payload.message.tmid = threadId;
+	}
+
+	const response = await api.post('/chat.sendMessage', payload);
+	const data = await response.json();
+
+	if (!data.success) {
+		throw new Error(`Error sending message: ${JSON.stringify(data)}`);
+	}
+
+	return data.message._id;
+}
+
+export async function createDiscussion(api: BaseTest['api'], parentRoomId: string, parentMessageId: string, name: string): Promise<string> {
+	const response = await api.post('/rooms.createDiscussion', {
+		prid: parentRoomId,
+		pmid: parentMessageId,
+		t_name: name,
+	});
+
+	const data = await response.json();
+	return data.discussion._id;
+}
+
+export async function createDirectMessageRoom(api: BaseTest['api'], username: string): Promise<string> {
+	const response = await api.post('/im.create', { username });
+	const data = await response.json();
+	return data.room._id;
+}
