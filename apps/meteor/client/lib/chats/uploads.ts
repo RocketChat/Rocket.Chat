@@ -27,7 +27,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 	private processingUploads: boolean = false;
 
-	set = (uploads: Upload[]): void => {		
+	set = (uploads: Upload[]): void => {
 		this.uploads = uploads;
 		this.emit('update');
 	};
