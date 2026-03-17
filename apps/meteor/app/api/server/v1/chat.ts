@@ -53,7 +53,6 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
-import { object } from 'underscore';
 
 type ChatStarMessageLocal = {
 	messageId: IMessage['_id'];
@@ -277,11 +276,11 @@ const isChatSyncMessagesLocalProps = ajv.compile<ChatSyncMessages>(ChatSyncMessa
 const isSyncMessagesResponse = ajv.compile<{
 	result: {
 		updated: IMessage[];
-		deleted: IMessage[];
+		deleted: unknown[];
 		cursor?: {
 			next: string | null;
 			previous: string | null;
-		};
+		} | null;
 	};
 }>({
 	type: 'object',
@@ -301,13 +300,19 @@ const isSyncMessagesResponse = ajv.compile<{
 					},
 				},
 				cursor: {
-					type: 'object',
-					properties: {
-						next: { type: ['string', 'null'] },
-						previous: { type: ['string', 'null'] },
-					},
-					required: ['next', 'previous'],
-					additionalProperties: false,
+					anyOf: [
+						{
+							type: 'object',
+							properties: {
+								next: { type: ['string', 'null'] },
+								previous: { type: ['string', 'null'] },
+							},
+							required: ['next', 'previous'],
+							additionalProperties: false,
+						},
+						{ type: 'null' },
+						{ type: 'object', nullable: true },
+					],
 				},
 			},
 			required: ['updated', 'deleted'],
@@ -610,7 +615,7 @@ const chatEndpoints = API.v1
 		'chat.syncMessages',
 		{
 			authRequired: true,
-			query: isChatSyncMessagesLocalProps,
+			validateParams: isChatSyncMessagesLocalProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
