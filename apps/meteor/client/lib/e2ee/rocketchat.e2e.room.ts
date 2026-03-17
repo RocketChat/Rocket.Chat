@@ -164,7 +164,7 @@ export class E2ERoom extends Emitter {
 		this.setState('KEYS_RECEIVED');
 	}
 
-	async shouldConvertSentMessages(message: { msg: string }) {
+	async shouldConvertSentMessages(message: { msg?: string }) {
 		if (!this.isReady() || this[PAUSED]) {
 			return false;
 		}
@@ -175,7 +175,7 @@ export class E2ERoom extends Emitter {
 			});
 		}
 
-		if (message.msg[0] === '/') {
+		if (message.msg?.[0] === '/') {
 			return false;
 		}
 
