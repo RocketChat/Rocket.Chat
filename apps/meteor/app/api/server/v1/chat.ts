@@ -49,8 +49,8 @@ import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { API } from '../api';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 
@@ -275,9 +275,12 @@ const isChatSyncMessagesLocalProps = ajv.compile<ChatSyncMessages>(ChatSyncMessa
 
 const isSyncMessagesResponse = ajv.compile<{
 	result: {
-		updated: Partial<IMessage>[];
-		deleted: unknown[];
-		cursor?: unknown;
+		updated: IMessage[];
+		deleted: IMessage[];
+		cursor?: {
+			next: string | null;
+			previous: string | null;
+		};
 	};
 }>({
 	type: 'object',
@@ -287,22 +290,20 @@ const isSyncMessagesResponse = ajv.compile<{
 			properties: {
 				updated: {
 					type: 'array',
-					items: {
-						type: 'object',
-						additionalProperties: true,
-					},
+					items: { $ref: '#/components/schemas/IMessage' },
 				},
 				deleted: {
 					type: 'array',
-					items: {
-						type: 'object',
-						additionalProperties: true,
-					},
+					items: { $ref: '#/components/schemas/IMessage' },
 				},
 				cursor: {
 					type: 'object',
-					nullable: true,
-					additionalProperties: true,
+					properties: {
+						next: { type: ['string', 'null'] },
+						previous: { type: ['string', 'null'] },
+					},
+					required: ['next', 'previous'],
+					additionalProperties: false,
 				},
 			},
 			required: ['updated', 'deleted'],
@@ -628,11 +629,11 @@ const chatEndpoints = API.v1
 			}
 
 			const getMessagesQuery = {
-				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
-				...(next && { next }),
-				...(previous && { previous }),
-				...(count && { count }),
-				...(type && { type }),
+				...(lastUpdate ? { lastUpdate: new Date(lastUpdate) } : {}),
+				...(next ? { next } : {}),
+				...(previous ? { previous } : {}),
+				...(count ? { count } : {}),
+				...(type ? { type } : {}),
 			};
 
 			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
