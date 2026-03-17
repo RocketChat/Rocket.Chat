@@ -157,6 +157,10 @@ const RoomsCreateDiscussionSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		topic: {
+			type: 'string',
+			nullable: true,
+		},
 	},
 	required: ['prid', 't_name'],
 	additionalProperties: false,
@@ -637,6 +641,7 @@ type MembersOrderedByRoleProps = {
 export type RoomsMembersOrderedByRoleProps = PaginatedRequest<MembersOrderedByRoleProps>;
 
 const membersOrderedByRoleRolePropsSchema = {
+	type: 'object',
 	properties: {
 		roomId: {
 			type: 'string',
