@@ -43,14 +43,6 @@ describe('TeamsDeleteProps (definition/rest/v1)', () => {
 			assert.isFalse(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: {} }));
 		});
 
-		it('should return false if teamId and roomsToRemove are provided, but roomsToRemove is not an array of strings', () => {
-			assert.isFalse(isTeamsDeleteProps({ teamId: 'teamId', roomsToRemove: [1] }));
-		});
-
-		it('should return false if teamName and roomsToRemove are provided, but roomsToRemove is not an array of strings', () => {
-			assert.isFalse(isTeamsDeleteProps({ teamName: 'teamName', roomsToRemove: [1] }));
-		});
-
 		it('should return false if teamName and rooms are provided but an extra property is provided', () => {
 			assert.isFalse(
 				isTeamsDeleteProps({

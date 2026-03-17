@@ -237,7 +237,7 @@ callbacks.add(
 					],
 				},
 				room,
-				true,
+				{ upsert: true },
 			);
 			return message;
 		}

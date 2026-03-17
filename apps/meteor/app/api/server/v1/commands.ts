@@ -1,35 +1,86 @@
 import { Apps } from '@rocket.chat/apps';
+import type { SlashCommand } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
 import { executeSlashCommandPreview } from '../../../lib/server/methods/executeSlashCommandPreview';
 import { getSlashCommandPreviews } from '../../../lib/server/methods/getSlashCommandPreviews';
 import { slashCommands } from '../../../utils/server/slashCommand';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
-import { getLoggedInUser } from '../helpers/getLoggedInUser';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 
-API.v1.addRoute(
+type CommandsGetParams = { command: string };
+
+const CommandsGetParamsSchema = {
+	type: 'object',
+	properties: {
+		command: { type: 'string' },
+	},
+	required: ['command'],
+	additionalProperties: false,
+};
+
+const isCommandsGetParams = ajv.compile<CommandsGetParams>(CommandsGetParamsSchema);
+
+const commandsEndpoints = API.v1.get(
 	'commands.get',
-	{ authRequired: true },
 	{
-		get() {
-			const params = this.queryParams;
-
-			if (typeof params.command !== 'string') {
-				return API.v1.failure('The query param "command" must be provided.');
-			}
-
-			const cmd = slashCommands.commands[params.command.toLowerCase()];
-
-			if (!cmd) {
-				return API.v1.failure(`There is no command in the system by the name of: ${params.command}`);
-			}
-
-			return API.v1.success({ command: cmd });
+		authRequired: true,
+		query: isCommandsGetParams,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			200: ajv.compile<{
+				command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
+				success: true;
+			}>({
+				type: 'object',
+				properties: {
+					command: {
+						type: 'object',
+						properties: {
+							clientOnly: { type: 'boolean' },
+							command: { type: 'string' },
+							description: { type: 'string' },
+							params: { type: 'string' },
+							providesPreview: { type: 'boolean' },
+						},
+						required: ['command', 'providesPreview'],
+						additionalProperties: false,
+					},
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['command', 'success'],
+				additionalProperties: false,
+			}),
 		},
+	},
+
+	async function action() {
+		const params = this.queryParams;
+
+		const cmd = slashCommands.commands[params.command.toLowerCase()];
+
+		if (!cmd) {
+			return API.v1.failure(`There is no command in the system by the name of: ${params.command}`);
+		}
+
+		return API.v1.success({
+			command: {
+				command: cmd.command,
+				description: cmd.description,
+				params: cmd.params,
+				clientOnly: cmd.clientOnly,
+				providesPreview: cmd.providesPreview,
+			},
+		});
 	},
 );
 
@@ -248,7 +299,6 @@ API.v1.addRoute(
 		// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
 		async get() {
 			const query = this.queryParams;
-			const user = await getLoggedInUser(this.request);
 
 			if (typeof query.command !== 'string') {
 				return API.v1.failure('You must provide a command to get the previews from.');
@@ -267,7 +317,7 @@ API.v1.addRoute(
 				return API.v1.failure('The command provided does not exist (or is disabled).');
 			}
 
-			if (!(await canAccessRoomIdAsync(query.roomId, user?._id))) {
+			if (!(await canAccessRoomIdAsync(query.roomId, this.userId))) {
 				return API.v1.forbidden();
 			}
 
@@ -277,6 +327,7 @@ API.v1.addRoute(
 				cmd,
 				params,
 				msg: { rid: query.roomId },
+				userId: this.userId,
 			});
 
 			return API.v1.success({ preview });
@@ -344,9 +395,17 @@ API.v1.addRoute(
 					triggerId: body.triggerId,
 				},
 				body.previewItem,
+				this.userId,
 			);
 
 			return API.v1.success();
 		},
 	},
 );
+
+export type CommandsEndpoints = ExtractRoutesFromAPI<typeof commandsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends CommandsEndpoints {}
+}

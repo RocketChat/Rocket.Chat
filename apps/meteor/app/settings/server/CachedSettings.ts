@@ -181,9 +181,15 @@ export class CachedSettings
 			const settings = _id.map((id) => this.store.get(id)?.value);
 			callback(settings as T[]);
 		}
-		const mergeFunction = _.debounce((): void => {
-			callback(_id.map((id) => this.store.get(id)?.value) as T[]);
-		}, 100);
+
+		const mergeFunction =
+			process.env.TEST_MODE !== 'true'
+				? _.debounce((): void => {
+						callback(_id.map((id) => this.store.get(id)?.value) as T[]);
+					}, 100)
+				: (): void => {
+						callback(_id.map((id) => this.store.get(id)?.value) as T[]);
+					};
 
 		const fns = _id.map((id) => this.on(id, mergeFunction));
 		return (): void => {

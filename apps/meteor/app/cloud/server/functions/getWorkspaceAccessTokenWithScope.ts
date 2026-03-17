@@ -59,6 +59,8 @@ export async function getWorkspaceAccessTokenWithScope({
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			method: 'POST',
 			body,
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
 			timeout: 5000,
 		});
 

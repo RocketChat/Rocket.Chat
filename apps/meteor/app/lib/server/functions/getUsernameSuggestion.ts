@@ -60,7 +60,7 @@ export async function generateUsernameSuggestion(user: Pick<IUser, 'name' | 'ema
 
 	usernames = usernames.filter((e) => e);
 
-	for await (const item of usernames) {
+	for (const item of usernames) {
 		if (await usernameIsAvailable(item)) {
 			return item;
 		}
@@ -71,7 +71,6 @@ export async function generateUsernameSuggestion(user: Pick<IUser, 'name' | 'ema
 	let index = await Users.countDocuments({ username: new RegExp(`^${usernames[0]}-[0-9]+`) });
 	const username = '';
 	while (!username) {
-		// eslint-disable-next-line no-await-in-loop
 		if (await usernameIsAvailable(`${usernames[0]}-${index}`)) {
 			return `${usernames[0]}-${index}`;
 		}

@@ -1,11 +1,6 @@
-import Ajv from 'ajv';
-
+import { ajv } from '../Ajv';
 import type { GroupsBaseProps } from './BaseProps';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 export type GroupsFilesProps = PaginatedRequest<GroupsBaseProps> & {
 	name?: string;

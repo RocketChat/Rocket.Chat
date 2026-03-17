@@ -1,6 +1,5 @@
 import './ajv';
 import './helpers/composeRoomWithLastMessage';
-import './helpers/getLoggedInUser';
 import './helpers/getPaginationItems';
 import './helpers/getUserFromParams';
 import './helpers/getUserInfo';
@@ -44,6 +43,7 @@ import './v1/email-inbox';
 import './v1/mailer';
 import './v1/teams';
 import './v1/moderation';
+import './v1/uploads';
 
 // This has to come last so all endpoints are registered before generating the OpenAPI documentation
 import './default/openApi';

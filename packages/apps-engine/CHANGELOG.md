@@ -1,5 +1,41 @@
 # @rocket.chat/apps-engine
 
+## 1.60.0
+
+### Minor Changes
+
+- ([#38099](https://github.com/RocketChat/Rocket.Chat/pull/38099)) Adds file metadata to the Apps.Engine for messages with multiple files
+
+### Patch Changes
+
+- ([#38374](https://github.com/RocketChat/Rocket.Chat/pull/38374)) Fixes an issue where apps logs were being lost in nested requests
+
+- ([#38513](https://github.com/RocketChat/Rocket.Chat/pull/38513)) Fixes an issue where app-defined API endpoints with dynamic paths could fail to receive requests when using path parameters like `:param`.
+
+## 1.60.0-rc.0
+
+### Minor Changes
+
+- ([#38099](https://github.com/RocketChat/Rocket.Chat/pull/38099)) Adds file metadata to the Apps.Engine for messages with multiple files
+
+### Patch Changes
+
+- ([#38374](https://github.com/RocketChat/Rocket.Chat/pull/38374)) Fixes an issue where apps logs were being lost in nested requests
+
+- ([#38513](https://github.com/RocketChat/Rocket.Chat/pull/38513)) Fixes an issue where app-defined API endpoints with dynamic paths could fail to receive requests when using path parameters like `:param`.
+
+## 1.59.1
+
+### Patch Changes
+
+- ([#38068](https://github.com/RocketChat/Rocket.Chat/pull/38068)) Fixes an issue that caused a spike in memory usage when apps handled the IPreFileUpload event
+
+## 1.59.1-rc.0
+
+### Patch Changes
+
+- ([#38068](https://github.com/RocketChat/Rocket.Chat/pull/38068)) Fixes an issue that caused a spike in memory usage when apps handled the IPreFileUpload event
+
 ## 1.59.0
 
 ### Minor Changes

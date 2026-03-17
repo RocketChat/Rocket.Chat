@@ -352,12 +352,15 @@ class HandleDomElement
 	implements IHandleElement
 {
 	public setElement(element: HTMLElement) {
+		// Prevent text selection in the handle and behind the widget
+		element.style.userSelect = 'none';
+		element.style.webkitUserSelect = 'none';
+
 		const onGrab = (event: PointerEvent) => {
 			const element = event.currentTarget as HTMLElement;
 			if (!element || (isMousePointer(event) && !isLeftClick(event))) {
 				return;
 			}
-			event.preventDefault();
 
 			this.emit('grab', [getPointerEventCoordinates(event), element.getBoundingClientRect()]);
 		};

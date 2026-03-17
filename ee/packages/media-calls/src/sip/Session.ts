@@ -156,7 +156,7 @@ export class SipServerSession {
 		logger.info({ msg: 'Connecting to drachtio', host, port });
 
 		this.wasEverEnabled = true;
-		this.srf.connect({
+		void this.srf.connect({
 			host,
 			port,
 			secret,

@@ -133,45 +133,6 @@ export const useQuickActions = (): {
 		}
 	}, [closeModal, discardTranscript, dispatchToastMessage, t]);
 
-	const forwardChat = useEndpoint('POST', '/v1/livechat/room.forward');
-
-	const handleForwardChat = useCallback(
-		async (departmentId?: string, userId?: string, comment?: string) => {
-			if (departmentId && userId) {
-				return;
-			}
-			const transferData: {
-				roomId: string;
-				clientAction: boolean;
-				comment?: string;
-				departmentId?: string;
-				userId?: string;
-			} = {
-				roomId: rid,
-				comment,
-				clientAction: true,
-			};
-
-			if (departmentId) {
-				transferData.departmentId = departmentId;
-			}
-			if (userId) {
-				transferData.userId = userId;
-			}
-
-			try {
-				await forwardChat(transferData);
-				dispatchToastMessage({ type: 'success', message: t('Transferred') });
-				router.navigate('/home');
-				LegacyRoomManager.close(room.t + rid);
-				closeModal();
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-		},
-		[closeModal, dispatchToastMessage, forwardChat, room.t, rid, router, t],
-	);
-
 	const closeChat = useEndpoint('POST', '/v1/livechat/room.closeByUser');
 
 	const discardForRoom = useLivechatInquiryStore((state) => state.discardForRoom);
@@ -268,7 +229,7 @@ export const useQuickActions = (): {
 				);
 				break;
 			case QuickActionsEnum.ChatForward:
-				setModal(<ForwardChatModal room={room} onForward={handleForwardChat} onCancel={closeModal} />);
+				setModal(<ForwardChatModal room={room} onCancel={closeModal} />);
 				break;
 			case QuickActionsEnum.CloseChat:
 				const email = await getVisitorEmail();
