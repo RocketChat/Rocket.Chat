@@ -348,7 +348,7 @@ const spotlightResponseSchema = ajv.compile<{
 					statusText: { type: 'string' },
 					avatarETag: { type: 'string' },
 				},
-				required: ['_id', 'name', 'username', 'status', 'statusText'],
+				required: ['_id', 'name', 'username', 'status'],
 				additionalProperties: true,
 			},
 		},

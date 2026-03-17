@@ -21,6 +21,7 @@ jest.mock('../../navigation/providers/RoomsNavigationProvider', () => ({
 }));
 
 jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	FeaturePreview: ({ children }: { children: ReactNode }) => <>{children}</>,
 	FeaturePreviewOn: ({ children }: { children: ReactNode }) => <>{children}</>,
 	FeaturePreviewOff: ({ children }: { children: ReactNode }) => <>{children}</>,

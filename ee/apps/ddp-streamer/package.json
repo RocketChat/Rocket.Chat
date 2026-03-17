@@ -45,7 +45,7 @@
 		"sharp": "^0.33.5",
 		"underscore": "^1.13.7",
 		"uuid": "^11.0.3",
-		"ws": "~8.18.3"
+		"ws": "~8.19.0"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
@@ -56,7 +56,7 @@
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/underscore": "^1.13.0",
 		"@types/uuid": "^10.0.0",
-		"@types/ws": "^8.5.13",
+		"@types/ws": "^8.18.1",
 		"eslint": "~9.39.3",
 		"pino-pretty": "^7.6.1",
 		"ts-node": "^10.9.2",

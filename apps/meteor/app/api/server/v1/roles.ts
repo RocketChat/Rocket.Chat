@@ -3,6 +3,7 @@ import type { IRole, IUserInRole } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	isRoleAddUserToRoleProps,
 	isRoleDeleteProps,
 	isRoleRemoveUserFromRoleProps,
@@ -25,7 +26,7 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
 
-const rolesSyncQuerySchema = ajv.compile<{ updatedSince?: string }>({
+const rolesSyncQuerySchema = ajvQuery.compile<{ updatedSince?: string }>({
 	type: 'object',
 	properties: { updatedSince: { type: 'string' } },
 	additionalProperties: false,
