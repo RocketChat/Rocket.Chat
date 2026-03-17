@@ -16,7 +16,7 @@ describe('MessageRead', () => {
 	} as MessageBridge;
 
 	const mockMsgBridgeNoMsg = {
-		doGetById(id: string, appId: string): Promise<IMessage> {
+		doGetById(id: string, appId: string) {
 			return Promise.resolve(undefined);
 		},
 	} as MessageBridge;
