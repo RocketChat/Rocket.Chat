@@ -19,7 +19,8 @@ describe('ConfigurationModify', () => {
 		assert.doesNotThrow(() => new ConfigurationModify(ssm, scm, scheduler));
 
 		const sm = new ConfigurationModify(ssm, scm, scheduler);
-		assert.ok(sm.serverSettings);
-		assert.ok(sm.slashCommands);
+		assert.strictEqual(sm.serverSettings, ssm);
+		assert.strictEqual(sm.slashCommands, scm);
+		assert.strictEqual(sm.scheduler, scheduler);
 	});
 });

@@ -1,5 +1,6 @@
 import * as assert from 'node:assert';
 import { describe, it } from 'node:test';
+import type { TestContext } from 'node:test';
 import type * as stackTrace from 'stack-trace';
 
 import { LogMessageSeverity } from '../../../../src/definition/accessors';
@@ -7,7 +8,9 @@ import { AppMethod } from '../../../../src/definition/metadata';
 import { AppConsole } from '../../../../src/server/logging';
 
 describe('AppConsole', () => {
-	it('basicConsoleMethods', () => {
+	it('basicConsoleMethods', (t: TestContext) => {
+		t.mock.timers.enable({ apis: ['Date'] });
+
 		assert.doesNotThrow(() => new AppConsole(AppMethod._CONSTRUCTOR));
 
 		const logger = new AppConsole(AppMethod._CONSTRUCTOR);
@@ -58,7 +61,8 @@ describe('AppConsole', () => {
 		assert.strictEqual(logger.getMethod(), AppMethod._CONSTRUCTOR);
 		assert.ok(logger.getStartTime() !== undefined);
 		assert.ok(logger.getEndTime() !== undefined);
-		assert.ok(logger.getTotalTime() > 1);
+		t.mock.timers.tick(1000);
+		assert.strictEqual(logger.getTotalTime(), 1000);
 
 		const getFunc = (logger as any).getFunc.bind(logger);
 		assert.strictEqual(getFunc([{} as stackTrace.StackFrame]), 'anonymous');

@@ -134,10 +134,10 @@ describe('AppOutboundCommunicationProviderManager', () => {
 		assert.throws(() => manager.addProvider('testing', provider));
 	});
 
-	it('ignoreAppsWithoutProviders', () => {
+	it('ignoreAppsWithoutProviders', async () => {
 		const manager = new AppOutboundCommunicationProviderManager(mockManager);
 
-		assert.doesNotThrow(() => manager.registerProviders('non-existant'));
+		await assert.doesNotReject(() => manager.registerProviders('non-existant'));
 	});
 
 	it('registerProviders', async () => {
@@ -241,16 +241,16 @@ describe('AppOutboundCommunicationProviderManager', () => {
 		assert.throws(() => manager.getProviderMetadata('testing', 'email'), { name: 'Error', message: 'provider-not-registered' });
 	});
 
-	it('getProviderMetadata', () => {
+	it('getProviderMetadata', async () => {
 		const manager = new AppOutboundCommunicationProviderManager(mockManager);
 		manager.addProvider('testing', TestData.getOutboundPhoneMessageProvider());
 
-		mock.method(OutboundMessageProvider.prototype, 'runGetProviderMetadata', () => ({
+		mock.method(OutboundMessageProvider.prototype, 'runGetProviderMetadata', () => Promise.resolve({
 			name: 'test-provider',
 			capabilities: ['sms'],
 		}));
 
-		const metadata = manager.getProviderMetadata('testing', 'phone');
+		const metadata = await manager.getProviderMetadata('testing', 'phone');
 		assert.deepStrictEqual(metadata, {
 			name: 'test-provider',
 			capabilities: ['sms'],
@@ -268,7 +268,7 @@ describe('AppOutboundCommunicationProviderManager', () => {
 		assert.throws(() => manager.sendOutboundMessage('testing', 'email', message), { name: 'Error', message: 'provider-not-registered' });
 	});
 
-	it('sendOutboundMessage', () => {
+	it('sendOutboundMessage', async () => {
 		const manager = new AppOutboundCommunicationProviderManager(mockManager);
 		manager.addProvider('testing', TestData.getOutboundPhoneMessageProvider());
 
@@ -276,7 +276,7 @@ describe('AppOutboundCommunicationProviderManager', () => {
 
 		mock.method(OutboundMessageProvider.prototype, 'runSendOutboundMessage', () => Promise.resolve('message-id'));
 
-		const result = manager.sendOutboundMessage('testing', 'phone', message);
-		assert.ok(result !== undefined);
+		const result = await manager.sendOutboundMessage('testing', 'phone', message);
+		assert.strictEqual(result, 'message-id');
 	});
 });
