@@ -328,7 +328,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return settings.get<boolean>('VoIP_TeamCollab_Screen_Sharing_Enabled') ?? false;
 		}
 
-		return false;
+		return true;
 	}
 
 	private async userHasMediaCallPermission(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
