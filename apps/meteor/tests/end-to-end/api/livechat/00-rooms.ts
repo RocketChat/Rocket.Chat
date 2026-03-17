@@ -1706,8 +1706,6 @@ describe('LIVECHAT - rooms', () => {
 				expect(inquiry.status).to.equal('queued');
 				expect(inquiry.department).to.equal(forwardToOfflineDepartment._id);
 
-				ws.close();
-
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
 					deleteDepartment(forwardToOfflineDepartment._id),
@@ -1745,8 +1743,6 @@ describe('LIVECHAT - rooms', () => {
 
 				expect(res.status).to.equal(400);
 				expect(res.body).to.have.property('error', 'error-no-agents-available-for-service-on-department');
-
-				ws.close();
 
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
@@ -1811,6 +1807,7 @@ describe('LIVECHAT - rooms', () => {
 				} = await createDepartmentWithAnAwayAgent({
 					allowReceiveForwardOffline: true,
 				});
+				sockets.push(ws);
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
 
@@ -1828,8 +1825,6 @@ describe('LIVECHAT - rooms', () => {
 				const roomInfo = await getLivechatRoomInfo(newRoom._id);
 				expect(roomInfo.servedBy).to.have.property('_id', agent.user._id);
 				expect(roomInfo.departmentId).to.be.equal(forwardToOfflineDepartment._id);
-
-				ws.close();
 
 				await Promise.all([
 					deleteDepartment(initialDepartment._id),
