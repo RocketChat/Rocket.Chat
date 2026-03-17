@@ -3,13 +3,6 @@ name: Start patch release
 on:
   repository_dispatch:
     types: ['release-patch']
-# workflow_dispatch:
-#   inputs:
-#   base-ref:
-#     description: Base version
-#     default: develop
-#     required: false
-#     type: string
 
 jobs:
   release:

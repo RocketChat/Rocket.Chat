@@ -3,13 +3,6 @@ name: Cut release
 on:
   repository_dispatch:
     types: ['release-cut']
-  # workflow_dispatch:
-  #   inputs:
-  #     base-ref:
-  #       description: Base version
-  #       default: develop
-  #       required: false
-  #       type: string
 
 jobs:
   release:
