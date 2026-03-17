@@ -590,10 +590,10 @@ const ChatSyncMessagesSchema = {
 
 export const isChatSyncMessagesProps = ajv.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
 
-type ChatSyncThreadMessages = PaginatedRequest<{
+type ChatSyncThreadMessages = {
 	tmid: string;
 	updatedSince: string;
-}>;
+};
 
 const ChatSyncThreadMessagesSchema = {
 	type: 'object',
@@ -605,18 +605,6 @@ const ChatSyncThreadMessagesSchema = {
 		updatedSince: {
 			type: 'string',
 			format: 'iso-date-time',
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
 		},
 	},
 	required: ['tmid', 'updatedSince'],
