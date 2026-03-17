@@ -51,6 +51,7 @@ import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
 import { API } from '../api';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 
@@ -1136,4 +1137,9 @@ API.v1.addRoute(
 	},
 );
 
-void chatEndpoints;
+export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ChatEndpoints {}
+}
