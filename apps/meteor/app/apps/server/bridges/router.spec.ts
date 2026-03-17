@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import request from 'supertest';
 
 import { apiServer } from './router';
@@ -31,7 +32,7 @@ describe('API Server Routes', () => {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then((res) => {
-				expect(res.body).toEqual({
+				expect(res.body).to.deep.equal({
 					body: { key: 'value' },
 					params: { appId, hash },
 					query: {},
@@ -49,7 +50,7 @@ describe('API Server Routes', () => {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then((res) => {
-				expect(res.body).toEqual({
+				expect(res.body).to.deep.equal({
 					body: { key: 'value' },
 					params: { appId, hash },
 					query: {},
@@ -68,7 +69,7 @@ describe('API Server Routes', () => {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then((res) => {
-				expect(res.body).toEqual({
+				expect(res.body).to.deep.equal({
 					body: { key: 'value' },
 					params: { appId },
 					query: {},
@@ -85,7 +86,7 @@ describe('API Server Routes', () => {
 			.expect('Content-Type', /json/)
 			.expect(200)
 			.then((res) => {
-				expect(res.body).toEqual({
+				expect(res.body).to.deep.equal({
 					body: { key: 'value' },
 					params: { appId },
 					query: {},

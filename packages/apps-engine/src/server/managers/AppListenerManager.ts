@@ -339,6 +339,13 @@ export class AppListenerManager {
 		return !!lockedEventList?.size;
 	}
 
+	public hasListeners(event: AppInterface): boolean {
+		if (this.isEventBlocked(event)) {
+			return true;
+		}
+		return (this.listeners.get(event)?.length ?? 0) > 0;
+	}
+
 	/* eslint-disable-next-line complexity */
 	public async executeListener<I extends keyof IListenerExecutor>(
 		int: I,

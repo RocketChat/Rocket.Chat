@@ -41,4 +41,53 @@ export class AppListenerManagerTestFixture {
 		Expect(() => alm.registerListeners(this.mockApp)).not.toThrow();
 		Expect(alm.getListeners(AppInterface.IPostMessageSent).length).toBe(1);
 	}
+
+	@Test()
+	public hasListenersReturnsFalseWhenNoListeners() {
+		const alm = new AppListenerManager(this.mockManager);
+
+		Expect(alm.hasListeners(AppInterface.IPostMessageSent)).toBe(false);
+	}
+
+	@Test()
+	public hasListenersReturnsTrueAfterRegisterListeners() {
+		const alm = new AppListenerManager(this.mockManager);
+
+		alm.registerListeners(this.mockApp);
+
+		Expect(alm.hasListeners(AppInterface.IPostMessageSent)).toBe(true);
+	}
+
+	@Test()
+	public hasListenersReturnsFalseAfterUnregisterListeners() {
+		const alm = new AppListenerManager(this.mockManager);
+
+		alm.registerListeners(this.mockApp);
+		alm.unregisterListeners(this.mockApp);
+
+		Expect(alm.hasListeners(AppInterface.IPostMessageSent)).toBe(false);
+	}
+
+	@Test()
+	public hasListenersReturnsTrueForBlockedEvent() {
+		const alm = new AppListenerManager(this.mockManager);
+
+		const mockEssentialApp = {
+			getID() {
+				return 'essential-app';
+			},
+			getImplementationList() {
+				return {
+					[AppInterface.IPostMessageSent]: true,
+				} as { [inte: string]: boolean };
+			},
+			getEssentials() {
+				return [AppInterface.IPostMessageSent];
+			},
+		} as ProxiedApp;
+
+		alm.lockEssentialEvents(mockEssentialApp);
+
+		Expect(alm.hasListeners(AppInterface.IPostMessageSent)).toBe(true);
+	}
 }

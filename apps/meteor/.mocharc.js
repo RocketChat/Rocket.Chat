@@ -32,5 +32,6 @@ module.exports = {
 		'app/livechat/server/lib/**/*.spec.ts',
 		'app/push/server/**/*.spec.ts',
 		'app/utils/server/**/*.spec.ts',
+		'app/apps/**/**.spec.ts',
 	],
 };
