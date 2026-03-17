@@ -21,12 +21,12 @@ import {
 	isChatGetDeletedMessagesProps,
 	isChatSyncThreadsListProps,
 	isChatGetThreadMessagesProps,
-	isChatSyncThreadMessagesProps,
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -50,7 +50,6 @@ import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
@@ -275,42 +274,77 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+type ChatSyncThreadMessages = PaginatedRequest<{
+	tmid: string;
+	updatedSince: string;
+}>;
+
+const ChatSyncThreadMessagesSchema = {
+	type: 'object',
+	properties: {
+		tmid: {
+			type: 'string',
+			minLength: 1,
+		},
+		updatedSince: {
+			type: 'string',
+			format: 'iso-date-time',
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['tmid', 'updatedSince'],
+	additionalProperties: false,
+};
+
+const isChatSyncThreadMessagesLocalProps = ajv.compile<ChatSyncThreadMessages>(ChatSyncThreadMessagesSchema);
+
 const isSyncThreadMessagesResponse = ajv.compile<{
-  messages: {
-    update: Partial<IMessage>[];
-    remove: Partial<IMessage>[];
-  };
+	messages: {
+		update: Partial<IMessage>[];
+		remove: Partial<IMessage>[];
+	};
 }>({
-  type: 'object',
-  properties: {
-    messages: {
-      type: 'object',
-      properties: {
-        update: {
-          type: 'array',
-          items: {
-            type: 'object',
-            additionalProperties: true,
-          },
-        },
-        remove: {
-          type: 'array',
-          items: {
-            type: 'object',
-            additionalProperties: true,
-          },
-        },
-      },
-      required: ['update', 'remove'],
-      additionalProperties: false,
-    },
-    success: {
-      type: 'boolean',
-      enum: [true],
-    },
-  },
-  required: ['messages', 'success'],
-  additionalProperties: false,
+	type: 'object',
+	properties: {
+		messages: {
+			type: 'object',
+			properties: {
+				update: {
+					type: 'array',
+					items: {
+						type: 'object',
+						additionalProperties: true,
+					},
+				},
+				remove: {
+					type: 'array',
+					items: {
+						type: 'object',
+						additionalProperties: true,
+					},
+				},
+			},
+			required: ['update', 'remove'],
+			additionalProperties: false,
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['messages', 'success'],
+	additionalProperties: false,
 });
 
 const chatEndpoints = API.v1
@@ -601,7 +635,7 @@ const chatEndpoints = API.v1
 		'chat.syncThreadMessages',
 		{
 			authRequired: true,
-			query: isChatSyncThreadMessagesProps,
+			query: isChatSyncThreadMessagesLocalProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
@@ -1094,9 +1128,4 @@ API.v1.addRoute(
 	},
 );
 
-export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
-
-declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChatEndpoints {}
-}
+void chatEndpoints;
