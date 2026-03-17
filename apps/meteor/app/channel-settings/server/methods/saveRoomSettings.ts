@@ -75,7 +75,7 @@ const isAbacManagedTeam = (team: Partial<ITeam> | null, teamRoom: IRoom): boolea
 	);
 };
 
-export const validators: RoomSettingsValidators = {
+const validators: RoomSettingsValidators = {
 	async default({ userId, room, value }) {
 		if (!(await hasPermissionAsync(userId, 'view-room-administration'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Viewing room administration is not allowed', {
