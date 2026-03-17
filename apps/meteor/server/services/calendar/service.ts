@@ -285,15 +285,15 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const user = await Users.findOneById(event.uid, { projection: { status: 1 } });
-		if (!user || user.status === UserStatus.OFFLINE) {
+		const user = await Users.findOneById(event.uid, { projection: { statusDefault: 1 } });
+		if (!user || user.statusDefault === UserStatus.OFFLINE) {
 			return;
 		}
 
 		const overlappingEvents = await CalendarEvent.findOverlappingEvents(event._id, event.uid, event.startTime, event.endTime)
 			.sort({ startTime: -1 })
 			.toArray();
-		const previousStatus = overlappingEvents.at(0)?.previousStatus ?? user.status;
+		const previousStatus = overlappingEvents.at(0)?.previousStatus ?? user.statusDefault;
 
 		if (previousStatus) {
 			await CalendarEvent.updateEvent(event._id, { previousStatus });
@@ -313,16 +313,16 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const user = await Users.findOneById(event.uid, { projection: { status: 1 } });
+		const user = await Users.findOneById(event.uid, { projection: { statusDefault: 1 } });
 		if (!user) {
 			return;
 		}
 
 		// Only restore status if:
-		// 1. The current status is BUSY (meaning it was set by our system, not manually changed by user)
+		// 1. The current statusDefault is BUSY (meaning it was set by our system, not manually changed by user)
 		// 2. We have a previousStatus stored from before the event started
 
-		if (user.status === UserStatus.BUSY && event.previousStatus && event.previousStatus !== user.status) {
+		if (user.statusDefault === UserStatus.BUSY && event.previousStatus && event.previousStatus !== user.statusDefault) {
 			await applyStatusChange({
 				eventId: event._id,
 				uid: event.uid,
@@ -334,7 +334,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			logger.debug({
 				msg: 'Not restoring status for user',
 				userId: event.uid,
-				currentStatus: user.status,
+				currentStatusDefault: user.statusDefault,
 				previousStatus: event.previousStatus,
 			});
 		}

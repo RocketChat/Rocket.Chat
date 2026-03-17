@@ -98,7 +98,8 @@ export class NotificationsModule {
 				return false;
 			}
 
-			return Authorization.canReadRoom(room, { _id: this.userId || '' }, extraData);
+			const user = this.userId ? { _id: this.userId } : undefined;
+			return Authorization.canReadRoom(room, user, extraData);
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');

@@ -38,6 +38,13 @@ export const parseFileIntoMessageAttachments = async (
 ): Promise<FilesAndAttachments> => {
 	validateFileRequiredFields(file);
 
+	const upload = await Uploads.findOneByIdAndUserIdAndRoomId(file._id, user._id, roomId, { projection: { _id: 1 } });
+	if (!upload) {
+		throw new Meteor.Error('error-invalid-file', 'Invalid file', {
+			method: 'sendFileMessage',
+		});
+	}
+
 	await Uploads.updateFileComplete(file._id, user._id, omit(file, '_id'));
 
 	const fileUrl = FileUpload.getPath(`${file._id}/${encodeURI(file.name || '')}`);

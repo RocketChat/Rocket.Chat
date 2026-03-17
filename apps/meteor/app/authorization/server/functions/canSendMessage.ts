@@ -13,9 +13,10 @@ const subscriptionOptions = {
 	},
 };
 
+// TODO: remove option uid and username and type
 export async function validateRoomMessagePermissionsAsync(
 	room: IRoom | null,
-	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
+	args: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] } | IUser,
 	extraData?: Record<string, any>,
 ): Promise<void> {
 	if (!room) {
@@ -25,33 +26,34 @@ export async function validateRoomMessagePermissionsAsync(
 	if (room.archived) {
 		throw new Error('room_is_archived');
 	}
-
-	if (type !== 'app' && !(await canAccessRoomAsync(room, { _id: uid }, extraData))) {
+	if (args.type !== 'app' && !(await canAccessRoomAsync(room, 'uid' in args ? { _id: args.uid } : args, extraData))) {
 		throw new Error('error-not-allowed');
 	}
 
-	if (await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, uid)) {
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, uid, subscriptionOptions);
+	if (
+		await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, 'uid' in args ? args.uid : args._id)
+	) {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, 'uid' in args ? args.uid : args._id, subscriptionOptions);
 		if (subscription && (subscription.blocked || subscription.blocker)) {
 			throw new Error('room_is_blocked');
 		}
 	}
 
-	if (room.ro === true && !(await hasPermissionAsync(uid, 'post-readonly', room._id))) {
+	if (room.ro === true && !(await hasPermissionAsync('uid' in args ? args.uid : args._id, 'post-readonly', room._id))) {
 		// Unless the user was manually unmuted
-		if (username && !(room.unmuted || []).includes(username)) {
+		if (args.username && !(room.unmuted || []).includes(args.username)) {
 			throw new Error("You can't send messages because the room is readonly.");
 		}
 	}
 
-	if (username && room?.muted?.includes(username)) {
+	if (args.username && room?.muted?.includes(args.username)) {
 		throw new Error('You_have_been_muted');
 	}
 }
-
+// TODO: remove option uid and username and type
 export async function canSendMessageAsync(
 	rid: IRoom['_id'],
-	{ uid, username, type }: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] },
+	user: { uid: IUser['_id']; username: IUser['username']; type: IUser['type'] } | IUser,
 	extraData?: Record<string, any>,
 ): Promise<IRoom> {
 	const room = await Rooms.findOneById(rid);
@@ -59,6 +61,6 @@ export async function canSendMessageAsync(
 		throw new Error('error-invalid-room');
 	}
 
-	await validateRoomMessagePermissionsAsync(room, { uid, username, type }, extraData);
+	await validateRoomMessagePermissionsAsync(room, user, extraData);
 	return room;
 }

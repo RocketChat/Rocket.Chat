@@ -228,7 +228,6 @@ describe('livechat/server/lib/webhooks sendRequest', () => {
 
 		// Process the 4 scheduled retries
 		for (let i = 0; i < 4; i++) {
-			// eslint-disable-next-line no-await-in-loop
 			await clock.tickAsync(retryAfter);
 		}
 
