@@ -1811,7 +1811,6 @@ describe('LIVECHAT - rooms', () => {
 				} = await createDepartmentWithAnAwayAgent({
 					allowReceiveForwardOffline: true,
 				});
-				// await new Promise((r) => setTimeout(r, 7000));
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
 
@@ -1827,7 +1826,6 @@ describe('LIVECHAT - rooms', () => {
 				});
 
 				const roomInfo = await getLivechatRoomInfo(newRoom._id);
-				console.log(roomInfo);
 				expect(roomInfo.servedBy).to.have.property('_id', agent.user._id);
 				expect(roomInfo.departmentId).to.be.equal(forwardToOfflineDepartment._id);
 
