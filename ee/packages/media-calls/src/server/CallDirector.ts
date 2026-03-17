@@ -1,9 +1,17 @@
-import type { IMediaCall, IMediaCallNegotiation, MediaCallContact, MediaCallSignedContact, ServerActor } from '@rocket.chat/core-typings';
-import type { CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
+import type {
+	IMediaCall,
+	IMediaCallNegotiation,
+	MediaCallContact,
+	MediaCallSignedContact,
+	ServerActor,
+	MediaCallNegotiationStream,
+} from '@rocket.chat/core-typings';
+import type { CallFeature, CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector, getMediaCallServer } from './injection';
+import { DEFAULT_CALL_FEATURES } from '../constants';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import type { InternalCallParams, MediaCallHeader } from '../definition/common';
@@ -52,7 +60,7 @@ class MediaCallDirector {
 	public async acceptCall(
 		call: MediaCallHeader,
 		calleeAgent: IMediaCallAgent,
-		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit },
+		data: { calleeContractId: string; webrtcAnswer?: RTCSessionDescriptionInit; supportedFeatures: CallFeature[] },
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
@@ -71,8 +79,11 @@ class MediaCallDirector {
 		logger.info({ msg: 'Call was flagged as accepted', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 
-		await calleeAgent.onCallAccepted(call._id, data.calleeContractId);
-		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, call.caller.contractId);
+		const updatedCall = await MediaCalls.findOneById(call._id, { projection: { features: 1 } });
+		const features = (updatedCall?.features || DEFAULT_CALL_FEATURES) as CallFeature[];
+
+		await calleeAgent.onCallAccepted(call._id, { signedContractId: data.calleeContractId, features });
+		await calleeAgent.oppositeAgent?.onCallAccepted(call._id, { signedContractId: call.caller.contractId, features });
 
 		if (data.webrtcAnswer && negotiation) {
 			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
@@ -131,7 +142,7 @@ class MediaCallDirector {
 	public async saveWebrtcSession(
 		call: IMediaCall,
 		fromAgent: IMediaCallAgent,
-		session: { sdp: RTCSessionDescriptionInit; negotiationId: string },
+		session: { sdp: RTCSessionDescriptionInit; negotiationId: string; streams?: MediaCallNegotiationStream[] },
 		contractId: string,
 	): Promise<void> {
 		logger.debug({ msg: 'MediaCallDirector.saveWebrtcSession', callId: call?._id });
@@ -153,8 +164,8 @@ class MediaCallDirector {
 		}
 
 		const updater = isOffer
-			? MediaCallNegotiations.setOfferById(negotiation._id, session.sdp)
-			: MediaCallNegotiations.setAnswerById(negotiation._id, session.sdp);
+			? MediaCallNegotiations.setOfferById(negotiation._id, session.sdp, session.streams)
+			: MediaCallNegotiations.setAnswerById(negotiation._id, session.sdp, session.streams);
 		const updateResult = await updater;
 
 		if (!updateResult.modifiedCount) {
@@ -167,7 +178,7 @@ class MediaCallDirector {
 	}
 
 	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy } = params;
+		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features } = params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
@@ -213,6 +224,8 @@ class MediaCallDirector {
 
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 			...(parentCallId && { parentCallId }),
+
+			features,
 		};
 
 		logger.debug({ msg: 'creating call', call });

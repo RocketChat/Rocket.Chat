@@ -6,12 +6,9 @@ import type { ComponentProps, ReactElement } from 'react';
 import { ReactiveUserStatus } from '../components/UserStatus';
 
 export const useRoomIcon = (
-	room: Pick<
-		IRoom,
-		't' | 'prid' | 'teamMain' | 'uids' | 'u' | 'abacAttributes'
-	>,
+	room: Pick<IRoom, 't' | 'prid' | 'teamMain' | 'uids' | 'u' | 'abacAttributes'>,
 ): ComponentProps<typeof Icon> | ReactElement | null => {
-	if (room.abacAttributes && room.abacAttributes.length > 0) {
+	if (room.abacAttributes) {
 		if (room.teamMain) {
 			return { name: 'team-shield' };
 		}

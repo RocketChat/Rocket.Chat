@@ -90,4 +90,9 @@ export class EmojiCustomRaw extends BaseRaw<IEmojiCustom> implements IEmojiCusto
 
 		return this.countDocuments(query);
 	}
+
+	// TODO: convert name: string to branded type using to enforce validation also replace this type cross the models/apis
+	findOneByName(name: string, options?: FindOptions<IEmojiCustom>): Promise<IEmojiCustom | null> {
+		return this.findOne({ name }, options);
+	}
 }

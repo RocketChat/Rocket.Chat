@@ -48,7 +48,7 @@ const getStatus = (index: number) => {
 };
 
 const getDate = (index: number) => {
-	const date = new Date();
+	const date = new Date(2025, 5, 1, 12, 0, 0);
 	if (index % 5 === 0) {
 		return new Date(date.setSeconds(date.getSeconds() - 10));
 	}

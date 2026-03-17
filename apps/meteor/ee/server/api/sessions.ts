@@ -136,6 +136,8 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
+			await api.broadcast('user.forceLogout', sessionObj.userId, sessionId);
+
 			await Promise.all([
 				Users.unsetOneLoginToken(this.userId, sessionObj.loginToken),
 				Sessions.logoutByloginTokenAndUserId({ loginToken: sessionObj.loginToken, userId: this.userId }),
@@ -239,7 +241,7 @@ API.v1.addRoute(
 				return API.v1.notFound('Session not found');
 			}
 
-			await api.broadcast('user.forceLogout', sessionObj.userId);
+			await api.broadcast('user.forceLogout', sessionObj.userId, sessionId);
 
 			await Promise.all([
 				Users.unsetOneLoginToken(sessionObj.userId, sessionObj.loginToken),

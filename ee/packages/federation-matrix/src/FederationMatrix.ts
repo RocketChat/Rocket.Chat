@@ -1,4 +1,4 @@
-import { type IFederationMatrixService, Room, ServiceClass } from '@rocket.chat/core-services';
+import { Authorization, type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
 	isMessageFromMatrixFederation,
@@ -11,7 +11,7 @@ import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederat
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
 import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Users, Subscriptions, Messages, Rooms, Settings } from '@rocket.chat/models';
+import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import emojione from 'emojione';
 
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
@@ -36,22 +36,45 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private processEDUPresence: boolean;
 
+	private processEDUReceipt: boolean;
+
+	private validateUserDomain: boolean;
+
 	private readonly logger = new Logger(this.name);
 
 	override async created(): Promise<void> {
-		// although this is async function, it is not awaited, so we need to register the listeners before everything else
-		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
-			if (clientAction === 'removed') {
-				return;
-			}
-
-			const { _id, value } = setting;
-			if (_id === 'Federation_Service_Domain' && typeof value === 'string') {
+		this.onSettingChanged('Federation_Service_Domain', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'string') {
 				this.serverName = value;
-			} else if (_id === 'Federation_Service_EDU_Process_Typing' && typeof value === 'boolean') {
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_EDU_Process_Typing', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
 				this.processEDUTyping = value;
-			} else if (_id === 'Federation_Service_EDU_Process_Presence' && typeof value === 'boolean') {
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_EDU_Process_Presence', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
 				this.processEDUPresence = value;
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_EDU_Process_Receipt', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.processEDUReceipt = value;
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_Validate_User_Domain', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.validateUserDomain = value;
 			}
 		});
 
@@ -94,10 +117,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
+	}
 
-		this.serverName = (await Settings.getValueById<string>('Federation_Service_Domain')) || '';
-		this.processEDUTyping = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Typing')) || false;
-		this.processEDUPresence = (await Settings.getValueById<boolean>('Federation_Service_EDU_Process_Presence')) || false;
+	override async started(): Promise<void> {
+		this.serverName = (await Settings.get<string>('Federation_Service_Domain')) || '';
+		this.processEDUTyping = (await Settings.get<boolean>('Federation_Service_EDU_Process_Typing')) || false;
+		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
+		this.processEDUReceipt = (await Settings.get<boolean>('Federation_Service_EDU_Process_Receipt')) || false;
+		this.validateUserDomain = (await Settings.get<boolean>('Federation_Service_Validate_User_Domain')) || false;
 	}
 
 	async createRoom(room: IRoom, owner: IUser): Promise<{ room_id: string; event_id: string }> {
@@ -136,7 +163,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			this.logger.debug({ msg: 'Ensuring federated users exist locally before DM creation', memberCount: usernames.length });
 
 			const federatedUsers = usernames.filter(validateFederatedUsername);
-			for await (const username of federatedUsers) {
+			for (const username of federatedUsers) {
 				const existingUser = await Users.findOneByUsername(username);
 				if (existingUser && isUserNativeFederated(existingUser)) {
 					continue;
@@ -496,7 +523,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			for await (const [eventId, username] of Object.entries(reactionData.federationReactionEventIds)) {
+			for (const [eventId, username] of Object.entries(reactionData.federationReactionEventIds)) {
 				if (username !== user.username) {
 					continue;
 				}
@@ -801,5 +828,64 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw err;
 			}
 		}
+	}
+
+	async canUserAccessFederation(user: IUser): Promise<boolean> {
+		if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+			return false;
+		}
+
+		if (!this.validateUserDomain) {
+			return true;
+		}
+
+		return (
+			user.emails?.some((email) => {
+				const domain = email.address.split('@')[1];
+				return domain === this.serverName && email.verified;
+			}) ?? false
+		);
+	}
+
+	async notifyRoomRead({ room, userId, threadId }: { room: IRoomNativeFederated; userId: string; threadId?: string }): Promise<void> {
+		if (!this.processEDUReceipt) {
+			return;
+		}
+
+		// get last event_id for the room or thread
+		const lastMessage = threadId
+			? await Messages.findVisibleThreadByThreadId(threadId, {
+					sort: { ts: -1 },
+					projection: { federation: 1 },
+				}).next()
+			: await Messages.findVisibleByRoomId(room._id, { projection: { federation: 1 }, sort: { ts: -1 } }).next();
+
+		if (!lastMessage?.federation?.eventId) {
+			this.logger.warn({ msg: 'No event ID found for room, skipping read receipt', roomId: room._id });
+			return;
+		}
+
+		const threadEventId = threadId
+			? (await Messages.findOneById(threadId, { projection: { federation: 1 } }))?.federation?.eventId
+			: undefined;
+
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('User not found');
+		}
+
+		if (!user.username) {
+			throw new Error('User username not found');
+		}
+
+		// TODO: should use common function to get matrix user ID
+		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+
+		await federationSDK.sendReadReceipt({
+			roomId: roomIdSchema.parse(room.federation.mrid),
+			eventIds: [eventIdSchema.parse(lastMessage?.federation?.eventId)],
+			userId: userIdSchema.parse(matrixUserId),
+			...(threadEventId && { threadId: eventIdSchema.parse(threadEventId) }),
+		});
 	}
 }

@@ -70,7 +70,11 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public async acceptCallById(callId: string, data: { calleeContractId: string }, expiresAt: Date): Promise<UpdateResult> {
+	public async acceptCallById(
+		callId: string,
+		data: { calleeContractId: string; supportedFeatures: string[] },
+		expiresAt: Date,
+	): Promise<UpdateResult> {
 		const { calleeContractId } = data;
 
 		return this.updateOne(
@@ -84,6 +88,11 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					'callee.contractId': calleeContractId,
 					'acceptedAt': new Date(),
 					expiresAt,
+				},
+				$pull: {
+					features: {
+						$nin: data.supportedFeatures,
+					},
 				},
 			},
 		);
