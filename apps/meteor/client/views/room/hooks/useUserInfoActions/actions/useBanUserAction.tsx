@@ -42,13 +42,6 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRo
 	const roomName = room?.t && escapeHTML(roomCoordinator.getRoomName(room.t, room));
 	const { roomCanBan } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
 
-	console.log(
-		userCanBan,
-		roomCanBan,
-		isRoomNativeFederated(room),
-		Federation.isEditableByTheUser(currentUser || undefined, room, subscription),
-	);
-
 	const { mutate: banUser, isPending } = useEndpointMutation('POST', '/v1/rooms.banUser', {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('User__username__banned_from__roomName__', { username, roomName }) });
@@ -71,6 +64,7 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRo
 		setModal(
 			<GenericModal
 				variant='danger'
+				title={t('Are_you_sure')}
 				confirmText={t('Yes_ban_user')}
 				confirmLoading={isPending}
 				onClose={() => setModal(null)}
@@ -83,10 +77,6 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRo
 	}, [setModal, t, isPending, onConfirm, roomName]);
 
 	return useMemo(() => {
-		if (!username) {
-			return undefined;
-		}
-
 		if (!userCanBan || !roomCanBan) {
 			return undefined;
 		}
@@ -98,5 +88,5 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRo
 			type: 'moderation' as const,
 			variant: 'danger' as const,
 		};
-	}, [handleBan, roomCanBan, userCanBan, username, t]);
+	}, [handleBan, roomCanBan, userCanBan, t]);
 };
