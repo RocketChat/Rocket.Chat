@@ -304,11 +304,11 @@ const ChatSyncThreadMessagesSchema = {
 			nullable: true,
 		},
 		query: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 		fields: {
-			type: 'object',
+			type: 'string',
 			nullable: true,
 		},
 	},
