@@ -162,9 +162,9 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						displayname: localUser.name || localUser.username,
 						avatar_url: avatarUrl,
 					});
-					this.logger.debug(`Sent avatar update for ${username} to room ${externalRoomId}`);
+					this.logger.debug({ msg: 'Sent avatar update', username, roomId: externalRoomId });
 				} catch (error) {
-					this.logger.error(`Failed to send avatar update for ${username} to room ${externalRoomId}:`, error);
+					this.logger.error({ err: error, msg: `Failed to send avatar update for ${username} to room ${externalRoomId}` });
 				}
 			}
 		});
