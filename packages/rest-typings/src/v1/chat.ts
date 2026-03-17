@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl} from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -146,54 +146,6 @@ const ChatReportMessageSchema = {
 
 export const isChatReportMessageProps = ajv.compile<ChatReportMessage>(ChatReportMessageSchema);
 
-type ChatGetThreadsList = PaginatedRequest<{
-	rid: IRoom['_id'];
-	type?: 'unread' | 'following';
-	text?: string;
-	fields?: string;
-}>;
-
-const ChatGetThreadsListSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		type: {
-			type: 'string',
-			enum: ['following', 'unread'],
-			nullable: true,
-		},
-		text: {
-			type: 'string',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
-};
-
-export const isChatGetThreadsListProps = ajv.compile<ChatGetThreadsList>(ChatGetThreadsListSchema);
 
 type ChatSyncThreadsList = {
 	rid: IRoom['_id'];
@@ -638,40 +590,6 @@ const ChatSyncMessagesSchema = {
 
 export const isChatSyncMessagesProps = ajv.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
 
-type ChatSyncThreadMessages = PaginatedRequest<{
-	tmid: string;
-	updatedSince: string;
-}>;
-
-const ChatSyncThreadMessagesSchema = {
-	type: 'object',
-	properties: {
-		tmid: {
-			type: 'string',
-			minLength: 1,
-		},
-		updatedSince: {
-			type: 'string',
-			format: 'iso-date-time',
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['tmid', 'updatedSince'],
-	additionalProperties: false,
-};
-
-export const isChatSyncThreadMessagesProps = ajv.compile<ChatSyncThreadMessages>(ChatSyncThreadMessagesSchema);
 
 type ChatGetThreadMessages = PaginatedRequest<{
 	tmid: string;
@@ -906,12 +824,6 @@ export type ChatEndpoints = {
 			total: number;
 		};
 	};
-	'/v1/chat.getThreadsList': {
-		GET: (params: ChatGetThreadsList) => {
-			threads: IThreadMainMessage[];
-			total: number;
-		};
-	};
 	'/v1/chat.syncThreadsList': {
 		GET: (params: ChatSyncThreadsList) => {
 			threads: {
@@ -987,14 +899,6 @@ export type ChatEndpoints = {
 			ts: number;
 			channel: IRoom;
 			message: IMessage;
-		};
-	};
-	'/v1/chat.syncThreadMessages': {
-		GET: (params: ChatSyncThreadMessages) => {
-			messages: {
-				update: IMessage[];
-				remove: IMessage[];
-			};
 		};
 	};
 	'/v1/chat.getThreadMessages': {

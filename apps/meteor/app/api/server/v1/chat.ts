@@ -1,13 +1,13 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, IRoom } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
 import {
 	ajv,
 	isChatReportMessageProps,
 	isChatGetURLPreviewProps,
 	isChatUpdateProps,
-	isChatGetThreadsListProps,
 	isChatDeleteProps,
 	isChatSyncMessagesProps,
 	isChatGetMessageProps,
@@ -275,6 +275,55 @@ const isChatPinMessageProps = ajv.compile<ChatPinMessage>(ChatPinMessageSchema);
 
 const isChatUnpinMessageProps = ajv.compile<ChatUnpinMessage>(ChatUnpinMessageSchema);
 
+type ChatGetThreadsList = PaginatedRequest<{
+	rid: IRoom['_id'];
+	type?: 'unread' | 'following';
+	text?: string;
+	fields?: string;
+}>;
+
+const ChatGetThreadsListSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+		},
+		type: {
+			type: 'string',
+			enum: ['following', 'unread'],
+			nullable: true,
+		},
+		text: {
+			type: 'string',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+		fields: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: ['rid'],
+	additionalProperties: false,
+};
+
+const isChatGetThreadsListLocalProps = ajv.compile<ChatGetThreadsList>(ChatGetThreadsListSchema);
+
 const isChatGetThreadsListResponse = ajv.compile<{
 	threads: IMessage[];
 	count: number;
@@ -302,7 +351,7 @@ const isChatGetThreadsListResponse = ajv.compile<{
 		success: {
 			type: 'boolean',
 			enum: [true],
-		}
+		},
 	},
 	required: ['threads', 'count', 'offset', 'total', 'success'],
 	additionalProperties: false,
@@ -596,7 +645,7 @@ const chatEndpoints = API.v1
 		'chat.getThreadsList',
 		{
 			authRequired: true,
-			query: isChatGetThreadsListProps,
+			query: isChatGetThreadsListLocalProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
@@ -867,7 +916,6 @@ API.v1.addRoute(
 	},
 );
 
-
 API.v1.addRoute(
 	'chat.syncThreadsList',
 	{ authRequired: true, validateParams: isChatSyncThreadsListProps },
@@ -1089,9 +1137,9 @@ API.v1.addRoute(
 	},
 );
 
+
 export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChatEndpoints {}
+  interface Endpoints extends ChatEndpoints {}
 }
