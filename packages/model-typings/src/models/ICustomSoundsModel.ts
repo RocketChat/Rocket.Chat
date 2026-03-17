@@ -8,4 +8,5 @@ export interface ICustomSoundsModel extends IBaseModel<ICustomSound> {
 	findByNameExceptId(name: string, except: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound>;
 	setName(_id: string, name: string): Promise<UpdateResult>;
 	create(data: Omit<ICustomSound, '_id'>): Promise<InsertOneResult<WithId<ICustomSound>>>;
+	setExtension(_id: string, extension: string): Promise<UpdateResult>;
 }

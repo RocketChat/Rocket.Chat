@@ -71,5 +71,16 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 		});
 	}
 
+	if (soundData.extension !== soundData.previousExtension) {
+		await CustomSounds.setExtension(soundData._id, soundData.extension);
+		void api.broadcast('notify.updateCustomSound', {
+			soundData: {
+				_id: soundData._id,
+				name: soundData.name,
+				extension: soundData.extension,
+			},
+		});
+	}
+
 	return soundData._id;
 };

@@ -242,12 +242,15 @@ const customSoundsEndpoints = API.v1
 					_id: fields._id,
 					name: fields.name,
 					extension: fields.extension,
-					newFile: Boolean(fields.newFile),
 					previousName: soundToUpdate.name,
 					previousExtension: soundToUpdate.extension,
 				});
 				if (fileBuffer) {
-					await uploadCustomSound(fileBuffer, mimetype, { _id: fields._id, name: fields.name, extension: fields.extension });
+					await uploadCustomSound(fileBuffer, mimetype, {
+						_id: fields._id,
+						previousExtension: soundToUpdate.extension,
+						extension: fields.extension,
+					});
 				}
 			} catch (error) {
 				SystemLogger.error({ error });

@@ -70,12 +70,8 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		formData.append('name', name);
 
 		if (file) {
-			formData.append('extension', soundData.extension);
-			formData.append('newFile', 'true');
 			formData.append('sound', file);
-		} else {
-			formData.append('extension', data.extension);
-			formData.append('newFile', 'false');
+			formData.append('extension', soundData.extension);
 		}
 
 		await saveAction(formData);

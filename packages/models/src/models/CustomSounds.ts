@@ -46,4 +46,14 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	create(data: Omit<ICustomSound, '_id'>): Promise<InsertOneResult<WithId<ICustomSound>>> {
 		return this.insertOne(data);
 	}
+
+	setExtension(_id: string, extension: string): Promise<UpdateResult> {
+		const update = {
+			$set: {
+				extension,
+			},
+		};
+
+		return this.updateOne({ _id }, update);
+	}
 }

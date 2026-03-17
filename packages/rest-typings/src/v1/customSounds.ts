@@ -71,9 +71,7 @@ const CustomSoundsCreateSchema = {
 
 export const isCustomSoundsCreateProps = ajv.compile<CustomSoundsCreate>(CustomSoundsCreateSchema);
 
-type CustomSoundsUpdate = Pick<ICustomSound, '_id' | 'name' | 'extension'> & {
-	newFile?: boolean;
-};
+type CustomSoundsUpdate = Pick<ICustomSound, '_id' | 'name' | 'extension'>;
 
 const CustomSoundsUpdateSchema = {
 	type: 'object',
@@ -90,11 +88,8 @@ const CustomSoundsUpdateSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		newFile: {
-			type: 'boolean',
-		},
 	},
-	required: ['_id', 'name', 'extension'],
+	required: ['_id', 'name'],
 	additionalProperties: false,
 };
 
