@@ -51,7 +51,7 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRo
 
 	const { mutate: banUser, isPending } = useEndpointMutation('POST', '/v1/rooms.banUser', {
 		onSuccess: () => {
-			dispatchToastMessage({ type: 'success', message: t('User__username__has_been_banned_from__roomName__', { username, roomName }) });
+			dispatchToastMessage({ type: 'success', message: t('User__username__banned_from__roomName__', { username, roomName }) });
 			void queryClient.invalidateQueries({ queryKey: roomsQueryKeys.members(room._id, room.t) });
 			void queryClient.invalidateQueries({ queryKey: roomsQueryKeys.bannedUsers(room._id) });
 		},
