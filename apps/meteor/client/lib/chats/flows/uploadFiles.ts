@@ -11,7 +11,7 @@ export const uploadFiles = async (
 ): Promise<void> => {
 	const uploadsStore = chat.composer?.uploads;
 	if (!uploadsStore) {
-		return;
+		throw new Error('No uploads store found in composer');
 	}
 
 	const mergedFilesLength = files.length + uploadsStore.get().length;
