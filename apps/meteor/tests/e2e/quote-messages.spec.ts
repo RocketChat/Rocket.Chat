@@ -22,19 +22,26 @@ test.describe.serial('Quote Messages', () => {
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 	});
 
-	test('should quote a single message in channel', async () => {
+	test('should quote a message containing plain text, emoji, markdown, and code blocks', async () => {
 		const messageText = faker.lorem.sentence();
-		const quoteText = faker.lorem.sentence();
+		const quoteText = `Quote with :smile:, *bold*, _italics_, and \`\`\`javascript\nconsole.log("Hello");\n\`\`\``;
 
-		await test.step('Send initial message and quote it', async () => {
+		await test.step('Send initial message and quote it with complex formatting', async () => {
 			await poHomeChannel.content.sendMessage(messageText);
 			await poHomeChannel.content.quoteMessage(quoteText, messageText);
 		});
 
-		await test.step('Verify quoted message appears', async () => {
-			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage.locator('blockquote')).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(quoteText);
+		await test.step('Verify quoted message and all formatting appears', async () => {
+			const lastMessage = poHomeChannel.content.lastUserMessage;
+			await expect(lastMessage).toBeVisible();
+			await expect(lastMessage.locator('blockquote')).toBeVisible();
+
+			// Verify content and formatting
+			await expect(lastMessage).toContainText('Quote with');
+			await expect(lastMessage.locator('strong')).toBeVisible();
+			await expect(lastMessage.locator('em')).toBeVisible();
+			await expect(lastMessage).toContainText('console.log');
+
 			await expect(poHomeChannel.content.lastMessageTextAttachmentEqualsText).toHaveText(messageText);
 		});
 	});
@@ -78,55 +85,6 @@ test.describe.serial('Quote Messages', () => {
 
 		await test.step('Verify message is deleted', async () => {
 			await expect(poHomeChannel.content.lastUserMessage).not.toContainText(quoteText);
-		});
-	});
-
-	test('should quote message with emoji', async () => {
-		const messageText = faker.lorem.sentence();
-		const quoteText = 'Quote with emoji :smile:';
-
-		await test.step('Send initial message and quote it with emoji', async () => {
-			await poHomeChannel.content.sendMessage(messageText);
-			await poHomeChannel.content.quoteMessage(quoteText, messageText);
-		});
-
-		await test.step('Verify quoted message with emoji appears', async () => {
-			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage.locator('blockquote')).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage).toContainText('Quote with emoji');
-		});
-	});
-
-	test('should quote message with markdown formatting', async () => {
-		const messageText = faker.lorem.sentence();
-		const quoteText = '*Bold* and _italics_ text';
-
-		await test.step('Send initial message and quote it with markdown formatting', async () => {
-			await poHomeChannel.content.sendMessage(messageText);
-			await poHomeChannel.content.quoteMessage(quoteText, messageText);
-		});
-
-		await test.step('Verify quoted message with markdown appears', async () => {
-			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage.locator('blockquote')).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage.locator('strong')).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage.locator('em')).toBeVisible();
-		});
-	});
-
-	test('should quote message with code blocks', async () => {
-		const messageText = faker.lorem.sentence();
-		const quoteText = '```javascript\nconsole.log("Hello World");\n```';
-
-		await test.step('Send initial message and quote it with code block', async () => {
-			await poHomeChannel.content.sendMessage(messageText);
-			await poHomeChannel.content.quoteMessage(quoteText, messageText);
-		});
-
-		await test.step('Verify quoted message with code block appears', async () => {
-			await expect(poHomeChannel.content.lastUserMessage).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage.locator('blockquote')).toBeVisible();
-			await expect(poHomeChannel.content.lastUserMessage).toContainText('console.log');
 		});
 	});
 
