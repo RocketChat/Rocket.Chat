@@ -52,7 +52,7 @@ type UserMenuAction = {
 }[];
 
 type UserInfoActionsParams = {
-	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
+	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension' | 'roles'>;
 	rid: IRoom['_id'];
 	reload?: () => void;
 	size?: number;
