@@ -840,10 +840,10 @@ export class ClientMediaCall implements IClientMediaCall {
 				this.emitter.emit('accepted');
 				break;
 			case 'active':
-				this.emitter.emit('active');
 				if (!this._activeTimestamp) {
 					this._activeTimestamp = new Date();
 				}
+				this.emitter.emit('active');
 				this.reportStates();
 				break;
 

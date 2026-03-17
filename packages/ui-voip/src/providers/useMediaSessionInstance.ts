@@ -91,7 +91,12 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			processorFactories: {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
-			displayMediaFactory: (...args) => navigator.mediaDevices.getDisplayMedia(...args),
+			displayMediaFactory: (...args) => {
+				if (!navigator.mediaDevices.getDisplayMedia) {
+					throw new Error('getDisplayMedia is not supported');
+				}
+				return navigator.mediaDevices.getDisplayMedia(...args);
+			},
 			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),

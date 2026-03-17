@@ -83,7 +83,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	}
 
 	public async setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null): Promise<void> {
-		this.config.logger?.debug('MediaCallWebRTCProcessor.setVideoTrack');
+		this.config.logger?.debug('MediaCallWebRTCProcessor.setScreenVideoTrack');
 		if (newVideoTrack && newVideoTrack.kind !== 'video') {
 			throw new Error('Unsupported track kind');
 		}
