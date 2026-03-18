@@ -178,13 +178,13 @@ test.describe.serial('Quote Messages', () => {
 		const quoteText = faker.lorem.sentence();
 
 		await test.step('Setup DM thread and messages via API', async () => {
-			const dmRoomId = await createDirectMessageRoom(api, Users.user1.data.username);
+			const dmRoomId = await createDirectMessageRoom(api, Users.user2.data.username);
 			const parentMsgId = await sendMessage(api, dmRoomId, messageText);
 			await sendMessage(api, dmRoomId, threadMessage, parentMsgId);
 		});
 
 		await test.step('Open DM thread and quote message', async () => {
-			await poHomeChannel.navbar.openChat(Users.user1.data.username);
+			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 			await poHomeChannel.content.openReplyInThread();
 
 			await poHomeChannel.content.lastUserThreadMessage.hover();
