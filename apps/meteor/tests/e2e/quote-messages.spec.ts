@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { Page } from 'playwright-core';
+import type { Page, BrowserContext } from 'playwright-core';
 
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
@@ -12,6 +12,7 @@ test.describe.serial('Quote Messages', () => {
 	let targetChannel: string;
 	let targetChannelId: string;
 	let page: Page;
+	let context: BrowserContext;
 
 	test.beforeAll(async ({ browser, api }) => {
 		targetChannel = await createTargetChannel(api);
@@ -20,7 +21,7 @@ test.describe.serial('Quote Messages', () => {
 		const infoData = await infoResponse.json();
 		targetChannelId = infoData.channel._id;
 
-		const context = await browser.newContext();
+		context = await browser.newContext();
 		page = await context.newPage();
 		poHomeChannel = new HomeChannel(page);
 
@@ -31,6 +32,7 @@ test.describe.serial('Quote Messages', () => {
 	test.afterAll(async ({ api }) => {
 		expect((await api.post('/channels.delete', { roomName: targetChannel })).status()).toBe(200);
 		await page.close();
+		await context.close();
 	});
 
 	test('should quote a message containing plain text, emoji, markdown, and code blocks', async ({ api }) => {
