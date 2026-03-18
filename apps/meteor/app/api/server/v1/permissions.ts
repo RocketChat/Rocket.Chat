@@ -2,6 +2,7 @@ import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -57,7 +58,7 @@ const permissionUpdatePropsSchema = {
 	additionalProperties: false,
 };
 
-const isPermissionsListAll = ajv.compile<PermissionsListAllProps>(permissionListAllSchema);
+const isPermissionsListAll = ajvQuery.compile<PermissionsListAllProps>(permissionListAllSchema);
 
 const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(permissionUpdatePropsSchema);
 

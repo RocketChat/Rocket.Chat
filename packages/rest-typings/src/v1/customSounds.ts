@@ -1,6 +1,6 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajvQuery } from './Ajv';
 import { type PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type CustomSoundsGetOne = { _id: ICustomSound['_id'] };
@@ -17,7 +17,7 @@ const CustomSoundsGetOneSchema = {
 	additionalProperties: false,
 };
 
-export const isCustomSoundsGetOneProps = ajv.compile<CustomSoundsGetOne>(CustomSoundsGetOneSchema);
+export const isCustomSoundsGetOneProps = ajvQuery.compile<CustomSoundsGetOne>(CustomSoundsGetOneSchema);
 
 type CustomSoundsList = PaginatedRequest<{ name?: string }>;
 
@@ -49,7 +49,7 @@ const CustomSoundsListSchema = {
 	additionalProperties: false,
 };
 
-export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
+export const isCustomSoundsListProps = ajvQuery.compile<CustomSoundsList>(CustomSoundsListSchema);
 
 type CustomSoundsCreate = Pick<ICustomSound, 'name' | 'extension'>;
 
@@ -69,7 +69,7 @@ const CustomSoundsCreateSchema = {
 	additionalProperties: false,
 };
 
-export const isCustomSoundsCreateProps = ajv.compile<CustomSoundsCreate>(CustomSoundsCreateSchema);
+export const isCustomSoundsCreateProps = ajvQuery.compile<CustomSoundsCreate>(CustomSoundsCreateSchema);
 
 type CustomSoundsUpdate = Pick<ICustomSound, '_id' | 'name'> & {
 	extension?: ICustomSound['extension'];
@@ -95,4 +95,4 @@ const CustomSoundsUpdateSchema = {
 	additionalProperties: false,
 };
 
-export const isCustomSoundsUpdateProps = ajv.compile<CustomSoundsUpdate>(CustomSoundsUpdateSchema);
+export const isCustomSoundsUpdateProps = ajvQuery.compile<CustomSoundsUpdate>(CustomSoundsUpdateSchema);
