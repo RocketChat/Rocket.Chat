@@ -33,6 +33,8 @@ jobs:
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
       source-hash: ${{ steps.source.outputs.hash }}
+      packages-build-cache-key: ${{ steps.ci-cache-keys.outputs.packages-build-cache-key }}
+      meteor-rc-cache-key: ${{ steps.ci-cache-keys.outputs.meteor-rc-cache-key }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2026-07-01
       enterprise-license: Uo7Jcr6WW0XYA8ydHd+Sk6pZ9/0V6dIASnyTwvUrNym/zJg2Ma3eYNKkC8osXLCc72y1ahohnWY7/+7IYkvono3GYXQR+IGvYbbrVgNR6OjMahd9P/odHZL1GFTm2qHrEL5Hh/XEOG+YluFeRdWPzCizQlp4zGGOi0+PkQo096TR9NVCLrsErVl2MW1WM6ZM1W5EUJG9pKly4BQnaOTUAlor1im6i8qPTDCKrISZfLiZEWuQKaPW/GE3mRKjQNjDh0CabX1N2S880pRRGoozBYAnp2NmFfrQW0+5ihKisBTIeMbMZ7K5NE5PkYU1nhQDcc+rpDHtwG9Ceg5X0J+oea3UfrPTmDON2aSI0iO22kvL6G7QI3fyrEIvJrMbxcNKxAFeQYgnjisw/b06+chWSG4jG686Fx58XrVS87dFhWL9WoGltsk1dJCntUQvI1sX6zOfpvyg1iWRnHfYDOrwoWlX57XMm29fWineEoqnOOTOVnA/uP+DKEhercQ9Xuo7Cr6zJxpQpwd03e7ODVjiEbTDqlkZE687rmxRCD4Wmu8L86WIl2xSEIajKLX301Ww5mz/FdLqk+Mg32lkW66W3azQKvJ1440NBrYxhpJ+dl9vSFMb3s1+xnz1cYUbjUcq9mARvORcgy5mLwKulmqT6Sq0Uvbv10YCO0TW0beXYW8=
@@ -90,6 +92,21 @@ jobs:
           DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
           echo "DENO_VERSION: ${DENO_VERSION}"
           echo "deno-version=${DENO_VERSION}" >> $GITHUB_OUTPUT
+
+      - id: ci-cache-keys
+        run: |
+          set -euo pipefail
+          PACKAGES_HASH=$(
+            (
+              cat yarn.lock .yarnrc.yml package.json turbo.json
+              find packages -name package.json ! -path '*/node_modules/*' | LC_ALL=C sort | while IFS= read -r f; do
+                [ -f "$f" ] && cat "$f"
+              done
+            ) | sha256sum | awk '{print $1}'
+          )
+          echo "packages-build-cache-key=${PACKAGES_HASH}" >> "$GITHUB_OUTPUT"
+          METEOR_HASH=$(git archive HEAD apps/meteor 2>/dev/null | sha256sum | awk '{print $1}')
+          echo "meteor-rc-cache-key=${METEOR_HASH}" >> "$GITHUB_OUTPUT"
 
       - id: by-tag
         run: |
@@ -175,10 +192,12 @@ jobs:
         with:
           path: |
             /tmp/RocketChat-packages-build.tar.gz
-          key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
+          key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.packages-build-cache-key }}
 
-      - name: Debug cache-hit
-        run: echo "cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
+      - name: Cache observability (packages-build)
+        run: |
+          echo "packages-build-cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
+          echo "packages-build-cache-key=${{ needs.release-versions.outputs.packages-build-cache-key }}"
 
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
@@ -190,6 +209,7 @@ jobs:
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Setup NodeJS
+        id: setup-node-packages
         uses: ./.github/actions/setup-node
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
@@ -199,6 +219,13 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           HARDENED_MODE: '1'
+
+      - name: Cache observability (node_modules)
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
+        run: |
+          echo "node-modules-cache-exact-hit=${{ steps.setup-node-packages.outputs.cache-node-modules-hit }}"
+          echo "deno-cache-exact-hit=${{ steps.setup-node-packages.outputs.cache-deno-hit }}"
+          du -sh node_modules 2>/dev/null || true
 
       - name: Cache vite
         uses: actions/cache@v5
@@ -259,7 +286,7 @@ jobs:
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          source-hash: ${{ needs.release-versions.outputs.source-hash }}
+          source-hash: ${{ needs.release-versions.outputs.packages-build-cache-key }}-${{ needs.release-versions.outputs.meteor-rc-cache-key }}
           type: ${{ matrix.type }}
 
   build-gh-docker:

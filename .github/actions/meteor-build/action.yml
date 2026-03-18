@@ -22,7 +22,7 @@ inputs:
     type: string
   source-hash:
     required: true
-    description: 'Source code hash'
+    description: 'RC cache id (e.g. packages-build-cache-key + meteor apps/meteor archive hash from CI)'
     type: string
 
 runs:
