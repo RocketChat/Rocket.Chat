@@ -20,8 +20,6 @@ import { IS_EE } from '../../e2e/config/constants';
 		await createAgent();
 		await makeAgentAvailable();
 
-		await cleanupApps();
-
 		const installResponse = await request.post(apps()).set(credentials).attach('app', appExternalIdTest);
 		if (!installResponse.body.success) {
 			throw new Error(`Failed to install test app: ${installResponse.body.error}`);
@@ -30,7 +28,9 @@ import { IS_EE } from '../../e2e/config/constants';
 		app = installResponse.body.app;
 	});
 
-	after(() => cleanupApps());
+	after(async () => {
+		await cleanupApps();
+	});
 
 	const callResolveVisitor = async (
 		externalId: { userId: string; username?: string },
