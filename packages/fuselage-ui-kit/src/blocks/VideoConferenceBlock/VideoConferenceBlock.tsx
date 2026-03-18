@@ -89,7 +89,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 
 	const openDiscussion: MouseEventHandler<HTMLButtonElement> = (_e) => {
 		if (data.discussionRid) {
-			goToRoom(data.discussionRid);
+			void goToRoom(data.discussionRid);
 		}
 	};
 
