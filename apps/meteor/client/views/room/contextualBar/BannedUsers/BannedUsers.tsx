@@ -53,7 +53,9 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 					</Box>
 				)}
 
-				{!loading && bannedUsers.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
+				{!loading && bannedUsers.length === 0 && (
+					<ContextualbarEmptyContent icon='ban' title={t('No_banned_users')} subtitle={t('No_banned_users_description')} />
+				)}
 
 				{!loading && bannedUsers.length > 0 && (
 					<Box w='full' h='full' overflow='hidden' flexShrink={1}>

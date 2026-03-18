@@ -3738,6 +3738,8 @@
   "No_app_matches_for": "No app matches for",
   "No_apps_installed": "No Apps Installed",
   "No_available_agents_to_transfer": "No available agents to transfer",
+  "No_banned_users": "No banned users",
+  "No_banned_users_description": "Banned users from this room will appear here.",
   "No_calls_yet": "No calls yet",
   "No_calls_yet_description": "All your calls will appear here.",
   "No_channels_in_team": "No Channels on this Team",
