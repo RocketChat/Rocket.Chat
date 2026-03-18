@@ -6,47 +6,49 @@ describe('setUserActiveStatus', () => {
 	const userId = 'test-user-id';
 	const username = 'testuser';
 
+	const sandbox = sinon.createSandbox();
+
 	const stubs = {
 		Users: {
-			findOneById: sinon.stub(),
-			setUserActive: sinon.stub(),
-			findOneAdmin: sinon.stub(),
-			countActiveUsersInRoles: sinon.stub(),
-			unsetLoginTokens: sinon.stub(),
-			unsetReason: sinon.stub(),
-			findActiveByUserIds: sinon.stub(),
+			findOneById: sandbox.stub(),
+			setUserActive: sandbox.stub(),
+			findOneAdmin: sandbox.stub(),
+			countActiveUsersInRoles: sandbox.stub(),
+			unsetLoginTokens: sandbox.stub(),
+			unsetReason: sandbox.stub(),
+			findActiveByUserIds: sandbox.stub(),
 		},
 		Rooms: {
-			setDmReadOnlyByUserId: sinon.stub(),
-			getDirectConversationsByUserId: sinon.stub(),
+			setDmReadOnlyByUserId: sandbox.stub(),
+			getDirectConversationsByUserId: sandbox.stub(),
 		},
-		check: sinon.stub(),
+		check: sandbox.stub(),
 		callbacks: {
-			run: sinon.stub(),
+			run: sandbox.stub(),
 		},
 		settings: {
-			get: sinon.stub(),
+			get: sandbox.stub(),
 		},
-		notifyOnUserChange: sinon.stub(),
-		notifyOnRoomChangedByUserDM: sinon.stub(),
-		notifyOnRoomChangedById: sinon.stub(),
-		getSubscribedRoomsForUserWithDetails: sinon.stub(),
-		shouldRemoveOrChangeOwner: sinon.stub(),
-		getUserSingleOwnedRooms: sinon.stub(),
-		closeOmnichannelConversations: sinon.stub(),
-		relinquishRoomOwnerships: sinon.stub(),
+		notifyOnUserChange: sandbox.stub(),
+		notifyOnRoomChangedByUserDM: sandbox.stub(),
+		notifyOnRoomChangedById: sandbox.stub(),
+		getSubscribedRoomsForUserWithDetails: sandbox.stub(),
+		shouldRemoveOrChangeOwner: sandbox.stub(),
+		getUserSingleOwnedRooms: sandbox.stub(),
+		closeOmnichannelConversations: sandbox.stub(),
+		relinquishRoomOwnerships: sandbox.stub(),
 		Mailer: {
-			sendNoWrap: sinon.stub(),
+			sendNoWrap: sandbox.stub(),
 		},
 		Accounts: {
 			emailTemplates: {
 				userActivated: {
-					subject: sinon.stub(),
-					html: sinon.stub(),
+					subject: sandbox.stub(),
+					html: sandbox.stub(),
 				},
 			},
 		},
-		isUserFederated: sinon.stub(),
+		isUserFederated: sandbox.stub(),
 	};
 
 	const { setUserActiveStatus } = proxyquire.noCallThru().load('../../../../../../app/lib/server/functions/setUserActiveStatus', {
@@ -95,16 +97,33 @@ describe('setUserActiveStatus', () => {
 	});
 
 	afterEach(() => {
-		Object.values(stubs).forEach((stub) => {
-			if (typeof stub === 'object' && stub !== null) {
-				Object.values(stub).forEach((method) => {
-					if (typeof method?.reset === 'function') {
-						method.reset();
-					}
-				});
-			} else if (typeof stub?.reset === 'function') {
-				stub.reset();
-			}
+		sandbox.reset();
+	});
+
+	describe('Successful status changes', () => {
+		it('should deactivate a user successfully', async () => {
+			const result = await setUserActiveStatus(userId, false);
+
+			expect(result).to.be.true;
+			expect(stubs.Users.setUserActive.calledWith(userId, false)).to.be.true;
+			expect(stubs.Users.unsetLoginTokens.calledWith(userId)).to.be.true;
+			expect(stubs.Rooms.setDmReadOnlyByUserId.calledWith(userId, undefined, true, false)).to.be.true;
+			expect(stubs.callbacks.run.calledWith('afterDeactivateUser', sinon.match({ _id: userId }))).to.be.true;
+			expect(stubs.notifyOnUserChange.calledWith(sinon.match({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [], active: false } }))).to.be.true;
+			expect(stubs.notifyOnRoomChangedByUserDM.calledWith(userId)).to.be.true;
+		});
+
+		it('should activate a user successfully', async () => {
+			stubs.Users.findOneById.resolves({ _id: userId, username, active: false });
+
+			const result = await setUserActiveStatus(userId, true);
+
+			expect(result).to.be.true;
+			expect(stubs.callbacks.run.calledWith('beforeActivateUser', sinon.match({ _id: userId }))).to.be.true;
+			expect(stubs.Users.setUserActive.calledWith(userId, true)).to.be.true;
+			expect(stubs.callbacks.run.calledWith('afterActivateUser', sinon.match({ _id: userId }))).to.be.true;
+			expect(stubs.Users.unsetReason.calledWith(userId)).to.be.true;
+			expect(stubs.notifyOnUserChange.calledWith(sinon.match({ clientAction: 'updated', id: userId, diff: { active: true } }))).to.be.true;
 		});
 	});
 
@@ -120,12 +139,22 @@ describe('setUserActiveStatus', () => {
 		it('should throw error for federated users', async () => {
 			stubs.isUserFederated.returns(true);
 
-			try {
-				await setUserActiveStatus(userId, false);
-				expect.fail('Should have thrown an error');
-			} catch (error: any) {
-				expect(error.message).to.equal('error-user-is-federated');
-			}
+			await expect(setUserActiveStatus(userId, false)).to.be.rejectedWith('error-user-is-federated');
+		});
+
+		it('should throw error if deactivating the last active admin', async () => {
+			stubs.Users.findOneAdmin.resolves({ _id: userId });
+			stubs.Users.countActiveUsersInRoles.resolves(1);
+
+			await expect(setUserActiveStatus(userId, false)).to.be.rejectedWith('error-action-not-allowed');
+		});
+
+		it('should throw error if user is the last owner of channels without confirmRelinquish', async () => {
+			stubs.getSubscribedRoomsForUserWithDetails.resolves([{ t: 'c' }]);
+			stubs.shouldRemoveOrChangeOwner.returns(true);
+			stubs.getUserSingleOwnedRooms.resolves(['room1']);
+
+			await expect(setUserActiveStatus(userId, false)).to.be.rejectedWith('user-last-owner');
 		});
 	});
 });
