@@ -336,7 +336,7 @@ const isChatGetThreadsListResponse = ajv.compile<{
 		threads: {
 			type: 'array',
 			items: {
-				ref: '#/components/schemas/IMessage',
+				$ref: '#/components/schemas/IMessage',
 			},
 		},
 		count: {
