@@ -1,4 +1,4 @@
-import { Box, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Box, Throbber } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarClose,
@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import BannedUsersItem from './BannedUsersItem';
-import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 
 type BannedUsersProps = {
@@ -47,13 +46,9 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 					</Box>
 				)}
 
-				{error && (
-					<Box pi={24} pb={12}>
-						<Callout type='danger'>{error.message}</Callout>
-					</Box>
-				)}
+				{error && <ContextualbarEmptyContent icon='warning' title={t('Banned_users_error')} subtitle={t('Please_try_again')} />}
 
-				{!loading && bannedUsers.length === 0 && (
+				{!loading && !error && bannedUsers.length === 0 && (
 					<ContextualbarEmptyContent icon='ban' title={t('No_banned_users')} subtitle={t('No_banned_users_description')} />
 				)}
 
@@ -64,9 +59,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 								style={{ height: '100%', width: '100%' }}
 								data={bannedUsers}
 								overscan={50}
-								endReached={onLoadMore}
-								// eslint-disable-next-line react/no-multi-comp
-								components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreBannedUsers} /> }}
+								endReached={loadMoreBannedUsers}
 								itemContent={(_index, user): ReactElement => (
 									<BannedUsersItem user={user} useRealName={useRealName} onClickUnban={onClickUnban} />
 								)}

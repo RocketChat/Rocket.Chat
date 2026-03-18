@@ -75,11 +75,6 @@ exports[`renders Default without crashing 1`] = `
                       data-testid="virtuoso-item-list"
                       style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
                     />
-                    <div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-jsq7k5"
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
@@ -441,33 +436,6 @@ exports[`renders WithError without crashing 1`] = `
             class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-1w66n2o"
           >
             <div
-              class="rcx-box rcx-box--full rcx-css-nyqak3"
-            >
-              <section
-                class="rcx-box rcx-box--full rcx-callout rcx-callout--danger"
-              >
-                <i
-                  aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-icon--name-ban rcx-icon rcx-callout__icon rcx-css-4pvxx3"
-                >
-                  
-                </i>
-                <div
-                  class="rcx-box rcx-box--full rcx-callout__wrapper"
-                >
-                  <div
-                    class="rcx-box rcx-box--full rcx-callout__wrapper-content"
-                  >
-                    <div
-                      class="rcx-box rcx-box--full rcx-callout__content"
-                    >
-                      Failed to load banned users
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </div>
-            <div
               class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-r8c38r"
             >
               <div
@@ -475,19 +443,19 @@ exports[`renders WithError without crashing 1`] = `
               >
                 <i
                   aria-hidden="true"
-                  class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-ban rcx-icon rcx-css-d884y5"
+                  class="rcx-box rcx-box--full rcx-states__icon rcx-icon--name-warning rcx-icon rcx-css-d884y5"
                 >
-                  
+                  
                 </i>
                 <h3
                   class="rcx-states__title"
                 >
-                  No_banned_users
+                  Banned_users_error
                 </h3>
                 <div
                   class="rcx-states__subtitle"
                 >
-                  No_banned_users_description
+                  Please_try_again
                 </div>
               </div>
             </div>
@@ -616,11 +584,6 @@ exports[`renders WithRealNames without crashing 1`] = `
                       data-testid="virtuoso-item-list"
                       style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
                     />
-                    <div>
-                      <div
-                        class="rcx-box rcx-box--full rcx-css-jsq7k5"
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
