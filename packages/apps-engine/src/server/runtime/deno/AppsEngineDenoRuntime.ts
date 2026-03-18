@@ -12,7 +12,7 @@ import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
 import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
-import { AppInterface, AppMethod } from '../../../definition/metadata';
+import { AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
