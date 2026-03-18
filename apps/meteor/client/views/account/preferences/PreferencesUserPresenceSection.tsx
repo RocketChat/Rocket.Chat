@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 const PreferencesUserPresenceSection = () => {
 	const { t } = useTranslation();
-	const { register, control } = useFormContext();
+	const { control } = useFormContext();
 
 	return (
 		<AccordionItem title={t('User_Presence')}>
@@ -23,7 +23,11 @@ const PreferencesUserPresenceSection = () => {
 				<Field>
 					<FieldLabel>{t('Idle_Time_Limit')}</FieldLabel>
 					<FieldRow>
-						<NumberInput {...register('idleTimeLimit')} />
+						<Controller
+							name='idleTimeLimit'
+							control={control}
+							render={({ field: { ref, value, onChange } }) => <NumberInput ref={ref} value={value} onChange={onChange} />}
+						/>
 					</FieldRow>
 				</Field>
 			</FieldGroup>
