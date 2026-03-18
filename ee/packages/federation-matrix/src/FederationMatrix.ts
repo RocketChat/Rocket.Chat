@@ -36,6 +36,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	private processEDUPresence: boolean;
 
+	private processEDUReceipt: boolean;
+
 	private validateUserDomain: boolean;
 
 	private readonly logger = new Logger(this.name);
@@ -59,6 +61,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const { value } = setting;
 			if (typeof value === 'boolean') {
 				this.processEDUPresence = value;
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_EDU_Process_Receipt', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.processEDUReceipt = value;
 			}
 		});
 
@@ -114,6 +123,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		this.serverName = (await Settings.get<string>('Federation_Service_Domain')) || '';
 		this.processEDUTyping = (await Settings.get<boolean>('Federation_Service_EDU_Process_Typing')) || false;
 		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
+		this.processEDUReceipt = (await Settings.get<boolean>('Federation_Service_EDU_Process_Receipt')) || false;
 		this.validateUserDomain = (await Settings.get<boolean>('Federation_Service_Validate_User_Domain')) || false;
 	}
 
@@ -835,5 +845,47 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return domain === this.serverName && email.verified;
 			}) ?? false
 		);
+	}
+
+	async notifyRoomRead({ room, userId, threadId }: { room: IRoomNativeFederated; userId: string; threadId?: string }): Promise<void> {
+		if (!this.processEDUReceipt) {
+			return;
+		}
+
+		// get last event_id for the room or thread
+		const lastMessage = threadId
+			? await Messages.findVisibleThreadByThreadId(threadId, {
+					sort: { ts: -1 },
+					projection: { federation: 1 },
+				}).next()
+			: await Messages.findVisibleByRoomId(room._id, { projection: { federation: 1 }, sort: { ts: -1 } }).next();
+
+		if (!lastMessage?.federation?.eventId) {
+			this.logger.warn({ msg: 'No event ID found for room, skipping read receipt', roomId: room._id });
+			return;
+		}
+
+		const threadEventId = threadId
+			? (await Messages.findOneById(threadId, { projection: { federation: 1 } }))?.federation?.eventId
+			: undefined;
+
+		const user = await Users.findOneById(userId);
+		if (!user) {
+			throw new Error('User not found');
+		}
+
+		if (!user.username) {
+			throw new Error('User username not found');
+		}
+
+		// TODO: should use common function to get matrix user ID
+		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
+
+		await federationSDK.sendReadReceipt({
+			roomId: roomIdSchema.parse(room.federation.mrid),
+			eventIds: [eventIdSchema.parse(lastMessage?.federation?.eventId)],
+			userId: userIdSchema.parse(matrixUserId),
+			...(threadEventId && { threadId: eventIdSchema.parse(threadEventId) }),
+		});
 	}
 }
