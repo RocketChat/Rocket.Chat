@@ -104,7 +104,7 @@ export abstract class LivechatBridge extends BaseBridge {
 	}
 
 	public async doResolveVisitor(
-		externalId: IVisitorExternalIdentifier,
+		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
 		contactData: ResolveVisitorContactData | undefined,
 		appId: string,
 	): Promise<IVisitor | undefined> {
@@ -214,7 +214,7 @@ export abstract class LivechatBridge extends BaseBridge {
 	protected abstract findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined>;
 
 	protected abstract resolveVisitor(
-		externalId: IVisitorExternalIdentifier,
+		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
 		contactData: ResolveVisitorContactData | undefined,
 		appId: string,
 	): Promise<IVisitor | undefined>;

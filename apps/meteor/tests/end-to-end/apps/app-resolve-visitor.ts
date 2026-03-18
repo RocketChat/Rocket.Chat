@@ -61,8 +61,9 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor.id).to.equal(visitor._id);
-			expect(response.body.visitor.externalIds[app.id].userId).to.equal(externalId.userId);
-			expect(response.body.visitor.externalIds[app.id].username).to.equal(externalId.username);
+			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			expect(appExternalId.userId).to.equal(externalId.userId);
+			expect(appExternalId.username).to.equal(externalId.username);
 		});
 
 		it('should not update externalId when found by lookup', async () => {
@@ -77,7 +78,8 @@ import { IS_EE } from '../../e2e/config/constants';
 			// To update visitor data, apps should use other methods like ILivechatUpdater.
 			const response = await callResolveVisitor({ userId: externalId.userId, username: '@changed' });
 
-			expect(response.body.visitor.externalIds[app.id].username).to.equal('@original');
+			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			expect(appExternalId.username).to.equal('@original');
 		});
 	});
 
@@ -91,8 +93,9 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor.id).to.equal(visitor._id);
-			expect(response.body.visitor.externalIds[app.id].userId).to.equal(externalId.userId);
-			expect(response.body.visitor.externalIds[app.id].username).to.equal(externalId.username);
+			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			expect(appExternalId.userId).to.equal(externalId.userId);
+			expect(appExternalId.username).to.equal(externalId.username);
 		});
 
 		it('should overwrite externalId when called with different userId', async () => {
@@ -104,8 +107,9 @@ import { IS_EE } from '../../e2e/config/constants';
 			const newExternalId = { userId: `second-${Date.now()}`, username: '@second' };
 			const response = await callResolveVisitor(newExternalId, { phone });
 
-			expect(response.body.visitor.externalIds[app.id].userId).to.equal(newExternalId.userId);
-			expect(response.body.visitor.externalIds[app.id].username).to.equal('@second');
+			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			expect(appExternalId.userId).to.equal(newExternalId.userId);
+			expect(appExternalId.username).to.equal('@second');
 		});
 
 		it('should return null when phone not found', async () => {
@@ -133,8 +137,9 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor.id).to.equal(visitor._id);
-			expect(response.body.visitor.externalIds[app.id].userId).to.equal(externalId.userId);
-			expect(response.body.visitor.externalIds[app.id].username).to.equal(externalId.username);
+			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			expect(appExternalId.userId).to.equal(externalId.userId);
+			expect(appExternalId.username).to.equal(externalId.username);
 		});
 
 		it('should overwrite externalId when called with different userId via email', async () => {
@@ -146,8 +151,9 @@ import { IS_EE } from '../../e2e/config/constants';
 			const newExternalId = { userId: `second-email-${Date.now()}`, username: '@second' };
 			const response = await callResolveVisitor(newExternalId, { email });
 
-			expect(response.body.visitor.externalIds[app.id].userId).to.equal(newExternalId.userId);
-			expect(response.body.visitor.externalIds[app.id].username).to.equal('@second');
+			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			expect(appExternalId.userId).to.equal(newExternalId.userId);
+			expect(appExternalId.username).to.equal('@second');
 		});
 
 		it('should return null when email not found', async () => {

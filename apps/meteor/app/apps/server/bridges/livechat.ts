@@ -237,6 +237,9 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async createAndReturnVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat visitor.`);
 
+		// Add source (appId) to each externalId entry
+		const externalIds = visitor.externalIds?.map((entry) => ({ ...entry, source: appId }));
+
 		const registerData = {
 			department: visitor.department,
 			username: visitor.username,
@@ -246,7 +249,7 @@ export class AppLivechatBridge extends LivechatBridge {
 			id: visitor.id,
 			...(visitor.phone?.length && { phone: { number: visitor.phone[0].phoneNumber } }),
 			...(visitor.visitorEmails?.length && { email: visitor.visitorEmails[0].address }),
-			...(visitor.externalIds && { externalIds: visitor.externalIds }),
+			...(externalIds?.length && { externalIds }),
 		};
 
 		const livechatVisitor = await registerGuest(registerData, {
@@ -348,7 +351,7 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected async resolveVisitor(
-		externalId: IVisitorExternalIdentifier,
+		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
 		contactData: ResolveVisitorContactData | undefined,
 		appId: string,
 	): Promise<IVisitor | undefined> {

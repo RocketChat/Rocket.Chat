@@ -14,7 +14,7 @@ const { resolveVisitor } = proxyquire.noCallThru().load('../../../../../../app/l
 });
 
 // Mock app ID (UUID format as used by Rocket.Chat apps)
-const appId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+const appId = 'a1b2c3d4-e5f6-4890-8bcd-ef1234567890';
 
 describe('resolveVisitor', () => {
 	beforeEach(() => {
@@ -27,7 +27,7 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-123',
 			token: 'token-123',
 			username: 'guest-1',
-			externalIds: { [appId]: { userId: 'bsuid-123' } },
+			externalIds: [{ source: appId, userId: 'bsuid-123' }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(existingVisitor);
@@ -50,7 +50,7 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-456',
 			token: 'token-456',
 			username: 'guest-2',
-			externalIds: { [appId]: externalId },
+			externalIds: [{ source: appId, ...externalId }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
@@ -71,7 +71,7 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-email',
 			token: 'token-email',
 			username: 'guest-email',
-			externalIds: { [appId]: externalId },
+			externalIds: [{ source: appId, ...externalId }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
@@ -92,7 +92,7 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-789',
 			token: 'token-789',
 			username: 'guest-3',
-			externalIds: { [appId]: newExternalId },
+			externalIds: [{ source: appId, ...newExternalId }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);

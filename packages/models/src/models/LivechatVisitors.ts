@@ -31,7 +31,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
-			{ key: { 'externalIds.$**': 1 } },
+			{ key: { 'externalIds.source': 1, 'externalIds.userId': 1 } },
 			{ key: { name: 1 }, sparse: true },
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
@@ -53,17 +53,35 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 	findOneVisitorByPhoneOrEmailAndAddExternalId(
 		contactData: { phone: string } | { email: string },
 		source: string,
-		externalId: IVisitorExternalIdentifier,
+		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
 	): Promise<ILivechatVisitor | null> {
 		const query =
 			'phone' in contactData ? { 'phone.phoneNumber': contactData.phone } : { 'visitorEmails.address': contactData.email.toLowerCase() };
 
-		return this.findOneAndUpdate(query, { $set: { [`externalIds.${source}`]: externalId } }, { returnDocument: 'after' });
+		// Use aggregation pipeline update to upsert into the array:
+		// 1. Filter out any existing entry with the same source
+		// 2. Add the new entry
+		return this.findOneAndUpdate(
+			query,
+			[
+				{
+					$set: {
+						externalIds: {
+							$concatArrays: [
+								{ $filter: { input: { $ifNull: ['$externalIds', []] }, cond: { $ne: ['$$this.source', source] } } },
+								[{ source, ...externalId }],
+							],
+						},
+					},
+				},
+			],
+			{ returnDocument: 'after' },
+		);
 	}
 
 	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null> {
 		return this.findOne({
-			[`externalIds.${source}.userId`]: externalUserId,
+			externalIds: { $elemMatch: { source, userId: externalUserId } },
 		});
 	}
 
@@ -320,6 +338,33 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		} else if (update.token) {
 			query = { token: update.token };
 			update._id = new ObjectId().toHexString();
+		}
+
+		// If externalIds is present, use a pipeline update to merge with existing entries
+		// instead of overwriting the entire array
+		if (update.externalIds?.length) {
+			const { externalIds, ...restUpdate } = update;
+			const sourcesToReplace = externalIds.map((e) => e.source);
+
+			return this.findOneAndUpdate(
+				query,
+				[
+					{
+						$set: {
+							...restUpdate,
+							externalIds: {
+								$concatArrays: [
+									// Keep existing entries that are not being replaced
+									{ $filter: { input: { $ifNull: ['$externalIds', []] }, cond: { $not: { $in: ['$$this.source', sourcesToReplace] } } } },
+									// Add the new entries
+									externalIds,
+								],
+							},
+						},
+					},
+				],
+				options,
+			);
 		}
 
 		return this.findOneAndUpdate(query, { $set: update }, options);

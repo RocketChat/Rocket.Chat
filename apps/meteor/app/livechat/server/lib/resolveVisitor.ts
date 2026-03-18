@@ -5,7 +5,7 @@ type ResolveVisitorContactData = { phone: string } | { email: string };
 
 type ResolveVisitorParams = {
 	source: string;
-	externalId: IVisitorExternalIdentifier;
+	externalId: Omit<IVisitorExternalIdentifier, 'source'>;
 	contactData?: ResolveVisitorContactData;
 };
 

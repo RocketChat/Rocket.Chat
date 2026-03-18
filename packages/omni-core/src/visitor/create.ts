@@ -11,7 +11,7 @@ type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'depa
 	connectionData?: any;
 	email?: string;
 	phone?: { number: string };
-	externalIds?: Record<string, IVisitorExternalIdentifier>;
+	externalIds?: IVisitorExternalIdentifier[];
 };
 
 export const registerGuest = makeFunction(
@@ -25,22 +25,13 @@ export const registerGuest = makeFunction(
 
 		logger.debug({ msg: 'New incoming conversation', id, token });
 
-		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } & Record<
-				`externalIds.${string}`,
-				IVisitorExternalIdentifier
-			> = {
+		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } = {
 			token,
 			status,
 			...(phone?.number && { phone: [{ phoneNumber: phone.number }] }),
 			...(name && { name }),
+			...(externalIds?.length && { externalIds }),
 		};
-
-		// We "flatten" the `externalIds` from the parameters using dot notation so Mongo doesn't overwrite the whole property when updating the record
-		if (externalIds) {
-			for (const [source, externalId] of Object.entries(externalIds)) {
-				visitorDataToUpdate[`externalIds.${source}`] = externalId;
-			}
-		}
 
 		if (email) {
 			const visitorEmail = email.trim().toLowerCase();

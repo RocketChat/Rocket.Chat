@@ -53,7 +53,7 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 	findOneVisitorByPhoneOrEmailAndAddExternalId(
 		contactData: { phone: string } | { email: string },
 		source: string,
-		externalId: IVisitorExternalIdentifier,
+		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
 	): Promise<ILivechatVisitor | null>;
 
 	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null>;
