@@ -23,7 +23,7 @@ export const useBannedUsersRoomAction = () => {
 
 	const hasPermissionToBan = usePermission('ban-user', room._id);
 	const userCanBan = isRoomFederated(room)
-		? !!isRoomNativeFederated(room) && Federation.isEditableByTheUser(user || undefined, room, subscription)
+		? isRoomNativeFederated(room) && Federation.isEditableByTheUser(user || undefined, room, subscription)
 		: hasPermissionToBan;
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
