@@ -250,7 +250,7 @@ const ChatSyncMessagesSchema = {
 			nullable: true,
 		},
 		count: {
-			type: 'number',
+			type: 'string',
 			nullable: true,
 		},
 		next: {
@@ -274,58 +274,54 @@ const ChatSyncMessagesSchema = {
 const isChatSyncMessagesLocalProps = ajv.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
 
 const isSyncMessagesResponse = ajv.compile<{
-	result: {
-		updated: IMessage[];
-		deleted: unknown[];
-		cursor?: {
-			next: string | null;
-			previous: string | null;
-		} | null;
-	};
+    result: {
+        updated: IMessage[];
+        deleted: IMessage[];
+        cursor?: {
+            next: string | null;
+            previous: string | null;
+        } | null;
+    };
 }>({
-	type: 'object',
-	properties: {
-		result: {
-			type: 'object',
-			properties: {
-				updated: {
-					type: 'array',
-					items: { $ref: '#/components/schemas/IMessage' },
-				},
-				deleted: {
-					type: 'array',
-					items: {
-						type: 'object',
-						additionalProperties: true,
-					},
-				},
-				cursor: {
-					anyOf: [
-						{
-							type: 'object',
-							properties: {
-								next: { type: ['string', 'null'] },
-								previous: { type: ['string', 'null'] },
-							},
-							required: ['next', 'previous'],
-							additionalProperties: false,
-						},
-						{ type: 'null' },
-						{ type: 'object', nullable: true },
-					],
-				},
-			},
-			required: ['updated', 'deleted'],
-			additionalProperties: false,
-		},
-		success: {
-			type: 'boolean',
-			enum: [true],
-		},
-	},
-	required: ['result', 'success'],
-	additionalProperties: false,
-});
+    type: 'object',
+    properties: {
+        result: {
+            type: 'object',
+            properties: {
+                updated: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/IMessage' },
+                },
+                deleted: {
+                    type: 'array',
+                    items: { $ref: '#/components/schemas/IMessage' },
+                },
+                cursor: {
+                    oneOf: [
+                        {
+                            type: 'object',
+                            properties: {
+                                next:     { type: 'string', nullable: true },
+                                previous: { type: 'string', nullable: true },
+                            },
+                            required: ['next', 'previous'],
+                            additionalProperties: false,
+                        },
+                        { type: 'null' },
+                    ],
+                },
+            },
+            required: ['updated', 'deleted'], 
+            additionalProperties: false,
+        },
+        success: {
+            type: 'boolean',
+            enum: [true],
+        },
+    },
+    required: ['result', 'success'],
+    additionalProperties: false,
+});;
 
 const chatEndpoints = API.v1
 	.post(

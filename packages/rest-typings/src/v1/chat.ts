@@ -595,6 +595,48 @@ const GetMentionedMessagesSchema = {
 
 export const isChatGetMentionedMessagesProps = ajvQuery.compile<GetMentionedMessages>(GetMentionedMessagesSchema);
 
+type ChatSyncMessages = {
+	roomId: IRoom['_id'];
+	lastUpdate?: string;
+	count?: number;
+	next?: string;
+	previous?: string;
+	type?: 'UPDATED' | 'DELETED';
+};
+
+const ChatSyncMessagesSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+		},
+		lastUpdate: {
+			type: 'string',
+			nullable: true,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		next: {
+			type: 'string',
+			nullable: true,
+		},
+		previous: {
+			type: 'string',
+			nullable: true,
+		},
+		type: {
+			type: 'string',
+			enum: ['UPDATED', 'DELETED'],
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isChatSyncMessagesProps = ajvQuery.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
 
 type ChatSyncThreadMessages = PaginatedRequest<{
 	tmid: string;
@@ -926,6 +968,18 @@ export type ChatEndpoints = {
 			count: number;
 			offset: number;
 			total: number;
+		};
+	};
+	'/v1/chat.syncMessages': {
+		GET: (params: ChatSyncMessages) => {
+			result: {
+				updated: IMessage[];
+				deleted: IMessage[];
+				cursor: {
+					next: string | null;
+					previous: string | null;
+				};
+			};
 		};
 	};
 	'/v1/chat.postMessage': {
