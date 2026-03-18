@@ -51,15 +51,15 @@ export type BigEmoji = {
 
 export type Emoji =
 	| {
-		type: 'EMOJI';
-		value: Plain;
-		shortCode: string;
-	}
+			type: 'EMOJI';
+			value: Plain;
+			shortCode: string;
+	  }
 	| {
-		type: 'EMOJI';
-		value: undefined;
-		unicode: string;
-	};
+			type: 'EMOJI';
+			value: undefined;
+			unicode: string;
+	  };
 
 export type Code = {
 	type: 'CODE';

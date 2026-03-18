@@ -148,7 +148,7 @@ Heading = count:HeadingStart [ \t]+ text:HeadingChunk { return heading(text, cou
 
 HeadingStart = value:"#" |1..4| { return value.length; }
 
-HeadingChunk = text:Inline { return text; }
+HeadingChunk = & {skipInlineEmoji = false; return true; } value:InlinePattern+ { skipInlineEmoji = false; return reducePlainTexts(value); }
 
 
 /**
