@@ -178,12 +178,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			// process must be able to read in order to include files that use NPM packages
 			const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
 
-			const allowedDirs = [appsEngineDir, parentNodeModulesDir];
-
-			// If the app handles file upload events, it needs to be able to read the temp dir
-			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload)) {
-				allowedDirs.push(this.tempFilePath);
-			}
+			const allowedDirs = [appsEngineDir, parentNodeModulesDir, this.tempFilePath];
 
 			const options = [
 				'run',
