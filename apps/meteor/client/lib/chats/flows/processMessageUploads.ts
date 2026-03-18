@@ -144,8 +144,8 @@ async function continueSendingMessage(store: UploadsAPI, message: IMessage) {
 		store.setProcessingUploads(true);
 		for (const fileToConfirm of confirmFilesQueue) {
 			await sdk.rest.post(`/v1/rooms.mediaConfirm/${rid}/${fileToConfirm._id}`, fileToConfirm.composedMessage);
+			store.removeUpload(fileToConfirm._id);
 		}
-		store.clear();
 	} catch (error: unknown) {
 		dispatchToastMessage({ type: 'error', message: error });
 	} finally {
