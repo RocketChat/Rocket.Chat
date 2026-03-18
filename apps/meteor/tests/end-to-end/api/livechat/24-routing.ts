@@ -567,6 +567,52 @@ import { IS_EE } from '../../../e2e/config/constants';
 			// Not checking who, just checking it's served
 			expect(roomInfo.servedBy).to.be.an('object');
 		});
+		describe('Load_Balancing - Livechat_accept_chats_with_no_agents', async () => {
+			let initialSettingValue: any;
+			let testUserInitialState: any;
+			let testUser2InitialState: any;
+
+			before(async () => {
+				testUserInitialState = await getAgent(testUser.user._id);
+				testUser2InitialState = await getAgent(testUser2.user._id);
+				initialSettingValue = await getSettingValueById('Livechat_accept_chats_with_no_agents');
+			});
+
+			after(async () => {
+				await updateSetting('Livechat_accept_chats_with_no_agents', initialSettingValue);
+				await switchLivechatStatus(testUserInitialState.statusLivechat, testUser.credentials);
+				await switchLivechatStatus(testUser2InitialState.statusLivechat, testUser2.credentials);
+				await setUserStatus(testUser2.credentials, testUser2InitialState.status);
+			});
+			describe('Livechat_accept_chats_with_no_agents is false', () => {
+				before(async () => {
+					await updateSetting('Livechat_accept_chats_with_no_agents', false);
+					await switchLivechatStatus('not-available', testUser.credentials);
+					await switchLivechatStatus('available', testUser2.credentials);
+					await setUserStatus(testUser2.credentials, UserStatus.OFFLINE);
+				});
+
+				it('should fail to start a conversation if there is an available but offline agent and Livechat_accept_chats_with_no_agents is false', async () => {
+					const visitor = await createVisitor(testDepartment._id);
+					const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
+					expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
+				});
+			});
+			describe('Livechat_accept_chats_with_no_agents is true', () => {
+				before(async () => {
+					await updateSetting('Livechat_accept_chats_with_no_agents', true);
+					await switchLivechatStatus('available', testUser2.credentials);
+					await setUserStatus(testUser2.credentials, UserStatus.OFFLINE);
+				});
+				it('should accept a conversation and route to an offline agent', async () => {
+					const visitor = await createVisitor(testDepartment._id);
+					const room = await createLivechatRoom(visitor.token);
+					const roomInfo = await getLivechatRoomInfo(room._id);
+					expect(roomInfo.servedBy).to.be.an('object');
+					expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
+				});
+			});
+		});
 	});
 	describe('Load Rotation', () => {
 		before(async () => {
