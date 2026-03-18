@@ -53,11 +53,11 @@ const livechatConfigEndpoints = API.v1
 						config: {
 							type: 'object',
 							properties: {
-								room: { $ref: '#/components/schemas/IOmnichannelRoom' },
-								agent: { $ref: '#/components/schemas/ILivechatAgent' },
-								guest: { $ref: '#/components/schemas/ILivechatVisitor' },
+								room: { type: 'object' },
+								agent: { type: 'object' },
+								guest: { type: 'object' },
 							},
-							additionalProperties: false,
+							additionalProperties: true,
 						},
 						success: { type: 'boolean', enum: [true] },
 					},

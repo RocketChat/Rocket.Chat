@@ -19,7 +19,7 @@ const livechatIntegrationsEndpoints = API.v1.get(
 				properties: {
 					settings: {
 						type: 'array',
-						items: { $ref: '#/components/schemas/ISetting' },
+						items: { type: 'object' },
 					},
 					success: { type: 'boolean', enum: [true] },
 				},
@@ -36,5 +36,5 @@ type LivechatIntegrationsEndpoints = ExtractRoutesFromAPI<typeof livechatIntegra
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends LivechatIntegrationsEndpoints {}
+	interface Endpoints extends LivechatIntegrationsEndpoints { }
 }

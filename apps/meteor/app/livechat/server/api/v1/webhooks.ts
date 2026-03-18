@@ -91,7 +91,7 @@ const livechatWebhookEndpoints = API.v1.post(
 		try {
 			logger.debug({ msg: 'Testing webhook', host: new URL(webhookUrl).host });
 			const request = await fetch(webhookUrl, options);
-			const response = await request.text();
+			await request.text();
 
 			logger.debug({ msg: 'Webhook response', status: request.status });
 			if (request.status === 200) {
