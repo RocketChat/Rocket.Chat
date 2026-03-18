@@ -46,8 +46,6 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 			if (error) {
 				setError('name', { message: t(error) });
 			}
-		} finally {
-			// setSaving(false);
 		}
 	};
 
@@ -66,6 +64,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 					control={control}
 					rules={{
 						required: t('Required_field', { field: t('Name') }),
+						validate: (value: string) => value?.trim() !== '' || t('Required_field', { field: t('Name') }),
 					}}
 					render={({ field: { value, onChange } }): ReactElement => (
 						<StringSettingInput

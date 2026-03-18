@@ -40,6 +40,7 @@ const AccountProfilePage = (): ReactElement => {
 	const methods = useForm({
 		defaultValues: getProfileInitialValues(user),
 		mode: 'onSubmit',
+		reValidateMode: 'onBlur',
 	});
 
 	const {

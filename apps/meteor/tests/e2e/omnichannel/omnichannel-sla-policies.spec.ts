@@ -67,7 +67,7 @@ test.describe('Omnichannel SLA Policies', () => {
 
 			await test.step('only allow numbers on estimated wait time field', async () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime.pressSequentially('a');
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.errorMessage(ERROR.estimatedWaitTimeRequired)).toBeVisible();
+				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime).toHaveValue('0');
 			});
 
 			await test.step('not allow 0 on estimated wait time field', async () => {

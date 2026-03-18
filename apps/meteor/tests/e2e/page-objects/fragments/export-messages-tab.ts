@@ -50,7 +50,7 @@ export class ExportMessagesTab extends FlexTab {
 	}
 
 	async setAdditionalEmail(email: string) {
-		await this.toAdditionalEmailsInput.fill(email);
+		await this.inputAdditionalEmails.fill(email);
 	}
 
 	getMessageCheckbox(messageText: string): Locator {
@@ -71,10 +71,6 @@ export class ExportMessagesTab extends FlexTab {
 
 	get outputFormat() {
 		return this.root.page().getByTestId('export-messages-output-format');
-	}
-
-	get toAdditionalEmailsInput() {
-		return this.root.getByRole('textbox', { name: 'To additional emails' });
 	}
 
 	get downloadButton() {

@@ -95,6 +95,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 		handleSubmit,
 	} = useForm<ContactFormData>({
 		mode: 'onSubmit',
+		reValidateMode: 'onBlur',
 		defaultValues: initialValue,
 	});
 
