@@ -6,6 +6,8 @@ export interface IVisitorExternalIdentifier {
 	username?: string;
 }
 
+export type ResolveVisitorContactData = { phone: string } | { email: string };
+
 export interface IVisitor {
 	id?: string;
 	token: string;

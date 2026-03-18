@@ -32,11 +32,14 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	after(() => cleanupApps());
 
-	const callResolveVisitor = async (externalId: { userId: string; username?: string }, phone?: string) => {
+	const callResolveVisitor = async (
+		externalId: { userId: string; username?: string },
+		contactData?: { phone?: string; email?: string },
+	) => {
 		return request
 			.post(apps(`/public/${app.id}/resolve-visitor`))
 			.set(credentials)
-			.send({ externalId, phone });
+			.send({ externalId, phone: contactData?.phone, email: contactData?.email });
 	};
 
 	describe('externalId lookup', () => {
@@ -52,7 +55,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			const visitor = await createVisitor(undefined, undefined, undefined, phone);
 
 			const externalId = { userId: `id-${Date.now()}`, username: '@user' };
-			await callResolveVisitor(externalId, phone);
+			await callResolveVisitor(externalId, { phone });
 
 			const response = await callResolveVisitor(externalId);
 
@@ -67,7 +70,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			await createVisitor(undefined, undefined, undefined, phone);
 
 			const externalId = { userId: `id-${Date.now()}`, username: '@original' };
-			await callResolveVisitor(externalId, phone);
+			await callResolveVisitor(externalId, { phone });
 
 			// resolveVisitor is for resolving/enriching visitors, not for updating existing data.
 			// When found by externalId, it returns the visitor as-is without modifications.
@@ -84,7 +87,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			const visitor = await createVisitor(undefined, undefined, undefined, phone);
 
 			const externalId = { userId: `id-${Date.now()}`, username: '@user' };
-			const response = await callResolveVisitor(externalId, phone);
+			const response = await callResolveVisitor(externalId, { phone });
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor.id).to.equal(visitor._id);
@@ -96,24 +99,66 @@ import { IS_EE } from '../../e2e/config/constants';
 			const phone = `+4${Date.now()}`;
 			await createVisitor(undefined, undefined, undefined, phone);
 
-			await callResolveVisitor({ userId: `first-${Date.now()}`, username: '@first' }, phone);
+			await callResolveVisitor({ userId: `first-${Date.now()}`, username: '@first' }, { phone });
 
 			const newExternalId = { userId: `second-${Date.now()}`, username: '@second' };
-			const response = await callResolveVisitor(newExternalId, phone);
+			const response = await callResolveVisitor(newExternalId, { phone });
 
 			expect(response.body.visitor.externalIds[app.id].userId).to.equal(newExternalId.userId);
 			expect(response.body.visitor.externalIds[app.id].username).to.equal('@second');
 		});
 
 		it('should return null when phone not found', async () => {
-			const response = await callResolveVisitor({ userId: `id-${Date.now()}` }, '+0000000000');
+			const response = await callResolveVisitor({ userId: `id-${Date.now()}` }, { phone: '+0000000000' });
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor).to.be.null;
 		});
 
 		it('should not use phone fallback when phone is empty', async () => {
-			const response = await callResolveVisitor({ userId: `id-${Date.now()}` }, '');
+			const response = await callResolveVisitor({ userId: `id-${Date.now()}` }, { phone: '' });
+
+			expect(response.status).to.equal(200);
+			expect(response.body.visitor).to.be.null;
+		});
+	});
+
+	describe('email fallback', () => {
+		it('should find visitor by email and save externalId', async () => {
+			const email = `test-${Date.now()}@example.com`;
+			const visitor = await createVisitor(undefined, undefined, email);
+
+			const externalId = { userId: `id-email-${Date.now()}`, username: '@emailuser' };
+			const response = await callResolveVisitor(externalId, { email });
+
+			expect(response.status).to.equal(200);
+			expect(response.body.visitor.id).to.equal(visitor._id);
+			expect(response.body.visitor.externalIds[app.id].userId).to.equal(externalId.userId);
+			expect(response.body.visitor.externalIds[app.id].username).to.equal(externalId.username);
+		});
+
+		it('should overwrite externalId when called with different userId via email', async () => {
+			const email = `test-${Date.now()}@example.com`;
+			await createVisitor(undefined, undefined, email);
+
+			await callResolveVisitor({ userId: `first-email-${Date.now()}`, username: '@first' }, { email });
+
+			const newExternalId = { userId: `second-email-${Date.now()}`, username: '@second' };
+			const response = await callResolveVisitor(newExternalId, { email });
+
+			expect(response.body.visitor.externalIds[app.id].userId).to.equal(newExternalId.userId);
+			expect(response.body.visitor.externalIds[app.id].username).to.equal('@second');
+		});
+
+		it('should return null when email not found', async () => {
+			const response = await callResolveVisitor({ userId: `id-${Date.now()}` }, { email: 'notfound@example.com' });
+
+			expect(response.status).to.equal(200);
+			expect(response.body.visitor).to.be.null;
+		});
+
+		it('should not use email fallback when email is empty', async () => {
+			const response = await callResolveVisitor({ userId: `id-${Date.now()}` }, { email: '' });
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor).to.be.null;

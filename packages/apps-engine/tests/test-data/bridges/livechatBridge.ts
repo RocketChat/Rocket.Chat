@@ -6,6 +6,7 @@ import type {
 	ILivechatRoom,
 	ILivechatTransferData,
 	IVisitor,
+	ResolveVisitorContactData,
 } from '../../../src/definition/livechat';
 import type { IMessage } from '../../../src/definition/messages';
 import type { IUser } from '../../../src/definition/users';
@@ -69,7 +70,11 @@ export class TestLivechatBridge extends LivechatBridge {
 		throw new Error('Method not implemented');
 	}
 
-	public resolveVisitor(externalId: IVisitorExternalIdentifier, phone: string | undefined, appId: string): Promise<IVisitor | undefined> {
+	public resolveVisitor(
+		externalId: IVisitorExternalIdentifier,
+		contactData: ResolveVisitorContactData | undefined,
+		appId: string,
+	): Promise<IVisitor | undefined> {
 		throw new Error('Method not implemented');
 	}
 

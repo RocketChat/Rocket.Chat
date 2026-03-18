@@ -50,16 +50,15 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
-	findOneVisitorByPhoneAndAddExternalId(
-		phone: string,
+	findOneVisitorByPhoneOrEmailAndAddExternalId(
+		contactData: { phone: string } | { email: string },
 		source: string,
 		externalId: IVisitorExternalIdentifier,
 	): Promise<ILivechatVisitor | null> {
-		return this.findOneAndUpdate(
-			{ 'phone.phoneNumber': phone },
-			{ $set: { [`externalIds.${source}`]: externalId } },
-			{ returnDocument: 'after' },
-		);
+		const query =
+			'phone' in contactData ? { 'phone.phoneNumber': contactData.phone } : { 'visitorEmails.address': contactData.email.toLowerCase() };
+
+		return this.findOneAndUpdate(query, { $set: { [`externalIds.${source}`]: externalId } }, { returnDocument: 'after' });
 	}
 
 	findOneByExternalId(source: string, externalUserId: string): Promise<ILivechatVisitor | null> {
@@ -277,7 +276,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 		if (!overwrite) {
 			const user = await this.getVisitorByToken(token, { projection: { livechatData: 1 } });
-			if (user?.livechatData && typeof user.livechatData[key] !== 'undefined') {
+			if (typeof user?.livechatData?.[key] !== 'undefined') {
 				return true;
 			}
 		}

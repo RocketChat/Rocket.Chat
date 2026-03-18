@@ -1,4 +1,4 @@
-import type { ILivechatRoom, IVisitor, IVisitorExternalIdentifier } from '../livechat';
+import type { ILivechatRoom, IVisitor, IVisitorExternalIdentifier, ResolveVisitorContactData } from '../livechat';
 import type { IUser } from '../users';
 
 export interface IExtraRoomParams {
@@ -10,13 +10,13 @@ export interface IExtraRoomParams {
 
 export interface ILivechatCreator {
 	/**
-	 * Resolves a visitor by external identifier (e.g., WhatsApp BSUID) with phone fallback.
-	 * If found by phone but not by externalId, enriches the visitor record with the externalId.
-	 * @param externalId The external identifier containing source, userId, and optional username
-	 * @param phone Optional phone number for fallback lookup
+	 * Resolves a visitor by external identifier (e.g., WhatsApp BSUID) with contact data fallback.
+	 * If found by contact data (phone or email) but not by externalId, enriches the visitor record with the externalId.
+	 * @param externalId The external identifier containing userId and optional username
+	 * @param contactData Optional contact data for fallback lookup. Use `{ phone: '+1234567890' }` or `{ email: 'user@example.com' }`
 	 * @returns The visitor if found, undefined otherwise
 	 */
-	resolveVisitor(externalId: IVisitorExternalIdentifier, phone?: string): Promise<IVisitor | undefined>;
+	resolveVisitor(externalId: IVisitorExternalIdentifier, contactData?: ResolveVisitorContactData): Promise<IVisitor | undefined>;
 	/**
 	 * Creates a room to connect the `visitor` to an `agent`.
 	 *

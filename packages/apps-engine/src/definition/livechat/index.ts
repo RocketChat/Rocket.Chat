@@ -16,7 +16,7 @@ import { IPostLivechatRoomSaved } from './IPostLivechatRoomSaved';
 import { IPostLivechatRoomStarted } from './IPostLivechatRoomStarted';
 import { IPostLivechatRoomTransferred } from './IPostLivechatRoomTransferred';
 import { IPreLivechatRoomCreatePrevent } from './IPreLivechatRoomCreatePrevent';
-import { IVisitorExternalIdentifier, IVisitor } from './IVisitor';
+import { IVisitorExternalIdentifier, IVisitor, ResolveVisitorContactData } from './IVisitor';
 import { IVisitorEmail } from './IVisitorEmail';
 import { IVisitorPhone } from './IVisitorPhone';
 
@@ -44,4 +44,5 @@ export {
 	LivechatTransferEventType,
 	IPostLivechatDepartmentRemoved,
 	IPostLivechatDepartmentDisabled,
+	ResolveVisitorContactData,
 };

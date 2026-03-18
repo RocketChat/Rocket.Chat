@@ -6,6 +6,7 @@ import type {
 	ILivechatRoom,
 	ILivechatTransferData,
 	IDepartment,
+	ResolveVisitorContactData,
 } from '@rocket.chat/apps-engine/definition/livechat';
 import type { IMessage as IAppsEngineMessage } from '@rocket.chat/apps-engine/definition/messages';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
@@ -128,13 +129,12 @@ export class AppLivechatBridge extends LivechatBridge {
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getName(),
-					...(source &&
-						source.type === 'app' && {
-							sidebarIcon: source.sidebarIcon,
-							defaultIcon: source.defaultIcon,
-							label: source.label,
-							destination: source.destination,
-						}),
+					...(source?.type === 'app' && {
+						sidebarIcon: source.sidebarIcon,
+						defaultIcon: source.defaultIcon,
+						label: source.label,
+						destination: source.destination,
+					}),
 				},
 			},
 			agent: agentRoom,
@@ -349,7 +349,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 	protected async resolveVisitor(
 		externalId: IVisitorExternalIdentifier,
-		phone: string | undefined,
+		contactData: ResolveVisitorContactData | undefined,
 		appId: string,
 	): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is resolving a livechat visitor by external ID.`);
@@ -357,7 +357,7 @@ export class AppLivechatBridge extends LivechatBridge {
 		const visitor = await resolveVisitor({
 			source: appId,
 			externalId,
-			phone,
+			contactData,
 		});
 
 		return this.orch.getConverters()?.get('visitors').convertVisitor(visitor);
