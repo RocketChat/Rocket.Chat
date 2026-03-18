@@ -30,6 +30,7 @@ import type {
 
 import { getCollectionName } from '../index';
 import { BaseRaw } from './BaseRaw';
+import { getAllowDiskUse } from '../allowDiskUse';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 type DestructuredDate = { year: number; month: number; day: number };
@@ -279,7 +280,7 @@ export const aggregates = {
 				devices: ISession['device'][];
 				_computedAt: string;
 			}
-		>(pipeline, { allowDiskUse: true });
+		>(pipeline, getAllowDiskUse());
 	},
 
 	async getUniqueUsersOfYesterday(
@@ -430,7 +431,7 @@ export const aggregates = {
 						},
 					},
 				],
-				{ allowDiskUse: true },
+				getAllowDiskUse(),
 			)
 			.toArray();
 	},
@@ -580,7 +581,7 @@ export const aggregates = {
 						},
 					},
 				],
-				{ allowDiskUse: true },
+				getAllowDiskUse(),
 			)
 			.toArray();
 	},
@@ -684,7 +685,7 @@ export const aggregates = {
 						},
 					},
 				],
-				{ allowDiskUse: true },
+				getAllowDiskUse(),
 			)
 			.toArray();
 	},

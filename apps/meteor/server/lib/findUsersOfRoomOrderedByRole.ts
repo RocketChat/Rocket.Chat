@@ -1,5 +1,5 @@
 import { type IUser, ROOM_ROLE_PRIORITY_MAP, type ISubscription } from '@rocket.chat/core-typings';
-import { Subscriptions, Users } from '@rocket.chat/models';
+import { Subscriptions, Users, getAllowDiskUse } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Document, FilterOperators } from 'mongodb';
 
@@ -125,9 +125,7 @@ export async function findUsersOfRoomOrderedByRole({
 				},
 			},
 		],
-		{
-			allowDiskUse: true,
-		},
+		getAllowDiskUse(),
 	);
 
 	const [members, totalCount] = await Promise.all([membersResult.toArray(), Users.countDocuments(matchUserFilter)]);

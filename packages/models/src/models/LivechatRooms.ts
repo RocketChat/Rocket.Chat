@@ -32,6 +32,7 @@ import type {
 
 import type { Updater } from '../updater';
 import { BaseRaw } from './BaseRaw';
+import { getAllowDiskUse } from '../allowDiskUse';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 /**
@@ -204,7 +205,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		}
 
 		const baseParams = [...firstParams, usersGroup, project];
-		const aggregateOptions = { readPreference: readSecondaryPreferred(), allowDiskUse: true };
+		const aggregateOptions = { readPreference: readSecondaryPreferred(), ...getAllowDiskUse() };
 
 		const [sortedResults, countResult] = await Promise.all([
 			this.col.aggregate([...baseParams, ...pagination], aggregateOptions).toArray(),
@@ -700,7 +701,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { ...getAllowDiskUse(), readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	countAllOpenChatsBetweenDate({ start, end, departmentId }: { start: Date; end: Date; departmentId?: string }) {

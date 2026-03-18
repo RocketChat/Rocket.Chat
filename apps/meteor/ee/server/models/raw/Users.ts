@@ -1,5 +1,5 @@
 import type { RocketChatRecordDeleted, IUser, AvailableAgentsAggregation } from '@rocket.chat/core-typings';
-import { queryStatusAgentOnline, UsersRaw } from '@rocket.chat/models';
+import { queryStatusAgentOnline, UsersRaw, getAllowDiskUse } from '@rocket.chat/models';
 import type { Db, Collection, Filter } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
@@ -110,7 +110,7 @@ export class UsersEE extends UsersRaw {
 					...(customFilter ? [customFilter] : []),
 					{ $project: { username: 1 } },
 				],
-				{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
+				{ ...getAllowDiskUse(), readPreference: readSecondaryPreferred() },
 			)
 			.toArray();
 	}

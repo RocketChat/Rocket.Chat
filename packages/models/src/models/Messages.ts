@@ -30,6 +30,7 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { getAllowDiskUse } from '../allowDiskUse';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -240,7 +241,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			params.push({ $limit: options.count });
 		}
 		return this.col.aggregate<{ _id: string | null; numberOfTransferredRooms: number }>(params, {
-			allowDiskUse: true,
+			...getAllowDiskUse(),
 			readPreference: readSecondaryPreferred(),
 		});
 	}
@@ -320,7 +321,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		if (options.count) {
 			params.push({ $limit: options.count });
 		}
-		return this.col.aggregate(params, { allowDiskUse: true, readPreference: readSecondaryPreferred() }).toArray();
+		return this.col.aggregate(params, { ...getAllowDiskUse(), readPreference: readSecondaryPreferred() }).toArray();
 	}
 
 	findLivechatClosedMessages(rid: IRoom['_id'], searchTerm?: string, options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {

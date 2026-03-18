@@ -26,6 +26,7 @@ import type {
 } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { getAllowDiskUse } from '../allowDiskUse';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements ILivechatContactsModel {
@@ -181,7 +182,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return this.findPaginated(
 			{ ...match },
 			{
-				allowDiskUse: true,
+				...getAllowDiskUse(),
 				...options,
 			},
 		);
@@ -451,7 +452,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 					},
 				},
 			],
-			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
+			{ ...getAllowDiskUse(), readPreference: readSecondaryPreferred() },
 		);
 	}
 

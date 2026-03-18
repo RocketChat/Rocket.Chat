@@ -4,6 +4,7 @@ import { Random } from '@rocket.chat/random';
 import type { AggregationCursor, FindCursor, Db, IndexDescription, FindOptions, UpdateResult, Document, Collection } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
+import { getAllowDiskUse } from '../allowDiskUse';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 
 export class AnalyticsRaw extends BaseRaw<IAnalytics> implements IAnalyticsModel {
@@ -306,7 +307,7 @@ export class AnalyticsRaw extends BaseRaw<IAnalytics> implements IAnalyticsModel
 		options?: any;
 	}): Promise<{ channels: IChannelsWithNumberOfMessagesBetweenDate[]; total: number }[]> {
 		const { baseParams, sortAndPaginationParams } = this.getRoomsWithNumberOfMessagesBetweenDateQuery(params);
-		const aggregateOptions = { allowDiskUse: true, readPreference: readSecondaryPreferred() };
+		const aggregateOptions = { ...getAllowDiskUse(), readPreference: readSecondaryPreferred() };
 
 		const [channels, countResult] = await Promise.all([
 			this.col.aggregate<IChannelsWithNumberOfMessagesBetweenDate>([...baseParams, ...sortAndPaginationParams], aggregateOptions).toArray(),

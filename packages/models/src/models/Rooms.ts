@@ -30,6 +30,7 @@ import type {
 
 import { Subscriptions } from '../index';
 import { BaseRaw } from './BaseRaw';
+import { getAllowDiskUse } from '../allowDiskUse';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
 import type { Updater } from '../updater';
 
@@ -616,7 +617,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}): AggregationCursor<IChannelsWithNumberOfMessagesBetweenDate> {
 		const aggregationParams = this.getChannelsWithNumberOfMessagesBetweenDateQuery(params);
 		return this.col.aggregate<IChannelsWithNumberOfMessagesBetweenDate>(aggregationParams, {
-			allowDiskUse: true,
+			...getAllowDiskUse(),
 			readPreference: readSecondaryPreferred(),
 		});
 	}
