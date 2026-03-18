@@ -135,6 +135,108 @@ export class TestEndpoint extends ApiEndpoint {
 
 </details>
 
+#### External ID Test (resolveVisitor API)
+
+File name: `external-id-test_0.0.1.zip`
+
+An app that tests the `ILivechatCreator.resolveVisitor()` API for resolving livechat visitors by external identifiers with phone/email fallback. This is used to test the WhatsApp BSUID (Business Scoped User ID) support and progressive visitor enrichment.
+
+**Endpoint:** `POST /api/apps/public/:appId/resolve-visitor`
+
+**Request body:**
+```json
+{
+  "externalId": { "userId": "bsuid-123", "username": "@johndoe" },
+  "phone": "+1234567890"
+}
+```
+or with email fallback:
+```json
+{
+  "externalId": { "userId": "ext-456" },
+  "email": "user@example.com"
+}
+```
+
+**Response:**
+- Returns the visitor if found (by externalId or contact data fallback)
+- Enriches visitor with externalId when found by phone/email
+- Returns `{ visitor: null }` if not found
+
+<details>
+<summary>App source code</summary>
+
+**ExternalIdTestApp.ts**
+```typescript
+import {
+	IAppAccessors,
+	IConfigurationExtend,
+	ILogger,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { ResolveVisitorEndpoint } from './ResolveVisitorEndpoint';
+
+export class ExternalIdTestApp extends App {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	public override async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new ResolveVisitorEndpoint(this)],
+		});
+	}
+}
+```
+
+**ResolveVisitorEndpoint.ts**
+```typescript
+import {
+	HttpStatusCode,
+	IHttp,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+
+export class ResolveVisitorEndpoint extends ApiEndpoint {
+	public override path = 'resolve-visitor';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		_read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { externalId, phone, email } = request.content;
+
+		let contactData: { phone: string } | { email: string } | undefined;
+
+		if (phone) {
+			contactData = { phone };
+		} else if (email) {
+			contactData = { email };
+		}
+
+		const visitor = await modify.getCreator().getLivechatCreator().resolveVisitor(externalId, contactData);
+
+		return {
+			status: HttpStatusCode.OK,
+			content: { visitor: visitor || null },
+		};
+	}
+}
+```
+
+</details>
+
 #### Nested Requests simulation
 
 File name: `nested-requests_0.0.1.zip`
