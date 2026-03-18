@@ -6734,6 +6734,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pinojs/redact@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@pinojs/redact@npm:0.4.0"
+  checksum: 10/2210ffb6b38357853d47239fd0532cc9edb406325270a81c440a35cece22090127c30c2ead3eefa3e608f2244087485308e515c431f4f69b6bd2e16cbd32812b
+  languageName: node
+  linkType: hard
+
 "@pkgjs/parseargs@npm:^0.11.0":
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
@@ -8934,7 +8941,7 @@ __metadata:
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
@@ -9065,7 +9072,7 @@ __metadata:
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
@@ -9236,7 +9243,7 @@ __metadata:
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     pino-pretty: "npm:^7.6.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
@@ -9328,7 +9335,7 @@ __metadata:
     marked: "npm:^16.1.2"
     matrix-js-sdk: "npm:^38.4.0"
     mongodb: "npm:6.16.0"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     pino-pretty: "npm:^7.6.1"
     reflect-metadata: "npm:^0.2.2"
     sanitize-html: "npm:~2.17.0"
@@ -9811,7 +9818,7 @@ __metadata:
   dependencies:
     "@rocket.chat/emitter": "npm:^0.32.0"
     eslint: "npm:~9.39.3"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10219,7 +10226,7 @@ __metadata:
     overlayscrollbars-react: "npm:^0.5.6"
     path: "npm:^0.12.7"
     path-to-regexp: "npm:^6.3.0"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     pino-pretty: "npm:^7.6.1"
     playwright-core: "npm:~1.52.0"
     playwright-qase-reporter: "npm:~2.1.7"
@@ -10403,7 +10410,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
     moleculer: "npm:^0.14.35"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     sinon: "npm:^19.0.5"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -10476,7 +10483,7 @@ __metadata:
     moment-timezone: "npm:^0.5.48"
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10516,7 +10523,7 @@ __metadata:
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
@@ -10659,7 +10666,7 @@ __metadata:
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
@@ -10721,7 +10728,7 @@ __metadata:
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     polka: "npm:^0.5.2"
     prom-client: "npm:^14.2.0"
     prometheus-gc-stats: "npm:^1.1.0"
@@ -22774,9 +22781,9 @@ __metadata:
   linkType: hard
 
 "fast-redact@npm:^3.1.1":
-  version: 3.1.2
-  resolution: "fast-redact@npm:3.1.2"
-  checksum: 10/b3b52081f9f4573c77c5f716d9ad509549e2af02109ef295cd1fbb2793237aeff64fdf68b4dbf84dfc2fde8c939dba7e3b21ce169117751f47c7e488fccc8055
+  version: 3.5.0
+  resolution: "fast-redact@npm:3.5.0"
+  checksum: 10/24b27e2023bd5a62f908d97a753b1adb8d89206b260f97727728e00b693197dea2fc2aa3711147a385d0ec6e713569fd533df37a4ef947e08cb65af3019c7ad5
   languageName: node
   linkType: hard
 
@@ -31029,6 +31036,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pino-abstract-transport@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "pino-abstract-transport@npm:3.0.0"
+  dependencies:
+    split2: "npm:^4.0.0"
+  checksum: 10/f42b85b2663c8520839124a55b27801e88c89c65e9569384b49bb4c81b022ae24860020c2375b92a03db699113969007cc155e1fb2dfe53754403920c1cbe18c
+  languageName: node
+  linkType: hard
+
 "pino-pretty@npm:^7.6.1":
   version: 7.6.1
   resolution: "pino-pretty@npm:7.6.1"
@@ -31053,9 +31069,37 @@ __metadata:
   linkType: hard
 
 "pino-std-serializers@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "pino-std-serializers@npm:6.0.0"
-  checksum: 10/c47e64f817b0f2674a6310669c63285ac2a11770e048e56e0383248f4451cc814db8098eac457602c1be04dbbb8dde08536a317039483e59db9246681bf85f9c
+  version: 6.2.2
+  resolution: "pino-std-serializers@npm:6.2.2"
+  checksum: 10/a00cdff4e1fbc206da9bed047e6dc400b065f43e8b4cef1635b0192feab0e8f932cdeb0faaa38a5d93d2e777ba4cda939c2ed4c1a70f6839ff25f9aef97c27ff
+  languageName: node
+  linkType: hard
+
+"pino-std-serializers@npm:^7.0.0":
+  version: 7.1.0
+  resolution: "pino-std-serializers@npm:7.1.0"
+  checksum: 10/6e27f6f885927b6df3b424ddb8a9e0e9854f3b59f4abd51afa74e1c2cf33436a505277b004bb00ce61884a962c8fdfd977391205c7baab885d6afb35fce7396a
+  languageName: node
+  linkType: hard
+
+"pino@npm:10.3.1":
+  version: 10.3.1
+  resolution: "pino@npm:10.3.1"
+  dependencies:
+    "@pinojs/redact": "npm:^0.4.0"
+    atomic-sleep: "npm:^1.0.0"
+    on-exit-leak-free: "npm:^2.1.0"
+    pino-abstract-transport: "npm:^3.0.0"
+    pino-std-serializers: "npm:^7.0.0"
+    process-warning: "npm:^5.0.0"
+    quick-format-unescaped: "npm:^4.0.3"
+    real-require: "npm:^0.2.0"
+    safe-stable-stringify: "npm:^2.3.1"
+    sonic-boom: "npm:^4.0.1"
+    thread-stream: "npm:^4.0.0"
+  bin:
+    pino: bin.js
+  checksum: 10/46cad7bf1859c83a8a9c43af764e5165f44057ce76d44b1b2b4390f2abccb8a579f42abfe742d88b4d8e1d339213afb46ea50fc39c50095dd1f0f9fe26ea1342
   languageName: node
   linkType: hard
 
@@ -32089,6 +32133,13 @@ __metadata:
   version: 3.0.0
   resolution: "process-warning@npm:3.0.0"
   checksum: 10/2d82fa641e50a5789eaf0f2b33453760996e373d4591aac576a22d696186ab7e240a0592db86c264d4f28a46c2abbe9b94689752017db7dadc90f169f12b0924
+  languageName: node
+  linkType: hard
+
+"process-warning@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "process-warning@npm:5.0.0"
+  checksum: 10/10f3e00ac9fc1943ec4566ff41fff2b964e660f853c283e622257719839d340b4616e707d62a02d6aa0038761bb1fa7c56bc7308d602d51bd96f05f9cd305dcd
   languageName: node
   linkType: hard
 
@@ -33929,7 +33980,7 @@ __metadata:
     mongodb: "npm:6.16.0"
     nats: "npm:^2.28.2"
     npm-run-all: "npm:^4.1.5"
-    pino: "npm:^8.21.0"
+    pino: "npm:10.3.1"
     pino-pretty: "npm:^7.6.1"
     sodium-native: "npm:^4.3.3"
     sodium-plus: "npm:^0.9.0"
@@ -34973,6 +35024,15 @@ __metadata:
   dependencies:
     atomic-sleep: "npm:^1.0.0"
   checksum: 10/e03c9611e43fa81132cd2ce0fe4eb7fbcf19db267e9dec20dc6c586f82465c9c906e91a02f72150c740463ad9335536ea2131850307aaa6686d1fb5d4cc4be3e
+  languageName: node
+  linkType: hard
+
+"sonic-boom@npm:^4.0.1":
+  version: 4.2.1
+  resolution: "sonic-boom@npm:4.2.1"
+  dependencies:
+    atomic-sleep: "npm:^1.0.0"
+  checksum: 10/161af46b3e6debc4ad3865b0db47f37289741a0b3005b8cf056f93a4e0e1a347e24ca1a2d8ccc864f7f19caa6185a766797f8382cdbfd2f3d046a0323d73a542
   languageName: node
   linkType: hard
 
@@ -36385,6 +36445,15 @@ __metadata:
   dependencies:
     real-require: "npm:^0.2.0"
   checksum: 10/03e743a2ccb2af5fa695d2e4369113336ee9b9f09c4453d50a222cbb4ae3af321bff658e0e5bf8bfbce9d7f5a7bf6262d12a2a365e160f4e76380ec624d32e7b
+  languageName: node
+  linkType: hard
+
+"thread-stream@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "thread-stream@npm:4.0.0"
+  dependencies:
+    real-require: "npm:^0.2.0"
+  checksum: 10/698ac8bd104c6cf91dda8421c30790979b867d7b6c878f914ddef18f1b1bc846f8776976d9f0113ed0ee90043f2e9e6554b96f4c1154ff84cd199da657f214fa
   languageName: node
   linkType: hard
 
