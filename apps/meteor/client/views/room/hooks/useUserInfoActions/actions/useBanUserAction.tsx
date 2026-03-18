@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { usePermission, useUser, useUserRoom, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,12 +9,12 @@ import { getRoomDirectives } from '../../../lib/getRoomDirectives';
 import { useBanUser } from '../../useBanUser';
 import type { UserInfoAction } from '../useUserInfoActions';
 
-export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRoom['_id']): UserInfoAction | undefined => {
+export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, roomId: IRoom['_id']): UserInfoAction | undefined => {
 	const { t } = useTranslation();
 
 	const currentUser = useUser();
-	const room = useUserRoom(rid);
-	const subscription = useUserSubscription(rid);
+	const room = useUserRoom(roomId);
+	const subscription = useUserSubscription(roomId);
 
 	if (!room) {
 		throw new Error('error-invalid-room');
@@ -25,18 +25,16 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRo
 	}
 
 	const { _id: uid, username } = user;
-	const hasPermissionToBan = usePermission('ban-user', rid);
+	const hasPermissionToBan = usePermission('ban-user', roomId);
 
-	const userCanBan = isRoomFederated(room)
-		? isRoomNativeFederated(room) && Federation.isEditableByTheUser(currentUser || undefined, room, subscription)
-		: hasPermissionToBan;
+	const federationCanBan = isRoomNativeFederated(room) && Federation.isEditableByTheUser(currentUser || undefined, room, subscription);
 
 	const { roomCanBan } = getRoomDirectives({ room, showingUserId: uid, userSubscription: subscription });
 
-	const handleBan = useBanUser({ roomId: rid });
+	const handleBan = useBanUser({ roomId });
 
 	return useMemo(() => {
-		if (!userCanBan || !roomCanBan) {
+		if (!hasPermissionToBan || !federationCanBan || !roomCanBan) {
 			return undefined;
 		}
 
@@ -47,5 +45,5 @@ export const useBanUserAction = (user: Pick<IUser, '_id' | 'username'>, rid: IRo
 			type: 'moderation' as const,
 			variant: 'danger' as const,
 		};
-	}, [handleBan, roomCanBan, userCanBan, t, username]);
+	}, [handleBan, roomCanBan, federationCanBan, hasPermissionToBan, t, username]);
 };

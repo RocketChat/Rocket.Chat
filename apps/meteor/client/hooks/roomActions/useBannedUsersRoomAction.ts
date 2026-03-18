@@ -1,4 +1,4 @@
-import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { usePermission, useUser } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
@@ -13,21 +13,12 @@ export const useBannedUsersRoomAction = () => {
 	const user = useUser();
 	const subscription = useRoomSubscription();
 
-	if (!room) {
-		throw new Error('error-invalid-room');
-	}
-
-	if (!user) {
-		throw new Error('error-user-not-found');
-	}
-
 	const hasPermissionToBan = usePermission('ban-user', room._id);
-	const userCanBan = isRoomFederated(room)
-		? isRoomNativeFederated(room) && Federation.isEditableByTheUser(user || undefined, room, subscription)
-		: hasPermissionToBan;
+
+	const federationCanBan = isRoomNativeFederated(room) && Federation.isEditableByTheUser(user || undefined, room, subscription);
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
-		if (!userCanBan) {
+		if (!hasPermissionToBan || !federationCanBan) {
 			return undefined;
 		}
 
@@ -40,5 +31,5 @@ export const useBannedUsersRoomAction = () => {
 			order: 13,
 			type: 'moderation',
 		};
-	}, [userCanBan]);
+	}, [federationCanBan, hasPermissionToBan]);
 };
