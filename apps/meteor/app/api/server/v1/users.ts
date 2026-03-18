@@ -346,21 +346,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'users.delete',
-	{ authRequired: true, permissionsRequired: ['delete-user'] },
-	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-			const { confirmRelinquish = false } = this.bodyParams;
-
-			const { deletedRooms } = await deleteUser(user._id, confirmRelinquish, this.userId);
-
-			return API.v1.success({ deletedRooms });
-		},
-	},
-);
-
-API.v1.addRoute(
 	'users.deleteOwnAccount',
 	{ authRequired: true },
 	{
@@ -877,6 +862,49 @@ const usersEndpoints = API.v1
 			const suggestions = await getAvatarSuggestionForUser(this.user);
 
 			return API.v1.success({ suggestions });
+		},
+	)
+	.post(
+		'users.delete',
+		{
+			authRequired: true,
+			permissionsRequired: ['delete-user'],
+			body: ajv.compile({
+				type: 'object',
+				properties: {
+					userId: { type: 'string' },
+					username: { type: 'string' },
+					confirmRelinquish: { type: 'boolean' },
+				},
+				additionalProperties: true,
+			}),
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						deletedRooms: {
+							type: 'array',
+							items: { type: 'string' },
+						},
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['deletedRooms', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+				400: validateBadRequestErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+			const { confirmRelinquish = false } = this.bodyParams;
+
+			const { deletedRooms } = await deleteUser(user._id, confirmRelinquish, this.userId);
+
+			return API.v1.success({ deletedRooms });
 		},
 	);
 

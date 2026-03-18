@@ -351,10 +351,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.delete': {
-		POST: (params: { userId: IUser['_id']; confirmRelinquish?: boolean }) => void;
-	};
-
 	'/v1/users.getAvatar': {
 		GET: (params: { userId?: string; username?: string; user?: string }) => void;
 	};
