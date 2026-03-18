@@ -109,7 +109,11 @@ describe('setUserActiveStatus', () => {
 			expect(stubs.Users.unsetLoginTokens.calledWith(userId)).to.be.true;
 			expect(stubs.Rooms.setDmReadOnlyByUserId.calledWith(userId, undefined, true, false)).to.be.true;
 			expect(stubs.callbacks.run.calledWith('afterDeactivateUser', sinon.match({ _id: userId }))).to.be.true;
-			expect(stubs.notifyOnUserChange.calledWith(sinon.match({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [], active: false } }))).to.be.true;
+			expect(
+				stubs.notifyOnUserChange.calledWith(
+					sinon.match({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [], 'active': false } }),
+				),
+			).to.be.true;
 			expect(stubs.notifyOnRoomChangedByUserDM.calledWith(userId)).to.be.true;
 		});
 
