@@ -1,33 +1,57 @@
 import { isTruthy } from '@rocket.chat/tools';
 
-import { strategyMap, type Provider } from './strategiesMap';
+import { isBuiltInProvider } from './strategiesMap';
 import { type ICachedSettings } from '../../../app/settings/server/CachedSettings';
 
-export const getOAuthServices = (settings: ICachedSettings) => {
+export interface OAuthServiceInfo {
+	name: string;
+	custom: boolean;
+	settingsKey: string;
+}
+
+export const getOAuthServices = (settings: ICachedSettings): OAuthServiceInfo[] => {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
 	const filteredServices = services.filter(([, value]) => typeof value === 'boolean' && value === true);
+
 	return filteredServices
-		.map(([key, value]) => {
+		.map(([key, value]): OAuthServiceInfo | undefined => {
 			if (!value) {
 				return;
 			}
 
-			let serviceName = key.replace('Accounts_OAuth_', '');
-			if (serviceName === 'Meteor') {
-				serviceName = 'meteor-developer';
-			}
-			if (/Accounts_OAuth_Custom-/.test(key)) {
-				return;
+			const isCustom = /^Accounts_OAuth_Custom-/.test(key);
+
+			let serviceName: string;
+			if (isCustom) {
+				serviceName = key.replace('Accounts_OAuth_Custom-', '');
+			} else {
+				serviceName = key.replace('Accounts_OAuth_', '');
+				if (serviceName === 'Meteor') {
+					serviceName = 'meteor-developer';
+				}
 			}
 
 			const serviceKey = serviceName.toLowerCase();
 
-			const oauthStrategy = strategyMap[serviceKey as Provider];
-			if (!oauthStrategy) {
+			if (!isCustom && !isBuiltInProvider(serviceKey)) {
 				return;
 			}
 
-			return serviceKey;
+			return {
+				name: serviceKey,
+				custom: isCustom,
+				settingsKey: key,
+			};
 		})
 		.filter(isTruthy);
+};
+
+export const getBuiltInOAuthServices = (settings: ICachedSettings): string[] => {
+	return getOAuthServices(settings)
+		.filter((service) => !service.custom)
+		.map((service) => service.name);
+};
+
+export const getCustomOAuthServices = (settings: ICachedSettings): OAuthServiceInfo[] => {
+	return getOAuthServices(settings).filter((service) => service.custom);
 };

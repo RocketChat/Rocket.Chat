@@ -1,3 +1,4 @@
+import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import express from 'express';
@@ -9,6 +10,8 @@ import type { ICachedSettings } from '../../app/settings/server/CachedSettings';
 import { configureOAuthServices } from '../lib/oauth/configureOAuthServices';
 import { createOAuthServiceConfig } from '../lib/oauth/createOAuthServiceConfig';
 import { getOAuthServices } from '../lib/oauth/getOAuthServices';
+
+const logger = new Logger('configurePassport');
 
 export const oAuthRouter = express();
 
@@ -31,17 +34,18 @@ oAuthRouter.use(passport.session());
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {
-		done(null, user.providerId);
+		done(null, user.providerId || user.id);
 	});
 
 	passport.deserializeUser(async (id, done) => {
 		const user = await Users.findOneById(id as string);
-		// we don’t actually use this user later
 		done(null, user);
 	});
 
-	settings.watchByRegex(/^(Accounts_OAuth_)[a-z0-9_]+$/i, () => {
+	settings.watchByRegex(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i, () => {
 		const services = getOAuthServices(settings);
+		logger.debug({ msg: 'OAuth services detected', services: services.map((s) => s.name) });
+
 		const oauthServiceConfigs = createOAuthServiceConfig(settings, services);
 		configureOAuthServices(oauthServiceConfigs);
 	});
