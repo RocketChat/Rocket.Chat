@@ -31,7 +31,7 @@ oAuthRouter.use(passport.session());
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {
-		done(null, user.id);
+		done(null, user._id);
 	});
 
 	passport.deserializeUser(async (id, done) => {
