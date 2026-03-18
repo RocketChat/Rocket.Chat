@@ -10,7 +10,6 @@ import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { OEmbedCache, Messages } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { isAbsoluteURL } from '@rocket.chat/tools';
 import he from 'he';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
@@ -20,6 +19,8 @@ import { camelCase } from 'lodash';
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
 import { afterParseUrlContent, beforeGetUrlContent } from '../lib/oembed/providers';
+
+const isAbsoluteURL = (str: string): boolean => /^(https?:\/\/|data:)/.test(str);
 
 const MAX_EXTERNAL_URL_PREVIEWS = 5;
 const log = new Logger('OEmbed');
@@ -149,8 +150,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 			},
 			timeout: settings.get<number>('API_EmbedTimeout') * 1000,
 			size: sizeLimit, // max size of the response body, this was not working as expected so I'm also manually verifying that on the iterator
-			ignoreSsrfValidation: false,
-			allowList: settings.get<string>('SSRF_Allowlist'),
+	
 		},
 		settings.get('Allow_Invalid_SelfSigned_Certs'),
 	);
@@ -351,18 +351,28 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	}
 
 	let changed = false;
-	for await (const item of message.urls) {
-		if (item.ignoreParse === true) {
-			log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
-			continue;
-		}
 
-		const { urlPreview, foundMeta } = await parseUrl(item.url);
+    for (let i = 0; i < message.urls.length; i += MAX_EXTERNAL_URL_PREVIEWS) {
+        const chunk = message.urls.slice(i, i + MAX_EXTERNAL_URL_PREVIEWS);
 
-		Object.assign(item, foundMeta ? urlPreview : {});
-		changed = changed || foundMeta;
-	}
+        const fetchPromises = chunk.map(async (item) => {
+            if (item.ignoreParse === true) {
+                return { item, foundMeta: false, urlPreview: undefined };
+            }
+            const { urlPreview, foundMeta } = await parseUrl(item.url);
+            return { item, urlPreview, foundMeta };
+        });
 
+        const results = await Promise.all(fetchPromises);
+
+        for (const result of results) {
+            if (result.foundMeta && result.urlPreview) {
+                Object.assign(result.item, result.urlPreview);
+                changed = true;
+            }
+        }
+    }
+	
 	if (changed === true) {
 		await Messages.setUrlsById(message._id, message.urls);
 	}
