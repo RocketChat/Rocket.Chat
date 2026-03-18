@@ -35,8 +35,7 @@ export const registerGuest = makeFunction(
 			...(name && { name }),
 		};
 
-		// Use dot notation for `externalIds` to merge with existing entries
-		// instead of overwriting.
+		// We "flatten" the `externalIds` from the parameters using dot notation so Mongo doesn't overwrite the whole property when updating the record
 		if (externalIds) {
 			for (const [source, externalId] of Object.entries(externalIds)) {
 				visitorDataToUpdate[`externalIds.${source}`] = externalId;
