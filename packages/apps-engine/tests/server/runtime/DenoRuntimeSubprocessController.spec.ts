@@ -60,7 +60,9 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 
 	@TeardownFixture
 	public async teardownFixture() {
-		await fs.unlink(path.join(os.tmpdir(), 'deno-runtime'));
+		await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch((reason) => {
+			console.warn('Failed to delete temporary Deno runtime symlink', reason);
+		});
 	}
 
 	@AsyncTest('correctly identifies a call to the HTTP accessor')
