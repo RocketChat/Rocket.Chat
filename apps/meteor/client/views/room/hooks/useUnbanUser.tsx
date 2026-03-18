@@ -5,17 +5,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { roomsQueryKeys } from '../../../../../lib/queryKeys';
-import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 
 type UseUnbanUserProps = {
 	roomId: string;
 };
 
 export const useUnbanUser = ({ roomId }: UseUnbanUserProps) => {
+	const { t } = useTranslation();
 	const room = useUserRoom(roomId);
 	const setModal = useSetModal();
-	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
 	const unbanUserEndpoint = useEndpoint('POST', '/v1/rooms.unbanUser');
@@ -41,15 +41,8 @@ export const useUnbanUser = ({ roomId }: UseUnbanUserProps) => {
 		},
 	});
 
-	const handleUnban = useCallback(
-		(username: string) => {
-			unbanUser({ roomId: room._id, username });
-		},
-		[room._id, unbanUser],
-	);
-
 	return useCallback(
-		(userId: string) => {
+		(username: string) => {
 			setModal(
 				<GenericModal
 					variant='danger'
@@ -58,12 +51,12 @@ export const useUnbanUser = ({ roomId }: UseUnbanUserProps) => {
 					confirmLoading={isUnbanPending}
 					onClose={() => setModal(null)}
 					onCancel={() => setModal(null)}
-					onConfirm={() => handleUnban(userId)}
+					onConfirm={() => unbanUser({ roomId: room._id, username })}
 				>
 					{t('The_user_will_be_unbanned_from__roomName__', { roomName })}
 				</GenericModal>,
 			);
 		},
-		[setModal, isUnbanPending, handleUnban, roomName, t],
+		[setModal, isUnbanPending, roomName, t, room._id, unbanUser],
 	);
 };

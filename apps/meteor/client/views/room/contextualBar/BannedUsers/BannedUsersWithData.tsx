@@ -1,9 +1,9 @@
 import { useRoomToolbox, useSetting } from '@rocket.chat/ui-contexts';
 
 import BannedUsers from './BannedUsers';
-import { useUnbanUser } from './hooks/useUnbanUser';
 import { useRoomBannedUsers } from '../../../hooks/useRoomBannedUsers';
 import { useRoom } from '../../contexts/RoomContext';
+import { useUnbanUser } from '../../hooks/useUnbanUser';
 
 const BannedUsersWithData = () => {
 	const room = useRoom();
