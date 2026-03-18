@@ -249,12 +249,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.getUsernameSuggestion': {
-		GET: () => {
-			result: string;
-		};
-	};
-
 	'/v1/users.checkUsernameAvailability': {
 		GET: (params: { username: string }) => {
 			result: boolean;

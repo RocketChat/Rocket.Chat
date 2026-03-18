@@ -878,6 +878,33 @@ const usersEndpoints = API.v1
 
 			return API.v1.success({ suggestions });
 		},
+	)
+	.get(
+		'users.getUsernameSuggestion',
+		{
+			authRequired: true,
+			userWithoutUsername: true,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						result: { type: 'string' },
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['result', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const result = await generateUsernameSuggestion(this.user);
+
+			return API.v1.success({ result });
+		},
 	);
 
 API.v1.addRoute(
@@ -917,18 +944,6 @@ API.v1.addRoute(
 
 			await sendForgotPasswordEmail(email.toLowerCase());
 			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.getUsernameSuggestion',
-	{ authRequired: true, userWithoutUsername: true },
-	{
-		async get() {
-			const result = await generateUsernameSuggestion(this.user);
-
-			return API.v1.success({ result });
 		},
 	},
 );
