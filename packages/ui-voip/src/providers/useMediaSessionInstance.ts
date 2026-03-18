@@ -93,7 +93,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			randomStringFactory,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: new MediaCallLogger(),
-			features: ['audio'],
+			features: ['audio', 'transfer', 'hold'],
 		});
 
 		if (window.sessionStorage) {

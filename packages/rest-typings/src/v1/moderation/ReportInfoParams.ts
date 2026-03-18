@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 export type ReportInfoParams = {
 	reportId: string;
@@ -17,4 +17,4 @@ const ajvParams = {
 	additionalProperties: false,
 };
 
-export const isReportInfoParams = ajv.compile<ReportInfoParams>(ajvParams);
+export const isReportInfoParams = ajvQuery.compile<ReportInfoParams>(ajvParams);

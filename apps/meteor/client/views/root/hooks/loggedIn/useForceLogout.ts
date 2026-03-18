@@ -1,5 +1,4 @@
 import { useStream, useSessionDispatch } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 import { useEffect } from 'react';
 
 export const useForceLogout = (userId: string) => {
@@ -9,13 +8,7 @@ export const useForceLogout = (userId: string) => {
 	useEffect(() => {
 		setForceLogout(false);
 
-		const unsubscribe = getNotifyUserStream(`${userId}/force_logout`, (sessionId) => {
-			const currentSessionId = Meteor.connection._lastSessionId;
-
-			if (sessionId === currentSessionId) {
-				window.location.reload();
-			}
-
+		const unsubscribe = getNotifyUserStream(`${userId}/force_logout`, () => {
 			setForceLogout(true);
 		});
 

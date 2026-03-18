@@ -21,7 +21,7 @@ import { useId, memo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
-import { goToRoomById } from '../../../lib/utils/goToRoomById';
+import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
 type CreateDirectMessageProps = { onClose: () => void };
 
@@ -40,10 +40,12 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 		formState: { isSubmitting, isValidating, errors },
 	} = useForm({ mode: 'onBlur', defaultValues: { users: [] } });
 
+	const goToRoom = useGoToRoom();
+
 	const mutateDirectMessage = useMutation({
 		mutationFn: createDirectAction,
 		onSuccess: ({ room: { rid } }) => {
-			goToRoomById(rid);
+			goToRoom(rid);
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });

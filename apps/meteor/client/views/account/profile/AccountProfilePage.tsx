@@ -96,11 +96,16 @@ const AccountProfilePage = (): ReactElement => {
 			try {
 				await deleteOwnAccount({ password: SHA256(passwordOrUsername) });
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
+				setModal(null);
 				logout();
 			} catch (error: any) {
 				if (error.error === 'user-last-owner') {
 					const { shouldChangeOwner, shouldBeRemoved } = error.details;
 					return handleConfirmOwnerChange(passwordOrUsername, shouldChangeOwner, shouldBeRemoved);
+				}
+
+				if (error.errorType === 'error-invalid-password') {
+					throw error;
 				}
 
 				dispatchToastMessage({ type: 'error', message: error });
