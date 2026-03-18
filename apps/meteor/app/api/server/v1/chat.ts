@@ -615,7 +615,7 @@ const chatEndpoints = API.v1
 		'chat.syncMessages',
 		{
 			authRequired: true,
-			validateParams: isChatSyncMessagesLocalProps,
+			query: isChatSyncMessagesLocalProps,
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
