@@ -25,7 +25,10 @@ export const registerGuest = makeFunction(
 
 		logger.debug({ msg: 'New incoming conversation', id, token });
 
-		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } & Record<string, unknown> = {
+		const visitorDataToUpdate: Partial<ILivechatVisitor> & { userAgent?: string; ip?: string; host?: string } & Record<
+				`externalIds.${string}`,
+				IVisitorExternalIdentifier
+			> = {
 			token,
 			status,
 			...(phone?.number && { phone: [{ phoneNumber: phone.number }] }),
