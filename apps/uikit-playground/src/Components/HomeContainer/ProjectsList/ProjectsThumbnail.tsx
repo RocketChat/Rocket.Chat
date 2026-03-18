@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { activeProjectAction, context, renameProjectAction } from '../../../Context';
 import { deleteProjectAction } from '../../../Context/action/deleteProjectAction';
-import { type ILayoutBlock } from '../../../Context/initialState';
+import type { ILayoutBlock } from '../../../Context/initialState';
 import routes from '../../../Routes/Routes';
 import { formatDate } from '../../../utils/formatDate';
 import RenderPayload from '../../RenderPayload/RenderPayload';

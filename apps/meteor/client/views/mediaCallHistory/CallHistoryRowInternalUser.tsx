@@ -1,7 +1,7 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import type { CallHistoryTableRowProps, CallHistoryTableInternalContact, MediaCallState } from '@rocket.chat/ui-voip';
-import { CallHistoryTableRow, useMediaCallContext, isCallingBlocked } from '@rocket.chat/ui-voip';
+import { CallHistoryTableRow, usePeekMediaSessionState } from '@rocket.chat/ui-voip';
+import type { CallHistoryTableRowProps, CallHistoryTableInternalContact, PeekMediaSessionStateReturn } from '@rocket.chat/ui-voip';
 import type { TFunction } from 'i18next';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -37,11 +37,11 @@ const i18nDictionary: Record<HistoryActions, string> = {
 	userInfo: 'User_info',
 } as const;
 
-const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: MediaCallState) => {
+const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: PeekMediaSessionStateReturn) => {
 	return (Object.entries(actions) as [HistoryActions, () => void][])
 		.filter(([_, callback]) => callback)
 		.map(([action, callback]) => {
-			const disabled = action === 'voiceCall' && isCallingBlocked(state);
+			const disabled = action === 'voiceCall' && state !== 'available';
 			return {
 				id: action,
 				icon: iconDictionary[action],
@@ -66,7 +66,7 @@ const CallHistoryRowInternalUser = ({
 	onClick,
 }: CallHistoryRowInternalUserProps) => {
 	const { t } = useTranslation();
-	const { state } = useMediaCallContext();
+	const state = usePeekMediaSessionState();
 	const actions = useMediaCallInternalHistoryActions({
 		contact: {
 			_id: contact._id,

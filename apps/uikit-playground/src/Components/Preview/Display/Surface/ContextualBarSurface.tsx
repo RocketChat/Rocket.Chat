@@ -10,7 +10,7 @@ import {
 	ContextualbarTitle,
 } from '@rocket.chat/fuselage';
 import { Scrollbars } from 'rc-scrollbars';
-import { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 const ContextualBarSurface = ({ children }: { children: ReactNode }) => (
 	<Contextualbar>

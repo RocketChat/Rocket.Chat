@@ -1,4 +1,4 @@
-import { type IThreadMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage,

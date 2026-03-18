@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-contexts",
-	"version": "27.0.1",
+	"version": "28.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -22,11 +22,11 @@
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "^0.32.0",
-		"@rocket.chat/fuselage": "^0.71.0",
-		"@rocket.chat/fuselage-hooks": "^0.39.0",
+		"@rocket.chat/fuselage": "^0.73.0",
+		"@rocket.chat/fuselage-hooks": "^0.40.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/i18n": "workspace:~",
-		"@rocket.chat/icons": "~0.46.0",
+		"@rocket.chat/icons": "~0.47.0",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tools": "workspace:~",
@@ -38,6 +38,8 @@
 		"jest": "~30.2.0",
 		"mongodb": "6.16.0",
 		"react": "~18.3.1",
+		"react-dom": "~18.3.1",
+		"react-virtuoso": "^4.12.0",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {

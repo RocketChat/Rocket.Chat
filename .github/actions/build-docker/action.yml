@@ -166,7 +166,7 @@ runs:
         retention-days: 1
 
     - uses: actions/upload-artifact@v4
-      if: inputs.publish-image == 'true' && inputs.arch == 'amd64'
+      if: inputs.publish-image == 'true'
       with:
         name: manifests-${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}
         path: /tmp/manifests

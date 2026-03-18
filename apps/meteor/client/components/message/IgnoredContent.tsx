@@ -4,10 +4,11 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type IgnoredContentProps = {
+	messageId: string;
 	onShowMessageIgnored: () => void;
 };
 
-const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactElement => {
+const IgnoredContent = ({ messageId, onShowMessageIgnored }: IgnoredContentProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const showMessageIgnored = (event: SyntheticEvent): void => {
@@ -17,7 +18,7 @@ const IgnoredContent = ({ onShowMessageIgnored }: IgnoredContentProps): ReactEle
 	};
 
 	return (
-		<MessageBody role='document' aria-roledescription={t('message_body')} dir='auto'>
+		<MessageBody id={`${messageId}-content`} role='document' aria-roledescription={t('message_body')} dir='auto'>
 			<Box display='flex' alignItems='center' fontSize='c2' color='hint'>
 				<span
 					tabIndex={0}

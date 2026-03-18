@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/http-router",
-	"version": "7.9.17",
+	"version": "7.9.18",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -22,7 +22,7 @@
 		"@rocket.chat/rest-typings": "workspace:^",
 		"ajv": "^8.17.1",
 		"express": "^4.21.2",
-		"hono": "^4.11.9",
+		"hono": "^4.12.5",
 		"qs": "^6.14.1"
 	},
 	"devDependencies": {
