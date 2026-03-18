@@ -16,7 +16,9 @@ const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
 	const router = useRouter();
 
 	const handleGoToHome = useEffectEvent(() => {
-		sidebar.toggle();
+		if (!sidebar.isCollapsed) {
+			sidebar.toggle();
+		}
 		router.navigate('/home');
 	});
 
