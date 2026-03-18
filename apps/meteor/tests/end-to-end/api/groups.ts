@@ -1,7 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
 import { TeamType, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
+import { after, before, describe, it, beforeEach } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiPrivateChannelName } from '../../data/api-data';
 import { pinMessage, starMessage, sendMessage, updateMessage } from '../../data/chat.helper';
@@ -1901,6 +1901,11 @@ describe('[Groups]', () => {
 		let testUser: TestUser<IUser>;
 		let testUserCredentials: Credentials;
 
+		beforeEach(async () => {
+			await updatePermission('create-c', ['admin', 'user']);
+			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
+		});
+
 		before(async () => {
 			await request
 				.post(api('groups.create'))
@@ -1945,6 +1950,8 @@ describe('[Groups]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 			await deleteRoom({ type: 'p', roomId: testRegularGroup._id });
+			await deleteRoom({ type: 'p', roomId: testTeamGroupForFailure._id });
+			await deleteRoom({ type: 'p', roomId: testTeamGroupForSuccess._id });
 			await deleteTeam(credentials, team.name);
 			await deleteUser(testUser);
 			await updatePermission('create-c', ['admin', 'user']);
@@ -1979,7 +1986,6 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 				});
-			await updatePermission('create-c', ['admin', 'user']);
 		});
 
 		it('should fail to change a team main room to channel when user lacks create-c permission', async () => {
@@ -1994,7 +2000,6 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 				});
-			await updatePermission('create-c', ['admin', 'user']);
 		});
 
 		it('should fail to change a team main room to channel when user has create-team-channel but lacks create-c', async () => {
@@ -2010,8 +2015,6 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 				});
-			await updatePermission('create-c', ['admin', 'user']);
-			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
 		});
 
 		it('should fail to change a team group to channel when user lacks create-team-channel permission', async () => {
@@ -2026,7 +2029,6 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
 				});
-			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
 		});
 
 		it('should succeed changing a team group to channel when user has create-team-channel but not create-c', async () => {
@@ -2043,8 +2045,6 @@ describe('[Groups]', () => {
 					expect(res.body).to.have.nested.property('group.t', 'c');
 					expect(res.body).to.have.nested.property('group.teamId', team._id);
 				});
-			await updatePermission('create-c', ['admin', 'user']);
-			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
 		});
 	});
 
