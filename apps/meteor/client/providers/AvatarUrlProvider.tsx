@@ -11,9 +11,9 @@ type AvatarUrlProviderProps = {
 
 const AvatarUrlProvider = ({ children }: AvatarUrlProviderProps) => {
 	const contextValue = useMemo(() => {
-		function getUserPathAvatar(username: string, etag?: string): string;
-		function getUserPathAvatar({ userId, etag }: { userId: string; etag?: string }): string;
-		function getUserPathAvatar({ username, etag }: { username: string; etag?: string }): string;
+		function getUserPathAvatar(username: string, etag?: string | null): string;
+		function getUserPathAvatar({ userId, etag }: { userId: string; etag?: string | null }): string;
+		function getUserPathAvatar({ username, etag }: { username: string; etag?: string | null }): string;
 		function getUserPathAvatar(...args: any): string {
 			if (typeof args[0] === 'string') {
 				const [username, etag] = args;

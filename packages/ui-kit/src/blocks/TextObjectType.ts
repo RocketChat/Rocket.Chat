@@ -1,4 +1,4 @@
-import { type TextObject } from './TextObject';
+import type { TextObject } from './TextObject';
 
 export const TextObjectType = {
 	PLAIN_TEXT: 'plain_text',
