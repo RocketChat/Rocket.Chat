@@ -10,7 +10,6 @@ import {
 	ContextualbarTitle,
 	VirtualizedScrollbars,
 } from '@rocket.chat/ui-client';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
@@ -22,15 +21,15 @@ import type { BannedUser } from '../../../hooks/useRoomBannedUsers';
 type BannedUsersProps = {
 	loading: boolean;
 	error?: Error;
+	useRealName?: boolean;
 	bannedUsers: BannedUser[];
 	onClickClose: () => void;
 	onClickUnban: (username: string) => void;
 	onLoadMore: () => void;
 };
 
-const BannedUsers = ({ loading, error, bannedUsers, onClickClose, onClickUnban, onLoadMore }: BannedUsersProps): ReactElement => {
+const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClickClose, onClickUnban, onLoadMore }: BannedUsersProps) => {
 	const { t } = useTranslation();
-	const useRealName = useSetting('UI_Use_Real_Name', false);
 
 	const loadMoreBannedUsers = useDebouncedCallback(() => onLoadMore(), 300, [onLoadMore, bannedUsers]);
 
