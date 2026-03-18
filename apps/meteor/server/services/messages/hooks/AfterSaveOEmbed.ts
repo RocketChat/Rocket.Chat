@@ -351,16 +351,23 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	}
 
 	let changed = false;
-	for await (const item of message.urls) {
-		if (item.ignoreParse === true) {
-			log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
-			continue;
+	const CONCURRENCY_LIMIT = 5;
+	for (let i = 0; i < message.urls.length; i += CONCURRENCY_LIMIT) {
+		const chunk = message.urls.slice(i, i + CONCURRENCY_LIMIT);
+		const fetchPromises = chunk.map(async (item) => {
+			if (item.ignoreParse === true) {
+				return { item, foundMeta: false, urlPreview: undefined };
+			}
+			const { urlPreview, foundMeta } = await parseUrl(item.url);
+			return { item, urlPreview, foundMeta };
+		});
+		const results = await Promise.all(fetchPromises);
+		for (const result of results) {
+			if (result.foundMeta && result.urlPreview) {
+				Object.assign(result.item, result.urlPreview);
+				changed = true;
+			}
 		}
-
-		const { urlPreview, foundMeta } = await parseUrl(item.url);
-
-		Object.assign(item, foundMeta ? urlPreview : {});
-		changed = changed || foundMeta;
 	}
 
 	if (changed === true) {
