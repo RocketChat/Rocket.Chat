@@ -72,7 +72,7 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.content.openLastMessageMenu();
 		await poHomeChannel.content.btnOptionEditMessage.click();
 
-		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.dragAndDropTxtFile({ waitForResponse: false });
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 	});
 
@@ -228,7 +228,7 @@ test.describe('file-upload-not-member', () => {
 	});
 
 	test('should not be able to upload if not a member', async () => {
-		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.dragAndDropTxtFile({ waitForResponse: false });
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 	});
 });
