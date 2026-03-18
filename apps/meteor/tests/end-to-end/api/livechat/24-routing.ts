@@ -317,15 +317,19 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
 			expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
 		});
-		it('should accept a conversation but not route to anyone when Livechat_accept_chats_with_no_agents is true', async () => {
+		it('should accept a conversation and route to an offline agent when Livechat_accept_chats_with_no_agents is true', async () => {
 			await updateSetting('Livechat_accept_chats_with_no_agents', true);
-
+			await makeAgentAvailable(testUser3.credentials);
+			await setUserStatus(testUser3.credentials, UserStatus.OFFLINE);
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 
-			expect(roomInfo.servedBy).to.be.undefined;
+			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(testUser3.user._id);
+			await makeAgentUnavailable(testUser3.credentials);
+			await setUserStatus(testUser3.credentials, UserStatus.ONLINE);
 		});
 		it('should not allow users to take more than Livechat_maximum_chats_per_agent chats', async () => {
 			await updateSetting('Livechat_maximum_chats_per_agent', 2);
