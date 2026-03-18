@@ -3059,10 +3059,17 @@ describe('[Channels]', () => {
 		});
 
 		after(async () => {
-			await deleteRoom({ type: 'c', roomId: testChannel._id });
-			await deleteRoom({ type: 'c', roomId: testRegularChannel._id });
-			await deleteRoom({ type: 'c', roomId: testTeamChannelForFailure._id });
-			await deleteRoom({ type: 'c', roomId: testTeamChannelForSuccess._id });
+			// Tries to delete rooms of all types to avoid flakyness
+			await Promise.all(
+				['p', 'c'].map(async (type: any) => {
+					Promise.all([
+						deleteRoom({ type, roomId: testChannel._id }),
+						deleteRoom({ type, roomId: testRegularChannel._id }),
+						deleteRoom({ type, roomId: testTeamChannelForFailure._id }),
+						deleteRoom({ type, roomId: testTeamChannelForSuccess._id }),
+					]);
+				}),
+			);
 			await deleteTeam(credentials, team.name);
 			await deleteUser(testUser);
 			await updatePermission('create-p', ['admin', 'user']);

@@ -1949,9 +1949,16 @@ describe('[Groups]', () => {
 				.send({ roomId: roomTypeId })
 				.expect('Content-Type', 'application/json')
 				.expect(200);
-			await deleteRoom({ type: 'p', roomId: testRegularGroup._id });
-			await deleteRoom({ type: 'p', roomId: testTeamGroupForFailure._id });
-			await deleteRoom({ type: 'p', roomId: testTeamGroupForSuccess._id });
+			// Tries to delete rooms of all types to avoid flakyness
+			await Promise.all(
+				['p', 'c'].map(async (type: any) => {
+					Promise.all([
+						deleteRoom({ type, roomId: testRegularGroup._id }),
+						deleteRoom({ type, roomId: testTeamGroupForFailure._id }),
+						deleteRoom({ type, roomId: testTeamGroupForSuccess._id }),
+					]);
+				}),
+			);
 			await deleteTeam(credentials, team.name);
 			await deleteUser(testUser);
 			await updatePermission('create-c', ['admin', 'user']);
