@@ -1,5 +1,6 @@
 import { capitalize } from '@rocket.chat/string-helpers';
 
+import { providerScopeMap } from './providerScopeMap';
 import { strategyMap, type Provider } from './strategiesMap';
 import { type ICachedSettings } from '../../../app/settings/server/CachedSettings';
 
@@ -10,6 +11,7 @@ export const createOAuthServiceConfig = (settings: ICachedSettings, services: st
 			strategy: strategyMap[service as Provider],
 			clientId: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_id`),
 			clientSecret: settings.get<string>(`Accounts_OAuth_${capitalize(service)}_secret`),
+			scope: providerScopeMap[service as Provider],
 		};
 	});
 };

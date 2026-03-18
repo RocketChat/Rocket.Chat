@@ -198,6 +198,7 @@ const validateEmailDomain = (user) => {
 };
 
 const onCreateUserAsync = async function (options, user = {}) {
+	console.log('onCreateUserAsync ->', options, user);
 	if (!options.skipBeforeCreateUserCallback) {
 		await beforeCreateUserCallback.run(options, user);
 	}
