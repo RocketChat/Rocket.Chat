@@ -233,8 +233,8 @@ const pushTokenEndpoints = API.v1
 						data: {
 							type: 'object',
 							properties: {
-								message: { type: 'object', additionalProperties: true },
-								notification: { type: 'object', additionalProperties: true },
+								message: { $ref: '#/components/schemas/IMessage' },
+								notification: { $ref: '#/components/schemas/IPushNotificationConfig' },
 							},
 							required: ['message', 'notification'],
 							additionalProperties: false,
