@@ -19,6 +19,13 @@ test.describe.serial('Quote Messages', () => {
 
 		const infoResponse = await api.get(`/channels.info?roomName=${targetChannel}`);
 		const infoData = await infoResponse.json();
+
+		if (!infoResponse.ok() || !infoData?.channel?._id) {
+			throw new Error(
+				`Channel lookup failed for "${targetChannel}". Status: ${infoResponse.status()}, Response Body: ${JSON.stringify(infoData)}`,
+			);
+		}
+
 		targetChannelId = infoData.channel._id;
 
 		context = await browser.newContext();
