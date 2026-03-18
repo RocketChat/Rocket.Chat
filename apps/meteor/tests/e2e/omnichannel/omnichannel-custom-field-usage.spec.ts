@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import { ddpLogin } from '../../data/users.helper';
 import { createFakeVisitor } from '../../mocks/data';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -30,9 +31,14 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 	let conversation: Awaited<ReturnType<typeof createConversation>>;
 	let roomCustomField: Awaited<ReturnType<typeof createCustomField>>;
 	let visitorCustomField: Awaited<ReturnType<typeof createCustomField>>;
+	let ws: WebSocket;
 
 	test.beforeAll('Set up agent, manager and custom fields', async ({ api }) => {
-		[agent, manager] = await Promise.all([createAgent(api, 'user1'), createManager(api, 'user1')]);
+		[agent, manager, ws] = await Promise.all([
+			createAgent(api, 'user1'),
+			createManager(api, 'user1'),
+			ddpLogin(Users.user1.data.loginToken),
+		]);
 
 		[roomCustomField, visitorCustomField, conversation] = await Promise.all([
 			createCustomField(api, {
@@ -67,6 +73,7 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 
 	test.afterAll('Remove agent, manager, custom fields and conversation', async () => {
 		await Promise.all([agent.delete(), manager.delete(), roomCustomField.delete(), visitorCustomField.delete(), conversation.delete()]);
+		ws.close();
 	});
 
 	test('Should be allowed to set room custom field for a conversation', async () => {

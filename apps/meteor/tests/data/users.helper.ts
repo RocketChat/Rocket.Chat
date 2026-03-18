@@ -172,6 +172,107 @@ export const setUserAway = (overrideCredentials = credentials, config?: IRequest
 		});
 };
 
+const connectWS = (port: number): Promise<WebSocket> =>
+	new Promise((resolve, reject) => {
+		const ws = new WebSocket(`ws://localhost:${port}/websocket`);
+
+		ws.onopen = () => resolve(ws);
+		ws.onerror = () => reject(new Error(`WS connection failed on ${port}`));
+	});
+
+export const ddpLogin = async (resume: string): Promise<WebSocket> => {
+	let ws: WebSocket;
+
+	if (process.env.CI) {
+		ws = await connectWS(3000);
+	} else if (process.env.IS_EE) {
+		ws = await connectWS(4000);
+	}
+
+	const loginId = `login-${Date.now()}-${Math.random()}`;
+
+	return new Promise((resolve, reject) => {
+		const handler = (event: MessageEvent) => {
+			const data = JSON.parse(event.data);
+
+			if (data.msg === 'connected') {
+				ws.send(
+					JSON.stringify({
+						msg: 'method',
+						id: loginId,
+						method: 'login',
+						params: [{ resume }],
+					}),
+				);
+			} else if (data.msg === 'result') {
+				if (data.id === loginId) {
+					ws.removeEventListener('message', handler);
+
+					if (data.error) {
+						reject(data.error);
+						return;
+					}
+
+					resolve(ws);
+				}
+			} else if (data.msg === 'ping') {
+				ws.send(JSON.stringify({ msg: 'pong' }));
+			} else if (data.msg === 'error') {
+				ws.removeEventListener('message', handler);
+				reject(data);
+			}
+		};
+
+		ws.addEventListener('message', handler);
+
+		ws.send(
+			JSON.stringify({
+				msg: 'connect',
+				version: '1',
+				support: ['1'],
+			}),
+		);
+	});
+};
+
+export const setUserAwayWS = (ws: WebSocket): Promise<void> =>
+	new Promise((resolve, reject) => {
+		const id = `away-${Date.now()}-${Math.random()}`;
+
+		const handler = (event: MessageEvent) => {
+			const data = JSON.parse(event.data);
+
+			if (data.msg === 'result' && data.id === id) {
+				ws.removeEventListener('message', handler);
+				if (data.error) {
+					reject(data.error);
+					return;
+				}
+				resolve();
+			}
+
+			if (data.msg === 'ping') {
+				ws.send(JSON.stringify({ msg: 'pong' }));
+			}
+
+			if (data.msg === 'error') {
+				ws.removeEventListener('message', handler);
+				reject(data);
+			}
+		};
+
+		ws.addEventListener('message', handler);
+
+		ws.send(
+			JSON.stringify({
+				msg: 'method',
+				method: 'UserPresence:away',
+				params: [],
+				id,
+			}),
+		);
+	});
+
 export const setUserOnline = (overrideCredentials = credentials, config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;
 	return requestInstance

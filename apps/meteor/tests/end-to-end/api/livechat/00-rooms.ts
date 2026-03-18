@@ -84,6 +84,7 @@ describe('LIVECHAT - rooms', () => {
 	let visitor: ILivechatVisitor;
 	let room: IOmnichannelRoom;
 	let appId: string;
+	const sockets: WebSocket[] = [];
 
 	before((done) => getCredentials(done));
 
@@ -128,6 +129,11 @@ describe('LIVECHAT - rooms', () => {
 				.delete(apps(`/${appId}`))
 				.set(credentials)
 				.expect(200);
+		}
+		for (const ws of sockets) {
+			if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+				ws.close();
+			}
 		}
 	});
 
@@ -1547,9 +1553,10 @@ describe('LIVECHAT - rooms', () => {
 				await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 				await updateSetting('Livechat_enabled_when_agent_idle', false);
 				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({
+				const { department: forwardToOfflineDepartment, ws } = await createDepartmentWithAnAwayAgent({
 					allowReceiveForwardOffline: true,
 				});
+				sockets.push(ws);
 
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
@@ -1675,7 +1682,8 @@ describe('LIVECHAT - rooms', () => {
 			async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: true });
+				const { department: forwardToOfflineDepartment, ws } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: true });
+				sockets.push(ws);
 
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
@@ -1714,7 +1722,8 @@ describe('LIVECHAT - rooms', () => {
 			async () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToOfflineDepartment } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: false });
+				const { department: forwardToOfflineDepartment, ws } = await createDepartmentWithAnAwayAgent({ allowReceiveForwardOffline: false });
+				sockets.push(ws);
 
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
@@ -1791,10 +1800,14 @@ describe('LIVECHAT - rooms', () => {
 				await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 				await updateSetting('Livechat_enabled_when_agent_idle', true);
 				const { department: initialDepartment } = await createDepartmentWithAnOnlineAgent();
-				const { department: forwardToOfflineDepartment, agent } = await createDepartmentWithAnAwayAgent({
+				const {
+					department: forwardToOfflineDepartment,
+					agent,
+					ws,
+				} = await createDepartmentWithAnAwayAgent({
 					allowReceiveForwardOffline: true,
 				});
-
+				sockets.push(ws);
 				const newVisitor = await createVisitor(initialDepartment._id);
 				const newRoom = await createLivechatRoom(newVisitor.token);
 
@@ -1810,7 +1823,6 @@ describe('LIVECHAT - rooms', () => {
 				});
 
 				const roomInfo = await getLivechatRoomInfo(newRoom._id);
-
 				expect(roomInfo.servedBy).to.have.property('_id', agent.user._id);
 				expect(roomInfo.departmentId).to.be.equal(forwardToOfflineDepartment._id);
 
