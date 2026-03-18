@@ -18,6 +18,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'leader', scope: 'Subscriptions', description: 'Leader' },
 		{ name: 'owner', scope: 'Subscriptions', description: 'Owner' },
 		{ name: 'user', scope: 'Users', description: '' },
+		{ name: 'federated-external', scope: 'Users', description: 'External Federated User' },
 		{ name: 'bot', scope: 'Users', description: '' },
 		{ name: 'app', scope: 'Users', description: '' },
 		{ name: 'guest', scope: 'Users', description: '' },
