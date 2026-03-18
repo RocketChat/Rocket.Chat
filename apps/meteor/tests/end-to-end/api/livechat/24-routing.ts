@@ -522,7 +522,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			sockets.push(ws2);
 			await setUserAwayWS(ws2);
 
-			await new Promise((r) => setTimeout(r, 9000));
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
 
