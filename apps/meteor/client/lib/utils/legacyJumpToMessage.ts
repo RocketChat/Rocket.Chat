@@ -19,16 +19,22 @@ export const legacyJumpToMessage = async (message: IMessage) => {
 			routeParamsOverrides: { tab: 'thread', context: message.tmid || message._id },
 			replace: RoomManager.opened === message.rid,
 		});
-		await RoomHistoryManager.getSurroundingMessages(message);
+
+		if (message.tcount) {
+			await RoomHistoryManager.getSurroundingChannelMessages(message);
+		} else if (!RoomHistoryManager.isLoaded(message.rid)) {
+			await RoomHistoryManager.getMore(message.rid);
+		}
+
 		return;
 	}
 
 	if (RoomManager.opened === message.rid) {
-		await RoomHistoryManager.getSurroundingMessages(message);
+		await RoomHistoryManager.getSurroundingChannelMessages(message);
 		return;
 	}
 
 	await goToRoomById(message.rid);
 
-	await RoomHistoryManager.getSurroundingMessages(message);
+	await RoomHistoryManager.getSurroundingChannelMessages(message);
 };

@@ -1,4 +1,4 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import type { IMessage, ISupportedLanguage } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import {
 	ajv,
@@ -15,14 +15,51 @@ import { settings } from '../../../settings/server';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
-API.v1.addRoute(
-	'autotranslate.getSupportedLanguages',
-	{
-		authRequired: true,
-		validateParams: isAutotranslateGetSupportedLanguagesParamsGET,
+type AutotranslateTranslateMessageParamsPOST = {
+	messageId: string;
+	targetLanguage?: string;
+};
+
+const AutotranslateTranslateMessageParamsPostSchema = {
+	type: 'object',
+	properties: {
+		messageId: {
+			type: 'string',
+		},
+		targetLanguage: {
+			type: 'string',
+			nullable: true,
+		},
 	},
-	{
-		async get() {
+	required: ['messageId'],
+	additionalProperties: false,
+};
+
+const isAutotranslateTranslateMessageParamsPOST = ajv.compile<AutotranslateTranslateMessageParamsPOST>(
+	AutotranslateTranslateMessageParamsPostSchema,
+);
+
+const autotranslateEndpoints = API.v1
+	.get(
+		'autotranslate.getSupportedLanguages',
+		{
+			authRequired: true,
+			query: isAutotranslateGetSupportedLanguagesParamsGET,
+			response: {
+				200: ajv.compile<{ languages: ISupportedLanguage[] }>({
+					type: 'object',
+					properties: {
+						languages: { type: 'array', items: { type: 'object' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['languages', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (!settings.get('AutoTranslate_Enabled')) {
 				return API.v1.failure('AutoTranslate is disabled.');
 			}
@@ -31,17 +68,24 @@ API.v1.addRoute(
 
 			return API.v1.success({ languages: languages || [] });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'autotranslate.saveSettings',
-	{
-		authRequired: true,
-		validateParams: isAutotranslateSaveSettingsParamsPOST,
-	},
-	{
-		async post() {
+	)
+	.post(
+		'autotranslate.saveSettings',
+		{
+			authRequired: true,
+			body: isAutotranslateSaveSettingsParamsPOST,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, field, value, defaultLanguage } = this.bodyParams;
 			if (!settings.get('AutoTranslate_Enabled')) {
 				return API.v1.failure('AutoTranslate is disabled.');
@@ -70,74 +114,48 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-type AutotranslateTranslateMessageParamsPOST = {
-	messageId: string;
-	targetLanguage?: string;
-};
-
-const AutotranslateTranslateMessageParamsPostSchema = {
-	type: 'object',
-	properties: {
-		messageId: {
-			type: 'string',
+	)
+	.post(
+		'autotranslate.translateMessage',
+		{
+			authRequired: true,
+			body: isAutotranslateTranslateMessageParamsPOST,
+			response: {
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-		targetLanguage: {
-			type: 'string',
-			nullable: true,
+		async function action() {
+			const { messageId, targetLanguage } = this.bodyParams;
+			if (!settings.get('AutoTranslate_Enabled')) {
+				return API.v1.failure('AutoTranslate is disabled.');
+			}
+			if (!messageId) {
+				return API.v1.failure('The bodyParam "messageId" is required.');
+			}
+			const message = await Messages.findOneById(messageId);
+			if (!message) {
+				return API.v1.failure('Message not found.');
+			}
+
+			const translatedMessage = await translateMessage(targetLanguage, message);
+
+			if (!translatedMessage) {
+				return API.v1.failure('Failed to translate message.');
+			}
+
+			return API.v1.success({ message: translatedMessage });
 		},
-	},
-	required: ['messageId'],
-	additionalProperties: false,
-};
-
-const isAutotranslateTranslateMessageParamsPOST = ajv.compile<AutotranslateTranslateMessageParamsPOST>(
-	AutotranslateTranslateMessageParamsPostSchema,
-);
-
-const autotranslateEndpoints = API.v1.post(
-	'autotranslate.translateMessage',
-	{
-		authRequired: true,
-		body: isAutotranslateTranslateMessageParamsPOST,
-		response: {
-			200: ajv.compile<{ message: IMessage }>({
-				type: 'object',
-				properties: {
-					message: { $ref: '#/components/schemas/IMessage' },
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['message', 'success'],
-				additionalProperties: false,
-			}),
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-		},
-	},
-	async function action() {
-		const { messageId, targetLanguage } = this.bodyParams;
-		if (!settings.get('AutoTranslate_Enabled')) {
-			return API.v1.failure('AutoTranslate is disabled.');
-		}
-		if (!messageId) {
-			return API.v1.failure('The bodyParam "messageId" is required.');
-		}
-		const message = await Messages.findOneById(messageId);
-		if (!message) {
-			return API.v1.failure('Message not found.');
-		}
-
-		const translatedMessage = await translateMessage(targetLanguage, message);
-
-		if (!translatedMessage) {
-			return API.v1.failure('Failed to translate message.');
-		}
-
-		return API.v1.success({ message: translatedMessage });
-	},
-);
+	);
 
 type AutotranslateEndpoints = ExtractRoutesFromAPI<typeof autotranslateEndpoints>;
 
