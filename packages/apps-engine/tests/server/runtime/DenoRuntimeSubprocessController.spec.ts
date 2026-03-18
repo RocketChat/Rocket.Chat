@@ -45,8 +45,6 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 			id: 'hello-world-test',
 			status: AppStatus.MANUALLY_ENABLED,
 		} as IAppStorageItem;
-
-		DenoRuntimeSubprocessController.setupEnvironment({ tempFilePath: os.tmpdir() });
 	}
 
 	@Setup

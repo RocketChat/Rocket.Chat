@@ -1,5 +1,5 @@
 import * as child_process from 'child_process';
-import * as fs from 'fs/promises';
+import * as fs from 'fs';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
 import { inspect as utilInspect } from 'util';
@@ -116,40 +116,38 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 	private readonly livenessManager: LivenessManager;
 
-	private static tempFilePath: string;
+	private readonly tempFilePath: string;
 
-	private static denoRuntimePath: string;
+	private readonly denoRuntimePath: string;
 
-	private static denoConfigPath: string;
+	private readonly denoConfigPath: string;
 
-	public static async setupEnvironment({ tempFilePath }: { tempFilePath: string }): Promise<void> {
-		this.tempFilePath = tempFilePath;
-		this.denoRuntimePath = path.join(tempFilePath, 'deno-runtime', 'main.ts');
+	constructor(
+		manager: AppManager,
+		// We need to keep the appSource around in case the Deno process needs to be restarted
+		private readonly appPackage: IParseAppPackageResult,
+		private readonly storageItem: IAppStorageItem,
+	) {
+		super();
+
+		this.tempFilePath = manager.getTempFilePath();
+		this.denoRuntimePath = path.join(this.tempFilePath, 'deno-runtime', 'main.ts');
 		this.denoConfigPath = getDenoConfigPath();
 
 		/**
 		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
 		 * The temp directory is the same we are given by the host to store temporary upload files
 		 */
-		await fs.symlink(path.dirname(this.denoConfigPath), path.dirname(this.denoRuntimePath), 'dir').catch((reason: unknown) => {
-			if ((reason as NodeJS.ErrnoException).code === 'EEXIST') {
-				return;
+		try {
+			fs.symlinkSync(
+				path.dirname(this.denoConfigPath),
+				path.dirname(this.denoRuntimePath),
+				'dir'
+			);
+		} catch (reason: unknown) {
+			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
+				throw reason;
 			}
-
-			throw reason;
-		});
-	}
-
-	// We need to keep the appSource around in case the Deno process needs to be restarted
-	constructor(
-		manager: AppManager,
-		private readonly appPackage: IParseAppPackageResult,
-		private readonly storageItem: IAppStorageItem,
-	) {
-		super();
-
-		if (!DenoRuntimeSubprocessController.denoRuntimePath) {
-			throw new Error('Deno runtime path is not set. Make sure to call setupEnvironment()');
 		}
 
 		this.debug = baseDebug.extend(appPackage.info.id);
@@ -172,9 +170,9 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		try {
 			const denoExePath = 'deno';
 
-			const denoWrapperPath = DenoRuntimeSubprocessController.denoRuntimePath;
+			const denoWrapperPath = this.denoRuntimePath;
 			// During development, the appsEngineDir is enough to run the deno process
-			const appsEngineDir = path.dirname(path.join(DenoRuntimeSubprocessController.denoConfigPath, '..'));
+			const appsEngineDir = path.dirname(path.join(this.denoConfigPath, '..'));
 			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
 			// When running in production, we're likely inside a node_modules which the Deno
 			// process must be able to read in order to include files that use NPM packages
@@ -184,13 +182,13 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 			// If the app handles file upload events, it needs to be able to read the temp dir
 			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload)) {
-				allowedDirs.push(DenoRuntimeSubprocessController.tempFilePath);
+				allowedDirs.push(this.tempFilePath);
 			}
 
 			const options = [
 				'run',
 				'--cached-only',
-				`--config=${DenoRuntimeSubprocessController.denoConfigPath}`,
+				`--config=${this.denoConfigPath}`,
 				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
 				denoWrapperPath,
