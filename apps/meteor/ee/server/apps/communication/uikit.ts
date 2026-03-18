@@ -255,13 +255,16 @@ export class AppUIKitInteractionApi {
 					type,
 					payload: { view, isCleared },
 				} = req.body;
+				const rid = 'rid' in req.body ? req.body.rid : undefined;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const action = {
 					type,
 					appId,
 					user,
+					room,
 					payload: {
 						view,
 						isCleared,
@@ -281,8 +284,10 @@ export class AppUIKitInteractionApi {
 
 			case 'viewSubmit': {
 				const { type, actionId, triggerId, payload } = req.body;
+				const rid = 'rid' in req.body ? req.body.rid : undefined;
 
 				const user = orch.getConverters()?.get('users').convertToApp(req.user);
+				const room = rid ? await orch.getConverters()?.get('rooms').convertById(rid) : undefined;
 
 				const action = {
 					type,
@@ -291,6 +296,7 @@ export class AppUIKitInteractionApi {
 					triggerId,
 					payload,
 					user,
+					room,
 				};
 
 				try {
