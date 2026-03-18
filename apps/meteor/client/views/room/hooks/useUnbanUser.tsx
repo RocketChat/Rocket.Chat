@@ -26,7 +26,7 @@ export const useUnbanUser = ({ roomId }: UseUnbanUserProps) => {
 
 	const roomName = escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
-	const { mutate: unbanUser, isPending: isUnbanPending } = useMutation({
+	const { mutate: unbanUser } = useMutation({
 		mutationFn: ({ roomId, username }: { roomId: string; username: string }) => unbanUserEndpoint({ roomId, username }),
 		onSuccess: (_, { username }) => {
 			dispatchToastMessage({ type: 'success', message: t('User__username__unbanned_from__roomName__', { username, roomName }) });
@@ -48,7 +48,6 @@ export const useUnbanUser = ({ roomId }: UseUnbanUserProps) => {
 					variant='danger'
 					title={t('Are_you_sure')}
 					confirmText={t('Yes_unban_user')}
-					confirmLoading={isUnbanPending}
 					onClose={() => setModal(null)}
 					onCancel={() => setModal(null)}
 					onConfirm={() => unbanUser({ roomId: room._id, username })}
@@ -57,6 +56,6 @@ export const useUnbanUser = ({ roomId }: UseUnbanUserProps) => {
 				</GenericModal>,
 			);
 		},
-		[setModal, isUnbanPending, roomName, t, room._id, unbanUser],
+		[setModal, roomName, t, room._id, unbanUser],
 	);
 };

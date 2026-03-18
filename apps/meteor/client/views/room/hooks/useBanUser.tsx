@@ -26,7 +26,7 @@ export const useBanUser = ({ roomId }: UseBanUserProps) => {
 
 	const roomName = escapeHTML(roomCoordinator.getRoomName(room.t, room));
 
-	const { mutate: banUser, isPending: isBanPending } = useMutation({
+	const { mutate: banUser } = useMutation({
 		mutationFn: ({ roomId, username }: { roomId: string; username: string }) => {
 			return banUserEndpoint({ roomId, username });
 		},
@@ -50,7 +50,6 @@ export const useBanUser = ({ roomId }: UseBanUserProps) => {
 					variant='danger'
 					title={t('Are_you_sure')}
 					confirmText={t('Yes_ban_user')}
-					confirmLoading={isBanPending}
 					onClose={() => setModal(null)}
 					onCancel={() => setModal(null)}
 					onConfirm={() => banUser({ roomId: room._id, username })}
@@ -59,6 +58,6 @@ export const useBanUser = ({ roomId }: UseBanUserProps) => {
 				</GenericModal>,
 			);
 		},
-		[setModal, t, isBanPending, roomName, room._id, banUser],
+		[setModal, t, roomName, room._id, banUser],
 	);
 };
