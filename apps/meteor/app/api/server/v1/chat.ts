@@ -320,8 +320,8 @@ const isChatSyncThreadMessagesLocalProps = ajv.compile<ChatSyncThreadMessages>(C
 
 const isSyncThreadMessagesResponse = ajv.compile<{
 	messages: {
-		update: Partial<IMessage>[];
-		remove: Partial<IMessage>[];
+		update: IMessage[];
+		remove: IMessage[];
 	};
 }>({
 	type: 'object',
@@ -332,15 +332,13 @@ const isSyncThreadMessagesResponse = ajv.compile<{
 				update: {
 					type: 'array',
 					items: {
-						type: 'object',
-						additionalProperties: true,
+						$ref: '#/components/schemas/IMessage',
 					},
 				},
 				remove: {
 					type: 'array',
 					items: {
-						type: 'object',
-						additionalProperties: true,
+						$ref: '#/components/schemas/IMessage',
 					},
 				},
 			},
