@@ -31,7 +31,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
 			{ key: { 'visitorEmails.address': 1 }, sparse: true },
-			{ key: { 'externalIds.$**': 1 }, sparse: true },
+			{ key: { 'externalIds.$**': 1 } },
 			{ key: { name: 1 }, sparse: true },
 			{ key: { username: 1 } },
 			{ key: { 'contactMananger.username': 1 }, sparse: true },
