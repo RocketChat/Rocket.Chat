@@ -60,6 +60,7 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.content.dragAndDropTxtFile();
 		await poHomeChannel.content.dragAndDropLstFile();
 
+		await expect(poHomeChannel.composer.inputMessage).toBeFocused();
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).toBeVisible();
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_LST)).toBeVisible();
 
