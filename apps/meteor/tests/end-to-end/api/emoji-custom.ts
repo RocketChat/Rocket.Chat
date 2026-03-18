@@ -448,7 +448,7 @@ describe('[EmojiCustom]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('The "emojiId" params is required!');
+					expect(res.body.error).to.be.equal("must have required property 'emojiId'");
 				})
 				.end(done);
 		});
@@ -497,13 +497,12 @@ describe('[EmojiCustom]', () => {
 </svg>`);
 
 		before(async () => {
+			await updateSetting('EmojiUpload_FileSystemPath', '', false);
 			await updateSetting('EmojiUpload_Storage_Type', 'FileSystem');
 			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: fsEmojiName }).expect(200);
 
 			await updateSetting('EmojiUpload_Storage_Type', 'GridFS');
 			await request.post(api('emoji-custom.create')).set(credentials).attach('emoji', imgURL).field({ name: gridFsEmojiName }).expect(200);
-
-			await updateSetting('EmojiUpload_FileSystemPath', '');
 		});
 
 		after(async () => {

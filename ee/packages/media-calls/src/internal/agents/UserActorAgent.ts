@@ -151,6 +151,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			requestedService: call.service,
 			requestedBy: call.transferredBy,
 			parentCallId: call._id,
+			features: call.features as CallFeature[],
 		});
 	}
 

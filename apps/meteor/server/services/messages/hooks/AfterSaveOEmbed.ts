@@ -10,6 +10,7 @@ import { isOEmbedUrlWithMetadata } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { OEmbedCache, Messages } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import he from 'he';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
@@ -18,7 +19,6 @@ import { camelCase } from 'lodash';
 
 import { settings } from '../../../../app/settings/server';
 import { Info } from '../../../../app/utils/rocketchat.info';
-import { isURL } from '../../../../lib/utils/isURL';
 import { afterParseUrlContent, beforeGetUrlContent } from '../lib/oembed/providers';
 
 const MAX_EXTERNAL_URL_PREVIEWS = 5;
@@ -182,7 +182,7 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 const parseUrl = async function (url: string): Promise<{ urlPreview: MessageUrl; foundMeta: boolean }> {
 	const parsedUrlObject: MessageUrl = { url, meta: {} };
 	let foundMeta = false;
-	if (!isURL(url)) {
+	if (!isAbsoluteURL(url)) {
 		return { urlPreview: parsedUrlObject, foundMeta };
 	}
 

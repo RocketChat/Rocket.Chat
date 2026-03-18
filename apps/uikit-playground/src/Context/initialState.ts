@@ -1,5 +1,5 @@
 import type { LayoutBlock } from '@rocket.chat/ui-kit';
-import { type Edge, type Node, type Viewport } from 'reactflow';
+import type { Edge, Node, Viewport } from 'reactflow';
 
 import { SurfaceOptions } from '../Components/Preview/Display/Surface/constant';
 import getDate from '../utils/getDate';
