@@ -4568,7 +4568,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4586,7 +4586,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});
@@ -4605,7 +4605,7 @@ describe('Threads', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					})
 					.end(done);
 			});

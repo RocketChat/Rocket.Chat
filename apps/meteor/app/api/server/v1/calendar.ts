@@ -1,4 +1,3 @@
-/*
 import { Calendar } from '@rocket.chat/core-services';
 import type { ICalendarEvent } from '@rocket.chat/core-typings';
 import {
@@ -223,4 +222,3 @@ API.v1.post(
 		return API.v1.success();
 	},
 );
-*/
