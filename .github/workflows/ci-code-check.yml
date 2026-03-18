@@ -12,7 +12,6 @@ on:
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
-  # NODE_OPTIONS: ${{ vars.TOOL_NODE_FLAGS }}
 
 jobs:
   code-check:
@@ -84,10 +83,6 @@ jobs:
 
           # only install meteor if bin isn't found
           command -v meteor >/dev/null 2>&1 || curl https://install.meteor.com | sed s/--progress-bar/-sL/g | /bin/sh
-
-      - name: Show available system memory
-        if: matrix.check == 'ts'
-        run: free -h
 
       - name: TS TypeCheck
         if: matrix.check == 'ts'
