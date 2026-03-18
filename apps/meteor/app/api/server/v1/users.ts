@@ -759,7 +759,7 @@ const usersEndpoints = API.v1
 		{
 			authRequired: true,
 			queryOperations: ['$or', '$and'],
-
+			permissionsRequired: ['view-d-room'],
 			query: ajv.compile<PaginatedRequest<{ fields?: string; query?: string }>>({
 				type: 'object',
 				properties: {
