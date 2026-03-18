@@ -2,12 +2,13 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker } from '../../components';
-import { useMediaCallContext } from '../../context';
+import { useMediaCallView } from '../../context/MediaCallViewContext';
 
 const OutgoingCall = () => {
 	const { t } = useTranslation();
 
-	const { onEndCall, peerInfo, connectionState } = useMediaCallContext();
+	const { sessionState, onEndCall } = useMediaCallView();
+	const { peerInfo, connectionState } = sessionState;
 
 	// TODO: Figure out how to ensure this always exist before rendering the component
 	if (!peerInfo) {

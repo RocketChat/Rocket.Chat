@@ -1,6 +1,6 @@
 import type { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { type ContextType } from 'react';
+import type { ContextType } from 'react';
 
 import { useUiKitActionManager } from './useUiKitActionManager';
 
