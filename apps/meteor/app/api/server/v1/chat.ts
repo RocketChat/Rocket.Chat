@@ -50,8 +50,8 @@ import { settings } from '../../../settings/server';
 import { followMessage } from '../../../threads/server/methods/followMessage';
 import { unfollowMessage } from '../../../threads/server/methods/unfollowMessage';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
-import { API } from '../api';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
+import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
 
