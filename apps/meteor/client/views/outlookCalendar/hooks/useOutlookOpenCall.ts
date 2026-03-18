@@ -3,7 +3,7 @@ import { useUser } from '@rocket.chat/ui-contexts';
 
 import { useVideoConfOpenCall } from '../../room/contextualBar/VideoConference/hooks/useVideoConfOpenCall';
 
-export const useOutlookOpenCall = (meetingUrl?: string) => {
+export const useOutlookOpenCall = (meetingUrl?: string | null) => {
 	const user = useUser();
 	const handleOpenCall = useVideoConfOpenCall();
 	const userDisplayName = useUserDisplayName({ name: user?.name, username: user?.username });

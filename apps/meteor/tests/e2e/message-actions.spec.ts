@@ -38,7 +38,7 @@ test.describe.serial('message-actions', () => {
 		await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).type('this is a reply message');
 		await page.keyboard.press('Enter');
 
-		await expect(poHomeChannel.content.lastThreadMessageText).toHaveText('this is a reply message');
+		await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 	});
 
 	// with thread open we listen to the subscription and update the collection from there
@@ -48,7 +48,7 @@ test.describe.serial('message-actions', () => {
 			await poHomeChannel.content.openReplyInThread();
 			await page.getByRole('dialog').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
 			await page.keyboard.press('Enter');
-			await expect(poHomeChannel.content.lastThreadMessageText).toHaveText('this is a reply message');
+			await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 		});
 
 		await test.step('unfollow thread', async () => {
@@ -73,7 +73,7 @@ test.describe.serial('message-actions', () => {
 			await poHomeChannel.content.openReplyInThread();
 			await page.locator('.rcx-vertical-bar').locator(`role=textbox[name="Message #${targetChannel}"]`).fill('this is a reply message');
 			await page.keyboard.press('Enter');
-			await expect(poHomeChannel.content.lastThreadMessageText).toHaveText('this is a reply message');
+			await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 		});
 
 		// close thread before testing because the behavior changes
@@ -225,7 +225,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward text file to channel', async () => {
 		const filename = 'any_file.txt';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -237,7 +237,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward image file to channel', async () => {
 		const filename = 'test-image.jpeg';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -249,7 +249,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward pdf file to channel', async () => {
 		const filename = 'test_pdf_file.pdf';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -261,7 +261,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward audio message to channel', async () => {
 		const filename = 'sample-audio.mp3';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
@@ -273,7 +273,7 @@ test.describe.serial('message-actions', () => {
 	test('expect forward video message to channel', async () => {
 		const filename = 'test_video.mp4';
 		await poHomeChannel.content.sendFileMessage(filename);
-		await poHomeChannel.content.btnModalConfirm.click();
+		await poHomeChannel.composer.btnSend.click();
 		await expect(poHomeChannel.content.lastUserMessage).toContainText(filename);
 
 		await poHomeChannel.content.forwardMessage(forwardChannel);
