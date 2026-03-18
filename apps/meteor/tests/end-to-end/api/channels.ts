@@ -3059,7 +3059,6 @@ describe('[Channels]', () => {
 		});
 
 		after(async () => {
-			// Tries to delete rooms of all types to avoid flakyness
 			await Promise.all(
 				['p', 'c'].map(async (type: any) => {
 					Promise.all([
