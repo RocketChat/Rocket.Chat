@@ -101,7 +101,6 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 	});
 
 	const totpId = useId();
-	const totpCodeId = useId();
 
 	const handleVerifyCode = useCallback(
 		async ({ authCode }: TwoFactorTOTPFormData) => {
@@ -156,9 +155,17 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps): ReactElement => {
 						<TextCopy text={totpSecret || ''} />
 						<Box mis='-16px' mb='-16px' is='img' size='x200' src={qrCode} aria-hidden='true' />
 						<Field>
-							<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
+							<FieldLabel htmlFor='totp-code'>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
 							<FieldRow>
-								<TextInput id={totpCodeId} mie='8px' {...register('authCode')} />
+								<TextInput
+									id='totp-code'
+									name='totp-code'
+									autoComplete='one-time-code'
+									inputMode='numeric'
+									pattern='[0-9]*'
+									mie='8px'
+									{...register('authCode')}
+								/>
 								<Button primary onClick={handleSubmit(handleVerifyCode)}>
 									{t('Verify')}
 								</Button>
