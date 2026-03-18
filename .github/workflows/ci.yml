@@ -223,7 +223,6 @@ jobs:
       - name: Cache observability (node_modules)
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: |
-          echo "node-modules-cache-exact-hit=${{ steps.setup-node-packages.outputs.cache-node-modules-hit }}"
           echo "deno-cache-exact-hit=${{ steps.setup-node-packages.outputs.cache-deno-hit }}"
           du -sh node_modules 2>/dev/null || true
 

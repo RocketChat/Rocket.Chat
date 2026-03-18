@@ -33,9 +33,6 @@ outputs:
   node-version:
     description: 'Node version'
     value: ${{ steps.node-version.outputs.node-version }}
-  cache-node-modules-hit:
-    description: 'Exact key hit for node_modules cache'
-    value: ${{ steps.cache-node-modules.outputs.cache-hit }}
   cache-deno-hit:
     description: 'Exact key hit for Deno cache'
     value: ${{ steps.cache-deno.outputs.cache-hit }}
@@ -55,36 +52,29 @@ runs:
         restore-keys: |
           deno-${{ runner.os }}-${{ runner.arch }}-v${{ inputs.deno-version }}-
 
-    - name: Cache Node modules
-      if: inputs.cache-modules
-      id: cache-node-modules
-      uses: actions/cache@v5
-      with:
-        path: |
-          node_modules
-          apps/meteor/node_modules
-          apps/meteor/ee/server/services/node_modules
-          packages/apps-engine/node_modules
-        key: node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}-${{ hashFiles('.yarnrc.yml') }}-v6
-        restore-keys: |
-          node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}-
-          node-modules-${{ inputs.type }}-${{ runner.arch }}-${{ runner.os }}-
-
     - name: Use Node.js ${{ inputs.node-version }}
       id: node-version
       uses: actions/setup-node@v6.0.0
       with:
         node-version: ${{ inputs.node-version }}
+        cache: ${{ inputs.cache-modules && 'yarn' || '' }}
 
     - name: Use Deno ${{ inputs.deno-version }}
       uses: denoland/setup-deno@v1
       with:
         deno-version: ${{ inputs.deno-version }}
 
+    - name: Cache mongodb-memory-server binary
+      if: inputs.cache-modules
+      uses: actions/cache@v5
+      with:
+        path: ${{ runner.temp }}/mongodb-memory-server
+        key: mongoms-${{ runner.arch }}-${{ runner.os }}-v1
+
     - name: Configure mongodb-memory-server cache
       shell: bash
       run: |
-        CACHE_DIR="${GITHUB_WORKSPACE}/node_modules/.cache/mongodb-memory-server"
+        CACHE_DIR="${{ runner.temp }}/mongodb-memory-server"
         mkdir -p "$CACHE_DIR"
         echo "MONGOMS_DOWNLOAD_DIR=$CACHE_DIR" >> $GITHUB_ENV
         echo "MONGOMS_PREFER_GLOBAL_PATH=false" >> $GITHUB_ENV
