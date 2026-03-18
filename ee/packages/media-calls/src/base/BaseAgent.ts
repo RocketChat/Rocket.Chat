@@ -5,6 +5,7 @@ import type {
 	MediaCallActorType,
 	MediaCallContact,
 	MediaCallSignedActor,
+	AnyMediaCall,
 } from '@rocket.chat/core-typings';
 import type { CallFeature, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
@@ -26,10 +27,6 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 		};
 	}
 
-	public get oppositeRole(): CallRole {
-		return ({ callee: 'caller', caller: 'callee' } as const)[this.role];
-	}
-
 	protected localDescription: RTCSessionDescriptionInit | null;
 
 	constructor(
@@ -46,12 +43,22 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 		return actor.type === this.actorType && actor.id === this.actorId;
 	}
 
-	public getMyCallActor(call: IMediaCall): MediaCallContact {
-		return call[this.role];
-	}
+	public getMyCallActor(call: AnyMediaCall): MediaCallContact {
+		if (call.kind === 'direct') {
+			return call[this.role];
+		}
 
-	public getOtherCallActor(call: IMediaCall): MediaCallContact {
-		return call[this.oppositeRole];
+		if (this.role === 'caller') {
+			return call.caller;
+		}
+
+		for (const callee of call.callees) {
+			if (callee.type === this.actorType && callee.id === this.actorId) {
+				return callee;
+			}
+		}
+
+		return this.actor;
 	}
 
 	public getSignedActor(contractId: string): MediaCallSignedActor {

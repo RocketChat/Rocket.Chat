@@ -93,7 +93,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public isBusy(): boolean {
-		return this.getMainCall(false)?.busy ?? false;
+		return this.getMainCall({ skipLocal: false, skipConferenceLegs: false })?.busy ?? false;
 	}
 
 	public enableStateReport(interval: number): void {
@@ -129,7 +129,11 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.knownCalls.get(callId) || null;
 	}
 
-	public getMainCall(skipLocal = false): IClientMediaCall | null {
+	public getMainCall(
+		options: { skipLocal: boolean; skipConferenceLegs: boolean } = { skipLocal: false, skipConferenceLegs: true },
+	): IClientMediaCall | null {
+		const { skipLocal, skipConferenceLegs } = options;
+
 		let ringingCall: IClientMediaCall | null = null;
 		let pendingCall: IClientMediaCall | null = null;
 
@@ -138,6 +142,9 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 				continue;
 			}
 			if (skipLocal && !call.confirmed) {
+				continue;
+			}
+			if (skipConferenceLegs && call.conferenceId) {
 				continue;
 			}
 
@@ -178,8 +185,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			call.setContractState(signal.self.contractId === this._sessionId ? 'signed' : 'ignored');
 		}
 
-		const oldCall = this.getReplacedCallBySignal(signal);
-		await call.processSignal(signal, oldCall);
+		const parentCall = this.getSignalParentCall(signal);
+		await call.processSignal(signal, parentCall);
 	}
 
 	public async setDeviceId(deviceId: ConstrainDOMString | null): Promise<void> {
@@ -199,7 +206,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public async startCall(calleeType: CallActorType, calleeId: string, params: { contactInfo?: CallContact } = {}): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.startCall', calleeId);
-		if (this.getMainCall(false)) {
+		if (this.getMainCall({ skipLocal: false, skipConferenceLegs: false })) {
 			throw new Error(`Already on a call.`);
 		}
 
@@ -267,9 +274,13 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return null;
 	}
 
-	private getReplacedCallBySignal(signal: ServerMediaSignal): ClientMediaCall | null {
+	private getSignalParentCall(signal: ServerMediaSignal): ClientMediaCall | null {
 		if ('replacingCallId' in signal && signal.replacingCallId) {
 			return this.knownCalls.get(signal.replacingCallId) || null;
+		}
+
+		if ('conferenceId' in signal && signal.conferenceId) {
+			return this.knownCalls.get(signal.conferenceId) || null;
 		}
 
 		return null;
@@ -572,7 +583,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		const hadBusyCall = this.lastState.hasBusyCall;
 
 		// Do not skip local calls if we transitioned from a different active call to it
-		const mainCall = this.getMainCall(!hadCall);
+		const mainCall = this.getMainCall({ skipLocal: !hadCall, skipConferenceLegs: true });
 		const hasCall = Boolean(mainCall);
 		const hasVisibleCall = Boolean(mainCall && !mainCall.hidden);
 		const hasBusyCall = Boolean(hasVisibleCall && mainCall?.busy);

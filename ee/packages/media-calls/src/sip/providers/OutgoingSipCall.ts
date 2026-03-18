@@ -1,4 +1,4 @@
-import type { IMediaCall, IMediaCallChannel, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type { IDirectMediaCall, IMediaCallChannel, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody, type CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import type Srf from 'drachtio-srf';
@@ -6,7 +6,7 @@ import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
 import { SIP_CALL_FEATURES } from '../../constants';
-import type { InternalCallParams } from '../../definition/common';
+import type { DirectCallParams } from '../../definition/common';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
@@ -33,7 +33,7 @@ export class OutgoingSipCall extends BaseSipCall {
 
 	constructor(
 		session: SipServerSession,
-		call: IMediaCall,
+		call: IDirectMediaCall,
 		protected override readonly agent: BroadcastActorAgent,
 		channel: IMediaCallChannel,
 	) {
@@ -44,7 +44,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		this.inboundRenegotiations = new Map();
 	}
 
-	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
+	public static async createCall(session: SipServerSession, params: DirectCallParams): Promise<IDirectMediaCall> {
 		logger.debug({ msg: 'OutgoingSipCall.createCall', sessionId: session.sessionId });
 		const { callee, ...extraParams } = params;
 
@@ -88,7 +88,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		return call;
 	}
 
-	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
+	protected async reflectCall(call: IDirectMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
 		if (params.dtmf && this.sipDialog) {
 			return this.sendDTMF(this.sipDialog, params.dtmf.dtmf, params.dtmf.duration || 2000);
 		}
@@ -112,7 +112,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		logger.debug({ msg: 'no changes detected', method: 'OutgoingSipCall.reflectCall' });
 	}
 
-	protected async createDialog(call: IMediaCall): Promise<void> {
+	protected async createDialog(call: IDirectMediaCall): Promise<void> {
 		logger.debug({ msg: 'OutgoingSipCall.createDialog', call });
 		if (this.lastCallState !== 'none' || this.sipDialog) {
 			logger.debug({ msg: 'invalid state to create an outgoing dialog' });
@@ -209,7 +209,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		this.sipDialog.on('destroy', () => {
 			logger.debug({ msg: 'OutgoingSipCall - uac.destroy' });
 			this.sipDialog = null;
-			void mediaCallDirector.hangup(call, this.agent, 'remote');
+			void mediaCallDirector.hangup(call, this.agent.actor, this.agent, 'remote');
 		});
 
 		this.sipDialog.on('modify', async (req, res) => {
@@ -300,7 +300,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		return null;
 	}
 
-	protected async processNegotiations(call: IMediaCall): Promise<void> {
+	protected async processNegotiations(call: IDirectMediaCall): Promise<void> {
 		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
 		if (negotiation?.offerer !== 'caller' || !negotiation.offer?.sdp || negotiation.answer) {
 			return this.processCalleeNegotiations();
@@ -327,12 +327,7 @@ export class OutgoingSipCall extends BaseSipCall {
 			return;
 		}
 
-		await mediaCallDirector.saveWebrtcSession(
-			call,
-			this.agent,
-			{ sdp: { sdp: answer, type: 'answer' }, negotiationId: negotiation._id },
-			this.session.sessionId,
-		);
+		await mediaCallDirector.saveWebrtcSession(call, this.agent, { sdp: { sdp: answer, type: 'answer' }, negotiationId: negotiation._id });
 	}
 
 	protected async processCalleeNegotiations(): Promise<void> {
@@ -348,7 +343,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		});
 	}
 
-	protected async processTransferredCall(call: IMediaCall): Promise<void> {
+	protected async processTransferredCall(call: IDirectMediaCall): Promise<void> {
 		if (this.lastCallState === 'hangup' || !call.transferredTo || !call.transferredBy) {
 			return;
 		}

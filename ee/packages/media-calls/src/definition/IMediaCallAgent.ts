@@ -1,12 +1,8 @@
-import type { IMediaCall, MediaCallActor, MediaCallActorType, MediaCallContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, MediaCallContact } from '@rocket.chat/core-typings';
 import type { CallFeature, CallRole } from '@rocket.chat/media-signaling';
 
 export interface IMediaCallAgent {
-	readonly actorType: MediaCallActorType;
-	readonly actorId: string;
-	readonly actor: MediaCallActor;
 	readonly role: CallRole;
-	readonly oppositeRole: CallRole;
 
 	oppositeAgent: IMediaCallAgent | null;
 
@@ -22,5 +18,5 @@ export interface IMediaCallAgent {
 
 	onCallTransferred(callId: string): Promise<void>;
 
-	getMyCallActor(call: IMediaCall): MediaCallContact;
+	getMyCallActor?(call: IMediaCall): MediaCallContact;
 }

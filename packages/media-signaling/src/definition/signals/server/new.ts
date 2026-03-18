@@ -1,4 +1,4 @@
-import type { CallContact, CallRole, CallService, CallFlag } from '../../call';
+import type { CallContact, CallRole, CallService, CallFlag, CallKind } from '../../call';
 
 /** Sent by the server to notify an agent that there's a new call for their actor */
 export type ServerMediaSignalNewCall = {
@@ -6,10 +6,10 @@ export type ServerMediaSignalNewCall = {
 	type: 'new';
 
 	service: CallService;
-	kind: 'direct';
+	kind: CallKind;
 	role: CallRole;
 	self: CallContact;
-	contact: CallContact;
+	contacts: CallContact[];
 
 	/** This will only be sent to the caller, with the id it used to request this call */
 	requestedCallId?: string;
@@ -20,4 +20,6 @@ export type ServerMediaSignalNewCall = {
 
 	// A list of flags that may be sent to the client to toggle custom behaviors
 	flags?: CallFlag[];
+
+	conferenceId?: string;
 };

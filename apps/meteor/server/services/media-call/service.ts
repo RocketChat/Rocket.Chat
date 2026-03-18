@@ -6,6 +6,8 @@ import type {
 	IInternalMediaCallHistoryItem,
 	CallHistoryItemState,
 	IExternalMediaCallHistoryItem,
+	AnyMediaCall,
+	IDirectMediaCall,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
@@ -84,14 +86,14 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			return;
 		}
 
-		if (call.uids.length !== 2) {
+		if (call.kind === 'direct' && call.uids.length !== 2) {
 			return this.saveExternalCallToHistory(call);
 		}
 
 		return this.saveInternalCallToHistory(call);
 	}
 
-	private async saveExternalCallToHistory(call: IMediaCall): Promise<void> {
+	private async saveExternalCallToHistory(call: IDirectMediaCall): Promise<void> {
 		const callerIsInternal = call.caller.type === 'user';
 		const calleeIsInternal = call.callee.type === 'user';
 
@@ -130,7 +132,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 	}
 
 	private getContactDataForInternalHistory(
-		contact: IMediaCall['caller'] | IMediaCall['callee'],
+		contact: IDirectMediaCall['caller'] | IDirectMediaCall['callee'],
 	): Pick<IInternalMediaCallHistoryItem, 'contactId' | 'contactName' | 'contactUsername'> {
 		return {
 			contactId: contact.id,
@@ -139,7 +141,12 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		};
 	}
 
-	private async saveInternalCallToHistory(call: IMediaCall): Promise<void> {
+	private async saveInternalCallToHistory(call: AnyMediaCall): Promise<void> {
+		// TODO save conference calls to history
+		if (call.kind === 'conference') {
+			return;
+		}
+
 		if (call.caller.type !== 'user' || call.callee.type !== 'user') {
 			logger.warn({ msg: 'Attempt to save an internal call history with a call that is not internal', callId: call._id });
 			return;

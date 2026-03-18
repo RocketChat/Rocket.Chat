@@ -5,6 +5,9 @@ import type {
 	MediaCallSignedContact,
 	MediaCallContact,
 	IUser,
+	AnyMediaCall,
+	IConferenceMediaCall,
+	IDirectMediaCall,
 } from '@rocket.chat/core-typings';
 import type { IMediaCallsModel } from '@rocket.chat/model-typings';
 import type {
@@ -37,7 +40,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		];
 	}
 
-	public async findOneByCallerRequestedId<T extends Document = IMediaCall>(
+	public async findOneByCallerRequestedId<T extends Document = AnyMediaCall>(
 		id: Required<IMediaCall>['callerRequestedId'],
 		caller: { type: MediaCallActorType; id: string },
 		options?: FindOptions<T>,
@@ -167,7 +170,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public findAllExpiredCalls<T extends Document = IMediaCall>(options?: FindOptions<T>): FindCursor<T> {
+	public findAllExpiredCalls<T extends Document = AnyMediaCall>(options?: FindOptions<T>): FindCursor<T> {
 		return this.find(
 			{
 				ended: false,
@@ -179,7 +182,7 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 		);
 	}
 
-	public findAllNotOverByUid<T extends Document = IMediaCall>(uid: IUser['_id'], options?: FindOptions<T>): FindCursor<T> {
+	public findAllNotOverByUid<T extends Document = AnyMediaCall>(uid: IUser['_id'], options?: FindOptions<T>): FindCursor<T> {
 		return this.find(
 			{
 				ended: false,
@@ -187,6 +190,21 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 					$gt: new Date(),
 				},
 				uids: uid,
+			},
+			options,
+		);
+	}
+
+	public findConferenceLegByCalleeId<T extends Document = IDirectMediaCall>(
+		conferenceId: IConferenceMediaCall['_id'],
+		calleeId: IUser['_id'],
+		options?: FindOptions<T>,
+	): Promise<T | null> {
+		return this.findOne<T>(
+			{
+				conferenceId,
+				'callee.type': 'user',
+				'callee.id': calleeId,
 			},
 			options,
 		);

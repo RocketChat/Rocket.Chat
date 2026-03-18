@@ -33,8 +33,9 @@ export const usePeekMediaSessionPeerInfo = (): PeerInfo | undefined => {
 		if (!mainCall) {
 			return undefined;
 		}
-		const { contact } = mainCall;
-		const peerInfo = derivePeerInfoFromInstanceContact(contact);
+		// TODO: Multiple contacts
+		const { contacts } = mainCall;
+		const peerInfo = derivePeerInfoFromInstanceContact(contacts[0]);
 
 		if (!cache.current || !areEqual(peerInfo, cache.current)) {
 			cache.current = peerInfo;

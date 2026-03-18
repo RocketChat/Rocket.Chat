@@ -1,4 +1,4 @@
-import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type { AnyMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isBusyState } from '@rocket.chat/media-signaling';
 import type { ClientMediaSignal, ServerMediaSignal, CallFeature } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
@@ -8,13 +8,19 @@ import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
 import { buildNewCallSignal } from '../../server/buildNewCallSignal';
 import { getMediaCallServer } from '../../server/injection';
+import { stripSensitiveDataFromSignal } from '../../server/stripSensitiveData';
 
 export class UserActorAgent extends BaseMediaCallAgent {
-	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
+	public async processSignal(call: AnyMediaCall, signal: ClientMediaSignal): Promise<void> {
 		const channel = await this.getOrCreateChannel(call, signal.contractId);
 
-		const signalProcessor = new UserActorSignalProcessor(this, call, channel);
-		return signalProcessor.processSignal(signal);
+		try {
+			const signalProcessor = new UserActorSignalProcessor(this, call, channel);
+			await signalProcessor.processSignal(signal);
+		} catch (err) {
+			logger.error({ msg: 'Failed to process user signal', signal: stripSensitiveDataFromSignal(signal), err });
+			throw err;
+		}
 	}
 
 	public async sendSignal(signal: ServerMediaSignal): Promise<void> {
@@ -65,18 +71,18 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
-	public async onCallCreated(call: IMediaCall): Promise<void> {
+	public async onCallCreated(call: AnyMediaCall): Promise<void> {
 		if (this.role === 'caller' && call.caller.contractId) {
 			// Pre-create the channel for the contractId that requested the call
 			await this.getOrCreateChannel(call, call.caller.contractId);
 		}
 
-		await this.sendSignal(buildNewCallSignal(call, this.role));
+		await this.sendSignal(buildNewCallSignal(call, this.role, this.actor));
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
 		const call = await MediaCalls.findOneById(callId);
-		if (!call || !isBusyState(call.state)) {
+		if (!call || !isBusyState(call.state) || call.kind === 'conference') {
 			return;
 		}
 
@@ -146,6 +152,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		}
 
 		await getMediaCallServer().requestCall({
+			kind: 'direct',
 			caller: actor as MediaCallSignedContact,
 			callee: call.transferredTo,
 			requestedService: call.service,

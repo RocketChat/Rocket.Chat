@@ -8,6 +8,7 @@ import type { GetActorContactOptions, MinimalUserData, MediaCallHeader } from '.
 import { UserActorAgent } from '../internal/agents/UserActorAgent';
 import { logger } from '../logger';
 import { BroadcastActorAgent } from './BroadcastAgent';
+import { ConferenceAgent } from '../internal/agents/ConferenceAgent';
 
 type ContactList = Record<MediaCallActorType, MediaCallContact | null>;
 
@@ -33,9 +34,21 @@ export class MediaCallCastDirector implements IMediaCallCastDirector {
 	}
 
 	public async getAgentFromCall(call: MediaCallHeader, role: CallRole): Promise<IMediaCallAgent | null> {
-		const { [role]: actor } = call;
+		if (call.kind === 'direct') {
+			const { [role]: actor } = call;
 
-		return this.getAgentForActorAndRole(actor, role);
+			return this.getAgentForActorAndRole(actor, role);
+		}
+
+		if (role === 'caller') {
+			return this.getAgentForActorAndRole(call.caller, role);
+		}
+
+		return this.getAgentForConferenceCallees(call.callees);
+	}
+
+	public async getAgentForConferenceCallees(callees: MediaCallContact[]): Promise<ConferenceAgent> {
+		return new ConferenceAgent(callees);
 	}
 
 	public async getContactForActor(

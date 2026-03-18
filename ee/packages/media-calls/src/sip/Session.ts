@@ -11,7 +11,7 @@ import type { BaseSipCall } from './providers/BaseSipCall';
 import { IncomingSipCall } from './providers/IncomingSipCall';
 import { OutgoingSipCall } from './providers/OutgoingSipCall';
 import type { IMediaCallServerSettings } from '../definition/IMediaCallServer';
-import type { InternalCallParams } from '../definition/common';
+import type { DirectCallParams } from '../definition/common';
 import { getDefaultSettings } from '../server/getDefaultSettings';
 
 export class SipServerSession {
@@ -72,7 +72,7 @@ export class SipServerSession {
 		}
 	}
 
-	public async createOutgoingCall(params: InternalCallParams): Promise<IMediaCall> {
+	public async createOutgoingCall(params: DirectCallParams): Promise<IMediaCall> {
 		return OutgoingSipCall.createCall(this, params);
 	}
 

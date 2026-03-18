@@ -1,3 +1,9 @@
+// TODO: Pending:
+// Connection between callees
+// improve getMainCall to ensure it never skips an active call regardless of kind
+// change reject behavior for conferences
+// Implement hangup
+
 import { Emitter } from '@rocket.chat/emitter';
 
 import type { MediaSignalTransportWrapper } from './TransportWrapper';
@@ -14,6 +20,7 @@ import type {
 	CallActorType,
 	CallFlag,
 	CallFeature,
+	CallKind,
 } from '../definition/call';
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
@@ -60,6 +67,16 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.remoteCallId ?? this.localCallId;
 	}
 
+	private _conferenceId: string | null = null;
+
+	public get conferenceId(): string | null {
+		return this._conferenceId;
+	}
+
+	private conference: ClientMediaCall | null = null;
+
+	private legs: Map<string, ClientMediaCall>;
+
 	public readonly emitter: Emitter<CallEvents>;
 
 	private _role: CallRole;
@@ -74,6 +91,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._state;
 	}
 
+	private _kind: CallKind;
+
+	public get kind(): CallKind {
+		return this._kind;
+	}
+
 	private _ignored: boolean;
 
 	public get ignored(): boolean {
@@ -82,8 +105,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private _contact: CallContact | null;
 
-	public get contact(): CallContact {
-		return this._contact || {};
+	public get contacts(): CallContact[] {
+		return [this._contact || {}];
 	}
 
 	private _transferredBy: CallContact | null;
@@ -160,6 +183,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private acceptedLocally: boolean;
 
+	public get isAcceptedLocally(): boolean {
+		return this.acceptedLocally;
+	}
+
 	private endedLocally: boolean;
 
 	private hasRemoteData: boolean;
@@ -217,9 +244,26 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.emitter = new Emitter<CallEvents>();
 
 		this.config.transporter = config.transporter;
+		const oldLogger = this.config.logger;
+
+		this.config.logger = {
+			log: (...what: any[]) => {
+				oldLogger?.log(this.kind, ...what);
+			},
+			debug: (...what: any[]) => {
+				oldLogger?.debug(this.kind, ...what);
+			},
+			error: (...what: any[]) => {
+				oldLogger?.error(this.kind, ...what);
+			},
+			warn: (...what: any[]) => {
+				oldLogger?.warn(this.kind, ...what);
+			},
+		};
 
 		this.localCallId = callId;
 		this.remoteCallId = null;
+		this.legs = new Map();
 
 		this.acceptedLocally = false;
 		this.endedLocally = false;
@@ -240,6 +284,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.stateTimeoutHandlers = new Set();
 		this._role = 'callee';
 		this._state = 'none';
+		this._kind = 'direct';
 		this.oldClientState = 'none';
 		this._ignored = false;
 		this._contact = null;
@@ -269,6 +314,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.hasRemoteData) {
 			this.changeContact(contact, { prioritizeExisting: true });
 		} else {
+			this._kind = 'direct';
 			this._role = 'caller';
 			this._contact = contact;
 		}
@@ -286,23 +332,31 @@ export class ClientMediaCall implements IClientMediaCall {
 		supportedFeatures: CallFeature[],
 		contactInfo?: CallContact,
 	): Promise<void> {
+		await this.requestConference([callee], supportedFeatures, contactInfo);
+	}
+
+	public async requestConference(
+		callees: { type: CallActorType; id: string }[],
+		supportedFeatures: CallFeature[],
+		contactInfo?: CallContact,
+	): Promise<void> {
 		if (this.initialized) {
 			return;
 		}
 
-		this.config.logger?.debug('ClientMediaCall.requestCall', callee);
+		this.config.logger?.debug('ClientMediaCall.requestCall', callees);
 
 		this.config.transporter.sendToServer(this.callId, 'request-call', {
-			callee,
+			callees,
 			supportedServices: Object.keys(this.config.processorFactories) as CallService[],
 			supportedFeatures,
 		});
 
-		return this.initializeOutboundCall({ ...contactInfo, ...callee });
+		return this.initializeOutboundCall({ ...contactInfo, ...callees[0] });
 	}
 
 	/** initialize a call with the data received from the server on a 'new' signal; this gets executed once for every call */
-	public async initializeRemoteCall(signal: ServerMediaSignalNewCall, oldCall?: ClientMediaCall | null): Promise<void> {
+	public async initializeRemoteCall(signal: ServerMediaSignalNewCall, parentCall?: ClientMediaCall | null): Promise<void> {
 		if (this.hasRemoteData) {
 			return;
 		}
@@ -310,6 +364,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.logger?.debug('ClientMediaCall.initializeRemoteCall', signal);
 
 		this.remoteCallId = signal.callId;
+		this._kind = signal.kind;
 		const wasInitialized = this.initialized;
 
 		this.initialized = true;
@@ -320,20 +375,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		this._transferredBy = signal.transferredBy || null;
 
-		if (this._role === 'caller' && !this.acceptedLocally) {
-			if (oldCall) {
-				this.acceptedLocally = true;
-			} else if (signal.self?.contractId && signal.self.contractId !== this.config.sessionId) {
-				// Call from another session, must be flagged as ignored before any event is triggered
-				this.config.logger?.log('Ignoring Outbound Call from a different session');
-				this.contractState = 'ignored';
-			} else if (AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS) {
-				this.config.logger?.log('Ignoring Unknown Outbound Call');
-				this.ignore();
-			}
-		}
+		this.initializeContractState(signal, parentCall);
 
-		this.changeContact(signal.contact);
+		// TODO: handle multiple contacts
+		this.changeContact(signal.contacts[0]);
 
 		// If the call is already flagged as over before the initialization, do not process anything other than filling in the basic information
 		if (this.isOver()) {
@@ -345,7 +390,11 @@ export class ClientMediaCall implements IClientMediaCall {
 			return this.rejectAsUnavailable();
 		}
 
-		if (this._service === 'webrtc') {
+		if (this.conference) {
+			this.conference.addConferenceLeg(this);
+		}
+
+		if (this._service === 'webrtc' && this._kind !== 'conference') {
 			try {
 				this.prepareWebRtcProcessor();
 			} catch (e) {
@@ -371,7 +420,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			this._role === 'caller' &&
 			this.acceptedLocally &&
 			this.contractState !== 'ignored' &&
-			(signal.requestedCallId === this.localCallId || Boolean(oldCall))
+			(signal.requestedCallId === this.localCallId || Boolean(parentCall))
 		) {
 			this.contractState = 'pre-signed';
 		}
@@ -429,23 +478,25 @@ export class ClientMediaCall implements IClientMediaCall {
 				}
 				return 'pending';
 			case 'accepted':
-				if (!this.negotiationManager.currentNegotiationId) {
-					return 'waiting-for-offer';
-				}
-
-				if (this._role === 'caller') {
-					if (!this.sentLocalSdp) {
-						return 'generating-local-sdp';
-					}
-					if (!this.receivedRemoteSdp) {
-						return 'waiting-for-answer';
-					}
-				} else {
-					if (!this.receivedRemoteSdp) {
+				if (this.kind !== 'conference') {
+					if (!this.negotiationManager.currentNegotiationId) {
 						return 'waiting-for-offer';
 					}
-					if (!this.sentLocalSdp) {
-						return 'generating-local-sdp';
+
+					if (this._role === 'caller') {
+						if (!this.sentLocalSdp) {
+							return 'generating-local-sdp';
+						}
+						if (!this.receivedRemoteSdp) {
+							return 'waiting-for-answer';
+						}
+					} else {
+						if (!this.receivedRemoteSdp) {
+							return 'waiting-for-offer';
+						}
+						if (!this.sentLocalSdp) {
+							return 'generating-local-sdp';
+						}
 					}
 				}
 
@@ -484,6 +535,18 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	public getRemoteMediaStream(tag?: string): IMediaStreamWrapper | null {
 		this.config.logger?.debug('ClientMediaCall.getRemoteMediaStream', tag);
+
+		if (this.kind === 'conference') {
+			// TODO: Merge all streams, or make the web app play all of them
+			for (const leg of this.legs.values()) {
+				const stream = leg.getRemoteMediaStream(tag);
+				if (stream) {
+					return stream;
+				}
+			}
+			return null;
+		}
+
 		if (!this.mayUseStreams()) {
 			return null;
 		}
@@ -491,7 +554,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this.webrtcProcessor.streams.getRemoteStreamByTag(tag || 'main');
 	}
 
-	public async processSignal(signal: ServerMediaSignal, oldCall?: ClientMediaCall | null) {
+	public async processSignal(signal: ServerMediaSignal, parentCall?: ClientMediaCall | null) {
 		if (this.isOver()) {
 			return;
 		}
@@ -500,7 +563,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const { type: signalType } = signal;
 
 		if (signalType === 'new') {
-			return this.initializeRemoteCall(signal, oldCall);
+			return this.initializeRemoteCall(signal, parentCall);
 		}
 
 		if (signalType === 'rejected-call-request') {
@@ -545,7 +608,9 @@ export class ClientMediaCall implements IClientMediaCall {
 
 		if (this.getClientState() === 'accepting') {
 			this.updateStateTimeouts();
-			this.addStateTimeout('accepting', TIMEOUT_TO_CONFIRM_ACCEPTANCE);
+			if (this.kind !== 'conference') {
+				this.addStateTimeout('accepting', TIMEOUT_TO_CONFIRM_ACCEPTANCE);
+			}
 
 			this.emitter.emit('accepting');
 		}
@@ -715,6 +780,10 @@ export class ClientMediaCall implements IClientMediaCall {
 			return;
 		}
 
+		if (this.kind === 'conference') {
+			return;
+		}
+
 		if (this.hasRemoteData || Date.now() > this.creationTimestamp.valueOf() + CALLS_WITH_NO_REMOTE_DATA_REPORT_DELAY) {
 			this.config.transporter.sendToServer(this.callId, 'local-state', {
 				callState: this.state,
@@ -752,6 +821,30 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		return this.enabledFeatures.includes(feature);
+	}
+
+	public addConferenceLeg(leg: ClientMediaCall): void {
+		if (this.legs.has(leg.callId)) {
+			return;
+		}
+
+		this.legs.set(leg.callId, leg);
+
+		// leg.emitter.on('clientStateChange', () => this.reflectLegStates());
+
+		this.reflectLegStates();
+
+		if (!this.isPendingAcceptance()) {
+			return;
+		}
+
+		this.changeState('active');
+	}
+
+	private reflectLegStates(): void {
+		// if (this.isOver()) {
+		// 	return;
+		// }
 	}
 
 	private changeState(newState: CallState): void {
@@ -797,13 +890,44 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.updateStateTimeouts();
 		// Any time the client state changes within the 'accepted' call state, set a new timeout for the new client state
 		// This ensures there will be three separate timeouts for the different negotiation stages: "generating local sdp", "waiting for remote sdp" and "connecting"
-		if (this._state === 'accepted') {
+		if (this._state === 'accepted' && this.kind !== 'conference') {
 			this.addStateTimeout(clientState, TIMEOUT_TO_PROGRESS_SIGNALING);
 		}
 
 		this.requestStateReport();
 		this.oldClientState = clientState;
 		this.emitter.emit('clientStateChange', oldClientState);
+	}
+
+	private initializeContractState(signal: ServerMediaSignalNewCall, parentCall?: ClientMediaCall | null): void {
+		if (signal.conferenceId) {
+			this._conferenceId = signal.conferenceId;
+		}
+
+		if (parentCall?.isAcceptedLocally) {
+			this.acceptedLocally = true;
+			if (signal.conferenceId && signal.conferenceId === parentCall.callId) {
+				this.conference = parentCall;
+			}
+		}
+
+		if (signal.self?.contractId && signal.self.contractId !== this.config.sessionId) {
+			// Call from another session, must be flagged as ignored before any event is triggered
+			this.config.logger?.log('Ignoring Call signed from a different session');
+			this.contractState = 'ignored';
+		} else if (!this.acceptedLocally) {
+			if (this._role === 'caller' && AUTO_IGNORE_UNKNOWN_OUTBOUND_CALLS) {
+				this.config.logger?.log('Ignoring Unknown Outbound Call');
+				this.ignore();
+			} else if (parentCall) {
+				this.config.logger?.log('Ignoring Child Call from a call we have not accepted.');
+				if (signal.self?.contractId) {
+					this.ignore();
+				} else {
+					this.contractState = 'ignored';
+				}
+			}
+		}
 	}
 
 	private maybeStopWebRTC(): void {
@@ -833,6 +957,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.hidden || this.isOver()) {
 			return;
 		}
+		if (this.kind === 'conference') {
+			return;
+		}
 
 		this.config.logger?.debug('ClientMediaCall.processOfferRequest', signal);
 
@@ -854,7 +981,16 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	protected shouldIgnoreWebRTC(): boolean {
 		if (this.hasRemoteData) {
-			return this.service !== 'webrtc';
+			if (this.service !== 'webrtc') {
+				return true;
+			}
+
+			// Conference calls do not use the webrtc processor directly - it'll be used in the sub-calls instead
+			if (this.kind === 'conference') {
+				return true;
+			}
+
+			return false;
 		}
 
 		// If we called and we don't support webrtc, assume it's not gonna be a webrtc call

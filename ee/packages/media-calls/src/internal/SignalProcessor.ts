@@ -1,7 +1,8 @@
-import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
+import type { AnyMediaCall, IUser, MediaCallContact } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { isPendingState } from '@rocket.chat/media-signaling';
 import type {
+	CallRole,
 	ClientMediaSignal,
 	ClientMediaSignalRegister,
 	ClientMediaSignalRequestCall,
@@ -11,6 +12,7 @@ import type {
 import { MediaCalls } from '@rocket.chat/models';
 
 import { DEFAULT_CALL_FEATURES } from '../constants';
+import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
@@ -58,7 +60,7 @@ export class GlobalSignalProcessor {
 		signal: Exclude<ClientMediaSignal, ClientMediaSignalRegister | ClientMediaSignalRequestCall>,
 	): Promise<void> {
 		try {
-			const call = await MediaCalls.findOneById(signal.callId);
+			const call = await MediaCalls.findOneById<AnyMediaCall>(signal.callId);
 			if (!call) {
 				logger.error({
 					msg: 'call not found',
@@ -69,7 +71,9 @@ export class GlobalSignalProcessor {
 			}
 
 			const isCaller = call.caller.type === 'user' && call.caller.id === uid;
-			const isCallee = call.callee.type === 'user' && call.callee.id === uid;
+			const callees = call.kind === 'direct' ? [call.callee] : call.callees;
+			const callee = callees.find((callee) => callee.type === 'user' && callee.id === uid);
+			const isCallee = Boolean(callee);
 
 			// The user must be either the caller or the callee, if its none or both, we can't process it
 			if (isCaller === isCallee) {
@@ -83,8 +87,7 @@ export class GlobalSignalProcessor {
 				throw new Error('invalid-call');
 			}
 
-			const role = isCaller ? 'caller' : 'callee';
-			const callActor = call[role];
+			const [role, callActor] = callee ? ['callee' as const, callee] : ['caller' as const, call.caller];
 
 			// Hangup requests from different clients won't be coming from the signed client
 			const skipContractCheck = signal.type === 'hangup' && signal.reason === 'another-client';
@@ -96,8 +99,7 @@ export class GlobalSignalProcessor {
 
 			await mediaCallDirector.renewCallId(call._id);
 
-			const agents = await mediaCallDirector.cast.getAgentsFromCall(call);
-			const { [role]: agent } = agents;
+			const agent = await this.getAgentToProcessSignal(call, callActor, role);
 
 			if (!(agent instanceof UserActorAgent)) {
 				throw new Error('Actor agent is not prepared to process signals');
@@ -108,6 +110,16 @@ export class GlobalSignalProcessor {
 			logger.error({ err: e });
 			throw e;
 		}
+	}
+
+	private async getAgentToProcessSignal(call: AnyMediaCall, actor: MediaCallContact, role: CallRole): Promise<IMediaCallAgent> {
+		if (call.kind === 'direct') {
+			const agents = await mediaCallDirector.cast.getAgentsFromCall(call);
+			return agents[role];
+		}
+
+		// TODO: handle oppositeAgent
+		return new UserActorAgent(actor, role);
 	}
 
 	private async processRegisterSignal(uid: IUser['_id'], signal: ClientMediaSignalRegister): Promise<void> {
@@ -121,8 +133,13 @@ export class GlobalSignalProcessor {
 		await Promise.all(calls.map((call) => this.reactToUnknownCall(uid, call, signal).catch(() => null)));
 	}
 
-	private async reactToUnknownCall(uid: IUser['_id'], call: IMediaCall, signal: ClientMediaSignalRegister): Promise<void> {
+	private async reactToUnknownCall(uid: IUser['_id'], call: AnyMediaCall, signal: ClientMediaSignalRegister): Promise<void> {
 		if (call.state === 'hangup') {
+			return;
+		}
+
+		if (call.kind === 'conference') {
+			// TODO: handle unknown conference calls on registration
 			return;
 		}
 
@@ -148,7 +165,7 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, role));
+		this.sendSignal(uid, buildNewCallSignal(call, role, actor));
 
 		if (call.state === 'active') {
 			this.sendSignal(uid, {
@@ -169,6 +186,16 @@ export class GlobalSignalProcessor {
 
 	private async processRequestCallSignal(uid: IUser['_id'], signal: ClientMediaSignalRequestCall): Promise<void> {
 		logger.debug({ msg: 'GlobalSignalProcessor.processRequestCallSignal', signal, uid });
+
+		const rejectionParams: Omit<ServerMediaSignalRejectedCallRequest, 'type' | 'reason'> = {
+			callId: signal.callId,
+			toContractId: signal.contractId,
+		};
+
+		if (!signal.callees.length) {
+			this.rejectCallRequest(uid, { ...rejectionParams, reason: 'invalid-call-params' });
+		}
+
 		const existingCall = await this.getExistingRequestedCall(uid, signal);
 		if (existingCall) {
 			return;
@@ -176,12 +203,15 @@ export class GlobalSignalProcessor {
 
 		const hasCalls = await MediaCalls.hasUnfinishedCallsByUid(uid);
 		if (hasCalls) {
-			this.rejectCallRequest(uid, { callId: signal.callId, toContractId: signal.contractId, reason: 'busy' });
+			this.rejectCallRequest(uid, { ...rejectionParams, reason: 'busy' });
 		}
 
 		const services = signal.supportedServices ?? [];
 		const requestedService = services.includes('webrtc') ? 'webrtc' : services[0];
 		const features = signal.supportedFeatures ?? DEFAULT_CALL_FEATURES;
+
+		const singleCallee = (signal.callees.length === 1 && signal.callees[0]) || null;
+		const multiCallees = signal.callees;
 
 		const params: InternalCallParams = {
 			caller: {
@@ -189,7 +219,8 @@ export class GlobalSignalProcessor {
 				id: uid,
 				contractId: signal.contractId,
 			},
-			callee: signal.callee,
+			...(singleCallee ? { callee: singleCallee, kind: 'direct' } : { callees: multiCallees, kind: 'conference' }),
+
 			requestedBy: {
 				type: 'user',
 				id: uid,
@@ -203,7 +234,7 @@ export class GlobalSignalProcessor {
 		this.createCall(params);
 	}
 
-	private async getExistingRequestedCall(uid: IUser['_id'], signal: ClientMediaSignalRequestCall): Promise<IMediaCall | null> {
+	private async getExistingRequestedCall(uid: IUser['_id'], signal: ClientMediaSignalRequestCall): Promise<AnyMediaCall | null> {
 		const { callId: requestedCallId } = signal;
 
 		if (!requestedCallId) {
@@ -242,7 +273,7 @@ export class GlobalSignalProcessor {
 			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, 'caller'));
+		this.sendSignal(uid, buildNewCallSignal(call, 'caller', caller));
 
 		return call;
 	}

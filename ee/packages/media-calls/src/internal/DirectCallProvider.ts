@@ -2,13 +2,13 @@ import type { IMediaCall } from '@rocket.chat/core-typings';
 import { MediaCalls } from '@rocket.chat/models';
 
 import { BaseCallProvider } from '../base/BaseCallProvider';
-import { CallRejectedError, type InternalCallParams } from '../definition/common';
+import { CallRejectedError, type DirectCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
 
-export class InternalCallProvider extends BaseCallProvider {
-	public static async createCall(params: InternalCallParams): Promise<IMediaCall> {
-		logger.debug({ msg: 'InternalCallProvider.createCall', params });
+export class DirectCallProvider extends BaseCallProvider {
+	public static async createCall(params: DirectCallParams): Promise<IMediaCall> {
+		logger.debug({ msg: 'DirectCallProvider.createCall', params });
 		if (params.caller.type !== 'user' || params.callee.type !== 'user') {
 			throw new CallRejectedError('unsupported');
 		}

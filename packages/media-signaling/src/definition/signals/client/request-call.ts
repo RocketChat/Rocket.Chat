@@ -1,17 +1,20 @@
 import type { JSONSchemaType } from 'ajv';
 
-import type { CallFeature, CallService } from '../../call';
+import { callActorTypes } from '../../call';
+import type { CallActorType, CallFeature, CallService } from '../../call';
 import { callFeatureList } from '../../call/IClientMediaCall';
+
+type Callee = {
+	type: CallActorType;
+	id: string;
+};
 
 export type ClientMediaSignalRequestCall = {
 	/** the callId on this signal is temporary and is never propagated to other agents */
 	callId: string;
 	contractId: string;
 	type: 'request-call';
-	callee: {
-		type: 'user' | 'sip';
-		id: string;
-	};
+	callees: Callee[];
 	supportedServices: CallService[];
 	supportedFeatures?: CallFeature[];
 };
@@ -33,22 +36,27 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 			type: 'string',
 			const: 'request-call',
 		},
-		callee: {
-			type: 'object',
-			properties: {
-				type: {
-					type: 'string',
-					enum: ['user', 'sip'],
-					nullable: false,
+		callees: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					type: {
+						type: 'string',
+						enum: callActorTypes,
+						nullable: false,
+					},
+					id: {
+						type: 'string',
+						minLength: 1,
+						nullable: false,
+					},
 				},
-				id: {
-					type: 'string',
-					minLength: 1,
-					nullable: false,
-				},
+				required: ['type', 'id'],
+				additionalProperties: false,
 			},
-			required: ['type', 'id'],
-			additionalProperties: false,
+			nullable: false,
+			minItems: 1,
 		},
 		supportedServices: {
 			type: 'array',
@@ -70,5 +78,5 @@ export const clientMediaSignalRequestCallSchema: JSONSchemaType<ClientMediaSigna
 		},
 	},
 	additionalProperties: false,
-	required: ['callId', 'contractId', 'type', 'callee', 'supportedServices'],
+	required: ['callId', 'contractId', 'type', 'supportedServices', 'callees'],
 };

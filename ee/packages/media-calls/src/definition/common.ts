@@ -1,4 +1,13 @@
-import type { AtLeast, IMediaCall, IUser, MediaCallActorType, MediaCallContact, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type {
+	AtLeast,
+	IUser,
+	MediaCallActorType,
+	MediaCallContact,
+	MediaCallSignedContact,
+	MediaCallKind,
+	IDirectMediaCall,
+	IConferenceMediaCall,
+} from '@rocket.chat/core-typings';
 import type { CallFeature, CallRejectedReason, CallService } from '@rocket.chat/media-signaling';
 
 export type MinimalUserData = Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
@@ -8,9 +17,9 @@ export type GetActorContactOptions = {
 	preferredType?: MediaCallActorType;
 };
 
-export type InternalCallParams = {
+export type BaseCallParams = {
+	kind: MediaCallKind;
 	caller: MediaCallSignedContact;
-	callee: MediaCallContact;
 	requestedCallId?: string;
 	requestedService?: CallService;
 	parentCallId?: string;
@@ -18,7 +27,22 @@ export type InternalCallParams = {
 	features: CallFeature[];
 };
 
-export type MediaCallHeader = AtLeast<IMediaCall, '_id' | 'caller' | 'callee'>;
+export type DirectCallParams = BaseCallParams & {
+	kind: 'direct';
+	callee: MediaCallContact;
+	conferenceId?: IConferenceMediaCall['_id'];
+};
+
+export type ConferenceCallParams = BaseCallParams & {
+	kind: 'conference';
+	callees: MediaCallContact[];
+};
+
+export type InternalCallParams = DirectCallParams | ConferenceCallParams;
+
+export type MediaCallHeader =
+	| AtLeast<IDirectMediaCall, '_id' | 'caller' | 'callee' | 'kind'>
+	| AtLeast<IConferenceMediaCall, '_id' | 'caller' | 'callees' | 'kind'>;
 
 export class CallRejectedError extends Error {
 	constructor(

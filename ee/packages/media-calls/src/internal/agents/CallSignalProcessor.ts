@@ -1,5 +1,5 @@
 import type {
-	IMediaCall,
+	AnyMediaCall,
 	IMediaCallChannel,
 	MediaCallActorType,
 	MediaCallNegotiationStream,
@@ -26,6 +26,7 @@ import { logger } from '../../logger';
 import { mediaCallDirector } from '../../server/CallDirector';
 import { getMediaCallServer } from '../../server/injection';
 import { stripSensitiveDataFromSignal } from '../../server/stripSensitiveData';
+import { ConferenceCallProvider } from '../ConferenceCallProvider';
 
 export class UserActorSignalProcessor {
 	public get contractId(): string {
@@ -62,10 +63,16 @@ export class UserActorSignalProcessor {
 
 	constructor(
 		protected readonly agent: IMediaCallAgent,
-		protected readonly call: IMediaCall,
+		protected readonly call: AnyMediaCall,
 		protected readonly channel: IMediaCallChannel,
 	) {
-		const actor = call[channel.role];
+		const callee =
+			call.kind === 'direct' ? call.callee : call.callees.find((callee) => callee.type === 'user' && callee.id === this.actorId);
+
+		const actor = channel.role === 'caller' ? call.caller : callee;
+		if (!actor) {
+			throw new Error('unsupported');
+		}
 
 		this.signed = Boolean(actor.contractId && actor.contractId === channel.contractId);
 		this.ignored = Boolean(actor.contractId && actor.contractId !== channel.contractId);
@@ -73,6 +80,11 @@ export class UserActorSignalProcessor {
 
 	public async requestWebRTCOffer(params: { negotiationId: string }): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.requestWebRTCOffer', params });
+
+		if (this.call.kind === 'conference') {
+			logger.error({ msg: 'Received a WebRTC Offer Request for a Conference call.', params });
+			throw new Error('Conference calls should not handle WebRTC negotiations directly.');
+		}
 
 		await this.sendSignal({
 			callId: this.callId,
@@ -118,7 +130,7 @@ export class UserActorSignalProcessor {
 	}
 
 	protected async hangup(reason: CallHangupReason): Promise<void> {
-		return mediaCallDirector.hangup(this.call, this.agent, reason);
+		return mediaCallDirector.hangup(this.call, this.actor, this.agent, reason);
 	}
 
 	protected async saveLocalDescription(
@@ -130,7 +142,7 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
-		await mediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId, streams }, this.contractId);
+		await mediaCallDirector.saveWebrtcSession(this.call, this.agent, { sdp, negotiationId, streams });
 	}
 
 	private async processAnswer(signal: ClientMediaSignalAnswer): Promise<void> {
@@ -183,12 +195,16 @@ export class UserActorSignalProcessor {
 			hangupReason = 'signaling-error';
 		}
 
-		await mediaCallDirector.hangup(this.call, this.agent, hangupReason);
+		await mediaCallDirector.hangup(this.call, this.actor, this.agent, hangupReason);
 	}
 
 	private async processNegotiationNeeded(oldNegotiationId: string): Promise<void> {
 		// Unsigned clients may not request negotiations
 		if (!this.signed) {
+			return;
+		}
+		// Conference calls do not handle negotiation directly
+		if (this.call.kind === 'conference') {
 			return;
 		}
 
@@ -263,7 +279,7 @@ export class UserActorSignalProcessor {
 		}
 
 		const self: MediaCallSignedContact = {
-			...this.agent.getMyCallActor(this.call),
+			...this.agent.getMyCallActor?.(this.call),
 			...this.actor,
 		};
 
@@ -286,7 +302,7 @@ export class UserActorSignalProcessor {
 		}
 
 		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
-		if (this.role === 'caller' && this.signed) {
+		if (this.role === 'caller' && this.signed && this.call.kind !== 'conference') {
 			// When the signed caller's client is reached, we immediatelly start the first negotiation
 			const negotiationId = await mediaCallDirector.startFirstNegotiation(this.call);
 			if (negotiationId) {
@@ -301,7 +317,7 @@ export class UserActorSignalProcessor {
 		}
 
 		if (this.role === 'callee') {
-			return mediaCallDirector.hangup(this.call, this.agent, 'rejected');
+			return mediaCallDirector.hangup(this.call, this.actor, this.agent, 'rejected');
 		}
 	}
 
@@ -311,17 +327,24 @@ export class UserActorSignalProcessor {
 			return;
 		}
 
-		await mediaCallDirector.hangup(this.call, this.agent, 'unavailable');
+		await mediaCallDirector.hangup(this.call, this.actor, this.agent, 'unavailable');
 	}
 
 	protected async clientHasAccepted(supportedFeatures: CallFeature[]): Promise<void> {
+		if (this.role !== 'callee') {
+			return;
+		}
+
 		if (!this.isCallPending()) {
 			return;
 		}
 
-		if (this.role === 'callee') {
-			await mediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId, supportedFeatures });
+		if (this.call.kind === 'conference') {
+			await ConferenceCallProvider.createLeg(this.call, this.actor);
+			return;
 		}
+
+		await mediaCallDirector.acceptCall(this.call, this.agent, { calleeContractId: this.contractId, supportedFeatures });
 	}
 
 	protected async clientIsActive(): Promise<void> {

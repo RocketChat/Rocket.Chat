@@ -3,7 +3,9 @@ import type { Emitter } from '@rocket.chat/emitter';
 import type { CallEvents } from './CallEvents';
 import type { IMediaStreamWrapper } from '../media/IMediaStreamWrapper';
 
-export type CallActorType = 'user' | 'sip';
+export const callActorTypes = ['user', 'sip'] as const;
+
+export type CallActorType = (typeof callActorTypes)[number];
 
 export type CallContact = {
 	type?: CallActorType;
@@ -18,6 +20,8 @@ export type CallContact = {
 export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
+
+export type CallKind = 'direct' | 'conference';
 
 export const callFeatureList = ['audio', 'transfer', 'hold'] as const;
 
@@ -95,13 +99,15 @@ export interface IClientMediaCall {
 	remoteHeld: boolean;
 	remoteMute: boolean;
 
-	contact: CallContact;
+	contacts: CallContact[];
 	transferredBy: CallContact | null;
 
 	/** if the call was requested by this session, then this will have the ID used to request the call, otherwise it will be the same as callId */
 	readonly tempCallId: string;
 	/** confirmed indicates if the call exists on the server */
 	readonly confirmed: boolean;
+
+	readonly conferenceId: string | null;
 
 	emitter: Emitter<CallEvents>;
 

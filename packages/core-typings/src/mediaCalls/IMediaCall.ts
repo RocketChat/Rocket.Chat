@@ -29,12 +29,14 @@ export type MediaCallContact<T extends MediaCallActorType = MediaCallActorType> 
 
 export type MediaCallSignedContact<T extends MediaCallActorType = MediaCallActorType> = MediaCallSignedEntity<MediaCallContact<T>>;
 
+export type MediaCallKind = 'direct' | 'conference';
+
 /* The list of call states that may actually be stored on the collection is smaller than the list of call states that may be computed by the client class */
 type MediaCallState = 'none' | 'ringing' | 'accepted' | 'active' | 'hangup';
 
 export interface IMediaCall extends IRocketChatRecord {
 	service: 'webrtc';
-	kind: 'direct';
+	kind: MediaCallKind;
 
 	state: MediaCallState;
 
@@ -42,7 +44,8 @@ export interface IMediaCall extends IRocketChatRecord {
 	createdAt: Date;
 
 	caller: MediaCallSignedContact;
-	callee: MediaCallContact;
+	callee?: MediaCallContact;
+	callees?: MediaCallContact[];
 
 	ended: boolean;
 	endedBy?: MediaCallActor | ServerActor;
@@ -68,4 +71,20 @@ export interface IMediaCall extends IRocketChatRecord {
 
 	/** The list of features that may be used in this call. Values are final once the call is accepted. */
 	features: string[];
+
+	conferenceId?: string;
 }
+
+export interface IDirectMediaCall extends IMediaCall {
+	kind: 'direct';
+
+	callee: MediaCallContact;
+}
+
+export interface IConferenceMediaCall extends IMediaCall {
+	kind: 'conference';
+
+	callees: MediaCallContact<'user'>[];
+}
+
+export type AnyMediaCall = IDirectMediaCall | IConferenceMediaCall;

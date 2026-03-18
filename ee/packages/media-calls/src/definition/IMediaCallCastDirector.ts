@@ -7,6 +7,7 @@ import type { GetActorContactOptions, MediaCallHeader, MinimalUserData } from '.
 export interface IMediaCallCastDirector {
 	getAgentsFromCall(call: MediaCallHeader): Promise<{ caller: IMediaCallAgent; callee: IMediaCallAgent }>;
 	getAgentFromCall(call: MediaCallHeader, role: CallRole): Promise<IMediaCallAgent | null>;
+	getAgentForConferenceCallees(callees: MediaCallContact[]): Promise<IMediaCallAgent>;
 	getContactForActor(
 		actor: MediaCallActor,
 		options: GetActorContactOptions,

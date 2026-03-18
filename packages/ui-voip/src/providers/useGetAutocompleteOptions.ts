@@ -17,7 +17,8 @@ export const useGetAutocompleteOptions = (instance: MediaSignalingSession | unde
 				return [];
 			}
 
-			const contact = instance.getMainCall()?.contact;
+			// TODO: Multiple contacts
+			const contact = instance.getMainCall()?.contacts[0];
 
 			const peerUsername = contact && 'username' in contact ? contact.username : undefined;
 			const peerExtension = contact ? getExtensionFromInstanceContact(contact) : undefined;

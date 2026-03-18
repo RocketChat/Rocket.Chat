@@ -5,6 +5,10 @@ import type {
 	MediaCallSignedContact,
 	ServerActor,
 	MediaCallNegotiationStream,
+	AnyMediaCall,
+	IDirectMediaCall,
+	IConferenceMediaCall,
+	MediaCallActor,
 } from '@rocket.chat/core-typings';
 import type { CallFeature, CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
@@ -14,23 +18,28 @@ import { getCastDirector, getMediaCallServer } from './injection';
 import { DEFAULT_CALL_FEATURES } from '../constants';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
-import type { InternalCallParams, MediaCallHeader } from '../definition/common';
+import type { ConferenceCallParams, DirectCallParams, MediaCallHeader } from '../definition/common';
 import { logger } from '../logger';
 
 const EXPIRATION_TIME = 120000;
 const EXPIRATION_CHECK_TIMEOUT = EXPIRATION_TIME + 1000;
 
-export type CreateCallParams = InternalCallParams & {
+type CreateCallAgentParams = {
 	callerAgent: IMediaCallAgent;
 	calleeAgent: IMediaCallAgent;
 };
+
+type CreateDirectCallParams = DirectCallParams & CreateCallAgentParams;
+
+type CreateConferenceCallParams = ConferenceCallParams & CreateCallAgentParams;
+
+export type CreateCallParams = CreateDirectCallParams | CreateConferenceCallParams;
 
 // expiration checks by call id
 const scheduledExpirationChecks = new Map<string, ReturnType<typeof setTimeout>>();
 
 class MediaCallDirector {
-	public async hangup(call: IMediaCall, actorAgent: IMediaCallAgent, reason: CallHangupReason): Promise<void> {
-		const { actor: endedBy } = actorAgent;
+	public async hangup(call: IMediaCall, endedBy: MediaCallActor, actorAgent: IMediaCallAgent, reason: CallHangupReason): Promise<void> {
 		logger.debug({ msg: 'MediaCallDirector.hangup', callId: call._id, reason, endedBy });
 
 		const modified = await this.hangupCallById(call._id, { endedBy, reason });
@@ -143,17 +152,11 @@ class MediaCallDirector {
 		call: IMediaCall,
 		fromAgent: IMediaCallAgent,
 		session: { sdp: RTCSessionDescriptionInit; negotiationId: string; streams?: MediaCallNegotiationStream[] },
-		contractId: string,
 	): Promise<void> {
 		logger.debug({ msg: 'MediaCallDirector.saveWebrtcSession', callId: call?._id });
 		const negotiation = await MediaCallNegotiations.findOneById(session.negotiationId);
 		if (!negotiation) {
 			throw new Error('invalid-negotiation');
-		}
-
-		const actor = fromAgent.getMyCallActor(call);
-		if (!actor.contractId || actor.contractId !== contractId) {
-			throw new Error('invalid-contract');
 		}
 
 		const isOfferer = fromAgent.role === negotiation.offerer;
@@ -177,12 +180,20 @@ class MediaCallDirector {
 		await fromAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
 	}
 
-	public async createCall(params: CreateCallParams): Promise<IMediaCall> {
-		const { caller, callee, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features } = params;
+	public async createCall(params: CreateDirectCallParams): Promise<IDirectMediaCall>;
+
+	public async createCall(params: CreateConferenceCallParams): Promise<IConferenceMediaCall>;
+
+	public async createCall(params: CreateCallParams): Promise<AnyMediaCall> {
+		const { caller, kind, requestedCallId, requestedService, callerAgent, calleeAgent, parentCallId, requestedBy, features } = params;
 
 		// The caller must always have a contract to create the call
 		if (!caller.contractId) {
 			throw new Error('invalid-caller');
+		}
+
+		if (parentCallId && kind !== 'direct') {
+			throw new Error('invalid-call-kind');
 		}
 
 		const service = requestedService || 'webrtc';
@@ -203,22 +214,29 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
-		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
+		const callees = kind === 'direct' ? [params.callee] : params.callees;
+		const userCallees = callees.filter((callee) => callee.type === 'user');
+		const calleeUids = userCallees.map((callee) => callee.id);
+
+		const autoAccept = Boolean(params.kind === 'direct' && params.conferenceId && params.callee.contractId);
+
+		const call: InsertionModel<IMediaCall> = {
 			service,
-			kind: 'direct',
-			state: 'none',
+			kind,
+			...(autoAccept ? { state: 'accepted', acceptedAt: new Date() } : { state: 'none' }),
 
 			createdBy: requestedBy || caller,
 			createdAt: new Date(),
 
 			caller,
-			callee,
+			...(kind === 'direct' ? { callee: params.callee } : { callees }),
+			...(kind === 'direct' && params.conferenceId && { conferenceId: params.conferenceId }),
 
 			expiresAt: this.getNewExpirationTime(),
 			uids: [
 				// add actor ids to uids field if their type is 'user', to make it easy to identify any call an user was part of
 				...(caller.type === 'user' ? [caller.id] : []),
-				...(callee.type === 'user' ? [callee.id] : []),
+				...calleeUids,
 			],
 			ended: false,
 
@@ -355,11 +373,12 @@ class MediaCallDirector {
 				msg: 'Agent failed to process a new call.',
 				err,
 				agentRole: agent.role,
+				kind: call.kind,
 				callerType: call.caller.type,
-				calleeType: call.callee.type,
+				calleeType: call.callee?.type,
 			});
 			await this.hangupCallByIdAndNotifyAgents(call._id, agentToNotifyIfItFails ? [agentToNotifyIfItFails] : [], {
-				endedBy: agent.getMyCallActor(call),
+				endedBy: agent.getMyCallActor?.(call) || { type: 'server', id: 'server' },
 				reason: 'error',
 			});
 			throw err;
@@ -410,7 +429,7 @@ class MediaCallDirector {
 
 		await Promise.allSettled(
 			agents.map(async (agent) =>
-				agent.onCallEnded(callId).catch((err) => logger.error({ msg: 'Failed to notify agent of a hangup', err, actor: agent.actor })),
+				agent.onCallEnded(callId).catch((err) => logger.error({ msg: 'Failed to notify agent of a hangup', err })),
 			),
 		);
 		return modified;

@@ -126,7 +126,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 			}
 
 			const {
-				contact,
+				contacts,
 				transferredBy: callTransferredBy,
 				state: callState,
 				role,
@@ -144,6 +144,9 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				dispatch({ type: 'reset' });
 				return;
 			}
+
+			// TODO: Multiple contacts
+			const contact = contacts[0];
 
 			const connectionState = deriveConnectionStateFromCallState(callState);
 

@@ -1,9 +1,9 @@
 import type {
 	MediaCallSignedContact,
-	IMediaCall,
 	MediaCallContactInformation,
 	MediaCallContact,
 	IMediaCallChannel,
+	IDirectMediaCall,
 } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
@@ -37,7 +37,7 @@ export class IncomingSipCall extends BaseSipCall {
 
 	constructor(
 		session: SipServerSession,
-		call: IMediaCall,
+		call: IDirectMediaCall,
 		protected override readonly agent: BroadcastActorAgent,
 		channel: IMediaCallChannel,
 		private readonly srf: Srf,
@@ -100,6 +100,7 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 
 		const call = await mediaCallDirector.createCall({
+			kind: 'direct',
 			caller,
 			callee,
 			callerAgent,
@@ -196,7 +197,7 @@ export class IncomingSipCall extends BaseSipCall {
 		uas.on('destroy', () => {
 			logger.debug({ msg: 'IncomingSipCall - uas.destroy' });
 			this.sipDialog = null;
-			void mediaCallDirector.hangup(this.call, this.agent, 'remote');
+			void mediaCallDirector.hangup(this.call, this.agent.actor, this.agent, 'remote');
 		});
 
 		this.sipDialog = uas;
@@ -206,10 +207,10 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug({ msg: 'IncomingSipCall.cancel', res: this.session.stripDrachtioServerDetails(res) });
 
 		logger.info({ msg: 'The incoming SIP call was canceled by the caller', callId: this.callId });
-		void mediaCallDirector.hangup(this.call, this.agent, 'remote').catch(() => null);
+		void mediaCallDirector.hangup(this.call, this.agent.actor, this.agent, 'remote').catch(() => null);
 	}
 
-	protected async reflectCall(call: IMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
+	protected async reflectCall(call: IDirectMediaCall, params: { dtmf?: ClientMediaSignalBody<'dtmf'> }): Promise<void> {
 		if (params.dtmf && this.sipDialog) {
 			return this.sendDTMF(this.sipDialog, params.dtmf.dtmf, params.dtmf.duration || 2000);
 		}
@@ -229,7 +230,7 @@ export class IncomingSipCall extends BaseSipCall {
 		logger.debug({ msg: 'no changes detected', method: 'IncomingSipCall.reflectCall' });
 	}
 
-	protected async processTransferredCall(call: IMediaCall): Promise<void> {
+	protected async processTransferredCall(call: IDirectMediaCall): Promise<void> {
 		if (this.lastCallState === 'hangup' || !call.transferredTo || !call.transferredBy) {
 			return;
 		}
@@ -274,7 +275,7 @@ export class IncomingSipCall extends BaseSipCall {
 		}
 	}
 
-	protected async processEndedCall(call: IMediaCall): Promise<void> {
+	protected async processEndedCall(call: IDirectMediaCall): Promise<void> {
 		logger.debug({ msg: 'IncomingSipCall.processEndedCall', lastCallState: this.lastCallState, hangupReason: call.hangupReason });
 
 		switch (call.hangupReason) {
@@ -330,7 +331,7 @@ export class IncomingSipCall extends BaseSipCall {
 		return null;
 	}
 
-	private async processNegotiations(call: IMediaCall): Promise<void> {
+	private async processNegotiations(call: IDirectMediaCall): Promise<void> {
 		const localNegotiation = await this.getPendingInboundNegotiation();
 		if (!localNegotiation) {
 			// Callee-initiated renegotiations are only processed if there's none initiated by the caller
@@ -355,7 +356,7 @@ export class IncomingSipCall extends BaseSipCall {
 		});
 	}
 
-	private async processCalleeNegotiation(call: IMediaCall): Promise<void> {
+	private async processCalleeNegotiation(call: IDirectMediaCall): Promise<void> {
 		if (!this.sipDialog) {
 			return;
 		}
@@ -380,12 +381,7 @@ export class IncomingSipCall extends BaseSipCall {
 			return;
 		}
 
-		await mediaCallDirector.saveWebrtcSession(
-			call,
-			this.agent,
-			{ sdp: { sdp: answer, type: 'answer' }, negotiationId: negotiation._id },
-			this.session.sessionId,
-		);
+		await mediaCallDirector.saveWebrtcSession(call, this.agent, { sdp: { sdp: answer, type: 'answer' }, negotiationId: negotiation._id });
 	}
 
 	private cancelPendingInvites(errorCode: number): void {

@@ -8,7 +8,8 @@ import { getDefaultSettings } from './getDefaultSettings';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
 import type { IMediaCallServer, IMediaCallServerSettings, MediaCallServerEvents } from '../definition/IMediaCallServer';
 import { CallRejectedError, type GetActorContactOptions, type InternalCallParams } from '../definition/common';
-import { InternalCallProvider } from '../internal/InternalCallProvider';
+import { ConferenceCallProvider } from '../internal/ConferenceCallProvider';
+import { DirectCallProvider } from '../internal/DirectCallProvider';
 import { GlobalSignalProcessor } from '../internal/SignalProcessor';
 import { logger } from '../logger';
 import { SipServerSession } from '../sip/Session';
@@ -103,12 +104,17 @@ export class MediaCallServer implements IMediaCallServer {
 	public async createCall(params: InternalCallParams): Promise<void> {
 		logger.debug({ msg: 'MediaCallServer.createCall', params });
 
+		if (params.kind === 'conference') {
+			await ConferenceCallProvider.createConference(params);
+			return;
+		}
+
 		if (params.callee.type === 'sip') {
 			await this.session.createOutgoingCall(params);
 			return;
 		}
 
-		await InternalCallProvider.createCall(params);
+		await DirectCallProvider.createCall(params);
 	}
 
 	public receiveCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
@@ -165,6 +171,18 @@ export class MediaCallServer implements IMediaCallServer {
 		if (!caller) {
 			logger.debug('Failed to load caller contact information');
 			throw new CallRejectedError('invalid-call-params');
+		}
+
+		if (params.kind === 'conference') {
+			// TODO: parse callees
+			return {
+				...params,
+				caller: {
+					...caller,
+					contractId: params.caller.contractId,
+				},
+				callees: params.callees,
+			};
 		}
 
 		// The callee contact type will determine if the call is going to go through SIP or directly to another rocket.chat user

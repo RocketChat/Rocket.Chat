@@ -1,5 +1,8 @@
 import type { JSONSchemaType } from 'ajv';
 
+import { callActorTypes } from '../../call';
+import type { CallActorType } from '../../call';
+
 /** Client is transfering the other actor to a new actor */
 export type ClientMediaSignalTransfer = {
 	callId: string;
@@ -7,7 +10,7 @@ export type ClientMediaSignalTransfer = {
 	contractId: string;
 
 	to: {
-		type: 'user' | 'sip';
+		type: CallActorType;
 		id: string;
 	};
 };
@@ -34,7 +37,7 @@ export const clientMediaSignalTransferSchema: JSONSchemaType<ClientMediaSignalTr
 			properties: {
 				type: {
 					type: 'string',
-					enum: ['user', 'sip'],
+					enum: callActorTypes,
 					nullable: false,
 				},
 				id: {
