@@ -126,15 +126,15 @@ export async function createTargetGroupAndReturnFullRoom(
 }
 
 export async function sendMessage(api: BaseTest['api'], roomId: string, msg: string, threadId?: string): Promise<string> {
-	const payload: any = { message: { rid: roomId, msg } };
+	const payload: { message: { rid: string; msg: string; tmid?: string } } = { message: { rid: roomId, msg } };
 	if (threadId) {
 		payload.message.tmid = threadId;
 	}
 
 	const response = await api.post('/chat.sendMessage', payload);
-	const data = await response.json();
+	const data: { success?: boolean; message?: { _id: string } } = await response.json();
 
-	if (!data.success) {
+	if (!data.success || !data.message?._id) {
 		throw new Error(`Error sending message: ${JSON.stringify(data)}`);
 	}
 
@@ -148,12 +148,22 @@ export async function createDiscussion(api: BaseTest['api'], parentRoomId: strin
 		t_name: name,
 	});
 
-	const data = await response.json();
+	const data: { success?: boolean; discussion?: { _id: string } } = await response.json();
+
+	if (!data.discussion?._id) {
+		throw new Error(`Error creating discussion: ${JSON.stringify(data)}`);
+	}
+
 	return data.discussion._id;
 }
 
 export async function createDirectMessageRoom(api: BaseTest['api'], username: string): Promise<string> {
 	const response = await api.post('/im.create', { username });
-	const data = await response.json();
+	const data: { success?: boolean; room?: { _id: string } } = await response.json();
+
+	if (!data.room?._id) {
+		throw new Error(`Error creating direct message room: ${JSON.stringify(data)}`);
+	}
+
 	return data.room._id;
 }
