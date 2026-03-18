@@ -205,7 +205,7 @@ API.v1.addRoute(
 		async get() {
 			const findResult = await findChannelByIdOrName({ params: this.queryParams });
 
-			const roles = await executeGetRoomRoles(findResult._id, this.userId);
+			const roles = await executeGetRoomRoles(findResult._id, this.user);
 
 			return API.v1.success({
 				roles,

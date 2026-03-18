@@ -1,11 +1,11 @@
 import type { OAuthConfiguration, OauthConfig } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { capitalize } from '@rocket.chat/string-helpers';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
-import { isURL } from '../../../lib/utils/isURL';
 import type { IOAuthProvider } from '../../definitions/IOAuthProvider';
 import { createOAuthTotpLoginMethod } from '../../meteor/login/oauth';
 import { overrideLoginMethod, type LoginCallback } from '../2fa/overrideLoginMethod';
@@ -48,7 +48,7 @@ export class CustomOAuth<TServiceName extends string = string> implements IOAuth
 		this.scope = options.scope ?? 'openid';
 		this.responseType = options.responseType || 'code';
 
-		if (!isURL(this.authorizePath)) {
+		if (!isAbsoluteURL(this.authorizePath)) {
 			this.authorizePath = this.serverURL + this.authorizePath;
 		}
 	}
