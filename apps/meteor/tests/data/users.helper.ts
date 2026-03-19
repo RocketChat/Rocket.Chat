@@ -172,7 +172,7 @@ export const setUserAway = (overrideCredentials = credentials, config?: IRequest
 		});
 };
 
-const connectWS = (port: number): Promise<WebSocket> =>
+const connectWS = (port: string): Promise<WebSocket> =>
 	new Promise((resolve, reject) => {
 		const ws = new WebSocket(`ws://localhost:${port}/websocket`);
 
@@ -181,13 +181,7 @@ const connectWS = (port: number): Promise<WebSocket> =>
 	});
 
 export const ddpLogin = async (resume: string): Promise<WebSocket> => {
-	let ws: WebSocket;
-
-	if (process.env.CI) {
-		ws = await connectWS(3000);
-	} else if (process.env.IS_EE) {
-		ws = await connectWS(4000);
-	}
+	const ws: WebSocket = await connectWS(process.env.DDP_LOGIN_PORT || '3000');
 
 	const loginId = `login-${Date.now()}-${Math.random()}`;
 
