@@ -1857,7 +1857,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
-			fname: room.fname,
+			...(room.fname && { fname: room.fname }),
 			...(room.customFields && { customFields: room.customFields }),
 			t: room.t,
 			u: {
@@ -1894,7 +1894,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
-			fname: room.fname,
+			...(room.fname && { fname: room.fname }),
 			...(room.customFields && { customFields: room.customFields }),
 			t: room.t,
 			u: {
