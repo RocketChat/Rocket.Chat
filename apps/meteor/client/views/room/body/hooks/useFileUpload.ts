@@ -42,6 +42,10 @@ export const useFileUpload = (store: UploadsAPI) => {
 
 	const handleEditUpload = useCallback((id: Upload['id'], fileName: string) => store.editUploadFileName(id, fileName), [store]);
 
+	const handlePauseUpload = useCallback((id: Upload['id']) => store.pause(id), [store]);
+
+	const handleResumeUpload = useCallback((id: Upload['id']) => store.resume(id), [store]);
+
 	const handleUploadFiles = useCallback(
 		(files: readonly File[]): void => {
 			chat?.flows.uploadFiles({ files, uploadsStore: store });
@@ -60,8 +64,20 @@ export const useFileUpload = (store: UploadsAPI) => {
 			handleRemoveUpload,
 			handleEditUpload,
 			handleCancelUpload,
+			handlePauseUpload,
+			handleResumeUpload,
 			handleUploadFiles,
 		}),
-		[uploads, isUploading, isProcessingUploads, handleRemoveUpload, handleEditUpload, handleCancelUpload, handleUploadFiles],
+		[
+			uploads,
+			isUploading,
+			isProcessingUploads,
+			handleRemoveUpload,
+			handleEditUpload,
+			handleCancelUpload,
+			handlePauseUpload,
+			handleResumeUpload,
+			handleUploadFiles,
+		],
 	);
 };

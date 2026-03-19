@@ -457,6 +457,8 @@ const MessageBox = ({
 						onEdit={handleEditUpload}
 						onRemove={handleRemoveUpload}
 						onCancel={handleCancelUpload}
+						onPause={handlePauseUpload}
+						onResume={handleResumeUpload}
 						disabled={isProcessingUploads}
 					/>
 				)}

@@ -114,6 +114,8 @@ export type UploadsAPI = {
 	getProcessingUploads(): boolean;
 	setProcessingUploads(processing: boolean): void;
 	cancel(id: Upload['id']): void;
+	pause(id: Upload['id']): void;
+	resume(id: Upload['id']): void;
 	removeUpload(id: Upload['id']): void;
 	editUploadFileName: (id: Upload['id'], fileName: string) => void;
 	send(file: File, encrypted?: never): Promise<void>;
