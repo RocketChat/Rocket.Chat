@@ -11,7 +11,7 @@ type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channel
 	searchText?: string;
 } & ComponentProps<typeof MessageBody>;
 
-const MessageContentBody = ({ mentions, channels, md, searchText, ...props }: MessageContentBodyProps) => {
+const MessageContentBody = ({ mentions, channels, md, searchText, style, ...props }: MessageContentBodyProps) => {
 	const { t } = useTranslation();
 
 	return (
