@@ -6,6 +6,8 @@ import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useController, useForm } from 'react-hook-form';
 
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
+
 type SlaEditProps = {
 	isNew?: boolean;
 	slaId?: string;
@@ -61,22 +63,25 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	const descFieldId = useId();
 	const dueTimeFieldId = useId();
 
-	const handleSave = async ({ name, description, dueTimeInMinutes }: SlaEditFormData) => {
-		try {
-			const payload = { name, description, dueTimeInMinutes: Number(dueTimeInMinutes) };
-			if (slaId) {
-				await updateSLA(payload);
-			} else {
-				await saveSLA(payload);
-			}
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async ({ name, description, dueTimeInMinutes }: SlaEditFormData) => {
+			try {
+				const payload = { name, description, dueTimeInMinutes: Number(dueTimeInMinutes) };
+				if (slaId) {
+					await updateSLA(payload);
+				} else {
+					await saveSLA(payload);
+				}
 
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			reload();
-			slasRoute.push({});
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				reload();
+				slasRoute.push({});
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
+			}
+		},
+		{ isDirty },
+	);
 
 	return (
 		<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} {...props}>
@@ -137,7 +142,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 									{t('Reset')}
 								</Button>
 							)}
-							<Button primary mie='none' type='submit' flexGrow={1} disabled={isNew ? false : !isDirty}>
+							<Button primary mie='none' type='submit' flexGrow={1}>
 								{t('Save')}
 							</Button>
 						</Margins>

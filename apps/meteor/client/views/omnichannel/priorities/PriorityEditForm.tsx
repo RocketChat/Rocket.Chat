@@ -6,6 +6,7 @@ import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import StringSettingInput from '../../admin/settings/Setting/inputs/StringSettingInput';
 
 export type PriorityFormData = { name: string; reset: boolean };
@@ -36,17 +37,20 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 
 	const nameFieldId = useId();
 
-	const handleSave = async ({ name }: { name: string }) => {
-		try {
-			await onSave({ name, reset: name === defaultName });
-		} catch (e) {
-			const { error } = e as PrioritySaveException;
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async ({ name }: { name: string }) => {
+			try {
+				await onSave({ name, reset: name === defaultName });
+			} catch (e) {
+				const { error } = e as PrioritySaveException;
 
-			if (error) {
-				setError('name', { message: t(error) });
+				if (error) {
+					setError('name', { message: t(error) });
+				}
 			}
-		}
-	};
+		},
+		{ isDirty },
+	);
 
 	const onReset = (): void => {
 		setValue('name', defaultName, {
@@ -94,7 +98,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 					<Button onClick={() => onCancel()} disabled={isSubmitting}>
 						{t('Cancel')}
 					</Button>
-					<Button primary type='submit' disabled={!isDirty} loading={isSubmitting}>
+					<Button primary type='submit' loading={isSubmitting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

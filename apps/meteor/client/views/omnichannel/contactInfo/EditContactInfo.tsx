@@ -23,6 +23,7 @@ import AdvancedContactModal from './AdvancedContactModal';
 import { useCreateContact } from './hooks/useCreateContact';
 import { useEditContact } from './hooks/useEditContact';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { ContactManagerInput } from '../additionalForms';
@@ -164,26 +165,31 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
 
-	const handleSave = async (data: ContactFormData): Promise<void> => {
-		const { name, phones, emails, customFields, contactManager } = data;
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async (data: ContactFormData): Promise<void> => {
+			const { name, phones, emails, customFields, contactManager } = data;
 
-		const payload = {
-			name,
-			phones: phones.map(({ phoneNumber }) => phoneNumber),
-			emails: emails.map(({ address }) => address),
-			customFields,
-			contactManager,
-		};
+			const payload = {
+				name,
+				phones: phones.map(({ phoneNumber }) => phoneNumber),
+				emails: emails.map(({ address }) => address),
+				customFields,
+				contactManager,
+			};
 
-		if (contactData) {
-			await editContact.mutateAsync({ contactId: contactData?._id, ...payload });
+			if (contactData) {
+				await editContact.mutateAsync({ contactId: contactData?._id, ...payload });
+				await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
+				return;
+			}
+
+			await createContact.mutateAsync(payload);
 			await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
-			return;
-		}
-
-		await createContact.mutateAsync(payload);
-		await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
-	};
+		},
+		{
+			isDirty,
+		},
+	);
 
 	const formId = useId();
 	const nameField = useId();
@@ -324,7 +330,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} loading={isSubmitting} disabled={contactData ? !isDirty : false} primary>
+					<Button type='submit' form={formId} loading={isSubmitting} primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

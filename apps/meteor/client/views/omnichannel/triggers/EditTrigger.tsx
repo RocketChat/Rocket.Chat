@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ConditionForm } from './ConditionForm';
 import { ActionForm } from './actions/ActionForm';
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
 export type TriggersPayload = {
 	name: string;
@@ -120,13 +121,16 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 		},
 	});
 
-	const handleSave = async (data: TriggersPayload) => {
-		return saveTriggerMutation.mutateAsync({
-			...data,
-			_id: triggerData?._id,
-			actions: data.actions.map(getDefaultAction),
-		});
-	};
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async (data: TriggersPayload) => {
+			saveTriggerMutation.mutateAsync({
+				...data,
+				_id: triggerData?._id,
+				actions: data.actions.map(getDefaultAction),
+			});
+		},
+		{ isDirty },
+	);
 
 	return (
 		<>
@@ -207,7 +211,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary disabled={triggerData?._id ? !isDirty : false} loading={isSubmitting}>
+					<Button form={formId} type='submit' primary loading={isSubmitting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
