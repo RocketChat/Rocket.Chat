@@ -1,6 +1,6 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Slider } from '@rocket.chat/fuselage';
-import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage-forms';
+import { AccordionItem } from '@rocket.chat/fuselage';
+import { Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch, Slider } from '@rocket.chat/fuselage-forms';
 import { type TranslationKey, useCustomSound, useTranslation } from '@rocket.chat/ui-contexts';
 import { Controller, useFormContext } from 'react-hook-form';
 
@@ -38,7 +38,7 @@ const PreferencesSoundSection = () => {
 									value={value}
 									minValue={0}
 									maxValue={100}
-									onChange={(value: number) => {
+									onChange={(value) => {
 										const soundVolume = (notificationsSoundVolume * masterVolume) / 100;
 										customSound.play(newMessageNotification, { volume: soundVolume / 100 });
 										onChange(value);
@@ -60,7 +60,7 @@ const PreferencesSoundSection = () => {
 									value={value}
 									minValue={0}
 									maxValue={100}
-									onChange={(value: number) => {
+									onChange={(value) => {
 										const soundVolume = (voipRingerVolume * masterVolume) / 100;
 										customSound.play('telephone', { volume: soundVolume / 100 });
 										onChange(value);
