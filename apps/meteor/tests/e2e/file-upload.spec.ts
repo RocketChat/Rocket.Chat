@@ -124,7 +124,7 @@ test.describe.serial('file-upload', () => {
 		const files = new Array(10).fill('number1.png');
 
 		await Promise.all(files.map((file) => poHomeChannel.content.sendFileMessage(file)));
-		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.dragAndDropTxtFile({ waitForResponse: false });
 
 		await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
 		await expect(poHomeChannel.composer.getFileByName('any_file.txt')).not.toBeVisible();
