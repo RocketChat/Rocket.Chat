@@ -203,6 +203,7 @@ export const ddpLogin = async (resume: string): Promise<WebSocket> => {
 					ws.removeEventListener('message', handler);
 
 					if (data.error) {
+						ws.close();
 						reject(data.error);
 						return;
 					}
