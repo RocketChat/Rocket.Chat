@@ -23,7 +23,7 @@ export class ActionManager implements IActionManager {
 
 	protected events = new Emitter<{ busy: { busy: boolean }; [viewId: string]: any }>();
 
-	protected triggerIdInfo = new Map<string, { appId: string | undefined; rid: string | undefined }>();
+	protected appIdByTriggerId = new Map<string, string | undefined>();
 
 	protected viewInstances = new Map<
 		string,
@@ -31,7 +31,6 @@ export class ActionManager implements IActionManager {
 			payload?: {
 				view: UiKit.ContextualBarView;
 			};
-			rid?: string;
 			close: () => void;
 		}
 	>();
@@ -39,9 +38,9 @@ export class ActionManager implements IActionManager {
 	public constructor(protected router: ContextType<typeof RouterContext>) {}
 
 	protected invalidateTriggerId(id: string) {
-		const info = this.triggerIdInfo.get(id);
-		this.triggerIdInfo.delete(id);
-		return info;
+		const appId = this.appIdByTriggerId.get(id);
+		this.appIdByTriggerId.delete(id);
+		return appId;
 	}
 
 	public on(viewId: string, listener: (data: any) => void): void;
@@ -68,20 +67,15 @@ export class ActionManager implements IActionManager {
 		this.events.emit('busy', { busy: false });
 	}
 
-	public generateTriggerId(appId: string | undefined, rid?: string) {
+	public generateTriggerId(appId: string | undefined) {
 		const triggerId = Random.id();
-		this.triggerIdInfo.set(triggerId, { appId, rid });
+		this.appIdByTriggerId.set(triggerId, appId);
 		setTimeout(() => this.invalidateTriggerId(triggerId), ActionManager.TRIGGER_TIMEOUT);
 		return triggerId;
 	}
 
 	public async emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>) {
-		// Get rid from interaction, or fallback to the rid stored for the view
-		let rid = 'rid' in userInteraction ? userInteraction.rid : undefined;
-		if (!rid && 'viewId' in userInteraction && userInteraction.viewId) {
-			rid = this.getRidByViewId(userInteraction.viewId);
-		}
-		const triggerId = this.generateTriggerId(appId, rid);
+		const triggerId = this.generateTriggerId(appId);
 
 		return this.runWithTimeout(
 			async () => {
@@ -144,12 +138,10 @@ export class ActionManager implements IActionManager {
 	public handleServerInteraction(interaction: UiKit.ServerInteraction): UiKit.ServerInteraction['type'] | undefined {
 		const { triggerId } = interaction;
 
-		const triggerInfo = this.invalidateTriggerId(triggerId);
-		if (!triggerInfo?.appId) {
+		const appId = this.invalidateTriggerId(triggerId);
+		if (!appId) {
 			return;
 		}
-
-		const { rid } = triggerInfo;
 
 		switch (interaction.type) {
 			case 'errors': {
@@ -166,7 +158,7 @@ export class ActionManager implements IActionManager {
 
 			case 'modal.open': {
 				const { view } = interaction;
-				this.openModal(view, rid);
+				this.openModal(view);
 				break;
 			}
 
@@ -238,10 +230,6 @@ export class ActionManager implements IActionManager {
 		return this.viewInstances.get(viewId)?.payload;
 	}
 
-	public getRidByViewId(viewId: string) {
-		return this.viewInstances.get(viewId)?.rid;
-	}
-
 	public openView(surface: 'modal', view: UiKit.ModalView): void;
 
 	public openView(surface: 'banner', view: UiKit.BannerView): void;
@@ -264,18 +252,16 @@ export class ActionManager implements IActionManager {
 		}
 	}
 
-	private openModal(view: UiKit.ModalView, rid?: string) {
+	private openModal(view: UiKit.ModalView) {
 		const instance = imperativeModal.open({
 			component: UiKitModal,
 			props: {
 				key: view.id,
 				initialView: view,
-				rid,
 			},
 		});
 
 		this.viewInstances.set(view.id, {
-			rid,
 			close: () => {
 				instance.close();
 				this.viewInstances.delete(view.id);

@@ -14,13 +14,12 @@ import { useUiKitView } from '../../../uikit/hooks/useUiKitView';
 type UiKitModalProps = {
 	key: UiKit.ModalView['id']; // force re-mount when viewId changes
 	initialView: UiKit.ModalView;
-	rid?: string;
 };
 
-const UiKitModal = ({ initialView, rid }: UiKitModalProps) => {
+const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
 	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
-	const contextValue = useModalContextValue({ view, errors, values, updateValues, rid });
+	const contextValue = useModalContextValue({ view, errors, values, updateValues });
 
 	const handleSubmit = useEffectEvent((e: FormEvent) => {
 		preventSyntheticEvent(e);
@@ -33,7 +32,6 @@ const UiKitModal = ({ initialView, rid }: UiKitModalProps) => {
 				},
 			},
 			viewId: view.id,
-			...(rid && { rid }),
 		});
 	});
 
@@ -49,7 +47,6 @@ const UiKitModal = ({ initialView, rid }: UiKitModalProps) => {
 				},
 				isCleared: false,
 			},
-			...(rid && { rid }),
 		});
 	});
 
@@ -64,7 +61,6 @@ const UiKitModal = ({ initialView, rid }: UiKitModalProps) => {
 				},
 				isCleared: true,
 			},
-			...(rid && { rid }),
 		});
 	});
 
