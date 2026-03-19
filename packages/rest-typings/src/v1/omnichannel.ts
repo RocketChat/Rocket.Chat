@@ -4873,7 +4873,13 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/agent.next/:token': {
 		GET: (params: GETAgentNextToken) => { agent: ILivechatAgent | { hiddenInfo: true } } | void;
 	};
-
+	// NOTE: This entry must remain here for cross-package type compatibility (ddp-client).
+	// The runtime definition lives in apps/meteor/app/livechat/server/api/v1/config.ts
+	'/v1/livechat/config': {
+		GET: (params: { token?: string; department?: string; businessUnit?: string }) => {
+			config: { [k: string]: string | boolean } & { room?: IOmnichannelRoom; agent?: ILivechatAgent; guest?: ILivechatVisitor };
+		};
+	};
 	'/v1/livechat/custom.field': {
 		POST: (params: POSTLivechatCustomFieldParams) => { field: { key: string; value: string; overwrite: boolean } };
 	};

@@ -1,4 +1,5 @@
 import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
+import { schemas } from '@rocket.chat/core-typings';
 import { ajv, GETLivechatConfigRouting, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 import mem from 'mem';
 
@@ -8,6 +9,14 @@ import { settings as serverSettings } from '../../../../settings/server/index';
 import { RoutingManager } from '../../lib/RoutingManager';
 import { online } from '../../lib/service-status';
 import { settings, findOpenRoom, getExtraConfigInfo, findAgent, findGuestWithoutActivity } from '../lib/livechat';
+
+const schemaComponents = schemas.components?.schemas;
+(['IOmnichannelRoom', 'ILivechatAgent', 'ILivechatVisitor'] as const).forEach((key) => {
+	const schema = schemaComponents?.[key];
+	if (schema && !ajv.getSchema(`#/components/schemas/${key}`)) {
+		ajv.addSchema(schema, `#/components/schemas/${key}`);
+	}
+});
 
 type GETLivechatConfigParams = {
 	token?: string;
@@ -45,7 +54,7 @@ const livechatConfigEndpoints = API.v1
 			query: isGETLivechatConfigParams,
 			response: {
 				200: ajv.compile<{
-					config: { [k: string]: string | boolean } & { room?: IOmnichannelRoom; agent?: ILivechatAgent; guest?: ILivechatVisitor };
+					config: { [k: string]: string | boolean } & { room?: IOmnichannelRoom; agent?: ILivechatAgent };
 					success: boolean;
 				}>({
 					type: 'object',
@@ -53,15 +62,15 @@ const livechatConfigEndpoints = API.v1
 						config: {
 							type: 'object',
 							properties: {
-								room: { type: 'object' },
-								agent: { type: 'object' },
-								guest: { type: 'object' },
+								room: { $ref: '#/components/schemas/IOmnichannelRoom' },
+								agent: { $ref: '#/components/schemas/ILivechatAgent' },
 							},
 							additionalProperties: true,
 						},
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['config', 'success'],
+					additionalProperties: false,
 				}),
 			},
 		},
@@ -86,7 +95,7 @@ const livechatConfigEndpoints = API.v1
 			const [agent, extraInfo] = await Promise.all([agentPromise, extraInfoPromise]);
 
 			return API.v1.success({
-				config: { ...config, online: status, ...extraInfo, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
+				config: { ...config, online: status, ...extraInfo, ...(room && { room }), ...(agent && { agent }) },
 			});
 		},
 	)

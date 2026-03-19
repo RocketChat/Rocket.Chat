@@ -16,12 +16,13 @@ const livechatWebhookEndpoints = API.v1.post(
 		permissionsRequired: ['view-livechat-webhooks'],
 		response: {
 			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<void>({
+			200: ajv.compile<{ success: boolean }>({
 				type: 'object',
 				properties: {
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['success'],
+				additionalProperties: false,
 			}),
 		},
 	},

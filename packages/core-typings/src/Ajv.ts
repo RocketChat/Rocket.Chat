@@ -15,6 +15,7 @@ import type { IModerationAudit, IModerationReport } from './IModerationReport';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IOmnichannelRoom } from './IRoom';
 import type { IPermission } from './IPermission';
+import type { ISetting } from './ISetting';
 import type { IRole } from './IRole';
 import type { IRoom, IDirectoryChannelResult } from './IRoom';
 import type { ISubscription } from './ISubscription';
@@ -55,6 +56,7 @@ export const schemas = typia.json.schemas<
 			| IOmnichannelRoom
 			| ILivechatAgent
 			| ILivechatVisitor
+			| ISetting
 		),
 		CallHistoryItem,
 		ICustomUserStatus,
