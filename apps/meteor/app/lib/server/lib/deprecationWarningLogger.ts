@@ -100,14 +100,16 @@ export const apiDeprecationLogger = ((logger) => {
 	};
 })(deprecationLogger.section('API'));
 
+type DeprecationPath<T> = T extends `/${string}` ? (T extends PathPattern ? T : never) : string;
+
+type DeprecationInfo<T> = DeprecationPath<T> | Array<DeprecationPath<T>>;
+
 export const methodDeprecationLogger = ((logger) => {
 	return {
-		method: <T extends string | PathPattern>(
-			method: string,
-			version: DeprecationLoggerNextPlannedVersion,
-			info: T extends `/${string}` ? (T extends PathPattern ? T : never) : string,
-		) => {
-			const replacement = typeof info === 'string' ? info : `Use the ${info} endpoint instead`;
+		method: <T extends string | PathPattern>(method: string, version: DeprecationLoggerNextPlannedVersion, info: DeprecationInfo<T>) => {
+			const infoArray = Array.isArray(info) ? info : [info];
+			const paths = infoArray.map((p) => (typeof p === 'string' && p.startsWith('/') ? `"${p}"` : p)).join(' or ');
+			const replacement = infoArray.length > 0 ? `Use the ${paths} endpoint${infoArray.length > 1 ? 's' : ''} instead` : '';
 			const message = `The method "${method}" is deprecated and will be removed on version ${version}${replacement ? ` (${replacement})` : ''}`;
 			if (process.env.TEST_MODE === 'true') {
 				throw new Error(message);
