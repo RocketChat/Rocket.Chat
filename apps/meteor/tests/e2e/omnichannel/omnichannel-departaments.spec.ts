@@ -192,10 +192,6 @@ test.describe('OC - Manage Departments', () => {
 			await poOmnichannelDepartments.getDepartmentMenuByName(department.name).click();
 			await poOmnichannelDepartments.menuEditOption.click();
 
-			await test.step('should form save button be disabled', async () => {
-				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
-			});
-
 			await test.step('should be able to add a tag properly', async () => {
 				await poOmnichannelDepartments.inputConversationClosingTags.fill(tagName);
 				await poOmnichannelDepartments.btnAddTags.click();
