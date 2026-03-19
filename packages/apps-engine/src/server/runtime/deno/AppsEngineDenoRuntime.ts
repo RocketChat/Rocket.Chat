@@ -208,6 +208,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				},
 			};
 
+			// SECURITY: We control the command, the arguments and the script that will be executed.
 			this.deno = child_process.spawn(denoExePath, options, environment);
 			this.messenger.setReceiver(this.deno);
 			this.livenessManager.attach(this.deno);
