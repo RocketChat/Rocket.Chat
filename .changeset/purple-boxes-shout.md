@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes an issue where offline agents were being assigned to visitors.
+Fixes an issue where offline livechat agents were being assigned to visitors.
