@@ -12,12 +12,12 @@ import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutat
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type AddCustomSoundProps = {
-	_goToNew: (_id: string) => () => void;
+	goToNew: (_id: string) => () => void;
 	close: () => void;
 	onChange: () => void;
 };
 
-const AddCustomSound = ({ _goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement => {
+const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundProps): ReactElement => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -25,10 +25,10 @@ const AddCustomSound = ({ _goToNew, close, onChange, ...props }: AddCustomSoundP
 	const [sound, setSound] = useState<File | undefined>();
 
 	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.create', {
-		onSuccess: () => {
+		onSuccess: ({ sound }) => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
 			onChange();
-			close();
+			goToNew(sound._id)();
 		},
 	});
 
