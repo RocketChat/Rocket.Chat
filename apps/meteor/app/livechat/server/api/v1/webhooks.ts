@@ -102,7 +102,7 @@ const livechatWebhookEndpoints = API.v1.post(
 			throw new Error('Invalid status code');
 		} catch (error) {
 			logger.error({ msg: 'Error testing webhook', err: error });
-			throw new Error('error-invalid-webhook-response');
+			throw new Error('error-invalid-webhook-response', { cause: error });
 		}
 	},
 );
@@ -110,6 +110,6 @@ const livechatWebhookEndpoints = API.v1.post(
 type LivechatWebhookEndpoints = ExtractRoutesFromAPI<typeof livechatWebhookEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
 	interface Endpoints extends LivechatWebhookEndpoints {}
 }

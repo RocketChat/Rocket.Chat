@@ -54,7 +54,7 @@ const livechatConfigEndpoints = API.v1
 			query: isGETLivechatConfigParams,
 			response: {
 				200: ajv.compile<{
-					config: { [k: string]: string | boolean } & { room?: IOmnichannelRoom; agent?: ILivechatAgent; guest?: ILivechatVisitor };
+					config: Record<string, unknown> & { room?: IOmnichannelRoom; agent?: ILivechatAgent; guest?: ILivechatVisitor };
 					success: boolean;
 				}>({
 					type: 'object',
@@ -120,5 +120,5 @@ type LivechatConfigEndpoints = ExtractRoutesFromAPI<typeof livechatConfigEndpoin
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
-	interface Endpoints extends LivechatConfigEndpoints { }
+	interface Endpoints extends LivechatConfigEndpoints {}
 }
