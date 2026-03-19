@@ -1,5 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { ICustomMessage, IMessage, IRoom, IThreadMainMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -605,19 +605,12 @@ const chatEndpoints = API.v1
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile({
+				200: ajv.compile<{ messages: ICustomMessage[] }>({
 					type: 'object',
 					properties: {
 						messages: {
 							type: 'array',
-							items: {
-								type: 'object',
-								properties: {
-									_id: { type: 'string' },
-								},
-								required: ['_id'],
-								additionalProperties: false,
-							},
+							items: { $ref: '#/components/schemas/ICustomMessage' },
 						},
 						count: {
 							type: 'number',

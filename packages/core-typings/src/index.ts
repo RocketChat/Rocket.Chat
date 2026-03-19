@@ -55,6 +55,7 @@ export type * from './ICredentialToken';
 export type * from './IAvatar';
 export type * from './ICustomUserStatus';
 export type * from './IEmailMessageHistory';
+export type * from './ICustomMessage';
 
 export type * from './IReadReceipt';
 export type * from './MessageReads';

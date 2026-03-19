@@ -4,6 +4,7 @@ import type { IBanner } from './IBanner';
 import type { ICalendarEvent } from './ICalendarEvent';
 import type { CallHistoryItem } from './ICallHistoryItem';
 import type { CloudConfirmationPollData, CloudRegistrationIntentData, CloudRegistrationStatus } from './ICloud';
+import type { ICustomMessage } from './ICustomMessage';
 import type { ICustomSound } from './ICustomSound';
 import type { ICustomUserStatus } from './ICustomUserStatus';
 import type { IEmailInbox } from './IEmailInbox';
@@ -28,6 +29,7 @@ export const schemas = typia.json.schemas<
 			| ISubscription
 			| IInvite
 			| ICustomSound
+			| ICustomMessage
 			| IMessage
 			| IOAuthApps
 			| IPermission
