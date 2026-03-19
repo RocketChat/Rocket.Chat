@@ -81,7 +81,7 @@ export function getDenoConfigPath(): string {
 		// This path is relative to the compiled version of the Apps-Engine source
 		return require.resolve('../../../deno-runtime/deno.jsonc');
 	} catch {
-		// This path is relative to the original Apps-Engine files
+		// This path is relative to the original Apps-Engine files - used during tests
 		return require.resolve('../../../../deno-runtime/deno.jsonc');
 	}
 }
