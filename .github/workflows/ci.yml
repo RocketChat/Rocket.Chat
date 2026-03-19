@@ -296,16 +296,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Restore packages build
-        uses: actions/download-artifact@v8
-        with:
-          name: packages-build
-          path: /tmp
-
-      - name: Unpack packages build
-        shell: bash
-        run: |
-          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+      - uses: ./.github/actions/restore-packages
 
       # we only build and publish the actual docker images if not a PR from a fork
       - name: Image ${{ matrix.service[0] }}

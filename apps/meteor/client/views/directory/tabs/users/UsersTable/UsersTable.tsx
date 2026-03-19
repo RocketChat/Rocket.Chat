@@ -1,4 +1,4 @@
-import type { IUser, Serialized } from '@rocket.chat/core-typings';
+import type { IDirectoryUserResult, IUser, Serialized } from '@rocket.chat/core-typings';
 import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
@@ -117,7 +117,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 									key={user._id}
 									onClick={handleClick}
 									mediaQuery={mediaQuery}
-									user={user as unknown as Serialized<IUser>}
+									user={user as unknown as Serialized<IDirectoryUserResult>}
 									federation={federation}
 									canViewFullOtherUserInfo={canViewFullOtherUserInfo}
 								/>
