@@ -3,7 +3,7 @@ import type { IUser, ISession, DeviceManagementSession, DeviceManagementPopulate
 import { License } from '@rocket.chat/license';
 import { Users, Sessions } from '@rocket.chat/models';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings';
+import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
 import { API } from '../../../app/api/server/api';
@@ -28,7 +28,7 @@ type SessionsPaginateProps = PaginatedRequest<{
 	filter?: string;
 }>;
 
-const isSessionsPaginateProps = ajv.compile<SessionsPaginateProps>({
+const isSessionsPaginateProps = ajvQuery.compile<SessionsPaginateProps>({
 	type: 'object',
 	properties: {
 		offset: {
@@ -209,7 +209,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const sessionId = this.queryParams?.sessionId as string;
+			const sessionId = this.queryParams?.sessionId;
 			const { sessions } = await Sessions.aggregateSessionsAndPopulate({ search: sessionId, count: 1 });
 			if (!sessions?.length) {
 				return API.v1.notFound('Session not found');

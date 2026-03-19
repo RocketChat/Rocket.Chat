@@ -959,7 +959,6 @@ describe('[Direct Messages]', () => {
 			.set(credentials)
 			.send({
 				roomId: directMessage._id,
-				userId: user._id,
 			})
 			.expect('Content-Type', 'application/json')
 			.expect(200)

@@ -274,7 +274,7 @@ export abstract class BaseRaw<
 		docs = docs.map((doc) => {
 			if (!doc._id || typeof doc._id !== 'string') {
 				const oid = new ObjectId();
-				return { _id: oid.toHexString(), ...doc };
+				doc = { ...doc, _id: oid.toHexString() } as InsertionModel<T>;
 			}
 			this.setUpdatedAt(doc);
 			return doc;
