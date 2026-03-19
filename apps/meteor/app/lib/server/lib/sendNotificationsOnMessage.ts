@@ -199,7 +199,7 @@ export const sendNotification = async ({
 			text: typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined,
 		};
 
-		const attachments = firstAttachmentWithUnicode ? [firstAttachmentWithUnicode, ...restAttachments].filter(Boolean) : [];
+		const attachments = firstAttachmentWithUnicode ? [firstAttachmentWithUnicode, ...restAttachments] : restAttachments;
 		for (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
