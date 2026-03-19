@@ -37,7 +37,8 @@ const NotificationPreferences = ({
 		watch,
 	} = useFormContext();
 	const [mobilePushNotifications, emailNotifications] = watch(['mobileAlert', 'emailAlert']);
-	const shouldShowDuplicateWarning = mobilePushNotifications !== 'nothing' && emailNotifications !== 'nothing';
+	const isExplicitlyEnabled = (value: string | undefined) => value === 'all' || value === 'mentions';
+	const shouldShowDuplicateWarning = isExplicitlyEnabled(mobilePushNotifications) && isExplicitlyEnabled(emailNotifications);
 
 	return (
 		<ContextualbarDialog>
