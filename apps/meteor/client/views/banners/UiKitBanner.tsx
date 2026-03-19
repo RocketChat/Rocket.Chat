@@ -67,7 +67,7 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 				dispatchToastMessage({ type: 'error', message: error });
 			});
 	});
-	if (view.title !== undefined && typeof view.title !== 'string') {
+	if (view.title !== undefined && title === undefined) {
 		return null;
 	}
 
