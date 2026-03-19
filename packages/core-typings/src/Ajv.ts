@@ -56,11 +56,11 @@ export const schemas = typia.json.schemas<
 			| IOmnichannelRoom
 			| ILivechatAgent
 			| ILivechatVisitor
-			| ISetting
 		),
 		CallHistoryItem,
 		ICustomUserStatus,
 		SlashCommand,
+		ISetting,
 	],
 	'3.0'
 >();

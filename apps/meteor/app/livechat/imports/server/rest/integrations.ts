@@ -1,9 +1,16 @@
 import type { ISetting } from '@rocket.chat/core-typings';
+import { schemas } from '@rocket.chat/core-typings';
 import { ajv, validateForbiddenErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../api/server';
 import type { ExtractRoutesFromAPI } from '../../../../api/server/ApiClass';
 import { findIntegrationSettings } from '../../../server/api/lib/integrations';
+
+// Register ISetting schema for $ref resolution (livechat loads before api/server/ajv.ts)
+const iSettingSchema = schemas.components?.schemas?.ISetting;
+if (iSettingSchema && !ajv.getSchema('#/components/schemas/ISetting')) {
+	ajv.addSchema(iSettingSchema, '#/components/schemas/ISetting');
+}
 
 const livechatIntegrationsEndpoints = API.v1.get(
 	'livechat/integrations.settings',
@@ -19,7 +26,7 @@ const livechatIntegrationsEndpoints = API.v1.get(
 				properties: {
 					settings: {
 						type: 'array',
-						items: { type: 'object' },
+						items: { $ref: '#/components/schemas/ISetting' },
 					},
 					success: { type: 'boolean', enum: [true] },
 				},
