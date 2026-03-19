@@ -44,6 +44,23 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 	public readonly credentials: { token?: string } = { token: this.token };
 
+	private ensureToken(): string {
+		if (this.token) return this.token;
+	  
+		try {
+		  const savedToken = localStorage.getItem('rc_livechat_token');
+	  
+		  if (savedToken) {
+			this.token = savedToken;
+			return savedToken;
+		  }
+		} catch (e) {
+		  console.warn('Failed to access localStorage', e);
+		}
+	  
+		throw new Error('Invalid token');
+	  }
+
 	private ev = new Emitter<{
 		userActivity: StreamerCallbackArgs<'notify-room', `${string}/user-activity`>;
 		message: StreamerCallbackArgs<'room-messages', string>;
@@ -67,19 +84,23 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onRoomMessage(rid: string, cb: (...args: StreamerCallbackArgs<'room-messages', string>) => void) {
-		return this.stream('room-messages', [rid, { token: this.token, visitorToken: this.token }], cb).stop;
+		const token = this.ensureToken();
+		return this.stream('room-messages', [rid, { token, visitorToken: token }], cb).stop;
 	}
 
 	onRoomUserActivity(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/user-activity`>) => void) {
-		return this.stream('notify-room', [`${rid}/user-activity`, { token: this.token, visitorToken: this.token }], cb).stop;
+		const token = this.ensureToken();
+		return this.stream('notify-room', [`${rid}/user-activity`, { token, visitorToken: token }], cb).stop;
 	}
 
 	onRoomDeleteMessage(rid: string, cb: (...args: StreamerCallbackArgs<'notify-room', `${string}/deleteMessage`>) => void) {
-		return this.stream('notify-room', [`${rid}/deleteMessage`, { token: this.token, visitorToken: this.token }], cb).stop;
+		const token = this.ensureToken();
+		return this.stream('notify-room', [`${rid}/deleteMessage`, { token, visitorToken: token }], cb).stop;
 	}
 
 	onAgentChange(rid: string, cb: (data: LivechatRoomEvents<'agentData'>) => void): () => void {
-		return this.stream('livechat-room', [rid, { token: this.token, visitorToken: this.token }], (data) => {
+		const token = this.ensureToken();
+		return this.stream('livechat-room', [rid, { token, visitorToken: token }], (data) => {
 			if (data.type === 'agentData') {
 				cb(data.data);
 			}
@@ -87,7 +108,8 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onAgentStatusChange(rid: string, cb: (data: LivechatRoomEvents<'agentStatus'>) => void): () => void {
-		return this.stream('livechat-room', [rid, { token: this.token, visitorToken: this.token }], (data) => {
+		const token = this.ensureToken();
+		return this.stream('livechat-room', [rid, { token, visitorToken: token }], (data) => {
 			if (data.type === 'agentStatus') {
 				cb(data.status);
 			}
@@ -95,7 +117,9 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onQueuePositionChange(rid: string, cb: (data: LivechatRoomEvents<'queueData' | 'agentData'>) => void): () => void {
-		return this.stream('livechat-room', rid, (data) => {
+		const token = this.ensureToken();
+
+		return this.stream('livechat-room', [rid, {token, visitorToken: token}], (data) => {
 			if (data.type === 'queueData') {
 				cb(data.data);
 			}
@@ -103,7 +127,8 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onVisitorChange(rid: string, cb: (data: LivechatRoomEvents<'visitorData'>) => void): () => void {
-		return this.stream('livechat-room', [rid, { token: this.token, visitorToken: this.token }], (data) => {
+		const token = this.ensureToken();
+		return this.stream('livechat-room', [rid, { token, visitorToken: token }], (data) => {
 			if (data.type === 'visitorData') {
 				cb(data.visitor);
 			}
@@ -111,7 +136,8 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	notifyVisitorActivity(rid: string, username: string, activity: string[]) {
-		return this.client.callAsync('stream-notify-room', `${rid}/user-activity`, username, activity, { token: this.token });
+		const token = this.ensureToken();
+		return this.client.callAsync('stream-notify-room', `${rid}/user-activity`, username, activity, { token });
 	}
 
 	notifyCallDeclined(rid: string) {
@@ -128,11 +154,9 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	async room(params: OperationParams<'GET', '/v1/livechat/room'>): Promise<Serialized<IOmnichannelRoom>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
+		const token = this.ensureToken();
 
-		const result = await this.rest.get('/v1/livechat/room', { ...params, token: this.token });
+		const result = await this.rest.get('/v1/livechat/room', { ...params, token });
 
 		// TODO: On major version bump, normalize the return of /v1/livechat/room
 		function isRoomObject(
@@ -151,27 +175,21 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	visitor(
 		params: OperationParams<'GET', '/v1/livechat/visitor'>,
 	): Promise<Serialized<OperationResult<'GET', '/v1/livechat/visitor'>['visitor']>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		const endpoint = `/v1/livechat/visitor/${this.token}`;
+		const token = this.ensureToken();
+		const endpoint = `/v1/livechat/visitor/${token}`;
 		return this.rest.get(endpoint as '/v1/livechat/visitor/:token', params);
 	}
 
 	nextAgent(
 		params: OperationParams<'GET', '/v1/livechat/agent.next/:token'>,
 	): Promise<Serialized<OperationResult<'GET', '/v1/livechat/agent.next/:token'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.get(`/v1/livechat/agent.next/${this.token}`, params);
+		const token = this.ensureToken();
+		return this.rest.get(`/v1/livechat/agent.next/${token}`, params);
 	}
 
 	async agent(rid: string): Promise<Serialized<OperationResult<'GET', '/v1/livechat/agent.info/:rid/:token'>['agent']>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		const { agent } = await this.rest.get(`/v1/livechat/agent.info/${rid}/${this.token}`);
+		const token = this.ensureToken();
+		const { agent } = await this.rest.get(`/v1/livechat/agent.info/${rid}/${token}`);
 		return agent;
 	}
 
@@ -179,20 +197,16 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		id: string,
 		params: OperationParams<'GET', '/v1/livechat/message/:_id'>,
 	): Promise<Serialized<OperationResult<'GET', '/v1/livechat/message/:_id'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.get(`/v1/livechat/message/${id}`, { ...params, token: this.token });
+		const token = this.ensureToken();
+		return this.rest.get(`/v1/livechat/message/${id}`, { ...params, token });
 	}
 
 	async loadMessages(
 		rid: string,
 		params: OperationParams<'GET', '/v1/livechat/messages.history/:rid'>,
 	): Promise<Serialized<OperationResult<'GET', '/v1/livechat/messages.history/:rid'>['messages']>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		const { messages } = await this.rest.get(`/v1/livechat/messages.history/${rid}`, { ...params, token: this.token });
+		const token = this.ensureToken();
+		const { messages } = await this.rest.get(`/v1/livechat/messages.history/${rid}`, { ...params, token });
 		return messages;
 	}
 
@@ -205,10 +219,8 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		rid: string;
 		department: string;
 	}): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor/department.transfer'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.post('/v1/livechat/visitor/department.transfer', { rid, token: this.token, department });
+		const token = this.ensureToken();
+		return this.rest.post('/v1/livechat/visitor/department.transfer', { rid, token, department });
 	}
 
 	async grantVisitor(
@@ -216,6 +228,9 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor'>>> {
 		const result = await this.rest.post('/v1/livechat/visitor', guest);
 		this.token = result?.visitor.token;
+		if(this.token) {
+			localStorage.setItem('rc_livechat_token', this.token);
+		}
 		return result;
 	}
 
@@ -224,28 +239,22 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	closeChat({ rid }: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.close'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.post('/v1/livechat/room.close', { rid, token: this.token });
+		const token = this.ensureToken();
+		return this.rest.post('/v1/livechat/room.close', { rid, token });
 	}
 
 	chatSurvey(
 		params: OperationParams<'POST', '/v1/livechat/room.survey'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.survey'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.post('/v1/livechat/room.survey', { rid: params.rid, token: this.token, data: params.data });
+		const token = this.ensureToken();
+		return this.rest.post('/v1/livechat/room.survey', { rid: params.rid, token, data: params.data });
 	}
 
 	sendMessage(
 		params: OperationParams<'POST', '/v1/livechat/message'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/message'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.post('/v1/livechat/message', { ...params, token: this.token });
+		const token = this.ensureToken();
+		return this.rest.post('/v1/livechat/message', { ...params, token });
 	}
 
 	sendOfflineMessage(
@@ -261,10 +270,8 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	requestTranscript(email: string, { rid }: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/livechat/transcript'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.post('/v1/livechat/transcript', { token: this.token, rid, email });
+		const token = this.ensureToken();
+		return this.rest.post('/v1/livechat/transcript', { token, rid, email });
 	}
 
 	sendCustomField(
@@ -280,26 +287,19 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	async updateVisitorStatus(newStatus: string): Promise<Serialized<OperationResult<'POST', '/v1/livechat/visitor.status'>['status']>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		const { status } = await this.rest.post('/v1/livechat/visitor.status', { token: this.token, status: newStatus });
+		const token = this.ensureToken();
+		const { status } = await this.rest.post('/v1/livechat/visitor.status', { token, status: newStatus });
 		return status;
 	}
 
 	uploadFile(rid: string, file: File): Promise<ProgressEvent<EventTarget>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-
+		
 		if (!file) {
 			throw new Error('Invalid file');
 		}
 
 		return new Promise((resolve, reject) => {
-			if (!this.token) {
-				return reject(new Error('Invalid token'));
-			}
+			const token = this.ensureToken();
 
 			return this.rest.upload(
 				`/v1/livechat/upload/${rid}`,
@@ -308,7 +308,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 					load: resolve,
 					error: reject,
 				},
-				{ headers: { 'x-visitor-token': this.token } },
+				{ headers: { 'x-visitor-token': token } },
 			);
 		});
 	}
@@ -317,26 +317,20 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		payload: OperationParams<'POST', '/apps/ui.interaction/:id'>,
 		appId: string,
 	): Promise<Serialized<OperationResult<'POST', '/apps/ui.interaction/:id'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.post(`/apps/ui.interaction/${appId}`, payload, { headers: { 'x-visitor-token': this.token } });
+		const token = this.ensureToken();
+		return this.rest.post(`/apps/ui.interaction/${appId}`, payload, { headers: { 'x-visitor-token': token } });
 	}
 
 	// API DELETE
 
 	deleteMessage(id: string, { rid }: { rid: string }): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/message/:_id'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.delete(`/v1/livechat/message/${id}`, { rid, token: this.token });
+		const token = this.ensureToken();
+		return this.rest.delete(`/v1/livechat/message/${id}`, { rid, token });
 	}
 
 	deleteVisitor(): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/visitor'>>> {
-		if (!this.token) {
-			throw new Error('Invalid token');
-		}
-		return this.rest.delete(`/v1/livechat/visitor/${this.token}` as any);
+		const token = this.ensureToken();
+		return this.rest.delete(`/v1/livechat/visitor/${token}` as any);
 	}
 
 	// API PUT
@@ -369,7 +363,21 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 		const sdk = new LivechatClientImpl(connection, stream, account, timeoutControl, rest);
 
+		try {
+			const savedToken = localStorage.getItem('rc_livechat_token');
+			if (savedToken) {
+			  sdk.token = savedToken;
+			}
+		  } catch (e) {
+			console.warn('Failed to restore token', e);
+		  }
+
 		connection.on('connected', () => {
+			if (!sdk.token) {
+				console.warn('Skipping subscription replay: no token');
+				return;
+			  }
+			
 			for (const [, sub] of stream.subscriptions.entries()) {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);
 			}
