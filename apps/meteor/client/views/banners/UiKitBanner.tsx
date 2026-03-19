@@ -67,6 +67,9 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 				dispatchToastMessage({ type: 'error', message: error });
 			});
 	});
+	if (view.title !== undefined && typeof view.title !== 'string') {
+		return null;
+	}
 
 	return (
 		<Banner icon={icon} inline={view.inline} title={title} variant={view.variant} closeable onClose={handleClose}>
