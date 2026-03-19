@@ -1,6 +1,7 @@
 import type { IModifyUpdater } from '@rocket.chat/apps-engine/definition/accessors/IModifyUpdater.ts';
 import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors/ILivechatUpdater.ts';
 import type { IUserUpdater } from '@rocket.chat/apps-engine/definition/accessors/IUserUpdater.ts';
+import type { IMessageUpdater } from '@rocket.chat/apps-engine/definition/accessors/IMessageUpdater.ts';
 import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder.ts';
 import type { IRoomBuilder } from '@rocket.chat/apps-engine/definition/accessors/IRoomBuilder.ts';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
@@ -69,6 +70,27 @@ export class ModifyUpdater implements IModifyUpdater {
 									}),
 			},
 		) as IUserUpdater;
+	}
+
+	public getMessageUpdater(): IMessageUpdater {
+		return new Proxy(
+			{ __kind: 'getMessageUpdater' },
+			{
+				get:
+					(_target: unknown, prop: string) =>
+					(...params: unknown[]) =>
+						prop === 'toJSON'
+							? {}
+							: this.senderFn({
+									method: `accessor:getModifier:getUpdater:getMessageUpdater:${prop}`,
+									params,
+								})
+									.then((response) => response.result)
+									.catch((err) => {
+										throw formatErrorResponse(err);
+									}),
+			},
+		) as IMessageUpdater;
 	}
 
 	public async message(messageId: string, editor: IUser): Promise<IMessageBuilder> {
