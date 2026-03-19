@@ -57,7 +57,6 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 				<Box fontScale='h4'>{subject}</Box>
 				<Box fontScale='c1'>{formatDateAndTime(startTime)}</Box>
 			</Box>
-
 			<Box>
 				{meetingUrl && (
 					<Button onClick={handleMeetingClick} small>
