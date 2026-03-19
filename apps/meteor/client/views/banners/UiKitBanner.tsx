@@ -51,8 +51,6 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 				dispatchToastMessage({ type: 'error', message: error });
 			});
 	});
-
-	// TODO: check why we are not considering TextObject as title
 	if (view.title !== undefined && typeof view.title !== 'string') {
 		return null;
 	}
