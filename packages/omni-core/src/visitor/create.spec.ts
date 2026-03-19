@@ -765,19 +765,4 @@ describe('registerGuest', () => {
 			);
 		});
 	});
-
-	describe('externalIds handling', () => {
-		it('should pass externalIds as array to allow merging with existing entries', async () => {
-			const token = 'test-token';
-			const externalIds = [
-				{ source: 'a1b2c3d4-e5f6-4890-8bcd-ef1234567890', userId: 'wa-123', username: '@john' },
-				{ source: 'b2c3d4e5-f6a7-4901-9cde-f12345678901', userId: 'tg-456' },
-			];
-
-			await registerGuest({ token, externalIds }, { shouldConsiderIdleAgent: false });
-
-			const callArgs = updateOneByIdOrTokenSpy.mock.calls[0][0];
-			expect(callArgs.externalIds).toEqual(externalIds);
-		});
-	});
 });

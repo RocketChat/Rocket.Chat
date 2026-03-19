@@ -340,33 +340,6 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			update._id = new ObjectId().toHexString();
 		}
 
-		// If externalIds is present, use a pipeline update to merge with existing entries
-		// instead of overwriting the entire array
-		if (update.externalIds?.length) {
-			const { externalIds, ...restUpdate } = update;
-			const sourcesToReplace = externalIds.map((e) => e.source);
-
-			return this.findOneAndUpdate(
-				query,
-				[
-					{
-						$set: {
-							...restUpdate,
-							externalIds: {
-								$concatArrays: [
-									// Keep existing entries that are not being replaced
-									{ $filter: { input: { $ifNull: ['$externalIds', []] }, cond: { $not: { $in: ['$$this.source', sourcesToReplace] } } } },
-									// Add the new entries
-									externalIds,
-								],
-							},
-						},
-					},
-				],
-				options,
-			);
-		}
-
 		return this.findOneAndUpdate(query, { $set: update }, options);
 	}
 
