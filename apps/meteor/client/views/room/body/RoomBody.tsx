@@ -10,10 +10,10 @@ import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import LoadingMessagesIndicator from './LoadingMessagesIndicator';
-import RetentionPolicyWarning from './RetentionPolicyWarning';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
+import UnreadMessagesIndicator from './UnreadMessagesIndicator';
+import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
 import ComposerContainer from '../composer/ComposerContainer';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
@@ -23,9 +23,6 @@ import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomC
 import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
-import RoomForeword from './RoomForeword/RoomForeword';
-import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import { UploadProgressContainer, UploadProgressIndicator } from './UploadProgress';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
@@ -83,7 +80,7 @@ const RoomBody = (): ReactElement => {
 
 	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
 
-	const { jumpToRef: surroundingMessagesJumpTpRef } = useLoadSurroundingMessages();
+	useLoadSurroundingMessages();
 
 	const {
 		wrapperRef,
@@ -108,13 +105,7 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
 
-	const jumpToRef = useMergedRefsV2(
-		jumpToRefIsAtBottom,
-		jumpToRefGetMore,
-		jumpToRefRestoreScrollPosition,
-		jumpToRefGetMoreImperative,
-		surroundingMessagesJumpTpRef,
-	);
+	const jumpToRef = useMergedRefsV2(jumpToRefIsAtBottom, jumpToRefGetMore, jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
 
 	const {
 		uploads,
@@ -259,26 +250,19 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomScrollbars ref={innerRef} key={room._id}>
-											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
-												{canPreview ? (
-													<>
-														{hasMorePreviousMessages ? (
-															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-														) : (
-															<li>
-																<RoomForeword user={user} room={room} />
-																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
-															</li>
-														)}
-													</>
-												) : null}
-												<MessageList rid={room._id} messageListRef={jumpToRef} scrollContainerRef={scrollContainerRef} />
-												{hasMoreNextMessages ? (
-													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-												) : null}
-											</ul>
-										</CustomScrollbars>
+										<MessageList
+											rid={room._id}
+											messageListRef={jumpToRef}
+											scrollContainerRef={scrollContainerRef}
+											isLoadingMoreMessages={isLoadingMoreMessages}
+											canPreview={canPreview}
+											hasMorePreviousMessages={hasMorePreviousMessages}
+											hasMoreNextMessages={hasMoreNextMessages}
+											user={user}
+											room={room}
+											retentionPolicy={retentionPolicy}
+											innerRef={innerRef}
+										/>
 									</MessageListErrorBoundary>
 								</div>
 							</div>
