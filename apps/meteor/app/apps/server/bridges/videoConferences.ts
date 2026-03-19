@@ -42,7 +42,7 @@ export class AppVideoConferenceBridge extends VideoConferenceBridge {
 		const data = (this.orch.getConverters()?.get('videoConferences') as AppVideoConferencesConverter).convertAppVideoConference(call);
 		await VideoConf.setProviderData(call._id, data.providerData);
 
-		for await (const { _id, ts } of data.users) {
+		for (const { _id, ts } of data.users) {
 			if (oldData.users.find((user) => user._id === _id)) {
 				continue;
 			}

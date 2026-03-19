@@ -9,6 +9,6 @@ export {
 	WorkspaceCommsResponsePayloadSchema,
 	type WorkspaceInteractionResponsePayload,
 } from './WorkspaceSyncPayload';
-export { ICloudSyncAnnouncement } from './CloudSyncAnnouncement';
+export type { ICloudSyncAnnouncement } from './CloudSyncAnnouncement';
 export { NpsSurveyAnnouncementSchema, type NpsSurveyAnnouncement } from './NpsSurveyAnnouncement';
 export { AnnouncementSchema, type Announcement } from './Announcement';

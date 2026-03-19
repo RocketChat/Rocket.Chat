@@ -1,8 +1,8 @@
 import json5 from 'json5';
 import { useEffect } from 'react';
 
-import { type ICodeMirrorChanges } from './useCodeMirror';
-import { type IPayload } from '../Context/initialState';
+import type { ICodeMirrorChanges } from './useCodeMirror';
+import type { IPayload } from '../Context/initialState';
 import codePrettier from '../utils/codePrettier';
 
 // Todo: needs to make it more strict
