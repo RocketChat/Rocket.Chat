@@ -87,7 +87,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 
 		await this.add('Federation_Service_EDU_Process_Receipt', false, {
 			type: 'boolean',
-			public: false,
+			public: true,
 			enterprise: true,
 			modules: ['federation'],
 			invalidValue: false,

@@ -1,6 +1,6 @@
 import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 import { CustomUserStatus } from '@rocket.chat/models';
-import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Match, check } from 'meteor/check';
@@ -46,7 +46,7 @@ const CustomUserStatusListSchema = {
 	additionalProperties: false,
 };
 
-const isCustomUserStatusListProps = ajv.compile<CustomUserStatusListProps>(CustomUserStatusListSchema);
+const isCustomUserStatusListProps = ajvQuery.compile<CustomUserStatusListProps>(CustomUserStatusListSchema);
 
 const customUserStatusEndpoints = API.v1.get(
 	'custom-user-status.list',
