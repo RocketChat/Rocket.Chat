@@ -91,7 +91,7 @@ const livechatAnalyticsEndpoints = API.v1
 					{
 						title: string;
 						value: string | number;
-					}[] & { success: boolean }
+					}[]
 				>({
 					type: 'array',
 					items: {
@@ -133,5 +133,5 @@ type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatAnalyticsE
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface, @typescript-eslint/no-empty-object-type
-	interface Endpoints extends LivechatAnalyticsEndpoints { }
+	interface Endpoints extends LivechatAnalyticsEndpoints {}
 }
