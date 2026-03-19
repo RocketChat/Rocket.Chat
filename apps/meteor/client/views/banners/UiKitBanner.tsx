@@ -53,9 +53,10 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 	});
 
 	// TODO: check why we are not considering TextObject as title
-	if (view.title && typeof view.title !== 'string') {
+	if (view.title !== undefined && typeof view.title !== 'string') {
 		return null;
 	}
+
 	return (
 		<Banner icon={icon} inline={view.inline} title={view.title} variant={view.variant} closeable onClose={handleClose}>
 			<UiKitContext.Provider value={contextValue}>
