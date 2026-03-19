@@ -102,8 +102,8 @@ test.describe('E2EE Encrypted Channels', () => {
 		await poHomeChannel.content.toggleAlsoSendThreadToChannel(true);
 		await page.getByRole('dialog').locator('[name="msg"]').last().fill('This is an encrypted thread message also sent in channel');
 		await page.keyboard.press('Enter');
-		await expect(poHomeChannel.content.lastThreadMessageText).toContainText('This is an encrypted thread message also sent in channel');
-		await expect(poHomeChannel.content.lastThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();
+		await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is an encrypted thread message also sent in channel');
+		await expect(poHomeChannel.content.lastUserThreadMessage.locator('.rcx-icon--name-key')).toBeVisible();
 		await expect(poHomeChannel.content.lastThreadMessagePreview).toContainText('This is an encrypted thread message also sent in channel');
 		await expect(poHomeChannel.content.mainThreadMessageText).toContainText('This is the thread main message.');
 		await expect(poHomeChannel.content.mainThreadMessageText.locator('.rcx-icon--name-key')).toBeVisible();

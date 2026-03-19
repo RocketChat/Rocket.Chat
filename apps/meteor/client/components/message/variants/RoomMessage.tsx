@@ -21,6 +21,7 @@ import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
+import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
@@ -33,6 +34,30 @@ type RoomMessageProps = {
 	ignoredUser?: boolean;
 	searchText?: string;
 } & ComponentProps<typeof Message>;
+
+const getAriaLabelledBy = ({
+	readReceiptEnabled,
+	messageId,
+	sequential,
+}: {
+	readReceiptEnabled: boolean;
+	messageId: string;
+	sequential: boolean;
+}) => {
+	const labels: string[] = [];
+
+	if (!sequential) {
+		labels.push(`${messageId}-displayName`, `${messageId}-time`);
+	}
+
+	labels.push(`${messageId}-content`);
+
+	if (readReceiptEnabled) {
+		labels.push(`${messageId}-read-status`);
+	}
+
+	return labels.join(' ');
+};
 
 const RoomMessage = ({
 	message,
@@ -58,6 +83,8 @@ const RoomMessage = ({
 	const toggleSelected = useToggleSelect(message._id);
 	const selected = useIsSelectedMessage(message._id);
 
+	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
+
 	useCountSelected();
 	const messageRef = useJumpToMessage(message._id);
 
@@ -68,7 +95,7 @@ const RoomMessage = ({
 			role='listitem'
 			aria-roledescription={t('message')}
 			tabIndex={0}
-			aria-labelledby={`${message._id}-displayName ${message._id}-time ${message._id}-content ${message._id}-read-status`}
+			aria-labelledby={getAriaLabelledBy({ readReceiptEnabled, messageId: message._id, sequential })}
 			onClick={selecting ? toggleSelected : undefined}
 			isSelected={selected}
 			isEditing={editing}
@@ -101,7 +128,7 @@ const RoomMessage = ({
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 				{ignored ? (
-					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
+					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
