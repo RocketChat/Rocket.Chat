@@ -4,6 +4,7 @@ import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import debounce from 'lodash.debounce';
 
 import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
 import { getUsernameServername } from '../helpers/getUsernameServername';
@@ -196,9 +197,14 @@ async function handleInvite({
 	}
 }
 
+const updateUserNameDebounced = debounce(async (userId: string, newName: string) => {
+	await Users.setName(userId, newName);
+}, 2000);
+
 async function handleJoin({
 	room_id: roomId,
 	state_key: userId,
+	content,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const joiningUser = await getOrCreateFederatedUser(userId);
 	if (!joiningUser?.username) {
@@ -221,6 +227,12 @@ async function handleJoin({
 	}
 
 	if (!subscription.status) {
+		if ('displayname' in content && content.displayname !== joiningUser.name) {
+			// whan a user changes the it's display name we receive a new join event for every room the user is in
+			// so we need to debounce the name update to avoid updating the name multiple times in a row
+			await updateUserNameDebounced(joiningUser._id, content.displayname || '');
+		}
+
 		logger.info('User is already joined to the room, skipping...');
 		return;
 	}

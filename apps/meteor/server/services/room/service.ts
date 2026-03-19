@@ -42,6 +42,9 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
 	async updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean> {
+		if (room.t !== 'd') {
+			throw new Error('Invalid room type');
+		}
 		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1, status: 1 } }).toArray();
 
 		const uids = subs.map((sub) => sub.u._id);
