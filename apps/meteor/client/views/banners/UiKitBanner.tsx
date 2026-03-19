@@ -33,7 +33,7 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 	}, [view.icon]);
 
 	const title = useMemo(() => {
-		if (!view.title) {
+		if (view.title === undefined) {
 			return undefined;
 		}
 
