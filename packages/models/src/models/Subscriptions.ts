@@ -2166,4 +2166,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 		return this.updateOne(query, update);
 	}
+
+	findJoinedByUserId<T extends Document = ISubscription>(userId: ISubscription['u']['_id'], options?: FindOptions<T>): FindCursor<T> {
+		return this.find(
+			{
+				'u._id': userId,
+				'status': { $exists: false },
+			},
+			options,
+		);
+	}
 }
