@@ -32,6 +32,22 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 		return null;
 	}, [view.icon]);
 
+	const title = useMemo(() => {
+		if (!view.title) {
+			return undefined;
+		}
+
+		if (typeof view.title === 'string') {
+			return view.title;
+		}
+
+		if ('text' in view.title) {
+			return view.title.text;
+		}
+
+		return undefined;
+	}, [view.title]);
+
 	const dispatchToastMessage = useToastMessageDispatch();
 	const handleClose = useEffectEvent(() => {
 		void actionManager
@@ -52,12 +68,8 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 			});
 	});
 
-	// TODO: check why we are not considering TextObject as title
-	if (view.title && typeof view.title !== 'string') {
-		return null;
-	}
 	return (
-		<Banner icon={icon} inline={view.inline} title={view.title} variant={view.variant} closeable onClose={handleClose}>
+		<Banner icon={icon} inline={view.inline} title={title} variant={view.variant} closeable onClose={handleClose}>
 			<UiKitContext.Provider value={contextValue}>
 				<UiKitComponent render={UiKitBannerSurfaceRender} blocks={view.blocks} />
 			</UiKitContext.Provider>
