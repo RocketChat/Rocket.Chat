@@ -12,6 +12,7 @@ import type { IMessage } from './IMessage';
 import type { IModerationAudit, IModerationReport } from './IModerationReport';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
+import type { IPushNotificationConfig } from './IPushNotificationConfig';
 import type { IRole } from './IRole';
 import type { IRoom, IDirectoryChannelResult } from './IRoom';
 import type { ISubscription } from './ISubscription';
@@ -49,6 +50,7 @@ export const schemas = typia.json.schemas<
 			| IModerationAudit
 			| IModerationReport
 			| IBanner
+			| IPushNotificationConfig
 		),
 		CallHistoryItem,
 		ICustomUserStatus,

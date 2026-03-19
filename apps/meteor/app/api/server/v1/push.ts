@@ -1,5 +1,5 @@
 import { Push } from '@rocket.chat/core-services';
-import type { IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
+import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
 	ajv,
@@ -227,7 +227,7 @@ const pushTokenEndpoints = API.v1
 			authRequired: true,
 			query: isPushGetProps,
 			response: {
-				200: ajv.compile<{ data: { message: object; notification: object }; success: true }>({
+				200: ajv.compile<SuccessResult<{ data: { message: IMessage; notification: IPushNotificationConfig } }>['body']>({
 					type: 'object',
 					properties: {
 						data: {
@@ -280,7 +280,7 @@ const pushTokenEndpoints = API.v1
 		{
 			authRequired: true,
 			response: {
-				200: ajv.compile<{ pushGatewayEnabled: boolean; defaultPushGateway: boolean; success: true }>({
+				200: ajv.compile<SuccessResult<{ pushGatewayEnabled: boolean; defaultPushGateway: boolean }>['body']>({
 					type: 'object',
 					properties: {
 						pushGatewayEnabled: { type: 'boolean' },
@@ -316,7 +316,7 @@ const pushTestEndpoints = API.v1.post(
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{ tokensCount: number }>({
+			200: ajv.compile<SuccessResult<{ tokensCount: number }>['body']>({
 				type: 'object',
 				properties: {
 					tokensCount: { type: 'integer' },
