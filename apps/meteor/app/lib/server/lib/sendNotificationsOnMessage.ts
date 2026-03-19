@@ -192,15 +192,14 @@ export const sendNotification = async ({
 		})
 	) {
 		const messageWithUnicode = message.msg ? emojione.shortnameToUnicode(message.msg) : message.msg;
-		const firstAttachment = message.attachments?.length && message.attachments.shift();
+		const [firstAttachment, ...restAttachments] = message.attachments ?? [];
+		const firstAttachmentWithUnicode = firstAttachment && {
+			...firstAttachment,
+			description: typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined,
+			text: typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined,
+		};
 
-		if (firstAttachment) {
-			firstAttachment.description =
-				typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
-			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
-		}
-
-		const attachments = firstAttachment ? [firstAttachment, ...(message.attachments ?? [])].filter(Boolean) : [];
+		const attachments = firstAttachmentWithUnicode ? [firstAttachmentWithUnicode, ...restAttachments].filter(Boolean) : [];
 		for (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
