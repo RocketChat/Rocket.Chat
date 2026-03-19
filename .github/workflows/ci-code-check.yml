@@ -77,7 +77,7 @@ jobs:
 
       - name: TS TypeCheck
         if: matrix.check == 'ts'
-        run: yarn turbo run typecheck
+        run: yarn turbo run typecheck --concurrency=5
 
       - name: Cache eslint
         uses: actions/cache@v5
