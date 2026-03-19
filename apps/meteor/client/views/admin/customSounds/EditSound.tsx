@@ -58,22 +58,24 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 			_id,
 			extension: data.extension,
 		});
+
 		const validation = validate(soundData, file);
-		validation.forEach((invalidFieldName) => {
-			dispatchToastMessage({ type: 'error', message: t('Required_field', { field: t(invalidFieldName) }) });
-			throw new Error(t('Required_field', { field: t(invalidFieldName) }));
-		});
+		if (validation.length > 0) {
+			const firstInvalidField = validation[0];
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Required_field', { field: t(firstInvalidField) }),
+			});
+			return;
+		}
 
 		const formData = new FormData();
-
 		formData.append('_id', _id);
 		formData.append('name', name);
-
 		if (file) {
 			formData.append('sound', file);
 			formData.append('extension', soundData.extension);
 		}
-
 		await saveAction(formData);
 		onChange();
 	}, [_id, dispatchToastMessage, name, previousName, previousSound, saveAction, file, t, onChange, data.extension]);

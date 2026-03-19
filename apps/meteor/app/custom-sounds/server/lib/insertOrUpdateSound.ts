@@ -7,7 +7,10 @@ import type { ICustomSoundData } from '../methods/insertOrUpdateSound';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<string> => {
-	if (!soundData.name?.trim()) {
+	// silently strip colon; this allows for uploading :soundname: as soundname
+	soundData.name = (soundData.name || '').replace(/:/g, '');
+
+	if (!soundData.name.trim()) {
 		throw new Meteor.Error('error-the-field-is-required', 'The field Name is required', {
 			method: 'insertOrUpdateSound',
 			field: 'Name',
@@ -19,9 +22,6 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 	// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 	// more practical than allowing specific sets of characters; also allows foreign languages
 	const nameValidation = /[\s,:><&"'\/\\\(\)]/;
-
-	// silently strip colon; this allows for uploading :soundname: as soundname
-	soundData.name = soundData.name.replace(/:/g, '');
 
 	if (nameValidation.test(soundData.name)) {
 		throw new Meteor.Error('error-input-is-not-a-valid-field', `${soundData.name} is not a valid name`, {

@@ -51,12 +51,16 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 
 	const handleSave = useCallback(async () => {
 		const soundData = createSoundData(sound, name);
-		const validation = validate(soundData, sound) as Array<Parameters<typeof t>[0]>;
 
-		validation.forEach((invalidFieldName) => {
-			dispatchToastMessage({ type: 'error', message: t('Required_field', { field: t(invalidFieldName) }) });
-			throw new Error(t('Required_field', { field: t(invalidFieldName) }));
-		});
+		const validation = validate(soundData, sound) as Array<Parameters<typeof t>[0]>;
+		if (validation.length > 0) {
+			const firstInvalidField = validation[0];
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Required_field', { field: t(firstInvalidField) }),
+			});
+			return;
+		}
 
 		const formData = new FormData();
 		if (sound) {

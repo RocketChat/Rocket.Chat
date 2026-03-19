@@ -59,7 +59,7 @@ export const createSoundData = (
 
 	return {
 		_id: previousData._id,
-		name,
+		name: name.trim(),
 		extension: getExtension(soundFile),
 		previousName: previousData.previousName,
 		previousExtension: previousData.previousSound?.extension,
