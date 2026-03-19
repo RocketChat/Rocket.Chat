@@ -22,7 +22,7 @@ const DevicePickerButton = forwardRef<HTMLButtonElement, DevicePickerButtonProps
 	{ secondary = false, small: _small, ...props },
 	ref,
 ) {
-	return <ActionButton secondary={secondary} {...props} label='customize' icon='customize' ref={ref} />;
+	return <ActionButton secondary={secondary} flexShrink={1} flexGrow={0} {...props} label='customize' icon='customize' ref={ref} />;
 });
 
 const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({

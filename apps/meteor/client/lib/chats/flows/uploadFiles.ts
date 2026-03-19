@@ -78,5 +78,9 @@ export const uploadFiles = async (
 	resetFileInput?.();
 	chat?.action.performContinuously('uploading');
 
-	await Promise.allSettled(files.map((file) => uploadFile(file)));
+	try {
+		await Promise.allSettled(files.map((file) => uploadFile(file)));
+	} finally {
+		chat.composer?.focus();
+	}
 };
