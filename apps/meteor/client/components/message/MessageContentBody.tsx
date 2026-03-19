@@ -15,7 +15,7 @@ const MessageContentBody = ({ mentions, channels, md, searchText, ...props }: Me
 	const { t } = useTranslation();
 
 	return (
-		<MessageBody role='document' aria-roledescription={t('message_body')} dir='auto' {...props}>
+		<MessageBody role='document' aria-roledescription={t('message_body')} dir='auto' style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', whiteSpace: 'normal' }} {...props}>
 			<Suspense fallback={<Skeleton />}>
 				<GazzodownText channels={channels} mentions={mentions} searchText={searchText}>
 					<Markup tokens={md} />
