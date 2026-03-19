@@ -23,11 +23,19 @@ export async function addParsedContacts(this: ImportDataConverter, parsedContact
 		}
 
 		const { emails = '', phones = '', name = '', manager: contactManager = undefined, id = Random.id(), ...customFields } = contactData;
+		const parsedEmails = emails
+			.split(';')
+			.map((value) => value.trim())
+			.filter(Boolean);
+		const parsedPhones = phones
+			.split(';')
+			.map((value) => value.trim())
+			.filter(Boolean);
 
 		await this.addContact({
 			importIds: [id],
-			emails: emails.split(';'),
-			phones: phones.split(';'),
+			emails: parsedEmails.length > 0 ? parsedEmails : undefined,
+			phones: parsedPhones.length > 0 ? parsedPhones : undefined,
 			name,
 			contactManager,
 			customFields,
