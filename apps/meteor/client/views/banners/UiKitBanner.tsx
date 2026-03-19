@@ -41,7 +41,7 @@ const UiKitBanner = ({ initialView }: UiKitBannerProps) => {
 			return view.title;
 		}
 
-		if ('text' in view.title) {
+		if (typeof view.title === 'object' && view.title !== null && 'text' in view.title) {
 			return view.title.text;
 		}
 
