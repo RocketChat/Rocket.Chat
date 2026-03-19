@@ -1863,7 +1863,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			u: {
 				_id: user._id,
 				username: user.username,
-				...(user.name !== undefined && { name: user.name }),
+				...(user.name && { name: user.name }),
 			},
 			...(room.prid && { prid: room.prid }),
 			...extraData,
@@ -1900,7 +1900,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			u: {
 				_id: user._id,
 				username: user.username,
-				...(user.name !== undefined && { name: user.name }),
+				...(user.name && { name: user.name }),
 			},
 			...(room.prid && { prid: room.prid }),
 			...extraData,
