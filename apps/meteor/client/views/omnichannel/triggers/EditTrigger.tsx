@@ -123,7 +123,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 
 	const handleSave = useFormSubmitWithDirtyCheck(
 		async (data: TriggersPayload) => {
-			saveTriggerMutation.mutateAsync({
+			await saveTriggerMutation.mutateAsync({
 				...data,
 				_id: triggerData?._id,
 				actions: data.actions.map(getDefaultAction),

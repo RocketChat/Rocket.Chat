@@ -65,10 +65,9 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 				queryClient.invalidateQueries({
 					queryKey: ['livechat-tags'],
 				});
+				onClose();
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
-			} finally {
-				onClose();
 			}
 		},
 		{ isDirty },

@@ -1,5 +1,6 @@
 import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
-import { Field, FieldError, Button, Box, ButtonGroup, ContextualbarFooter } from '@rocket.chat/fuselage';
+import { Field, FieldError, FieldLabel, FieldRow, TextInput, Button, ButtonGroup, ContextualbarFooter } from '@rocket.chat/fuselage';
+import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId } from 'react';
@@ -7,7 +8,6 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
-import StringSettingInput from '../../admin/settings/Setting/inputs/StringSettingInput';
 
 export type PriorityFormData = { name: string; reset: boolean };
 
@@ -27,7 +27,6 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 
 	const {
 		control,
-		setValue,
 		formState: { errors, isDirty, isSubmitting },
 		setError,
 		handleSubmit,
@@ -52,47 +51,44 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		{ isDirty },
 	);
 
-	const onReset = (): void => {
-		setValue('name', defaultName, {
-			shouldDirty: true,
-			shouldValidate: true,
-		});
-	};
-
 	return (
-		<Box is='form' onSubmit={handleSubmit(handleSave)} display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
-			<Field>
-				<Controller
-					name='name'
-					control={control}
-					rules={{
-						required: t('Required_field', { field: t('Name') }),
-						validate: (value: string) => value?.trim() !== '' || t('Required_field', { field: t('Name') }),
-					}}
-					render={({ field: { value, onChange } }): ReactElement => (
-						<StringSettingInput
-							_id={nameFieldId}
-							packageValue={defaultName}
-							disabled={isSubmitting}
-							error={errors.name?.message}
-							label={t('Name')}
-							placeholder={t('Name')}
-							value={value}
-							hasResetButton={value !== t(i18n)}
-							onResetButtonClick={onReset}
-							onChangeValue={onChange}
-							aria-describedby={`${nameFieldId}-error`}
-							aria-invalid={Boolean(errors.name?.message)}
-							required
+		<>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
+				<Field>
+					<FieldRow>
+						<FieldLabel htmlFor={nameFieldId} required>
+							{t('Name')}
+						</FieldLabel>
+					</FieldRow>
+					<FieldRow>
+						<Controller
+							name='name'
+							control={control}
+							rules={{
+								required: t('Required_field', { field: t('Name') }),
+								validate: (value: string) => value?.trim() !== '' || t('Required_field', { field: t('Name') }),
+							}}
+							render={({ field: { value, onChange } }): ReactElement => (
+								<TextInput
+									id={nameFieldId}
+									value={value}
+									placeholder={t('Name')}
+									disabled={isSubmitting}
+									onChange={(e) => onChange((e.target as HTMLInputElement).value)}
+									aria-describedby={`${nameFieldId}-error`}
+									aria-invalid={Boolean(errors.name?.message)}
+									error={errors.name?.message}
+								/>
+							)}
 						/>
+					</FieldRow>
+					{errors.name && (
+						<FieldError role='alert' id={`${nameFieldId}-error`}>
+							{errors.name.message}
+						</FieldError>
 					)}
-				/>
-				{errors.name && (
-					<FieldError role='alert' id={`${nameFieldId}-error`}>
-						{errors.name.message}
-					</FieldError>
-				)}
-			</Field>
+				</Field>
+			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={() => onCancel()} disabled={isSubmitting}>
@@ -103,7 +99,7 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Box>
+		</>
 	);
 };
 

@@ -1,5 +1,15 @@
 import type { IOmnichannelServiceLevelAgreements, Serialized } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, Margins, Box, NumberInput } from '@rocket.chat/fuselage';
+import {
+	Field,
+	FieldLabel,
+	FieldRow,
+	FieldError,
+	TextInput,
+	Button,
+	NumberInput,
+	ButtonGroup,
+	ContextualbarFooter,
+} from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -84,72 +94,70 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 	);
 
 	return (
-		<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} {...props}>
-			<Field>
-				<FieldLabel required htmlFor={nameFieldId}>
-					{t('Name')}
-				</FieldLabel>
-				<FieldRow>
-					<TextInput
-						id={nameFieldId}
-						placeholder={t('Name')}
-						flexGrow={1}
-						{...nameField}
-						aria-describedby={`${nameFieldId}-error`}
-						aria-invalid={Boolean(errors.name?.message)}
-						error={errors.name?.message}
-					/>
-				</FieldRow>
-				{errors.name && (
-					<FieldError role='alert' id={`${nameFieldId}-error`}>
-						{errors.name.message}
-					</FieldError>
-				)}
-			</Field>
-			<Field>
-				<FieldLabel htmlFor={descFieldId}>{t('Description')}</FieldLabel>
-				<FieldRow>
-					<TextInput id={descFieldId} placeholder={t('Description')} flexGrow={1} {...descField} />
-				</FieldRow>
-			</Field>
-			<Field>
-				<FieldLabel required htmlFor={dueTimeFieldId}>
-					{t('Estimated_wait_time_in_minutes')}
-				</FieldLabel>
-				<FieldRow>
-					<NumberInput
-						id={dueTimeFieldId}
-						placeholder={t('Estimated_wait_time_in_minutes')}
-						flexGrow={1}
-						{...dueTimeField}
-						aria-describedby={`${dueTimeFieldId}-error`}
-						aria-invalid={Boolean(errors.dueTimeInMinutes?.message)}
-						error={errors.dueTimeInMinutes?.message}
-					/>
-				</FieldRow>
-				{errors.dueTimeInMinutes && (
-					<FieldError role='alert' id={`${dueTimeFieldId}-error`}>
-						{errors.dueTimeInMinutes.message}
-					</FieldError>
-				)}
-			</Field>
-			<Field>
-				<FieldRow>
-					<Box display='flex' flexDirection='row' justifyContent='space-between' w='full'>
-						<Margins inlineEnd={4}>
-							{!isNew && (
-								<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
-									{t('Reset')}
-								</Button>
-							)}
-							<Button primary mie='none' type='submit' flexGrow={1}>
-								{t('Save')}
-							</Button>
-						</Margins>
-					</Box>
-				</FieldRow>
-			</Field>
-		</ContextualbarScrollableContent>
+		<>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} {...props}>
+				<Field>
+					<FieldLabel required htmlFor={nameFieldId}>
+						{t('Name')}
+					</FieldLabel>
+					<FieldRow>
+						<TextInput
+							id={nameFieldId}
+							placeholder={t('Name')}
+							flexGrow={1}
+							{...nameField}
+							aria-describedby={`${nameFieldId}-error`}
+							aria-invalid={Boolean(errors.name?.message)}
+							error={errors.name?.message}
+						/>
+					</FieldRow>
+					{errors.name && (
+						<FieldError role='alert' id={`${nameFieldId}-error`}>
+							{errors.name.message}
+						</FieldError>
+					)}
+				</Field>
+				<Field>
+					<FieldLabel htmlFor={descFieldId}>{t('Description')}</FieldLabel>
+					<FieldRow>
+						<TextInput id={descFieldId} placeholder={t('Description')} flexGrow={1} {...descField} />
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldLabel required htmlFor={dueTimeFieldId}>
+						{t('Estimated_wait_time_in_minutes')}
+					</FieldLabel>
+					<FieldRow>
+						<NumberInput
+							id={dueTimeFieldId}
+							placeholder={t('Estimated_wait_time_in_minutes')}
+							flexGrow={1}
+							{...dueTimeField}
+							aria-describedby={`${dueTimeFieldId}-error`}
+							aria-invalid={Boolean(errors.dueTimeInMinutes?.message)}
+							error={errors.dueTimeInMinutes?.message}
+						/>
+					</FieldRow>
+					{errors.dueTimeInMinutes && (
+						<FieldError role='alert' id={`${dueTimeFieldId}-error`}>
+							{errors.dueTimeInMinutes.message}
+						</FieldError>
+					)}
+				</Field>
+			</ContextualbarScrollableContent>
+			<ContextualbarFooter>
+				<ButtonGroup stretch>
+					{!isNew && (
+						<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
+							{t('Reset')}
+						</Button>
+					)}
+					<Button primary mie='none' type='submit' flexGrow={1}>
+						{t('Save')}
+					</Button>
+				</ButtonGroup>
+			</ContextualbarFooter>
+		</>
 	);
 }
 

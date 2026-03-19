@@ -145,8 +145,7 @@ const ExportMessages = () => {
 	}, [type, selectedMessageStore]);
 
 	useEffect(() => {
-		const shouldValidate = isSubmitted;
-		setValue('messagesCount', messageCount, { shouldDirty: true, shouldValidate });
+		setValue('messagesCount', messageCount, { shouldDirty: true, shouldValidate: isSubmitted });
 	}, [messageCount, setValue, isSubmitted]);
 
 	const { mutateAsync: exportAsPDF } = useExportMessagesAsPDFMutation();
