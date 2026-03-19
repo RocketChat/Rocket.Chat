@@ -12,7 +12,7 @@ export interface IActionManager {
 	off(eventName: 'busy', listener: ({ busy }: { busy: boolean }) => void): void;
 	notifyBusy(): void;
 	notifyIdle(): void;
-	generateTriggerId(appId: string | undefined): string;
+	generateTriggerId(appId: string | undefined, rid?: string): string;
 	emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>): Promise<void>;
 	handleServerInteraction(interaction: UiKit.ServerInteraction): UiKit.ServerInteraction['type'] | undefined;
 	getInteractionPayloadByViewId(viewId: UiKit.ContextualBarView['id']):
@@ -20,6 +20,7 @@ export interface IActionManager {
 				view: UiKit.ContextualBarView;
 		  }
 		| undefined;
+	getRidByViewId(viewId: string): string | undefined;
 	openView(surface: 'modal', view: UiKit.ModalView): void;
 	openView(surface: 'banner', view: UiKit.BannerView): void;
 	openView(surface: 'contextual_bar', view: UiKit.ContextualBarView): void;
