@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam, ISubscription } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -456,7 +456,7 @@ const GETRoomsNameExistsSchema = {
 	additionalProperties: false,
 };
 
-export const isGETRoomsNameExists = ajv.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
+export const isGETRoomsNameExists = ajvQuery.compile<GETRoomsNameExists>(GETRoomsNameExistsSchema);
 
 type RoomsIsMemberProps = { roomId: string } & ({ username: string } | { userId: string });
 
@@ -471,7 +471,7 @@ const RoomsIsMemberPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsIsMemberProps = ajv.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
+export const isRoomsIsMemberProps = ajvQuery.compile<RoomsIsMemberProps>(RoomsIsMemberPropsSchema);
 
 export type Notifications = {
 	disableNotifications?: string;
@@ -551,7 +551,7 @@ const roomsImagesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsImagesProps = ajv.compile<RoomsImagesProps>(roomsImagesPropsSchema);
+export const isRoomsImagesProps = ajvQuery.compile<RoomsImagesProps>(roomsImagesPropsSchema);
 
 export type RoomsCleanHistoryProps = {
 	roomId: IRoom['_id'];
@@ -667,7 +667,7 @@ const membersOrderedByRoleRolePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsMembersOrderedByRoleProps = ajv.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
+export const isRoomsMembersOrderedByRoleProps = ajvQuery.compile<RoomsMembersOrderedByRoleProps>(membersOrderedByRoleRolePropsSchema);
 
 type RoomsHideProps = {
 	roomId: string;
