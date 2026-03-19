@@ -54,7 +54,7 @@ const livechatConfigEndpoints = API.v1
 			query: isGETLivechatConfigParams,
 			response: {
 				200: ajv.compile<{
-					config: { [k: string]: string | boolean } & { room?: IOmnichannelRoom; agent?: ILivechatAgent };
+					config: { [k: string]: string | boolean } & { room?: IOmnichannelRoom; agent?: ILivechatAgent; guest?: ILivechatVisitor };
 					success: boolean;
 				}>({
 					type: 'object',
@@ -64,6 +64,7 @@ const livechatConfigEndpoints = API.v1
 							properties: {
 								room: { $ref: '#/components/schemas/IOmnichannelRoom' },
 								agent: { $ref: '#/components/schemas/ILivechatAgent' },
+								guest: { $ref: '#/components/schemas/ILivechatVisitor' },
 							},
 							additionalProperties: true,
 						},
@@ -95,7 +96,7 @@ const livechatConfigEndpoints = API.v1
 			const [agent, extraInfo] = await Promise.all([agentPromise, extraInfoPromise]);
 
 			return API.v1.success({
-				config: { ...config, online: status, ...extraInfo, ...(room && { room }), ...(agent && { agent }) },
+				config: { ...config, online: status, ...extraInfo, ...(guest && { guest }), ...(room && { room }), ...(agent && { agent }) },
 			});
 		},
 	)
@@ -119,5 +120,5 @@ type LivechatConfigEndpoints = ExtractRoutesFromAPI<typeof livechatConfigEndpoin
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-object-type, @typescript-eslint/no-empty-interface
-	interface Endpoints extends LivechatConfigEndpoints {}
+	interface Endpoints extends LivechatConfigEndpoints { }
 }
