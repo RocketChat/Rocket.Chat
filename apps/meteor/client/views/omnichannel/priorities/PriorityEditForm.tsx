@@ -31,7 +31,6 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		setError,
 		handleSubmit,
 	} = useForm<PriorityFormData>({
-		mode: 'onSubmit',
 		defaultValues: data ? { name: dirty ? name : defaultName } : {},
 	});
 

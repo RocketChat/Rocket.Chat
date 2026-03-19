@@ -82,7 +82,6 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 		handleSubmit,
 		watch,
 	} = useForm<UnitEditFormData>({
-		mode: 'onSubmit',
 		values: {
 			name: unitData?.name || '',
 			visibility: unitData?.visibility || '',

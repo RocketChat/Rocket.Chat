@@ -32,7 +32,6 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 		handleSubmit,
 		reset,
 	} = useForm<SlaEditFormData>({
-		mode: 'onSubmit',
 		defaultValues: {
 			name: data?.name || '',
 			description: data?.description || '',

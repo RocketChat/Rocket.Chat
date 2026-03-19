@@ -91,7 +91,7 @@ const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivec
 		handleSubmit,
 		trigger,
 		formState: { isSubmitting, errors, isDirty },
-	} = useForm<TriggersPayload>({ mode: 'onSubmit', values: initValues });
+	} = useForm<TriggersPayload>({ values: initValues });
 
 	const { fields: conditionsFields } = useFieldArray({
 		control,

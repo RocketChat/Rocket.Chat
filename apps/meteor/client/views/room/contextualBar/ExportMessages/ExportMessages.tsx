@@ -69,7 +69,6 @@ const ExportMessages = () => {
 		clearErrors,
 		reset,
 	} = useForm<ExportMessagesFormValues>({
-		mode: 'onSubmit',
 		defaultValues: {
 			type: isE2ERoom ? 'download' : 'email',
 			dateFrom: '',

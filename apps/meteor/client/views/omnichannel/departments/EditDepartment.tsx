@@ -69,7 +69,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		control,
 		handleSubmit,
 		formState: { errors, isDirty, isSubmitting },
-	} = useForm<EditDepartmentFormData>({ mode: 'onSubmit', defaultValues: initialValues });
+	} = useForm<EditDepartmentFormData>({ defaultValues: initialValues });
 
 	const [fallbackFilter, setFallbackFilter] = useState<string>('');
 	const [isUnitRequired, setUnitRequired] = useState(false);

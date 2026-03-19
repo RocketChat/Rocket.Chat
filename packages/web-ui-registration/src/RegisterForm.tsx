@@ -69,7 +69,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 		clearErrors,
 		control,
 		formState: { errors },
-	} = useForm<LoginRegisterPayload>({ mode: 'onSubmit' });
+	} = useForm<LoginRegisterPayload>();
 
 	const { password } = watch();
 	const passwordIsValid = useValidatePassword(password);

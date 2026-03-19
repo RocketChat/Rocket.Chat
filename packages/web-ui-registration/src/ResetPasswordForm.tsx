@@ -23,7 +23,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 		formState: { errors, isSubmitting },
 	} = useForm<{
 		email: string;
-	}>({ mode: 'onSubmit' });
+	}>();
 
 	useEffect(() => {
 		if (forgotPasswordFormRef.current) {

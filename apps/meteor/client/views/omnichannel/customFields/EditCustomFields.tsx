@@ -67,7 +67,6 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 	const handleDelete = useRemoveCustomField();
 
 	const methods = useForm<EditCustomFieldsFormData>({
-		mode: 'onSubmit',
 		values: getInitialValues(customFieldData),
 	});
 	const {

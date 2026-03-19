@@ -44,7 +44,6 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 		formState: { isDirty, errors },
 		handleSubmit,
 	} = useForm<TagEditPayload>({
-		mode: 'onSubmit',
 		values: {
 			name: name || '',
 			description: description || '',

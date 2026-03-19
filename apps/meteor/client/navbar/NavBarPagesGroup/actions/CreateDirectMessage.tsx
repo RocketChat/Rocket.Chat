@@ -38,7 +38,7 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 		control,
 		handleSubmit,
 		formState: { isSubmitting, isValidating, errors },
-	} = useForm({ mode: 'onSubmit', defaultValues: { users: [] } });
+	} = useForm({ defaultValues: { users: [] } });
 
 	const goToRoom = useGoToRoom();
 

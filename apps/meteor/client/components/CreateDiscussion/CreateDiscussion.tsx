@@ -60,7 +60,6 @@ const CreateDiscussion = ({
 		watch,
 		setValue,
 	} = useForm({
-		mode: 'onSubmit',
 		defaultValues: {
 			name: nameSuggestion || '',
 			parentRoom: '',
