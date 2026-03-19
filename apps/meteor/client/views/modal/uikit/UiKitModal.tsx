@@ -3,6 +3,7 @@ import { UiKitContext } from '@rocket.chat/fuselage-ui-kit';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent } from 'react';
+import { useContext } from 'react';
 
 import ModalBlock from './ModalBlock';
 import { detectEmoji } from '../../../lib/utils/detectEmoji';
@@ -10,6 +11,7 @@ import { preventSyntheticEvent } from '../../../lib/utils/preventSyntheticEvent'
 import { useModalContextValue } from '../../../uikit/hooks/useModalContextValue';
 import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
 import { useUiKitView } from '../../../uikit/hooks/useUiKitView';
+import { RoomContext } from '../../room/contexts/RoomContext';
 
 type UiKitModalProps = {
 	key: UiKit.ModalView['id']; // force re-mount when viewId changes
@@ -19,7 +21,8 @@ type UiKitModalProps = {
 const UiKitModal = ({ initialView }: UiKitModalProps) => {
 	const actionManager = useUiKitActionManager();
 	const { view, errors, values, updateValues, state } = useUiKitView(initialView);
-	const contextValue = useModalContextValue({ view, errors, values, updateValues });
+	const rid = useContext(RoomContext)?.rid;
+	const contextValue = useModalContextValue({ view, errors, values, updateValues, rid });
 
 	const handleSubmit = useEffectEvent((e: FormEvent) => {
 		preventSyntheticEvent(e);
@@ -32,6 +35,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 				},
 			},
 			viewId: view.id,
+			...(rid && { rid }),
 		});
 	});
 
@@ -47,6 +51,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 				},
 				isCleared: false,
 			},
+			...(rid && { rid }),
 		});
 	});
 
@@ -61,6 +66,7 @@ const UiKitModal = ({ initialView }: UiKitModalProps) => {
 				},
 				isCleared: true,
 			},
+			...(rid && { rid }),
 		});
 	});
 

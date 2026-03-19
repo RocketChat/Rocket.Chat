@@ -22,11 +22,12 @@ type UseModalContextValueParams = {
 			blockId?: string;
 		};
 	}>;
+	rid?: string;
 };
 
 type UseModalContextValueReturn = ContextType<typeof UiKitContext>;
 
-export const useModalContextValue = ({ view, errors, values, updateValues }: UseModalContextValueParams): UseModalContextValueReturn => {
+export const useModalContextValue = ({ view, errors, values, updateValues, rid }: UseModalContextValueParams): UseModalContextValueReturn => {
 	const actionManager = useUiKitActionManager();
 
 	const emitInteraction = useMemo(() => actionManager.emitInteraction.bind(actionManager), [actionManager]);
@@ -51,6 +52,7 @@ export const useModalContextValue = ({ view, errors, values, updateValues }: Use
 					blockId,
 					value,
 				},
+				...(rid && { rid }),
 			});
 		},
 		updateState: ({ actionId, value, /* ,appId, */ blockId = 'default' }) => {
