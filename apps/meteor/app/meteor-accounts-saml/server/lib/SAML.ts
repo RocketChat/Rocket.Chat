@@ -384,7 +384,7 @@ export class SAML {
 				await logOutUser(inResponseTo);
 			} finally {
 				res.writeHead(302, {
-					Location: req.query.RelayState,
+					Location: Meteor.absoluteUrl(),
 				});
 				res.end();
 			}
