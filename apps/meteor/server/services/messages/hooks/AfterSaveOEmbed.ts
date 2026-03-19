@@ -350,20 +350,25 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 		return message;
 	}
 
-	let changed = false;
-	for await (const item of message.urls) {
-		if (item.ignoreParse === true) {
-			log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
-			continue;
-		}
+let changed: boolean = false;
+const urlsToProcess = message.urls.filter((item) => {
+    if (item.ignoreParse === true) {
+        log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
+        return false;
+    }
+    return true;
+});
 
-		const { urlPreview, foundMeta } = await parseUrl(item.url);
+const results = await Promise.allSettled(urlsToProcess.map((item) => parseUrl(item.url)));
 
-		Object.assign(item, foundMeta ? urlPreview : {});
-		changed = changed || foundMeta;
-	}
-
-	if (changed === true) {
+results.forEach((result, index) => {
+    if (result.status === 'fulfilled') {
+        const { urlPreview, foundMeta } = result.value;
+        Object.assign(urlsToProcess[index], foundMeta ? urlPreview : {});
+        changed = changed || foundMeta;
+    }
+});
+	if (changed) {
 		await Messages.setUrlsById(message._id, message.urls);
 	}
 
