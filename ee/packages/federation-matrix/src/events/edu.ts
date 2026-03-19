@@ -1,8 +1,8 @@
-import { api } from '@rocket.chat/core-services';
+import { api, Room } from '@rocket.chat/core-services';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Users } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:edu');
 
@@ -69,6 +69,46 @@ export const edus = async () => {
 			logger.debug({ msg: 'Updated presence for user from Matrix federation', userId: matrixUser._id, status });
 		} catch (err) {
 			logger.error({ msg: 'Error handling Matrix presence event', err });
+		}
+	});
+
+	federationSDK.eventEmitterService.on('homeserver.matrix.receipt', async (data) => {
+		try {
+			const matrixUser = await Users.findOneByUsername(data.user_id);
+			if (!matrixUser) {
+				logger.debug({ msg: 'No federated user found for Matrix user_id', userId: data.user_id });
+				return;
+			}
+
+			const matrixRoom = await Rooms.findOne({ 'federation.mrid': data.room_id });
+			if (!matrixRoom) {
+				logger.debug({ msg: 'No bridged room found for Matrix room_id', roomId: data.room_id });
+				return;
+			}
+
+			if (data.thread_id) {
+				const msg = await Messages.findOneByFederationId(data.thread_id);
+				if (!msg) {
+					logger.debug({ msg: 'No message found for Matrix thread_id', threadId: data.thread_id });
+					return;
+				}
+
+				if (msg.rid !== matrixRoom._id) {
+					logger.warn({
+						msg: 'Message thread_id does not belong to the expected room',
+						threadId: data.thread_id,
+						expectedRoomId: matrixRoom._id,
+						actualRoomId: msg.rid,
+					});
+					return;
+				}
+
+				await Room.readThread({ room: matrixRoom, user: matrixUser, tmid: msg._id });
+			} else {
+				await Room.markAsRead(matrixRoom, matrixUser._id);
+			}
+		} catch (err) {
+			logger.error({ msg: 'Error handling Matrix receipt event', err });
 		}
 	});
 };

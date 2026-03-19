@@ -5,7 +5,7 @@ import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useContext } from 'react';
 
 import { updatePayloadAction, context } from '../../Context';
-import { type IPayload } from '../../Context/initialState';
+import type { IPayload } from '../../Context/initialState';
 import useCodeMirror from '../../hooks/useCodeMirror';
 import useFormatCodeMirrorValue from '../../hooks/useFormatCodeMirrorValue';
 import intendCode from '../../utils/intendCode';
