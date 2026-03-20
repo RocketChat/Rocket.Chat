@@ -197,9 +197,19 @@ async function handleInvite({
 	}
 }
 
-const updateUserNameDebounced = debounce(async (userId: string, newName: string) => {
-	await Users.setName(userId, newName);
-}, 2000);
+const updateUserNameDebouncedMap = new Map<string, (newName: string) => void>();
+
+function updateUserNameDebounced(userId: string, newName: string): void {
+	if (!updateUserNameDebouncedMap.has(userId)) {
+		updateUserNameDebouncedMap.set(
+			userId,
+			debounce(async (name: string) => {
+				await Users.setName(userId, name);
+			}, 2000),
+		);
+	}
+	updateUserNameDebouncedMap.get(userId)?.(newName);
+}
 
 async function handleJoin({
 	room_id: roomId,
@@ -230,7 +240,7 @@ async function handleJoin({
 		if ('displayname' in content && content.displayname !== joiningUser.name) {
 			// whan a user changes the it's display name we receive a new join event for every room the user is in
 			// so we need to debounce the name update to avoid updating the name multiple times in a row
-			await updateUserNameDebounced(joiningUser._id, content.displayname || '');
+			void updateUserNameDebounced(joiningUser._id, content.displayname || '');
 		}
 
 		logger.info('User is already joined to the room, skipping...');
