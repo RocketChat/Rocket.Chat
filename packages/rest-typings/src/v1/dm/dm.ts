@@ -1,7 +1,6 @@
 import type { ImEndpoints } from './im';
 
 export type DmEndpoints = {
-	'/v1/dm.counters': ImEndpoints['/v1/im.counters'];
 	'/v1/dm.files': ImEndpoints['/v1/im.files'];
 	'/v1/dm.history': ImEndpoints['/v1/im.history'];
 	'/v1/dm.members': ImEndpoints['/v1/im.members'];

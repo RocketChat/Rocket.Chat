@@ -5,6 +5,7 @@ import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-ty
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
@@ -319,6 +320,119 @@ const dmSetTopicAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		});
 	};
 
+type DmCountersProps = {
+	roomId: string;
+	userId?: string;
+};
+
+const isDmCountersProps = ajvQuery.compile<DmCountersProps>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		userId: { type: 'string', nullable: true },
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+});
+
+const dmCountersResponseSchema = ajv.compile<{
+	joined: boolean;
+	members: number | null;
+	unreads: number | null;
+	unreadsFrom: string | null;
+	msgs: number | null;
+	latest: string | null;
+	userMentions: number | null;
+}>({
+	type: 'object',
+	properties: {
+		joined: { type: 'boolean' },
+		members: { type: 'number', nullable: true },
+		unreads: { type: 'number', nullable: true },
+		unreadsFrom: { type: 'string', nullable: true },
+		msgs: { type: 'number', nullable: true },
+		latest: { type: 'string', nullable: true },
+		userMentions: { type: 'number', nullable: true },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['joined', 'members', 'unreads', 'unreadsFrom', 'msgs', 'latest', 'userMentions', 'success'],
+	additionalProperties: false,
+});
+
+const dmCountersEndpointsProps = {
+	authRequired: true,
+	query: isDmCountersProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+		200: dmCountersResponseSchema,
+	},
+};
+
+const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof dmCountersEndpointsProps, Path> =>
+	async function action() {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
+		const access = await hasPermissionAsync(this.userId, 'view-room-administration');
+		const { roomId, userId: ruserId } = this.queryParams;
+		if (!roomId) {
+			throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" is required');
+		}
+		let user = this.userId;
+		let unreads = null;
+		let userMentions = null;
+		let unreadsFrom = null;
+		let joined = false;
+		let msgs = null;
+		let latest = null;
+		let members = null;
+		let lm = null;
+
+		if (ruserId) {
+			if (!access) {
+				return API.v1.forbidden('error-not-allowed');
+			}
+			user = ruserId;
+		}
+		const canAccess = await canAccessRoomIdAsync(roomId, user);
+
+		if (!canAccess) {
+			return API.v1.forbidden('error-not-allowed');
+		}
+
+		const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
+
+		lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString();
+
+		if (subscription) {
+			unreads = subscription.unread ?? null;
+			if (subscription.ls && room.msgs) {
+				unreadsFrom = new Date(subscription.ls).toISOString();
+			}
+			userMentions = subscription.userMentions;
+			joined = true;
+		}
+
+		if (access || joined) {
+			msgs = room.msgs;
+			latest = lm;
+			members = await Users.countActiveUsersInDMRoom(room._id);
+		}
+
+		return API.v1.success({
+			joined,
+			members,
+			unreads,
+			unreadsFrom,
+			msgs,
+			latest,
+			userMentions,
+		});
+	};
+
 const dmCreateResponseSchema = ajv.compile<{ room: IRoom & { rid: string } }>({
 	type: 'object',
 	properties: {
@@ -385,72 +499,9 @@ const dmEndpoints = API.v1
 	.post('dm.open', dmOpenEndpointsProps, dmOpenAction('dm.open'))
 	.post('im.open', dmOpenEndpointsProps, dmOpenAction('im.open'))
 	.post('dm.setTopic', dmSetTopicEndpointsProps, dmSetTopicAction('dm.setTopic'))
-	.post('im.setTopic', dmSetTopicEndpointsProps, dmSetTopicAction('im.setTopic'));
-
-// https://github.com/RocketChat/Rocket.Chat/pull/9679 as reference
-API.v1.addRoute(
-	['dm.counters', 'im.counters'],
-	{ authRequired: true },
-	{
-		async get() {
-			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
-			const { roomId, userId: ruserId } = this.queryParams;
-			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" is required');
-			}
-			let user = this.userId;
-			let unreads = null;
-			let userMentions = null;
-			let unreadsFrom = null;
-			let joined = false;
-			let msgs = null;
-			let latest = null;
-			let members = null;
-			let lm = null;
-
-			if (ruserId) {
-				if (!access) {
-					return API.v1.forbidden();
-				}
-				user = ruserId;
-			}
-			const canAccess = await canAccessRoomIdAsync(roomId, user);
-
-			if (!canAccess) {
-				return API.v1.forbidden();
-			}
-
-			const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
-
-			lm = room?.lm ? new Date(room.lm).toISOString() : new Date(room._updatedAt).toISOString(); // lm is the last message timestamp
-
-			if (subscription) {
-				unreads = subscription.unread ?? null;
-				if (subscription.ls && room.msgs) {
-					unreadsFrom = new Date(subscription.ls).toISOString(); // last read timestamp
-				}
-				userMentions = subscription.userMentions;
-				joined = true;
-			}
-
-			if (access || joined) {
-				msgs = room.msgs;
-				latest = lm;
-				members = await Users.countActiveUsersInDMRoom(room._id);
-			}
-
-			return API.v1.success({
-				joined,
-				members,
-				unreads,
-				unreadsFrom,
-				msgs,
-				latest,
-				userMentions,
-			});
-		},
-	},
-);
+	.post('im.setTopic', dmSetTopicEndpointsProps, dmSetTopicAction('im.setTopic'))
+	.get('dm.counters', dmCountersEndpointsProps, dmCountersAction('dm.counters'))
+	.get('im.counters', dmCountersEndpointsProps, dmCountersAction('im.counters'));
 
 API.v1.addRoute(
 	['dm.files', 'im.files'],
