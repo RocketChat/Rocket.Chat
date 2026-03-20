@@ -1,5 +1,4 @@
 import { Rooms, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
@@ -7,34 +6,26 @@ import { executeUnbanUserFromRoom } from '../../app/lib/server/functions/execute
 
 export const unbanUserFromRoom = async (fromId: string, data: { rid: string; username: string }): Promise<boolean> => {
 	if (!(await hasPermissionAsync(fromId, 'ban-user', data.rid))) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
-			method: 'unbanUserFromRoom',
-		});
+		throw new Error('Not allowed');
 	}
 
 	const room = await Rooms.findOneById(data.rid);
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-			method: 'unbanUserFromRoom',
-		});
+		throw new Error('Invalid room');
 	}
 
 	const fromUser = await Users.findOneById(fromId);
 	if (!fromUser) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-			method: 'unbanUserFromRoom',
-		});
+		throw new Error('Invalid user');
 	}
 
 	if (!(await canAccessRoomAsync(room, fromUser))) {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		throw new Error('The required "roomId" or "roomName" param provided does not match any group');
 	}
 
 	const bannedUser = await Users.findOneByUsernameIgnoringCase(data.username);
 	if (!bannedUser) {
-		throw new Meteor.Error('error-user-not-found', 'User not found', {
-			method: 'unbanUserFromRoom',
-		});
+		throw new Error('User not found');
 	}
 
 	await executeUnbanUserFromRoom(data.rid, bannedUser, fromUser);

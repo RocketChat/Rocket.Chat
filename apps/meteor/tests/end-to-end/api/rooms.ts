@@ -4347,7 +4347,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-user-already-banned');
+					expect(res.body).to.have.property('error');
 				});
 		});
 

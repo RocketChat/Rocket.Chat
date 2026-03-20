@@ -24,16 +24,6 @@ const modelsMock = {
 	},
 };
 
-const meteorMethodsMock = sinon.stub();
-const meteorErrorMock = class extends Error {
-	details: Record<string, any>;
-
-	constructor(error: string, message: string, details?: Record<string, any>) {
-		super(error);
-		this.message = message || error;
-		this.details = details || {};
-	}
-};
 const roomCoordinatorMock = {
 	getRoomDirectives: sinon.stub(),
 };
@@ -43,9 +33,10 @@ const RoomMemberActions = {
 };
 
 const { banUserFromRoomMethod } = p.noCallThru().load('../../../../server/lib/banUserFromRoom.ts', {
+	'@rocket.chat/core-typings': {
+		isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
+	},
 	'@rocket.chat/models': modelsMock,
-	'meteor/check': { Match: { ObjectIncluding: sinon.stub() }, check: sinon.stub() },
-	'meteor/meteor': { Meteor: { methods: meteorMethodsMock, Error: meteorErrorMock, userId: sinon.stub() } },
 	'../../app/authorization/server': { canAccessRoomAsync: canAccessRoomAsyncMock },
 	'../../app/authorization/server/functions/hasPermission': { hasPermissionAsync: hasPermissionAsyncMock },
 	'../../app/authorization/server/functions/hasRole': { hasRoleAsync: hasRoleAsyncMock },
