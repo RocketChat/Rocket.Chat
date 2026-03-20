@@ -13,8 +13,18 @@ export const uploadCustomSound = async (
 	const rs = RocketChatFile.bufferToStream(buffer);
 	await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
 
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		const ws = RocketChatFileCustomSoundsInstance.createWriteStream(`${soundData._id}.${soundData.extension}`, contentType);
+
+		ws.on('error', (err: Error) => {
+			reject(err);
+		});
+
+		rs.on('error', (err: Error) => {
+			ws.destroy();
+			reject(err);
+		});
+
 		ws.on('end', () => {
 			setTimeout(() => api.broadcast('notify.updateCustomSound', { soundData }), 500);
 			resolve();
