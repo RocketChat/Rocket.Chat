@@ -88,7 +88,29 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 	const { ldap, lastLogin, services: rawServices, ...userData } = await sdk.rest.get('/v1/me');
 
 	if (userData) {
+		const existingUser = Users.state.get(uid);
 		const { email, cloud, resume, email2fa, emailCode, ...services } = rawServices || {};
+
+		const mergedEmail2fa =
+			email2fa &&
+			(() => {
+				const { changedAt: apiChangedAt, ...email2faRest } = email2fa;
+				let changedAt: Date | undefined;
+				if (apiChangedAt != null) {
+					const parsed = new Date(apiChangedAt as string | number | Date);
+					if (!Number.isNaN(parsed.getTime())) {
+						changedAt = parsed;
+					}
+				}
+				if (changedAt == null && existingUser?.services?.email2fa?.changedAt != null) {
+					const prev = existingUser.services.email2fa.changedAt;
+					changedAt = prev instanceof Date ? prev : new Date(prev);
+				}
+				return {
+					...email2faRest,
+					...(changedAt != null ? { changedAt } : {}),
+				};
+			})();
 
 		updateUser({
 			...userData,
@@ -118,7 +140,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 							}
 						: {}),
 					...(emailCode ? { ...emailCode, expire: new Date(emailCode.expire) } : {}),
-					...(email2fa ? { email2fa: { ...email2fa, changedAt: new Date(email2fa.changedAt) } } : {}),
+					...(mergedEmail2fa ? { email2fa: mergedEmail2fa } : {}),
 					...(email?.verificationTokens && {
 						email: {
 							verificationTokens: email.verificationTokens.map((token) => ({
