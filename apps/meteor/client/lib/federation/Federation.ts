@@ -75,7 +75,8 @@ export const actionAllowed = (
 			return false;
 		}
 
-		const allowedForModeratorsOverDefaultUsers = action === RoomMemberActions.SET_AS_MODERATOR || action === RoomMemberActions.REMOVE_USER;
+		const allowedForModeratorsOverDefaultUsers =
+			action === RoomMemberActions.SET_AS_MODERATOR || action === RoomMemberActions.REMOVE_USER || action === RoomMemberActions.BAN;
 
 		return allowedForModeratorsOverDefaultUsers;
 	}
