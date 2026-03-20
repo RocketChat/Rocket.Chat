@@ -528,7 +528,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.pdp.checkUsernamesMatchAttributes(usernames, attributes, object);
 
 		usernames.forEach((username) => {
-			// TODO: Add room name
 			void Audit.actionPerformed({ username }, { _id: object._id, name: object.name }, 'system', 'granted-object-access');
 		});
 	}
