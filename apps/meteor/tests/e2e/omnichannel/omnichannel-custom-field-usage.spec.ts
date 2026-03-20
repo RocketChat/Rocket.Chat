@@ -73,7 +73,7 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 
 	test.afterAll('Remove agent, manager, custom fields and conversation', async () => {
 		await Promise.all([agent.delete(), manager.delete(), roomCustomField.delete(), visitorCustomField.delete(), conversation.delete()]);
-		ws.close();
+		ws?.close();
 	});
 
 	test('Should be allowed to set room custom field for a conversation', async () => {

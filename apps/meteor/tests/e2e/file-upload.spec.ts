@@ -59,6 +59,8 @@ test.describe.serial('file-upload', () => {
 	test('should attach multiple files and send one per message', async () => {
 		await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
 		await poHomeChannel.content.sendFileMessage(TEST_FILE_LST);
+
+		await expect(poHomeChannel.composer.inputMessage).toBeFocused();
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).toBeVisible();
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_LST)).toBeVisible();
 

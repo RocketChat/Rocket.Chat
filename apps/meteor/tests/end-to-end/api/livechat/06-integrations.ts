@@ -281,8 +281,9 @@ describe('LIVECHAT - Integrations', () => {
 					.send({
 						LivechatWebhookUrl: 8000,
 					})
-					.expect(200);
-				expect(response.body).to.have.property('success', true);
+					.expect('Content-Type', 'application/json')
+					.expect(400);
+				expect(response.body).to.have.property('success', false);
 			});
 			it('should fail if a wrong setting is provided', async () => {
 				const response = await request

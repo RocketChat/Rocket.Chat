@@ -1,6 +1,6 @@
 import type { RocketChatRecordDeleted, IRole, IUserInRole } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type RoleDeleteProps = { roleId: IRole['_id'] };
@@ -111,7 +111,7 @@ const RolesGetUsersInRolePropsSchema = {
 	additionalProperties: false,
 };
 
-export const isRolesGetUsersInRoleProps = ajv.compile<RolesGetUsersInRoleProps>(RolesGetUsersInRolePropsSchema);
+export const isRolesGetUsersInRoleProps = ajvQuery.compile<RolesGetUsersInRoleProps>(RolesGetUsersInRolePropsSchema);
 
 type RoleSyncProps = {
 	updatedSince?: string;

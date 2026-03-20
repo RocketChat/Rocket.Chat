@@ -65,6 +65,7 @@ env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}-amd64
+  DDP_LOGIN_PORT: 3000
 
 jobs:
   test:
@@ -125,16 +126,7 @@ jobs:
 
       - uses: rharkor/caching-for-turbo@v1.8
 
-      - name: Restore packages build
-        uses: actions/download-artifact@v8
-        with:
-          name: packages-build
-          path: /tmp
-
-      - name: Unpack packages build
-        shell: bash
-        run: |
-          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+      - uses: ./.github/actions/restore-packages
 
       # Download Docker images from build artifacts
       - name: Download Docker images

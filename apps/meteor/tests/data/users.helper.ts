@@ -172,106 +172,91 @@ export const setUserAway = (overrideCredentials = credentials, config?: IRequest
 		});
 };
 
-const connectWS = (port: number): Promise<WebSocket> =>
+const connectWS = (port: string): Promise<WebSocket> =>
 	new Promise((resolve, reject) => {
 		const ws = new WebSocket(`ws://localhost:${port}/websocket`);
 
-		ws.onopen = () => resolve(ws);
+		ws.onopen = () => {
+			ws.addEventListener('message', (event: MessageEvent) => {
+				const data = JSON.parse(event.data);
+				if (data.msg === 'ping') {
+					ws.send(JSON.stringify({ msg: 'pong' }));
+				}
+			});
+			resolve(ws);
+		};
 		ws.onerror = () => reject(new Error(`WS connection failed on ${port}`));
 	});
 
-export const ddpLogin = async (resume: string): Promise<WebSocket> => {
-	let ws: WebSocket;
-
-	if (process.env.CI) {
-		ws = await connectWS(3000);
-	} else if (process.env.IS_EE) {
-		ws = await connectWS(4000);
-	}
-
-	const loginId = `login-${Date.now()}-${Math.random()}`;
-
+const waitForDDP = (ws: WebSocket, id: string | 'handshake', sendAction: () => void): Promise<any> => {
 	return new Promise((resolve, reject) => {
+		const timeout = setTimeout(() => {
+			cleanup();
+			ws.close();
+			reject(new Error(`Timeout waiting for DDP id: ${id}`));
+		}, 5000);
+
+		const cleanup = () => {
+			clearTimeout(timeout);
+			ws.removeEventListener('message', handler);
+			ws.removeEventListener('close', onClose);
+			ws.removeEventListener('error', onError);
+		};
+
+		const onClose = () => {
+			cleanup();
+			reject(new Error(`WS closed while waiting for id: ${id}`));
+		};
+
+		const onError = (error: any) => {
+			cleanup();
+			ws.close();
+			reject(error || new Error(`WS error during operation id: ${id}`));
+		};
+
 		const handler = (event: MessageEvent) => {
-			const data = JSON.parse(event.data);
+			try {
+				const data = JSON.parse(event.data);
+				const isHandshake = id === 'handshake' && data.msg === 'connected';
+				const isResult = data.id === id && (data.msg === 'result' || data.msg === 'error');
 
-			if (data.msg === 'connected') {
-				ws.send(
-					JSON.stringify({
-						msg: 'method',
-						id: loginId,
-						method: 'login',
-						params: [{ resume }],
-					}),
-				);
-			} else if (data.msg === 'result') {
-				if (data.id === loginId) {
-					ws.removeEventListener('message', handler);
-
+				if (isHandshake || isResult) {
+					cleanup();
 					if (data.error) {
-						reject(data.error);
-						return;
+						ws.close();
+						return reject(data.error);
 					}
-
-					resolve(ws);
+					resolve(data);
 				}
-			} else if (data.msg === 'ping') {
-				ws.send(JSON.stringify({ msg: 'pong' }));
-			} else if (data.msg === 'error') {
-				ws.removeEventListener('message', handler);
-				reject(data);
+			} catch (e) {
+				// Ignore no JSON message
 			}
 		};
 
 		ws.addEventListener('message', handler);
+		ws.addEventListener('close', onClose);
+		ws.addEventListener('error', onError);
 
-		ws.send(
-			JSON.stringify({
-				msg: 'connect',
-				version: '1',
-				support: ['1'],
-			}),
-		);
+		sendAction();
 	});
 };
 
-export const setUserAwayWS = (ws: WebSocket): Promise<void> =>
-	new Promise((resolve, reject) => {
-		const id = `away-${Date.now()}-${Math.random()}`;
+export const ddpLogin = async (resume: string): Promise<WebSocket> => {
+	const ws = await connectWS(process.env.DDP_LOGIN_PORT || '3000');
+	const loginId = `login-${Date.now()}`;
 
-		const handler = (event: MessageEvent) => {
-			const data = JSON.parse(event.data);
+	await waitForDDP(ws, 'handshake', () => ws.send(JSON.stringify({ msg: 'connect', version: '1', support: ['1'] })));
 
-			if (data.msg === 'result' && data.id === id) {
-				ws.removeEventListener('message', handler);
-				if (data.error) {
-					reject(data.error);
-					return;
-				}
-				resolve();
-			}
+	await waitForDDP(ws, loginId, () => ws.send(JSON.stringify({ msg: 'method', id: loginId, method: 'login', params: [{ resume }] })));
 
-			if (data.msg === 'ping') {
-				ws.send(JSON.stringify({ msg: 'pong' }));
-			}
+	return ws;
+};
 
-			if (data.msg === 'error') {
-				ws.removeEventListener('message', handler);
-				reject(data);
-			}
-		};
+export const setUserAwayWS = async (ws: WebSocket): Promise<void> => {
+	const id = `away-${Date.now()}`;
 
-		ws.addEventListener('message', handler);
-
-		ws.send(
-			JSON.stringify({
-				msg: 'method',
-				method: 'UserPresence:away',
-				params: [],
-				id,
-			}),
-		);
-	});
+	await waitForDDP(ws, id, () => ws.send(JSON.stringify({ msg: 'method', method: 'UserPresence:away', params: [], id })));
+};
 
 export const setUserOnline = (overrideCredentials = credentials, config?: IRequestConfig) => {
 	const requestInstance = config?.request || request;

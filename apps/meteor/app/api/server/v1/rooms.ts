@@ -5,6 +5,7 @@ import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/mod
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
 	ajv,
+	ajvQuery,
 	isGETRoomsNameExists,
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
@@ -1042,7 +1043,7 @@ export const roomEndpoints = API.v1
 		'rooms.roles',
 		{
 			authRequired: true,
-			query: ajv.compile<{
+			query: ajvQuery.compile<{
 				rid: string;
 			}>(isRoomGetRolesPropsSchema),
 			response: {
@@ -1089,7 +1090,7 @@ export const roomEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['view-room-administration'],
-			query: ajv.compile<{
+			query: ajvQuery.compile<{
 				filter?: string;
 				offset?: number;
 				count?: number;
