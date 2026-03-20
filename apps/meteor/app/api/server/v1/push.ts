@@ -222,57 +222,86 @@ const pushTokenEndpoints = API.v1
 		},
 	);
 
-API.v1.addRoute(
+const pushGetResponseSchema = ajv.compile<{ data: Record<string, unknown> }>({
+	type: 'object',
+	properties: {
+		data: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['data', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'push.get',
-	{ authRequired: true },
 	{
-		async get() {
-			const params = this.queryParams;
-			check(
-				params,
-				Match.ObjectIncluding({
-					id: String,
-				}),
-			);
-
-			const receiver = await Users.findOneById(this.userId);
-			if (!receiver) {
-				throw new Error('error-user-not-found');
-			}
-
-			const message = await Messages.findOneById(params.id);
-			if (!message) {
-				throw new Error('error-message-not-found');
-			}
-
-			const room = await Rooms.findOneById(message.rid);
-			if (!room) {
-				throw new Error('error-room-not-found');
-			}
-
-			if (!(await canAccessRoomAsync(room, receiver))) {
-				throw new Error('error-not-allowed');
-			}
-
-			const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
-
-			return API.v1.success({ data });
+		authRequired: true,
+		response: {
+			200: pushGetResponseSchema,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const params = this.queryParams as Record<string, string>;
+		check(
+			params,
+			Match.ObjectIncluding({
+				id: String,
+			}),
+		);
+
+		const receiver = await Users.findOneById(this.userId);
+		if (!receiver) {
+			throw new Error('error-user-not-found');
+		}
+
+		const message = await Messages.findOneById(params.id);
+		if (!message) {
+			throw new Error('error-message-not-found');
+		}
+
+		const room = await Rooms.findOneById(message.rid);
+		if (!room) {
+			throw new Error('error-room-not-found');
+		}
+
+		if (!(await canAccessRoomAsync(room, receiver))) {
+			throw new Error('error-not-allowed');
+		}
+
+		const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
+
+		return API.v1.success({ data });
 	},
 );
 
-API.v1.addRoute(
+const pushInfoResponseSchema = ajv.compile<{ pushGatewayEnabled: boolean; defaultPushGateway: boolean }>({
+	type: 'object',
+	properties: {
+		pushGatewayEnabled: { type: 'boolean' },
+		defaultPushGateway: { type: 'boolean' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['pushGatewayEnabled', 'defaultPushGateway', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.get(
 	'push.info',
-	{ authRequired: true },
 	{
-		async get() {
-			const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
-			const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
-			return API.v1.success({
-				pushGatewayEnabled: settings.get('Push_enable'),
-				defaultPushGateway,
-			});
+		authRequired: true,
+		response: {
+			200: pushInfoResponseSchema,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
+		const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
+		return API.v1.success({
+			pushGatewayEnabled: Boolean(settings.get('Push_enable')),
+			defaultPushGateway,
+		});
 	},
 );
 
