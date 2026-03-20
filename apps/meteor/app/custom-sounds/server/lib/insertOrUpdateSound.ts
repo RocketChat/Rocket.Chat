@@ -17,8 +17,6 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 		});
 	}
 
-	// let nameValidation = new RegExp('^[0-9a-zA-Z-_+;.]+$');
-
 	// allow all characters except colon, whitespace, comma, >, <, &, ", ', /, \, (, )
 	// more practical than allowing specific sets of characters; also allows foreign languages
 	const nameValidation = /[\s,:><&"'\/\\\(\)]/;
@@ -55,7 +53,6 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 		).insertedId;
 	}
 
-	// update sound
 	if (soundData.newFile) {
 		await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
 	}
