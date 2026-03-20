@@ -365,6 +365,6 @@ callbacks.add('afterSaveUser', async ({ user: userUpdated, oldUser: oldUserData 
 	}
 
 	if ('name' in userUpdated && userUpdated.name !== oldUserData.name) {
-		await FederationMatrix.updateUserName(userUpdated);
+		void FederationMatrix.updateUserName(userUpdated);
 	}
 });
