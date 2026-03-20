@@ -36,7 +36,7 @@ const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 });
 
 // eslint-disable-next-line react/no-multi-comp
-const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
+const DevicePicker = ({ secondary = false, className }: { secondary?: boolean; className?: string }) => {
 	const { t } = useTranslation();
 
 	const { onDeviceChange } = useMediaCallView();
@@ -124,6 +124,7 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 			selectionMode='multiple'
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
+			className={className}
 			onAction={(deviceId) => {
 				if (typeof deviceId !== 'string') {
 					return;

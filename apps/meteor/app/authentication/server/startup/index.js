@@ -306,6 +306,11 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	delete user.globalRoles;
 
+	// for some reason, the name is not being set in the user object but is being set in the options object
+	if (options.name && typeof options.name === 'string') {
+		user.name = options.name;
+	}
+
 	if (user.services && !user.services.password && !options.skipAuthServiceDefaultRoles) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 

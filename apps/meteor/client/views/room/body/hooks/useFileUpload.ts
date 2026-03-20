@@ -1,67 +1,49 @@
 import { useCallback, useEffect, useMemo, useSyncExternalStore } from 'react';
 
-import type { UploadsAPI } from '../../../../lib/chats/ChatAPI';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { useChat } from '../../contexts/ChatContext';
 
-export const useFileUpload = (store: UploadsAPI) => {
+const emptySubscribe = () => () => undefined;
+const emptyUploads: readonly Upload[] = [];
+const getEmptyUploads = () => emptyUploads;
+const getEmptyBool = () => false;
+
+export const useFileUpload = () => {
 	const chat = useChat();
 
-	if (!chat || !store) {
+	if (!chat) {
 		throw new Error('No ChatContext provided');
 	}
 
+	const store = chat.composer?.uploads;
+
+	const uploads = useSyncExternalStore(store?.subscribe ?? emptySubscribe, store?.get ?? getEmptyUploads);
+	const isProcessingUploads = useSyncExternalStore(store?.subscribe ?? emptySubscribe, store?.getProcessingUploads ?? getEmptyBool);
+
 	useEffect(() => {
-		store.wipeFailedOnes();
-	}, [store]);
+		store?.wipeFailedOnes();
 
-	const uploads = useSyncExternalStore(store.subscribe, store.get);
-	const isProcessingUploads = useSyncExternalStore(store.subscribe, store.getProcessingUploads);
-
-	const stopUploadingAction = useCallback(() => {
-		if (uploads.length === 1) {
-			chat.action.stop('uploading');
-		}
-	}, [chat.action, uploads.length]);
-
-	const handleRemoveUpload = useCallback(
-		(id: Upload['id']) => {
-			store.removeUpload(id);
-			stopUploadingAction();
-		},
-		[stopUploadingAction, store],
-	);
-
-	const handleCancelUpload = useCallback(
-		(id: Upload['id']) => {
-			store.cancel(id);
-			stopUploadingAction();
-		},
-		[stopUploadingAction, store],
-	);
-
-	const handleEditUpload = useCallback((id: Upload['id'], fileName: string) => store.editUploadFileName(id, fileName), [store]);
+		return () => store?.clear();
+	}, [chat.action, store]);
 
 	const handleUploadFiles = useCallback(
 		(files: readonly File[]): void => {
-			chat?.flows.uploadFiles({ files, uploadsStore: store });
+			chat.flows.uploadFiles({ files });
 		},
-		[chat, store],
+		[chat],
 	);
 
 	const isUploading = uploads.length > 0 && uploads.some((upload) => upload.percentage < 100 && !upload.error);
 
 	return useMemo(
 		() => ({
+			uploadsStore: store,
 			uploads,
 			hasUploads: uploads.length > 0,
 			isUploading,
 			isProcessingUploads,
-			handleRemoveUpload,
-			handleEditUpload,
-			handleCancelUpload,
 			handleUploadFiles,
 		}),
-		[uploads, isUploading, isProcessingUploads, handleRemoveUpload, handleEditUpload, handleCancelUpload, handleUploadFiles],
+		[store, uploads, isUploading, isProcessingUploads, handleUploadFiles],
 	);
 };
