@@ -31,7 +31,7 @@
 		"emojione": "^4.5.0",
 		"marked": "^16.1.2",
 		"mongodb": "6.16.0",
-		"pino": "^8.21.0",
+		"pino": "10.3.1",
 		"reflect-metadata": "^0.2.2",
 		"sanitize-html": "~2.17.0",
 		"tsyringe": "^4.10.0",
@@ -46,7 +46,7 @@
 		"jest": "~30.2.0",
 		"jest-qase-reporter": "^2.1.4",
 		"matrix-js-sdk": "^38.4.0",
-		"pino-pretty": "^7.6.1",
+		"pino-pretty": "13.1.3",
 		"typescript": "~5.9.3"
 	},
 	"volta": {
