@@ -207,6 +207,8 @@ export class Job {
 					this.fail(err);
 				} else {
 					this.attrs.lastFinishedAt = new Date();
+					this.attrs.failReason = undefined;
+    				this.attrs.failedAt = undefined;
 				}
 
 				this.attrs.lockedAt = null;

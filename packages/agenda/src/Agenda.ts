@@ -474,23 +474,35 @@ export class Agenda extends EventEmitter {
 		}
 	}
 
-	private async _updateJob(job: Job, props: Record<string, any>): Promise<void> {
-		const id = job.attrs._id;
-		const update = {
-			$set: props,
-		};
+private async _updateJob(job: Job, props: Record<string, any>): Promise<void> {
+	const id = job.attrs._id;
 
-		// Update the job and process the resulting data'
-		debug('job already has _id, calling findOneAndUpdate() using _id as query');
-		try {
-			const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
-			result && (await this._processDbResult(job, result));
-		} catch (error) {
-			this.emit('error:database', error);
-			throw error;
+	const $set: Record<string, any> = {};
+	const $unset: Record<string, any> = {};
+
+	for (const [key, value] of Object.entries(props)) {
+		if (value === undefined) {
+			$unset[key] = '';
+		} else {
+			$set[key] = value;
 		}
 	}
 
+	const update: Record<string, any> = {};
+	if (Object.keys($set).length) update.$set = $set;
+	if (Object.keys($unset).length) update.$unset = $unset;
+
+	// Update the job and process the resulting data
+	debug('job already has _id, calling findOneAndUpdate() using _id as query');
+	try {
+		const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
+		result && (await this._processDbResult(job, result));
+	} catch (error) {
+		this.emit('error:database', error);
+		throw error;
+	}
+	}
+	
 	private async _saveSingleJob(job: Job, props: Record<string, any>, now: Date): Promise<void> {
 		// Job type set to 'single' so...
 		debug('job with type of "single" found');
