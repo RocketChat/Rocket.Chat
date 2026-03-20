@@ -117,8 +117,8 @@ const RoomBody = (): ReactElement => {
 		surroundingMessagesJumpTpRef,
 	);
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(chat.uploads);
-	const { uploads, isUploading } = useFileUpload(chat.uploads);
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
+	const { uploads, isUploading } = useFileUpload();
 
 	const { messageListRef } = useMessageListNavigation();
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
