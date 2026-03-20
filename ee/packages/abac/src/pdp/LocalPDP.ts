@@ -50,7 +50,7 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		const isUserCompliant = await Users.findOne(
 			{
 				_id: user._id,
-				$and: buildCompliantConditions(room.abacAttributes),
+				$and: buildCompliantConditions(room.abacAttributes ?? []),
 			},
 			{ projection: { _id: 1 } },
 		);

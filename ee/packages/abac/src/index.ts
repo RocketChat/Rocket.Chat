@@ -43,7 +43,7 @@ const limit = pLimit(20);
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
-	private pdp: IPolicyDecisionPoint;
+	private pdp!: IPolicyDecisionPoint;
 
 	decisionCacheTimeout = 60; // seconds
 
