@@ -1,5 +1,53 @@
 # @rocket.chat/meteor
 
+## 8.2.1
+
+### Patch Changes
+
+- ([#39508](https://github.com/RocketChat/Rocket.Chat/pull/39508) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#39517](https://github.com/RocketChat/Rocket.Chat/pull/39517) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes `ssrf` validation for oauth endpoints, which allows internal endpoints to be used during the auth flow.
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.1
+  - @rocket.chat/rest-typings@8.2.1
+  - @rocket.chat/abac@0.1.5
+  - @rocket.chat/federation-matrix@0.0.14
+  - @rocket.chat/license@1.1.12
+  - @rocket.chat/media-calls@0.2.5
+  - @rocket.chat/omnichannel-services@0.3.49
+  - @rocket.chat/pdf-worker@0.3.31
+  - @rocket.chat/presence@0.2.52
+  - @rocket.chat/api-client@0.2.52
+  - @rocket.chat/apps@0.6.5
+  - @rocket.chat/core-services@0.13.1
+  - @rocket.chat/cron@0.1.52
+  - @rocket.chat/fuselage-ui-kit@28.0.1
+  - @rocket.chat/gazzodown@28.0.1
+  - @rocket.chat/http-router@7.9.19
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/model-typings@2.1.1
+  - @rocket.chat/ui-avatar@24.0.1
+  - @rocket.chat/ui-client@28.0.1
+  - @rocket.chat/ui-contexts@28.0.1
+  - @rocket.chat/ui-voip@18.0.1
+  - @rocket.chat/web-ui-registration@28.0.1
+  - @rocket.chat/models@2.1.1
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.31
+  - @rocket.chat/omni-core-ee@0.0.17
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@28.0.1
+  - @rocket.chat/instance-status@0.1.52
+  - @rocket.chat/omni-core@0.0.17
+  - @rocket.chat/server-fetch@0.1.1
+  </details>
+
 ## 8.2.0
 
 ### Minor Changes
