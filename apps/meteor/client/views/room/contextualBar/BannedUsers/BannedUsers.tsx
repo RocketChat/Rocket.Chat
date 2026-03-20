@@ -52,7 +52,7 @@ const BannedUsers = ({ loading, error, bannedUsers, useRealName = false, onClick
 					<ContextualbarEmptyContent icon='ban' title={t('No_banned_users')} subtitle={t('No_banned_users_description')} />
 				)}
 
-				{!loading && bannedUsers.length > 0 && (
+				{!loading && !error && bannedUsers.length > 0 && (
 					<Box w='full' h='full' overflow='hidden' flexShrink={1}>
 						<VirtualizedScrollbars>
 							<Virtuoso
