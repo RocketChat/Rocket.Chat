@@ -897,9 +897,6 @@ export type ChatEndpoints = {
 			message: IMessage;
 		};
 	};
-	'/v1/chat.reportMessage': {
-		POST: (params: ChatReportMessage) => void;
-	};
 	'/v1/chat.getDiscussions': {
 		GET: (params: ChatGetDiscussions) => {
 			messages: IMessage[];
@@ -926,9 +923,6 @@ export type ChatEndpoints = {
 			ts: string;
 			message: Pick<IMessage, '_id' | 'rid' | 'u'>;
 		};
-	};
-	'/v1/chat.react': {
-		POST: (params: ChatReact) => void;
 	};
 	'/v1/chat.ignoreUser': {
 		GET: (params: ChatIgnoreUser) => void;
