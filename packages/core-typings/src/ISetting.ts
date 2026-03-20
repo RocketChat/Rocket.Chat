@@ -52,7 +52,8 @@ export interface ISettingBase extends IRocketChatRecord {
 		| 'timespan';
 	public: boolean;
 	env: boolean;
-	group?: string;
+	// TODO: migrate settings with group and section with null to undefined
+	group?: string | null;
 	section?: string;
 	tab?: string;
 	i18nLabel: string;

@@ -1,6 +1,8 @@
 export * from './Widget';
 export * from './PeerInfo';
 export * from './PeerAutocomplete';
+export * from './Cards';
+export * from './Actions';
 
 export { default as ToggleButton } from './ToggleButton';
 export { default as ActionButton } from './ActionButton';
