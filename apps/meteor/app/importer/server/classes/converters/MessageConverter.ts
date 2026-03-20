@@ -83,47 +83,37 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		// Convert the mentions and channels first because these conversions can also modify the msg in the message object
 		const mentions = data.mentions && (await this.convertMessageMentions(data));
 		const channels = data.channels && (await this.convertMessageChannels(data));
+		const editedBy = data.editedBy ? await this._cache.findImportedUser(data.editedBy) : undefined;
+		const reactions = data.reactions ? await this.convertMessageReactions(data.reactions) : undefined;
 
 		return {
-        	rid,
-        	u: {
-        		_id: creator._id,
-        		username: creator.username,
-        	},
-        	msg: data.msg,
-        	ts: data.ts,
-        
-        	...(data.t !== undefined ? { t: data.t } : {}),
-        	...(data.groupable !== undefined ? { groupable: data.groupable } : {}),
-        	...(data.tmid ? { tmid: data.tmid } : {}),
-        	...(data.tlm ? { tlm: data.tlm } : {}),
-        	...(data.tcount !== undefined ? { tcount: data.tcount } : {}),
-        	...(data.replies?.length
-        		? { replies: await this.convertMessageReplies(data.replies) }
-        		: {}),
-        
-        	...(data.editedAt ? { editedAt: data.editedAt } : {}),
-        	...(data.editedBy
-        		? {
-        				editedBy:
-        					(await this._cache.findImportedUser(data.editedBy)) ||
-        					undefined,
-        		  }
-        		: {}),
-        
-        	...(mentions?.length ? { mentions } : {}),
-        	...(channels?.length ? { channels } : {}),
-        	...(data._importFile ? { _importFile: data._importFile } : {}),
-        	...(data.url ? { url: data.url } : {}),
-        	...(data.attachments?.length ? { attachments: data.attachments } : {}),
-        	...(data.bot ? { bot: data.bot } : {}),
-        	...(data.emoji ? { emoji: data.emoji } : {}),
-        	...(data.alias ? { alias: data.alias } : {}),
-        	...(data._id ? { _id: data._id } : {}),
-        	...(data.reactions
-        		? { reactions: await this.convertMessageReactions(data.reactions) }
-        		: {}),
-        };
+			rid,
+			u: {
+				_id: creator._id,
+				username: creator.username,
+			},
+			msg: data.msg,
+			ts: data.ts,
+
+			...(data.t !== undefined ? { t: data.t } : {}),
+			...(data.groupable !== undefined ? { groupable: data.groupable } : {}),
+			...(data.tmid ? { tmid: data.tmid } : {}),
+			...(data.tlm ? { tlm: data.tlm } : {}),
+			...(data.tcount !== undefined ? { tcount: data.tcount } : {}),
+			...(data.replies?.length ? { replies: await this.convertMessageReplies(data.replies) } : {}),
+			...(data.editedAt ? { editedAt: data.editedAt } : {}),
+			...(editedBy ? { editedBy } : {}),
+			...(mentions?.length ? { mentions } : {}),
+			...(channels?.length ? { channels } : {}),
+			...(data._importFile ? { _importFile: data._importFile } : {}),
+			...(data.url ? { url: data.url } : {}),
+			...(data.attachments?.length ? { attachments: data.attachments } : {}),
+			...(data.bot ? { bot: data.bot } : {}),
+			...(data.emoji ? { emoji: data.emoji } : {}),
+			...(data.alias ? { alias: data.alias } : {}),
+			...(data._id ? { _id: data._id } : {}),
+			...(reactions ? { reactions } : {}),
+		};
 	}
 
 	protected async convertMessageChannels(message: IImportMessage): Promise<MentionedChannel[] | undefined> {
