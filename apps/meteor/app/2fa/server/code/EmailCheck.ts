@@ -43,8 +43,8 @@ export class EmailCheck implements ICodeCheck {
 		await Mailer.send({
 			to: address,
 			from: settings.get('From_Email'),
-			subject: 'Authentication code',
-			replyTo: undefined,
+            subject: String(settings.get('Accounts_TwoFactorAuthentication_By_Email_Subject')),
+            replyTo: undefined,
 			data: {
 				code: random.replace(/^(\d{3})/, '$1-'),
 			},

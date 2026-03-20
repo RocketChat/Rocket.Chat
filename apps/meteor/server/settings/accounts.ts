@@ -69,6 +69,18 @@ export const createAccountSettings = () =>
 				],
 			});
 
+            await this.add('Accounts_TwoFactorAuthentication_By_Email_Subject', '{Accounts_TwoFactorAuthentication_By_Email_Subject}', {
+                type: 'string',
+                enableQuery: [
+                    enable2FA,
+                    {
+                        _id: 'Accounts_TwoFactorAuthentication_By_Email_Enabled',
+                        value: true,
+                    },
+                ],
+                i18nLabel: 'Subject',
+            });
+
 			await this.add('Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts', 5, {
 				type: 'int',
 				enableQuery: [
