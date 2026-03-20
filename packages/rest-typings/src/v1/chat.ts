@@ -638,41 +638,6 @@ const ChatSyncMessagesSchema = {
 
 export const isChatSyncMessagesProps = ajvQuery.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
 
-type ChatSyncThreadMessages = PaginatedRequest<{
-	tmid: string;
-	updatedSince: string;
-}>;
-
-const ChatSyncThreadMessagesSchema = {
-	type: 'object',
-	properties: {
-		tmid: {
-			type: 'string',
-			minLength: 1,
-		},
-		updatedSince: {
-			type: 'string',
-			format: 'iso-date-time',
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['tmid', 'updatedSince'],
-	additionalProperties: false,
-};
-
-export const isChatSyncThreadMessagesProps = ajvQuery.compile<ChatSyncThreadMessages>(ChatSyncThreadMessagesSchema);
-
 type ChatGetThreadMessages = PaginatedRequest<{
 	tmid: string;
 }>;
@@ -987,14 +952,6 @@ export type ChatEndpoints = {
 			ts: number;
 			channel: IRoom;
 			message: IMessage;
-		};
-	};
-	'/v1/chat.syncThreadMessages': {
-		GET: (params: ChatSyncThreadMessages) => {
-			messages: {
-				update: IMessage[];
-				remove: IMessage[];
-			};
 		};
 	};
 	'/v1/chat.getThreadMessages': {
