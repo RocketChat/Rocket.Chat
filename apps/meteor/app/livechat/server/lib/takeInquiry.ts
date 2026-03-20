@@ -37,6 +37,7 @@ export const takeInquiry = async (
 			method: 'livechat:takeInquiry',
 			...(process.env.TEST_MODE && {
 				Livechat_enabled_when_agent_idle: settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+				Livechat_accept_chats_with_no_agents: settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 				user: await Users.findOneById(userId),
 			}),
 		});
