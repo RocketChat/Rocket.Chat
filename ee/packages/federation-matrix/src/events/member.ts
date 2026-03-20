@@ -235,18 +235,19 @@ async function handleJoin({
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 	}
 
+	// updates user name whenever we receive a join event, because Matrix sends a new join event with the updated display name whenever a user changes their display name
+	if ('displayname' in content && content.displayname !== joiningUser.name) {
+		// whan a user changes the it's display name we receive a new join event for every room the user is in
+		// so we need to debounce the name update to avoid updating the name multiple times in a row
+		void updateUserNameDebounced(joiningUser._id, content.displayname || '');
+	}
+
 	// update room name for DMs
 	if (room.t === 'd') {
 		await Room.updateDirectMessageRoomName(room, [subscription._id]);
 	}
 
 	if (!subscription.status) {
-		if ('displayname' in content && content.displayname !== joiningUser.name) {
-			// whan a user changes the it's display name we receive a new join event for every room the user is in
-			// so we need to debounce the name update to avoid updating the name multiple times in a row
-			void updateUserNameDebounced(joiningUser._id, content.displayname || '');
-		}
-
 		logger.info('User is already joined to the room, skipping...');
 		return;
 	}
