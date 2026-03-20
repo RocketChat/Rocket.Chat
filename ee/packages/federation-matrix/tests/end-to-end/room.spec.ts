@@ -1865,7 +1865,6 @@ import { SynapseClient } from '../helper/synapse-client';
 
 			afterAll(async () => {
 				await deleteUser(rcUser1.user, {}, rc1AdminRequestConfig);
-				await hs1AdminApp.matrixClient.setDisplayName(''); // reset Synapse admin name
 			});
 
 			describe('When a RC local user changes their display name', () => {
@@ -1948,6 +1947,10 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 
 			describe('When a Synapse user changes their displayname', () => {
+				afterAll(async () => {
+					await hs1AdminApp.matrixClient.setDisplayName(federationConfig.hs1.adminMatrixUserId); // reset Synapse admin name
+				});
+
 				it('should propagate the updated name to the RC side', async () => {
 					// Action: update the Synapse user's displayname — Synapse broadcasts new m.room.member
 					// events to all joined rooms, which RC federation receives and debounces the name update
