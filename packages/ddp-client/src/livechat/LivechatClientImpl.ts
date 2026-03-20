@@ -39,16 +39,19 @@ declare module '../DDPSDK' {
 	}
 }
 
+
 export class LivechatClientImpl extends DDPSDK implements LivechatStream, LivechatEndpoints {
-	private token?: string;
 
 	public readonly credentials: { token?: string } = { token: this.token };
+
+	private storageKey!: string;
+	private token?: string;
 
 	private ensureToken(): string {
 		if (this.token) return this.token;
 	  
 		try {
-		  const savedToken = localStorage.getItem('rc_livechat_token');
+		  const savedToken = localStorage.getItem(this.storageKey);
 	  
 		  if (savedToken) {
 			this.token = savedToken;
@@ -229,7 +232,11 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		const result = await this.rest.post('/v1/livechat/visitor', guest);
 		this.token = result?.visitor.token;
 		if(this.token) {
-			localStorage.setItem('rc_livechat_token', this.token);
+			try {
+				localStorage.setItem(this.storageKey, this.token);
+			} catch (e) {
+				console.warn('Failed to persist token', e);
+			}
 		}
 		return result;
 	}
@@ -330,7 +337,17 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 	deleteVisitor(): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/visitor'>>> {
 		const token = this.ensureToken();
-		return this.rest.delete(`/v1/livechat/visitor/${token}` as any);
+
+	return this.rest.delete(`/v1/livechat/visitor/${token}` as any)
+		.finally(() => {
+			try {
+				localStorage.removeItem(this.storageKey);
+			} catch (e) {
+				console.warn('Failed to remove token', e);
+			}
+
+			this.token = undefined;
+		});
 	}
 
 	// API PUT
@@ -363,8 +380,10 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 		const sdk = new LivechatClientImpl(connection, stream, account, timeoutControl, rest);
 
+		sdk.storageKey = `rc_livechat_token_${url}`;
+
 		try {
-			const savedToken = localStorage.getItem('rc_livechat_token');
+			const savedToken = localStorage.getItem(sdk.storageKey);
 			if (savedToken) {
 			  sdk.token = savedToken;
 			}
