@@ -558,6 +558,81 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
+	)
+	.post(
+		'chat.react',
+		{
+			authRequired: true,
+			body: isChatReactProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.messageId);
+
+			if (!msg) {
+				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+			}
+
+			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : (this.bodyParams as { reaction: string }).reaction;
+
+			if (!emoji) {
+				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
+			}
+
+			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.reportMessage',
+		{
+			authRequired: true,
+			body: isChatReportMessageProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { messageId, description } = this.bodyParams;
+			if (!messageId) {
+				throw new Meteor.Error('error-param-required', 'The required "messageId" param is missing.');
+			}
+
+			if (!description) {
+				throw new Meteor.Error('error-param-required', 'The required "description" param is missing.');
+			}
+
+			await reportMessage(messageId, description, this.userId);
+
+			return API.v1.success();
+		},
 	);
 
 API.v1.addRoute(
@@ -649,51 +724,6 @@ API.v1.addRoute(
 			return API.v1.success({
 				message,
 			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.react',
-	{ authRequired: true, validateParams: isChatReactProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.messageId);
-
-			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
-			}
-
-			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : (this.bodyParams as { reaction: string }).reaction;
-
-			if (!emoji) {
-				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
-			}
-
-			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	'chat.reportMessage',
-	{ authRequired: true, validateParams: isChatReportMessageProps },
-	{
-		async post() {
-			const { messageId, description } = this.bodyParams;
-			if (!messageId) {
-				return API.v1.failure('The required "messageId" param is missing.');
-			}
-
-			if (!description) {
-				return API.v1.failure('The required "description" param is missing.');
-			}
-
-			await reportMessage(messageId, description, this.userId);
-
-			return API.v1.success();
 		},
 	},
 );
