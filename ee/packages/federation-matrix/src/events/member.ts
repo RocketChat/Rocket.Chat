@@ -204,7 +204,11 @@ function updateUserNameDebounced(userId: string, newName: string): void {
 		updateUserNameDebouncedMap.set(
 			userId,
 			debounce(async (name: string) => {
-				await Users.setName(userId, name);
+				try {
+					await Users.setName(userId, name);
+				} finally {
+					updateUserNameDebouncedMap.delete(userId);
+				}
 			}, 2000),
 		);
 	}
