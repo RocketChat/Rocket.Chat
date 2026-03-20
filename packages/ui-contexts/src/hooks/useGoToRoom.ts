@@ -4,7 +4,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint } from './useEndpoint';
 import { useRouter } from './useRouter';
 
-export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}) => {
+export const useGoToRoom = (): ((roomId: IRoom['_id']) => Promise<void>) => {
 	const router = useRouter();
 	const getRoomById = useEndpoint('GET', '/v1/rooms.info');
 
@@ -17,11 +17,6 @@ export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}) => 
 
 		const { path } = router.getRoomRoute(t, ['c', 'p'].includes(t) ? { name } : { rid });
 
-		router.navigate(
-			{
-				pathname: path,
-			},
-			{ replace },
-		);
+		router.navigate({ pathname: path });
 	});
 };

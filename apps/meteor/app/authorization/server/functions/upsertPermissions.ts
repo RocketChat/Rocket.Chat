@@ -18,6 +18,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'leader', scope: 'Subscriptions', description: 'Leader' },
 		{ name: 'owner', scope: 'Subscriptions', description: 'Owner' },
 		{ name: 'user', scope: 'Users', description: '' },
+		{ name: 'federated-external', scope: 'Users', description: 'External Federated User' },
 		{ name: 'bot', scope: 'Users', description: '' },
 		{ name: 'app', scope: 'Users', description: '' },
 		{ name: 'guest', scope: 'Users', description: '' },
@@ -52,8 +53,9 @@ export const upsertPermissions = async (): Promise<void> => {
 			level: CONSTANTS.SETTINGS_LEVEL as 'settings' | undefined,
 			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
-			group: setting.group,
-			section: setting.section ?? undefined,
+			// TODO: migrate settings with group and section with null to undefined
+			...(setting.group && { group: setting.group }),
+			...(setting.section && { section: setting.section }),
 			sorter: setting.sorter,
 			roles: [],
 		};
