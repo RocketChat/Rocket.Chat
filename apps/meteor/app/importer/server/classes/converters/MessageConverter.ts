@@ -85,6 +85,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		const channels = data.channels && (await this.convertMessageChannels(data));
 		const editedBy = data.editedBy ? await this._cache.findImportedUser(data.editedBy) : undefined;
 		const reactions = data.reactions ? await this.convertMessageReactions(data.reactions) : undefined;
+		const replies = data.replies?.length ? await this.convertMessageReplies(data.replies) : undefined;
 
 		return {
 			rid,
@@ -100,7 +101,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			...(data.tmid ? { tmid: data.tmid } : {}),
 			...(data.tlm ? { tlm: data.tlm } : {}),
 			...(data.tcount !== undefined ? { tcount: data.tcount } : {}),
-			...(data.replies?.length ? { replies: await this.convertMessageReplies(data.replies) } : {}),
+			...(replies?.length ? { replies } : {}),
 			...(data.editedAt ? { editedAt: data.editedAt } : {}),
 			...(editedBy ? { editedBy } : {}),
 			...(mentions?.length ? { mentions } : {}),
