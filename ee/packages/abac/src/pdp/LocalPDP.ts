@@ -1,28 +1,14 @@
-import type {
-	IAbacAttributeDefinition,
-	IRoom,
-	AtLeast,
-	IUser,
-	ISubscription,
-} from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser, ISubscription } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 
-import {
-	OnlyCompliantCanBeAddedToRoomError,
-} from '../errors';
-import {
-	buildCompliantConditions,
-	buildNonCompliantConditions,
-	buildRoomNonCompliantConditionsFromSubject,
-} from '../helper';
+import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
+import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
 import { logger } from '../logger';
-
 import type { IPolicyDecisionPoint } from './types';
 
 const pdpLogger = logger.section('LocalPDP');
 
 export class LocalPDP implements IPolicyDecisionPoint {
-
 	private shouldUseCache(decisionCacheTimeout: number, userSub: ISubscription) {
 		// Cases:
 		// 1) Never checked before -> check now

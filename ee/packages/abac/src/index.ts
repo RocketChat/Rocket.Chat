@@ -344,7 +344,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (diffAttributeSets(previous, normalized).added) {
-			await this.onRoomAttributesChanged(room, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
+			await this.onRoomAttributesChanged(room, updated?.abacAttributes ?? normalized);
 		}
 	}
 

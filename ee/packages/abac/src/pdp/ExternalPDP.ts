@@ -12,11 +12,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		throw new Error('ExternalPDP: canAccessObject not implemented');
 	}
 
-	async checkUsernamesMatchAttributes(
-		_usernames: string[],
-		_attributes: IAbacAttributeDefinition[],
-		_object: IRoom,
-	): Promise<void> {
+	async checkUsernamesMatchAttributes(_usernames: string[], _attributes: IAbacAttributeDefinition[], _object: IRoom): Promise<void> {
 		throw new Error('ExternalPDP: checkUsernamesMatchAttributes not implemented');
 	}
 
