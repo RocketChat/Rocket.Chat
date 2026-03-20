@@ -32,6 +32,29 @@ const CommandsGetParamsSchema = {
 
 const isCommandsGetParams = ajvQuery.compile<CommandsGetParams>(CommandsGetParamsSchema);
 
+const commandsListResponseSchema = ajv.compile<{
+	commands: SlashCommand[];
+	appsLoaded: boolean;
+	offset: number;
+	count: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		commands: {
+			type: 'array',
+			items: { $ref: '#/components/schemas/SlashCommand' },
+		},
+		appsLoaded: { type: 'boolean' },
+		offset: { type: 'number' },
+		count: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['commands', 'appsLoaded', 'offset', 'count', 'total', 'success'],
+	additionalProperties: false,
+});
+
 const commandsEndpoints = API.v1.get(
 	'commands.get',
 	{
@@ -86,6 +109,51 @@ const commandsEndpoints = API.v1.get(
 				clientOnly: cmd.clientOnly,
 				providesPreview: cmd.providesPreview,
 			},
+		});
+	},
+)
+.get(
+	'commands.list',
+	{
+		authRequired: true,
+		response: {
+			200: commandsListResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		if (!Apps.self?.isLoaded()) {
+			return API.v1.success({
+				commands: [],
+				appsLoaded: false as const,
+				offset: 0,
+				count: 0,
+				total: 0,
+			});
+		}
+
+		const params = this.queryParams as Record<string, any>;
+		const { offset, count } = await getPaginationItems(params);
+		const { sort, query } = await this.parseJsonQuery();
+
+		let commands = Object.values(slashCommands.commands);
+
+		if (query?.command) {
+			commands = commands.filter((command) => command.command === query.command);
+		}
+
+		const totalCount = commands.length;
+
+		return API.v1.success({
+			commands: processQueryOptionsOnResult(commands, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+			}),
+			appsLoaded: true as const,
+			offset,
+			count: commands.length,
+			total: totalCount,
 		});
 	},
 );
@@ -196,50 +264,6 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 	return result;
 };
 
-API.v1.addRoute(
-	'commands.list',
-	{ authRequired: true },
-	{
-		async get() {
-			if (!Apps.self?.isLoaded()) {
-				return {
-					statusCode: 202, // Accepted - apps are not ready, so the list is incomplete. Retry later
-					body: {
-						commands: [],
-						appsLoaded: false,
-						offset: 0,
-						count: 0,
-						total: 0,
-					},
-				};
-			}
-
-			const params = this.queryParams as Record<string, any>;
-			const { offset, count } = await getPaginationItems(params);
-			const { sort, query } = await this.parseJsonQuery();
-
-			let commands = Object.values(slashCommands.commands);
-
-			if (query?.command) {
-				commands = commands.filter((command) => command.command === query.command);
-			}
-
-			const totalCount = commands.length;
-
-			return API.v1.success({
-				commands: processQueryOptionsOnResult(commands, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-				}),
-				appsLoaded: true,
-				offset,
-				count: commands.length,
-				total: totalCount,
-			});
-		},
-	},
-);
 
 const isCommandsRunProps = ajv.compile<{ command: string; params?: string; roomId: string; tmid?: string; triggerId?: string }>({
 	type: 'object',
