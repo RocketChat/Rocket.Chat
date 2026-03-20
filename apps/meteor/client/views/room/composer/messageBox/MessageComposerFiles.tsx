@@ -2,28 +2,26 @@ import { MessageComposerFileGroup } from '@rocket.chat/ui-composer';
 import { useTranslation } from 'react-i18next';
 
 import MessageComposerFileItem from './MessageComposerFileItem';
-import type { Upload } from '../../../../lib/chats/Upload';
+import { useFileUpload } from '../../body/hooks/useFileUpload';
 
-type MessageComposerFileGroupProps = {
-	uploads?: readonly Upload[];
-	onRemove: (id: Upload['id']) => void;
-	onEdit: (id: Upload['id'], fileName: string) => void;
-	onCancel: (id: Upload['id']) => void;
-	disabled: boolean;
-};
-
-const MessageComposerFiles = ({ uploads, onRemove, onEdit, onCancel, disabled }: MessageComposerFileGroupProps) => {
+const MessageComposerFiles = () => {
 	const { t } = useTranslation();
+	const { uploads, uploadsStore, isProcessingUploads, hasUploads } = useFileUpload();
+
+	if (!uploadsStore || !hasUploads) {
+		return null;
+	}
+
 	return (
 		<MessageComposerFileGroup aria-label={t('Uploads')}>
-			{uploads?.map((upload) => (
+			{uploads.map((upload) => (
 				<MessageComposerFileItem
 					key={upload.id}
 					upload={upload}
-					onRemove={onRemove}
-					onEdit={onEdit}
-					onCancel={onCancel}
-					disabled={disabled}
+					onRemove={uploadsStore.removeUpload}
+					onEdit={uploadsStore.editUploadFileName}
+					onCancel={uploadsStore.cancel}
+					disabled={isProcessingUploads}
 				/>
 			))}
 		</MessageComposerFileGroup>
