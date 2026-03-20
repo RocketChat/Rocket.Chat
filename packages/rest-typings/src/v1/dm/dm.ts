@@ -1,10 +1,6 @@
 import type { ImEndpoints } from './im';
 
 export type DmEndpoints = {
-	'/v1/dm.files': ImEndpoints['/v1/im.files'];
-	'/v1/dm.history': ImEndpoints['/v1/im.history'];
-	'/v1/dm.members': ImEndpoints['/v1/im.members'];
-	'/v1/dm.messages': ImEndpoints['/v1/im.messages'];
 	'/v1/dm.messages.others': ImEndpoints['/v1/im.messages.others'];
 	'/v1/dm.list': ImEndpoints['/v1/im.list'];
 	'/v1/dm.list.everyone': ImEndpoints['/v1/im.list.everyone'];
