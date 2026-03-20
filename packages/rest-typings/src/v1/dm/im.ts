@@ -19,17 +19,6 @@ export type ImEndpoints = {
 	'/v1/im.leave': {
 		POST: (params: DmLeaveProps) => void;
 	};
-	'/v1/im.counters': {
-		GET: (params: { roomId: string; userId?: string }) => {
-			joined: boolean;
-			unreads: number | null;
-			unreadsFrom: string | null;
-			msgs: number | null;
-			members: number | null;
-			latest: string | null;
-			userMentions: number | null;
-		};
-	};
 	'/v1/im.files': {
 		GET: (params: DmFileProps) => PaginatedResult<{
 			files: IUploadWithUser[];
