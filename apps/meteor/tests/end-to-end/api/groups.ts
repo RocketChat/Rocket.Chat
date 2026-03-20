@@ -1951,7 +1951,7 @@ describe('[Groups]', () => {
 				.expect(200);
 			await Promise.all(
 				['p', 'c'].map(async (type: any) => {
-					Promise.all([
+					return Promise.all([
 						deleteRoom({ type, roomId: testRegularGroup._id }),
 						deleteRoom({ type, roomId: testTeamGroupForFailure._id }),
 						deleteRoom({ type, roomId: testTeamGroupForSuccess._id }),

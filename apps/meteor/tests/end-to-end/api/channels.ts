@@ -3061,7 +3061,7 @@ describe('[Channels]', () => {
 		after(async () => {
 			await Promise.all(
 				['p', 'c'].map(async (type: any) => {
-					Promise.all([
+					return Promise.all([
 						deleteRoom({ type, roomId: testChannel._id }),
 						deleteRoom({ type, roomId: testRegularChannel._id }),
 						deleteRoom({ type, roomId: testTeamChannelForFailure._id }),
