@@ -2,7 +2,7 @@ import { Apps } from '@rocket.chat/apps';
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { ajv, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -24,7 +24,7 @@ const CommandsGetParamsSchema = {
 	additionalProperties: false,
 };
 
-const isCommandsGetParams = ajv.compile<CommandsGetParams>(CommandsGetParamsSchema);
+const isCommandsGetParams = ajvQuery.compile<CommandsGetParams>(CommandsGetParamsSchema);
 
 const commandsEndpoints = API.v1.get(
 	'commands.get',

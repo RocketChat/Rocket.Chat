@@ -1,7 +1,8 @@
 import * as fs from 'fs/promises';
+import * as os from 'os';
 import * as path from 'path';
 
-import { TestFixture, Setup, Expect, AsyncTest, SpyOn, Any, AsyncSetupFixture, Teardown } from 'alsatian';
+import { TestFixture, Setup, Expect, AsyncTest, SpyOn, Any, AsyncSetupFixture, Teardown, TeardownFixture } from 'alsatian';
 import type { SuccessObject } from 'jsonrpc-lite';
 
 import { AppStatus } from '../../../src/definition/AppStatus';
@@ -55,6 +56,13 @@ export class DenuRuntimeSubprocessControllerTestFixture {
 	@Teardown
 	public teardown() {
 		this.controller.stopApp();
+	}
+
+	@TeardownFixture
+	public async teardownFixture() {
+		await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch((reason) => {
+			console.warn('Failed to delete temporary Deno runtime symlink', reason);
+		});
 	}
 
 	@AsyncTest('correctly identifies a call to the HTTP accessor')

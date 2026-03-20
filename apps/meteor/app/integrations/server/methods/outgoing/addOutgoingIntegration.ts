@@ -1,6 +1,7 @@
 import type { INewOutgoingIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations } from '@rocket.chat/models';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -59,15 +60,17 @@ export const addOutgoingIntegration = async (userId: string, integration: INewOu
 
 	const integrationData = await validateOutgoingIntegration(integration, userId);
 
-	const { insertedId } = await Integrations.insertOne(integrationData);
+	const { insertedId } = await Integrations.insertOne(removeEmpty(integrationData));
 
-	if (insertedId) {
-		void notifyOnIntegrationChanged({ ...integrationData, _id: insertedId }, 'inserted');
+	const integrationStored = await Integrations.findOne({ _id: insertedId });
+
+	if (!integrationStored) {
+		throw new Error('Error inserting integration');
 	}
 
-	integrationData._id = insertedId;
+	void notifyOnIntegrationChanged({ ...integrationStored, _id: insertedId }, 'inserted');
 
-	return integrationData;
+	return integrationStored as IOutgoingIntegration;
 };
 
 Meteor.methods<ServerMethods>({

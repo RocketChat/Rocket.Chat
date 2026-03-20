@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type ChatSendMessage = {
@@ -123,7 +123,7 @@ const ChatGetDiscussionsSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetDiscussionsProps = ajv.compile<ChatGetDiscussions>(ChatGetDiscussionsSchema);
+export const isChatGetDiscussionsProps = ajvQuery.compile<ChatGetDiscussions>(ChatGetDiscussionsSchema);
 
 type ChatReportMessage = {
 	messageId: IMessage['_id'];
@@ -193,7 +193,7 @@ const ChatGetThreadsListSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetThreadsListProps = ajv.compile<ChatGetThreadsList>(ChatGetThreadsListSchema);
+export const isChatGetThreadsListProps = ajvQuery.compile<ChatGetThreadsList>(ChatGetThreadsListSchema);
 
 type ChatSyncThreadsList = {
 	rid: IRoom['_id'];
@@ -498,7 +498,7 @@ const GetStarredMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetStarredMessagesProps = ajv.compile<GetStarredMessages>(GetStarredMessagesSchema);
+export const isChatGetStarredMessagesProps = ajvQuery.compile<GetStarredMessages>(GetStarredMessagesSchema);
 
 type GetPinnedMessages = {
 	roomId: IRoom['_id'];
@@ -531,7 +531,7 @@ const GetPinnedMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetPinnedMessagesProps = ajv.compile<GetPinnedMessages>(GetPinnedMessagesSchema);
+export const isChatGetPinnedMessagesProps = ajvQuery.compile<GetPinnedMessages>(GetPinnedMessagesSchema);
 
 type GetMentionedMessages = {
 	roomId: IRoom['_id'];
@@ -564,7 +564,7 @@ const GetMentionedMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetMentionedMessagesProps = ajv.compile<GetMentionedMessages>(GetMentionedMessagesSchema);
+export const isChatGetMentionedMessagesProps = ajvQuery.compile<GetMentionedMessages>(GetMentionedMessagesSchema);
 
 type ChatSyncMessages = {
 	roomId: IRoom['_id'];
@@ -607,7 +607,7 @@ const ChatSyncMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatSyncMessagesProps = ajv.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
+export const isChatSyncMessagesProps = ajvQuery.compile<ChatSyncMessages>(ChatSyncMessagesSchema);
 
 type ChatSyncThreadMessages = PaginatedRequest<{
 	tmid: string;
@@ -642,7 +642,7 @@ const ChatSyncThreadMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatSyncThreadMessagesProps = ajv.compile<ChatSyncThreadMessages>(ChatSyncThreadMessagesSchema);
+export const isChatSyncThreadMessagesProps = ajvQuery.compile<ChatSyncThreadMessages>(ChatSyncThreadMessagesSchema);
 
 type ChatGetThreadMessages = PaginatedRequest<{
 	tmid: string;
@@ -672,7 +672,7 @@ const ChatGetThreadMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetThreadMessagesProps = ajv.compile<ChatGetThreadMessages>(ChatGetThreadMessagesSchema);
+export const isChatGetThreadMessagesProps = ajvQuery.compile<ChatGetThreadMessages>(ChatGetThreadMessagesSchema);
 
 type ChatGetDeletedMessages = PaginatedRequest<{
 	roomId: IRoom['_id'];
@@ -708,7 +708,7 @@ const ChatGetDeletedMessagesSchema = {
 	additionalProperties: false,
 };
 
-export const isChatGetDeletedMessagesProps = ajv.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
+export const isChatGetDeletedMessagesProps = ajvQuery.compile<ChatGetDeletedMessages>(ChatGetDeletedMessagesSchema);
 
 type ChatPostMessage =
 	| {
