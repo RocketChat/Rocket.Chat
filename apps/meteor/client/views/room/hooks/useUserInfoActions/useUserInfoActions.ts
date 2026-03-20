@@ -104,7 +104,7 @@ export const useUserInfoActions = ({
 			...(isMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...((isMember || isInvited) && removeUser && { removeUser }),
-			...(isMember && banUser && { banUser }),
+			...((isMember || isInvited) && banUser && { banUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
 		}),
 		[
