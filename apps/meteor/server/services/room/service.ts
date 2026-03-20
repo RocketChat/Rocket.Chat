@@ -18,8 +18,10 @@ import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { performUserBan } from '../../../app/lib/server/functions/banUserFromRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
+import { unbanUserFromRoom } from '../../../app/lib/server/functions/unbanUserFromRoom';
 import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { readThread } from '../../../app/threads/server/functions';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -125,6 +127,14 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async performUserRemoval(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
 		return performUserRemoval(room, user, options);
+	}
+
+	async performUserBan(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
+		return performUserBan(room, user, options);
+	}
+
+	async performUserUnban(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
+		return unbanUserFromRoom(room._id, user, options);
 	}
 
 	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
@@ -319,7 +329,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 						u: { _id: inviter._id, username: inviter.username },
 					});
 				} else {
-					await Message.saveSystemMessage('au', room._id, userToBeAdded.username, userToBeAdded, extraData);
+					console.log('AUUUUUUUEE 2', await Message.saveSystemMessage('au', room._id, userToBeAdded.username, userToBeAdded, extraData));
 				}
 			} else if (room.prid) {
 				await Message.saveSystemMessage('ut', room._id, userToBeAdded.username, userToBeAdded, { ts });
