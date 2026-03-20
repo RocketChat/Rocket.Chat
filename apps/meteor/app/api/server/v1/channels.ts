@@ -432,19 +432,20 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 
-			const mentions = await getUserMentionsByChannel(this.userId, roomId, {
-				sort: sort || { ts: 1 },
-				skip: offset,
-				limit: count,
-			});
-
-			const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
+			const [mentions, total] = await Promise.all([
+				getUserMentionsByChannel(this.userId, roomId, {
+					sort: sort || { ts: 1 },
+					skip: offset,
+					limit: count,
+				}),
+				Messages.countVisibleByMentionAndRoomId(this.user.username, roomId),
+			]);
 
 			return API.v1.success({
 				mentions,
 				count: mentions.length,
 				offset,
-				total: allMentions.length,
+				total,
 			});
 		},
 	},
