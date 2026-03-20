@@ -10852,6 +10852,7 @@ __metadata:
     "@types/jest": "npm:^29.5.5"
     "@types/node-fetch": "npm:~2.6.13"
     "@types/proxy-from-env": "npm:^1.0.4"
+    abort-controller: "npm:^3.0.0"
     eslint: "npm:~9.39.3"
     http-proxy-agent: "npm:^7.0.2"
     https-proxy-agent: "npm:^7.0.6"
