@@ -3,16 +3,16 @@ import { Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import { MessageTypes } from '@rocket.chat/message-types';
 import {
-	VirtualizedScrollbars,
+	ContextualbarClose,
 	ContextualbarContent,
+	ContextualbarDialog,
+	ContextualbarEmptyContent,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarEmptyContent,
-	ContextualbarDialog,
+	VirtualizedScrollbars,
 } from '@rocket.chat/ui-client';
-import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useRoomToolbox, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { ReactElement, ReactNode } from 'react';
 import { useCallback } from 'react';
