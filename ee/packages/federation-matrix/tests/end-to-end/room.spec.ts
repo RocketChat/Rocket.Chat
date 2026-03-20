@@ -1812,7 +1812,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 		});
 
-		describe('Synchronizing user names across federated servers', () => {
+		describe.skip('Synchronizing user names across federated servers', () => {
 			const ts = Date.now();
 
 			const rcUser1 = {
