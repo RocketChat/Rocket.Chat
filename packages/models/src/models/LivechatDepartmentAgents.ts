@@ -195,9 +195,9 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		const onlineUsernames = onlineUsers.map((user) => user.username).filter(isStringValue);
 
 		// get fully booked agents, to ignore them from the query
-		const currentUnavailableAgents = (await Users.getUnavailableAgents(departmentId, extraQuery, isLivechatEnabledWhenAgentIdle)).map(
-			(u) => u.username,
-		);
+		const currentUnavailableAgents = (
+			await Users.getUnavailableAgents(departmentId, extraQuery, isLivechatEnabledWhenAgentIdle, acceptChatsWithNoAgents)
+		).map((u) => u.username);
 
 		const query: Filter<ILivechatDepartmentAgents> = {
 			departmentId,

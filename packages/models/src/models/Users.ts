@@ -1666,6 +1666,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		_departmentId?: string,
 		_extraQuery?: Filter<AvailableAgentsAggregation>,
 		_isLivechatEnabledWhenAgentIdle?: boolean,
+		_acceptChatsWithNoAgent?: boolean,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {
 		return [];
 	}
@@ -1949,7 +1950,9 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	) {
 		// TODO: Create class Agent
 		// fetch all unavailable agents, and exclude them from the selection
-		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery, enabledWhenAgentIdle)).map((u) => u.username);
+		const unavailableAgents = (await this.getUnavailableAgents(undefined, extraQuery, enabledWhenAgentIdle, acceptChatsWithNoAgents)).map(
+			(u) => u.username,
+		);
 		const extraFilters = {
 			...(ignoreAgentId && { _id: { $ne: ignoreAgentId } }),
 			// limit query to remove booked agents
