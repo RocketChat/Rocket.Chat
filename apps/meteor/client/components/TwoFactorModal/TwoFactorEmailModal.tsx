@@ -1,4 +1,4 @@
-import { Box, FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Button } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, Button, InputBox } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -65,7 +65,17 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 						{t('Enter_the_code_we_just_emailed_you')}
 					</FieldLabel>
 					<FieldRow>
-						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_code_here')} />
+						<InputBox
+							id={id}
+							name='email'
+							ref={ref}
+							value={code}
+							onChange={onChange}
+							placeholder={t('Enter_code_here')}
+							inputMode='numeric'
+							autoComplete='one-time-code'
+							type='text'
+						/>
 					</FieldRow>
 					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
 				</Field>
