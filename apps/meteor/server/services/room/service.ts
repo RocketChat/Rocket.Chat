@@ -18,7 +18,9 @@ import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { performUserBan } from '../../../app/lib/server/functions/banUserFromRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
+import { executeUnbanUserFromRoom } from '../../../app/lib/server/functions/executeUnbanUserFromRoom';
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { readThread } from '../../../app/threads/server/functions';
@@ -125,6 +127,14 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 
 	async performUserRemoval(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
 		return performUserRemoval(room, user, options);
+	}
+
+	async performUserBan(room: IRoom, user: IUser, byUser: IUser): Promise<void> {
+		return performUserBan(room, user, byUser);
+	}
+
+	async performUserUnban(room: IRoom, user: IUser, byUser: IUser): Promise<void> {
+		return executeUnbanUserFromRoom(room._id, user, byUser);
 	}
 
 	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {

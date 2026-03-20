@@ -1,12 +1,15 @@
-import { FederationMatrix, MeteorError, Room } from '@rocket.chat/core-services';
-import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
+import { FederationMatrix, Message, MeteorError, Room } from '@rocket.chat/core-services';
+import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated, isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../../../../app/lib/server/lib/notifyListener';
 import { callbacks } from '../../../../server/lib/callbacks';
+import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
+import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/afterUnbanFromRoomCallback';
 import { beforeAddUsersToRoom, beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
 import { beforeChangeRoomRole } from '../../../../server/lib/callbacks/beforeChangeRoomRole';
 import { prepareCreateRoomCallback } from '../../../../server/lib/callbacks/beforeCreateRoomCallback';
@@ -112,6 +115,26 @@ beforeAddUserToRoom.add(
 			return;
 		}
 
+		// Check if user is already in room
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+		if (subscription) {
+			if (!isBannedSubscription(subscription)) {
+				return;
+			}
+			// For federated rooms, unban requires a Matrix kick (leave) followed by a new invite.
+			// Remove the subscription so the unban propagates to Matrix via the afterUnbanFromRoom callback,
+			// then let the flow continue to create a new INVITED subscription via the beforeAddUserToRoom hook.
+			await Subscriptions.removeById(subscription._id);
+
+			await Message.saveSystemMessage('user-unbanned', room._id, user.username, inviter);
+
+			void notifyOnSubscriptionChanged(subscription, 'removed');
+			void notifyOnRoomChangedById(room._id);
+
+			await afterUnbanFromRoomCallback.run({ unbannedUser: user, userWhoUnbanned: inviter }, room);
+		}
+
 		if (!isUserNativeFederated(user) && !(await FederationMatrix.canUserAccessFederation(user))) {
 			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
 		}
@@ -186,6 +209,26 @@ afterRemoveFromRoomCallback.add(
 	},
 	callbacks.priority.HIGH,
 	'federation-matrix-after-remove-from-room',
+);
+
+afterBanFromRoomCallback.add(
+	async (data: { bannedUser: IUser; userWhoBanned: IUser }, room: IRoom): Promise<void> => {
+		if (FederationActions.shouldPerformFederationAction(room)) {
+			await FederationMatrix.banUser(room, data.bannedUser, data.userWhoBanned);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-ban-from-room',
+);
+
+afterUnbanFromRoomCallback.add(
+	async (data: { unbannedUser: IUser; userWhoUnbanned: IUser }, room: IRoom): Promise<void> => {
+		if (FederationActions.shouldPerformFederationAction(room)) {
+			await FederationMatrix.unbanUser(room, data.unbannedUser, data.userWhoUnbanned);
+		}
+	},
+	callbacks.priority.HIGH,
+	'federation-matrix-after-unban-from-room',
 );
 
 callbacks.add(
