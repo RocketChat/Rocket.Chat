@@ -263,7 +263,6 @@ export class CustomOAuth {
 			identity.name = this.getName(identity);
 		}
 
-		console.log('identity', identity);
 		return renameInvalidProperties(identity);
 	}
 
@@ -294,11 +293,9 @@ export class CustomOAuth {
 
 			const response = await request.json();
 
-			logger.debug({ msg: 'fetch email from identity provider response', response });
-
 			return response.find((email) => email.primary === true)?.email;
 		} catch (err) {
-			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
+			const error = new Error(`Failed to fetch emails from ${this.name} at ${this.emailPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
 		}
 	}
