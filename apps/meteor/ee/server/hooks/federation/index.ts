@@ -58,15 +58,12 @@ callbacks.add(
 		}
 
 		try {
-			// TODO: Check if message already exists in the database, if it does, don't send it to the federation to avoid loops
-			// If message is federated, it will save external_message_id like into the message object
-			// if this prop exists here it should not be sent to the federation to avoid loops
 			if (!message.federation?.eventId) {
 				await FederationMatrix.sendMessage(message, room, user);
 			}
 		} catch (error) {
 			// Log the error but don't prevent the message from being sent locally
-			console.error('[sendMessage] Failed to send message to Native Federation:', error);
+			console.error('[federation] [sendMessage] Failed to send message to Native Federation:', error);
 		}
 	},
 	callbacks.priority.HIGH,
@@ -136,6 +133,31 @@ beforeAddUserToRoom.add(
 	},
 	callbacks.priority.MEDIUM,
 	'native-federation-on-before-add-users-to-room',
+);
+
+callbacks.add(
+	'afterJoinRoom',
+	async (user: IUser, room: IRoom): Promise<void> => {
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
+		}
+
+		if (!user.username) {
+			return;
+		}
+
+		if (isUserNativeFederated(user)) {
+			return;
+		}
+
+		try {
+			await FederationMatrix.inviteUsersToRoom(room, [user.username], user);
+		} catch (error) {
+			console.error('[federation] Failed to send Matrix invite for self-join:', error);
+		}
+	},
+	callbacks.priority.LOW,
+	'native-federation-after-self-join-room',
 );
 
 callbacks.add(
