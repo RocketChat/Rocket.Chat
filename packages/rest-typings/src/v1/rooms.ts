@@ -631,7 +631,7 @@ const RoomsBannedUsersSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsBannedUsersProps = ajv.compile<RoomsBannedUsersProps>(RoomsBannedUsersSchema);
+export const isRoomsBannedUsersProps = ajvQuery.compile<RoomsBannedUsersProps>(RoomsBannedUsersSchema);
 
 export type RoomsImagesProps = {
 	roomId: string;
