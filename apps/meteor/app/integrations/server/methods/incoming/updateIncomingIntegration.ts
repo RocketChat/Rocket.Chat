@@ -176,17 +176,17 @@ export const updateIncomingIntegration = async (
 			$set: {
 				enabled: integration.enabled,
 				name: integration.name,
-				avatar: integration.avatar,
-				emoji: integration.emoji,
-				alias: integration.alias,
-				channel: channels,
+				...(integration.avatar && { avatar: integration.avatar }),
+				...(integration.emoji && { emoji: integration.emoji }),
+				...(integration.alias && { alias: integration.alias }),
+				...(channels && { channel: channels }),
 				...('username' in integration && { username: user.username, userId: user._id }),
 				...(isFrozen
 					? {}
 					: {
-							script: integration.script,
+							...(integration.script && { script: integration.script }),
 							scriptEnabled: integration.scriptEnabled,
-							scriptEngine,
+							...(scriptEngine && { scriptEngine }),
 						}),
 				...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,

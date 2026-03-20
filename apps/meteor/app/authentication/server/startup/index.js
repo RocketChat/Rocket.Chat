@@ -2,7 +2,7 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import { User } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML } from '@rocket.chat/string-helpers';
-import { getLoginExpirationInDays } from '@rocket.chat/tools';
+import { getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -217,7 +217,9 @@ const onCreateUserAsync = async function (options, user = {}) {
 	user.status = 'offline';
 
 	user.active = user.active !== undefined ? user.active : !settings.get('Accounts_ManuallyApproveNewUsers');
-	user.inactiveReason = settings.get('Accounts_ManuallyApproveNewUsers') && !user.active ? 'pending_approval' : undefined;
+	if (settings.get('Accounts_ManuallyApproveNewUsers') && !user.active) {
+		user.inactiveReason = 'pending_approval';
+	}
 
 	if (!user.name) {
 		if (options.profile) {
@@ -234,8 +236,9 @@ const onCreateUserAsync = async function (options, user = {}) {
 		const verified = settings.get('Accounts_Verify_Email_For_External_Accounts');
 
 		for (const service of Object.values(user.services)) {
-			if (!user.name) {
-				user.name = service.name || service.username;
+			const suggestedName = service.name || service.username;
+			if (!user.name && suggestedName) {
+				user.name = suggestedName;
 			}
 
 			if (!user.emails && service.email) {
@@ -282,7 +285,7 @@ const onCreateUserAsync = async function (options, user = {}) {
 		throw new Meteor.Error(403, 'User validation failed');
 	}
 
-	return user;
+	return removeEmpty(user);
 };
 
 Accounts.onCreateUser(function (...args) {
@@ -342,11 +345,15 @@ Accounts.insertUserDoc = async function (options, user) {
 		user.roles = [];
 	}
 
+	console.log('<-----user----->', user, options);
+
 	const _id = await insertUserDoc.call(Accounts, options, user);
 
 	user = await Users.findOne({
 		_id,
 	});
+
+	console.log('<-----user----->', user);
 
 	/**
 	 * if settings shows setup wizard to be pending
@@ -371,6 +378,8 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	// Make user's roles to be present on callback
 	user = await Users.findOneById(_id, { projection: { username: 1, type: 1, roles: 1 } });
+
+	console.log('<-----user----->', user);
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false) {
