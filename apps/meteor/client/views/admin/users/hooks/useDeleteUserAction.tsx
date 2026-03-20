@@ -15,6 +15,7 @@ import { useMemo } from 'react';
 
 import type { AdminUserAction } from './useAdminUserInfoActions';
 import { useConfirmOwnerChanges } from './useConfirmOwnerChanges';
+import { useUserId } from '@rocket.chat/ui-contexts';
 
 export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, onReload: () => void): AdminUserAction | undefined => {
 	const t = useTranslation();
@@ -33,7 +34,7 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 
 	const deleteUserQuery = useMemo(() => ({ userId, confirmRelinquish: false }), [userId]);
 	const deleteUserEndpoint = useEndpoint('POST', '/v1/users.delete');
-
+	const currentUserId = useUserId();
 	const deleteUser = (): Promise<void> =>
 		confirmOwnerChanges(
 			async (confirm = false) => {
@@ -64,12 +65,12 @@ export const useDeleteUserAction = (userId: IUser['_id'], onChange: () => void, 
 		);
 	});
 
-	return canDeleteUser
-		? {
-				icon: 'trash',
-				content: t('Delete'),
-				onClick: confirmDeleteUser,
-				variant: 'danger',
-			}
-		: undefined;
+	return canDeleteUser && !!currentUserId && currentUserId !== userId
+	? {
+		icon: 'trash',
+		content: t('Delete'),
+		onClick: confirmDeleteUser,
+		variant: 'danger',
+		}
+	: undefined;
 };
