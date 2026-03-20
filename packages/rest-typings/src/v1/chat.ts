@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, MessageAttachment, IReadReceiptWithUser, MessageUrl } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -145,55 +145,6 @@ const ChatReportMessageSchema = {
 };
 
 export const isChatReportMessageProps = ajv.compile<ChatReportMessage>(ChatReportMessageSchema);
-
-type ChatGetThreadsList = PaginatedRequest<{
-	rid: IRoom['_id'];
-	type?: 'unread' | 'following';
-	text?: string;
-	fields?: string;
-}>;
-
-const ChatGetThreadsListSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		type: {
-			type: 'string',
-			enum: ['following', 'unread'],
-			nullable: true,
-		},
-		text: {
-			type: 'string',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
-};
-
-export const isChatGetThreadsListProps = ajvQuery.compile<ChatGetThreadsList>(ChatGetThreadsListSchema);
 
 type ChatSyncThreadsList = {
 	rid: IRoom['_id'];
@@ -903,12 +854,6 @@ export type ChatEndpoints = {
 	'/v1/chat.getDiscussions': {
 		GET: (params: ChatGetDiscussions) => {
 			messages: IMessage[];
-			total: number;
-		};
-	};
-	'/v1/chat.getThreadsList': {
-		GET: (params: ChatGetThreadsList) => {
-			threads: IThreadMainMessage[];
 			total: number;
 		};
 	};
