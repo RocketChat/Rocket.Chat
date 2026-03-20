@@ -2358,30 +2358,39 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should update group name if user changes name', async () => {
-			await updateSetting('UI_Use_Real_Name', true);
-			await request
-				.post(api('users.update'))
-				.set(credentials)
-				.send({
-					userId: testUser._id,
-					data: {
-						name: `changed.name.${testUser.username}`,
-					},
-				});
+		describe('use real name', () => {
+			before(async () => {
+				await updateSetting('UI_Use_Real_Name', true);
+			});
 
-			// need to wait for the name update finish
-			await sleep(300);
+			after(async () => {
+				await updateSetting('UI_Use_Real_Name', false);
+			});
 
-			await request
-				.get(api('subscriptions.getOne'))
-				.set(credentials)
-				.query({ roomId })
-				.send()
-				.expect((res) => {
-					const { subscription } = res.body;
-					expect(subscription.fname).to.equal(`changed.name.${testUser.username}, ${testUser2.name}`);
-				});
+			it('should update group name if user changes name', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							name: `changed.name.${testUser.username}`,
+						},
+					});
+
+				// need to wait for the name update finish
+				await sleep(300);
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({ roomId })
+					.send()
+					.expect((res) => {
+						const { subscription } = res.body;
+						expect(subscription.fname).to.equal(`changed.name.${testUser.username}, ${testUser2.name}`);
+					});
+			});
 		});
 	});
 
