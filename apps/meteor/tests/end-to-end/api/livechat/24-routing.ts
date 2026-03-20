@@ -215,7 +215,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 	});
 
-	describe.only('Auto-Selection', () => {
+	describe('Auto-Selection', () => {
 		before(async () => {
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 		});
@@ -332,9 +332,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.an('object');
-      expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
+			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 
-      // at this point, testUser reached the limit of chats (2)
+			// at this point, testUser reached the limit of chats (2)
 			const visitor2 = await createVisitor(testDepartment._id);
 			const room2 = await createLivechatRoom(visitor2.token);
 
@@ -351,25 +351,20 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
 		it('should not route to an idle user', async () => {
+			// we set Livechat_maximum_chats_per_agent to 0, meaning testUser can take chats in following tests
+			await updateSetting('Livechat_maximum_chats_per_agent', 0);
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
 			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
 			sockets.push(ws1);
 			await setUserAwayWS(ws1);
-			await setUserStatus(testUser3.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser3.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
-
-			// Agent is available but should be ignored
-			await switchLivechatStatus('available', testUser.credentials);
-
-console.log("pausa")
-			await new Promise((r) => setTimeout(r, 9000));
 
 			const visitor = await createVisitor(testDepartment._id);
-			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
-			expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
 		});
 		it('should route to an idle user', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', true);
@@ -379,9 +374,9 @@ console.log("pausa")
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 		});
 		it('should route to another available agent if contact manager is unavailable and Omnichannel_contact_manager_routing is enabled', async () => {
-			await makeAgentAvailable(testUser.credentials);
 			const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
 			const room = await createLivechatRoom(visitor.token);
 
@@ -556,22 +551,18 @@ console.log("pausa")
 			expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
 		});
 		it('should not route to an idle user', async () => {
+			await makeAgentUnavailable(testUser2.credentials);
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
 			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
 			sockets.push(ws1);
 			await setUserAwayWS(ws1);
-			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
-
-			// Agent is available but should be ignored
-			await switchLivechatStatus('available', testUser.credentials);
 
 			const visitor = await createVisitor(testDepartment._id);
-			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
-			expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
 		});
 		it('should route to agents even if theyre idle when setting is enabled', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', true);
@@ -579,10 +570,6 @@ console.log("pausa")
 			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
 			sockets.push(ws1);
 			await setUserAwayWS(ws1);
-			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
 
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
@@ -590,6 +577,7 @@ console.log("pausa")
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			// Not checking who, just checking it's served
 			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 		});
 		describe('Load_Balancing - Livechat_accept_chats_with_no_agents', async () => {
 			let initialSettingValue: any;
@@ -632,6 +620,7 @@ console.log("pausa")
 					const visitor = await createVisitor(testDepartment._id);
 					const room = await createLivechatRoom(visitor.token);
 					const roomInfo = await getLivechatRoomInfo(room._id);
+
 					expect(roomInfo.servedBy).to.be.an('object');
 					expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
 				});
@@ -719,22 +708,18 @@ console.log("pausa")
 			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 		});
 		it('should not route to an idle user', async () => {
+			await makeAgentUnavailable(testUser2.credentials);
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
 			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
 			sockets.push(ws1);
 			await setUserAwayWS(ws1);
-			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
-
-			// Agent is available but should be ignored
-			await switchLivechatStatus('available', testUser.credentials);
 
 			const visitor = await createVisitor(testDepartment._id);
-			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
-			expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
 		});
 		it('should route to agents even if theyre idle when setting is enabled', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', true);
@@ -742,10 +727,6 @@ console.log("pausa")
 			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
 			sockets.push(ws1);
 			await setUserAwayWS(ws1);
-			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
 
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
@@ -753,6 +734,7 @@ console.log("pausa")
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			// Not checking who, just checking it's served
 			expect(roomInfo.servedBy).to.be.an('object');
+			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 		});
 
 		describe('Load_Rotation - Livechat_accept_chats_with_no_agents', async () => {
@@ -796,6 +778,7 @@ console.log("pausa")
 					const visitor = await createVisitor(testDepartment._id);
 					const room = await createLivechatRoom(visitor.token);
 					const roomInfo = await getLivechatRoomInfo(room._id);
+
 					expect(roomInfo.servedBy).to.be.an('object');
 					expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
 				});
