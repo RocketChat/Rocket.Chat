@@ -74,7 +74,242 @@ exports[`renders Default without crashing 1`] = `
                     <div
                       data-testid="virtuoso-item-list"
                       style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
-                    />
+                    >
+                      <div
+                        data-index="0"
+                        data-item-index="0"
+                        data-known-size="100"
+                        style="overflow-anchor: none;"
+                      >
+                        <li
+                          aria-disabled="false"
+                          aria-selected="false"
+                          class="rcx-option"
+                          style="padding-inline: 24px; cursor: default;"
+                        >
+                          <div
+                            class="rcx-option__wrapper"
+                          >
+                            <div
+                              class="rcx-option__avatar"
+                            >
+                              <figure
+                                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                              >
+                                <img
+                                  alt="Avatar"
+                                  aria-hidden="true"
+                                  class="rcx-avatar__element rcx-avatar__element--x28"
+                                  data-username="john.doe"
+                                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                  title="john.doe"
+                                />
+                              </figure>
+                            </div>
+                            <div
+                              class="rcx-option__column"
+                            >
+                              <svg
+                                class="rcx-status-bullet rcx-status-bullet--loading undefined "
+                                fill="none"
+                                height="12"
+                                title="Loading"
+                                viewBox="0 0 12 12"
+                                width="12"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <circle
+                                  class="rcx-status-bullet rcx-status-bullet--loading"
+                                  cx="6"
+                                  cy="6"
+                                  r="5"
+                                  stroke-dasharray="2 2"
+                                  stroke-width="2"
+                                />
+                              </svg>
+                            </div>
+                            <div
+                              class="rcx-option__content"
+                            >
+                              john.doe
+                               
+                            </div>
+                            <div
+                              class="rcx-box--animated rcx-option__menu-wrapper"
+                            >
+                              <button
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                aria-label="More"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                id="react-aria-:r1:"
+                                title="More"
+                                type="button"
+                              >
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </button>
+                            </div>
+                          </div>
+                        </li>
+                      </div>
+                      <div
+                        data-index="1"
+                        data-item-index="1"
+                        data-known-size="100"
+                        style="overflow-anchor: none;"
+                      >
+                        <li
+                          aria-disabled="false"
+                          aria-selected="false"
+                          class="rcx-option"
+                          style="padding-inline: 24px; cursor: default;"
+                        >
+                          <div
+                            class="rcx-option__wrapper"
+                          >
+                            <div
+                              class="rcx-option__avatar"
+                            >
+                              <figure
+                                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                              >
+                                <img
+                                  alt="Avatar"
+                                  aria-hidden="true"
+                                  class="rcx-avatar__element rcx-avatar__element--x28"
+                                  data-username="jane.smith:matrix.org"
+                                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                  title="jane.smith:matrix.org"
+                                />
+                              </figure>
+                            </div>
+                            <div
+                              class="rcx-option__column"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-1g87xs3"
+                              >
+                                
+                              </i>
+                            </div>
+                            <div
+                              class="rcx-option__content"
+                            >
+                              jane.smith:matrix.org
+                               
+                            </div>
+                            <div
+                              class="rcx-box--animated rcx-option__menu-wrapper"
+                            >
+                              <button
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                aria-label="More"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                id="react-aria-:r3:"
+                                title="More"
+                                type="button"
+                              >
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </button>
+                            </div>
+                          </div>
+                        </li>
+                      </div>
+                      <div
+                        data-index="2"
+                        data-item-index="2"
+                        data-known-size="100"
+                        style="overflow-anchor: none;"
+                      >
+                        <li
+                          aria-disabled="false"
+                          aria-selected="false"
+                          class="rcx-option"
+                          style="padding-inline: 24px; cursor: default;"
+                        >
+                          <div
+                            class="rcx-option__wrapper"
+                          >
+                            <div
+                              class="rcx-option__avatar"
+                            >
+                              <figure
+                                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                              >
+                                <img
+                                  alt="Avatar"
+                                  aria-hidden="true"
+                                  class="rcx-avatar__element rcx-avatar__element--x28"
+                                  data-username="rocket.cat"
+                                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                  title="rocket.cat"
+                                />
+                              </figure>
+                            </div>
+                            <div
+                              class="rcx-option__column"
+                            >
+                              <svg
+                                class="rcx-status-bullet rcx-status-bullet--loading undefined "
+                                fill="none"
+                                height="12"
+                                title="Loading"
+                                viewBox="0 0 12 12"
+                                width="12"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <circle
+                                  class="rcx-status-bullet rcx-status-bullet--loading"
+                                  cx="6"
+                                  cy="6"
+                                  r="5"
+                                  stroke-dasharray="2 2"
+                                  stroke-width="2"
+                                />
+                              </svg>
+                            </div>
+                            <div
+                              class="rcx-option__content"
+                            >
+                              rocket.cat
+                               
+                            </div>
+                            <div
+                              class="rcx-box--animated rcx-option__menu-wrapper"
+                            >
+                              <button
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                aria-label="More"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                id="react-aria-:r5:"
+                                title="More"
+                                type="button"
+                              >
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </button>
+                            </div>
+                          </div>
+                        </li>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -583,7 +818,260 @@ exports[`renders WithRealNames without crashing 1`] = `
                     <div
                       data-testid="virtuoso-item-list"
                       style="box-sizing: border-box; margin-top: 0px; padding-top: 0px; padding-bottom: 0px;"
-                    />
+                    >
+                      <div
+                        data-index="0"
+                        data-item-index="0"
+                        data-known-size="100"
+                        style="overflow-anchor: none;"
+                      >
+                        <li
+                          aria-disabled="false"
+                          aria-selected="false"
+                          class="rcx-option"
+                          style="padding-inline: 24px; cursor: default;"
+                        >
+                          <div
+                            class="rcx-option__wrapper"
+                          >
+                            <div
+                              class="rcx-option__avatar"
+                            >
+                              <figure
+                                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                              >
+                                <img
+                                  alt="Avatar"
+                                  aria-hidden="true"
+                                  class="rcx-avatar__element rcx-avatar__element--x28"
+                                  data-username="john.doe"
+                                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                  title="john.doe"
+                                />
+                              </figure>
+                            </div>
+                            <div
+                              class="rcx-option__column"
+                            >
+                              <svg
+                                class="rcx-status-bullet rcx-status-bullet--loading undefined "
+                                fill="none"
+                                height="12"
+                                title="Loading"
+                                viewBox="0 0 12 12"
+                                width="12"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <circle
+                                  class="rcx-status-bullet rcx-status-bullet--loading"
+                                  cx="6"
+                                  cy="6"
+                                  r="5"
+                                  stroke-dasharray="2 2"
+                                  stroke-width="2"
+                                />
+                              </svg>
+                            </div>
+                            <div
+                              class="rcx-option__content"
+                            >
+                              John Doe
+                               
+                              <div
+                                class="rcx-option__description"
+                              >
+                                @
+                                john.doe
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box--animated rcx-option__menu-wrapper"
+                            >
+                              <button
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                aria-label="More"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                id="react-aria-:rb:"
+                                title="More"
+                                type="button"
+                              >
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </button>
+                            </div>
+                          </div>
+                        </li>
+                      </div>
+                      <div
+                        data-index="1"
+                        data-item-index="1"
+                        data-known-size="100"
+                        style="overflow-anchor: none;"
+                      >
+                        <li
+                          aria-disabled="false"
+                          aria-selected="false"
+                          class="rcx-option"
+                          style="padding-inline: 24px; cursor: default;"
+                        >
+                          <div
+                            class="rcx-option__wrapper"
+                          >
+                            <div
+                              class="rcx-option__avatar"
+                            >
+                              <figure
+                                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                              >
+                                <img
+                                  alt="Avatar"
+                                  aria-hidden="true"
+                                  class="rcx-avatar__element rcx-avatar__element--x28"
+                                  data-username="jane.smith:matrix.org"
+                                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                  title="jane.smith:matrix.org"
+                                />
+                              </figure>
+                            </div>
+                            <div
+                              class="rcx-option__column"
+                            >
+                              <i
+                                aria-hidden="true"
+                                class="rcx-box rcx-box--full rcx-icon--name-globe rcx-icon rcx-css-1g87xs3"
+                              >
+                                
+                              </i>
+                            </div>
+                            <div
+                              class="rcx-option__content"
+                            >
+                              Jane Smith
+                               
+                              <div
+                                class="rcx-option__description"
+                              >
+                                @
+                                jane.smith:matrix.org
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box--animated rcx-option__menu-wrapper"
+                            >
+                              <button
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                aria-label="More"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                id="react-aria-:rd:"
+                                title="More"
+                                type="button"
+                              >
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </button>
+                            </div>
+                          </div>
+                        </li>
+                      </div>
+                      <div
+                        data-index="2"
+                        data-item-index="2"
+                        data-known-size="100"
+                        style="overflow-anchor: none;"
+                      >
+                        <li
+                          aria-disabled="false"
+                          aria-selected="false"
+                          class="rcx-option"
+                          style="padding-inline: 24px; cursor: default;"
+                        >
+                          <div
+                            class="rcx-option__wrapper"
+                          >
+                            <div
+                              class="rcx-option__avatar"
+                            >
+                              <figure
+                                class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                              >
+                                <img
+                                  alt="Avatar"
+                                  aria-hidden="true"
+                                  class="rcx-avatar__element rcx-avatar__element--x28"
+                                  data-username="rocket.cat"
+                                  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="
+                                  title="rocket.cat"
+                                />
+                              </figure>
+                            </div>
+                            <div
+                              class="rcx-option__column"
+                            >
+                              <svg
+                                class="rcx-status-bullet rcx-status-bullet--loading undefined "
+                                fill="none"
+                                height="12"
+                                title="Loading"
+                                viewBox="0 0 12 12"
+                                width="12"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <circle
+                                  class="rcx-status-bullet rcx-status-bullet--loading"
+                                  cx="6"
+                                  cy="6"
+                                  r="5"
+                                  stroke-dasharray="2 2"
+                                  stroke-width="2"
+                                />
+                              </svg>
+                            </div>
+                            <div
+                              class="rcx-option__content"
+                            >
+                              Rocket.Cat
+                               
+                              <div
+                                class="rcx-option__description"
+                              >
+                                @
+                                rocket.cat
+                              </div>
+                            </div>
+                            <div
+                              class="rcx-box--animated rcx-option__menu-wrapper"
+                            >
+                              <button
+                                aria-expanded="false"
+                                aria-haspopup="true"
+                                aria-label="More"
+                                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
+                                id="react-aria-:rf:"
+                                title="More"
+                                type="button"
+                              >
+                                <i
+                                  aria-hidden="true"
+                                  class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-4pvxx3"
+                                >
+                                  
+                                </i>
+                              </button>
+                            </div>
+                          </div>
+                        </li>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
