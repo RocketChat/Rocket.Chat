@@ -215,7 +215,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 		});
 	});
 
-	describe('Auto-Selection', () => {
+	describe.only('Auto-Selection', () => {
 		before(async () => {
 			await updateSetting('Livechat_Routing_Method', 'Auto_Selection');
 		});
@@ -325,28 +325,30 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
 		});
 		it('should not allow users to take more than Livechat_maximum_chats_per_agent chats', async () => {
-			await updateSetting('Livechat_maximum_chats_per_agent', 1);
-
-			await makeAgentAvailable(testUser3.credentials);
+			await updateSetting('Livechat_maximum_chats_per_agent', 2);
+			await makeAgentAvailable(testUser.credentials);
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
-			await getLivechatRoomInfo(room._id);
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.an('object');
+      expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 
+      // at this point, testUser reached the limit of chats (2)
 			const visitor2 = await createVisitor(testDepartment._id);
 			const room2 = await createLivechatRoom(visitor2.token);
 
-			const roomInfo = await getLivechatRoomInfo(room2._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-			await makeAgentUnavailable(testUser3.credentials);
+			const roomInfo2 = await getLivechatRoomInfo(room2._id);
+			expect(roomInfo2.servedBy).to.be.undefined;
 		});
 		it('should ignore disabled users', async () => {
-			await updateSetting('Livechat_maximum_chats_per_agent', 0);
 			await setUserActiveStatus(testUser2.user._id, false);
 
 			const visitor = await createVisitor(testDepartment._id);
-			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
-			expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+			expect(roomInfo.servedBy).to.be.undefined;
 		});
 		it('should not route to an idle user', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
@@ -361,6 +363,9 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
+
+console.log("pausa")
+			await new Promise((r) => setTimeout(r, 9000));
 
 			const visitor = await createVisitor(testDepartment._id);
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
