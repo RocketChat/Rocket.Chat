@@ -7,6 +7,7 @@ import type { CloudConfirmationPollData, CloudRegistrationIntentData, CloudRegis
 import type { ICustomSound } from './ICustomSound';
 import type { ICustomUserStatus } from './ICustomUserStatus';
 import type { IEmailInbox } from './IEmailInbox';
+import type { IEmojiCustom } from './IEmojiCustom';
 import type { IIntegration } from './IIntegration';
 import type { IIntegrationHistory } from './IIntegrationHistory';
 import type { IInvite } from './IInvite';
@@ -31,6 +32,7 @@ export const schemas = typia.json.schemas<
 			| ISubscription
 			| IInvite
 			| ICustomSound
+			| IEmojiCustom
 			| IMessage
 			| IOAuthApps
 			| IPermission

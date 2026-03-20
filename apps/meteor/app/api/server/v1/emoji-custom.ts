@@ -27,7 +27,10 @@ const emojiDeleteBodySchema = ajv.compile({
 const emojiCustomAllResponseSchema = ajv.compile<{ emojis: IEmojiCustom[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
-		emojis: { type: 'array' },
+		emojis: {
+			type: 'array',
+			items: { $ref: '#/components/schemas/IEmojiCustom' },
+		},
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },
