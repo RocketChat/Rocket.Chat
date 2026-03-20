@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelDepartments } from '../page-objects/omnichannel';
+import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { createMonitor } from '../utils/omnichannel/monitors';
@@ -63,16 +64,18 @@ test.describe.serial('OC - Monitor Role', () => {
 				departments: [{ departmentId: departmentA._id }],
 			}),
 		]);
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', true);
 	});
 
 	// Delete all created data
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			...agents.map((agent) => agent.delete()),
 			...departments.map((department) => department.delete()),
 			...units.map((unit) => unit.delete()),
 			monitor.delete(),
 		]);
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {

@@ -2,7 +2,7 @@ import { FederationMatrix, MeteorError, Room } from '@rocket.chat/core-services'
 import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
@@ -287,3 +287,26 @@ prepareCreateRoomCallback.add(async ({ extraData }) => {
 	// only an empty "federation" object
 	(extraData as IRoomNativeFederated).federation = { version: 1 } as any;
 });
+
+callbacks.add(
+	'afterReadMessages',
+	async (room: IRoom, params: { uid: IUser['_id']; lastSeen?: Date; tmid?: IMessage['_id'] }) => {
+		if (!FederationActions.shouldPerformFederationAction(room)) {
+			return;
+		}
+
+		const user = await Users.findOneById(params.uid);
+		if (!user) {
+			return;
+		}
+
+		if (isUserNativeFederated(user)) {
+			// if the user is federated, it means the read receipt came from Matrix, so we don't need to notify Matrix again
+			return;
+		}
+
+		await FederationMatrix.notifyRoomRead({ room, userId: params.uid, threadId: params.tmid });
+	},
+	callbacks.priority.MEDIUM,
+	'federation-read-receipt',
+);

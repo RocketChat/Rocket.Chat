@@ -1,0 +1,26 @@
+diff --git a/dist/binaries/yoga-wasm-base64-esm.js b/dist/binaries/yoga-wasm-base64-esm.js
+index 350866aeaf90bdcc7bea18adfaae1cfcf2e40af6..a973419e8569791396b7a123599fd464b8c0cff4 100644
+--- a/dist/binaries/yoga-wasm-base64-esm.js
++++ b/dist/binaries/yoga-wasm-base64-esm.js
+@@ -1,6 +1,6 @@
+ 
+ var loadYoga = (() => {
+-  var _scriptDir = import.meta.url;
++  var _scriptDir = undefined;
+   
+   return (
+ function(loadYoga) {
+diff --git a/package.json b/package.json
+index 1fb0482c9451d745ca010f9c1ad58f5d0f74a559..8f7705e1325c046fd671ddc163bc34b74d4389cf 100644
+--- a/package.json
++++ b/package.json
+@@ -14,7 +14,8 @@
+   "types": "./dist/src/index.d.ts",
+   "exports": {
+     ".": "./dist/src/index.js",
+-    "./load": "./dist/src/load.js"
++    "./load": "./dist/src/load.js",
++    "./dist/src/load.js": "./dist/src/load.js"
+   },
+   "files": [
+     "dist/binaries/**",
