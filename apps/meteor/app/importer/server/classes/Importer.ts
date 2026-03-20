@@ -372,8 +372,12 @@ export class Importer {
 		}
 
 		await Imports.update({ _id: this.importRecord._id }, { $set: fields });
-		// #TODO: Remove need for the typecast
-		this.importRecord = (await Imports.findOne(this.importRecord._id)) as IImport;
+
+		const importRecord = await Imports.findOne(this.importRecord._id);
+		if (!importRecord) {
+			throw new Error('error-import-record-not-found');
+		}
+		this.importRecord = importRecord;
 
 		return this.importRecord;
 	}
