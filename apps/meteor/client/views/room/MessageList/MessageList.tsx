@@ -1,29 +1,40 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { VirtualScrollbars } from '@rocket.chat/ui-client';
-import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import { useSearchParameter, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
+import type { ScrollToOptions } from '@tanstack/react-virtual';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import type { ComponentProps, MutableRefObject } from 'react';
+import type { ComponentProps, MutableRefObject, RefObject } from 'react';
+import { useEffect, useImperativeHandle, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VirtualizedMessageList } from './VirtualizedMessageList';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
+import RoomForeword from '../body/RoomForeword/RoomForeword';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
 import MessageListProvider from './providers/MessageListProvider';
-import RoomForeword from '../body/RoomForeword/RoomForeword';
+import { setHighlightMessage } from './providers/messageHighlightSubscription';
+
+export type VirtualizerHandle = {
+	scrollToIndex: (index: number, opts?: ScrollToOptions) => void;
+	scrollToOffset: (offset: number, opts?: ScrollToOptions) => void;
+	scrollToEnd: (opts?: ScrollToOptions) => void;
+	getTotalSize: () => number;
+};
 
 type MessageListProps = {
 	rid: IRoom['_id'];
 	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
 	scrollContainerRef?: MutableRefObject<HTMLElement | null>;
+	virtualizerRef?: RefObject<VirtualizerHandle | null>;
 	isLoadingMoreMessages: boolean;
 	canPreview: boolean;
 	hasMorePreviousMessages: boolean;
 	hasMoreNextMessages: boolean;
-	user: IUser;
+	user: IUser | null;
 	room: IRoom;
 	retentionPolicy: RetentionPolicy;
 	innerRef: MutableRefObject<HTMLElement | null>;
@@ -36,6 +47,7 @@ export const MessageList = function MessageList({
 	rid,
 	messageListRef,
 	scrollContainerRef,
+	virtualizerRef,
 	isLoadingMoreMessages,
 	canPreview,
 	hasMorePreviousMessages,
@@ -55,15 +67,45 @@ export const MessageList = function MessageList({
 	const overscan = Math.min(OVERSCAN, Math.max(0, Math.floor(DEFAULT_MAX_RENDERED / 2) - 2));
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 
-	console.log('scrollContainerRef', messages?.length);
-
 	const virtualizer = useVirtualizer<HTMLElement, Element>({
 		count: messages?.length ?? 0,
 		getScrollElement: () => scrollContainerRef?.current ?? null,
 		estimateSize: () => ESTIMATE_SIZE,
 		overscan,
 		getItemKey: (index: number) => messages[index]?._id ?? index,
+		initialOffset: Infinity,
 	});
+
+	useImperativeHandle(
+		virtualizerRef,
+		() => ({
+			scrollToIndex: (...args: Parameters<typeof virtualizer.scrollToIndex>) => virtualizer.scrollToIndex(...args),
+			scrollToOffset: (...args: Parameters<typeof virtualizer.scrollToOffset>) => virtualizer.scrollToOffset(...args),
+			scrollToEnd: (opts) => virtualizer.scrollToIndex(virtualizer.options.count - 1, { align: 'end', ...opts }),
+			getTotalSize: () => virtualizer.getTotalSize(),
+		}),
+		[virtualizer],
+	);
+
+	const jumpToMessageParam = useSearchParameter('msg');
+	const jumpedToMsgRef = useRef<string | null>(null);
+
+	useEffect(() => {
+		if (!jumpToMessageParam) {
+			jumpedToMsgRef.current = null;
+			return;
+		}
+		if (jumpedToMsgRef.current === jumpToMessageParam) {
+			return;
+		}
+		const index = messages.findIndex((m) => m._id === jumpToMessageParam);
+		if (index === -1) {
+			return;
+		}
+		virtualizer.scrollToIndex(index, { align: 'center' });
+		setHighlightMessage(jumpToMessageParam);
+		jumpedToMsgRef.current = jumpToMessageParam;
+	}, [jumpToMessageParam, messages, virtualizer]);
 
 	const totalSize = virtualizer.getTotalSize();
 	const virtualItems = virtualizer.getVirtualItems();

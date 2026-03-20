@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
-import { CustomScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
@@ -8,6 +8,7 @@ import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
+import type { VirtualizerHandle } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
@@ -78,7 +79,10 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
+	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
+
+	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } =
+		useJumpToMessageImperative(virtualizerRef);
 
 	useLoadSurroundingMessages();
 
@@ -99,11 +103,14 @@ const RoomBody = (): ReactElement => {
 		sendToBottomIfNecessary,
 		isAtBottom,
 		jumpToRef: jumpToRefIsAtBottom,
-	} = useListIsAtBottom();
+	} = useListIsAtBottom(virtualizerRef);
 
 	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
 
-	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
+	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(
+		room._id,
+		virtualizerRef,
+	);
 
 	const jumpToRef = useMergedRefsV2(jumpToRefIsAtBottom, jumpToRefGetMore, jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
 
@@ -132,6 +139,7 @@ const RoomBody = (): ReactElement => {
 		});
 
 	const innerRef = useMergedRefsV2(
+		scrollContainerRefCallback,
 		dateScrollInnerRef,
 		restoreScrollPositionInnerRef,
 		isAtBottomInnerRef,
@@ -141,7 +149,6 @@ const RoomBody = (): ReactElement => {
 		selectAndScrollRef,
 		messageListRef,
 		jumpToRefGetMoreImperativeInnerRef,
-		scrollContainerRefCallback,
 	);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
@@ -254,6 +261,7 @@ const RoomBody = (): ReactElement => {
 											rid={room._id}
 											messageListRef={jumpToRef}
 											scrollContainerRef={scrollContainerRef}
+											virtualizerRef={virtualizerRef}
 											isLoadingMoreMessages={isLoadingMoreMessages}
 											canPreview={canPreview}
 											hasMorePreviousMessages={hasMorePreviousMessages}

@@ -1,10 +1,12 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { useMergedRefs, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
+import type { RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import { useMessageListJumpToMessageParam, useMessageListRef } from '../../../../components/message/list/MessageListContext';
 import { setRef } from '../../composer/hooks/useMessageComposerMergedRefs';
+import type { VirtualizerHandle } from '../MessageList';
 import { setHighlightMessage, clearHighlightMessage } from '../providers/messageHighlightSubscription';
 
 /**
@@ -13,20 +15,22 @@ import { setHighlightMessage, clearHighlightMessage } from '../providers/message
  * so we need to check if the scrollbars are initialized and if there is any message to be highlighted
  */
 
-export const useJumpToMessageImperative = () => {
+export const useJumpToMessageImperative = (virtualizerRef?: RefObject<VirtualizerHandle | null>) => {
 	const jumpToRef = useRef<HTMLDivElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	const jumpToRefAction = useCallback(() => {
+		if (virtualizerRef?.current) {
+			return;
+		}
 		if (!jumpToRef.current || !containerRef.current) {
 			return;
 		}
-
 		// calculate the scroll position to center the message
 		// avoiding scrollIntoView because it will can scroll parent elements
 		containerRef.current.scrollTop =
 			jumpToRef.current.offsetTop - containerRef.current.clientHeight / 2 + jumpToRef.current.offsetHeight / 2;
-	}, []);
+	}, [virtualizerRef]);
 
 	return {
 		jumpToRef: useMergedRefs(jumpToRef, jumpToRefAction),

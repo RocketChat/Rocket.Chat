@@ -1,11 +1,12 @@
 import { useMergedRefs, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
-import type { MutableRefObject } from 'react';
+import type { MutableRefObject, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import type { VirtualizerHandle } from '../../MessageList/MessageList';
 
-export const useListIsAtBottom = () => {
+export const useListIsAtBottom = (virtualizerRef?: RefObject<VirtualizerHandle | null>) => {
 	const atBottomRef = useRef(true);
 
 	const jumpToRef = useRef<HTMLElement>(undefined);
@@ -13,8 +14,12 @@ export const useListIsAtBottom = () => {
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const sendToBottom = useCallback(() => {
+		if (virtualizerRef?.current) {
+			virtualizerRef.current.scrollToEnd();
+			return;
+		}
 		innerBoxRef.current?.scrollTo({ left: 30, top: innerBoxRef.current?.scrollHeight });
-	}, []);
+	}, [virtualizerRef]);
 
 	const sendToBottomIfNecessary = useCallback(() => {
 		if (jumpToRef.current) {
@@ -41,16 +46,21 @@ export const useListIsAtBottom = () => {
 					return;
 				}
 
-				const observer = new ResizeObserver(() => {
-					if (jumpToRef.current) {
-						atBottomRef.current = false;
-					}
-					if (atBottomRef.current === true) {
-						node.scrollTo({ left: 30, top: node.scrollHeight });
-					}
-				});
+				// const observer = new ResizeObserver(() => {
+				// 	if (jumpToRef.current) {
+				// 		atBottomRef.current = false;
+				// 	}
 
-				observer.observe(messageList);
+				// 	if (atBottomRef.current === true) {
+				// 		if (virtualizerRef?.current) {
+				// 			virtualizerRef.current.scrollToEnd();
+				// 		} else {
+				// 			node.scrollTo({ left: 30, top: node.scrollHeight });
+				// 		}
+				// 	}
+				// });
+
+				// observer.observe(messageList);
 
 				const handleScroll = withThrottling({ wait: 100 })(() => {
 					atBottomRef.current = isAtBottom(100);
@@ -61,11 +71,11 @@ export const useListIsAtBottom = () => {
 				});
 
 				return () => {
-					observer.disconnect();
+					// observer.disconnect();
 					node.removeEventListener('scroll', handleScroll);
 				};
 			},
-			[isAtBottom],
+			[isAtBottom, virtualizerRef],
 		),
 	);
 
