@@ -102,9 +102,9 @@ export const useUserInfoActions = ({
 			...(isMember && openModerationConsole && { openModerationConsole }),
 			...(isMember && ignoreUser && { ignoreUser }),
 			...(isMember && muteUser && { muteUser }),
-			...(isMember && banUser && { banUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...((isMember || isInvited) && removeUser && { removeUser }),
+			...(isMember && banUser && { banUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
 		}),
 		[
