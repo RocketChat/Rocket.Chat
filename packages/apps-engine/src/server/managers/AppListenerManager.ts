@@ -357,16 +357,13 @@ export class AppListenerManager {
 			case AppInterface.IPreMessageSentModify:
 				return this.executePreMessageSentModify(data as IMessage);
 			case AppInterface.IPostMessageSent:
-				this.executePostMessageSent(data as IMessage);
-				return;
+				return this.executePostMessageSent(data as IMessage);
 			case AppInterface.IPostSystemMessageSent:
-				this.executePostSystemMessageSent(data as IMessage);
-				return;
+				return this.executePostSystemMessageSent(data as IMessage);
 			case AppInterface.IPreMessageDeletePrevent:
 				return this.executePreMessageDeletePrevent(data as IMessage);
 			case AppInterface.IPostMessageDeleted:
-				this.executePostMessageDelete(data as IMessageDeleteContext);
-				return;
+				return this.executePostMessageDelete(data as IMessageDeleteContext);
 			case AppInterface.IPreMessageUpdatedPrevent:
 				return this.executePreMessageUpdatedPrevent(data as IMessage);
 			case AppInterface.IPreMessageUpdatedExtend:
@@ -374,8 +371,7 @@ export class AppListenerManager {
 			case AppInterface.IPreMessageUpdatedModify:
 				return this.executePreMessageUpdatedModify(data as IMessage);
 			case AppInterface.IPostMessageUpdated:
-				this.executePostMessageUpdated(data as IMessage);
-				return;
+				return this.executePostMessageUpdated(data as IMessage);
 			case AppInterface.IPostMessageReacted:
 				return this.executePostMessageReacted(data as IMessageReactionContext);
 			case AppInterface.IPostMessageFollowed:
@@ -394,13 +390,11 @@ export class AppListenerManager {
 			case AppInterface.IPreRoomCreateModify:
 				return this.executePreRoomCreateModify(data as IRoom);
 			case AppInterface.IPostRoomCreate:
-				this.executePostRoomCreate(data as IRoom);
-				return;
+				return this.executePostRoomCreate(data as IRoom);
 			case AppInterface.IPreRoomDeletePrevent:
 				return this.executePreRoomDeletePrevent(data as IRoom);
 			case AppInterface.IPostRoomDeleted:
-				this.executePostRoomDeleted(data as IRoom);
-				return;
+				return this.executePostRoomDeleted(data as IRoom);
 			case AppInterface.IPreRoomUserJoined:
 				return this.executePreRoomUserJoined(data as IRoomUserJoinedContext);
 			case AppInterface.IPostRoomUserJoined:
@@ -411,11 +405,9 @@ export class AppListenerManager {
 				return this.executePostRoomUserLeave(data as IRoomUserLeaveContext);
 			// External Components
 			case AppInterface.IPostExternalComponentOpened:
-				this.executePostExternalComponentOpened(data as IExternalComponent);
-				return;
+				return this.executePostExternalComponentOpened(data as IExternalComponent);
 			case AppInterface.IPostExternalComponentClosed:
-				this.executePostExternalComponentClosed(data as IExternalComponent);
-				return;
+				return this.executePostExternalComponentClosed(data as IExternalComponent);
 			case AppInterface.IUIKitInteractionHandler:
 				return this.executeUIKitInteraction(data as UIKitIncomingInteraction);
 			case AppInterface.IUIKitLivechatInteractionHandler:
