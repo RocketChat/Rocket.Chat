@@ -951,7 +951,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	// when a user changes their username, we need to send a new event for every room the user is a member
 	async updateUserName(user: IUser): Promise<void> {
-		// const oldMatrixUserId = user.federation.mui;
 		const matrixUserId = userIdSchema.parse(`@${user.username}:${this.serverName}`);
 
 		const subs = await Subscriptions.findJoinedByUserId<Pick<ISubscription, 'rid'>>(user._id, { projection: { rid: 1 } }).toArray();
@@ -960,8 +959,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			subs.map(({ rid }) => rid),
 			{ projection: { _id: 1, federation: 1, federated: 1 } },
 		).toArray();
-
-		// console.log('roomsUserIsMemberOf ->', roomsUserIsMemberOf);
 
 		await Promise.all(
 			rooms.map(async ({ federation }) => {
