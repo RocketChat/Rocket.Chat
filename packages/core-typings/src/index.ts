@@ -36,6 +36,7 @@ export type * from './IUserDataFile';
 export type * from './IUserSession';
 export type * from './IUserStatus';
 export * from './IUser';
+export type * from './IMeApiUser';
 
 export type * from './ee/IAuditLog';
 export type * from './ee/IWorkspaceCredentials';
