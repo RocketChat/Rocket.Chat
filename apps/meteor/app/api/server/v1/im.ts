@@ -433,6 +433,312 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		});
 	};
 
+const dmFilesResponseSchema = ajv.compile<{ files: object[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		files: { type: 'array', items: { type: 'object' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['files', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const dmFilesEndpointsProps = {
+	authRequired: true,
+	query: isDmFileProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+		200: dmFilesResponseSchema,
+	},
+};
+
+const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmFilesEndpointsProps, Path> =>
+	async function action() {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
+		const { typeGroup, name, roomId, username, onlyConfirmed } = this.queryParams;
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const { room } = await findDirectMessageRoom(roomId ? { roomId } : { username }, this.userId);
+
+		const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
+		if (!canAccess) {
+			return API.v1.forbidden('error-not-allowed');
+		}
+
+		const filter = {
+			...query,
+			rid: room._id,
+			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+			...(typeGroup ? { typeGroup } : {}),
+			...(onlyConfirmed && { expiresAt: { $exists: false } }),
+		};
+
+		const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(filter, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			files: await addUserToFileObj(files),
+			count: files.length,
+			offset,
+			total,
+		});
+	};
+
+const dmMembersResponseSchema = ajv.compile<{ members: object[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		members: { type: 'array', items: { type: 'object' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['members', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const dmMembersEndpointsProps = {
+	authRequired: true,
+	query: isDmMemberProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+		200: dmMembersResponseSchema,
+	},
+};
+
+const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof dmMembersEndpointsProps, Path> =>
+	async function action() {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
+		const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
+
+		const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
+		if (!canAccess) {
+			return API.v1.forbidden('error-not-allowed');
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+
+		check(
+			this.queryParams,
+			Match.ObjectIncluding({
+				status: Match.Maybe([String]),
+				filter: Match.Maybe(String),
+			}),
+		);
+		const { status, filter } = this.queryParams;
+
+		const extraQuery: Record<string, unknown> = {
+			_id: { $in: room.uids },
+			...(status && { status: { $in: status } }),
+		};
+
+		const options: FindOptions<IUser> = {
+			projection: {
+				_id: 1,
+				username: 1,
+				name: 1,
+				status: 1,
+				statusText: 1,
+				utcOffset: 1,
+				federated: 1,
+				freeSwitchExtension: 1,
+			},
+			skip: offset,
+			limit: count,
+			sort: {
+				_updatedAt: -1,
+				username: sort?.username ? sort.username : 1,
+			},
+		};
+
+		const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
+
+		const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter ?? '', [], options, searchFields, [extraQuery]);
+
+		const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		// find subscriptions of those users
+		const subs = await Subscriptions.findByRoomIdAndUserIds(
+			room._id,
+			members.map((member) => member._id),
+			{ projection: { u: 1, status: 1, ts: 1, roles: 1 } },
+		).toArray();
+
+		const membersWithSubscriptionInfo = members.map((member) => {
+			const sub = subs.find((sub) => sub.u._id === member._id);
+
+			const { u: _u, ...subscription } = sub || {};
+
+			return {
+				...member,
+				subscription,
+			};
+		});
+
+		return API.v1.success({
+			members: membersWithSubscriptionInfo,
+			count: members.length,
+			offset,
+			total,
+		});
+	};
+
+const dmMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const dmMessagesEndpointsProps = {
+	authRequired: true,
+	query: isDmMessagesProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+		200: dmMessagesResponseSchema,
+	},
+};
+
+const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof dmMessagesEndpointsProps, Path> =>
+	async function action() {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
+		const { roomId, username, mentionIds, starredIds, pinned } = this.queryParams as {
+			roomId?: string;
+			username?: string;
+			mentionIds?: string;
+			starredIds?: string;
+			pinned?: string;
+		};
+
+		const { room } = await findDirectMessageRoom({ ...(roomId ? { roomId } : { username }) }, this.userId);
+
+		const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
+		if (!canAccess) {
+			return API.v1.forbidden('error-not-allowed');
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const parseIds = (ids: string | undefined, field: string) =>
+			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
+
+		const ourQuery = {
+			rid: room._id,
+			...query,
+			...parseIds(mentionIds, 'mentions._id'),
+			...parseIds(starredIds, 'starred._id'),
+			...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+			_hidden: { $ne: true },
+		};
+		const sortObj = sort || { ts: -1 };
+
+		const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
+			sort: sortObj,
+			skip: offset,
+			limit: count,
+			...(fields && { projection: fields }),
+		});
+
+		const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			messages: await normalizeMessagesForUser(messages, this.userId),
+			count: messages.length,
+			offset,
+			total,
+		});
+	};
+
+const dmHistoryResponseSchema = ajv.compile<Record<string, unknown>>({
+	type: 'object',
+	properties: {
+		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'success'],
+	additionalProperties: true,
+});
+
+const dmHistoryEndpointsProps = {
+	authRequired: true,
+	query: isDmHistoryProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+		200: dmHistoryResponseSchema,
+	},
+};
+
+const dmHistoryAction = <Path extends string>(_path: Path): TypedAction<typeof dmHistoryEndpointsProps, Path> =>
+	async function action() {
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
+		const { offset = 0, count = 20 } = await getPaginationItems(this.queryParams);
+		const { roomId, latest, oldest, inclusive, unreads, showThreadMessages } = this.queryParams;
+
+		if (!roomId) {
+			throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" is required');
+		}
+		const { room } = await findDirectMessageRoom({ roomId }, this.userId);
+
+		const objectParams = {
+			rid: room._id,
+			fromUserId: this.userId,
+			latest: latest ? new Date(latest) : new Date(),
+			oldest: oldest ? new Date(oldest) : undefined,
+			inclusive: inclusive === 'true',
+			offset,
+			count,
+			unreads: unreads === 'true',
+			showThreadMessages: showThreadMessages === 'true',
+		};
+
+		const result = await getChannelHistory(objectParams);
+
+		if (!result) {
+			return API.v1.forbidden('error-not-allowed');
+		}
+
+		return API.v1.success(result as Record<string, unknown>);
+	};
+
 const dmCreateResponseSchema = ajv.compile<{ room: IRoom & { rid: string } }>({
 	type: 'object',
 	properties: {
@@ -501,227 +807,15 @@ const dmEndpoints = API.v1
 	.post('dm.setTopic', dmSetTopicEndpointsProps, dmSetTopicAction('dm.setTopic'))
 	.post('im.setTopic', dmSetTopicEndpointsProps, dmSetTopicAction('im.setTopic'))
 	.get('dm.counters', dmCountersEndpointsProps, dmCountersAction('dm.counters'))
-	.get('im.counters', dmCountersEndpointsProps, dmCountersAction('im.counters'));
-
-API.v1.addRoute(
-	['dm.files', 'im.files'],
-	{
-		authRequired: true,
-		validateParams: isDmFileProps,
-	},
-	{
-		async get() {
-			const { typeGroup, name, roomId, username, onlyConfirmed } = this.queryParams;
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const { room } = await findDirectMessageRoom(roomId ? { roomId } : { username }, this.userId);
-
-			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
-			if (!canAccess) {
-				return API.v1.forbidden();
-			}
-
-			const filter = {
-				...query,
-				rid: room._id,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
-				...(typeGroup ? { typeGroup } : {}),
-				...(onlyConfirmed && { expiresAt: { $exists: false } }),
-			};
-
-			const { cursor, totalCount } = Uploads.findPaginatedWithoutThumbs(filter, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				files: await addUserToFileObj(files),
-				count: files.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	['dm.history', 'im.history'],
-	{ authRequired: true, validateParams: isDmHistoryProps },
-	{
-		async get() {
-			const { offset = 0, count = 20 } = await getPaginationItems(this.queryParams);
-			const { roomId, latest, oldest, inclusive, unreads, showThreadMessages } = this.queryParams;
-
-			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" is required');
-			}
-			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
-
-			const objectParams = {
-				rid: room._id,
-				fromUserId: this.userId,
-				latest: latest ? new Date(latest) : new Date(),
-				oldest: oldest ? new Date(oldest) : undefined,
-				inclusive: inclusive === 'true',
-				offset,
-				count,
-				unreads: unreads === 'true',
-				showThreadMessages: showThreadMessages === 'true',
-			};
-
-			const result = await getChannelHistory(objectParams);
-
-			if (!result) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success(result);
-		},
-	},
-);
-
-API.v1.addRoute(
-	['dm.members', 'im.members'],
-	{
-		authRequired: true,
-		validateParams: isDmMemberProps,
-	},
-	{
-		async get() {
-			const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
-
-			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
-			if (!canAccess) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
-			const { status, filter } = this.queryParams;
-
-			const extraQuery = {
-				_id: { $in: room.uids },
-				...(status && { status: { $in: status } }),
-			};
-
-			const options: FindOptions<IUser> = {
-				projection: {
-					_id: 1,
-					username: 1,
-					name: 1,
-					status: 1,
-					statusText: 1,
-					utcOffset: 1,
-					federated: 1,
-					freeSwitchExtension: 1,
-				},
-				skip: offset,
-				limit: count,
-				sort: {
-					_updatedAt: -1,
-					username: sort?.username ? sort.username : 1,
-				},
-			};
-
-			const searchFields = settings.get<string>('Accounts_SearchFields').trim().split(',');
-
-			const { cursor, totalCount } = Users.findPaginatedByActiveUsersExcept(filter, [], options, searchFields, [extraQuery]);
-
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			// find subscriptions of those users
-			const subs = await Subscriptions.findByRoomIdAndUserIds(
-				room._id,
-				members.map((member) => member._id),
-				{ projection: { u: 1, status: 1, ts: 1, roles: 1 } },
-			).toArray();
-
-			const membersWithSubscriptionInfo = members.map((member) => {
-				const sub = subs.find((sub) => sub.u._id === member._id);
-
-				const { u: _u, ...subscription } = sub || {};
-
-				return {
-					...member,
-					subscription,
-				};
-			});
-
-			return API.v1.success({
-				members: membersWithSubscriptionInfo,
-				count: members.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	['dm.messages', 'im.messages'],
-	{
-		authRequired: true,
-		validateParams: isDmMessagesProps,
-	},
-	{
-		async get() {
-			const { roomId, username, mentionIds, starredIds, pinned } = this.queryParams;
-
-			const { room } = await findDirectMessageRoom({ ...(roomId ? { roomId } : { username }) }, this.userId);
-
-			const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
-			if (!canAccess) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const parseIds = (ids: string | undefined, field: string) =>
-				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
-
-			const ourQuery = {
-				rid: room._id,
-				...query,
-				...parseIds(mentionIds, 'mentions._id'),
-				...parseIds(starredIds, 'starred._id'),
-				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
-				_hidden: { $ne: true },
-			};
-			const sortObj = sort || { ts: -1 };
-
-			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
-				sort: sortObj,
-				skip: offset,
-				limit: count,
-				...(fields && { projection: fields }),
-			});
-
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(messages, this.userId),
-				count: messages.length,
-				offset,
-				total,
-			});
-		},
-	},
-);
+	.get('im.counters', dmCountersEndpointsProps, dmCountersAction('im.counters'))
+	.get('dm.files', dmFilesEndpointsProps, dmFilesAction('dm.files'))
+	.get('im.files', dmFilesEndpointsProps, dmFilesAction('im.files'))
+	.get('dm.members', dmMembersEndpointsProps, dmMembersAction('dm.members'))
+	.get('im.members', dmMembersEndpointsProps, dmMembersAction('im.members'))
+	.get('dm.messages', dmMessagesEndpointsProps, dmMessagesAction('dm.messages'))
+	.get('im.messages', dmMessagesEndpointsProps, dmMessagesAction('im.messages'))
+	.get('dm.history', dmHistoryEndpointsProps, dmHistoryAction('dm.history'))
+	.get('im.history', dmHistoryEndpointsProps, dmHistoryAction('im.history'));
 
 API.v1.addRoute(
 	['dm.messages.others', 'im.messages.others'],
