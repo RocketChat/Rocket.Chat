@@ -5,6 +5,7 @@ import { federationSDK, type HomeserverEventSignatures, type PduForType } from '
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import debounce from 'lodash.debounce';
+import mem from 'mem';
 
 import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
 import { getUsernameServername } from '../helpers/getUsernameServername';
@@ -197,22 +198,10 @@ async function handleInvite({
 	}
 }
 
-const updateUserNameDebouncedMap = new Map<string, (newName: string) => void>();
+const getUpdateUserNameDebounced = mem((userId: string) => debounce((name: string) => Users.setName(userId, name), 2000));
 
 function updateUserNameDebounced(userId: string, newName: string): void {
-	if (!updateUserNameDebouncedMap.has(userId)) {
-		updateUserNameDebouncedMap.set(
-			userId,
-			debounce(async (name: string) => {
-				try {
-					await Users.setName(userId, name);
-				} finally {
-					updateUserNameDebouncedMap.delete(userId);
-				}
-			}, 2000),
-		);
-	}
-	updateUserNameDebouncedMap.get(userId)?.(newName);
+	void getUpdateUserNameDebounced(userId)(newName);
 }
 
 async function handleJoin({

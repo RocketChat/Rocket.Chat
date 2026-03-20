@@ -9367,6 +9367,7 @@ __metadata:
     lodash.debounce: "npm:^4.0.8"
     marked: "npm:^16.1.2"
     matrix-js-sdk: "npm:^38.4.0"
+    mem: "npm:^8.1.1"
     mongodb: "npm:6.16.0"
     pino: "npm:10.3.1"
     pino-pretty: "npm:13.1.3"
