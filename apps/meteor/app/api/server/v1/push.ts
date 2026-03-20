@@ -3,6 +3,7 @@ import type { IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
 	ajv,
+	isPushGetProps,
 	validateNotFoundErrorResponse,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -10,7 +11,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { executePushTest } from '../../../../server/lib/pushConfig';
@@ -232,49 +232,6 @@ const pushGetResponseSchema = ajv.compile<{ data: Record<string, unknown> }>({
 	additionalProperties: false,
 });
 
-API.v1.get(
-	'push.get',
-	{
-		authRequired: true,
-		response: {
-			200: pushGetResponseSchema,
-			401: validateUnauthorizedErrorResponse,
-		},
-	},
-	async function action() {
-		const params = this.queryParams as Record<string, string>;
-		check(
-			params,
-			Match.ObjectIncluding({
-				id: String,
-			}),
-		);
-
-		const receiver = await Users.findOneById(this.userId);
-		if (!receiver) {
-			throw new Error('error-user-not-found');
-		}
-
-		const message = await Messages.findOneById(params.id);
-		if (!message) {
-			throw new Error('error-message-not-found');
-		}
-
-		const room = await Rooms.findOneById(message.rid);
-		if (!room) {
-			throw new Error('error-room-not-found');
-		}
-
-		if (!(await canAccessRoomAsync(room, receiver))) {
-			throw new Error('error-not-allowed');
-		}
-
-		const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
-
-		return API.v1.success({ data });
-	},
-);
-
 const pushInfoResponseSchema = ajv.compile<{ pushGatewayEnabled: boolean; defaultPushGateway: boolean }>({
 	type: 'object',
 	properties: {
@@ -286,24 +243,62 @@ const pushInfoResponseSchema = ajv.compile<{ pushGatewayEnabled: boolean; defaul
 	additionalProperties: false,
 });
 
-API.v1.get(
-	'push.info',
-	{
-		authRequired: true,
-		response: {
-			200: pushInfoResponseSchema,
-			401: validateUnauthorizedErrorResponse,
+const pushGetInfoEndpoints = API.v1
+	.get(
+		'push.get',
+		{
+			authRequired: true,
+			query: isPushGetProps,
+			response: {
+				200: pushGetResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-	},
-	async function action() {
-		const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
-		const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
-		return API.v1.success({
-			pushGatewayEnabled: Boolean(settings.get('Push_enable')),
-			defaultPushGateway,
-		});
-	},
-);
+		async function action() {
+			const { id } = this.queryParams;
+
+			const receiver = await Users.findOneById(this.userId);
+			if (!receiver) {
+				throw new Error('error-user-not-found');
+			}
+
+			const message = await Messages.findOneById(id);
+			if (!message) {
+				throw new Error('error-message-not-found');
+			}
+
+			const room = await Rooms.findOneById(message.rid);
+			if (!room) {
+				throw new Error('error-room-not-found');
+			}
+
+			if (!(await canAccessRoomAsync(room, receiver))) {
+				throw new Error('error-not-allowed');
+			}
+
+			const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
+
+			return API.v1.success({ data });
+		},
+	)
+	.get(
+		'push.info',
+		{
+			authRequired: true,
+			response: {
+				200: pushInfoResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
+			const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
+			return API.v1.success({
+				pushGatewayEnabled: Boolean(settings.get('Push_enable')),
+				defaultPushGateway,
+			});
+		},
+	);
 
 const pushTestEndpoints = API.v1.post(
 	'push.test',
@@ -349,7 +344,9 @@ type PushTestEndpoints = ExtractRoutesFromAPI<typeof pushTestEndpoints>;
 
 type PushTokenEndpoints = ExtractRoutesFromAPI<typeof pushTokenEndpoints>;
 
-type PushEndpoints = PushTestEndpoints & PushTokenEndpoints;
+type PushGetInfoEndpoints = ExtractRoutesFromAPI<typeof pushGetInfoEndpoints>;
+
+type PushEndpoints = PushTestEndpoints & PushTokenEndpoints & PushGetInfoEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
