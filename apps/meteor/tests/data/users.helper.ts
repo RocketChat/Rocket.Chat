@@ -200,11 +200,18 @@ const waitForDDP = (ws: WebSocket, id: string | 'handshake', sendAction: () => v
 			clearTimeout(timeout);
 			ws.removeEventListener('message', handler);
 			ws.removeEventListener('close', onClose);
+			ws.removeEventListener('error', onError);
 		};
 
 		const onClose = () => {
 			cleanup();
 			reject(new Error(`WS closed while waiting for id: ${id}`));
+		};
+
+		const onError = (error: any) => {
+			cleanup();
+			ws.close();
+			reject(error || new Error(`WS error during operation id: ${id}`));
 		};
 
 		const handler = (event: MessageEvent) => {
@@ -228,6 +235,8 @@ const waitForDDP = (ws: WebSocket, id: string | 'handshake', sendAction: () => v
 
 		ws.addEventListener('message', handler);
 		ws.addEventListener('close', onClose);
+		ws.addEventListener('error', onError);
+
 		sendAction();
 	});
 };
