@@ -5,7 +5,7 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { afterUnbanFromRoomCallback } from '../../../../server/lib/callbacks/afterUnbanFromRoomCallback';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
-export const unbanUserFromRoom = async function (rid: string, user: IUser, options?: { byUser?: IUser }): Promise<void> {
+export const executeUnbanUserFromRoom = async function (rid: string, user: IUser, options?: { byUser?: IUser }): Promise<void> {
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
 		throw new Error('error-invalid-room');

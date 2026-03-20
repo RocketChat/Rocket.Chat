@@ -3,9 +3,9 @@ import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../app/authorization/server';
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { unbanUserFromRoom } from '../../app/lib/server/functions/unbanUserFromRoom';
+import { executeUnbanUserFromRoom } from '../../app/lib/server/functions/executeUnbanUserFromRoom';
 
-export const unbanUserFromRoomMethod = async (fromId: string, data: { rid: string; username: string }): Promise<boolean> => {
+export const unbanUserFromRoom = async (fromId: string, data: { rid: string; username: string }): Promise<boolean> => {
 	if (!(await hasPermissionAsync(fromId, 'ban-user', data.rid))) {
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
 			method: 'unbanUserFromRoom',
@@ -37,7 +37,7 @@ export const unbanUserFromRoomMethod = async (fromId: string, data: { rid: strin
 		});
 	}
 
-	await unbanUserFromRoom(data.rid, bannedUser, { byUser: fromUser });
+	await executeUnbanUserFromRoom(data.rid, bannedUser, { byUser: fromUser });
 
 	return true;
 };

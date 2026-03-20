@@ -20,8 +20,8 @@ import { performAcceptRoomInvite } from '../../../app/lib/server/functions/accep
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
 import { performUserBan } from '../../../app/lib/server/functions/banUserFromRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
+import { executeUnbanUserFromRoom } from '../../../app/lib/server/functions/executeUnbanUserFromRoom';
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
-import { unbanUserFromRoom } from '../../../app/lib/server/functions/unbanUserFromRoom';
 import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
 import { readThread } from '../../../app/threads/server/functions';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
@@ -134,7 +134,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async performUserUnban(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
-		return unbanUserFromRoom(room._id, user, options);
+		return executeUnbanUserFromRoom(room._id, user, options);
 	}
 
 	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
