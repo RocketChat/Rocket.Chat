@@ -165,7 +165,7 @@ const customSoundsEndpoints = API.v1
 			permissionsRequired: ['manage-sounds'],
 		},
 		async function action() {
-			const sound = await getUploadFormData(
+			const { fields, fileBuffer, mimetype } = await getUploadFormData(
 				{
 					request: this.request,
 				},
@@ -175,8 +175,6 @@ const customSoundsEndpoints = API.v1
 					validate: isCustomSoundsCreateProps,
 				},
 			);
-
-			const { fields, fileBuffer, mimetype } = sound;
 
 			if (!CUSTOM_SOUND_ALLOWED_MIME_TYPES.includes(mimetype)) {
 				return API.v1.failure('MIME type not allowed');
@@ -220,7 +218,7 @@ const customSoundsEndpoints = API.v1
 			permissionsRequired: ['manage-sounds'],
 		},
 		async function action() {
-			const sound = await getUploadFormData(
+			const { fields, fileBuffer, mimetype } = await getUploadFormData(
 				{
 					request: this.request,
 				},
@@ -231,8 +229,6 @@ const customSoundsEndpoints = API.v1
 					validate: isCustomSoundsUpdateProps,
 				},
 			);
-
-			const { fields, fileBuffer, mimetype } = sound;
 
 			if (fileBuffer && !CUSTOM_SOUND_ALLOWED_MIME_TYPES.includes(mimetype)) {
 				return API.v1.failure('MIME type not allowed');
