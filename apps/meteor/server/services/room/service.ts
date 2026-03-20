@@ -129,12 +129,12 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return performUserRemoval(room, user, options);
 	}
 
-	async performUserBan(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
-		return performUserBan(room, user, options);
+	async performUserBan(room: IRoom, user: IUser, byUser: IUser): Promise<void> {
+		return performUserBan(room, user, byUser);
 	}
 
-	async performUserUnban(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
-		return executeUnbanUserFromRoom(room._id, user, options);
+	async performUserUnban(room: IRoom, user: IUser, byUser: IUser): Promise<void> {
+		return executeUnbanUserFromRoom(room._id, user, byUser);
 	}
 
 	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {

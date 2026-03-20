@@ -69,7 +69,7 @@ export const banUserFromRoomMethod = async (fromId: string, data: { rid: string;
 		}
 	}
 
-	await banUserFromRoom(data.rid, bannedUser, { byUser: fromUser });
+	await banUserFromRoom(data.rid, bannedUser, fromUser);
 
 	return true;
 };

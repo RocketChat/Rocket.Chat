@@ -45,6 +45,8 @@ const { performUserBan, banUserFromRoom } = p.noCallThru().load('../../../../../
 });
 
 describe('banUserFromRoom', () => {
+	const mockByUser = { _id: 'admin1', username: 'admin' };
+
 	beforeEach(() => {
 		modelsMock.Rooms.findOneById.reset();
 		modelsMock.Rooms.incUsersCountById.reset();
@@ -65,7 +67,7 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'c' };
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await performUserBan(room, user);
+			await performUserBan(room, user, mockByUser);
 
 			expect(modelsMock.Subscriptions.banByRoomIdAndUserId.called).to.be.false;
 			expect(modelsMock.Users.removeRoomByUserId.called).to.be.false;
@@ -77,7 +79,7 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'c' };
 			const user = { _id: 'user1' }; // no username
 
-			await expect(performUserBan(room, user)).to.be.rejectedWith('User must have a username to be banned from the room');
+			await expect(performUserBan(room, user, mockByUser)).to.be.rejectedWith('User must have a username to be banned from the room');
 		});
 
 		it('should return early if subscription is already BANNED', async () => {
@@ -86,7 +88,7 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'c' };
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await performUserBan(room, user);
+			await performUserBan(room, user, mockByUser);
 
 			expect(modelsMock.Subscriptions.banByRoomIdAndUserId.called).to.be.false;
 		});
@@ -102,7 +104,7 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'c' };
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await performUserBan(room, user);
+			await performUserBan(room, user, mockByUser);
 
 			expect(modelsMock.Subscriptions.banByRoomIdAndUserId.calledWith('room1', 'user1')).to.be.true;
 		});
@@ -118,7 +120,7 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'c' };
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await performUserBan(room, user);
+			await performUserBan(room, user, mockByUser);
 
 			expect(modelsMock.Users.removeRoomByUserId.calledWith('user1', 'room1')).to.be.true;
 		});
@@ -134,7 +136,7 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'c' };
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await performUserBan(room, user);
+			await performUserBan(room, user, mockByUser);
 
 			expect(modelsMock.Rooms.incUsersCountById.calledWith('room1', -1)).to.be.true;
 		});
@@ -150,7 +152,7 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'c' };
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await performUserBan(room, user);
+			await performUserBan(room, user, mockByUser);
 
 			expect(removeUserFromRolesAsyncMock.calledWith('user1', ['moderator', 'owner', 'leader'], 'room1')).to.be.true;
 		});
@@ -166,7 +168,7 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'p' };
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await performUserBan(room, user);
+			await performUserBan(room, user, mockByUser);
 
 			expect(removeUserFromRolesAsyncMock.calledWith('user1', ['moderator', 'owner', 'leader'], 'room1')).to.be.true;
 		});
@@ -181,12 +183,12 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'd' };
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await performUserBan(room, user);
+			await performUserBan(room, user, mockByUser);
 
 			expect(removeUserFromRolesAsyncMock.called).to.be.false;
 		});
 
-		it('should save system message with byUser when provided', async () => {
+		it('should save system message including who banned', async () => {
 			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves({ _id: 'sub1' });
 			modelsMock.Subscriptions.banByRoomIdAndUserId.resolves();
 			modelsMock.Users.removeRoomByUserId.resolves();
@@ -196,9 +198,9 @@ describe('banUserFromRoom', () => {
 
 			const room = { _id: 'room1', t: 'c' };
 			const user = { _id: 'user1', username: 'testuser' };
-			const byUser = { _id: 'admin1', username: 'admin' };
+			const byUser = { _id: 'moderator2', username: 'mod' };
 
-			await performUserBan(room, user, { byUser });
+			await performUserBan(room, user, byUser);
 
 			expect(messageMock.saveSystemMessage.calledOnce).to.be.true;
 			const { args } = messageMock.saveSystemMessage.firstCall;
@@ -206,27 +208,6 @@ describe('banUserFromRoom', () => {
 			expect(args[1]).to.equal('room1');
 			expect(args[2]).to.equal('testuser');
 			expect(args[4]).to.deep.include({ u: byUser });
-		});
-
-		it('should save system message without byUser when not provided', async () => {
-			modelsMock.Subscriptions.findOneByRoomIdAndUserId.resolves({ _id: 'sub1' });
-			modelsMock.Subscriptions.banByRoomIdAndUserId.resolves();
-			modelsMock.Users.removeRoomByUserId.resolves();
-			modelsMock.Rooms.incUsersCountById.resolves();
-			removeUserFromRolesAsyncMock.resolves();
-			messageMock.saveSystemMessage.resolves();
-
-			const room = { _id: 'room1', t: 'c' };
-			const user = { _id: 'user1', username: 'testuser' };
-
-			await performUserBan(room, user);
-
-			expect(messageMock.saveSystemMessage.calledOnce).to.be.true;
-			const { args } = messageMock.saveSystemMessage.firstCall;
-			expect(args[0]).to.equal('user-banned');
-			expect(args[1]).to.equal('room1');
-			expect(args[2]).to.equal('testuser');
-			expect(args).to.have.lengthOf(4); // no extraData
 		});
 
 		it('should notify subscription as removed so client drops the stream', async () => {
@@ -241,7 +222,7 @@ describe('banUserFromRoom', () => {
 			const room = { _id: 'room1', t: 'c' };
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await performUserBan(room, user);
+			await performUserBan(room, user, mockByUser);
 
 			expect(notifyOnSubscriptionChangedMock.calledWith(subscription, 'removed')).to.be.true;
 			expect(notifyOnRoomChangedByIdMock.calledWith('room1')).to.be.true;
@@ -254,7 +235,7 @@ describe('banUserFromRoom', () => {
 
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await expect(banUserFromRoom('room1', user)).to.be.rejectedWith('error-invalid-room');
+			await expect(banUserFromRoom('room1', user, mockByUser)).to.be.rejectedWith('error-invalid-room');
 		});
 
 		it('should call performUserBan with correct arguments', async () => {
@@ -269,9 +250,15 @@ describe('banUserFromRoom', () => {
 
 			const user = { _id: 'user1', username: 'testuser' };
 
-			await banUserFromRoom('room1', user);
+			await banUserFromRoom('room1', user, mockByUser);
 
 			expect(modelsMock.Subscriptions.banByRoomIdAndUserId.calledWith('room1', 'user1')).to.be.true;
+			expect(afterBanFromRoomCallbackMock.run.calledOnce).to.be.true;
+			expect(afterBanFromRoomCallbackMock.run.firstCall.args[0]).to.deep.include({
+				bannedUser: user,
+				userWhoBanned: mockByUser,
+			});
+			expect(afterBanFromRoomCallbackMock.run.firstCall.args[1]).to.equal(room);
 		});
 	});
 });

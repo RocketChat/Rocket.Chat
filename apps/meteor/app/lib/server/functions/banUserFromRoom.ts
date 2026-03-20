@@ -11,8 +11,9 @@ import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/not
  * Bans a user from a room when triggered by federation or other external events.
  * Executes only the necessary database operations, with no callbacks, to prevent
  * propagation loops during external event processing.
+ * `byUser` must be the Rocket.Chat user who initiated the ban (local record).
  */
-export const performUserBan = async function (room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void> {
+export const performUserBan = async function (room: IRoom, user: IUser, byUser: IUser): Promise<void> {
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 	if (!subscription) {
 		return;
@@ -46,15 +47,10 @@ export const performUserBan = async function (room: IRoom, user: IUser, options?
 		await Team.removeMember(room.teamId, user._id);
 	}
 
-	// Save system message
-	if (options?.byUser) {
-		const extraData = {
-			u: options.byUser,
-		};
-		await Message.saveSystemMessage('user-banned', room._id, user.username, user, extraData);
-	} else {
-		await Message.saveSystemMessage('user-banned', room._id, user.username, user);
-	}
+	// Save system message (who banned is always recorded)
+	await Message.saveSystemMessage('user-banned', room._id, user.username, user, {
+		u: byUser,
+	});
 
 	// Send 'removed' so the client drops the room stream/socket subscription.
 	// The record still exists in DB with status BANNED for access-control purposes.
@@ -68,15 +64,13 @@ export const performUserBan = async function (room: IRoom, user: IUser, options?
  * Used for local actions (UI or API) that should propagate normally to federation
  * and other subscribers.
  */
-export const banUserFromRoom = async function (rid: string, user: IUser, options?: { byUser?: IUser }): Promise<void> {
+export const banUserFromRoom = async function (rid: string, user: IUser, byUser: IUser): Promise<void> {
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
 		throw new Error('error-invalid-room');
 	}
 
-	await performUserBan(room, user, options);
+	await performUserBan(room, user, byUser);
 
-	if (options?.byUser) {
-		void afterBanFromRoomCallback.run({ bannedUser: user, userWhoBanned: options.byUser }, room);
-	}
+	void afterBanFromRoomCallback.run({ bannedUser: user, userWhoBanned: byUser }, room);
 };

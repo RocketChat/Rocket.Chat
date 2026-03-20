@@ -1327,13 +1327,13 @@ export const roomEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const user = await getUserFromParams(this.bodyParams);
+			const user = await getUserFromParams(this.bodyParams, true);
 
 			if (!user.username) {
 				return API.v1.failure('Invalid user');
 			}
 
-			await executeUnbanUserFromRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+			await executeUnbanUserFromRoom(this.bodyParams.roomId, user, this.user);
 
 			return API.v1.success();
 		},

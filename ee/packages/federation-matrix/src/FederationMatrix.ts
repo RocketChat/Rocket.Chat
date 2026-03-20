@@ -646,9 +646,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				? userWhoBanned.federation.mui
 				: `@${userWhoBanned.username}:${this.serverName}`;
 
-			// The federation SDK does not have a native banUser method.
-			// We use kickUser to propagate the removal to the Matrix side.
-			// The ban state is maintained locally via the subscription status.
 			await federationSDK.banUser(
 				roomIdSchema.parse(room.federation.mrid),
 				userIdSchema.parse(actualBannedMatrixUserId),

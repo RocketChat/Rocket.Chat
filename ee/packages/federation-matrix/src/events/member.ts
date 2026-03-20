@@ -257,7 +257,7 @@ async function handleLeave({
 	// Check local subscription state to distinguish leave from unban.
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, leavingUser._id);
 	if (subscription && isBannedSubscription(subscription)) {
-		await Room.performUserUnban(room, leavingUser, { byUser: senderUser });
+		await Room.performUserUnban(room, leavingUser, senderUser);
 		logger.info({ msg: 'Unbanned user via federation leave event', userId: leavingUser._id, roomId: room._id });
 		return;
 	}
@@ -292,8 +292,11 @@ async function handleBan({
 
 	const [senderUsername] = getUsernameServername(senderId, serverName);
 	const senderUser = await Users.findOneByUsername(senderUsername);
+	if (!senderUser) {
+		throw new Error(`Ban sender not found locally: ${senderUsername} (Matrix id ${senderId})`);
+	}
 
-	await Room.performUserBan(room, bannedUser, senderUser ? { byUser: senderUser } : undefined);
+	await Room.performUserBan(room, bannedUser, senderUser);
 }
 
 export function member() {

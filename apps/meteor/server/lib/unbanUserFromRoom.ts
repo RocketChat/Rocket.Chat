@@ -37,7 +37,7 @@ export const unbanUserFromRoom = async (fromId: string, data: { rid: string; use
 		});
 	}
 
-	await executeUnbanUserFromRoom(data.rid, bannedUser, { byUser: fromUser });
+	await executeUnbanUserFromRoom(data.rid, bannedUser, fromUser);
 
 	return true;
 };

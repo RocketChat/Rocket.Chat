@@ -216,6 +216,6 @@ describe('banUserFromRoomMethod', () => {
 		expect(banUserFromRoomMock.calledOnce).to.be.true;
 		expect(banUserFromRoomMock.firstCall.args[0]).to.equal('room1');
 		expect(banUserFromRoomMock.firstCall.args[1]).to.deep.include({ _id: 'bannedUserId', username: 'testuser' });
-		expect(banUserFromRoomMock.firstCall.args[2]).to.deep.include({ byUser: { _id: 'fromUserId', username: 'admin' } });
+		expect(banUserFromRoomMock.firstCall.args[2]).to.deep.include({ _id: 'fromUserId', username: 'admin' });
 	});
 });
