@@ -5250,7 +5250,7 @@
   "The_setting_s_is_configured_to_s_and_you_are_accessing_from_s": "The setting <strong>%s</strong> is configured to <strong>%s</strong> and you are accessing from <strong>%s</strong>!",
   "The_user_s_will_be_removed_from_role_s": "The user %s will be removed from role %s",
   "The_user_will_be_banned_from__roomName__": "The user will be banned from {{roomName}}",
-  "The_user_will_be_unbanned_from__roomName__": "The user will unbanned from {{roomName}}",
+  "The_user_will_be_unbanned_from__roomName__": "The user will be unbanned from {{roomName}}",
   "The_user_will_be_removed_from_s": "The user will be removed from %s",
   "The_user_wont_be_able_to_type_in_s": "The user won't be able to type in %s",
   "The_workspace_has_exceeded_the_monthly_limit_of_active_contacts": "The workspace has exceeded the monthly limit of active contacts.",
