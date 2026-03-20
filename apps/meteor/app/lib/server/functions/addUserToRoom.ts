@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Team, Room } from '@rocket.chat/core-services';
-import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
+import { Message, Team, Room } from '@rocket.chat/core-services';
+import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -11,7 +11,7 @@ import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddU
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 /**
  * This function adds user to the given room.
@@ -48,17 +48,44 @@ export const addUserToRoom = async (
 		throw new Meteor.Error('user-not-found');
 	}
 
-	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription) {
-		return;
-	}
-
 	if (
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id))
 	) {
 		return;
+	}
+
+	// Check if user is already in room
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	if (subscription) {
+		if (isBannedSubscription(subscription)) {
+			if (isRoomNativeFederated(room)) {
+				// For federated rooms, unban requires a Matrix kick (leave) followed by a new invite.
+				// Remove the subscription so the unban propagates to Matrix via the afterUnbanFromRoom callback,
+				// then let the flow continue to create a new INVITED subscription via the beforeAddUserToRoom hook.
+				await Subscriptions.removeById(subscription._id);
+
+				if (!skipSystemMessage && userToBeAdded.username) {
+					await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username, userToBeAdded);
+				}
+
+				void notifyOnSubscriptionChanged(subscription, 'removed');
+				void notifyOnRoomChangedById(rid);
+
+				// Propagate unban to Matrix (kick event)
+				if (inviter) {
+					const { afterUnbanFromRoomCallback } = await import('../../../../server/lib/callbacks/afterUnbanFromRoomCallback');
+					await afterUnbanFromRoomCallback.run({ unbannedUser: userToBeAdded, userWhoUnbanned: inviter as IUser }, room);
+				}
+
+				// Fall through — subscription is gone, so the rest of addUserToRoom will
+				// hit the federation early-return and the beforeAddUserToRoom hook will
+				// send the Matrix invite and create the subscription as INVITED.
+			}
+		} else {
+			// User already has an active subscription — nothing to do
+			return;
+		}
 	}
 
 	try {
@@ -96,6 +123,17 @@ export const addUserToRoom = async (
 
 		// Keep the current event
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
+	}
+
+	if (subscription && isBannedSubscription(subscription)) {
+		const deleteCount = await Subscriptions.removeByUserId(userToBeAdded._id);
+		if (!deleteCount) {
+			return true;
+		}
+
+		if (!skipSystemMessage && inviter) {
+			await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username!, inviter, { ts: now });
+		}
 	}
 
 	await Room.createUserSubscription({
