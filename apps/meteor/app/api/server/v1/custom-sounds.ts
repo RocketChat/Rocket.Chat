@@ -188,11 +188,11 @@ const customSoundsEndpoints = API.v1
 					extension: fields.extension,
 				});
 				await uploadCustomSound(fileBuffer, mimetype, { _id, name: fields.name, extension: fields.extension });
+				return API.v1.success({ sound: { _id } });
 			} catch (error) {
 				SystemLogger.error({ error });
 				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
 			}
-			return API.v1.success({ sound: { _id } });
 		},
 	)
 	.post(
