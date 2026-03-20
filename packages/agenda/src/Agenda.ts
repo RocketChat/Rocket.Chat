@@ -474,35 +474,36 @@ export class Agenda extends EventEmitter {
 		}
 	}
 
-private async _updateJob(job: Job, props: Record<string, any>): Promise<void> {
-	const id = job.attrs._id;
+	private async _updateJob(job: Job, props: Record<string, any>): Promise<void> {
+    const id = job.attrs._id;
 
-	const $set: Record<string, any> = {};
-	const $unset: Record<string, any> = {};
+		const $set: Record<string, any> = {};
+		const $unset: Record<string, any> = {};
+		const unsetOnUndefined = new Set(['failReason', 'failedAt']);
 
-	for (const [key, value] of Object.entries(props)) {
-		if (value === undefined) {
-			$unset[key] = '';
-		} else {
-			$set[key] = value;
+		for (const [key, value] of Object.entries(props)) {
+			if (value === undefined && unsetOnUndefined.has(key)) {
+				$unset[key] = '';
+			} else if (value !== undefined) {
+				$set[key] = value;
+			}
+		}
+
+    const update: Record<string, any> = {};
+    if (Object.keys($set).length > 0) update.$set = $set;
+    if (Object.keys($unset).length > 0) update.$unset = $unset;
+
+    // Update the job and process the resulting data
+    debug('job already has _id, calling findOneAndUpdate() using _id as query');
+		try {
+			const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
+			result && (await this._processDbResult(job, result));
+		} catch (error) {
+			this.emit('error:database', error);
+			throw error;
 		}
 	}
 
-	const update: Record<string, any> = {};
-	if (Object.keys($set).length) update.$set = $set;
-	if (Object.keys($unset).length) update.$unset = $unset;
-
-	// Update the job and process the resulting data
-	debug('job already has _id, calling findOneAndUpdate() using _id as query');
-	try {
-		const result = await this.getCollection().findOneAndUpdate({ _id: id } as any, update, { returnDocument: 'after' });
-		result && (await this._processDbResult(job, result));
-	} catch (error) {
-		this.emit('error:database', error);
-		throw error;
-	}
-	}
-	
 	private async _saveSingleJob(job: Job, props: Record<string, any>, now: Date): Promise<void> {
 		// Job type set to 'single' so...
 		debug('job with type of "single" found');
