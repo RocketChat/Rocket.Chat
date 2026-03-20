@@ -47,6 +47,10 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 
 	showSystemMessages = false;
 
+	// Simple in-memory cache for settings to avoid repeated fetches
+	private settingsFetchedAt = 0;
+	private readonly settingsFetchTTL = 10 * 60 * 1000; // 10 minutes
+
 	constructor(
 		loggerConstructor: typeof Logger,
 		// Instance of i18n. Should already be init'd and loaded with the translation files
@@ -81,25 +85,35 @@ export class OmnichannelTranscript extends ServiceClass implements IOmnichannelT
 	}
 
 	override async started(): Promise<void> {
-		// TODO: cache these with mem
-		const [siteName, dateFormat, timeAndDateFormat, serverLanguage, reportingTimezone, defaultCustomTimezone, showSystemMessages] =
-			await Promise.all([
-				settingsService.get<string>('Site_Name'),
-				settingsService.get<string>('Message_DateFormat'),
-				settingsService.get<string>('Message_TimeAndDateFormat'),
-				settingsService.get<string>('Language'),
-				settingsService.get<'server' | 'custom' | 'user'>('Default_Timezone_For_Reporting'),
-				settingsService.get<string>('Default_Custom_Timezone'),
-				settingsService.get<boolean>('Livechat_transcript_show_system_messages'),
-			]);
+		// Use a short-lived in-memory cache to avoid repeated settings fetches on restarts
+		const now = Date.now();
+		if (now - this.settingsFetchedAt < this.settingsFetchTTL) {
+			return;
+		}
 
-		this.siteName = siteName;
-		this.dateFormat = dateFormat;
-		this.timeAndDateFormat = timeAndDateFormat;
-		this.serverLanguage = serverLanguage;
-		this.reportingTimezone = reportingTimezone;
-		this.defaultCustomTimezone = defaultCustomTimezone;
-		this.showSystemMessages = showSystemMessages;
+		try {
+			const [siteName, dateFormat, timeAndDateFormat, serverLanguage, reportingTimezone, defaultCustomTimezone, showSystemMessages] =
+				await Promise.all([
+					settingsService.get<string>('Site_Name'),
+					settingsService.get<string>('Message_DateFormat'),
+					settingsService.get<string>('Message_TimeAndDateFormat'),
+					settingsService.get<string>('Language'),
+					settingsService.get<'server' | 'custom' | 'user'>('Default_Timezone_For_Reporting'),
+					settingsService.get<string>('Default_Custom_Timezone'),
+					settingsService.get<boolean>('Livechat_transcript_show_system_messages'),
+				]);
+
+			this.siteName = siteName;
+			this.dateFormat = dateFormat;
+			this.timeAndDateFormat = timeAndDateFormat;
+			this.serverLanguage = serverLanguage;
+			this.reportingTimezone = reportingTimezone;
+			this.defaultCustomTimezone = defaultCustomTimezone;
+			this.showSystemMessages = showSystemMessages;
+			this.settingsFetchedAt = Date.now();
+		} catch (err: unknown) {
+			this.log.error({ msg: 'Failed to load OmnichannelTranscript settings on start', err });
+		}
 	}
 
 	async getTimezone(agent?: AtLeast<ILivechatAgent, 'utcOffset'> | null): Promise<string> {
