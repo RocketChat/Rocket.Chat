@@ -1,6 +1,5 @@
 import type { IMessage, IRoom, IUser, IUploadWithUser, ISubscription } from '@rocket.chat/core-typings';
 
-import type { DmCreateProps } from './DmCreateProps';
 import type { DmFileProps } from './DmFileProps';
 import type { DmHistoryProps } from './DmHistoryProps';
 import type { DmLeaveProps } from './DmLeaveProps';
@@ -14,11 +13,6 @@ type DmKickProps = {
 };
 
 export type ImEndpoints = {
-	'/v1/im.create': {
-		POST: (params: DmCreateProps) => {
-			room: IRoom & { rid: IRoom['_id'] };
-		};
-	};
 	'/v1/im.kick': {
 		POST: (params: DmKickProps) => void;
 	};
@@ -67,13 +61,5 @@ export type ImEndpoints = {
 	};
 	'/v1/im.list.everyone': {
 		GET: (params: PaginatedRequest<{ query: string; fields?: string }>) => PaginatedResult<{ ims: IRoom[] }>;
-	};
-	'/v1/im.open': {
-		POST: (params: { roomId: string }) => void;
-	};
-	'/v1/im.setTopic': {
-		POST: (params: { roomId: string; topic?: string }) => {
-			topic?: string;
-		};
 	};
 };

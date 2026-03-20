@@ -70,28 +70,6 @@ const findDirectMessageRoom = async (
 	};
 };
 
-API.v1.addRoute(
-	['dm.create', 'im.create'],
-	{
-		authRequired: true,
-		validateParams: isDmCreateProps,
-	},
-	{
-		async post() {
-			const users =
-				'username' in this.bodyParams
-					? [this.bodyParams.username]
-					: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
-
-			const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
-
-			return API.v1.success({
-				room: { ...room, _id: room.rid },
-			});
-		},
-	},
-);
-
 type DmDeleteProps =
 	| {
 			roomId: string;
@@ -240,11 +218,174 @@ const dmCloseAction = <Path extends string>(_path: Path): TypedAction<typeof dmC
 		return API.v1.success();
 	};
 
+const isDmOpenProps = ajv.compile<{ roomId: string }>({
+	type: 'object',
+	properties: { roomId: { type: 'string' } },
+	required: ['roomId'],
+	additionalProperties: false,
+});
+
+const dmOpenEndpointsProps = {
+	authRequired: true,
+	body: isDmOpenProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+		200: ajv.compile<void>({
+			type: 'object',
+			properties: { success: { type: 'boolean', enum: [true] } },
+			required: ['success'],
+			additionalProperties: false,
+		}),
+	},
+};
+
+const dmOpenAction = <Path extends string>(_path: Path): TypedAction<typeof dmOpenEndpointsProps, Path> =>
+	async function action() {
+		const { roomId } = this.bodyParams;
+		if (!roomId) {
+			throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+		}
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+		const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
+		if (!canAccess) {
+			return API.v1.forbidden('error-not-allowed');
+		}
+
+		const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
+
+		if (!subscription?.open) {
+			await openRoom(this.userId, room._id);
+		}
+
+		return API.v1.success();
+	};
+
+const isDmSetTopicProps = ajv.compile<{ roomId: string; topic?: string }>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		topic: { type: 'string', nullable: true },
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+});
+
+const dmSetTopicResponseSchema = ajv.compile<{ topic?: string }>({
+	type: 'object',
+	properties: {
+		topic: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const dmSetTopicEndpointsProps = {
+	authRequired: true,
+	body: isDmSetTopicProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+		200: dmSetTopicResponseSchema,
+	},
+};
+
+const dmSetTopicAction = <Path extends string>(_path: Path): TypedAction<typeof dmSetTopicEndpointsProps, Path> =>
+	async function action() {
+		const { roomId, topic } = this.bodyParams;
+		if (!roomId) {
+			throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+		}
+		if (!this.userId) {
+			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		}
+
+		const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
+		if (!canAccess) {
+			return API.v1.forbidden('error-not-allowed');
+		}
+
+		const { room } = await findDirectMessageRoom({ roomId }, this.userId);
+
+		await saveRoomSettings(this.userId, room._id, 'roomTopic', topic ?? '');
+
+		return API.v1.success({
+			topic,
+		});
+	};
+
+const dmCreateResponseSchema = ajv.compile<{ room: IRoom & { rid: string } }>({
+	type: 'object',
+	properties: {
+		room: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['room', 'success'],
+	additionalProperties: false,
+});
+
 const dmEndpoints = API.v1
 	.post('im.delete', dmDeleteEndpointsProps, dmDeleteAction('im.delete'))
 	.post('dm.delete', dmDeleteEndpointsProps, dmDeleteAction('dm.delete'))
 	.post('dm.close', dmCloseEndpointsProps, dmCloseAction('dm.close'))
-	.post('im.close', dmCloseEndpointsProps, dmCloseAction('im.close'));
+	.post('im.close', dmCloseEndpointsProps, dmCloseAction('im.close'))
+	.post(
+		'dm.create',
+		{
+			authRequired: true,
+			body: isDmCreateProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: dmCreateResponseSchema,
+			},
+		},
+		async function action() {
+			const users =
+				'username' in this.bodyParams
+					? [this.bodyParams.username]
+					: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
+
+			const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
+
+			return API.v1.success({
+				room: { ...room, _id: room.rid },
+			});
+		},
+	)
+	.post(
+		'im.create',
+		{
+			authRequired: true,
+			body: isDmCreateProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: dmCreateResponseSchema,
+			},
+		},
+		async function action() {
+			const users =
+				'username' in this.bodyParams
+					? [this.bodyParams.username]
+					: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
+
+			const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
+
+			return API.v1.success({
+				room: { ...room, _id: room.rid },
+			});
+		},
+	)
+	.post('dm.open', dmOpenEndpointsProps, dmOpenAction('dm.open'))
+	.post('im.open', dmOpenEndpointsProps, dmOpenAction('im.open'))
+	.post('dm.setTopic', dmSetTopicEndpointsProps, dmSetTopicAction('dm.setTopic'))
+	.post('im.setTopic', dmSetTopicEndpointsProps, dmSetTopicAction('im.setTopic'));
 
 // https://github.com/RocketChat/Rocket.Chat/pull/9679 as reference
 API.v1.addRoute(
@@ -645,58 +786,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	['dm.open', 'im.open'],
-	{ authRequired: true },
-	{
-		async post() {
-			const { roomId } = this.bodyParams;
-
-			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
-			}
-			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
-			if (!canAccess) {
-				return API.v1.forbidden();
-			}
-
-			const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
-
-			if (!subscription?.open) {
-				await openRoom(this.userId, room._id);
-			}
-
-			return API.v1.success();
-		},
-	},
-);
-
-API.v1.addRoute(
-	['dm.setTopic', 'im.setTopic'],
-	{ authRequired: true },
-	{
-		async post() {
-			const { roomId, topic } = this.bodyParams;
-
-			if (!roomId) {
-				throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
-			}
-
-			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
-			if (!canAccess) {
-				return API.v1.forbidden();
-			}
-
-			const { room } = await findDirectMessageRoom({ roomId }, this.userId);
-
-			await saveRoomSettings(this.userId, room._id, 'roomTopic', topic);
-
-			return API.v1.success({
-				topic,
-			});
-		},
-	},
-);
 
 export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 
