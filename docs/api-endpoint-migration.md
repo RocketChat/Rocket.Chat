@@ -358,21 +358,28 @@ integrations: {
 
 ### Handling nullable types
 
-When a field can be `null`, combine `nullable: true` with `$ref`:
+Ajv does **not** allow `nullable: true` without `type`. Since `$ref` schemas don't have a `type` at the reference site, you cannot use `{ nullable: true, $ref: '...' }`. Instead, use `oneOf` with `{ type: 'null' }`:
 
 ```typescript
-// Nullable $ref
-report: { nullable: true, $ref: '#/components/schemas/IModerationReport' },
+// Nullable $ref — use oneOf with null
+report: {
+  oneOf: [
+    { $ref: '#/components/schemas/IModerationReport' },
+    { type: 'null' },
+  ],
+},
 
-// Nullable union
+// Nullable union — add null as another oneOf branch
 integration: {
-  nullable: true,
   oneOf: [
     { $ref: '#/components/schemas/IIncomingIntegration' },
     { $ref: '#/components/schemas/IOutgoingIntegration' },
+    { type: 'null' },
   ],
 },
 ```
+
+> **Note**: `nullable: true` works fine with `type`, e.g., `{ type: 'string', nullable: true }`. The restriction only applies when combining `nullable` with `$ref` (no `type` present).
 
 ### Handling intersection types with `allOf`
 
@@ -439,6 +446,44 @@ This happens because `oneOf` requires **exactly one** match, but the value is bo
 ```
 
 **Long-term fix**: Revise the core-typings to narrow `ts` to `string` (which is what MongoDB aggregation pipelines and `JSON.stringify` actually return), or adjust the AJV/typia schema generation to handle `Date | string` unions correctly (e.g., using `anyOf` instead of `oneOf`, or collapsing `Date` into `string`).
+
+### Known Pitfall: Mapped utility types (`Nullable<>`, `Partial<>`, etc.)
+
+Typia does **not** resolve custom mapped types when generating JSON schemas. For example, the following pattern:
+
+```typescript
+type Nullable<T, K extends keyof T> = { [P in K]: T[P] | null } & Omit<T, K>;
+
+export interface IVideoConferenceUser
+  extends Nullable<Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'>, 'avatarETag'> {
+  ts: Date;
+}
+```
+
+Produces `avatarETag: { type: 'string' }` **without** `nullable: true`, even though the resolved type is `string | null`. This causes response validation to reject `null` values when `coerceTypes` is `false`.
+
+**Fix**: Declare nullable fields explicitly instead of relying on mapped types:
+
+```typescript
+// BEFORE — typia loses the | null
+extends Nullable<Pick<Required<IUser>, '_id' | 'username' | 'name' | 'avatarETag'>, 'avatarETag'>
+
+// AFTER — typia correctly generates nullable: true
+extends Pick<Required<IUser>, '_id' | 'username' | 'name'> {
+  avatarETag: string | null;
+}
+```
+
+After changing the type, rebuild core-typings (`yarn workspace @rocket.chat/core-typings run build`) to regenerate the schema.
+
+**How to detect**: If a `$ref` schema rejects `null` values at runtime but the TypeScript type allows `null`, check if the type uses a mapped utility type. Inspect the generated schema:
+
+```bash
+node -e "const { schemas } = require('./packages/core-typings/dist/Ajv.js'); \
+  console.log(JSON.stringify(schemas.components.schemas.YourType, null, 2))"
+```
+
+Look for fields that should have `nullable: true` but don't.
 
 ### Adding a new type to typia
 
@@ -598,15 +643,59 @@ When migrating an endpoint, search for its tests and update:
 
 ## Tracking Migration Progress
 
+Two scripts help track migration progress and identify type-safety issues.
+
+### `scripts/list-unmigrated-api-endpoints.mjs`
+
+Lists all endpoints that still use the legacy `addRoute` pattern and need migration.
+
 ```bash
-# Summary by file
+# Human-readable report grouped by file
 node scripts/list-unmigrated-api-endpoints.mjs
 
-# Full list with line numbers (JSON)
+# Machine-readable JSON with file paths and line numbers
 node scripts/list-unmigrated-api-endpoints.mjs --json
 ```
 
-The script scans for `API.v1.addRoute` and `API.default.addRoute` calls in `apps/meteor/app/api/`.
+The script scans `apps/meteor/app/api/` for `API.v1.addRoute(...)` and `API.default.addRoute(...)` calls, extracting the route path, HTTP methods, file, and line number. Endpoints using this pattern lack compile-time type checking on request params and response shapes.
+
+### `scripts/analyze-weak-types.mjs`
+
+Analyzes `packages/rest-typings/` for "weak" types — generic types that provide little or no type safety in endpoint definitions.
+
+```bash
+# Full report grouped by endpoint
+node scripts/analyze-weak-types.mjs
+
+# JSON output for tooling/CI
+node scripts/analyze-weak-types.mjs --json
+
+# Only check AJV schema definitions (type: 'object' with no properties, etc.)
+node scripts/analyze-weak-types.mjs --schema-only
+
+# Only check TypeScript type definitions (any, Record<string, any>, etc.)
+node scripts/analyze-weak-types.mjs --ts-only
+```
+
+Weak types detected:
+
+| Pattern | Level | Risk |
+|---|---|---|
+| `any`, `unknown` | TypeScript | No type checking at all |
+| `object` (bare) | TypeScript | Accepts any non-primitive |
+| `Record<string, any>`, `Record<string, unknown>` | TypeScript | Untyped key-value bag |
+| `any[]`, `Array<any>` | TypeScript | Untyped array |
+| `Partial<IMessage>`, `Partial<IRoom>`, `Partial<IUser>` | TypeScript | Overly broad — accepts any subset of a large interface |
+| `{ type: 'object' }` without `properties` | AJV Schema | No runtime validation of object shape |
+| `{ type: 'array' }` without `items` | AJV Schema | No runtime validation of array elements |
+
+### Recommended workflow
+
+1. **Pick a domain** to migrate (e.g., channels, users, teams).
+2. **Run `list-unmigrated-api-endpoints.mjs`** to see which endpoints still use `addRoute`.
+3. **Run `analyze-weak-types.mjs`** to check if the existing `rest-typings` for that domain have weak types.
+4. **Migrate the endpoint**: move from `addRoute` to the typed pattern, and strengthen any weak types in `rest-typings` at the same time.
+5. **Re-run both scripts** to verify the endpoint no longer appears in either report.
 
 ## Reference Files
 
@@ -625,3 +714,4 @@ The script scans for `API.v1.addRoute` and `API.default.addRoute` calls in `apps
 | Request validators (examples)    | `packages/rest-typings/src/v1/moderation/`       |
 | Router implementation            | `packages/http-router/src/Router.ts`             |
 | Unmigrated endpoints script      | `scripts/list-unmigrated-api-endpoints.mjs`      |
+| Weak types analysis script       | `scripts/analyze-weak-types.mjs`                 |
