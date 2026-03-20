@@ -329,7 +329,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 						u: { _id: inviter._id, username: inviter.username },
 					});
 				} else {
-					console.log('AUUUUUUUEE 2', await Message.saveSystemMessage('au', room._id, userToBeAdded.username, userToBeAdded, extraData));
+					await Message.saveSystemMessage('au', room._id, userToBeAdded.username, userToBeAdded, extraData);
 				}
 			} else if (room.prid) {
 				await Message.saveSystemMessage('ut', room._id, userToBeAdded.username, userToBeAdded, { ts });
