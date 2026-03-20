@@ -19,7 +19,7 @@ This module integrates [OpenClaw](https://openclaw.ai), an open-source autonomou
 
 ### Slash command
 
-```
+```bash
 /openclaw What is the weather in Berlin today?
 ```
 
@@ -29,7 +29,7 @@ The AI agent will process your prompt and respond in the channel.
 
 OpenClaw can POST responses to:
 
-```
+```json
 POST /api/v1/openclaw.webhook
 Content-Type: application/json
 
@@ -43,7 +43,7 @@ Content-Type: application/json
 
 ## Architecture
 
-```
+```text
 Rocket.Chat ──► OpenClaw /hooks/agent  (outbound: user messages/commands)
 OpenClaw    ──► Rocket.Chat /api/v1/openclaw.webhook  (inbound: AI responses)
 ```

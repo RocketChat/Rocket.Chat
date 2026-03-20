@@ -6,32 +6,23 @@ import { sendToAgent, isEnabled } from './openclawClient';
 import { settings } from '../../../settings/server';
 import { openclawLogger } from '../logger';
 
-/**
- * Determine if a message should be forwarded to OpenClaw.
- * Filters out bot messages, system messages, and checks if integration is enabled.
- */
 export function shouldProcessMessage(message: IMessage): boolean {
-	// Skip if not enabled
 	if (!isEnabled()) {
 		return false;
 	}
 
-	// Skip system messages
 	if (message.t) {
 		return false;
 	}
 
-	// Skip empty messages
 	if (!message.msg || message.msg.trim().length === 0) {
 		return false;
 	}
 
-	// Skip messages from bots to prevent infinite loops
 	if (message.bot) {
 		return false;
 	}
 
-	// Skip messages from the OpenClaw bot user
 	const botUsername = settings.get<string>('OpenClaw_Bot_Username');
 	if (botUsername && message.u?.username === botUsername) {
 		return false;
@@ -40,9 +31,6 @@ export function shouldProcessMessage(message: IMessage): boolean {
 	return true;
 }
 
-/**
- * Format a Rocket.Chat message into an OpenClaw agent payload.
- */
 export function formatMessagePayload(
 	message: IMessage,
 	room: IRoom,
@@ -61,10 +49,6 @@ export function formatMessagePayload(
 	};
 }
 
-/**
- * Process a message and forward it to the OpenClaw agent.
- * Returns the agent's response text, or null if no response.
- */
 export async function forwardMessageToAgent(
 	message: IMessage,
 	room: IRoom,
@@ -95,9 +79,6 @@ export async function forwardMessageToAgent(
 	return result.response || result.message || null;
 }
 
-/**
- * Get the bot user for posting OpenClaw responses.
- */
 export async function getOpenClawBotUser() {
 	const botUsername = settings.get<string>('OpenClaw_Bot_Username') || 'openclaw.bot';
 
@@ -106,18 +87,15 @@ export async function getOpenClawBotUser() {
 		return user;
 	}
 
-	// Fall back to rocket.cat if the configured bot user doesn't exist
-	openclawLogger.warn({
+	openclawLogger.debug({
 		msg: 'OpenClaw bot user not found, falling back to rocket.cat',
 		botUsername,
+		fallback: 'rocket.cat',
 	});
 
 	return Users.findOneByUsername('rocket.cat');
 }
 
-/**
- * Resolve a room by ID.
- */
 export async function getRoomById(roomId: string): Promise<IRoom | null> {
 	const room = await Rooms.findOneById(roomId);
 	return room || null;

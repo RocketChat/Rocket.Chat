@@ -1,4 +1,5 @@
-import type { IMessage } from '@rocket.chat/core-typings';
+import { timingSafeEqual } from 'crypto';
+
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { API } from '../../../api/server/api';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
@@ -6,20 +7,13 @@ import { settings } from '../../../settings/server';
 import { openclawLogger } from '../logger';
 import { getOpenClawBotUser, getRoomById } from '../lib/messageHandler';
 
-/**
- * Webhook endpoint for receiving responses from the OpenClaw agent.
- *
- * OpenClaw posts AI responses back to this endpoint, which then delivers
- * the response as a message in the appropriate Rocket.Chat channel.
- *
- * Expected payload:
- * {
- *   "token": "<auth_token>",
- *   "channel_id": "<room_id>",
- *   "text": "<response_text>",
- *   "thread_id": "<optional_thread_id>"
- * }
- */
+function safeCompare(a: string, b: string): boolean {
+	if (a.length !== b.length) {
+		return false;
+	}
+	return timingSafeEqual(Buffer.from(a), Buffer.from(b));
+}
+
 API.v1.addRoute(
 	'openclaw.webhook',
 	{ authRequired: false },
@@ -27,7 +21,6 @@ API.v1.addRoute(
 		async post() {
 			openclawLogger.info({ msg: 'Received OpenClaw webhook callback' });
 
-			// Check if OpenClaw is enabled
 			if (settings.get<boolean>('OpenClaw_Enabled') !== true) {
 				openclawLogger.warn({ msg: 'OpenClaw webhook received but integration is disabled' });
 				return API.v1.failure('OpenClaw integration is disabled');
@@ -38,16 +31,14 @@ API.v1.addRoute(
 				return API.v1.failure('Invalid request body');
 			}
 
-			// Validate the webhook token
 			const expectedToken = settings.get<string>('OpenClaw_Auth_Token');
 			const receivedToken = body.token as string | undefined;
 
-			if (!expectedToken || !receivedToken || receivedToken !== expectedToken) {
+			if (!expectedToken || !receivedToken || !safeCompare(receivedToken, expectedToken)) {
 				openclawLogger.warn({ msg: 'OpenClaw webhook token validation failed' });
 				return API.v1.unauthorized('Invalid webhook token');
 			}
 
-			// Validate required fields
 			const channelId = body.channel_id as string | undefined;
 			const text = body.text as string | undefined;
 
@@ -59,21 +50,18 @@ API.v1.addRoute(
 				return API.v1.failure('Missing required field: text');
 			}
 
-			// Resolve the target room
 			const room = await getRoomById(channelId);
 			if (!room) {
 				openclawLogger.error({ msg: 'Target room not found for OpenClaw webhook', channelId });
 				return API.v1.failure('Target room not found');
 			}
 
-			// Get the bot user to post as
 			const botUser = await getOpenClawBotUser();
 			if (!botUser || !botUser.username) {
 				openclawLogger.error({ msg: 'OpenClaw bot user not found' });
 				return API.v1.failure('Bot user not found');
 			}
 
-			// Build the message payload
 			const threadId = body.thread_id as string | undefined;
 			const alias = (body.alias as string) || 'OpenClaw AI';
 			const avatar = (body.avatar as string) || '';
@@ -95,7 +83,7 @@ API.v1.addRoute(
 			try {
 				const result = await processWebhookMessage(
 					messagePayload,
-					botUser as Parameters<typeof processWebhookMessage>[1],
+					{ ...botUser, username: botUser.username },
 					defaultValues,
 				);
 

@@ -26,6 +26,8 @@ export interface OpenClawResponse {
 	error?: string;
 }
 
+export type OpenClawConfigError = 'NOT_ENABLED' | 'MISSING_API_URL' | 'MISSING_AUTH_TOKEN';
+
 function getConfig(): { apiUrl: string; authToken: string; model: string } {
 	const apiUrl = settings.get<string>('OpenClaw_API_URL');
 	const authToken = settings.get<string>('OpenClaw_Auth_Token');
@@ -38,28 +40,24 @@ function isEnabled(): boolean {
 	return settings.get<boolean>('OpenClaw_Enabled') === true;
 }
 
-function validateConfig(): { valid: boolean; error?: string } {
+function validateConfig(): { valid: boolean; error?: OpenClawConfigError } {
 	if (!isEnabled()) {
-		return { valid: false, error: 'OpenClaw integration is not enabled. Enable it in Admin → Settings → OpenClaw.' };
+		return { valid: false, error: 'NOT_ENABLED' };
 	}
 
 	const { apiUrl, authToken } = getConfig();
 
 	if (!apiUrl) {
-		return { valid: false, error: 'OpenClaw API URL is not configured. Set it in Admin → Settings → OpenClaw.' };
+		return { valid: false, error: 'MISSING_API_URL' };
 	}
 
 	if (!authToken) {
-		return { valid: false, error: 'OpenClaw authentication token is not configured. Set it in Admin → Settings → OpenClaw.' };
+		return { valid: false, error: 'MISSING_AUTH_TOKEN' };
 	}
 
 	return { valid: true };
 }
 
-/**
- * Send a message to the OpenClaw agent for processing.
- * Posts to the OpenClaw `/hooks/agent` endpoint.
- */
 export async function sendToAgent(payload: OpenClawAgentPayload): Promise<OpenClawResponse> {
 	const validation = validateConfig();
 	if (!validation.valid) {
@@ -74,7 +72,13 @@ export async function sendToAgent(payload: OpenClawAgentPayload): Promise<OpenCl
 	}
 
 	openclawLogger.info({ msg: 'Sending message to OpenClaw agent', url, channel: payload.channel_id });
-	openclawLogger.debug({ payload });
+	openclawLogger.debug({
+		msg: 'OpenClaw agent request metadata',
+		channel: payload.channel_id,
+		threadId: payload.thread_id,
+		model: payload.model,
+		hasCallbackUrl: Boolean(payload.callback_url),
+	});
 
 	try {
 		const response = await fetch(url, {
@@ -89,13 +93,23 @@ export async function sendToAgent(payload: OpenClawAgentPayload): Promise<OpenCl
 
 		const contentType = response.headers.get('content-type') || '';
 		let data: Record<string, unknown> | null = null;
+		let malformedJson = false;
 
 		if (contentType.includes('application/json')) {
 			try {
 				data = (await response.json()) as Record<string, unknown>;
-			} catch {
-				data = null;
+			} catch (error) {
+				malformedJson = true;
+				openclawLogger.error({
+					msg: 'OpenClaw agent returned malformed JSON',
+					status: response.status,
+					error: error instanceof Error ? error.message : String(error),
+				});
 			}
+		}
+
+		if (malformedJson) {
+			return { success: false, error: 'OpenClaw agent returned malformed JSON' };
 		}
 
 		if (!response.ok) {
@@ -118,10 +132,6 @@ export async function sendToAgent(payload: OpenClawAgentPayload): Promise<OpenCl
 	}
 }
 
-/**
- * Send a wake event to the OpenClaw agent.
- * Posts to the OpenClaw `/hooks/wake` endpoint.
- */
 export async function wakeAgent(payload: OpenClawWakePayload): Promise<OpenClawResponse> {
 	const validation = validateConfig();
 	if (!validation.valid) {
