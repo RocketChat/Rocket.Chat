@@ -13,13 +13,12 @@ export type PriorityFormData = { name: string; reset: boolean };
 
 export type PriorityEditFormProps = {
 	data: Serialized<ILivechatPriority>;
-	onCancel: () => void;
 	onSave: (values: PriorityFormData) => Promise<void>;
 };
 
 type PrioritySaveException = { success: false; error: TranslationKey | undefined };
 
-const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): ReactElement => {
+const PriorityEditForm = ({ data, onSave }: PriorityEditFormProps): ReactElement => {
 	const { t } = useTranslation();
 
 	const { name, i18n, dirty } = data;
@@ -29,11 +28,16 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		control,
 		formState: { errors, isDirty, isSubmitting },
 		setError,
+		setValue,
 		handleSubmit,
+		watch,
 	} = useForm<PriorityFormData>({
 		defaultValues: data ? { name: dirty ? name : defaultName } : {},
 	});
 
+	const currentName = watch('name');
+
+	const formId = useId();
 	const nameFieldId = useId();
 
 	const handleSave = useFormSubmitWithDirtyCheck(
@@ -51,9 +55,16 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 		{ isDirty },
 	);
 
+	const onReset = (): void => {
+		setValue('name', defaultName, {
+			shouldDirty: true,
+			shouldValidate: true,
+		});
+	};
+
 	return (
 		<>
-			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)}>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} id={formId}>
 				<Field>
 					<FieldRow>
 						<FieldLabel htmlFor={nameFieldId} required>
@@ -91,10 +102,11 @@ const PriorityEditForm = ({ data, onSave, onCancel }: PriorityEditFormProps): Re
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={() => onCancel()} disabled={isSubmitting}>
-						{t('Cancel')}
+					<Button onClick={onReset} disabled={currentName === defaultName}>
+						{t('Reset')}
 					</Button>
-					<Button primary type='submit' loading={isSubmitting}>
+
+					<Button primary type='submit' loading={isSubmitting} form={formId}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

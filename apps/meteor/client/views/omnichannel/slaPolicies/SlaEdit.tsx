@@ -69,6 +69,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 
 	const { field: descField } = useController({ control, name: 'description' });
 
+	const formId = useId();
 	const nameFieldId = useId();
 	const descFieldId = useId();
 	const dueTimeFieldId = useId();
@@ -95,7 +96,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 
 	return (
 		<>
-			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} {...props}>
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSave)} id={formId} {...props}>
 				<Field>
 					<FieldLabel required htmlFor={nameFieldId}>
 						{t('Name')}
@@ -152,7 +153,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps): ReactE
 							{t('Reset')}
 						</Button>
 					)}
-					<Button primary mie='none' type='submit' flexGrow={1}>
+					<Button primary mie='none' type='submit' flexGrow={1} form={formId}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
