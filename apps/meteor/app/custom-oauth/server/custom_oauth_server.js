@@ -76,6 +76,7 @@ export class CustomOAuth {
 		this.serverURL = options.serverURL;
 		this.tokenPath = options.tokenPath;
 		this.identityPath = options.identityPath;
+		this.emailPath = options.emailPath;
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.keyField = options.keyField;
@@ -99,6 +100,10 @@ export class CustomOAuth {
 
 		if (!isAbsoluteURL(this.identityPath)) {
 			this.identityPath = this.serverURL + this.identityPath;
+		}
+
+		if (this.emailPath && !isAbsoluteURL(this.emailPath)) {
+			this.emailPath = this.serverURL + this.emailPath;
 		}
 
 		if (Match.test(options.addAutopublishFields, Object)) {
@@ -187,7 +192,7 @@ export class CustomOAuth {
 
 			logger.debug({ msg: 'Identity response', response });
 
-			return this.normalizeIdentity(response);
+			return this.normalizeIdentity(response, accessToken);
 		} catch (err) {
 			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
@@ -230,7 +235,7 @@ export class CustomOAuth {
 		});
 	}
 
-	normalizeIdentity(identity) {
+	async normalizeIdentity(identity, accessToken) {
 		if (identity) {
 			for (const normalizer of Object.values(normalizers)) {
 				const result = normalizer(identity);
@@ -248,6 +253,10 @@ export class CustomOAuth {
 			identity.email = this.getEmail(identity);
 		}
 
+		if (!identity.email && this.emailPath) {
+			identity.email = await this.getEmailFromPath(accessToken);
+		}
+
 		if (this.avatarField) {
 			identity.avatarUrl = this.getAvatarUrl(identity);
 		}
@@ -259,6 +268,40 @@ export class CustomOAuth {
 		}
 
 		return renameInvalidProperties(identity);
+	}
+
+	async getEmailFromPath(accessToken) {
+		if (!this.emailPath) {
+			throw new Meteor.Error('CustomOAuth: emailPath is required');
+		}
+
+		const params = {};
+		const headers = {
+			'User-Agent': this.userAgent,
+			'Accept': 'application/json',
+		};
+
+		if (this.identityTokenSentVia === 'header') {
+			headers.Authorization = `Bearer ${accessToken}`;
+		} else {
+			params[this.accessTokenParam] = accessToken;
+		}
+
+		try {
+			// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
+			const request = await fetch(`${this.emailPath}`, { method: 'GET', headers, params, ignoreSsrfValidation: true });
+
+			if (!request.ok) {
+				throw new Error(request.statusText);
+			}
+
+			const response = await request.json();
+
+			return response.find((email) => email.primary === true)?.email;
+		} catch (err) {
+			const error = new Error(`Failed to fetch emails from ${this.name} at ${this.emailPath}. ${err.message}`);
+			throw _.extend(error, { response: err.response });
+		}
 	}
 
 	retrieveCredential(credentialToken, credentialSecret) {
