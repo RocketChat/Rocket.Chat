@@ -1865,6 +1865,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 			afterAll(async () => {
 				await deleteUser(rcUser1.user, {}, rc1AdminRequestConfig);
+				await hs1AdminApp.matrixClient.setDisplayName(''); // reset Synapse admin name
 			});
 
 			describe('When a RC local user changes their display name', () => {
