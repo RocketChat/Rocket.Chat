@@ -1,5 +1,5 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 export type DmFileProps = PaginatedRequest<
 	({ roomId: string; username?: string } | { roomId?: string; username: string }) & {
@@ -54,4 +54,4 @@ const dmFilesListPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isDmFileProps = ajv.compile<DmFileProps>(dmFilesListPropsSchema);
+export const isDmFileProps = ajvQuery.compile<DmFileProps>(dmFilesListPropsSchema);

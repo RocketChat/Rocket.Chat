@@ -30,4 +30,5 @@ export interface IFederationMatrixService {
 	verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }>;
 	handleInvite(subscriptionId: ISubscription['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void>;
 	canUserAccessFederation(user: IUser): Promise<boolean>;
+	notifyRoomRead(params: { room: IRoomNativeFederated; userId: string; threadId?: string }): Promise<void>;
 }

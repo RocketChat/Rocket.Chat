@@ -36,7 +36,12 @@ export class PushService extends ServiceClassInternal implements IPushService {
 	): Promise<Omit<IPushToken, 'authToken'>> {
 		const tokenId = await registerPushToken(data);
 
-		const removeResult = await PushToken.removeByTokenAndAppNameExceptId(data.token, data.appName, tokenId);
+		const removeResult = await PushToken.removeDuplicateTokens({
+			_id: tokenId,
+			token: data.token,
+			appName: data.appName,
+			authToken: data.authToken,
+		});
 		if (removeResult.deletedCount) {
 			logger.debug({ msg: 'Removed existing app items', removed: removeResult.deletedCount });
 		}
