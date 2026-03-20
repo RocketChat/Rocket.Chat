@@ -14,7 +14,6 @@ import {
 	isChatPostMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
-	isChatIgnoreUserProps,
 	isChatGetPinnedMessagesProps,
 	isChatGetMentionedMessagesProps,
 	isChatReactProps,
@@ -286,6 +285,34 @@ const isIgnoreUserResponse = ajv.compile<void>({
 	required: ['success'],
 	additionalProperties: false,
 });
+
+type ChatIgnoreUser = {
+	rid: string;
+	userId: string;
+	ignore: string;
+};
+
+const ChatIgnoreUserSchema = {
+	type: 'object',
+	properties: {
+		rid: {
+			type: 'string',
+			minLength: 1,
+		},
+		userId: {
+			type: 'string',
+			minLength: 1,
+		},
+		ignore: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['rid', 'userId', 'ignore'],
+	additionalProperties: false,
+};
+
+const isChatIgnoreUserProps = ajv.compile<ChatIgnoreUser>(ChatIgnoreUserSchema);
 
 const isChatPostMessageResponse = ajv.compile<{ ts: number; channel: string; message: IMessage }>({
 	type: 'object',
@@ -608,7 +635,6 @@ const chatEndpoints = API.v1
 			let { ignore = true } = this.queryParams;
 
 			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
-
 			if (!rid?.trim()) {
 				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
 			}
