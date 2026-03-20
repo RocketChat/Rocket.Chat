@@ -36,6 +36,7 @@ export class AppManagerTestFixture {
 			logStorage: this.testingInfastructure.getLogStorage(),
 			bridges: this.testingInfastructure.getAppBridges(),
 			sourceStorage: this.testingInfastructure.getSourceStorage(),
+			tempFilePath: this.testingInfastructure.getTempFilePath(),
 		});
 
 		Expect(manager.getStorage()).toBe(this.testingInfastructure.getAppStorage());
@@ -51,6 +52,7 @@ export class AppManagerTestFixture {
 					logStorage: {} as AppLogStorage,
 					bridges: {} as AppBridges,
 					sourceStorage: {} as AppSourceStorage,
+					tempFilePath: 'temp-file-path',
 				}),
 		).toThrowError(Error, 'There is already a valid AppManager instance');
 	}
@@ -66,6 +68,7 @@ export class AppManagerTestFixture {
 					logStorage: invalid as any,
 					bridges: invalid as any,
 					sourceStorage: invalid as any,
+					tempFilePath: 'temp-file-path',
 				}),
 		).toThrowError(Error, 'Invalid instance of the AppMetadataStorage');
 
@@ -76,6 +79,7 @@ export class AppManagerTestFixture {
 					logStorage: invalid as any,
 					bridges: invalid as any,
 					sourceStorage: invalid as any,
+					tempFilePath: 'temp-file-path',
 				}),
 		).toThrowError(Error, 'Invalid instance of the AppLogStorage');
 
@@ -86,6 +90,7 @@ export class AppManagerTestFixture {
 					logStorage: this.testingInfastructure.getLogStorage(),
 					bridges: invalid as any,
 					sourceStorage: invalid as any,
+					tempFilePath: 'temp-file-path',
 				}),
 		).toThrowError(Error, 'Invalid instance of the AppBridges');
 
@@ -96,6 +101,7 @@ export class AppManagerTestFixture {
 					logStorage: this.testingInfastructure.getLogStorage(),
 					bridges: this.testingInfastructure.getAppBridges(),
 					sourceStorage: invalid as any,
+					tempFilePath: this.testingInfastructure.getTempFilePath(),
 				}),
 		).toThrowError(Error, 'Invalid instance of the AppSourceStorage');
 	}
@@ -107,6 +113,7 @@ export class AppManagerTestFixture {
 			logStorage: this.testingInfastructure.getLogStorage(),
 			bridges: this.testingInfastructure.getAppBridges(),
 			sourceStorage: this.testingInfastructure.getSourceStorage(),
+			tempFilePath: this.testingInfastructure.getTempFilePath(),
 		});
 
 		Expect(manager.getParser() instanceof AppPackageParser).toBe(true);
@@ -129,6 +136,7 @@ export class AppManagerTestFixture {
 			logStorage: this.testingInfastructure.getLogStorage(),
 			bridges: this.testingInfastructure.getAppBridges(),
 			sourceStorage: this.testingInfastructure.getSourceStorage(),
+			tempFilePath: this.testingInfastructure.getTempFilePath(),
 		});
 
 		const appsOverview = TestData.getAppsOverview();
@@ -153,6 +161,7 @@ export class AppManagerTestFixture {
 			logStorage: this.testingInfastructure.getLogStorage(),
 			bridges: this.testingInfastructure.getAppBridges(),
 			sourceStorage: this.testingInfastructure.getSourceStorage(),
+			tempFilePath: this.testingInfastructure.getTempFilePath(),
 		});
 
 		const appsOverview = TestData.getAppsOverview();
@@ -177,6 +186,7 @@ export class AppManagerTestFixture {
 			logStorage: this.testingInfastructure.getLogStorage(),
 			bridges: this.testingInfastructure.getAppBridges(),
 			sourceStorage: this.testingInfastructure.getSourceStorage(),
+			tempFilePath: this.testingInfastructure.getTempFilePath(),
 		});
 
 		const sameLicenseData = 'same-license-data';
@@ -217,6 +227,7 @@ export class AppManagerTestFixture {
 			logStorage: this.testingInfastructure.getLogStorage(),
 			bridges: this.testingInfastructure.getAppBridges(),
 			sourceStorage: this.testingInfastructure.getSourceStorage(),
+			tempFilePath: this.testingInfastructure.getTempFilePath(),
 		});
 
 		const existingSubscriptionInfo = TestData.getMarketplaceSubscriptionInfo({
