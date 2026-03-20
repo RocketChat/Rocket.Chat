@@ -19,7 +19,7 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 
 const emojiDeleteBodySchema = ajv.compile({
 	type: 'object',
-	properties: { emojiId: { type: 'string' } },
+	properties: { emojiId: { type: 'string', minLength: 1 } },
 	required: ['emojiId'],
 	additionalProperties: false,
 });
