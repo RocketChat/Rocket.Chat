@@ -25,6 +25,7 @@ export interface IRoom extends IRocketChatRecord {
 	encrypted?: boolean;
 	// The existence of an abac attribute definition indicates that ABAC is enabled for the room
 	abacAttributes?: IAbacAttributeDefinition[];
+	requiredRoles?: string[];
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
