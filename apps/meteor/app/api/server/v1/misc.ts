@@ -9,9 +9,11 @@ import {
 	isDirectoryProps,
 	isFingerprintProps,
 	isMeteorCall,
+	meSuccessResponseSchema,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
+import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
@@ -170,18 +172,13 @@ import { getUserInfo } from '../helpers/getUserInfo';
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-const meResponseSchema = ajv.compile<Record<string, unknown>>({
-	type: 'object',
-	additionalProperties: true,
-});
-
 API.v1.get(
 	'me',
 	{
 		authRequired: true,
 		userWithoutUsername: true,
 		response: {
-			200: meResponseSchema,
+			200: ajv.compile<MeApiSuccessResponse>(meSuccessResponseSchema),
 			401: validateUnauthorizedErrorResponse,
 		},
 	},
@@ -189,7 +186,7 @@ API.v1.get(
 		const userFields = { ...getBaseUserFields(), services: 1 };
 		const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
 
-		return API.v1.success((await getUserInfo(user)) as unknown as Record<string, unknown>);
+		return API.v1.success(await getUserInfo(user));
 	},
 );
 
@@ -348,7 +345,7 @@ const spotlightResponseSchema = ajv.compile<{
 					statusText: { type: 'string' },
 					avatarETag: { type: 'string' },
 				},
-				required: ['_id', 'name', 'username', 'status'],
+				required: ['_id', 'name', 'username', 'status', 'statusText'],
 				additionalProperties: true,
 			},
 		},
@@ -360,7 +357,7 @@ const spotlightResponseSchema = ajv.compile<{
 					_id: { type: 'string' },
 					t: { type: 'string' },
 					name: { type: 'string' },
-					lastMessage: { type: 'object' },
+					lastMessage: { $ref: '#/components/schemas/IMessage' },
 				},
 				required: ['_id', 't', 'name'],
 				additionalProperties: true,
