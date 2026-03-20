@@ -11,7 +11,7 @@ import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddU
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
-import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
+import { notifyOnRoomChangedById } from '../lib/notifyListener';
 
 /**
  * This function adds user to the given room.
@@ -55,39 +55,6 @@ export const addUserToRoom = async (
 		return;
 	}
 
-	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription) {
-		if (isBannedSubscription(subscription)) {
-			if (isRoomNativeFederated(room)) {
-				// For federated rooms, unban requires a Matrix kick (leave) followed by a new invite.
-				// Remove the subscription so the unban propagates to Matrix via the afterUnbanFromRoom callback,
-				// then let the flow continue to create a new INVITED subscription via the beforeAddUserToRoom hook.
-				await Subscriptions.removeById(subscription._id);
-
-				if (!skipSystemMessage && userToBeAdded.username) {
-					await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username, userToBeAdded);
-				}
-
-				void notifyOnSubscriptionChanged(subscription, 'removed');
-				void notifyOnRoomChangedById(rid);
-
-				// Propagate unban to Matrix (kick event)
-				if (inviter) {
-					const { afterUnbanFromRoomCallback } = await import('../../../../server/lib/callbacks/afterUnbanFromRoomCallback');
-					await afterUnbanFromRoomCallback.run({ unbannedUser: userToBeAdded, userWhoUnbanned: inviter as IUser }, room);
-				}
-
-				// Fall through — subscription is gone, so the rest of addUserToRoom will
-				// hit the federation early-return and the beforeAddUserToRoom hook will
-				// send the Matrix invite and create the subscription as INVITED.
-			}
-		} else {
-			// User already has an active subscription — nothing to do
-			return;
-		}
-	}
-
 	try {
 		const inviterUser = inviter && ((await Users.findOneById(inviter._id)) || undefined);
 		// Not "duplicated": we're moving away from callbacks so this is a patch function. We should migrate the next one to be a patch or use this same patch, instead of calling both
@@ -125,7 +92,11 @@ export const addUserToRoom = async (
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
 	}
 
-	if (subscription && isBannedSubscription(subscription)) {
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	if (subscription) {
+		if (!isBannedSubscription(subscription)) {
+			return true;
+		}
 		const deleteCount = await Subscriptions.removeByUserId(userToBeAdded._id);
 		if (!deleteCount) {
 			return true;
