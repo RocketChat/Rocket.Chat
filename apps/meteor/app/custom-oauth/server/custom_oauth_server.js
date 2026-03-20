@@ -102,6 +102,10 @@ export class CustomOAuth {
 			this.identityPath = this.serverURL + this.identityPath;
 		}
 
+		if (!isAbsoluteURL(this.emailPath)) {
+			this.emailPath = this.serverURL + this.emailPath;
+		}
+
 		if (Match.test(options.addAutopublishFields, Object)) {
 			Accounts.addAutopublishFields(options.addAutopublishFields);
 		}
