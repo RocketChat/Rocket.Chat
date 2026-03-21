@@ -176,7 +176,12 @@ export const sendNoWrap = async ({
 
 	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
 
-	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
+	try {
+		await Email.sendAsync(eventResult || email);
+	} catch (e) {
+		console.error('[Email Error]', e);
+		throw new Meteor.Error('email-send-failed', e instanceof Error ? e.message : 'Email sending failed');
+	}
 };
 
 export const send = async ({
