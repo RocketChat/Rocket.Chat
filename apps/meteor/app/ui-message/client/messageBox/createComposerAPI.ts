@@ -1,12 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
+import { Tracker } from 'meteor/tracker';
 import type { RefObject } from 'react';
 
 import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createComposerAPI = (
@@ -14,6 +16,7 @@ export const createComposerAPI = (
 	storageID: string,
 	quoteChainLimit: number,
 	composerRef: RefObject<HTMLElement>,
+	{ rid, tmid }: { rid: string; tmid?: string },
 ): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
@@ -350,5 +353,6 @@ export const createComposerAPI = (
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
+		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };

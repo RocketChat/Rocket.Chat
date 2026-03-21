@@ -81,7 +81,7 @@ class NotificationClass {
 		}
 
 		try {
-			for await (const item of notification.items) {
+			for (const item of notification.items) {
 				switch (item.type) {
 					case 'push':
 						await this.push(notification, item);

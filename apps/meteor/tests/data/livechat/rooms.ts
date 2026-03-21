@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import type {

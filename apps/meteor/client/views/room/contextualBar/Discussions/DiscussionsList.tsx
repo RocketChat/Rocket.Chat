@@ -19,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import DiscussionsListRow from './DiscussionsListRow';
-import { goToRoomById } from '../../../../lib/utils/goToRoomById';
+import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 type DiscussionsListProps = {
 	total: number;
@@ -46,10 +46,15 @@ function DiscussionsList({
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
 
-	const onClick = useCallback((e: MouseEvent<HTMLElement>) => {
-		const { drid } = e.currentTarget.dataset;
-		if (drid) goToRoomById(drid);
-	}, []);
+	const goToRoom = useGoToRoom();
+
+	const onClick = useCallback(
+		(e: MouseEvent<HTMLElement>) => {
+			const { drid } = e.currentTarget.dataset;
+			if (drid) goToRoom(drid);
+		},
+		[goToRoom],
+	);
 
 	const { ref, contentBoxSize: { inlineSize = 378, blockSize = 1 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,

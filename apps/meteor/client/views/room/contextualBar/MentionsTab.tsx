@@ -22,7 +22,6 @@ const MentionsTab = (): ReactElement => {
 			for (
 				let offset = 0, result = await getMentionedMessages({ roomId: room._id, offset: 0 });
 				result.count > 0;
-				// eslint-disable-next-line no-await-in-loop
 				offset += result.count, result = await getMentionedMessages({ roomId: room._id, offset })
 			) {
 				messages.push(...result.messages.map(mapMessageFromApi));

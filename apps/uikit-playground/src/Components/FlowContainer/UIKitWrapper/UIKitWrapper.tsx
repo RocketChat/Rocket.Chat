@@ -4,7 +4,7 @@ import { Handle, Position } from 'reactflow';
 import './UIKitWrapper.scss';
 
 import { context } from '../../../Context';
-import { type idType } from '../../../Context/initialState';
+import type { idType } from '../../../Context/initialState';
 import SurfaceRender from '../../Preview/Display/Surface/SurfaceRender';
 import RenderPayload from '../../RenderPayload/RenderPayload';
 
