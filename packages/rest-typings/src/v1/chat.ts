@@ -497,7 +497,7 @@ const ChatGetMessageReadReceiptsSchema = {
 export const isChatGetMessageReadReceiptsProps = ajv.compile<ChatGetMessageReadReceipts>(ChatGetMessageReadReceiptsSchema);
 
 type GetStarredMessages = {
-	roomId: IRoom['_id'];
+	roomId?: IRoom['_id'];
 	count?: number;
 	offset?: number;
 	sort?: string;
@@ -523,7 +523,9 @@ const GetStarredMessagesSchema = {
 			nullable: true,
 		},
 	},
-	required: ['roomId'],
+	// roomId is optional to allow global fetch across user subscriptions
+	// (Activity Hub). Validation will accept requests without roomId.
+	required: [],
 	additionalProperties: false,
 };
 
@@ -563,7 +565,7 @@ const GetPinnedMessagesSchema = {
 export const isChatGetPinnedMessagesProps = ajv.compile<GetPinnedMessages>(GetPinnedMessagesSchema);
 
 type GetMentionedMessages = {
-	roomId: IRoom['_id'];
+	roomId?: IRoom['_id'];
 	count?: number;
 	offset?: number;
 	sort?: string;
@@ -589,7 +591,9 @@ const GetMentionedMessagesSchema = {
 			nullable: true,
 		},
 	},
-	required: ['roomId'],
+	// roomId is optional to allow global fetch across user subscriptions
+	// (Activity Hub). Validation will accept requests without roomId.
+	required: [],
 	additionalProperties: false,
 };
 
