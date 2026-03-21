@@ -117,7 +117,11 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const { startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 
 		const meetingUrl = await this.getMeetingUrl(data);
-		const reminderTime = reminderMinutesBeforeStart != null && startTime ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
+		const effectiveStartTime = startTime ?? event.startTime;
+		const reminderTime =
+			reminderMinutesBeforeStart != null && effectiveStartTime
+				? getShiftedTime(effectiveStartTime, -reminderMinutesBeforeStart)
+				: undefined;
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,
