@@ -30,8 +30,8 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
 	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
-	const { watch } = useFormContext();
-	const avatarValue = watch('avatar');
+	const formContext = useFormContext();
+	const avatarValue = formContext?.watch?.('avatar');
 
 	useEffect(() => {
 		if (!avatarValue) {
