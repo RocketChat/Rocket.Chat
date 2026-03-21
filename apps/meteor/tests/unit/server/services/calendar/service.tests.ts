@@ -306,6 +306,27 @@ describe('CalendarService', () => {
 			expect(updateArgs.reminderTime).to.be.an.instanceOf(Date);
 		});
 
+		it('should handle reminderMinutesBeforeStart = 0 without startTime in patch', async () => {
+			const fakeEvent = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				subject: fakeSubject,
+				reminderMinutesBeforeStart: 5,
+			};
+
+			CalendarEventMock.findOne.resolves(fakeEvent);
+
+			await service.update(fakeEventId, {
+				reminderMinutesBeforeStart: 0,
+			});
+
+			const updateArgs = CalendarEventMock.updateEvent.firstCall.args[1];
+			expect(updateArgs.reminderMinutesBeforeStart).to.equal(0);
+			expect(updateArgs.reminderTime).to.deep.equal(fakeStartTime);
+		});
+
 		it('should recalculate reminderTime when only startTime is updated', async () => {
 			const fakeEvent = {
 				_id: fakeEventId,
