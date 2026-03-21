@@ -6,6 +6,7 @@ import type { IParseAppPackageResult } from '../../../src/server/compiler';
 import { AppRuntimeManager } from '../../../src/server/managers/AppRuntimeManager';
 import type { IRuntimeController } from '../../../src/server/runtime/IRuntimeController';
 import type { IAppStorageItem } from '../../../src/server/storage';
+import { TestInfastructureSetup } from '../../test-data/utilities';
 
 export class AppRuntimeManagerTestFixture {
 	private mockManager: AppManager;
@@ -20,20 +21,9 @@ export class AppRuntimeManagerTestFixture {
 
 	@SetupFixture
 	public setupFixture() {
-		this.mockManager = {
-			getAccessorManager() {
-				return {} as any;
-			},
-			getApiManager() {
-				return {} as any;
-			},
-			getLogStorage() {
-				return {} as any;
-			},
-			getBridges() {
-				return {} as any;
-			},
-		} as AppManager;
+		const testInfrastructure = new TestInfastructureSetup();
+
+		this.mockManager = testInfrastructure.getMockManager();
 
 		this.mockAppPackage = {
 			info: {

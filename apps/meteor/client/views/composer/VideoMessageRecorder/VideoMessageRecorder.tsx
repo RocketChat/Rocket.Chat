@@ -8,13 +8,11 @@ import { useRef, useEffect, useState } from 'react';
 
 import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserAction';
 import { VideoRecorder } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
-import type { UploadsAPI } from '../../../lib/chats/ChatAPI';
 import { useChat } from '../../room/contexts/ChatContext';
 
 type VideoMessageRecorderProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
-	uploadsStore: UploadsAPI;
 	reference: RefObject<HTMLElement>;
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'is'>;
 
@@ -38,7 +36,7 @@ const getVideoRecordingExtension = () => {
 	return 'mp4';
 };
 
-const VideoMessageRecorder = ({ rid, tmid, uploadsStore, reference }: VideoMessageRecorderProps) => {
+const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProps) => {
 	const t = useTranslation();
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const dispatchToastMessage = useToastMessageDispatch();
@@ -86,7 +84,7 @@ const VideoMessageRecorder = ({ rid, tmid, uploadsStore, reference }: VideoMessa
 		const cb = async (blob: Blob) => {
 			const fileName = `${t('Video_record')}.${getVideoRecordingExtension()}`;
 			const file = new File([blob], fileName, { type: VideoRecorder.getSupportedMimeTypes().split(';')[0] });
-			await chat?.flows.uploadFiles({ files: [file], uploadsStore });
+			await chat?.flows.uploadFiles({ files: [file] });
 			chat?.composer?.setRecordingVideo(false);
 		};
 

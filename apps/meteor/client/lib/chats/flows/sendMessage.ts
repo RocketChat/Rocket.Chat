@@ -60,7 +60,6 @@ export const sendMessage = async (
 		tshow,
 		previewUrls,
 		isSlashCommandAllowed,
-		tmid,
 	}: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean; tmid?: IMessage['tmid'] },
 ): Promise<boolean> => {
 	if (!(await chat.data.isSubscribedToRoom())) {
@@ -74,13 +73,13 @@ export const sendMessage = async (
 
 	chat.readStateManager.clearUnreadMark();
 
-	const uploadsStore = tmid ? chat.threadUploads : chat.uploads;
+	const uploadsStore = chat.composer?.uploads;
 
 	text = text.trim();
 	text = closeUnclosedCodeBlock(text);
 	const mid = chat.currentEditingMessage.getMID();
 
-	const hasFiles = uploadsStore.get().length > 0;
+	const hasFiles = uploadsStore && uploadsStore.get().length > 0;
 	if (!text && !mid && !hasFiles) {
 		// Nothing to do
 		return false;
