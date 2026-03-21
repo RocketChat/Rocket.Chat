@@ -81,3 +81,4 @@ import '../app/reactions/server';
 import '../app/livechat/server';
 import '../app/authentication/server';
 import '../app/github/server';
+import './passport';
