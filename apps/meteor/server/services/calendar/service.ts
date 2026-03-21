@@ -25,7 +25,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 	public async create(data: Omit<InsertionModel<ICalendarEvent>, 'reminderTime' | 'notificationSent'>): Promise<ICalendarEvent['_id']> {
 		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, meetingUrl, busy } = data;
 		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
-		const reminderTime = minutes ? getShiftedTime(startTime, -minutes) : undefined;
+		const reminderTime = getShiftedTime(startTime, -minutes);
 
 		const insertData: InsertionModel<ICalendarEvent> = {
 			uid,
@@ -57,7 +57,8 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
-		const reminderTime = reminderMinutesBeforeStart ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
+		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
+		const reminderTime = getShiftedTime(startTime, -minutes);
 
 		const updateData: Omit<InsertionModel<ICalendarEvent>, 'uid' | 'notificationSent'> = {
 			startTime,
@@ -116,7 +117,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const { startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 
 		const meetingUrl = await this.getMeetingUrl(data);
-		const reminderTime = reminderMinutesBeforeStart && startTime ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
+		const reminderTime = reminderMinutesBeforeStart != null && startTime ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,
