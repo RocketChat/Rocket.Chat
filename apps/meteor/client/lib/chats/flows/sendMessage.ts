@@ -121,6 +121,12 @@ export const sendMessage = async (
 		}
 
 		try {
+			if (!text && originalMessage.attachments?.length) {
+				chat.composer?.clear();
+				await chat.flows.requestMessageDeletion(originalMessage);
+				return false;
+			}
+			
 			if (await chat.flows.processMessageEditing({ ...originalMessage, msg: '' }, previewUrls)) {
 				chat.currentEditingMessage.stop();
 				return false;
