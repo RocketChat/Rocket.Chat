@@ -1,7 +1,10 @@
+import { getPino } from '@rocket.chat/logger';
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
 
 import type { LicenseManager } from './license';
 import { getModules } from './modules';
+
+const logger = getPino();
 
 export function showLicense(this: LicenseManager, license: ILicenseV3 | undefined, valid: boolean | undefined) {
 	if (!process.env.LICENSE_DEBUG || process.env.LICENSE_DEBUG === 'false') {
@@ -19,10 +22,10 @@ export function showLicense(this: LicenseManager, license: ILicenseV3 | undefine
 
 	const modules = getModules.call(this);
 
-	console.log('---- License enabled ----');
-	console.log('              url ->', JSON.stringify(serverUrls));
-	console.log('          periods ->', JSON.stringify(validPeriods));
-	console.log('           limits ->', JSON.stringify(limits));
-	console.log('          modules ->', modules.join(', '));
-	console.log('-------------------------');
+	logger.debug('---- License enabled ----');
+	logger.debug('              url -> %s', JSON.stringify(serverUrls));
+	logger.debug('          periods -> %s', JSON.stringify(validPeriods));
+	logger.debug('           limits -> %s', JSON.stringify(limits));
+	logger.debug('          modules -> %s', modules.join(', '));
+	logger.debug('-------------------------');
 }

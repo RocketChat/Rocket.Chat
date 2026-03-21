@@ -1,8 +1,11 @@
+import { getPino } from '@rocket.chat/logger';
 import type { IPresence, IBrokerNode } from '@rocket.chat/core-services';
 import { License, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { Users, UsersSessions } from '@rocket.chat/models';
+
+const logger = getPino();
 
 import { PresenceReaper } from './lib/PresenceReaper';
 import { processPresenceAndStatus } from './lib/processConnectionStatus';
@@ -105,13 +108,13 @@ export class Presence extends ServiceClass implements IPresence {
 		const rejected = results.filter((result) => result.status === 'rejected');
 
 		if (fulfilled.length > 0) {
-			console.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
+			logger.debug(`[PresenceReaper] Successfully updated presence for ${fulfilled.length} users.`);
 		}
 
 		if (rejected.length > 0) {
-			console.error(
-				`[PresenceReaper] Failed to update presence for ${rejected.length} users:`,
-				rejected.map(({ reason }) => reason),
+			logger.error(
+				{ reasons: rejected.map(({ reason }) => reason) },
+				`[PresenceReaper] Failed to update presence for ${rejected.length} users`,
 			);
 		}
 	}
