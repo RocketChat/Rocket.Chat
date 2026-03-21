@@ -57,8 +57,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 		const { uid, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 		const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
-		const minutes = reminderMinutesBeforeStart ?? defaultMinutesForNotifications;
-		const reminderTime = getShiftedTime(startTime, -minutes);
+		const reminderTime = reminderMinutesBeforeStart != null ? getShiftedTime(startTime, -reminderMinutesBeforeStart) : undefined;
 
 		const updateData: Omit<InsertionModel<ICalendarEvent>, 'uid' | 'notificationSent'> = {
 			startTime,
@@ -117,11 +116,14 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		const { startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
 
 		const meetingUrl = await this.getMeetingUrl(data);
-		const effectiveStartTime = startTime ?? event.startTime;
-		const reminderTime =
-			reminderMinutesBeforeStart != null && effectiveStartTime
-				? getShiftedTime(effectiveStartTime, -reminderMinutesBeforeStart)
-				: undefined;
+		const shouldRecomputeReminder = startTime !== undefined || reminderMinutesBeforeStart !== undefined;
+		const reminderTime = shouldRecomputeReminder
+			? (() => {
+					const effectiveStartTime = startTime ?? event.startTime;
+					const effectiveMinutes = reminderMinutesBeforeStart ?? event.reminderMinutesBeforeStart;
+					return effectiveMinutes != null && effectiveStartTime ? getShiftedTime(effectiveStartTime, -effectiveMinutes) : undefined;
+				})()
+			: undefined;
 
 		const updateData: Partial<ICalendarEvent> = {
 			startTime,

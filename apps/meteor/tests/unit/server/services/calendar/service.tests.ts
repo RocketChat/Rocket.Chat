@@ -306,6 +306,29 @@ describe('CalendarService', () => {
 			expect(updateArgs.reminderTime).to.be.an.instanceOf(Date);
 		});
 
+		it('should recalculate reminderTime when only startTime is updated', async () => {
+			const fakeEvent = {
+				_id: fakeEventId,
+				uid: fakeUserId,
+				startTime: fakeStartTime,
+				endTime: fakeEndTime,
+				subject: fakeSubject,
+				reminderMinutesBeforeStart: 10,
+			};
+
+			CalendarEventMock.findOne.resolves(fakeEvent);
+
+			const newStartTime = new Date('2025-01-02T14:00:00Z');
+			const expectedReminderTime = new Date('2025-01-02T13:50:00Z');
+
+			await service.update(fakeEventId, {
+				startTime: newStartTime,
+			});
+
+			const updateArgs = CalendarEventMock.updateEvent.firstCall.args[1];
+			expect(updateArgs.reminderTime).to.deep.equal(expectedReminderTime);
+		});
+
 		it('should update cron jobs when start/end times change', async () => {
 			const fakeEvent = {
 				_id: fakeEventId,
