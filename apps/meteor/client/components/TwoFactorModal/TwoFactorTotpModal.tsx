@@ -49,7 +49,17 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 						{t('Enter_the_code_provided_by_your_authentication_app_to_continue')}
 					</FieldLabel>
 					<FieldRow>
-						<TextInput id={id} ref={ref} value={code} onChange={onChange} placeholder={t('Enter_code_here')}></TextInput>
+						<TextInput
+							id={id}
+							ref={ref}
+							type='text'
+							name='totp'
+							autoComplete='one-time-code'
+							inputMode='numeric'
+							value={code}
+							onChange={onChange}
+							placeholder={t('Enter_code_here')}
+						/>
 					</FieldRow>
 					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
 				</Field>
