@@ -1,16 +1,17 @@
-import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
+import type { AvatarObject, IUser } from '@rocket.chat/core-typings';
+import { Avatar, Box, Button, IconButton, Label, TextInput } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
-import { useId, useState, useCallback } from 'react';
+import { useSetting, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent, ReactElement } from 'react';
+import { useCallback, useEffect, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useFormContext } from 'react-hook-form';
+import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
+import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
-import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
-import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
 type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
@@ -29,6 +30,15 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
 	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const { watch } = useFormContext();
+	const avatarValue = watch('avatar');
+
+	useEffect(() => {
+		if (!avatarValue) {
+			setNewAvatarSource(undefined);
+			setAvatarFromUrl('');
+		}
+	}, [avatarValue]);
 
 	const setUploadedPreview = useCallback(
 		async (file: File, avatarObj: AvatarObject) => {
