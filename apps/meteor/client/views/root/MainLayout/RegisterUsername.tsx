@@ -96,7 +96,7 @@ const RegisterUsername = () => {
 	return (
 		<VerticalWizardLayout
 			background={customBackground}
-			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : <></>}
+			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Rocket.Chat logo' /> : <></>}
 		>
 			<Form aria-labelledby={formLabelId} onSubmit={handleSubmit((data) => registerUsernameMutation.mutate(data))}>
 				<Form.Header>
