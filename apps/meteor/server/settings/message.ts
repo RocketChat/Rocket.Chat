@@ -123,6 +123,28 @@ export const createMessageSettings = () =>
 			type: 'int',
 			public: true,
 		});
+		await this.section('Mentions_Confirmation', async function () {
+			await this.add('Message_RequireConfirmationToMentionAll', false, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Message_RequireConfirmationToMentionAll',
+				i18nDescription: 'Message_RequireConfirmationToMentionAll_Description',
+			});
+			await this.add('Message_MentionAll_Confirmation_MinUsers', 10, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Message_MentionAll_Confirmation_MinUsers',
+				i18nDescription: 'Message_MentionAll_Confirmation_MinUsers_Description',
+				enableQuery: { _id: 'Message_RequireConfirmationToMentionAll', value: true },
+			});
+			await this.add('Message_MentionAll_Confirmation_MinTimezones', 2, {
+				type: 'int',
+				public: true,
+				i18nLabel: 'Message_MentionAll_Confirmation_MinTimezones',
+				i18nDescription: 'Message_MentionAll_Confirmation_MinTimezones_Description',
+				enableQuery: { _id: 'Message_RequireConfirmationToMentionAll', value: true },
+			});
+		});
 		await this.add('Message_MaxAllowedSize', 5000, {
 			type: 'int',
 			public: true,
