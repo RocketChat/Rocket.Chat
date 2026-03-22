@@ -1,5 +1,14 @@
 # @rocket.chat/server-fetch
 
+## 0.1.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/models@2.1.1
+  </details>
+
 ## 0.1.0
 
 ### Minor Changes

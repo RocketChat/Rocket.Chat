@@ -1,4 +1,3 @@
-import type { IUser } from '@rocket.chat/core-typings';
 import type { MediaSignalingSession } from '@rocket.chat/media-signaling';
 import { useEndpoint, useSetting, useUser, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
@@ -32,7 +31,7 @@ export const useGetAutocompleteOptions = (instance: MediaSignalingSession | unde
 						}
 					: undefined;
 
-			const exceptions = [user?.username, peerUsername].filter(Boolean) as IUser['username'][];
+			const exceptions = [user?.username, peerUsername].filter(Boolean);
 
 			const { items } = await usersAutoCompleteEndpoint({
 				selector: JSON.stringify({ term: filter, exceptions, ...(conditions && { conditions }) }),

@@ -137,9 +137,9 @@ const MessageBox = ({
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit, messageComposerRef));
+			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit, messageComposerRef, { rid: room._id, tmid }));
 		},
-		[chat, storageID, quoteChainLimit],
+		[chat, storageID, quoteChainLimit, room._id, tmid],
 	);
 
 	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
@@ -158,17 +158,7 @@ const MessageBox = ({
 		chat.emojiPicker.open(ref, (emoji: string) => chat.composer?.insertText(` :${emoji}: `));
 	});
 
-	const uploadsStore = tmid ? chat.threadUploads : chat.uploads;
-	const {
-		uploads,
-		hasUploads,
-		handleUploadFiles,
-		handleEditUpload,
-		handleRemoveUpload,
-		handleCancelUpload,
-		isUploading,
-		isProcessingUploads,
-	} = useFileUpload(uploadsStore);
+	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
 
 	const handleSendMessage = useEffectEvent(() => {
 		if (isUploading || isProcessingUploads) {
@@ -436,9 +426,9 @@ const MessageBox = ({
 				unencryptedMessagesAllowed={unencryptedMessagesAllowed}
 				isMobile={isMobile}
 			/>
-			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} uploadsStore={uploadsStore} rid={room._id} tmid={tmid} />}
+			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={room._id} tmid={tmid} />}
 			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
-				{isRecordingAudio && <AudioMessageRecorder rid={room._id} uploadsStore={uploadsStore} isMicrophoneDenied={isMicrophoneDenied} />}
+				{isRecordingAudio && <AudioMessageRecorder rid={room._id} isMicrophoneDenied={isMicrophoneDenied} />}
 				<MessageComposerInputExpandable
 					dimensions={sizes}
 					ref={mergedRefs}
@@ -451,15 +441,7 @@ const MessageBox = ({
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
 				/>
-				{hasUploads && (
-					<MessageComposerFiles
-						uploads={uploads}
-						onEdit={handleEditUpload}
-						onRemove={handleRemoveUpload}
-						onCancel={handleCancelUpload}
-						disabled={isProcessingUploads}
-					/>
-				)}
+				<MessageComposerFiles />
 				<MessageComposerToolbar>
 					<MessageComposerToolbarActions aria-label={t('Message_composer_toolbox_primary_actions')}>
 						<MessageComposerAction

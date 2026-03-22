@@ -9,6 +9,14 @@ export function addSettings(): Promise<void> {
 			},
 			async function () {
 				await this.section('VoIP_TeamCollab_WebRTC', async function () {
+					await this.add('VoIP_TeamCollab_Screen_Sharing_Enabled', true, {
+						type: 'boolean',
+						public: true,
+						invalidValue: false,
+						alert: 'VoIP_TeamCollab_Screen_Sharing_Enabled_Alert',
+						i18nDescription: 'VoIP_TeamCollab_Screen_Sharing_Enabled_Description',
+					});
+
 					await this.add('VoIP_TeamCollab_Ice_Servers', 'stun:stun.l.google.com:19302', {
 						type: 'string',
 						public: true,

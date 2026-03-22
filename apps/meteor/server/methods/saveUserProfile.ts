@@ -16,6 +16,7 @@ import { passwordPolicy } from '../../app/lib/server/lib/passwordPolicy';
 import { setEmailFunction } from '../../app/lib/server/methods/setEmail';
 import { settings as rcSettings } from '../../app/settings/server';
 import { setUserStatusMethod } from '../../app/user-status/server/methods/setUserStatus';
+import { callbacks } from '../lib/callbacks';
 import { compareUserPassword } from '../lib/compareUserPassword';
 import { compareUserPasswordHistory } from '../lib/compareUserPasswordHistory';
 
@@ -177,6 +178,11 @@ async function saveUserProfile(
 	if (!updatedUser) {
 		throw new Error('Unexpected error after saving user profile: user not found');
 	}
+
+	await callbacks.run('afterSaveUser', {
+		user: updatedUser,
+		oldUser: user,
+	});
 
 	void notifyOnUserChange({
 		clientAction: 'updated',
