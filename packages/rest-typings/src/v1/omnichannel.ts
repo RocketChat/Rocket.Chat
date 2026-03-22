@@ -649,13 +649,14 @@ const POSTLivechatTagsDeleteSuccessResponseSchema = {
 
 export const POSTLivechatTagsDeleteSuccessResponse = ajv.compile<void>(POSTLivechatTagsDeleteSuccessResponseSchema);
 
-type LivechatTagsListProps = PaginatedRequest<{ text: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
+type LivechatTagsListProps = PaginatedRequest<{ text?: string; viewAll?: 'true' | 'false'; department?: string }, 'name'>;
 
 const LivechatTagsListSchema = {
 	type: 'object',
 	properties: {
 		text: {
 			type: 'string',
+			nullable: true,
 		},
 		department: {
 			type: 'string',
@@ -683,11 +684,57 @@ const LivechatTagsListSchema = {
 			nullable: true,
 		},
 	},
-	required: ['text'],
 	additionalProperties: false,
 };
 
 export const isLivechatTagsListProps = ajvQuery.compile<LivechatTagsListProps>(LivechatTagsListSchema);
+
+const GETLivechatTagsSuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		tags: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					name: { type: 'string' },
+					description: { type: 'string' },
+					numDepartments: { type: 'number' },
+					departments: { type: 'array', items: { type: 'string' } },
+				},
+				required: ['_id', 'name', 'numDepartments', 'departments'],
+				additionalProperties: false,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['tags', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+};
+
+export const GETLivechatTagsSuccessResponse = ajv.compile<{ tags: ILivechatTag[]; count: number; offset: number; total: number }>(
+	GETLivechatTagsSuccessResponseSchema,
+);
+
+const GETLivechatTagByIdSuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		_id: { type: 'string' },
+		name: { type: 'string' },
+		description: { type: 'string' },
+		numDepartments: { type: 'number' },
+		departments: { type: 'array', items: { type: 'string' } },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['_id', 'name', 'numDepartments', 'departments', 'success'],
+	additionalProperties: false,
+};
+
+export const GETLivechatTagByIdSuccessResponse = ajv.compile<ILivechatTag>(GETLivechatTagByIdSuccessResponseSchema);
 
 type LivechatDepartmentProps = PaginatedRequest<{
 	text?: string;
@@ -4621,14 +4668,7 @@ export type OmnichannelEndpoints = {
 	'/v1/livechat/monitors/:username': {
 		GET: () => ILivechatMonitor;
 	};
-	'/v1/livechat/tags': {
-		GET: (params: LivechatTagsListProps) => PaginatedResult<{
-			tags: ILivechatTag[];
-		}>;
-	};
-	'/v1/livechat/tags/:tagId': {
-		GET: () => ILivechatTag;
-	};
+
 	'/v1/livechat/department': {
 		GET: (params?: LivechatDepartmentProps) => PaginatedResult<{
 			departments: ILivechatDepartment[];
