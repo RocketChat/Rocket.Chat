@@ -212,7 +212,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 	}
 
 	async getInstances(): Promise<BrokerNode[]> {
-		return this.broker.call('$node.list', { onlyAvailable: true });
+		return this.broker.call('$node.list', { onlyAvailable: true }, { nodeID: this.broker.nodeID });
 	}
 
 	async getAppsStatusInInstances(): Promise<AppStatusReport> {
