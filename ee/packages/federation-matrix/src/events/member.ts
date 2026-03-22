@@ -1,8 +1,11 @@
 import { Room } from '@rocket.chat/core-services';
+import { isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import debounce from 'lodash.debounce';
+import mem from 'mem';
 
 import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
 import { getUsernameServername } from '../helpers/getUsernameServername';
@@ -195,9 +198,16 @@ async function handleInvite({
 	}
 }
 
+const getUpdateUserNameDebounced = mem((userId: string) => debounce((name: string) => Users.setName(userId, name), 2000));
+
+function updateUserNameDebounced(userId: string, newName: string): void {
+	void getUpdateUserNameDebounced(userId)(newName);
+}
+
 async function handleJoin({
 	room_id: roomId,
 	state_key: userId,
+	content,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const joiningUser = await getOrCreateFederatedUser(userId);
 	if (!joiningUser?.username) {
@@ -212,6 +222,13 @@ async function handleJoin({
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
 	if (!subscription) {
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
+	}
+
+	// updates user name whenever we receive a join event, because Matrix sends a new join event with the updated display name whenever a user changes their display name
+	if ('displayname' in content && content.displayname !== joiningUser.name) {
+		// whan a user changes the it's display name we receive a new join event for every room the user is in
+		// so we need to debounce the name update to avoid updating the name multiple times in a row
+		void updateUserNameDebounced(joiningUser._id, content.displayname || '');
 	}
 
 	// update room name for DMs
@@ -230,6 +247,7 @@ async function handleJoin({
 async function handleLeave({
 	room_id: roomId,
 	state_key: userId,
+	sender,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const serverName = federationSDK.getConfig('serverName');
 	const [username] = getUsernameServername(userId, serverName);
@@ -239,9 +257,25 @@ async function handleLeave({
 		return;
 	}
 
+	const [senderUsername] = getUsernameServername(sender, serverName);
+
+	const senderUser = await Users.findOneByUsername(senderUsername);
+	if (!senderUser) {
+		return;
+	}
+
 	const room = await Rooms.findOneFederatedByMrid(roomId);
 	if (!room) {
 		throw new Error(`Room not found while leaving user ${userId} from room ${roomId}`);
+	}
+
+	// In Matrix, unban is a leave event for a previously banned user.
+	// Check local subscription state to distinguish leave from unban.
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, leavingUser._id);
+	if (subscription && isBannedSubscription(subscription)) {
+		await Room.performUserUnban(room, leavingUser, senderUser);
+		logger.info({ msg: 'Unbanned user via federation leave event', userId: leavingUser._id, roomId: room._id });
+		return;
 	}
 
 	await Room.performUserRemoval(room, leavingUser);
@@ -252,6 +286,33 @@ async function handleLeave({
 	}
 
 	// TODO check if there are no pending invites to the room, and if so, delete the room
+}
+
+async function handleBan({
+	room_id: roomId,
+	state_key: userId,
+	sender: senderId,
+}: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
+	const serverName = federationSDK.getConfig('serverName');
+	const [username] = getUsernameServername(userId, serverName);
+
+	const bannedUser = await Users.findOneByUsername(username);
+	if (!bannedUser) {
+		return;
+	}
+
+	const room = await Rooms.findOneFederatedByMrid(roomId);
+	if (!room) {
+		throw new Error(`Room not found while banning user ${userId} from room ${roomId}`);
+	}
+
+	const [senderUsername] = getUsernameServername(senderId, serverName);
+	const senderUser = await Users.findOneByUsername(senderUsername);
+	if (!senderUser) {
+		throw new Error(`Ban sender not found locally: ${senderUsername} (Matrix id ${senderId})`);
+	}
+
+	await Room.performUserBan(room, bannedUser, senderUser);
 }
 
 export function member() {
@@ -268,6 +329,10 @@ export function member() {
 
 				case 'leave':
 					await handleLeave(event);
+					break;
+
+				case 'ban':
+					await handleBan(event);
 					break;
 
 				default:
