@@ -53,6 +53,7 @@ export interface Endpoints
 		ChatEndpoints,
 		CommandsEndpoints,
 		CloudEndpoints,
+		CommandsEndpoints,
 		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DirectoryEndpoint,
