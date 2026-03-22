@@ -180,10 +180,10 @@ export async function createDirectRoom(
 				{
 					...(options?.creator === member._id && { $set: { open: true } }),
 					$setOnInsert: generateSubscription(fname, name, member, {
-						...options?.subscriptionExtra,
 						...(options?.creator !== member._id && { open: members.length > 2 }),
-						...subscriptionStatus,
 						...(roomExtraData.federated && member._id === options?.creator && { roles: ['owner'] }),
+						...subscriptionStatus,
+						...options?.subscriptionExtra,
 					}),
 				},
 				{ upsert: true },
