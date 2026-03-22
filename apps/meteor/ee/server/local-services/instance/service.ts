@@ -79,6 +79,7 @@ export class InstanceService extends ServiceClassInternal implements IInstanceSe
 		this.broker = new ServiceBroker({
 			nodeID: InstanceStatus.id(),
 			transporter: this.transporter,
+			disableBalancer: !isTransporterTCP,
 			serializer: new EJSONSerializer(),
 			heartbeatInterval: defaultPingInterval,
 			heartbeatTimeout: indexExpire,
