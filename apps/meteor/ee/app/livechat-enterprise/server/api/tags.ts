@@ -129,5 +129,5 @@ type LivechatTagsEndpoints = ExtractRoutesFromAPI<typeof livechatTagsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends LivechatTagsEndpoints { }
+	interface Endpoints extends LivechatTagsEndpoints {}
 }
