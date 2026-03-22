@@ -39,11 +39,6 @@ test.describe.serial('Threads', () => {
 		await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel');
 		await expect(poHomeChannel.content.lastThreadMessagePreview).toContainText('This is a thread message also sent in channel');
 	});
-	test('expect open threads contextual bar when clicked on thread preview', async ({ page }) => {
-		await poHomeChannel.content.lastThreadMessagePreviewText.click();
-		await expect(page).toHaveURL(/.*thread/);
-		await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel');
-	});
 	test.describe('hideFlexTab Preference enabled for threads', () => {
 		test.beforeAll(async ({ api }) => {
 			await expect(
@@ -55,16 +50,15 @@ test.describe.serial('Threads', () => {
 				(await api.post('/users.setPreferences', { userId: 'rocketchat.internal.admin.test', data: { hideFlexTab: false } })).status(),
 			).toBe(200);
 		});
-		test('expect to close thread contextual bar on clicking outside', async ({ page }) => {
-			await poHomeChannel.content.lastThreadMessagePreviewText.click();
-			await expect(page).toHaveURL(/.*thread/);
+		test('should close thread contextual bar on clicking outside of it', async ({ page }) => {
+			await test.step('open threads contextual bar when clicked on thread preview', async () => {
+				await poHomeChannel.content.lastThreadMessagePreviewText.click();
+				await expect(page).toHaveURL(/.*thread/);
+				await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel');
+			});
+
 			await poHomeChannel.content.lastUserMessage.click();
 			await expect(page).not.toHaveURL(/.*thread/);
-		});
-		test('expect open threads contextual bar when clicked on thread preview', async ({ page }) => {
-			await poHomeChannel.content.lastThreadMessagePreviewText.click();
-			await expect(page).toHaveURL(/.*thread/);
-			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText('This is a thread message also sent in channel');
 		});
 		test('expect not to close thread contextual bar when performing some action', async ({ page }) => {
 			await poHomeChannel.content.lastThreadMessagePreviewText.click();

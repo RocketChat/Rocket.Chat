@@ -51,7 +51,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		closeTab();
 	}, [closeTab]);
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget(chat.threadUploads);
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat?.messageEditing.toPreviousMessage();
