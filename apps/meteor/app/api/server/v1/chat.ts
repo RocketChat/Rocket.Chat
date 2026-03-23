@@ -697,13 +697,29 @@ const chatEndpoints = API.v1
 				message,
 			});
 		},
-	);
-
-API.v1.addRoute(
-	'chat.postMessage',
-	{ authRequired: true, validateParams: isChatPostMessageProps },
-	{
-		async post() {
+	)
+	.post(
+		'chat.postMessage',
+		{
+			authRequired: true,
+			body: isChatPostMessageProps,
+			response: {
+				200: ajv.compile<{ ts: number; channel: string; message: IMessage }>({
+					type: 'object',
+					properties: {
+						ts: { type: 'number' },
+						channel: { type: 'string' },
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['ts', 'channel', 'message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { text, attachments } = this.bodyParams;
 			const maxAllowedSize = settings.get<number>('Message_MaxAllowedSize') ?? 0;
 
@@ -733,8 +749,7 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.search',
