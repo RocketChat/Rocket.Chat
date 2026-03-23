@@ -8,20 +8,27 @@ import { settings } from '../../../settings/server';
 const userLastRequest = new Map<string, number>();
 const COOLDOWN = 5000; // 5 sec
 
+// 🤖 Bot user
+const botUser = {
+  _id: 'ai-bot',
+  username: 'ai.bot',
+};
+
 callbacks.add(
   'afterSaveMessage',
   async (message, { room }) => {
     try {
-      // ❌ Ignore bot itself (prevent infinite loop)
-      if (message.u?.username === 'ai.bot') {
+  
+      if (message?.u?.username === botUser.username) {
         return message;
       }
+
+  
       if (!settings.get('AI_Enable')) {
         return message;
-     }
+      }
 
-      // ❌ Ignore system/bot messages
-      if (!message.msg) {
+      if (!message?.msg || !message?.u?._id) {
         return message;
       }
 
@@ -42,7 +49,7 @@ callbacks.add(
 
       userLastRequest.set(message.u._id, now);
 
-      // ✅ Clean prompt (remove @ai)
+      // ✅ Clean prompt
       const prompt = message.msg.replace(/@ai/gi, '').trim();
 
       if (!prompt) {
@@ -74,15 +81,12 @@ AI:
       // ⏳ Send "Thinking..."
       // =========================
       const tempMessage = await sendMessage(
+        botUser,
         {
           msg: '🤖 Thinking...',
-          u: {
-            _id: 'ai-bot',
-            username: 'ai.bot',
-          },
           rid: message.rid,
         },
-        { _id: 'ai-bot' }
+        room // ✅ REQUIRED
       );
 
       // =========================
