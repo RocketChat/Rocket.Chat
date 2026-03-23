@@ -868,13 +868,30 @@ const chatEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	);
-
-API.v1.addRoute(
-	'chat.getDeletedMessages',
-	{ authRequired: true, validateParams: isChatGetDeletedMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getDeletedMessages',
+		{
+			authRequired: true,
+			query: isChatGetDeletedMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: Pick<IMessage, '_id'>[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { type: 'object' } },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, since } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -897,8 +914,7 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.getPinnedMessages',
