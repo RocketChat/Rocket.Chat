@@ -1290,13 +1290,28 @@ const chatEndpoints = API.v1
 
 			return API.v1.success(messages);
 		},
-	);
-
-API.v1.addRoute(
-	'chat.getDiscussions',
-	{ authRequired: true, validateParams: isChatGetDiscussionsProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getDiscussions',
+		{
+			authRequired: true,
+			query: isChatGetDiscussionsProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[]; total: number }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { type: 'object' } },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'total', 'success'],
+					additionalProperties: true,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, text } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -1313,8 +1328,7 @@ API.v1.addRoute(
 			});
 			return API.v1.success(messages);
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.getURLPreview',
