@@ -128,47 +128,6 @@ const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFo
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 
 API.v1.addRoute(
-	'chat.delete',
-	{ authRequired: true, validateParams: isChatDeleteProps },
-	{
-		async post() {
-			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
-
-			if (!msg) {
-				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
-			}
-
-			if (this.bodyParams.roomId !== msg.rid) {
-				return API.v1.failure('The room id provided does not match where the message is from.');
-			}
-
-			if (
-				this.bodyParams.asUser &&
-				msg.u._id !== this.userId &&
-				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
-			) {
-				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
-			}
-
-			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;
-			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
-
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			await deleteMessageValidatingPermission(msg, user._id);
-
-			return API.v1.success({
-				_id: msg._id,
-				ts: Date.now().toString(),
-				message: msg,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'chat.syncMessages',
 	{ authRequired: true, validateParams: isChatSyncMessagesProps },
 	{
@@ -632,6 +591,71 @@ const chatEndpoints = API.v1
 			await reportMessage(messageId, description, this.userId);
 
 			return API.v1.success();
+		},
+	)
+	.post(
+		'chat.delete',
+		{
+			authRequired: true,
+			body: isChatDeleteProps,
+			response: {
+				200: ajv.compile<{ _id: string; ts: string; message: Pick<IMessage, '_id' | 'rid' | 'u'> }>({
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						ts: { type: 'string' },
+						message: {
+							type: 'object',
+							properties: {
+								_id: { type: 'string' },
+								rid: { type: 'string' },
+								u: { type: 'object' },
+							},
+							required: ['_id', 'rid', 'u'],
+							additionalProperties: true,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['_id', 'ts', 'message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const msg = await Messages.findOneById(this.bodyParams.msgId, { projection: { u: 1, rid: 1 } });
+
+			if (!msg) {
+				return API.v1.failure(`No message found with the id of "${this.bodyParams.msgId}".`);
+			}
+
+			if (this.bodyParams.roomId !== msg.rid) {
+				return API.v1.failure('The room id provided does not match where the message is from.');
+			}
+
+			if (
+				this.bodyParams.asUser &&
+				msg.u._id !== this.userId &&
+				!(await hasPermissionAsync(this.userId, 'force-delete-message', msg.rid))
+			) {
+				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
+			}
+
+			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;
+			const user = await Users.findOneById(userId, { projection: { _id: 1 } });
+
+			if (!user) {
+				return API.v1.failure('User not found');
+			}
+
+			await deleteMessageValidatingPermission(msg, user._id);
+
+			return API.v1.success({
+				_id: msg._id,
+				ts: Date.now().toString(),
+				message: msg,
+			});
 		},
 	);
 
