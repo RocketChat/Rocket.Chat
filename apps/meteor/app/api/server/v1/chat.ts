@@ -250,7 +250,7 @@ const ChatSyncMessagesSchema = {
 			nullable: true,
 		},
 		count: {
-			type: 'string',
+			type: 'number',
 			nullable: true,
 		},
 		next: {
@@ -634,11 +634,11 @@ const chatEndpoints = API.v1
 			}
 
 			const getMessagesQuery = {
-				...(lastUpdate ? { lastUpdate: new Date(lastUpdate) } : {}),
-				...(next ? { next } : {}),
-				...(previous ? { previous } : {}),
-				...(count ? { count } : {}),
-				...(type ? { type } : {}),
+				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(next && { next }),
+				...(previous && { previous }),
+				...(count && { count }),
+				...(type && { type }),
 			};
 
 			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
