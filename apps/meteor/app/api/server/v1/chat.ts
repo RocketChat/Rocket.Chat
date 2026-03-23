@@ -959,13 +959,30 @@ const chatEndpoints = API.v1
 				total,
 			});
 		},
-	);
-
-API.v1.addRoute(
-	'chat.getThreadsList',
-	{ authRequired: true, validateParams: isChatGetThreadsListProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getThreadsList',
+		{
+			authRequired: true,
+			query: isChatGetThreadsListProps,
+			response: {
+				200: ajv.compile<{ threads: IThreadMainMessage[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						threads: { type: 'array', items: { type: 'object' } },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['threads', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { rid, type, text } = this.queryParams;
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -1005,8 +1022,7 @@ API.v1.addRoute(
 				total,
 			});
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.syncThreadsList',
