@@ -9,6 +9,7 @@ import { Random } from '@rocket.chat/random';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getUserCreatedByApp } from '../../../lib/server/functions/getUserCreatedByApp';
+import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { notifyOnUserChange, notifyOnUserChangeById } from '../../../lib/server/lib/notifyListener';
@@ -133,6 +134,21 @@ export class AppUserBridge extends UserBridge {
 
 		const { status } = fields;
 		delete fields.status;
+
+		if (!status && typeof fields.statusText === 'string') {
+			await setStatusText(
+				{
+					_id: user.id,
+					username: user.username,
+					name: user.name,
+					status: user.status as UserStatus,
+					roles: user.roles,
+					statusText: user.statusText,
+				},
+				fields.statusText,
+			);
+			delete fields.statusText;
+		}
 
 		if (status) {
 			await Presence.setStatus(user.id, status as UserStatus, fields.statusText);
