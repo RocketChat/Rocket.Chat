@@ -831,76 +831,87 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'rooms.export',
-	{ authRequired: true, validateParams: isRoomsExportProps },
 	{
-		async post() {
-			const { rid, type } = this.bodyParams;
-
-			if (!(await hasPermissionAsync(this.userId, 'mail-messages', rid))) {
-				throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
-			}
-
-			const room = await Rooms.findOneById(rid);
-			if (!room) {
-				throw new Meteor.Error('error-invalid-room');
-			}
-
-			const user = await Users.findOneById(this.userId);
-
-			if (!user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-			}
-
-			if (type === 'file') {
-				const { dateFrom, dateTo } = this.bodyParams;
-				const { format } = this.bodyParams;
-
-				const convertedDateFrom = dateFrom ? new Date(dateFrom) : new Date(0);
-				const convertedDateTo = dateTo ? new Date(dateTo) : new Date();
-				convertedDateTo.setDate(convertedDateTo.getDate() + 1);
-
-				if (convertedDateFrom > convertedDateTo) {
-					throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
-				}
-
-				void dataExport.sendFile(
-					{
-						rid,
-						format,
-						dateFrom: convertedDateFrom,
-						dateTo: convertedDateTo,
-					},
-					user,
-				);
-				return API.v1.success();
-			}
-
-			if (type === 'email') {
-				const { toUsers, toEmails, subject, messages } = this.bodyParams;
-
-				if ((!toUsers || toUsers.length === 0) && (!toEmails || toEmails.length === 0)) {
-					throw new Meteor.Error('error-invalid-recipient');
-				}
-
-				const result = await dataExport.sendViaEmail(
-					{
-						rid,
-						toUsers: (toUsers as string[]) || [],
-						toEmails: toEmails || [],
-						subject: subject || '',
-						messages: messages || [],
-						language: user.language || 'en',
-					},
-					user,
-				);
-
-				return API.v1.success(result);
-			}
-
-			return API.v1.failure();
+		authRequired: true,
+		body: isRoomsExportProps,
+		response: {
+			200: ajv.compile<void | { missing: string[] }>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: true,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { rid, type } = this.bodyParams;
+
+		if (!(await hasPermissionAsync(this.userId, 'mail-messages', rid))) {
+			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
+		}
+
+		const room = await Rooms.findOneById(rid);
+		if (!room) {
+			throw new Meteor.Error('error-invalid-room');
+		}
+
+		const user = await Users.findOneById(this.userId);
+
+		if (!user || !(await canAccessRoomAsync(room, user))) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+
+		if (type === 'file') {
+			const { dateFrom, dateTo } = this.bodyParams;
+			const { format } = this.bodyParams;
+
+			const convertedDateFrom = dateFrom ? new Date(dateFrom) : new Date(0);
+			const convertedDateTo = dateTo ? new Date(dateTo) : new Date();
+			convertedDateTo.setDate(convertedDateTo.getDate() + 1);
+
+			if (convertedDateFrom > convertedDateTo) {
+				throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
+			}
+
+			void dataExport.sendFile(
+				{
+					rid,
+					format,
+					dateFrom: convertedDateFrom,
+					dateTo: convertedDateTo,
+				},
+				user,
+			);
+			return API.v1.success();
+		}
+
+		if (type === 'email') {
+			const { toUsers, toEmails, subject, messages } = this.bodyParams;
+
+			if ((!toUsers || toUsers.length === 0) && (!toEmails || toEmails.length === 0)) {
+				throw new Meteor.Error('error-invalid-recipient');
+			}
+
+			const result = await dataExport.sendViaEmail(
+				{
+					rid,
+					toUsers: (toUsers as string[]) || [],
+					toEmails: toEmails || [],
+					subject: subject || '',
+					messages: messages || [],
+					language: user.language || 'en',
+				},
+				user,
+			);
+
+			return API.v1.success(result);
+		}
+
+		return API.v1.failure();
 	},
 );
 
