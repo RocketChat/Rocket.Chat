@@ -203,6 +203,8 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
+		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+
 		const call: Omit<IMediaCall, '_id' | '_updatedAt'> = {
 			service,
 			kind: 'direct',
@@ -225,7 +227,7 @@ class MediaCallDirector {
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 			...(parentCallId && { parentCallId }),
 
-			features,
+			features: allowedFeatures,
 		};
 
 		logger.debug({ msg: 'creating call', call });
