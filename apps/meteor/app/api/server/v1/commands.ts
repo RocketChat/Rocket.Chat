@@ -75,109 +75,110 @@ const isCommandsListParams = ajvQuery.compile<CommandsListParams>({
 	additionalProperties: false,
 });
 
-const commandsEndpoints = API.v1.get(
-	'commands.get',
-	{
-		authRequired: true,
-		query: isCommandsGetParams,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{
-				command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
-				success: true;
-			}>({
-				type: 'object',
-				properties: {
-					command: {
-						type: 'object',
-						properties: {
-							clientOnly: { type: 'boolean' },
-							command: { type: 'string' },
-							description: { type: 'string' },
-							params: { type: 'string' },
-							providesPreview: { type: 'boolean' },
+const commandsEndpoints = API.v1
+	.get(
+		'commands.get',
+		{
+			authRequired: true,
+			query: isCommandsGetParams,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					command: Pick<SlashCommand, 'clientOnly' | 'command' | 'description' | 'params' | 'providesPreview'>;
+					success: true;
+				}>({
+					type: 'object',
+					properties: {
+						command: {
+							type: 'object',
+							properties: {
+								clientOnly: { type: 'boolean' },
+								command: { type: 'string' },
+								description: { type: 'string' },
+								params: { type: 'string' },
+								providesPreview: { type: 'boolean' },
+							},
+							required: ['command', 'providesPreview'],
+							additionalProperties: false,
 						},
-						required: ['command', 'providesPreview'],
-						additionalProperties: false,
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
 					},
-					success: {
-						type: 'boolean',
-						enum: [true],
-					},
-				},
-				required: ['command', 'success'],
-				additionalProperties: false,
-			}),
-		},
-	},
-
-	async function action() {
-		const params = this.queryParams;
-
-		const cmd = slashCommands.commands[params.command.toLowerCase()];
-
-		if (!cmd) {
-			return API.v1.failure(`There is no command in the system by the name of: ${params.command}`);
-		}
-
-		return API.v1.success({
-			command: {
-				command: cmd.command,
-				description: cmd.description,
-				params: cmd.params,
-				clientOnly: cmd.clientOnly,
-				providesPreview: cmd.providesPreview,
+					required: ['command', 'success'],
+					additionalProperties: false,
+				}),
 			},
-		});
-	},
-)
-.get(
-	'commands.list',
-	{
-		authRequired: true,
-		query: isCommandsListParams,
-		response: {
-			200: commandsListResponseSchema,
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
 		},
-	},
-	async function action() {
-		if (!Apps.self?.isLoaded()) {
+
+		async function action() {
+			const params = this.queryParams;
+
+			const cmd = slashCommands.commands[params.command.toLowerCase()];
+
+			if (!cmd) {
+				return API.v1.failure(`There is no command in the system by the name of: ${params.command}`);
+			}
+
 			return API.v1.success({
-				commands: [],
-				appsLoaded: false as const,
-				offset: 0,
-				count: 0,
-				total: 0,
+				command: {
+					command: cmd.command,
+					description: cmd.description,
+					params: cmd.params,
+					clientOnly: cmd.clientOnly,
+					providesPreview: cmd.providesPreview,
+				},
 			});
-		}
+		},
+	)
+	.get(
+		'commands.list',
+		{
+			authRequired: true,
+			query: isCommandsListParams,
+			response: {
+				200: commandsListResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			if (!Apps.self?.isLoaded()) {
+				return API.v1.success({
+					commands: [],
+					appsLoaded: false as const,
+					offset: 0,
+					count: 0,
+					total: 0,
+				});
+			}
 
-		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, query } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, query } = await this.parseJsonQuery();
 
-		let commands = Object.values(slashCommands.commands);
+			let commands = Object.values(slashCommands.commands);
 
-		if (query?.command) {
-			commands = commands.filter((command) => command.command === query.command);
-		}
+			if (query?.command) {
+				commands = commands.filter((command) => command.command === query.command);
+			}
 
-		const totalCount = commands.length;
+			const totalCount = commands.length;
 
-		return API.v1.success({
-			commands: processQueryOptionsOnResult(commands, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-			}),
-			appsLoaded: true as const,
-			offset,
-			count: commands.length,
-			total: totalCount,
-		});
-	},
-);
+			return API.v1.success({
+				commands: processQueryOptionsOnResult(commands, {
+					sort: sort || { name: 1 },
+					skip: offset,
+					limit: count,
+				}),
+				appsLoaded: true as const,
+				offset,
+				count: commands.length,
+				total: totalCount,
+			});
+		},
+	);
 
 /* @deprecated */
 const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string, any>, F extends keyof T>(
@@ -284,7 +285,6 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 
 	return result;
 };
-
 
 const isCommandsRunProps = ajv.compile<{ command: string; params?: string; roomId: string; tmid?: string; triggerId?: string }>({
 	type: 'object',
