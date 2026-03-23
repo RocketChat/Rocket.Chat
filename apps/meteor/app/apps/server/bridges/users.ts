@@ -132,10 +132,13 @@ export class AppUserBridge extends UserBridge {
 			return true;
 		}
 
-		const { status } = fields;
+		const { status, statusText } = fields;
+		delete fields.statusText;
 		delete fields.status;
 
-		if (!status && typeof fields.statusText === 'string') {
+		if (status) {
+			await Presence.setStatus(user.id, status as UserStatus, statusText);
+		} else if (typeof statusText === 'string') {
 			await setStatusText(
 				{
 					_id: user.id,
@@ -145,13 +148,8 @@ export class AppUserBridge extends UserBridge {
 					roles: user.roles,
 					statusText: user.statusText,
 				},
-				fields.statusText,
+				statusText,
 			);
-			delete fields.statusText;
-		}
-
-		if (status) {
-			await Presence.setStatus(user.id, status as UserStatus, fields.statusText);
 		}
 
 		await Users.updateOne({ _id: user.id }, { $set: fields as any });
