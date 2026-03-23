@@ -794,16 +794,30 @@ const chatEndpoints = API.v1
 				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
-	);
-
-// The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
-// for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
-// one channel whereas the other one allows for sending to more than one channel at a time.
-API.v1.addRoute(
-	'chat.sendMessage',
-	{ authRequired: true, validateParams: isChatSendMessageProps },
-	{
-		async post() {
+	)
+	// The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
+	// for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
+	// one channel whereas the other one allows for sending to more than one channel at a time.
+	.post(
+		'chat.sendMessage',
+		{
+			authRequired: true,
+			body: isChatSendMessageProps,
+			response: {
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (MessageTypes.isSystemMessage(this.bodyParams.message)) {
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
@@ -817,8 +831,7 @@ API.v1.addRoute(
 				message,
 			});
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.ignoreUser',
