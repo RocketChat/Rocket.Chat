@@ -546,6 +546,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 	}
 
+	private shouldUseCache(userSub: { abacLastTimeChecked?: Date }): boolean {
+		return (
+			this.decisionCacheTimeout > 0 &&
+			!!userSub.abacLastTimeChecked &&
+			Date.now() - userSub.abacLastTimeChecked.getTime() < this.decisionCacheTimeout * 1000
+		);
+	}
+
 	async canAccessObject(
 		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
 		user: Pick<IUser, '_id'>,
@@ -570,11 +578,19 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return false;
 		}
 
-		const decision = await this.pdp.canAccessObject(room, user, userSub, this.decisionCacheTimeout);
+		if (this.shouldUseCache(userSub)) {
+			logger.debug({ msg: 'Using cached ABAC decision', userId: user._id, roomId: room._id });
+			return true;
+		}
+
+		const decision = await this.pdp.canAccessObject(room, user);
 
 		if (decision.userToRemove) {
-			// When a user is not compliant, remove them from the room automatically
 			await this.removeUserFromRoom(room, decision.userToRemove, 'realtime-policy-eval');
+		}
+
+		if (decision.granted) {
+			await Subscriptions.setAbacLastTimeCheckedByUserIdAndRoomId(user._id, room._id, new Date());
 		}
 
 		return decision.granted;
