@@ -915,33 +915,46 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.isMember',
 	{
 		authRequired: true,
-		validateParams: isRoomsIsMemberProps,
-	},
-	{
-		async get() {
-			const { roomId, userId, username } = this.queryParams;
-			const [room, user] = await Promise.all([
-				findRoomByIdOrName({
-					params: { roomId },
-				}),
-				Users.findOneByIdOrUsername(userId || username),
-			]);
-
-			if (!user?._id) {
-				return API.v1.failure('error-user-not-found');
-			}
-
-			if (await canAccessRoomAsync(room, { _id: this.user._id })) {
-				return API.v1.success({
-					isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
-				});
-			}
-			return API.v1.forbidden();
+		query: isRoomsIsMemberProps,
+		response: {
+			200: ajv.compile<{ isMember: boolean }>({
+				type: 'object',
+				properties: {
+					isMember: { type: 'boolean' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['isMember', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId } = this.queryParams;
+		const usernameOrUserId = 'userId' in this.queryParams ? this.queryParams.userId : this.queryParams.username;
+		const [room, user] = await Promise.all([
+			findRoomByIdOrName({
+				params: { roomId },
+			}),
+			Users.findOneByIdOrUsername(usernameOrUserId),
+		]);
+
+		if (!user?._id) {
+			return API.v1.failure('error-user-not-found');
+		}
+
+		if (await canAccessRoomAsync(room, { _id: this.user._id })) {
+			return API.v1.success({
+				isMember: (await Subscriptions.countByRoomIdAndUserId(room._id, user._id)) > 0,
+			});
+		}
+		return API.v1.forbidden();
 	},
 );
 
