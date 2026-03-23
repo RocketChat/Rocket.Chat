@@ -49,10 +49,14 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 
 	if (isMenuEmpty || disabled) {
 		if (button) {
-			// FIXME: deprecate prop `button` as there's no way to ensure it is actually a button
-			// (e.g cloneElement could be passing props to a fragment)
-			return cloneElement(button, { small: true, icon, disabled, title, className } as any);
-		}
+  // Deprecated: The 'button' prop may allow non-semantic elements, causing accessibility issues.
+
+  console.warn(
+      "GenericMenu: The 'button' prop is deprecated. Please use a semantic <button> element."
+  );
+
+  return cloneElement(button, { small: true, icon, disabled, title, className } as any);
+	}
 
 		return <IconButton small icon={icon} className={className} title={title} disabled />;
 	}
