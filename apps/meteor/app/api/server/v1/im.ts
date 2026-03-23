@@ -240,17 +240,11 @@ const dmOpenEndpointsProps = {
 			additionalProperties: false,
 		}),
 	},
-};
+} as const;
 
 const dmOpenAction = <Path extends string>(_path: Path): TypedAction<typeof dmOpenEndpointsProps, Path> =>
 	async function action() {
 		const { roomId } = this.bodyParams;
-		if (!roomId) {
-			throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
-		}
-		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
-		}
 		const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 		if (!canAccess) {
 			return API.v1.forbidden('error-not-allowed');
@@ -661,7 +655,7 @@ const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof 
 			...query,
 			...parseIds(mentionIds, 'mentions._id'),
 			...parseIds(starredIds, 'starred._id'),
-			...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+			...(pinned?.toLowerCase() === 'true' && { pinned: true }),
 			_hidden: { $ne: true },
 		};
 		const sortObj = sort || { ts: -1 };
@@ -930,7 +924,6 @@ API.v1.addRoute(
 		},
 	},
 );
-
 
 export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 
