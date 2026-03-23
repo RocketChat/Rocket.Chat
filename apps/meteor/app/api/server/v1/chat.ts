@@ -749,13 +749,27 @@ const chatEndpoints = API.v1
 				message,
 			});
 		},
-	);
-
-API.v1.addRoute(
-	'chat.search',
-	{ authRequired: true, validateParams: isChatSearchProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.search',
+		{
+			authRequired: true,
+			query: isChatSearchProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[] }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, searchText } = this.queryParams;
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
@@ -780,8 +794,7 @@ API.v1.addRoute(
 				messages: await normalizeMessagesForUser(result, this.userId),
 			});
 		},
-	},
-);
+	);
 
 // The difference between `chat.postMessage` and `chat.sendMessage` is that `chat.sendMessage` allows
 // for passing a value for `_id` and the other one doesn't. Also, `chat.sendMessage` only sends it to
