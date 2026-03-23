@@ -12,7 +12,6 @@ import type { ChannelsEndpoints } from './v1/channels';
 import type { ChatEndpoints } from './v1/chat';
 import type { CloudEndpoints } from './v1/cloud';
 import type { CommandsEndpoints } from './v1/commands';
-import type { CustomUserStatusEndpoints } from './v1/customUserStatus';
 import type { DirectoryEndpoint } from './v1/directory';
 import type { ImEndpoints, DmEndpoints } from './v1/dm';
 import type { E2eEndpoints } from './v1/e2e';
@@ -54,7 +53,6 @@ export interface Endpoints
 		CommandsEndpoints,
 		CloudEndpoints,
 		CommandsEndpoints,
-		CustomUserStatusEndpoints,
 		DmEndpoints,
 		DirectoryEndpoint,
 		EmojiCustomEndpoints,
@@ -211,7 +209,6 @@ export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/channels';
 export * from './v1/customSounds';
-export type * from './v1/customUserStatus';
 export * from './v1/subscriptionsEndpoints';
 export type * from './v1/mailer';
 export * from './v1/mailer/MailerParamsPOST';
