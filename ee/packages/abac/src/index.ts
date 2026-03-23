@@ -51,6 +51,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 		super();
 		this.setPdpStrategy('local');
 
+		this.onSettingChanged('ABAC_PDP_Type', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (value === 'local') {
+				this.setPdpStrategy('local');
+			} else if (value === 'virtru') {
+				this.setPdpStrategy('external');
+			}
+		});
+
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
 			const { value } = setting;
 			if (typeof value !== 'number') {
@@ -74,6 +83,11 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
+
+		const pdpType = await Settings.get<string>('ABAC_PDP_Type');
+		if (pdpType === 'virtru') {
+			this.setPdpStrategy('external');
+		}
 	}
 
 	async addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void> {
@@ -599,6 +613,74 @@ export class AbacService extends ServiceClass implements IAbacService {
 				err,
 			});
 		}
+	}
+
+	async syncExternalPdpRooms(): Promise<void> {
+		logger.info('Starting external PDP room membership sync');
+
+		// Build a map of ABAC rooms for quick lookup
+		const abacRoomsMap = new Map<string, IRoom>();
+		const abacRoomsCursor = Rooms.find(
+			{ abacAttributes: { $exists: true, $ne: [] } },
+			{ projection: { _id: 1, t: 1, teamMain: 1, abacAttributes: 1 } },
+		);
+
+		for await (const room of abacRoomsCursor) {
+			abacRoomsMap.set(room._id, room);
+		}
+
+		if (!abacRoomsMap.size) {
+			logger.info('No ABAC-managed rooms found, skipping sync');
+			return;
+		}
+
+		const abacRoomIds = Array.from(abacRoomsMap.keys());
+
+		// Get all active users that are members of at least one ABAC room
+		const usersCursor = Users.find(
+			{
+				active: true,
+				__rooms: { $in: abacRoomIds },
+			},
+			{ projection: { _id: 1, emails: 1, username: 1, __rooms: 1 } },
+		);
+
+		let userCount = 0;
+		let evictedCount = 0;
+
+		for await (const user of usersCursor) {
+			// Use __rooms to resolve the user's ABAC rooms directly from the map — no extra DB query
+			const userAbacRooms = (user.__rooms ?? [])
+				.map((rid) => abacRoomsMap.get(rid))
+				.filter((room): room is IRoom => !!room);
+
+			if (!userAbacRooms.length) {
+				continue;
+			}
+
+			try {
+				const nonCompliantRooms = await this.pdp.evaluateUserRooms(user, userAbacRooms);
+
+				if (!nonCompliantRooms.length) {
+					userCount++;
+					continue;
+				}
+
+				await Promise.all(
+					nonCompliantRooms.map((room) => limit(() => this.removeUserFromRoom(room, user as IUser, 'external-pdp-sync'))),
+				);
+				evictedCount += nonCompliantRooms.length;
+				userCount++;
+			} catch (err) {
+				logger.error({
+					msg: 'External PDP sync failed for user',
+					userId: user._id,
+					err,
+				});
+			}
+		}
+
+		logger.info({ msg: 'External PDP room membership sync completed', userCount, evictedCount });
 	}
 }
 
