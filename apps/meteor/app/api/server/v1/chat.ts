@@ -1208,13 +1208,30 @@ const chatEndpoints = API.v1
 				},
 			});
 		},
-	);
-
-API.v1.addRoute(
-	'chat.getMentionedMessages',
-	{ authRequired: true, validateParams: isChatGetMentionedMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getMentionedMessages',
+		{
+			authRequired: true,
+			query: isChatGetMentionedMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
+					type: 'object',
+					properties: {
+						messages: { type: 'array', items: { type: 'object' } },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -1231,8 +1248,7 @@ API.v1.addRoute(
 
 			return API.v1.success(messages);
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.getStarredMessages',
