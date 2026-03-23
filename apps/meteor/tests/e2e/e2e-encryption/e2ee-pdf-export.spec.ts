@@ -52,7 +52,7 @@ test.describe('E2EE PDF Export', () => {
 		await expect(encryptedRoomPage.encryptedRoomHeaderIcon).toBeVisible();
 
 		await encryptedRoomPage.showExportMessagesTab();
-		await expect(exportMessagesTab.method).toContainClass('disabled'); // FIXME: looks like the component have an a11y issue
+		await expect(exportMessagesTab.method).toBeDisabled();
 		await expect(exportMessagesTab.method).toHaveAccessibleName('Download file');
 	});
 

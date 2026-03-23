@@ -229,6 +229,7 @@ const ExportMessages = () => {
 											{...field}
 											placeholder={t('Type')}
 											disabled={isE2ERoom}
+											aria-disabled={isE2ERoom}
 											options={exportOptions}
 										/>
 									)}
@@ -258,6 +259,7 @@ const ExportMessages = () => {
 												id={formatField}
 												data-testid='export-messages-output-format'
 												disabled={type === 'email'}
+												aria-disabled={type === 'email'}
 												placeholder={t('Format')}
 												options={options}
 											/>
