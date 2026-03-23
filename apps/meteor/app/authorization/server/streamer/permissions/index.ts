@@ -4,6 +4,7 @@ import { Permissions } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
+import { hasPermission } from '@rocket.chat/core-services';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -32,7 +33,11 @@ export const permissionsGetMethod = async (
 Meteor.methods<ServerMethods>({
 	async 'permissions/get'(updatedAt?: Date) {
 		check(updatedAt, Match.Maybe(Date));
-		// TODO: should we return this for non logged users?
+
+		if (!this.userId || !(await hasPermission(this.userId, 'view-permissions'))) {
+			throw new Meteor.Error('error-not-authorized');
+		}
+
 		// TODO: we could cache this collection
 
 		return permissionsGetMethod(updatedAt);
