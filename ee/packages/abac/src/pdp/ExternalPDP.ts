@@ -41,20 +41,16 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return this.tokenCache.accessToken;
 		}
 
-		const response = await serverFetch(
-			`${this.config.oidcEndpoint}/protocol/openid-connect/token`,
-			{
-				method: 'POST',
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				body: new URLSearchParams({
-					grant_type: 'client_credentials',
-					client_id: this.config.clientId,
-					client_secret: this.config.clientSecret,
-				}),
-				ignoreSsrfValidation: true,
-			},
-			true,
-		);
+		const response = await serverFetch(`${this.config.oidcEndpoint}/protocol/openid-connect/token`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: new URLSearchParams({
+				grant_type: 'client_credentials',
+				client_id: this.config.clientId,
+				client_secret: this.config.clientSecret,
+			}),
+			ignoreSsrfValidation: true,
+		});
 
 		if (!response.ok) {
 			throw new Error(`Failed to obtain client token: ${response.status} ${response.statusText}`);
@@ -75,19 +71,15 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 	private async apiCall<T>(endpoint: string, body: unknown): Promise<T> {
 		const token = await this.getClientToken();
 
-		const response = await serverFetch(
-			`${this.config.baseUrl}${endpoint}`,
-			{
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${token}`,
-				},
-				body: JSON.stringify(body),
-				ignoreSsrfValidation: true,
+		const response = await serverFetch(`${this.config.baseUrl}${endpoint}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
 			},
-			true,
-		);
+			body: JSON.stringify(body),
+			ignoreSsrfValidation: true,
+		});
 
 		if (!response.ok) {
 			const text = await response.text().catch(() => '');
