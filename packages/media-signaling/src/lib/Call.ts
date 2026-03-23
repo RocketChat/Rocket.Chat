@@ -1207,14 +1207,14 @@ export class ClientMediaCall implements IClientMediaCall {
 				continue;
 			}
 
-			handler.reset();
+			handler.clear();
 			this.stateTimeoutHandlers.delete(handler);
 		}
 	}
 
 	private clearStateTimeouts(): void {
 		for (const handler of this.stateTimeoutHandlers.values()) {
-			handler.reset();
+			handler.clear();
 		}
 		this.stateTimeoutHandlers.clear();
 	}
