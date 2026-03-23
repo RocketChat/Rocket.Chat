@@ -8,6 +8,7 @@ import debounce from 'lodash.debounce';
 import mem from 'mem';
 
 import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
+import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId';
 import { getUsernameServername } from '../helpers/getUsernameServername';
 import { MatrixMediaService } from '../services/MatrixMediaService';
 
@@ -15,7 +16,7 @@ const logger = new Logger('federation-matrix:member');
 
 async function downloadAndSetAvatar(user: IUser, avatarUrl: string): Promise<void> {
 	try {
-		if (!avatarUrl || !avatarUrl.startsWith('mxc://')) {
+		if (!avatarUrl?.startsWith('mxc://')) {
 			return;
 		}
 
@@ -177,11 +178,6 @@ async function handleInvite({
 		throw new Error(`Failed to get or create invitee user: ${userId}`);
 	}
 
-	if (content.avatar_url && inviteeUser?.federation?.avatarUrl !== content.avatar_url) {
-		logger.debug(`Avatar changed for ${inviteeUser.username}: ${inviteeUser?.federation?.avatarUrl} -> ${content.avatar_url}`);
-		void downloadAndSetAvatar(inviteeUser, content.avatar_url);
-	}
-
 	const strippedState = unsigned.invite_room_state;
 
 	const joinRuleType = getJoinRuleType(strippedState);
@@ -248,6 +244,14 @@ function updateUserNameDebounced(userId: string, newName: string): void {
 	void getUpdateUserNameDebounced(userId)(newName);
 }
 
+const getDownloadAndSetAvatarDebounced = mem((_userId: string) =>
+	debounce((user: IUser, avatarUrl: string) => downloadAndSetAvatar(user, avatarUrl), 2000),
+);
+
+function downloadAndSetAvatarDebounced(userId: string, user: IUser, newAvatarUrl: string): void {
+	void getDownloadAndSetAvatarDebounced(userId)(user, newAvatarUrl);
+}
+
 async function handleJoin({
 	room_id: roomId,
 	state_key: userId,
@@ -266,6 +270,18 @@ async function handleJoin({
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, joiningUser._id);
 	if (!subscription) {
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
+	}
+
+	const senderServerName = extractDomainFromMatrixUserId(userId);
+
+	// we dont need to download the avatar of ourselves
+	if (
+		senderServerName !== federationSDK.getConfig('serverName') &&
+		content.avatar_url &&
+		joiningUser?.federation?.avatarUrl !== content.avatar_url
+	) {
+		logger.debug(`Avatar changed for ${joiningUser.username}: ${joiningUser?.federation?.avatarUrl} -> ${content.avatar_url}`);
+		void downloadAndSetAvatarDebounced(joiningUser._id, joiningUser, content.avatar_url);
 	}
 
 	// updates user name whenever we receive a join event, because Matrix sends a new join event with the updated display name whenever a user changes their display name
