@@ -3,61 +3,62 @@ import { generateAIResponse } from './aiService';
 import { sendMessage } from '../../../lib/server';
 import { Messages } from '../../../models/server';
 import { settings } from '../../../settings/server';
+import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 
-// 🔒 Rate limiter (per user)
+// 🔒 Rate limiter
 const userLastRequest = new Map<string, number>();
-const COOLDOWN = 5000; // 5 sec
+const COOLDOWN = 5000;
 
 // 🤖 Bot user
 const botUser = {
   _id: 'ai-bot',
   username: 'ai.bot',
+  name: 'AI Bot',
 };
 
 callbacks.add(
   'afterSaveMessage',
   async (message, { room }) => {
     try {
-  
+      // ❌ Ignore bot itself
       if (message?.u?.username === botUser.username) {
         return message;
       }
 
-  
+      // ❌ Feature disabled
       if (!settings.get('AI_Enable')) {
         return message;
       }
 
+      // ❌ Invalid message
       if (!message?.msg || !message?.u?._id) {
         return message;
       }
 
-      // ✅ Detect @ai mention
+      // ✅ Detect @ai
       const isMentioningAI =
         message.msg.includes('@ai') ||
         message.mentions?.some((u) => u.username === 'ai');
 
       if (!isMentioningAI) return message;
 
-      // ✅ Rate limiting
+      // ✅ Rate limiting (safe)
+      const userId = message.u._id;
       const now = Date.now();
-      const last = userLastRequest.get(message.u._id) || 0;
+      const last = userLastRequest.get(userId) ?? 0;
 
       if (now - last < COOLDOWN) {
         return message;
       }
 
-      userLastRequest.set(message.u._id, now);
+      userLastRequest.set(userId, now);
 
       // ✅ Clean prompt
       const prompt = message.msg.replace(/@ai/gi, '').trim();
-
-      if (!prompt) {
-        return message;
-      }
+      if (!prompt) return message;
 
       // =========================
-      // 🧠 CONTEXT (last 10 msgs)
+      // 🧠 CONTEXT
       // =========================
       const history = await Messages.find(
         { rid: message.rid },
@@ -78,7 +79,7 @@ AI:
 `;
 
       // =========================
-      // ⏳ Send "Thinking..."
+      // ⏳ Thinking message
       // =========================
       const tempMessage = await sendMessage(
         botUser,
@@ -86,13 +87,20 @@ AI:
           msg: '🤖 Thinking...',
           rid: message.rid,
         },
-        room // ✅ REQUIRED
+        room
       );
 
-      // =========================
-      // 🤖 Call AI
-      // =========================
-      const aiReply = await generateAIResponse(finalPrompt);
+      let aiReply = '';
+
+      try {
+        // =========================
+        // 🤖 Call AI
+        // =========================
+        aiReply = await generateAIResponse(finalPrompt);
+      } catch (err) {
+        console.error('AI generation failed:', err);
+        aiReply = '⚠️ Failed to generate AI response';
+      }
 
       // =========================
       // ✏️ Update message
@@ -105,6 +113,9 @@ AI:
           },
         }
       );
+
+      // ✅ Notify clients (IMPORTANT)
+      await notifyOnMessageChange({ id: tempMessage._id });
 
       return message;
     } catch (err) {
