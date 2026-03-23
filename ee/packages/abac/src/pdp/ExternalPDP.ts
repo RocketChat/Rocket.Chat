@@ -1,4 +1,4 @@
-import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast, ISubscription } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
 
@@ -126,8 +126,6 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 	async canAccessObject(
 		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
 		user: AtLeast<IUser, '_id'>,
-		_userSub: ISubscription,
-		_decisionCacheTimeout: number,
 	): Promise<{ granted: boolean; userToRemove?: IUser }> {
 		const attributes = room.abacAttributes ?? [];
 

@@ -1,38 +1,15 @@
-import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser, ISubscription } from '@rocket.chat/core-typings';
-import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
+import type { IAbacAttributeDefinition, IRoom, AtLeast, IUser } from '@rocket.chat/core-typings';
+import { Rooms, Users } from '@rocket.chat/models';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonCompliantConditionsFromSubject } from '../helper';
-import { logger } from '../logger';
 import type { IPolicyDecisionPoint } from './types';
 
-const pdpLogger = logger.section('LocalPDP');
-
 export class LocalPDP implements IPolicyDecisionPoint {
-	private shouldUseCache(decisionCacheTimeout: number, userSub: ISubscription) {
-		// Cases:
-		// 1) Never checked before -> check now
-		// 2) Checked before, but cache expired -> check now
-		// 3) Checked before, and cache valid -> use cached decision (subsciprtion exists)
-		// 4) Cache disabled (0) -> always check
-		return (
-			decisionCacheTimeout > 0 &&
-			userSub.abacLastTimeChecked &&
-			Date.now() - userSub.abacLastTimeChecked.getTime() < decisionCacheTimeout * 1000
-		);
-	}
-
 	async canAccessObject(
 		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
 		user: AtLeast<IUser, '_id'>,
-		userSub: ISubscription,
-		decisionCacheTimeout: number,
 	): Promise<{ granted: boolean; userToRemove?: IUser }> {
-		if (this.shouldUseCache(decisionCacheTimeout, userSub)) {
-			pdpLogger.debug({ msg: 'Using cached ABAC decision', userId: user._id, roomId: room._id });
-			return { granted: !!userSub };
-		}
-
 		const isUserCompliant = await Users.findOne(
 			{
 				_id: user._id,
@@ -50,8 +27,6 @@ export class LocalPDP implements IPolicyDecisionPoint {
 			return { granted: false, userToRemove: fullUser };
 		}
 
-		// Set last time the decision was made
-		await Subscriptions.setAbacLastTimeCheckedByUserIdAndRoomId(user._id, room._id, new Date());
 		return { granted: true };
 	}
 
