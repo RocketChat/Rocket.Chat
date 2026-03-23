@@ -2285,6 +2285,44 @@ const GETAgentNextTokenSchema = {
 
 export const isGETAgentNextToken = ajvQuery.compile<GETAgentNextToken>(GETAgentNextTokenSchema);
 
+const GETAgentInfoSuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		agent: {
+			type: 'object',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['agent', 'success'],
+	additionalProperties: false,
+};
+
+export const GETAgentInfoSuccessResponse = ajv.compile<{ agent: ILivechatAgent | { hiddenInfo: true }; success: boolean }>(
+	GETAgentInfoSuccessResponseSchema,
+);
+
+const GETAgentNextSuccessResponseSchema = {
+	type: 'object',
+	properties: {
+		agent: {
+			type: 'object',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const GETAgentNextSuccessResponse = ajv.compile<
+	{ agent?: ILivechatAgent | { hiddenInfo: true }; success: boolean } | { success: boolean }
+>(GETAgentNextSuccessResponseSchema);
+
 type GETLivechatConfigParams = {
 	token?: string;
 	department?: string;
