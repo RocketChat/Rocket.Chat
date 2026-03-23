@@ -1922,7 +1922,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				});
 		});
 
@@ -1938,7 +1938,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				});
 		});
 
@@ -1954,7 +1954,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				});
 		});
 
@@ -2241,7 +2241,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				});
 		});
 		it('should fail deleting a message if no room id is provided', async () => {
@@ -2255,7 +2255,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
 				});
 		});
 		it('should fail deleting a message if it is not in the provided room', async () => {
