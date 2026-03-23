@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../../app/settings/server';
 
 const abacEnabledQuery = { _id: 'ABAC_Enabled', value: true };
-const virtruPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'virtru' }];
+const externalPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'external' }];
 
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('General', async function () {
@@ -25,7 +25,7 @@ export function addSettings(): Promise<void> {
 					invalidValue: 'local',
 					values: [
 						{ key: 'local', i18nLabel: 'ABAC_PDP_Type_Local' },
-						{ key: 'virtru', i18nLabel: 'ABAC_PDP_Type_Virtru' },
+						{ key: 'external', i18nLabel: 'ABAC_PDP_Type_External' },
 					],
 					enableQuery: abacEnabledQuery,
 				});
@@ -44,67 +44,68 @@ export function addSettings(): Promise<void> {
 					enableQuery: [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'local' }],
 				});
 
-				// Virtru PDP Configuration
-				await this.add('ABAC_Virtru_Base_URL', '', {
+				// External PDP Configuration
+				await this.add('ABAC_External_Base_URL', '', {
 					type: 'string',
 					public: false,
 					invalidValue: '',
-					section: 'ABAC_Virtru_PDP_Configuration',
-					enableQuery: virtruPdpQuery,
+					section: 'ABAC_External_PDP_Configuration',
+					enableQuery: externalPdpQuery,
 				});
-				await this.add('ABAC_Virtru_Client_ID', '', {
+				await this.add('ABAC_External_Client_ID', '', {
 					type: 'string',
 					public: false,
 					invalidValue: '',
-					section: 'ABAC_Virtru_PDP_Configuration',
-					enableQuery: virtruPdpQuery,
+					section: 'ABAC_External_PDP_Configuration',
+					enableQuery: externalPdpQuery,
 				});
-				await this.add('ABAC_Virtru_Client_Secret', '', {
+				await this.add('ABAC_External_Client_Secret', '', {
 					type: 'password',
 					public: false,
 					invalidValue: '',
-					section: 'ABAC_Virtru_PDP_Configuration',
-					enableQuery: virtruPdpQuery,
+					section: 'ABAC_External_PDP_Configuration',
+					enableQuery: externalPdpQuery,
 				});
-				await this.add('ABAC_Virtru_OIDC_Endpoint', '', {
+				await this.add('ABAC_External_OIDC_Endpoint', '', {
 					type: 'string',
 					public: false,
 					invalidValue: '',
-					section: 'ABAC_Virtru_PDP_Configuration',
-					enableQuery: virtruPdpQuery,
+					section: 'ABAC_External_PDP_Configuration',
+					i18nDescription: 'ABAC_External_OIDC_Endpoint_Description',
+					enableQuery: externalPdpQuery,
 				});
-				await this.add('ABAC_Virtru_Default_Entity_Key', 'emailAddress', {
+				await this.add('ABAC_External_Default_Entity_Key', 'emailAddress', {
 					type: 'select',
 					public: false,
 					invalidValue: 'emailAddress',
-					section: 'ABAC_Virtru_PDP_Configuration',
-					i18nDescription: 'ABAC_Virtru_Default_Entity_Key_Description',
+					section: 'ABAC_External_PDP_Configuration',
+					i18nDescription: 'ABAC_External_Default_Entity_Key_Description',
 					values: [
-						{ key: 'emailAddress', i18nLabel: 'ABAC_Virtru_Entity_Key_Email' },
-						{ key: 'oidcIdentifier', i18nLabel: 'ABAC_Virtru_Entity_Key_OIDC' },
+						{ key: 'emailAddress', i18nLabel: 'ABAC_External_Entity_Key_Email' },
+						{ key: 'oidcIdentifier', i18nLabel: 'ABAC_External_Entity_Key_OIDC' },
 					],
-					enableQuery: virtruPdpQuery,
+					enableQuery: externalPdpQuery,
 				});
-				await this.add('ABAC_Virtru_Attribute_Namespace', 'example.com', {
+				await this.add('ABAC_External_Attribute_Namespace', 'example.com', {
 					type: 'string',
 					public: false,
 					invalidValue: 'example.com',
-					section: 'ABAC_Virtru_PDP_Configuration',
-					i18nDescription: 'ABAC_Virtru_Attribute_Namespace_Description',
-					enableQuery: virtruPdpQuery,
+					section: 'ABAC_External_PDP_Configuration',
+					i18nDescription: 'ABAC_External_Attribute_Namespace_Description',
+					enableQuery: externalPdpQuery,
 				});
-				await this.add('ABAC_Virtru_Sync_Interval', 'every_24_hours', {
+				await this.add('ABAC_External_Sync_Interval', 'every_24_hours', {
 					type: 'select',
 					public: false,
 					invalidValue: 'every_24_hours',
-					section: 'ABAC_Virtru_PDP_Configuration',
+					section: 'ABAC_External_PDP_Configuration',
 					values: [
 						{ key: 'every_1_hour', i18nLabel: 'every_hour' },
 						{ key: 'every_6_hours', i18nLabel: 'every_six_hours' },
 						{ key: 'every_12_hours', i18nLabel: 'every_12_hours' },
 						{ key: 'every_24_hours', i18nLabel: 'every_24_hours' },
 					],
-					enableQuery: virtruPdpQuery,
+					enableQuery: externalPdpQuery,
 				});
 			},
 		);

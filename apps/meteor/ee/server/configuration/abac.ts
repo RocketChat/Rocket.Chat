@@ -31,7 +31,7 @@ Meteor.startup(async () => {
 			await import('../hooks/abac');
 
 			stopWatcher = settings.watch('ABAC_Enabled', async (value) => {
-				if (value) {
+				if (value && settings.get<string>('ABAC_PDP_Type') !== 'external') {
 					await LDAPEE.syncUsersAbacAttributes(Users.findLDAPUsers());
 				}
 			});
@@ -42,14 +42,14 @@ Meteor.startup(async () => {
 				const abacEnabled = settings.get('ABAC_Enabled');
 				const pdpType = settings.get<string>('ABAC_PDP_Type');
 
-				if (!abacEnabled || pdpType !== 'virtru') {
+				if (!abacEnabled || pdpType !== 'external') {
 					if (await cronJobs.has(EXTERNAL_PDP_SYNC_JOB)) {
 						await cronJobs.remove(EXTERNAL_PDP_SYNC_JOB);
 					}
 					return;
 				}
 
-				const intervalValue = settings.get<string>('ABAC_Virtru_Sync_Interval') || 'every_24_hours';
+				const intervalValue = settings.get<string>('ABAC_External_Sync_Interval') || 'every_24_hours';
 				const schedule = intervalToCronMap[intervalValue] ?? intervalToCronMap.every_24_hours;
 
 				if (schedule !== lastSchedule && (await cronJobs.has(EXTERNAL_PDP_SYNC_JOB))) {
@@ -61,7 +61,7 @@ Meteor.startup(async () => {
 			}
 
 			stopCronWatcher = settings.watchMultiple(
-				['ABAC_Enabled', 'ABAC_PDP_Type', 'ABAC_Virtru_Sync_Interval'],
+				['ABAC_Enabled', 'ABAC_PDP_Type', 'ABAC_External_Sync_Interval'],
 				() => configureExternalPdpSync(),
 			);
 		},
