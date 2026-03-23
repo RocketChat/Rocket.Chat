@@ -603,45 +603,63 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.images',
-	{ authRequired: true, validateParams: isRoomsImagesProps },
 	{
-		async get() {
-			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {
-				projection: { t: 1, teamId: 1, prid: 1 },
-			});
-
-			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			let initialImage: IUpload | null = null;
-			if (this.queryParams.startingFromId) {
-				initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
-				skip: offset,
-				limit: count,
-			});
-
-			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			// If the initial image was not returned in the query, insert it as the first element of the list
-			if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
-				files.splice(0, 0, initialImage);
-			}
-
-			return API.v1.success({
-				files,
-				count,
-				offset,
-				total,
-			});
+		authRequired: true,
+		query: isRoomsImagesProps,
+		response: {
+			200: ajv.compile<{ files: IUpload[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					files: { type: 'array', items: { type: 'object' } },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['files', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {
+			projection: { t: 1, teamId: 1, prid: 1 },
+		});
+
+		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.forbidden();
+		}
+
+		let initialImage: IUpload | null = null;
+		if (this.queryParams.startingFromId) {
+			initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+
+		const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
+			skip: offset,
+			limit: count,
+		});
+
+		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		// If the initial image was not returned in the query, insert it as the first element of the list
+		if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
+			files.splice(0, 0, initialImage);
+		}
+
+		return API.v1.success({
+			files,
+			count,
+			offset,
+			total,
+		});
 	},
 );
 
