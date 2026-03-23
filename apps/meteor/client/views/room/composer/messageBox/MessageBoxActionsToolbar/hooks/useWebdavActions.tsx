@@ -4,12 +4,11 @@ import { useSetModal, useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useWebDAVAccountIntegrationsQuery } from '../../../../../../hooks/webdav/useWebDAVAccountIntegrationsQuery';
-import type { UploadsAPI } from '../../../../../../lib/chats/ChatAPI';
 import { useChat } from '../../../../contexts/ChatContext';
 import AddWebdavAccountModal from '../../../../webdav/AddWebdavAccountModal';
 import WebdavFilePickerModal from '../../../../webdav/WebdavFilePickerModal';
 
-export const useWebdavActions = (disabled: boolean, uploadsStore: UploadsAPI): GenericMenuItemProps[] => {
+export const useWebdavActions = (disabled: boolean): GenericMenuItemProps[] => {
 	const enabled = useSetting('Webdav_Integration_Enabled', false);
 
 	const { isSuccess, data } = useWebDAVAccountIntegrationsQuery({ enabled });
@@ -20,7 +19,7 @@ export const useWebdavActions = (disabled: boolean, uploadsStore: UploadsAPI): G
 	const setModal = useSetModal();
 	const handleAddWebDav = () => setModal(<AddWebdavAccountModal onClose={() => setModal(null)} onConfirm={() => setModal(null)} />);
 
-	const handleUpload = async (file: File) => chat?.flows.uploadFiles({ files: [file], uploadsStore });
+	const handleUpload = async (file: File) => chat?.flows.uploadFiles({ files: [file] });
 
 	const handleOpenWebdav = (account: IWebdavAccountIntegration) =>
 		setModal(<WebdavFilePickerModal account={account} onUpload={handleUpload} onClose={() => setModal(null)} />);

@@ -2,15 +2,15 @@ import { faker } from '@faker-js/faker';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { Registration, HomeChannel } from './page-objects';
+import { HomeChannel, Login } from './page-objects';
 import { test, expect } from './utils/test';
 
 test.describe.serial('Presence', () => {
-	let poRegistration: Registration;
+	let poLogin: Login;
 	let poHomeChannel: HomeChannel;
 
 	test.beforeEach(async ({ page }) => {
-		poRegistration = new Registration(page);
+		poLogin = new Login(page);
 		poHomeChannel = new HomeChannel(page);
 
 		await page.goto('/home');
@@ -18,9 +18,7 @@ test.describe.serial('Presence', () => {
 
 	test.describe('Login using default settings', () => {
 		test('should user be online after log in', async () => {
-			await poRegistration.username.fill('user1');
-			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
-			await poRegistration.btnLogin.click();
+			await poLogin.login('user1', DEFAULT_USER_CREDENTIALS.password);
 
 			await expect(poHomeChannel.navbar.btnUserMenu).toBeVisible();
 		});

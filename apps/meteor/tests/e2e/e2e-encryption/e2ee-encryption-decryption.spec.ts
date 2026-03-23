@@ -95,7 +95,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		await test.step('upload the file with encryption', async () => {
 			// Upload a file
-			await encryptedRoomPage.sendFileMessage('any_file.txt');
+			await encryptedRoomPage.dragAndDropTxtFile();
 
 			// Update file name and send
 			await encryptedRoomPage.composer.getFileByName('any_file.txt').click();
@@ -119,12 +119,10 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 			await encryptedRoomPage.dragAndDropTxtFile();
 
 			// Update file name and send
-			await expect(async () => {
-				await encryptedRoomPage.composer.getFileByName('any_file.txt').click();
-				await fileUploadModal.setName(fileName);
-				await fileUploadModal.update();
-				await expect(encryptedRoomPage.composer.getFileByName(fileName)).toBeVisible();
-			}).toPass();
+			await encryptedRoomPage.composer.getFileByName('any_file.txt').click();
+			await fileUploadModal.setName(fileName);
+			await fileUploadModal.update();
+			await expect(encryptedRoomPage.composer.getFileByName(fileName)).toBeVisible();
 
 			await encryptedRoomPage.composer.inputMessage.fill(fileDescription);
 			await encryptedRoomPage.composer.btnSend.click();

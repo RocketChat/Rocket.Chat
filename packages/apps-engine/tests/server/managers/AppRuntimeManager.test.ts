@@ -8,6 +8,7 @@ import { AppRuntimeManager } from '../../../src/server/managers/AppRuntimeManage
 import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/deno/AppsEngineDenoRuntime';
 import type { IRuntimeController } from '../../../src/server/runtime/IRuntimeController';
 import type { IAppStorageItem } from '../../../src/server/storage';
+import { TestInfastructureSetup } from '../../test-data/utilities';
 
 describe('AppRuntimeManager', () => {
 	let mockManager: AppManager;
@@ -17,20 +18,9 @@ describe('AppRuntimeManager', () => {
 	let mockSubprocessController: IRuntimeController;
 
 	beforeEach(() => {
-		mockManager = {
-			getAccessorManager() {
-				return {} as any;
-			},
-			getApiManager() {
-				return {} as any;
-			},
-			getLogStorage() {
-				return {} as any;
-			},
-			getBridges() {
-				return {} as any;
-			},
-		} as AppManager;
+		const testInfrastructure = new TestInfastructureSetup();
+
+		mockManager = testInfrastructure.getMockManager();
 
 		mockAppPackage = {
 			info: {

@@ -1,3 +1,5 @@
+import * as os from 'os';
+
 import { TestsAppBridges } from './bridges/appBridges';
 import { TestSourceStorage } from './storage/TestSourceStorage';
 import { TestsAppLogStorage } from './storage/logStorage';
@@ -73,7 +75,7 @@ export class TestInfastructureSetup {
 	private runtimeManager: AppRuntimeManager;
 
 	constructor() {
-		this.appStorage = new TestsAppStorage();
+		this.appStorage = TestsAppStorage.getInstance();
 		this.logStorage = new TestsAppLogStorage();
 		this.bridges = new TestsAppBridges();
 		this.sourceStorage = new TestSourceStorage();
@@ -130,8 +132,12 @@ export class TestInfastructureSetup {
 			getRuntime: () => {
 				return this.runtimeManager;
 			},
-			getTempFilePath: () => 'temp-file-path',
+			getTempFilePath: this.getTempFilePath,
 		} as unknown as AppManager;
+	}
+
+	public getTempFilePath(): string {
+		return os.tmpdir();
 	}
 
 	public getAppStorage(): AppMetadataStorage {

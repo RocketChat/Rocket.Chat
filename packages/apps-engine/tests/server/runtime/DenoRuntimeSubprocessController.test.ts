@@ -1,7 +1,10 @@
 import * as fs from 'fs/promises';
+import * as os from 'os';
 import * as assert from 'node:assert';
-import { describe, it, beforeEach, afterEach, mock } from 'node:test';
+import { describe, it, beforeEach, afterEach, mock, before, after } from 'node:test';
 import * as path from 'path';
+
+import { type RpcStatusType, SuccessObject } from 'jsonrpc-lite';
 
 import { AppStatus } from '../../../src/definition/AppStatus';
 import { UserStatusConnection, UserType } from '../../../src/definition/users';
@@ -12,25 +15,15 @@ import { DenoRuntimeSubprocessController } from '../../../src/server/runtime/den
 import type { IAppStorageItem } from '../../../src/server/storage';
 import { TestInfastructureSetup } from '../../test-data/utilities';
 
-type MessagePayload = {
-	type: string;
-	payload: {
-		jsonrpc: string;
-		id: string;
-		method: string;
-		params: unknown[];
-		serialize(): string;
-	};
-};
-type HandlerResponse = { id: string; result: unknown };
-
 describe('DenoRuntimeSubprocessController', () => {
+	const rpcTypeRequest = 'request' as RpcStatusType.request;
+
 	let manager: AppManager;
 	let controller: DenoRuntimeSubprocessController;
 	let appPackage: IParseAppPackageResult;
 	let appStorageItem: IAppStorageItem;
 
-	beforeEach(async () => {
+	before(async () => {
 		const infrastructure = new TestInfastructureSetup();
 		manager = infrastructure.getMockManager();
 
@@ -47,22 +40,30 @@ describe('DenoRuntimeSubprocessController', () => {
 			id: 'hello-world-test',
 			status: AppStatus.MANUALLY_ENABLED,
 		} as IAppStorageItem;
+	});
 
+	beforeEach(async () => {
 		controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
 		await controller.setupApp();
-	});
+	})
 
 	afterEach(async () => {
 		await controller?.stopApp();
 		mock.restoreAll();
 	});
 
+	after(async () => {
+		await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch((reason) => {
+			console.warn('Failed to delete temporary Deno runtime symlink', reason);
+		});
+	})
+
 	it('correctly identifies a call to the HTTP accessor', async () => {
 		const httpBridge = manager.getBridges().getHttpBridge();
 		const doCallSpy = mock.method(httpBridge, 'doCall');
 
-		const r = await controller.handleAccessorMessage({
-			type: 'request',
+		const r = await controller['handleAccessorMessage']({
+			type: rpcTypeRequest,
 			payload: {
 				jsonrpc: '2.0',
 				id: 'test',
@@ -118,8 +119,8 @@ describe('DenoRuntimeSubprocessController', () => {
 			}),
 		);
 
-		const { id, result } = await controller.handleAccessorMessage({
-			type: 'request',
+		const { id, result } = await controller['handleAccessorMessage']({
+			type: rpcTypeRequest,
 			payload: {
 				jsonrpc: '2.0',
 				id: 'test',
@@ -137,8 +138,8 @@ describe('DenoRuntimeSubprocessController', () => {
 	});
 
 	it('correctly identifies a call to the IEnvironmentReader accessor via IRead', async () => {
-		const { id, result } = await controller.handleAccessorMessage({
-			type: 'request',
+		const { id, result } = await controller['handleAccessorMessage']({
+			type: rpcTypeRequest,
 			payload: {
 				jsonrpc: '2.0',
 				id: 'requestId',
@@ -156,8 +157,8 @@ describe('DenoRuntimeSubprocessController', () => {
 		const livechatBridge = manager.getBridges().getLivechatBridge();
 		const doCreateVisitorSpy = mock.method(livechatBridge, 'doCreateVisitor', () => Promise.resolve('random id'));
 
-		const { id, result } = await controller.handleAccessorMessage({
-			type: 'request',
+		const { id, result } = await controller['handleAccessorMessage']({
+			type: rpcTypeRequest,
 			payload: {
 				jsonrpc: '2.0',
 				id: 'requestId',
@@ -201,8 +202,8 @@ describe('DenoRuntimeSubprocessController', () => {
 			avatarUrl: 'https://avatars.com/123',
 		};
 
-		const response = await controller.handleBridgeMessage({
-			type: 'request',
+		const response = await controller['handleBridgeMessage']({
+			type: rpcTypeRequest,
 			payload: {
 				jsonrpc: '2.0',
 				id: 'requestId',
@@ -211,6 +212,9 @@ describe('DenoRuntimeSubprocessController', () => {
 				serialize: () => '',
 			},
 		});
+
+		assert.ok(response instanceof SuccessObject);
+
 		const { id, result } = response;
 
 		assert.strictEqual(doCreateSpy.mock.calls.length, 1);

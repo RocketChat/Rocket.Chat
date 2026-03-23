@@ -1,5 +1,6 @@
 import { api, FederationMatrix, isMeteorError } from '@rocket.chat/core-services';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
+import { isBannedSubscription } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -74,10 +75,10 @@ slashCommands.add({
 
 		for await (const user of users) {
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(message.rid, user._id, {
-				projection: { _id: 1 },
+				projection: { _id: 1, status: 1 },
 			});
-			if (subscription == null) {
-				usersFiltered.push(user as IUser);
+			if (subscription == null || isBannedSubscription(subscription)) {
+				usersFiltered.push(user);
 				continue;
 			}
 			const usernameStr = user.username as string;

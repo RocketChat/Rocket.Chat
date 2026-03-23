@@ -104,6 +104,7 @@ describe('useDevicePermissionPrompt2 - Permission state: prompt', () => {
 		act(() => {
 			rejectPromise = result.current({ actionType: 'incoming' });
 		});
+		// eslint-disable-next-line jest/valid-expect
 		const rejectionExpectation = expect(rejectPromise).rejects.toThrow(PermissionRequestCancelledCallRejectedError);
 
 		const cancel = await screen.findByText('Cancel and reject');

@@ -10,7 +10,17 @@ const Datastore = require('@seald-io/nedb') as typeof import('@seald-io/nedb').d
 export class TestsAppStorage extends AppMetadataStorage {
 	private db: InstanceType<typeof Datastore>;
 
-	constructor() {
+	private static instance: TestsAppStorage;
+
+	public static getInstance(): TestsAppStorage {
+		if (!TestsAppStorage.instance) {
+			TestsAppStorage.instance = new TestsAppStorage();
+		}
+
+		return TestsAppStorage.instance;
+	}
+
+	private constructor() {
 		super('nedb');
 		this.db = new Datastore({ filename: 'tests/test-data/dbs/apps.nedb', autoload: true });
 		this.db.ensureIndex({ fieldName: 'id', unique: true });
