@@ -193,7 +193,14 @@ describe('[CustomSounds]', () => {
 		});
 
 		after(async () => {
-			await request.post(api('custom-sounds.update')).set(credentials).field('_id', fileId).field('name', previousFileName).expect(200);
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.field('_id', fileId)
+				.field('name', previousFileName)
+				.attach('sound', mockWavAudioPath)
+				.field('extension', 'wav')
+				.expect(200);
 		});
 
 		it('should successfully update only the name of the sound without sending the file again', async () => {

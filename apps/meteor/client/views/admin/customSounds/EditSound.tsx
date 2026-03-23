@@ -34,7 +34,8 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 
 	useEffect(() => {
 		setName(previousName || '');
-	}, [previousName]);
+		setFile(undefined);
+	}, [_id, previousName]);
 
 	const deleteCustomSound = useMethod('deleteCustomSound');
 
