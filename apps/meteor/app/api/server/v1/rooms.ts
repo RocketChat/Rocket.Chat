@@ -110,20 +110,31 @@ export async function findRoomByIdOrName({
 	return room;
 }
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.nameExists',
 	{
 		authRequired: true,
-		validateParams: isGETRoomsNameExists,
-	},
-	{
-		async get() {
-			const { roomName } = this.queryParams;
-
-			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
-
-			return API.v1.success({ exists: !!room });
+		query: isGETRoomsNameExists,
+		response: {
+			200: ajv.compile<{ exists: boolean }>({
+				type: 'object',
+				properties: {
+					exists: { type: 'boolean' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['exists', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomName } = this.queryParams;
+
+		const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
+
+		return API.v1.success({ exists: !!room });
 	},
 );
 
