@@ -310,55 +310,98 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 	}
 
 	async evaluateUserRooms(
-		user: Pick<IUser, '_id' | 'emails' | 'username'>,
-		rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[],
-	): Promise<IRoom[]> {
-		if (!rooms.length) {
+		entries: Array<{
+			user: Pick<IUser, '_id' | 'emails' | 'username'>;
+			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
+		}>,
+	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
+		const requestIndex: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: AtLeast<IRoom, '_id' | 'abacAttributes'> }> = [];
+		const allRequests: unknown[] = [];
+
+		for (const { user, rooms } of entries) {
+			const entityKey = this.getUserEntityKey(user);
+			if (!entityKey) {
+				for (const room of rooms) {
+					requestIndex.push({ user, room });
+					allRequests.push(null);
+				}
+				continue;
+			}
+
+			for (const room of rooms) {
+				requestIndex.push({ user, room });
+				allRequests.push({
+					entityIdentifier: {
+						entityChain: {
+							entities: [this.buildEntityIdentifier(entityKey)],
+						},
+					},
+					action: { name: 'read' },
+					resources: [
+						{
+							ephemeralId: room._id,
+							attributeValues: { fqns: this.buildAttributeFqns(room.abacAttributes ?? []) },
+						},
+					],
+				});
+			}
+		}
+
+		if (!allRequests.length) {
 			return [];
 		}
 
-		const entityKey = this.getUserEntityKey(user);
-		if (!entityKey) {
-			return rooms as IRoom[];
+		// Batch into chunks of 200 (GetDecisionBulk limit)
+		const BATCH_SIZE = 200;
+		const allDecisions: Array<string | undefined> = [];
+
+		for (let i = 0; i < allRequests.length; i += BATCH_SIZE) {
+			const batch = allRequests.slice(i, i + BATCH_SIZE);
+			const validBatch = batch.filter(Boolean);
+
+			if (!validBatch.length) {
+				allDecisions.push(...batch.map(() => undefined));
+				continue;
+			}
+
+			const result = await this.apiCall<{
+				decisionResponses?: Array<{
+					resourceDecisions?: Array<{
+						decision?: string;
+					}>;
+				}>;
+			}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
+				decisionRequests: validBatch,
+			});
+
+			pdpLogger.debug({
+				msg: 'GetDecisionBulk response (evaluateUserRooms)',
+				batch: `${i}-${i + batch.length}`,
+				result: result.decisionResponses,
+			});
+
+			let resultIdx = 0;
+			for (const req of batch) {
+				if (!req) {
+					allDecisions.push(undefined);
+				} else {
+					const resp = result.decisionResponses?.[resultIdx];
+					const permitted = resp?.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
+					allDecisions.push(permitted ? 'DECISION_PERMIT' : undefined);
+					resultIdx++;
+				}
+			}
 		}
 
-		const decisionRequests = rooms.map((room) => ({
-			entityIdentifier: {
-				entityChain: {
-					entities: [this.buildEntityIdentifier(entityKey)],
-				},
-			},
-			action: { name: 'read' },
-			resources: [
-				{
-					ephemeralId: room._id,
-					attributeValues: { fqns: this.buildAttributeFqns(room.abacAttributes ?? []) },
-				},
-			],
-		}));
+		const nonCompliant: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }> = [];
 
-		const result = await this.apiCall<{
-			decisionResponses?: Array<{
-				resourceDecisions?: Array<{
-					decision?: string;
-				}>;
-			}>;
-		}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
-			decisionRequests,
-		});
-
-		pdpLogger.debug({ msg: 'GetDecisionBulk response (evaluateUserRooms)', userId: user._id, result: result.decisionResponses });
-
-		const nonCompliantRooms: IRoom[] = [];
-
-		result.decisionResponses?.forEach((resp, index) => {
-			const permitted = resp.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
-			if (!permitted && rooms[index]) {
-				nonCompliantRooms.push(rooms[index] as IRoom);
+		allDecisions.forEach((decision, index) => {
+			if (decision !== 'DECISION_PERMIT' && requestIndex[index]) {
+				nonCompliant.push({ user: requestIndex[index].user, room: requestIndex[index].room as IRoom });
 			}
 		});
 
-		return nonCompliantRooms;
+		return nonCompliant;
 	}
 
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {

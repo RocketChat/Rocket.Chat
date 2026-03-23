@@ -65,35 +65,12 @@ export class LocalPDP implements IPolicyDecisionPoint {
 	}
 
 	async evaluateUserRooms(
-		user: Pick<IUser, '_id' | 'emails' | 'username'>,
-		rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[],
-	): Promise<IRoom[]> {
-		const fullUser = await Users.findOneById(user._id);
-		if (!fullUser) {
-			return rooms as IRoom[];
-		}
-
-		const nonCompliant: IRoom[] = [];
-		for (const room of rooms) {
-			const attributes = room.abacAttributes ?? [];
-			if (!attributes.length) {
-				continue;
-			}
-
-			const isCompliant = await Users.findOne(
-				{
-					_id: user._id,
-					$and: buildCompliantConditions(attributes),
-				},
-				{ projection: { _id: 1 } },
-			);
-
-			if (!isCompliant) {
-				nonCompliant.push(room as IRoom);
-			}
-		}
-
-		return nonCompliant;
+		_entries: Array<{
+			user: Pick<IUser, '_id' | 'emails' | 'username'>;
+			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
+		}>,
+	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
+		throw new Error('evaluateUserRooms is not implemented for LocalPDP');
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], _object: IRoom): Promise<void> {

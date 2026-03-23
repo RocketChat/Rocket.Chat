@@ -94,17 +94,12 @@ export function addSettings(): Promise<void> {
 					i18nDescription: 'ABAC_External_Attribute_Namespace_Description',
 					enableQuery: externalPdpQuery,
 				});
-				await this.add('ABAC_External_Sync_Interval', 'every_24_hours', {
-					type: 'select',
+				await this.add('ABAC_External_Sync_Interval', '*/5 * * * *', {
+					type: 'string',
 					public: false,
-					invalidValue: 'every_24_hours',
+					invalidValue: '*/5 * * * *',
 					section: 'ABAC_External_PDP_Configuration',
-					values: [
-						{ key: 'every_1_hour', i18nLabel: 'every_hour' },
-						{ key: 'every_6_hours', i18nLabel: 'every_six_hours' },
-						{ key: 'every_12_hours', i18nLabel: 'every_12_hours' },
-						{ key: 'every_24_hours', i18nLabel: 'every_24_hours' },
-					],
+					i18nDescription: 'ABAC_External_Sync_Interval_Description',
 					enableQuery: externalPdpQuery,
 				});
 			},
