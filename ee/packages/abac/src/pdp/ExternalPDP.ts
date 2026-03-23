@@ -1,4 +1,3 @@
-import { Settings } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast, ISubscription } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
@@ -9,7 +8,7 @@ import type { IPolicyDecisionPoint } from './types';
 
 const pdpLogger = logger.section('ExternalPDP');
 
-interface VirtruConfig {
+export interface IExternalPDPConfig {
 	baseUrl: string;
 	clientId: string;
 	clientSecret: string;
@@ -18,41 +17,39 @@ interface VirtruConfig {
 	attributeNamespace: string;
 }
 
-interface TokenCache {
+interface ITokenCache {
 	accessToken: string;
 	expiresAt: number;
 }
 
 export class ExternalPDP implements IPolicyDecisionPoint {
-	private tokenCache: TokenCache | null = null;
+	private tokenCache: ITokenCache | null = null;
 
-	private async getConfig(): Promise<VirtruConfig> {
-		const [baseUrl, clientId, clientSecret, oidcEndpoint, defaultEntityKey, attributeNamespace] = await Promise.all([
-			Settings.get<string>('ABAC_Virtru_Base_URL'),
-			Settings.get<string>('ABAC_Virtru_Client_ID'),
-			Settings.get<string>('ABAC_Virtru_Client_Secret'),
-			Settings.get<string>('ABAC_Virtru_OIDC_Endpoint'),
-			Settings.get<string>('ABAC_Virtru_Default_Entity_Key'),
-			Settings.get<string>('ABAC_Virtru_Attribute_Namespace'),
-		]);
+	private config: IExternalPDPConfig;
 
-		return { baseUrl, clientId, clientSecret, oidcEndpoint, defaultEntityKey, attributeNamespace: attributeNamespace || 'example.com' };
+	constructor(config: IExternalPDPConfig) {
+		this.config = config;
 	}
 
-	private async getClientToken(config: VirtruConfig): Promise<string> {
+	updateConfig(config: IExternalPDPConfig): void {
+		this.config = config;
+		this.tokenCache = null;
+	}
+
+	private async getClientToken(): Promise<string> {
 		if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
 			return this.tokenCache.accessToken;
 		}
 
 		const response = await serverFetch(
-			`${config.oidcEndpoint}/protocol/openid-connect/token`,
+			`${this.config.oidcEndpoint}/protocol/openid-connect/token`,
 			{
 				method: 'POST',
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				body: new URLSearchParams({
 					grant_type: 'client_credentials',
-					client_id: config.clientId,
-					client_secret: config.clientSecret,
+					client_id: this.config.clientId,
+					client_secret: this.config.clientSecret,
 				}),
 				ignoreSsrfValidation: true,
 			},
@@ -75,11 +72,11 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		return data.access_token;
 	}
 
-	private async apiCall<T>(config: VirtruConfig, endpoint: string, body: unknown): Promise<T> {
-		const token = await this.getClientToken(config);
+	private async apiCall<T>(endpoint: string, body: unknown): Promise<T> {
+		const token = await this.getClientToken();
 
 		const response = await serverFetch(
-			`${config.baseUrl}${endpoint}`,
+			`${this.config.baseUrl}${endpoint}`,
 			{
 				method: 'POST',
 				headers: {
@@ -94,40 +91,43 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 
 		if (!response.ok) {
 			const text = await response.text().catch(() => '');
-			throw new Error(`Virtru API call to ${endpoint} failed: ${response.status} ${response.statusText} - ${text}`);
+			pdpLogger.error({ msg: 'External PDP API call failed', endpoint, status: response.status, response: text });
+			throw new Error('External PDP call failed');
 		}
 
 		return response.json() as Promise<T>;
 	}
 
-	private buildAttributeFqns(attributes: IAbacAttributeDefinition[], namespace: string): string[] {
-		if (!namespace) {
-			throw new Error('ExternalPDP: attribute namespace is not configured');
+	private buildAttributeFqns(attributes: IAbacAttributeDefinition[]): string[] {
+		if (!this.config.attributeNamespace) {
+			throw new Error('Attribute namespace is not configured for ExternalPDP');
 		}
 
-		return attributes.flatMap((attr) => attr.values.map((value) => `https://${namespace}/attr/${attr.key}/value/${value}`));
+		return attributes.flatMap((attr) =>
+			attr.values.map((value) => `https://${this.config.attributeNamespace}/attr/${attr.key}/value/${value}`),
+		);
 	}
 
-	private buildEntityIdentifier(entityKey: string, defaultEntityKey: string) {
-		if (defaultEntityKey === 'emailAddress') {
+	private buildEntityIdentifier(entityKey: string) {
+		if (this.config.defaultEntityKey === 'emailAddress') {
 			return { emailAddress: entityKey };
 		}
 
 		return { id: entityKey };
 	}
 
-	private getUserEntityKey(user: Pick<IUser, '_id' | 'emails' | 'username'>, defaultEntityKey: string): string | undefined {
-		if (!defaultEntityKey) {
-			throw new Error('ExternalPDP: default entity key is not configured');
+	private getUserEntityKey(user: Pick<IUser, '_id' | 'emails' | 'username'>): string | undefined {
+		if (!this.config.defaultEntityKey) {
+			throw new Error('Default entity key is not configured for ExternalPDP');
 		}
 
-		switch (defaultEntityKey) {
+		switch (this.config.defaultEntityKey) {
 			case 'emailAddress':
 				return user.emails?.[0]?.address;
 			case 'oidcIdentifier':
-				return user.username;
+				return user.username; // For now, username, we're gonna change this to find the right oidc identifier for the user
 			default:
-				throw new Error(`ExternalPDP: unknown entity key type: ${defaultEntityKey}`);
+				throw new Error('Unsupported default entity key configuration for ExternalPDP');
 		}
 	}
 
@@ -137,31 +137,30 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		_userSub: ISubscription,
 		_decisionCacheTimeout: number,
 	): Promise<{ granted: boolean; userToRemove?: IUser }> {
-		const config = await this.getConfig();
 		const attributes = room.abacAttributes ?? [];
 
 		if (!attributes.length) {
 			return { granted: true };
 		}
 
-		const fullUser = await Users.findOneById(user._id, { projection: { _id: 1, emails: 1, username: 1 } });
+		const fullUser = await Users.findOneById(user._id);
 		if (!fullUser) {
 			return { granted: false };
 		}
 
-		const entityKey = this.getUserEntityKey(fullUser, config.defaultEntityKey);
+		const entityKey = this.getUserEntityKey(fullUser);
 		if (!entityKey) {
 			pdpLogger.warn({ msg: 'User has no entity key for external PDP evaluation', userId: user._id });
 			return { granted: false };
 		}
 
-		const fqns = this.buildAttributeFqns(attributes, config.attributeNamespace);
+		const fqns = this.buildAttributeFqns(attributes);
 
 		const result = await this.apiCall<{
 			decisionResponses?: Array<{
 				decision?: string;
 			}>;
-		}>(config, '/authorization.AuthorizationService/GetDecisions', {
+		}>('/authorization.AuthorizationService/GetDecisions', {
 			decisionRequests: [
 				{
 					actions: [{ standard: 1 }],
@@ -174,7 +173,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 					entityChains: [
 						{
 							id: 'rc-access-check',
-							entities: [this.buildEntityIdentifier(entityKey, config.defaultEntityKey)],
+							entities: [this.buildEntityIdentifier(entityKey)],
 						},
 					],
 				},
@@ -187,10 +186,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		const granted = decision === 'DECISION_PERMIT';
 
 		if (!granted) {
-			const userToRemove = await Users.findOneById(user._id);
-			if (userToRemove) {
-				return { granted: false, userToRemove };
-			}
+			return { granted: false, userToRemove: fullUser };
 		}
 
 		return { granted };
@@ -201,14 +197,11 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return;
 		}
 
-		const config = await this.getConfig();
-		const fqns = this.buildAttributeFqns(attributes, config.attributeNamespace);
-
 		const users = await Users.find({ username: { $in: usernames } }, { projection: { _id: 1, emails: 1, username: 1 } }).toArray();
 
 		const decisionRequests = users
 			.map((user) => {
-				const entityKey = this.getUserEntityKey(user, config.defaultEntityKey);
+				const entityKey = this.getUserEntityKey(user);
 				if (!entityKey) {
 					return null;
 				}
@@ -216,14 +209,14 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 				return {
 					entityIdentifier: {
 						entityChain: {
-							entities: [this.buildEntityIdentifier(entityKey, config.defaultEntityKey)],
+							entities: [this.buildEntityIdentifier(entityKey)],
 						},
 					},
 					action: { name: 'read' },
 					resources: [
 						{
 							ephemeralId: object._id,
-							attributeValues: { fqns },
+							attributeValues: { fqns: this.buildAttributeFqns(attributes) },
 						},
 					],
 				};
@@ -240,7 +233,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 					decision?: string;
 				}>;
 			}>;
-		}>(config, '/authorization.v2.AuthorizationService/GetDecisionBulk', {
+		}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
 			decisionRequests,
 		});
 
@@ -263,9 +256,6 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const config = await this.getConfig();
-		const fqns = this.buildAttributeFqns(newAttributes, config.attributeNamespace);
-
 		const subscriptions = await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1 } }).toArray();
 		const userIds = subscriptions.map((s) => s.u._id);
 
@@ -278,25 +268,25 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		const usersWithKeys = users
 			.map((user) => ({
 				user,
-				entityKey: this.getUserEntityKey(user, config.defaultEntityKey),
+				entityKey: this.getUserEntityKey(user),
 			}))
 			.filter((entry): entry is { user: IUser; entityKey: string } => !!entry.entityKey);
 
 		if (!usersWithKeys.length) {
-			return users as IUser[];
+			return users;
 		}
 
 		const decisionRequests = usersWithKeys.map(({ entityKey }) => ({
 			entityIdentifier: {
 				entityChain: {
-					entities: [this.buildEntityIdentifier(entityKey, config.defaultEntityKey)],
+					entities: [this.buildEntityIdentifier(entityKey)],
 				},
 			},
 			action: { name: 'read' },
 			resources: [
 				{
 					ephemeralId: room._id,
-					attributeValues: { fqns },
+					attributeValues: { fqns: this.buildAttributeFqns(newAttributes) },
 				},
 			],
 		}));
@@ -307,7 +297,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 					decision?: string;
 				}>;
 			}>;
-		}>(config, '/authorization.v2.AuthorizationService/GetDecisionBulk', {
+		}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
 			decisionRequests,
 		});
 
@@ -323,8 +313,8 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		});
 
 		// Users without entity keys are also non-compliant
-		const usersWithoutKeys = users.filter((user) => !this.getUserEntityKey(user, config.defaultEntityKey));
-		nonCompliantUsers.push(...(usersWithoutKeys as IUser[]));
+		const usersWithoutKeys = users.filter((user) => !this.getUserEntityKey(user));
+		nonCompliantUsers.push(...usersWithoutKeys);
 
 		return nonCompliantUsers;
 	}
@@ -337,9 +327,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const config = await this.getConfig();
-
-		const entityKey = this.getUserEntityKey(user, config.defaultEntityKey);
+		const entityKey = this.getUserEntityKey(user);
 		if (!entityKey) {
 			return rooms as IRoom[];
 		}
@@ -347,14 +335,14 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		const decisionRequests = rooms.map((room) => ({
 			entityIdentifier: {
 				entityChain: {
-					entities: [this.buildEntityIdentifier(entityKey, config.defaultEntityKey)],
+					entities: [this.buildEntityIdentifier(entityKey)],
 				},
 			},
 			action: { name: 'read' },
 			resources: [
 				{
 					ephemeralId: room._id,
-					attributeValues: { fqns: this.buildAttributeFqns(room.abacAttributes ?? [], config.attributeNamespace) },
+					attributeValues: { fqns: this.buildAttributeFqns(room.abacAttributes ?? []) },
 				},
 			],
 		}));
@@ -365,7 +353,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 					decision?: string;
 				}>;
 			}>;
-		}>(config, '/authorization.v2.AuthorizationService/GetDecisionBulk', {
+		}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
 			decisionRequests,
 		});
 
@@ -389,9 +377,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const config = await this.getConfig();
-
-		const entityKey = this.getUserEntityKey(user, config.defaultEntityKey);
+		const entityKey = this.getUserEntityKey(user);
 		if (!entityKey) {
 			// Without an entity key we cannot evaluate, treat all ABAC rooms as non-compliant
 			return Rooms.find(
@@ -418,14 +404,14 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		const decisionRequests = abacRooms.map((room) => ({
 			entityIdentifier: {
 				entityChain: {
-					entities: [this.buildEntityIdentifier(entityKey, config.defaultEntityKey)],
+					entities: [this.buildEntityIdentifier(entityKey)],
 				},
 			},
 			action: { name: 'read' },
 			resources: [
 				{
 					ephemeralId: room._id,
-					attributeValues: { fqns: this.buildAttributeFqns(room.abacAttributes ?? [], config.attributeNamespace) },
+					attributeValues: { fqns: this.buildAttributeFqns(room.abacAttributes ?? []) },
 				},
 			],
 		}));
@@ -437,7 +423,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 					decision?: string;
 				}>;
 			}>;
-		}>(config, '/authorization.v2.AuthorizationService/GetDecisionBulk', {
+		}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
 			decisionRequests,
 		});
 

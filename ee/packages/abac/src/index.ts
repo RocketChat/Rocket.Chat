@@ -34,7 +34,7 @@ import {
 	MAX_ABAC_ATTRIBUTE_KEYS,
 } from './helper';
 import { logger } from './logger';
-import type { IPolicyDecisionPoint } from './pdp';
+import type { IPolicyDecisionPoint, ExternalPDPConfig } from './pdp';
 import { LocalPDP, ExternalPDP } from './pdp';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
@@ -45,6 +45,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private pdp!: IPolicyDecisionPoint;
 
+	private externalPdpConfig: ExternalPDPConfig = {
+		baseUrl: '',
+		clientId: '',
+		clientSecret: '',
+		oidcEndpoint: '',
+		defaultEntityKey: 'emailAddress',
+		attributeNamespace: 'example.com',
+	};
+
 	decisionCacheTimeout = 60; // seconds
 
 	constructor() {
@@ -53,10 +62,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.onSettingChanged('ABAC_PDP_Type', async ({ setting }): Promise<void> => {
 			const { value } = setting;
-			if (value === 'local') {
-				this.setPdpStrategy('local');
-			} else if (value === 'virtru') {
-				this.setPdpStrategy('external');
+			if (value === 'local' || value === 'external') {
+				this.setPdpStrategy(value);
 			}
 		});
 
@@ -67,12 +74,33 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 			this.decisionCacheTimeout = value;
 		});
+
+		const externalPdpSettingsMap: Record<string, keyof ExternalPDPConfig> = {
+			ABAC_External_Base_URL: 'baseUrl',
+			ABAC_External_Client_ID: 'clientId',
+			ABAC_External_Client_Secret: 'clientSecret',
+			ABAC_External_OIDC_Endpoint: 'oidcEndpoint',
+			ABAC_External_Default_Entity_Key: 'defaultEntityKey',
+			ABAC_External_Attribute_Namespace: 'attributeNamespace',
+		};
+
+		for (const [settingId, configKey] of Object.entries(externalPdpSettingsMap)) {
+			this.onSettingChanged(settingId, async ({ setting }): Promise<void> => {
+				const { value } = setting;
+				if (typeof value === 'string') {
+					this.externalPdpConfig[configKey] = value;
+					if (this.pdp instanceof ExternalPDP) {
+						this.pdp.updateConfig({ ...this.externalPdpConfig });
+					}
+				}
+			});
+		}
 	}
 
 	setPdpStrategy(strategy: 'local' | 'external'): void {
 		switch (strategy) {
 			case 'external':
-				this.pdp = new ExternalPDP();
+				this.pdp = new ExternalPDP({ ...this.externalPdpConfig });
 				break;
 			case 'local':
 			default:
@@ -84,8 +112,26 @@ export class AbacService extends ServiceClass implements IAbacService {
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
+		const [baseUrl, clientId, clientSecret, oidcEndpoint, defaultEntityKey, attributeNamespace] = await Promise.all([
+			Settings.get<string>('ABAC_External_Base_URL'),
+			Settings.get<string>('ABAC_External_Client_ID'),
+			Settings.get<string>('ABAC_External_Client_Secret'),
+			Settings.get<string>('ABAC_External_OIDC_Endpoint'),
+			Settings.get<string>('ABAC_External_Default_Entity_Key'),
+			Settings.get<string>('ABAC_External_Attribute_Namespace'),
+		]);
+
+		this.externalPdpConfig = {
+			baseUrl: baseUrl || '',
+			clientId: clientId || '',
+			clientSecret: clientSecret || '',
+			oidcEndpoint: oidcEndpoint || '',
+			defaultEntityKey: defaultEntityKey || 'emailAddress',
+			attributeNamespace: attributeNamespace || 'example.com',
+		};
+
 		const pdpType = await Settings.get<string>('ABAC_PDP_Type');
-		if (pdpType === 'virtru') {
+		if (pdpType === 'external') {
 			this.setPdpStrategy('external');
 		}
 	}
@@ -685,6 +731,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 }
 
 export { LocalPDP, ExternalPDP } from './pdp';
-export type { IPolicyDecisionPoint } from './pdp';
+export type { IPolicyDecisionPoint, ExternalPDPConfig } from './pdp';
 
 export default AbacService;
