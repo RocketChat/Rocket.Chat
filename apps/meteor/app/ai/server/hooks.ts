@@ -35,7 +35,7 @@ callbacks.add(
         return message;
       }
 
-      // ✅ Strict mention detection (fix)
+      // ✅ Strict mention detection
       const mentionRegex = /(^|\s)@ai(\s|$)/i;
 
       const isMentioningAI =
@@ -46,7 +46,16 @@ callbacks.add(
 
       if (!isMentioningAI) return message;
 
-      // ✅ Rate limiting
+      // ✅ Clean prompt FIRST (fix for cooldown bug)
+      const prompt = message.msg
+        .replace(/(^|\s)@(?:ai|ai\.bot)(?=\s|$)/gi, ' ')
+        .trim();
+
+      if (!prompt) {
+        return message;
+      }
+
+      // ✅ Rate limiting AFTER prompt validation
       const userId = message.u._id;
       const now = Date.now();
       const last = userLastRequest.get(userId) ?? 0;
@@ -56,12 +65,6 @@ callbacks.add(
       }
 
       userLastRequest.set(userId, now);
-
-      // ✅ Clean prompt (fix)
-      const prompt = message.msg
-        .replace(/(^|\s)@(?:ai|ai\.bot)(?=\s|$)/gi, ' ')
-        .trim();
-      if (!prompt) return message;
 
       // =========================
       // 🧠 CONTEXT (thread-aware)
@@ -96,7 +99,7 @@ AI:
         {
           msg: '🤖 Thinking...',
           rid: message.rid,
-          tmid: message.tmid, // ✅ thread support
+          tmid: message.tmid,
         },
         room
       );
