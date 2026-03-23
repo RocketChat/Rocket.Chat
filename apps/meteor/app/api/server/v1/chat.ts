@@ -127,33 +127,6 @@ const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFo
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 
-API.v1.addRoute(
-	'chat.getMessage',
-	{
-		authRequired: true,
-		validateParams: isChatGetMessageProps,
-	},
-	{
-		async get() {
-			if (!this.queryParams.msgId) {
-				return API.v1.failure('The "msgId" query parameter must be provided.');
-			}
-
-			const msg = await getSingleMessage(this.userId, this.queryParams.msgId);
-
-			if (!msg) {
-				return API.v1.failure();
-			}
-
-			const [message] = await normalizeMessagesForUser([msg], this.userId);
-
-			return API.v1.success({
-				message,
-			});
-		},
-	},
-);
-
 type ChatPinMessage = {
 	messageId: IMessage['_id'];
 };
@@ -685,6 +658,43 @@ const chatEndpoints = API.v1
 					deleted: 'deleted' in result ? result.deleted : [],
 					cursor: 'cursor' in result ? result.cursor : undefined,
 				},
+			});
+		},
+	)
+	.get(
+		'chat.getMessage',
+		{
+			authRequired: true,
+			query: isChatGetMessageProps,
+			response: {
+				200: ajv.compile<{ message: IMessage }>({
+					type: 'object',
+					properties: {
+						message: { $ref: '#/components/schemas/IMessage' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			if (!this.queryParams.msgId) {
+				return API.v1.failure('The "msgId" query parameter must be provided.');
+			}
+
+			const msg = await getSingleMessage(this.userId, this.queryParams.msgId);
+
+			if (!msg) {
+				return API.v1.failure();
+			}
+
+			const [message] = await normalizeMessagesForUser([msg], this.userId);
+
+			return API.v1.success({
+				message,
 			});
 		},
 	);
