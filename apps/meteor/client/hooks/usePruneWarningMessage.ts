@@ -2,13 +2,66 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useTranslation, useLanguage } from '@rocket.chat/ui-contexts';
-import { sendAt } from 'cron';
 import { intlFormat } from 'date-fns';
 import { useEffect, useState } from 'react';
 
 import { useFormattedRelativeTime } from './useFormattedRelativeTime';
 import { getCronAdvancedTimerFromPrecisionSetting } from '../../lib/getCronAdvancedTimerFromPrecisionSetting';
 import { useRetentionPolicy } from '../views/room/hooks/useRetentionPolicy';
+
+const sendAt = (cronExpression: string): Date => {
+	const parts = cronExpression.split(' ').filter(Boolean);
+
+	if (parts.length !== 5 && parts.length !== 6) {
+		throw new Error('Invalid cron expression');
+	}
+
+	const [minute, hour, dom, month, dow] = parts.length === 6 ? parts.slice(1) : parts;
+
+	const match = (val: number, pattern: string): boolean => {
+		if (pattern === '*') return true;
+		if (pattern.includes(',')) return pattern.split(',').some((p) => match(val, p));
+		if (pattern.includes('-')) {
+			const [start, end] = pattern.split('-').map(Number);
+			return val >= start && val <= end;
+		}
+		if (pattern.startsWith('*/')) {
+			const step = parseInt(pattern.slice(2), 10);
+			return val % step === 0;
+		}
+		return parseInt(pattern, 10) === val;
+	};
+
+	const now = new Date();
+	const date = new Date(now.getTime() + 60 * 1000);
+	date.setSeconds(0, 0);
+
+	const limit = new Date(now.getTime() + 5 * 365 * 24 * 60 * 60 * 1000);
+
+	while (date < limit) {
+		const curMinute = date.getMinutes();
+		const curHour = date.getHours();
+		const curDom = date.getDate();
+		const curMonth = date.getMonth();
+		const curDow = date.getDay();
+
+		const domRestricted = dom !== '*';
+		const dowRestricted = dow !== '*';
+		const dayMatches =
+			(!domRestricted && !dowRestricted) ||
+			(domRestricted && !dowRestricted && match(curDom, dom)) ||
+			(!domRestricted && dowRestricted && match(curDow, dow)) ||
+			(domRestricted && dowRestricted && (match(curDom, dom) || match(curDow, dow)));
+
+		if (match(curMinute, minute) && match(curHour, hour) && match(curMonth, month) && dayMatches) {
+			return date;
+		}
+
+		date.setMinutes(date.getMinutes() + 1);
+	}
+
+	throw new Error('Invalid cron expression: unreachable date');
+};
 
 const getMessage = ({ filesOnly, excludePinned }: { filesOnly: boolean; excludePinned: boolean }): TranslationKey => {
 	if (filesOnly) {
