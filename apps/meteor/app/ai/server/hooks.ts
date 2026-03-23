@@ -58,7 +58,9 @@ callbacks.add(
       userLastRequest.set(userId, now);
 
       // ✅ Clean prompt (fix)
-      const prompt = message.msg.replace(/(^|\s)@ai(\s|$)/gi, ' ').trim();
+      const prompt = message.msg
+        .replace(/(^|\s)@(?:ai|ai\.bot)(?=\s|$)/gi, ' ')
+        .trim();
       if (!prompt) return message;
 
       // =========================
