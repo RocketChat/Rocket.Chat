@@ -41,8 +41,7 @@ const roomId = 'GENERAL';
 	const findLogEntry = (logs: ILoggerStorageEntry[], methodFragment: string, firstArg: string) =>
 		logs.find(
 			(log) =>
-				String(log.method).includes(methodFragment) &&
-				log.entries.some((entry) => Array.isArray(entry.args) && entry.args[0] === firstArg),
+				String(log.method).includes(methodFragment) && log.entries.some((entry) => Array.isArray(entry.args) && entry.args[0] === firstArg),
 		);
 
 	it('should include room data in executeBlockActionHandler when rid is sent', async () => {
