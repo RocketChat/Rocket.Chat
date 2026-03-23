@@ -5,11 +5,18 @@ import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
+import type { VoipPushNotificationEventType } from '../../definition/IMediaCallServer';
 import { logger } from '../../logger';
 import { buildNewCallSignal } from '../../server/buildNewCallSignal';
 import { getMediaCallServer } from '../../server/injection';
 
 export class UserActorAgent extends BaseMediaCallAgent {
+	private pushNotificationsEnabled = true;
+
+	public disablePushNotifications(): void {
+		this.pushNotificationsEnabled = false;
+	}
+
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
 		const channel = await this.getOrCreateChannel(call, signal.contractId);
 
@@ -33,11 +40,16 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			return;
 		}
 
-		getMediaCallServer().sendPushNotification({ callId, event: 'answer' });
+		this.sendPushNotification({ callId, event: 'answer' });
 
 		const negotiation = await MediaCallNegotiations.findLatestByCallId(callId);
 		if (!negotiation?.offer) {
 			logger.debug('The call was accepted but the webrtc offer is not yet available.');
+			return;
+		}
+
+		if (negotiation.offerer !== 'caller') {
+			logger.debug('onCallAccepted event was triggered with a renegotiation already in place.');
 			return;
 		}
 
@@ -53,7 +65,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 
 	public async onCallEnded(callId: string): Promise<void> {
 		if (this.role === 'callee') {
-			getMediaCallServer().sendPushNotification({ callId, event: 'end' });
+			this.sendPushNotification({ callId, event: 'end' });
 		}
 
 		return this.sendSignal({
@@ -63,11 +75,12 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
-	public async onCallActive(callId: string): Promise<void> {
+	public async onCallActive(callId: string, data: { signedContractId?: string } = {}): Promise<void> {
 		return this.sendSignal({
 			callId,
 			type: 'notification',
 			notification: 'active',
+			...(data.signedContractId && { signedContractId: data.signedContractId }),
 		});
 	}
 
@@ -80,7 +93,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		await this.sendSignal(buildNewCallSignal(call, this.role));
 
 		if (this.role === 'callee') {
-			getMediaCallServer().sendPushNotification({ callId: call._id, event: 'new' });
+			this.sendPushNotification({ callId: call._id, event: 'new' });
 		}
 	}
 
@@ -168,5 +181,13 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
 		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration, role: this.role });
 		// internal calls have nothing to do with DTMFs
+	}
+
+	private sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {
+		if (!this.pushNotificationsEnabled) {
+			return;
+		}
+
+		getMediaCallServer().sendPushNotification(params);
 	}
 }

@@ -63,7 +63,7 @@ export abstract class BaseMediaCallAgent implements IMediaCallAgent {
 
 	public abstract onCallAccepted(callId: string, data: { signedContractId: string; features: CallFeature[] }): Promise<void>;
 
-	public abstract onCallActive(callId: string): Promise<void>;
+	public abstract onCallActive(callId: string, data?: { signedContractId?: string }): Promise<void>;
 
 	public abstract onCallEnded(callId: string): Promise<void>;
 

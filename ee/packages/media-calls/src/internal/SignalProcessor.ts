@@ -2,6 +2,7 @@ import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { isPendingState } from '@rocket.chat/media-signaling';
 import type {
+	CallFeature,
 	ClientMediaSignal,
 	ClientMediaSignalRegister,
 	ClientMediaSignalRequestCall,
@@ -114,6 +115,12 @@ export class GlobalSignalProcessor {
 		logger.debug({ msg: 'GlobalSignalProcessor.processRegisterSignal', signal: stripSensitiveDataFromSignal(signal), uid });
 
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
+		this.sendSignal(uid, {
+			type: 'registered',
+			toContractId: signal.contractId,
+			activeCalls: calls.map(({ _id }) => _id),
+		});
+
 		if (!calls.length) {
 			return;
 		}
@@ -136,34 +143,46 @@ export class GlobalSignalProcessor {
 		const role = isCaller ? 'caller' : 'callee';
 		const actor = call[role];
 
-		// If this user's side of the call has already been signed
-		if (actor.contractId) {
-			// If it was signed by a session that the current session is replacing (as in a browser refresh)
-			if (actor.contractId === signal.oldContractId) {
-				logger.info({ msg: 'Server detected a client refresh for a session with an active call.', callId: call._id });
-				await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
-				return;
-			}
-		} else {
-			await mediaCallDirector.renewCallId(call._id);
+		// If this user's side of the call is signed to a session that the current session is replacing (as in a browser refresh)
+		if (actor.contractId && actor.contractId === signal.oldContractId) {
+			logger.info({ msg: 'Server detected a client refresh for a session with an active call.', callId: call._id });
+			await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
+			return;
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, role));
+		await mediaCallDirector.renewCallId(call._id);
+
+		const agents = await mediaCallDirector.cast.getAgentsFromCall(call);
+		const { [role]: agent } = agents;
+
+		const otherAgent = agent.oppositeAgent;
+		if (otherAgent && otherAgent instanceof UserActorAgent) {
+			await otherAgent.sendSignal({
+				callId: call._id,
+				type: 'notification',
+				notification: 'trying',
+			});
+		}
+
+		if (!(agent instanceof UserActorAgent)) {
+			logger.error({
+				msg: 'Actor agent is not prepared to process signals',
+				method: 'reactToUnknownCall',
+				signal: stripSensitiveDataFromSignal(signal),
+				isCaller,
+				isCallee,
+			});
+			throw new Error('internal-error');
+		}
+
+		agent.disablePushNotifications();
+
+		await agent.onCallCreated(call);
 
 		if (call.state === 'active') {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'notification',
-				notification: 'active',
-				...(actor.contractId && { signedContractId: actor.contractId }),
-			});
+			await agent.onCallActive(call._id, actor.contractId ? { signedContractId: actor.contractId } : undefined);
 		} else if (actor.contractId && !isPendingState(call.state)) {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'notification',
-				notification: 'accepted',
-				signedContractId: actor.contractId,
-			});
+			await agent.onCallAccepted(call._id, { signedContractId: actor.contractId, features: call.features as CallFeature[] });
 		}
 	}
 
