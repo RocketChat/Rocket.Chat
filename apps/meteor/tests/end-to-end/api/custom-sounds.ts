@@ -281,6 +281,7 @@ describe('[CustomSounds]', () => {
 				.post(api('custom-sounds.update'))
 				.set(credentials)
 				.attach('sound', largeBuffer, { filename: 'large.wav', contentType: 'audio/wav' })
+				.field('_id', fileId)
 				.field('name', 'large-sound')
 				.field('extension', 'wav')
 				.expect(400)
@@ -331,7 +332,7 @@ describe('[CustomSounds]', () => {
 
 			it('should return forbidden if user does not have the manage-sounds permission', async () => {
 				await request
-					.post(api('custom-sounds.create'))
+					.post(api('custom-sounds.update'))
 					.set(unauthorizedUserCredentials)
 					.attach('sound', mockWavAudioPath)
 					.field('_id', fileId)
