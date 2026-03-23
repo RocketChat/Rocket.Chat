@@ -1,5 +1,5 @@
 import { IconButton, MenuItem, MenuSection, Menu } from '@rocket.chat/fuselage';
-import { cloneElement, type ComponentProps, type ReactNode } from 'react';
+import { cloneElement, type ComponentProps, type ReactNode, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { GenericMenuItemProps } from './GenericMenuItem';
@@ -31,6 +31,13 @@ type GenericMenuConditionalProps =
 type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof Menu>, 'children'>;
 
 const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, className, ...props }: GenericMenuProps) => {
+    useEffect(() => {
+    if (button) {
+      console.warn(
+        "GenericMenu: The 'button' prop is deprecated. Please use a semantic <button> element."
+		  );
+    }
+  }, []);
 	const { t, i18n } = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
