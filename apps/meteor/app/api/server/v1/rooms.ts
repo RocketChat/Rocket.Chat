@@ -425,17 +425,7 @@ API.v1.post(
 			return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
 		}
 
-		const {
-			latest,
-			oldest,
-			inclusive = false,
-			limit,
-			excludePinned,
-			filesOnly,
-			ignoreThreads,
-			ignoreDiscussion,
-			users,
-		} = this.bodyParams;
+		const { latest, oldest, inclusive = false, limit, excludePinned, filesOnly, ignoreThreads, ignoreDiscussion, users } = this.bodyParams;
 
 		if (!latest) {
 			return API.v1.failure('Body parameter "latest" is required.');
@@ -575,31 +565,31 @@ API.v1.get(
 		},
 	},
 	async function action() {
-			const room = await findRoomByIdOrName({ params: this.queryParams });
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+		const room = await findRoomByIdOrName({ params: this.queryParams });
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
 
-			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.failure('not-allowed', 'Not Allowed');
-			}
+		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
 
-			const ourQuery = Object.assign(query, { prid: room._id });
+		const ourQuery = Object.assign(query, { prid: room._id });
 
-			const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
-				sort: sort || { fname: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
+		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+			sort: sort || { fname: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
 
-			const [discussions, total] = await Promise.all([cursor.toArray(), totalCount]);
+		const [discussions, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-			return API.v1.success({
-				discussions,
-				count: discussions.length,
-				offset,
-				total,
-			});
+		return API.v1.success({
+			discussions,
+			count: discussions.length,
+			offset,
+			total,
+		});
 	},
 );
 

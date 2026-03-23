@@ -9,10 +9,12 @@ import { ajv } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
+// eslint-disable-next-line import/no-duplicates
 import { DDP } from 'meteor/ddp';
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
+// eslint-disable-next-line import/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
