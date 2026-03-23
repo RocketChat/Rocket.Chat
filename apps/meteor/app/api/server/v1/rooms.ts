@@ -110,20 +110,31 @@ export async function findRoomByIdOrName({
 	return room;
 }
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.nameExists',
 	{
 		authRequired: true,
-		validateParams: isGETRoomsNameExists,
-	},
-	{
-		async get() {
-			const { roomName } = this.queryParams;
-
-			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
-
-			return API.v1.success({ exists: !!room });
+		query: isGETRoomsNameExists,
+		response: {
+			200: ajv.compile<{ exists: boolean }>({
+				type: 'object',
+				properties: {
+					exists: { type: 'boolean' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['exists', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomName } = this.queryParams;
+
+		const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
+
+		return API.v1.success({ exists: !!room });
 	},
 );
 
@@ -182,36 +193,50 @@ const roomDeleteEndpoint = API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.get',
-	{ authRequired: true },
 	{
-		async get() {
-			const { updatedSince } = this.queryParams;
-
-			let updatedSinceDate;
-			if (updatedSince) {
-				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-				} else {
-					updatedSinceDate = new Date(updatedSince);
-				}
-			}
-
-			let result = await roomsGetMethod(this.userId, updatedSinceDate);
-
-			if (Array.isArray(result)) {
-				result = {
-					update: result,
-					remove: [],
-				};
-			}
-
-			return API.v1.success({
-				update: await Promise.all(result.update.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				remove: await Promise.all(result.remove.map((room) => composeRoomWithLastMessage(room, this.userId))),
-			});
+		authRequired: true,
+		response: {
+			200: ajv.compile<{ update: IRoom[]; remove: IRoom[] }>({
+				type: 'object',
+				properties: {
+					update: { type: 'array', items: { type: 'object' } },
+					remove: { type: 'array', items: { type: 'object' } },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['update', 'remove', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { updatedSince } = this.queryParams;
+
+		let updatedSinceDate;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+		}
+
+		let result = await roomsGetMethod(this.userId, updatedSinceDate);
+
+		if (Array.isArray(result)) {
+			result = {
+				update: result,
+				remove: [],
+			};
+		}
+
+		return API.v1.success({
+			update: await Promise.all(result.update.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			remove: await Promise.all(result.remove.map((room) => composeRoomWithLastMessage(room, this.userId))),
+		});
 	},
 );
 
@@ -372,85 +397,110 @@ const roomsSaveNotificationEndpoint = API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'rooms.cleanHistory',
-	{ authRequired: true, validateParams: isRoomsCleanHistoryProps },
 	{
-		async post() {
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-			const { _id } = room;
-
-			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
-			}
-
-			const {
-				latest,
-				oldest,
-				inclusive = false,
-				limit,
-				excludePinned,
-				filesOnly,
-				ignoreThreads,
-				ignoreDiscussion,
-				users,
-			} = this.bodyParams;
-
-			if (!latest) {
-				return API.v1.failure('Body parameter "latest" is required.');
-			}
-
-			if (!oldest) {
-				return API.v1.failure('Body parameter "oldest" is required.');
-			}
-
-			const count = await cleanRoomHistoryMethod(this.userId, {
-				roomId: _id,
-				latest: new Date(latest),
-				oldest: new Date(oldest),
-				inclusive,
-				limit,
-				excludePinned: [true, 'true', 1, '1'].includes(excludePinned ?? false),
-				filesOnly: [true, 'true', 1, '1'].includes(filesOnly ?? false),
-				ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads ?? false),
-				ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
-				fromUsers: users?.filter(isTruthy) || [],
-			});
-
-			return API.v1.success({ _id, count });
+		authRequired: true,
+		body: isRoomsCleanHistoryProps,
+		response: {
+			200: ajv.compile<{ _id: string; count: number }>({
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					count: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['_id', 'count', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const room = await findRoomByIdOrName({ params: this.bodyParams });
+		const { _id } = room;
+
+		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
+		}
+
+		const { latest, oldest, inclusive = false, limit, excludePinned, filesOnly, ignoreThreads, ignoreDiscussion, users } = this.bodyParams;
+
+		if (!latest) {
+			return API.v1.failure('Body parameter "latest" is required.');
+		}
+
+		if (!oldest) {
+			return API.v1.failure('Body parameter "oldest" is required.');
+		}
+
+		const count = await cleanRoomHistoryMethod(this.userId, {
+			roomId: _id,
+			latest: new Date(latest),
+			oldest: new Date(oldest),
+			inclusive,
+			limit,
+			excludePinned: [true, 'true', 1, '1'].includes(excludePinned ?? false),
+			filesOnly: [true, 'true', 1, '1'].includes(filesOnly ?? false),
+			ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads ?? false),
+			ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
+			fromUsers: users?.filter(isTruthy) || [],
+		});
+
+		return API.v1.success({ _id, count });
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.info',
-	{ authRequired: true },
 	{
-		async get() {
-			const room = await findRoomByIdOrName({ params: this.queryParams });
-			const { fields } = await this.parseJsonQuery();
-
-			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.failure('not-allowed', 'Not Allowed');
-			}
-
-			const discussionParent =
-				room.prid &&
-				(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
-					projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
-				}));
-			const { team, parentRoom } = await Team.getRoomInfo(room);
-			const parent = discussionParent || parentRoom;
-
-			return API.v1.success({
-				room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
-				...(team && { team }),
-				...(parent && { parent }),
-			});
+		authRequired: true,
+		response: {
+			200: ajv.compile<{ room: IRoom | null }>({
+				type: 'object',
+				properties: {
+					room: { type: ['object', 'null'] },
+					team: { type: 'object' },
+					parent: { type: 'object' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['room', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const room = await findRoomByIdOrName({ params: this.queryParams });
+		const { fields } = await this.parseJsonQuery();
+
+		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
+
+		const discussionParent =
+			room.prid &&
+			(await Rooms.findOneById<Pick<IRoom, 'name' | 'fname' | 't' | 'prid' | 'u'>>(room.prid, {
+				projection: { name: 1, fname: 1, t: 1, prid: 1, u: 1 },
+			}));
+		const { team, parentRoom } = await Team.getRoomInfo(room);
+		const parent = discussionParent || parentRoom;
+
+		return API.v1.success({
+			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
+			...(team && { team }),
+			...(parent && { parent }),
+		});
 	},
 );
 
+/*
+TO-DO: 8.0.0 should use the ajv validation
+which will change this endpoint's
+response errors.
+*/
 /*
 TO-DO: 8.0.0 should use the ajv validation
 which will change this endpoint's
@@ -493,79 +543,113 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.getDiscussions',
-	{ authRequired: true },
 	{
-		async get() {
-			const room = await findRoomByIdOrName({ params: this.queryParams });
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.failure('not-allowed', 'Not Allowed');
-			}
-
-			const ourQuery = Object.assign(query, { prid: room._id });
-
-			const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
-				sort: sort || { fname: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [discussions, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				discussions,
-				count: discussions.length,
-				offset,
-				total,
-			});
+		authRequired: true,
+		response: {
+			200: ajv.compile<{ discussions: IRoom[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					discussions: { type: 'array', items: { type: 'object' } },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['discussions', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const room = await findRoomByIdOrName({ params: this.queryParams });
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
+
+		const ourQuery = Object.assign(query, { prid: room._id });
+
+		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+			sort: sort || { fname: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [discussions, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			discussions,
+			count: discussions.length,
+			offset,
+			total,
+		});
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.images',
-	{ authRequired: true, validateParams: isRoomsImagesProps },
 	{
-		async get() {
-			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {
-				projection: { t: 1, teamId: 1, prid: 1 },
-			});
-
-			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			let initialImage: IUpload | null = null;
-			if (this.queryParams.startingFromId) {
-				initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-
-			const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
-				skip: offset,
-				limit: count,
-			});
-
-			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			// If the initial image was not returned in the query, insert it as the first element of the list
-			if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
-				files.splice(0, 0, initialImage);
-			}
-
-			return API.v1.success({
-				files,
-				count,
-				offset,
-				total,
-			});
+		authRequired: true,
+		query: isRoomsImagesProps,
+		response: {
+			200: ajv.compile<{ files: IUpload[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					files: { type: 'array', items: { type: 'object' } },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['files', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't' | 'teamId' | 'prid'>>(this.queryParams.roomId, {
+			projection: { t: 1, teamId: 1, prid: 1 },
+		});
+
+		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.forbidden();
+		}
+
+		let initialImage: IUpload | null = null;
+		if (this.queryParams.startingFromId) {
+			initialImage = await Uploads.findOneById(this.queryParams.startingFromId);
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+
+		const { cursor, totalCount } = Uploads.findImagesByRoomId(room._id, initialImage?.uploadedAt, {
+			skip: offset,
+			limit: count,
+		});
+
+		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		// If the initial image was not returned in the query, insert it as the first element of the list
+		if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
+			files.splice(0, 0, initialImage);
+		}
+
+		return API.v1.success({
+			files,
+			count,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -890,53 +974,78 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const successResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'rooms.muteUser',
-	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
+		authRequired: true,
+		body: isRoomsMuteUnmuteUserProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		if (!user.username) {
+			return API.v1.failure('Invalid user');
+		}
+
+		await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+		return API.v1.success();
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'rooms.unmuteUser',
-	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
+		authRequired: true,
+		body: isRoomsMuteUnmuteUserProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		if (!user.username) {
+			return API.v1.failure('Invalid user');
+		}
+
+		await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+		return API.v1.success();
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'rooms.open',
-	{ authRequired: true, validateParams: isRoomsOpenProps },
 	{
-		async post() {
-			const { roomId } = this.bodyParams;
-
-			await openRoom(this.userId, roomId);
-
-			return API.v1.success();
+		authRequired: true,
+		body: isRoomsOpenProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId } = this.bodyParams;
+
+		await openRoom(this.userId, roomId);
+
+		return API.v1.success();
 	},
 );
 
