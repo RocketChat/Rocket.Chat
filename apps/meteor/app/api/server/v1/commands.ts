@@ -391,7 +391,7 @@ API.v1.post(
 		}
 
 		if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-			return API.v1.forbidden('Not allowed');
+			return API.v1.forbidden();
 		}
 
 		const params = body.params ? body.params : '';
@@ -439,7 +439,7 @@ API.v1.get(
 		}
 
 		if (!(await canAccessRoomIdAsync(query.roomId, this.userId))) {
-			return API.v1.forbidden('Not allowed');
+			return API.v1.forbidden();
 		}
 
 		const params = query.params ? query.params : '';
@@ -477,7 +477,7 @@ API.v1.post(
 		}
 
 		if (!(await canAccessRoomIdAsync(body.roomId, this.userId))) {
-			return API.v1.forbidden('Not allowed');
+			return API.v1.forbidden();
 		}
 
 		const { params = '' } = body;

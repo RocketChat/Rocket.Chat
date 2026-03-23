@@ -198,7 +198,7 @@ const dmCloseAction = <Path extends string>(_path: Path): TypedAction<typeof dmC
 		} else {
 			const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 			if (!canAccess) {
-				return API.v1.forbidden('error-not-allowed');
+				return API.v1.forbidden();
 			}
 
 			const { subscription: subs } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -247,7 +247,7 @@ const dmOpenAction = <Path extends string>(_path: Path): TypedAction<typeof dmOp
 		const { roomId } = this.bodyParams;
 		const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 		if (!canAccess) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		const { room, subscription } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -302,7 +302,7 @@ const dmSetTopicAction = <Path extends string>(_path: Path): TypedAction<typeof 
 
 		const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
 		if (!canAccess) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		const { room } = await findDirectMessageRoom({ roomId }, this.userId);
@@ -387,14 +387,14 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 
 		if (ruserId) {
 			if (!access) {
-				return API.v1.forbidden('error-not-allowed');
+				return API.v1.forbidden();
 			}
 			user = ruserId;
 		}
 		const canAccess = await canAccessRoomIdAsync(roomId, user);
 
 		if (!canAccess) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		const { room, subscription } = await findDirectMessageRoom({ roomId }, user);
@@ -466,7 +466,7 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 
 		const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 		if (!canAccess) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		const filter = {
@@ -528,7 +528,7 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 
 		const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 		if (!canAccess) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
@@ -641,7 +641,7 @@ const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof 
 
 		const canAccess = await canAccessRoomIdAsync(room._id, this.userId);
 		if (!canAccess) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
@@ -727,7 +727,7 @@ const dmHistoryAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		const result = await getChannelHistory(objectParams);
 
 		if (!result) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		return API.v1.success(result as Record<string, unknown>);
