@@ -35,14 +35,18 @@ callbacks.add(
         return message;
       }
 
-      // ✅ Detect @ai
+      // ✅ Strict mention detection (fix)
+      const mentionRegex = /(^|\s)@ai(\s|$)/i;
+
       const isMentioningAI =
-        message.msg.includes('@ai') ||
-        message.mentions?.some((u) => u.username === 'ai');
+        mentionRegex.test(message.msg) ||
+        message.mentions?.some((u) =>
+          ['ai', 'ai.bot'].includes(u.username)
+        );
 
       if (!isMentioningAI) return message;
 
-      // ✅ Rate limiting (safe)
+      // ✅ Rate limiting
       const userId = message.u._id;
       const now = Date.now();
       const last = userLastRequest.get(userId) ?? 0;
@@ -53,17 +57,21 @@ callbacks.add(
 
       userLastRequest.set(userId, now);
 
-      // ✅ Clean prompt
-      const prompt = message.msg.replace(/@ai/gi, '').trim();
+      // ✅ Clean prompt (fix)
+      const prompt = message.msg.replace(/(^|\s)@ai(\s|$)/gi, ' ').trim();
       if (!prompt) return message;
 
       // =========================
-      // 🧠 CONTEXT
+      // 🧠 CONTEXT (thread-aware)
       // =========================
-      const history = await Messages.find(
-        { rid: message.rid },
-        { sort: { ts: -1 }, limit: 10 }
-      ).toArray();
+      const query: any = message.tmid
+        ? { tmid: message.tmid }
+        : { rid: message.rid };
+
+      const history = await Messages.find(query, {
+        sort: { ts: -1 },
+        limit: 10,
+      }).toArray();
 
       const context = history
         .reverse()
@@ -86,6 +94,7 @@ AI:
         {
           msg: '🤖 Thinking...',
           rid: message.rid,
+          tmid: message.tmid, // ✅ thread support
         },
         room
       );
@@ -114,7 +123,7 @@ AI:
         }
       );
 
-      // ✅ Notify clients (IMPORTANT)
+      // ✅ Notify clients
       await notifyOnMessageChange({ id: tempMessage._id });
 
       return message;
