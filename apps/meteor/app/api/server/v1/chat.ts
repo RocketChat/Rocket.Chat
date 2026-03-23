@@ -128,50 +128,6 @@ const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFo
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
 
 API.v1.addRoute(
-	'chat.syncMessages',
-	{ authRequired: true, validateParams: isChatSyncMessagesProps },
-	{
-		async get() {
-			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
-
-			if (!roomId) {
-				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
-			}
-
-			if (!lastUpdate && !type) {
-				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
-			}
-
-			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
-				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
-			}
-
-			const getMessagesQuery = {
-				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
-				...(next && { next }),
-				...(previous && { previous }),
-				...(count && { count }),
-				...(type && { type }),
-			};
-
-			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
-
-			if (!result) {
-				return API.v1.failure();
-			}
-
-			return API.v1.success({
-				result: {
-					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
-					deleted: 'deleted' in result ? result.deleted : [],
-					cursor: 'cursor' in result ? result.cursor : undefined,
-				},
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'chat.getMessage',
 	{
 		authRequired: true,
@@ -655,6 +611,80 @@ const chatEndpoints = API.v1
 				_id: msg._id,
 				ts: Date.now().toString(),
 				message: msg,
+			});
+		},
+	)
+	.get(
+		'chat.syncMessages',
+		{
+			authRequired: true,
+			query: isChatSyncMessagesProps,
+			response: {
+				200: ajv.compile<{
+					result: { updated: IMessage[]; deleted: IMessage[]; cursor?: { next: string | null; previous: string | null } };
+				}>({
+					type: 'object',
+					properties: {
+						result: {
+							type: 'object',
+							properties: {
+								updated: { type: 'array', items: { type: 'object' } },
+								deleted: { type: 'array', items: { type: 'object' } },
+								cursor: {
+									type: 'object',
+									properties: {
+										next: { type: ['string', 'null'] },
+										previous: { type: ['string', 'null'] },
+									},
+								},
+							},
+							required: ['updated', 'deleted'],
+							additionalProperties: false,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['result', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId, lastUpdate, count, next, previous, type } = this.queryParams;
+
+			if (!roomId) {
+				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
+			}
+
+			if (!lastUpdate && !type) {
+				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
+			}
+
+			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
+				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
+			}
+
+			const getMessagesQuery = {
+				...(lastUpdate && { lastUpdate: new Date(lastUpdate) }),
+				...(next && { next }),
+				...(previous && { previous }),
+				...(count && { count }),
+				...(type && { type }),
+			};
+
+			const result = await getMessageHistory(roomId, this.userId, getMessagesQuery);
+
+			if (!result) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success({
+				result: {
+					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
+					deleted: 'deleted' in result ? result.deleted : [],
+					cursor: 'cursor' in result ? result.cursor : undefined,
+				},
 			});
 		},
 	);
