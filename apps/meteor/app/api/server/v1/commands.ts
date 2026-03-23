@@ -55,6 +55,26 @@ const commandsListResponseSchema = ajv.compile<{
 	additionalProperties: false,
 });
 
+type CommandsListParams = {
+	offset?: number;
+	count?: number;
+	sort?: string;
+	query?: string;
+	fields?: string;
+};
+
+const isCommandsListParams = ajvQuery.compile<CommandsListParams>({
+	type: 'object',
+	properties: {
+		offset: { type: 'number', nullable: true },
+		count: { type: 'number', nullable: true },
+		sort: { type: 'string', nullable: true },
+		query: { type: 'string', nullable: true },
+		fields: { type: 'string', nullable: true },
+	},
+	additionalProperties: false,
+});
+
 const commandsEndpoints = API.v1.get(
 	'commands.get',
 	{
@@ -116,8 +136,10 @@ const commandsEndpoints = API.v1.get(
 	'commands.list',
 	{
 		authRequired: true,
+		query: isCommandsListParams,
 		response: {
 			200: commandsListResponseSchema,
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
 	},
@@ -132,8 +154,7 @@ const commandsEndpoints = API.v1.get(
 			});
 		}
 
-		const params = this.queryParams as Record<string, any>;
-		const { offset, count } = await getPaginationItems(params);
+		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort, query } = await this.parseJsonQuery();
 
 		let commands = Object.values(slashCommands.commands);
