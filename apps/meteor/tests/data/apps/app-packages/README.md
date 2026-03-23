@@ -180,3 +180,124 @@ export class NestedRequestsApp extends App implements IPostMessageSent {
 ```
 
 </details>
+
+#### UIKit Room Context Test
+
+File name: `uikit-room-test_0.0.1.zip`
+
+An app that validates room context propagation in UIKit modal interactions. It provides a slash command (`open-uikit-room-test-modal`) that opens a modal, and implements `executeBlockActionHandler`, `executeViewSubmitHandler`, and `executeViewClosedHandler`. Each handler logs the room ID from the interaction context, which can be verified in the app's logs to confirm that the `rid` is correctly passed through UIKit interaction payloads.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+import {
+    IAppAccessors,
+    IConfigurationExtend,
+    IHttp,
+    ILogger,
+    IModify,
+    IPersistence,
+    IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { ISlashCommand, SlashCommandContext } from '@rocket.chat/apps-engine/definition/slashcommands';
+import {
+    UIKitBlockInteractionContext,
+    UIKitViewCloseInteractionContext,
+    UIKitViewSubmitInteractionContext,
+    IUIKitResponse,
+} from '@rocket.chat/apps-engine/definition/uikit';
+
+class OpenModalCommand implements ISlashCommand {
+    public command = 'open-uikit-room-test-modal';
+    public i18nParamsExample = '';
+    public i18nDescription = '';
+    public providesPreview = false;
+
+    constructor(private readonly app: UiKitRoomTestApp) {}
+
+    public async executor(context: SlashCommandContext, _read: IRead, modify: IModify): Promise<void> {
+        const triggerId = context.getTriggerId();
+        const room = context.getRoom();
+        const sender = context.getSender();
+
+        if (!triggerId) {
+            this.app.getLogger().error('No triggerId provided to slash command');
+            return;
+        }
+
+        this.app.getLogger().debug('open_modal_slash_command', room.id);
+
+        await modify.getUiController().openModalView(
+            {
+                title: {
+                    type: 'plain_text',
+                    text: 'UIKit Room Test Modal',
+                },
+                blocks: [
+                    {
+                        type: 'section',
+                        blockId: 'test_block',
+                        text: {
+                            type: 'mrkdwn',
+                            text: 'This modal is used to test room context in UIKit interactions.',
+                        },
+                    },
+                ],
+            },
+            { triggerId },
+            sender,
+        );
+    }
+}
+
+export class UiKitRoomTestApp extends App {
+    constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+        super(info, logger, accessors);
+    }
+
+    public async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+        await configuration.slashCommands.provideSlashCommand(new OpenModalCommand(this));
+    }
+
+    public async executeBlockActionHandler(
+        context: UIKitBlockInteractionContext,
+        _read: IRead,
+        _http: IHttp,
+        _persistence: IPersistence,
+        _modify: IModify,
+    ): Promise<IUIKitResponse> {
+        const data = context.getInteractionData();
+        this.getLogger().debug('block_action_room', data.room ? data.room.id : 'no-room');
+        return context.getInteractionResponder().successResponse();
+    }
+
+    public async executeViewSubmitHandler(
+        context: UIKitViewSubmitInteractionContext,
+        _read: IRead,
+        _http: IHttp,
+        _persistence: IPersistence,
+        _modify: IModify,
+    ): Promise<IUIKitResponse> {
+        const data = context.getInteractionData();
+        this.getLogger().debug('view_submit_room', data.room ? data.room.id : 'no-room');
+        return context.getInteractionResponder().successResponse();
+    }
+
+    public async executeViewClosedHandler(
+        context: UIKitViewCloseInteractionContext,
+        _read: IRead,
+        _http: IHttp,
+        _persistence: IPersistence,
+        _modify: IModify,
+    ): Promise<IUIKitResponse> {
+        const data = context.getInteractionData();
+        this.getLogger().debug('view_closed_room', data.room ? data.room.id : 'no-room');
+        return context.getInteractionResponder().successResponse();
+    }
+}
+```
+
+</details>
