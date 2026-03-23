@@ -41,7 +41,7 @@ export function addSettings(): Promise<void> {
 					public: true,
 					section: 'ABAC',
 					invalidValue: 0,
-					enableQuery: [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'local' }],
+					enableQuery: [abacEnabledQuery],
 				});
 
 				// External PDP Configuration
