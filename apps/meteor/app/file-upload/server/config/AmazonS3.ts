@@ -81,7 +81,6 @@ const configure = _.debounce(() => {
 	const config: Omit<S3Options, 'name' | 'getPath'> = {
 		connection: {
 			forcePathStyle: ForcePathStyle,
-			region: Region,
 			followRegionRedirects: true,
 		},
 		params: {
@@ -90,6 +89,10 @@ const configure = _.debounce(() => {
 		},
 		URLExpiryTimeSpan,
 	};
+
+	if (Region) {
+		config.connection.region = Region;
+	}
 
 	if (AWSAccessKeyId && AWSSecretAccessKey) {
 		config.connection.credentials = {

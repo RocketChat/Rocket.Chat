@@ -205,6 +205,7 @@ class MediaCallDirector {
 		callerAgent.oppositeAgent = calleeAgent;
 		calleeAgent.oppositeAgent = callerAgent;
 
+		const allowedFeatures = features.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
 		const call: Omit<IMediaCall, '_updatedAt'> = {
 			// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
 			_id: randomUUID(),
@@ -229,7 +230,7 @@ class MediaCallDirector {
 			...(requestedCallId && { callerRequestedId: requestedCallId }),
 			...(parentCallId && { parentCallId }),
 
-			features,
+			features: allowedFeatures,
 		};
 
 		logger.debug({ msg: 'creating call', call });
