@@ -132,9 +132,7 @@ export class AppUserBridge extends UserBridge {
 			return true;
 		}
 
-		const { status, statusText } = fields;
-		delete fields.statusText;
-		delete fields.status;
+		const { status, statusText, ...updateFields } = fields;
 
 		if (status) {
 			await Presence.setStatus(user.id, status as UserStatus, statusText);
@@ -152,9 +150,9 @@ export class AppUserBridge extends UserBridge {
 			);
 		}
 
-		await Users.updateOne({ _id: user.id }, { $set: fields as any });
+		await Users.updateOne({ _id: user.id }, { $set: updateFields as any });
 
-		void notifyOnUserChange({ clientAction: 'updated', id: user.id, diff: fields });
+		void notifyOnUserChange({ clientAction: 'updated', id: user.id, diff: updateFields });
 
 		return true;
 	}
