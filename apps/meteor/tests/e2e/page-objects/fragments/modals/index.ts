@@ -3,6 +3,7 @@ export * from './confirm-delete-modal';
 export * from './confirm-logout-modal';
 export * from './confirm-remove-modal';
 export * from './create-new-modal';
+export * from './delete-account-modal';
 export * from './disable-room-encryption-modal';
 export * from './edit-status-modal';
 export * from './enable-room-encryption-modal';

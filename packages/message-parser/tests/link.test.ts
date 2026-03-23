@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { link, paragraph, plain, bold, strike, italic, quote, lineBreak, unorderedList, listItem, orderedList } from '../src/utils';
+import { link, paragraph, plain, bold, strike, italic, quote, lineBreak, unorderedList, listItem, orderedList } from './helpers';
 
 test.each([
 	['<https://domain.com|Test>', [paragraph([link('https://domain.com', [plain('Test')])])]],

@@ -1,7 +1,7 @@
 import type { Credentials } from '@rocket.chat/api-client';
-import type { IIntegration, IMessage, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
+import { TeamType, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
+import { after, before, describe, it, beforeEach } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiPrivateChannelName } from '../../data/api-data';
 import { pinMessage, starMessage, sendMessage, updateMessage } from '../../data/chat.helper';
@@ -10,7 +10,7 @@ import { createGroup, deleteGroup } from '../../data/groups.helper';
 import { createIntegration, removeIntegration } from '../../data/integration.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
-import { deleteTeam } from '../../data/teams.helper';
+import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { testFileUploads } from '../../data/uploads.helper';
 import { adminUsername, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -1200,6 +1200,106 @@ describe('[Groups]', () => {
 				})
 				.end(done);
 		});
+
+		describe('inclusive parameter', () => {
+			let testGroup: IRoom;
+			let oldestMessage: IMessage;
+			let middleMessage: IMessage;
+			let latestMessage: IMessage;
+
+			before(async () => {
+				const groupRes = await request
+					.post(api('groups.create'))
+					.set(credentials)
+					.send({ name: `inclusive-test-group-${Date.now()}` });
+				testGroup = groupRes.body.group;
+
+				// Send messages with small delays to ensure distinct timestamps
+				const msg1 = await sendMessage({ message: { rid: testGroup._id, msg: 'oldest message' } });
+				oldestMessage = msg1.body.message;
+
+				// Small delay to ensure timestamps are different
+				await new Promise((resolve) => setTimeout(resolve, 50));
+
+				const msg2 = await sendMessage({ message: { rid: testGroup._id, msg: 'middle message' } });
+				middleMessage = msg2.body.message;
+
+				await new Promise((resolve) => setTimeout(resolve, 50));
+
+				const msg3 = await sendMessage({ message: { rid: testGroup._id, msg: 'latest message' } });
+				latestMessage = msg3.body.message;
+			});
+
+			after(async () => {
+				if (testGroup?._id) {
+					await request.post(api('groups.delete')).set(credentials).send({ roomId: testGroup._id });
+				}
+			});
+
+			it('should include boundary messages when inclusive=true', async () => {
+				const res = await request
+					.get(api('groups.history'))
+					.set(credentials)
+					.query({
+						roomId: testGroup._id,
+						oldest: oldestMessage.ts,
+						latest: latestMessage.ts,
+						inclusive: 'true',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').that.is.an('array');
+
+				const messageIds = res.body.messages.map((m: IMessage) => m._id);
+				expect(messageIds).to.include(oldestMessage._id, 'oldest message should be included');
+				expect(messageIds).to.include(latestMessage._id, 'latest message should be included');
+			});
+
+			it('should exclude boundary messages when inclusive=false', async () => {
+				const res = await request
+					.get(api('groups.history'))
+					.set(credentials)
+					.query({
+						roomId: testGroup._id,
+						oldest: oldestMessage.ts,
+						latest: latestMessage.ts,
+						inclusive: 'false',
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').that.is.an('array');
+
+				const messageIds = res.body.messages.map((m: IMessage) => m._id);
+				expect(messageIds).to.not.include(oldestMessage._id, 'oldest message should be excluded');
+				expect(messageIds).to.not.include(latestMessage._id, 'latest message should be excluded');
+				// Middle message should still be included if it exists in the range
+				expect(messageIds).to.include(middleMessage._id, 'middle message should be included');
+			});
+
+			it('should exclude boundary messages by default (no inclusive param)', async () => {
+				const res = await request
+					.get(api('groups.history'))
+					.set(credentials)
+					.query({
+						roomId: testGroup._id,
+						oldest: oldestMessage.ts,
+						latest: latestMessage.ts,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('messages').that.is.an('array');
+
+				const messageIds = res.body.messages.map((m: IMessage) => m._id);
+				expect(messageIds).to.not.include(oldestMessage._id, 'oldest message should be excluded by default');
+				expect(messageIds).to.not.include(latestMessage._id, 'latest message should be excluded by default');
+			});
+		});
 	});
 
 	describe('/groups.archive', () => {
@@ -1794,6 +1894,17 @@ describe('[Groups]', () => {
 
 	describe('/groups.setType', () => {
 		let roomTypeId: IRoom['_id'];
+		let testRegularGroup: IRoom;
+		let testTeamGroupForFailure: IRoom;
+		let testTeamGroupForSuccess: IRoom;
+		let team: ITeam;
+		let testUser: TestUser<IUser>;
+		let testUserCredentials: Credentials;
+
+		beforeEach(async () => {
+			await updatePermission('create-c', ['admin', 'user']);
+			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
+		});
 
 		before(async () => {
 			await request
@@ -1806,20 +1917,51 @@ describe('[Groups]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-
 					roomTypeId = res.body.group._id;
 				});
+
+			testUser = await createUser();
+			testUserCredentials = await login(testUser.username, password);
+
+			await updatePermission('create-team', ['admin', 'user']);
+			team = await createTeam(credentials, `team-setType-${Date.now()}`, TeamType.PRIVATE, [testUser.username]);
+
+			await request.post(api('groups.addOwner')).set(credentials).send({ roomId: team.roomId, userId: testUser._id });
+
+			testRegularGroup = (await createRoom({ type: 'p', name: `regular-setType-${Date.now()}`, credentials: testUserCredentials })).body
+				.group;
+
+			testTeamGroupForFailure = (await createRoom({ type: 'p', name: `teamGrp-fail-${Date.now()}`, extraData: { teamId: team._id } })).body
+				.group;
+			testTeamGroupForSuccess = (await createRoom({ type: 'p', name: `teamGrp-success-${Date.now()}`, extraData: { teamId: team._id } }))
+				.body.group;
+
+			await request.post(api('groups.invite')).set(credentials).send({ roomId: testTeamGroupForFailure._id, userId: testUser._id });
+			await request.post(api('groups.addOwner')).set(credentials).send({ roomId: testTeamGroupForFailure._id, userId: testUser._id });
+			await request.post(api('groups.invite')).set(credentials).send({ roomId: testTeamGroupForSuccess._id, userId: testUser._id });
+			await request.post(api('groups.addOwner')).set(credentials).send({ roomId: testTeamGroupForSuccess._id, userId: testUser._id });
 		});
 
 		after(async () => {
 			await request
 				.post(api('channels.delete'))
 				.set(credentials)
-				.send({
-					roomId: roomTypeId,
-				})
+				.send({ roomId: roomTypeId })
 				.expect('Content-Type', 'application/json')
 				.expect(200);
+			await Promise.all(
+				['p', 'c'].map(async (type: any) => {
+					return Promise.all([
+						deleteRoom({ type, roomId: testRegularGroup._id }),
+						deleteRoom({ type, roomId: testTeamGroupForFailure._id }),
+						deleteRoom({ type, roomId: testTeamGroupForSuccess._id }),
+					]);
+				}),
+			);
+			await deleteTeam(credentials, team.name);
+			await deleteUser(testUser);
+			await updatePermission('create-c', ['admin', 'user']);
+			await updatePermission('create-team-channel', ['admin', 'owner', 'moderator']);
 		});
 
 		it('should change the type of the group to a channel', async () => {
@@ -1835,6 +1977,79 @@ describe('[Groups]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.nested.property('group.t', 'c');
+				});
+		});
+
+		it('should fail to change a regular group to channel when user lacks create-c permission', async () => {
+			await updatePermission('create-c', ['admin']);
+			await request
+				.post(api('groups.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: testRegularGroup._id, type: 'c' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+		});
+
+		it('should fail to change a team main room to channel when user lacks create-c permission', async () => {
+			await updatePermission('create-c', ['admin']);
+			await request
+				.post(api('groups.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: team.roomId, type: 'c' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+		});
+
+		it('should fail to change a team main room to channel when user has create-team-channel but lacks create-c', async () => {
+			await updatePermission('create-c', ['admin']);
+			await updatePermission('create-team-channel', ['owner']);
+			await request
+				.post(api('groups.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: team.roomId, type: 'c' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+		});
+
+		it('should fail to change a team group to channel when user lacks create-team-channel permission', async () => {
+			await updatePermission('create-team-channel', []);
+			await request
+				.post(api('groups.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: testTeamGroupForFailure._id, type: 'c' })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+				});
+		});
+
+		it('should succeed changing a team group to channel when user has create-team-channel but not create-c', async () => {
+			await updatePermission('create-c', ['admin']);
+			await updatePermission('create-team-channel', ['owner']);
+			await request
+				.post(api('groups.setType'))
+				.set(testUserCredentials)
+				.send({ roomId: testTeamGroupForSuccess._id, type: 'c' })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('group.t', 'c');
+					expect(res.body).to.have.nested.property('group.teamId', team._id);
 				});
 		});
 	});

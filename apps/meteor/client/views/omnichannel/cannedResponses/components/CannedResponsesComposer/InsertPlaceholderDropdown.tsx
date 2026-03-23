@@ -5,7 +5,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 type InsertPlaceholderDropdownProps = {
-	onChange: any;
+	onChange: (value: string) => void;
 	textAreaRef: RefObject<HTMLTextAreaElement>;
 	setVisible: Dispatch<SetStateAction<boolean>>;
 };
@@ -17,7 +17,7 @@ const InsertPlaceholderDropdown = ({ onChange, textAreaRef, setVisible }: Insert
 		cursor: pointer;
 	`;
 
-	const setPlaceholder = (name: any): void => {
+	const setPlaceholder = (name: string): void => {
 		if (textAreaRef?.current) {
 			const text = textAreaRef.current.value;
 			const startPos = textAreaRef.current.selectionStart;

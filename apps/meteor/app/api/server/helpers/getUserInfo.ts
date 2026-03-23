@@ -1,6 +1,8 @@
 import { isOAuthUser, type IUser, type IUserEmail, type IUserCalendar } from '@rocket.chat/core-typings';
+import semver from 'semver';
 
 import { settings } from '../../../settings/server';
+import { Info } from '../../../utils/rocketchat.info';
 import { getURL } from '../../../utils/server/getURL';
 import { getUserPreference } from '../../../utils/server/lib/getUserPreference';
 
@@ -17,12 +19,29 @@ const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> =
 	const allDefaultUserSettings = settings.getByRegexp(new RegExp(`^${defaultUserSettingPrefix}.*$`));
 
 	const accumulator: Record<string, any> = {};
-	for await (const [key] of allDefaultUserSettings) {
+	for (const [key] of allDefaultUserSettings) {
 		const settingWithoutPrefix = key.replace(defaultUserSettingPrefix, ' ').trim();
 		accumulator[settingWithoutPrefix] = await getUserPreference(me, settingWithoutPrefix);
 	}
 
 	return accumulator;
+};
+
+const filterOutdatedVersionUpdateBanners = (banners: NonNullable<IUser['banners']>): IUser['banners'] => {
+	return Object.fromEntries(
+		Object.entries(banners).filter(([id]) => {
+			if (!id.startsWith('versionUpdate-')) {
+				return true;
+			}
+
+			const version = id.replace('versionUpdate-', '').replace(/_/g, '.');
+			if (!semver.valid(version) || semver.lte(version, Info.version)) {
+				return false;
+			}
+
+			return true;
+		}),
+	);
 };
 
 /**
@@ -80,6 +99,7 @@ export async function getUserInfo(
 
 	return {
 		...me,
+		...(me.banners && { banners: filterOutdatedVersionUpdateBanners(me.banners) }),
 		email: verifiedEmail ? verifiedEmail.address : undefined,
 		settings: {
 			profile: {},

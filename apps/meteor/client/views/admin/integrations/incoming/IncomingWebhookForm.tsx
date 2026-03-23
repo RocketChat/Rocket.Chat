@@ -21,7 +21,7 @@ import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { EditIncomingWebhookFormData } from './EditIncomingWebhook';
 import useClipboardWithToast from '../../../../hooks/useClipboardWithToast';
@@ -177,17 +177,9 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								/>
 							</FieldRow>
 							<FieldHint id={`${channelField}-hint-1`}>{t('Messages_that_are_sent_to_the_Incoming_WebHook_will_be_posted_here')}</FieldHint>
-							<FieldHint
-								id={`${channelField}-hint-2`}
-								dangerouslySetInnerHTML={{
-									__html: DOMPurify.sanitize(
-										t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
-											postProcess: 'sprintf',
-											sprintf: ['@', '#', '@john', '#general'],
-										}),
-									),
-								}}
-							/>
+							<FieldHint id={`${channelField}-hint-2`}>
+								<Trans i18nKey='Start_with_s_for_user_or_s_for_channel_Eg_s_or_s' components={{ code: <code className='inline' /> }} />
+							</FieldHint>
 							{errors?.channel && (
 								<FieldError aria-live='assertive' id={`${channelField}-error`}>
 									{errors?.channel.message}
@@ -202,7 +194,7 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								<Controller
 									name='username'
 									control={control}
-									rules={{ required: t('Required_field', { field: t('Post_to_Channel') }) }}
+									rules={{ required: t('Required_field', { field: t('Post_as') }) }}
 									render={({ field }) => (
 										<TextInput
 											id={usernameField}
@@ -272,10 +264,9 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 								/>
 							</FieldRow>
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
-							<FieldHint
-								id={`${emojiField}-hint-2`}
-								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] })) }}
-							/>
+							<FieldHint id={`${emojiField}-hint-2`}>
+								<Trans i18nKey='Example_s' values={{ value: ':ghost:' }} components={{ code: <code className='inline' /> }} />
+							</FieldHint>
 						</Field>
 						<Field>
 							<FieldRow>
