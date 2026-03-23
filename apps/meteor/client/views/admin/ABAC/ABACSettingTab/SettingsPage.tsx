@@ -13,6 +13,7 @@ const SettingsPage = () => {
 			<Box>
 				<Margins block={24}>
 					<AbacEnabledToggle hasABAC={hasABAC} />
+					<SettingField settingId='ABAC_PDP_Type' />
 					<SettingField settingId='ABAC_ShowAttributesInRooms' />
 					<SettingField settingId='Abac_Cache_Decision_Time_Seconds' />
 

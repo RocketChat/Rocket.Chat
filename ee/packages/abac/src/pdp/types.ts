@@ -16,4 +16,9 @@ export interface IPolicyDecisionPoint {
 	): Promise<IUser[]>;
 
 	onSubjectAttributesChanged(user: IUser, next: IAbacAttributeDefinition[]): Promise<IRoom[]>;
+
+	evaluateUserRooms(
+		user: Pick<IUser, '_id' | 'emails' | 'username'>,
+		rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[],
+	): Promise<IRoom[]>;
 }
