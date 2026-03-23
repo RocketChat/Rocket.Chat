@@ -1148,13 +1148,35 @@ const chatEndpoints = API.v1
 				total,
 			});
 		},
-	);
-
-API.v1.addRoute(
-	'chat.syncThreadMessages',
-	{ authRequired: true, validateParams: isChatSyncThreadMessagesProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.syncThreadMessages',
+		{
+			authRequired: true,
+			query: isChatSyncThreadMessagesProps,
+			response: {
+				200: ajv.compile<{ messages: { update: IMessage[]; remove: IMessage[] } }>({
+					type: 'object',
+					properties: {
+						messages: {
+							type: 'object',
+							properties: {
+								update: { type: 'array', items: { type: 'object' } },
+								remove: { type: 'array', items: { type: 'object' } },
+							},
+							required: ['update', 'remove'],
+							additionalProperties: false,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['messages', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { tmid } = this.queryParams;
 			const { query, fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
@@ -1186,8 +1208,7 @@ API.v1.addRoute(
 				},
 			});
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.getMentionedMessages',
