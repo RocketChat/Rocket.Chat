@@ -193,36 +193,50 @@ const roomDeleteEndpoint = API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.get',
-	{ authRequired: true },
 	{
-		async get() {
-			const { updatedSince } = this.queryParams;
-
-			let updatedSinceDate;
-			if (updatedSince) {
-				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
-				} else {
-					updatedSinceDate = new Date(updatedSince);
-				}
-			}
-
-			let result = await roomsGetMethod(this.userId, updatedSinceDate);
-
-			if (Array.isArray(result)) {
-				result = {
-					update: result,
-					remove: [],
-				};
-			}
-
-			return API.v1.success({
-				update: await Promise.all(result.update.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				remove: await Promise.all(result.remove.map((room) => composeRoomWithLastMessage(room, this.userId))),
-			});
+		authRequired: true,
+		response: {
+			200: ajv.compile<{ update: IRoom[]; remove: IRoom[] }>({
+				type: 'object',
+				properties: {
+					update: { type: 'array', items: { type: 'object' } },
+					remove: { type: 'array', items: { type: 'object' } },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['update', 'remove', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { updatedSince } = this.queryParams;
+
+		let updatedSinceDate;
+		if (updatedSince) {
+			if (isNaN(Date.parse(updatedSince))) {
+				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+			} else {
+				updatedSinceDate = new Date(updatedSince);
+			}
+		}
+
+		let result = await roomsGetMethod(this.userId, updatedSinceDate);
+
+		if (Array.isArray(result)) {
+			result = {
+				update: result,
+				remove: [],
+			};
+		}
+
+		return API.v1.success({
+			update: await Promise.all(result.update.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			remove: await Promise.all(result.remove.map((room) => composeRoomWithLastMessage(room, this.userId))),
+		});
 	},
 );
 
