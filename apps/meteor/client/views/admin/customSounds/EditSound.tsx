@@ -131,7 +131,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
+					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
 					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />
