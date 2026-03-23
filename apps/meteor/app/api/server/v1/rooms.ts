@@ -984,53 +984,78 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const successResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'rooms.muteUser',
-	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
+		authRequired: true,
+		body: isRoomsMuteUnmuteUserProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		if (!user.username) {
+			return API.v1.failure('Invalid user');
+		}
+
+		await muteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+		return API.v1.success();
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'rooms.unmuteUser',
-	{ authRequired: true, validateParams: isRoomsMuteUnmuteUserProps },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (!user.username) {
-				return API.v1.failure('Invalid user');
-			}
-
-			await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
-
-			return API.v1.success();
+		authRequired: true,
+		body: isRoomsMuteUnmuteUserProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		if (!user.username) {
+			return API.v1.failure('Invalid user');
+		}
+
+		await unmuteUserInRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+		return API.v1.success();
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'rooms.open',
-	{ authRequired: true, validateParams: isRoomsOpenProps },
 	{
-		async post() {
-			const { roomId } = this.bodyParams;
-
-			await openRoom(this.userId, roomId);
-
-			return API.v1.success();
+		authRequired: true,
+		body: isRoomsOpenProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId } = this.bodyParams;
+
+		await openRoom(this.userId, roomId);
+
+		return API.v1.success();
 	},
 );
 
