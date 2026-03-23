@@ -23,7 +23,7 @@ const roomId = 'GENERAL';
 
 	after(() => cleanupApps());
 
-	const sendUiKitInteraction = (type: string, payload: object) =>
+	const sendUiKitInteraction = (type: string, payload: Record<string, unknown>) =>
 		request
 			.post(`/api/apps/ui.interaction/${app.id}`)
 			.set(credentials)
@@ -41,7 +41,7 @@ const roomId = 'GENERAL';
 	const findLogEntry = (logs: ILoggerStorageEntry[], methodFragment: string, firstArg: string) =>
 		logs.find(
 			(log) =>
-				(log.method as string).includes(methodFragment) &&
+				String(log.method).includes(methodFragment) &&
 				log.entries.some((entry) => Array.isArray(entry.args) && entry.args[0] === firstArg),
 		);
 
