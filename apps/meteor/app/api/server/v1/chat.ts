@@ -831,13 +831,26 @@ const chatEndpoints = API.v1
 				message,
 			});
 		},
-	);
-
-API.v1.addRoute(
-	'chat.ignoreUser',
-	{ authRequired: true, validateParams: isChatIgnoreUserProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.ignoreUser',
+		{
+			authRequired: true,
+			query: isChatIgnoreUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { rid, userId } = this.queryParams;
 			let { ignore = true } = this.queryParams;
 
@@ -855,8 +868,7 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'chat.getDeletedMessages',
