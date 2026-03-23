@@ -16,6 +16,9 @@ callbacks.add(
       if (message.u?.username === 'ai.bot') {
         return message;
       }
+      if (!settings.get('AI_Enable')) {
+        return message;
+     }
 
       // ❌ Ignore system/bot messages
       if (!message.msg) {
