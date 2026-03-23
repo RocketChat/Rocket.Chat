@@ -1328,13 +1328,27 @@ const chatEndpoints = API.v1
 			});
 			return API.v1.success(messages);
 		},
-	);
-
-API.v1.addRoute(
-	'chat.getURLPreview',
-	{ authRequired: true, validateParams: isChatGetURLPreviewProps },
-	{
-		async get() {
+	)
+	.get(
+		'chat.getURLPreview',
+		{
+			authRequired: true,
+			query: isChatGetURLPreviewProps,
+			response: {
+				200: ajv.compile<{ urlPreview: object }>({
+					type: 'object',
+					properties: {
+						urlPreview: { type: 'object' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['urlPreview', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { roomId, url } = this.queryParams;
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
@@ -1346,8 +1360,7 @@ API.v1.addRoute(
 
 			return API.v1.success({ urlPreview });
 		},
-	},
-);
+	);
 
 export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 
