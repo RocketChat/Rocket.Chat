@@ -33,7 +33,7 @@
   "ABAC_External_Attribute_Namespace": "Attribute Namespace",
   "ABAC_External_Attribute_Namespace_Description": "The namespace used to build attribute FQNs (e.g. opentdf.io produces https://opentdf.io/attr/{key}/value/{value}).",
   "ABAC_External_Sync_Interval": "Membership Sync Interval",
-  "ABAC_External_Sync_Interval_Description": "How often to re-evaluate all ABAC room memberships against the external PDP and evict non-compliant users.",
+  "ABAC_External_Sync_Interval_Description": "Cron expression for how often to re-evaluate all ABAC room memberships against the external PDP and evict non-compliant users (e.g. */5 * * * * for every 5 minutes).",
   "ABAC_Enabled_callout": "User attributes are synchronized via LDAP. <1>Learn more</1>",
   "ABAC_Learn_More": "Learn about ABAC",
   "ABAC_automatically_disabled_callout": "ABAC automatically disabled",

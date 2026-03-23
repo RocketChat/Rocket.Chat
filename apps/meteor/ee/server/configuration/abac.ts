@@ -9,13 +9,6 @@ import { LDAPEE } from '../sdk';
 
 const EXTERNAL_PDP_SYNC_JOB = 'ABAC_External_PDP_Sync';
 
-const intervalToCronMap: Record<string, string> = {
-	every_1_hour: '0 * * * *',
-	every_6_hours: '0 */6 * * *',
-	every_12_hours: '0 */12 * * *',
-	every_24_hours: '0 0 * * *',
-};
-
 Meteor.startup(async () => {
 	let stopWatcher: () => void;
 	let stopCronWatcher: () => void;
@@ -36,7 +29,6 @@ Meteor.startup(async () => {
 				}
 			});
 
-			// External PDP sync cron
 			let lastSchedule: string;
 			async function configureExternalPdpSync(): Promise<void> {
 				const abacEnabled = settings.get('ABAC_Enabled');
@@ -49,21 +41,17 @@ Meteor.startup(async () => {
 					return;
 				}
 
-				const intervalValue = settings.get<string>('ABAC_External_Sync_Interval') || 'every_24_hours';
-				const schedule = intervalToCronMap[intervalValue] ?? intervalToCronMap.every_24_hours;
+				const cronValue = settings.get<string>('ABAC_External_Sync_Interval');
 
-				if (schedule !== lastSchedule && (await cronJobs.has(EXTERNAL_PDP_SYNC_JOB))) {
+				if (cronValue !== lastSchedule && (await cronJobs.has(EXTERNAL_PDP_SYNC_JOB))) {
 					await cronJobs.remove(EXTERNAL_PDP_SYNC_JOB);
 				}
 
-				lastSchedule = schedule;
-				await cronJobs.add(EXTERNAL_PDP_SYNC_JOB, schedule, () => Abac.syncExternalPdpRooms());
+				lastSchedule = cronValue;
+				await cronJobs.add(EXTERNAL_PDP_SYNC_JOB, cronValue, () => Abac.evaluateRoomMembership());
 			}
 
-			stopCronWatcher = settings.watchMultiple(
-				['ABAC_Enabled', 'ABAC_PDP_Type', 'ABAC_External_Sync_Interval'],
-				() => configureExternalPdpSync(),
-			);
+			stopCronWatcher = settings.watchMultiple(['ABAC_PDP_Type', 'ABAC_External_Sync_Interval'], () => configureExternalPdpSync());
 		},
 		down: async () => {
 			stopWatcher?.();
