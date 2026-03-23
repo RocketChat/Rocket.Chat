@@ -373,7 +373,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public forbidden<T>(msg?: T): ForbiddenResult<T> {
+	public forbidden<T = string>(msg?: T): ForbiddenResult<T> {
 		return {
 			statusCode: 403,
 			body: {
