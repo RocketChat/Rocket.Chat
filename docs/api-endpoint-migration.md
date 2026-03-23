@@ -569,6 +569,36 @@ Source: `apps/meteor/app/api/server/v1/invites.ts`
 4. **Augment `Endpoints`**: Use `declare module '@rocket.chat/rest-typings'` to merge the extracted types into the global `Endpoints` interface. This is what makes `useEndpoint('listInvites')` and similar SDK calls type-safe.
 5. **Import `ExtractRoutesFromAPI`** from `'../ApiClass'` (relative to the endpoint file in `v1/`).
 
+### Keep types in `rest-typings` (do NOT remove them)
+
+The `declare module` augmentation via `ExtractRoutesFromAPI` only works within the `apps/meteor` compilation unit. External packages (`ddp-client`, `rest-client`, etc.) compile independently and **do not see** the augmented types — they only see the types exported from `@rocket.chat/rest-typings`.
+
+**When migrating an endpoint, keep its type definition in `rest-typings` unchanged.** The augmentation adds response schema types on top of the existing definition. Removing the type from `rest-typings` will break external package consumers.
+
+This duplication is temporary — see `docs/api-definitions-package-plan.md` for the planned consolidation.
+
+### Use `as const` on options variables
+
+When endpoint options are stored in a separate variable (required for sharing between action factories), add `as const` so that `authRequired: true` is inferred as the literal `true`, not `boolean`. This matters because `TypedThis` uses a conditional type:
+
+```typescript
+userId: TOptions['authRequired'] extends true ? string : string | undefined;
+```
+
+Without `as const`, `authRequired` is `boolean`, and `userId` becomes `string | undefined` — forcing unnecessary guards in the action body.
+
+```typescript
+// Correct — userId is string, bodyParams is typed
+const myEndpointProps = {
+	authRequired: true,
+	body: isMyProps,
+	response: { ... },
+} as const;
+
+// Inline options don't need as const — TypeScript infers literals from the generic context
+API.v1.post('myEndpoint', { authRequired: true, body: isMyProps, response: { ... } }, async function action() { ... });
+```
+
 ### What augmentation enables
 
 Once the `Endpoints` interface is augmented, the entire stack benefits:
