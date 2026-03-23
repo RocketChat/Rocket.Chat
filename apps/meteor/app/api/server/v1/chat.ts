@@ -24,6 +24,7 @@ import {
 	isChatSyncThreadMessagesProps,
 	isChatGetStarredMessagesProps,
 	isChatGetDiscussionsProps,
+	isChatGetMessageReadCountProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
@@ -42,6 +43,7 @@ import { processWebhookMessage } from '../../../lib/server/functions/processWebh
 import { getSingleMessage } from '../../../lib/server/methods/getSingleMessage';
 import { executeSendMessage } from '../../../lib/server/methods/sendMessage';
 import { executeUpdateMessage } from '../../../lib/server/methods/updateMessage';
+import { getMessageReadCount as getMessageReadCountHelper } from '../../../read-counter/server/getMessageReadCount';
 import { applyAirGappedRestrictionsValidation } from '../../../license/server/airGappedRestrictionsWrapper';
 import { pinMessage, unpinMessage } from '../../../message-pin/server/pinMessage';
 import { starMessage } from '../../../message-star/server/starMessage';
@@ -126,6 +128,37 @@ const isChatUnstarMessageLocalProps = ajv.compile<ChatUnstarMessageLocal>(ChatUn
 const isChatFollowMessageLocalProps = ajv.compile<ChatFollowMessageLocal>(ChatFollowMessageLocalSchema);
 
 const isChatUnfollowMessageLocalProps = ajv.compile<ChatUnfollowMessageLocal>(ChatUnfollowMessageLocalSchema);
+
+API.v1.addRoute(
+	'chat.getMessageReadCount',
+	{
+		authRequired: true,
+		validateParams: isChatGetMessageReadCountProps,
+	},
+	{
+		async get() {
+			const { messageId } = this.queryParams;
+
+			const message = await Messages.findOneById(messageId, { projection: { rid: 1 } });
+
+			if (!message) {
+				return API.v1.failure('The required "messageId" param is missing or invalid.');
+			}
+
+			if (!(await canAccessRoomIdAsync(message.rid, this.userId))) {
+				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			}
+
+			const result = await getMessageReadCountHelper(messageId, this.userId);
+
+			if (!result) {
+				return API.v1.failure();
+			}
+
+			return API.v1.success(result);
+		},
+	},
+);
 
 type ChatPinMessage = {
 	messageId: IMessage['_id'];

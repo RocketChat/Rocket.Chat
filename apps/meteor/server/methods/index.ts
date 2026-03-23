@@ -11,6 +11,8 @@ import './channelsList';
 import './createDirectMessage';
 import './deleteFileMessage';
 import './deleteUser';
+import './getAvatarSuggestion';
+import './getMessageReadCount';
 import './getRoomById';
 import './getRoomIdByNameOrId';
 import './getRoomNameById';
