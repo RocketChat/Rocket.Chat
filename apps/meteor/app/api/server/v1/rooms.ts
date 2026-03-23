@@ -800,22 +800,34 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const successResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: { success: { type: 'boolean', enum: [true] } },
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
 	'rooms.changeArchivationState',
-	{ authRequired: true, validateParams: isRoomsChangeArchivationStateProps },
 	{
-		async post() {
-			const { rid, action } = this.bodyParams;
-
-			let result;
-			if (action === 'archive') {
-				result = await executeArchiveRoom(this.userId, rid);
-			} else {
-				result = await executeUnarchiveRoom(this.userId, rid);
-			}
-
-			return API.v1.success({ result });
+		authRequired: true,
+		body: isRoomsChangeArchivationStateProps,
+		response: {
+			200: successResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { rid, action } = this.bodyParams;
+
+		if (action === 'archive') {
+			await executeArchiveRoom(this.userId, rid);
+		} else {
+			await executeUnarchiveRoom(this.userId, rid);
+		}
+
+		return API.v1.success();
 	},
 );
 
@@ -973,13 +985,6 @@ API.v1.addRoute(
 		},
 	},
 );
-
-const successResponseSchema = ajv.compile<void>({
-	type: 'object',
-	properties: { success: { type: 'boolean', enum: [true] } },
-	required: ['success'],
-	additionalProperties: false,
-});
 
 API.v1.post(
 	'rooms.muteUser',
