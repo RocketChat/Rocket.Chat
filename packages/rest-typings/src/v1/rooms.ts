@@ -330,25 +330,6 @@ const RoomsAdminRoomsGetRoomSchema = {
 
 export const isRoomsAdminRoomsGetRoomProps = ajv.compile<RoomsAdminRoomsGetRoomProps>(RoomsAdminRoomsGetRoomSchema);
 
-type RoomsChangeArchivationStateProps = { rid: string; action?: string };
-
-const RoomsChangeArchivationStateSchema = {
-	type: 'object',
-	properties: {
-		rid: {
-			type: 'string',
-		},
-		action: {
-			type: 'string',
-			nullable: true,
-		},
-	},
-	required: ['rid'],
-	additionalProperties: false,
-};
-
-export const isRoomsChangeArchivationStateProps = ajv.compile<RoomsChangeArchivationStateProps>(RoomsChangeArchivationStateSchema);
-
 type RoomsSaveRoomSettingsProps = {
 	rid: string;
 	roomAvatar?: string;
@@ -883,12 +864,6 @@ export type RoomsEndpoints = {
 		POST: (params: RoomsSaveRoomSettingsProps) => {
 			success: boolean;
 			rid: string;
-		};
-	};
-
-	'/v1/rooms.changeArchivationState': {
-		POST: (params: RoomsChangeArchivationStateProps) => {
-			success: boolean;
 		};
 	};
 

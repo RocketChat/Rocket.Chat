@@ -16,7 +16,6 @@ import {
 	isRoomsCleanHistoryProps,
 	isRoomsOpenProps,
 	isRoomsMembersOrderedByRoleProps,
-	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
 	isRoomsInviteProps,
 	validateBadRequestErrorResponse,
@@ -717,25 +716,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms.changeArchivationState',
-	{ authRequired: true, validateParams: isRoomsChangeArchivationStateProps },
-	{
-		async post() {
-			const { rid, action } = this.bodyParams;
-
-			let result;
-			if (action === 'archive') {
-				result = await executeArchiveRoom(this.userId, rid);
-			} else {
-				result = await executeUnarchiveRoom(this.userId, rid);
-			}
-
-			return API.v1.success({ result });
-		},
-	},
-);
-
-API.v1.addRoute(
 	'rooms.export',
 	{ authRequired: true, validateParams: isRoomsExportProps },
 	{
@@ -1041,6 +1021,18 @@ const isRoomsLeavePropsSchema = {
 
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+const isRoomsChangeArchivationStateProps = ajv.compile<{
+	rid: string;
+	action?: string;
+}>({
+	type: 'object',
+	properties: {
+		rid: { type: 'string' },
+		action: { type: 'string', nullable: true },
+	},
+	required: ['rid'],
+	additionalProperties: false,
+});
 const roomsBannedUsersResponseSchema = ajv.compile<{
 	success: true;
 	bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>[];
@@ -1373,6 +1365,41 @@ export const roomEndpoints = API.v1
 				offset,
 				total,
 			});
+		},
+	)
+	.post(
+		'rooms.changeArchivationState',
+		{
+			authRequired: true,
+			body: isRoomsChangeArchivationStateProps,
+			response: {
+				200: ajv.compile<{
+					success: true;
+					result: unknown;
+				}>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+						result: {},
+					},
+					required: ['success', 'result'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { rid, action } = this.bodyParams;
+
+			let result;
+			if (action === 'archive') {
+				result = await executeArchiveRoom(this.userId, rid);
+			} else {
+				result = await executeUnarchiveRoom(this.userId, rid);
+			}
+
+			return API.v1.success({ result });
 		},
 	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
