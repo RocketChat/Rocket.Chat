@@ -469,7 +469,7 @@ describe('[Commands]', () => {
 				})
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('error', 'Not allowed');
+					expect(res.body).to.have.a.property('error', 'unauthorized');
 				});
 		});
 
