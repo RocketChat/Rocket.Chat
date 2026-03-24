@@ -6487,6 +6487,7 @@
   "manage-voip-contact-center-settings_description": "Permission to manage voip contact center settings",
   "manage-voip-extensions": "Manage Voice Calls",
   "manage-voip-extensions_description": "Permission to manage voice calls and assign extensions to users",
+  "Mark_as_important": "Mark as important",
   "marketplace_featured_section_community_featured": "Featured Community Apps",
   "marketplace_featured_section_community_supported": "Community Supported Apps",
   "marketplace_featured_section_enterprise": "Featured Enterprise Apps",

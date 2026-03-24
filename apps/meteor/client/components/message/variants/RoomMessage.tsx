@@ -84,7 +84,9 @@ const RoomMessage = ({
 			data-sequential={sequential}
 			data-own={message.u._id === uid}
 			data-qa-type='message'
+			data-important={message.isImportant}
 			aria-busy={message.temp}
+			className={message.isImportant ? 'rcx-message--important' : undefined}
 			{...props}
 		>
 			<MessageLeftContainer>

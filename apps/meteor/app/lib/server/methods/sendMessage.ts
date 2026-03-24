@@ -134,6 +134,7 @@ Meteor.methods<ServerMethods>({
 			federation: Match.Maybe(Object),
 			groupable: Match.Maybe(Boolean),
 			sentByEmail: Match.Maybe(Boolean),
+			isImportant: Match.Maybe(Boolean),
 		});
 
 		const uid = Meteor.userId();

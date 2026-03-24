@@ -3,7 +3,8 @@ import type { Icon } from '@rocket.chat/fuselage';
 import { GenericMenu, type GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { MessageComposerAction, MessageComposerActionsDivider } from '@rocket.chat/ui-composer';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation, useLayoutHiddenActions } from '@rocket.chat/ui-contexts';
+import { useTranslation, useLayoutHiddenActions, useUserId, usePermission, useUserSubscription, useMethod } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ComponentProps, MouseEvent } from 'react';
 import { memo } from 'react';
 
@@ -28,6 +29,8 @@ type MessageBoxActionsToolbarProps = {
 	isRecording: boolean;
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
+	isImportantActive?: boolean;
+	onImportantToggle?: (active: boolean) => void;
 };
 
 const isHidden = (hiddenActions: Array<string>, action: GenericMenuItemProps) => {
@@ -45,6 +48,8 @@ const MessageBoxActionsToolbar = ({
 	tmid,
 	variant = 'large',
 	isMicrophoneDenied,
+	isImportantActive = false,
+	onImportantToggle,
 }: MessageBoxActionsToolbarProps) => {
 	const t = useTranslation();
 	const chatContext = useChat();
@@ -54,6 +59,27 @@ const MessageBoxActionsToolbar = ({
 	}
 
 	const room = useRoom();
+	const userId = useUserId();
+	const subscription = useUserSubscription(rid);
+	const getUserRoomRole = useMethod('getUserRoomRole');
+	
+	const { data: hasRoleFromQuery = false } = useQuery({
+		queryKey: ['user-room-role-toolbar', userId, rid, 'important-message-marker'],
+		queryFn: async () => {
+			if (!userId) return false;
+			try {
+				return await getUserRoomRole(rid, userId, 'important-message-marker');
+			} catch (error) {
+				return false;
+			}
+		},
+		staleTime: 0,
+		enabled: !!userId,
+	});
+	
+	const hasPermission = usePermission('mark-message-as-important', rid);
+	const hasRole = subscription?.roles?.includes('important-message-marker') ?? hasRoleFromQuery;
+	const canMarkMessagesAsImportant = hasPermission || hasRole;
 
 	const audioMessageAction = useAudioMessageAction(!canSend || typing || isRecording || isMicrophoneDenied, isMicrophoneDenied);
 	const videoMessageAction = useVideoMessageAction(!canSend || typing || isRecording);
@@ -91,7 +117,11 @@ const MessageBoxActionsToolbar = ({
 		featured.push(allActions.audioMessageAction, allActions.fileUploadAction);
 		createNew.push(allActions.videoMessageAction);
 	} else {
-		featured.push(allActions.audioMessageAction, allActions.videoMessageAction, allActions.fileUploadAction);
+		featured.push(
+			allActions.audioMessageAction,
+			allActions.videoMessageAction,
+			allActions.fileUploadAction
+		);
 	}
 
 	if (allActions.webdavActions) {
@@ -113,7 +143,7 @@ const MessageBoxActionsToolbar = ({
 			.map((item) => ({
 				id: item.id,
 				icon: item.icon as ComponentProps<typeof Icon>['name'],
-				content: t(item.label),
+				content: t(item.label as TranslationKey),
 				onClick: (event?: MouseEvent<HTMLElement>) =>
 					item.action({
 						rid,
@@ -146,6 +176,16 @@ const MessageBoxActionsToolbar = ({
 		<>
 			<MessageComposerActionsDivider />
 			{featured.map((action) => action && renderAction(action))}
+			{canMarkMessagesAsImportant && (
+				<MessageComposerAction
+					icon='check'
+					data-qa-id='important-message'
+					title={t('Mark_as_important')}
+					disabled={isRecording || !canSend}
+					onClick={() => onImportantToggle?.(!isImportantActive)}
+					pressed={isImportantActive}
+				/>
+			)}
 			<GenericMenu
 				disabled={isRecording}
 				data-qa-id='menu-more-actions'

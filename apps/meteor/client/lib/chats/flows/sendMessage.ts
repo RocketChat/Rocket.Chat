@@ -45,7 +45,8 @@ export const sendMessage = async (
 		tshow,
 		previewUrls,
 		isSlashCommandAllowed,
-	}: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean },
+		isImportant,
+	}: { text: string; tshow?: boolean; previewUrls?: string[]; isSlashCommandAllowed?: boolean; isImportant?: boolean },
 ): Promise<boolean> => {
 	if (!(await chat.data.isSubscribedToRoom())) {
 		try {
@@ -71,6 +72,10 @@ export const sendMessage = async (
 			quotedMessages: chat.composer?.quotedMessages.get() ?? [],
 			originalMessage: mid ? await chat.data.findMessageByID(mid) : null,
 		});
+
+		if (isImportant) {
+			message.isImportant = true;
+		}
 
 		if (mid) {
 			const originalMessage = await chat.data.findMessageByID(mid);

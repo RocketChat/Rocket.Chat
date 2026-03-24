@@ -149,6 +149,7 @@ export type ChatAPI = {
 			tshow?: boolean;
 			previewUrls?: string[];
 			isSlashCommandAllowed?: boolean;
+			isImportant?: boolean;
 		}) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;

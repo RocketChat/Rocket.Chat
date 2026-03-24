@@ -88,6 +88,13 @@
 	&.highlight {
 		animation: highlight 6s;
 	}
+
+	&.rcx-message--important {
+		background-color: rgba(245, 69, 92, 0.08) !important;
+		border-left: 3px solid #f5455c;
+		padding-left: 8px;
+		margin: 2px 0;
+	}
 }
 
 .page-loading {

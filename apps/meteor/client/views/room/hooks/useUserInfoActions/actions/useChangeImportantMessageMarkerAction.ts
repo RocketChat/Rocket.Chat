@@ -7,53 +7,14 @@ import {
 	useToastMessageDispatch,
 	useUserId,
 	useUser,
+	useMethod,
+	useStream,
 } from '@rocket.chat/ui-contexts';
-import { useMemo, useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMemo, useEffect } from 'react';
 
 import { getRoomDirectives } from '../../../lib/getRoomDirectives';
-import { useUserHasRoomRole } from '../../useUserHasRoomRole';
 import type { UserInfoAction, UserInfoActionType } from '../useUserInfoActions';
-
-// Глобальное хранилище для демо-режима
-const demoStore: {
-	roles: Record<string, boolean>;
-	listeners: Set<() => void>;
-} = {
-	roles: {},
-	listeners: new Set(),
-};
-
-const subscribe = (listener: () => void) => {
-	demoStore.listeners.add(listener);
-	return () => {
-		demoStore.listeners.delete(listener);
-	};
-};
-
-const updateDemoRole = (key: string, value: boolean) => {
-	demoStore.roles[key] = value;
-	demoStore.listeners.forEach((listener) => listener());
-};
-
-const useDemoRole = (key: string, serverValue: boolean) => {
-	const [value, setValue] = useState(() => {
-		return demoStore.roles[key] !== undefined ? demoStore.roles[key] : serverValue;
-	});
-
-	useEffect(() => {
-		const unsubscribe = subscribe(() => {
-			setValue(demoStore.roles[key] !== undefined ? demoStore.roles[key] : serverValue);
-		});
-
-		if (demoStore.roles[key] === undefined) {
-			setValue(serverValue);
-		}
-
-		return unsubscribe;
-	}, [key, serverValue]);
-
-	return [value, (newValue: boolean) => updateDemoRole(key, newValue)] as const;
-};
 
 export const useChangeImportantMessageMarkerAction = (
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension' | 'roles'>,
@@ -70,6 +31,9 @@ export const useChangeImportantMessageMarkerAction = (
 	
 	const userCanSetImportantMessageMarker = usePermission('set-important-message-marker', rid);
 	const dispatchToastMessage = useToastMessageDispatch();
+	const getUserRoomRole = useMethod('getUserRoomRole');
+	const queryClient = useQueryClient();
+	const subscribeToNotifyLogged = useStream('notify-logged');
 
 	if (!room) {
 		throw Error('Room not provided');
@@ -81,32 +45,77 @@ export const useChangeImportantMessageMarkerAction = (
 		['admin', 'owner'].includes(role)
 	);
 	
-	const isTargetOwner = useUserHasRoomRole(uid, rid, 'owner');
-	const isTargetModerator = useUserHasRoomRole(uid, rid, 'moderator');
+	useEffect(() => {
+		const unsubscribe = subscribeToNotifyLogged('roles-change', (role) => {
+			if (role.u?._id === uid && (role.scope === rid || !role.scope)) {
+				queryClient.invalidateQueries({ 
+					queryKey: ['user-room-role', uid, rid] 
+				});
+			}
+		});
+		
+		return unsubscribe;
+	}, [subscribeToNotifyLogged, uid, rid, queryClient]);
 	
-	// УБРАЛИ leader из проверки
-	const isTargetPrivileged = isTargetOwner || isTargetModerator;
+	const { data: isTargetOwner = false } = useQuery({
+		queryKey: ['user-room-role', uid, rid, 'owner'],
+		queryFn: async () => {
+			try {
+				return await getUserRoomRole(rid, uid, 'owner');
+			} catch (error) {
+				return false;
+			}
+		},
+		staleTime: 0,
+	});
 
-	const demoKey = `${uid}-${rid}-important-message-marker`;
-	const serverHasRole = useUserHasRoomRole(uid, rid, 'important-message-marker');
-	
-	const [hasRole, setHasRole] = useDemoRole(demoKey, serverHasRole);
+	const isTargetPrivileged = isTargetOwner;
+
+	const { data: hasRole = false, refetch } = useQuery({
+		queryKey: ['user-room-role', uid, rid, 'important-message-marker'],
+		queryFn: async () => {
+			try {
+				return await getUserRoomRole(rid, uid, 'important-message-marker');
+			} catch (error) {
+				return false;
+			}
+		},
+		staleTime: 0,
+	});
 
 	const changeRoleAction = useEffectEvent(async () => {
 		try {
 			const newRoleState = !hasRole;
-			setHasRole(newRoleState);
-			
-			dispatchToastMessage({ 
-				type: 'success', 
-				message: newRoleState 
-					? `Granted ability to mark important messages to @${username} (demo mode)`
-					: `Removed ability to mark important messages from @${username} (demo mode)`
+
+			await Meteor.callAsync(
+				newRoleState
+					? 'addRoomImportantMessageMarker'
+					: 'removeRoomImportantMessageMarker',
+				rid,
+				uid
+			);
+
+			// Refetch the role status and invalidate all role queries for this user
+			await refetch();
+			await queryClient.invalidateQueries({ 
+				queryKey: ['user-room-role', uid, rid] 
+			});
+
+			dispatchToastMessage({
+				type: 'success',
+				message: newRoleState
+					? `Granted ability to mark important messages to @${username} in this room`
+					: `Removed ability to mark important messages from @${username} in this room`,
 			});
 		} catch (error) {
-			dispatchToastMessage({ 
-				type: 'error', 
-				message: 'Failed to change role' 
+			const message =
+				error && typeof error === 'object' && 'message' in error
+					? (error as any).message
+					: String(error);
+
+			dispatchToastMessage({
+				type: 'error',
+				message: `Failed to change role: ${message}`,
 			});
 		}
 	});
@@ -134,7 +143,7 @@ export const useChangeImportantMessageMarkerAction = (
 
 		return {
 			content: hasRole 
-				? 'Remove ability to mark important messages' 
+				? 'Remove ability to mark important messages'
 				: 'Grant ability to mark important messages',
 			icon: 'flag' as const,
 			onClick: changeRoleAction,
