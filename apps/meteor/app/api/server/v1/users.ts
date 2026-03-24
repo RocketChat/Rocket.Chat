@@ -88,26 +88,21 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
-API.v1.get(
+API.v1.addRoute(
 	'users.getAvatar',
+	{ authRequired: true },
 	{
-		authRequired: true,
-		query: isUsersGetAvatarParamsGET,
-		response: {
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
+		async get() {
+			const user = await getUserFromParams(this.queryParams);
+
+			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+			this.response.headers.set('Location', url);
+
+			return {
+				statusCode: 307,
+				body: url,
+			};
 		},
-	},
-	async function action() {
-		const user = await getUserFromParams(this.queryParams);
-
-		const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-		this.response.headers.set('Location', url);
-
-		return {
-			statusCode: 307 as const,
-			body: url,
-		};
 	},
 );
 
@@ -797,10 +792,10 @@ API.v1.get(
 				sort,
 				status: status as 'active' | 'deactivated',
 				roles: roles ?? null,
-				searchTerm: searchTerm as string,
-				hasLoggedIn: hasLoggedIn as boolean,
+				searchTerm: searchTerm ?? '',
+				hasLoggedIn: hasLoggedIn ?? false,
 				type: type as string,
-				inactiveReason: inactiveReason as string,
+				inactiveReason,
 			}),
 		);
 	},
@@ -885,7 +880,7 @@ API.v1.post(
 		}
 		if (this.bodyParams.customFields) {
 			try {
-				await validateCustomFields(this.bodyParams.customFields);
+				validateCustomFields(this.bodyParams.customFields);
 			} catch (e) {
 				return API.v1.failure(e);
 			}
@@ -1173,6 +1168,10 @@ API.v1
 		},
 		async function action() {
 			const result = await generateUsernameSuggestion(this.user);
+
+			if (!result) {
+				return API.v1.failure('No username suggestion found');
+			}
 
 			return API.v1.success({ result });
 		},
