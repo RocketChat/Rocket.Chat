@@ -1,0 +1,95 @@
+import type { App } from '@rocket.chat/core-typings';
+import { expect } from 'chai';
+import { after, before, describe, it } from 'mocha';
+
+import { getCredentials, request, credentials } from '../../data/api-data';
+import { appUpdateStatusTest } from '../../data/apps/app-packages';
+import { apps } from '../../data/apps/apps-data';
+import { cleanupApps, installLocalTestPackage } from '../../data/apps/helper';
+import { getUserByUsername } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
+
+const APP_USERNAME = 'update-status-test.bot';
+
+(IS_EE ? describe : describe.skip)('Apps - Update App User Status', () => {
+	let app: App;
+
+	before((done) => getCredentials(done));
+
+	before(async () => {
+		await cleanupApps();
+		app = await installLocalTestPackage(appUpdateStatusTest);
+	});
+
+	after(() => cleanupApps());
+
+	describe('[updateStatusText]', () => {
+		it('should return 400 when statusText is missing', async () => {
+			await request
+				.post(apps(`/public/${app.id}/update-status-text`))
+				.set(credentials)
+				.send({ username: APP_USERNAME })
+				.expect(400);
+		});
+
+		it('should update the app user statusText', async () => {
+			const statusText = `test-status-${Date.now()}`;
+
+			await request
+				.post(apps(`/public/${app.id}/update-status-text`))
+				.set(credentials)
+				.send({ username: APP_USERNAME, statusText })
+				.expect(200);
+
+			const appUser = await getUserByUsername(APP_USERNAME);
+			expect(appUser.statusText).to.be.equal(statusText);
+		});
+
+		it('should clear the app user statusText', async () => {
+			await request
+				.post(apps(`/public/${app.id}/update-status-text`))
+				.set(credentials)
+				.send({ username: APP_USERNAME, statusText: '' })
+				.expect(200);
+
+			const appUser = await getUserByUsername(APP_USERNAME);
+			expect(appUser.statusText).to.be.equal('');
+		});
+	});
+
+	describe('[updateStatus]', () => {
+		it('should return 400 when status is missing', async () => {
+			await request
+				.post(apps(`/public/${app.id}/update-status`))
+				.set(credentials)
+				.send({ username: APP_USERNAME })
+				.expect(400);
+		});
+
+		it('should update the app user statusText when status and statusText is provided', async () => {
+			const statusText = `busy-status-${Date.now()}`;
+
+			await request
+				.post(apps(`/public/${app.id}/update-status`))
+				.set(credentials)
+				.send({ username: APP_USERNAME, status: 'busy', statusText })
+				.expect(200);
+
+			const appUser = await getUserByUsername(APP_USERNAME);
+			expect(appUser.statusText).to.be.equal(statusText);
+		});
+
+		it('should update status without changing statusText', async () => {
+			const userBefore = await getUserByUsername(APP_USERNAME);
+
+			await request
+				.post(apps(`/public/${app.id}/update-status`))
+				.set(credentials)
+				.send({ username: APP_USERNAME, status: 'away' })
+				.expect(200);
+
+			const appUser = await getUserByUsername(APP_USERNAME);
+			expect(appUser.statusText).to.be.equal(userBefore.statusText);
+		});
+	});
+});
