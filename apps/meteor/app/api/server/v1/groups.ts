@@ -6,7 +6,19 @@ import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
+import {IMessage} from '@rocket.chat/core-typings'
+import {
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+	PaginatedRequest, 
+	withGroupBaseProperties, 
+	GroupsBaseProps, 
+	
+} from '@rocket.chat/rest-typings';
 
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -36,6 +48,126 @@ import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
+
+type GroupsHistoryProps = PaginatedRequest<
+	GroupsBaseProps & {
+		latest?: string;
+		oldest?: string;
+		inclusive?: 'true' | 'false';
+		unreads?: 'true' | 'false';
+		showThreadMessages?: string;
+	}
+>;
+const groupsHistoryPropsSchema = withGroupBaseProperties({
+	latest: {
+		type: 'string',
+	},
+	oldest: {
+		type: 'string',
+	},
+	inclusive: {
+		type: 'string',
+	},
+	unreads: {
+		type: 'string',
+	},
+	showThreadMessages: {
+		type: 'string',
+	},
+	count: {
+		type: 'string',
+	},
+	offset: {
+		type: 'string',
+	},
+	sort: {
+		type: 'string',
+	},
+});
+const isGroupsHistoryProps = ajv.compile<GroupsHistoryProps>(groupsHistoryPropsSchema);
+
+const isGroupsHistoryReponse = ajv.compile({
+    type: 'object',
+    properties: {
+        success: { type: 'boolean', enum: [true] },
+        messages: {
+            type: 'array',
+            items: { $ref: '#/components/schemas/IMessage' },
+        },
+        count: { type: 'integer' },
+        offset: { type: 'integer' },
+        total: { type: 'integer' },
+        unreadNotLoaded: { type: 'integer' },
+        firstUnread: { $ref: '#/components/schemas/IMessage' }, 
+    },
+    required: ['success', 'messages'],
+    additionalProperties: false,
+});
+
+const groupsHistoryEndpoints = API.v1.get(
+	'groups.history',
+	{
+		authRequired: true,
+		query: isGroupsHistoryProps,
+		response: {
+			200: isGroupsHistoryReponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.queryParams,
+			userId: this.userId,
+			checkedArchived: false,
+		});
+
+		let latestDate = new Date();
+		if (this.queryParams.latest) {
+			latestDate = new Date(this.queryParams.latest);
+		}
+
+		let oldestDate = undefined;
+		if (this.queryParams.oldest) {
+			oldestDate = new Date(this.queryParams.oldest);
+		}
+
+		const inclusive = this.queryParams.inclusive === 'true';
+
+		let count = 20;
+		if (this.queryParams.count) {
+			count = parseInt(String(this.queryParams.count));
+		}
+
+		let offset = 0;
+		if (this.queryParams.offset) {
+			offset = parseInt(String(this.queryParams.offset));
+		}
+
+		const unreads = this.queryParams.unreads === 'true';
+		const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
+
+		const result = await getChannelHistory({
+			rid: findResult.rid,
+			fromUserId: this.userId,
+			latest: latestDate,
+			oldest: oldestDate,
+			inclusive,
+			offset,
+			count,
+			unreads,
+			showThreadMessages,
+		});
+
+		if (!result) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		return API.v1.success(result as { messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number });
+	},
+);
+
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -488,63 +620,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'groups.history',
-	{ authRequired: true },
-	{
-		async get() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
-				userId: this.userId,
-				checkedArchived: false,
-			});
-
-			let latestDate = new Date();
-			if (this.queryParams.latest) {
-				latestDate = new Date(this.queryParams.latest);
-			}
-
-			let oldestDate = undefined;
-			if (this.queryParams.oldest) {
-				oldestDate = new Date(this.queryParams.oldest);
-			}
-
-			const inclusive = this.queryParams.inclusive === 'true';
-
-			let count = 20;
-			if (this.queryParams.count) {
-				count = parseInt(String(this.queryParams.count));
-			}
-
-			let offset = 0;
-			if (this.queryParams.offset) {
-				offset = parseInt(String(this.queryParams.offset));
-			}
-
-			const unreads = this.queryParams.unreads === 'true';
-
-			const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
-
-			const result = await getChannelHistory({
-				rid: findResult.rid,
-				fromUserId: this.userId,
-				latest: latestDate,
-				oldest: oldestDate,
-				inclusive,
-				offset,
-				count,
-				unreads,
-				showThreadMessages,
-			});
-
-			if (!result) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success(result);
-		},
-	},
-);
 
 API.v1.addRoute(
 	'groups.info',
@@ -1300,3 +1375,11 @@ API.v1.addRoute(
 		},
 	},
 );
+
+
+export type GroupsHistoryEndpoints = ExtractRoutesFromAPI<typeof groupsHistoryEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends GroupsHistoryEndpoints {}
+}
