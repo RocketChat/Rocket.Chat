@@ -60,6 +60,10 @@ const APP_USERNAME = 'update-status-test.bot';
 				.expect(200);
 
 			const appUser = await getUserByUsername(APP_USERNAME);
+
+			// We can't test the status value because the Presence service will override it with OFFLINE
+			// when the user doesn't have an active session/connection
+			// expect(appUser.status).to.equal(status);
 			expect(appUser.statusText).to.be.equal(statusText);
 		});
 
@@ -73,6 +77,10 @@ const APP_USERNAME = 'update-status-test.bot';
 				.expect(200);
 
 			const appUser = await getUserByUsername(APP_USERNAME);
+
+			// We can't test the status value because the Presence service will override it with OFFLINE
+			// when the user doesn't have an active session/connection
+			// expect(appUser.status).to.equal(status);
 			expect(appUser.statusText).to.be.equal(userBefore.statusText);
 		});
 	});
