@@ -1,6 +1,7 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
+import { isTruthy } from '@rocket.chat/tools';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { logger } from '../logger';
@@ -113,6 +114,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			throw new Error('Default entity key is not configured for ExternalPDP');
 		}
 
+		// Maybe this should be more flexible and just allow a path? Something like `.emails.0.address` like the subject mapping from opentdf?
 		switch (this.config.defaultEntityKey) {
 			case 'emailAddress':
 				return user.emails?.[0]?.address;
@@ -215,7 +217,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 					],
 				};
 			})
-			.filter(Boolean);
+			.filter(isTruthy);
 
 		if (!decisionRequests.length) {
 			throw new OnlyCompliantCanBeAddedToRoomError();
@@ -266,6 +268,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			}))
 			.filter((entry): entry is { user: IUser; entityKey: string } => !!entry.entityKey);
 
+		// For now: if no user is available we just assume they are not compliant
 		if (!usersWithKeys.length) {
 			return users;
 		}
@@ -276,6 +279,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 					entities: [this.buildEntityIdentifier(entityKey)],
 				},
 			},
+			// The subject mappings on opentdf should allow this action. Otherwise, this would be DENY
 			action: { name: 'read' },
 			resources: [
 				{
