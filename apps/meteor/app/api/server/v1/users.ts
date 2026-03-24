@@ -360,25 +360,42 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.deleteOwnAccount',
-	{ authRequired: true },
 	{
-		async post() {
-			const { password } = this.bodyParams;
-			if (!password) {
-				return API.v1.failure('Body parameter "password" is required.');
-			}
-			if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
-			}
-
-			const { confirmRelinquish = false } = this.bodyParams;
-
-			await deleteUserOwnAccount(this.userId, password, confirmRelinquish);
-
-			return API.v1.success();
+		authRequired: true,
+		body: ajv.compile<{ password: string; confirmRelinquish?: boolean }>({
+			type: 'object',
+			properties: {
+				password: { type: 'string' },
+				confirmRelinquish: { type: 'boolean', nullable: true },
+			},
+			required: ['password'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		const { confirmRelinquish = false } = this.bodyParams;
+
+		await deleteUserOwnAccount(this.userId, this.bodyParams.password, confirmRelinquish);
+
+		return API.v1.success();
 	},
 );
 
@@ -628,35 +645,45 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.sendWelcomeEmail',
 	{
 		authRequired: true,
-		validateParams: isUsersSendWelcomeEmailProps,
+		body: isUsersSendWelcomeEmailProps,
 		permissionsRequired: ['send-mail'],
-	},
-	{
-		async post() {
-			const { email } = this.bodyParams;
-
-			if (!isSMTPConfigured()) {
-				throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
-					method: 'sendWelcomeEmail',
-				});
-			}
-
-			const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
-
-			if (!user) {
-				throw new MeteorError('error-invalid-user', 'Invalid user', {
-					method: 'sendWelcomeEmail',
-				});
-			}
-
-			await sendWelcomeEmail({ ...user, email });
-
-			return API.v1.success();
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { email } = this.bodyParams;
+
+		if (!isSMTPConfigured()) {
+			throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
+				method: 'sendWelcomeEmail',
+			});
+		}
+
+		const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
+
+		if (!user) {
+			throw new MeteorError('error-invalid-user', 'Invalid user', {
+				method: 'sendWelcomeEmail',
+			});
+		}
+
+		await sendWelcomeEmail({ ...user, email });
+
+		return API.v1.success();
 	},
 );
 
@@ -880,58 +907,99 @@ const usersEndpoints = API.v1
 		},
 	);
 
-API.v1.addRoute(
+API.v1.get(
 	'users.getPreferences',
-	{ authRequired: true },
 	{
-		async get() {
-			const user = await Users.findOneById(this.userId);
-			if (user?.settings) {
-				const { preferences = {} } = user?.settings;
-				preferences.language = user?.language;
-
-				return API.v1.success({
-					preferences,
-				});
-			}
-			return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
+		authRequired: true,
+		response: {
+			200: ajv.compile<{ preferences: Record<string, unknown> }>({
+				type: 'object',
+				properties: {
+					preferences: { type: 'object' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['preferences', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await Users.findOneById(this.userId);
+		if (user?.settings) {
+			const { preferences = {} } = user?.settings;
+			preferences.language = user?.language;
+
+			return API.v1.success({
+				preferences,
+			});
+		}
+		return API.v1.failure(i18n.t('Accounts_Default_User_Preferences_not_available').toUpperCase());
 	},
 );
 
-API.v1.addRoute(
-	'users.forgotPassword',
-	{ authRequired: false },
-	{
-		async post() {
+API.v1
+	.post(
+		'users.forgotPassword',
+		{
+			authRequired: false,
+			body: ajv.compile<{ email: string }>({
+				type: 'object',
+				properties: {
+					email: { type: 'string' },
+				},
+				required: ['email'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+			},
+		},
+		async function action() {
 			const isPasswordResetEnabled = settings.get('Accounts_PasswordReset');
 
 			if (!isPasswordResetEnabled) {
 				return API.v1.failure('Password reset is not enabled');
 			}
 
-			const { email } = this.bodyParams;
-			if (!email) {
-				return API.v1.failure("The 'email' param is required");
-			}
-
-			await sendForgotPasswordEmail(email.toLowerCase());
+			await sendForgotPasswordEmail(this.bodyParams.email.toLowerCase());
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.getUsernameSuggestion',
-	{ authRequired: true, userWithoutUsername: true },
-	{
-		async get() {
+	)
+	.get(
+		'users.getUsernameSuggestion',
+		{
+			authRequired: true,
+			userWithoutUsername: true,
+			response: {
+				200: ajv.compile<{ result: string }>({
+					type: 'object',
+					properties: {
+						result: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['result', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const result = await generateUsernameSuggestion(this.user);
 
 			return API.v1.success({ result });
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'users.checkUsernameAvailability',
@@ -1021,11 +1089,27 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'users.2fa.enableEmail',
-	{ authRequired: true },
-	{
-		async post() {
+const voidSuccessResponse = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+API.v1
+	.post(
+		'users.2fa.enableEmail',
+		{
+			authRequired: true,
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const hasUnverifiedEmail = this.user.emails?.some((email) => !email.verified);
 			if (hasUnverifiedEmail) {
 				throw new MeteorError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
@@ -1062,14 +1146,20 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.2fa.disableEmail',
-	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
-	{
-		async post() {
+	)
+	.post(
+		'users.2fa.disableEmail',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			await Users.disableEmail2FAByUserId(this.userId);
 
 			void notifyOnUserChangeAsync(async () => {
@@ -1087,55 +1177,67 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
+	)
+	.post(
+		'users.2fa.sendEmailCode',
+		{
+			body: ajv.compile<{ emailOrUsername: string }>({
+				type: 'object',
+				properties: {
+					emailOrUsername: { type: 'string' },
+				},
+				required: ['emailOrUsername'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+			},
+		},
+		async function action() {
+			const { emailOrUsername } = this.bodyParams;
 
-API.v1.addRoute('users.2fa.sendEmailCode', {
-	async post() {
-		const { emailOrUsername } = this.bodyParams;
+			const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
+			const userId = this.userId || (await Users[method](emailOrUsername, { projection: { _id: 1 } }))?._id;
 
-		if (!emailOrUsername) {
-			throw new Meteor.Error('error-parameter-required', 'emailOrUsername is required');
-		}
+			if (!userId) {
+				// this.logger.error('[2fa] User was not found when requesting 2fa email code');
+				return API.v1.success();
+			}
+			const user = await getUserForCheck(userId);
+			if (!user) {
+				// this.logger.error('[2fa] User was not found when requesting 2fa email code');
+				return API.v1.success();
+			}
 
-		const method = emailOrUsername.includes('@') ? 'findOneByEmailAddress' : 'findOneByUsername';
-		const userId = this.userId || (await Users[method](emailOrUsername, { projection: { _id: 1 } }))?._id;
+			await emailCheck.sendEmailCode(user);
 
-		if (!userId) {
-			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
 			return API.v1.success();
-		}
-		const user = await getUserForCheck(userId);
-		if (!user) {
-			// this.logger.error('[2fa] User was not found when requesting 2fa email code');
-			return API.v1.success();
-		}
+		},
+	);
 
-		await emailCheck.sendEmailCode(user);
-
-		return API.v1.success();
-	},
-});
-
-API.v1.addRoute(
+API.v1.post(
 	'users.sendConfirmationEmail',
 	{
 		authRequired: true,
-		validateParams: isUsersSendConfirmationEmailParamsPOST,
+		body: isUsersSendConfirmationEmailParamsPOST,
 		rateLimiterOptions: {
 			numRequestsAllowed: 1,
 			intervalTimeInMS: 60000,
 		},
-	},
-	{
-		async post() {
-			const { email } = this.bodyParams;
-
-			if (await sendConfirmationEmail(email)) {
-				return API.v1.success();
-			}
-			return API.v1.failure();
+		response: {
+			200: voidSuccessResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { email } = this.bodyParams;
+
+		if (await sendConfirmationEmail(email)) {
+			return API.v1.success();
+		}
+		return API.v1.failure();
 	},
 );
 
@@ -1281,23 +1383,43 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'users.removeOtherTokens',
-	{ authRequired: true },
-	{
-		async post() {
+API.v1
+	.post(
+		'users.removeOtherTokens',
+		{
+			authRequired: true,
+			response: {
+				200: voidSuccessResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			return API.v1.success(await Users.removeNonLoginTokensExcept(this.userId, this.token));
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.resetE2EKey',
-	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
-	{
-		async post() {
+	)
+	.post(
+		'users.resetE2EKey',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			body: ajv.compile<{ userId?: string; username?: string; user?: string }>({
+				type: 'object',
+				properties: {
+					userId: { type: 'string' },
+					username: { type: 'string' },
+					user: { type: 'string' },
+				},
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
-				// reset other user keys
 				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
 					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
@@ -1316,17 +1438,30 @@ API.v1.addRoute(
 			await resetUserE2EEncriptionKey(this.userId, false);
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.resetTOTP',
-	{ authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } },
-	{
-		async post() {
-			// // reset own keys
+	)
+	.post(
+		'users.resetTOTP',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			body: ajv.compile<{ userId?: string; username?: string; user?: string }>({
+				type: 'object',
+				properties: {
+					userId: { type: 'string' },
+					username: { type: 'string' },
+					user: { type: 'string' },
+				},
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
-				// reset other user keys
 				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
 					throw new Meteor.Error('error-not-allowed', 'Not allowed');
 				}
@@ -1347,8 +1482,7 @@ API.v1.addRoute(
 			await resetTOTP(this.userId, false);
 			return API.v1.success();
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'users.listTeams',
