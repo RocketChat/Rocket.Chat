@@ -9,7 +9,14 @@ const PreferencesSoundSection = () => {
 
 	const customSound = useCustomSound();
 	const soundsList: SelectOption[] = customSound.list?.map((value) => [value._id, t(value.name as TranslationKey)]) || [];
-	const { control, watch } = useFormContext();
+	const { control, watch } = useFormContext<{
+		newMessageNotification: string;
+		notificationsSoundVolume: number;
+		masterVolume: number;
+		voipRingerVolume: number;
+		newRoomNotification: string;
+		muteFocusedConversations: boolean;
+	}>();
 	const { newMessageNotification, notificationsSoundVolume = 100, masterVolume = 100, voipRingerVolume = 100 } = watch();
 
 	return (
