@@ -3571,6 +3571,7 @@
   "Mobile_Description": "Define behaviors for connecting to your workspace from mobile devices.",
   "Mobile_Push_Notifications_Default_Alert": "Push Notifications Default Alert",
   "Mobile_apps": "Mobile apps",
+  "Mobile_push_and_email_duplicate_warning": "You have both mobile push and email notifications enabled. This may result in duplicate alerts.",
   "Moderation": "Moderation",
   "Moderation_Action_View_reports": "View reported messages",
   "Moderation_Are_you_sure_you_want_to_deactivate_this_user": "User will be unable to log in unless reactivated. All reported messages will be permanently deleted from their respective room.",

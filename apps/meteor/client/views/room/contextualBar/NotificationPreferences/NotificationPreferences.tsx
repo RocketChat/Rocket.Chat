@@ -1,13 +1,13 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import {
+	ContextualbarClose,
+	ContextualbarDialog,
+	ContextualbarFooter,
 	ContextualbarHeader,
 	ContextualbarIcon,
-	ContextualbarTitle,
-	ContextualbarClose,
 	ContextualbarScrollableContent,
-	ContextualbarFooter,
-	ContextualbarDialog,
+	ContextualbarTitle,
 } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
@@ -34,7 +34,11 @@ const NotificationPreferences = ({
 	const {
 		formState: { isDirty, isSubmitting },
 		reset,
+		watch,
 	} = useFormContext();
+	const [mobilePushNotifications, emailNotifications] = watch(['mobileAlert', 'emailAlert']);
+	const isExplicitlyEnabled = (value: string | undefined) => value === 'all' || value === 'mentions';
+	const shouldShowDuplicateWarning = isExplicitlyEnabled(mobilePushNotifications) && isExplicitlyEnabled(emailNotifications);
 
 	return (
 		<ContextualbarDialog>
@@ -47,6 +51,7 @@ const NotificationPreferences = ({
 				<NotificationPreferencesForm notificationOptions={notificationOptions} handlePlaySound={handlePlaySound} />
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
+				{shouldShowDuplicateWarning && <Callout type='warning'>{t('Mobile_push_and_email_duplicate_warning')}</Callout>}
 				<ButtonGroup stretch>
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
 						{t('Reset')}
