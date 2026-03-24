@@ -366,6 +366,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	}
 
 	public unauthorized(): UnauthorizedResult<string>;
+	public unauthorized<T>(msg: T): UnauthorizedResult<T>;
 
 	public unauthorized<T>(msg?: T): UnauthorizedResult<T> {
 		return {
