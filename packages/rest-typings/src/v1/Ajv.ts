@@ -44,7 +44,7 @@ export { ajv, ajvQuery };
 
 type BadRequestErrorResponse = {
 	success: false;
-	error?: string;
+	error?: unknown;
 	errorType?: string;
 	stack?: string;
 	details?: string | object;

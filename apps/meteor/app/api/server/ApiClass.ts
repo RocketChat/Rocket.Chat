@@ -290,6 +290,8 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 	public failure(): FailureResult<string>;
 
+	public failure(result: unknown): FailureResult<string>;
+
 	public failure<T>(result?: T): FailureResult<T>;
 
 	public failure<T, TErrorType extends string, TStack extends string, TErrorDetails>(
