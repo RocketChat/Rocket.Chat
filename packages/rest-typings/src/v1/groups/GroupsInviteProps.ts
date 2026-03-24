@@ -1,5 +1,4 @@
 import { ajv } from '../Ajv';
-
 import type { GroupsBaseProps } from './BaseProps';
 import { withGroupBaseProperties } from './BaseProps';
 
