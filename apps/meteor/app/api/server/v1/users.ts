@@ -18,6 +18,12 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	isUsersGetAvatarParamsGET,
+	isUsersListParamsGET,
+	isUsersPresenceParamsGET,
+	isUsersRequestDataDownloadParamsGET,
+	isUsersGetPresenceParamsGET,
+	isUsersGetStatusParamsGET,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -86,6 +92,7 @@ API.v1.get(
 	'users.getAvatar',
 	{
 		authRequired: true,
+		query: isUsersGetAvatarParamsGET,
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
@@ -98,7 +105,7 @@ API.v1.get(
 		this.response.headers.set('Location', url);
 
 		return {
-			statusCode: 307,
+			statusCode: 307 as const,
 			body: url,
 		};
 	},
@@ -143,7 +150,7 @@ API.v1.post(
 		}
 		const auditStore = new UserChangedAuditStore({
 			_id: this.user._id,
-			ip: this.requestIp,
+			ip: this.requestIp || '',
 			useragent: this.request.headers.get('user-agent') || '',
 			username: this.user.username,
 		});
@@ -622,6 +629,7 @@ API.v1.get(
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
+		query: isUsersListParamsGET,
 		response: {
 			200: ajv.compile<{ users: IUser[]; count: number; offset: number; total: number }>({
 				type: 'object',
@@ -787,12 +795,12 @@ API.v1.get(
 				offset,
 				count,
 				sort,
-				status,
-				roles,
-				searchTerm,
-				hasLoggedIn,
-				type,
-				inactiveReason,
+				status: status as 'active' | 'deactivated',
+				roles: roles ?? null,
+				searchTerm: searchTerm as string,
+				hasLoggedIn: hasLoggedIn as boolean,
+				type: type as string,
+				inactiveReason: inactiveReason as string,
 			}),
 		);
 	},
@@ -1484,6 +1492,7 @@ API.v1.get(
 	'users.presence',
 	{
 		authRequired: true,
+		query: isUsersPresenceParamsGET,
 		response: {
 			200: ajv.compile<{ users: object[]; full: boolean }>({
 				type: 'object',
@@ -1551,6 +1560,7 @@ API.v1
 		'users.requestDataDownload',
 		{
 			authRequired: true,
+			query: isUsersRequestDataDownloadParamsGET,
 			response: {
 				200: ajv.compile<{ requested: boolean; exportOperation: IExportOperation }>({
 					type: 'object',
@@ -1865,6 +1875,7 @@ API.v1
 		'users.getPresence',
 		{
 			authRequired: true,
+			query: isUsersGetPresenceParamsGET,
 			response: {
 				200: ajv.compile<{ presence: UserStatus; connectionStatus?: string; lastLogin?: Date }>({
 					type: 'object',
@@ -1906,10 +1917,16 @@ API.v1
 				numRequestsAllowed: 5,
 				intervalTimeInMS: 60000,
 			},
-			body: ajv.compile<{ status?: string; message?: string; userId?: string; username?: string; user?: string }>({
+			body: ajv.compile<{
+				status?: UserStatus;
+				message?: string;
+				userId?: string;
+				username?: string;
+				user?: string;
+			}>({
 				type: 'object',
 				properties: {
-					status: { type: 'string', nullable: true },
+					status: { type: 'string', enum: ['online', 'away', 'offline', 'busy'] },
 					message: { type: 'string', nullable: true },
 					userId: { type: 'string' },
 					username: { type: 'string' },
@@ -2007,6 +2024,7 @@ API.v1
 		'users.getStatus',
 		{
 			authRequired: true,
+			query: isUsersGetStatusParamsGET,
 			response: {
 				200: ajv.compile<{ _id: string; status: string; connectionStatus?: string }>({
 					type: 'object',
@@ -2024,13 +2042,12 @@ API.v1
 			},
 		},
 		async function action() {
-			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
-				const user: IUser | null = await Users.findOneById(this.userId);
+			if (!isUserFromParams(this.queryParams, this.userId, this.user)) {
 				return API.v1.success({
-					_id: user?._id,
+					_id: this.userId,
 					// message: user.statusText,
-					connectionStatus: (user?.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-					status: (user?.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					connectionStatus: (this.user.statusConnection || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+					status: (this.user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 				});
 			}
 
