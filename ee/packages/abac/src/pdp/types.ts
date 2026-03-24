@@ -1,5 +1,22 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
+export interface IResourceDecision {
+	decision?: string;
+	ephemeralResourceId?: string;
+}
+
+export interface IGetDecisionsResponse {
+	decisionResponses?: Array<{
+		decision?: string;
+	}>;
+}
+
+export interface IGetDecisionBulkResponse {
+	decisionResponses?: Array<{
+		resourceDecisions?: IResourceDecision[];
+	}>;
+}
+
 export interface IPolicyDecisionPoint {
 	canAccessObject(
 		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
@@ -21,4 +38,18 @@ export interface IPolicyDecisionPoint {
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
+}
+
+export interface IExternalPDPConfig {
+	baseUrl: string;
+	clientId: string;
+	clientSecret: string;
+	oidcEndpoint: string;
+	defaultEntityKey: string;
+	attributeNamespace: string;
+}
+
+export interface ITokenCache {
+	accessToken: string;
+	expiresAt: number;
 }
