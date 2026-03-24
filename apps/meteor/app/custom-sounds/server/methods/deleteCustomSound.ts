@@ -5,6 +5,7 @@ import { CustomSounds } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
+import { methodDeprecationLogger } from '../../../lib/server/lib/deprecationWarningLogger';
 import { RocketChatFileCustomSoundsInstance } from '../startup/custom-sounds';
 
 declare module '@rocket.chat/ddp-client' {
@@ -16,6 +17,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async deleteCustomSound(_id) {
+		methodDeprecationLogger.method('deleteCustomSound', '9.0.0', '/v1/custom-sounds.delete');
 		let sound = null;
 
 		if (this.userId && (await hasPermissionAsync(this.userId, 'manage-sounds'))) {
