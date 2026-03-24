@@ -1,10 +1,17 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import {
+	isGroupsOnlineProps,
+	isGroupsMessagesProps,
+	isGroupsFilesProps,
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
@@ -31,11 +38,135 @@ import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
+
+type GroupsCreateProps = {
+	name: string;
+	members?: string[];
+	customFields?: Record<string, any>;
+	readOnly?: boolean;
+	extraData?: {
+		broadcast: boolean;
+		encrypted: boolean;
+		federated?: boolean;
+		topic?: string;
+		teamId?: string;
+	};
+	excludeSelf?: boolean;
+};
+
+const GroupsCreatePropsSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+		},
+		members: {
+			type: 'array',
+			items: { type: 'string' },
+		},
+		readOnly: {
+			type: 'boolean',
+		},
+		customFields: {
+			type: 'object',
+			additionalProperties: true,
+		},
+		extraData: {
+			type: 'object',
+			properties: {
+				broadcast: {
+					type: 'boolean',
+				},
+				encrypted: {
+					type: 'boolean',
+				},
+				federated: {
+					type: 'boolean',
+				},
+				teamId: {
+					type: 'string',
+				},
+				topic: {
+					type: 'string',
+				},
+			},
+			additionalProperties: false,
+		},
+		excludeSelf: {
+			type: 'boolean',
+		},
+	},
+	required: ['name'],
+	additionalProperties: false,
+};
+
+const isGroupsCreateProps = ajv.compile<GroupsCreateProps>(GroupsCreatePropsSchema);
+
+const isGroupsCreateResponseSchema = ajv.compile({
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+		group: {
+			$ref: '#/components/schemas/IRoom',
+		},
+	},
+	required: ['success', 'group'],
+	additionalProperties: false,
+});
+
+const groupsEndpoints = API.v1
+	//Creates private group
+	.post(
+		'groups.create',
+		{
+			authRequired: true,
+			body: isGroupsCreateProps,
+			response: {
+				200: isGroupsCreateResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
+			const readOnly = this.bodyParams.readOnly ?? false;
+
+			try {
+				const result = await createPrivateGroupMethod(
+					this.user,
+					this.bodyParams.name,
+					this.bodyParams.members ? this.bodyParams.members : [],
+					readOnly,
+					this.bodyParams.customFields,
+					this.bodyParams.extraData,
+					this.bodyParams.excludeSelf ?? false,
+				);
+
+				const room = await Rooms.findOneById(result.rid, { projection: API.v1.defaultFieldsToExclude });
+				if (!room) {
+					throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+				}
+
+				return API.v1.success({
+					group: await composeRoomWithLastMessage(room, this.userId),
+				});
+			} catch (error: unknown) {
+				if (isMeteorError(error) && error.reason === 'error-not-allowed') {
+					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				}
+				throw error;
+			}
+		},
+	);
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -312,58 +443,6 @@ API.v1.addRoute(
 				latest,
 				userMentions,
 			});
-		},
-	},
-);
-
-// Create Private Group
-API.v1.addRoute(
-	'groups.create',
-	{ authRequired: true },
-	{
-		async post() {
-			if (!this.bodyParams.name) {
-				return API.v1.failure('Body param "name" is required');
-			}
-
-			if (this.bodyParams.members && !Array.isArray(this.bodyParams.members)) {
-				return API.v1.failure('Body param "members" must be an array if provided');
-			}
-
-			if (this.bodyParams.customFields && !(typeof this.bodyParams.customFields === 'object')) {
-				return API.v1.failure('Body param "customFields" must be an object if provided');
-			}
-			if (this.bodyParams.extraData && !(typeof this.bodyParams.extraData === 'object')) {
-				return API.v1.failure('Body param "extraData" must be an object if provided');
-			}
-
-			const readOnly = typeof this.bodyParams.readOnly !== 'undefined' ? this.bodyParams.readOnly : false;
-
-			try {
-				const result = await createPrivateGroupMethod(
-					this.user,
-					this.bodyParams.name,
-					this.bodyParams.members ? this.bodyParams.members : [],
-					readOnly,
-					this.bodyParams.customFields,
-					this.bodyParams.extraData,
-					this.bodyParams.excludeSelf ?? false,
-				);
-
-				const room = await Rooms.findOneById(result.rid, { projection: API.v1.defaultFieldsToExclude });
-				if (!room) {
-					throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-				}
-
-				return API.v1.success({
-					group: await composeRoomWithLastMessage(room, this.userId),
-				});
-			} catch (error: unknown) {
-				if (isMeteorError(error) && error.reason === 'error-not-allowed') {
-					return API.v1.forbidden();
-				}
-				throw error;
-			}
 		},
 	},
 );
@@ -1300,3 +1379,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type GroupsEndpoints = ExtractRoutesFromAPI<typeof groupsEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends GroupsEndpoints {}
+}

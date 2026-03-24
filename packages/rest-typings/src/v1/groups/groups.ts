@@ -8,7 +8,6 @@ import type { GroupsArchiveProps } from './GroupsArchiveProps';
 import type { GroupsCloseProps } from './GroupsCloseProps';
 import type { GroupsConvertToTeamProps } from './GroupsConvertToTeamProps';
 import type { GroupsCountersProps } from './GroupsCountersProps';
-import type { GroupsCreateProps } from './GroupsCreateProps';
 import type { GroupsDeleteProps } from './GroupsDeleteProps';
 import type { GroupsFilesProps } from './GroupsFilesProps';
 import type { GroupsGetIntegrationsProps } from './GroupsGetIntegrationsProps';
@@ -64,11 +63,6 @@ export type GroupsEndpoints = {
 	};
 	'/v1/groups.unarchive': {
 		POST: (params: GroupsUnarchiveProps) => void;
-	};
-	'/v1/groups.create': {
-		POST: (params: GroupsCreateProps) => {
-			group: Omit<IRoom, 'joinCode' | 'members' | 'importIds' | 'e2e'>;
-		};
 	};
 	'/v1/groups.convertToTeam': {
 		POST: (params: GroupsConvertToTeamProps) => { team: ITeam };
