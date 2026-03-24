@@ -1,3 +1,5 @@
+import fs from 'fs';
+
 import { request } from '@playwright/test';
 
 import { Users } from './userStates';
@@ -14,4 +16,15 @@ export default async function insertApp(): Promise<void> {
 
 	await api.post(`${BASE_URL}/api/apps`, { data: { url: APP_URL }, headers });
 	await api.post(`${BASE_API_URL}/settings/VideoConf_Default_Provider`, { data: { value: 'test' }, headers });
+}
+
+export async function installLocalTestPackage(packagePath: string): Promise<void> {
+	const api = await request.newContext();
+
+	const headers = {
+		'X-Auth-Token': Users.admin.data.loginToken,
+		'X-User-Id': Users.admin.data.username,
+	};
+
+	await api.post(`${BASE_URL}/api/apps`, { multipart: { app: fs.createReadStream(packagePath) }, headers });
 }
