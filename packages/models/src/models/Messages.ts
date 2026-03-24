@@ -1842,4 +1842,15 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		);
 	}
+	async removeReactionsByUsername(username: string): Promise<void> {
+    await this.col.updateMany(
+        { 'reactions': { $exists: true } },
+        {
+            $pull: { 'reactions.$[bucket].usernames': username } as any,
+        },
+        {
+            arrayFilters: [{ 'bucket.usernames': username }],
+        },
+    );
+}
 }
