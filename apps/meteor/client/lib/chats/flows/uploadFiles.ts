@@ -3,12 +3,17 @@ import { MAX_MULTIPLE_UPLOADED_FILES } from '../../../../lib/constants';
 import { e2e } from '../../e2ee';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
-import type { ChatAPI, UploadsAPI } from '../ChatAPI';
+import type { ChatAPI } from '../ChatAPI';
 
 export const uploadFiles = async (
 	chat: ChatAPI,
-	{ files, uploadsStore, resetFileInput }: { files: readonly File[]; uploadsStore: UploadsAPI; resetFileInput?: () => void },
+	{ files, resetFileInput }: { files: readonly File[]; resetFileInput?: () => void },
 ): Promise<void> => {
+	const uploadsStore = chat.composer?.uploads;
+	if (!uploadsStore) {
+		throw new Error('No uploads store found in composer');
+	}
+
 	const mergedFilesLength = files.length + uploadsStore.get().length;
 	if (mergedFilesLength > MAX_MULTIPLE_UPLOADED_FILES) {
 		return dispatchToastMessage({

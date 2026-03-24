@@ -2,6 +2,7 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import type { Room } from 'matrix-js-sdk';
 import { EventTimeline } from 'matrix-js-sdk';
 
+import { api } from '../../../../../apps/meteor/tests/data/api-data';
 import {
 	createRoom,
 	getRoomInfo,
@@ -1807,6 +1808,168 @@ import { SynapseClient } from '../helper/synapse-client';
 				it('should have the RC user with leave membership on Synapse side after revoked invitation', async () => {
 					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
 					expect(member?.membership).toBe('leave');
+				});
+			});
+		});
+
+		describe.skip('Synchronizing user names across federated servers', () => {
+			const ts = Date.now();
+
+			const rcUser1 = {
+				username: `sync-name-user1-${ts}`,
+				fullName: `Sync Name User1 ${ts}`,
+				newFullName: `Updated Sync Name User1 ${ts}`,
+				adminUpdatedName: `Admin Updated User1 ${ts}`,
+				get matrixId() {
+					return `@${this.username}:${federationConfig.rc1.domain}`;
+				},
+				config: {} as IRequestConfig,
+				user: {} as IUser,
+			};
+
+			const newSynapseDisplayName = `Updated Synapse Name ${ts}`;
+
+			let channelName: string;
+			let federatedChannel: { _id: string; name: string; t: string; federated?: boolean; federation?: { mrid: string } };
+
+			beforeAll(async () => {
+				rcUser1.user = await createUser(
+					{
+						username: rcUser1.username,
+						password: 'random',
+						email: `${rcUser1.username}@rocket.chat`,
+						name: rcUser1.fullName,
+					},
+					rc1AdminRequestConfig,
+				);
+
+				rcUser1.config = await getRequestConfig(federationConfig.rc1.url, rcUser1.username, 'random');
+
+				channelName = `sync-name-channel-${ts}`;
+
+				const createResponse = await createRoom({
+					type: 'p',
+					name: channelName,
+					members: [federationConfig.hs1.adminMatrixUserId],
+					extraData: { federated: true },
+					config: rcUser1.config,
+				});
+
+				federatedChannel = createResponse.body.group;
+
+				expect(federatedChannel).toHaveProperty('_id');
+				expect(federatedChannel).toHaveProperty('federation');
+
+				await hs1AdminApp.acceptInvitationForRoomName(channelName);
+			}, 20000);
+
+			afterAll(async () => {
+				await deleteUser(rcUser1.user, {}, rc1AdminRequestConfig);
+			});
+
+			describe('When a RC local user changes their display name', () => {
+				it('should propagate the updated displayname to the Synapse side', async () => {
+					// Action: update the RC user's display name via their own profile
+					await rcUser1.config.request
+						.post(api('users.updateOwnBasicInfo'))
+						.set(rcUser1.config.credentials)
+						.send({ data: { name: rcUser1.newFullName } })
+						.expect(200);
+
+					// Synapse view: verify the member's displayname was updated in the federated room
+					await retry(
+						'waiting for RC user displayname to propagate to Synapse',
+						async () => {
+							const members = await hs1AdminApp.getRoomMembers(channelName);
+							const member = members.find((m) => m.userId === rcUser1.matrixId);
+							expect(member).toBeDefined();
+							expect(member?.name).toBe(rcUser1.newFullName);
+						},
+						{ retries: 10, delayMs: 1000 },
+					);
+				});
+			});
+
+			describe('When a RC admin changes the user display name via admin APIs', () => {
+				it('should propagate the updated displayname to the Synapse side', async () => {
+					// Action: update the RC user's display name via the admin users.update API
+					await rc1AdminRequestConfig.request
+						.post(api('users.update'))
+						.set(rc1AdminRequestConfig.credentials)
+						.send({ userId: rcUser1.user._id, data: { name: rcUser1.adminUpdatedName } })
+						.expect(200);
+
+					// Synapse view: verify the member's displayname was updated in the federated room
+					await retry(
+						'waiting for admin-updated displayname to propagate to Synapse',
+						async () => {
+							const members = await hs1AdminApp.getRoomMembers(channelName);
+							const member = members.find((m) => m.userId === rcUser1.matrixId);
+							expect(member).toBeDefined();
+							expect(member?.name).toBe(rcUser1.adminUpdatedName);
+						},
+						{ retries: 10, delayMs: 1000 },
+					);
+				});
+			});
+
+			describe('When a new federated room is created on RC', () => {
+				it.failing('should show the user current display name on the Synapse side', async () => {
+					// At this point rcUser1's name is adminUpdatedName from the previous test
+					const newChannelName = `sync-name-channel-2-${ts}`;
+
+					const createResponse = await createRoom({
+						type: 'p',
+						name: newChannelName,
+						members: [federationConfig.hs1.adminMatrixUserId],
+						extraData: { federated: true },
+						config: rcUser1.config,
+					});
+
+					const newChannel = createResponse.body.group;
+					expect(newChannel).toHaveProperty('_id');
+					expect(newChannel).toHaveProperty('federation');
+
+					await hs1AdminApp.acceptInvitationForRoomName(newChannelName);
+
+					// Synapse view: the RC user should appear with their current name in the new room
+					await retry(
+						'waiting for RC user to appear with correct displayname in new Synapse room',
+						async () => {
+							const members = await hs1AdminApp.getRoomMembers(newChannelName);
+							const member = members.find((m) => m.userId === rcUser1.matrixId);
+							expect(member).toBeDefined();
+							expect(member?.name).toBe(rcUser1.adminUpdatedName);
+						},
+						{ retries: 10, delayMs: 1000 },
+					);
+				});
+			});
+
+			describe('When a Synapse user changes their displayname', () => {
+				afterAll(async () => {
+					await hs1AdminApp.matrixClient.setDisplayName(federationConfig.hs1.adminMatrixUserId); // reset Synapse admin name
+				});
+
+				it('should propagate the updated name to the RC side', async () => {
+					// Action: update the Synapse user's displayname — Synapse broadcasts new m.room.member
+					// events to all joined rooms, which RC federation receives and debounces the name update
+					await hs1AdminApp.matrixClient.setDisplayName(newSynapseDisplayName);
+
+					// RC view: verify the federated user's name was updated — wait for debounce (> 2s) + propagation
+					await retry(
+						'waiting for Synapse user displayname to propagate to RC',
+						async () => {
+							const response = await rc1AdminRequestConfig.request
+								.get(api('users.info'))
+								.set(rc1AdminRequestConfig.credentials)
+								.query({ username: federationConfig.hs1.adminMatrixUserId })
+								.expect(200);
+
+							expect(response.body.user).toHaveProperty('name', newSynapseDisplayName);
+						},
+						{ retries: 15, delayMs: 1000 },
+					);
 				});
 			});
 		});
