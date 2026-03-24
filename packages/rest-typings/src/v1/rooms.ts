@@ -60,9 +60,8 @@ const RoomsAutocompleteChannelAndPrivateWithPaginationSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps = ajvQuery.compile<RoomsAutocompleteChannelAndPrivateWithPaginationProps>(
-	RoomsAutocompleteChannelAndPrivateWithPaginationSchema,
-);
+export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps =
+	ajvQuery.compile<RoomsAutocompleteChannelAndPrivateWithPaginationProps>(RoomsAutocompleteChannelAndPrivateWithPaginationSchema);
 
 type RoomsAutocompleteAvailableForTeamsProps = { name?: string };
 
