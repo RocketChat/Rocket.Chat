@@ -31,7 +31,9 @@ export async function installLocalTestPackage(packagePath: string): Promise<{ ap
 	return response.json();
 }
 
-export async function getAppLogs(appId: string): Promise<{ logs: Array<{ method: string; entries: Array<{ args: unknown[] }> }> }> {
+export async function getAppLogs(
+	appId: string,
+): Promise<{ success: boolean; logs: Array<{ method: string; entries: Array<{ args: unknown[] }> }> }> {
 	const api = await request.newContext();
 
 	const headers = {
