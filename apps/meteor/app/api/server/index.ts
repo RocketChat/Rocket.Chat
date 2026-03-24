@@ -43,6 +43,7 @@ import './v1/banners';
 import './v1/email-inbox';
 import './v1/mailer';
 import './v1/teams';
+import './v1/user-room-categories';
 import './v1/moderation';
 import './v1/uploads';
 
