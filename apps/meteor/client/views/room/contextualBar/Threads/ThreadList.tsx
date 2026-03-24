@@ -14,11 +14,12 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useId } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
+import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
@@ -27,6 +28,7 @@ type ThreadType = 'all' | 'following' | 'unread';
 
 const ThreadList = () => {
 	const t = useTranslation();
+	const threadListId = useId();
 
 	const { closeTab } = useRoomToolbox();
 
@@ -125,6 +127,8 @@ const ThreadList = () => {
 			</ContextualbarHeader>
 			<ContextualbarSection>
 				<TextInput
+					aria-label={t('Search_Messages')}
+					aria-controls={threadListId}
 					placeholder={t('Search_Messages')}
 					addon={<Icon name='magnifier' size='x20' />}
 					ref={autoFocusRef}
@@ -132,10 +136,12 @@ const ThreadList = () => {
 					onChange={handleSearchTextChange}
 				/>
 				<Box w='x144' mis={8}>
-					<Select options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
+					<Select aria-controls={threadListId} options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0}>
+				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
+
 				{isPending && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
@@ -150,7 +156,7 @@ const ThreadList = () => {
 
 				{isSuccess && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
+				<Box id={threadListId} role='list' aria-label={t('Threads')} flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
 					{!error && itemCount > 0 && items.length > 0 && (
 						<VirtualizedScrollbars>
 							<Virtuoso

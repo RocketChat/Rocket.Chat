@@ -7110,6 +7110,10 @@
   "__count__messages_selected": "{{count}} messages selected",
   "__count__replies": "{{count}} replies",
   "__count__replies__date__": "{{count}} replies, {{date}}",
+  "__count__result_found": {
+     "one": "{{count}} result found",
+    "other": "{{count}} results found"
+  },
   "__count__tags__and__count__conversations__period__": "{{count}} tags and {{conversations}} conversations, {{period}}",
   "__count__without__assignee__": "{{count}} without assignee",
   "__count__without__department__": "{{count}} without department",

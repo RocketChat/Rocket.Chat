@@ -12,16 +12,18 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import type { ChangeEvent } from 'react';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
+import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 
 type RoomFilesProps = {
-	loading: boolean;
+	isPending: boolean;
+	isSuccess: boolean;
 	type: string;
 	text: string;
 	filesItems: IUploadWithUser[];
@@ -34,7 +36,8 @@ type RoomFilesProps = {
 };
 
 const RoomFiles = ({
-	loading,
+	isPending,
+	isSuccess,
 	type,
 	text,
 	filesItems = [],
@@ -46,6 +49,7 @@ const RoomFiles = ({
 	onClickDelete,
 }: RoomFilesProps) => {
 	const { t } = useTranslation();
+	const filesListId = useId();
 
 	const options: SelectOption[] = useMemo(
 		() => [
@@ -70,23 +74,26 @@ const RoomFiles = ({
 				<TextInput
 					data-qa-files-search
 					placeholder={t('Search_Files')}
+					aria-label={t('Search_Files')}
+					aria-controls={filesListId}
 					value={text}
 					onChange={setText}
 					addon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box w='x144' mis={8}>
-					<Select onChange={setType} value={type} options={options} />
+					<Select aria-controls={filesListId} onChange={setType} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0}>
-				{loading && (
+				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={filesItems.length} />
+				{isPending && (
 					<Box p={24}>
 						<Throbber size='x12' />
 					</Box>
 				)}
-				{!loading && filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
-				{!loading && filesItems.length > 0 && (
-					<Box w='full' h='full' flexShrink={1} overflow='hidden'>
+				{isSuccess && filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
+				{isSuccess && filesItems.length > 0 && (
+					<Box id={filesListId} role='list' aria-label={t('Files_List')} w='full' h='full' flexShrink={1} overflow='hidden'>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{
