@@ -18,7 +18,6 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
-	isUsersListParamsGET,
 	isUsersPresenceParamsGET,
 	isUsersRequestDataDownloadParamsGET,
 	isUsersGetPresenceParamsGET,
@@ -612,134 +611,119 @@ API.v1.get(
 	},
 );
 
-API.v1.get(
+// users.list accepts arbitrary query filter fields (name, username, etc.)
+// that cannot be statically defined — keeping as addRoute until params are known
+API.v1.addRoute(
 	'users.list',
 	{
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
-		query: isUsersListParamsGET,
-		response: {
-			200: ajv.compile<{ users: IUser[]; count: number; offset: number; total: number }>({
-				type: 'object',
-				properties: {
-					// user shape varies by projection and permissions
-					users: { type: 'array' },
-					count: { type: 'number' },
-					offset: { type: 'number' },
-					total: { type: 'number' },
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['users', 'count', 'offset', 'total', 'success'],
-				additionalProperties: false,
-			}),
-			400: validateBadRequestErrorResponse,
-			401: validateUnauthorizedErrorResponse,
-			403: validateForbiddenErrorResponse,
-		},
 	},
-	async function action() {
-		if (
-			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-			!(await hasPermissionAsync(this.userId, 'view-outside-room'))
-		) {
-			return API.v1.forbidden();
-		}
+	{
+		async get() {
+			if (
+				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+			) {
+				return API.v1.forbidden();
+			}
 
-		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort, fields, query } = await this.parseJsonQuery();
 
-		const nonEmptyFields = getNonEmptyFields(fields);
+			const nonEmptyFields = getNonEmptyFields(fields);
 
-		const inclusiveFields = getInclusiveFields(nonEmptyFields);
+			const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
-		const inclusiveFieldsKeys = Object.keys(inclusiveFields);
+			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
-		const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
+			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
 
-		// if user provided a query, validate it with their allowed operators
-		// otherwise we use the default query (with $regex and $options)
-		if (
-			!isValidQuery(
-				nonEmptyQuery,
-				[
-					...inclusiveFieldsKeys,
-					inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
-					inclusiveFieldsKeys.includes('username') && 'username.*',
-					inclusiveFieldsKeys.includes('name') && 'name.*',
-					inclusiveFieldsKeys.includes('type') && 'type.*',
-					inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
-				].filter(Boolean) as string[],
-				// At this point, we have already validated the user query not containing malicious fields
-				// On here we are using our own query so we can allow some extra fields
-				[...this.queryOperations, '$regex', '$options'],
-			)
-		) {
-			throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
-		}
+			// if user provided a query, validate it with their allowed operators
+			// otherwise we use the default query (with $regex and $options)
+			if (
+				!isValidQuery(
+					nonEmptyQuery,
+					[
+						...inclusiveFieldsKeys,
+						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
+						inclusiveFieldsKeys.includes('username') && 'username.*',
+						inclusiveFieldsKeys.includes('name') && 'name.*',
+						inclusiveFieldsKeys.includes('type') && 'type.*',
+						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
+					].filter(Boolean) as string[],
+					// At this point, we have already validated the user query not containing malicious fields
+					// On here we are using our own query so we can allow some extra fields
+					[...this.queryOperations, '$regex', '$options'],
+				)
+			) {
+				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
+			}
 
-		const actualSort = sort || { username: 1 };
+			const actualSort = sort || { username: 1 };
 
-		if (sort?.status) {
-			actualSort.active = sort.status;
-		}
+			if (sort?.status) {
+				actualSort.active = sort.status;
+			}
 
-		if (sort?.name) {
-			actualSort.nameInsensitive = sort.name;
-		}
+			if (sort?.name) {
+				actualSort.nameInsensitive = sort.name;
+			}
 
-		const limit =
-			count !== 0
-				? [
-						{
-							$limit: count,
-						},
-					]
-				: [];
+			const limit =
+				count !== 0
+					? [
+							{
+								$limit: count,
+							},
+						]
+					: [];
 
-		const result = await Users.col
-			.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
-				{
-					$match: nonEmptyQuery,
-				},
-				{
-					$project: inclusiveFields,
-				},
-				{
-					$addFields: {
-						nameInsensitive: {
-							$toLower: '$name',
+			const result = await Users.col
+				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
+					{
+						$match: nonEmptyQuery,
+					},
+					{
+						$project: inclusiveFields,
+					},
+					{
+						$addFields: {
+							nameInsensitive: {
+								$toLower: '$name',
+							},
 						},
 					},
-				},
-				{
-					$facet: {
-						sortedResults: [
-							{
-								$sort: actualSort,
-							},
-							{
-								$skip: offset,
-							},
-							...limit,
-						],
-						totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+					{
+						$facet: {
+							sortedResults: [
+								{
+									$sort: actualSort,
+								},
+								{
+									$skip: offset,
+								},
+								...limit,
+							],
+							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+						},
 					},
-				},
-			])
-			.toArray();
+				])
+				.toArray();
 
-		const {
-			sortedResults: users,
-			totalCount: [{ total } = { total: 0 }],
-		} = result[0];
+			const {
+				sortedResults: users,
+				totalCount: [{ total } = { total: 0 }],
+			} = result[0];
 
-		return API.v1.success({
-			users,
-			count: users.length,
-			offset,
-			total,
-		});
+			return API.v1.success({
+				users,
+				count: users.length,
+				offset,
+				total,
+			});
+		},
 	},
 );
 
