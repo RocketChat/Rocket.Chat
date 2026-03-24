@@ -152,6 +152,10 @@ const RoomsCreateDiscussionSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		topic: {
+			type: 'string',
+			nullable: true,
+		},
 		users: {
 			type: 'array',
 			items: {
