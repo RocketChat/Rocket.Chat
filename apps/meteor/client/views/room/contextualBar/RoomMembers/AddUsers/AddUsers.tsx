@@ -10,8 +10,8 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
+	GenericModal,
 } from '@rocket.chat/ui-client';
-import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useMethod, useSetModal, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { ReactElement } from 'react';
