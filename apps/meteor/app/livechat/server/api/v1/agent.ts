@@ -2,8 +2,7 @@ import type { ILivechatAgent } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import {
-	GETAgentInfoSuccessResponse,
-	GETAgentNextSuccessResponse,
+	ajv,
 	isGETAgentNextToken,
 	isPOSTLivechatAgentSaveInfoParams,
 	isPOSTLivechatAgentStatusProps,
@@ -22,6 +21,38 @@ import { getRequiredDepartment } from '../../lib/departmentsLib';
 import { saveAgentInfo } from '../../lib/omni-users';
 import { setUserStatusLivechat, allowAgentChangeServiceStatus } from '../../lib/utils';
 import { findRoom, findGuest, findAgent, findOpenRoom } from '../lib/livechat';
+
+const GETAgentInfoSuccessResponse = ajv.compile<{ agent: ILivechatAgent | { hiddenInfo: true }; success: boolean }>({
+	type: 'object',
+	properties: {
+		agent: {
+			type: 'object',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['agent', 'success'],
+	additionalProperties: false,
+});
+
+const GETAgentNextSuccessResponse = ajv.compile<
+	{ agent?: ILivechatAgent | { hiddenInfo: true }; success: boolean } | { success: boolean }
+>({
+	type: 'object',
+	properties: {
+		agent: {
+			type: 'object',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
 
 const livechatAgentInfoEndpoint = API.v1.get(
 	'livechat/agent.info/:rid/:token',

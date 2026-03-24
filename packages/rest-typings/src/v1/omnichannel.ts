@@ -2285,43 +2285,6 @@ const GETAgentNextTokenSchema = {
 
 export const isGETAgentNextToken = ajvQuery.compile<GETAgentNextToken>(GETAgentNextTokenSchema);
 
-const GETAgentInfoSuccessResponseSchema = {
-	type: 'object',
-	properties: {
-		agent: {
-			type: 'object',
-		},
-		success: {
-			type: 'boolean',
-			enum: [true],
-		},
-	},
-	required: ['agent', 'success'],
-	additionalProperties: false,
-};
-
-export const GETAgentInfoSuccessResponse = ajv.compile<{ agent: ILivechatAgent | { hiddenInfo: true }; success: boolean }>(
-	GETAgentInfoSuccessResponseSchema,
-);
-
-const GETAgentNextSuccessResponseSchema = {
-	type: 'object',
-	properties: {
-		agent: {
-			type: 'object',
-		},
-		success: {
-			type: 'boolean',
-			enum: [true],
-		},
-	},
-	required: ['success'],
-	additionalProperties: false,
-};
-
-export const GETAgentNextSuccessResponse = ajv.compile<
-	{ agent?: ILivechatAgent | { hiddenInfo: true }; success: boolean } | { success: boolean }
->(GETAgentNextSuccessResponseSchema);
 
 type GETLivechatConfigParams = {
 	token?: string;
@@ -2885,14 +2848,14 @@ type POSTLivechatRoomCloseByUserParams = {
 	generateTranscriptPdf?: boolean;
 	forceClose?: boolean;
 	transcriptEmail?:
-		| {
-				// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
-				sendToVisitor: false;
-		  }
-		| {
-				sendToVisitor: true;
-				requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
-		  };
+	| {
+		// Note: if sendToVisitor is false, then any previously requested transcripts (like via livechat:requestTranscript) will be also cancelled
+		sendToVisitor: false;
+	}
+	| {
+		sendToVisitor: true;
+		requestData: Pick<NonNullable<IOmnichannelRoom['transcriptRequest']>, 'email' | 'subject'>;
+	};
 };
 
 const POSTLivechatRoomCloseByUserParamsSchema = {
@@ -4397,8 +4360,8 @@ export const isLivechatTriggerWebhookCallParams = ajv.compile<LivechatTriggerWeb
 
 type POSTLivechatRoomsCloseAll =
 	| {
-			departmentIds?: string[];
-	  }
+		departmentIds?: string[];
+	}
 	| undefined;
 
 const POSTLivechatRoomsCloseAllSchema = {
@@ -4920,12 +4883,7 @@ export type OmnichannelEndpoints = {
 	'/v1/omnichannel/contact.search': {
 		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
 	};
-	'/v1/livechat/agent.info/:rid/:token': {
-		GET: () => { agent: ILivechatAgent | { hiddenInfo: true } };
-	};
-	'/v1/livechat/agent.next/:token': {
-		GET: (params: GETAgentNextToken) => { agent: ILivechatAgent | { hiddenInfo: true } } | void;
-	};
+
 	'/v1/livechat/config': {
 		GET: (params: GETLivechatConfigParams) => {
 			config: { [k: string]: string | boolean } & { room?: IOmnichannelRoom; agent?: ILivechatAgent };
