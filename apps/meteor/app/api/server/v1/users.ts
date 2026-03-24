@@ -18,7 +18,6 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
-	isUsersGetAvatarParamsGET,
 	isUsersListParamsGET,
 	isUsersPresenceParamsGET,
 	isUsersRequestDataDownloadParamsGET,
@@ -115,6 +114,7 @@ const voidSuccessResponse = ajv.compile<void>({
 	additionalProperties: false,
 });
 
+// user shape varies by projection and permissions — use $ref when IUser is available in typia
 const userObjectResponse = ajv.compile<{ user: object }>({
 	type: 'object',
 	properties: {
@@ -411,6 +411,7 @@ API.v1.post(
 				user: { type: 'string' },
 				confirmRelinquish: { type: 'boolean', nullable: true },
 			},
+			anyOf: [{ required: ['userId'] }, { required: ['username'] }, { required: ['user'] }],
 			additionalProperties: false,
 		}),
 		response: {
@@ -561,15 +562,8 @@ API.v1.get(
 		authRequired: true,
 		query: isUsersInfoParamsGetProps,
 		response: {
-			200: ajv.compile<{ user: object }>({
-				type: 'object',
-				properties: {
-					user: { type: 'object' },
-					success: { type: 'boolean', enum: [true] },
-				},
-				required: ['user', 'success'],
-				additionalProperties: false,
-			}),
+			// user shape varies by projection, permissions, and includeUserRooms
+			200: userObjectResponse,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
@@ -629,7 +623,8 @@ API.v1.get(
 			200: ajv.compile<{ users: IUser[]; count: number; offset: number; total: number }>({
 				type: 'object',
 				properties: {
-					users: { type: 'array' },
+					// user shape varies by projection and permissions
+				users: { type: 'array' },
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -758,7 +753,8 @@ API.v1.get(
 			200: ajv.compile<{ users: IUser[]; count: number; offset: number; total: number }>({
 				type: 'object',
 				properties: {
-					users: { type: 'array' },
+					// user shape varies by projection and permissions
+				users: { type: 'array' },
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -790,11 +786,11 @@ API.v1.get(
 				offset,
 				count,
 				sort,
-				status: status as 'active' | 'deactivated',
-				roles: roles ?? null,
-				searchTerm: searchTerm ?? '',
-				hasLoggedIn: hasLoggedIn ?? false,
-				type: type as string,
+				status,
+				roles,
+				searchTerm,
+				hasLoggedIn,
+				type,
 				inactiveReason,
 			}),
 		);
@@ -1087,7 +1083,8 @@ API.v1.get(
 			200: ajv.compile<{ preferences: Record<string, unknown> }>({
 				type: 'object',
 				properties: {
-					preferences: { type: 'object' },
+					// preferences is a dynamic key-value object that varies per user
+				preferences: { type: 'object' },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['preferences', 'success'],
@@ -1496,7 +1493,8 @@ API.v1.get(
 			200: ajv.compile<{ users: object[]; full: boolean }>({
 				type: 'object',
 				properties: {
-					users: { type: 'array' },
+					// user shape varies by projection and permissions
+				users: { type: 'array' },
 					full: { type: 'boolean' },
 					success: { type: 'boolean', enum: [true] },
 				},
@@ -1565,7 +1563,8 @@ API.v1
 					type: 'object',
 					properties: {
 						requested: { type: 'boolean' },
-						exportOperation: { type: 'object' },
+						// IExportOperation has complex/dynamic shape not yet in typia
+					exportOperation: { type: 'object' },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['requested', 'exportOperation', 'success'],
@@ -1647,7 +1646,8 @@ API.v1.get(
 			200: ajv.compile<{ items: object[] }>({
 				type: 'object',
 				properties: {
-					items: { type: 'array' },
+					// autocomplete items shape varies by permissions
+				items: { type: 'array' },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['items', 'success'],
