@@ -1,5 +1,3 @@
-import type { Page } from '@playwright/test';
-
 import { appUiKitRoomTest } from '../../data/apps/app-packages';
 import { IS_EE } from '../config/constants';
 import { getAppLogs, installLocalTestPackage } from '../fixtures/insert-apps';
@@ -14,21 +12,16 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 	let poHomeChannel: HomeChannel;
 	let appId: string;
 
-	let page: Page;
-
-	test.beforeAll(async ({ browser }) => {
+	test.beforeAll(async () => {
 		const result = await installLocalTestPackage(appUiKitRoomTest);
 		appId = result.app.id;
-
-		page = await browser.newPage();
-		poHomeChannel = new HomeChannel(page);
-
-		await page.goto('/home');
-		await poHomeChannel.navbar.openChat('general');
 	});
 
-	test.afterAll(async () => {
-		await page.close();
+	test.beforeEach(async ({ page }) => {
+		poHomeChannel = new HomeChannel(page);
+		await poHomeChannel.goto();
+		await poHomeChannel.waitForHome();
+		await page.getByRole('link', { name: 'general' }).click();
 	});
 
 	/**
@@ -40,7 +33,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		return logs.find((log) => String(log.method).includes(methodFragment) && log.entries.some((entry) => entry.args[0] === label));
 	}
 
-	test('should include correct data in executeBlockActionHandler when triggered in a message', async () => {
+	test('should include correct data in executeBlockActionHandler when triggered in a message', async ({ page }) => {
 		// Send a message with a button via the slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal message');
 
@@ -80,7 +73,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		expect(containerEntry?.args[1], 'Container type should be message').toBe('message');
 	});
 
-	test('should include correct data in executeBlockActionHandler when triggered in a contextual bar surface', async () => {
+	test('should include correct data in executeBlockActionHandler when triggered in a contextual bar surface', async ({ page }) => {
 		// Open a contextual bar via slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal ctx');
 
@@ -91,9 +84,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		await page.waitForURL(/\/app\//);
 
 		// Wait for the contextual bar to appear and click the button
-		const button = page.locator('[data-qa="ContextualbarContent"]').getByRole('button', { name: 'Click!' });
-		await button.waitFor({ state: 'visible' });
-		await button.click();
+		await page.getByLabel('UIKit Room Test Contextual Bar').getByRole('button', { name: 'Click!' }).click();
 
 		// Wait for the handler to process
 		await page.waitForTimeout(1000);
@@ -127,7 +118,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		await poHomeChannel.btnContextualbarClose.click();
 	});
 
-	test('should include correct data in executeBlockActionHandler when triggered in a modal surface', async () => {
+	test('should include correct data in executeBlockActionHandler when triggered in a modal surface', async ({ page }) => {
 		// Open a modal via slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal modal');
 
@@ -169,7 +160,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		await modal.getByRole('button', { name: 'Close' }).click();
 	});
 
-	test('should include correct data in executeViewSubmitHandler when triggered in a modal surface', async () => {
+	test('should include correct data in executeViewSubmitHandler when triggered in a modal surface', async ({ page }) => {
 		// Open a modal via slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal modal');
 
@@ -201,7 +192,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		expect(triggerEntry?.args[1], 'TriggerId should be present').not.toBe('no-triggerId');
 	});
 
-	test('should include correct data in executeViewSubmitHandler when triggered in a contextual bar surface', async () => {
+	test('should include correct data in executeViewSubmitHandler when triggered in a contextual bar surface', async ({ page }) => {
 		// Open a contextual bar via slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal ctx');
 
@@ -236,7 +227,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		expect(userEntry?.args[1], 'User should be present for contextual bar view submit').toBe('user1');
 	});
 
-	test('should include correct data in executeViewClosedHandler when triggered in a modal surface', async () => {
+	test('should include correct data in executeViewClosedHandler when triggered in a modal surface', async ({ page }) => {
 		// Open a modal via slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal modal');
 
@@ -264,7 +255,7 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		expect(userEntry?.args[1], 'User should be present for modal view closed').toBe('user1');
 	});
 
-	test('should include correct data in executeViewClosedHandler when triggered in a contextual bar surface', async () => {
+	test('should include correct data in executeViewClosedHandler when triggered in a contextual bar surface', async ({ page }) => {
 		// Open a contextual bar via slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal ctx');
 
