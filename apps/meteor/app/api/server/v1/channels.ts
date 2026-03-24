@@ -953,7 +953,11 @@ API.v1.addRoute(
 
 			const unbanBeforeAdd = 'unbanBeforeAdd' in this.bodyParams ? this.bodyParams.unbanBeforeAdd : undefined;
 
-			await addUsersToRoomMethod(this.userId, { rid: findResult._id, users: users.map((u) => u.username).filter(isTruthy), unbanBeforeAdd }, this.user);
+			await addUsersToRoomMethod(
+				this.userId,
+				{ rid: findResult._id, users: users.map((u) => u.username).filter(isTruthy), unbanBeforeAdd },
+				this.user,
+			);
 
 			return API.v1.success({
 				channel: await findChannelByIdOrName({ params: this.bodyParams, userId: this.userId }),
