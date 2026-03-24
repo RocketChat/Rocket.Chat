@@ -114,49 +114,53 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 			});
 	};
 
-if (isIgnoredHost(urlObj.hostname)) {
-  throw new Error('host is ignored');
-}
+	if (isIgnoredHost(urlObj.hostname)) {
+		throw new Error('host is ignored');
+	}
 
-const safePorts = settings
-  .get<string>('API_EmbedSafePorts')
-  .split(',')
-  .map((p) => p.trim())
-  .filter(Boolean);
+	const safePorts = settings
+		.get<string>('API_EmbedSafePorts')
+		.split(',')
+		.map((p) => p.trim())
+		.filter(Boolean);
 
-if (safePorts.length > 0 && urlObj.port && !safePorts.includes(urlObj.port)) {
-  throw new Error('invalid/unsafe port');
-}
+	if (safePorts.length > 0 && urlObj.port && !safePorts.includes(urlObj.port)) {
+		throw new Error('invalid/unsafe port');
+	}
 
-if (
-  safePorts.length > 0 &&
-  !urlObj.port &&
-  !safePorts.some((port) => portsProtocol.get(port) === urlObj.protocol)
-) {
-  throw new Error('invalid/unsafe port');
-}
+	if (
+		safePorts.length > 0 &&
+		!urlObj.port &&
+		!safePorts.some((port) => portsProtocol.get(port) === urlObj.protocol)
+	) {
+		throw new Error('invalid/unsafe port');
+	}
 
-const data = beforeGetUrlContent({ urlObj });
+	const data = beforeGetUrlContent({ urlObj });
 
-const fetchUrlObj = data.urlObj;
+	const fetchUrlObj = data.urlObj;
 
-if (isIgnoredHost(fetchUrlObj.hostname)) {
-  throw new Error('host is ignored');
-}
+	// FIX 3: Defense-in-depth — we intentionally validate both the original URL and the
+	// post-hook fetchUrlObj. The beforeGetUrlContent hook may rewrite the URL (e.g. for
+	// provider-specific rewrites), so a URL that passed the first check could resolve to
+	// a different host after the hook. Both checks are required; do not remove either one.
+	if (isIgnoredHost(fetchUrlObj.hostname)) {
+		throw new Error('host is ignored');
+	}
 
-if (safePorts.length > 0 && fetchUrlObj.port && !safePorts.includes(fetchUrlObj.port)) {
-  throw new Error('invalid/unsafe port');
-}
+	if (safePorts.length > 0 && fetchUrlObj.port && !safePorts.includes(fetchUrlObj.port)) {
+		throw new Error('invalid/unsafe port');
+	}
 
-if (
-  safePorts.length > 0 &&
-  !fetchUrlObj.port &&
-  !safePorts.some((port) => portsProtocol.get(port) === fetchUrlObj.protocol)
-) {
-  throw new Error('invalid/unsafe port');
-}
+	if (
+		safePorts.length > 0 &&
+		!fetchUrlObj.port &&
+		!safePorts.some((port) => portsProtocol.get(port) === fetchUrlObj.protocol)
+	) {
+		throw new Error('invalid/unsafe port');
+	}
 
-const url = fetchUrlObj.toString();
+	const url = fetchUrlObj.toString();
 	const sizeLimit = 250000;
 
 	log.debug({ msg: 'Fetching URL for OEmbed', url, redirectCount });
@@ -366,59 +370,81 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 
 	log.debug({ msg: 'URLs found in message', count: message.urls.length });
 
-if (message.attachments && message.attachments.length > 0) {
-	log.debug({ msg: 'All URLs ignored for OEmbed' });
-	return message;
-}
-
-const urlsToProcess = message.urls.filter((item) => {
-	if (item.ignoreParse === true) {
-		log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
-		return false;
+	// FIX 5: Use optional chaining for style consistency with the rest of the codebase
+	if (message.attachments?.length > 0) {
+		log.debug({ msg: 'All URLs ignored for OEmbed' });
+		return message;
 	}
-	return true;
-});
 
-if (
-	urlsToProcess.filter((item) => !item.url.includes(settings.get('Site_Url'))).length >
-	MAX_EXTERNAL_URL_PREVIEWS
-) {
-	log.debug({ msg: 'All URLs ignored for OEmbed' });
-	return message;
-}
+	const urlsToProcess = message.urls.filter((item) => {
+		if (item.ignoreParse === true) {
+			log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
+			return false;
+		}
+		return true;
+	});
 
-let changed: boolean = false;
-const BATCH_SIZE = 5;
-const results: PromiseSettledResult<{
-  urlPreview: MessageUrl;
-  foundMeta: boolean;
-}>[] = [];
+	// FIX 1: Use URL origin comparison instead of includes() to prevent bypass via
+	// query params (e.g. https://evil.com?ref=<site_url> would fool the old check).
+	const siteOrigin = (() => {
+		try {
+			return new URL(settings.get<string>('Site_Url')).origin;
+		} catch {
+			return null;
+		}
+	})();
 
-for (let i = 0; i < urlsToProcess.length; i += BATCH_SIZE) {
-  const batch = urlsToProcess.slice(i, i + BATCH_SIZE);
+	const externalUrlCount = urlsToProcess.filter((item) => {
+		try {
+			return new URL(item.url).origin !== siteOrigin;
+		} catch {
+			return true;
+		}
+	}).length;
 
-  const batchResults = await Promise.allSettled(
-    batch.map((item) => parseUrl(item.url))
-  )
+	if (externalUrlCount > MAX_EXTERNAL_URL_PREVIEWS) {
+		log.debug({ msg: 'All URLs ignored for OEmbed' });
+		return message;
+	}
 
-  results.push(...batchResults);
-}
+	// FIX 4: urlsToProcess holds direct object references into message.urls (Array.filter
+	// preserves identity, not copies). Mutating urlsToProcess[i] via Object.assign therefore
+	// also mutates the corresponding entry in message.urls, which is what gets persisted by
+	// Messages.setUrlsById below. Do not replace Object.assign with object spread here —
+	// spread would create a new object and break the aliasing contract.
+	changed = false;
+	const BATCH_SIZE = 5;
+	const results: PromiseSettledResult<{
+		urlPreview: MessageUrl;
+		foundMeta: boolean;
+	}>[] = [];
 
-results.forEach((result, index) => {
-  if (result.status !== 'fulfilled') {
-    log.warn({
-      msg: 'Error parsing URL for OEmbed',
-      url: urlsToProcess[index]?.url,
-      err: result.reason,
-    });
-    return;
-  }
+	for (let i = 0; i < urlsToProcess.length; i += BATCH_SIZE) {
+		const batch = urlsToProcess.slice(i, i + BATCH_SIZE);
 
-  const { urlPreview, foundMeta } = result.value;
+		// FIX 2: Added missing semicolon here (was failing ESLint CI)
+		const batchResults = await Promise.allSettled(
+			batch.map((item) => parseUrl(item.url)),
+		);
 
-  Object.assign(urlsToProcess[index], foundMeta ? urlPreview : {});
-  changed = changed || foundMeta;
-});
+		results.push(...batchResults);
+	}
+
+	results.forEach((result, index) => {
+		if (result.status !== 'fulfilled') {
+			log.warn({
+				msg: 'Error parsing URL for OEmbed',
+				url: urlsToProcess[index]?.url,
+				err: result.reason,
+			});
+			return;
+		}
+
+		const { urlPreview, foundMeta } = result.value;
+
+		Object.assign(urlsToProcess[index], foundMeta ? urlPreview : {});
+		changed = changed || foundMeta;
+	});
 
 	if (changed) {
 		await Messages.setUrlsById(message._id, message.urls);
