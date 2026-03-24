@@ -114,25 +114,49 @@ const getUrlContent = async (urlObj: URL, redirectCount = 5): Promise<OEmbedUrlC
 			});
 	};
 
-	if (isIgnoredHost(urlObj.hostname)) {
-		throw new Error('host is ignored');
-	}
+if (isIgnoredHost(urlObj.hostname)) {
+  throw new Error('host is ignored');
+}
 
-	const safePorts = settings.get<string>('API_EmbedSafePorts').replace(/\s/g, '').split(',') || [];
+const safePorts = settings
+  .get<string>('API_EmbedSafePorts')
+  .replace(/\s/g, '')
+  .split(',')
+  .filter(Boolean);
 
-	// checks if the URL port is in the safe ports list
-	if (safePorts.length > 0 && urlObj.port && !safePorts.includes(urlObj.port)) {
-		throw new Error('invalid/unsafe port');
-	}
+if (safePorts.length > 0 && urlObj.port && !safePorts.includes(urlObj.port)) {
+  throw new Error('invalid/unsafe port');
+}
 
-	// if port is not detected, use protocol to verify instead
-	if (safePorts.length > 0 && !urlObj.port && !safePorts.some((port) => portsProtocol.get(port) === urlObj.protocol)) {
-		throw new Error('invalid/unsafe port');
-	}
+if (
+  safePorts.length > 0 &&
+  !urlObj.port &&
+  !safePorts.some((port) => portsProtocol.get(port) === urlObj.protocol)
+) {
+  throw new Error('invalid/unsafe port');
+}
 
-	const data = beforeGetUrlContent({ urlObj });
+const data = beforeGetUrlContent({ urlObj });
+const fetchUrlObj = data.urlObj;
 
-	const url = data.urlObj.toString();
+// 🔥 NEW VALIDATION
+if (isIgnoredHost(fetchUrlObj.hostname)) {
+  throw new Error('host is ignored');
+}
+
+if (safePorts.length > 0 && fetchUrlObj.port && !safePorts.includes(fetchUrlObj.port)) {
+  throw new Error('invalid/unsafe port');
+}
+
+if (
+  safePorts.length > 0 &&
+  !fetchUrlObj.port &&
+  !safePorts.some((port) => portsProtocol.get(port) === fetchUrlObj.protocol)
+) {
+  throw new Error('invalid/unsafe port');
+}
+
+const url = fetchUrlObj.toString();
 	const sizeLimit = 250000;
 
 	log.debug({ msg: 'Fetching URL for OEmbed', url, redirectCount });
@@ -342,13 +366,11 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 
 	log.debug({ msg: 'URLs found in message', count: message.urls.length });
 
-	if (
-		(message.attachments && message.attachments.length > 0) ||
-		message.urls.filter((item) => !item.url.includes(settings.get('Site_Url'))).length > MAX_EXTERNAL_URL_PREVIEWS
-	) {
+	if (message.attachments && message.attachments.length > 0) {
 		log.debug({ msg: 'All URLs ignored for OEmbed' });
-		return message;
+		return message;		
 	}
+
 
 let changed: boolean = false;
 const urlsToProcess = message.urls.filter((item) => {
@@ -370,7 +392,7 @@ for (let i = 0; i < urlsToProcess.length; i += BATCH_SIZE) {
 
   const batchResults = await Promise.allSettled(
     batch.map((item) => parseUrl(item.url))
-  );
+  )
 
   results.push(...batchResults);
 }
