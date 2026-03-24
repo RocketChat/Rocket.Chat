@@ -63,11 +63,9 @@ export class MatrixMediaService {
 
 	static async getLocalFileForMatrixNode(mediaId: string, serverName: string): Promise<IUpload | null> {
 		try {
-			if (mediaId.startsWith('avatar')) {
-				const avatarFile = await Avatars.findOneByETag(mediaId.substring(6));
-				if (!avatarFile) {
-					return null;
-				}
+			// try to find an avatar with the given mediaId as etag first, the index tends to be smaller
+			const avatarFile = await Avatars.findOneByETag(mediaId);
+			if (avatarFile) {
 				return avatarFile;
 			}
 

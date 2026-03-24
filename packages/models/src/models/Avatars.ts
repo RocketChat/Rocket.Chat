@@ -10,7 +10,11 @@ export class AvatarsRaw extends BaseUploadModelRaw implements IAvatarsModel {
 	}
 
 	protected override modelIndexes(): IndexDescription[] {
-		return [...super.modelIndexes(), { key: { userId: 1 }, sparse: true }];
+		return [
+			...super.modelIndexes(),
+			{ key: { userId: 1 }, sparse: true },
+			{ key: { etag: 1 }, sparse: true }, // avatars are queried by etag (specially for federation)
+		];
 	}
 
 	findOneByUserId(userId: IUser['_id'], options?: FindOptions<IAvatar>) {

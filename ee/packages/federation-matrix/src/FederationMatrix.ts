@@ -127,7 +127,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				projection: { _id: 1, username: 1, name: 1, federated: 1, federation: 1 },
 			});
 
-			if (!localUser || !localUser.username) {
+			if (!localUser?.username) {
 				return;
 			}
 
@@ -136,20 +136,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
-
-			if (roomsUserIsMemberOf.length === 0) {
-				this.logger.debug(`User ${username} is not in any federated rooms, skipping avatar update`);
-				return;
-			}
-
-			this.logger.info(`Sending avatar update for ${username} to ${roomsUserIsMemberOf.length} federated rooms`);
+			this.logger.info(`Sending avatar update for ${username} to federated rooms`);
 
 			const matrixUserId = `@${localUser.username}:${this.serverName}`;
-			// Use avatarETag from event (which has the NEW value) instead of querying DB
-			const avatarUrl = avatarETag
-				? `mxc://${this.serverName}/avatar${avatarETag}`
-				: `mxc://${this.serverName}/avatar${localUser.username}`;
+
+			// if no avatarETag is provided, it means the user removed his avatar, so we need to send an empty string to Matrix to remove the avatar from their side as well
+			const avatarUrl = avatarETag ? `mxc://${this.serverName}/${avatarETag}` : null;
+
+			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id);
 
 			// TODO add user avatar update events to a fanout queue
 			for await (const { externalRoomId } of roomsUserIsMemberOf) {
