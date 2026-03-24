@@ -1,13 +1,14 @@
 import { api } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Users } from '@rocket.chat/models';
+import { Messages, Users } from '@rocket.chat/models';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
 import { FileUpload } from '../../app/file-upload/server';
 import { settings } from '../../app/settings/server';
+import { client } from '../database/utils';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -46,7 +47,20 @@ export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']
 	}
 
 	await FileUpload.getStore('Avatars').deleteByName(user.username);
-	await Users.unsetAvatarData(user._id);
+	const session = await client.startSession();
+	await session.withTransaction(async () => {
+		await Users.unsetAvatarData(user._id, { session });
+		await Messages.updateMany(
+			{ 'u._id': user._id },
+			{
+				$set: {
+					'u.avatarETag': undefined,
+					'avatar': `/avatar/${user.username}`,
+				},
+			},
+			{ session },
+		);
+	});
 	void api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: undefined });
 };
 
