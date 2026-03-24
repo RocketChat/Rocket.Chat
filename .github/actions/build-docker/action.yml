@@ -58,7 +58,7 @@ runs:
       if: inputs.service == 'rocketchat'
       uses: actions/download-artifact@v6
       with:
-        name: build-${{ inputs.type }}
+        name: build-${{ (inputs.type == 'fips' && github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || (inputs.type == 'fips' && 'production' || inputs.type) }}
         path: /tmp/build
 
     - name: Unpack meteor build
