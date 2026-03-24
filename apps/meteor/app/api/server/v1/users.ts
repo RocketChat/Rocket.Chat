@@ -635,6 +635,7 @@ API.v1.get(
 				required: ['users', 'count', 'offset', 'total', 'success'],
 				additionalProperties: false,
 			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
