@@ -81,77 +81,103 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
-API.v1.addRoute(
+API.v1.get(
 	'users.getAvatar',
-	{ authRequired: true },
-	{
-		async get() {
-			const user = await getUserFromParams(this.queryParams);
-
-			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-			this.response.headers.set('Location', url);
-
-			return {
-				statusCode: 307,
-				body: url,
-			};
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.update',
-	{ authRequired: true, twoFactorRequired: true, validateParams: isUsersUpdateParamsPOST },
-	{
-		async post() {
-			const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
-
-			if (userData.name && !validateNameChars(userData.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-			const auditStore = new UserChangedAuditStore({
-				_id: this.user._id,
-				ip: this.requestIp,
-				useragent: this.request.headers.get('user-agent') || '',
-				username: this.user.username,
-			});
-
-			await saveUser(this.userId, userData, { auditStore });
-
-			if (typeof this.bodyParams.data.active !== 'undefined') {
-				const {
-					userId,
-					data: { active },
-					confirmRelinquish,
-				} = this.bodyParams;
-				await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
-			}
-
-			const { fields } = await this.parseJsonQuery();
-
-			const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			return API.v1.success({ user });
-		},
-	},
-);
-
-API.v1.addRoute(
-	'users.updateOwnBasicInfo',
 	{
 		authRequired: true,
-		userWithoutUsername: true,
-		validateParams: isUsersUpdateOwnBasicInfoParamsPOST,
-		rateLimiterOptions: {
-			numRequestsAllowed: 1,
-			intervalTimeInMS: 60000,
+		response: {
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
 	},
+	async function action() {
+		const user = await getUserFromParams(this.queryParams);
+
+		const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+		this.response.headers.set('Location', url);
+
+		return {
+			statusCode: 307,
+			body: url,
+		};
+	},
+);
+
+const userObjectResponse = ajv.compile<{ user: object }>({
+	type: 'object',
+	properties: {
+		user: { type: 'object' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['user', 'success'],
+	additionalProperties: false,
+});
+
+API.v1.post(
+	'users.update',
 	{
-		async post() {
+		authRequired: true,
+		twoFactorRequired: true,
+		body: isUsersUpdateParamsPOST,
+		response: {
+			200: userObjectResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const userData = { _id: this.bodyParams.userId, ...this.bodyParams.data };
+
+		if (userData.name && !validateNameChars(userData.name)) {
+			return API.v1.failure('Name contains invalid characters');
+		}
+		const auditStore = new UserChangedAuditStore({
+			_id: this.user._id,
+			ip: this.requestIp,
+			useragent: this.request.headers.get('user-agent') || '',
+			username: this.user.username,
+		});
+
+		await saveUser(this.userId, userData, { auditStore });
+
+		if (typeof this.bodyParams.data.active !== 'undefined') {
+			const {
+				userId,
+				data: { active },
+				confirmRelinquish,
+			} = this.bodyParams;
+			await executeSetUserActiveStatus(this.userId, userId, active, Boolean(confirmRelinquish));
+		}
+
+		const { fields } = await this.parseJsonQuery();
+
+		const user = await Users.findOneById(this.bodyParams.userId, { projection: fields });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+
+		return API.v1.success({ user });
+	},
+);
+
+API.v1
+	.post(
+		'users.updateOwnBasicInfo',
+		{
+			authRequired: true,
+			userWithoutUsername: true,
+			body: isUsersUpdateOwnBasicInfoParamsPOST,
+			rateLimiterOptions: {
+				numRequestsAllowed: 1,
+				intervalTimeInMS: 60000,
+			},
+			response: {
+				200: userObjectResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const userData = {
 				email: this.bodyParams.data.email,
 				realname: this.bodyParams.data.name,
@@ -182,14 +208,19 @@ API.v1.addRoute(
 				user: await getUserInfo((await Users.findOneById(this.userId, { projection: API.v1.defaultFieldsToExclude })) as IUser, false),
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.setPreferences',
-	{ authRequired: true, validateParams: isUsersSetPreferencesParamsPOST },
-	{
-		async post() {
+	)
+	.post(
+		'users.setPreferences',
+		{
+			authRequired: true,
+			body: isUsersSetPreferencesParamsPOST,
+			response: {
+				200: userObjectResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (
 				this.bodyParams.userId &&
 				this.bodyParams.userId !== this.userId &&
@@ -226,14 +257,19 @@ API.v1.addRoute(
 				} as unknown as Required<Pick<IUser, '_id' | 'settings'>>,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.setAvatar',
-	{ authRequired: true, validateParams: isUsersSetAvatarProps },
-	{
-		async post() {
+	)
+	.post(
+		'users.setAvatar',
+		{
+			authRequired: true,
+			body: isUsersSetAvatarProps,
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const canEditOtherUserAvatar = await hasPermissionAsync(this.userId, 'edit-other-user-avatar');
 
 			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
@@ -297,14 +333,19 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.create',
-	{ authRequired: true, validateParams: isUserCreateParamsPOST },
-	{
-		async post() {
+	)
+	.post(
+		'users.create',
+		{
+			authRequired: true,
+			body: isUserCreateParamsPOST,
+			response: {
+				200: userObjectResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			// New change made by pull request #5152
 			if (typeof this.bodyParams.joinDefaultChannels === 'undefined') {
 				this.bodyParams.joinDefaultChannels = true;
@@ -342,8 +383,7 @@ API.v1.addRoute(
 
 			return API.v1.success({ user });
 		},
-	},
-);
+	);
 
 API.v1.post(
 	'users.delete',
@@ -423,28 +463,47 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.setActiveStatus',
 	{
 		authRequired: true,
-		validateParams: isUserSetActiveStatusParamsPOST,
+		body: isUserSetActiveStatusParamsPOST,
 		permissionsRequired: {
 			POST: { permissions: ['edit-other-user-active-status', 'manage-moderation-actions'], operation: 'hasAny' },
 		},
-	},
-	{
-		async post() {
-			const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
-			await executeSetUserActiveStatus(this.userId, userId, activeStatus, confirmRelinquish);
-
-			const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-			return API.v1.success({
-				user,
-			});
+		response: {
+			200: ajv.compile<{ user: Pick<IUser, '_id' | 'active'> }>({
+				type: 'object',
+				properties: {
+					user: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							active: { type: 'boolean' },
+						},
+						required: ['_id', 'active'],
+						additionalProperties: false,
+					},
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['user', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { userId, activeStatus, confirmRelinquish = false } = this.bodyParams;
+		await executeSetUserActiveStatus(this.userId, userId, activeStatus, confirmRelinquish);
+
+		const user = await Users.findOneById(this.bodyParams.userId, { projection: { active: 1 } });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+		return API.v1.success({
+			user,
+		});
 	},
 );
 
@@ -483,204 +542,245 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.info',
-	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
-		async get() {
-			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
-				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
-				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
-				('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']);
-
-			if (!searchTerms) {
-				return API.v1.failure('Invalid search query.');
-			}
-
-			const user = await getFullUserDataByIdOrUsernameOrImportId(this.userId, ...searchTerms);
-
-			if (!user) {
-				return API.v1.failure('User not found.');
-			}
-			const myself = user._id === this.userId;
-			if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
-				return API.v1.success({
-					user: {
-						...user,
-						rooms: await Subscriptions.findByUserId(user._id, {
-							projection: {
-								rid: 1,
-								name: 1,
-								t: 1,
-								roles: 1,
-								unread: 1,
-								federated: 1,
-							},
-							sort: {
-								t: 1,
-								name: 1,
-							},
-						}).toArray(),
-					},
-				});
-			}
-
-			return API.v1.success({
-				user,
-			});
+		authRequired: true,
+		query: isUsersInfoParamsGetProps,
+		response: {
+			200: ajv.compile<{ user: object }>({
+				type: 'object',
+				properties: {
+					user: { type: 'object' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['user', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
+			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
+			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
+			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']);
+
+		if (!searchTerms) {
+			return API.v1.failure('Invalid search query.');
+		}
+
+		const user = await getFullUserDataByIdOrUsernameOrImportId(this.userId, ...searchTerms);
+
+		if (!user) {
+			return API.v1.failure('User not found.');
+		}
+		const myself = user._id === this.userId;
+		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+			return API.v1.success({
+				user: {
+					...user,
+					rooms: await Subscriptions.findByUserId(user._id, {
+						projection: {
+							rid: 1,
+							name: 1,
+							t: 1,
+							roles: 1,
+							unread: 1,
+							federated: 1,
+						},
+						sort: {
+							t: 1,
+							name: 1,
+						},
+					}).toArray(),
+				},
+			});
+		}
+
+		return API.v1.success({
+			user,
+		});
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.list',
 	{
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
-	},
-	{
-		async get() {
-			if (
-				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
-			) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const nonEmptyFields = getNonEmptyFields(fields);
-
-			const inclusiveFields = getInclusiveFields(nonEmptyFields);
-
-			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
-
-			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
-
-			// if user provided a query, validate it with their allowed operators
-			// otherwise we use the default query (with $regex and $options)
-			if (
-				!isValidQuery(
-					nonEmptyQuery,
-					[
-						...inclusiveFieldsKeys,
-						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
-						inclusiveFieldsKeys.includes('username') && 'username.*',
-						inclusiveFieldsKeys.includes('name') && 'name.*',
-						inclusiveFieldsKeys.includes('type') && 'type.*',
-						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
-					].filter(Boolean) as string[],
-					// At this point, we have already validated the user query not containing malicious fields
-					// On here we are using our own query so we can allow some extra fields
-					[...this.queryOperations, '$regex', '$options'],
-				)
-			) {
-				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
-			}
-
-			const actualSort = sort || { username: 1 };
-
-			if (sort?.status) {
-				actualSort.active = sort.status;
-			}
-
-			if (sort?.name) {
-				actualSort.nameInsensitive = sort.name;
-			}
-
-			const limit =
-				count !== 0
-					? [
-							{
-								$limit: count,
-							},
-						]
-					: [];
-
-			const result = await Users.col
-				.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
-					{
-						$match: nonEmptyQuery,
-					},
-					{
-						$project: inclusiveFields,
-					},
-					{
-						$addFields: {
-							nameInsensitive: {
-								$toLower: '$name',
-							},
-						},
-					},
-					{
-						$facet: {
-							sortedResults: [
-								{
-									$sort: actualSort,
-								},
-								{
-									$skip: offset,
-								},
-								...limit,
-							],
-							totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
-						},
-					},
-				])
-				.toArray();
-
-			const {
-				sortedResults: users,
-				totalCount: [{ total } = { total: 0 }],
-			} = result[0];
-
-			return API.v1.success({
-				users,
-				count: users.length,
-				offset,
-				total,
-			});
+		response: {
+			200: ajv.compile<{ users: IUser[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					users: { type: 'array' },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['users', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		if (
+			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+			!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+		) {
+			return API.v1.forbidden();
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const nonEmptyFields = getNonEmptyFields(fields);
+
+		const inclusiveFields = getInclusiveFields(nonEmptyFields);
+
+		const inclusiveFieldsKeys = Object.keys(inclusiveFields);
+
+		const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
+
+		// if user provided a query, validate it with their allowed operators
+		// otherwise we use the default query (with $regex and $options)
+		if (
+			!isValidQuery(
+				nonEmptyQuery,
+				[
+					...inclusiveFieldsKeys,
+					inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
+					inclusiveFieldsKeys.includes('username') && 'username.*',
+					inclusiveFieldsKeys.includes('name') && 'name.*',
+					inclusiveFieldsKeys.includes('type') && 'type.*',
+					inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
+				].filter(Boolean) as string[],
+				// At this point, we have already validated the user query not containing malicious fields
+				// On here we are using our own query so we can allow some extra fields
+				[...this.queryOperations, '$regex', '$options'],
+			)
+		) {
+			throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
+		}
+
+		const actualSort = sort || { username: 1 };
+
+		if (sort?.status) {
+			actualSort.active = sort.status;
+		}
+
+		if (sort?.name) {
+			actualSort.nameInsensitive = sort.name;
+		}
+
+		const limit =
+			count !== 0
+				? [
+						{
+							$limit: count,
+						},
+					]
+				: [];
+
+		const result = await Users.col
+			.aggregate<{ sortedResults: IUser[]; totalCount: { total: number }[] }>([
+				{
+					$match: nonEmptyQuery,
+				},
+				{
+					$project: inclusiveFields,
+				},
+				{
+					$addFields: {
+						nameInsensitive: {
+							$toLower: '$name',
+						},
+					},
+				},
+				{
+					$facet: {
+						sortedResults: [
+							{
+								$sort: actualSort,
+							},
+							{
+								$skip: offset,
+							},
+							...limit,
+						],
+						totalCount: [{ $group: { _id: null, total: { $sum: 1 } } }],
+					},
+				},
+			])
+			.toArray();
+
+		const {
+			sortedResults: users,
+			totalCount: [{ total } = { total: 0 }],
+		} = result[0];
+
+		return API.v1.success({
+			users,
+			count: users.length,
+			offset,
+			total,
+		});
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.listByStatus',
 	{
 		authRequired: true,
-		validateParams: isUsersListStatusProps,
+		query: isUsersListStatusProps,
 		permissionsRequired: ['view-d-room'],
-	},
-	{
-		async get() {
-			if (
-				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
-			) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-			const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
-
-			return API.v1.success(
-				await findPaginatedUsersByStatus({
-					uid: this.userId,
-					offset,
-					count,
-					sort,
-					status,
-					roles,
-					searchTerm,
-					hasLoggedIn,
-					type,
-					inactiveReason,
-				}),
-			);
+		response: {
+			200: ajv.compile<{ users: IUser[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					users: { type: 'array' },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['users', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		if (
+			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+			!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+		) {
+			return API.v1.forbidden();
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
+
+		return API.v1.success(
+			await findPaginatedUsersByStatus({
+				uid: this.userId,
+				offset,
+				count,
+				sort,
+				status,
+				roles,
+				searchTerm,
+				hasLoggedIn,
+				type,
+				inactiveReason,
+			}),
+		);
 	},
 );
 
@@ -726,7 +826,7 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.register',
 	{
 		authRequired: false,
@@ -734,63 +834,65 @@ API.v1.addRoute(
 			numRequestsAllowed: settings.get('Rate_Limiter_Limit_RegisterUser') ?? 1,
 			intervalTimeInMS: settings.get('API_Enable_Rate_Limiter_Limit_Time_Default') ?? 60000,
 		},
-		validateParams: isUserRegisterParamsPOST,
-	},
-	{
-		async post() {
-			const { secret: secretURL, ...params } = this.bodyParams;
-
-			if (this.userId) {
-				return API.v1.failure('Logged in users can not register again.');
-			}
-
-			if (params.name && !validateNameChars(params.name)) {
-				return API.v1.failure('Name contains invalid characters');
-			}
-
-			if (!validateUsername(this.bodyParams.username)) {
-				return API.v1.failure(`The username provided is not valid`);
-			}
-
-			if (!(await checkUsernameAvailability(this.bodyParams.username))) {
-				return API.v1.failure('Username is already in use');
-			}
-			if (!(await checkEmailAvailability(this.bodyParams.email))) {
-				return API.v1.failure('Email already exists');
-			}
-			if (this.bodyParams.customFields) {
-				try {
-					await validateCustomFields(this.bodyParams.customFields);
-				} catch (e) {
-					return API.v1.failure(e);
-				}
-			}
-
-			// Register the user
-			const userId = await registerUser({
-				...params,
-				...(secretURL && { secretURL }),
-			});
-
-			if (typeof userId !== 'string') {
-				return API.v1.failure('Error creating user');
-			}
-
-			// Now set their username
-			const { fields } = await this.parseJsonQuery();
-			await setUsernameWithValidation(userId, this.bodyParams.username);
-
-			const user = await Users.findOneById(userId, { projection: fields });
-			if (!user) {
-				return API.v1.failure('User not found');
-			}
-
-			if (this.bodyParams.customFields) {
-				await saveCustomFields(userId, this.bodyParams.customFields);
-			}
-
-			return API.v1.success({ user });
+		body: isUserRegisterParamsPOST,
+		response: {
+			200: userObjectResponse,
+			400: validateBadRequestErrorResponse,
 		},
+	},
+	async function action() {
+		const { secret: secretURL, ...params } = this.bodyParams;
+
+		if (this.userId) {
+			return API.v1.failure('Logged in users can not register again.');
+		}
+
+		if (params.name && !validateNameChars(params.name)) {
+			return API.v1.failure('Name contains invalid characters');
+		}
+
+		if (!validateUsername(this.bodyParams.username)) {
+			return API.v1.failure(`The username provided is not valid`);
+		}
+
+		if (!(await checkUsernameAvailability(this.bodyParams.username))) {
+			return API.v1.failure('Username is already in use');
+		}
+		if (!(await checkEmailAvailability(this.bodyParams.email))) {
+			return API.v1.failure('Email already exists');
+		}
+		if (this.bodyParams.customFields) {
+			try {
+				await validateCustomFields(this.bodyParams.customFields);
+			} catch (e) {
+				return API.v1.failure(e);
+			}
+		}
+
+		// Register the user
+		const userId = await registerUser({
+			...params,
+			...(secretURL && { secretURL }),
+		});
+
+		if (typeof userId !== 'string') {
+			return API.v1.failure('Error creating user');
+		}
+
+		// Now set their username
+		const { fields } = await this.parseJsonQuery();
+		await setUsernameWithValidation(userId, this.bodyParams.username);
+
+		const user = await Users.findOneById(userId, { projection: fields });
+		if (!user) {
+			return API.v1.failure('User not found');
+		}
+
+		if (this.bodyParams.customFields) {
+			await saveCustomFields(userId, this.bodyParams.customFields);
+		}
+
+		return API.v1.success({ user });
 	},
 );
 
@@ -1373,56 +1475,69 @@ API.v1.post(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'users.presence',
-	{ authRequired: true },
 	{
-		async get() {
-			// if presence broadcast is disabled, return an empty array (all users are "offline")
-			if (settings.get('Presence_broadcast_disabled')) {
-				return API.v1.success({
-					users: [],
-					full: true,
-				});
-			}
-
-			const { from, ids } = this.queryParams;
-
-			const options = {
-				projection: {
-					username: 1,
-					name: 1,
-					status: 1,
-					utcOffset: 1,
-					statusText: 1,
-					avatarETag: 1,
+		authRequired: true,
+		response: {
+			200: ajv.compile<{ users: object[]; full: boolean }>({
+				type: 'object',
+				properties: {
+					users: { type: 'array' },
+					full: { type: 'boolean' },
+					success: { type: 'boolean', enum: [true] },
 				},
-			};
+				required: ['users', 'full', 'success'],
+				additionalProperties: false,
+			}),
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		// if presence broadcast is disabled, return an empty array (all users are "offline")
+		if (settings.get('Presence_broadcast_disabled')) {
+			return API.v1.success({
+				users: [],
+				full: true,
+			});
+		}
 
-			if (ids) {
+		const { from, ids } = this.queryParams;
+
+		const options = {
+			projection: {
+				username: 1,
+				name: 1,
+				status: 1,
+				utcOffset: 1,
+				statusText: 1,
+				avatarETag: 1,
+			},
+		};
+
+		if (ids) {
+			return API.v1.success({
+				users: await Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+				full: false,
+			});
+		}
+
+		if (from) {
+			const ts = new Date(from);
+			const diff = (Date.now() - Number(ts)) / 1000 / 60;
+
+			if (diff < 10) {
 				return API.v1.success({
-					users: await Users.findNotOfflineByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+					users: await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray(),
 					full: false,
 				});
 			}
+		}
 
-			if (from) {
-				const ts = new Date(from);
-				const diff = (Date.now() - Number(ts)) / 1000 / 60;
-
-				if (diff < 10) {
-					return API.v1.success({
-						users: await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray(),
-						full: false,
-					});
-				}
-			}
-
-			return API.v1.success({
-				users: await Users.findUsersNotOffline(options).toArray(),
-				full: true,
-			});
-		},
+		return API.v1.success({
+			users: await Users.findUsersNotOffline(options).toArray(),
+			full: true,
+		});
 	},
 );
 
@@ -1509,35 +1624,49 @@ API.v1
 		},
 	);
 
-API.v1.addRoute(
+API.v1.get(
 	'users.autocomplete',
-	{ authRequired: true, validateParams: isUsersAutocompleteProps },
 	{
-		async get() {
-			const { selector: selectorRaw } = this.queryParams;
-
-			const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
-
-			try {
-				if (selector?.conditions) {
-					const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
-					const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
-
-					if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
-						throw new Error('error-invalid-query');
-					}
-				}
-			} catch (e) {
-				return API.v1.failure(e);
-			}
-
-			return API.v1.success(
-				await findUsersToAutocomplete({
-					uid: this.userId,
-					selector,
-				}),
-			);
+		authRequired: true,
+		query: isUsersAutocompleteProps,
+		response: {
+			200: ajv.compile<{ items: object[] }>({
+				type: 'object',
+				properties: {
+					items: { type: 'array' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['items', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { selector: selectorRaw } = this.queryParams;
+
+		const selector: { exceptions: Required<IUser>['username'][]; conditions: Filter<IUser>; term: string } = JSON.parse(selectorRaw);
+
+		try {
+			if (selector?.conditions) {
+				const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+				const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
+
+				if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
+					throw new Error('error-invalid-query');
+				}
+			}
+		} catch (e) {
+			return API.v1.failure(e);
+		}
+
+		return API.v1.success(
+			await findUsersToAutocomplete({
+				uid: this.userId,
+				selector,
+			}),
+		);
 	},
 );
 
@@ -1723,11 +1852,30 @@ API.v1
 		},
 	);
 
-API.v1.addRoute(
-	'users.getPresence',
-	{ authRequired: true },
-	{
-		async get() {
+const statusType = { type: 'string', enum: ['online', 'offline', 'away', 'busy'] } as const;
+
+API.v1
+	.get(
+		'users.getPresence',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{ presence: UserStatus; connectionStatus?: string; lastLogin?: Date }>({
+					type: 'object',
+					properties: {
+						presence: statusType,
+						connectionStatus: { type: 'string', nullable: true },
+						lastLogin: { type: 'string', nullable: true },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['presence', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				const user = await Users.findOneById(this.userId);
 				return API.v1.success({
@@ -1743,20 +1891,33 @@ API.v1.addRoute(
 				presence: user.status || ('offline' as UserStatus),
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.setStatus',
-	{
-		authRequired: true,
-		rateLimiterOptions: {
-			numRequestsAllowed: 5,
-			intervalTimeInMS: 60000,
+	)
+	.post(
+		'users.setStatus',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ status?: string; message?: string; userId?: string; username?: string; user?: string }>({
+				type: 'object',
+				properties: {
+					status: { type: 'string', nullable: true },
+					message: { type: 'string', nullable: true },
+					userId: { type: 'string' },
+					username: { type: 'string' },
+					user: { type: 'string' },
+				},
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-	},
-	{
-		async post() {
+		async function action() {
 			check(
 				this.bodyParams,
 				Match.OneOf(
@@ -1834,20 +1995,28 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-// status: 'online' | 'offline' | 'away' | 'busy';
-// message?: string;
-// _id: string;
-// connectionStatus?: 'online' | 'offline' | 'away' | 'busy';
-// };
-
-API.v1.addRoute(
-	'users.getStatus',
-	{ authRequired: true },
-	{
-		async get() {
+	)
+	.get(
+		'users.getStatus',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{ _id: string; status: string; connectionStatus?: string }>({
+					type: 'object',
+					properties: {
+						_id: { type: 'string' },
+						status: statusType,
+						connectionStatus: { type: 'string', nullable: true },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['_id', 'status', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				const user: IUser | null = await Users.findOneById(this.userId);
 				return API.v1.success({
@@ -1866,8 +2035,7 @@ API.v1.addRoute(
 				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
 			});
 		},
-	},
-);
+	);
 
 settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 	const userRegisterRoute = '/api/v1/users.registerpost';
