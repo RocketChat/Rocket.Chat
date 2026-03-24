@@ -128,10 +128,6 @@ export class AppUserBridge extends UserBridge {
 			throw new Error('User not provided');
 		}
 
-		if (!Object.keys(fields).length) {
-			return true;
-		}
-
 		const { status, statusText, ...updateFields } = fields;
 
 		if (status) {
@@ -148,6 +144,10 @@ export class AppUserBridge extends UserBridge {
 				},
 				statusText,
 			);
+		}
+
+		if (!Object.keys(updateFields).length) {
+			return true;
 		}
 
 		await Users.updateOne({ _id: user.id }, { $set: updateFields as any });
