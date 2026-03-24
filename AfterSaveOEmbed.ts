@@ -360,7 +360,10 @@ const urlsToProcess = message.urls.filter((item) => {
 });
 
 const BATCH_SIZE = 5;
-const results: PromiseSettledResult<any>[] = [];
+const results: PromiseSettledResult<{
+  urlPreview: MessageUrl;
+  foundMeta: boolean;
+}>[] = [];
 
 for (let i = 0; i < urlsToProcess.length; i += BATCH_SIZE) {
   const batch = urlsToProcess.slice(i, i + BATCH_SIZE);
