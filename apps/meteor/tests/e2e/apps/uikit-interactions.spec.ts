@@ -84,6 +84,12 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		// Open a contextual bar via slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal ctx');
 
+		// Opening a contextual bar via the Apps Engine causes a client-side URL navigation
+		// (e.g. /channel/general/app/{viewId}). Wait for that navigation to complete before
+		// using any locators, otherwise Playwright throws "Target page, context or browser
+		// has been closed" while the navigation is still in progress.
+		await page.waitForURL(/\/app\//);
+
 		// Wait for the contextual bar to appear and click the button
 		const button = page.locator('[data-qa="ContextualbarContent"]').getByRole('button', { name: 'Click!' });
 		await button.waitFor({ state: 'visible' });
@@ -199,6 +205,9 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		// Open a contextual bar via slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal ctx');
 
+		// Wait for the client-side navigation to the contextual bar URL to complete
+		await page.waitForURL(/\/app\//);
+
 		// Wait for the contextual bar and submit it
 		const submitButton = page.locator('[data-qa="ContextualbarContent"]').getByRole('button', { name: 'Submit' });
 		await submitButton.waitFor({ state: 'visible' });
@@ -258,6 +267,9 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 	test('should include correct data in executeViewClosedHandler when triggered in a contextual bar surface', async () => {
 		// Open a contextual bar via slash command
 		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal ctx');
+
+		// Wait for the client-side navigation to the contextual bar URL to complete
+		await page.waitForURL(/\/app\//);
 
 		// Wait for the contextual bar to appear and close it
 		await poHomeChannel.btnContextualbarClose.waitFor({ state: 'visible' });
