@@ -34,8 +34,8 @@ type GenericMenuProps =
   GenericMenuConditionalProps &
   Omit<ComponentProps<typeof Menu>, 'children'> & {
     /**
-     * @deprecated Use a semantic <button> instead.
-     */
+    * @deprecated This prop will be removed in the future. A replacement API will be introduced.
+    */
     button?: ReactNode;
   };
 
@@ -43,8 +43,8 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
   useEffect(() => {
     if (button && !hasWarnedButtonDeprecation) {
       console.warn(
-        "GenericMenu: The 'button' prop is deprecated. Please use a semantic <button> element."
-      );
+        "GenericMenu: The 'button' prop is deprecated. A replacement API will be introduced."
+       );
       hasWarnedButtonDeprecation = true;
     }
   }, [button]);
