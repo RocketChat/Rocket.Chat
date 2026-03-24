@@ -22,6 +22,12 @@ export class NotifierAccessorTestFixture {
 			doNotifyRoom(room: IRoom, msg: IMessage, appId: string): Promise<void> {
 				return Promise.resolve();
 			},
+			doDeleteNotifyUser(user: IUser, msg: IMessage, appId: string): Promise<void> {
+				return Promise.resolve();
+			},
+			doDeleteNotifyRoom(room: IRoom, msg: IMessage, appId: string): Promise<void> {
+				return Promise.resolve();
+			},
 		} as MessageBridge;
 	}
 
@@ -32,6 +38,8 @@ export class NotifierAccessorTestFixture {
 		const noti = new Notifier(this.mockUserBridge, this.mockMsgBridge, 'testing');
 		await Expect(() => noti.notifyRoom(TestData.getRoom(), TestData.getMessage())).not.toThrowAsync();
 		await Expect(() => noti.notifyUser(TestData.getUser(), TestData.getMessage())).not.toThrowAsync();
+		await Expect(() => noti.deleteNotifyUser(TestData.getUser(), TestData.getMessage())).not.toThrowAsync();
+		await Expect(() => noti.deleteNotifyRoom(TestData.getRoom(), TestData.getMessage())).not.toThrowAsync();
 		Expect(noti.getMessageBuilder() instanceof MessageBuilder).toBe(true);
 	}
 }
