@@ -1542,7 +1542,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter "prid" is required.');
+					expect(res.body).to.have.property('error').that.includes("must have required property 'prid'");
 				})
 				.end(done);
 		});
@@ -1556,7 +1556,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter "t_name" is required.');
+					expect(res.body).to.have.property('error').that.includes("must have required property 't_name'");
 				})
 				.end(done);
 		});
@@ -1826,7 +1826,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The 'selector' param is required");
+					expect(res.body.error).to.include("must have required property 'selector'");
 				})
 				.end(done);
 		});
@@ -1870,7 +1870,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The 'selector' param is required");
+					expect(res.body.error).to.include("must have required property 'selector'");
 				})
 				.end(done);
 		});
@@ -1966,7 +1966,7 @@ describe('[Rooms]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal("The 'selector' param is required");
+						expect(res.body.error).to.include("must have required property 'selector'");
 					})
 					.end(done);
 			});
