@@ -8,6 +8,7 @@ import type {
 	ITeam,
 	ISubscription,
 	RequiredField,
+	MessageTypesValues,
 } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
@@ -367,7 +368,7 @@ type RoomsSaveRoomSettingsProps = {
 	roomType?: IRoom['t'];
 	readOnly?: boolean;
 	reactWhenReadOnly?: boolean;
-	systemMessages?: string[];
+	systemMessages?: MessageTypesValues[];
 	default?: boolean;
 	joinCode?: string;
 	encrypted?: boolean;
