@@ -320,6 +320,14 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	response: Response;
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
 	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
+	readonly connection: {
+		token: string;
+		id: string;
+		close: () => void;
+		clientAddress: string;
+		httpHeaders: Record<string, string>;
+	};
+	readonly twoFactorChecked: boolean;
 } & (TOptions['authRequired'] extends true
 	? {
 			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
