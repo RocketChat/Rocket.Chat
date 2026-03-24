@@ -5,6 +5,7 @@ import { request } from '@playwright/test';
 import { Users } from './userStates';
 import { APP_URL } from '../../data/apps/apps-data';
 import { BASE_API_URL, BASE_URL } from '../config/constants';
+import { expect } from '../utils/test';
 
 export default async function insertApp(): Promise<void> {
 	const api = await request.newContext();
@@ -27,6 +28,8 @@ export async function installLocalTestPackage(packagePath: string): Promise<{ ap
 	};
 
 	const response = await api.post(`${BASE_URL}/api/apps`, { multipart: { app: fs.createReadStream(packagePath) }, headers });
+
+	await expect(response).toBeOK();
 
 	return response.json();
 }
