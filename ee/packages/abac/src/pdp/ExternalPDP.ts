@@ -173,13 +173,17 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		const decision = result.decisionResponses?.[0]?.decision;
 		pdpLogger.debug({ msg: 'GetDecisions response', userId: user._id, roomId: room._id, decision, fqns });
 
-		const granted = decision === 'DECISION_PERMIT';
+		if (decision === 'DECISION_PERMIT') {
+			return { granted: true };
+		}
 
-		if (!granted) {
+		if (decision === 'DECISION_DENY') {
 			return { granted: false, userToRemove: fullUser };
 		}
 
-		return { granted };
+		// Unknown or missing decision — deny access but don't evict
+		pdpLogger.warn({ msg: 'Unexpected decision from external PDP', userId: user._id, roomId: room._id, decision });
+		return { granted: false };
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {
