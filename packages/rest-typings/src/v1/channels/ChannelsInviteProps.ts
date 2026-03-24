@@ -1,8 +1,8 @@
 import { ajv } from '../Ajv';
 
 export type ChannelsInviteProps =
-	| { roomId: string; userId?: string; username?: string; user?: string }
-	| { roomName: string; userId?: string; username?: string; user?: string };
+	| { roomId: string; userId?: string; username?: string; user?: string; unbanBeforeAdd?: boolean }
+	| { roomName: string; userId?: string; username?: string; user?: string; unbanBeforeAdd?: boolean };
 
 const channelsInvitePropsSchema = {
 	oneOf: [
@@ -22,6 +22,10 @@ const channelsInvitePropsSchema = {
 				},
 				user: {
 					type: 'string',
+					nullable: true,
+				},
+				unbanBeforeAdd: {
+					type: 'boolean',
 					nullable: true,
 				},
 			},
@@ -44,6 +48,10 @@ const channelsInvitePropsSchema = {
 				},
 				user: {
 					type: 'string',
+					nullable: true,
+				},
+				unbanBeforeAdd: {
+					type: 'boolean',
 					nullable: true,
 				},
 			},

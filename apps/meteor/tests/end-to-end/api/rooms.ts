@@ -4389,6 +4389,7 @@ describe('[Rooms]', () => {
 					.send({
 						roomId: testChannel._id,
 						userId: bannableUser._id,
+						unbanBeforeAdd: true,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
