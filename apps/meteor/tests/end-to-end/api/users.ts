@@ -7,6 +7,7 @@ import type { IGetRoomRoles, PaginatedResult, DefaultUserInfo } from '@rocket.ch
 import { assert, expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
@@ -804,6 +805,28 @@ describe('[Users]', () => {
 					});
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.create'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.register]', () => {
@@ -904,6 +927,17 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('error').and.to.be.equal('Logged in users can not register again.');
 				})
 				.end(done);
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.register'))
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 
@@ -1217,6 +1251,16 @@ describe('[Users]', () => {
 						expect(res.body).to.have.nested.property('presence', 'offline');
 					});
 			});
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.getPresence'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -1549,6 +1593,16 @@ describe('[Users]', () => {
 					});
 				});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.list'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
 	});
 
 	describe('Avatars', () => {
@@ -1658,6 +1712,16 @@ describe('[Users]', () => {
 					})
 					.end(done);
 			});
+
+			it('should return 401 when not authenticated', async () => {
+				await request
+					.post(api('users.setAvatar'))
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('status', 'error');
+					});
+			});
 		});
 
 		describe('[/users.resetAvatar]', () => {
@@ -1755,6 +1819,16 @@ describe('[Users]', () => {
 							.end(done);
 					});
 				});
+			});
+
+			it('should return 401 when not authenticated', async () => {
+				await request
+					.post(api('users.resetAvatar'))
+					.expect('Content-Type', 'application/json')
+					.expect(401)
+					.expect((res: Response) => {
+						expect(res.body).to.have.property('status', 'error');
+					});
 			});
 		});
 
@@ -2629,6 +2703,16 @@ describe('[Users]', () => {
 					});
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.update'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
 	});
 
 	describe('[/users.updateOwnBasicInfo]', () => {
@@ -3156,6 +3240,16 @@ describe('[Users]', () => {
 					.expect(200);
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
 	});
 
 	// TODO check for all response fields
@@ -3272,6 +3366,28 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.setPreferences'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.getPreferences]', () => {
@@ -3290,6 +3406,16 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('success', true);
 				})
 				.end(done);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.getPreferences'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -3384,6 +3510,28 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('success', false);
 				})
 				.end(done);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.sendConfirmationEmail'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.sendConfirmationEmail'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
 		});
 	});
 
@@ -3635,6 +3783,28 @@ describe('[Users]', () => {
 				expect(roles[0].u).to.have.property('_id', credentials['X-User-Id']);
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.deleteOwnAccount'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.deleteOwnAccount'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.delete]', () => {
@@ -3800,6 +3970,16 @@ describe('[Users]', () => {
 						})
 						.end(done);
 				});
+
+				it('should return 401 when not authenticated', async () => {
+					await request
+						.get(api('users.getPersonalAccessTokens'))
+						.expect('Content-Type', 'application/json')
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('status', 'error');
+						});
+				});
 			});
 
 			describe('[/users.generatePersonalAccessToken]', () => {
@@ -3832,6 +4012,28 @@ describe('[Users]', () => {
 						})
 						.end(done);
 				});
+
+				it('should return 401 when not authenticated', async () => {
+					await request
+						.post(api('users.generatePersonalAccessToken'))
+						.expect('Content-Type', 'application/json')
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('status', 'error');
+						});
+				});
+
+				it('should return 400 when body is empty', async () => {
+					await request
+						.post(api('users.generatePersonalAccessToken'))
+						.set(credentials)
+						.send({})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
+				});
 			});
 			describe('[/users.regeneratePersonalAccessToken]', () => {
 				it('should return a personal access token to user when user regenerates the token', (done) => {
@@ -3862,6 +4064,28 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('success', false);
 						})
 						.end(done);
+				});
+
+				it('should return 401 when not authenticated', async () => {
+					await request
+						.post(api('users.regeneratePersonalAccessToken'))
+						.expect('Content-Type', 'application/json')
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('status', 'error');
+						});
+				});
+
+				it('should return 400 when body is empty', async () => {
+					await request
+						.post(api('users.regeneratePersonalAccessToken'))
+						.set(credentials)
+						.send({})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
 				});
 			});
 			describe('[/users.getPersonalAccessTokens]', () => {
@@ -3906,6 +4130,28 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('success', false);
 						})
 						.end(done);
+				});
+
+				it('should return 401 when not authenticated', async () => {
+					await request
+						.post(api('users.removePersonalAccessToken'))
+						.expect('Content-Type', 'application/json')
+						.expect(401)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('status', 'error');
+						});
+				});
+
+				it('should return 400 when body is empty', async () => {
+					await request
+						.post(api('users.removePersonalAccessToken'))
+						.set(credentials)
+						.send({})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res: Response) => {
+							expect(res.body).to.have.property('success', false);
+						});
 				});
 			});
 		});
@@ -4286,6 +4532,18 @@ describe('[Users]', () => {
 				expect(originalCreator.u).to.have.property('_id', credentials['X-User-Id']);
 			});
 		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.setActiveStatus'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.deactivateIdle]', () => {
@@ -4380,6 +4638,18 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
+
+		it('should return 400 when body is empty', async () => {
+			await request
+				.post(api('users.deactivateIdle'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.requestDataDownload]', () => {
@@ -4426,6 +4696,16 @@ describe('[Users]', () => {
 					expect(res.body.exportOperation).to.have.property('fullExport', true);
 				})
 				.end(done);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.requestDataDownload'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -4537,6 +4817,16 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.logoutOtherClients'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
 				});
 		});
 	});
@@ -4709,6 +4999,16 @@ describe('[Users]', () => {
 					.end(done);
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.autocomplete'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
 	});
 
 	describe('[/users.getStatus]', () => {
@@ -4738,6 +5038,16 @@ describe('[Users]', () => {
 					expect(res.body._id).to.be.equal('rocket.cat');
 				})
 				.end(done);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.getStatus'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -4875,6 +5185,16 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.setStatus'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
 	});
 
 	describe('[/users.removeOtherTokens]', () => {
@@ -4912,6 +5232,16 @@ describe('[Users]', () => {
 			}
 
 			void request.post(api('users.removeOtherTokens')).set(newCredentials).expect(200).then(tryAuthentication);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.removeOtherTokens'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
 		});
 	});
 
@@ -5024,6 +5354,27 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.listTeams'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when query is empty', async () => {
+			await request
+				.get(api('users.listTeams'))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
 	});
 
 	describe('[/users.logout]', () => {
@@ -5109,6 +5460,16 @@ describe('[Users]', () => {
 				.expect(404)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.logout'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
 				});
 		});
 	});
@@ -5361,6 +5722,16 @@ describe('[Users]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'error-invalid-user');
 					expect(res.body).to.have.property('error', 'Invalid user [error-invalid-user]');
+				});
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.sendWelcomeEmail'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
 				});
 		});
 	});
