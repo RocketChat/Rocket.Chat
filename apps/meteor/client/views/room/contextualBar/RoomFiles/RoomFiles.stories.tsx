@@ -49,7 +49,7 @@ Default.args = {
 
 export const Loading = Template.bind({});
 Loading.args = {
-	loading: true,
+	isPending: true,
 };
 
 export const Empty = Template.bind({});

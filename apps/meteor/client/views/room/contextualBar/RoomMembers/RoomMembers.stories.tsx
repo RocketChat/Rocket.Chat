@@ -18,7 +18,7 @@ const Template: StoryFn<typeof RoomMembers> = (args) => <RoomMembers {...args} /
 
 export const Default = Template.bind({});
 Default.args = {
-	loading: false,
+	isPending: false,
 	members: [
 		{
 			_id: 'rocket.cat',
@@ -46,7 +46,7 @@ Default.args = {
 
 export const Loading = Template.bind({});
 Loading.args = {
-	loading: true,
+	isPending: true,
 	setText: action('setText'),
 	setType: action('setType'),
 	loadMoreItems: action('loadMoreItems'),
@@ -55,7 +55,7 @@ Loading.args = {
 
 export const WithABACRoom = Template.bind({});
 WithABACRoom.args = {
-	loading: false,
+	isPending: false,
 	members: [
 		{
 			_id: 'rocket.cat',
@@ -84,7 +84,7 @@ WithABACRoom.args = {
 
 export const WithInvitedMember = Template.bind({});
 WithInvitedMember.args = {
-	loading: false,
+	isPending: false,
 	members: [
 		{
 			_id: 'rocket.cat',
