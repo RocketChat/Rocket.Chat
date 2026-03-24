@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import type { GenericMenuItemProps } from './GenericMenuItem';
 import GenericMenuItem from './GenericMenuItem';
 import { useHandleMenuAction } from './hooks/useHandleMenuAction';
+let hasWarnedButtonDeprecation: boolean = false;
 
 type GenericMenuCommonProps = {
 	title: string;
@@ -28,16 +29,25 @@ type GenericMenuConditionalProps =
 			sections?: never;
 	  };
 
-type GenericMenuProps = GenericMenuCommonProps & GenericMenuConditionalProps & Omit<ComponentProps<typeof Menu>, 'children'>;
+type GenericMenuProps =
+  GenericMenuCommonProps &
+  GenericMenuConditionalProps &
+  Omit<ComponentProps<typeof Menu>, 'children'> & {
+    /**
+     * @deprecated Use a semantic <button> instead.
+     */
+    button?: ReactNode;
+  };
 
 const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction, button, className, ...props }: GenericMenuProps) => {
-    useEffect(() => {
-    if (button) {
+  useEffect(() => {
+    if (button && !hasWarnedButtonDeprecation) {
       console.warn(
         "GenericMenu: The 'button' prop is deprecated. Please use a semantic <button> element."
-		  );
+      );
+      hasWarnedButtonDeprecation = true;
     }
-  }, []);
+  }, [button]);
 	const { t, i18n } = useTranslation();
 
 	const sections = 'sections' in props && props.sections;
@@ -55,17 +65,17 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 	const isMenuEmpty = !(sections && sections.length > 0) && !(items && items.length > 0);
 
 	if (isMenuEmpty || disabled) {
-		if (button) {
-  // Deprecated: The 'button' prop may allow non-semantic elements, causing accessibility issues.
-
-  console.warn(
-      "GenericMenu: The 'button' prop is deprecated. Please use a semantic <button> element."
-  );
-
-  return cloneElement(button, { small: true, icon, disabled, title, className } as any);
-	}
-
-		return <IconButton small icon={icon} className={className} title={title} disabled />;
+  if (button) {
+    return cloneElement(button as React.ReactElement, {
+      small: true,
+      icon,
+      disabled,
+      title,
+      className,
+    } as any);
+  }
+		
+	return <IconButton small icon={icon} className={className} title={title} disabled />;
 	}
 
 	return (
