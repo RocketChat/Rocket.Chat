@@ -1,7 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useMemo } from 'react';
+import { useSetModal, useUserId } from '@rocket.chat/ui-contexts';
+import { createElement, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ManageUserRoomCategoryModal from '../ManageUserRoomCategoryModal';
 import { useRoomConvertToTeam } from './actions/useRoomConvertToTeam';
 import { useRoomLeave } from './actions/useRoomLeave';
 import { useRoomMoveToTeam } from './actions/useRoomMoveToTeam';
@@ -18,6 +20,12 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 	const { onClickEnterRoom, onClickEdit, resetState } = options;
 
 	const { t } = useTranslation();
+	const userId = useUserId();
+	const setModal = useSetModal();
+
+	const openUserRoomCategoryModal = useCallback(() => {
+		setModal(createElement(ManageUserRoomCategoryModal, { room, onClose: () => setModal(null) }));
+	}, [room, setModal]);
 
 	const handleLeave = useRoomLeave(room);
 	const { handleDelete, canDeleteRoom } = useDeleteRoom(room, { reload: resetState });
@@ -52,6 +60,16 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 								content: t('Edit'),
 								icon: 'edit' as const,
 								onClick: onClickEdit,
+							},
+						]
+					: []),
+				...(userId && !['l'].includes(room.t)
+					? [
+							{
+								id: 'user-room-category',
+								content: t('Add_to_user_room_category'),
+								icon: 'sort-amount-down' as const,
+								onClick: openUserRoomCategoryModal,
 							},
 						]
 					: []),
@@ -100,5 +118,18 @@ export const useRoomActions = (room: IRoom, options: UseRoomActionsOptions) => {
 		};
 
 		return memoizedActions;
-	}, [canDeleteRoom, handleConvertToTeam, handleDelete, handleHide, handleLeave, handleMoveToTeam, onClickEdit, onClickEnterRoom, t]);
+	}, [
+		canDeleteRoom,
+		handleConvertToTeam,
+		handleDelete,
+		handleHide,
+		handleLeave,
+		handleMoveToTeam,
+		onClickEdit,
+		onClickEnterRoom,
+		openUserRoomCategoryModal,
+		room.t,
+		t,
+		userId,
+	]);
 };
