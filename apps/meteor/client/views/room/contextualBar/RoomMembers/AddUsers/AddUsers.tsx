@@ -11,7 +11,8 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { GenericModal } from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useMethod, useSetModal, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -40,6 +41,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const isFederated = roomIsFederated && !isFederationBlocked;
 
 	const { closeTab } = useRoomToolbox();
+	const setModal = useSetModal();
 	const saveAction = useMethod('addUsersToRoom');
 
 	const {
@@ -49,13 +51,31 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		formState: { isDirty, isSubmitting, errors },
 	} = useForm({ defaultValues: { users: [] } });
 
-	const handleSave = useEffectEvent(async ({ users }: { users: string[] }) => {
+	const handleSave = useEffectEvent(async ({ users, unbanBeforeAdd }: { users: string[]; unbanBeforeAdd?: boolean }) => {
 		try {
-			await saveAction({ rid, users });
+			await saveAction({ rid, users, unbanBeforeAdd });
 			dispatchToastMessage({ type: 'success', message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added') });
 			onClickBack();
 			reload();
-		} catch (error) {
+		} catch (error: any) {
+			if (error.error === 'error-user-is-banned') {
+				setModal(
+					<GenericModal
+						variant='warning'
+						title={t('User_is_banned')}
+						confirmText={t('Unban_and_add')}
+						onClose={() => setModal(null)}
+						onCancel={() => setModal(null)}
+						onConfirm={async () => {
+							setModal(null);
+							await handleSave({ users, unbanBeforeAdd: true });
+						}}
+					>
+						{t('User_is_banned_from_room_confirm_unban')}
+					</GenericModal>,
+				);
+				return;
+			}
 			dispatchToastMessage({ type: 'error', message: error as Error });
 		}
 	});
