@@ -89,49 +89,57 @@ const RoomMembers = ({
 
 	const useRealName = useSetting('UI_Use_Real_Name', false);
 
-	const { counts, titles } = useMemo(() => {
-		const owners: RoomMember[] = [];
-		const leaders: RoomMember[] = [];
-		const moderators: RoomMember[] = [];
-		const normalMembers: RoomMember[] = [];
+	const { counts, titles, flattenedMembers } = useMemo(() => {
+	const membersWithSortName = members.map((member) => ({
+		...member,
+		sortName: (useRealName ? member.name || member.username : member.username) ?? '',
+	}));
 
-		members.forEach((member) => {
-			if (member.roles?.includes('owner')) {
-				owners.push(member);
-			} else if (member.roles?.includes('leader')) {
-				leaders.push(member);
-			} else if (member.roles?.includes('moderator')) {
-				moderators.push(member);
-			} else {
-				normalMembers.push(member);
-			}
-		});
+	const owners = membersWithSortName.filter((m) => m.roles?.includes('owner'));
+	const leaders = membersWithSortName.filter((m) => m.roles?.includes('leader'));
+	const moderators = membersWithSortName.filter((m) => m.roles?.includes('moderator'));
+	const normalMembers = membersWithSortName.filter(
+		(m) =>
+			!m.roles?.includes('owner') &&
+			!m.roles?.includes('leader') &&
+			!m.roles?.includes('moderator')
+	);
 
-		const counts = [];
-		const titles = [];
+		const sortGroup = (arr: typeof membersWithSortName) =>
+			[...arr].sort((a, b) => a.sortName.localeCompare(b.sortName));
+		
+		const sortedOwners = sortGroup(owners);
+		const sortedLeaders = sortGroup(leaders);
+		const sortedModerators = sortGroup(moderators);
+		const sortedNormal = sortGroup(normalMembers);
+		
+		const counts: number[] = [];
+		const titles: ReactElement[] = [];
 
-		if (owners.length > 0) {
-			counts.push(owners.length);
-			titles.push(<MembersListDivider title='Owners' count={owners.length} />);
+		if (sortedOwners.length) {
+			counts.push(sortedOwners.length);
+			titles.push(<MembersListDivider title={t('Owners')} count={sortedOwners.length} />);
 		}
 
-		if (leaders.length > 0) {
-			counts.push(leaders.length);
-			titles.push(<MembersListDivider title='Leaders' count={leaders.length} />);
+		if (sortedLeaders.length) {
+			counts.push(sortedLeaders.length);
+			titles.push(<MembersListDivider title={t('Leaders')} count={sortedLeaders.length} />);
 		}
 
-		if (moderators.length > 0) {
-			counts.push(moderators.length);
-			titles.push(<MembersListDivider title='Moderators' count={moderators.length} />);
+		if (sortedModerators.length) {
+			counts.push(sortedModerators.length);
+			titles.push(<MembersListDivider title={t('Moderators')} count={sortedModerators.length} />);
 		}
 
-		if (normalMembers.length > 0) {
-			counts.push(normalMembers.length);
-			titles.push(<MembersListDivider title='Members' count={normalMembers.length} />);
+		if (sortedNormal.length) {
+			counts.push(sortedNormal.length);
+			titles.push(<MembersListDivider title={t('Members')} count={sortedNormal.length} />);
 		}
-
-		return { counts, titles };
-	}, [members]);
+		
+		const flattenedMembers = [...sortedOwners, ...sortedLeaders, ...sortedModerators, ...sortedNormal];
+		
+		return { counts, titles, flattenedMembers };
+	}, [members, useRealName, t]);
 
 	return (
 		<ContextualbarDialog>
@@ -165,13 +173,13 @@ const RoomMembers = ({
 					</Box>
 				)}
 
-				{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
+				{!loading && flattenedMembers.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 
-				{!loading && members.length > 0 && (
+				{!loading && flattenedMembers.length > 0 && (
 					<>
 						<Box pi={24} pb={12}>
 							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing_current_of_total', { current: members.length, total })}
+								{t('Showing_current_of_total', { current: flattenedMembers.length, total })}
 							</Box>
 						</Box>
 
@@ -184,11 +192,11 @@ const RoomMembers = ({
 									}}
 									overscan={50}
 									groupCounts={counts}
-									groupContent={(index): ReactElement => titles[index]}
+									groupContent={(index) => titles[index]}
 									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
 									itemContent={(index): ReactElement => (
-										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+										<RowComponent useRealName={useRealName} data={itemData} user={flattenedMembers[index]} index={index} reload={reload} />
 									)}
 								/>
 							</VirtualizedScrollbars>
