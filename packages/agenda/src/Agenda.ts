@@ -575,9 +575,7 @@ export class Agenda extends EventEmitter {
 			const id = job.attrs._id;
 
 			const props = job.toJSON();
-			// delete props._id;
-			// delete props.unique;
-			// delete props.uniqueOpts;
+
 
 			// Store name of agenda queue as last modifier in job data
 			props.lastModifiedBy = this._name;

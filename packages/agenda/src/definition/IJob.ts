@@ -18,7 +18,7 @@ export interface IJob {
 
 	priority?: number;
 
-	failReason?: string | Error;
+	failReason?: string;
 	failCount?: number;
 
 	lastModifiedBy?: string;
