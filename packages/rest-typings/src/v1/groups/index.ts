@@ -37,4 +37,3 @@ export * from './GroupsSetReadOnlyProps';
 export * from './GroupsSetTopicProps';
 export * from './GroupsSetTypeProps';
 export * from './GroupsModeratorsProps';
-export * from './GroupsHistoryProps';

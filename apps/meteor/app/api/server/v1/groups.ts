@@ -1,24 +1,22 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
-import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
+import type { IIntegration, IUser, IRoom, RoomType, UserStatus, IMessage } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
-import { isTruthy } from '@rocket.chat/tools';
-import { check, Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
-import type { Filter } from 'mongodb';
-import {IMessage} from '@rocket.chat/core-typings'
+import type { PaginatedRequest, GroupsBaseProps } from '@rocket.chat/rest-typings';
 import {
+	isGroupsOnlineProps,
+	isGroupsMessagesProps,
+	isGroupsFilesProps,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
-	PaginatedRequest, 
-	withGroupBaseProperties, 
-	GroupsBaseProps, 
-	
+	withGroupBaseProperties,
 } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
+import { check, Match } from 'meteor/check';
+import { Meteor } from 'meteor/meteor';
+import type { Filter } from 'mongodb';
 
-import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoom } from '../../../../server/lib/findUsersOfRoom';
 import { openRoom } from '../../../../server/lib/openRoom';
@@ -43,6 +41,7 @@ import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -87,21 +86,21 @@ const groupsHistoryPropsSchema = withGroupBaseProperties({
 const isGroupsHistoryProps = ajv.compile<GroupsHistoryProps>(groupsHistoryPropsSchema);
 
 const isGroupsHistoryReponse = ajv.compile({
-    type: 'object',
-    properties: {
-        success: { type: 'boolean', enum: [true] },
-        messages: {
-            type: 'array',
-            items: { $ref: '#/components/schemas/IMessage' },
-        },
-        count: { type: 'integer' },
-        offset: { type: 'integer' },
-        total: { type: 'integer' },
-        unreadNotLoaded: { type: 'integer' },
-        firstUnread: { $ref: '#/components/schemas/IMessage' }, 
-    },
-    required: ['success', 'messages'],
-    additionalProperties: false,
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		messages: {
+			type: 'array',
+			items: { $ref: '#/components/schemas/IMessage' },
+		},
+		count: { type: 'integer' },
+		offset: { type: 'integer' },
+		total: { type: 'integer' },
+		unreadNotLoaded: { type: 'integer' },
+		firstUnread: { $ref: '#/components/schemas/IMessage' },
+	},
+	required: ['success', 'messages'],
+	additionalProperties: false,
 });
 
 const groupsHistoryEndpoints = API.v1.get(
@@ -167,7 +166,6 @@ const groupsHistoryEndpoints = API.v1.get(
 		return API.v1.success(result as { messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number });
 	},
 );
-
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -619,7 +617,6 @@ API.v1.addRoute(
 		},
 	},
 );
-
 
 API.v1.addRoute(
 	'groups.info',
@@ -1375,7 +1372,6 @@ API.v1.addRoute(
 		},
 	},
 );
-
 
 export type GroupsHistoryEndpoints = ExtractRoutesFromAPI<typeof groupsHistoryEndpoints>;
 
