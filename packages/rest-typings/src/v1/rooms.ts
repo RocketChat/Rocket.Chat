@@ -363,10 +363,13 @@ type RoomsSaveRoomSettingsProps = {
 	roomTopic?: string;
 	roomAnnouncement?: string;
 	roomDescription?: string;
+	roomCustomFields?: Record<string, any>;
 	roomType?: IRoom['t'];
 	readOnly?: boolean;
 	reactWhenReadOnly?: boolean;
+	systemMessages?: string[];
 	default?: boolean;
+	joinCode?: string;
 	encrypted?: boolean;
 	favorite?: {
 		defaultValue: boolean;
@@ -410,6 +413,10 @@ const RoomsSaveRoomSettingsSchema = {
 			type: 'string',
 			nullable: true,
 		},
+		roomCustomFields: {
+			type: 'object',
+			nullable: true,
+		},
 		roomType: {
 			type: 'string',
 			nullable: true,
@@ -422,8 +429,17 @@ const RoomsSaveRoomSettingsSchema = {
 			type: 'boolean',
 			nullable: true,
 		},
+		systemMessages: {
+			type: 'array',
+			items: { type: 'string' },
+			nullable: true,
+		},
 		default: {
 			type: 'boolean',
+			nullable: true,
+		},
+		joinCode: {
+			type: 'string',
 			nullable: true,
 		},
 		encrypted: {
