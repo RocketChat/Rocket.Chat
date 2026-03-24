@@ -5364,4 +5364,113 @@ describe('[Users]', () => {
 				});
 		});
 	});
+
+	describe('[/users.createToken]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.createToken'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body is missing required fields', async () => {
+			await request
+				.post(api('users.createToken'))
+				.set(credentials)
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
+
+	describe('[/users.resetE2EKey]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.resetE2EKey'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body has invalid properties', async () => {
+			await request
+				.post(api('users.resetE2EKey'))
+				.set(credentials)
+				.send({ invalidProp: true })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
+
+	describe('[/users.resetTOTP]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.resetTOTP'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+
+		it('should return 400 when body has invalid properties', async () => {
+			await request
+				.post(api('users.resetTOTP'))
+				.set(credentials)
+				.send({ invalidProp: true })
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
+
+	describe('[/users.2fa.enableEmail]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.2fa.enableEmail'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+	});
+
+	describe('[/users.2fa.disableEmail]', () => {
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.post(api('users.2fa.disableEmail'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
+	});
+
+	describe('[/users.2fa.sendEmailCode]', () => {
+		it('should return 400 when emailOrUsername is missing', async () => {
+			await request
+				.post(api('users.2fa.sendEmailCode'))
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('success', false);
+				});
+		});
+	});
 });
