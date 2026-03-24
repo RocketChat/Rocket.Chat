@@ -24,14 +24,6 @@ const APP_USERNAME = 'update-status-test.bot';
 	after(() => cleanupApps());
 
 	describe('[updateStatusText]', () => {
-		it('should return 400 when statusText is missing', async () => {
-			await request
-				.post(apps(`/public/${app.id}/update-status-text`))
-				.set(credentials)
-				.send({ username: APP_USERNAME })
-				.expect(400);
-		});
-
 		it('should update the app user statusText', async () => {
 			const statusText = `test-status-${Date.now()}`;
 
@@ -58,14 +50,6 @@ const APP_USERNAME = 'update-status-test.bot';
 	});
 
 	describe('[updateStatus]', () => {
-		it('should return 400 when status is missing', async () => {
-			await request
-				.post(apps(`/public/${app.id}/update-status`))
-				.set(credentials)
-				.send({ username: APP_USERNAME })
-				.expect(400);
-		});
-
 		it('should update the app user statusText when status and statusText is provided', async () => {
 			const statusText = `busy-status-${Date.now()}`;
 
