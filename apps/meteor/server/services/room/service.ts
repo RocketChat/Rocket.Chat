@@ -148,6 +148,16 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return performAcceptRoomInvite(room, subscription, user);
 	}
 
+	async revokeInvite(room: IRoom, user: IUser): Promise<void> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+		if (!subscription || subscription.status !== 'INVITED') {
+			return;
+		}
+
+		await Subscriptions.removeById(subscription._id);
+		void notifyOnSubscriptionChangedByRoomIdAndUserId(room._id, user._id, 'removed');
+	}
+
 	async getValidRoomName(displayName: string, roomId = '', options: { allowDuplicates?: boolean } = {}): Promise<string> {
 		return getValidRoomName(displayName, roomId, options);
 	}
