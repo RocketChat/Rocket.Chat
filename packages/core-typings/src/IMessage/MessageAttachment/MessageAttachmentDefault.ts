@@ -1,5 +1,6 @@
 import type { Root } from '@rocket.chat/message-parser';
 
+import type { MessageAttachment } from './MessageAttachment';
 import type { MessageAttachmentBase } from './MessageAttachmentBase';
 
 export type MarkdownFields = 'text' | 'pretext' | 'fields';
@@ -32,4 +33,6 @@ export type MessageAttachmentDefault = {
 	thumb_url?: string;
 
 	color?: string;
+
+	attachments?: MessageAttachment[];
 } & MessageAttachmentBase;
