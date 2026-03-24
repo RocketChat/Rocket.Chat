@@ -745,3 +745,95 @@ Weak types detected:
 | Router implementation            | `packages/http-router/src/Router.ts`             |
 | Unmigrated endpoints script      | `scripts/list-unmigrated-api-endpoints.mjs`      |
 | Weak types analysis script       | `scripts/analyze-weak-types.mjs`                 |
+
+## Post-Migration Cleanup Checklist
+
+After migrating endpoints, run through these improvements to maximize quality. These are not blocking but should be addressed before the migration is considered complete.
+
+### 1. Extract shared schemas
+
+Avoid duplicating the same schema inline across endpoints. Common patterns to extract:
+
+```typescript
+// Void success — reuse across all endpoints returning only { success: true }
+const voidSuccessResponse = ajv.compile<void>({
+  type: 'object',
+  properties: { success: { type: 'boolean', enum: [true] } },
+  required: ['success'],
+  additionalProperties: false,
+});
+
+// Paginated response — reuse for list endpoints
+const paginatedUsersResponse = ajv.compile<{ users: IUser[]; count: number; offset: number; total: number }>({
+  type: 'object',
+  properties: {
+    users: { type: 'array' },
+    count: { type: 'number' },
+    offset: { type: 'number' },
+    total: { type: 'number' },
+    success: { type: 'boolean', enum: [true] },
+  },
+  required: ['users', 'count', 'offset', 'total', 'success'],
+  additionalProperties: false,
+});
+
+// User identifier body — reuse for endpoints accepting userId/username/user
+const userIdentifierBodySchema = ajv.compile<{ userId?: string; username?: string; user?: string }>({
+  type: 'object',
+  properties: {
+    userId: { type: 'string' },
+    username: { type: 'string' },
+    user: { type: 'string' },
+  },
+  additionalProperties: false,
+});
+```
+
+**Important:** Declare shared `const` schemas **before** their first usage to avoid temporal dead zone (TDZ) errors. JavaScript `const` is not hoisted.
+
+### 2. Strengthen relaxed object schemas
+
+After initial migration, review schemas using `{ type: 'object' }` without `properties`. These pass any object shape through without validation.
+
+**Acceptable cases** (document with a comment):
+- Dynamic/schemaless objects (e.g., user preferences, custom fields)
+- Complex types not yet in typia (e.g., `IExportOperation`)
+
+**Should be fixed:**
+- Types that have a `$ref` available (e.g., `IUser` → `{ $ref: '#/components/schemas/IUser' }`)
+- Array items without schema (e.g., `{ type: 'array' }` → `{ type: 'array', items: { $ref: '...' } }`)
+
+Run `node scripts/analyze-weak-types.mjs --schema-only` to find all instances.
+
+### 3. Add `authRequired: false` explicitly
+
+Endpoints that are intentionally public should declare `authRequired: false` explicitly rather than relying on the default. This makes the intent clear and self-documenting.
+
+### 4. Add OpenAPI tags
+
+Endpoints without `tags` in their options are excluded from the generated OpenAPI spec. Add appropriate tags:
+
+```typescript
+{
+  authRequired: true,
+  tags: ['Users'],
+  // ...
+}
+```
+
+### 5. Create a changeset
+
+If the migration changes error types (e.g., `'invalid-params'` → `'error-invalid-params'`), this is a breaking change for API consumers matching on `errorType`. Create a changeset:
+
+```bash
+yarn changeset
+```
+
+Use `minor` bump for the affected packages and document the error type change.
+
+### 6. Add missing test coverage
+
+For each migrated endpoint, verify:
+- **Validator tests** exist for the body/query schema (valid, invalid, extra properties)
+- **E2E tests** cover success (200), unauthorized (401), invalid params (400), and forbidden (403) cases
+- **Error type assertions** use `'error-invalid-params'` (not the old `'invalid-params'`)
