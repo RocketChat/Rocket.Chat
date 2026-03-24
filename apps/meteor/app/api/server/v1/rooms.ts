@@ -22,6 +22,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -958,55 +959,73 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.membersOrderedByRole',
-	{ authRequired: true, validateParams: isRoomsMembersOrderedByRoleProps },
 	{
-		async get() {
-			const findResult = await findRoomByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
-			});
-
-			if (!(await canAccessRoomAsync(findResult, this.user))) {
-				return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any room');
-			}
-
-			if (!isPublicRoom(findResult) && !isPrivateRoom(findResult)) {
-				return API.v1.failure('error-room-type-not-supported');
-			}
-
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
-				return API.v1.unauthorized();
-			}
-
-			// Ensures that role priorities for the specified room are synchronized correctly.
-			// This function acts as a soft migration. If the `roomRolePriorities` field
-			// for the room has already been created and is up-to-date, no updates will be performed.
-			// If not, it will synchronize the role priorities of the users of the room.
-			await syncRolePrioritiesForRoomIfRequired(findResult._id);
-
-			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
-			const { sort = {} } = await this.parseJsonQuery();
-
-			const { status, filter } = this.queryParams;
-
-			const { members, total } = await findUsersOfRoomOrderedByRole({
-				rid: findResult._id,
-				...(status && { status: { $in: status } }),
-				skip,
-				limit,
-				filter,
-				sort,
-			});
-
-			return API.v1.success({
-				members,
-				count: members.length,
-				offset: skip,
-				total,
-			});
+		authRequired: true,
+		query: isRoomsMembersOrderedByRoleProps,
+		response: {
+			200: ajv.compile<{ members: IUser[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					members: { type: 'array', items: { type: 'object' } },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['members', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findRoomByIdOrName({
+			params: this.queryParams,
+			checkedArchived: false,
+		});
+
+		if (!(await canAccessRoomAsync(findResult, this.user))) {
+			return API.v1.notFound('The required "roomId" or "roomName" param provided does not match any room');
+		}
+
+		if (!isPublicRoom(findResult) && !isPrivateRoom(findResult)) {
+			return API.v1.failure('error-room-type-not-supported');
+		}
+
+		if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+			return API.v1.unauthorized();
+		}
+
+		// Ensures that role priorities for the specified room are synchronized correctly.
+		// This function acts as a soft migration. If the `roomRolePriorities` field
+		// for the room has already been created and is up-to-date, no updates will be performed.
+		// If not, it will synchronize the role priorities of the users of the room.
+		await syncRolePrioritiesForRoomIfRequired(findResult._id);
+
+		const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+		const { sort = {} } = await this.parseJsonQuery();
+
+		const { status, filter } = this.queryParams;
+
+		const { members, total } = await findUsersOfRoomOrderedByRole({
+			rid: findResult._id,
+			...(status && { status: { $in: status } }),
+			skip,
+			limit,
+			filter,
+			sort,
+		});
+
+		return API.v1.success({
+			members,
+			count: members.length,
+			offset: skip,
+			total,
+		});
 	},
 );
 
