@@ -272,9 +272,11 @@ const RoomsExportSchema = {
 
 export const isRoomsExportProps = ajv.compile<RoomsExportProps>(RoomsExportSchema);
 
+type AdminRoomType = 'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams';
+
 type RoomsAdminRoomsProps = PaginatedRequest<{
 	filter?: string;
-	types?: string[];
+	types?: AdminRoomType[];
 }>;
 
 const RoomsAdminRoomsSchema = {
@@ -288,6 +290,7 @@ const RoomsAdminRoomsSchema = {
 			type: 'array',
 			items: {
 				type: 'string',
+				enum: ['c', 'd', 'p', 'l', 'discussions', 'teams'],
 			},
 			nullable: true,
 		},
@@ -312,7 +315,7 @@ const RoomsAdminRoomsSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAdminRoomsProps = ajv.compile<RoomsAdminRoomsProps>(RoomsAdminRoomsSchema);
+export const isRoomsAdminRoomsProps = ajvQuery.compile<RoomsAdminRoomsProps>(RoomsAdminRoomsSchema);
 
 type RoomsAdminRoomsGetRoomProps = { rid?: string };
 
@@ -363,8 +366,8 @@ type RoomsSaveRoomSettingsProps = {
 	default?: boolean;
 	encrypted?: boolean;
 	favorite?: {
-		defaultValue?: boolean;
-		favorite?: boolean;
+		defaultValue: boolean;
+		favorite: boolean;
 	};
 	retentionEnabled?: boolean;
 	retentionMaxAge?: number;
@@ -429,13 +432,12 @@ const RoomsSaveRoomSettingsSchema = {
 			properties: {
 				defaultValue: {
 					type: 'boolean',
-					nullable: true,
 				},
 				favorite: {
 					type: 'boolean',
-					nullable: true,
 				},
 			},
+			required: ['defaultValue', 'favorite'],
 			nullable: true,
 		},
 		retentionEnabled: { type: 'boolean', nullable: true },

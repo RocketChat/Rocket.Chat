@@ -1,5 +1,13 @@
 import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
-import { type IRoom, type IUpload, type RequiredField, isPrivateRoom, isPublicRoom, type IUser } from '@rocket.chat/core-typings';
+import {
+	type IRoom,
+	type IUpload,
+	type RequiredField,
+	type RoomAdminFieldsType,
+	isPrivateRoom,
+	isPublicRoom,
+	type IUser,
+} from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
@@ -19,6 +27,14 @@ import {
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
 	isRoomsInviteProps,
+	isRoomsCreateDiscussionProps,
+	isRoomsAdminRoomsProps,
+	isRoomsAutocompleteAdminRoomsPayload,
+	isRoomsAdminRoomsGetRoomProps,
+	isRoomsAutoCompleteChannelAndPrivateProps,
+	isRoomsAutocompleteChannelAndPrivateWithPaginationProps,
+	isRoomsAutocompleteAvailableForTeamsProps,
+	isRoomsSaveRoomSettingsProps,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
@@ -507,40 +523,41 @@ TO-DO: 8.0.0 should use the ajv validation
 which will change this endpoint's
 response errors.
 */
-API.v1.addRoute(
+API.v1.post(
 	'rooms.createDiscussion',
-	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
-		async post() {
-			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
-			if (!prid) {
-				return API.v1.failure('Body parameter "prid" is required.');
-			}
-			if (!t_name) {
-				return API.v1.failure('Body parameter "t_name" is required.');
-			}
-			if (users && !Array.isArray(users)) {
-				return API.v1.failure('Body parameter "users" must be an array.');
-			}
-
-			if (encrypted !== undefined && typeof encrypted !== 'boolean') {
-				return API.v1.failure('Body parameter "encrypted" must be a boolean when included.');
-			}
-
-			const discussion = await applyAirGappedRestrictionsValidation(() =>
-				createDiscussion(this.userId, {
-					prid,
-					pmid,
-					t_name,
-					reply,
-					users: users?.filter(isTruthy) || [],
-					encrypted,
-					topic,
-				}),
-			);
-
-			return API.v1.success({ discussion });
+		authRequired: true,
+		body: isRoomsCreateDiscussionProps,
+		response: {
+			200: ajv.compile<{ discussion: IRoom }>({
+				type: 'object',
+				properties: {
+					discussion: { type: 'object' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['discussion', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
+
+		const discussion = await applyAirGappedRestrictionsValidation(() =>
+			createDiscussion(this.userId, {
+				prid,
+				pmid,
+				t_name,
+				reply,
+				users: users?.filter(isTruthy) || [],
+				encrypted,
+				topic,
+			}),
+		);
+
+		return API.v1.success({ discussion });
 	},
 );
 
@@ -654,150 +671,235 @@ API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.adminRooms',
-	{ authRequired: true },
 	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-			const { types, filter } = this.queryParams;
-
-			return API.v1.success(
-				await findAdminRooms({
-					uid: this.userId,
-					filter: filter || '',
-					types: (types && !Array.isArray(types) ? [types] : types) ?? [],
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+		authRequired: true,
+		query: isRoomsAdminRoomsProps,
+		response: {
+			200: ajv.compile<{ rooms: IRoom[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
+					rooms: { type: 'array', items: { type: 'object' } },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['rooms', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
 	},
-);
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+		const { types, filter } = this.queryParams;
 
-API.v1.addRoute(
-	'rooms.autocomplete.adminRooms',
-	{ authRequired: true },
-	{
-		async get() {
-			const { selector } = this.queryParams;
-			if (!selector) {
-				return API.v1.failure("The 'selector' param is required");
-			}
-
-			return API.v1.success(
-				await findAdminRoomsAutocomplete({
-					uid: this.userId,
-					selector: JSON.parse(selector),
-				}),
-			);
-		},
-	},
-);
-
-API.v1.addRoute(
-	'rooms.adminRooms.getRoom',
-	{ authRequired: true },
-	{
-		async get() {
-			const { rid } = this.queryParams;
-			const room = await findAdminRoom({
+		return API.v1.success(
+			await findAdminRooms({
 				uid: this.userId,
-				rid: rid || '',
-			});
-
-			if (!room) {
-				return API.v1.failure('not-allowed', 'Not Allowed');
-			}
-			return API.v1.success(room);
-		},
+				filter: filter || '',
+				types: types ?? [],
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			}),
+		);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
+	'rooms.autocomplete.adminRooms',
+	{
+		authRequired: true,
+		query: isRoomsAutocompleteAdminRoomsPayload,
+		response: {
+			200: ajv.compile<{ items: IRoom[] }>({
+				type: 'object',
+				properties: {
+					items: { type: 'array', items: { type: 'object' } },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['items', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { selector } = this.queryParams;
+
+		return API.v1.success(
+			await findAdminRoomsAutocomplete({
+				uid: this.userId,
+				selector: JSON.parse(selector),
+			}),
+		);
+	},
+);
+
+API.v1.get(
+	'rooms.adminRooms.getRoom',
+	{
+		authRequired: true,
+		query: isRoomsAdminRoomsGetRoomProps,
+		response: {
+			200: ajv.compile<Pick<IRoom, RoomAdminFieldsType>>({
+				allOf: [
+					{ $ref: '#/components/schemas/IRoomAdmin' },
+					{ type: 'object', properties: { success: { type: 'boolean', enum: [true] } }, required: ['success'] },
+				],
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+		},
+	},
+	async function action() {
+		const { rid } = this.queryParams;
+		const room = await findAdminRoom({
+			uid: this.userId,
+			rid: rid || '',
+		});
+
+		if (!room) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
+		return API.v1.success(room);
+	},
+);
+
+API.v1.get(
 	'rooms.autocomplete.channelAndPrivate',
-	{ authRequired: true },
 	{
-		async get() {
-			const { selector } = this.queryParams;
-			if (!selector) {
-				return API.v1.failure("The 'selector' param is required");
-			}
-
-			return API.v1.success(
-				await findChannelAndPrivateAutocomplete({
-					uid: this.userId,
-					selector: JSON.parse(selector),
-				}),
-			);
+		authRequired: true,
+		query: isRoomsAutoCompleteChannelAndPrivateProps,
+		response: {
+			200: ajv.compile<{ items: IRoom[] }>({
+				type: 'object',
+				properties: {
+					items: { type: 'array', items: { type: 'object' } },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['items', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { selector } = this.queryParams;
+
+		return API.v1.success(
+			await findChannelAndPrivateAutocomplete({
+				uid: this.userId,
+				selector: JSON.parse(selector),
+			}),
+		);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.autocomplete.channelAndPrivate.withPagination',
-	{ authRequired: true },
 	{
-		async get() {
-			const { selector } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-
-			if (!selector) {
-				return API.v1.failure("The 'selector' param is required");
-			}
-
-			return API.v1.success(
-				await findChannelAndPrivateAutocompleteWithPagination({
-					uid: this.userId,
-					selector: JSON.parse(selector),
-					pagination: {
-						offset,
-						count,
-						sort,
-					},
-				}),
-			);
+		authRequired: true,
+		query: isRoomsAutocompleteChannelAndPrivateWithPaginationProps,
+		response: {
+			200: ajv.compile<{ items: IRoom[]; total: number }>({
+				type: 'object',
+				properties: {
+					items: { type: 'array', items: { type: 'object' } },
+					total: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['items', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { selector } = this.queryParams;
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+
+		return API.v1.success(
+			await findChannelAndPrivateAutocompleteWithPagination({
+				uid: this.userId,
+				selector: JSON.parse(selector),
+				pagination: {
+					offset,
+					count,
+					sort,
+				},
+			}),
+		);
 	},
 );
 
-API.v1.addRoute(
+API.v1.get(
 	'rooms.autocomplete.availableForTeams',
-	{ authRequired: true },
 	{
-		async get() {
-			const { name } = this.queryParams;
-
-			if (name && typeof name !== 'string') {
-				return API.v1.failure("The 'name' param is invalid");
-			}
-
-			return API.v1.success(
-				await findRoomsAvailableForTeams({
-					uid: this.userId,
-					name: name || '',
-				}),
-			);
+		authRequired: true,
+		query: isRoomsAutocompleteAvailableForTeamsProps,
+		response: {
+			200: ajv.compile<{ items: IRoom[] }>({
+				type: 'object',
+				properties: {
+					items: { type: 'array', items: { type: 'object' } },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['items', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { name } = this.queryParams;
+
+		return API.v1.success(
+			await findRoomsAvailableForTeams({
+				uid: this.userId,
+				name,
+			}),
+		);
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'rooms.saveRoomSettings',
-	{ authRequired: true },
 	{
-		async post() {
-			const { rid, ...params } = this.bodyParams;
-
-			const result = await saveRoomSettings(this.userId, rid, params);
-
-			return API.v1.success({ rid: result.rid });
+		authRequired: true,
+		body: isRoomsSaveRoomSettingsProps,
+		response: {
+			200: ajv.compile<{ rid: string }>({
+				type: 'object',
+				properties: {
+					rid: { type: 'string' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['rid', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { rid, ...params } = this.bodyParams;
+
+		const result = await saveRoomSettings(this.userId, rid, params);
+
+		return API.v1.success({ rid: result.rid });
 	},
 );
 
