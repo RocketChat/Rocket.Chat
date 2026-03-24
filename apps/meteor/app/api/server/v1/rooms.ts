@@ -869,7 +869,7 @@ API.v1.get(
 		return API.v1.success(
 			await findRoomsAvailableForTeams({
 				uid: this.userId,
-				name,
+				name: name || '',
 			}),
 		);
 	},
