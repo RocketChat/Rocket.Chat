@@ -266,7 +266,7 @@ describe('LIVECHAT - rooms', () => {
 		it('should return an error when the "tags" query parameter is not valid', async () => {
 			await request
 				.get(api('livechat/rooms'))
-				.query({ tags: 'invalid' })
+				.query({ tags: { obj: true } })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(400)
