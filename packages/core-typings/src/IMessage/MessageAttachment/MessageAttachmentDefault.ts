@@ -37,5 +37,5 @@ export type MessageAttachmentDefault = {
 	attachments?: MessageAttachment[];
 
 	/** Encrypted content from e2e messages, preserved in pin attachments */
-	content?: object;
+	content?: object; // TODO: check if MessageAttachmentDefault[content] is a valid type it does not seem to be used anywhere
 } & MessageAttachmentBase;
