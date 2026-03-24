@@ -4,6 +4,7 @@ import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import {
 	isCustomSoundsGetOneProps,
 	isCustomSoundsListProps,
+	isCustomSoundsDeleteProps,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateNotFoundErrorResponse,
@@ -12,6 +13,8 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 
+import { SystemLogger } from '../../../../server/lib/logger/system';
+import { deleteCustomSound } from '../../../custom-sounds/server/lib/deleteCustomSound';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
@@ -123,6 +126,48 @@ const customSoundsEndpoints = API.v1
 			}
 
 			return API.v1.success({ sound });
+		},
+	)
+	.post(
+		'custom-sounds.delete',
+		{
+			response: {
+				200: ajv.compile<{ success: boolean }>({
+					additionalProperties: false,
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							description: 'Indicates if the request was successful.',
+						},
+					},
+					required: ['success'],
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+			authRequired: true,
+			body: isCustomSoundsDeleteProps,
+			permissionsRequired: ['manage-sounds'],
+		},
+		async function action() {
+			const { _id } = this.bodyParams;
+
+			try {
+				await deleteCustomSound(_id);
+
+				return API.v1.success({});
+			} catch (error: any) {
+				SystemLogger.error({ error });
+
+				if (error.error === 'Custom_Sound_Error_Invalid_Sound') {
+					return API.v1.notFound('Custom Sound not found.');
+				}
+
+				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
+			}
 		},
 	);
 

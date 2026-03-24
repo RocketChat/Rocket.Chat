@@ -50,3 +50,19 @@ const CustomSoundsListSchema = {
 };
 
 export const isCustomSoundsListProps = ajvQuery.compile<CustomSoundsList>(CustomSoundsListSchema);
+
+type CustomSoundsDelete = { _id: ICustomSound['_id'] };
+
+const CustomSoundsDeleteSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['_id'],
+	additionalProperties: false,
+};
+
+export const isCustomSoundsDeleteProps = ajvQuery.compile<CustomSoundsDelete>(CustomSoundsDeleteSchema);

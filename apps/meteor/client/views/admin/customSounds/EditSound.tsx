@@ -1,6 +1,6 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactElement, SyntheticEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,7 +41,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		setSound(previousSound || '');
 	}, [previousName, previousSound, _id]);
 
-	const deleteCustomSound = useMethod('deleteCustomSound');
+	const deleteCustomSoundEndpoint = useEndpoint('POST', '/v1/custom-sounds.delete');
 	const uploadCustomSound = useMethod('uploadCustomSound');
 	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
 
@@ -103,7 +103,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleDelete = async (): Promise<void> => {
 			try {
-				await deleteCustomSound(_id);
+				await deleteCustomSoundEndpoint({ _id });
 				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Has_Been_Deleted') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -121,7 +121,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				{t('Custom_Sound_Delete_Warning')}
 			</GenericModal>,
 		);
-	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
+	}, [_id, close, deleteCustomSoundEndpoint, dispatchToastMessage, onChange, setModal, t]);
 
 	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
 
