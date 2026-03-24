@@ -217,3 +217,78 @@ describe('Password Policy', () => {
 		expect(policy.policy.length).toBe(1);
 	});
 });
+
+describe('getStrengthScore', () => {
+	// A single policy instance is sufficient — getStrengthScore is policy-config-independent.
+	const policy = new PasswordPolicy({});
+
+	it('should return score 0 / very-weak with zero entropy for an empty string', () => {
+		const result = policy.getStrengthScore('');
+		expect(result.score).toBe(0);
+		expect(result.label).toBe('very-weak');
+		expect(result.entropy).toBe(0);
+	});
+
+	it('should return score 0 / very-weak for non-string input', () => {
+		const result = policy.getStrengthScore(null as any);
+		expect(result.score).toBe(0);
+		expect(result.label).toBe('very-weak');
+		expect(result.entropy).toBe(0);
+	});
+
+	it('should return score 0 (very-weak) for a 5-char lowercase-only password — ~23.5 bits', () => {
+		// pool = 26, entropy = 5 * log2(26) ≈ 23.5 bits  →  < 28 threshold
+		const result = policy.getStrengthScore('abcde');
+		expect(result.score).toBe(0);
+		expect(result.label).toBe('very-weak');
+		expect(result.entropy).toBeGreaterThan(0);
+	});
+
+	it('should return score 1 (weak) for a 6-char lowercase-only password — ~28.2 bits', () => {
+		// pool = 26, entropy = 6 * log2(26) ≈ 28.2 bits  →  [28, 36)
+		const result = policy.getStrengthScore('abcdef');
+		expect(result.score).toBe(1);
+		expect(result.label).toBe('weak');
+	});
+
+	it('should return score 1 (weak) for a 5-char all-class password — ~32.8 bits', () => {
+		// pool = 26+26+10+33 = 95, entropy = 5 * log2(95) ≈ 32.8 bits  →  [28, 36)
+		const result = policy.getStrengthScore('Abc1!');
+		expect(result.score).toBe(1);
+		expect(result.label).toBe('weak');
+	});
+
+	it('should return score 2 (fair) for an 8-char lowercase-only password — ~37.6 bits', () => {
+		// pool = 26, entropy = 8 * log2(26) ≈ 37.6 bits  →  [36, 60)
+		const result = policy.getStrengthScore('abcdefgh');
+		expect(result.score).toBe(2);
+		expect(result.label).toBe('fair');
+	});
+
+	it('should return score 3 (strong) for a 13-char lowercase-only password — ~61.1 bits', () => {
+		// pool = 26, entropy = 13 * log2(26) ≈ 61.1 bits  →  [60, 128)
+		const result = policy.getStrengthScore('abcdefghijklm');
+		expect(result.score).toBe(3);
+		expect(result.label).toBe('strong');
+	});
+
+	it('should return score 3 (strong) for a 10-char all-class password — ~65.7 bits', () => {
+		// pool = 95, entropy = 10 * log2(95) ≈ 65.7 bits  →  [60, 128)
+		const result = policy.getStrengthScore('Abcdef12!@');
+		expect(result.score).toBe(3);
+		expect(result.label).toBe('strong');
+	});
+
+	it('should return score 4 (very-strong) for a 20-char all-class password — ~131.4 bits', () => {
+		// pool = 95, entropy = 20 * log2(95) ≈ 131.4 bits  →  ≥ 128
+		const result = policy.getStrengthScore('AbCdEf1!AbCdEf1!AbCd');
+		expect(result.score).toBe(4);
+		expect(result.label).toBe('very-strong');
+	});
+
+	it('should expose a positive numeric entropy value for any non-empty password', () => {
+		const result = policy.getStrengthScore('hello');
+		expect(typeof result.entropy).toBe('number');
+		expect(result.entropy).toBeGreaterThan(0);
+	});
+});
