@@ -89,7 +89,11 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						)}
 					</MessageNameContainer>
 					{messageType && (
-						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
+						<MessageSystemBody
+							role='document'
+							aria-roledescription={t('system_message_body')}
+							style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}
+						>
 							{messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
