@@ -35,4 +35,7 @@ export type MessageAttachmentDefault = {
 	color?: string;
 
 	attachments?: MessageAttachment[];
+
+	/** Encrypted content from e2e messages, preserved in pin attachments */
+	content?: object;
 } & MessageAttachmentBase;
