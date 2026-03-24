@@ -27,7 +27,7 @@ const RoomsAutoCompleteChannelAndPrivateSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutoCompleteChannelAndPrivateProps = ajv.compile<RoomsAutoCompleteChannelAndPrivateProps>(
+export const isRoomsAutoCompleteChannelAndPrivateProps = ajvQuery.compile<RoomsAutoCompleteChannelAndPrivateProps>(
 	RoomsAutoCompleteChannelAndPrivateSchema,
 );
 
@@ -60,11 +60,11 @@ const RoomsAutocompleteChannelAndPrivateWithPaginationSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps = ajv.compile<RoomsAutocompleteChannelAndPrivateWithPaginationProps>(
+export const isRoomsAutocompleteChannelAndPrivateWithPaginationProps = ajvQuery.compile<RoomsAutocompleteChannelAndPrivateWithPaginationProps>(
 	RoomsAutocompleteChannelAndPrivateWithPaginationSchema,
 );
 
-type RoomsAutocompleteAvailableForTeamsProps = { name: string };
+type RoomsAutocompleteAvailableForTeamsProps = { name?: string };
 
 const RoomsAutocompleteAvailableForTeamsSchema = {
 	type: 'object',
@@ -73,11 +73,11 @@ const RoomsAutocompleteAvailableForTeamsSchema = {
 			type: 'string',
 		},
 	},
-	required: ['name'],
+	required: [],
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteAvailableForTeamsProps = ajv.compile<RoomsAutocompleteAvailableForTeamsProps>(
+export const isRoomsAutocompleteAvailableForTeamsProps = ajvQuery.compile<RoomsAutocompleteAvailableForTeamsProps>(
 	RoomsAutocompleteAvailableForTeamsSchema,
 );
 
@@ -94,7 +94,7 @@ const RoomsAutocompleteAdminRoomsPayloadSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAutocompleteAdminRoomsPayload = ajv.compile<RoomsAutocompleteAdminRoomsPayload>(
+export const isRoomsAutocompleteAdminRoomsPayload = ajvQuery.compile<RoomsAutocompleteAdminRoomsPayload>(
 	RoomsAutocompleteAdminRoomsPayloadSchema,
 );
 
@@ -335,7 +335,7 @@ const RoomsAdminRoomsGetRoomSchema = {
 	additionalProperties: false,
 };
 
-export const isRoomsAdminRoomsGetRoomProps = ajv.compile<RoomsAdminRoomsGetRoomProps>(RoomsAdminRoomsGetRoomSchema);
+export const isRoomsAdminRoomsGetRoomProps = ajvQuery.compile<RoomsAdminRoomsGetRoomProps>(RoomsAdminRoomsGetRoomSchema);
 
 type RoomsChangeArchivationStateProps = { rid: string; action?: string };
 
