@@ -74,10 +74,10 @@ const groupsHistoryPropsSchema = withGroupBaseProperties({
 		type: 'string',
 	},
 	count: {
-		type: 'string',
+		type: 'integer',
 	},
 	offset: {
-		type: 'string',
+		type: 'integer',
 	},
 	sort: {
 		type: 'string',
