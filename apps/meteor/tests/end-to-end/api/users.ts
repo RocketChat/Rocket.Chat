@@ -1969,8 +1969,8 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters [invalid-params]');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters [error-invalid-params]');
 				});
 		});
 
@@ -1988,8 +1988,8 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', 'must NOT have additional properties [invalid-params]');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('error', 'must NOT have additional properties [error-invalid-params]');
 				});
 		});
 
@@ -5255,8 +5255,8 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('invalid-params');
-					expect(res.body.error).to.be.equal('must be equal to one of the allowed values [invalid-params]');
+					expect(res.body.errorType).to.be.equal('error-invalid-params');
+					expect(res.body.error).to.be.equal('must be equal to one of the allowed values [error-invalid-params]');
 				});
 		});
 
@@ -5343,8 +5343,8 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', "must have required property 'email' [invalid-params]");
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('error', "must have required property 'email' [error-invalid-params]");
 				});
 		});
 
