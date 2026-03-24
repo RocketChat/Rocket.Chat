@@ -743,6 +743,162 @@ const dmCreateResponseSchema = ajv.compile<{ room: IRoom & { rid: string } }>({
 	additionalProperties: false,
 });
 
+const paginatedMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; offset: number; count: number; total: number }>({
+	type: 'object',
+	properties: {
+		messages: { type: 'array', items: { type: 'object' } },
+		offset: { type: 'number' },
+		count: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'offset', 'count', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const paginatedImsResponseSchema = ajv.compile<{ ims: IRoom[]; offset: number; count: number; total: number }>({
+	type: 'object',
+	properties: {
+		ims: { type: 'array', items: { type: 'object' } },
+		offset: { type: 'number' },
+		count: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['ims', 'offset', 'count', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const dmMessagesOthersEndpointsProps = {
+	authRequired: true as const,
+	permissionsRequired: ['view-room-administration'],
+	response: {
+		200: paginatedMessagesResponseSchema,
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+	},
+};
+
+const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<typeof dmMessagesOthersEndpointsProps, Path> =>
+	async function action() {
+		if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
+			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
+				route: '/api/v1/im.messages.others',
+			});
+		}
+
+		const { roomId } = this.queryParams;
+		if (!roomId) {
+			throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
+		}
+
+		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(roomId, { projection: { _id: 1, t: 1 } });
+		if (!room || room?.t !== 'd') {
+			throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, { rid: room._id });
+
+		const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [msgs, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		if (!msgs) {
+			throw new Meteor.Error('error-no-messages', 'No messages found');
+		}
+
+		return API.v1.success({
+			messages: await normalizeMessagesForUser(msgs, this.userId),
+			offset,
+			count: msgs.length,
+			total,
+		});
+	};
+
+const dmListEndpointsProps = {
+	authRequired: true as const,
+	response: {
+		200: paginatedImsResponseSchema,
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+	},
+};
+
+const dmListAction = <Path extends string>(_name: Path): TypedAction<typeof dmListEndpointsProps, Path> =>
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort = { name: 1 }, fields } = await this.parseJsonQuery();
+
+		// TODO: CACHE: Add Breaking notice since we removed the query param
+
+		const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' }, { projection: { rid: 1 } })
+			.map((item) => item.rid)
+			.toArray();
+
+		const { cursor, totalCount } = Rooms.findPaginated(
+			{ t: 'd', _id: { $in: subscriptions } },
+			{
+				sort,
+				skip: offset,
+				limit: count,
+				projection: fields,
+			},
+		);
+
+		const [ims, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			ims: await Promise.all(ims.map((room: IRoom) => composeRoomWithLastMessage(room, this.userId))),
+			offset,
+			count: ims.length,
+			total,
+		});
+	};
+
+const dmListEveryoneEndpointsProps = {
+	authRequired: true as const,
+	permissionsRequired: ['view-room-administration'],
+	response: {
+		200: paginatedImsResponseSchema,
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		403: validateForbiddenErrorResponse,
+	},
+};
+
+const dmListEveryoneAction = <Path extends string>(_name: Path): TypedAction<typeof dmListEveryoneEndpointsProps, Path> =>
+	async function action() {
+		const { offset, count }: { offset: number; count: number } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const { cursor, totalCount } = Rooms.findPaginated(
+			{ ...query, t: 'd' },
+			{
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			},
+		);
+
+		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			ims: await Promise.all(rooms.map((room: IRoom) => composeRoomWithLastMessage(room, this.userId))),
+			offset,
+			count: rooms.length,
+			total,
+		});
+	};
+
 const dmEndpoints = API.v1
 	.post('im.delete', dmDeleteEndpointsProps, dmDeleteAction('im.delete'))
 	.post('dm.delete', dmDeleteEndpointsProps, dmDeleteAction('dm.delete'))
@@ -809,121 +965,13 @@ const dmEndpoints = API.v1
 	.get('dm.messages', dmMessagesEndpointsProps, dmMessagesAction('dm.messages'))
 	.get('im.messages', dmMessagesEndpointsProps, dmMessagesAction('im.messages'))
 	.get('dm.history', dmHistoryEndpointsProps, dmHistoryAction('dm.history'))
-	.get('im.history', dmHistoryEndpointsProps, dmHistoryAction('im.history'));
-
-API.v1.addRoute(
-	['dm.messages.others', 'im.messages.others'],
-	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
-	{
-		async get() {
-			if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
-				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
-					route: '/api/v1/im.messages.others',
-				});
-			}
-
-			const { roomId } = this.queryParams;
-			if (!roomId) {
-				throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
-			}
-
-			const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(roomId, { projection: { _id: 1, t: 1 } });
-			if (!room || room?.t !== 'd') {
-				throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-			const ourQuery = Object.assign({}, query, { rid: room._id });
-
-			const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
-				sort: sort || { ts: -1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [msgs, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			if (!msgs) {
-				throw new Meteor.Error('error-no-messages', 'No messages found');
-			}
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(msgs, this.userId),
-				offset,
-				count: msgs.length,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	['dm.list', 'im.list'],
-	{ authRequired: true },
-	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort = { name: 1 }, fields } = await this.parseJsonQuery();
-
-			// TODO: CACHE: Add Breaking notice since we removed the query param
-
-			const subscriptions = await Subscriptions.find({ 'u._id': this.userId, 't': 'd' }, { projection: { rid: 1 } })
-				.map((item) => item.rid)
-				.toArray();
-
-			const { cursor, totalCount } = Rooms.findPaginated(
-				{ t: 'd', _id: { $in: subscriptions } },
-				{
-					sort,
-					skip: offset,
-					limit: count,
-					projection: fields,
-				},
-			);
-
-			const [ims, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				ims: await Promise.all(ims.map((room: IRoom) => composeRoomWithLastMessage(room, this.userId))),
-				offset,
-				count: ims.length,
-				total,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	['dm.list.everyone', 'im.list.everyone'],
-	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
-	{
-		async get() {
-			const { offset, count }: { offset: number; count: number } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const { cursor, totalCount } = Rooms.findPaginated(
-				{ ...query, t: 'd' },
-				{
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-					projection: fields,
-				},
-			);
-
-			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				ims: await Promise.all(rooms.map((room: IRoom) => composeRoomWithLastMessage(room, this.userId))),
-				offset,
-				count: rooms.length,
-				total,
-			});
-		},
-	},
-);
+	.get('im.history', dmHistoryEndpointsProps, dmHistoryAction('im.history'))
+	.get('dm.messages.others', dmMessagesOthersEndpointsProps, dmMessagesOthersAction('dm.messages.others'))
+	.get('im.messages.others', dmMessagesOthersEndpointsProps, dmMessagesOthersAction('im.messages.others'))
+	.get('dm.list', dmListEndpointsProps, dmListAction('dm.list'))
+	.get('im.list', dmListEndpointsProps, dmListAction('im.list'))
+	.get('dm.list.everyone', dmListEveryoneEndpointsProps, dmListEveryoneAction('dm.list.everyone'))
+	.get('im.list.everyone', dmListEveryoneEndpointsProps, dmListEveryoneAction('im.list.everyone'));
 
 export type DmEndpoints = ExtractRoutesFromAPI<typeof dmEndpoints>;
 
