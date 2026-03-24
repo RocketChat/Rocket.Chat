@@ -9,6 +9,7 @@ import type {
 	AtLeast,
 	ILivechatAgentStatus,
 	IMeteorLoginToken,
+	IRoom,
 } from '@rocket.chat/core-typings';
 import type {
 	Document,
@@ -165,6 +166,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
 	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
+	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>): FindCursor<IUser>;
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
 
