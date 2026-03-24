@@ -171,7 +171,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					...data,
 					...((data.joinCode || 'joinCodeRequired' in data) && { joinCode: joinCodeRequired ? data.joinCode : '' }),
 					...((data.systemMessages || !hideSysMes) && {
-						systemMessages: hideSysMes && data.systemMessages,
+						systemMessages: data.systemMessages,
 					}),
 					retentionEnabled,
 					retentionOverrideGlobal,

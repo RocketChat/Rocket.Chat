@@ -288,6 +288,8 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
+	public failure(): FailureResult<string>;
+
 	public failure<T>(result?: T): FailureResult<T>;
 
 	public failure<T, TErrorType extends string, TStack extends string, TErrorDetails>(
@@ -362,6 +364,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			},
 		};
 	}
+
+	public unauthorized(): UnauthorizedResult<string>;
+
+	public unauthorized<T>(msg: T): UnauthorizedResult<T>;
 
 	public unauthorized<T>(msg?: T): UnauthorizedResult<T> {
 		return {

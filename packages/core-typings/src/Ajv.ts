@@ -17,7 +17,7 @@ import type { IModerationAudit, IModerationReport } from './IModerationReport';
 import type { IOAuthApps } from './IOAuthApps';
 import type { IPermission } from './IPermission';
 import type { IRole } from './IRole';
-import type { IRoom, IDirectoryChannelResult } from './IRoom';
+import type { IRoom, IDirectoryChannelResult, IRoomAdmin } from './IRoom';
 import type { ISubscription } from './ISubscription';
 import type { IUser, IDirectoryUserResult } from './IUser';
 import type { VideoConference, VideoConferenceInstructions } from './IVideoConference';
@@ -42,6 +42,7 @@ export const schemas = typia.json.schemas<
 			| ICalendarEvent
 			| IRole
 			| IRoom
+			| IRoomAdmin
 			| IDirectoryChannelResult
 			| IUser
 			| IDirectoryUserResult

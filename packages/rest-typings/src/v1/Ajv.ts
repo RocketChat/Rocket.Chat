@@ -8,9 +8,9 @@ const ajv = new Ajv({
 	discriminator: true,
 });
 
-/** AJV instance for query param validation; coerces types (e.g. string "50" → number) for URL query strings. */
+/** AJV instance for query param validation; coerces types (e.g. string "50" → number, "c" → ["c"]) for URL query strings. */
 const ajvQuery = new Ajv({
-	coerceTypes: true,
+	coerceTypes: 'array',
 	allowUnionTypes: true,
 	code: { source: true },
 	discriminator: true,
