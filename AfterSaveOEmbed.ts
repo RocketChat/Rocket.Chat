@@ -120,8 +120,8 @@ if (isIgnoredHost(urlObj.hostname)) {
 
 const safePorts = settings
   .get<string>('API_EmbedSafePorts')
-  .replace(/\s/g, '')
   .split(',')
+  .map((p) => p.trim())
   .filter(Boolean);
 
 if (safePorts.length > 0 && urlObj.port && !safePorts.includes(urlObj.port)) {
@@ -137,9 +137,9 @@ if (
 }
 
 const data = beforeGetUrlContent({ urlObj });
+
 const fetchUrlObj = data.urlObj;
 
-// 🔥 NEW VALIDATION
 if (isIgnoredHost(fetchUrlObj.hostname)) {
   throw new Error('host is ignored');
 }
@@ -366,21 +366,28 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 
 	log.debug({ msg: 'URLs found in message', count: message.urls.length });
 
-	if (message.attachments && message.attachments.length > 0) {
-		log.debug({ msg: 'All URLs ignored for OEmbed' });
-		return message;		
-	}
+if (message.attachments && message.attachments.length > 0) {
+	log.debug({ msg: 'All URLs ignored for OEmbed' });
+	return message;
+}
 
-
-let changed: boolean = false;
 const urlsToProcess = message.urls.filter((item) => {
-    if (item.ignoreParse === true) {
-        log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
-        return false;
-    }
-    return true;
+	if (item.ignoreParse === true) {
+		log.debug({ msg: 'URL ignored for OEmbed', url: item.url });
+		return false;
+	}
+	return true;
 });
 
+if (
+	urlsToProcess.filter((item) => !item.url.includes(settings.get('Site_Url'))).length >
+	MAX_EXTERNAL_URL_PREVIEWS
+) {
+	log.debug({ msg: 'All URLs ignored for OEmbed' });
+	return message;
+}
+
+let changed: boolean = false;
 const BATCH_SIZE = 5;
 const results: PromiseSettledResult<{
   urlPreview: MessageUrl;
