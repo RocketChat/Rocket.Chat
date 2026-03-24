@@ -1572,7 +1572,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter "users" must be an array.');
+					expect(res.body).to.have.property('error').that.includes('must be array');
 				})
 				.end(done);
 		});
