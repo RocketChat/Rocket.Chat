@@ -624,7 +624,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// user shape varies by projection and permissions
-				users: { type: 'array' },
+					users: { type: 'array' },
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -754,7 +754,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// user shape varies by projection and permissions
-				users: { type: 'array' },
+					users: { type: 'array' },
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -1084,7 +1084,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// preferences is a dynamic key-value object that varies per user
-				preferences: { type: 'object' },
+					preferences: { type: 'object' },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['preferences', 'success'],
@@ -1494,7 +1494,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// user shape varies by projection and permissions
-				users: { type: 'array' },
+					users: { type: 'array' },
 					full: { type: 'boolean' },
 					success: { type: 'boolean', enum: [true] },
 				},
@@ -1564,7 +1564,7 @@ API.v1
 					properties: {
 						requested: { type: 'boolean' },
 						// IExportOperation has complex/dynamic shape not yet in typia
-					exportOperation: { type: 'object' },
+						exportOperation: { type: 'object' },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['requested', 'exportOperation', 'success'],
@@ -1647,7 +1647,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// autocomplete items shape varies by permissions
-				items: { type: 'array' },
+					items: { type: 'array' },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['items', 'success'],
@@ -2041,7 +2041,7 @@ API.v1
 			},
 		},
 		async function action() {
-			if (!isUserFromParams(this.queryParams, this.userId, this.user)) {
+			if (isUserFromParams(this.queryParams, this.userId, this.user)) {
 				return API.v1.success({
 					_id: this.userId,
 					// message: user.statusText,
