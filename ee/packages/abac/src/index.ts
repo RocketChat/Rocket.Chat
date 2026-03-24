@@ -43,7 +43,7 @@ const limit = pLimit(20);
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
-	private pdp!: IPolicyDecisionPoint;
+	private pdp: IPolicyDecisionPoint | null = null;
 
 	private externalPdpConfig: ExternalPDPConfig = {
 		baseUrl: '',
@@ -58,7 +58,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	constructor() {
 		super();
-		this.setPdpStrategy('local');
 
 		this.onSettingChanged('ABAC_PDP_Type', async ({ setting }): Promise<void> => {
 			const { value } = setting;
@@ -98,6 +97,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	setPdpStrategy(strategy: 'local' | 'external'): void {
+		const previousPdp = this.pdp ? this.pdp.constructor.name : 'none';
+
 		switch (strategy) {
 			case 'external':
 				this.pdp = new ExternalPDP({ ...this.externalPdpConfig });
@@ -107,6 +108,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 				this.pdp = new LocalPDP();
 				break;
 		}
+
+		logger.warn({
+			msg: '>>> PDP STRATEGY CHANGED <<<',
+			from: previousPdp,
+			to: this.pdp.constructor.name,
+			requestedStrategy: strategy,
+		});
 	}
 
 	override async started(): Promise<void> {
@@ -131,9 +139,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		};
 
 		const pdpType = await Settings.get<string>('ABAC_PDP_Type');
-		if (pdpType === 'external') {
-			this.setPdpStrategy('external');
-		}
+		this.setPdpStrategy(pdpType === 'external' ? 'external' : 'local');
 	}
 
 	async addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void> {
@@ -573,6 +579,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return false;
 		}
 
+		if (!this.pdp) {
+			return false;
+		}
+
 		const userSub = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { abacLastTimeChecked: 1 } });
 		if (!userSub) {
 			return false;
@@ -583,7 +593,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return true;
 		}
 
-		const decision = await this.pdp.canAccessObject(room, user);
+		let decision: { granted: boolean; userToRemove?: IUser };
+		try {
+			decision = await this.pdp.canAccessObject(room, user);
+		} catch (err) {
+			logger.error({ msg: 'PDP canAccessObject failed', userId: user._id, roomId: room._id, err });
+			return false;
+		}
 
 		if (decision.userToRemove) {
 			await this.removeUserFromRoom(room, decision.userToRemove, 'realtime-policy-eval');
@@ -597,7 +613,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {
-		if (!usernames.length || !attributes.length) {
+		if (!usernames.length || !attributes.length || !this.pdp) {
 			return;
 		}
 
@@ -639,6 +655,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
+		if (!this.pdp) {
+			return;
+		}
+
 		try {
 			const nonCompliantUsers = await this.pdp.onRoomAttributesChanged(room, newAttributes);
 
@@ -657,7 +677,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	protected async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<void> {
-		if (!user?._id || !Array.isArray(user.__rooms) || !user.__rooms.length) {
+		if (!user?._id || !Array.isArray(user.__rooms) || !user.__rooms.length || !this.pdp) {
 			return;
 		}
 
@@ -678,6 +698,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async evaluateRoomMembership(): Promise<void> {
+		if (!this.pdp) {
+			return;
+		}
+
 		const abacRooms = await Rooms.find(
 			{ abacAttributes: { $exists: true, $ne: [] } },
 			{ projection: { _id: 1, t: 1, teamMain: 1, abacAttributes: 1 } },

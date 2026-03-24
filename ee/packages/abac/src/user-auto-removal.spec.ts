@@ -23,6 +23,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 	let sharedMongo: SharedMongoConnection;
 	let db: Db;
 	const service = new AbacService();
+	service.setPdpStrategy('local');
 
 	let roomsCol: Collection<IRoom>;
 	let usersCol: Collection<IUser>;
