@@ -345,18 +345,42 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.delete',
-	{ authRequired: true, permissionsRequired: ['delete-user'] },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-			const { confirmRelinquish = false } = this.bodyParams;
-
-			const { deletedRooms } = await deleteUser(user._id, confirmRelinquish, this.userId);
-
-			return API.v1.success({ deletedRooms });
+		authRequired: true,
+		permissionsRequired: ['delete-user'],
+		body: ajv.compile<{ userId?: string; username?: string; user?: string; confirmRelinquish?: boolean }>({
+			type: 'object',
+			properties: {
+				userId: { type: 'string' },
+				username: { type: 'string' },
+				user: { type: 'string' },
+				confirmRelinquish: { type: 'boolean', nullable: true },
+			},
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{ deletedRooms: string[] }>({
+				type: 'object',
+				properties: {
+					deletedRooms: { type: 'array', items: { type: 'string' } },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['deletedRooms', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+		const { confirmRelinquish = false } = this.bodyParams;
+
+		const { deletedRooms } = await deleteUser(user._id, confirmRelinquish, this.userId);
+
+		return API.v1.success({ deletedRooms });
 	},
 );
 
@@ -424,23 +448,38 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.deactivateIdle',
-	{ authRequired: true, validateParams: isUserDeactivateIdleParamsPOST, permissionsRequired: ['edit-other-user-active-status'] },
 	{
-		async post() {
-			const { daysIdle, role = 'user' } = this.bodyParams;
-
-			const lastLoggedIn = new Date();
-			lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
-
-			// since we're deactiving users that are not logged in, there is no need to send data through WS
-			const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
-
-			return API.v1.success({
-				count,
-			});
+		authRequired: true,
+		body: isUserDeactivateIdleParamsPOST,
+		permissionsRequired: ['edit-other-user-active-status'],
+		response: {
+			200: ajv.compile<{ count: number }>({
+				type: 'object',
+				properties: {
+					count: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['count', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { daysIdle, role = 'user' } = this.bodyParams;
+
+		const lastLoggedIn = new Date();
+		lastLoggedIn.setDate(lastLoggedIn.getDate() - daysIdle);
+
+		// since we're deactiving users that are not logged in, there is no need to send data through WS
+		const { modifiedCount: count } = await Users.setActiveNotLoggedInAfterWithRole(lastLoggedIn, role, false);
+
+		return API.v1.success({
+			count,
+		});
 	},
 );
 
@@ -755,28 +794,42 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+API.v1.post(
 	'users.resetAvatar',
-	{ authRequired: true },
 	{
-		async post() {
-			const user = await getUserFromParams(this.bodyParams);
-
-			if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
-				await resetAvatar(this.userId, this.userId);
-			} else if (
-				(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
-				(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
-			) {
-				await resetAvatar(this.userId, user._id);
-			} else {
-				throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
-					method: 'users.resetAvatar',
-				});
-			}
-
-			return API.v1.success();
+		authRequired: true,
+		body: ajv.compile<{ userId?: string; username?: string; user?: string }>({
+			type: 'object',
+			properties: {
+				userId: { type: 'string' },
+				username: { type: 'string' },
+				user: { type: 'string' },
+			},
+			additionalProperties: false,
+		}),
+		response: {
+			200: voidSuccessResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.bodyParams);
+
+		if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
+			await resetAvatar(this.userId, this.userId);
+		} else if (
+			(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
+			(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+		) {
+			await resetAvatar(this.userId, user._id);
+		} else {
+			throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
+				method: 'users.resetAvatar',
+			});
+		}
+
+		return API.v1.success();
 	},
 );
 
@@ -1001,60 +1054,131 @@ API.v1
 		},
 	);
 
-API.v1.addRoute(
-	'users.checkUsernameAvailability',
-	{
-		authRequired: true,
-		validateParams: isUsersCheckUsernameAvailabilityParamsGET,
+const tokenNameBodySchema = ajv.compile<{ tokenName: string; bypassTwoFactor?: boolean }>({
+	type: 'object',
+	properties: {
+		tokenName: { type: 'string' },
+		bypassTwoFactor: { type: 'boolean', nullable: true },
 	},
-	{
-		async get() {
+	required: ['tokenName'],
+	additionalProperties: false,
+});
+
+const tokenResponseSchema = ajv.compile<{ token: string }>({
+	type: 'object',
+	properties: {
+		token: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['token', 'success'],
+	additionalProperties: false,
+});
+
+API.v1
+	.get(
+		'users.checkUsernameAvailability',
+		{
+			authRequired: true,
+			query: isUsersCheckUsernameAvailabilityParamsGET,
+			response: {
+				200: ajv.compile<{ result: boolean }>({
+					type: 'object',
+					properties: {
+						result: { type: 'boolean' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['result', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { username } = this.queryParams;
 
 			const result = await checkUsernameAvailabilityWithValidation(this.userId, username);
 
 			return API.v1.success({ result });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.generatePersonalAccessToken',
-	{ authRequired: true, twoFactorRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'users.generatePersonalAccessToken',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			body: tokenNameBodySchema,
+			response: {
+				200: tokenResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { tokenName, bypassTwoFactor = false } = this.bodyParams;
-			if (!tokenName) {
-				return API.v1.failure("The 'tokenName' param is required");
-			}
 			const token = await generatePersonalAccessTokenOfUser({ tokenName, userId: this.userId, bypassTwoFactor });
 
 			return API.v1.success({ token });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.regeneratePersonalAccessToken',
-	{ authRequired: true, twoFactorRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'users.regeneratePersonalAccessToken',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			body: ajv.compile<{ tokenName: string }>({
+				type: 'object',
+				properties: {
+					tokenName: { type: 'string' },
+				},
+				required: ['tokenName'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: tokenResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { tokenName } = this.bodyParams;
-			if (!tokenName) {
-				return API.v1.failure("The 'tokenName' param is required");
-			}
 			const token = await regeneratePersonalAccessTokenOfUser(tokenName, this.userId);
 
 			return API.v1.success({ token });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.getPersonalAccessTokens',
-	{ authRequired: true, permissionsRequired: ['create-personal-access-tokens'] },
-	{
-		async get() {
+	)
+	.get(
+		'users.getPersonalAccessTokens',
+		{
+			authRequired: true,
+			permissionsRequired: ['create-personal-access-tokens'],
+			response: {
+				200: ajv.compile<{ tokens: { name: string; createdAt: string; lastTokenPart: string; bypassTwoFactor: boolean }[] }>({
+					type: 'object',
+					properties: {
+						tokens: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									name: { type: 'string' },
+									createdAt: { type: 'string' },
+									lastTokenPart: { type: 'string' },
+									bypassTwoFactor: { type: 'boolean' },
+								},
+								required: ['name', 'createdAt', 'lastTokenPart', 'bypassTwoFactor'],
+								additionalProperties: false,
+							},
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['tokens', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const user = (await Users.getLoginTokensByUserId(this.userId).toArray())[0] as unknown as IUser | undefined;
 
 			const isPersonalAccessToken = (loginToken: ILoginToken | IPersonalAccessToken): loginToken is IPersonalAccessToken =>
@@ -1070,24 +1194,32 @@ API.v1.addRoute(
 					})) || [],
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.removePersonalAccessToken',
-	{ authRequired: true, twoFactorRequired: true },
-	{
-		async post() {
-			const { tokenName } = this.bodyParams;
-			if (!tokenName) {
-				return API.v1.failure("The 'tokenName' param is required");
-			}
-			await removePersonalAccessTokenOfUser(tokenName, this.userId);
+	)
+	.post(
+		'users.removePersonalAccessToken',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			body: ajv.compile<{ tokenName: string }>({
+				type: 'object',
+				properties: {
+					tokenName: { type: 'string' },
+				},
+				required: ['tokenName'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: voidSuccessResponse,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			await removePersonalAccessTokenOfUser(this.bodyParams.tokenName, this.userId);
 
 			return API.v1.success();
 		},
-	},
-);
+	);
 
 const voidSuccessResponse = ajv.compile<void>({
 	type: 'object',
@@ -1294,11 +1426,26 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'users.requestDataDownload',
-	{ authRequired: true },
-	{
-		async get() {
+API.v1
+	.get(
+		'users.requestDataDownload',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{ requested: boolean; exportOperation: IExportOperation }>({
+					type: 'object',
+					properties: {
+						requested: { type: 'boolean' },
+						exportOperation: { type: 'object' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['requested', 'exportOperation', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { fullExport = false } = this.queryParams;
 			const result = (await requestDataDownload({ userData: this.user, fullExport: fullExport === 'true' })) as {
 				requested: boolean;
@@ -1310,14 +1457,26 @@ API.v1.addRoute(
 				exportOperation: result.exportOperation,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.logoutOtherClients',
-	{ authRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'users.logoutOtherClients',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<{ token: string; tokenExpires: string }>({
+					type: 'object',
+					properties: {
+						token: { type: 'string' },
+						tokenExpires: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['token', 'tokenExpires', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 
 			if (!xAuthToken) {
@@ -1348,8 +1507,7 @@ API.v1.addRoute(
 				tokenExpires: tokenExpires?.toISOString() || '',
 			});
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'users.autocomplete',
@@ -1484,11 +1642,27 @@ API.v1
 		},
 	);
 
-API.v1.addRoute(
-	'users.listTeams',
-	{ authRequired: true, validateParams: isUsersListTeamsProps },
-	{
-		async get() {
+API.v1
+	.get(
+		'users.listTeams',
+		{
+			authRequired: true,
+			query: isUsersListTeamsProps,
+			response: {
+				200: ajv.compile<{ teams: unknown[] }>({
+					type: 'object',
+					properties: {
+						teams: { type: 'array' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['teams', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			check(
 				this.queryParams,
 				Match.ObjectIncluding({
@@ -1507,14 +1681,27 @@ API.v1.addRoute(
 				teams,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'users.logout',
-	{ authRequired: true, validateParams: isUserLogoutParamsPOST },
-	{
-		async post() {
+	)
+	.post(
+		'users.logout',
+		{
+			authRequired: true,
+			body: isUserLogoutParamsPOST,
+			response: {
+				200: ajv.compile<{ message: string }>({
+					type: 'object',
+					properties: {
+						message: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['message', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const userId = this.bodyParams.userId || this.userId;
 
 			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
@@ -1534,8 +1721,7 @@ API.v1.addRoute(
 				message: `User ${userId} has been logged out!`,
 			});
 		},
-	},
-);
+	);
 
 API.v1.addRoute(
 	'users.getPresence',
