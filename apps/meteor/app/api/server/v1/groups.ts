@@ -85,7 +85,7 @@ const groupsHistoryPropsSchema = withGroupBaseProperties({
 });
 const isGroupsHistoryProps = ajv.compile<GroupsHistoryProps>(groupsHistoryPropsSchema);
 
-const isGroupsHistoryReponse = ajv.compile({
+const isGroupsHistoryResponse = ajv.compile({
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [true] },
@@ -109,7 +109,7 @@ const groupsHistoryEndpoints = API.v1.get(
 		authRequired: true,
 		query: isGroupsHistoryProps,
 		response: {
-			200: isGroupsHistoryReponse,
+			200: isGroupsHistoryResponse,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
