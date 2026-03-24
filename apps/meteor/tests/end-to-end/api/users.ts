@@ -3340,6 +3340,19 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		it('should return an error when email is missing', (done) => {
+			void request
+				.post(api('users.forgotPassword'))
+				.send({})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				})
+				.end(done);
+		});
 	});
 
 	describe('[/users.sendConfirmationEmail]', () => {
@@ -3403,6 +3416,18 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.exist;
+				})
+				.end(done);
+		});
+
+		it('should return 401 when not authenticated', (done) => {
+			void request
+				.get(api('users.getUsernameSuggestion'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res) => {
+					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('message');
 				})
 				.end(done);
 		});
