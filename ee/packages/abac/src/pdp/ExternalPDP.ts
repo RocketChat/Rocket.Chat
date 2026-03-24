@@ -1,27 +1,20 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
-import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
+import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
 import { isTruthy } from '@rocket.chat/tools';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { logger } from '../logger';
-import type { IPolicyDecisionPoint } from './types';
+import type {
+	IPolicyDecisionPoint,
+	IGetDecisionsResponse,
+	IGetDecisionBulkResponse,
+	IResourceDecision,
+	ITokenCache,
+	IExternalPDPConfig,
+} from './types';
 
 const pdpLogger = logger.section('ExternalPDP');
-
-export interface IExternalPDPConfig {
-	baseUrl: string;
-	clientId: string;
-	clientSecret: string;
-	oidcEndpoint: string;
-	defaultEntityKey: string;
-	attributeNamespace: string;
-}
-
-interface ITokenCache {
-	accessToken: string;
-	expiresAt: number;
-}
 
 export class ExternalPDP implements IPolicyDecisionPoint {
 	private tokenCache: ITokenCache | null = null;
@@ -59,10 +52,10 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 
 		const data = (await response.json()) as { access_token: string; expires_in?: number };
 
-		// Cache token with a safety margin of 30 seconds
 		const expiresIn = data.expires_in ?? 300;
 		this.tokenCache = {
 			accessToken: data.access_token,
+			// We check for expiry 30 seconds before the actual expiry time for safety.
 			expiresAt: Date.now() + (expiresIn - 30) * 1000,
 		};
 
@@ -89,6 +82,47 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		}
 
 		return response.json() as Promise<T>;
+	}
+
+	private async getDecision(request: {
+		actions: unknown[];
+		resourceAttributes: unknown[];
+		entityChains: unknown[];
+	}): Promise<string | undefined> {
+		const result = await this.apiCall<IGetDecisionsResponse>('/authorization.AuthorizationService/GetDecisions', {
+			decisionRequests: [request],
+		});
+
+		pdpLogger.debug({ msg: 'GetDecision response', result: result.decisionResponses });
+
+		return result.decisionResponses?.[0]?.decision;
+	}
+
+	private async getDecisionBulk(requests: Array<unknown | null>): Promise<Array<{ resourceDecisions?: IResourceDecision[] } | undefined>> {
+		const BATCH_SIZE = 200;
+		const allResponses: Array<{ resourceDecisions?: IResourceDecision[] } | undefined> = [];
+
+		for (let i = 0; i < requests.length; i += BATCH_SIZE) {
+			const batch = requests.slice(i, i + BATCH_SIZE);
+			const validBatch = batch.filter(Boolean);
+
+			if (!validBatch.length) {
+				allResponses.push(...batch.map(() => undefined));
+				continue;
+			}
+
+			const result = await this.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
+				decisionRequests: validBatch,
+			});
+
+			pdpLogger.debug({ msg: 'GetDecisionBulk response', batch: i + 1, result: result.decisionResponses });
+
+			const responses = result.decisionResponses ?? [];
+			let responseIdx = 0;
+			allResponses.push(...batch.map((req) => (req ? responses[responseIdx++] : undefined)));
+		}
+
+		return allResponses;
 	}
 
 	private buildAttributeFqns(attributes: IAbacAttributeDefinition[]): string[] {
@@ -146,34 +180,21 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return { granted: false };
 		}
 
-		const fqns = this.buildAttributeFqns(attributes);
-
-		const result = await this.apiCall<{
-			decisionResponses?: Array<{
-				decision?: string;
-			}>;
-		}>('/authorization.AuthorizationService/GetDecisions', {
-			decisionRequests: [
+		const decision = await this.getDecision({
+			actions: [{ standard: 1 }],
+			resourceAttributes: [
 				{
-					actions: [{ standard: 1 }],
-					resourceAttributes: [
-						{
-							resourceAttributesId: room._id,
-							attributeValueFqns: fqns,
-						},
-					],
-					entityChains: [
-						{
-							id: 'rc-access-check',
-							entities: [this.buildEntityIdentifier(entityKey)],
-						},
-					],
+					resourceAttributesId: room._id,
+					attributeValueFqns: this.buildAttributeFqns(attributes),
+				},
+			],
+			entityChains: [
+				{
+					id: 'rc-access-check',
+					entities: [this.buildEntityIdentifier(entityKey)],
 				},
 			],
 		});
-
-		const decision = result.decisionResponses?.[0]?.decision;
-		pdpLogger.debug({ msg: 'GetDecisions response', userId: user._id, roomId: room._id, decision, fqns });
 
 		if (decision === 'DECISION_PERMIT') {
 			return { granted: true };
@@ -183,8 +204,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return { granted: false, userToRemove: fullUser };
 		}
 
-		// Unknown or missing decision — deny access but don't evict
-		pdpLogger.warn({ msg: 'Unexpected decision from external PDP', userId: user._id, roomId: room._id, decision });
+		// If we get an inconclusive or error decision, we err on the side of caution and deny access, but do not remove the user since we can't be sure
 		return { granted: false };
 	}
 
@@ -193,8 +213,9 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return;
 		}
 
-		const users = await Users.find({ username: { $in: usernames } }, { projection: { _id: 1, emails: 1, username: 1 } }).toArray();
+		const users = await Users.findByUsernames(usernames, { projection: { _id: 1, emails: 1, username: 1 } }).toArray();
 
+		const fqns = this.buildAttributeFqns(attributes);
 		const decisionRequests = users
 			.map((user) => {
 				const entityKey = this.getUserEntityKey(user);
@@ -212,7 +233,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 					resources: [
 						{
 							ephemeralId: object._id,
-							attributeValues: { fqns: this.buildAttributeFqns(attributes) },
+							attributeValues: { fqns },
 						},
 					],
 				};
@@ -223,21 +244,9 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			throw new OnlyCompliantCanBeAddedToRoomError();
 		}
 
-		const result = await this.apiCall<{
-			decisionResponses?: Array<{
-				resourceDecisions?: Array<{
-					decision?: string;
-				}>;
-			}>;
-		}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
-			decisionRequests,
-		});
+		const responses = await this.getDecisionBulk(decisionRequests);
 
-		pdpLogger.debug({ msg: 'GetDecisionBulk response (checkUsernames)', roomId: object._id, result: result.decisionResponses });
-
-		const hasNonCompliant = result.decisionResponses?.some((resp) =>
-			resp.resourceDecisions?.some((rd) => rd.decision !== 'DECISION_PERMIT'),
-		);
+		const hasNonCompliant = responses.some((resp) => resp?.resourceDecisions?.some((rd) => rd.decision !== 'DECISION_PERMIT'));
 
 		if (hasNonCompliant) {
 			throw new OnlyCompliantCanBeAddedToRoomError();
@@ -252,67 +261,51 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const subscriptions = await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1 } }).toArray();
-		const userIds = subscriptions.map((s) => s.u._id);
-
-		if (!userIds.length) {
-			return [];
-		}
-
-		const users = await Users.find({ _id: { $in: userIds } }, { projection: { _id: 1, emails: 1, username: 1, __rooms: 1 } }).toArray();
-
-		const usersWithKeys = users
-			.map((user) => ({
-				user,
-				entityKey: this.getUserEntityKey(user),
-			}))
-			.filter((entry): entry is { user: IUser; entityKey: string } => !!entry.entityKey);
-
-		// For now: if no user is available we just assume they are not compliant
-		if (!usersWithKeys.length) {
-			return users;
-		}
-
-		const decisionRequests = usersWithKeys.map(({ entityKey }) => ({
-			entityIdentifier: {
-				entityChain: {
-					entities: [this.buildEntityIdentifier(entityKey)],
-				},
-			},
-			// The subject mappings on opentdf should allow this action. Otherwise, this would be DENY
-			action: { name: 'read' },
-			resources: [
-				{
-					ephemeralId: room._id,
-					attributeValues: { fqns: this.buildAttributeFqns(newAttributes) },
-				},
-			],
-		}));
-
-		const result = await this.apiCall<{
-			decisionResponses?: Array<{
-				resourceDecisions?: Array<{
-					decision?: string;
-				}>;
-			}>;
-		}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
-			decisionRequests,
+		const users = Users.findActiveByRoomIds([room._id], {
+			projection: { _id: 1, emails: 1, username: 1 },
 		});
-
-		pdpLogger.debug({ msg: 'GetDecisionBulk response (roomAttributesChanged)', roomId: room._id, result: result.decisionResponses });
 
 		const nonCompliantUsers: IUser[] = [];
+		const decisionRequests: unknown[] = [];
+		const requestUserIndex: IUser[] = [];
+		const fqns = this.buildAttributeFqns(newAttributes);
 
-		result.decisionResponses?.forEach((resp, index) => {
-			const permitted = resp.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
-			if (!permitted && usersWithKeys[index]) {
-				nonCompliantUsers.push(usersWithKeys[index].user);
+		for await (const user of users) {
+			const entityKey = this.getUserEntityKey(user);
+			if (!entityKey) {
+				pdpLogger.warn({ msg: 'User has no entity key for external PDP evaluation, skipping', userId: user._id });
+				continue;
+			}
+
+			requestUserIndex.push(user);
+			decisionRequests.push({
+				entityIdentifier: {
+					entityChain: {
+						entities: [this.buildEntityIdentifier(entityKey)],
+					},
+				},
+				action: { name: 'read' },
+				resources: [
+					{
+						ephemeralId: room._id,
+						attributeValues: { fqns },
+					},
+				],
+			});
+		}
+
+		if (!decisionRequests.length) {
+			return nonCompliantUsers;
+		}
+
+		const responses = await this.getDecisionBulk(decisionRequests);
+
+		responses.forEach((resp, index) => {
+			const permitted = resp?.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
+			if (!permitted && requestUserIndex[index]) {
+				nonCompliantUsers.push(requestUserIndex[index]);
 			}
 		});
-
-		// Users without entity keys are also non-compliant
-		const usersWithoutKeys = users.filter((user) => !this.getUserEntityKey(user));
-		nonCompliantUsers.push(...usersWithoutKeys);
 
 		return nonCompliantUsers;
 	}
@@ -329,10 +322,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		for (const { user, rooms } of entries) {
 			const entityKey = this.getUserEntityKey(user);
 			if (!entityKey) {
-				for (const room of rooms) {
-					requestIndex.push({ user, room });
-					allRequests.push(null);
-				}
+				pdpLogger.warn({ msg: 'User has no entity key for external PDP evaluation, skipping', userId: user._id });
 				continue;
 			}
 
@@ -359,52 +349,13 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		// Batch into chunks of 200 (GetDecisionBulk limit)
-		const BATCH_SIZE = 200;
-		const allDecisions: Array<string | undefined> = [];
-
-		for (let i = 0; i < allRequests.length; i += BATCH_SIZE) {
-			const batch = allRequests.slice(i, i + BATCH_SIZE);
-			const validBatch = batch.filter(Boolean);
-
-			if (!validBatch.length) {
-				allDecisions.push(...batch.map(() => undefined));
-				continue;
-			}
-
-			const result = await this.apiCall<{
-				decisionResponses?: Array<{
-					resourceDecisions?: Array<{
-						decision?: string;
-					}>;
-				}>;
-			}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
-				decisionRequests: validBatch,
-			});
-
-			pdpLogger.debug({
-				msg: 'GetDecisionBulk response (evaluateUserRooms)',
-				batch: `${i}-${i + batch.length}`,
-				result: result.decisionResponses,
-			});
-
-			let resultIdx = 0;
-			for (const req of batch) {
-				if (!req) {
-					allDecisions.push(undefined);
-				} else {
-					const resp = result.decisionResponses?.[resultIdx];
-					const permitted = resp?.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
-					allDecisions.push(permitted ? 'DECISION_PERMIT' : undefined);
-					resultIdx++;
-				}
-			}
-		}
+		const responses = await this.getDecisionBulk(allRequests);
 
 		const nonCompliant: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }> = [];
 
-		allDecisions.forEach((decision, index) => {
-			if (decision !== 'DECISION_PERMIT' && requestIndex[index]) {
+		responses.forEach((resp, index) => {
+			const permitted = resp?.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
+			if (!permitted && requestIndex[index]) {
 				nonCompliant.push({ user: requestIndex[index].user, room: requestIndex[index].room as IRoom });
 			}
 		});
@@ -420,23 +371,13 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 
 		const entityKey = this.getUserEntityKey(user);
 		if (!entityKey) {
-			// Without an entity key we cannot evaluate, treat all ABAC rooms as non-compliant
-			return Rooms.find(
-				{
-					_id: { $in: roomIds },
-					abacAttributes: { $exists: true, $ne: [] },
-				},
-				{ projection: { _id: 1 } },
-			).toArray();
+			pdpLogger.warn({ msg: 'User has no entity key for external PDP evaluation, skipping', userId: user._id });
+			return [];
 		}
 
-		const abacRooms = await Rooms.find(
-			{
-				_id: { $in: roomIds },
-				abacAttributes: { $exists: true, $ne: [] },
-			},
-			{ projection: { _id: 1, abacAttributes: 1 } },
-		).toArray();
+		const abacRooms = await Rooms.findPrivateRoomsByIdsWithAbacAttributes(roomIds, {
+			projection: { _id: 1, abacAttributes: 1 },
+		}).toArray();
 
 		if (!abacRooms.length) {
 			return [];
@@ -457,23 +398,12 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			],
 		}));
 
-		const result = await this.apiCall<{
-			decisionResponses?: Array<{
-				resourceDecisions?: Array<{
-					ephemeralResourceId?: string;
-					decision?: string;
-				}>;
-			}>;
-		}>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
-			decisionRequests,
-		});
-
-		pdpLogger.debug({ msg: 'GetDecisionBulk response (subjectAttributesChanged)', userId: user._id, result: result.decisionResponses });
+		const responses = await this.getDecisionBulk(decisionRequests);
 
 		const nonCompliantRooms: IRoom[] = [];
 
-		result.decisionResponses?.forEach((resp, index) => {
-			const permitted = resp.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
+		responses.forEach((resp, index) => {
+			const permitted = resp?.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
 			if (!permitted && abacRooms[index]) {
 				nonCompliantRooms.push(abacRooms[index]);
 			}
