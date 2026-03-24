@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/network-broker",
-	"version": "0.2.30",
+	"version": "0.2.31",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -19,7 +19,7 @@
 		"@rocket.chat/core-services": "workspace:^",
 		"ejson": "^2.2.3",
 		"moleculer": "^0.14.35",
-		"pino": "^8.21.0"
+		"pino": "10.3.1"
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",

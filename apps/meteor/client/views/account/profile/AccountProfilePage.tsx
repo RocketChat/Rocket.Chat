@@ -96,11 +96,15 @@ const AccountProfilePage = (): ReactElement => {
 			try {
 				await deleteOwnAccount({ password: SHA256(passwordOrUsername) });
 				dispatchToastMessage({ type: 'success', message: t('User_has_been_deleted') });
-				logout();
+				setModal(null);
 			} catch (error: any) {
 				if (error.error === 'user-last-owner') {
 					const { shouldChangeOwner, shouldBeRemoved } = error.details;
 					return handleConfirmOwnerChange(passwordOrUsername, shouldChangeOwner, shouldBeRemoved);
+				}
+
+				if (error.errorType === 'error-invalid-password') {
+					throw error;
 				}
 
 				dispatchToastMessage({ type: 'error', message: error });
@@ -108,7 +112,7 @@ const AccountProfilePage = (): ReactElement => {
 		};
 
 		return setModal(<ActionConfirmModal onConfirm={handleConfirm} onCancel={() => setModal(null)} isPassword={hasLocalPassword} />);
-	}, [dispatchToastMessage, hasLocalPassword, setModal, handleConfirmOwnerChange, deleteOwnAccount, logout, t]);
+	}, [dispatchToastMessage, hasLocalPassword, setModal, handleConfirmOwnerChange, deleteOwnAccount, t]);
 
 	const profileFormId = useId();
 
