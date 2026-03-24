@@ -794,6 +794,15 @@ API.v1.addRoute(
 	},
 );
 
+const voidSuccessResponse = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
 API.v1.post(
 	'users.resetAvatar',
 	{
@@ -1220,15 +1229,6 @@ API.v1
 			return API.v1.success();
 		},
 	);
-
-const voidSuccessResponse = ajv.compile<void>({
-	type: 'object',
-	properties: {
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['success'],
-	additionalProperties: false,
-});
 
 API.v1
 	.post(
