@@ -21,6 +21,7 @@ import {
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
@@ -102,6 +103,15 @@ API.v1.get(
 		};
 	},
 );
+
+const voidSuccessResponse = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
 
 const userObjectResponse = ajv.compile<{ user: object }>({
 	type: 'object',
@@ -267,6 +277,7 @@ API.v1
 				200: voidSuccessResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -625,6 +636,7 @@ API.v1.get(
 				additionalProperties: false,
 			}),
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -753,6 +765,7 @@ API.v1.get(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -896,15 +909,6 @@ API.v1.post(
 	},
 );
 
-const voidSuccessResponse = ajv.compile<void>({
-	type: 'object',
-	properties: {
-		success: { type: 'boolean', enum: [true] },
-	},
-	required: ['success'],
-	additionalProperties: false,
-});
-
 API.v1.post(
 	'users.resetAvatar',
 	{
@@ -980,7 +984,7 @@ const usersEndpoints = API.v1
 									minLength: 1,
 								},
 							},
-							required: ['userId'],
+							required: ['userId', 'authToken'],
 							additionalProperties: false,
 						},
 						success: {
@@ -1828,6 +1832,7 @@ API.v1
 				}),
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -1915,6 +1920,7 @@ API.v1
 				200: voidSuccessResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
