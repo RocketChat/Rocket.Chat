@@ -12,6 +12,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { isTruthy } from '@rocket.chat/tools';
 import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
@@ -74,25 +75,40 @@ export class AbacService extends ServiceClass implements IAbacService {
 			this.decisionCacheTimeout = value;
 		});
 
-		const externalPdpSettingsMap: Record<string, keyof ExternalPDPConfig> = {
-			ABAC_External_Base_URL: 'baseUrl',
-			ABAC_External_Client_ID: 'clientId',
-			ABAC_External_Client_Secret: 'clientSecret',
-			ABAC_External_OIDC_Endpoint: 'oidcEndpoint',
-			ABAC_External_Default_Entity_Key: 'defaultEntityKey',
-			ABAC_External_Attribute_Namespace: 'attributeNamespace',
-		};
+		this.onSettingChanged('ABAC_External_Base_URL', async ({ setting }): Promise<void> => {
+			this.externalPdpConfig.baseUrl = setting.value as string;
+			this.syncExternalPdpConfig();
+		});
 
-		for (const [settingId, configKey] of Object.entries(externalPdpSettingsMap)) {
-			this.onSettingChanged(settingId, async ({ setting }): Promise<void> => {
-				const { value } = setting;
-				if (typeof value === 'string') {
-					this.externalPdpConfig[configKey] = value;
-					if (this.pdp instanceof ExternalPDP) {
-						this.pdp.updateConfig({ ...this.externalPdpConfig });
-					}
-				}
-			});
+		this.onSettingChanged('ABAC_External_Client_ID', async ({ setting }): Promise<void> => {
+			this.externalPdpConfig.clientId = setting.value as string;
+			this.syncExternalPdpConfig();
+		});
+
+		this.onSettingChanged('ABAC_External_Client_Secret', async ({ setting }): Promise<void> => {
+			this.externalPdpConfig.clientSecret = setting.value as string;
+			this.syncExternalPdpConfig();
+		});
+
+		this.onSettingChanged('ABAC_External_OIDC_Endpoint', async ({ setting }): Promise<void> => {
+			this.externalPdpConfig.oidcEndpoint = setting.value as string;
+			this.syncExternalPdpConfig();
+		});
+
+		this.onSettingChanged('ABAC_External_Default_Entity_Key', async ({ setting }): Promise<void> => {
+			this.externalPdpConfig.defaultEntityKey = setting.value as string;
+			this.syncExternalPdpConfig();
+		});
+
+		this.onSettingChanged('ABAC_External_Attribute_Namespace', async ({ setting }): Promise<void> => {
+			this.externalPdpConfig.attributeNamespace = setting.value as string;
+			this.syncExternalPdpConfig();
+		});
+	}
+
+	private syncExternalPdpConfig(): void {
+		if (this.pdp instanceof ExternalPDP) {
+			this.pdp.updateConfig({ ...this.externalPdpConfig });
 		}
 	}
 
@@ -109,8 +125,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 				break;
 		}
 
-		logger.warn({
-			msg: '>>> PDP STRATEGY CHANGED <<<',
+		logger.debug({
+			msg: 'PDP strategy changed',
 			from: previousPdp,
 			to: this.pdp.constructor.name,
 			requestedStrategy: strategy,
@@ -119,6 +135,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
+
+		const pdpType = await Settings.get<string>('ABAC_PDP_Type');
+		if (pdpType !== 'external') {
+			this.setPdpStrategy('local');
+			return;
+		}
 
 		const [baseUrl, clientId, clientSecret, oidcEndpoint, defaultEntityKey, attributeNamespace] = await Promise.all([
 			Settings.get<string>('ABAC_External_Base_URL'),
@@ -138,8 +160,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			attributeNamespace: attributeNamespace || 'example.com',
 		};
 
-		const pdpType = await Settings.get<string>('ABAC_PDP_Type');
-		this.setPdpStrategy(pdpType === 'external' ? 'external' : 'local');
+		this.setPdpStrategy('external');
 	}
 
 	async addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void> {
@@ -702,10 +723,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		const abacRooms = await Rooms.find(
-			{ abacAttributes: { $exists: true, $ne: [] } },
-			{ projection: { _id: 1, t: 1, teamMain: 1, abacAttributes: 1 } },
-		).toArray();
+		const abacRooms = await Rooms.findAllPrivateRoomsWithAbacAttributes({
+			projection: { _id: 1, t: 1, teamMain: 1, abacAttributes: 1 },
+		}).toArray();
 
 		if (!abacRooms.length) {
 			return;
@@ -714,13 +734,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 		const abacRoomById = Object.fromEntries(abacRooms.map((room) => [room._id, room]));
 		const abacRoomIds = abacRooms.map((room) => room._id);
 
-		const users = Users.find(
-			{
-				active: true,
-				__rooms: { $in: abacRoomIds },
-			},
-			{ projection: { _id: 1, emails: 1, username: 1, __rooms: 1 } },
-		);
+		const users = Users.findActiveByRoomIds(abacRoomIds, {
+			projection: { _id: 1, emails: 1, username: 1, __rooms: 1 },
+		});
 
 		const entries = (
 			await users
@@ -729,7 +745,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 					return rooms.length ? { user, rooms } : null;
 				})
 				.toArray()
-		).filter(Boolean) as Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; rooms: IRoom[] }>;
+		).filter(isTruthy);
 
 		if (!entries.length) {
 			return;

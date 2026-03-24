@@ -29,25 +29,20 @@ Meteor.startup(async () => {
 				}
 			});
 
-			let lastSchedule: string;
 			async function configureExternalPdpSync(): Promise<void> {
+				if (await cronJobs.has(EXTERNAL_PDP_SYNC_JOB)) {
+					await cronJobs.remove(EXTERNAL_PDP_SYNC_JOB);
+				}
+
 				const abacEnabled = settings.get('ABAC_Enabled');
 				const pdpType = settings.get<string>('ABAC_PDP_Type');
 
 				if (!abacEnabled || pdpType !== 'external') {
-					if (await cronJobs.has(EXTERNAL_PDP_SYNC_JOB)) {
-						await cronJobs.remove(EXTERNAL_PDP_SYNC_JOB);
-					}
 					return;
 				}
 
 				const cronValue = settings.get<string>('ABAC_External_Sync_Interval');
 
-				if (cronValue !== lastSchedule && (await cronJobs.has(EXTERNAL_PDP_SYNC_JOB))) {
-					await cronJobs.remove(EXTERNAL_PDP_SYNC_JOB);
-				}
-
-				lastSchedule = cronValue;
 				await cronJobs.add(EXTERNAL_PDP_SYNC_JOB, cronValue, () => Abac.evaluateRoomMembership());
 			}
 
