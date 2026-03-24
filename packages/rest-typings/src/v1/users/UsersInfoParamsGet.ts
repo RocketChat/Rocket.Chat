@@ -1,4 +1,4 @@
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 export type UsersInfoParamsGet = ({ userId: string } | { username: string } | { importId: string }) & {
 	fields?: string;
@@ -61,4 +61,4 @@ const UsersInfoParamsGetSchema = {
 	],
 };
 
-export const isUsersInfoParamsGetProps = ajv.compile<UsersInfoParamsGet>(UsersInfoParamsGetSchema);
+export const isUsersInfoParamsGetProps = ajvQuery.compile<UsersInfoParamsGet>(UsersInfoParamsGetSchema);

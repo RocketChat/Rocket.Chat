@@ -144,9 +144,9 @@ export class Agenda extends EventEmitter {
 		this._ready = new Promise((resolve) => this.once('ready', resolve));
 
 		if (config.mongo) {
-			this.mongo(config.mongo, config.db ? config.db.collection : undefined);
+			void this.mongo(config.mongo, config.db ? config.db.collection : undefined);
 		} else if (config.db) {
-			this.database(config.db.address, config.db.collection, config.db.options);
+			void this.database(config.db.address, config.db.collection, config.db.options);
 		}
 	}
 
@@ -182,7 +182,7 @@ export class Agenda extends EventEmitter {
 			debug('successful connection to MongoDB using collection: [%s]', collection);
 			this._db = client;
 			this._mdb = client.db();
-			this.dbInit(collection);
+			void this.dbInit(collection);
 		} catch (error) {
 			debug('error connecting to MongoDB using collection: [%s]', collection);
 			this.emit('error:database', error);
@@ -882,7 +882,7 @@ export class Agenda extends EventEmitter {
 			// CALL THE ACTUAL METHOD TO PROCESS THE JOB!!!
 			debug('[%s:%s] processing job', job.attrs.name, job.attrs._id);
 
-			job
+			void job
 				.run()
 				.then((jobRan) => [null, jobRan])
 				.catch((error) => [error, job])
@@ -916,7 +916,7 @@ export class Agenda extends EventEmitter {
 		// Otherwise, setTimeout that gets called at the time of 'nextRunAt'
 		if (job.attrs.nextRunAt <= now) {
 			debug('[%s:%s] nextRunAt is in the past, run the job immediately', job.attrs.name, job.attrs._id);
-			this._runOrRetry();
+			void this._runOrRetry();
 		} else {
 			const runIn = job.attrs.nextRunAt.valueOf() - now.valueOf();
 			debug('[%s:%s] nextRunAt is in the future, calling setTimeout(%d)', job.attrs.name, job.attrs._id, runIn);
@@ -971,14 +971,14 @@ export class Agenda extends EventEmitter {
 			for (jobName in this._definitions) {
 				if (this._definitions.hasOwnProperty(jobName)) {
 					debug('queuing up job to process: [%s]', jobName);
-					this._jobQueueFilling(jobName);
+					void this._jobQueueFilling(jobName);
 				}
 			}
 		} else if (this._definitions[extraJob.attrs.name]) {
 			// Add the job to list of jobs to lock and then lock it immediately!
 			debug('job [%s] was passed directly to processJobs(), locking and running immediately', extraJob.attrs.name);
 			this._jobsToLock.push(extraJob);
-			this._lockOnTheFly();
+			void this._lockOnTheFly();
 		}
 	}
 }

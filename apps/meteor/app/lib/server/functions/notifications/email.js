@@ -54,7 +54,7 @@ export async function getEmailContent({ message, user, room }) {
 		});
 	}
 
-	if (message.t === 'e2e' && !message.file && !message.files?.length) {
+	if (message.t === 'e2e') {
 		return settings.get('Email_notification_show_message') ? i18n.t('Encrypted_message_preview_unavailable', { lng }) : header;
 	}
 

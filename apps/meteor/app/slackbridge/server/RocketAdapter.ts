@@ -503,13 +503,13 @@ export default class RocketAdapter {
 						// Make sure that a message with the same bot_id and timestamp doesn't already exists
 						const msg = await Messages.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts);
 						if (!msg) {
-							void sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
+							void sendMessage(rocketUser, rocketMsgObj, rocketChannel, { upsert: true });
 						}
 					}
 				}, 500);
 			} else {
 				rocketLogger.debug('Send message to Rocket.Chat');
-				await sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
+				await sendMessage(rocketUser, rocketMsgObj, rocketChannel, { upsert: true });
 			}
 		}
 	}

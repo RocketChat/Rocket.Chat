@@ -43,7 +43,7 @@ slashCommands.add({
 			});
 		}
 
-		const user = await Users.findOneById(userId, { projection: { federated: 1, federation: 1 } });
+		const user = await Users.findOneById(userId);
 		if (!user) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'slashCommands',

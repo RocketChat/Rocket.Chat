@@ -3,7 +3,7 @@ import type { Response } from 'supertest';
 
 import { request } from '../data/api-data';
 
-const methods = ['get', 'post', 'put', 'del'] as const;
+const methods = ['get', 'post', 'put', 'del', 'delete'] as const;
 
 let lastUrl: string;
 let lastMethod: string;

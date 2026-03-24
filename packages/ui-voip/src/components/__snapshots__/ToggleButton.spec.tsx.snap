@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders ToggleButtonStory without crashing 1`] = `
+<body>
+  <div>
+    <button
+      aria-label="Mute"
+      class="rcx-box rcx-box--full rcx-button--medium-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
+      label="Mute"
+      title="Mute"
+      type="button"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-mic rcx-icon rcx-css-xb06ut"
+      >
+        
+      </i>
+    </button>
+  </div>
+</body>
+`;
