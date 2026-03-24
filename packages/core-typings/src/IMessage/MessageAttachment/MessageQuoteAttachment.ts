@@ -5,7 +5,7 @@ import type { MessageAttachmentBase } from './MessageAttachmentBase';
 
 export type MessageQuoteAttachment = {
 	author_name: string;
-	author_link: string;
+	author_link?: string;
 	author_icon: string;
 	message_link?: string;
 	text: string;
