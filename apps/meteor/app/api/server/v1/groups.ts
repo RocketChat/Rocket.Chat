@@ -1,7 +1,16 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import {
+	isGroupsOnlineProps,
+	isGroupsMessagesProps,
+	isGroupsFilesProps,
+	ajv,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+	withGroupBaseProperties,
+} from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -31,11 +40,102 @@ import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams, getUserListFromParams } from '../helpers/getUserFromParams';
+
+type GroupsInvitesProps = {
+	roomId?: string;
+	roomName?: string;
+	userId?: string;
+	userIds?: string[];
+	usernames?: string[];
+};
+
+const isGroupsInvitePropSchema = withGroupBaseProperties({
+	userId: {
+		type: 'string',
+	},
+	userIds: {
+		type: 'array',
+		items: {
+			type: 'string',
+		},
+	},
+	usernames: {
+		type: 'array',
+		items: {
+			type: 'string',
+		},
+	},
+});
+
+const isGroupsInviteProps = ajv.compile<GroupsInvitesProps>(isGroupsInvitePropSchema);
+
+const isGroupsInviteResponse = ajv.compile({
+	type: 'object',
+	properties: {
+		group: {
+			$ref: '#/components/schemas/IRoom',
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['group', 'success'],
+	additionalProperties: false,
+});
+
+const groupsEndPoints = API.v1.post(
+	'groups.invite',
+	{
+		authRequired: true,
+		body: isGroupsInviteProps,
+		response: {
+			200: isGroupsInviteResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const roomId = 'roomId' in this.bodyParams ? this.bodyParams.roomId : '';
+		const roomName = 'roomName' in this.bodyParams ? this.bodyParams.roomName : '';
+		const idOrName = roomId || roomName;
+
+		if (!idOrName?.trim()) {
+			throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+		}
+
+		const { _id: rid, t: type } = (await Rooms.findOneByIdOrName(idOrName)) || {};
+
+		if (!rid || type !== 'p') {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		}
+
+		const users = await getUserListFromParams(this.bodyParams);
+
+		if (!users.length) {
+			throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
+		}
+
+		await addUsersToRoomMethod(this.userId, { rid, users: users.map((u) => u.username).filter(isTruthy) }, this.user);
+
+		const room = await Rooms.findOneById(rid, { projection: API.v1.defaultFieldsToExclude });
+
+		if (!room) {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		}
+
+		return API.v1.success({
+			group: await composeRoomWithLastMessage(room, this.userId),
+		});
+	},
+);
 
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
@@ -558,46 +658,6 @@ API.v1.addRoute(
 			});
 
 			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
-
-			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
-	'groups.invite',
-	{ authRequired: true },
-	{
-		async post() {
-			const roomId = 'roomId' in this.bodyParams ? this.bodyParams.roomId : '';
-			const roomName = 'roomName' in this.bodyParams ? this.bodyParams.roomName : '';
-			const idOrName = roomId || roomName;
-
-			if (!idOrName?.trim()) {
-				throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
-			}
-
-			const { _id: rid, t: type } = (await Rooms.findOneByIdOrName(idOrName)) || {};
-
-			if (!rid || type !== 'p') {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			const users = await getUserListFromParams(this.bodyParams);
-
-			if (!users.length) {
-				throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
-			}
-
-			await addUsersToRoomMethod(this.userId, { rid, users: users.map((u) => u.username).filter(isTruthy) }, this.user);
-
-			const room = await Rooms.findOneById(rid, { projection: API.v1.defaultFieldsToExclude });
 
 			if (!room) {
 				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
@@ -1300,3 +1360,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+export type GroupsHistoryEndpoints = ExtractRoutesFromAPI<typeof groupsEndPoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends GroupsHistoryEndpoints {}
+}
