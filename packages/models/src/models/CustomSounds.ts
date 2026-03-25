@@ -14,18 +14,10 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// find
-	findByName(name: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
+	findByName(name: string, exceptId?: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
 		const query = {
 			name,
-		};
-
-		return this.find(query, options);
-	}
-
-	findByNameExceptId(name: string, except: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
-		const query = {
-			_id: { $nin: [except] },
-			name,
+			...(exceptId && { _id: { $nin: [exceptId] } }),
 		};
 
 		return this.find(query, options);

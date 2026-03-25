@@ -29,14 +29,7 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 		});
 	}
 
-	let matchingResults;
-
-	if (soundData._id) {
-		check(soundData._id, String);
-		matchingResults = await CustomSounds.findByNameExceptId(soundData.name, soundData._id).toArray();
-	} else {
-		matchingResults = await CustomSounds.findByName(soundData.name).toArray();
-	}
+	const matchingResults = await CustomSounds.findByName(soundData.name, soundData._id).toArray();
 
 	if (matchingResults.length > 0) {
 		throw new Meteor.Error('Custom_Sound_Error_Name_Already_In_Use', 'The custom sound name is already in use', {
