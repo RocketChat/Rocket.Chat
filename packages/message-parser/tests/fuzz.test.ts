@@ -2,21 +2,13 @@ import fc from 'fast-check';
 
 import { parse } from '../src';
 
-const plainTextArbitrary = fc
-	.stringMatching(/[a-zA-Z0-9 ]{1,20}/)
-	.filter((value) => value.length > 0);
+const plainTextArbitrary = fc.stringMatching(/[a-zA-Z0-9 ]{1,20}/).filter((value) => value.length > 0);
 
-const timestampArbitrary = fc
-	.integer({ min: 1_000_000_000, max: 2_000_000_000 })
-	.map((value) => `<t:${value}>`);
+const timestampArbitrary = fc.integer({ min: 1_000_000_000, max: 2_000_000_000 }).map((value) => `<t:${value}>`);
 
-const relativeTimestampArbitrary = fc
-	.integer({ min: 1_000_000_000, max: 2_000_000_000 })
-	.map((value) => `<t:${value}:R>`);
+const relativeTimestampArbitrary = fc.integer({ min: 1_000_000_000, max: 2_000_000_000 }).map((value) => `<t:${value}:R>`);
 
-const mentionArbitrary = fc
-	.stringMatching(/[a-z0-9._-]{1,12}/)
-	.map((value) => `@${value}`);
+const mentionArbitrary = fc.stringMatching(/[a-z0-9._-]{1,12}/).map((value) => `@${value}`);
 
 const boldArbitrary = plainTextArbitrary.map((value) => `*${value}*`);
 

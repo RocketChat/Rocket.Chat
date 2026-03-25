@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { emoji, heading, lineBreak, link, mentionChannel, paragraph, plain } from './helpers';
+import { emoji, heading, link, mentionChannel, paragraph, plain } from './helpers';
 
 test.each([
 	['# h1', [heading([plain('h1')], 1)]],
@@ -47,7 +47,6 @@ test.each([
 	['# :newspaper: Headline', [heading([emoji('newspaper'), plain(' Headline')], 1)]],
 	['## Hello :smile:', [heading([plain('Hello '), emoji('smile')], 2)]],
 	['### :smile: text :newspaper:', [heading([emoji('smile'), plain(' text '), emoji('newspaper')], 3)]],
-
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
 });

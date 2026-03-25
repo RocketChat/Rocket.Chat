@@ -129,7 +129,7 @@ describe('expand (compact → verbose)', () => {
 	});
 
 	it('heading', () => {
-		expectExpand('## Title', [{ t: 'h', l: 2, r: [3, 8] }], [
+		expectExpand('## Title', [{ t: 'h', l: 2, c: [[3, 8]] }], [
 			{ type: 'HEADING', level: 2, value: [{ type: 'PLAIN_TEXT', value: 'Title' }] },
 		] as unknown as Root);
 	});
@@ -202,7 +202,7 @@ describe('compactify (verbose → compact)', () => {
 	it('heading', () => {
 		const msg = '## Title';
 		const compact = compactify(parse(msg), msg);
-		expect(compact).toEqual([{ t: 'h', l: 2, r: [3, 8] }]);
+		expect(compact).toEqual([{ t: 'h', l: 2, c: [[3, 8]] }]);
 	});
 });
 

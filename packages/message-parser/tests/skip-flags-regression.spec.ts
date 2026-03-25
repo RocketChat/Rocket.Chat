@@ -1,13 +1,6 @@
 import { parse } from '../src';
 
 describe('Skip Flags Regression (Complexity Audit)', () => {
-	const measureDepth = (depth: number) => {
-		const input = `${'*'.repeat(depth)}text${'*'.repeat(depth)}`;
-		const start = performance.now();
-		parse(input);
-		return performance.now() - start;
-	};
-
 	it('should parse nested formatting across multiple depths without throwing', () => {
 		for (let d = 1; d <= 50; d++) {
 			const input = `${'*'.repeat(d)}text${'*'.repeat(d)}`;

@@ -68,7 +68,7 @@ export type CInlineNode =
 
 export type CBlock =
 	| { t: 'p'; c: CInline[] }
-	| { t: 'h'; l: 1 | 2 | 3 | 4; r: Span }
+	| { t: 'h'; l: 1 | 2 | 3 | 4; c: CInline[]; r?: Span }
 	| { t: '```'; l?: string; r: Span }
 	| { t: '>'; c: CBlock[] }
 	| { t: 'q'; c: CBlock[] }
@@ -182,7 +182,7 @@ function expandBlock(
 		case 'p':
 			return { type: 'PARAGRAPH', value: block.c.map((c) => expandInline(msg, c)) } as Paragraph;
 		case 'h':
-			return { type: 'HEADING', level: block.l, value: [makePlain(msg, block.r)] } as Heading;
+			return { type: 'HEADING', level: block.l, value: block.c.map((c) => expandInline(msg, c)) } as Heading;
 		case '```': {
 			const content = msg.slice(block.r[0], block.r[1]);
 			const lines: CodeLine[] = content.split('\n').map((line) => ({
@@ -446,9 +446,8 @@ function compactBlock(ctx: Ctx, node: Paragraph | Root[number]): CBlock {
 			const heading = node as Heading;
 			advance(ctx, heading.level); // #, ##, ###, ####
 			advance(ctx, 1); // space
-			const text = heading.value.map(textOf).join('');
-			const r = spanFor(ctx, text);
-			return { t: 'h', l: heading.level, r };
+			const c = heading.value.map((ch) => compactInline(ctx, ch));
+			return { t: 'h', l: heading.level, c };
 		}
 
 		case 'CODE': {
