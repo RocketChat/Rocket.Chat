@@ -37,6 +37,8 @@ export interface IRoomService {
 		},
 	): Promise<boolean | undefined>;
 	performUserRemoval(room: IRoom, user: IUser, options?: { byUser?: IUser }): Promise<void>;
+	performUserBan(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
+	performUserUnban(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
 	performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
 	removeUserFromRoom(
 		roomId: string,
@@ -70,4 +72,6 @@ export interface IRoomService {
 		roles?: ISubscription['roles'];
 	}): Promise<string | undefined>;
 	updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean>;
+	markAsRead(room: IRoom, userId: string, readThreads?: boolean): Promise<void>;
+	readThread(params: { user: IUser; room: IRoom; tmid: string }): Promise<void>;
 }

@@ -694,6 +694,33 @@ export class SynapseClient {
 	}
 
 	/**
+	 * Bans a user from a room on the Synapse homeserver.
+	 *
+	 * @param roomId - The Matrix room ID
+	 * @param userId - The Matrix user ID to ban
+	 * @param reason - Optional reason for the ban
+	 */
+	async banUser(roomId: string, userId: string, reason?: string): Promise<void> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		await this.matrixClient.ban(roomId, userId, reason);
+	}
+
+	/**
+	 * Unbans a user from a room on the Synapse homeserver.
+	 *
+	 * @param roomId - The Matrix room ID
+	 * @param userId - The Matrix user ID to unban
+	 */
+	async unbanUser(roomId: string, userId: string): Promise<void> {
+		if (!this.matrixClient) {
+			throw new Error('Matrix client is not initialized');
+		}
+		await this.matrixClient.unban(roomId, userId);
+	}
+
+	/**
 	 * Closes the Matrix client connection and cleans up resources.
 	 *
 	 * Properly shuts down the Matrix client, clears all data stores,
