@@ -118,10 +118,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		switch (strategy) {
 			case 'virtru':
 				this.pdp = new VirtruPDP({ ...this.virtruPdpConfig });
+				this.pdpType = 'virtru';
 				break;
 			case 'local':
 			default:
 				this.pdp = new LocalPDP();
+				this.pdpType = 'local';
 				break;
 		}
 
@@ -645,9 +647,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 	}
 
-	private get pdpType(): 'local' | 'virtru' {
-		return this.pdp instanceof VirtruPDP ? 'virtru' : 'local';
-	}
+	private pdpType: 'local' | 'virtru' = 'local';
 
 	private async removeUserFromRoom(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
 		return Room.removeUserFromRoom(room._id, user, {
