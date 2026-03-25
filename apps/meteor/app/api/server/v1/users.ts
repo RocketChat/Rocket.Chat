@@ -883,16 +883,7 @@ const usersEndpoints = API.v1
 	'users.autocomplete',
 	{
 		authRequired: true,
-		query: ajv.compile<{
-			selector: string;
-		}>({
-			type: 'object',
-			properties: {
-				selector: { type: 'string' },
-			},
-			required: ['selector'],
-			additionalProperties: false,
-		}),
+		query: isUsersAutoCompleteProps,
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
@@ -973,18 +964,26 @@ const usersEndpoints = API.v1
 			return API.v1.failure(e instanceof Error ? e.message : String(e));
 		}
 
-		const result = await findUsersToAutocomplete({
-			uid: this.userId,
-			selector: {
-				exceptions: parsedSelector.exceptions ?? [],
-				conditions: parsedSelector.conditions ?? {},
-				term: parsedSelector.term,
-			},
-		});
+		const { items } = await findUsersToAutocomplete({
+    uid: this.userId,
+    selector: {
+        exceptions: parsedSelector.exceptions ?? [],
+        conditions: parsedSelector.conditions ?? {},
+        term: parsedSelector.term,
+    },
+});
 
-		return API.v1.success(result);
-	},
-);
+return API.v1.success({
+    items: items.map(({ _id, name, username, nickname, status, avatarETag, freeSwitchExtension }) => ({
+        _id,
+        name,
+        username,
+        ...(nickname && { nickname }),
+        status,
+        ...(avatarETag && { avatarETag }),
+        ...(freeSwitchExtension && { freeSwitchExtension }),
+    })),
+});
 
 API.v1.addRoute(
 	'users.getPreferences',
