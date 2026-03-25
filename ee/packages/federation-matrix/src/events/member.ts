@@ -41,15 +41,29 @@ async function downloadAndSetAvatar(user: IUser, avatarUrl: string | null): Prom
 		}
 
 		// detect content type from buffer (basic image type detection)
-		let contentType = 'image/png';
+		let contentType: string | undefined;
 		if (buffer[0] === 0xff && buffer[1] === 0xd8) {
 			contentType = 'image/jpeg';
 		} else if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
 			contentType = 'image/png';
 		} else if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
 			contentType = 'image/gif';
-		} else if (buffer[0] === 0x52 && buffer[1] === 0x49 && buffer[2] === 0x46 && buffer[3] === 0x46) {
+		} else if (
+			buffer[0] === 0x52 &&
+			buffer[1] === 0x49 &&
+			buffer[2] === 0x46 &&
+			buffer[3] === 0x46 &&
+			buffer[8] === 0x57 &&
+			buffer[9] === 0x45 &&
+			buffer[10] === 0x42 &&
+			buffer[11] === 0x50
+		) {
 			contentType = 'image/webp';
+		}
+
+		if (!contentType) {
+			logger.warn({ msg: 'Unsupported remote avatar format from external server', username: user.username, avatarUrl });
+			return;
 		}
 
 		// TODO need to perform a validation to check if the user actually changed avatar
