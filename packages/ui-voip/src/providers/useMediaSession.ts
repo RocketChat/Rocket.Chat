@@ -17,7 +17,7 @@ const defaultSessionInfo: SessionState = {
 	held: false,
 	remoteMuted: false,
 	remoteHeld: false,
-	startedAt: new Date(),
+	startedAt: undefined,
 	hidden: false,
 	supportedFeatures: ['audio', 'transfer', 'hold'],
 };
@@ -119,7 +119,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 		const updateSessionState = () => {
 			const mainCall = instance.getMainCall();
-
 			if (!mainCall) {
 				dispatch({ type: 'reset' });
 				return;
@@ -136,6 +135,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				remoteHeld,
 				remoteMute,
 				callId,
+				activeTimestamp: startedAt,
 				features: supportedFeatures,
 			} = mainCall;
 			const state = deriveWidgetStateFromCallState(callState, role);
@@ -163,6 +163,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						remoteHeld,
 						remoteMuted: remoteMute,
 						callId,
+						startedAt,
 						supportedFeatures,
 					},
 				});
@@ -196,6 +197,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 					remoteHeld,
 					remoteMuted: remoteMute,
 					callId,
+					startedAt,
 					supportedFeatures,
 				},
 			});
