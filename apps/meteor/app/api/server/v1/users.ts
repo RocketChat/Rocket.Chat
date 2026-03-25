@@ -914,7 +914,7 @@ const usersEndpoints = API.v1
 								avatarETag: { type: 'string' },
 								freeSwitchExtension: { type: 'string' },
 							},
-							required: ['_id', 'name', 'username', 'status'],
+							required: ['_id', 'username'],
 							additionalProperties: false,
 						},
 					},
