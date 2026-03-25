@@ -149,7 +149,7 @@ const RoomMembers = ({
 				<TextInput
 					placeholder={t('Search_by_username')}
 					aria-label={t('Search_Messages')}
-					aria-controls={membersListId}
+					aria-controls={isSuccess ? membersListId : undefined}
 					value={text}
 					ref={inputRef}
 					onChange={setText}
@@ -157,7 +157,7 @@ const RoomMembers = ({
 				/>
 				<Box w='x144' mis={8}>
 					<Select
-						aria-controls={membersListId}
+						aria-controls={isSuccess ? membersListId : undefined}
 						options={options}
 						value={type}
 						onChange={(value): void => setType(value as 'online' | 'all')}
@@ -178,33 +178,35 @@ const RoomMembers = ({
 					</Box>
 				)}
 
-				{isSuccess && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
-
-				{isSuccess && members.length > 0 && (
+				{isSuccess && (
 					<>
-						<Box pi={24} pb={12}>
-							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing_current_of_total', { current: members.length, total })}
+						{members.length > 0 && (
+							<Box pi={24} pb={12}>
+								<Box is='span' color='hint' fontScale='p2'>
+									{t('Showing_current_of_total', { current: members.length, total })}
+								</Box>
 							</Box>
-						</Box>
-
-						<Box id={membersListId} role='list' aria-label={t('Members')} w='full' h='full' overflow='hidden' flexShrink={1}>
-							<VirtualizedScrollbars>
-								<GroupedVirtuoso
-									style={{
-										height: '100%',
-										width: '100%',
-									}}
-									overscan={50}
-									groupCounts={counts}
-									groupContent={(index): ReactElement => titles[index]}
-									// eslint-disable-next-line react/no-multi-comp
-									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-									itemContent={(index): ReactElement => (
-										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
-									)}
-								/>
-							</VirtualizedScrollbars>
+						)}
+						<Box id={membersListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
+							{members.length > 0 && (
+								<VirtualizedScrollbars>
+									<GroupedVirtuoso
+										style={{
+											height: '100%',
+											width: '100%',
+										}}
+										overscan={50}
+										groupCounts={counts}
+										groupContent={(index): ReactElement => titles[index]}
+										// eslint-disable-next-line react/no-multi-comp
+										components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+										itemContent={(index): ReactElement => (
+											<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+										)}
+									/>
+								</VirtualizedScrollbars>
+							)}
 						</Box>
 					</>
 				)}
