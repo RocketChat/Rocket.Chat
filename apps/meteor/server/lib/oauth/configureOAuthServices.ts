@@ -44,7 +44,15 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[])
 						{},
 					);
 
-					const userFromDB = await Users.findOneById(user.userId as string);
+					if (!user?.userId || typeof user?.userId !== 'string') {
+						return done(new Error('User not found'));
+					}
+
+					const userFromDB = await Users.findOneById(user.userId);
+
+					if (!userFromDB) {
+						return done(new Error('User not found'));
+					}
 
 					return done(null, userFromDB);
 				},
