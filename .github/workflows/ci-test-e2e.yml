@@ -57,6 +57,8 @@ on:
         required: false
       CODECOV_TOKEN:
         required: false
+      CI_MONGO_URL:
+        required: false
       REPORTER_JIRA_ROCKETCHAT_API_KEY:
         required: false
       NPM_TOKEN:
@@ -157,6 +159,16 @@ jobs:
           # List loaded images
           docker images
 
+      - name: Configure external MongoDB URL
+        env:
+          CI_MONGO_URL: ${{ secrets.CI_MONGO_URL }}
+        if: env.CI_MONGO_URL != ''
+        run: |
+          DB_NAME="rocketchat_${{ inputs.type }}_${{ matrix.shard }}_${{ github.run_id }}_${{ github.run_attempt }}"
+          echo "MONGO_URL=${CI_MONGO_URL}/${DB_NAME}" >> $GITHUB_ENV
+          echo "DOCKER_MONGO_URL=${CI_MONGO_URL}/${DB_NAME}" >> $GITHUB_ENV
+          echo "EXTERNAL_MONGO=true" >> $GITHUB_ENV
+
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
         if: runner.debug == '1'
         run: echo "DEBUG_LOG_LEVEL=2" >> "$GITHUB_ENV"
@@ -177,7 +189,11 @@ jobs:
         if: inputs.release == 'ce'
         run: |
           # when we are testing CE, we only need to start the rocketchat container
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat --wait
+          EXTRA_ARGS=""
+          if [ "$EXTERNAL_MONGO" = "true" ]; then
+            EXTRA_ARGS="--scale mongo=0"
+          fi
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d rocketchat $EXTRA_ARGS --wait
 
       - name: Start containers for EE
         if: inputs.release == 'ee'
@@ -186,7 +202,11 @@ jobs:
           TRANSPORTER: ${{ inputs.transporter }}
           COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
         run: |
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
+          EXTRA_ARGS=""
+          if [ "$EXTERNAL_MONGO" = "true" ]; then
+            EXTRA_ARGS="--scale mongo=0"
+          fi
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d $EXTRA_ARGS --wait
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'

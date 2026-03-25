@@ -16,7 +16,7 @@ services:
       - TEST_MODE=true
       - DEBUG=${DEBUG:-}
       - EXIT_UNHANDLEDPROMISEREJECTION=true
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'MONGO_OPLOG_URL=${MONGO_OPLOG_URL:-}'
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
@@ -29,8 +29,11 @@ services:
       - 'Federation_Service_Domain=rc.host'
       - HEAP_USAGE_PERCENT=99
     depends_on:
-      - traefik
-      - mongo
+      traefik:
+        condition: service_started
+      mongo:
+        condition: service_started
+        required: false
     labels:
       traefik.enable: true
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
@@ -56,7 +59,7 @@ services:
         SERVICE: authorization-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
@@ -76,7 +79,7 @@ services:
         SERVICE: account-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/account-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
@@ -96,7 +99,7 @@ services:
         SERVICE: presence-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/presence-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
@@ -116,7 +119,7 @@ services:
         SERVICE: ddp-streamer
     image: ghcr.io/${LOWERCASE_REPOSITORY}/ddp-streamer-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
@@ -142,7 +145,7 @@ services:
         SERVICE: queue-worker
     image: ghcr.io/${LOWERCASE_REPOSITORY}/queue-worker-service:${DOCKER_TAG}
     environment:
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
@@ -163,7 +166,7 @@ services:
     image: ghcr.io/${LOWERCASE_REPOSITORY}/omnichannel-transcript-service:${DOCKER_TAG}
     environment:
       - TEST_MODE=true
-      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - MONGO_URL=${DOCKER_MONGO_URL:-mongodb://mongo:27017/rocketchat?replicaSet=rs0}
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
     extra_hosts:
