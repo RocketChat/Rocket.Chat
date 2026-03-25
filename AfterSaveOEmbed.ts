@@ -412,7 +412,8 @@ const rocketUrlParser = async function (message: IMessage): Promise<IMessage> {
 	// also mutates the corresponding entry in message.urls, which is what gets persisted by
 	// Messages.setUrlsById below. Do not replace Object.assign with object spread here —
 	// spread would create a new object and break the aliasing contract.
-	changed = false;
+	// spread would create a new object and break the aliasing contract.
+	let changed = false; // ✨ ADD 'let' HERE
 	const BATCH_SIZE = 5;
 	const results: PromiseSettledResult<{
 		urlPreview: MessageUrl;
