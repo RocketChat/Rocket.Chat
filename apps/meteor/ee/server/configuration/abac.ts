@@ -7,7 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { settings } from '../../../app/settings/server';
 import { LDAPEE } from '../sdk';
 
-const EXTERNAL_PDP_SYNC_JOB = 'ABAC_External_PDP_Sync';
+const VIRTRU_PDP_SYNC_JOB = 'ABAC_Virtru_PDP_Sync';
 
 Meteor.startup(async () => {
 	let stopWatcher: () => void;
@@ -24,36 +24,36 @@ Meteor.startup(async () => {
 			await import('../hooks/abac');
 
 			stopWatcher = settings.watch('ABAC_Enabled', async (value) => {
-				if (value && settings.get<string>('ABAC_PDP_Type') !== 'external') {
+				if (value && settings.get<string>('ABAC_PDP_Type') !== 'virtru') {
 					await LDAPEE.syncUsersAbacAttributes(Users.findLDAPUsers());
 				}
 			});
 
-			async function configureExternalPdpSync(): Promise<void> {
-				if (await cronJobs.has(EXTERNAL_PDP_SYNC_JOB)) {
-					await cronJobs.remove(EXTERNAL_PDP_SYNC_JOB);
+			async function configureVirtruPdpSync(): Promise<void> {
+				if (await cronJobs.has(VIRTRU_PDP_SYNC_JOB)) {
+					await cronJobs.remove(VIRTRU_PDP_SYNC_JOB);
 				}
 
 				const abacEnabled = settings.get('ABAC_Enabled');
 				const pdpType = settings.get<string>('ABAC_PDP_Type');
 
-				if (!abacEnabled || pdpType !== 'external') {
+				if (!abacEnabled || pdpType !== 'virtru') {
 					return;
 				}
 
-				const cronValue = settings.get<string>('ABAC_External_Sync_Interval');
+				const cronValue = settings.get<string>('ABAC_Virtru_Sync_Interval');
 
-				await cronJobs.add(EXTERNAL_PDP_SYNC_JOB, cronValue, () => Abac.evaluateRoomMembership());
+				await cronJobs.add(VIRTRU_PDP_SYNC_JOB, cronValue, () => Abac.evaluateRoomMembership());
 			}
 
-			stopCronWatcher = settings.watchMultiple(['ABAC_PDP_Type', 'ABAC_External_Sync_Interval'], () => configureExternalPdpSync());
+			stopCronWatcher = settings.watchMultiple(['ABAC_PDP_Type', 'ABAC_Virtru_Sync_Interval'], () => configureVirtruPdpSync());
 		},
 		down: async () => {
 			stopWatcher?.();
 			stopCronWatcher?.();
 
-			if (await cronJobs.has(EXTERNAL_PDP_SYNC_JOB)) {
-				await cronJobs.remove(EXTERNAL_PDP_SYNC_JOB);
+			if (await cronJobs.has(VIRTRU_PDP_SYNC_JOB)) {
+				await cronJobs.remove(VIRTRU_PDP_SYNC_JOB);
 			}
 		},
 	});

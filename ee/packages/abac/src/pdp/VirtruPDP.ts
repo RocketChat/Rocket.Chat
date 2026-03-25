@@ -11,21 +11,21 @@ import type {
 	IGetDecisionBulkResponse,
 	IResourceDecision,
 	ITokenCache,
-	IExternalPDPConfig,
+	IVirtruPDPConfig,
 } from './types';
 
-const pdpLogger = logger.section('ExternalPDP');
+const pdpLogger = logger.section('VirtruPDP');
 
-export class ExternalPDP implements IPolicyDecisionPoint {
+export class VirtruPDP implements IPolicyDecisionPoint {
 	private tokenCache: ITokenCache | null = null;
 
-	private config: IExternalPDPConfig;
+	private config: IVirtruPDPConfig;
 
-	constructor(config: IExternalPDPConfig) {
+	constructor(config: IVirtruPDPConfig) {
 		this.config = config;
 	}
 
-	updateConfig(config: IExternalPDPConfig): void {
+	updateConfig(config: IVirtruPDPConfig): void {
 		this.config = config;
 		this.tokenCache = null;
 	}
@@ -79,8 +79,8 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 
 		if (!response.ok) {
 			const text = await response.text().catch(() => '');
-			pdpLogger.error({ msg: 'External PDP API call failed', endpoint, status: response.status, response: text });
-			throw new Error('External PDP call failed');
+			pdpLogger.error({ msg: 'Virtru PDP API call failed', endpoint, status: response.status, response: text });
+			throw new Error('Virtru PDP call failed');
 		}
 
 		return response.json() as Promise<T>;
@@ -129,7 +129,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 
 	private buildAttributeFqns(attributes: IAbacAttributeDefinition[]): string[] {
 		if (!this.config.attributeNamespace) {
-			throw new Error('Attribute namespace is not configured for ExternalPDP');
+			throw new Error('Attribute namespace is not configured for VirtruPDP');
 		}
 
 		return attributes.flatMap((attr) =>
@@ -147,7 +147,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 
 	private getUserEntityKey(user: Pick<IUser, '_id' | 'emails' | 'username'>): string | undefined {
 		if (!this.config.defaultEntityKey) {
-			throw new Error('Default entity key is not configured for ExternalPDP');
+			throw new Error('Default entity key is not configured for VirtruPDP');
 		}
 
 		// Maybe this should be more flexible and just allow a path? Something like `.emails.0.address` like the subject mapping from opentdf?
@@ -157,7 +157,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 			case 'oidcIdentifier':
 				return user.username; // For now, username, we're gonna change this to find the right oidc identifier for the user
 			default:
-				throw new Error('Unsupported default entity key configuration for ExternalPDP');
+				throw new Error('Unsupported default entity key configuration for VirtruPDP');
 		}
 	}
 
@@ -178,7 +178,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 
 		const entityKey = this.getUserEntityKey(fullUser);
 		if (!entityKey) {
-			pdpLogger.warn({ msg: 'User has no entity key for external PDP evaluation', userId: user._id });
+			pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation', userId: user._id });
 			return { granted: false };
 		}
 
@@ -275,7 +275,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		for await (const user of users) {
 			const entityKey = this.getUserEntityKey(user);
 			if (!entityKey) {
-				pdpLogger.warn({ msg: 'User has no entity key for external PDP evaluation, skipping', userId: user._id });
+				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, skipping', userId: user._id });
 				continue;
 			}
 
@@ -324,7 +324,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 		for (const { user, rooms } of entries) {
 			const entityKey = this.getUserEntityKey(user);
 			if (!entityKey) {
-				pdpLogger.warn({ msg: 'User has no entity key for external PDP evaluation, skipping', userId: user._id });
+				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, skipping', userId: user._id });
 				continue;
 			}
 
@@ -373,7 +373,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 
 		const entityKey = this.getUserEntityKey(user);
 		if (!entityKey) {
-			pdpLogger.warn({ msg: 'User has no entity key for external PDP evaluation, skipping', userId: user._id });
+			pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, skipping', userId: user._id });
 			return [];
 		}
 

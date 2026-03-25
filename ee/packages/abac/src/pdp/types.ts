@@ -40,7 +40,7 @@ export interface IPolicyDecisionPoint {
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>>;
 }
 
-export interface IExternalPDPConfig {
+export interface IVirtruPDPConfig {
 	baseUrl: string;
 	clientId: string;
 	clientSecret: string;
