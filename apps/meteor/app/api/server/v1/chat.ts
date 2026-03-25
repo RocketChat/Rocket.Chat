@@ -247,7 +247,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ message: IMessage }>({
 					type: 'object',
 					properties: {
-						message: { type: 'object' },
+						message: { $ref: '#/components/schemas/IMessage' },
 						success: {
 							type: 'boolean',
 							enum: [true],
@@ -601,8 +601,8 @@ const chatEndpoints = API.v1
 						result: {
 							type: 'object',
 							properties: {
-								updated: { type: 'array', items: { type: 'object' } },
-								deleted: { type: 'array', items: { type: 'object' } },
+								updated: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+								deleted: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
 								cursor: {
 									type: 'object',
 									properties: {
@@ -878,7 +878,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ messages: Pick<IMessage, '_id'>[]; count: number; offset: number; total: number }>({
 					type: 'object',
 					properties: {
-						messages: { type: 'array', items: { type: 'object' } },
+						messages: { type: 'array', items: { type: 'object' } }, // relaxed: only _id is projected,
 						count: { type: 'number' },
 						offset: { type: 'number' },
 						total: { type: 'number' },
@@ -969,7 +969,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ threads: IThreadMainMessage[]; count: number; offset: number; total: number }>({
 					type: 'object',
 					properties: {
-						threads: { type: 'array', items: { type: 'object' } },
+						threads: { type: 'array', items: { type: 'object' } }, // relaxed: IThreadMainMessage not in OpenAPI schemas,
 						count: { type: 'number' },
 						offset: { type: 'number' },
 						total: { type: 'number' },
@@ -1035,8 +1035,8 @@ const chatEndpoints = API.v1
 						threads: {
 							type: 'object',
 							properties: {
-								update: { type: 'array', items: { type: 'object' } },
-								remove: { type: 'array', items: { type: 'object' } },
+								update: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+								remove: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
 							},
 							required: ['update', 'remove'],
 							additionalProperties: false,
@@ -1097,7 +1097,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
 					type: 'object',
 					properties: {
-						messages: { type: 'array', items: { type: 'object' } },
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
 						count: { type: 'number' },
 						offset: { type: 'number' },
 						total: { type: 'number' },
@@ -1161,8 +1161,8 @@ const chatEndpoints = API.v1
 						messages: {
 							type: 'object',
 							properties: {
-								update: { type: 'array', items: { type: 'object' } },
-								remove: { type: 'array', items: { type: 'object' } },
+								update: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+								remove: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
 							},
 							required: ['update', 'remove'],
 							additionalProperties: false,
@@ -1218,7 +1218,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
 					type: 'object',
 					properties: {
-						messages: { type: 'array', items: { type: 'object' } },
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
 						count: { type: 'number' },
 						offset: { type: 'number' },
 						total: { type: 'number' },
@@ -1258,7 +1258,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ messages: IMessage[]; count: number; offset: number; total: number }>({
 					type: 'object',
 					properties: {
-						messages: { type: 'array', items: { type: 'object' } },
+						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
 						count: { type: 'number' },
 						offset: { type: 'number' },
 						total: { type: 'number' },
@@ -1300,7 +1300,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ messages: IMessage[]; total: number }>({
 					type: 'object',
 					properties: {
-						messages: { type: 'array', items: { type: 'object' } },
+						messages: { type: 'array', items: { type: 'object' } }, // relaxed: discussions have extra room fields,
 						total: { type: 'number' },
 						success: { type: 'boolean', enum: [true] },
 					},
@@ -1338,7 +1338,7 @@ const chatEndpoints = API.v1
 				200: ajv.compile<{ urlPreview: object }>({
 					type: 'object',
 					properties: {
-						urlPreview: { type: 'object' },
+						urlPreview: { type: 'object' }, // relaxed: opaque preview shape,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['urlPreview', 'success'],

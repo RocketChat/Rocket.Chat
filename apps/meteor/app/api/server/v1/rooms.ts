@@ -218,8 +218,8 @@ API.v1.get(
 			200: ajv.compile<{ update: IRoom[]; remove: IRoom[] }>({
 				type: 'object',
 				properties: {
-					update: { type: 'array', items: { type: 'object' } },
-					remove: { type: 'array', items: { type: 'object' } },
+					update: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom composed with lastMessage
+					remove: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom composed with lastMessage
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['update', 'remove', 'success'],
@@ -569,7 +569,7 @@ API.v1.get(
 			200: ajv.compile<{ discussions: IRoom[]; count: number; offset: number; total: number }>({
 				type: 'object',
 				properties: {
-					discussions: { type: 'array', items: { type: 'object' } },
+					discussions: { type: 'array', items: { type: 'object' } }, // relaxed: discussions have extra room fields
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -620,7 +620,7 @@ API.v1.get(
 			200: ajv.compile<{ files: IUpload[]; count: number; offset: number; total: number }>({
 				type: 'object',
 				properties: {
-					files: { type: 'array', items: { type: 'object' } },
+					files: { type: 'array', items: { type: 'object' } }, // relaxed: IUpload with user transform
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -680,7 +680,7 @@ API.v1.get(
 			200: ajv.compile<{ rooms: IRoom[]; count: number; offset: number; total: number }>({
 				type: 'object',
 				properties: {
-					rooms: { type: 'array', items: { type: 'object' } },
+					rooms: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with admin fields
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -722,7 +722,7 @@ API.v1.get(
 			200: ajv.compile<{ items: IRoom[] }>({
 				type: 'object',
 				properties: {
-					items: { type: 'array', items: { type: 'object' } },
+					items: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom autocomplete subset
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['items', 'success'],
@@ -783,7 +783,7 @@ API.v1.get(
 			200: ajv.compile<{ items: IRoom[] }>({
 				type: 'object',
 				properties: {
-					items: { type: 'array', items: { type: 'object' } },
+					items: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom autocomplete subset
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['items', 'success'],
@@ -814,7 +814,7 @@ API.v1.get(
 			200: ajv.compile<{ items: IRoom[]; total: number }>({
 				type: 'object',
 				properties: {
-					items: { type: 'array', items: { type: 'object' } },
+					items: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom autocomplete subset
 					total: { type: 'number' },
 					success: { type: 'boolean', enum: [true] },
 				},
@@ -853,7 +853,7 @@ API.v1.get(
 			200: ajv.compile<{ items: IRoom[] }>({
 				type: 'object',
 				properties: {
-					items: { type: 'array', items: { type: 'object' } },
+					items: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom autocomplete subset
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['items', 'success'],
@@ -1070,7 +1070,7 @@ API.v1.get(
 			200: ajv.compile<{ members: IUser[]; count: number; offset: number; total: number }>({
 				type: 'object',
 				properties: {
-					members: { type: 'array', items: { type: 'object' } },
+					members: { type: 'array', items: { type: 'object' } }, // relaxed: projected IUser with role priority
 					count: { type: 'number' },
 					offset: { type: 'number' },
 					total: { type: 'number' },
@@ -1418,7 +1418,7 @@ export const roomEndpoints = API.v1
 					properties: {
 						rooms: {
 							type: 'array',
-							items: { type: 'object' },
+							items: { type: 'object' }, // relaxed: IRoom subset
 						},
 						count: { type: 'number' },
 						offset: { type: 'number' },

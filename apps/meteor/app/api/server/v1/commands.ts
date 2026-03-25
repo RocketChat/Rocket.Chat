@@ -146,13 +146,17 @@ const commandsEndpoints = API.v1
 		},
 		async function action() {
 			if (!Apps.self?.isLoaded()) {
-				return API.v1.success({
-					commands: [],
-					appsLoaded: false as const,
-					offset: 0,
-					count: 0,
-					total: 0,
-				});
+				return {
+					statusCode: 202 as const,
+					body: {
+						commands: [],
+						appsLoaded: false as const,
+						offset: 0,
+						count: 0,
+						total: 0,
+						success: true as const,
+					},
+				};
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -397,7 +401,7 @@ API.v1.post(
 		const params = body.params ? body.params : '';
 		if (body.tmid) {
 			const thread = await Messages.findOneById(body.tmid);
-			if (thread?.rid !== body.roomId) {
+			if (!thread || thread.rid !== body.roomId) {
 				return API.v1.failure('Invalid thread.');
 			}
 		}
@@ -483,7 +487,7 @@ API.v1.post(
 		const { params = '' } = body;
 		if (body.tmid) {
 			const thread = await Messages.findOneById(body.tmid);
-			if (thread?.rid !== body.roomId) {
+			if (!thread || thread.rid !== body.roomId) {
 				return API.v1.failure('Invalid thread.');
 			}
 		}
