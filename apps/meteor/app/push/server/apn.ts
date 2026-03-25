@@ -34,12 +34,14 @@ export const sendAPN = ({
 
 	const note = new apn.Notification();
 
+	// Expires 1 hour from now, unless configured otherwise.
+	const expirationSeconds = notification.apn?.expirationSeconds ?? 3600;
+
 	if (notification.useVoipToken) {
-		note.expiry = Math.floor(Date.now() / 1000) + 60; // Expires in 60 seconds
 		note.pushType = 'voip';
-	} else {
-		note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
 	}
+
+	note.expiry = Math.floor(Date.now() / 1000) + expirationSeconds;
 
 	if (notification.badge !== undefined) {
 		note.badge = notification.badge;

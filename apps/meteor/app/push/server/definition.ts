@@ -26,6 +26,7 @@ export type PendingPushNotification = {
 	notId?: number;
 	apn?: {
 		category?: string;
+		expirationSeconds?: number;
 	};
 	gcm?: {
 		style?: string;

@@ -178,6 +178,14 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
+	public async onCallTrying(callId: string): Promise<void> {
+		await this.sendSignal({
+			callId,
+			type: 'notification',
+			notification: 'trying',
+		});
+	}
+
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
 		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration, role: this.role });
 		// internal calls have nothing to do with DTMFs
