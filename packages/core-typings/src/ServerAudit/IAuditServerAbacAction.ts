@@ -3,7 +3,7 @@ import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, ISe
 export type MinimalUser = Pick<IUser, 'username'> & Optional<Pick<IUser, '_id'>, '_id'>;
 export type MinimalRoom = Pick<IRoom, '_id' | 'name'>;
 
-export type AbacAuditReason = 'ldap-sync' | 'room-attributes-change' | 'system' | 'api' | 'realtime-policy-eval' | 'external-pdp-sync';
+export type AbacAuditReason = 'ldap-sync' | 'room-attributes-change' | 'system' | 'api' | 'realtime-policy-eval' | 'virtru-pdp-sync';
 
 export type AbacActionPerformed = 'revoked-object-access' | 'granted-object-access';
 
