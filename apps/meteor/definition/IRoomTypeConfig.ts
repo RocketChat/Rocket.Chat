@@ -40,6 +40,7 @@ export const RoomMemberActions = {
 	IGNORE: 'ignore',
 	BLOCK: 'block',
 	MUTE: 'mute',
+	BAN: 'ban',
 	SET_AS_OWNER: 'setAsOwner',
 	SET_AS_LEADER: 'setAsLeader',
 	SET_AS_MODERATOR: 'setAsModerator',
