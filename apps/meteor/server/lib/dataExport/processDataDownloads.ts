@@ -256,8 +256,7 @@ export async function processDataDownloads(): Promise<void> {
 	}
 
 	const isStale = operation.status !== 'pending' &&
-    operation._updatedAt &&
-    moment().diff(moment(operation._updatedAt), 'days') > 1;
+		moment().diff(moment(operation._updatedAt ?? operation.createdAt), 'days') > 1
 
 	if (isStale) {
 		await ExportOperations.markAsSkipped(operation._id);
