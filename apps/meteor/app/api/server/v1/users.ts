@@ -890,10 +890,10 @@ const usersEndpoints = API.v1
 			200: ajv.compile<{
 				items: {
 					_id: string;
-					name: string;
+					name?: string;
 					username: string;
 					nickname?: string;
-					status: string;
+					status?: string;
 					avatarETag?: string;
 					freeSwitchExtension?: string;
 				}[];
@@ -976,10 +976,10 @@ const usersEndpoints = API.v1
 return API.v1.success({
     items: items.map(({ _id, name, username, nickname, status, avatarETag, freeSwitchExtension }) => ({
         _id,
-        name,
+        ...(name && { name }),
         username,
         ...(nickname && { nickname }),
-        status,
+        ...(status && { status }),
         ...(avatarETag && { avatarETag }),
         ...(freeSwitchExtension && { freeSwitchExtension }),
     })),
