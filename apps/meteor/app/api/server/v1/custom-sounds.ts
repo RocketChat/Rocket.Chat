@@ -180,10 +180,8 @@ const customSoundsEndpoints = API.v1
 				return API.v1.failure('MIME type not allowed');
 			}
 
-			let _id;
-
 			try {
-				_id = await insertOrUpdateSound({
+				const _id = await insertOrUpdateSound({
 					name: fields.name,
 					extension: fields.extension,
 				});
