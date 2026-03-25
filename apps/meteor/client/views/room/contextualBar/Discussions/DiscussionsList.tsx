@@ -90,13 +90,11 @@ function DiscussionsList({
 						<Throbber size='x12' />
 					</Box>
 				)}
-
 				{error instanceof Error && (
 					<Callout mi={24} type='danger'>
 						{error.toString()}
 					</Callout>
 				)}
-
 				{isSuccess && (
 					<Box id={discussionListId} w='full' h='full' overflow='hidden' flexShrink={1}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}

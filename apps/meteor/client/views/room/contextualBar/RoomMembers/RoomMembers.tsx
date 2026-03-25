@@ -171,13 +171,11 @@ const RoomMembers = ({
 						<Throbber size='x12' />
 					</Box>
 				)}
-
 				{error && (
 					<Box pi={24} pb={12}>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
-
 				{isSuccess && (
 					<>
 						{members.length > 0 && (
