@@ -670,7 +670,14 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				result: {
 					updated: 'updated' in result ? await normalizeMessagesForUser(result.updated, this.userId) : [],
-					deleted: 'deleted' in result ? result.deleted : [],
+					deleted:
+						'deleted' in result
+							? result.deleted.map((msg) => ({
+									_id: msg._id,
+									_deletedAt:
+										'_deletedAt' in msg && msg._deletedAt instanceof Date ? msg._deletedAt.toISOString() : new Date().toISOString(),
+								}))
+							: [],
 					cursor: 'cursor' in result ? result.cursor : undefined,
 				},
 			});
