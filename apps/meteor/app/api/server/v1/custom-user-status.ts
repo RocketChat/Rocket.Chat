@@ -177,6 +177,15 @@ API.v1.post(
 	},
 );
 
+const isCustomUserStatusDeleteProps = ajv.compile<{ customUserStatusId: string }>({
+	type: 'object',
+	properties: {
+		customUserStatusId: { type: 'string', minLength: 1 },
+	},
+	required: ['customUserStatusId'],
+	additionalProperties: false,
+});
+
 const customUserStatusDeleteResponseSchema = ajv.compile<void>({
 	type: 'object',
 	properties: {
@@ -190,6 +199,7 @@ API.v1.post(
 	'custom-user-status.delete',
 	{
 		authRequired: true,
+		body: isCustomUserStatusDeleteProps,
 		response: {
 			200: customUserStatusDeleteResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -198,9 +208,6 @@ API.v1.post(
 	},
 	async function action() {
 		const { customUserStatusId } = this.bodyParams;
-		if (!customUserStatusId) {
-			return API.v1.failure('The "customUserStatusId" params is required!');
-		}
 
 		await deleteCustomUserStatus(this.userId, customUserStatusId);
 

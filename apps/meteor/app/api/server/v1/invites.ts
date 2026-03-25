@@ -60,7 +60,7 @@ const sendInvitationEmailResponseSchema = ajv.compile<{ success: boolean }>({
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['success'],
-	additionalProperties: true,
+	additionalProperties: false,
 });
 
 const invites = API.v1

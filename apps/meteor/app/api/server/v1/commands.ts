@@ -146,13 +146,17 @@ const commandsEndpoints = API.v1
 		},
 		async function action() {
 			if (!Apps.self?.isLoaded()) {
-				return API.v1.success({
-					commands: [],
-					appsLoaded: false as const,
-					offset: 0,
-					count: 0,
-					total: 0,
-				});
+				return API.v1.success(
+					{
+						commands: [],
+						appsLoaded: false as const,
+						offset: 0,
+						count: 0,
+						total: 0,
+						success: true as const,
+					},
+					202,
+				);
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);

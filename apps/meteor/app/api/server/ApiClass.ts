@@ -37,6 +37,7 @@ import type {
 	UnavailableResult,
 	GenericRouteExecutionContext,
 	TooManyRequestsResult,
+	SuccessStatusCodes,
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
@@ -266,15 +267,15 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 	public success(): SuccessResult<void>;
 
-	public success<T>(result: T): SuccessResult<T>;
+	public success<T>(result: T, statusCode?: SuccessStatusCodes): SuccessResult<T>;
 
-	public success<T>(result: T = {} as T): SuccessResult<T> {
+	public success<T>(result: T = {} as T, statusCode: SuccessStatusCodes = 200): SuccessResult<T> {
 		if (isObject(result)) {
 			(result as Record<string, any>).success = true;
 		}
 
 		const finalResult = {
-			statusCode: 200,
+			statusCode,
 			body: result,
 		} as SuccessResult<T>;
 

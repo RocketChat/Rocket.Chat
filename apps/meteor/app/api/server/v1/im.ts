@@ -307,6 +307,7 @@ const dmSetTopicAction = <Path extends string>(_path: Path): TypedAction<typeof 
 
 		const { room } = await findDirectMessageRoom({ roomId }, this.userId);
 
+		// saveRoomTopic treats undefined and '' identically
 		await saveRoomSettings(this.userId, room._id, 'roomTopic', topic ?? '');
 
 		return API.v1.success({
@@ -430,7 +431,7 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 const dmFilesResponseSchema = ajv.compile<{ files: object[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
-		files: { type: 'array', items: { type: 'object' } },
+		files: { type: 'array', items: { type: 'object' } }, // relaxed: IUpload with addUserToFileObj transform
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },
@@ -497,7 +498,7 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 const dmMembersResponseSchema = ajv.compile<{ members: object[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
-		members: { type: 'array', items: { type: 'object' } },
+		members: { type: 'array', items: { type: 'object' } }, // relaxed: projected IUser + subscription info
 		count: { type: 'number' },
 		offset: { type: 'number' },
 		total: { type: 'number' },
@@ -736,7 +737,7 @@ const dmHistoryAction = <Path extends string>(_path: Path): TypedAction<typeof d
 const dmCreateResponseSchema = ajv.compile<{ room: IRoom & { rid: string } }>({
 	type: 'object',
 	properties: {
-		room: { type: 'object' },
+		room: { type: 'object' }, // relaxed: IRoom shape varies,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['room', 'success'],
@@ -746,7 +747,7 @@ const dmCreateResponseSchema = ajv.compile<{ room: IRoom & { rid: string } }>({
 const paginatedMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; offset: number; count: number; total: number }>({
 	type: 'object',
 	properties: {
-		messages: { type: 'array', items: { type: 'object' } },
+		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
 		offset: { type: 'number' },
 		count: { type: 'number' },
 		total: { type: 'number' },
@@ -759,7 +760,7 @@ const paginatedMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; offs
 const paginatedImsResponseSchema = ajv.compile<{ ims: IRoom[]; offset: number; count: number; total: number }>({
 	type: 'object',
 	properties: {
-		ims: { type: 'array', items: { type: 'object' } },
+		ims: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with lastMessage compose
 		offset: { type: 'number' },
 		count: { type: 'number' },
 		total: { type: 'number' },
@@ -899,59 +900,37 @@ const dmListEveryoneAction = <Path extends string>(_name: Path): TypedAction<typ
 		});
 	};
 
+const dmCreateEndpointsProps = {
+	authRequired: true,
+	body: isDmCreateProps,
+	response: {
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
+		200: dmCreateResponseSchema,
+	},
+} as const;
+
+const dmCreateAction = <Path extends string>(_path: Path): TypedAction<typeof dmCreateEndpointsProps, Path> =>
+	async function action() {
+		const users =
+			'username' in this.bodyParams
+				? [this.bodyParams.username]
+				: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
+
+		const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
+
+		return API.v1.success({
+			room: { ...room, _id: room.rid },
+		});
+	};
+
 const dmEndpoints = API.v1
 	.post('im.delete', dmDeleteEndpointsProps, dmDeleteAction('im.delete'))
 	.post('dm.delete', dmDeleteEndpointsProps, dmDeleteAction('dm.delete'))
 	.post('dm.close', dmCloseEndpointsProps, dmCloseAction('dm.close'))
 	.post('im.close', dmCloseEndpointsProps, dmCloseAction('im.close'))
-	.post(
-		'dm.create',
-		{
-			authRequired: true,
-			body: isDmCreateProps,
-			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: dmCreateResponseSchema,
-			},
-		},
-		async function action() {
-			const users =
-				'username' in this.bodyParams
-					? [this.bodyParams.username]
-					: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
-
-			const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
-
-			return API.v1.success({
-				room: { ...room, _id: room.rid },
-			});
-		},
-	)
-	.post(
-		'im.create',
-		{
-			authRequired: true,
-			body: isDmCreateProps,
-			response: {
-				400: validateBadRequestErrorResponse,
-				401: validateUnauthorizedErrorResponse,
-				200: dmCreateResponseSchema,
-			},
-		},
-		async function action() {
-			const users =
-				'username' in this.bodyParams
-					? [this.bodyParams.username]
-					: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
-
-			const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
-
-			return API.v1.success({
-				room: { ...room, _id: room.rid },
-			});
-		},
-	)
+	.post('dm.create', dmCreateEndpointsProps, dmCreateAction('dm.create'))
+	.post('im.create', dmCreateEndpointsProps, dmCreateAction('im.create'))
 	.post('dm.open', dmOpenEndpointsProps, dmOpenAction('dm.open'))
 	.post('im.open', dmOpenEndpointsProps, dmOpenAction('im.open'))
 	.post('dm.setTopic', dmSetTopicEndpointsProps, dmSetTopicAction('dm.setTopic'))

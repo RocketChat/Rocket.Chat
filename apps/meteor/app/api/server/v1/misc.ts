@@ -196,6 +196,7 @@ const cacheInvalid = 60000; // 1 minute
 
 const shieldSvgResponseSchema = ajv.compile<string>({
 	type: 'string',
+	description: 'SVG image markup',
 });
 
 API.v1.get(
@@ -354,7 +355,7 @@ const spotlightResponseSchema = ajv.compile<{
 					statusText: { type: 'string' },
 					avatarETag: { type: 'string' },
 				},
-				required: ['_id', 'name', 'username', 'status', 'statusText'],
+				required: ['_id', 'name', 'username', 'status'],
 				additionalProperties: true,
 			},
 		},
