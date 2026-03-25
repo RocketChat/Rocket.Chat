@@ -160,7 +160,7 @@ const groupsHistoryEndpoints = API.v1.get(
 		});
 
 		if (!result) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			return API.v1.forbidden('User does not have the permissions required for this action')
 		}
 
 		return API.v1.success(result as { messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number });
