@@ -43,6 +43,10 @@ export class BroadcastActorAgent extends BaseMediaCallAgent {
 		this.reportCallUpdated({ callId, dtmf: { dtmf, duration } });
 	}
 
+	public async onCallTrying(_callId: string): Promise<void> {
+		// No need to broadcast trying signals as this doesn't change anything on the call data
+	}
+
 	protected reportCallUpdated(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
 		const { callId, ...otherParams } = params;
 

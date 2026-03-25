@@ -143,26 +143,22 @@ export class GlobalSignalProcessor {
 		const role = isCaller ? 'caller' : 'callee';
 		const actor = call[role];
 
-		// If this user's side of the call is signed to a session that the current session is replacing (as in a browser refresh)
-		if (actor.contractId && actor.contractId === signal.oldContractId) {
-			logger.info({ msg: 'Server detected a client refresh for a session with an active call.', callId: call._id });
-			await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
-			return;
+		// If this user's side of the call has already been signed
+		if (actor.contractId) {
+			// If it was signed by a session that the current session is replacing (as in a browser refresh)
+			if (actor.contractId === signal.oldContractId) {
+				logger.info({ msg: 'Server detected a client refresh for a session with an active call.', callId: call._id });
+				await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
+				return;
+			}
+		} else {
+			await mediaCallDirector.renewCallId(call._id);
 		}
-
-		await mediaCallDirector.renewCallId(call._id);
 
 		const agents = await mediaCallDirector.cast.getAgentsFromCall(call);
 		const { [role]: agent } = agents;
 
-		const otherAgent = agent.oppositeAgent;
-		if (otherAgent && otherAgent instanceof UserActorAgent) {
-			await otherAgent.sendSignal({
-				callId: call._id,
-				type: 'notification',
-				notification: 'trying',
-			});
-		}
+		await agent.oppositeAgent?.onCallTrying(call._id);
 
 		if (!(agent instanceof UserActorAgent)) {
 			logger.error({
