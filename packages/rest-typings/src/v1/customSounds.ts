@@ -1,6 +1,6 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 
-import { ajvQuery } from './Ajv';
+import { ajvQuery, ajv } from './Ajv';
 import { type PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type CustomSoundsGetOne = { _id: ICustomSound['_id'] };
@@ -65,4 +65,4 @@ const CustomSoundsDeleteSchema = {
 	additionalProperties: false,
 };
 
-export const isCustomSoundsDeleteProps = ajvQuery.compile<CustomSoundsDelete>(CustomSoundsDeleteSchema);
+export const isCustomSoundsDeleteProps = ajv.compile<CustomSoundsDelete>(CustomSoundsDeleteSchema);
