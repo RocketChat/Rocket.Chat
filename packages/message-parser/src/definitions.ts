@@ -75,7 +75,7 @@ export type InlineCode = {
 export type Heading = {
 	type: 'HEADING';
 	level: 1 | 2 | 3 | 4;
-	value: Plain[];
+	value: Inlines[];
 };
 
 export type Quote = {
