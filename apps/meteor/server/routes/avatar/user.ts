@@ -41,14 +41,7 @@ export const userAvatarByUsername = async function (request: IncomingMessage, re
 		return;
 	}
 
-	let file = await Avatars.findOneByName(requestUsername);
-
-	// if not found and username starts with @, try without @ (for federated users)
-	if (!file && requestUsername[0] === '@') {
-		const usernameWithoutAt = requestUsername.slice(1);
-		file = await Avatars.findOneByName(usernameWithoutAt);
-	}
-
+	const file = await Avatars.findOneByName(requestUsername);
 	if (file) {
 		void serveAvatarFile(file, req, res, next);
 		return;
