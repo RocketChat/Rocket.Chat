@@ -198,7 +198,7 @@ async function handleInvite({
 	}
 }
 
-const getUpdateUserNameDebounced = mem((userId: string) => debounce((name: string) => Users.setName(userId, name), 2000));
+const getUpdateUserNameDebounced = mem((userId: string) => debounce((name: string) => Users.setName(userId, name), 1000));
 
 function updateUserNameDebounced(userId: string, newName: string): void {
 	void getUpdateUserNameDebounced(userId)(newName);
