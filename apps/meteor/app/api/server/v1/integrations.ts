@@ -148,7 +148,7 @@ API.v1.get(
 					integrations: {
 						type: 'array',
 						items: {
-							$ref: '#/components/schemas/IIntegration',
+							oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
 						},
 					},
 					offset: { type: 'number' },
@@ -283,7 +283,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					integration: {
-						$ref: '#/components/schemas/IIntegration',
+						oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
 					},
 					success: { type: 'boolean', enum: [true] },
 				},
