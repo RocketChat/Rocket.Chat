@@ -1,6 +1,6 @@
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, type RoomVersion } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
+import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
@@ -43,7 +43,7 @@ const QueryProfileQuerySchema = {
 	additionalProperties: false,
 };
 
-const isQueryProfileQueryProps = ajv.compile(QueryProfileQuerySchema);
+const isQueryProfileQueryProps = ajvQuery.compile(QueryProfileQuerySchema);
 
 const QueryProfileResponseSchema = {
 	type: 'object',
@@ -151,8 +151,6 @@ const MakeJoinParamsSchema = {
 	required: ['roomId', 'userId'],
 };
 
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isMakeJoinParamsProps = ajv.compile(MakeJoinParamsSchema);
 
 const MakeJoinQuerySchema = {
@@ -177,9 +175,7 @@ const MakeJoinQuerySchema = {
 	},
 };
 
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const isMakeJoinQueryProps = ajv.compile(MakeJoinQuerySchema);
+const isMakeJoinQueryProps = ajvQuery.compile(MakeJoinQuerySchema);
 
 const MakeJoinResponseSchema = {
 	type: 'object',
@@ -263,8 +259,6 @@ const MakeJoinResponseSchema = {
 	required: ['room_version', 'event'],
 };
 
-// @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isMakeJoinResponseProps = ajv.compile(MakeJoinResponseSchema);
 
 const GetMissingEventsParamsSchema = {
