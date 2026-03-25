@@ -1,11 +1,14 @@
 import { Field, FieldLabel, FieldRow, TextInput, Box, Margins, Button, ButtonGroup, IconButton } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import fileSize from 'filesize';
 import type { ReactElement, FormEvent } from 'react';
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { validate, createSoundData } from './lib';
+import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
+import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type AddCustomSoundProps = {
@@ -19,71 +22,54 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const [name, setName] = useState('');
-	const [sound, setSound] = useState<{ name: string }>();
+	const [sound, setSound] = useState<File | undefined>();
 
-	const uploadCustomSound = useMethod('uploadCustomSound');
-	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
+	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.create', {
+		onSuccess: ({ sound }) => {
+			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			onChange();
+			goToNew(sound._id)();
+		},
+	});
 
 	const handleChangeFile = useCallback((soundFile: File) => {
 		setSound(soundFile);
 	}, []);
 
-	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
-
-	const saveAction = useCallback(
-		// FIXME
-		async (name: string, soundFile: any) => {
-			const soundData = createSoundData(soundFile, name);
-			const validation = validate(soundData, soundFile) as Array<Parameters<typeof t>[0]>;
-
-			validation.forEach((invalidFieldName) => {
-				throw new Error(t('Required_field', { field: t(invalidFieldName) }));
+	const [clickUpload] = useSingleFileInput(
+		handleChangeFile,
+		CUSTOM_SOUND_ALLOWED_MIME_TYPES.join(','),
+		'audio',
+		MAX_CUSTOM_SOUND_SIZE_BYTES,
+		() => {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(MAX_CUSTOM_SOUND_SIZE_BYTES, { base: 2, standard: 'jedec' }) }),
 			});
-
-			try {
-				const soundId = await insertOrUpdateSound(soundData);
-
-				if (!soundId) {
-					return undefined;
-				}
-
-				dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
-
-				const reader = new FileReader();
-				reader.readAsBinaryString(soundFile);
-				reader.onloadend = (): void => {
-					try {
-						uploadCustomSound(reader.result as string, soundFile.type, {
-							...soundData,
-							_id: soundId,
-							random: Math.round(Math.random() * 1000),
-						});
-						dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
-					} catch (error) {
-						(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
-					}
-				};
-				close();
-				return soundId;
-			} catch (error) {
-				(typeof error === 'string' || error instanceof Error) && dispatchToastMessage({ type: 'error', message: error });
-			}
 		},
-		[dispatchToastMessage, insertOrUpdateSound, t, uploadCustomSound],
 	);
 
 	const handleSave = useCallback(async () => {
-		try {
-			const result = await saveAction(name, sound);
-			if (result) {
-				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
-			}
-			result && goToNew(result);
-			onChange();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
+		const soundData = createSoundData(sound, name);
+
+		const validation = validate(soundData, sound) as Array<Parameters<typeof t>[0]>;
+		if (validation.length > 0) {
+			const firstInvalidField = validation[0];
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Required_field', { field: t(firstInvalidField) }),
+			});
+			return;
 		}
-	}, [dispatchToastMessage, goToNew, name, onChange, saveAction, sound, t]);
+
+		const formData = new FormData();
+		if (sound) {
+			formData.append('sound', sound);
+		}
+		formData.append('name', name);
+		formData.append('extension', soundData.extension);
+		await saveAction(formData);
+	}, [sound, name, saveAction, t, dispatchToastMessage]);
 
 	return (
 		<>
@@ -99,7 +85,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
+					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
 					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />

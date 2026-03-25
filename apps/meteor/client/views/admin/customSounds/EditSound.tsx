@@ -1,11 +1,14 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import fileSize from 'filesize';
 import type { ReactElement, SyntheticEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { validate, createSoundData } from './lib';
+import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '../../../../lib/constants';
+import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
 type EditSoundProps = {
@@ -14,7 +17,7 @@ type EditSoundProps = {
 	data: {
 		_id: string;
 		name: string;
-		extension?: string;
+		extension: string;
 	};
 };
 
@@ -27,78 +30,56 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const previousSound = useMemo(() => data || {}, [data]);
 
 	const [name, setName] = useState(() => data?.name ?? '');
-	const [sound, setSound] = useState<
-		| {
-				_id: string;
-				name: string;
-				extension?: string;
-		  }
-		| File
-	>(() => data);
+	const [file, setFile] = useState<File | undefined>();
 
 	useEffect(() => {
 		setName(previousName || '');
-		setSound(previousSound || '');
-	}, [previousName, previousSound, _id]);
+		setFile(undefined);
+	}, [_id, previousName]);
 
 	const deleteCustomSoundEndpoint = useEndpoint('POST', '/v1/custom-sounds.delete');
-	const uploadCustomSound = useMethod('uploadCustomSound');
-	const insertOrUpdateSound = useMethod('insertOrUpdateSound');
+
+	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.update', {
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Saved_Successfully') });
+			onChange();
+			close();
+		},
+	});
 
 	const handleChangeFile = useCallback((soundFile: File) => {
-		setSound(soundFile);
+		setFile(soundFile);
 	}, []);
 
-	const hasUnsavedChanges = useMemo(() => previousName !== name || previousSound !== sound, [name, previousName, previousSound, sound]);
-
-	const saveAction = useCallback(
-		// FIXME
-		async (sound: any) => {
-			const soundData = createSoundData(sound, name, { previousName, previousSound, _id, extension: sound.extension });
-			const validation = validate(soundData, sound);
-			if (validation.length === 0) {
-				let soundId: string;
-				try {
-					soundId = await insertOrUpdateSound(soundData);
-				} catch (error) {
-					dispatchToastMessage({ type: 'error', message: error });
-					return;
-				}
-
-				soundData._id = soundId;
-				soundData.random = Math.round(Math.random() * 1000);
-
-				if (sound && sound !== previousSound) {
-					dispatchToastMessage({ type: 'success', message: t('Uploading_file') });
-
-					const reader = new FileReader();
-					reader.readAsBinaryString(sound);
-					reader.onloadend = (): void => {
-						try {
-							uploadCustomSound(reader.result as string, sound.type, { ...soundData, _id: soundId });
-							return dispatchToastMessage({ type: 'success', message: t('File_uploaded') });
-						} catch (error) {
-							dispatchToastMessage({ type: 'error', message: error });
-						}
-					};
-				}
-				close();
-			}
-
-			validation.forEach((invalidFieldName) =>
-				dispatchToastMessage({
-					type: 'error',
-					message: t('Required_field', { field: t(invalidFieldName) }),
-				}),
-			);
-		},
-		[_id, dispatchToastMessage, insertOrUpdateSound, name, previousName, previousSound, t, uploadCustomSound],
-	);
+	const hasUnsavedChanges = useMemo(() => previousName !== name || !!file, [name, previousName, file]);
 
 	const handleSave = useCallback(async () => {
-		await saveAction(sound);
-		onChange();
-	}, [saveAction, sound, onChange]);
+		const soundData = createSoundData(file, name, {
+			previousName,
+			previousSound,
+			_id,
+			extension: data.extension,
+		});
+
+		const validation = validate(soundData, file);
+		if (validation.length > 0) {
+			const firstInvalidField = validation[0];
+			dispatchToastMessage({
+				type: 'error',
+				message: t('Required_field', { field: t(firstInvalidField) }),
+			});
+			return;
+		}
+
+		const formData = new FormData();
+		formData.append('_id', _id);
+		formData.append('name', name);
+		if (file) {
+			formData.append('sound', file);
+			formData.append('extension', soundData.extension);
+		}
+		await saveAction(formData);
+	}, [_id, dispatchToastMessage, name, previousName, previousSound, saveAction, file, t, data.extension]);
 
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleDelete = async (): Promise<void> => {
@@ -123,7 +104,18 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		);
 	}, [_id, close, deleteCustomSoundEndpoint, dispatchToastMessage, onChange, setModal, t]);
 
-	const [clickUpload] = useSingleFileInput(handleChangeFile, 'audio/mp3');
+	const [clickUpload] = useSingleFileInput(
+		handleChangeFile,
+		CUSTOM_SOUND_ALLOWED_MIME_TYPES.join(','),
+		'audio',
+		MAX_CUSTOM_SOUND_SIZE_BYTES,
+		() => {
+			dispatchToastMessage({
+				type: 'error',
+				message: t('File_exceeds_allowed_size_of_bytes', { size: fileSize(MAX_CUSTOM_SOUND_SIZE_BYTES, { base: 2, standard: 'jedec' }) }),
+			});
+		},
+	);
 
 	return (
 		<>
@@ -139,11 +131,11 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Sound_File_mp3')}</FieldLabel>
+					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
 					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />
-							{sound?.name || 'none'}
+							{file?.name || `${data.name}.${data.extension}` || t('None')}
 						</Margins>
 					</Box>
 				</Field>

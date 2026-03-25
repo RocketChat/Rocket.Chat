@@ -1,13 +1,22 @@
 import type { ICustomSoundData } from '../../../../app/custom-sounds/server/methods/insertOrUpdateSound';
+import { CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../../lib/constants';
 
-type ICustomSoundFile = {
-	name: string;
-	type: string;
-	extension?: string;
+const getExtension = (file?: File): string => {
+	if (!file?.name) {
+		return '';
+	}
+
+	const dotIndex = file.name.lastIndexOf('.');
+
+	if (dotIndex <= 0 || dotIndex === file.name.length - 1) {
+		return '';
+	}
+
+	return file.name.slice(dotIndex + 1).toLowerCase();
 };
 
 // Here previousData will define if it is an update or a new entry
-export function validate(soundData: ICustomSoundData, soundFile?: ICustomSoundFile): ('Name' | 'Sound File' | 'FileType')[] {
+export function validate(soundData: ICustomSoundData, soundFile?: File): ('Name' | 'Sound File' | 'FileType')[] {
 	const errors: ('Name' | 'Sound File' | 'FileType')[] = [];
 
 	if (!soundData.name) {
@@ -20,7 +29,7 @@ export function validate(soundData: ICustomSoundData, soundFile?: ICustomSoundFi
 
 	if (soundFile) {
 		if (!soundData.previousSound || soundData.previousSound !== soundFile) {
-			if (!/audio\/mp3/.test(soundFile.type) && !/audio\/mpeg/.test(soundFile.type) && !/audio\/x-mpeg/.test(soundFile.type)) {
+			if (!CUSTOM_SOUND_ALLOWED_MIME_TYPES.includes(soundFile.type)) {
 				errors.push('FileType');
 			}
 		}
@@ -30,7 +39,7 @@ export function validate(soundData: ICustomSoundData, soundFile?: ICustomSoundFi
 }
 
 export const createSoundData = (
-	soundFile: ICustomSoundFile,
+	soundFile: File | undefined,
 	name: string,
 	previousData?: {
 		_id: string;
@@ -44,18 +53,16 @@ export const createSoundData = (
 	if (!previousData) {
 		return {
 			name: name.trim(),
-			extension: soundFile?.name.split('.').pop() || '',
-			newFile: true,
+			extension: getExtension(soundFile),
 		};
 	}
 
 	return {
 		_id: previousData._id,
-		name,
-		extension: soundFile?.name.split('.').pop() || '',
+		name: name.trim(),
+		extension: getExtension(soundFile),
 		previousName: previousData.previousName,
 		previousExtension: previousData.previousSound?.extension,
 		previousSound: previousData.previousSound,
-		newFile: false,
 	};
 };

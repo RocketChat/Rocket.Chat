@@ -60,7 +60,6 @@ const CreateDiscussion = ({
 		watch,
 		setValue,
 	} = useForm({
-		mode: 'onBlur',
 		defaultValues: {
 			name: nameSuggestion || '',
 			parentRoom: '',

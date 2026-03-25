@@ -111,7 +111,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		setValue,
 		watch,
 	} = useForm({
-		mode: 'onBlur',
 		defaultValues: {
 			members: [],
 			name: '',
