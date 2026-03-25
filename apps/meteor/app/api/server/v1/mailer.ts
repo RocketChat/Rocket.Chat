@@ -1,4 +1,11 @@
-import { ajv, isMailerProps, isMailerUnsubscribeProps, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isMailerProps,
+	isMailerUnsubscribeProps,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+	validateBadRequestErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { sendMail } from '../../../mail-messages/server/functions/sendMail';
 import { Mailer } from '../../../mail-messages/server/lib/Mailer';
@@ -30,7 +37,9 @@ API.v1.post(
 		permissionsRequired: ['send-mail'],
 		response: {
 			200: mailerResponseSchema,
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
