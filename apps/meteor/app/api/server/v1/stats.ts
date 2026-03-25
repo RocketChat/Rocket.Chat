@@ -1,6 +1,7 @@
 import type { IStats } from '@rocket.chat/core-typings';
 import {
 	ajv,
+	isTelemetryPayload,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateBadRequestErrorResponse,
@@ -99,6 +100,7 @@ API.v1.post(
 	'statistics.telemetry',
 	{
 		authRequired: true,
+		body: isTelemetryPayload,
 		response: {
 			200: statisticsTelemetryResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -106,11 +108,11 @@ API.v1.post(
 		},
 	},
 	function action() {
-		const events = this.bodyParams as Record<string, any>;
+		const { params } = this.bodyParams;
 
-		events?.params?.forEach((event: Record<string, any>) => {
-			const { eventName, ...params } = event;
-			void telemetryEvent.call(eventName, params);
+		params.forEach((event) => {
+			const { eventName, ...rest } = event;
+			void telemetryEvent.call(eventName, rest);
 		});
 
 		return API.v1.success();

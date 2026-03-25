@@ -248,6 +248,7 @@ export * from './v1/users/UsersGetPresenceParamsGET';
 export * from './v1/users/UsersGetStatusParamsGET';
 export * from './v1/moderation';
 export * from './v1/server-events';
+export * from './v1/statistics';
 
 export * from './v1/autotranslate/AutotranslateGetSupportedLanguagesParamsGET';
 export * from './v1/autotranslate/AutotranslateSaveSettingsParamsPOST';
