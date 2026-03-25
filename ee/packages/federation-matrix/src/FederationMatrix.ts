@@ -7,7 +7,7 @@ import {
 	isUserNativeFederated,
 	UserStatus,
 } from '@rocket.chat/core-typings';
-import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated } from '@rocket.chat/core-typings';
+import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated, ISubscription } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
 import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -947,5 +947,34 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			userId: userIdSchema.parse(matrixUserId),
 			...(threadEventId && { threadId: eventIdSchema.parse(threadEventId) }),
 		});
+	}
+
+	// when a user changes their username, we need to send a new event for every room the user is a member
+	async updateUserName(user: IUser): Promise<void> {
+		const matrixUserId = userIdSchema.parse(`@${user.username}:${this.serverName}`);
+
+		const subs = await Subscriptions.findJoinedByUserId<Pick<ISubscription, 'rid'>>(user._id, { projection: { rid: 1 } }).toArray();
+
+		const rooms = await Rooms.findFederatedByIds<Pick<IRoomNativeFederated, '_id' | 'federation' | 'federated'>>(
+			subs.map(({ rid }) => rid),
+			{ projection: { _id: 1, federation: 1, federated: 1 } },
+		).toArray();
+
+		await Promise.all(
+			rooms.map(async ({ federation }) => {
+				try {
+					await federationSDK.updateRoomMembership({
+						roomId: roomIdSchema.parse(federation.mrid),
+						userId: matrixUserId,
+						membership: 'join',
+						content: {
+							displayname: user.name || user.username,
+						},
+					});
+				} catch (err) {
+					this.logger.error({ msg: 'Failed to update username in Matrix for a room', roomId: federation.mrid, err });
+				}
+			}),
+		);
 	}
 }

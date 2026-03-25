@@ -353,3 +353,18 @@ callbacks.add(
 	callbacks.priority.MEDIUM,
 	'federation-read-receipt',
 );
+
+callbacks.add('afterSaveUser', async ({ user: userUpdated, oldUser: oldUserData }) => {
+	if (!userUpdated || !oldUserData) {
+		return;
+	}
+
+	if (isUserNativeFederated(userUpdated)) {
+		// if the user is federated, it means the update came from Matrix, so we don't need to notify Matrix again
+		return;
+	}
+
+	if ('name' in userUpdated && userUpdated.name !== oldUserData.name) {
+		void FederationMatrix.updateUserName(userUpdated);
+	}
+});

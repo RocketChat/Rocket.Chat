@@ -94,6 +94,7 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 										aria-describedby={`${membersFieldId}-hint ${membersFieldId}-error`}
 										aria-required='true'
 										aria-invalid={Boolean(errors.users)}
+										aria-label={t('Direct_message_creation_description')}
 									/>
 								)}
 							/>
