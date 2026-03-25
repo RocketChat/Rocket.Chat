@@ -1,6 +1,6 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -30,7 +30,7 @@ const EmailInboxListPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isEmailInboxList = ajv.compile<EmailInboxListProps>(EmailInboxListPropsSchema);
+export const isEmailInboxList = ajvQuery.compile<EmailInboxListProps>(EmailInboxListPropsSchema);
 
 type EmailInboxProps = {
 	_id?: string;
@@ -154,7 +154,7 @@ const EmailInboxSearchPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isEmailInboxSearch = ajv.compile<EmailInboxSearchProps>(EmailInboxSearchPropsSchema);
+export const isEmailInboxSearch = ajvQuery.compile<EmailInboxSearchProps>(EmailInboxSearchPropsSchema);
 
 export type EmailInboxEndpoints = {
 	'/v1/email-inbox.list': {
