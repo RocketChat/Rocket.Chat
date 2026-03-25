@@ -112,6 +112,6 @@ export async function getUserInfo(me: IUser, pullPreferences = true): Promise<IM
 				},
 			},
 		}),
-	// Cast needed: spread of full IUser produces a superset; runtime response schema validates the actual shape
+		// Cast needed: spread of full IUser produces a superset; runtime response schema validates the actual shape
 	} as IMeApiUser;
 }
