@@ -8,13 +8,8 @@ import { Users } from '@rocket.chat/models';
  * So we need to upsert the user with the federation object
  */
 
-export async function createOrUpdateFederatedUser(options: {
-	username: string;
-	name?: string;
-	origin: string;
-	avatarUrl?: string;
-}): Promise<IUser> {
-	const { username, name = username, origin, avatarUrl } = options;
+export async function createOrUpdateFederatedUser(options: { username: string; name?: string; origin: string }): Promise<IUser> {
+	const { username, name = username, origin } = options;
 
 	// TODO: Have a specific method to handle this upsert
 	const user = await Users.findOneAndUpdate(
@@ -35,7 +30,6 @@ export async function createOrUpdateFederatedUser(options: {
 					version: 1,
 					mui: username,
 					origin,
-					...(avatarUrl ? { avatarUrl } : {}),
 				},
 				_updatedAt: new Date(),
 			},
