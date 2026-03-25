@@ -1,6 +1,6 @@
 import { isTruthy } from '@rocket.chat/tools';
 
-import { strategyMap, type Provider } from './strategiesMap';
+import { OAuthConfigs } from './oauthConfigs';
 import { type ICachedSettings } from '../../../app/settings/server/CachedSettings';
 
 export const getOAuthServices = (settings: ICachedSettings) => {
@@ -22,8 +22,8 @@ export const getOAuthServices = (settings: ICachedSettings) => {
 
 			const serviceKey = serviceName.toLowerCase();
 
-			const oauthStrategy = strategyMap[serviceKey as Provider];
-			if (!oauthStrategy) {
+			const oauthConfig = OAuthConfigs[serviceKey];
+			if (!oauthConfig) {
 				return;
 			}
 

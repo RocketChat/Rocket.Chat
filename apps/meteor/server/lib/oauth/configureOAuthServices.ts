@@ -3,17 +3,10 @@ import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
-import type { Strategy, Profile, DoneCallback } from 'passport';
+import type { Profile, DoneCallback } from 'passport';
 
+import type { OAuthServiceConfig } from './createOAuthServiceConfig';
 import { oAuthRouter } from '../../configuration/configurePassport';
-
-type OAuthServiceConfig = {
-	provider: string;
-	strategy: new (...args: any[]) => Strategy;
-	clientId: string;
-	clientSecret: string;
-	scope: string[];
-};
 
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[]) => {
 	oauthServiceConfig.forEach((config) => {
