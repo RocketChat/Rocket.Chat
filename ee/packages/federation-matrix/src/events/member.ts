@@ -231,9 +231,13 @@ async function handleJoin({
 		void updateUserNameDebounced(joiningUser._id, content.displayname || '');
 	}
 
-	// update room name for DMs
+	// update room name for DMs after user name was updated
 	if (room.t === 'd') {
-		await Room.updateDirectMessageRoomName(room, [subscription._id]);
+		await Room.updateDirectMessageRoomName(
+			room,
+			[subscription._id],
+			[{ _id: joiningUser._id, name: content.displayname || joiningUser.name, username: joiningUser.username }],
+		);
 	}
 
 	if (!subscription.status) {
