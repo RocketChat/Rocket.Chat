@@ -645,12 +645,25 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 	}
 
+	private get pdpType(): 'local' | 'virtru' {
+		return this.pdp instanceof VirtruPDP ? 'virtru' : 'local';
+	}
+
 	private async removeUserFromRoom(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
 		return Room.removeUserFromRoom(room._id, user, {
 			skipAppPreEvents: true,
 			customSystemMessage: 'abac-removed-user-from-room' as const,
 		})
-			.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id, name: room.name }, reason))
+			.then(
+				() =>
+					void Audit.actionPerformed(
+						{ _id: user._id, username: user.username },
+						{ _id: room._id, name: room.name },
+						reason,
+						'revoked-object-access',
+						this.pdpType,
+					),
+			)
 			.catch((err) => {
 				logger.error({
 					msg: 'Failed to remove user from ABAC room',
