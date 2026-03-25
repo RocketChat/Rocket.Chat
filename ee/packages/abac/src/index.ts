@@ -76,7 +76,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		this.onSettingChanged('ABAC_Virtru_Base_URL', async ({ setting }): Promise<void> => {
-			this.virtruPdpConfig.baseUrl = setting.value as string;
+			this.virtruPdpConfig.baseUrl = (setting.value as string).replace(/\/+$/, '');
 			this.syncVirtruPdpConfig();
 		});
 
@@ -91,7 +91,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		this.onSettingChanged('ABAC_Virtru_OIDC_Endpoint', async ({ setting }): Promise<void> => {
-			this.virtruPdpConfig.oidcEndpoint = setting.value as string;
+			this.virtruPdpConfig.oidcEndpoint = (setting.value as string).replace(/\/+$/, '');
 			this.syncVirtruPdpConfig();
 		});
 
@@ -154,10 +154,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		]);
 
 		this.virtruPdpConfig = {
-			baseUrl: baseUrl || '',
+			baseUrl: (baseUrl || '').replace(/\/+$/, ''),
 			clientId: clientId || '',
 			clientSecret: clientSecret || '',
-			oidcEndpoint: oidcEndpoint || '',
+			oidcEndpoint: (oidcEndpoint || '').replace(/\/+$/, ''),
 			defaultEntityKey: defaultEntityKey || 'emailAddress',
 			attributeNamespace: attributeNamespace || 'example.com',
 		};
