@@ -12,6 +12,8 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[])
 	oauthServiceConfig.forEach((config) => {
 		const Strategy = config.strategy;
 
+		passport.unuse(config.provider);
+
 		passport.use(
 			config.provider,
 			new Strategy(
