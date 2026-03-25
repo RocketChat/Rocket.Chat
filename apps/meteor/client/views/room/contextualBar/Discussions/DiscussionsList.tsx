@@ -76,7 +76,7 @@ function DiscussionsList({
 				<TextInput
 					placeholder={t('Search_Messages')}
 					aria-label={t('Search_Messages')}
-					aria-controls={discussionListId}
+					aria-controls={isSuccess ? discussionListId : undefined}
 					value={text}
 					onChange={onChangeFilter}
 					ref={inputRef as RefObject<HTMLInputElement>}
@@ -97,25 +97,26 @@ function DiscussionsList({
 					</Callout>
 				)}
 
-				{isSuccess && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
-
-				<Box id={discussionListId} aria-label={t('Discussions')} flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-					{!error && itemCount > 0 && discussions.length > 0 && (
-						<VirtualizedScrollbars>
-							<Virtuoso
-								style={{
-									height: blockSize,
-									width: inlineSize,
-								}}
-								totalCount={itemCount}
-								endReached={isPending ? () => undefined : (start) => loadMoreItems(start, Math.min(50, itemCount - start))}
-								overscan={25}
-								data={discussions}
-								itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
-							/>
-						</VirtualizedScrollbars>
-					)}
-				</Box>
+				{isSuccess && (
+					<Box id={discussionListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
+						{discussions.length > 0 && (
+							<VirtualizedScrollbars>
+								<Virtuoso
+									style={{
+										height: blockSize,
+										width: inlineSize,
+									}}
+									totalCount={itemCount}
+									endReached={isPending ? () => undefined : (start) => loadMoreItems(start, Math.min(50, itemCount - start))}
+									overscan={25}
+									data={discussions}
+									itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
+								/>
+							</VirtualizedScrollbars>
+						)}
+					</Box>
+				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);
