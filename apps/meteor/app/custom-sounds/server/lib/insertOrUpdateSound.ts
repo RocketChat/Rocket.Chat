@@ -29,6 +29,10 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 		});
 	}
 
+	if (soundData._id) {
+		check(soundData._id, String);
+	}
+
 	const matchingResults = await CustomSounds.findByName(soundData.name, soundData._id).toArray();
 
 	if (matchingResults.length > 0) {
@@ -50,19 +54,8 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 		await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
 	}
 
-	if (soundData.name !== soundData.previousName) {
-		await CustomSounds.setName(soundData._id, soundData.name);
-		void api.broadcast('notify.updateCustomSound', {
-			soundData: {
-				_id: soundData._id,
-				name: soundData.name,
-				extension: soundData.extension,
-			},
-		});
-	}
-
-	if (soundData.extension !== soundData.previousExtension) {
-		await CustomSounds.setExtension(soundData._id, soundData.extension);
+	if (soundData.name !== soundData.previousName || soundData.extension !== soundData.previousExtension) {
+		await CustomSounds.updateById(soundData._id, { name: soundData.name, extension: soundData.extension });
 		void api.broadcast('notify.updateCustomSound', {
 			soundData: {
 				_id: soundData._id,
