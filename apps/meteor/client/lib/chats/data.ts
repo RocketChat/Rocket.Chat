@@ -10,6 +10,7 @@ import { Messages, Rooms, Subscriptions } from '../../stores';
 import { settings } from '../settings';
 import { getUserId } from '../user';
 import { prependReplies } from '../utils/prependReplies';
+import { upsertThreadMessageInCache } from '../utils/threadMessageUtils';
 
 export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage['_id'] | undefined }): DataAPI => {
 	const composeMessage = async (
@@ -162,7 +163,12 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 	};
 
 	const pushEphemeralMessage = async (message: Omit<IMessage, 'rid' | 'tmid'>): Promise<void> => {
-		Messages.state.store({ ...message, rid, ...(tmid && { tmid }) });
+		const fullMessage = { ...message, rid, ...(tmid && { tmid }) } as IMessage;
+		Messages.state.store(fullMessage);
+
+		if (tmid) {
+			upsertThreadMessageInCache(fullMessage, rid, tmid);
+		}
 	};
 
 	const updateMessage = async (message: IEditedMessage, previewUrls?: string[]): Promise<void> => {
