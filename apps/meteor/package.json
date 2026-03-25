@@ -226,7 +226,7 @@
 		"jschardet": "^3.1.4",
 		"jsdom": "^26.1.0",
 		"json-2-csv": "^5.5.10",
-		"jsrsasign": "^11.1.0",
+		"jsrsasign": "^11.1.1",
 		"juice": "^8.1.0",
 		"katex": "~0.16.28",
 		"ldap-escape": "^2.0.6",
