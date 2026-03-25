@@ -44,10 +44,10 @@ export { ajv, ajvQuery };
 
 type BadRequestErrorResponse = {
 	success: false;
-	error?: string;
+	error?: unknown;
 	errorType?: string;
 	stack?: string;
-	details?: string | object;
+	details?: string | object | object[];
 };
 
 const BadRequestErrorResponseSchema = {
@@ -57,7 +57,7 @@ const BadRequestErrorResponseSchema = {
 		stack: { type: 'string' },
 		error: { type: 'string' },
 		errorType: { type: 'string' },
-		details: { anyOf: [{ type: 'string' }, { type: 'object' }] },
+		details: { anyOf: [{ type: 'string' }, { type: 'object' }, { type: 'array' }] },
 	},
 	required: ['success'],
 	additionalProperties: false,
