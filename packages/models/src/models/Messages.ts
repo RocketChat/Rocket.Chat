@@ -700,7 +700,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 		while (await pointer.hasNext()) {
 			const message = await pointer.next();
-			if (!message.reactions) continue;
+			if (!message?.reactions) continue;
 
 			let updated = false;
 			for (const [emoji, data] of Object.entries(message.reactions as Record<string, { usernames?: string[] }>)) {

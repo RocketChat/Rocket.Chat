@@ -163,8 +163,9 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 				replaceByUser: { _id: userToReplaceWhenUnlinking._id, username: userToReplaceWhenUnlinking?.username, alias: nameAlias },
 			});
 		}
+		await Messages.removeReactionsByUsername(user.username);
 	}
-    await Messages.removeReactionsByUsername(user.username);
+    
 	// Remove user from users database
 	await Users.removeById(userId);
 

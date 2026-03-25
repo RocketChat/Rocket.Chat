@@ -128,6 +128,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findLivechatClosingMessage(rid: IRoom['_id'], options?: FindOptions<IMessage>): Promise<IMessage | null>;
 
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult>;
+	removeReactionsByUsername(username: string): Promise<void>
 	keepHistoryForToken(token: string): Promise<UpdateResult | Document>;
 	setRoomIdByToken(token: string, rid: string): Promise<UpdateResult | Document>;
 	createWithTypeRoomIdMessageUserAndUnread(
