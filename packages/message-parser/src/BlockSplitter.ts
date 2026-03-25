@@ -61,6 +61,10 @@ export class BlockSplitter {
 			}
 
 			if (line.trim() === '') {
+				if (currentBlock?.type === BlockType.LIST && /^\s+$/.test(line)) {
+					currentBlock.content += `\n${line}`;
+					continue;
+				}
 				this.flush(blocks, currentBlock);
 				currentBlock = null;
 				continue;
