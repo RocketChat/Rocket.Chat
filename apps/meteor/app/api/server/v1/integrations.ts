@@ -33,7 +33,7 @@ import { findOneIntegration } from '../lib/integrations';
 const integrationSuccessSchema = ajv.compile<{ integration: IIntegration | null }>({
 	type: 'object',
 	properties: {
-		integration: { $ref: '#/components/schemas/IIntegration' },
+		integration: { oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }] },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['integration', 'success'],
