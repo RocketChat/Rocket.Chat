@@ -311,6 +311,7 @@ const customSoundsEndpoints = API.v1
 			}
 		},
 	);
+
 export type CustomSoundEndpoints = ExtractRoutesFromAPI<typeof customSoundsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
