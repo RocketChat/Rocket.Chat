@@ -43,6 +43,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 				client_id: this.config.clientId,
 				client_secret: this.config.clientSecret,
 			}),
+			// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
 			ignoreSsrfValidation: true,
 		});
 
@@ -72,6 +73,7 @@ export class ExternalPDP implements IPolicyDecisionPoint {
 				'Authorization': `Bearer ${token}`,
 			},
 			body: JSON.stringify(body),
+			// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
 			ignoreSsrfValidation: true,
 		});
 
