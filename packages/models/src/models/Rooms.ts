@@ -4,6 +4,7 @@ import type {
 	IOmnichannelGenericRoom,
 	IRoom,
 	IRoomFederated,
+	IRoomNativeFederated,
 	ITeam,
 	IUser,
 	RocketChatRecordDeleted,
@@ -912,6 +913,15 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		};
 
 		return this.find<IRoomFederated>(query, options);
+	}
+
+	findFederatedByIds<T extends Document = IRoomNativeFederated>(ids: Array<IRoom['_id']>, options: FindOptions<T> = {}): FindCursor<T> {
+		const query = {
+			_id: { $in: ids },
+			federated: true,
+		};
+
+		return this.find<T>(query, options);
 	}
 
 	findOneFederatedByMrid(mrid: string, options: FindOptions<IRoomFederated> = {}): Promise<IRoomFederated | null> {

@@ -42,7 +42,7 @@ test.describe.serial('file-upload', () => {
 
 	test('should send file with name updated', async () => {
 		const updatedFileName = `edited_${TEST_FILE_TXT}`;
-		await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
+		await poHomeChannel.content.dragAndDropTxtFile();
 
 		await test.step('update file name and send', async () => {
 			await poHomeChannel.composer.getFileByName(TEST_FILE_TXT).click();
@@ -57,8 +57,8 @@ test.describe.serial('file-upload', () => {
 	});
 
 	test('should attach multiple files and send one per message', async () => {
-		await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
-		await poHomeChannel.content.sendFileMessage(TEST_FILE_LST);
+		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.dragAndDropLstFile();
 
 		await expect(poHomeChannel.composer.inputMessage).toBeFocused();
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).toBeVisible();
@@ -73,7 +73,7 @@ test.describe.serial('file-upload', () => {
 		await poHomeChannel.content.openLastMessageMenu();
 		await poHomeChannel.content.btnOptionEditMessage.click();
 
-		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.dragAndDropTxtFile({ waitForResponse: false });
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 	});
 
@@ -124,7 +124,7 @@ test.describe.serial('file-upload', () => {
 		const files = new Array(10).fill('number1.png');
 
 		await Promise.all(files.map((file) => poHomeChannel.content.sendFileMessage(file)));
-		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.dragAndDropTxtFile({ waitForResponse: false });
 
 		await expect(poHomeChannel.composer.getFilesInComposer()).toHaveCount(10);
 		await expect(poHomeChannel.composer.getFileByName('any_file.txt')).not.toBeVisible();
@@ -229,7 +229,7 @@ test.describe('file-upload-not-member', () => {
 	});
 
 	test('should not be able to upload if not a member', async () => {
-		await poHomeChannel.content.dragAndDropTxtFile();
+		await poHomeChannel.content.dragAndDropTxtFile({ waitForResponse: false });
 		await expect(poHomeChannel.composer.getFileByName(TEST_FILE_TXT)).not.toBeVisible();
 	});
 });

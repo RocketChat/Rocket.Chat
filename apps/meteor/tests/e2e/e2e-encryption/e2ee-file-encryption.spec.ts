@@ -60,7 +60,7 @@ test.describe('E2EE File Encryption', () => {
 		const updatedFileName = `edited_${TEST_FILE_TXT}`;
 
 		await test.step('send a file in channel and edit it', async () => {
-			await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
+			await poHomeChannel.content.dragAndDropTxtFile();
 			await poHomeChannel.composer.getFileByName(TEST_FILE_TXT).click();
 			await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
 			await poHomeChannel.content.btnUpdateFileUpload.click();
@@ -128,7 +128,7 @@ test.describe('E2EE File Encryption', () => {
 	test('File encryption with whitelisted and blacklisted media types', async ({ api }) => {
 		await test.step('send a text file in channel', async () => {
 			const updatedFileName = `edited_${TEST_FILE_TXT}`;
-			await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
+			await poHomeChannel.content.dragAndDropTxtFile();
 			await poHomeChannel.composer.getFileByName(TEST_FILE_TXT).click();
 			await poHomeChannel.content.inputFileUploadName.fill(updatedFileName);
 			await poHomeChannel.content.btnUpdateFileUpload.click();
@@ -144,7 +144,7 @@ test.describe('E2EE File Encryption', () => {
 		});
 
 		await test.step('send text file again with whitelist setting set', async () => {
-			await poHomeChannel.content.sendFileMessage(TEST_FILE_TXT);
+			await poHomeChannel.content.dragAndDropTxtFile();
 			await poHomeChannel.composer.inputMessage.fill('message 2');
 			await poHomeChannel.composer.getFileByName(TEST_FILE_TXT).click();
 			await poHomeChannel.content.inputFileUploadName.fill('any_file2.txt');
