@@ -186,7 +186,7 @@ export const getMatrixRoomsRoutes = () => {
 						chunk: publicRooms
 							.filter((r) => {
 								if (filter.generic_search_term) {
-									return r.name?.toLowerCase().includes(filter.generic_search_term.toLowerCase());
+									return r.name.toLowerCase().includes(filter.generic_search_term.toLowerCase());
 								}
 
 								// Today only one room type is supported (https://spec.matrix.org/v1.15/client-server-api/#types)
