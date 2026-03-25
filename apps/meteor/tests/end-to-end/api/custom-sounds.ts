@@ -95,6 +95,20 @@ describe('[CustomSounds]', () => {
 			fileId3 = response.body.sound._id;
 		});
 
+		it('should not be able to create two sounds with the same name', async () => {
+			await request
+				.post(api('custom-sounds.create'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('name', fileName)
+				.field('extension', 'mp3')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The custom sound name is already in use [Custom_Sound_Error_Name_Already_In_Use]');
+				});
+		});
+
 		it('should return unauthorized if not authenticated', async () => {
 			await request.post(api('custom-sounds.create')).expect(401);
 		});
@@ -248,6 +262,35 @@ describe('[CustomSounds]', () => {
 					expect(res.body).to.have.property('sound').and.to.be.an('object');
 					expect(res.body.sound).to.have.property('name').and.to.be.equal(newSoundName);
 					expect(res.body.sound).to.have.property('extension').and.to.be.equal('mp3');
+				});
+		});
+
+		it('should not be able to update sounds name if the name was already taken ', async () => {
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('_id', fileId)
+				.field('name', `${fileName}-2`)
+				.field('extension', 'mp3')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'The custom sound name is already in use [Custom_Sound_Error_Name_Already_In_Use]');
+				});
+		});
+
+		it('should not be able to update sound if file was attached but the extension was not', async () => {
+			await request
+				.post(api('custom-sounds.update'))
+				.set(credentials)
+				.attach('sound', mockWavAudioPath)
+				.field('_id', fileId)
+				.field('name', `${fileName}-2`)
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Extension required');
 				});
 		});
 
