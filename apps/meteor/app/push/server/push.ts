@@ -96,6 +96,7 @@ type GatewayNotification = {
 		sound?: string;
 		notId?: number;
 		category?: string;
+		expirationSeconds?: number;
 	};
 	gcm?: {
 		from?: string;
@@ -440,6 +441,7 @@ class PushClass {
 			contentAvailable: Match.Optional(Match.Integer),
 			apn: Match.Optional({
 				category: Match.Optional(String),
+				expirationSeconds: Match.Optional(Match.Integer),
 			}),
 			gcm: Match.Optional({
 				image: Match.Optional(String),
@@ -481,7 +483,7 @@ class PushClass {
 			...(this.hasApnOptions(options)
 				? {
 						apn: {
-							...pick(options.apn, 'category'),
+							...pick(options.apn, 'category', 'expirationSeconds'),
 						},
 					}
 				: {}),

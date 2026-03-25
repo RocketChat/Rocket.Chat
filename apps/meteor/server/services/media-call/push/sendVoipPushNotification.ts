@@ -87,8 +87,10 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 	const caller = await getActorUserData(call.caller);
 
 	metrics.notificationsSent.inc({ notification_type: 'mobile' });
+	const useVoipToken = type === 'incoming_call';
+
 	await Push.send({
-		useVoipToken: type === 'incoming_call',
+		useVoipToken,
 		priority: 10,
 		payload: {
 			host: Meteor.absoluteUrl(),
@@ -100,6 +102,7 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 			caller,
 			createdAt: call.createdAt.toISOString(),
 		},
+		...(useVoipToken && { apn: { expirationSeconds: 60 } }),
 		userId,
 		notId: PushNotification.getNotificationId(call._id),
 		// We should not send state change notifications to the device where the call was accepted/rejected
