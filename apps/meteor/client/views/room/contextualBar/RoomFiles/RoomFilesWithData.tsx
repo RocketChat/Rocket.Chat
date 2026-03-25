@@ -30,6 +30,7 @@ const RoomFilesWithData = () => {
 
 	return (
 		<RoomFiles
+			rid={room._id}
 			isPending={isPending}
 			isSuccess={isSuccess}
 			type={type}

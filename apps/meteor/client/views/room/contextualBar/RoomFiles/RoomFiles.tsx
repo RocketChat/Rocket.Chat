@@ -1,4 +1,4 @@
-import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ContextualbarSection } from '@rocket.chat/fuselage';
 import {
@@ -22,6 +22,7 @@ import FileItem from './components/FileItem';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 
 type RoomFilesProps = {
+	rid: IRoom['_id'];
 	isPending: boolean;
 	isSuccess: boolean;
 	type: string;
@@ -36,6 +37,7 @@ type RoomFilesProps = {
 };
 
 const RoomFiles = ({
+	rid,
 	isPending,
 	isSuccess,
 	type,
@@ -75,13 +77,13 @@ const RoomFiles = ({
 					data-qa-files-search
 					placeholder={t('Search_Files')}
 					aria-label={t('Search_Files')}
-					aria-controls={filesListId}
+					aria-controls={isSuccess ? filesListId : undefined}
 					value={text}
 					onChange={setText}
 					addon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box w='x144' mis={8}>
-					<Select aria-controls={filesListId} onChange={setType} value={type} options={options} />
+					<Select aria-controls={isSuccess ? filesListId : undefined} onChange={setType} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0}>
@@ -91,26 +93,28 @@ const RoomFiles = ({
 						<Throbber size='x12' />
 					</Box>
 				)}
-				{isSuccess && filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
-				{isSuccess && filesItems.length > 0 && (
-					<Box id={filesListId} role='list' aria-label={t('Files_List')} w='full' h='full' flexShrink={1} overflow='hidden'>
-						<VirtualizedScrollbars>
-							<Virtuoso
-								style={{
-									height: '100%',
-									width: '100%',
-								}}
-								totalCount={total}
-								endReached={loadMoreItems}
-								overscan={100}
-								data={filesItems}
-								itemContent={(_, data) => <FileItem fileData={data} onClickDelete={onClickDelete} />}
-								components={{
-									List: RoomFilesListWrapper,
-									Item: RoomFileItemWrapper,
-								}}
-							/>
-						</VirtualizedScrollbars>
+				{isSuccess && (
+					<Box w='full' h='full' id={filesListId} flexShrink={1} overflow='hidden'>
+						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
+						{filesItems.length > 0 && (
+							<VirtualizedScrollbars>
+								<Virtuoso
+									style={{
+										height: '100%',
+										width: '100%',
+									}}
+									totalCount={total}
+									endReached={loadMoreItems}
+									overscan={100}
+									data={filesItems}
+									itemContent={(_, data) => <FileItem rid={rid} fileData={data} onClickDelete={onClickDelete} />}
+									components={{
+										List: RoomFilesListWrapper,
+										Item: RoomFileItemWrapper,
+									}}
+								/>
+							</VirtualizedScrollbars>
+						)}
 					</Box>
 				)}
 			</ContextualbarContent>
