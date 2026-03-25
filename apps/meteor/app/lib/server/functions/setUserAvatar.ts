@@ -14,6 +14,19 @@ import { RocketChatFile } from '../../../file/server';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 
+const sanitizeAvatarUrl = (url: string): string => {
+	try {
+		const parsedUrl = new URL(url);
+		parsedUrl.username = '';
+		parsedUrl.password = '';
+		parsedUrl.search = '';
+		parsedUrl.hash = '';
+		return parsedUrl.toString();
+	} catch {
+		return 'invalid-avatar-url';
+	}
+};
+
 export const setAvatarFromServiceWithValidation = async (
 	userId: string,
 	dataURI: string,
@@ -100,6 +113,7 @@ export async function setUserAvatar(
 
 	const { buffer, type } = await (async (): Promise<{ buffer: Buffer; type: string }> => {
 		if (service === 'url' && typeof dataURI === 'string') {
+			const sanitizedUrl = sanitizeAvatarUrl(dataURI);
 			const controller = new AbortController();
 			const AVATAR_FETCH_TIMEOUT_MS = 30_000;
 			const timer = setTimeout(() => controller.abort(), AVATAR_FETCH_TIMEOUT_MS);
@@ -115,19 +129,19 @@ export async function setUserAvatar(
 					});
 				} catch (e) {
 					if (controller.signal.aborted) {
-						throw new Meteor.Error('error-avatar-url-timeout', `Avatar URL timed out after ${AVATAR_FETCH_TIMEOUT_MS}ms: ${encodeURI(dataURI)}`, {
+						throw new Meteor.Error('error-avatar-url-timeout', `Avatar URL timed out after ${AVATAR_FETCH_TIMEOUT_MS}ms: ${sanitizedUrl}`, {
 							function: 'setUserAvatar',
-							url: dataURI,
+							url: sanitizedUrl,
 						});
 					}
 					SystemLogger.info({
 						msg: 'Not a valid response from the avatar url',
-						url: encodeURI(dataURI),
+						url: sanitizedUrl,
 						err: e,
 					});
-					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${encodeURI(dataURI)}`, {
+					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${sanitizedUrl}`, {
 						function: 'setUserAvatar',
-						url: dataURI,
+						url: sanitizedUrl,
 					});
 				}
 
@@ -136,25 +150,25 @@ export async function setUserAvatar(
 					if (response.status !== 404) {
 						SystemLogger.info({
 							msg: 'Error while handling the setting of the avatar from a url',
-							url: encodeURI(dataURI),
+							url: sanitizedUrl,
 							username: user.username,
 							status: response.status,
 						});
 						throw new Meteor.Error(
 							'error-avatar-url-handling',
-							`Error while handling avatar setting from a URL (${encodeURI(dataURI)}) for ${user.username}`,
-							{ function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username },
+							`Error while handling avatar setting from a URL (${sanitizedUrl}) for ${user.username}`,
+							{ function: 'RocketChat.setUserAvatar', url: sanitizedUrl, username: user.username },
 						);
 					}
 
 					SystemLogger.info({
 						msg: 'Not a valid response from the avatar url',
 						status: response.status,
-						url: dataURI,
+						url: sanitizedUrl,
 					});
-					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
+					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${sanitizedUrl}`, {
 						function: 'setUserAvatar',
-						url: dataURI,
+						url: sanitizedUrl,
 					});
 				}
 
@@ -165,18 +179,17 @@ export async function setUserAvatar(
 					SystemLogger.info({
 						msg: 'Not a valid content-type from the provided avatar url',
 						contentType: response.headers.get('content-type'),
-						url: dataURI,
+						url: sanitizedUrl,
 					});
-					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
+					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${sanitizedUrl}`, {
 						function: 'setUserAvatar',
-						url: dataURI,
+						url: sanitizedUrl,
 					});
 				}
 
 				const maxSize = settings.get<number>('FileUpload_MaxFileSize') ?? 104857600;
-				const isUnlimitedMaxSize = maxSize <= -1;
+				const isUnlimitedMaxSize = maxSize <= 0;
 
-				// Reject early if Content-Length header already exceeds the limit
 				const contentLengthHeader = response.headers.get('content-length');
 				if (!isUnlimitedMaxSize && contentLengthHeader) {
 					const declaredSize = parseInt(contentLengthHeader, 10);
@@ -184,16 +197,15 @@ export async function setUserAvatar(
 						void (response.body as any)?.cancel?.();
 						throw new Meteor.Error('error-avatar-image-too-large', 'Avatar image exceeds the maximum allowed file size', {
 							function: 'setUserAvatar',
-							url: dataURI,
+							url: sanitizedUrl,
 						});
 					}
 				}
 
-				// Stream the body, counting bytes so we abort even when Content-Length is absent
 				if (!response.body) {
-					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
+					throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${sanitizedUrl}`, {
 						function: 'setUserAvatar',
-						url: dataURI,
+						url: sanitizedUrl,
 					});
 				}
 
@@ -206,7 +218,7 @@ export async function setUserAvatar(
 						void (response.body as any)?.cancel?.();
 						throw new Meteor.Error('error-avatar-image-too-large', 'Avatar image exceeds the maximum allowed file size', {
 							function: 'setUserAvatar',
-							url: dataURI,
+							url: sanitizedUrl,
 						});
 					}
 					chunks.push(part);
@@ -217,11 +229,10 @@ export async function setUserAvatar(
 					type: contentType,
 				};
 			} catch (e) {
-				// Convert a mid-stream abort (timer fired during body read) to a clean error
 				if (controller.signal.aborted && !(e instanceof Meteor.Error)) {
-					throw new Meteor.Error('error-avatar-url-timeout', `Avatar URL timed out after ${AVATAR_FETCH_TIMEOUT_MS}ms: ${encodeURI(dataURI)}`, {
+					throw new Meteor.Error('error-avatar-url-timeout', `Avatar URL timed out after ${AVATAR_FETCH_TIMEOUT_MS}ms: ${sanitizedUrl}`, {
 						function: 'setUserAvatar',
-						url: dataURI,
+						url: sanitizedUrl,
 					});
 				}
 				throw e;

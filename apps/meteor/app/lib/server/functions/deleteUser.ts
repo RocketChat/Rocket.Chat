@@ -143,7 +143,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 		await LivechatVisitors.removeContactManagerByUsername(user.username);
 
 		// removes user's avatar
-		if (user.avatarOrigin === 'upload' || user.avatarOrigin === 'url' || user.avatarOrigin === 'rest') {
+		if (user.avatarOrigin && user.avatarOrigin !== 'initials') {
 			await FileUpload.getStore('Avatars').deleteByName(user.username);
 		}
 
