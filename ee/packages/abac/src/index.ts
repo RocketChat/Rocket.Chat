@@ -768,9 +768,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			const nonCompliant = await this.pdp.evaluateUserRooms(entries);
 
 			// TODO: this should be in a persistent queue
-			await Promise.all(
-				nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'virtru-pdp-sync'))),
-			);
+			await Promise.all(nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'virtru-pdp-sync'))));
 		} catch (err) {
 			logger.error({ msg: 'Failed to evaluate room membership', err });
 		}
