@@ -1679,7 +1679,8 @@ API.v1
 			},
 		},
 		async function action() {
-			return API.v1.success(await Users.removeNonLoginTokensExcept(this.userId, this.token));
+			await Users.removeNonLoginTokensExcept(this.userId, this.token);
+			return API.v1.success();
 		},
 	)
 	.post(
