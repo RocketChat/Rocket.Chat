@@ -164,7 +164,7 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 			});
 		}
 	}
-
+    await Messages.removeReactionsByUsername(user.username);
 	// Remove user from users database
 	await Users.removeById(userId);
 

@@ -673,6 +673,60 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	setReactions(messageId: string, reactions: IMessage['reactions']): Promise<UpdateResult> {
 		return this.updateOne({ _id: messageId }, { $set: { reactions } });
 	}
+	public async removeReactionsByUsername(username: string) {
+		const query = {
+			reactions: { $exists: true },
+			$expr: {
+				$gt: [
+					{
+						$size: {
+							$filter: {
+								input: { $objectToArray: '$reactions' },
+								as: 'reaction',
+								cond: {
+									$in: [username, '$$reaction.v.usernames'],
+								},
+							},
+						},
+					},
+					0,
+				],
+			},
+		};
+
+		const pointer = this.find(query, {
+			projection: { reactions: 1 },
+		});
+
+		while (await pointer.hasNext()) {
+			const message = await pointer.next();
+			if (!message.reactions) continue;
+
+			let updated = false;
+			for (const [emoji, data] of Object.entries(message.reactions as Record<string, { usernames?: string[] }>)) {
+				if (!data.usernames) continue;
+
+				const filtered = data.usernames.filter((u) => u !== username);
+
+				if (filtered.length !== data.usernames.length) {
+					updated = true;
+
+					if (filtered.length === 0) {
+						delete message.reactions[emoji];
+					} else {
+						message.reactions[emoji].usernames = filtered;
+					}
+				}
+			}
+
+			if (updated) {
+				await this.updateOne(
+					{ _id: message._id },
+					Object.keys(message.reactions).length ? { $set: { reactions: message.reactions } } : { $unset: { reactions: 1 } },
+				);
+			}
+		}
+	}
 
 	keepHistoryForToken(token: string): Promise<UpdateResult | Document> {
 		return this.updateMany(
