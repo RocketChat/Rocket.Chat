@@ -33,9 +33,7 @@ import { findOneIntegration } from '../lib/integrations';
 const integrationSuccessSchema = ajv.compile<{ integration: IIntegration | null }>({
 	type: 'object',
 	properties: {
-		integration: {
-			oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
-		},
+		integration: { $ref: '#/components/schemas/IIntegration' },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['integration', 'success'],
@@ -150,7 +148,7 @@ API.v1.get(
 					integrations: {
 						type: 'array',
 						items: {
-							oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
+							$ref: '#/components/schemas/IIntegration',
 						},
 					},
 					offset: { type: 'number' },
@@ -285,7 +283,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					integration: {
-						oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
+						$ref: '#/components/schemas/IIntegration',
 					},
 					success: { type: 'boolean', enum: [true] },
 				},
