@@ -52,6 +52,7 @@ type GroupsInvitesProps = {
 	roomName?: string;
 	userId?: string;
 	userIds?: string[];
+	username?:string; 
 	usernames?: string[];
 };
 
@@ -65,6 +66,9 @@ const isGroupsInvitePropSchema = withGroupBaseProperties({
 			type: 'string',
 		},
 	},
+	username: {
+		type: 'string'
+	}, 
 	usernames: {
 		type: 'array',
 		items: {
