@@ -5149,7 +5149,7 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('invalid-params');
-					expect(res.body.error).to.be.equal('Valid status types include online, away, offline, and busy.');
+					expect(res.body.error).to.include('must be equal to one of the allowed values');
 				})
 				.end(done);
 		});
