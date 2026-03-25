@@ -202,7 +202,7 @@ const waitForRoomEvent = async (
 						{
 							username: userDm,
 							password: 'random',
-							email: `${userDm}}@rocket.chat`,
+							email: `${userDm}@rocket.chat`,
 							name: initialDisplayName,
 						},
 						rc1AdminRequestConfig,
