@@ -101,7 +101,7 @@ ENV NODE_ENV=production \
 RUN apk update && \
     apk --no-cache --virtual deps add shadow && \
     # Update OpenSSL
-    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
+    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.22
     apk upgrade --no-cache openssl && \
     rm -rf /var/cache/apk/* && \
     groupmod -n rocketchat nogroup && \

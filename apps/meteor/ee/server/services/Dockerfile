@@ -74,7 +74,7 @@ WORKDIR /app/apps/meteor/ee/server/services
 RUN apk update && \
     apk --no-cache --virtual build-dependencies add g++ python3 make py3-setuptools && \
     # Update OpenSSL
-    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
+    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.22
     apk upgrade --no-cache openssl && \
     yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
