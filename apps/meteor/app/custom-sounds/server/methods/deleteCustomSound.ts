@@ -1,5 +1,6 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -17,6 +18,7 @@ Meteor.methods<ServerMethods>({
 		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-sounds'))) {
 			throw new Meteor.Error('not_authorized');
 		}
+		check(_id, String);
 		return deleteCustomSound(_id);
 	},
 });
