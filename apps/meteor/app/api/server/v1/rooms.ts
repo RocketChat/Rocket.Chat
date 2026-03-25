@@ -76,12 +76,12 @@ export async function findRoomByIdOrName({
 	checkedArchived = true,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	checkedArchived?: boolean;
 }): Promise<IRoom> {
 	if (
@@ -110,21 +110,51 @@ export async function findRoomByIdOrName({
 	return room;
 }
 
-API.v1.addRoute(
-	'rooms.nameExists',
+const roomNameExistsEndpoint = API.v1.get('rooms.nameExists',
 	{
 		authRequired: true,
-		validateParams: isGETRoomsNameExists,
-	},
-	{
-		async get() {
-			const { roomName } = this.queryParams;
-
-			const room = await Rooms.findOneByName(roomName, { projection: { _id: 1 } });
-
-			return API.v1.success({ exists: !!room });
+		//required query validation using ajv
+		query: ajv.compile<{ roomName: string }>({
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+					description: 'The name of the room to check',
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		}),
+		//response validation
+		response: {
+			200: ajv.compile<{
+				exists: boolean,
+				success: true
+			}>({
+				type: 'object',
+				properties: {
+					exists: {
+						type: 'boolean',
+					},
+					success: {
+						type: 'boolean',
+						enum: [true],
+					},
+				},
+				required: ['exists', 'success'],
+				additionalProperties: false
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse
 		},
 	},
+	async function action() {
+		const { roomName } = this.queryParams;
+		const room = await Rooms.findOneByName(roomName, {
+			projection: { _id: 1 },
+		});
+		return API.v1.success({ exists: !!room });
+	}
 );
 
 const roomDeleteEndpoint = API.v1.post(
@@ -970,21 +1000,21 @@ API.v1.addRoute(
 
 type RoomsFavorite =
 	| {
-			roomId: string;
-			favorite: boolean;
-	  }
+		roomId: string;
+		favorite: boolean;
+	}
 	| {
-			roomName: string;
-			favorite: boolean;
-	  };
+		roomName: string;
+		favorite: boolean;
+	};
 
 type RoomsLeave =
 	| {
-			roomId: string;
-	  }
+		roomId: string;
+	}
 	| {
-			roomName: string;
-	  };
+		roomName: string;
+	};
 
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
@@ -1377,9 +1407,10 @@ export const roomEndpoints = API.v1
 	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
+	ExtractRoutesFromAPI<typeof roomNameExistsEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RoomEndpoints {}
+	interface Endpoints extends RoomEndpoints { }
 }

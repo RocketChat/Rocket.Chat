@@ -915,12 +915,6 @@ export type RoomsEndpoints = {
 		};
 	};
 
-	'/v1/rooms.nameExists': {
-		GET: (params: { roomName: string }) => {
-			exists: boolean;
-		};
-	};
-
 	'/v1/rooms.get': {
 		GET: (params: { updatedSince: string }) => {
 			update: IRoom[];
