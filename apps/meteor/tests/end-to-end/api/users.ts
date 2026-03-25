@@ -2044,7 +2044,7 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters [invalid-params]');
+					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters');
 				});
 		});
 
@@ -2063,7 +2063,7 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', 'must NOT have additional properties [invalid-params]');
+					expect(res.body).to.have.property('error', 'must NOT have additional properties');
 				});
 		});
 
@@ -3475,7 +3475,8 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', "must have required property 'email'");
 				})
 				.end(done);
 		});
@@ -3939,7 +3940,6 @@ describe('[Users]', () => {
 					.set(credentials)
 					.send({
 						tokenName: 'test',
-						loginToken: '1234567890',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
@@ -5617,7 +5617,7 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.errorType).to.be.equal('error-invalid-params');
-					expect(res.body.error).to.be.equal('must be equal to one of the allowed values [error-invalid-params]');
+					expect(res.body.error).to.be.equal('must be equal to one of the allowed values');
 				});
 		});
 
@@ -5705,7 +5705,7 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', "must have required property 'email' [invalid-params]");
+					expect(res.body).to.have.property('error', "must have required property 'email'");
 				});
 		});
 
