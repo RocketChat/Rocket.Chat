@@ -110,7 +110,7 @@ export class LDAPEEManager extends LDAPManager {
 			!settings.get('LDAP_Background_Sync_ABAC_Attributes') ||
 			!License.hasModule('abac') ||
 			!settings.get('ABAC_Enabled') ||
-			settings.get('ABAC_PDP_Type') === 'external'
+			settings.get('ABAC_PDP_Type') === 'virtru'
 		) {
 			return;
 		}
@@ -134,7 +134,7 @@ export class LDAPEEManager extends LDAPManager {
 			!settings.get('LDAP_Enable') ||
 			!License.hasModule('abac') ||
 			!settings.get('ABAC_Enabled') ||
-			settings.get('ABAC_PDP_Type') === 'external'
+			settings.get('ABAC_PDP_Type') === 'virtru'
 		) {
 			return;
 		}

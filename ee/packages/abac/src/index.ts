@@ -35,8 +35,8 @@ import {
 	MAX_ABAC_ATTRIBUTE_KEYS,
 } from './helper';
 import { logger } from './logger';
-import type { IPolicyDecisionPoint, ExternalPDPConfig } from './pdp';
-import { LocalPDP, ExternalPDP } from './pdp';
+import type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
+import { LocalPDP, VirtruPDP } from './pdp';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
@@ -46,7 +46,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	private pdp: IPolicyDecisionPoint | null = null;
 
-	private externalPdpConfig: ExternalPDPConfig = {
+	private virtruPdpConfig: VirtruPDPConfig = {
 		baseUrl: '',
 		clientId: '',
 		clientSecret: '',
@@ -62,7 +62,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.onSettingChanged('ABAC_PDP_Type', async ({ setting }): Promise<void> => {
 			const { value } = setting;
-			if (value === 'local' || value === 'external') {
+			if (value === 'local' || value === 'virtru') {
 				this.setPdpStrategy(value);
 			}
 		});
@@ -75,49 +75,49 @@ export class AbacService extends ServiceClass implements IAbacService {
 			this.decisionCacheTimeout = value;
 		});
 
-		this.onSettingChanged('ABAC_External_Base_URL', async ({ setting }): Promise<void> => {
-			this.externalPdpConfig.baseUrl = setting.value as string;
-			this.syncExternalPdpConfig();
+		this.onSettingChanged('ABAC_Virtru_Base_URL', async ({ setting }): Promise<void> => {
+			this.virtruPdpConfig.baseUrl = setting.value as string;
+			this.syncVirtruPdpConfig();
 		});
 
-		this.onSettingChanged('ABAC_External_Client_ID', async ({ setting }): Promise<void> => {
-			this.externalPdpConfig.clientId = setting.value as string;
-			this.syncExternalPdpConfig();
+		this.onSettingChanged('ABAC_Virtru_Client_ID', async ({ setting }): Promise<void> => {
+			this.virtruPdpConfig.clientId = setting.value as string;
+			this.syncVirtruPdpConfig();
 		});
 
-		this.onSettingChanged('ABAC_External_Client_Secret', async ({ setting }): Promise<void> => {
-			this.externalPdpConfig.clientSecret = setting.value as string;
-			this.syncExternalPdpConfig();
+		this.onSettingChanged('ABAC_Virtru_Client_Secret', async ({ setting }): Promise<void> => {
+			this.virtruPdpConfig.clientSecret = setting.value as string;
+			this.syncVirtruPdpConfig();
 		});
 
-		this.onSettingChanged('ABAC_External_OIDC_Endpoint', async ({ setting }): Promise<void> => {
-			this.externalPdpConfig.oidcEndpoint = setting.value as string;
-			this.syncExternalPdpConfig();
+		this.onSettingChanged('ABAC_Virtru_OIDC_Endpoint', async ({ setting }): Promise<void> => {
+			this.virtruPdpConfig.oidcEndpoint = setting.value as string;
+			this.syncVirtruPdpConfig();
 		});
 
-		this.onSettingChanged('ABAC_External_Default_Entity_Key', async ({ setting }): Promise<void> => {
-			this.externalPdpConfig.defaultEntityKey = setting.value as string;
-			this.syncExternalPdpConfig();
+		this.onSettingChanged('ABAC_Virtru_Default_Entity_Key', async ({ setting }): Promise<void> => {
+			this.virtruPdpConfig.defaultEntityKey = setting.value as string;
+			this.syncVirtruPdpConfig();
 		});
 
-		this.onSettingChanged('ABAC_External_Attribute_Namespace', async ({ setting }): Promise<void> => {
-			this.externalPdpConfig.attributeNamespace = setting.value as string;
-			this.syncExternalPdpConfig();
+		this.onSettingChanged('ABAC_Virtru_Attribute_Namespace', async ({ setting }): Promise<void> => {
+			this.virtruPdpConfig.attributeNamespace = setting.value as string;
+			this.syncVirtruPdpConfig();
 		});
 	}
 
-	private syncExternalPdpConfig(): void {
-		if (this.pdp instanceof ExternalPDP) {
-			this.pdp.updateConfig({ ...this.externalPdpConfig });
+	private syncVirtruPdpConfig(): void {
+		if (this.pdp instanceof VirtruPDP) {
+			this.pdp.updateConfig({ ...this.virtruPdpConfig });
 		}
 	}
 
-	setPdpStrategy(strategy: 'local' | 'external'): void {
+	setPdpStrategy(strategy: 'local' | 'virtru'): void {
 		const previousPdp = this.pdp ? this.pdp.constructor.name : 'none';
 
 		switch (strategy) {
-			case 'external':
-				this.pdp = new ExternalPDP({ ...this.externalPdpConfig });
+			case 'virtru':
+				this.pdp = new VirtruPDP({ ...this.virtruPdpConfig });
 				break;
 			case 'local':
 			default:
@@ -137,21 +137,21 @@ export class AbacService extends ServiceClass implements IAbacService {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
 		const pdpType = await Settings.get<string>('ABAC_PDP_Type');
-		if (pdpType !== 'external') {
+		if (pdpType !== 'virtru') {
 			this.setPdpStrategy('local');
 			return;
 		}
 
 		const [baseUrl, clientId, clientSecret, oidcEndpoint, defaultEntityKey, attributeNamespace] = await Promise.all([
-			Settings.get<string>('ABAC_External_Base_URL'),
-			Settings.get<string>('ABAC_External_Client_ID'),
-			Settings.get<string>('ABAC_External_Client_Secret'),
-			Settings.get<string>('ABAC_External_OIDC_Endpoint'),
-			Settings.get<string>('ABAC_External_Default_Entity_Key'),
-			Settings.get<string>('ABAC_External_Attribute_Namespace'),
+			Settings.get<string>('ABAC_Virtru_Base_URL'),
+			Settings.get<string>('ABAC_Virtru_Client_ID'),
+			Settings.get<string>('ABAC_Virtru_Client_Secret'),
+			Settings.get<string>('ABAC_Virtru_OIDC_Endpoint'),
+			Settings.get<string>('ABAC_Virtru_Default_Entity_Key'),
+			Settings.get<string>('ABAC_Virtru_Attribute_Namespace'),
 		]);
 
-		this.externalPdpConfig = {
+		this.virtruPdpConfig = {
 			baseUrl: baseUrl || '',
 			clientId: clientId || '',
 			clientSecret: clientSecret || '',
@@ -160,7 +160,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			attributeNamespace: attributeNamespace || 'example.com',
 		};
 
-		this.setPdpStrategy('external');
+		this.setPdpStrategy('virtru');
 	}
 
 	async addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void> {
@@ -756,7 +756,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 			// TODO: this should be in a persistent queue
 			await Promise.all(
-				nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'external-pdp-sync'))),
+				nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'virtru-pdp-sync'))),
 			);
 		} catch (err) {
 			logger.error({ msg: 'Failed to evaluate room membership', err });
@@ -764,7 +764,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 }
 
-export { LocalPDP, ExternalPDP } from './pdp';
-export type { IPolicyDecisionPoint, ExternalPDPConfig } from './pdp';
+export { LocalPDP, VirtruPDP } from './pdp';
+export type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 
 export default AbacService;
