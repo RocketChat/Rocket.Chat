@@ -165,8 +165,12 @@ jobs:
         if: env.CI_MONGO_URL != ''
         run: |
           DB_NAME="rocketchat_${{ inputs.type }}_${{ matrix.shard }}_${{ github.run_id }}_${{ github.run_attempt }}"
-          echo "MONGO_URL=${CI_MONGO_URL}/${DB_NAME}" >> $GITHUB_ENV
-          echo "DOCKER_MONGO_URL=${CI_MONGO_URL}/${DB_NAME}" >> $GITHUB_ENV
+          BASE="${CI_MONGO_URL%%\?*}"
+          BASE="${BASE%/}"
+          QUERY="${CI_MONGO_URL#"$BASE"}"
+          FULL_URL="${BASE}/${DB_NAME}${QUERY}"
+          echo "MONGO_URL=${FULL_URL}" >> $GITHUB_ENV
+          echo "DOCKER_MONGO_URL=${FULL_URL}" >> $GITHUB_ENV
           echo "EXTERNAL_MONGO=true" >> $GITHUB_ENV
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
