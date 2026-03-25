@@ -232,6 +232,8 @@ const customSoundsEndpoints = API.v1
 				return API.v1.failure('MIME type not allowed');
 			}
 
+			if (fileBuffer && !fields.extension) return API.v1.failure('Extension required');
+
 			const soundToUpdate = await CustomSounds.findOneById<Pick<ICustomSound, '_id' | 'name' | 'extension'>>(fields._id, {
 				projection: { _id: 1, name: 1, extension: 1 },
 			});
