@@ -87,6 +87,7 @@ const integrationsCreateSchema = {
 				},
 				alias: {
 					type: 'string',
+					maxLength: 60,
 					nullable: true,
 				},
 				avatar: {
@@ -191,6 +192,7 @@ const integrationsCreateSchema = {
 				},
 				alias: {
 					type: 'string',
+					maxLength: 60,
 					nullable: true,
 				},
 				avatar: {
