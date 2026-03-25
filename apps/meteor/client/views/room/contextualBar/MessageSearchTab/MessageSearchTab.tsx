@@ -9,7 +9,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import MessageSearch from './components/MessageSearch';
@@ -24,7 +24,6 @@ const MessageSearchTab = () => {
 	const [{ searchText, globalSearch }, handleSearch] = useState({ searchText: '', globalSearch: false });
 
 	const { t } = useTranslation();
-	const searchListId = useId();
 
 	return (
 		<ContextualbarDialog>
@@ -35,11 +34,11 @@ const MessageSearchTab = () => {
 			</ContextualbarHeader>
 			{providerQuery.data && (
 				<ContextualbarSection>
-					<MessageSearchForm searchListId={searchListId} provider={providerQuery.data} onSearch={handleSearch} />
+					<MessageSearchForm provider={providerQuery.data} onSearch={handleSearch} />
 				</ContextualbarSection>
 			)}
 			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
-				{providerQuery.isSuccess && <MessageSearch searchListId={searchListId} searchText={searchText} globalSearch={globalSearch} />}
+				{providerQuery.isSuccess && <MessageSearch searchText={searchText} globalSearch={globalSearch} />}
 				{providerQuery.isError && (
 					<Callout m={24} type='danger'>
 						{t('Search_current_provider_not_active')}

@@ -11,12 +11,11 @@ import { getRoomTypeTranslation } from '../../../../../lib/getRoomTypeTranslatio
 import { useRoom } from '../../../contexts/RoomContext';
 
 type MessageSearchFormProps = {
-	searchListId: string;
 	provider: IMessageSearchProvider;
 	onSearch: (params: { searchText: string; globalSearch: boolean }) => void;
 };
 
-const MessageSearchForm = ({ searchListId, provider, onSearch }: MessageSearchFormProps) => {
+const MessageSearchForm = ({ provider, onSearch }: MessageSearchFormProps) => {
 	const { handleSubmit, register, setFocus, control } = useForm({
 		defaultValues: {
 			searchText: '',
@@ -56,7 +55,6 @@ const MessageSearchForm = ({ searchListId, provider, onSearch }: MessageSearchFo
 					addon={<Icon name='magnifier' size='x20' />}
 					placeholder={t('Search_Messages')}
 					aria-label={t('Search_Messages')}
-					aria-controls={searchListId}
 					autoComplete='off'
 					{...register('searchText')}
 				/>
