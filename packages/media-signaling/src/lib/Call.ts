@@ -14,7 +14,11 @@ import type {
 	CallActorType,
 	CallFlag,
 	CallFeature,
+	IClientMediaCallLocalParticipant,
+	IClientMediaCallRemoteParticipant,
+	AnyClientMediaCallParticipant,
 } from '../definition/call';
+import type { AnyMediaCallData } from '../definition/call/callStates';
 import type { ClientContractState, ClientState } from '../definition/client';
 import type { IMediaSignalLogger } from '../definition/logger';
 import type { MediaStreamIdentification, IMediaStreamWrapper } from '../definition/media';
@@ -30,6 +34,7 @@ import type {
 } from '../definition/signals/server';
 
 export interface IClientMediaCallConfig {
+	userId: string;
 	logger?: IMediaSignalLogger;
 	transporter: MediaSignalTransportWrapper;
 	processorFactories: IServiceProcessorFactoryList;
@@ -216,6 +221,54 @@ export class ClientMediaCall implements IClientMediaCall {
 		return [...(this.enabledFeatures || [])];
 	}
 
+	public readonly localParticipant: IClientMediaCallLocalParticipant;
+
+	private selfContact: CallContact | null;
+
+	private remoteParticipant: IClientMediaCallRemoteParticipant | null;
+
+	public get remoteParticipants(): IClientMediaCallRemoteParticipant[] {
+		if (!this.remoteParticipant) {
+			return [];
+		}
+
+		return [this.remoteParticipant];
+	}
+
+	public get participants(): AnyClientMediaCallParticipant[] {
+		return [this.localParticipant, ...this.remoteParticipants];
+	}
+
+	public get callStateData(): AnyMediaCallData {
+		if (!this.confirmed || !this.remoteParticipant) {
+			const number = this.contact.type === 'sip' ? this.contact.id : '';
+
+			return {
+				confirmed: false,
+				tempCallId: this.tempCallId,
+				state: this.state,
+				title: this.contact.displayName || number || 'unknown',
+				localParticipant: this.localParticipant,
+			};
+		}
+
+		return {
+			confirmed: this.confirmed,
+			callId: this.callId,
+			service: this.service,
+			flags: this.flags,
+			features: this.features,
+			state: this.state,
+			transferredBy: this.transferredBy,
+			activeTimestamp: this.activeTimestamp,
+			tempCallId: this.tempCallId,
+			hidden: this.hidden,
+
+			localParticipant: this.localParticipant,
+			remoteParticipant: this.remoteParticipant,
+		};
+	}
+
 	constructor(
 		private readonly config: IClientMediaCallConfig,
 		callId: string,
@@ -256,6 +309,9 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._remoteHeld = false;
 		this._remoteMute = false;
 		this._flags = [];
+		this.selfContact = null;
+		this.localParticipant = this.createLocalParticipantProxy();
+		this.remoteParticipant = null;
 
 		this.negotiationManager = new NegotiationManager(this, { logger: config.logger });
 	}
@@ -325,6 +381,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 		this._flags = signal.flags || [];
+		this.selfContact = signal.self || { type: 'user', id: this.config.userId };
 
 		this._transferredBy = signal.transferredBy || null;
 
@@ -342,6 +399,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		this.changeContact(signal.contact);
+
+		this.remoteParticipant = this.createRemoteParticipantProxy();
 
 		// If the call is already flagged as over before the initialization, do not process anything other than filling in the basic information
 		if (this.isOver()) {
@@ -818,6 +877,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		return this.enabledFeatures.includes(feature);
+	}
+
+	public hasFlag(flag: CallFlag): boolean {
+		if (!this.flags) {
+			return false;
+		}
+
+		return this.flags.includes(flag);
 	}
 
 	private changeState(newState: CallState): void {
@@ -1314,6 +1381,81 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		return this.signed;
+	}
+
+	private createLocalParticipantProxy(): IClientMediaCallLocalParticipant {
+		const localParticipant: IClientMediaCallLocalParticipant = {
+			local: true,
+			participantId: this.config.userId,
+			actorType: 'user',
+			actorId: this.config.userId,
+			role: this._role,
+			muted: this.muted,
+			held: this.held,
+			contact: this.selfContact || { type: 'user', id: this.config.userId },
+			getMediaStream: (tag?: string) => this.getLocalMediaStream(tag),
+			setMuted: (muted: boolean) => this.setMuted(muted),
+			setHeld: (held: boolean) => this.setHeld(held),
+		};
+
+		return new Proxy<IClientMediaCallLocalParticipant>(localParticipant, {
+			get: (target: typeof localParticipant, prop: keyof typeof localParticipant, receiver): any => {
+				switch (prop) {
+					case 'role':
+						return this._role;
+					case 'contact':
+						return this.selfContact || { type: 'user', id: this.config.userId };
+					case 'muted':
+						return this.muted;
+					case 'held':
+						return this.held;
+					default:
+						return Reflect.get(target, prop, receiver);
+				}
+			},
+		});
+	}
+
+	private createRemoteParticipantProxy(): IClientMediaCallRemoteParticipant {
+		if (!this.hasRemoteData) {
+			throw new Error('Unable to initialize remote participant without remote data');
+		}
+
+		const { type: actorType, id: actorId } = this.contact;
+
+		if (!actorType || !actorId) {
+			throw new Error('Unable to initialize remote participant without actor identification');
+		}
+
+		const participantId = actorType === 'user' ? actorId : `${actorType}/${actorId}`;
+		const role = this._role === 'callee' ? 'caller' : 'callee';
+
+		const remote: IClientMediaCallRemoteParticipant = {
+			local: false,
+			participantId,
+			actorType,
+			actorId,
+			role,
+			muted: this.remoteMute,
+			held: this.remoteHeld,
+			contact: this.contact,
+			getMediaStream: (tag?: string) => this.getRemoteMediaStream(tag),
+		};
+
+		return new Proxy<IClientMediaCallRemoteParticipant>(remote, {
+			get: (target: typeof remote, prop: keyof typeof remote, receiver): any => {
+				switch (prop) {
+					case 'contact':
+						return this.contact;
+					case 'muted':
+						return this.remoteMute;
+					case 'held':
+						return this.remoteHeld;
+					default:
+						return Reflect.get(target, prop, receiver);
+				}
+			},
+		});
 	}
 
 	private mayUseStreams(): this is ClientMediaCallWebRTC {
