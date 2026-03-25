@@ -594,7 +594,11 @@ const chatEndpoints = API.v1
 			query: isChatSyncMessagesProps,
 			response: {
 				200: ajv.compile<{
-					result: { updated: IMessage[]; deleted: { _id: string; _deletedAt: string }[]; cursor?: { next: string | null; previous: string | null } };
+					result: {
+						updated: IMessage[];
+						deleted: { _id: string; _deletedAt: string }[];
+						cursor?: { next: string | null; previous: string | null };
+					};
 				}>({
 					type: 'object',
 					properties: {
