@@ -25,7 +25,6 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[])
 					profileFields: ['id', 'displayName', 'emails'],
 				},
 				async (accessToken: string, refreshToken: string, profile: Profile, done: DoneCallback) => {
-					console.log('user authenticated -> oauth callback', { accessToken, refreshToken, profile });
 					const profileWithRaw = profile as Profile & { _json?: Record<string, unknown>; _raw?: string };
 					const { _json, _raw, ...restProfile } = profileWithRaw;
 
@@ -44,8 +43,6 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[])
 					);
 
 					const userFromDB = await Users.findOneById(user.userId as string);
-
-					console.log('updateOrCreateUserFromExternalService', userFromDB);
 
 					return done(null, userFromDB);
 				},
