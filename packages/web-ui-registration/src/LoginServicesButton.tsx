@@ -28,10 +28,10 @@ const LoginServicesButton = <T extends LoginService>({
 	const { t } = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, ...props });
 
-	const [useLegacyOAuth] = useLocalStorage<boolean>('useLegacyOAuth', false);
+	const [isLegacyOAuthEnabled] = useLocalStorage<boolean>('useLegacyOAuth', false);
 
 	const handleOnClick = useCallback(() => {
-		if (!useLegacyOAuth) {
+		if (!isLegacyOAuthEnabled) {
 			window.location.href = `/oauth/${service}`;
 			return;
 		}
@@ -42,7 +42,7 @@ const LoginServicesButton = <T extends LoginService>({
 			}
 			setError?.([e.error, e.reason]);
 		});
-	}, [handler, setError, useLegacyOAuth, service]);
+	}, [handler, setError, isLegacyOAuthEnabled, service]);
 
 	return (
 		<Button
