@@ -1,6 +1,6 @@
 import type { IExportOperation, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import type { IExportOperationsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, IndexDescription, UpdateResult } from 'mongodb';
+import type { Collection, FindCursor, Db, IndexDescription, UpdateResult, Filter } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -8,14 +8,17 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IExportOperation>>) {
 		super(db, 'export_operations', trash);
 	}
+	markAsSkipped(id: IExportOperation['_id']): Promise<UpdateResult> {
+    return this.updateOne({ _id: id }, { $set: { status: 'skipped' } });
+	}
 
 	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { userId: 1 } }, { key: { status: 1 } }];
 	}
 
 	findOnePending(): Promise<IExportOperation | null> {
-		const query = {
-			status: { $nin: ['completed', 'skipped'] },
+		const query: Filter<IExportOperation> = {
+			status: { $nin: ['completed', 'skipped', 'failed'] },
 		};
 
 		return this.findOne(query);
@@ -40,8 +43,8 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 	}
 
 	findAllPendingBeforeMyRequest(requestDay: Date): FindCursor<IExportOperation> {
-		const query = {
-			status: { $nin: ['completed', 'skipped'] },
+		const query: Filter<IExportOperation> = {
+			status: { $nin: ['completed', 'skipped', 'failed'] },
 			createdAt: { $lt: requestDay },
 		};
 
@@ -49,8 +52,8 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 	}
 
 	countAllPendingBeforeMyRequest(requestDay: Date): Promise<number> {
-		const query = {
-			status: { $nin: ['completed', 'skipped'] },
+		const query: Filter<IExportOperation> = {
+			status: { $nin: ['completed', 'skipped', 'failed'] },
 			createdAt: { $lt: requestDay },
 		};
 
@@ -60,6 +63,7 @@ export class ExportOperationsRaw extends BaseRaw<IExportOperation> implements IE
 	updateOperation(data: IExportOperation): Promise<UpdateResult> {
 		const update = {
 			$set: {
+				 _updatedAt: new Date(),
 				roomList: data.roomList,
 				status: data.status,
 				fileList: data.fileList,

@@ -10,13 +10,14 @@ export interface IExportOperation extends IRocketChatRecord {
 				roomName: string;
 				userId: string | undefined;
 				exportedCount: number;
-				status: string;
+				status: 'pending'| 'exporting'| 'completed';
 				type: RoomType;
 				targetFile: string;
 		  }
 		| Record<string, never>
 	)[];
-	status: string;
+	status: 'pending' | 'preparing' | 'exporting-rooms' | 'exporting' | 'downloading' | 'compressing' | 'uploading' | 'completed' | 'skipped' | 'failed';
+	failReason?: string
 	fileList: FileProp[];
 	generatedFile?: string;
 	fileId: string;

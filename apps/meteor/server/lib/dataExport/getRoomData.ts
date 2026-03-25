@@ -10,7 +10,7 @@ export const getRoomData = async (
 			roomName: string;
 			userId: string | undefined;
 			exportedCount: number;
-			status: string;
+			status: 'pending' | 'exporting' | 'completed';
 			type: RoomType;
 			targetFile: string;
 	  }

@@ -26,7 +26,7 @@ const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileTyp
 				roomName: string;
 				userId: string | undefined;
 				exportedCount: number;
-				status: string;
+				status: 'pending' | 'exporting' | 'completed';
 				type: RoomType;
 				targetFile: string;
 		  }
@@ -242,6 +242,10 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 		await ExportOperations.updateOperation(exportOperation);
 	} catch (e) {
 		console.error(e);
+		exportOperation.status = 'failed';
+		exportOperation.failReason = e instanceof Error ? e.message : String(e);
+		await ExportOperations.updateOperation(exportOperation);
+
 	}
 };
 
@@ -251,17 +255,13 @@ export async function processDataDownloads(): Promise<void> {
 		return;
 	}
 
-	if (operation.status === 'completed') {
-		return;
-	}
+	const isStale = operation.status !== 'pending' &&
+    operation._updatedAt &&
+    moment().diff(moment(operation._updatedAt), 'days') > 1;
 
-	if (operation.status !== 'pending') {
-		// If the operation has started but was not updated in over a day, then skip it
-		if (operation._updatedAt && moment().diff(moment(operation._updatedAt), 'days') > 1) {
-			operation.status = 'skipped';
-			await ExportOperations.updateOperation(operation);
-			return processDataDownloads();
-		}
+	if (isStale) {
+		await ExportOperations.markAsSkipped(operation._id);
+		return processDataDownloads();
 	}
 
 	await continueExportOperation(operation);
