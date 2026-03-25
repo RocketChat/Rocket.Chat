@@ -594,7 +594,7 @@ const chatEndpoints = API.v1
 			query: isChatSyncMessagesProps,
 			response: {
 				200: ajv.compile<{
-					result: { updated: IMessage[]; deleted: IMessage[]; cursor?: { next: string | null; previous: string | null } };
+					result: { updated: IMessage[]; deleted: { _id: string; _deletedAt: string }[]; cursor?: { next: string | null; previous: string | null } };
 				}>({
 					type: 'object',
 					properties: {
@@ -602,7 +602,18 @@ const chatEndpoints = API.v1
 							type: 'object',
 							properties: {
 								updated: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-								deleted: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
+								deleted: {
+									type: 'array',
+									items: {
+										type: 'object',
+										properties: {
+											_id: { type: 'string' },
+											_deletedAt: { type: 'string', format: 'date-time' },
+										},
+										required: ['_id', '_deletedAt'],
+										additionalProperties: false,
+									},
+								},
 								cursor: {
 									type: 'object',
 									properties: {
