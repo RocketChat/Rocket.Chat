@@ -13,12 +13,14 @@ export type TemplateTextParameter = {
 	type: 'text';
 	value: string;
 	format: 'text';
+	placeholder: string;
 };
 
 export type TemplateMediaParameter = {
 	type: 'media';
 	value: string;
 	format: 'image' | 'video' | 'document';
+	placeholder: string;
 };
 
 export type TemplateParameter = TemplateTextParameter | TemplateMediaParameter;
