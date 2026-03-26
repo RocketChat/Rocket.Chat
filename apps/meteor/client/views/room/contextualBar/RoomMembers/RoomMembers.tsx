@@ -148,7 +148,7 @@ const RoomMembers = ({
 			<ContextualbarSection>
 				<TextInput
 					placeholder={t('Search_by_username')}
-					aria-label={t('Search_Messages')}
+					aria-label={t('Search_by_username')}
 					aria-controls={isSuccess ? membersListId : undefined}
 					value={text}
 					ref={inputRef}
