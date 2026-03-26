@@ -85,20 +85,17 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 	}
 
 	private async getDisplayMedia(constraints: MediaStreamConstraints) {
-		const dispatchToast = () => this.requestToast({ message: 'Share_screen_failed_update_or_check_permissions', type: 'error' });
-		if (!navigator?.mediaDevices?.getDisplayMedia) {
-			dispatchToast();
-			throw new Error('getDisplayMedia is not supported');
-		}
 		try {
+			if (!navigator?.mediaDevices?.getDisplayMedia) {
+				throw new Error('getDisplayMedia is not supported');
+			}
 			const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
 			if (!stream) {
-				dispatchToast();
 				throw new Error('MediaSessionStore - getDisplayMedia - Failed to get display media');
 			}
 			return stream;
 		} catch (error) {
-			dispatchToast();
+			this.requestToast({ message: 'Share_screen_failed_update_or_check_permissions', type: 'error' });
 			throw error;
 		}
 	}
