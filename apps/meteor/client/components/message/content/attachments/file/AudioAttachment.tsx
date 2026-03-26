@@ -1,7 +1,9 @@
 import type { AudioAttachmentProps } from '@rocket.chat/core-typings';
-import { AudioPlayer, Box, Button, Icon, IconButton } from '@rocket.chat/fuselage';
-import { useMediaUrl } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { AudioPlayer, Box, Button, Icon } from '@rocket.chat/fuselage';
+import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
+import { useMediaUrl, useSetModal } from '@rocket.chat/ui-contexts';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useReloadOnError } from './hooks/useReloadOnError';
@@ -34,21 +36,42 @@ const AudioAttachment = ({
 }: AudioAttachmentProps) => {
 	const { t } = useTranslation();
 	const getURL = useMediaUrl();
+	const setModal = useSetModal();
 	const src = useMemo(() => getURL(url), [getURL, url]);
 	const { mediaRef } = useReloadOnError(src, 'audio');
 	const { transcribe, unloadModel, modelLoaded, status, transcript, progress, metrics, isSupported } = useTranscribeAudio();
 	const [language, setLanguage] = useState<string>('');
 	const [modelId, setModelId] = useState<string>('onnx-community/whisper-small');
 	const [showMetrics, setShowMetrics] = useState(true);
-	const [menuOpen, setMenuOpen] = useState(false);
-	const menuRef = useRef<HTMLDivElement>(null);
+
+	const doTranscribe = useCallback(() => {
+		transcribe(src, language || undefined, modelId);
+	}, [transcribe, src, language, modelId]);
 
 	const handleTranscribe = useCallback(() => {
-		if (status === 'idle' || status === 'error' || status === 'done') {
-			setMenuOpen(false);
-			transcribe(src, language || undefined, modelId);
+		if (status !== 'idle' && status !== 'error' && status !== 'done') return;
+
+		if (!modelLoaded) {
+			const selectedModelLabel = MODELS.find((m) => m.id === modelId)?.label || modelId;
+			setModal(
+				<GenericModal
+					variant='info'
+					title={t('Download_model_title')}
+					confirmText={t('Download_and_transcribe')}
+					onClose={() => setModal(null)}
+					onCancel={() => setModal(null)}
+					onConfirm={() => {
+						setModal(null);
+						doTranscribe();
+					}}
+				>
+					{t('Download_model_warning', { model: selectedModelLabel })}
+				</GenericModal>,
+			);
+			return;
 		}
-	}, [status, transcribe, src, language, modelId]);
+		doTranscribe();
+	}, [status, modelLoaded, modelId, setModal, t, doTranscribe]);
 
 	const isLoading = status === 'loading-model' || status === 'transcribing';
 
@@ -58,8 +81,47 @@ const AudioAttachment = ({
 		return t('Transcribe');
 	};
 
-	const selectedLang = LANGUAGES.find((l) => l.code === language)?.label || 'Auto-detect';
-	const selectedModel = MODELS.find((m) => m.id === modelId)?.shortLabel || 'Small';
+	const menuSections = useMemo(() => {
+		const languageItems: GenericMenuItemProps[] = LANGUAGES.map((lang) => ({
+			id: `lang-${lang.code || 'auto'}`,
+			content: lang.label,
+			icon: language === lang.code ? 'check' as const : undefined,
+			onClick: () => setLanguage(lang.code),
+		}));
+
+		const modelItems: GenericMenuItemProps[] = MODELS.map((model) => ({
+			id: `model-${model.id}`,
+			content: model.label,
+			icon: modelId === model.id ? 'check' as const : undefined,
+			onClick: () => setModelId(model.id),
+		}));
+
+		const optionItems: GenericMenuItemProps[] = [
+			{
+				id: 'show-metrics',
+				content: t('Show_metrics'),
+				icon: showMetrics ? 'check' as const : undefined,
+				onClick: () => setShowMetrics((v) => !v),
+			},
+			...(modelLoaded
+				? [
+						{
+							id: 'unload-model',
+							content: t('Unload_model'),
+							icon: 'cross' as const,
+							onClick: unloadModel,
+							variant: 'danger' as const,
+						},
+					]
+				: []),
+		];
+
+		return [
+			{ title: t('Language'), items: languageItems },
+			{ title: t('Model'), items: modelItems },
+			{ title: '', items: optionItems },
+		];
+	}, [language, modelId, showMetrics, modelLoaded, unloadModel, t]);
 
 	return (
 		<>
@@ -67,109 +129,26 @@ const AudioAttachment = ({
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
 				<AudioPlayer src={src} type={type} ref={mediaRef} />
 				{isSupported && (
-					<Box mbs={4} display='flex' alignItems='center' position='relative' ref={menuRef} style={{ overflow: 'visible' }}>
+					<Box mbs={4} display='flex' alignItems='center'>
 						<Button small onClick={handleTranscribe} disabled={isLoading}>
 							<Icon name='language' size='x16' mie={4} />
 							{buttonLabel()}
 						</Button>
 						{!isLoading && (
-							<>
-								<IconButton
-									small
-									icon='chevron-down'
-									mis={2}
-									onClick={() => setMenuOpen(!menuOpen)}
-									title={`${selectedLang} · ${selectedModel}`}
-								/>
-								{menuOpen && (
-									<Box
-										position='absolute'
-										zIndex={100}
-										bg='surface-sidebar'
-										elevation='2'
-										borderRadius={4}
-										borderWidth={1}
-										borderColor='stroke-extra-light'
-										p={4}
-										style={{ bottom: '100%', left: 0, marginBottom: 4, minWidth: 180 }}
-									>
-										<Box fontScale='c2' color='hint' pbs={4} pbe={2} pie={4} pis={28}>
-											{t('Language')}
-										</Box>
-										{LANGUAGES.map((lang) => (
-											<Box
-												key={lang.code}
-												display='flex'
-												alignItems='center'
-												p={4}
-												borderRadius={4}
-												color={language === lang.code ? 'font-info' : 'default'}
-												bg={language === lang.code ? 'surface-selected' : undefined}
-												style={{ cursor: 'pointer' }}
-												onClick={() => {
-													setLanguage(lang.code);
-												}}
-											>
-												<Box mie={8} fontScale='c1' style={{ width: 16 }}>
-													{language === lang.code ? '✓' : ''}
-												</Box>
-												<Box fontScale='p2'>{lang.label}</Box>
-											</Box>
-										))}
-										<Box fontScale='c2' color='hint' pbs={8} pbe={2} pie={4} pis={28}>
-											{t('Model')}
-										</Box>
-										{MODELS.map((model) => (
-											<Box
-												key={model.id}
-												display='flex'
-												alignItems='center'
-												p={4}
-												borderRadius={4}
-												color={modelId === model.id ? 'font-info' : 'default'}
-												bg={modelId === model.id ? 'surface-selected' : undefined}
-												style={{ cursor: 'pointer' }}
-												onClick={() => {
-													setModelId(model.id);
-												}}
-											>
-												<Box mie={8} fontScale='c1' style={{ width: 16 }}>
-													{modelId === model.id ? '✓' : ''}
-												</Box>
-												<Box fontScale='p2'>{model.label}</Box>
-											</Box>
-										))}
-										<Box borderBlockStartWidth={1} borderColor='stroke-extra-light' mbs={4} pbs={4}>
-											<Box
-												display='flex'
-												alignItems='center'
-												p={4}
-												borderRadius={4}
-												style={{ cursor: 'pointer' }}
-												onClick={() => setShowMetrics(!showMetrics)}
-											>
-												<Box mie={8} fontScale='c1' style={{ width: 16 }}>
-													{showMetrics ? '✓' : ''}
-												</Box>
-												<Box fontScale='p2'>{t('Show_metrics')}</Box>
-											</Box>
-										</Box>
-									</Box>
-								)}
-							</>
+							<GenericMenu
+								detached
+								icon='chevron-down'
+								title={t('Transcribe')}
+								sections={menuSections}
+								placement='bottom-start'
+							/>
 						)}
 					</Box>
 				)}
 			</MessageCollapsible>
 			{status === 'done' && transcript && (
 				<Box mbs={4}>
-					<Box
-						p={8}
-						bg='surface-tint'
-						borderRadius={4}
-						fontScale='p2'
-						color='default'
-					>
+					<Box p={8} bg='surface-tint' borderRadius={4} fontScale='p2' color='default'>
 						{transcript}
 					</Box>
 					{metrics && showMetrics && (
@@ -184,24 +163,11 @@ const AudioAttachment = ({
 								<Box mie={16}>Lang: {metrics.language}</Box>
 								<Box mie={16}>Audio: {metrics.audioDuration}s ({(metrics.audioSize / 1024).toFixed(0)} KB)</Box>
 							</Box>
-							<Box display='flex' flexWrap='wrap' alignItems='center'>
+							<Box display='flex' flexWrap='wrap'>
 								<Box mie={16}>JS Heap: {metrics.heapBefore} → {metrics.heapAfter} MB</Box>
 								<Box mie={16}>GPU: {metrics.gpu}</Box>
 								{metrics.deviceMemory > 0 && <Box mie={16}>Browser RAM: {metrics.deviceMemory} GB</Box>}
-								<Box mie={16}>CPU: {metrics.cpuCores} cores</Box>
-								{modelLoaded && (
-									<Box
-										is='button'
-										fontScale='micro'
-										color='danger'
-										bg='transparent'
-										borderWidth={0}
-										style={{ cursor: 'pointer', textDecoration: 'underline' }}
-										onClick={unloadModel}
-									>
-										Unload model
-									</Box>
-								)}
+								<Box>CPU: {metrics.cpuCores} cores</Box>
 							</Box>
 						</Box>
 					)}
