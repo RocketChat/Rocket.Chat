@@ -1,13 +1,42 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 
+export type IEntityIdentifier = { emailAddress: string } | { id: string };
+
+export interface IGetDecisionRequest {
+	actions: Array<{ standard: number }>;
+	resourceAttributes: Array<{
+		resourceAttributesId: string;
+		attributeValueFqns: string[];
+	}>;
+	entityChains: Array<{
+		id: string;
+		entities: IEntityIdentifier[];
+	}>;
+}
+
+export interface IGetDecisionBulkRequest {
+	entityIdentifier: {
+		entityChain: {
+			entities: IEntityIdentifier[];
+		};
+	};
+	action: { name: string };
+	resources: Array<{
+		ephemeralId: string;
+		attributeValues: { fqns: string[] };
+	}>;
+}
+
+export type Decision = 'DECISION_PERMIT' | 'DECISION_DENY' | 'DECISION_UNKNOWN';
+
 export interface IResourceDecision {
-	decision?: string;
+	decision?: Decision;
 	ephemeralResourceId?: string;
 }
 
 export interface IGetDecisionsResponse {
 	decisionResponses?: Array<{
-		decision?: string;
+		decision?: Decision;
 	}>;
 }
 

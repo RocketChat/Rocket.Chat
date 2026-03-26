@@ -6,7 +6,10 @@ import { isTruthy } from '@rocket.chat/tools';
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { logger } from '../logger';
 import type {
+	IEntityIdentifier,
 	IPolicyDecisionPoint,
+	IGetDecisionRequest,
+	IGetDecisionBulkRequest,
 	IGetDecisionsResponse,
 	IGetDecisionBulkResponse,
 	IResourceDecision,
@@ -86,11 +89,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return response.json() as Promise<T>;
 	}
 
-	private async getDecision(request: {
-		actions: unknown[];
-		resourceAttributes: unknown[];
-		entityChains: unknown[];
-	}): Promise<string | undefined> {
+	private async getDecision(request: IGetDecisionRequest): Promise<string | undefined> {
 		const result = await this.apiCall<IGetDecisionsResponse>('/authorization.AuthorizationService/GetDecisions', {
 			decisionRequests: [request],
 		});
@@ -100,7 +99,9 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return result.decisionResponses?.[0]?.decision;
 	}
 
-	private async getDecisionBulk(requests: Array<unknown | null>): Promise<Array<{ resourceDecisions?: IResourceDecision[] } | undefined>> {
+	private async getDecisionBulk(
+		requests: Array<IGetDecisionBulkRequest | null>,
+	): Promise<Array<{ resourceDecisions?: IResourceDecision[] } | undefined>> {
 		const BATCH_SIZE = 200;
 		const allResponses: Array<{ resourceDecisions?: IResourceDecision[] } | undefined> = [];
 
@@ -117,7 +118,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				decisionRequests: validBatch,
 			});
 
-			pdpLogger.debug({ msg: 'GetDecisionBulk response', batch: i + 1, result: result.decisionResponses });
+			pdpLogger.debug({ msg: 'GetDecisionBulk response', batch: i + 1, result });
 
 			const responses = result.decisionResponses ?? [];
 			let responseIdx = 0;
@@ -137,7 +138,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		);
 	}
 
-	private buildEntityIdentifier(entityKey: string) {
+	private buildEntityIdentifier(entityKey: string): IEntityIdentifier {
 		if (this.config.defaultEntityKey === 'emailAddress') {
 			return { emailAddress: entityKey };
 		}
@@ -268,7 +269,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		});
 
 		const nonCompliantUsers: IUser[] = [];
-		const decisionRequests: unknown[] = [];
+		const decisionRequests: IGetDecisionBulkRequest[] = [];
 		const requestUserIndex: IUser[] = [];
 		const fqns = this.buildAttributeFqns(newAttributes);
 
@@ -319,7 +320,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
 		const requestIndex: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: AtLeast<IRoom, '_id' | 'abacAttributes'> }> = [];
-		const allRequests: unknown[] = [];
+		const allRequests: IGetDecisionBulkRequest[] = [];
 
 		for (const { user, rooms } of entries) {
 			const entityKey = this.getUserEntityKey(user);
