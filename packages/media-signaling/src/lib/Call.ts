@@ -890,11 +890,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public hasFlag(flag: CallFlag): boolean {
-		if (!this.flags) {
-			return false;
-		}
-
-		return this.flags.includes(flag);
+		return this._flags.includes(flag);
 	}
 
 	private changeState(newState: CallState): void {
