@@ -49,7 +49,6 @@ const SendJoinParamsSchema = {
 	required: ['roomId', 'stateKey'],
 };
 
-// @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isSendJoinParamsProps = ajv.compile(SendJoinParamsSchema);
 
@@ -186,7 +185,6 @@ const SendJoinEventSchema = {
 	],
 };
 
-// @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isSendJoinEventProps = ajv.compile(SendJoinEventSchema);
 
@@ -220,7 +218,6 @@ const SendJoinResponseSchema = {
 	required: ['event', 'state', 'auth_chain', 'members_omitted', 'origin'],
 };
 
-// @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isSendJoinResponseProps = ajv.compile(SendJoinResponseSchema);
 

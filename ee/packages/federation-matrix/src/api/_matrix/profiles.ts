@@ -151,7 +151,6 @@ const MakeJoinParamsSchema = {
 	required: ['roomId', 'userId'],
 };
 
-// @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isMakeJoinParamsProps = ajv.compile(MakeJoinParamsSchema);
 
@@ -177,7 +176,6 @@ const MakeJoinQuerySchema = {
 	},
 };
 
-// @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isMakeJoinQueryProps = ajv.compile(MakeJoinQuerySchema);
 
@@ -263,7 +261,6 @@ const MakeJoinResponseSchema = {
 	required: ['room_version', 'event'],
 };
 
-// @ts-ignore
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const isMakeJoinResponseProps = ajv.compile(MakeJoinResponseSchema);
 
