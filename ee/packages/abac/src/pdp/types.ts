@@ -47,6 +47,8 @@ export interface IGetDecisionBulkResponse {
 }
 
 export interface IPolicyDecisionPoint {
+	isAvailable(): Promise<boolean>;
+
 	canAccessObject(
 		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
 		user: AtLeast<IUser, '_id'>,
