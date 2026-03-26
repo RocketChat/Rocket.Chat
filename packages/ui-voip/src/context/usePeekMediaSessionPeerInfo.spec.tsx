@@ -111,7 +111,7 @@ describe('usePeekMediaSessionPeerInfo', () => {
 			const emitter = new Emitter<{ sessionStateChange: void }>();
 
 			const defaultInstanceState = {
-				confirmed: true,
+				confirmed: true as const,
 				remoteParticipant: {
 					contact: {
 						type: 'sip' as const,

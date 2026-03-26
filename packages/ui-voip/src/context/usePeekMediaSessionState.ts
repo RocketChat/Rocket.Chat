@@ -28,7 +28,10 @@ export const usePeekMediaSessionState = (): PeekMediaSessionStateReturn => {
 			return 'available';
 		}
 
-		const { state: callState, localParticipant: { role } } = instanceState;
+		const {
+			state: callState,
+			localParticipant: { role },
+		} = instanceState;
 		const state = deriveWidgetStateFromCallState(callState, role);
 		if (!state) {
 			return 'available';

@@ -124,7 +124,10 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				return;
 			}
 
-			const { state: callState, localParticipant: { role } } = instanceState;
+			const {
+				state: callState,
+				localParticipant: { role },
+			} = instanceState;
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (!state) {
