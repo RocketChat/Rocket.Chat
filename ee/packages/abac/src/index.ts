@@ -96,7 +96,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		this.onSettingChanged('ABAC_Virtru_Default_Entity_Key', async ({ setting }): Promise<void> => {
-			this.virtruPdpConfig.defaultEntityKey = setting.value as string;
+			this.virtruPdpConfig.defaultEntityKey = setting.value as VirtruPDPConfig['defaultEntityKey'];
 			this.syncVirtruPdpConfig();
 		});
 
@@ -158,7 +158,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			clientId: clientId || '',
 			clientSecret: clientSecret || '',
 			oidcEndpoint: (oidcEndpoint || '').replace(/\/+$/, ''),
-			defaultEntityKey: defaultEntityKey || 'emailAddress',
+			defaultEntityKey: (defaultEntityKey as VirtruPDPConfig['defaultEntityKey']) || 'emailAddress',
 			attributeNamespace: attributeNamespace || 'example.com',
 		};
 
