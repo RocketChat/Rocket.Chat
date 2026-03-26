@@ -137,17 +137,9 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					/>
 				</Field>
 
-				<Box
-					display='flex'
-					flexDirection={isMobile ? 'column' : 'row'}
-					alignItems='stretch'
-					justifyContent='space-between'
-					className={css`
-						gap: 16px;
-					`}
-				>
+				<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} style={{ gap: '16px' }}>
 					<Field flexShrink={1}>
-						<FieldLabel required>{t('Name')}</FieldLabel>
+						<FieldLabel required={requireName}>{t('Name')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								control={control}
@@ -261,10 +253,8 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				<Field>
 					<FieldLabel required>{t('Email')}</FieldLabel>
 					<FieldRow
-						display='flex'
 						flexDirection={isMobile ? 'column' : 'row'}
 						alignItems='stretch'
-						justifyContent='space-between'
 						className={css`
 							gap: 8px;
 						`}
