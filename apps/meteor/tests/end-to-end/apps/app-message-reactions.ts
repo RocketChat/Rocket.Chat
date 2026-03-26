@@ -32,7 +32,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		const messageId = sendRes.body.message._id;
 
 		const slashRes = await executeAppSlashCommand('msg-update', roomId, `add ${messageId}`);
-		expect(slashRes.status, 'Slash command execution failed').to.equal(200);
+		expect(slashRes.status, 'Slash command to add reaction failed').to.equal(200);
 
 		let message = await getMessageById({ msgId: messageId });
 		expect(message.reactions, 'Message reactions should exist after adding').to.exist;
@@ -40,7 +40,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		// Now remove the reaction
 		const removeRes = await executeAppSlashCommand('msg-update', roomId, `remove ${messageId}`);
-		expect(removeRes.status, 'Remove reaction slash command failed').to.equal(200);
+		expect(removeRes.status, 'Slash command to remove reaction failed').to.equal(200);
 
 		message = await getMessageById({ msgId: messageId });
 		const hasThumbsUp = Boolean(message.reactions && ':+1:' in message.reactions);
