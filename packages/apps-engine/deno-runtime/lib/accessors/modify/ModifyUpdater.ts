@@ -28,11 +28,19 @@ const { RocketChatAssociationModel } = require('@rocket.chat/apps-engine/definit
 };
 
 export class ModifyUpdater implements IModifyUpdater {
-	constructor(private readonly senderFn: typeof Messenger.sendRequest) {}
+	private readonly livechatUpdater: ILivechatUpdater;
+	private readonly userUpdater: IUserUpdater;
+	private readonly messageUpdater: IMessageUpdater;
 
-	public getLivechatUpdater(): ILivechatUpdater {
+	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
+		this.livechatUpdater = this.proxify('getLivechatUpdater');
+		this.userUpdater = this.proxify('getUserUpdater');
+		this.messageUpdater = this.proxify('getMessageUpdater');
+	}
+
+	private proxify<T extends ILivechatUpdater | IUserUpdater | IMessageUpdater>(target: 'getLivechatUpdater' | 'getUserUpdater' | 'getMessageUpdater'): T {
 		return new Proxy(
-			{ __kind: 'getLivechatUpdater' },
+			{ __kind: target },
 			{
 				get:
 					(_target: unknown, prop: string) =>
@@ -40,7 +48,7 @@ export class ModifyUpdater implements IModifyUpdater {
 						prop === 'toJSON'
 							? {}
 							: this.senderFn({
-									method: `accessor:getModifier:getUpdater:getLivechatUpdater:${prop}`,
+									method: `accessor:getModifier:getUpdater:${target}:${prop}`,
 									params,
 								})
 									.then((response) => response.result)
@@ -48,49 +56,19 @@ export class ModifyUpdater implements IModifyUpdater {
 										throw formatErrorResponse(err);
 									}),
 			},
-		) as ILivechatUpdater;
+		) as T;
+	}
+
+	public getLivechatUpdater(): ILivechatUpdater {
+		return this.livechatUpdater;
 	}
 
 	public getUserUpdater(): IUserUpdater {
-		return new Proxy(
-			{ __kind: 'getUserUpdater' },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getUpdater:getUserUpdater:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as IUserUpdater;
+		return this.userUpdater;
 	}
 
 	public getMessageUpdater(): IMessageUpdater {
-		return new Proxy(
-			{ __kind: 'getMessageUpdater' },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getUpdater:getMessageUpdater:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as IMessageUpdater;
+		return this.messageUpdater;
 	}
 
 	public async message(messageId: string, editor: IUser): Promise<IMessageBuilder> {
