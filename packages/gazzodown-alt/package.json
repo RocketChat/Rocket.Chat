@@ -1,0 +1,32 @@
+{
+	"name": "@rocket.chat/gazzodown-alt",
+	"version": "0.0.1",
+	"private": true,
+	"main": "./dist/index.js",
+	"typings": "./dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@rocket.chat/message-parser": "workspace:^",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/react": "~18.3.27",
+		"eslint": "~9.39.3",
+		"react": "~18.3.1",
+		"typescript": "~5.9.3"
+	},
+	"peerDependencies": {
+		"@rocket.chat/message-parser": "0.31.34",
+		"react": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}
