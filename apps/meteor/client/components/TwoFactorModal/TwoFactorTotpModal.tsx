@@ -2,7 +2,7 @@ import { Box, FieldGroup, Field, FieldLabel, FieldRow, FieldError, InputBox } fr
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { OnConfirm } from './TwoFactorModal';
@@ -19,6 +19,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 	const { t } = useTranslation();
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
+	const inputId = 'totp-code';
 
 	const onConfirmTotpCode = (e: SyntheticEvent): void => {
 		e.preventDefault();
@@ -29,7 +30,6 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 		setCode(currentTarget.value);
 	};
 
-	const id = useId();
 	return (
 		<GenericModal
 			wrapperFunction={(props) => <Box is='form' onSubmit={onConfirmTotpCode} {...props} />}
@@ -45,12 +45,12 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 		>
 			<FieldGroup>
 				<Field>
-					<FieldLabel alignSelf='stretch' htmlFor={id}>
+					<FieldLabel alignSelf='stretch' htmlFor={inputId}>
 						{t('Enter_the_code_provided_by_your_authentication_app_to_continue')}
 					</FieldLabel>
 					<FieldRow>
 						<InputBox
-							id={id}
+							id={inputId}
 							name='totp'
 							ref={ref}
 							value={code}
@@ -59,6 +59,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 							inputMode='numeric'
 							autoComplete='one-time-code'
 							type='text'
+							htmlSize={6}
 						/>
 					</FieldRow>
 					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}

@@ -75,6 +75,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttem
 							inputMode='numeric'
 							autoComplete='one-time-code'
 							type='text'
+							htmlSize={6}
 						/>
 					</FieldRow>
 					{invalidAttempt && <FieldError>{t('Invalid_password')}</FieldError>}
