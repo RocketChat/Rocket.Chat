@@ -93,7 +93,11 @@ export class ClientMediaCall implements IClientMediaCall {
 	private _transferredBy: CallContact | null;
 
 	public get transferredBy(): CallContact | null {
-		return this._transferredBy;
+		if (!this._transferredBy) {
+			return null;
+		}
+
+		return { ...this._transferredBy };
 	}
 
 	private _service: CallService | null;
@@ -163,7 +167,11 @@ export class ClientMediaCall implements IClientMediaCall {
 	private _activeTimestamp: Date | undefined;
 
 	public get activeTimestamp(): Date | undefined {
-		return this._activeTimestamp;
+		if (!this._activeTimestamp) {
+			return undefined;
+		}
+
+		return new Date(this._activeTimestamp);
 	}
 
 	protected webrtcProcessor: IWebRTCProcessor | null = null;
@@ -214,7 +222,7 @@ export class ClientMediaCall implements IClientMediaCall {
 	private _flags: CallFlag[];
 
 	public get flags(): CallFlag[] {
-		return this._flags;
+		return [...this._flags];
 	}
 
 	public get features(): CallFeature[] {
@@ -445,8 +453,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		} finally {
 			if (!wasInitialized) {
 				this.emitter.emit('initialized');
-				this.emitter.emit('contactUpdate');
 			}
+			this.emitter.emit('contactUpdate');
 			this.emitter.emit('confirmed');
 		}
 
