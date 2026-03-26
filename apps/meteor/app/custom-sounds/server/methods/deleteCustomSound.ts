@@ -15,6 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+// TODO remove custom-sounds Meteor methods on 9.0.0
 Meteor.methods<ServerMethods>({
 	async deleteCustomSound(_id) {
 		methodDeprecationLogger.method('deleteCustomSound', '9.0.0', '/v1/custom-sounds.delete');
