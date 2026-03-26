@@ -68,6 +68,27 @@ const StatisticsListSchema = {
 
 export const isStatisticsListProps = ajv.compile<StatisticsListProps>(StatisticsListSchema);
 
+const TelemetryPayloadSchema = {
+	type: 'object',
+	properties: {
+		params: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					eventName: { type: 'string' },
+					timestamp: { type: 'number', nullable: true },
+				},
+				required: ['eventName'],
+			},
+		},
+	},
+	required: ['params'],
+	additionalProperties: false,
+};
+
+export const isTelemetryPayload = ajv.compile<TelemetryPayload>(TelemetryPayloadSchema);
+
 export type StatisticsEndpoints = {
 	'/v1/statistics': {
 		GET: (params: StatisticsProps) => IStats;

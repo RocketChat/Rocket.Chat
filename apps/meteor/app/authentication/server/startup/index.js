@@ -345,15 +345,11 @@ Accounts.insertUserDoc = async function (options, user) {
 		user.roles = [];
 	}
 
-	console.log('<-----user----->', user, options);
-
 	const _id = await insertUserDoc.call(Accounts, options, user);
 
 	user = await Users.findOne({
 		_id,
 	});
-
-	console.log('<-----user----->', user);
 
 	/**
 	 * if settings shows setup wizard to be pending
@@ -378,8 +374,6 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	// Make user's roles to be present on callback
 	user = await Users.findOneById(_id, { projection: { username: 1, type: 1, roles: 1 } });
-
-	console.log('<-----user----->', user);
 
 	if (user.username) {
 		if (options.joinDefaultChannels !== false) {

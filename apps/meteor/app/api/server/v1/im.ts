@@ -272,7 +272,7 @@ const isDmSetTopicProps = ajv.compile<{ roomId: string; topic?: string }>({
 const dmSetTopicResponseSchema = ajv.compile<{ topic?: string }>({
 	type: 'object',
 	properties: {
-		topic: { type: 'string' },
+		topic: { type: 'string', nullable: true },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['success'],

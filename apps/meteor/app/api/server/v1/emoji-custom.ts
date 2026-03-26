@@ -169,7 +169,6 @@ const emojiCustomCreateEndpoints = API.v1
 		{
 			authRequired: true,
 			response: {
-				400: validateBadRequestErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
 					properties: {
@@ -181,6 +180,8 @@ const emojiCustomCreateEndpoints = API.v1
 					required: ['success'],
 					additionalProperties: false,
 				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
 			},
 		},
 		async function action() {
