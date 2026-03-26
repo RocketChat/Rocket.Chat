@@ -1,4 +1,7 @@
 import {
+	isLivechatTagsListProps,
+	GETLivechatTagsSuccessResponse,
+	GETLivechatTagByIdSuccessResponse,
 	isPOSTLivechatTagsSaveParams,
 	POSTLivechatTagsSaveSuccessResponse,
 	isPOSTLivechatTagsDeleteParams,
@@ -6,6 +9,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
+	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { findTags, findTagById } from './lib/tags';
@@ -14,15 +18,21 @@ import type { ExtractRoutesFromAPI } from '../../../../../app/api/server/ApiClas
 import { getPaginationItems } from '../../../../../app/api/server/helpers/getPaginationItems';
 import { LivechatEnterprise } from '../lib/LivechatEnterprise';
 
-API.v1.addRoute(
-	'livechat/tags',
-	{
-		authRequired: true,
-		permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } },
-		license: ['livechat-enterprise'],
-	},
-	{
-		async get() {
+const livechatTagsEndpoints = API.v1
+	.get(
+		'livechat/tags',
+		{
+			authRequired: true,
+			permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } },
+			license: ['livechat-enterprise'],
+			query: isLivechatTagsListProps,
+			response: {
+				200: GETLivechatTagsSuccessResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 			const { text, viewAll, department } = this.queryParams;
@@ -41,18 +51,21 @@ API.v1.addRoute(
 				}),
 			);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'livechat/tags/:tagId',
-	{
-		authRequired: true,
-		permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } },
-		license: ['livechat-enterprise'],
-	},
-	{
-		async get() {
+	)
+	.get(
+		'livechat/tags/:tagId',
+		{
+			authRequired: true,
+			permissionsRequired: { GET: { permissions: ['view-l-room', 'manage-livechat-tags'], operation: 'hasAny' } },
+			license: ['livechat-enterprise'],
+			response: {
+				200: GETLivechatTagByIdSuccessResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+		},
+		async function action() {
 			const { tagId } = this.urlParams;
 
 			const tag = await findTagById({
@@ -66,10 +79,7 @@ API.v1.addRoute(
 
 			return API.v1.success(tag);
 		},
-	},
-);
-
-const livechatTagsEndpoints = API.v1
+	)
 	.post(
 		'livechat/tags.save',
 		{
