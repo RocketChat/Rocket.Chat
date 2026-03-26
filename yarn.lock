@@ -9042,7 +9042,6 @@ __metadata:
     "@types/stack-trace": "npm:0.0.33"
     "@types/uuid": "npm:~10.0.0"
     adm-zip: "npm:^0.5.16"
-    alsatian: "npm:^2.4.0"
     debug: "npm:^4.3.7"
     esbuild: "npm:~0.25.12"
     eslint: "npm:~9.39.3"
@@ -14787,7 +14786,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=0.0.2, @types/node@npm:>=12, @types/node@npm:>=12.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18, @types/node@npm:>=18.0.0, @types/node@npm:>=4.0.0":
+"@types/node@npm:*, @types/node@npm:>=0.0.2, @types/node@npm:>=12, @types/node@npm:>=12.0.0, @types/node@npm:>=13.7.0, @types/node@npm:>=18, @types/node@npm:>=18.0.0":
   version: 22.16.1
   resolution: "@types/node@npm:22.16.1"
   dependencies:
@@ -16295,22 +16294,6 @@ __metadata:
     json-schema-traverse: "npm:^1.0.0"
     require-from-string: "npm:^2.0.2"
   checksum: 10/ee3c62162c953e91986c838f004132b6a253d700f1e51253b99791e2dbfdb39161bc950ebdc2f156f8568035bb5ed8be7bd78289cd9ecbf3381fe8f5b82e3f33
-  languageName: node
-  linkType: hard
-
-"alsatian@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "alsatian@npm:2.4.0"
-  dependencies:
-    "@types/node": "npm:>=4.0.0"
-    extendo-error: "npm:^1.0.1"
-    glob: "npm:^7.0.3"
-    reflect-metadata: "npm:^0.1.3"
-    tap-bark: "npm:1.0.0"
-    ts-node: "npm:^7.0.0"
-  bin:
-    alsatian: ./cli/alsatian-cli.js
-  checksum: 10/64f58da3c59c205897a9dca485e521a89d982a70f5dfe907f290fbdbf49ec46afa2a32b78b8b244c8ff23ab14db12be75318561d6561b1995b56b1c0c4e66d79
   languageName: node
   linkType: hard
 
@@ -22445,13 +22428,6 @@ __metadata:
   version: 0.1.7
   resolution: "extendable-error@npm:0.1.7"
   checksum: 10/80478be7429a1675d2085f701239796bab3230ed6f2fb1b138fbabec24bea6516b7c5ceb6e9c209efcc9c089948d93715703845653535f8e8a49655066a9255e
-  languageName: node
-  linkType: hard
-
-"extendo-error@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "extendo-error@npm:1.0.1"
-  checksum: 10/5965cd2af1127ce321353196095ee07b0d7add134b2837356d676ca8c4a590d6a397ffa50b0ad26a73cba3b2d486806c4653df82cc3f65776dbda79a45c8caa8
   languageName: node
   linkType: hard
 
@@ -33013,13 +32989,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"reflect-metadata@npm:^0.1.3":
-  version: 0.1.14
-  resolution: "reflect-metadata@npm:0.1.14"
-  checksum: 10/fcab9c17ec3b9fea0e2f748c2129aceb57c24af6d8d13842b8a77c8c79dde727d7456ce293e76e8d7b267d1dbf93eea4c5b3c9101299a789a075824f2e40f1ee
-  languageName: node
-  linkType: hard
-
 "reflect-metadata@npm:^0.2.2":
   version: 0.2.2
   resolution: "reflect-metadata@npm:0.2.2"
@@ -35755,7 +35724,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tap-bark@npm:1.0.0, tap-bark@npm:^1.0.0":
+"tap-bark@npm:^1.0.0":
   version: 1.0.0
   resolution: "tap-bark@npm:1.0.0"
   dependencies:
@@ -36446,24 +36415,6 @@ __metadata:
   bin:
     ts-node: dist/bin.js
   checksum: 10/2bcf74a7b64191afaba41780ffd0b39536bb376471a8febfea678d2312906714f4e76f4b6768f113e13084a54a3117c93ae79dcce3ced90bcad3626ab37ead94
-  languageName: node
-  linkType: hard
-
-"ts-node@npm:^7.0.0":
-  version: 7.0.1
-  resolution: "ts-node@npm:7.0.1"
-  dependencies:
-    arrify: "npm:^1.0.0"
-    buffer-from: "npm:^1.1.0"
-    diff: "npm:^3.1.0"
-    make-error: "npm:^1.1.1"
-    minimist: "npm:^1.2.0"
-    mkdirp: "npm:^0.5.1"
-    source-map-support: "npm:^0.5.6"
-    yn: "npm:^2.0.0"
-  bin:
-    ts-node: dist/bin.js
-  checksum: 10/c1e0f1582867c34a03a25b1861e86922b9576931d473d48cd13275400832972350c4564e5f2c2df5817be6acbbb8e1dedf43bdd6f8c0f06b15d3530562a08a90
   languageName: node
   linkType: hard
 
