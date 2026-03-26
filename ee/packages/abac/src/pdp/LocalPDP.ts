@@ -6,6 +6,10 @@ import { buildCompliantConditions, buildNonCompliantConditions, buildRoomNonComp
 import type { IPolicyDecisionPoint } from './types';
 
 export class LocalPDP implements IPolicyDecisionPoint {
+	async isAvailable(): Promise<boolean> {
+		return true;
+	}
+
 	async canAccessObject(
 		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
 		user: AtLeast<IUser, '_id'>,

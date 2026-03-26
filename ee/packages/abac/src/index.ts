@@ -731,6 +731,14 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
+	async isPdpAvailable(): Promise<boolean> {
+		if (!this.pdp) {
+			return false;
+		}
+
+		return this.pdp.isAvailable();
+	}
+
 	async evaluateRoomMembership(): Promise<void> {
 		if (!this.pdp) {
 			return;
