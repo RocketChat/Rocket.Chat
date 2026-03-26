@@ -398,55 +398,57 @@ export class ClientMediaCall implements IClientMediaCall {
 			}
 		}
 
-		this.changeContact(signal.contact);
-
+		this.changeContact(signal.contact, { skipEvent: true });
 		this.remoteParticipant = this.createRemoteParticipantProxy();
 
-		// If the call is already flagged as over before the initialization, do not process anything other than filling in the basic information
-		if (this.isOver()) {
-			return;
-		}
-
-		// If it's flagged as ignored even before the initialization, tell the server we're unavailable
-		if (this.ignored) {
-			return this.rejectAsUnavailable();
-		}
-
-		if (this._service === 'webrtc') {
-			try {
-				this.prepareWebRtcProcessor();
-			} catch (e) {
-				this.sendError({
-					errorType: 'service',
-					errorCode: 'service-initialization-failed',
-					critical: true,
-					errorDetails: serializeError(e),
-				});
-				await this.rejectAsUnavailable();
-				throw e;
+		try {
+			// If the call is already flagged as over before the initialization, do not process anything other than filling in the basic information
+			if (this.isOver()) {
+				return;
 			}
+
+			// If it's flagged as ignored even before the initialization, tell the server we're unavailable
+			if (this.ignored) {
+				return this.rejectAsUnavailable();
+			}
+
+			if (this._service === 'webrtc') {
+				try {
+					this.prepareWebRtcProcessor();
+				} catch (e) {
+					this.sendError({
+						errorType: 'service',
+						errorCode: 'service-initialization-failed',
+						critical: true,
+						errorDetails: serializeError(e),
+					});
+					await this.rejectAsUnavailable();
+					throw e;
+				}
+			}
+
+			// Send an ACK so the server knows that this session exists and is reachable
+			this.acknowledge();
+
+			// Adds a secondary timeout for all sessions of the call; Won't matter if the original caller session is still active, but is needed for transferred calls.
+			this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
+
+			// If the call was requested by this specific session, assume we're signed already.
+			if (
+				this._role === 'caller' &&
+				this.acceptedLocally &&
+				this.contractState !== 'ignored' &&
+				(signal.requestedCallId === this.localCallId || Boolean(oldCall))
+			) {
+				this.contractState = 'pre-signed';
+			}
+		} finally {
+			if (!wasInitialized) {
+				this.emitter.emit('initialized');
+				this.emitter.emit('contactUpdate');
+			}
+			this.emitter.emit('confirmed');
 		}
-
-		// Send an ACK so the server knows that this session exists and is reachable
-		this.acknowledge();
-
-		// Adds a secondary timeout for all sessions of the call; Won't matter if the original caller session is still active, but is needed for transferred calls.
-		this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
-
-		// If the call was requested by this specific session, assume we're signed already.
-		if (
-			this._role === 'caller' &&
-			this.acceptedLocally &&
-			this.contractState !== 'ignored' &&
-			(signal.requestedCallId === this.localCallId || Boolean(oldCall))
-		) {
-			this.contractState = 'pre-signed';
-		}
-
-		if (!wasInitialized) {
-			this.emitter.emit('initialized');
-		}
-		this.emitter.emit('confirmed');
 
 		await this.processEarlySignals();
 	}
@@ -952,7 +954,10 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 	}
 
-	private changeContact(contact: CallContact | null, { prioritizeExisting }: { prioritizeExisting?: boolean } = {}): void {
+	private changeContact(
+		contact: CallContact | null,
+		{ prioritizeExisting, skipEvent }: { prioritizeExisting?: boolean; skipEvent?: boolean } = {},
+	): void {
 		this.config.logger?.debug('ClientMediaCall.changeContact');
 		const lowPriorityContact = prioritizeExisting ? contact : this._contact;
 		const highPriorityContact = prioritizeExisting ? this._contact : contact;
@@ -960,7 +965,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		const finalContact = highPriorityContact || lowPriorityContact;
 
 		this._contact = finalContact && { ...finalContact };
-		if (this._contact) {
+		if (this._contact && !skipEvent) {
 			this.emitter.emit('contactUpdate');
 		}
 	}
