@@ -39,6 +39,7 @@ export const Default = Template.bind({});
 Default.args = {
 	isSuccess: true,
 	discussions: fakeDiscussions,
+	itemCount: fakeDiscussions.length,
 };
 
 export const Loading = Template.bind({});
@@ -50,4 +51,5 @@ export const Empty = Template.bind({});
 Empty.args = {
 	isSuccess: true,
 	discussions: [],
+	itemCount: 0,
 };
