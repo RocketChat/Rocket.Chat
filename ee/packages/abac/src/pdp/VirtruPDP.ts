@@ -2,10 +2,12 @@ import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.ch
 import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
 import { isTruthy } from '@rocket.chat/tools';
+import pLimit from 'p-limit';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
 import { logger } from '../logger';
 import type {
+	Decision,
 	IEntityIdentifier,
 	IPolicyDecisionPoint,
 	IGetDecisionRequest,
@@ -37,7 +39,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
 			return this.tokenCache.accessToken;
 		}
-
 		const response = await serverFetch(`${this.config.oidcEndpoint}/protocol/openid-connect/token`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -89,7 +90,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		return response.json() as Promise<T>;
 	}
 
-	private async getDecision(request: IGetDecisionRequest): Promise<string | undefined> {
+	private async getDecision(request: IGetDecisionRequest): Promise<Decision | undefined> {
 		const result = await this.apiCall<IGetDecisionsResponse>('/authorization.AuthorizationService/GetDecisions', {
 			decisionRequests: [request],
 		});
@@ -103,29 +104,36 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		requests: Array<IGetDecisionBulkRequest | null>,
 	): Promise<Array<{ resourceDecisions?: IResourceDecision[] } | undefined>> {
 		const BATCH_SIZE = 200;
-		const allResponses: Array<{ resourceDecisions?: IResourceDecision[] } | undefined> = [];
+		const limit = pLimit(4);
 
+		const batches: Array<(IGetDecisionBulkRequest | null)[]> = [];
 		for (let i = 0; i < requests.length; i += BATCH_SIZE) {
-			const batch = requests.slice(i, i + BATCH_SIZE);
-			const validBatch = batch.filter(Boolean);
-
-			if (!validBatch.length) {
-				allResponses.push(...batch.map(() => undefined));
-				continue;
-			}
-
-			const result = await this.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
-				decisionRequests: validBatch,
-			});
-
-			pdpLogger.debug({ msg: 'GetDecisionBulk response', batch: i + 1, result });
-
-			const responses = result.decisionResponses ?? [];
-			let responseIdx = 0;
-			allResponses.push(...batch.map((req) => (req ? responses[responseIdx++] : undefined)));
+			batches.push(requests.slice(i, i + BATCH_SIZE));
 		}
 
-		return allResponses;
+		const batchResults = await Promise.all(
+			batches.map((batch, batchIndex) =>
+				limit(async (): Promise<Array<{ resourceDecisions?: IResourceDecision[] } | undefined>> => {
+					const validBatch = batch.filter(Boolean);
+
+					if (!validBatch.length) {
+						return batch.map(() => undefined);
+					}
+
+					const result = await this.apiCall<IGetDecisionBulkResponse>('/authorization.v2.AuthorizationService/GetDecisionBulk', {
+						decisionRequests: validBatch,
+					});
+
+					pdpLogger.debug({ msg: 'GetDecisionBulk response', batch: batchIndex + 1, result });
+
+					const responses = result.decisionResponses ?? [];
+					let responseIdx = 0;
+					return batch.map((req) => (req ? responses[responseIdx++] : undefined));
+				}),
+			),
+		);
+
+		return batchResults.flat();
 	}
 
 	private buildAttributeFqns(attributes: IAbacAttributeDefinition[]): string[] {
@@ -147,18 +155,11 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 	}
 
 	private getUserEntityKey(user: Pick<IUser, '_id' | 'emails' | 'username'>): string | undefined {
-		if (!this.config.defaultEntityKey) {
-			throw new Error('Default entity key is not configured for VirtruPDP');
-		}
-
-		// Maybe this should be more flexible and just allow a path? Something like `.emails.0.address` like the subject mapping from opentdf?
 		switch (this.config.defaultEntityKey) {
 			case 'emailAddress':
 				return user.emails?.[0]?.address;
 			case 'oidcIdentifier':
 				return user.username; // For now, username, we're gonna change this to find the right oidc identifier for the user
-			default:
-				throw new Error('Unsupported default entity key configuration for VirtruPDP');
 		}
 	}
 
