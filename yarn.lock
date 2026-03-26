@@ -11611,7 +11611,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-types/shared@npm:^3.0.0-nightly-fb28ab3b4-241024, @react-types/shared@npm:^3.14.1, @react-types/shared@npm:^3.27.0":
+"@react-types/shared@npm:^3.0.0-nightly-fb28ab3b4-241024":
+  version: 3.34.0
+  resolution: "@react-types/shared@npm:3.34.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+  checksum: 10/d28b0a3a3f68f94167fd7b4f474803430093b1a31f5f50cef6ddd755b923ba3af35dde40ffcc1f320926892744823a039b4a396c671f7c59aa49634811f0c43a
+  languageName: node
+  linkType: hard
+
+"@react-types/shared@npm:^3.14.1, @react-types/shared@npm:^3.27.0":
   version: 3.27.0
   resolution: "@react-types/shared@npm:3.27.0"
   peerDependencies:
