@@ -74,7 +74,7 @@ export interface IVirtruPDPConfig {
 	clientId: string;
 	clientSecret: string;
 	oidcEndpoint: string;
-	defaultEntityKey: string;
+	defaultEntityKey: 'emailAddress' | 'oidcIdentifier';
 	attributeNamespace: string;
 }
 
