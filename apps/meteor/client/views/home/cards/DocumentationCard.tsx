@@ -6,7 +6,7 @@ import { GenericCard, GenericCardButton } from '../../../components/GenericCard'
 import { useExternalLink } from '../../../hooks/useExternalLink';
 import { links } from '../../../lib/links';
 
-const DOCS_URL = links.go.documentation;
+const documentationUrl = links.go.documentation;
 
 const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const { t } = useTranslation();
@@ -17,11 +17,15 @@ const DocumentationCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): Re
 			title={t('Documentation')}
 			body={t('Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat')}
 			buttons={[
-				<GenericCardButton key={1} onClick={() => handleOpenLink(DOCS_URL)} role='link'>
+				<GenericCardButton
+					key="documentation-link"
+					onClick={handleOpenLink.bind(null, documentationUrl)}
+					role="link"
+				>
 					{t('See_documentation')}
 				</GenericCardButton>,
 			]}
-			width='x340'
+			width="x340"
 			{...props}
 		/>
 	);
