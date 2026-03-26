@@ -91,7 +91,7 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
-FROM node:22.16.0-alpine3.21 AS release-standard
+FROM node:22.16.0-alpine3.22 AS release-standard
 
 ARG SERVICE
 
