@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -28,6 +29,9 @@ Meteor.methods<ServerMethods>({
 	async insertOrUpdateSound(soundData) {
 		if (!this.userId || !(await hasPermissionAsync(this.userId, 'manage-sounds'))) {
 			throw new Meteor.Error('not_authorized');
+		}
+		if (soundData._id) {
+			check(soundData._id, String);
 		}
 		return insertOrUpdateSound(soundData);
 	},

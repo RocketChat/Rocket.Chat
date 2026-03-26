@@ -1,6 +1,5 @@
 import { api } from '@rocket.chat/core-services';
 import { CustomSounds } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import type { ICustomSoundData } from '../methods/insertOrUpdateSound';
@@ -27,10 +26,6 @@ export const insertOrUpdateSound = async (soundData: ICustomSoundData): Promise<
 			input: soundData.name,
 			field: 'Name',
 		});
-	}
-
-	if (soundData._id) {
-		check(soundData._id, String);
 	}
 
 	const matchingResults = await CustomSounds.findByName(soundData.name, soundData._id).toArray();
