@@ -8,6 +8,12 @@
 **/.meteor/meteorite
 /private/certs/*
 *.bak
+
+# HF transformers vendor files (copied by scripts/copy-hf-vendor.sh)
+public/hf/*.js
+public/hf/*.mjs
+public/hf/*.wasm
+!public/hf/loader.mjs
 *.iml
 *.ipr
 *.iws
