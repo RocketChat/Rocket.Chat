@@ -125,11 +125,12 @@ export const MessageList = function MessageList({
 		}
 
 		// Initial-load scroll-to-end: execute as soon as the scroll element is measured.
-		// scrollOffset === null means the element isn't ready yet — keep the flag and wait.
-		// Doing this here (rather than in a useEffect) guarantees the element is available
-		// and prevents onChange from cascading into spurious getMore calls before we've scrolled.
+		// scrollRect === null means the element hasn't been observed yet — keep the flag and wait.
+		// We deliberately check scrollRect (not scrollOffset) because initialOffset: Infinity sets
+		// scrollOffset = Infinity from birth, so scrollOffset !== null would fire before the DOM
+		// element is actually available, making scrollToIndex a silent no-op and clearing the flag.
 		if (shouldScrollToEndRef.current) {
-			if (scrollOffset !== null && ctx.messages.length > 0) {
+			if (scrollRect !== null && ctx.messages.length > 0) {
 				instance.scrollToIndex(ctx.messages.length - 1, { align: 'end' });
 				shouldScrollToEndRef.current = false;
 			}
