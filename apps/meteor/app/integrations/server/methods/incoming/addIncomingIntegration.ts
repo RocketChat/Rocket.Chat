@@ -73,6 +73,17 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		}
 	}
 
+	// ✅ Avatar URL validation
+	if (integration.avatar && integration.avatar.trim() !== '') {
+		try {
+			new URL(integration.avatar);
+		} catch {
+			throw new Meteor.Error('error-invalid-avatar-url', 'Avatar URL must be a valid URL', {
+				method: 'addIncomingIntegration',
+			});
+		}
+	}
+
 	if (!integration.username || typeof integration.username.valueOf() !== 'string' || integration.username.trim() === '') {
 		throw new Meteor.Error('error-invalid-username', 'Invalid username', {
 			method: 'addIncomingIntegration',
