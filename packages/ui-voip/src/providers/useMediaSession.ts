@@ -126,7 +126,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 			const {
 				state: callState,
-				localParticipant: { role },
+				localParticipant: { role, muted, held },
 			} = instanceState;
 			const state = deriveWidgetStateFromCallState(callState, role);
 
@@ -149,8 +149,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						},
 						transferredBy: undefined,
 						state,
-						muted: false,
-						held: false,
+						muted,
+						held,
 						connectionState,
 						hidden: false,
 						remoteHeld: false,
@@ -169,7 +169,6 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 				activeTimestamp: startedAt,
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
-				localParticipant: { muted, held },
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
 			} = instanceState;
 

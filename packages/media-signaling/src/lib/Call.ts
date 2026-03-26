@@ -381,7 +381,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._service = signal.service;
 		this._role = signal.role;
 		this._flags = signal.flags || [];
-		this.selfContact = signal.self || { type: 'user', id: this.config.userId };
+		this.selfContact = { type: 'user', id: this.config.userId, ...signal.self };
 
 		this._transferredBy = signal.transferredBy || null;
 
