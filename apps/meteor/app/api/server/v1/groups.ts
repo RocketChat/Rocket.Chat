@@ -88,7 +88,7 @@ const isGroupsMembersResponse = ajv.compile({
 		total: { type: 'integer' },
 		success: { type: 'boolean', enum: [true] },
 	},
-	required: ['members', 'success'],
+	required: ['members', 'success','count','offset','total'],
 	additionalProperties: false,
 });
 
