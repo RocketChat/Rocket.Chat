@@ -7,6 +7,7 @@ import AuthorizationProvider from './AuthorizationProvider';
 import AvatarUrlProvider from './AvatarUrlProvider';
 import CustomSoundProvider from './CustomSoundProvider';
 import { DeviceProvider } from './DeviceProvider/DeviceProvider';
+import { TranscriptionProvider } from './TranscriptionProvider';
 import EmojiPickerProvider from './EmojiPickerProvider';
 import LayoutProvider from './LayoutProvider';
 import MediaCallProvider from './MediaCallProvider';
@@ -41,7 +42,8 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 											<AuthenticationProvider>
 												<CustomSoundProvider>
 													<DeviceProvider>
-														<ModalProvider>
+														<TranscriptionProvider>
+															<ModalProvider>
 															<AuthorizationProvider>
 																<EmojiPickerProvider>
 																	<OmnichannelRoomIconProvider>
@@ -58,6 +60,7 @@ const MeteorProvider = ({ children }: MeteorProviderProps) => (
 																</EmojiPickerProvider>
 															</AuthorizationProvider>
 														</ModalProvider>
+														</TranscriptionProvider>
 													</DeviceProvider>
 												</CustomSoundProvider>
 											</AuthenticationProvider>
