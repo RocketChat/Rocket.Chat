@@ -132,7 +132,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.knownCalls.get(callId) || null;
 	}
 
-	public getState(skipLocal = false): (AnyMediaCallData & { call: IClientMediaCall } ) | null {
+	public getState(skipLocal = false): (AnyMediaCallData & { call: IClientMediaCall }) | null {
 		const call = this.getMainCall(skipLocal);
 		if (!call) {
 			return null;
