@@ -15,6 +15,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
+import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 
 import { callbacks } from '../../../../server/lib/callbacks';

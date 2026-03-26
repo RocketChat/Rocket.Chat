@@ -4,6 +4,7 @@ import * as z from 'zod';
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
+import { settings } from '../../../../app/settings/server';
 import { Apps } from '../orchestrator';
 
 type FetchMarketplaceAppsParams = {
@@ -149,6 +150,8 @@ export async function fetchMarketplaceApps({ endUserID }: FetchMarketplaceAppsPa
 	try {
 		request = await Apps.getMarketplaceClient().fetch(`v1/apps`, {
 			headers,
+			ignoreSsrfValidation: false,
+			allowList: settings.get<string>('SSRF_Allowlist'),
 			params: {
 				...(endUserID && { endUserID }),
 			},

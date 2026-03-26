@@ -1,4 +1,4 @@
-import { ServiceClassInternal, Authorization, Message, MeteorError } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Authorization, Message, MeteorError, FederationMatrix } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
 import {
 	type AtLeast,
@@ -18,13 +18,17 @@ import { saveRoomName } from '../../../app/channel-settings/server';
 import { saveRoomTopic } from '../../../app/channel-settings/server/functions/saveRoomTopic';
 import { performAcceptRoomInvite } from '../../../app/lib/server/functions/acceptRoomInvite';
 import { addUserToRoom } from '../../../app/lib/server/functions/addUserToRoom';
+import { performUserBan } from '../../../app/lib/server/functions/banUserFromRoom';
 import { createRoom } from '../../../app/lib/server/functions/createRoom'; // TODO remove this import
+import { executeUnbanUserFromRoom } from '../../../app/lib/server/functions/executeUnbanUserFromRoom';
 import { removeUserFromRoom, performUserRemoval } from '../../../app/lib/server/functions/removeUserFromRoom';
 import { notifyOnSubscriptionChangedById, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../../app/lib/server/lib/notifyListener';
+import { readThread } from '../../../app/threads/server/functions';
 import { getDefaultSubscriptionPref } from '../../../app/utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../../../app/utils/server/lib/getValidRoomName';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+import { readMessages } from '../../lib/readMessages';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { addRoomLeader } from '../../methods/addRoomLeader';
 import { addRoomModerator } from '../../methods/addRoomModerator';
@@ -38,6 +42,9 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
 	async updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean> {
+		if (room.t !== 'd') {
+			throw new Error('Invalid room type');
+		}
 		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1, status: 1 } }).toArray();
 
 		const uids = subs.map((sub) => sub.u._id);
@@ -125,6 +132,14 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return performUserRemoval(room, user, options);
 	}
 
+	async performUserBan(room: IRoom, user: IUser, byUser: IUser): Promise<void> {
+		return performUserBan(room, user, byUser);
+	}
+
+	async performUserUnban(room: IRoom, user: IUser, byUser: IUser): Promise<void> {
+		return executeUnbanUserFromRoom(room._id, user, byUser);
+	}
+
 	async performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser & { username: string }): Promise<void> {
 		return performAcceptRoomInvite(room, subscription, user);
 	}
@@ -149,7 +164,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	/**
 	 * Method called by users to join a room.
 	 */
-	async join({ room, user, joinCode }: { room: IRoom; user: Pick<IUser, '_id' | 'federated' | 'federation'>; joinCode?: string }) {
+	async join({ room, user, joinCode }: { room: IRoom; user: IUser; joinCode?: string }) {
 		if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.JOIN, user._id))) {
 			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
@@ -165,7 +180,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		if (
 			FederationActions.shouldPerformFederationAction(room) &&
 			!isUserNativeFederated(user) &&
-			!(await Authorization.hasPermission(user._id, 'access-federation'))
+			!(await FederationMatrix.canUserAccessFederation(user))
 		) {
 			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
 		}
@@ -291,7 +306,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			groupMentions: 0,
 			...(roles && { roles }),
 			...(status && { status }),
-			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, name: inviter.name } }),
+			...(inviter && { inviter: { _id: inviter._id, username: inviter.username!, ...(inviter.name && { name: inviter.name }) } }),
 			...autoTranslateConfig,
 			...getDefaultSubscriptionPref(userToBeAdded),
 			...(room.t === 'd' && inviter && { fname: inviter.name, name: inviter.username }),
@@ -329,5 +344,17 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		return insertedId;
+	}
+
+	async markAsRead(room: IRoom, userId: string, readThreads = false): Promise<void> {
+		await readMessages(room, userId, readThreads);
+	}
+
+	async readThread({ user, room, tmid }: { user: IUser; room: IRoom; tmid: string }): Promise<void> {
+		await readThread({
+			user,
+			room,
+			tmid,
+		});
 	}
 }

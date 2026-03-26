@@ -84,6 +84,29 @@ export interface IRoom extends IRocketChatRecord {
 	rolePrioritiesCreated?: number | boolean;
 }
 
+export type IDirectoryChannelResult = Pick<
+	IRoom,
+	| '_id'
+	| 't'
+	| 'usersCount'
+	| 'name'
+	| 'fname'
+	| 'description'
+	| 'topic'
+	| 'lastMessage'
+	| 'ts'
+	| 'archived'
+	| 'default'
+	| 'featured'
+	| 'prid'
+	| 'teamId'
+	| 'teamMain'
+	| 'federated'
+> & {
+	belongsTo?: string;
+	roomsCount?: number;
+};
+
 export const isRoomWithJoinCode = (room: Partial<IRoom>): room is IRoomWithJoinCode =>
 	'joinCodeRequired' in room && (room as any).joinCodeRequired === true;
 
@@ -131,6 +154,9 @@ export const isPublicDiscussion = (room: Partial<IRoom>): room is IRoom => isDis
 
 export const isPublicRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'c';
 export const isPrivateRoom = (room: Partial<IRoom>): room is IRoom => room.t === 'p';
+
+export const isABACManagedRoom = (room: Partial<IRoom>): room is IRoom & { abacAttributes: IAbacAttributeDefinition[] } =>
+	Array.isArray(room?.abacAttributes) && room.abacAttributes.length > 0;
 
 export interface IDirectMessageRoom extends Omit<IRoom, 'default' | 'featured' | 'u' | 'name'> {
 	t: 'd';

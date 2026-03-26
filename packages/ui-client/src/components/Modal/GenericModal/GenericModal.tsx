@@ -105,22 +105,22 @@ const GenericModal = ({
 
 	const handleConfirm = useEffectEvent(() => {
 		dismissedRef.current = false;
-		onConfirm?.();
+		void onConfirm?.();
 	});
 
 	const handleCancel = useEffectEvent(() => {
 		dismissedRef.current = false;
-		onCancel?.();
+		void onCancel?.();
 	});
 
 	const handleCloseButtonClick = useEffectEvent(() => {
 		dismissedRef.current = true;
-		onClose?.();
+		void onClose?.();
 	});
 
 	const handleDismiss = useEffectEvent(() => {
 		dismissedRef.current = true;
-		onDismiss?.();
+		void onDismiss?.();
 	});
 
 	useEffect(() => {

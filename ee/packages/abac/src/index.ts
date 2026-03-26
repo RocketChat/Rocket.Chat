@@ -1,4 +1,4 @@
-import { Room, ServiceClass } from '@rocket.chat/core-services';
+import { Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import type {
@@ -12,7 +12,7 @@ import type {
 	AbacAuditReason,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Rooms, AbacAttributes, Users, Subscriptions, Settings } from '@rocket.chat/models';
+import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { Document, FindCursor, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
@@ -48,9 +48,23 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	protected logger: Logger;
 
+	decisionCacheTimeout = 60; // seconds
+
 	constructor() {
 		super();
 		this.logger = new Logger('AbacService');
+
+		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value !== 'number') {
+				return;
+			}
+			this.decisionCacheTimeout = value;
+		});
+	}
+
+	override async started(): Promise<void> {
+		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 	}
 
 	async addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>): Promise<void> {
@@ -522,13 +536,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return false;
 		}
 
-		const decisionCacheTimeout = (await Settings.getValueById('Abac_Cache_Decision_Time_Seconds')) as number;
 		const userSub = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { abacLastTimeChecked: 1 } });
 		if (!userSub) {
 			return false;
 		}
 
-		if (this.shouldUseCache(decisionCacheTimeout, userSub)) {
+		if (this.shouldUseCache(this.decisionCacheTimeout, userSub)) {
 			this.logger.debug({ msg: 'Using cached ABAC decision', userId: user._id, roomId: room._id });
 			return !!userSub;
 		}

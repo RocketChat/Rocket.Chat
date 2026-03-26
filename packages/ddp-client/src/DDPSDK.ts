@@ -114,7 +114,7 @@ export class DDPSDK implements SDK {
 
 		connection.on('connected', () => {
 			if (account.user?.token) {
-				account.loginWithToken(account.user.token);
+				void account.loginWithToken(account.user.token);
 			}
 			[...stream.subscriptions.entries()].forEach(([, sub]) => {
 				ddp.subscribeWithId(sub.id, sub.name, sub.params);

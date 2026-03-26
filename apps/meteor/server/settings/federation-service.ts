@@ -85,6 +85,15 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			alert: 'Federation_Service_EDU_Process_Presence_Alert',
 		});
 
+		await this.add('Federation_Service_EDU_Process_Receipt', false, {
+			type: 'boolean',
+			public: true,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: false,
+			alert: 'Federation_Service_EDU_Process_Receipt_Alert',
+		});
+
 		await this.add('Federation_Service_Join_Encrypted_Rooms', false, {
 			type: 'boolean',
 			public: false,
@@ -94,6 +103,14 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 		});
 
 		await this.add('Federation_Service_Join_Non_Private_Rooms', false, {
+			type: 'boolean',
+			public: false,
+			enterprise: true,
+			modules: ['federation'],
+			invalidValue: false,
+		});
+
+		await this.add('Federation_Service_Validate_User_Domain', false, {
 			type: 'boolean',
 			public: false,
 			enterprise: true,

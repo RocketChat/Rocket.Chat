@@ -1,6 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { ExportMessagesTab } from './export-messages-tab';
+import { FilesFlexTab } from './files-flextab';
 import { HomeFlextabChannels } from './home-flextab-channels';
 import { HomeFlextabMembers } from './home-flextab-members';
 import { HomeFlextabNotificationPreferences } from './home-flextab-notificationPreferences';
@@ -25,6 +26,8 @@ export class HomeFlextab {
 
 	readonly searchMessages: SearchMessagesFlexTab;
 
+	readonly files: FilesFlexTab;
+
 	constructor(page: Page) {
 		this.page = page;
 		this.members = new HomeFlextabMembers(page);
@@ -34,6 +37,7 @@ export class HomeFlextab {
 		this.exportMessages = new ExportMessagesTab(page);
 		this.pruneMessages = new HomeFlextabPruneMessages(page);
 		this.searchMessages = new SearchMessagesFlexTab(page);
+		this.files = new FilesFlexTab(page);
 	}
 
 	get toolbarPrimaryActions(): Locator {
@@ -66,10 +70,6 @@ export class HomeFlextab {
 
 	get btnEnableE2E(): Locator {
 		return this.page.locator('role=menuitem[name="Enable E2E encryption"]');
-	}
-
-	get flexTabViewThreadMessage(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
 	}
 
 	get userInfoUsername(): Locator {
