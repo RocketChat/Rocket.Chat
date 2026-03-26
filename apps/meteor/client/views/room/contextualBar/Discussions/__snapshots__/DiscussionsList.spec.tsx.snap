@@ -249,7 +249,7 @@ exports[`renders Empty without crashing 1`] = `
               role="status"
               style="border: 0px; clip-path: inset(50%); height: 1px; margin: -1px; overflow: hidden; padding: 0px; position: absolute; width: 1px; white-space: nowrap;"
             >
-              __count__result_found
+              No_results_found
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"

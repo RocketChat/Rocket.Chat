@@ -47,7 +47,7 @@ exports[`renders Default without crashing 1`] = `
             >
               <input
                 aria-controls=":r0:"
-                aria-label="Search_Messages"
+                aria-label="Search_by_username"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_by_username"
                 size="1"
@@ -267,7 +267,7 @@ exports[`renders Empty without crashing 1`] = `
             >
               <input
                 aria-controls=":ra:"
-                aria-label="Search_Messages"
+                aria-label="Search_by_username"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_by_username"
                 size="1"
@@ -464,7 +464,7 @@ exports[`renders Loading without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper"
             >
               <input
-                aria-label="Search_Messages"
+                aria-label="Search_by_username"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_by_username"
                 size="1"
@@ -653,7 +653,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
             >
               <input
                 aria-controls=":ru:"
-                aria-label="Search_Messages"
+                aria-label="Search_by_username"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_by_username"
                 size="1"
@@ -873,7 +873,7 @@ exports[`renders WithInvitedMember without crashing 1`] = `
             >
               <input
                 aria-controls=":r18:"
-                aria-label="Search_Messages"
+                aria-label="Search_by_username"
                 class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
                 placeholder="Search_by_username"
                 size="1"
