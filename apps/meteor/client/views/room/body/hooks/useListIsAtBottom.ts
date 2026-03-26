@@ -9,8 +9,6 @@ import type { VirtualizerHandle } from '../../MessageList/MessageList';
 export const useListIsAtBottom = (virtualizerRef?: RefObject<VirtualizerHandle | null>) => {
 	const atBottomRef = useRef(true);
 
-	const jumpToRef = useRef<HTMLElement>(undefined);
-
 	const innerBoxRef = useRef<HTMLDivElement | null>(null);
 
 	const sendToBottom = useCallback(() => {
@@ -22,45 +20,35 @@ export const useListIsAtBottom = (virtualizerRef?: RefObject<VirtualizerHandle |
 	}, [virtualizerRef]);
 
 	const sendToBottomIfNecessary = useCallback(() => {
-		if (jumpToRef.current) {
-			atBottomRef.current = false;
-		}
 		if (atBottomRef.current === true) {
 			sendToBottom();
 		}
-	}, [atBottomRef, sendToBottom]);
+	}, [sendToBottom]);
 
-	const isAtBottom = useCallback<(threshold?: number) => boolean>((threshold = 0) => {
-		if (!innerBoxRef.current) {
-			return true;
-		}
-		return isAtBottomLib(innerBoxRef.current, threshold);
-	}, []);
+	// When a virtualizerRef is provided (main message list), atBottomRef is maintained by the
+	// virtualizer's onChange callback in MessageList and isAtBottom delegates to the virtualizer.
+	// The DOM-based fallback path is kept for the non-virtualized thread list.
+	const isAtBottom = useCallback<(threshold?: number) => boolean>(
+		(threshold = 0) => {
+			if (virtualizerRef?.current) {
+				return virtualizerRef.current.isAtBottom(threshold);
+			}
+			if (!innerBoxRef.current) {
+				return true;
+			}
+			return isAtBottomLib(innerBoxRef.current, threshold);
+		},
+		[virtualizerRef],
+	);
 
 	const ref = useSafeRefCallback(
 		useCallback(
 			(node: HTMLElement) => {
-				const messageList = node.querySelector('ul');
-
-				if (!messageList) {
+				// For the virtualized main list, atBottomRef is updated by MessageList's onChange.
+				// We only attach a DOM scroll listener for the non-virtualized thread list.
+				if (virtualizerRef?.current) {
 					return;
 				}
-
-				// const observer = new ResizeObserver(() => {
-				// 	if (jumpToRef.current) {
-				// 		atBottomRef.current = false;
-				// 	}
-
-				// 	if (atBottomRef.current === true) {
-				// 		if (virtualizerRef?.current) {
-				// 			virtualizerRef.current.scrollToEnd();
-				// 		} else {
-				// 			node.scrollTo({ left: 30, top: node.scrollHeight });
-				// 		}
-				// 	}
-				// });
-
-				// observer.observe(messageList);
 
 				const handleScroll = withThrottling({ wait: 100 })(() => {
 					atBottomRef.current = isAtBottom(100);
@@ -71,7 +59,6 @@ export const useListIsAtBottom = (virtualizerRef?: RefObject<VirtualizerHandle |
 				});
 
 				return () => {
-					// observer.disconnect();
 					node.removeEventListener('scroll', handleScroll);
 				};
 			},
@@ -85,6 +72,5 @@ export const useListIsAtBottom = (virtualizerRef?: RefObject<VirtualizerHandle |
 		sendToBottom,
 		sendToBottomIfNecessary,
 		isAtBottom,
-		jumpToRef,
 	};
 };

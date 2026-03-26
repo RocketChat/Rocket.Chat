@@ -5,6 +5,7 @@ import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPre
 import type { MouseEvent, ReactElement } from 'react';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 
+import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
@@ -25,7 +26,6 @@ import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useFileUpload } from './hooks/useFileUpload';
-import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
@@ -102,17 +102,17 @@ const RoomBody = (): ReactElement => {
 		sendToBottom,
 		sendToBottomIfNecessary,
 		isAtBottom,
-		jumpToRef: jumpToRefIsAtBottom,
 	} = useListIsAtBottom(virtualizerRef);
-
-	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
 
 	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(
 		room._id,
 		virtualizerRef,
 	);
 
-	const jumpToRef = useMergedRefsV2(jumpToRefIsAtBottom, jumpToRefGetMore, jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
+	const jumpToRef = useMergedRefsV2(jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
+
+	const handleGetMore = useCallback(() => RoomHistoryManager.getMore(room._id), [room._id]);
+	const handleGetMoreNext = useCallback(() => RoomHistoryManager.getMoreNext(room._id, atBottomRef), [room._id, atBottomRef]);
 
 	const {
 		uploads,
@@ -145,7 +145,6 @@ const RoomBody = (): ReactElement => {
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
 		unreadBarInnerRef,
-		getMoreInnerRef,
 		selectAndScrollRef,
 		messageListRef,
 		jumpToRefGetMoreImperativeInnerRef,
@@ -270,6 +269,9 @@ const RoomBody = (): ReactElement => {
 											room={room}
 											retentionPolicy={retentionPolicy}
 											innerRef={innerRef}
+											atBottomRef={atBottomRef}
+											onGetMore={handleGetMore}
+											onGetMoreNext={handleGetMoreNext}
 										/>
 									</MessageListErrorBoundary>
 								</div>

@@ -40,7 +40,7 @@ export const useJumpToMessageImperative = (virtualizerRef?: RefObject<Virtualize
 
 /**
  * `listRef` is a reference to the message node in the message list.
- * its shared between other hooks like `useLoadSurroundingMessages`, `useJumpToMessage`, `useGetMore`, `useListIsAtBottom` and `useRestoreScrollPosition`
+ * its shared between other hooks like `useLoadSurroundingMessages`, `useJumpToMessage`, `useListIsAtBottom` and `useRestoreScrollPosition`
  * since each hook has a different concern, this ref helps each other aware if a message is being highlighted which changes the scroll position
 
  */

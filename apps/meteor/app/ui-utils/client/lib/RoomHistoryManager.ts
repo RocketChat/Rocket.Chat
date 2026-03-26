@@ -9,7 +9,6 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { getUserId } from '../../../../client/lib/user';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
-import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
 
@@ -59,10 +58,6 @@ class RoomHistoryManagerClass extends Emitter {
 			firstUnread: ReactiveVar<IMessage | undefined>;
 			loaded: number | undefined;
 			oldestTs?: Date;
-			scroll?: {
-				scrollHeight: number;
-				scrollTop: number;
-			};
 		}
 	> = {};
 
@@ -162,13 +157,6 @@ class RoomHistoryManagerClass extends Emitter {
 				room.oldestTs = messages[messages.length - 1].ts;
 			}
 
-			const wrapper = await waitForElement('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-
-			room.scroll = {
-				scrollHeight: wrapper.scrollHeight,
-				scrollTop: wrapper.scrollTop,
-			};
-
 			await upsertMessageBulk({
 				msgs: messages.filter((msg) => msg.t !== 'command'),
 				subscription,
@@ -197,23 +185,6 @@ class RoomHistoryManagerClass extends Emitter {
 			room.isLoading.set(false);
 			await waitAfterFlush();
 		}
-	}
-
-	public restoreScroll(rid: IRoom['_id']) {
-		const room = this.getRoom(rid);
-		const wrapper = document.querySelector('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-
-		if (room.scroll === undefined) {
-			return;
-		}
-
-		if (!wrapper) {
-			return;
-		}
-
-		const heightDiff = wrapper.scrollHeight - (room.scroll.scrollHeight ?? NaN);
-		wrapper.scrollTop = room.scroll.scrollTop + heightDiff;
-		room.scroll = undefined;
 	}
 
 	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
