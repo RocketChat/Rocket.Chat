@@ -9843,6 +9843,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rocket.chat/gazzodown-alt@workspace:packages/gazzodown-alt":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/gazzodown-alt@workspace:packages/gazzodown-alt"
+  dependencies:
+    "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/react": "npm:~18.3.27"
+    eslint: "npm:~9.39.3"
+    react: "npm:~18.3.1"
+    typescript: "npm:~5.9.3"
+  peerDependencies:
+    "@rocket.chat/message-parser": 0.31.34
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/gazzodown@workspace:^, @rocket.chat/gazzodown@workspace:packages/gazzodown":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/gazzodown@workspace:packages/gazzodown"
