@@ -1,6 +1,6 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Button, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
+import { AccordionItem, Button, Callout, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
@@ -84,7 +84,9 @@ const PreferencesNotificationsSection = () => {
 		return options;
 	}, [i18n, t, userEmailNotificationMode]);
 
-	const { control } = useFormContext();
+	const { control, watch } = useFormContext();
+	const mobilePushNotifications = watch('pushNotifications');
+	const emailNotifications = watch('emailNotificationMode');
 
 	const notificationRequireId = useId();
 	const desktopNotificationsId = useId();
@@ -198,6 +200,11 @@ const PreferencesNotificationsSection = () => {
 							)}
 						/>
 					</FieldRow>
+					{mobilePushNotifications !== 'nothing' && emailNotifications !== 'nothing' && (
+						<Callout type='warning'>
+							{t('Mobile_push_and_email_duplicate_warning')}
+						</Callout>
+					)}
 					<FieldHint id={`${emailNotificationModeId}-hint`}>
 						{canChangeEmailNotification && t('You_need_to_verifiy_your_email_address_to_get_notications')}
 						{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
