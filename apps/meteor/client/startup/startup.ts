@@ -12,8 +12,7 @@ import { watchUserId } from '../meteor/user';
 Meteor.startup(() => {
 	let status: UserStatus | undefined = undefined;
 	Tracker.autorun(async () => {
-		const uid = watchUserId();
-		if (!uid) {
+		if (Meteor.loggingOut()) {
 			removeLocalUserData();
 			return;
 		}
@@ -23,6 +22,12 @@ Meteor.startup(() => {
 		}
 
 		if (Meteor.loggingIn()) {
+			return;
+		}
+
+		const uid = watchUserId();
+
+		if (!uid) {
 			return;
 		}
 

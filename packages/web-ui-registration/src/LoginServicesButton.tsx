@@ -1,4 +1,5 @@
 import { Button } from '@rocket.chat/fuselage';
+import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { LoginService } from '@rocket.chat/ui-contexts';
 import { useLoginWithService } from '@rocket.chat/ui-contexts';
@@ -27,14 +28,21 @@ const LoginServicesButton = <T extends LoginService>({
 	const { t } = useTranslation();
 	const handler = useLoginWithService({ service, buttonLabelText, ...props });
 
+	const [isLegacyOAuthEnabled] = useLocalStorage<boolean>('useLegacyOAuth', false);
+
 	const handleOnClick = useCallback(() => {
+		if (!isLegacyOAuthEnabled) {
+			window.location.href = `/oauth/${service}`;
+			return;
+		}
+
 		handler().catch((e: { error?: LoginErrors; reason?: string }) => {
 			if (!e.error || typeof e.error !== 'string') {
 				return;
 			}
 			setError?.([e.error, e.reason]);
 		});
-	}, [handler, setError]);
+	}, [handler, setError, isLegacyOAuthEnabled, service]);
 
 	return (
 		<Button
