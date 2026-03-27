@@ -3,7 +3,7 @@ import { isThreadMessage } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { VirtualScrollbars } from '@rocket.chat/ui-client';
-import { useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ScrollToOptions, VirtualItem } from '@tanstack/react-virtual';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { MutableRefObject, Ref, RefObject } from 'react';
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MessageListItem } from './MessageListItem';
 import { isMessageSequential } from './lib/isMessageSequential';
-import { setHighlightMessage } from './providers/messageHighlightSubscription';
+import { setHighlightMessage, clearHighlightMessage } from './providers/messageHighlightSubscription';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
@@ -69,6 +69,7 @@ export function VirtualizedMessageList({
 	atBottomRef,
 }: VirtualizedMessageListProps) {
 	const { t } = useTranslation();
+	const router = useRouter();
 
 	const overscan = Math.min(OVERSCAN, Math.max(0, Math.floor(DEFAULT_MAX_RENDERED / 2) - 2));
 
@@ -193,11 +194,14 @@ export function VirtualizedMessageList({
 			}
 			return;
 		}
-		// Message is loaded — scroll to it.
+		// Message is loaded — scroll to it, then clear the ?msg= param.
 		virtualizer.scrollToIndex(index, { align: 'center' });
 		setHighlightMessage(jumpToMessageParam);
 		jumpedToMsgRef.current = jumpToMessageParam;
-	}, [jumpToMessageParam, messages, virtualizer, rid]);
+		const { msg: _, ...search } = router.getSearchParameters();
+		router.navigate({ pathname: router.getLocationPathname(), search }, { replace: true });
+		setTimeout(clearHighlightMessage, 2000);
+	}, [jumpToMessageParam, messages, virtualizer, rid, router]);
 
 	return messages.length > 0 ? (
 		<VirtualScrollbars ref={innerRef} viewportRef={scrollContainerRef} key={room._id}>

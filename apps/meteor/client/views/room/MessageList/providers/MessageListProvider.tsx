@@ -1,5 +1,5 @@
 import { isRoomFederated, isThreadMainMessage } from '@rocket.chat/core-typings';
-import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useLayout, useUser, useUserPreference, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactNode, RefCallback } from 'react';
 import { useMemo, memo } from 'react';
 
@@ -59,7 +59,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 	const formatTime = useFormatTime();
 	const formatDate = useFormatDate();
 	const hasSubscription = Boolean(subscription);
-	const msgParameter = useSearchParameter('msg');
 
 	const chat = useChat();
 
@@ -93,7 +92,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			showRealName,
 			showUsername,
 			messageListRef,
-			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
 				katex: {
 					dollarSyntaxEnabled: katexDollarSyntaxEnabled,
@@ -140,7 +138,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			highlights,
 			reactToMessage,
 			showColors,
-			msgParameter,
 			messageListRef,
 			chat?.emojiPicker,
 			readReceiptsEnabled,

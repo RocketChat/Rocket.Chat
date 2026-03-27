@@ -101,7 +101,6 @@ const RoomBody = (): ReactElement => {
 		sendToBottom,
 		sendToBottomIfNecessary,
 		isAtBottom,
-		jumpToRef: jumpToRefIsAtBottom,
 	} = useListIsAtBottom(virtualizerRef);
 
 	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(
@@ -109,7 +108,7 @@ const RoomBody = (): ReactElement => {
 		virtualizerRef,
 	);
 
-	const jumpToRef = useMergedRefsV2(jumpToRefIsAtBottom, jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
+	const jumpToRef = useMergedRefsV2(jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
 
 	const {
 		uploads,

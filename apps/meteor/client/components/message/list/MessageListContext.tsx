@@ -32,7 +32,6 @@ export type MessageListContextValue = {
 	};
 	autoTranslateLanguage?: string;
 	showColors: boolean;
-	jumpToMessageParam?: string;
 	username: string | undefined;
 	apiEmbedEnabled: boolean;
 	readReceipts: {
@@ -90,9 +89,6 @@ export const useMessageListShowRoles = (): MessageListContextValue['showRoles'] 
 export const useMessageListShowRealName = (): MessageListContextValue['showRealName'] => useContext(MessageListContext).showRealName;
 export const useMessageListShowUsername = (): MessageListContextValue['showUsername'] => useContext(MessageListContext).showUsername;
 export const useMessageListHighlights = (): MessageListContextValue['highlights'] => useContext(MessageListContext).highlights;
-export const useMessageListJumpToMessageParam = (): MessageListContextValue['jumpToMessageParam'] =>
-	useContext(MessageListContext).jumpToMessageParam;
-
 export const useUserHasReacted: MessageListContextValue['useUserHasReacted'] = (message: IMessage) =>
 	useContext(MessageListContext).useUserHasReacted(message);
 export const useOpenEmojiPicker: MessageListContextValue['useOpenEmojiPicker'] = (...args) =>
