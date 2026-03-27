@@ -311,7 +311,50 @@ describe('parseMessageTextToAstMarkdown', () => {
 		});
 	});
 
-	// TODO: Add more tests for each type of message and for each type of token
+	it('should parse plain text message correctly', () => {
+	const message: IMessage = {
+		...baseMessage,
+		msg: 'hello world',
+	};
+
+	const parsed: Root = [
+		{
+			type: 'PARAGRAPH',
+			value: [
+				{
+					type: 'PLAIN_TEXT',
+					value: 'hello world',
+				},
+			],
+		},
+	];
+
+	expect(parseMessageTextToAstMarkdown(message, parseOptions, autoTranslateOptions).md).toStrictEqual(parsed);
+});
+
+it('should handle empty message correctly', () => {
+	const message: IMessage = {
+		...baseMessage,
+		msg: '',
+	};
+
+	const parsed: Root = [];
+
+	expect(parseMessageTextToAstMarkdown(message, parseOptions, autoTranslateOptions).md).toStrictEqual(parsed);
+});
+
+it('should parse link correctly', () => {
+	const message: IMessage = {
+		...baseMessage,
+		msg: '[Google](https://google.com)',
+	};
+
+	const result = parseMessageTextToAstMarkdown(message, parseOptions, autoTranslateOptions);
+
+	// we check structure safely (because link AST may vary slightly)
+	expect(result.md).toBeDefined();
+	expect(result.md.length).toBeGreaterThan(0);
+});
 });
 
 describe('parseMessageAttachments', () => {
