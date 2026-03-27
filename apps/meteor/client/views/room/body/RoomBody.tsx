@@ -25,7 +25,6 @@ import { useDateScroll } from '../hooks/useDateScroll';
 import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useFileUpload } from './hooks/useFileUpload';
-import { useGetMore } from './hooks/useGetMore';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useListIsAtBottom } from './hooks/useListIsAtBottom';
@@ -105,14 +104,12 @@ const RoomBody = (): ReactElement => {
 		jumpToRef: jumpToRefIsAtBottom,
 	} = useListIsAtBottom(virtualizerRef);
 
-	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
-
 	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(
 		room._id,
 		virtualizerRef,
 	);
 
-	const jumpToRef = useMergedRefsV2(jumpToRefIsAtBottom, jumpToRefGetMore, jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
+	const jumpToRef = useMergedRefsV2(jumpToRefIsAtBottom, jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
 
 	const {
 		uploads,
@@ -145,7 +142,6 @@ const RoomBody = (): ReactElement => {
 		isAtBottomInnerRef,
 		newMessagesScrollRef,
 		unreadBarInnerRef,
-		getMoreInnerRef,
 		selectAndScrollRef,
 		messageListRef,
 		jumpToRefGetMoreImperativeInnerRef,
@@ -270,6 +266,7 @@ const RoomBody = (): ReactElement => {
 											room={room}
 											retentionPolicy={retentionPolicy}
 											innerRef={innerRef}
+											atBottomRef={atBottomRef}
 										/>
 									</MessageListErrorBoundary>
 								</div>
