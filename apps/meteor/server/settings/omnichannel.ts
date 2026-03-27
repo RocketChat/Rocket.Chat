@@ -1,6 +1,7 @@
 import { SettingEditor } from '@rocket.chat/core-typings';
 
 import { settingsRegistry } from '../../app/settings/server';
+import { shouldBreakInVersion } from '../lib/shouldBreakInVersion';
 
 const omnichannelEnabledQuery = { _id: 'Livechat_enabled', value: true };
 
@@ -336,25 +337,32 @@ export const createOmniSettings = () =>
 			enableQuery: omnichannelEnabledQuery,
 		});
 
-		await this.add('Livechat_lead_email_regex', '\\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\\.)+[A-Z]{2,4}\\b', {
-			type: 'string',
-			group: 'Omnichannel',
-			section: 'CRM_Integration',
-			i18nLabel: 'Lead_capture_email_regex',
-			enableQuery: omnichannelEnabledQuery,
-		});
-
-		await this.add(
-			'Livechat_lead_phone_regex',
-			'((?:\\([0-9]{1,3}\\)|[0-9]{2})[ \\-]*?[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))',
-			{
+		if (!shouldBreakInVersion('9.0.0')) {
+			// TODO: Remove Livechat lead capture features in version 9.0.0
+			await this.add('Livechat_lead_email_regex', '\\b[A-Z0-9._%+-]+@(?:[A-Z0-9-]+\\.)+[A-Z]{2,4}\\b', {
 				type: 'string',
 				group: 'Omnichannel',
 				section: 'CRM_Integration',
-				i18nLabel: 'Lead_capture_phone_regex',
+				i18nLabel: 'Lead_capture_email_regex',
 				enableQuery: omnichannelEnabledQuery,
-			},
-		);
+				alert: 'Lead_capture_email_regex_deprecation_alert',
+			});
+
+			await this.add(
+				'Livechat_lead_phone_regex',
+				'((?:\\([0-9]{1,3}\\)|[0-9]{2})[ \\-]*?[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$)|[0-9]{4,5}(?:[\\-\\s\\_]{1,2})?[0-9]{4}(?:(?=[^0-9])|$))',
+				{
+					type: 'string',
+					group: 'Omnichannel',
+					section: 'CRM_Integration',
+					i18nLabel: 'Lead_capture_phone_regex',
+					enableQuery: omnichannelEnabledQuery,
+					alert: 'Lead_capture_phone_regex_deprecation_alert',
+				},
+			);
+		} else {
+			throw new Error('Omnichannel: Livechat lead capture features should be removed from the codebase in version 9.0.0');
+		}
 
 		await this.add('Livechat_history_monitor_type', 'url', {
 			type: 'select',
