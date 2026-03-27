@@ -54,6 +54,7 @@ export const useThreadListData = (): ThreadListData => {
 	);
 
 	const [type, setType] = useLocalStorage<ThreadType>('thread-list-type', 'all');
+	const effectiveType = typeOptions.find(([storedType]) => storedType === type)?.[0] ?? 'all';
 
 	const handleTypeChange = useCallback(
 		(type: string) => {
@@ -68,33 +69,33 @@ export const useThreadListData = (): ThreadListData => {
 	const subscription = useRoomSubscription();
 	const subscribed = !!subscription;
 	const uid = useUserId();
-	const tunread = subscription?.tunread ? [...subscription.tunread].sort().join(',') : undefined;
+	const tunread = subscription?.tunread?.length ? [...subscription.tunread].sort().join(',') : undefined;
 	const text = useDebouncedValue(searchText, 400);
 	const options = useDebouncedValue(
 		useMemo(() => {
-			if (type === 'all' || !subscribed || !uid) {
+			if (effectiveType === 'all' || !subscribed || !uid) {
 				return {
 					rid,
 					text,
 				};
 			}
-			switch (type) {
+			switch (effectiveType) {
 				case 'following':
 					return {
 						rid,
 						text,
-						type,
+						type: effectiveType,
 						uid,
 					};
 				case 'unread':
 					return {
 						rid,
 						text,
-						type,
-						tunread: tunread?.split(','),
+						type: effectiveType,
+						...(tunread ? { tunread: tunread.split(',') } : {}),
 					};
 			}
-		}, [rid, subscribed, text, tunread, type, uid]),
+		}, [effectiveType, rid, subscribed, text, tunread, uid]),
 		300,
 	);
 
@@ -115,7 +116,7 @@ export const useThreadListData = (): ThreadListData => {
 		searchText,
 		handleSearchTextChange,
 		typeOptions,
-		type,
+		type: effectiveType,
 		handleTypeChange,
 		handleTabBarCloseButtonClick,
 		isPending,
