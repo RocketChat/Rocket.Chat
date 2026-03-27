@@ -1,20 +1,5 @@
-import { ajv } from '../Ajv';
-import type { GroupsBaseProps } from './BaseProps';
-import { withGroupBaseProperties } from './BaseProps';
+import type { WithUserId } from './BaseProps';
+import { withUserIdProps } from './BaseProps';
 
-export type GroupsInviteProps = GroupsBaseProps & { userId: string; unbanBeforeAdd?: boolean };
-
-const groupsInviteSchema = withGroupBaseProperties(
-	{
-		userId: {
-			type: 'string',
-		},
-		unbanBeforeAdd: {
-			type: 'boolean',
-			nullable: true,
-		},
-	},
-	['userId'],
-);
-
-export const isGroupsInviteProps = ajv.compile<GroupsInviteProps>(groupsInviteSchema);
+export type GroupsInviteProps = WithUserId;
+export const isGroupsInviteProps = withUserIdProps;

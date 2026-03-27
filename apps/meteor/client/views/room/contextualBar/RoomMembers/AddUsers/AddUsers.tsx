@@ -12,7 +12,7 @@ import {
 	ContextualbarDialog,
 	GenericModal,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod, useSetModal, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch, useMethod, useSetModal, useEndpoint, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -43,6 +43,8 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 	const { closeTab } = useRoomToolbox();
 	const setModal = useSetModal();
 	const saveAction = useMethod('addUsersToRoom');
+	const getBannedUsers = useEndpoint('GET', '/v1/rooms.bannedUsers');
+	const unbanUser = useEndpoint('POST', '/v1/rooms.unbanUser');
 
 	const {
 		handleSubmit,
@@ -51,14 +53,23 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		formState: { isDirty, isSubmitting, errors },
 	} = useForm({ defaultValues: { users: [] } });
 
-	const handleSave = useEffectEvent(async ({ users, unbanBeforeAdd }: { users: string[]; unbanBeforeAdd?: boolean }) => {
+	const handleSave = useEffectEvent(async ({ users }: { users: string[] }) => {
 		try {
-			await saveAction({ rid, users, unbanBeforeAdd });
+			await saveAction({ rid, users });
 			dispatchToastMessage({ type: 'success', message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added') });
 			onClickBack();
 			reload();
 		} catch (error: any) {
 			if (error.error === 'error-user-is-banned') {
+				const { bannedUsers } = await getBannedUsers({ roomId: rid });
+				const bannedUsernames = new Set(bannedUsers.map((u) => u.username));
+				const usersToUnban = users.filter((username) => bannedUsernames.has(username));
+
+				if (!usersToUnban.length) {
+					dispatchToastMessage({ type: 'error', message: error as Error });
+					return;
+				}
+
 				setModal(
 					<GenericModal
 						variant='warning'
@@ -68,7 +79,18 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 						onCancel={() => setModal(null)}
 						onConfirm={async () => {
 							setModal(null);
-							await handleSave({ users, unbanBeforeAdd: true });
+							try {
+								await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
+								await saveAction({ rid, users });
+								dispatchToastMessage({
+									type: 'success',
+									message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added'),
+								});
+								onClickBack();
+								reload();
+							} catch (err) {
+								dispatchToastMessage({ type: 'error', message: err as Error });
+							}
 						}}
 					>
 						{t('User_is_banned_from_room_confirm_unban')}

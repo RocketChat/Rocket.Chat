@@ -595,9 +595,7 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
 			}
 
-			const unbanBeforeAdd = 'unbanBeforeAdd' in this.bodyParams ? this.bodyParams.unbanBeforeAdd : undefined;
-
-			await addUsersToRoomMethod(this.userId, { rid, users: users.map((u) => u.username).filter(isTruthy), unbanBeforeAdd }, this.user);
+			await addUsersToRoomMethod(this.userId, { rid, users: users.map((u) => u.username).filter(isTruthy) }, this.user);
 
 			const room = await Rooms.findOneById(rid, { projection: API.v1.defaultFieldsToExclude });
 

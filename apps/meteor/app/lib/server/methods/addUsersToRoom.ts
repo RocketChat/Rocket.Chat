@@ -13,7 +13,7 @@ import { addUserToRoom } from '../functions/addUserToRoom';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		addUsersToRoom(data: { rid: string; users: string[]; unbanBeforeAdd?: boolean }): boolean;
+		addUsersToRoom(data: { rid: string; users: string[] }): boolean;
 	}
 }
 
@@ -26,11 +26,7 @@ export const sanitizeUsername = (username: string) => {
 	return username.replace(/(^@)|( @)/, '');
 };
 
-export const addUsersToRoomMethod = async (
-	userId: string,
-	data: { rid: string; users: string[]; unbanBeforeAdd?: boolean },
-	user?: IUser,
-): Promise<boolean> => {
+export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
 	if (!userId) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 			method: 'addUsersToRoom',
@@ -101,13 +97,11 @@ export const addUsersToRoomMethod = async (
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (subscription && isBannedSubscription(subscription)) {
-				if (!data.unbanBeforeAdd) {
-					throw new Meteor.Error('error-user-is-banned', 'User is banned from this room', {
-						method: 'addUsersToRoom',
-					});
-				}
+				throw new Meteor.Error('error-user-is-banned', 'User is banned from this room', {
+					method: 'addUsersToRoom',
+				});
 			}
-			if (!subscription || isBannedSubscription(subscription)) {
+			if (!subscription) {
 				return addUserToRoom(data.rid, newUser, user);
 			}
 			if (!newUser.username) {
