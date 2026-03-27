@@ -17,3 +17,5 @@ const config: OauthConfig = {
 };
 
 export const Github = new CustomOAuth('github', config);
+
+console.log('Github');
