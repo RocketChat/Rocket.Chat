@@ -40,7 +40,42 @@ describe('useRoomToolboxActions', () => {
 		});
 		expect(result.current.featuredActions).toMatchObject(actions.filter((action) => action.featured));
 	});
+
+it('should return visibleActions sorted by order', () => {
+	const unorderedActions: RoomToolboxActionConfig[] = [
+		{
+			id: 'b',
+			title: 'B',
+			groups: ['channel'],
+			icon: undefined as unknown as RoomToolboxActionConfig['icon'],
+			order: 2,
+		},
+		{
+			id: 'a',
+			title: 'A',
+			groups: ['channel'],
+			icon: undefined as unknown as RoomToolboxActionConfig['icon'],
+			order: 1,
+		},
+		{
+			id: 'c',
+			title: 'C',
+			groups: ['channel'],
+			icon: undefined as unknown as RoomToolboxActionConfig['icon'],
+			order: 3,
+		},
+	];
+
+	const { result } = renderHook(() => useRoomToolboxActions({ actions: unorderedActions, openTab: () => undefined }), {
+		wrapper: mockAppRoot().build(),
+	});
+
+	const visibleIds = result.current.visibleActions.map((action) => action.id);
+
+	expect(visibleIds).toEqual(['a', 'b', 'c']);
 });
+});
+
 
 const appsActions: RoomToolboxActionConfig[] = [
 	{
@@ -168,3 +203,4 @@ const actions: RoomToolboxActionConfig[] = [
 		type: 'customization',
 	},
 ];
+
