@@ -351,9 +351,25 @@ it('should parse link correctly', () => {
 
 	const result = parseMessageTextToAstMarkdown(message, parseOptions, autoTranslateOptions);
 
-	// we check structure safely (because link AST may vary slightly)
-	expect(result.md).toBeDefined();
-	expect(result.md.length).toBeGreaterThan(0);
+	const expected: Root = [
+		{
+			type: 'PARAGRAPH',
+			value: [
+				{
+					type: 'LINK',
+					value: [
+						{
+							type: 'PLAIN_TEXT',
+							value: 'Google',
+						},
+					],
+					url: 'https://google.com',
+				},
+			],
+		},
+	];
+
+	expect(result.md).toStrictEqual(expected);
 });
 });
 
