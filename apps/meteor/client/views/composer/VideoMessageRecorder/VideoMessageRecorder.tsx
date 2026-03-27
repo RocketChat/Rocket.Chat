@@ -41,7 +41,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [time, setTime] = useState<string | undefined>();
+	const [time, setTime] = useState<string | undefined>('00:00');
 	const [recordingState, setRecordingState] = useState<'idle' | 'loading' | 'recording'>('idle');
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const isRecording = recordingState === 'recording';
@@ -85,10 +85,10 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 			const fileName = `${t('Video_record')}.${getVideoRecordingExtension()}`;
 			const file = new File([blob], fileName, { type: VideoRecorder.getSupportedMimeTypes().split(';')[0] });
 			await chat?.flows.uploadFiles({ files: [file] });
-			chat?.composer?.setRecordingVideo(false);
 		};
 
 		VideoRecorder.stop(cb);
+		chat?.composer?.setRecordingVideo(false);
 		setTime(undefined);
 		stopVideoRecording(rid, tmid);
 	};
