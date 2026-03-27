@@ -2638,10 +2638,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		const healthy = await mockServerHealthy();
 		expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
 
+		await updatePermission('abac-management', ['admin']);
+		await updateSetting('ABAC_Enabled', true);
+		await updateSetting('ABAC_PDP_Type', 'virtru');
 		await Promise.all([
-			updatePermission('abac-management', ['admin']),
-			updateSetting('ABAC_Enabled', true),
-			updateSetting('ABAC_PDP_Type', 'virtru'),
 			updateSetting('ABAC_Virtru_Base_URL', 'http://mock-server:8080'),
 			updateSetting('ABAC_Virtru_OIDC_Endpoint', 'http://mock-server:8080/auth/realms/mock'),
 			updateSetting('ABAC_Virtru_Client_ID', 'mock-client'),
@@ -2661,7 +2661,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	after(async function () {
 		this.timeout(10000);
 
-		await Promise.all([mockServerReset(), updateSetting('ABAC_PDP_Type', 'local'), updateSetting('ABAC_Enabled', false)]);
+		await mockServerReset();
+		await updateSetting('ABAC_PDP_Type', 'local');
+		await updateSetting('ABAC_Enabled', false);
 	});
 
 	describe('Full flow: create room → add users → set ABAC attributes → PDP evaluates', () => {

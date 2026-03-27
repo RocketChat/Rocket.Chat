@@ -207,7 +207,6 @@ jobs:
         working-directory: ./apps/meteor
         env:
           WEBHOOK_TEST_URL: 'http://httpbin'
-          MOCK_SERVER_URL: 'http://mock-server:8080'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           set -o xtrace
