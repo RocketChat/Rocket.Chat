@@ -1,6 +1,6 @@
 import type { INotificationDesktop } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Button, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
+import { AccordionItem, Button, Callout, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useUserPreference, useUser } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useId, useMemo, useState } from 'react';
@@ -84,7 +84,17 @@ const PreferencesNotificationsSection = () => {
 		return options;
 	}, [i18n, t, userEmailNotificationMode]);
 
-	const { control } = useFormContext();
+	const { control, watch } = useFormContext();
+
+	const pushNotificationsValue = watch('pushNotifications');
+	const emailNotificationModeValue = watch('emailNotificationMode');
+
+	const effectivePushValue = pushNotificationsValue === 'default' ? defaultMobileNotifications : pushNotificationsValue;
+	const effectiveEmailValue = emailNotificationModeValue === 'default' ? userEmailNotificationMode : emailNotificationModeValue;
+
+	const isPushEnabled = Boolean(effectivePushValue && effectivePushValue !== 'nothing');
+	const isEmailEnabled = Boolean(effectiveEmailValue && effectiveEmailValue !== 'nothing');
+	const showEmailDisablePrompt = isPushEnabled && isEmailEnabled && canChangeEmailNotification;
 
 	const notificationRequireId = useId();
 	const desktopNotificationsId = useId();
@@ -202,6 +212,11 @@ const PreferencesNotificationsSection = () => {
 						{canChangeEmailNotification && t('You_need_to_verifiy_your_email_address_to_get_notications')}
 						{!canChangeEmailNotification && t('Email_Notifications_Change_Disabled')}
 					</FieldHint>
+					{showEmailDisablePrompt && (
+						<Callout type='warning' marginBlockStart={8}>
+							{t('Push_notifications_are_enabled_disable_email')}
+						</Callout>
+					)}
 				</Field>
 				{showNewLoginEmailPreference && (
 					<Field>
