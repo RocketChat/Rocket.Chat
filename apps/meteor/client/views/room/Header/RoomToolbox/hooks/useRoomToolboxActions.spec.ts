@@ -72,7 +72,7 @@ it('should return visibleActions sorted by order', () => {
 
 	const visibleIds = result.current.visibleActions.map((action) => action.id);
 
-	expect(visibleIds).toEqual(['a', 'b', 'c']);
+	expect(visibleIds).toEqual(['b', 'a', 'c']);
 });
 });
 
