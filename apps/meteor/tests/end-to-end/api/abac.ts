@@ -2679,7 +2679,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			room = (await createRoom({ type: 'p', name: `extpdp-permit-${Date.now()}` })).body.group;
 
-			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
+			await request
+				.post('/api/v1/groups.invite')
+				.set(credentials)
+				.send({ roomId: room._id, usernames: [user.username] })
+				.expect(200);
 
 			await mockServerReset();
 			await seedDefaultMocks();
@@ -2741,7 +2745,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			room = (await createRoom({ type: 'p', name: `extpdp-deny-${Date.now()}` })).body.group;
 
-			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
+			await request
+				.post('/api/v1/groups.invite')
+				.set(credentials)
+				.send({ roomId: room._id, usernames: [user.username] })
+				.expect(200);
 
 			await mockServerReset();
 			await seedDefaultMocks();
@@ -2782,7 +2790,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			room = (await createRoom({ type: 'p', name: `extpdp-access-${Date.now()}` })).body.group;
 
-			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
+			await request
+				.post('/api/v1/groups.invite')
+				.set(credentials)
+				.send({ roomId: room._id, usernames: [user.username] })
+				.expect(200);
 
 			await mockServerReset();
 			await seedDefaultMocks();
@@ -2984,7 +2996,11 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			user = await createUser();
 
 			room = (await createRoom({ type: 'p', name: `extpdp-tighten-${Date.now()}` })).body.group;
-			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
+			await request
+				.post('/api/v1/groups.invite')
+				.set(credentials)
+				.send({ roomId: room._id, usernames: [user.username] })
+				.expect(200);
 
 			await mockServerReset();
 			await seedDefaultMocks();
