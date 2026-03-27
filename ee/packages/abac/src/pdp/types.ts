@@ -27,7 +27,7 @@ export interface IGetDecisionBulkRequest {
 	}>;
 }
 
-export type Decision = 'DECISION_PERMIT' | 'DECISION_DENY' | 'DECISION_UNKNOWN';
+export type Decision = 'DECISION_PERMIT' | 'DECISION_DENY' | 'DECISION_UNSPECIFIED';
 
 export interface IResourceDecision {
 	decision?: Decision;
