@@ -1,13 +1,20 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { AccordionItem } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldHint, FieldLabel, FieldLink, FieldRow, Select, ToggleSwitch } from '@rocket.chat/fuselage-forms';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 const PreferencesMessagesSection = () => {
 	const { t } = useTranslation();
 	const { control } = useFormContext();
+	// Remove id associations after `FieldLink` is added to fuselage-forms
+	const messageTimeFormatLabelId = useId();
+	const messageTimeFormatLinkId = useId();
+	const hideUsernamesLabelId = useId();
+	const hideUsernamesLinkId = useId();
+	const hideRolesLabelId = useId();
+	const hideRolesLinkId = useId();
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
 		(): SelectOption[] => [
@@ -65,8 +72,10 @@ const PreferencesMessagesSection = () => {
 					<FieldHint>{t('Accounts_Default_User_Preferences_alsoSendThreadToChannel_Description')}</FieldHint>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
-					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
+					<FieldLabel id={messageTimeFormatLabelId}>{t('Message_TimeFormat')}</FieldLabel>
+					<FieldLink id={messageTimeFormatLinkId} aria-labelledby={messageTimeFormatLabelId} href='/account/accessibility-and-appearance'>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldLink>
 				</Field>
 				<Field>
 					<FieldRow>
@@ -119,12 +128,16 @@ const PreferencesMessagesSection = () => {
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Hide_usernames')}</FieldLabel>
-					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
+					<FieldLabel id={hideUsernamesLabelId}>{t('Hide_usernames')}</FieldLabel>
+					<FieldLink id={hideUsernamesLinkId} aria-labelledby={hideUsernamesLabelId} href='/account/accessibility-and-appearance'>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldLink>
 				</Field>
 				<Field>
-					<FieldLabel>{t('Hide_roles')}</FieldLabel>
-					<FieldLink href='/account/accessibility-and-appearance'>{t('Go_to_accessibility_and_appearance')}</FieldLink>
+					<FieldLabel id={hideRolesLabelId}>{t('Hide_roles')}</FieldLabel>
+					<FieldLink id={hideRolesLinkId} aria-labelledby={hideRolesLabelId} href='/account/accessibility-and-appearance'>
+						{t('Go_to_accessibility_and_appearance')}
+					</FieldLink>
 				</Field>
 				<Field>
 					<FieldRow>
