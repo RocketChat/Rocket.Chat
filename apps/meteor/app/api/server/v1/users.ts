@@ -429,7 +429,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'users.info',
-	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
+	{ authRequired: true, userWithoutUsername: true, validateParams: isUsersInfoParamsGetProps },
 	{
 		async get() {
 			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
