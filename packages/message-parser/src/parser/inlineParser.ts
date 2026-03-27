@@ -1,11 +1,14 @@
-import type { Bold, Plain, UserMention, ChannelMention } from '../definitions';
+import type { Bold, Plain, UserMention, ChannelMention, Italic, InlineCode } from '../definitions';
 
-/** Returns true if the character at the given char code is a valid identifier character (a-z, A-Z, 0-9, dot) */
+/** Shared type for items that can appear inside inline markup (Bold, Italic) */
+type InlineContentItem = Bold['value'][number] | Italic['value'][number];
+
+/** Returns true if the character code represents a valid identifier character (a-z, A-Z, 0-9, dot) */
 function isIdentifierChar(c: number): boolean {
-    return (c >= 65 && c <= 90) ||  
-           (c >= 97 && c <= 122) || 
-           (c >= 48 && c <= 57) ||  
-           (c === 46);              
+    return (c >= 65 && c <= 90) ||  // A-Z
+           (c >= 97 && c <= 122) || // a-z
+           (c >= 48 && c <= 57) ||  // 0-9
+           (c === 46);              // dot
 }
 
 /** Consumes plain text until a stop character is encountered */
@@ -63,9 +66,10 @@ function parseChannelMention(input: string, pos: number): [ChannelMention | null
 /**
  * Consumes inline content items until the closing delimiter is reached.
  * Attempts to parse structured nodes (mentions) before falling back to plain text.
+ * Used by both parseBold and parseItalic.
  */
-function parseInlineContent(input: string, pos: number, closingDelimiter: string): [Bold['value'], number] {
-    const items: Bold['value'] = [];
+function parseInlineContent(input: string, pos: number, closingDelimiter: string): [InlineContentItem[], number] {
+    const items: InlineContentItem[] = [];
 
     while (pos < input.length) {
         // Stop when closing delimiter is found
@@ -88,7 +92,7 @@ function parseInlineContent(input: string, pos: number, closingDelimiter: string
         }
 
         // Consume plain text until next special character
-        const [plainText, newPos3] = parsePlainText(input, pos, ['*', '@', '#']);
+        const [plainText, newPos3] = parsePlainText(input, pos, ['*', '_', '@', '#', '`']);
         if (plainText !== null) {
             items.push(plainText);
             pos = newPos3;
@@ -124,5 +128,53 @@ export function parseBold(input: string, pos: number): [Bold | null, number] {
     if (!input.startsWith(delimiter, pos)) return [null, originalPos];
     pos += delimiter.length;
 
-    return [{ type: 'BOLD', value: items }, pos];
+    return [{ type: 'BOLD', value: items as Bold['value'] }, pos];
+}
+
+/**
+ * Parses italic markup in the form _text_ or __text__.
+ * Returns the Italic AST node and the position after the closing delimiter,
+ * or [null, originalPos] if the input does not match.
+ */
+export function parseItalic(input: string, pos: number): [Italic | null, number] {
+    const originalPos = pos;
+
+    if (input[pos] !== '_') return [null, pos];
+
+    // Determine delimiter: __ takes priority over _
+    const delimiter = input[pos + 1] === '_' ? '__' : '_';
+    pos += delimiter.length;
+
+    const [items, newPos] = parseInlineContent(input, pos, delimiter);
+    pos = newPos;
+
+    // Closing delimiter must be present for valid italic
+    if (!input.startsWith(delimiter, pos)) return [null, originalPos];
+    pos += delimiter.length;
+
+    return [{ type: 'ITALIC', value: items as Italic['value'] }, pos];
+}
+
+/**
+ * Parses inline code in the form `code`.
+ * Content is treated as plain text — no nested markup is parsed.
+ * Returns [null, originalPos] if no closing backtick is found.
+ */
+export function parseInlineCode(input: string, pos: number): [InlineCode | null, number] {
+    if (input[pos] !== '`') return [null, pos];
+    const originalPos = pos;
+    pos++;
+
+    let result = '';
+    while (pos < input.length) {
+        if (input[pos] === '`') break;
+        result += input[pos];
+        pos++;
+    }
+
+    // Closing backtick must be present for valid inline code
+    if (input[pos] !== '`') return [null, originalPos];
+    pos++;
+
+    return [{ type: 'INLINE_CODE', value: { type: 'PLAIN_TEXT', value: result } }, pos];
 }
