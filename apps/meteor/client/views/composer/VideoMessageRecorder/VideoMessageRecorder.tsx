@@ -114,12 +114,12 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 
 	return (
 		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
-			<Box bg='light' padding={4} borderRadius={4} elevation='2'>
+			<Box role='dialog' aria-label={t('Video_record')} bg='light' padding={4} borderRadius={4} elevation='2'>
 				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius={4}>
 					<video muted autoPlay playsInline ref={videoRef} width={320} height={240} />
 				</Box>
 				<Box mbs={4} display='flex' justifyContent='space-between'>
-					<Button small onClick={handleRecord}>
+					<Button aria-label={isRecording ? t('Stop_Recording') : t('Record')} small onClick={handleRecord}>
 						<Box is='span' display='flex' alignItems='center'>
 							<Icon size='x16' mie={time ? 4 : undefined} name={isRecording ? 'stop-unfilled' : 'rec'} />
 							{time && <span>{time}</span>}
