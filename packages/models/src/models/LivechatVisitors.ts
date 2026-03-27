@@ -369,7 +369,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.deleteOne({ _id });
 	}
 
-	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
+	async saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
 		const saveEmail = ([] as string[])
 			.concat(emails)
 			.filter((email) => email?.trim())
@@ -384,16 +384,22 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return Promise.resolve();
 		}
 
-		// the only reason we're using $setUnion here instead of $addToSet is because
-		// old visitors might have `visitorEmails` or `phone` as `null` which would cause $addToSet to fail
-		return this.updateOne({ _id }, [
+		if (saveEmail.length) {
+			await this.updateOne({ _id, visitorEmails: null as any }, { $set: { visitorEmails: [] } });
+		}
+		if (savePhone.length) {
+			await this.updateOne({ _id, phone: null }, { $set: { phone: [] } });
+		}
+
+		return this.updateOne(
+			{ _id },
 			{
-				$set: {
-					...(saveEmail.length && { visitorEmails: { $setUnion: [{ $ifNull: ['$visitorEmails', []] }, saveEmail] } }),
-					...(savePhone.length && { phone: { $setUnion: [{ $ifNull: ['$phone', []] }, savePhone] } }),
+				$addToSet: {
+					...(saveEmail.length && { visitorEmails: { $each: saveEmail } }),
+					...(savePhone.length && { phone: { $each: savePhone } }),
 				},
 			},
-		]);
+		);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {
