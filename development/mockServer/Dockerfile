@@ -4,8 +4,7 @@ COPY go.mod ./
 COPY main.go ./
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /mock-server .
 
-FROM alpine:3.21
-RUN apk add --no-cache wget
+FROM scratch
 COPY --from=build /mock-server /mock-server
 EXPOSE 8080
 ENTRYPOINT ["/mock-server"]

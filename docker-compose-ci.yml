@@ -207,7 +207,7 @@ services:
     ports:
       - 4000:8080
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8080/__mock/health"]
+      test: ["CMD", "/mock-server", "-healthcheck"]
       interval: 2s
       timeout: 5s
       retries: 5

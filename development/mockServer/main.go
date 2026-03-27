@@ -226,6 +226,18 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "-healthcheck" {
+		port := os.Getenv("PORT")
+		if port == "" {
+			port = "8080"
+		}
+		resp, err := http.Get("http://127.0.0.1:" + port + "/__mock/health")
+		if err != nil || resp.StatusCode != 200 {
+			os.Exit(1)
+		}
+		os.Exit(0)
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
