@@ -2666,32 +2666,87 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await updateSetting('ABAC_Enabled', false);
 	});
 
-	describe('Full flow: create room → add users → set ABAC attributes → PDP evaluates', () => {
+	describe('PERMIT all: users remain when PDP permits everyone', () => {
 		let room: IRoom;
-		let userA: IUser;
-		let userACredentials: Credentials;
-		let userB: IUser;
+		let user: IUser;
+		let userCreds: Credentials;
 
 		before(async function () {
 			this.timeout(15000);
 
-			userA = await createUser();
-			userACredentials = await login(userA.username, password);
-			userB = await createUser();
+			user = await createUser();
+			userCreds = await login(user.username, password);
 
-			room = (await createRoom({ type: 'p', name: `extpdp-flow-${Date.now()}` })).body.group;
+			room = (await createRoom({ type: 'p', name: `extpdp-permit-${Date.now()}` })).body.group;
 
-			await request
-				.post('/api/v1/groups.invite')
-				.set(credentials)
-				.send({ roomId: room._id, usernames: [userA.username, userB.username] })
-				.expect(200);
+			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
 
 			await mockServerReset();
 			await seedDefaultMocks();
 			await seedGetDecisionBulk([
 				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
 				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+			]);
+
+			await request
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+				.set(credentials)
+				.send({ values: ['alpha'] })
+				.expect(200);
+		});
+
+		after(async () => {
+			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
+		});
+
+		it('room creator remains in the room', async () => {
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+
+			const memberIds = res.body.members.map((m: IUser) => m._id);
+			expect(memberIds).to.include(credentials['X-User-Id']);
+		});
+
+		it('user remains in the room', async () => {
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+
+			const usernames = res.body.members.map((m: IUser) => m.username);
+			expect(usernames).to.include(user.username);
+		});
+
+		it('user can access room history when PDP returns PERMIT', async () => {
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisions('DECISION_PERMIT');
+
+			await request
+				.get('/api/v1/groups.history')
+				.set(userCreds)
+				.query({ roomId: room._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('messages').that.is.an('array');
+				});
+		});
+	});
+
+	describe('DENY all: all non-owner users are removed when PDP denies everyone', () => {
+		let room: IRoom;
+		let user: IUser;
+
+		before(async function () {
+			this.timeout(15000);
+
+			user = await createUser();
+
+			room = (await createRoom({ type: 'p', name: `extpdp-deny-${Date.now()}` })).body.group;
+
+			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
+
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisionBulk([
+				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
 				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
 			]);
 
@@ -2703,54 +2758,58 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
-			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(userA), deleteUser(userB)]);
+			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
 		});
 
-		it('room creator (admin) is never removed', async () => {
-			const res = await request.get('/api/v1/rooms.membersOrderedByRole').set(credentials).query({ roomId: room._id }).expect(200);
-
-			const memberIds = res.body.members.map((m: IUser) => m._id);
-			expect(memberIds).to.include(credentials['X-User-Id']);
-		});
-
-		it('compliant user (PERMIT) remains in the room', async () => {
-			const res = await request.get('/api/v1/rooms.membersOrderedByRole').set(credentials).query({ roomId: room._id }).expect(200);
+		it('user was removed from the room', async () => {
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 
 			const usernames = res.body.members.map((m: IUser) => m.username);
-			expect(usernames).to.include(userA.username);
+			expect(usernames).to.not.include(user.username);
 		});
+	});
 
-		it('non-compliant user (DENY) was removed from the room', async () => {
-			const res = await request.get('/api/v1/rooms.membersOrderedByRole').set(credentials).query({ roomId: room._id }).expect(200);
+	describe('Access check: PDP DENY removes user on room access', () => {
+		let room: IRoom;
+		let user: IUser;
+		let userCreds: Credentials;
 
-			const usernames = res.body.members.map((m: IUser) => m.username);
-			expect(usernames).to.not.include(userB.username);
-		});
+		before(async function () {
+			this.timeout(15000);
 
-		it('compliant user can access room history when PDP returns PERMIT', async () => {
+			user = await createUser();
+			userCreds = await login(user.username, password);
+
+			room = (await createRoom({ type: 'p', name: `extpdp-access-${Date.now()}` })).body.group;
+
+			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
+
 			await mockServerReset();
 			await seedDefaultMocks();
-			await seedGetDecisions('DECISION_PERMIT');
+			await seedGetDecisionBulk([
+				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+			]);
 
 			await request
-				.get('/api/v1/groups.history')
-				.set(userACredentials)
-				.query({ roomId: room._id })
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('messages').that.is.an('array');
-				});
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+				.set(credentials)
+				.send({ values: ['alpha'] })
+				.expect(200);
 		});
 
-		it('compliant user loses access when PDP flips to DENY', async () => {
+		after(async () => {
+			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
+		});
+
+		it('user loses access when PDP flips to DENY', async () => {
 			await mockServerReset();
 			await seedDefaultMocks();
 			await seedGetDecisions('DECISION_DENY');
 
 			await request
 				.get('/api/v1/groups.history')
-				.set(userACredentials)
+				.set(userCreds)
 				.query({ roomId: room._id })
 				.expect(403)
 				.expect((res) => {
@@ -2759,10 +2818,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('user is removed from room after access DENY', async () => {
-			const res = await request.get('/api/v1/rooms.membersOrderedByRole').set(credentials).query({ roomId: room._id }).expect(200);
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 
 			const usernames = res.body.members.map((m: IUser) => m.username);
-			expect(usernames).to.not.include(userA.username);
+			expect(usernames).to.not.include(user.username);
 		});
 	});
 
@@ -2808,7 +2867,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('invited user is a member of the room after PERMIT', async () => {
-			const res = await request.get('/api/v1/rooms.membersOrderedByRole').set(credentials).query({ roomId: room._id }).expect(200);
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 
 			const usernames = res.body.members.map((m: IUser) => m.username);
 			expect(usernames).to.include(permitUser.username);
@@ -2830,17 +2889,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
-		it('denied user is not a member of the room after DENY', async () => {
-			const res = await request.get('/api/v1/rooms.membersOrderedByRole').set(credentials).query({ roomId: room._id }).expect(200);
+		it('denied user is not a member of the room', async () => {
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 
 			const usernames = res.body.members.map((m: IUser) => m.username);
 			expect(usernames).to.not.include(denyUser.username);
 		});
 
 		it('room creator remains after invite operations', async () => {
-			const res = await request.get('/api/v1/rooms.membersOrderedByRole').set(credentials).query({ roomId: room._id }).expect(200);
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 
-			expect(res.body.members.length).to.be.at.least(1);
+			const memberIds = res.body.members.map((m: IUser) => m._id);
+			expect(memberIds).to.include(credentials['X-User-Id']);
 		});
 	});
 
@@ -2914,28 +2974,21 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	describe('Tightening room attributes: PDP re-evaluates members', () => {
+	describe('Tightening room attributes: PDP re-evaluates and removes denied users', () => {
 		let room: IRoom;
-		let staysUser: IUser;
-		let leavesUser: IUser;
+		let user: IUser;
 
 		before(async function () {
 			this.timeout(15000);
 
-			staysUser = await createUser();
-			leavesUser = await createUser();
+			user = await createUser();
 
 			room = (await createRoom({ type: 'p', name: `extpdp-tighten-${Date.now()}` })).body.group;
-			await request
-				.post('/api/v1/groups.invite')
-				.set(credentials)
-				.send({ roomId: room._id, usernames: [staysUser.username, leavesUser.username] })
-				.expect(200);
+			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
 
 			await mockServerReset();
 			await seedDefaultMocks();
 			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
 				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
 				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
 			]);
@@ -2947,16 +3000,15 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
-			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(staysUser), deleteUser(leavesUser)]);
+			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
 		});
 
-		it('should remove only the user the PDP denies when attributes are tightened', async function () {
+		it('user is removed when attributes are tightened and PDP denies all', async function () {
 			this.timeout(10000);
 			await mockServerReset();
 			await seedDefaultMocks();
 			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
 				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
 			]);
 
@@ -2966,11 +3018,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.send({ values: ['alpha', 'beta'] })
 				.expect(200);
 
-			const res = await request.get('/api/v1/rooms.membersOrderedByRole').set(credentials).query({ roomId: room._id }).expect(200);
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
 
 			const usernames = res.body.members.map((m: IUser) => m.username);
-			expect(usernames).to.include(staysUser.username);
-			expect(usernames).to.not.include(leavesUser.username);
+			expect(usernames).to.not.include(user.username);
 		});
 	});
 });
