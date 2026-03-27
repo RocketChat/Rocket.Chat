@@ -59,6 +59,10 @@ on:
         required: false
       CI_MONGO_URL:
         required: false
+      NETBIRD_SETUP_KEY:
+        required: false
+      NETBIRD_PSK:
+        required: false
       REPORTER_JIRA_ROCKETCHAT_API_KEY:
         required: false
       NPM_TOKEN:
@@ -158,6 +162,14 @@ jobs:
 
           # List loaded images
           docker images
+
+      - name: Connect to NetBird
+        if: secrets.CI_MONGO_URL != ''
+        uses: RocketChat/netbird-connect@main
+        with:
+          setup-key: ${{ secrets.NETBIRD_SETUP_KEY }}
+          preshared-key: ${{ secrets.NETBIRD_PSK }}
+          test-ip: ${{ vars.NETBIRD_TEST_IP }}
 
       - name: Configure external MongoDB URL
         env:
