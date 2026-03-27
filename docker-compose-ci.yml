@@ -200,6 +200,18 @@ services:
   httpbin:
     image: kong/httpbin
 
+  mock-server:
+    build:
+      context: ./development/mockServer
+      dockerfile: Dockerfile
+    ports:
+      - 4000:8080
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:8080/__mock/health"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
   traefik:
     image: traefik:v3.6.6
     command:
