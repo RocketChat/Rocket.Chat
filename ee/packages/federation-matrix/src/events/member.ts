@@ -416,7 +416,13 @@ async function handleMembershipRejected({
 
 	await Room.revokeInvite(room, user);
 
-	logger.info({ msg: 'Revoked invite due to rejected membership event', userId: user._id, roomId: room._id, membership: event.content.membership, reason });
+	logger.info({
+		msg: 'Revoked invite due to rejected membership event',
+		userId: user._id,
+		roomId: room._id,
+		membership: event.content.membership,
+		reason,
+	});
 }
 
 export function member() {
