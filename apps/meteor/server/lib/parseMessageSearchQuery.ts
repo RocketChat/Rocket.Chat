@@ -241,37 +241,39 @@ class MessageSearchQueryParser {
 	/**
 	 * Query in message text
 	 */
-	private consumeMessageText(text: string) {
-		text = text.trim().replace(/\s\s/g, ' ');
-
-		if (text === '') {
-			return text;
-		}
-
-		if (/^\/.+\/[imxs]*$/.test(text)) {
-			const r = text.split('/');
-			this.query.msg = {
-				$regex: r[1],
-				$options: r[2],
-			};
-		} else if (this.forceRegex) {
-			this.query.msg = {
-				$regex: text,
-				$options: 'i',
-			};
-		} else {
-			this.query.$text = {
-				$search: text,
-			};
-			this.options.projection = {
-				score: {
-					$meta: 'textScore',
-				},
-			};
-		}
-
-		return text;
+  /**
+ * Query in message text + attachments
+ */
+ private consumeMessageText(text: string) {
+	text = text.trim().replace(/\s\s+/g, ' ');
+	
+	if (!text || text.length < 2) {
+		delete this.query.$or;
+		return '';
 	}
+
+	if (/^\/.+\/[imxs]*$/.test(text)) {
+		const r = text.split('/');
+
+		this.query.$or = [
+			{ msg: { $regex: r[1], $options: r[2] } },
+			{ 'attachments.text': { $regex: r[1], $options: r[2] } },
+			{ 'attachments.title': { $regex: r[1], $options: r[2] } },
+			{ 'attachments.description': { $regex: r[1], $options: r[2] } },
+		];
+	} else {
+		const safeText = escapeRegExp(text);
+
+		this.query.$or = [
+			{ msg: { $regex: safeText, $options: 'i' } },
+			{ 'attachments.text': { $regex: safeText, $options: 'i' } },
+			{ 'attachments.title': { $regex: safeText, $options: 'i' } },
+			{ 'attachments.description': { $regex: safeText, $options: 'i' } },
+		];
+	}
+
+	return text;
+}
 
 	parse(text: string) {
 		[
