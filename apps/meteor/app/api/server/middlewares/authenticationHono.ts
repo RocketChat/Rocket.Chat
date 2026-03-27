@@ -1,7 +1,6 @@
 import { type IUser, type RequiredField } from '@rocket.chat/core-typings';
 import { type Logger } from '@rocket.chat/logger';
 import type { MiddlewareHandler } from 'hono';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings/server';
 import { applyBreakingChanges, type APIClass } from '../ApiClass';
@@ -39,7 +38,8 @@ export function authenticationMiddlewareForHono(
 		}
 
 		if (user && !options.userWithoutUsername && !isUserWithUsername(user)) {
-			throw new Meteor.Error('error-unauthorized', 'Users must have a username');
+			const result = api.unauthorized('Users must have a username');
+			return c.json(result.body, result.statusCode);
 		}
 
 		c.set('user', user);
