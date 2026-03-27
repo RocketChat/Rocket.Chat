@@ -68,7 +68,7 @@ export const useThreadListData = (): ThreadListData => {
 	const subscription = useRoomSubscription();
 	const subscribed = !!subscription;
 	const uid = useUserId();
-	const tunread = subscription?.tunread?.sort().join(',');
+	const tunread = subscription?.tunread ? [...subscription.tunread].sort().join(',') : undefined;
 	const text = useDebouncedValue(searchText, 400);
 	const options = useDebouncedValue(
 		useMemo(() => {
