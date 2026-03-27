@@ -63,7 +63,9 @@ jest.mock('@rocket.chat/core-services', () => {
 	const actual = jest.requireActual('@rocket.chat/core-services');
 	return {
 		...actual,
-		ServiceClass: class {},
+		ServiceClass: class {
+			onSettingChanged = jest.fn();
+		},
 		Room: {
 			removeUserFromRoom: jest.fn(),
 		},

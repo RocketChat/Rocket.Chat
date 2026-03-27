@@ -3,17 +3,21 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { PeerInfo } from '../context';
-import { useMediaCallExternalContext } from '../context';
+import { usePeekMediaSessionPeerInfo } from '../context/usePeekMediaSessionPeerInfo';
+import { usePeekMediaSessionState } from '../context/usePeekMediaSessionState';
+import { useWidgetExternalControls } from '../context/useWidgetExternalControls';
 
 export const useMediaCallAction = (
 	callee?: PeerInfo,
 ): { title: string; icon: IconNames; action: (callee?: PeerInfo) => void } | undefined => {
 	const { t } = useTranslation();
 
-	const { state, onToggleWidget, onEndCall, peerInfo } = useMediaCallExternalContext();
+	const { toggleWidget, endCall } = useWidgetExternalControls();
+	const state = usePeekMediaSessionState();
+	const peerInfo = usePeekMediaSessionPeerInfo();
 
 	return useMemo(() => {
-		if (state === 'unauthorized') {
+		if (state === 'unavailable') {
 			return undefined;
 		}
 
@@ -25,7 +29,7 @@ export const useMediaCallAction = (
 			return {
 				title: t('Voice_call__user__hangup', { user: getDisplayName(peerInfo) }),
 				icon: 'phone-off',
-				action: () => onEndCall(),
+				action: () => endCall(),
 			};
 		}
 
@@ -33,7 +37,7 @@ export const useMediaCallAction = (
 			return {
 				title: t('Voice_call__user__cancel', { user: getDisplayName(peerInfo) }),
 				icon: 'phone-off',
-				action: () => onEndCall(),
+				action: () => endCall(),
 			};
 		}
 
@@ -41,7 +45,7 @@ export const useMediaCallAction = (
 			return {
 				title: t('Voice_call__user__reject', { user: getDisplayName(peerInfo) }),
 				icon: 'phone-off',
-				action: () => onEndCall(),
+				action: () => endCall(),
 			};
 		}
 
@@ -49,14 +53,14 @@ export const useMediaCallAction = (
 			return {
 				title: t('Voice_call__user_', { user: getDisplayName(callee) }),
 				icon: 'phone',
-				action: () => onToggleWidget(callee),
+				action: () => toggleWidget(callee),
 			};
 		}
 
 		return {
 			title: t('New_voice_call'),
-			icon: 'dialpad',
-			action: () => onToggleWidget(),
+			icon: 'dialpad' as const,
+			action: () => toggleWidget(undefined),
 		};
-	}, [state, peerInfo, callee, t, onEndCall, onToggleWidget]);
+	}, [state, t, peerInfo, callee, toggleWidget, endCall]);
 };

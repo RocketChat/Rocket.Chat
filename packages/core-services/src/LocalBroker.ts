@@ -217,7 +217,7 @@ export class LocalBroker implements IBroker {
 					return reject(err);
 				}
 
-				for await (const service of Array.from(this.pendingServices)) {
+				for (const service of Array.from(this.pendingServices)) {
 					const serviceInstance = this.services.get(service);
 					if (serviceInstance) {
 						await this.startService(serviceInstance);

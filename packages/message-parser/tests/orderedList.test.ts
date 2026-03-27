@@ -1,9 +1,10 @@
 import { parse } from '../src';
-import { bold, plain, orderedList, listItem, emoji } from '../src/utils';
+import { bold, plain, orderedList, listItem, emoji } from './helpers';
 
 test.each([
 	[
 		`
+0. Zeroth item
 7. First item
 2. Second item
 8. Third item
@@ -13,6 +14,7 @@ test.each([
 `.trim(),
 		[
 			orderedList([
+				listItem([plain('Zeroth item')], 0),
 				listItem([plain('First item')], 7),
 				listItem([plain('Second item')], 2),
 				listItem([plain('Third item')], 8),

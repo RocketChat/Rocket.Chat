@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { image, paragraph, plain } from '../src/utils';
+import { image, paragraph, plain } from './helpers';
 
 test.each([
 	[

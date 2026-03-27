@@ -1,7 +1,7 @@
 import { Media } from '@rocket.chat/core-services';
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
-import { isEmojiCustomList } from '@rocket.chat/rest-typings';
+import { ajv, isEmojiCustomList, validateBadRequestErrorResponse, validateUnauthorizedErrorResponse } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { Meteor } from 'meteor/meteor';
 
@@ -11,6 +11,7 @@ import { insertOrUpdateEmoji } from '../../../emoji-custom/server/lib/insertOrUp
 import { uploadEmojiCustomWithBuffer } from '../../../emoji-custom/server/lib/uploadEmojiCustom';
 import { deleteEmojiCustom } from '../../../emoji-custom/server/methods/deleteEmojiCustom';
 import { settings } from '../../../settings/server';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { findEmojisCustom } from '../lib/emoji-custom';
@@ -29,11 +30,43 @@ function validateDateParam(paramName: string, paramValue: string | undefined): D
 	return date;
 }
 
-API.v1.addRoute(
-	'emoji-custom.list',
-	{ authRequired: true, validateParams: isEmojiCustomList },
-	{
-		async get() {
+const emojiListResponseSchema = ajv.compile({
+	type: 'object',
+	properties: {
+		emojis: {
+			type: 'object',
+			properties: {
+				update: { type: 'array', items: { type: 'object' } },
+				remove: { type: 'array', items: { type: 'object' } },
+			},
+			required: ['update', 'remove'],
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['emojis', 'success'],
+	additionalProperties: false,
+});
+
+const emojiDeleteBodySchema = ajv.compile({
+	type: 'object',
+	properties: { emojiId: { type: 'string' } },
+	required: ['emojiId'],
+	additionalProperties: false,
+});
+
+const emojiCustomCreateEndpoints = API.v1
+	.get(
+		'emoji-custom.list',
+		{
+			authRequired: true,
+			query: isEmojiCustomList,
+			response: {
+				200: emojiListResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { query } = await this.parseJsonQuery();
 			const { updatedSince, _updatedAt, _id } = this.queryParams;
 
@@ -70,14 +103,28 @@ API.v1.addRoute(
 				},
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'emoji-custom.all',
-	{ authRequired: true },
-	{
-		async get() {
+	)
+	.get(
+		'emoji-custom.all',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: {
+						emojis: { type: 'array', items: { type: 'object' } },
+						total: { type: 'number' },
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['emojis', 'total', 'count', 'offset', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, query } = await this.parseJsonQuery();
 			const { name } = this.queryParams;
@@ -100,19 +147,46 @@ API.v1.addRoute(
 				}),
 			);
 		},
-	},
-);
-
-API.v1.addRoute(
-	'emoji-custom.create',
-	{ authRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'emoji-custom.create',
+		{
+			authRequired: true,
+			response: {
+				400: ajv.compile({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [false] },
+						stack: { type: 'string' },
+						error: { type: 'string' },
+						errorType: { type: 'string' },
+						details: { type: 'string' },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
 			const emoji = await getUploadFormData(
 				{
 					request: this.request,
 				},
-				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize') },
+				{
+					field: 'emoji',
+					sizeLimit: settings.get('FileUpload_MaxFileSize'),
+				},
 			);
 
 			const { fields, fileBuffer, mimetype } = emoji;
@@ -142,14 +216,23 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'emoji-custom.update',
-	{ authRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'emoji-custom.update',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const emoji = await getUploadFormData(
 				{
 					request: this.request,
@@ -200,14 +283,24 @@ API.v1.addRoute(
 			}
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'emoji-custom.delete',
-	{ authRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'emoji-custom.delete',
+		{
+			authRequired: true,
+			body: emojiDeleteBodySchema,
+			response: {
+				200: ajv.compile({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { emojiId } = this.bodyParams;
 			if (!emojiId) {
 				return API.v1.failure('The "emojiId" params is required!');
@@ -217,5 +310,13 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
+	);
+
+type EmojiCustomCreateEndpoints = ExtractRoutesFromAPI<typeof emojiCustomCreateEndpoints>;
+
+export type EmojiCustomEndpoints = EmojiCustomCreateEndpoints;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends EmojiCustomCreateEndpoints {}
+}

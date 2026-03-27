@@ -1,12 +1,14 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
+import { Tracker } from 'meteor/tracker';
 import type { RefObject } from 'react';
 
 import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createComposerAPI = (
@@ -14,6 +16,7 @@ export const createComposerAPI = (
 	storageID: string,
 	quoteChainLimit: number,
 	composerRef: RefObject<HTMLElement>,
+	{ rid, tmid }: { rid: string; tmid?: string },
 ): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
@@ -230,11 +233,11 @@ export const createComposerAPI = (
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
+		const startPatternFound = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
 
 		if (startPatternFound) {
 			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
+			const endPatternFound = input.value.slice(selectionEnd, selectionEnd + endPattern.length) === endPattern;
 
 			if (endPatternFound) {
 				insertText(selectedText);
@@ -350,5 +353,6 @@ export const createComposerAPI = (
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
+		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };

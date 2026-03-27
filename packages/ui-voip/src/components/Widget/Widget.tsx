@@ -6,6 +6,7 @@ import { FocusScope } from 'react-aria';
 
 import { DragContext } from './WidgetDraggableContext';
 import { useDraggable } from '../../hooks';
+import { type LastKnownPosition } from '../../providers/useWidgetPositionTracker';
 
 // TODO: Initial position from the draggable api instead of style props
 // TODO: A11Y
@@ -30,10 +31,12 @@ const WidgetBase = styled('article')`
 
 type WidgetProps = {
 	children: ReactNode;
+	restorePosition?: LastKnownPosition | null;
+	onChangePosition?: (position: LastKnownPosition | null) => void;
 } & ComponentProps<typeof WidgetBase>;
 
-const Widget = ({ children, ...props }: WidgetProps) => {
-	const [draggableRef, boundingRef, handleRef] = useDraggable();
+const Widget = ({ children, onChangePosition, restorePosition, ...props }: WidgetProps) => {
+	const [draggableRef, boundingRef, handleRef] = useDraggable({ onChangePosition, restorePosition });
 
 	useLayoutEffect(() => {
 		boundingRef(document.body);

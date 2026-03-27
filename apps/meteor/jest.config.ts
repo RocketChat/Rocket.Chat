@@ -15,6 +15,7 @@ export default {
 				'<rootDir>/app/ui-message/client/**/**.spec.[jt]s?(x)',
 				'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
 				'<rootDir>/tests/unit/client/providers/**/*.spec.{ts,tsx}',
+				'<rootDir>/app/ui/client/**/**.spec.[jt]s?(x)',
 			],
 
 			moduleNameMapper: {
@@ -47,6 +48,7 @@ export default {
 				'<rootDir>/app/api/server/**.spec.ts',
 				'<rootDir>/app/api/server/helpers/**.spec.ts',
 				'<rootDir>/app/api/server/middlewares/**.spec.ts',
+				'<rootDir>/app/version-check/server/**/*.spec.ts',
 			],
 			coveragePathIgnorePatterns: ['/node_modules/'],
 		},

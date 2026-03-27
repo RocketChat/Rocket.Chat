@@ -1,6 +1,16 @@
 import { getUserInfo } from './getUserInfo';
 import type { CachedSettings } from '../../../settings/server/CachedSettings';
 
+const mockInfoVersion = jest.fn(() => '7.5.0');
+
+jest.mock('../../../utils/rocketchat.info', () => ({
+	Info: {
+		get version() {
+			return mockInfoVersion();
+		},
+	},
+}));
+
 jest.mock('@rocket.chat/models', () => ({
 	Users: {
 		findOneById: jest.fn().mockResolvedValue({
@@ -69,6 +79,11 @@ describe('getUserInfo', () => {
 				},
 			}),
 		);
+	});
+
+	it("should NOT return user preferences when 'pullPreferences' param is false", async () => {
+		const userInfo = await getUserInfo(user, false);
+		expect(userInfo.settings).not.toHaveProperty('preferences');
 	});
 
 	describe('email handling', () => {
@@ -191,6 +206,52 @@ describe('getUserInfo', () => {
 					Outlook_Url: 'https://outlook.office365.com/owa/#calendar/view/month',
 				},
 			});
+		});
+	});
+
+	describe('version update banner filtering', () => {
+		beforeEach(() => {
+			mockInfoVersion.mockReturnValue('7.5.0');
+		});
+
+		it('should filter out versionUpdate banners for versions <= current installed', async () => {
+			user.banners = {
+				'versionUpdate-6_2_0': {
+					id: 'versionUpdate-6_2_0',
+					priority: 10,
+					title: 'Update',
+					text: 'New version',
+					modifiers: [],
+					link: '',
+					read: false,
+				},
+			};
+			const userInfo = await getUserInfo(user);
+			expect(userInfo.banners).toEqual({});
+		});
+
+		it('should keep versionUpdate banners for versions > current installed', async () => {
+			user.banners = {
+				'versionUpdate-8_0_0': {
+					id: 'versionUpdate-8_0_0',
+					priority: 10,
+					title: 'Update',
+					text: 'New version',
+					modifiers: [],
+					link: '',
+					read: false,
+				},
+			};
+			const userInfo = await getUserInfo(user);
+			expect(userInfo.banners).toHaveProperty('versionUpdate-8_0_0');
+		});
+
+		it('should keep non-versionUpdate banners unchanged', async () => {
+			user.banners = {
+				'other-banner': { id: 'other-banner', priority: 10, title: 'Other', text: 'Other banner', modifiers: [], link: '', read: false },
+			};
+			const userInfo = await getUserInfo(user);
+			expect(userInfo.banners).toHaveProperty('other-banner');
 		});
 	});
 });

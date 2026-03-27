@@ -32,7 +32,7 @@ const handleInternalException = (err: unknown, msg: string): MeteorError => {
 	return new MeteorError(500, 'Internal server error');
 };
 
-export const SERVER_ID = ejson.stringify({ server_id: '0' });
+export const SERVER_ID = ejson.stringify({ msg: 'server_id', server_id: '0' });
 
 export class Server extends EventEmitter {
 	private _subscriptions = new Map<string, SubscriptionFn>();

@@ -1,4 +1,4 @@
-import type { IRoom, IUser, ITeam } from '@rocket.chat/core-typings';
+import type { IDirectoryChannelResult, IDirectoryUserResult } from '@rocket.chat/core-typings';
 
 import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -46,6 +46,6 @@ export const isDirectoryProps = ajv.compile<DirectoryProps>(DirectorySchema);
 
 export type DirectoryEndpoint = {
 	'/v1/directory': {
-		GET: (params: DirectoryProps) => PaginatedResult<{ result: (IUser | IRoom | ITeam)[] }>;
+		GET: (params: DirectoryProps) => PaginatedResult<{ result: (IDirectoryUserResult | IDirectoryChannelResult)[] }>;
 	};
 };
