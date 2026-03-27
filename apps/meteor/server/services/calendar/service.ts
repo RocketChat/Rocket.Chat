@@ -177,7 +177,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 	private async getMeetingUrl(eventData: Partial<ICalendarEvent>): Promise<string | undefined> {
 		if (eventData.meetingUrl !== undefined) {
-			return eventData.meetingUrl;
+			return eventData.meetingUrl || undefined;
 		}
 
 		if (eventData.description !== undefined) {
