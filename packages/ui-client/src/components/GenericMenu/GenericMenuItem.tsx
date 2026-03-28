@@ -1,4 +1,4 @@
-import { MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fuselage';
+import { Box, MenuItemColumn, MenuItemContent, MenuItemIcon, MenuItemInput } from '@rocket.chat/fuselage'; // 1. Added Box import
 import type { ComponentProps, MouseEvent, ReactNode } from 'react';
 
 export type GenericMenuItemProps = {
@@ -17,13 +17,18 @@ export type GenericMenuItemProps = {
 };
 
 const GenericMenuItem = ({ icon, iconColor, content, addon, status, gap, tooltip }: GenericMenuItemProps) => (
-	<>
-		{gap && <MenuItemColumn />}
-		{icon && <MenuItemIcon name={icon} color={iconColor} />}
-		{status && <MenuItemColumn>{status}</MenuItemColumn>}
-		{content && <MenuItemContent title={tooltip}>{content}</MenuItemContent>}
-		{addon && <MenuItemInput>{addon}</MenuItemInput>}
-	</>
+    <>
+        {gap && <MenuItemColumn />}
+        {/* 2. Wrap the icon in a flexbox container */}
+        {icon && (
+            <Box display='flex' alignItems='center' justifyContent='center' width='x20'>
+                <MenuItemIcon name={icon} color={iconColor} />
+            </Box>
+        )}
+        {status && <MenuItemColumn>{status}</MenuItemColumn>}
+        {content && <MenuItemContent title={tooltip}>{content}</MenuItemContent>}
+        {addon && <MenuItemInput>{addon}</MenuItemInput>}
+    </>
 );
 
 export default GenericMenuItem;
