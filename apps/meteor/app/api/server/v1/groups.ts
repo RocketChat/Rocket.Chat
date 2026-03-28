@@ -57,32 +57,44 @@ type GroupsHistoryProps = PaginatedRequest<
 		showThreadMessages?: string;
 	}
 >;
-const groupsHistoryPropsSchema = withGroupBaseProperties({
-	latest: {
-		type: 'string',
-	},
-	oldest: {
-		type: 'string',
-	},
-	inclusive: {
-		type: 'string',
-	},
-	unreads: {
-		type: 'string',
-	},
-	showThreadMessages: {
-		type: 'string',
-	},
-	count: {
-		type: 'integer',
-	},
-	offset: {
-		type: 'integer',
-	},
-	sort: {
-		type: 'string',
-	},
-});
+const groupsHistoryPropsSchema = {
+  type: 'object',
+  oneOf: [
+    {
+      type: 'object',
+      properties: {
+        roomId: { type: 'string' },
+        latest: { type: 'string' },
+        oldest: { type: 'string' },
+        inclusive: { type: 'string' },
+        unreads: { type: 'string' },
+        showThreadMessages: { type: 'string' },
+        count: { type: 'string' },
+        offset: { type: 'string' },
+        sort: { type: 'string' },
+      },
+      required: ['roomId'],
+      additionalProperties: false,
+    },
+    {
+      type: 'object',
+      properties: {
+        roomName: { type: 'string' },
+        latest: { type: 'string' },
+        oldest: { type: 'string' },
+        inclusive: { type: 'string' },
+        unreads: { type: 'string' },
+        showThreadMessages: { type: 'string' },
+        count: { type: 'string' },
+        offset: { type: 'string' },
+        sort: { type: 'string' },
+      },
+      required: ['roomName'],
+      additionalProperties: false,
+    },
+  ],
+} as const;
+
 const isGroupsHistoryProps = ajv.compile<GroupsHistoryProps>(groupsHistoryPropsSchema);
 
 const isGroupsHistoryResponse = ajv.compile({
