@@ -2973,10 +2973,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
-			await Promise.all([
-				request.post('/api/v1/rooms.delete').set(credentials).send({ roomId: room._id }),
-				deleteUser(user),
-			]);
+			await Promise.all([request.post('/api/v1/rooms.delete').set(credentials).send({ roomId: room._id }), deleteUser(user)]);
 		});
 
 		it('admin loses access after DENY-all', async () => {
@@ -3017,10 +3014,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
-			await Promise.all([
-				request.post('/api/v1/rooms.delete').set(credentials).send({ roomId: room._id }),
-				deleteUser(user),
-			]);
+			await Promise.all([request.post('/api/v1/rooms.delete').set(credentials).send({ roomId: room._id }), deleteUser(user)]);
 		});
 
 		it('tightening with DENY-all removes everyone', async function () {
