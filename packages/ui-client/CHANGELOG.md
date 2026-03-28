@@ -1,5 +1,27 @@
 # @rocket.chat/ui-client
 
+## 29.0.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-avatar@25.0.0-rc.1
+  - @rocket.chat/ui-contexts@29.0.0-rc.1
+  </details>
+
+## 29.0.0-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c, 43d0cfc6a70e8a31d5f3d24162216dae6b07efdd]:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.0-rc.0
+  - @rocket.chat/ui-avatar@25.0.0-rc.0
+  </details>
+
 ## 28.0.1
 
 ### Patch Changes
