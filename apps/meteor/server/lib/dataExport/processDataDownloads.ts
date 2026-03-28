@@ -200,7 +200,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 			}
 		}
 
-		const generatedFileName = uuidv4();
+		exportOperation.generatedFileName = exportOperation.generatedFileName ?? uuidv4();
 		const zipFolder = settings.get<string>('UserData_FileSystemZipPath')?.trim() || '/tmp/zipFiles';
 
 		if (exportOperation.status === 'downloading') {
@@ -208,7 +208,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 				await copyFileUpload(attachmentData, exportOperation.assetsPath);
 			}
 
-			const targetFile = joinPath(zipFolder, `${generatedFileName}.zip`);
+			const targetFile = joinPath(zipFolder, `${exportOperation.generatedFileName}.zip`);
 			await rm(targetFile, { force: true });
 
 			exportOperation.status = 'compressing';
@@ -217,7 +217,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 		if (exportOperation.status === 'compressing') {
 			await mkdir(zipFolder, { recursive: true });
 
-			exportOperation.generatedFile = joinPath(zipFolder, `${generatedFileName}.zip`);
+			exportOperation.generatedFile = joinPath(zipFolder, `${exportOperation.generatedFileName}.zip`);
 			try {
 				await access(exportOperation.generatedFile);
 			} catch (error) {

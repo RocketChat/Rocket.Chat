@@ -20,6 +20,7 @@ export interface IExportOperation extends IRocketChatRecord {
 	failReason?: string;
 	fileList: FileProp[];
 	generatedFile?: string;
+    generatedFileName?: string;
 	fileId: string;
 	userNameTable: Record<string, string>;
 	userData: IUser;
