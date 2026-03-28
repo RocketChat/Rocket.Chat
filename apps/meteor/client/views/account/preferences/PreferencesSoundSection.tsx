@@ -1,8 +1,20 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { AccordionItem, Field, FieldGroup, FieldHint, FieldLabel, FieldRow, Select, Slider, ToggleSwitch } from '@rocket.chat/fuselage';
+import {
+	AccordionItem,
+	Box,
+	Field,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	Select,
+	Slider,
+	ToggleSwitch,
+} from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useCustomSound, useTranslation } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
+import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 
 const PreferencesSoundSection = () => {
@@ -23,6 +35,11 @@ const PreferencesSoundSection = () => {
 	return (
 		<AccordionItem title={t('Sound')}>
 			<FieldGroup>
+				<VisuallyHidden>
+					<Box is='legend' aria-hidden={true}>
+						{t('Sound')}
+					</Box>
+				</VisuallyHidden>
 				<Field>
 					<FieldLabel is='span' aria-describedby={`${masterVolumeId}-hint`}>
 						{t('Master_volume')}
