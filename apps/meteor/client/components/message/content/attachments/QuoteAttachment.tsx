@@ -1,6 +1,5 @@
 import type { MessageQuoteAttachment } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
@@ -14,22 +13,7 @@ import AttachmentContent from './structure/AttachmentContent';
 import AttachmentDetails from './structure/AttachmentDetails';
 import AttachmentInner from './structure/AttachmentInner';
 
-// TODO: remove this team collaboration
-const quoteStyles = css`
-	.rcx-attachment__details {
-		.rcx-message-body {
-			color: ${Palette.text['font-default']};
-		}
-	}
-	&:hover,
-	&:focus {
-		.rcx-attachment__details {
-			background: ${Palette.surface['surface-hover']};
-			border-color: ${Palette.stroke['stroke-light']};
-			border-inline-start-color: ${Palette.stroke['stroke-medium']};
-		}
-	}
-`;
+
 
 type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
@@ -41,7 +25,7 @@ export const QuoteAttachment = ({ attachment }: QuoteAttachmentProps): ReactElem
 
 	return (
 		<>
-			<AttachmentContent className={quoteStyles} width='full'>
+			<AttachmentContent width='full'>
 				<AttachmentDetails
 					is='blockquote'
 					borderRadius='x2'
