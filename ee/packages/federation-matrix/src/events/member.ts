@@ -296,10 +296,9 @@ async function handleJoin({
 	const senderServerName = extractDomainFromMatrixUserId(userId);
 
 	// handle avatar updates to membership events
-	if (senderServerName !== federationSDK.getConfig('serverName')) {
-		// TODO if there is no avatar_url we may want to validate first if we should remove the user avatar because if may be dealing with an old join event, and the user may have changed their avatar since then, so we need to check if the avatar_url is different from the current one before removing it
-		void downloadAndSetAvatarDebounced(joiningUser._id, joiningUser, content.avatar_url || null);
-	}
+	if (senderServerName !== federationSDK.getConfig('serverName') && 'avatar_url' in content) {
+	    void downloadAndSetAvatarDebounced(joiningUser._id, joiningUser, content.avatar_url || null);
+}
 
 	// updates user name whenever we receive a join event, because Matrix sends a new join event with the updated display name whenever a user changes their display name
 	if ('displayname' in content && content.displayname !== joiningUser.name) {
