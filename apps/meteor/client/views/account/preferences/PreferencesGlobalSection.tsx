@@ -26,7 +26,14 @@ const PreferencesGlobalSection = () => {
 							name='dontAskAgainList'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<MultiSelect id={dontAskAgainListId} placeholder={t('Nothing_found')} value={value} onChange={onChange} options={options} />
+								<MultiSelect
+									id={dontAskAgainListId}
+									placeholder={t('Nothing_found')}
+									customEmpty={t('Nothing_found')}
+									value={value}
+									onChange={onChange}
+									options={options}
+								/>
 							)}
 						/>
 					</FieldRow>
