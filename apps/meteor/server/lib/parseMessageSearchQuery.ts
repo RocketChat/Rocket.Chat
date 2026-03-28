@@ -245,34 +245,39 @@ class MessageSearchQueryParser {
  * Query in message text + attachments
  */
  private consumeMessageText(text: string) {
-	text = text.trim().replace(/\s\s+/g, ' ');
-	
-	if (!text || text.length < 2) {
-		delete this.query.$or;
-		return '';
-	}
+    text = text.trim().replace(/\s\s+/g, ' ');
 
-	if (/^\/.+\/[imxs]*$/.test(text)) {
-		const r = text.split('/');
+    if (!text) {
+        delete this.query.$or;
+        return '';
+    }
 
-		this.query.$or = [
-			{ msg: { $regex: r[1], $options: r[2] } },
-			{ 'attachments.text': { $regex: r[1], $options: r[2] } },
-			{ 'attachments.title': { $regex: r[1], $options: r[2] } },
-			{ 'attachments.description': { $regex: r[1], $options: r[2] } },
-		];
-	} else {
-		const safeText = escapeRegExp(text);
+    let regex;
+    let options = 'i';
 
-		this.query.$or = [
-			{ msg: { $regex: safeText, $options: 'i' } },
-			{ 'attachments.text': { $regex: safeText, $options: 'i' } },
-			{ 'attachments.title': { $regex: safeText, $options: 'i' } },
-			{ 'attachments.description': { $regex: safeText, $options: 'i' } },
-		];
-	}
+    // Case 1: /pattern/flags
+    if (/^\/.+\/[imxs]*$/.test(text)) {
+        const r = text.split('/');
+        regex = r[1];
+        options = r[2];
+    }
+    // Case 2: forceRegex enabled
+    else if (this.forceRegex) {
+        regex = text;
+    }
+    // Case 3: normal search
+    else {
+        regex = escapeRegExp(text);
+    }
 
-	return text;
+    this.query.$or = [
+        { msg: { $regex: regex, $options: options } },
+        { 'attachments.text': { $regex: regex, $options: options } },
+        { 'attachments.title': { $regex: regex, $options: options } },
+        { 'attachments.description': { $regex: regex, $options: options } },
+    ];
+
+    return text;
 }
 
 	parse(text: string) {
