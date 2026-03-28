@@ -47,7 +47,10 @@ const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, faile
 };
 
 export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
-	const whitelist = String(settings.get('Block_Multiple_Failed_Logins_Ip_Whitelist')).split(',');
+	const whitelist = String(settings.get('Block_Multiple_Failed_Logins_Ip_Whitelist'))
+		.split(',')
+		.map((entry) => entry.trim())
+		.filter(Boolean);
 
 	if (
 		!settings.get('Block_Multiple_Failed_Logins_Enabled') ||
