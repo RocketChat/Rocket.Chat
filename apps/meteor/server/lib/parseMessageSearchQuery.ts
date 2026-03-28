@@ -252,33 +252,32 @@ class MessageSearchQueryParser {
     return '';
   }
 
+  let regex: string;
+  let options = 'i';
+
   const match = text.match(/^\/(.+)\/([imxs]*)$/);
 
   if (match) {
-    const regex = match[1];
-    const options = match[2];
-
-    this.query.$or = [
-      { msg: { $regex: regex, $options: options } },
-      { 'attachments.text': { $regex: regex, $options: options } },
-      { 'attachments.title': { $regex: regex, $options: options } },
-      { 'attachments.description': { $regex: regex, $options: options } },
-    ];
-
-    return text;
+    regex = match[1];
+    options = match[2];
   }
-
-  const safeText = escapeRegExp(text);
-
+  else if (this.forceRegex) {
+    regex = text; 
+  }
+  else {
+    regex = escapeRegExp(text);
+  }
   this.query.$or = [
-    { msg: { $regex: safeText, $options: 'i' } },
-    { 'attachments.text': { $regex: safeText, $options: 'i' } },
-    { 'attachments.title': { $regex: safeText, $options: 'i' } },
-    { 'attachments.description': { $regex: safeText, $options: 'i' } },
+    { msg: { $regex: regex, $options: options } },
+    { 'attachments.text': { $regex: regex, $options: options } },
+    { 'attachments.title': { $regex: regex, $options: options } },
+    { 'attachments.description': { $regex: regex, $options: options } },
   ];
 
   return text;
 }
+
+
 	parse(text: string) {
 		[
 			(input: string) => this.consumeFrom(input),
