@@ -1,4 +1,4 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesAction, StatesActions, ButtonGroup, Button, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -65,7 +65,15 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps): Re
 					{!calendarListResult.isPending && total === 0 && (
 						<States>
 							<StatesIcon name='calendar' />
-							<StatesTitle>{t('No_history')}</StatesTitle>
+							<StatesTitle>{t('No_events_for_today')}</StatesTitle>
+							<StatesSubtitle>{t('Take_a_break_or_create_an_event_to_get_started')}</StatesSubtitle>
+							{outlookUrl && (
+								<StatesActions>
+									<StatesAction icon='new-window' onClick={() => window.open(outlookUrl, '_blank')}>
+										{t('Create_Event')}
+									</StatesAction>
+								</StatesActions>
+							)}
 						</States>
 					)}
 					{calendarListResult.isSuccess && calendarListResult.data.length > 0 && (
