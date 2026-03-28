@@ -100,6 +100,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 				key: { active: 1, lastLogin: 1 },
 				partialFilterExpression: { active: true, lastLogin: { $exists: true } },
 			},
+			{
+				key: { active: 1, lastLogin: 1 },
+				partialFilterExpression: { active: false },
+			}
 		];
 	}
 
@@ -564,26 +568,26 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 
 		const departmentFilter = department
 			? [
-					{
-						$lookup: {
-							from: 'rocketchat_livechat_department_agents',
-							let: { userId: '$_id' },
-							pipeline: [
-								{
-									$match: {
-										$expr: {
-											$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', department] }],
-										},
+				{
+					$lookup: {
+						from: 'rocketchat_livechat_department_agents',
+						let: { userId: '$_id' },
+						pipeline: [
+							{
+								$match: {
+									$expr: {
+										$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', department] }],
 									},
 								},
-							],
-							as: 'department',
-						},
+							},
+						],
+						as: 'department',
 					},
-					{
-						$match: { department: { $size: 1 } },
-					},
-				]
+				},
+				{
+					$match: { department: { $size: 1 } },
+				},
+			]
 			: [];
 
 		const aggregate: Document[] = [
@@ -644,26 +648,26 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 		const departmentFilter = department
 			? [
-					{
-						$lookup: {
-							from: 'rocketchat_livechat_department_agents',
-							let: { userId: '$_id' },
-							pipeline: [
-								{
-									$match: {
-										$expr: {
-											$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', department] }],
-										},
+				{
+					$lookup: {
+						from: 'rocketchat_livechat_department_agents',
+						let: { userId: '$_id' },
+						pipeline: [
+							{
+								$match: {
+									$expr: {
+										$and: [{ $eq: ['$$userId', '$agentId'] }, { $eq: ['$departmentId', department] }],
 									},
 								},
-							],
-							as: 'department',
-						},
+							},
+						],
+						as: 'department',
 					},
-					{
-						$match: { department: { $size: 1 } },
-					},
-				]
+				},
+				{
+					$match: { department: { $size: 1 } },
+				},
+			]
 			: [];
 
 		const aggregate: Document[] = [
@@ -763,23 +767,23 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 					},
 					...(departmentId
 						? {
-								'queueInfo.chatsForDepartment': {
-									$size: {
-										$filter: {
-											input: '$subs',
-											as: 'sub',
-											cond: {
-												$and: [
-													{ $eq: ['$$sub.t', 'l'] },
-													{ $eq: ['$$sub.open', true] },
-													{ $ne: ['$$sub.onHold', true] },
-													{ $eq: ['$$sub.department', departmentId] },
-												],
-											},
+							'queueInfo.chatsForDepartment': {
+								$size: {
+									$filter: {
+										input: '$subs',
+										as: 'sub',
+										cond: {
+											$and: [
+												{ $eq: ['$$sub.t', 'l'] },
+												{ $eq: ['$$sub.open', true] },
+												{ $ne: ['$$sub.onHold', true] },
+												{ $eq: ['$$sub.department', departmentId] },
+											],
 										},
 									},
 								},
-							}
+							},
+						}
 						: {}),
 				},
 			},
@@ -2980,15 +2984,15 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update: UpdateFilter<IUser> = {
 			...(bio.trim()
 				? {
-						$set: {
-							bio,
-						},
-					}
+					$set: {
+						bio,
+					},
+				}
 				: {
-						$unset: {
-							bio: 1,
-						},
-					}),
+					$unset: {
+						bio: 1,
+					},
+				}),
 		};
 		return this.updateOne({ _id }, update);
 	}
@@ -2997,15 +3001,15 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		const update: UpdateFilter<IUser> = {
 			...(nickname.trim()
 				? {
-						$set: {
-							nickname,
-						},
-					}
+					$set: {
+						nickname,
+					},
+				}
 				: {
-						$unset: {
-							nickname: 1,
-						},
-					}),
+					$unset: {
+						nickname: 1,
+					},
+				}),
 		};
 		return this.updateOne({ _id }, update);
 	}
