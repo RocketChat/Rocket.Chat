@@ -2,42 +2,44 @@ import { Contextualbar } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
-import RoomFiles from './RoomFiles';
+import DiscussionsList from './DiscussionsList';
 
 export default {
-	component: RoomFiles,
+	component: DiscussionsList,
 	parameters: {
 		layout: 'fullscreen',
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
 	args: {
-		type: 'all',
 		text: '',
 		loadMoreItems: action('loadMoreItems'),
-		setText: action('setText'),
-		setType: action('setType'),
 	},
-} satisfies Meta<typeof RoomFiles>;
+} satisfies Meta<typeof DiscussionsList>;
 
-const Template: StoryFn<typeof RoomFiles> = (args) => <RoomFiles {...args} />;
+const Template: StoryFn<typeof DiscussionsList> = (args) => <DiscussionsList {...args} />;
 
-const fakeItems = Array.from({ length: 10 }, (_, i) => ({
+const fakeDiscussions = Array.from({ length: 10 }, (_, i) => ({
 	_id: String(i),
-	name: `File ${i}`,
-	url: '#',
-	uploadedAt: new Date(),
-	user: {
-		_id: 'rocket.cat',
-		username: 'rocket.cat',
+	msg: `Discussion ${i}`,
+	ts: new Date('2024-01-01T00:00:00Z'),
+	username: 'user.name',
+	dcount: 5,
+	dlm: new Date('2024-01-01T00:00:00Z'),
+	drid: `drid-${i}`,
+	rid: 'roomId',
+	_updatedAt: new Date('2024-01-01T00:00:00Z'),
+	u: {
+		_id: 'user-id',
+		username: 'user.name',
 	},
 }));
 
 export const Default = Template.bind({});
 Default.args = {
-	filesItems: fakeItems,
-	total: fakeItems.length,
 	isSuccess: true,
+	discussions: fakeDiscussions,
+	itemCount: fakeDiscussions.length,
 };
 
 export const Loading = Template.bind({});
@@ -48,6 +50,6 @@ Loading.args = {
 export const Empty = Template.bind({});
 Empty.args = {
 	isSuccess: true,
-	filesItems: [],
-	total: 0,
+	discussions: [],
+	itemCount: 0,
 };
