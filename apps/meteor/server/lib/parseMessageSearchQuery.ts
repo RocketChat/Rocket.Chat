@@ -247,13 +247,11 @@ class MessageSearchQueryParser {
  private consumeMessageText(text: string) {
   text = text.trim().replace(/\s\s+/g, ' ');
 
-  // Prevent expensive small queries
   if (!text || text.length < 2) {
     delete this.query.$or;
     return '';
   }
 
-  // Case 1: Explicit regex (/pattern/flags)
   const match = text.match(/^\/(.+)\/([imxs]*)$/);
 
   if (match) {
@@ -270,7 +268,6 @@ class MessageSearchQueryParser {
     return text;
   }
 
-  // Case 2: Normal search (also regex-based)
   const safeText = escapeRegExp(text);
 
   this.query.$or = [
