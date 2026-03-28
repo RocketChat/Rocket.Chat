@@ -152,7 +152,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 								return;
 							}
 							const progress = (event.loaded / event.total) * 100;
-							this.updateUpload(id, { percentage: Math.round(progress) || 0 });
+							this.updateUpload(id, { percentage: Math.min(Math.round(progress), 99) || 0 });
 						},
 						error: (event) => {
 							this.updateUpload(id, { percentage: 0, error: new Error(xhr.responseText) });
@@ -175,7 +175,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 
 						if (xhr.status === 200) {
 							const result = JSON.parse(xhr.responseText);
-							this.updateUpload(id, { id: result.file._id, url: result.file.url });
+							this.updateUpload(id, { id: result.file._id, url: result.file.url, percentage: 100 });
 							return;
 						}
 

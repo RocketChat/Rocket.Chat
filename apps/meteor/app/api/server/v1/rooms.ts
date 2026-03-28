@@ -1,6 +1,5 @@
 import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
-import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
+import { type IRoom, type IUpload, type RequiredField, isPrivateRoom, isPublicRoom, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
@@ -9,6 +8,9 @@ import {
 	isGETRoomsNameExists,
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
+	isRoomsBanUserProps,
+	isRoomsUnbanUserProps,
+	isRoomsBannedUsersProps,
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
@@ -26,6 +28,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { adminFields } from '../../../../lib/rooms/adminFields';
 import { omit } from '../../../../lib/utils/omit';
+import { banUserFromRoomMethod } from '../../../../server/lib/banUserFromRoom';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
@@ -42,6 +45,7 @@ import { saveRoomSettings } from '../../../channel-settings/server/methods/saveR
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
+import { executeUnbanUserFromRoom } from '../../../lib/server/functions/executeUnbanUserFromRoom';
 import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
 import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { cleanRoomHistoryMethod } from '../../../lib/server/methods/cleanRoomHistory';
@@ -1037,6 +1041,36 @@ const isRoomsLeavePropsSchema = {
 
 const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
 const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+const roomsBannedUsersResponseSchema = ajv.compile<{
+	success: true;
+	bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		bannedUsers: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					username: { type: 'string' },
+					name: { type: 'string' },
+				},
+				required: ['_id', 'username'],
+				additionalProperties: false,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+	},
+	required: ['success', 'bannedUsers', 'count', 'offset', 'total'],
+	additionalProperties: false,
+});
 
 export const roomEndpoints = API.v1
 	.get(
@@ -1247,8 +1281,100 @@ export const roomEndpoints = API.v1
 
 			return API.v1.success();
 		},
-	);
+	)
+	.post(
+		'rooms.banUser',
+		{
+			authRequired: true,
+			body: isRoomsBanUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
 
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await banUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.unbanUser',
+		{
+			authRequired: true,
+			body: isRoomsUnbanUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams, true);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await executeUnbanUserFromRoom(this.bodyParams.roomId, user, this.user);
+
+			return API.v1.success();
+		},
+	)
+	.get(
+		'rooms.bannedUsers',
+		{
+			authRequired: true,
+			query: isRoomsBannedUsersProps,
+			response: {
+				200: roomsBannedUsersResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.queryParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const { cursor, totalCount } = Subscriptions.findPaginated({ rid: roomId, status: 'BANNED' as const }, { offset, count });
+
+			const [bannedSubs, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			const userIds = bannedSubs.map((sub) => sub.u._id);
+			const users = await Users.find<RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>>(
+				{ _id: { $in: userIds } },
+				{ projection: { username: 1, name: 1 } },
+			).toArray();
+
+			return API.v1.success({
+				bannedUsers: users,
+				count: users.length,
+				offset,
+				total,
+			});
+		},
+	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
 	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
