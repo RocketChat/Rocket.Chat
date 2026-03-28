@@ -4,8 +4,8 @@ import type { IUser } from './IUser';
 import type { RoomType } from './RoomType';
 
 export interface IExportOperation extends IRocketChatRecord {
-	roomList?: (
-		| {
+	roomList?:
+        {
 				roomId: string;
 				roomName: string;
 				userId: string | undefined;
@@ -13,9 +13,7 @@ export interface IExportOperation extends IRocketChatRecord {
 				status: 'pending' | 'exporting'| 'completed';
 				type: RoomType;
 				targetFile: string;
-		  }
-		| Record<string, never>
-	)[];
+		  }	[];
 	status: 'pending' | 'preparing' | 'exporting-rooms' | 'exporting' | 'downloading' | 'compressing' | 'uploading' | 'completed' | 'skipped' | 'failed';
 	failReason?: string;
 	fileList: FileProp[];
