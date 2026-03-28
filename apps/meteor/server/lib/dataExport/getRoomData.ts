@@ -14,12 +14,12 @@ export const getRoomData = async (
 			type: RoomType;
 			targetFile: string;
 	  }
-	| Record<string, never>
+	| null
 > => {
 	const roomData = await Rooms.findOneById(roomId);
 
 	if (!roomData) {
-		return {};
+		return null;
 	}
 
 	const roomName = roomData.name && roomData.t !== 'd' ? roomData.name : roomId;

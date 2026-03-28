@@ -20,8 +20,8 @@ import { sendEmail } from './sendEmail';
 import { uploadZipFile } from './uploadZipFile';
 
 const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileType: 'json' | 'html', userId: IUser['_id']) => {
-	const roomList: (
-		| {
+	const roomList: 
+	{
 				roomId: string;
 				roomName: string;
 				userId: string | undefined;
@@ -29,13 +29,14 @@ const loadUserSubscriptions = async (_exportOperation: IExportOperation, fileTyp
 				status: 'pending' | 'exporting' | 'completed';
 				type: RoomType;
 				targetFile: string;
-		  }
-		| Record<string, never>
-	)[] = [];
+	}[] = [];
 
 	const cursor = Subscriptions.findByUserId(userId);
 	for await (const subscription of cursor) {
 		const roomData = await getRoomData(subscription.rid, userId);
+		if (!roomData) {
+			continue;
+		}
 		roomData.targetFile = `${(fileType === 'json' && roomData.roomName) || subscription.rid}.${fileType}`;
 
 		roomList.push(roomData);

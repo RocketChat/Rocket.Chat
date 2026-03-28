@@ -10,4 +10,5 @@ export interface IExportOperationsModel extends IBaseModel<IExportOperation> {
 	findAllPendingBeforeMyRequest(requestDay: Date): FindCursor<IExportOperation>;
 	updateOperation(data: IExportOperation): Promise<UpdateResult>;
 	countAllPendingBeforeMyRequest(requestDay: Date): Promise<number>;
+	markAsSkipped(id: IExportOperation['_id']): Promise<UpdateResult>;
 }

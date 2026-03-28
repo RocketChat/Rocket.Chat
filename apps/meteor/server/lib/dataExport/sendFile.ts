@@ -33,7 +33,10 @@ export const sendFile = async (data: ExportFile, user: IUser): Promise<void> => 
 	await mkdir(assetsPath, { recursive: true });
 
 	const roomData = await getRoomData(data.rid);
-
+	if (!roomData) {
+		throw new Error(`Room not found: ${data.rid}`);
+	}
+	
 	roomData.targetFile = `${(data.format === 'json' && roomData.roomName) || roomData.roomId}.${data.format}`;
 
 	const fullFileList: any[] = [];
