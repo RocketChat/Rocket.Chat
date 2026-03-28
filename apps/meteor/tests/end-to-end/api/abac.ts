@@ -2734,49 +2734,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	describe('DENY all: all non-owner users are removed when PDP denies everyone', () => {
-		let room: IRoom;
-		let user: IUser;
-
-		before(async function () {
-			this.timeout(15000);
-
-			user = await createUser();
-
-			room = (await createRoom({ type: 'p', name: `extpdp-deny-${Date.now()}` })).body.group;
-
-			await request
-				.post('/api/v1/groups.invite')
-				.set(credentials)
-				.send({ roomId: room._id, usernames: [user.username] })
-				.expect(200);
-
-			await mockServerReset();
-			await seedDefaultMocks();
-			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
-				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
-			]);
-
-			await request
-				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
-				.set(credentials)
-				.send({ values: ['alpha'] })
-				.expect(200);
-		});
-
-		after(async () => {
-			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
-		});
-
-		it('user was removed from the room', async () => {
-			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
-
-			const usernames = res.body.members.map((m: IUser) => m.username);
-			expect(usernames).to.not.include(user.username);
-		});
-	});
-
 	describe('Access check: PDP DENY removes user on room access', () => {
 		let room: IRoom;
 		let user: IUser;
@@ -2986,7 +2943,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	describe('Tightening room attributes: PDP re-evaluates and removes denied users', () => {
+	describe('DENY all on attribute set, then lighten to recover', () => {
 		let room: IRoom;
 		let user: IUser;
 
@@ -2994,13 +2951,56 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			this.timeout(15000);
 
 			user = await createUser();
+			room = (await createRoom({ type: 'p', name: `extpdp-denyall-${Date.now()}` })).body.group;
+			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
 
-			room = (await createRoom({ type: 'p', name: `extpdp-tighten-${Date.now()}` })).body.group;
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisionBulk([
+				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
+				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
+			]);
+
 			await request
-				.post('/api/v1/groups.invite')
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
 				.set(credentials)
-				.send({ roomId: room._id, usernames: [user.username] })
+				.send({ values: ['alpha'] })
 				.expect(200);
+		});
+
+		after(async () => {
+			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
+		});
+
+		it('admin loses access after DENY-all', async () => {
+			await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(400);
+		});
+
+		it('admin can re-join after removing ABAC attributes and PDP returns PERMIT', async () => {
+			await request.delete(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`).set(credentials).expect(200);
+
+			await mockServerReset();
+			await seedDefaultMocks();
+			await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
+
+			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, userId: credentials['X-User-Id'] }).expect(200);
+
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+			const memberIds = res.body.members.map((m: IUser) => m._id);
+			expect(memberIds).to.include(credentials['X-User-Id']);
+		});
+	});
+
+	describe('Tightening attributes: DENY all then recover', () => {
+		let room: IRoom;
+		let user: IUser;
+
+		before(async function () {
+			this.timeout(15000);
+
+			user = await createUser();
+			room = (await createRoom({ type: 'p', name: `extpdp-tighten-${Date.now()}` })).body.group;
+			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, usernames: [user.username] }).expect(200);
 
 			await mockServerReset();
 			await seedDefaultMocks();
@@ -3019,7 +3019,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
 		});
 
-		it('user is removed when attributes are tightened and PDP denies all', async function () {
+		it('tightening with DENY-all removes everyone', async function () {
 			this.timeout(10000);
 			await mockServerReset();
 			await seedDefaultMocks();
@@ -3034,10 +3034,20 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.send({ values: ['alpha', 'beta'] })
 				.expect(200);
 
-			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+			await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(400);
+		});
 
-			const usernames = res.body.members.map((m: IUser) => m.username);
-			expect(usernames).to.not.include(user.username);
+		it('lightening attributes and PERMIT allows admin to re-join', async () => {
+			await request.delete(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`).set(credentials).expect(200);
+
+			await mockServerReset();
+			await seedDefaultMocks();
+
+			await request.post('/api/v1/groups.invite').set(credentials).send({ roomId: room._id, userId: credentials['X-User-Id'] }).expect(200);
+
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+			const memberIds = res.body.members.map((m: IUser) => m._id);
+			expect(memberIds).to.include(credentials['X-User-Id']);
 		});
 	});
 });
