@@ -580,6 +580,12 @@ export const createAccountSettings = () =>
 				i18nLabel: 'Display_Avatars_Sidebar',
 			});
 
+			await this.add('Accounts_Default_User_Preferences_askConfirmMentionAll', true, {
+				type: 'boolean',
+				public: true,
+				i18nLabel: 'Ask_confirmation_before_mention_all',
+			});
+
 			await this.add('Accounts_Default_User_Preferences_sidebarShowUnread', false, {
 				type: 'boolean',
 				public: true,

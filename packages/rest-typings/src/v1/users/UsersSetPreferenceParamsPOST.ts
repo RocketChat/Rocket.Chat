@@ -40,6 +40,7 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		muteFocusedConversations?: boolean;
+		askConfirmMentionAll?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
 		themeAppearence?: ThemePreference;
@@ -199,6 +200,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				muteFocusedConversations: {
+					type: 'boolean',
+					nullable: true,
+				},
+				askConfirmMentionAll: {
 					type: 'boolean',
 					nullable: true,
 				},
