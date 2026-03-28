@@ -5,6 +5,7 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { useFormatTime } from '../../../hooks/useFormatTime';
 import { usePreventPropagation } from '../../../hooks/usePreventPropagation';
 import OutlookCalendarEventModal from '../OutlookCalendarEventModal';
 import { useOutlookOpenCall } from '../hooks/useOutlookOpenCall';
@@ -22,10 +23,11 @@ const hovered = css`
 	}
 `;
 
-const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: OutlookEventItemProps) => {
+const OutlookEventItem = ({ subject, description, startTime, endTime, meetingUrl }: OutlookEventItemProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();
+	const formatTime = useFormatTime();
 	const openCall = useOutlookOpenCall(meetingUrl);
 	const handleMeetingClick = usePreventPropagation(openCall);
 
@@ -55,7 +57,10 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 		>
 			<Box>
 				<Box fontScale='h4'>{subject}</Box>
-				<Box fontScale='c1'>{formatDateAndTime(startTime)}</Box>
+				<Box fontScale='c1'>
+					{formatDateAndTime(startTime)}
+					{endTime && ` - ${formatTime(endTime)}`}
+				</Box>
 			</Box>
 			<Box>
 				{meetingUrl && (
