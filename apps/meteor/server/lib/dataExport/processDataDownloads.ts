@@ -201,7 +201,10 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 			}
 		}
 
-		exportOperation.generatedFileName = exportOperation.generatedFileName ?? uuidv4();
+		if (!exportOperation.generatedFileName) {
+			exportOperation.generatedFileName = uuidv4();
+			await ExportOperations.updateOperation(exportOperation);
+		}
 		const zipFolder = settings.get<string>('UserData_FileSystemZipPath')?.trim() || '/tmp/zipFiles';
 
 		if (exportOperation.status === 'downloading') {

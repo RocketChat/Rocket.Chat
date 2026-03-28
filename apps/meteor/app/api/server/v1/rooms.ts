@@ -772,7 +772,7 @@ API.v1.addRoute(
 						dateTo: convertedDateTo,
 					},
 					user,
-				);
+				).catch((e) => console.error('Data export sendFile failed:', e));
 				return API.v1.success();
 			}
 
