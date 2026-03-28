@@ -13,8 +13,6 @@ import AttachmentContent from './structure/AttachmentContent';
 import AttachmentDetails from './structure/AttachmentDetails';
 import AttachmentInner from './structure/AttachmentInner';
 
-
-
 type QuoteAttachmentProps = {
 	attachment: MessageQuoteAttachment;
 };
