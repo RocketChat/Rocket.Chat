@@ -245,41 +245,43 @@ class MessageSearchQueryParser {
  * Query in message text + attachments
  */
  private consumeMessageText(text: string) {
-    text = text.trim().replace(/\s\s+/g, ' ');
+  text = text.trim().replace(/\s\s+/g, ' ');
 
-    if (!text) {
-        delete this.query.$or;
-        return '';
-    }
+  // Prevent expensive small queries
+  if (!text || text.length < 2) {
+    delete this.query.$or;
+    return '';
+  }
 
-    let regex;
-    let options = 'i';
+  // Case 1: Explicit regex (/pattern/flags)
+  const match = text.match(/^\/(.+)\/([imxs]*)$/);
 
-    // Case 1: /pattern/flags
-    if (/^\/.+\/[imxs]*$/.test(text)) {
-        const r = text.split('/');
-        regex = r[1];
-        options = r[2];
-    }
-    // Case 2: forceRegex enabled
-    else if (this.forceRegex) {
-        regex = text;
-    }
-    // Case 3: normal search
-    else {
-        regex = escapeRegExp(text);
-    }
+  if (match) {
+    const regex = match[1];
+    const options = match[2];
 
     this.query.$or = [
-        { msg: { $regex: regex, $options: options } },
-        { 'attachments.text': { $regex: regex, $options: options } },
-        { 'attachments.title': { $regex: regex, $options: options } },
-        { 'attachments.description': { $regex: regex, $options: options } },
+      { msg: { $regex: regex, $options: options } },
+      { 'attachments.text': { $regex: regex, $options: options } },
+      { 'attachments.title': { $regex: regex, $options: options } },
+      { 'attachments.description': { $regex: regex, $options: options } },
     ];
 
     return text;
-}
+  }
 
+  // Case 2: Normal search (also regex-based)
+  const safeText = escapeRegExp(text);
+
+  this.query.$or = [
+    { msg: { $regex: safeText, $options: 'i' } },
+    { 'attachments.text': { $regex: safeText, $options: 'i' } },
+    { 'attachments.title': { $regex: safeText, $options: 'i' } },
+    { 'attachments.description': { $regex: safeText, $options: 'i' } },
+  ];
+
+  return text;
+}
 	parse(text: string) {
 		[
 			(input: string) => this.consumeFrom(input),
