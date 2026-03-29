@@ -86,6 +86,7 @@ describe('ModifyDeleter', () => {
 		assert.deepStrictEqual(spy.mock.calls[0].arguments, ['app-id', UserType.APP]);
 
 		await md.deleteUsers('app-id', UserType.BOT);
+		assert.strictEqual(spy.mock.calls.length, 2);
 		assert.deepStrictEqual(spy.mock.calls[1].arguments, ['app-id', UserType.BOT]);
 	});
 
