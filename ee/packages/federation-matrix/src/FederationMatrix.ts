@@ -18,6 +18,7 @@ import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUs
 import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
 import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
 import { validateFederatedUsername } from './helpers/validateFederatedUsername';
+import { FanoutQueue } from './FanoutQueue';
 import { MatrixMediaService } from './services/MatrixMediaService';
 
 export const fileTypes: Record<string, FileMessageType> = {
@@ -39,6 +40,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	private validateUserDomain: boolean;
 
 	private readonly logger = new Logger(this.name);
+
+        private readonly avatarFanoutQueue = new FanoutQueue('avatar-updates', {
+    concurrency: 5,
+    maxRetries: 3,
+    baseDelayMs: 1000,
+});
 
 	override async created(): Promise<void> {
 		this.onSettingChanged('Federation_Service_Domain', async ({ setting }): Promise<void> => {
@@ -108,6 +115,51 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
+		this.onEvent('user.avatarUpdate', async ({ username, avatarETag }): Promise<void> => {
+			if (!username || username.includes(':')) {
+				return;
+			}
+
+			const localUser = await Users.findOneByUsername(username, {
+				projection: { _id: 1, username: 1, name: 1, federated: 1, federation: 1 },
+			});
+
+			if (!localUser?.username) {
+				return;
+			}
+
+			if (isUserNativeFederated(localUser)) {
+				this.logger.warn(`Skipping avatar update for federated user ${username} (remote user)`);
+				return;
+			}
+
+			this.logger.info(`Sending avatar update for ${username} to federated rooms`);
+
+			const matrixUserId = `@${localUser.username}:${this.serverName}`;
+
+			const avatarUrl = avatarETag ? `mxc://${this.serverName}/${avatarETag}` : null;
+
+			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
+
+			const profilePayload = {
+				displayname: localUser.name || localUser.username,
+				avatar_url: avatarUrl,
+			};
+
+			for (const { externalRoomId } of roomsUserIsMemberOf) {
+				if (!externalRoomId) {
+					continue;
+				}
+
+				void this.avatarFanoutQueue.enqueue(
+					`avatar:${username}:${externalRoomId}`,
+					async () => {
+						await federationSDK.updateUserProfile(externalRoomId, matrixUserId, profilePayload);
+						this.logger.debug({ msg: 'Sent avatar update', username, roomId: externalRoomId });
+					},
+				);
+			}
+		});
 	}
 
 	override async started(): Promise<void> {
