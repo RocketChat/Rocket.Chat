@@ -31,6 +31,11 @@ import UiKitMessageBlock from '../../../../components/message/uikit/UiKitMessage
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatTime } from '../../../../hooks/useFormatTime';
 
+const SYSTEM_MESSAGE_WRAP_STYLE = {
+  whiteSpace: 'pre-wrap',
+  wordBreak: 'break-word',
+};
+
 type ContactHistoryMessageProps = {
 	message: IMessage;
 	sequential: boolean;
@@ -71,7 +76,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 						<MessageSystemName data-username={message.u.username} data-qa-type='username'>
 							@{message.u.username}
 						</MessageSystemName>
-						<MessageSystemBody title={message.msg} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+						<MessageSystemBody title={message.msg} style={SYSTEM_MESSAGE_WRAP_STYLE}>
 							{t('Conversation_closed', { comment: message.msg })}
 						</MessageSystemBody>
 						<MessageSystemTimestamp title={formatTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
