@@ -29,8 +29,28 @@ export abstract class Composer {
 		return this.toolbarPrimaryActions.getByRole('button', { name: 'Audio message' });
 	}
 
+	getFileByName(fileName: string): Locator {
+		return this.root.getByRole('group', { name: fileName, exact: true });
+	}
+
+	get groupUploads() {
+		return this.root.getByRole('group', { name: 'Uploads', exact: true });
+	}
+
+	getFilesInComposer(): Locator {
+		return this.groupUploads.getByRole('group', { name: /^(?!Close$)/ });
+	}
+
+	async removeFileByName(fileName: string): Promise<void> {
+		return this.getFileByName(fileName).getByRole('button', { name: 'Remove', exact: true }).click();
+	}
+
 	get btnSend(): Locator {
 		return this.root.getByRole('button', { name: 'Send' });
+	}
+
+	get btnCancel(): Locator {
+		return this.root.getByRole('button', { name: 'Cancel', exact: true });
 	}
 
 	get btnOptionFileUpload(): Locator {

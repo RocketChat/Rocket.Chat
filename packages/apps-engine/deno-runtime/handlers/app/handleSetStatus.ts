@@ -4,6 +4,7 @@ import type { AppStatus as _AppStatus } from '@rocket.chat/apps-engine/definitio
 import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
 import { require } from '../../lib/require.ts';
 import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 const { AppStatus } = require('@rocket.chat/apps-engine/definition/AppStatus.js') as {
 	AppStatus: typeof _AppStatus;
@@ -26,7 +27,7 @@ export default async function handleSetStatus(request: RequestContext): Promise<
 		});
 	}
 
-	await app['setStatus'](status);
+	await app['setStatus'].call(wrapAppForRequest(app, request), status);
 
 	return null;
 }

@@ -2,6 +2,7 @@ import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Babel } from 'meteor/babel-compiler';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -114,14 +115,14 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
 
 			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-			integrationData.scriptError = undefined;
+			delete integrationData.scriptError;
 		} catch (e) {
 			integrationData.scriptCompiled = undefined;
 			integrationData.scriptError = e instanceof Error ? _.pick(e, 'name', 'message', 'stack') : undefined;
 		}
 	}
 
-	for await (let channel of channels) {
+	for (let channel of channels) {
 		let record;
 		const channelType = channel[0];
 		channel = channel.substr(1);
@@ -157,7 +158,9 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	await addUserRolesAsync(user._id, ['bot']);
 
-	const { insertedId } = await Integrations.insertOne(integrationData);
+	const strippedIntegrationData = removeEmpty(integrationData);
+
+	const { insertedId } = await Integrations.insertOne(strippedIntegrationData);
 
 	if (insertedId) {
 		void notifyOnIntegrationChanged({ ...integrationData, _id: insertedId }, 'inserted');

@@ -24,6 +24,7 @@ import type {
 	ICustomUserStatus,
 	IWebdavAccount,
 	MessageAttachment,
+	ISession,
 } from '@rocket.chat/core-typings';
 import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type * as UiKit from '@rocket.chat/ui-kit';
@@ -164,7 +165,7 @@ export interface StreamerEvents {
 		},
 
 		{ key: `${string}/message`; args: [IMessage] },
-		{ key: `${string}/force_logout`; args: [] },
+		{ key: `${string}/force_logout`; args: [ISession['sessionId'] | undefined] },
 		{
 			key: `${string}/webdav`;
 			args: [{ type: 'changed'; account: Partial<IWebdavAccount> } | { type: 'removed'; account: { _id: IWebdavAccount['_id'] } }];

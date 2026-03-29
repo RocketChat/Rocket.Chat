@@ -39,10 +39,10 @@ const MediaCallHistoryContextualbar = ({
 		queryKey: callHistoryQueryKeys.info(callId || historyId),
 		queryFn: async () => {
 			if (callId) {
-				return getCallHistory({ callId } as any); // TODO fix this type
+				return getCallHistory({ callId });
 			}
 			if (historyId) {
-				return getCallHistory({ historyId } as any); // TODO fix this type
+				return getCallHistory({ historyId });
 			}
 			throw new Error('Call ID or history ID is required');
 		},

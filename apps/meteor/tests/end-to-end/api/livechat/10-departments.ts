@@ -95,6 +95,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 });
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - Departments', () => {
+	let initialDep: ILivechatDepartment;
 	before((done) => getCredentials(done));
 
 	before(async () => {
@@ -103,9 +104,11 @@ import { IS_EE } from '../../../e2e/config/constants';
 		await createAgent();
 		await makeAgentAvailable();
 		await updateSetting('Omnichannel_enable_department_removal', true);
+		initialDep = await createDepartment(undefined, 'Random Pagination Department');
 	});
 
 	after(async () => {
+		await deleteDepartment(initialDep._id);
 		await updateSetting('Omnichannel_enable_department_removal', false);
 	});
 

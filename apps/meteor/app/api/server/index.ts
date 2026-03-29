@@ -1,6 +1,5 @@
 import './ajv';
 import './helpers/composeRoomWithLastMessage';
-import './helpers/getLoggedInUser';
 import './helpers/getPaginationItems';
 import './helpers/getUserFromParams';
 import './helpers/getUserInfo';

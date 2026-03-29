@@ -311,9 +311,25 @@ async function handleLeave({
 		return;
 	}
 
+	const [senderUsername] = getUsernameServername(sender, serverName);
+
+	const senderUser = await Users.findOneByUsername(senderUsername);
+	if (!senderUser) {
+		return;
+	}
+
 	const room = await Rooms.findOneFederatedByMrid(roomId);
 	if (!room) {
 		throw new Error(`Room not found while leaving user ${userId}`);
+	}
+
+	// In Matrix, unban is a leave event for a previously banned user.
+	// Check local subscription state to distinguish leave from unban.
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, leavingUser._id);
+	if (subscription && isBannedSubscription(subscription)) {
+		await Room.performUserUnban(room, leavingUser, senderUser);
+		logger.info({ msg: 'Unbanned user via federation leave event', userId: leavingUser._id, roomId: room._id });
+		return;
 	}
 
 	// In Matrix, unban is a leave event for a previously banned user.
@@ -330,6 +346,33 @@ async function handleLeave({
 	if (room.t === 'd') {
 		await Room.updateDirectMessageRoomName(room);
 	}
+}
+
+async function handleBan({
+	room_id: roomId,
+	state_key: userId,
+	sender: senderId,
+}: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
+	const serverName = federationSDK.getConfig('serverName');
+	const [username] = getUsernameServername(userId, serverName);
+
+	const bannedUser = await Users.findOneByUsername(username);
+	if (!bannedUser) {
+		return;
+	}
+
+	const room = await Rooms.findOneFederatedByMrid(roomId);
+	if (!room) {
+		throw new Error(`Room not found while banning user ${userId} from room ${roomId}`);
+	}
+
+	const [senderUsername] = getUsernameServername(senderId, serverName);
+	const senderUser = await Users.findOneByUsername(senderUsername);
+	if (!senderUser) {
+		throw new Error(`Ban sender not found locally: ${senderUsername} (Matrix id ${senderId})`);
+	}
+
+	await Room.performUserBan(room, bannedUser, senderUser);
 }
 
 async function handleBan({

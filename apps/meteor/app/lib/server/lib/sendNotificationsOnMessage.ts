@@ -201,7 +201,7 @@ export const sendNotification = async ({
 		}
 
 		const attachments = firstAttachment ? [firstAttachment, ...(message.attachments ?? [])].filter(Boolean) : [];
-		for await (const email of receiver.emails) {
+		for (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
@@ -426,7 +426,7 @@ export async function sendAllNotifications(message: IMessage, room: IRoom) {
 		return message;
 	}
 
-	if (!room || room.t == null) {
+	if (room?.t == null) {
 		return message;
 	}
 

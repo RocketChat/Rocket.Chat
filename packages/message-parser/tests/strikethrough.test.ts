@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { emoji, emojiUnicode, link, mentionChannel, mentionUser, paragraph, plain, strike } from '../src/utils';
+import { emoji, emojiUnicode, link, mentionChannel, mentionUser, paragraph, plain, strike } from './helpers';
 
 test.each([
 	['~:smile:~', [paragraph([strike([emoji('smile')])])]],

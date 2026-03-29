@@ -88,7 +88,11 @@ class GoogleAutoTranslate extends AutoTranslate {
 		};
 
 		try {
-			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, {
+				ignoreSsrfValidation: true,
+				params,
+			});
 			if (!request.ok && request.status === 400 && request.statusText === 'INVALID_ARGUMENT') {
 				throw new Error('Failed to fetch supported languages');
 			}
@@ -100,7 +104,11 @@ class GoogleAutoTranslate extends AutoTranslate {
 				params.target = 'en';
 				target = 'en';
 				if (!this.supportedLanguages[target]) {
-					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, { params });
+					// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+					const request = await fetch(`https://translation.googleapis.com/language/translate/v2/languages`, {
+						ignoreSsrfValidation: true,
+						params,
+					});
 					result = (await request.json()) as typeof result;
 				}
 			}
@@ -126,13 +134,15 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
-		for await (let language of targetLanguages) {
+		for (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.slice(0, 2);
 			}
 
 			try {
+				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 				const result = await fetch(this.apiEndPointUrl, {
+					ignoreSsrfValidation: true,
 					params: {
 						key: this.apiKey,
 						target: language,
@@ -147,8 +157,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 				if (
 					result.status === 200 &&
-					body.data &&
-					body.data.translations &&
+					body.data?.translations &&
 					Array.isArray(body.data.translations) &&
 					body.data.translations.length > 0
 				) {
@@ -173,13 +182,15 @@ class GoogleAutoTranslate extends AutoTranslate {
 		const translations: { [k: string]: string } = {};
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
-		for await (let language of targetLanguages) {
+		for (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.slice(0, 2);
 			}
 
 			try {
+				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 				const result = await fetch(this.apiEndPointUrl, {
+					ignoreSsrfValidation: true,
 					params: {
 						key: this.apiKey,
 						target: language,
@@ -194,8 +205,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 				if (
 					result.status === 200 &&
-					body.data &&
-					body.data.translations &&
+					body.data?.translations &&
 					Array.isArray(body.data.translations) &&
 					body.data.translations.length > 0
 				) {

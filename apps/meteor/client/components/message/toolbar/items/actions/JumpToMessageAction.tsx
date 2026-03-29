@@ -17,7 +17,6 @@ const JumpToMessageAction = ({ id, message }: JumpToMessageActionProps) => {
 			id={id}
 			icon='jump'
 			title={t('Jump_to_message')}
-			qa='Jump_to_message'
 			onClick={() => {
 				setMessageJumpQueryStringParameter(message._id);
 			}}

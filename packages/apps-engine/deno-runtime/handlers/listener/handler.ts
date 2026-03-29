@@ -14,6 +14,7 @@ import { require } from '../../lib/require.ts';
 import createRoom from '../../lib/roomFactory.ts';
 import { Room } from '../../lib/room.ts';
 import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
 
 const { AppsEngineException } = require('@rocket.chat/apps-engine/definition/exceptions/AppsEngineException.js') as {
 	AppsEngineException: typeof _AppsEngineException;
@@ -26,7 +27,7 @@ export default async function handleListener(request: RequestContext): Promise<D
 
 	const eventExecutor = app?.[evtInterface as keyof App];
 
-	if (typeof eventExecutor !== 'function') {
+	if (!app || typeof eventExecutor !== 'function') {
 		return JsonRpcError.methodNotFound({
 			message: 'Invalid event interface called on app',
 		});
@@ -38,7 +39,7 @@ export default async function handleListener(request: RequestContext): Promise<D
 
 	try {
 		const args = parseArgs({ AppAccessorsInstance }, evtInterface, params);
-		return await (eventExecutor as (...args: unknown[]) => Promise<Defined>).apply(app, args);
+		return await (eventExecutor as (...args: unknown[]) => Promise<Defined>).apply(wrapAppForRequest(app, request), args);
 	} catch (e) {
 		if (e instanceof JsonRpcError) {
 			return e;
