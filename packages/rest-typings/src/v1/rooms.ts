@@ -1,4 +1,14 @@
-import type { IMessage, IRoom, IUser, RoomAdminFieldsType, IUpload, IE2EEMessage, ITeam, ISubscription } from '@rocket.chat/core-typings';
+import type {
+	IMessage,
+	IRoom,
+	IUser,
+	RoomAdminFieldsType,
+	IUpload,
+	IE2EEMessage,
+	ITeam,
+	ISubscription,
+	RequiredField,
+} from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
@@ -522,6 +532,107 @@ const RoomsMuteUnmuteUserSchema = {
 };
 
 export const isRoomsMuteUnmuteUserProps = ajv.compile<RoomsMuteUnmuteUser>(RoomsMuteUnmuteUserSchema);
+
+type RoomsBanUserProps = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsBanUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsBanUserProps = ajv.compile<RoomsBanUserProps>(RoomsBanUserSchema);
+
+type RoomsUnbanUserProps = { userId: string; roomId: string } | { username: string; roomId: string };
+
+const RoomsUnbanUserSchema = {
+	type: 'object',
+	oneOf: [
+		{
+			properties: {
+				userId: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['userId', 'roomId'],
+			additionalProperties: false,
+		},
+		{
+			properties: {
+				username: {
+					type: 'string',
+					minLength: 1,
+				},
+				roomId: {
+					type: 'string',
+					minLength: 1,
+				},
+			},
+			required: ['username', 'roomId'],
+			additionalProperties: false,
+		},
+	],
+};
+
+export const isRoomsUnbanUserProps = ajv.compile<RoomsUnbanUserProps>(RoomsUnbanUserSchema);
+
+type RoomsBannedUsersProps = { roomId: string; count?: number; offset?: number };
+
+const RoomsBannedUsersSchema = {
+	type: 'object',
+	properties: {
+		roomId: {
+			type: 'string',
+			minLength: 1,
+		},
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+	},
+	required: ['roomId'],
+	additionalProperties: false,
+};
+
+export const isRoomsBannedUsersProps = ajvQuery.compile<RoomsBannedUsersProps>(RoomsBannedUsersSchema);
+
 export type RoomsImagesProps = {
 	roomId: string;
 	startingFromId?: string;
@@ -833,6 +944,20 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.unmuteUser': {
 		POST: (params: RoomsMuteUnmuteUser) => void;
+	};
+
+	'/v1/rooms.banUser': {
+		POST: (params: RoomsBanUserProps) => void;
+	};
+
+	'/v1/rooms.unbanUser': {
+		POST: (params: RoomsUnbanUserProps) => void;
+	};
+
+	'/v1/rooms.bannedUsers': {
+		GET: (params: RoomsBannedUsersProps) => PaginatedResult<{
+			bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, 'username'>[];
+		}>;
 	};
 
 	'/v1/rooms.images': {

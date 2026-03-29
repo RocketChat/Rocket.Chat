@@ -26,7 +26,7 @@ const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled,
 
 	const fileSize = formatBytes(upload.file.size, 2);
 	const fileExtension = getMimeType(upload.file.type, upload.file.name);
-	const isLoading = upload.percentage !== 100 && !upload.error;
+	const isLoading = !upload.url && !upload.error;
 
 	const handleOpenFilePreview = () => {
 		if (isLoading || upload.error) {
