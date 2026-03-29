@@ -129,9 +129,22 @@ export const _setUsername = async function (
 		}, session);
 	}
 	// Set new username*
-	// TODO: use updater for setting the username and handle possible side effects in addUserToRoom
-	await Users.setUsername(user._id, username, { session });
-	user.username = username;
+	
+if (updater) {
+	await updater.updateOne(
+		{ _id: user._id },
+		{ $set: { username } }
+	);
+} else {
+	
+	await Users.updateOne(
+		{ _id: user._id },
+		{ $set: { username } },
+		{ session }
+	);
+}
+
+user.username = username;
 
 	if (!previousUsername && settings.get('Accounts_SetDefaultAvatar') === true) {
 		const avatarSuggestions = await getAvatarSuggestionForUser(user);
