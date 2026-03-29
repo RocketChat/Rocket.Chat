@@ -4,6 +4,7 @@ import { IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
+import { setSettingValueById } from './utils';
 import { expect, test } from './utils/test';
 
 test.describe('Internal Voice Calls - Enterprise Edition', () => {
@@ -11,6 +12,7 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 	let sessions: { page: Page; poHomeChannel: HomeChannel }[];
 
 	test.beforeAll(async ({ api }) => {
+		await setSettingValueById(api, 'VoIP_TeamCollab_Screen_Sharing_Enabled', false);
 		await Promise.all([
 			api.post('/users.setStatus', { status: 'online', username: 'user1' }),
 			api.post('/users.setStatus', { status: 'online', username: 'user2' }),
@@ -22,6 +24,10 @@ test.describe('Internal Voice Calls - Enterprise Edition', () => {
 			createAuxContext(browser, Users.user1).then(({ page }) => ({ page, poHomeChannel: new HomeChannel(page) })),
 			createAuxContext(browser, Users.user2).then(({ page }) => ({ page, poHomeChannel: new HomeChannel(page) })),
 		]);
+	});
+
+	test.afterAll(async ({ api }) => {
+		await setSettingValueById(api, 'VoIP_TeamCollab_Screen_Sharing_Enabled', true);
 	});
 
 	test('should initiate voice call from direct message', async () => {

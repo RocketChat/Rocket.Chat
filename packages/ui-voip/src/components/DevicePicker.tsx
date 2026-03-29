@@ -8,7 +8,7 @@ import { forwardRef, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { ActionButton } from '.';
-import { useMediaCallContext } from '../context';
+import { useMediaCallView } from '../context/MediaCallViewContext';
 import { useDevicePermissionPrompt2, stopTracks } from '../hooks/useDevicePermissionPrompt';
 
 type DevicePickerButtonProps = {
@@ -22,7 +22,7 @@ const DevicePickerButton = forwardRef<HTMLButtonElement, DevicePickerButtonProps
 	{ secondary = false, small: _small, ...props },
 	ref,
 ) {
-	return <ActionButton secondary={secondary} {...props} label='customize' icon='customize' ref={ref} />;
+	return <ActionButton secondary={secondary} flexShrink={1} flexGrow={0} {...props} label='customize' icon='customize' ref={ref} />;
 });
 
 const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
@@ -36,10 +36,10 @@ const getDefaultDeviceItem = (label: string, type: 'input' | 'output') => ({
 });
 
 // eslint-disable-next-line react/no-multi-comp
-const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
+const DevicePicker = ({ secondary = false, className }: { secondary?: boolean; className?: string }) => {
 	const { t } = useTranslation();
 
-	const { onDeviceChange } = useMediaCallContext();
+	const { onDeviceChange } = useMediaCallView();
 
 	const availableDevices = useAvailableDevices();
 	const selectedAudioDevices = useSelectedDevices();
@@ -124,6 +124,7 @@ const DevicePicker = ({ secondary = false }: { secondary?: boolean }) => {
 			selectionMode='multiple'
 			isOpen={isOpen}
 			onOpenChange={onOpenChange}
+			className={className}
 			onAction={(deviceId) => {
 				if (typeof deviceId !== 'string') {
 					return;

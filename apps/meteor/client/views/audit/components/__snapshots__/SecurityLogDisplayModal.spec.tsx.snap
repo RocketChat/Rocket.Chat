@@ -65,7 +65,7 @@ exports[`renders Default without crashing 1`] = `
                   class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x24"
                 >
                   <img
-                    alt=""
+                    alt="Avatar"
                     aria-hidden="true"
                     class="rcx-avatar__element rcx-avatar__element--x24"
                     src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQYV2Oora39DwAFaQJ3y3rKeAAAAABJRU5ErkJggg=="

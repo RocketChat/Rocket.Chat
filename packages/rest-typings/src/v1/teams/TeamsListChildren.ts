@@ -1,7 +1,7 @@
 import type { ITeam } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajv } from '../Ajv';
+import { ajvQuery } from '../Ajv';
 
 type GeneralProps = {
 	filter?: string;
@@ -33,4 +33,4 @@ const TeamsListChildrenPropsSchema = {
 	oneOf: [{ required: ['teamId'] }, { required: ['teamName'] }, { required: ['roomId'] }],
 };
 
-export const isTeamsListChildrenProps = ajv.compile<TeamsListChildrenProps>(TeamsListChildrenPropsSchema);
+export const isTeamsListChildrenProps = ajvQuery.compile<TeamsListChildrenProps>(TeamsListChildrenPropsSchema);

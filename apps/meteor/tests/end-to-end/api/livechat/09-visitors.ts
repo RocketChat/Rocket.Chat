@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
-import { type Response } from 'supertest';
+import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';

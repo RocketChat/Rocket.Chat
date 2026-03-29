@@ -1,0 +1,11 @@
+{
+	"name": "todo-issue",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"parse-diff": "^0.11.1"
+	},
+	"devDependencies": {
+		"@types/bun": "latest"
+	}
+}
