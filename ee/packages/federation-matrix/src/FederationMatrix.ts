@@ -104,7 +104,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					return;
 				}
 
-				// TODO: Check if it should exclude himself from the list
 				const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id).toArray();
 				const statusMap: Record<UserStatus, PresenceState> = {
 					[UserStatus.ONLINE]: 'online',
@@ -195,7 +194,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const matrixUserId = userIdSchema.parse(`@${owner.username}:${this.serverName}`);
 			const roomName = room.name || room.fname || 'Untitled Room';
 
-			// canonical alias computed from name
+			
 			const matrixRoomResult = await federationSDK.createRoom(matrixUserId, roomName, room.t === 'c' ? 'public' : 'invite');
 
 			this.logger.debug({ msg: 'Matrix room created', response: matrixRoomResult });
@@ -206,7 +205,6 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 			await Rooms.setAsFederated(room._id, { mrid: matrixRoomResult.room_id, origin: this.serverName });
 
-			// Members are NOT invited here - invites are sent via beforeAddUserToRoom callback.
 
 			this.logger.debug({ msg: 'Room creation completed successfully', roomId: room._id });
 
@@ -292,7 +290,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		try {
 			let lastEventId: { eventId: string } | null = null;
 
-			// TODO handle multiple files, we currently save thumbs on files[], we need to flag them as thumb so we can ignore them here
+			
 			const [file] = message.files;
 
 			const mxcUri = await MatrixMediaService.prepareLocalFileForMatrix(file._id, matrixDomain, matrixRoomId);
@@ -471,8 +469,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix event ID mapping found for message ${message._id}`);
 			}
 
-			// TODO fix branded EventID and remove type casting
-			// TODO message.u?.username is not the user who removed the message
+			
+
 			const eventId = await federationSDK.redactMessage(roomIdSchema.parse(matrixRoomId), eventIdSchema.parse(matrixEventId));
 
 			this.logger.debug({ msg: 'Message redaction sent to Matrix successfully', eventId });
@@ -496,8 +494,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 						);
 					}
 
-					// if inviter is an external user it means we receive the invite from the endpoint
-					// since we accept from there we can skip accepting here
+					
+		
 					if (isUserNativeFederated(inviter)) {
 						this.logger.debug('Inviter is native federated, skip accept invite');
 						return;
@@ -674,8 +672,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				? userWhoUnbanned.federation.mui
 				: `@${userWhoUnbanned.username}:${this.serverName}`;
 
-			// In Matrix, unban is a membership: leave event for the banned user.
-			// We use kickUser (which sends a leave) to propagate the unban.
+	
 			await federationSDK.kickUser(
 				roomIdSchema.parse(room.federation.mrid),
 				userIdSchema.parse(actualUnbannedMatrixUserId),
@@ -866,7 +863,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		const results = Object.fromEntries(
 			await Promise.all(
 				matrixIds.map(async (matrixId) => {
-					// Split only on the first ':' (after the leading '@') so we keep any port in the homeserver
+					
 					const separatorIndex = matrixId.indexOf(':', 1);
 					if (separatorIndex === -1) {
 						return [matrixId, 'UNABLE_TO_VERIFY'];
@@ -929,7 +926,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error('User username not found');
 		}
 
-		// TODO: should use common function to get matrix user ID
+		
 		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 		if (action === 'accept') {
@@ -971,7 +968,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			return;
 		}
 
-		// get last event_id for the room or thread
+		
 		const lastMessage = threadId
 			? await Messages.findVisibleThreadByThreadId(threadId, {
 					sort: { ts: -1 },
@@ -997,7 +994,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			throw new Error('User username not found');
 		}
 
-		// TODO: should use common function to get matrix user ID
+		
 		const matrixUserId = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 		await federationSDK.sendReadReceipt({
@@ -1008,7 +1005,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		});
 	}
 
-	// when a user changes their username, we need to send a new event for every room the user is a member
+	
 	async updateUserName(user: IUser): Promise<void> {
 		const matrixUserId = userIdSchema.parse(`@${user.username}:${this.serverName}`);
 
