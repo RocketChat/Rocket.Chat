@@ -303,7 +303,8 @@ describe('CalendarService', () => {
 
 			const updateArgs = CalendarEventMock.updateEvent.firstCall.args[1];
 			expect(updateArgs.reminderMinutesBeforeStart).to.equal(10);
-			expect(updateArgs.reminderTime).to.be.an.instanceOf(Date);
+			const expectedReminderTime = new Date('2025-01-01T09:50:00Z');
+			expect(updateArgs.reminderTime).to.deep.equal(expectedReminderTime);
 		});
 
 		it('should handle reminderMinutesBeforeStart = 0 without startTime in patch', async () => {
