@@ -4,6 +4,7 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { createMonitor } from '../utils/omnichannel/monitors';
@@ -44,7 +45,7 @@ test.describe('OC - Monitor Role', () => {
 		const responses = await Promise.all([
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: true }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: false }),
-			api.post('/settings/Omnichannel_enable_department_removal', { value: true }),
+			setSettingValueById(api, 'Omnichannel_enable_department_removal', true),
 			// This is required now we're sending a chat into a department with no agents and no default agent
 			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: true }),
 		]);
@@ -124,7 +125,7 @@ test.describe('OC - Monitor Role', () => {
 			// Reset setting
 			api.post('/settings/Livechat_allow_manual_on_hold', { value: false }),
 			api.post('/settings/Livechat_allow_manual_on_hold_upon_agent_engagement_only', { value: true }),
-			api.post('/settings/Omnichannel_enable_department_removal', { value: false }),
+			setSettingValueById(api, 'Omnichannel_enable_department_removal', false),
 			api.post('/settings/Livechat_accept_chats_with_no_agents', { value: false }),
 		]);
 	});

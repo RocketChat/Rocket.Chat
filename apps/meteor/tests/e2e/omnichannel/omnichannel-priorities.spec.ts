@@ -54,30 +54,30 @@ test.describe.serial('Omnichannel Priorities', () => {
 
 			await test.step('default state', async () => {
 				await Promise.all([
-					expect(poOmnichannelPriorities.editPriority.btnSave).toBeDisabled(),
-					expect(poOmnichannelPriorities.editPriority.btnReset).not.toBeVisible(),
+					expect(poOmnichannelPriorities.editPriority.btnSave).not.toBeDisabled(),
 					expect(poOmnichannelPriorities.editPriority.inputName).toHaveValue('Highest'),
 				]);
 			});
 
 			await test.step('field name is required', async () => {
 				await poOmnichannelPriorities.editPriority.inputName.fill('any_text');
-				await expect(poOmnichannelPriorities.editPriority.btnSave).toBeEnabled();
-				await poOmnichannelPriorities.editPriority.inputName.fill('');
+				await poOmnichannelPriorities.editPriority.inputName.clear();
+				await poOmnichannelPriorities.editPriority.btnSave.click();
 				await expect(poOmnichannelPriorities.editPriority.errorMessage(ERROR.fieldNameRequired)).toBeVisible();
-				await expect(poOmnichannelPriorities.editPriority.btnSave).toBeDisabled();
+			});
+
+			await test.step('should trim field name and show error if only spaces', async () => {
+				await poOmnichannelPriorities.editPriority.inputName.fill('   ');
+				await poOmnichannelPriorities.editPriority.btnSave.click();
+				await expect(poOmnichannelPriorities.editPriority.errorMessage(ERROR.fieldNameRequired)).toBeVisible();
 			});
 
 			await test.step('edit and save priority', async () => {
 				await poOmnichannelPriorities.editPriority.inputName.fill(PRIORITY_NAME);
-				await Promise.all([
-					expect(poOmnichannelPriorities.editPriority.btnReset).toBeVisible(),
-					expect(poOmnichannelPriorities.editPriority.btnSave).toBeEnabled(),
-				]);
+				await expect(poOmnichannelPriorities.editPriority.errorMessage(ERROR.fieldNameRequired)).not.toBeVisible();
 				await poOmnichannelPriorities.editPriority.save();
 
 				await Promise.all([
-					expect(poOmnichannelPriorities.editPriority.inputName).not.toBeVisible(),
 					expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).toBeVisible(),
 					expect(poOmnichannelPriorities.findPriority('Highest')).not.toBeVisible(),
 				]);
@@ -91,13 +91,13 @@ test.describe.serial('Omnichannel Priorities', () => {
 				await poOmnichannelPriorities.editPriority.btnReset.click();
 				await Promise.all([
 					expect(poOmnichannelPriorities.editPriority.inputName).toHaveValue('Highest'),
-					expect(poOmnichannelPriorities.editPriority.btnReset).not.toBeVisible(),
+					expect(poOmnichannelPriorities.editPriority.btnReset).toBeDisabled(),
 				]);
 
 				await expect(poOmnichannelPriorities.editPriority.btnSave).toBeEnabled();
 				await poOmnichannelPriorities.editPriority.save();
 				await expect(poOmnichannelPriorities.findPriority('Highest')).toBeVisible();
-				await expect(poOmnichannelPriorities.btnReset).not.toBeEnabled();
+				await expect(poOmnichannelPriorities.btnReset).toBeDisabled();
 			});
 
 			await test.step('reset all', async () => {
@@ -120,7 +120,7 @@ test.describe.serial('Omnichannel Priorities', () => {
 				await poOmnichannelPriorities.resetPriorities();
 
 				await Promise.all([
-					expect(poOmnichannelPriorities.btnReset).not.toBeEnabled(),
+					expect(poOmnichannelPriorities.btnReset).toBeDisabled(),
 					expect(poOmnichannelPriorities.findPriority(PRIORITY_NAME)).not.toBeVisible(),
 					expect(poOmnichannelPriorities.findPriority('Highest')).toBeVisible(),
 				]);

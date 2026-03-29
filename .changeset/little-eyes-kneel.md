@@ -22,7 +22,6 @@
 '@rocket.chat/mock-providers': patch
 '@rocket.chat/release-action': patch
 '@rocket.chat/pdf-worker': patch
-'@rocket.chat/ui-theming': patch
 '@rocket.chat/account-utils': patch
 '@rocket.chat/core-services': patch
 '@rocket.chat/message-types': patch

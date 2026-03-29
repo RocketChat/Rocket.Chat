@@ -28,6 +28,7 @@ export type MediaSignalingSessionConfig = {
 	logger?: IMediaSignalLogger;
 	processorFactories: IServiceProcessorFactoryList;
 	mediaStreamFactory: MediaStreamFactory;
+	displayMediaFactory: MediaStreamFactory;
 	randomStringFactory: RandomStringFactory;
 	transport: MediaSignalTransport<ClientMediaSignal>;
 	iceGatheringTimeout?: number;
@@ -119,6 +120,8 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		for (const call of this.knownCalls.values()) {
 			this.ignoredCalls.add(call.callId);
+			void this.setScreenVideoTrack(null, call).catch(() => undefined);
+
 			call.ignore();
 		}
 
@@ -479,6 +482,48 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await this.setInputTrack(null);
 	}
 
+	private async setScreenVideoTrack(newVideoTrack: MediaStreamTrack | null, call: ClientMediaCall): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.setScreenVideoTrack', Boolean(newVideoTrack));
+
+		await call.setScreenVideoTrack(newVideoTrack);
+	}
+
+	private async startScreenVideoTrack(): Promise<MediaStreamTrack | void> {
+		this.config.logger?.debug('MediaSignalingSession.startScreenVideoTrack');
+
+		const displayMedia = await this.config.displayMediaFactory({}).catch(() => null);
+
+		this.config.logger?.debug('MediaSignalingSession.startScreenVideoTrack.done');
+
+		if (!displayMedia) {
+			this.config.logger?.error('MediaSignalingSession.startScreenVideoTrack.failed.noDisplayMedia');
+			throw new Error('Failed to get display media');
+		}
+
+		const tracks = displayMedia.getVideoTracks();
+		if (!tracks.length) {
+			this.config.logger?.error('MediaSignalingSession.startScreenVideoTrack.failed.noTracks');
+			throw new Error('Failed to get video tracks');
+		}
+
+		return tracks[0];
+	}
+
+	private async endScreenSharing(call: ClientMediaCall): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.endScreenSharing');
+		await this.setScreenVideoTrack(null, call);
+	}
+
+	private async startScreenSharing(call: ClientMediaCall): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.startScreenSharing');
+		const track = await this.startScreenVideoTrack();
+		if (!track) {
+			return;
+		}
+
+		await this.setScreenVideoTrack(track, call);
+	}
+
 	private createCall(callId: string): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
@@ -505,6 +550,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		call.emitter.on('hidden', () => this.onHiddenCall(call));
 		call.emitter.on('active', () => this.onActiveCall(call));
 		call.emitter.on('ended', () => this.onEndedCall(call));
+		call.emitter.on('screenShareRequestChange', (requested: boolean) => this.onScreenShareRequestChange(call, requested));
 		call.emitter.on('streamChange', () => this.onSessionStateChange());
 
 		return call;
@@ -563,6 +609,18 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onActiveCall(_call: ClientMediaCall): void {
 		this.config.logger?.debug('MediaSignalingSession.onActiveCall');
+		this.onSessionStateChange();
+	}
+
+	private async onScreenShareRequestChange(call: ClientMediaCall, requested: boolean): Promise<void> {
+		this.config.logger?.debug('MediaSignalingSession.onScreenShareRequestChange');
+
+		if (!requested) {
+			await this.endScreenSharing(call);
+		} else {
+			await this.startScreenSharing(call);
+		}
+
 		this.onSessionStateChange();
 	}
 
