@@ -74,6 +74,7 @@ import {
 	VideoConferenceRaw,
 	WebdavAccountsRaw,
 	WorkspaceCredentialsRaw,
+	NotificationHistoryRaw,
 	AbacAttributesRaw,
 } from '@rocket.chat/models';
 import type { Collection } from 'mongodb';
@@ -131,6 +132,7 @@ registerModel('IMessageReadsModel', new MessageReadsRaw(db));
 registerModel('IMessagesModel', new MessagesRaw(db, trashCollection));
 registerModel('IMigrationsModel', new MigrationsRaw(db));
 registerModel('IModerationReportsModel', new ModerationReportsRaw(db));
+registerModel('INotificationHistoryModel', new NotificationHistoryRaw(db));
 registerModel('INotificationQueueModel', new NotificationQueueRaw(db));
 registerModel('INpsModel', new NpsRaw(db));
 registerModel('INpsVoteModel', new NpsVoteRaw(db));

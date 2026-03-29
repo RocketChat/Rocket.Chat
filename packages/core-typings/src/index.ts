@@ -131,5 +131,6 @@ export type * from './IAbacAttribute';
 export * from './Abac';
 export type * from './ServerAudit/IAuditServerAbacAction';
 export type * from './ServerAudit/IAuditUserChangedEvent';
+export type * from './INotificationHistory';
 
 export { schemas } from './Ajv';

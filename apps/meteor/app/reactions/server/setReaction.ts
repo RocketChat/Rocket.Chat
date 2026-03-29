@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../server/lib/callbacks';
 import { i18n } from '../../../server/lib/i18n';
+import { createReactionNotification } from '../../api/server/lib/activityHub';
 import { canAccessRoomAsync } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { emoji } from '../../emoji/server';
@@ -81,6 +82,7 @@ export async function setReaction(room: IRoom, user: IUser, message: IMessage, r
 			await Rooms.setReactionsInLastMessage(room._id, message.reactions);
 		}
 
+		void createReactionNotification(user._id, message, reaction, true);
 		void callbacks.run('afterSetReaction', message, { user, reaction, shouldReact: true, room });
 
 		isReacted = true;

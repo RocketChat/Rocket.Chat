@@ -78,6 +78,7 @@ import type {
 	IMediaCallsModel,
 	IMediaCallChannelsModel,
 	IMediaCallNegotiationsModel,
+	INotificationHistoryModel,
 	ICallHistoryModel,
 	IAbacAttributesModel,
 } from '@rocket.chat/model-typings';
@@ -166,6 +167,7 @@ export const Messages = proxify<IMessagesModel>('IMessagesModel');
 export const MediaCalls = proxify<IMediaCallsModel>('IMediaCallsModel');
 export const MediaCallChannels = proxify<IMediaCallChannelsModel>('IMediaCallChannelsModel');
 export const MediaCallNegotiations = proxify<IMediaCallNegotiationsModel>('IMediaCallNegotiationsModel');
+export const NotificationHistory = proxify<INotificationHistoryModel>('INotificationHistoryModel');
 export const NotificationQueue = proxify<INotificationQueueModel>('INotificationQueueModel');
 export const Nps = proxify<INpsModel>('INpsModel');
 export const NpsVote = proxify<INpsVoteModel>('INpsVoteModel');

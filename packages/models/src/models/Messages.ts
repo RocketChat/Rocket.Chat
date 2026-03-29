@@ -119,6 +119,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated(query, options);
 	}
 
+	findPaginatedStarredByUserId(userId: IUser['_id'], options?: FindOptions<IMessage>): FindPaginated<FindCursor<IMessage>> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'starred._id': userId,
+			// no 'rid' filter — all rooms
+		};
+
+		return this.findPaginated(query, options);
+	}
+
 	findPaginatedByRoomIdAndType(
 		roomId: IRoom['_id'],
 		type: IMessage['t'],
