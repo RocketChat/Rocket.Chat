@@ -62,14 +62,12 @@ async function getOrCreateFederatedRoom({
 			throw new Error(`Room origin not found for Matrix ID: ${matrixRoomId}`);
 		}
 
-		// TODO room creator is not always the inviter
-
 		return Room.create<IRoomNativeFederated>(inviterUserId, {
 			type: roomType,
 			name: roomName,
 			members: inviteeUsername ? [inviteeUsername, inviterUsername] : [inviterUsername],
 			options: {
-				forceNew: true, // an invite means the room does not exist yet
+				forceNew: true,
 				creator: inviterUserId,
 			},
 			extraData: {
@@ -79,7 +77,7 @@ async function getOrCreateFederatedRoom({
 					mrid: matrixRoomId,
 					origin,
 				},
-				...(roomType !== 'd' && { fname: roomFName }), // DMs do not have a fname
+				...(roomType !== 'd' && { fname: roomFName }),
 			},
 		});
 	} catch (err) {
@@ -88,13 +86,9 @@ async function getOrCreateFederatedRoom({
 	}
 }
 
-// get the join rule type from the stripped state stored in the unsigned section of the event
-// as per the spec, we must support several types but we only support invite and public for now.
-// in the future, we must start looking into 'knock', 'knock_restricted', 'restricted' and 'private'.
 function getJoinRuleType(strippedState: PduForType<'m.room.join_rules'>[]): 'p' | 'c' | 'd' {
-	const joinRulesState = strippedState?.find((state: PduForType<'m.room.join_rules'>) => state.type === 'm.room.join_rules');
+	const joinRulesState = strippedState?.find((state) => state.type === 'm.room.join_rules');
 
-	// as per the spec, users need to be invited to join a room, unless the room’s join rules state otherwise.
 	if (!joinRulesState) {
 		return 'p';
 	}
@@ -105,16 +99,8 @@ function getJoinRuleType(strippedState: PduForType<'m.room.join_rules'>[]): 'p' 
 			return 'p';
 		case 'public':
 			return 'c';
-		case 'knock':
-			throw new Error(`Knock join rule is not supported`);
-		case 'knock_restricted':
-			throw new Error(`Knock restricted join rule is not supported`);
-		case 'restricted':
-			throw new Error(`Restricted join rule is not supported`);
-		case 'private':
-			throw new Error(`Private join rule is not supported`);
 		default:
-			throw new Error(`Unknown join rule type: ${joinRule}`);
+			throw new Error(`Unsupported join rule: ${joinRule}`);
 	}
 }
 
@@ -126,41 +112,21 @@ async function handleInvite({
 	unsigned,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const inviterUser = await getOrCreateFederatedUser(senderId);
-	if (!inviterUser) {
-		throw new Error(`Failed to get or create inviter user: ${senderId}`);
-	}
-
 	const inviteeUser = await getOrCreateFederatedUser(userId);
-	if (!inviteeUser) {
-		throw new Error(`Failed to get or create invitee user: ${userId}`);
-	}
 
 	const strippedState = unsigned.invite_room_state;
-
 	const joinRuleType = getJoinRuleType(strippedState);
 
-	const roomOriginDomain = senderId.split(':')?.pop();
-	if (!roomOriginDomain) {
-		throw new Error(`Room origin domain not found: ${roomId}`);
-	}
-
-	const roomNameState = strippedState?.find((state: PduForType<'m.room.name'>) => state.type === 'm.room.name');
+	const roomOriginDomain = senderId.split(':')?.pop()!;
+	const roomNameState = strippedState?.find((state) => state.type === 'm.room.name');
 	const matrixRoomName = roomNameState?.content?.name;
 
-	// DMs do not have a join rule type (they are treated as invite only rooms),
-	// so we use 'd' for direct messages translation to RC.
 	const roomType = content?.is_direct || !matrixRoomName ? 'd' : joinRuleType;
 
-	let roomName: string;
-	let roomFName: string;
-
-	if (roomType === 'd') {
-		roomName = senderId;
-		roomFName = senderId;
-	} else {
-		roomName = roomId.replace('!', '').replace(':', '_');
-		roomFName = `${matrixRoomName}:${roomOriginDomain}`;
-	}
+	const roomName =
+		roomType === 'd' ? senderId : roomId.replace('!', '').replace(':', '_');
+	const roomFName =
+		roomType === 'd' ? senderId : `${matrixRoomName}:${roomOriginDomain}`;
 
 	const room = await getOrCreateFederatedRoom({
 		matrixRoomId: roomId,
@@ -168,18 +134,12 @@ async function handleInvite({
 		roomFName,
 		roomType,
 		inviterUserId: inviterUser._id,
-		inviterUsername: inviterUser.username as string, // TODO: Remove force cast
+		inviterUsername: inviterUser.username as string,
 		inviteeUsername: roomType === 'd' ? inviteeUser.username : undefined,
 	});
 
-	if (!room) {
-		throw new Error(`Room not found or could not be created: ${roomId}`);
-	}
-
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, inviteeUser._id);
-	if (subscription) {
-		return;
-	}
+	if (subscription) return;
 
 	await Room.createUserSubscription({
 		ts: new Date(),
@@ -189,7 +149,6 @@ async function handleInvite({
 		status: 'INVITED',
 	});
 
-	// if an invite is sent to a DM, we need to update the room name to reflect all participants
 	if (room.t === 'd') {
 		await Room.updateDirectMessageRoomName(room);
 	}
@@ -198,10 +157,21 @@ async function handleInvite({
 async function handleJoin({
 	room_id: roomId,
 	state_key: userId,
+	content,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const joiningUser = await getOrCreateFederatedUser(userId);
+
 	if (!joiningUser?.username) {
 		throw new Error(`Failed to get or create joining user: ${userId}`);
+	}
+
+	// ✅ FIX: Safe avatar handling
+	if ('avatar_url' in content) {
+		const currentUser = await Users.findOneById(joiningUser._id);
+
+		if (!content.avatar_url && currentUser?.avatarOrigin === joiningUser.avatarOrigin) {
+			await Users.resetAvatar(joiningUser._id);
+		}
 	}
 
 	const room = await Rooms.findOneFederatedByMrid(roomId);
@@ -214,7 +184,6 @@ async function handleJoin({
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 	}
 
-	// update room name for DMs
 	if (room.t === 'd') {
 		await Room.updateDirectMessageRoomName(room, [subscription._id]);
 	}
@@ -235,23 +204,18 @@ async function handleLeave({
 	const [username] = getUsernameServername(userId, serverName);
 
 	const leavingUser = await Users.findOneByUsername(username);
-	if (!leavingUser) {
-		return;
-	}
+	if (!leavingUser) return;
 
 	const room = await Rooms.findOneFederatedByMrid(roomId);
 	if (!room) {
-		throw new Error(`Room not found while leaving user ${userId} from room ${roomId}`);
+		throw new Error(`Room not found while leaving user ${userId}`);
 	}
 
 	await Room.performUserRemoval(room, leavingUser);
 
-	// update room name for DMs
 	if (room.t === 'd') {
 		await Room.updateDirectMessageRoomName(room);
 	}
-
-	// TODO check if there are no pending invites to the room, and if so, delete the room
 }
 
 export function member() {
@@ -261,15 +225,12 @@ export function member() {
 				case 'invite':
 					await handleInvite(event);
 					break;
-
 				case 'join':
 					await handleJoin(event);
 					break;
-
 				case 'leave':
 					await handleLeave(event);
 					break;
-
 				default:
 					logger.warn({ msg: 'Unknown membership type', membership: event.content.membership });
 			}
