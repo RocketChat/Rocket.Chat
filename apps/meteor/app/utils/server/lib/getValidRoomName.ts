@@ -51,7 +51,6 @@ export const getValidRoomName = async (displayName: string, rid = '', options: {
 			if (settings.get('UI_Allow_room_names_with_special_chars')) {
 				let tmpName = slugifiedName;
 				let next = 0;
-				// eslint-disable-next-line no-await-in-loop
 				while (await Rooms.findOneByNameAndNotId(tmpName, rid)) {
 					tmpName = `${slugifiedName}-${++next}`;
 				}

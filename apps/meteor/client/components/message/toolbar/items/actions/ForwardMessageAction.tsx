@@ -35,7 +35,6 @@ const ForwardMessageAction = ({ message, room }: ForwardMessageActionProps) => {
 			id='forward-message'
 			icon='arrow-forward'
 			title={getTitle}
-			qa='Forward_message'
 			disabled={encrypted || isABACEnabled}
 			onClick={async () => {
 				const permalink = await getPermaLink(message._id);

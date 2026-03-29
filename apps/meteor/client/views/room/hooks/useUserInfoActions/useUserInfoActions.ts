@@ -7,6 +7,7 @@ import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 
 import { useAddUserAction } from './actions/useAddUserAction';
+import { useBanUserAction } from './actions/useBanUserAction';
 import { useBlockUserAction } from './actions/useBlockUserAction';
 import { useChangeLeaderAction } from './actions/useChangeLeaderAction';
 import { useChangeModeratorAction } from './actions/useChangeModeratorAction';
@@ -44,7 +45,7 @@ type UserInfoActionWithContent = {
 
 export type UserInfoAction = UserInfoActionWithContent | UserInfoActionWithOnlyIcon;
 
-type UserMenuAction = {
+export type UserMenuAction = {
 	id: string;
 	title: string;
 	items: GenericMenuItemProps[];
@@ -59,6 +60,11 @@ type UserInfoActionsParams = {
 	isInvited?: boolean;
 };
 
+type UseUserInfoActionsResult = {
+	actions: [string, UserInfoAction][];
+	menuActions: UserMenuAction | undefined;
+};
+
 export const useUserInfoActions = ({
 	user,
 	rid,
@@ -66,7 +72,7 @@ export const useUserInfoActions = ({
 	size = 2,
 	isMember,
 	isInvited,
-}: UserInfoActionsParams): { actions: [string, UserInfoAction][]; menuActions: any | undefined } => {
+}: UserInfoActionsParams): UseUserInfoActionsResult => {
 	const addUser = useAddUserAction(user, rid, reload);
 	const blockUser = useBlockUserAction(user, rid);
 	const changeLeader = useChangeLeaderAction(user, rid);
@@ -77,6 +83,7 @@ export const useUserInfoActions = ({
 	const ignoreUser = useIgnoreUserAction(user, rid);
 	const muteUser = useMuteUserAction(user, rid);
 	const removeUser = useRemoveUserAction(user, rid, reload, isInvited);
+	const banUser = useBanUserAction(user, rid);
 	const videoCall = useVideoCallAction(user);
 	const reportUserOption = useReportUser(user);
 	const isLayoutEmbedded = useEmbeddedLayout();
@@ -97,6 +104,7 @@ export const useUserInfoActions = ({
 			...(isMember && muteUser && { muteUser }),
 			...(blockUser && { toggleBlock: blockUser }),
 			...((isMember || isInvited) && removeUser && { removeUser }),
+			...((isMember || isInvited) && banUser && { banUser }),
 			...(reportUserOption && { reportUser: reportUserOption }),
 		}),
 		[
@@ -114,6 +122,7 @@ export const useUserInfoActions = ({
 			reportUserOption,
 			openModerationConsole,
 			addUser,
+			banUser,
 			isMember,
 			isInvited,
 		],

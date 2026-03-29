@@ -58,9 +58,9 @@ exports[`RoomFormAttributeField renders Default without crashing 1`] = `
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-w398ts"
-                role="listbox"
               >
                 <button
+                  aria-expanded="false"
                   aria-haspopup="listbox"
                   class="rcx-box rcx-box--full rcx-input-box--undecorated rcx-select__focus rcx-css-trljwa rcx-css-3fq6z9"
                   type="button"

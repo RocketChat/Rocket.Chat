@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { bold, link, paragraph, plain, italic, strike, emoji, emojiUnicode, mentionChannel, mentionUser } from '../src/utils';
+import { bold, link, paragraph, plain, italic, strike, emoji, emojiUnicode, mentionChannel, mentionUser } from './helpers';
 
 test.each([
 	['*:smile:*', [paragraph([bold([emoji('smile')])])]],
@@ -57,6 +57,12 @@ test.each([
 	['*(teste*', [paragraph([bold([plain('(teste')])])]],
 	['*(teste)*', [paragraph([bold([plain('(teste)')])])]],
 	['*__~bolditalicstrike~_*', [paragraph([bold([plain('_'), italic([strike([plain('bolditalicstrike')])])])])]],
+	['*test:*', [paragraph([bold([plain('test:')])])]],
+	['*bold ending with colon:*', [paragraph([bold([plain('bold ending with colon:')])])]],
+	['*bold ending with colon:* and some more text', [paragraph([bold([plain('bold ending with colon:')]), plain(' and some more text')])]],
+	['*bold ending with colon :*and some more text', [paragraph([bold([plain('bold ending with colon :')]), plain('and some more text')])]],
+	['*bold with a kissing emoji :* *', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' *')])]],
+	['*bold with a kissing emoji :* ', [paragraph([bold([plain('bold with a kissing emoji :')]), plain(' ')])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });

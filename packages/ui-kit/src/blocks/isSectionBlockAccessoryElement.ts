@@ -3,7 +3,7 @@ import { BlockElementType } from './BlockElementType';
 import type { SectionBlock } from './layout/SectionBlock';
 
 export const isSectionBlockAccessoryElement = (block: BlockElement): block is Exclude<SectionBlock['accessory'], undefined> => {
-	switch (block.type as Exclude<SectionBlock['accessory'], undefined>['type']) {
+	switch (block.type) {
 		case BlockElementType.BUTTON:
 		case BlockElementType.DATEPICKER:
 		case BlockElementType.IMAGE:

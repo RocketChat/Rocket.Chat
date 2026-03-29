@@ -50,7 +50,7 @@ exports[`renders Default without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
                     >
                       <img
-                        alt=""
+                        alt="Avatar"
                         aria-hidden="true"
                         class="rcx-avatar__element rcx-avatar__element--x332"
                         data-username="guilherme.gazzo"
@@ -353,7 +353,7 @@ exports[`renders InvitedUser without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
                     >
                       <img
-                        alt=""
+                        alt="Avatar"
                         aria-hidden="true"
                         class="rcx-avatar__element rcx-avatar__element--x332"
                         data-username="guilherme.gazzo"
@@ -670,7 +670,7 @@ exports[`renders WithABACAttributes without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
                     >
                       <img
-                        alt=""
+                        alt="Avatar"
                         aria-hidden="true"
                         class="rcx-avatar__element rcx-avatar__element--x332"
                         data-username="guilherme.gazzo"
@@ -1033,7 +1033,7 @@ exports[`renders WithVoiceCallExtension without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-avatar rcx-avatar--x332"
                     >
                       <img
-                        alt=""
+                        alt="Avatar"
                         aria-hidden="true"
                         class="rcx-avatar__element rcx-avatar__element--x332"
                         data-username="guilherme.gazzo"

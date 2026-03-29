@@ -1,13 +1,77 @@
-import { Room } from '@rocket.chat/core-services';
+import { Room, Upload } from '@rocket.chat/core-services';
+import { isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import debounce from 'lodash.debounce';
+import mem from 'mem';
 
 import { createOrUpdateFederatedUser } from '../helpers/createOrUpdateFederatedUser';
+import { extractDomainFromMatrixUserId } from '../helpers/extractDomainFromMatrixUserId';
 import { getUsernameServername } from '../helpers/getUsernameServername';
+import { MatrixMediaService } from '../services/MatrixMediaService';
 
 const logger = new Logger('federation-matrix:member');
+
+async function downloadAndSetAvatar(user: IUser, avatarUrl: string | null): Promise<void> {
+	try {
+		// if no avatarUrl is provided, it means the user removed his avatar, so we need to set an empty avatar to remove the avatar from their side as well
+		if (!avatarUrl) {
+			await Upload.resetUserAvatar(user);
+			return;
+		}
+
+		if (!avatarUrl?.startsWith('mxc://')) {
+			return;
+		}
+
+		logger.debug(`Downloading avatar for user ${user.username}: ${avatarUrl}`);
+
+		const parsed = MatrixMediaService.parseMXCUri(avatarUrl);
+		if (!parsed) {
+			logger.warn(`Invalid MXC URI: ${avatarUrl}`);
+			return;
+		}
+
+		const buffer = await federationSDK.downloadFromRemoteServer(parsed.serverName, parsed.mediaId);
+		if (!buffer) {
+			logger.warn(`Failed to download avatar from ${avatarUrl}`);
+			return;
+		}
+
+		// detect content type from buffer (basic image type detection)
+		let contentType: string | undefined;
+		if (buffer[0] === 0xff && buffer[1] === 0xd8) {
+			contentType = 'image/jpeg';
+		} else if (buffer[0] === 0x89 && buffer[1] === 0x50 && buffer[2] === 0x4e && buffer[3] === 0x47) {
+			contentType = 'image/png';
+		} else if (buffer[0] === 0x47 && buffer[1] === 0x49 && buffer[2] === 0x46) {
+			contentType = 'image/gif';
+		} else if (
+			buffer[0] === 0x52 &&
+			buffer[1] === 0x49 &&
+			buffer[2] === 0x46 &&
+			buffer[3] === 0x46 &&
+			buffer[8] === 0x57 &&
+			buffer[9] === 0x45 &&
+			buffer[10] === 0x42 &&
+			buffer[11] === 0x50
+		) {
+			contentType = 'image/webp';
+		}
+
+		if (!contentType) {
+			logger.warn({ msg: 'Unsupported remote avatar format from external server', username: user.username, avatarUrl });
+			return;
+		}
+
+		// TODO need to perform a validation to check if the user actually changed avatar
+		await Upload.setUserAvatar(user, buffer, contentType, 'rest');
+	} catch (error) {
+		logger.error({ err: error, user: user.username, msg: `Error downloading/setting avatar for user` });
+	}
+}
 
 async function getOrCreateFederatedUser(userId: string): Promise<IUser> {
 	try {
@@ -154,6 +218,20 @@ async function handleInvite({
 	}
 }
 
+const getUpdateUserNameDebounced = mem((userId: string) => debounce((name: string) => Users.setName(userId, name), 1000));
+
+function updateUserNameDebounced(userId: string, newName: string): void {
+	void getUpdateUserNameDebounced(userId)(newName);
+}
+
+const getDownloadAndSetAvatarDebounced = mem((_userId: string) =>
+	debounce((user: IUser, avatarUrl: string | null) => downloadAndSetAvatar(user, avatarUrl), 2000),
+);
+
+function downloadAndSetAvatarDebounced(userId: string, user: IUser, newAvatarUrl: string | null): void {
+	void getDownloadAndSetAvatarDebounced(userId)(user, newAvatarUrl);
+}
+
 async function handleJoin({
 	room_id: roomId,
 	state_key: userId,
@@ -184,8 +262,27 @@ async function handleJoin({
 		throw new Error(`Subscription not found while joining user ${userId} to room ${roomId}`);
 	}
 
+	const senderServerName = extractDomainFromMatrixUserId(userId);
+
+	// handle avatar updates to membership events
+	if (senderServerName !== federationSDK.getConfig('serverName')) {
+		// TODO if there is no avatar_url we may want to validate first if we should remove the user avatar because if may be dealing with an old join event, and the user may have changed their avatar since then, so we need to check if the avatar_url is different from the current one before removing it
+		void downloadAndSetAvatarDebounced(joiningUser._id, joiningUser, content.avatar_url || null);
+	}
+
+	// updates user name whenever we receive a join event, because Matrix sends a new join event with the updated display name whenever a user changes their display name
+	if ('displayname' in content && content.displayname !== joiningUser.name) {
+		// whan a user changes the it's display name we receive a new join event for every room the user is in
+		// so we need to debounce the name update to avoid updating the name multiple times in a row
+		void updateUserNameDebounced(joiningUser._id, content.displayname || '');
+	}
+
 	if (room.t === 'd') {
-		await Room.updateDirectMessageRoomName(room, [subscription._id]);
+		await Room.updateDirectMessageRoomName(
+			room,
+			[subscription._id],
+			[{ _id: joiningUser._id, name: content.displayname || joiningUser.name || joiningUser.username, username: joiningUser.username }],
+		);
 	}
 
 	if (!subscription.status) {
@@ -199,6 +296,7 @@ async function handleJoin({
 async function handleLeave({
 	room_id: roomId,
 	state_key: userId,
+	sender,
 }: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
 	const serverName = federationSDK.getConfig('serverName');
 	const [username] = getUsernameServername(userId, serverName);
@@ -206,9 +304,25 @@ async function handleLeave({
 	const leavingUser = await Users.findOneByUsername(username);
 	if (!leavingUser) return;
 
+	const [senderUsername] = getUsernameServername(sender, serverName);
+
+	const senderUser = await Users.findOneByUsername(senderUsername);
+	if (!senderUser) {
+		return;
+	}
+
 	const room = await Rooms.findOneFederatedByMrid(roomId);
 	if (!room) {
 		throw new Error(`Room not found while leaving user ${userId}`);
+	}
+
+	// In Matrix, unban is a leave event for a previously banned user.
+	// Check local subscription state to distinguish leave from unban.
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, leavingUser._id);
+	if (subscription && isBannedSubscription(subscription)) {
+		await Room.performUserUnban(room, leavingUser, senderUser);
+		logger.info({ msg: 'Unbanned user via federation leave event', userId: leavingUser._id, roomId: room._id });
+		return;
 	}
 
 	await Room.performUserRemoval(room, leavingUser);
@@ -216,6 +330,33 @@ async function handleLeave({
 	if (room.t === 'd') {
 		await Room.updateDirectMessageRoomName(room);
 	}
+}
+
+async function handleBan({
+	room_id: roomId,
+	state_key: userId,
+	sender: senderId,
+}: HomeserverEventSignatures['homeserver.matrix.membership']['event']): Promise<void> {
+	const serverName = federationSDK.getConfig('serverName');
+	const [username] = getUsernameServername(userId, serverName);
+
+	const bannedUser = await Users.findOneByUsername(username);
+	if (!bannedUser) {
+		return;
+	}
+
+	const room = await Rooms.findOneFederatedByMrid(roomId);
+	if (!room) {
+		throw new Error(`Room not found while banning user ${userId} from room ${roomId}`);
+	}
+
+	const [senderUsername] = getUsernameServername(senderId, serverName);
+	const senderUser = await Users.findOneByUsername(senderUsername);
+	if (!senderUser) {
+		throw new Error(`Ban sender not found locally: ${senderUsername} (Matrix id ${senderId})`);
+	}
+
+	await Room.performUserBan(room, bannedUser, senderUser);
 }
 
 export function member() {
@@ -231,6 +372,11 @@ export function member() {
 				case 'leave':
 					await handleLeave(event);
 					break;
+
+				case 'ban':
+					await handleBan(event);
+					break;
+
 				default:
 					logger.warn({ msg: 'Unknown membership type', membership: event.content.membership });
 			}

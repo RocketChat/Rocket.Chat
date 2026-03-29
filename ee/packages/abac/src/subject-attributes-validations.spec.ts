@@ -6,7 +6,9 @@ import { AbacService } from './index';
 import { acquireSharedInMemoryMongo, SHARED_ABAC_TEST_DB, type SharedMongoConnection } from './test-helpers/mongoMemoryServer';
 
 jest.mock('@rocket.chat/core-services', () => ({
-	ServiceClass: class {},
+	ServiceClass: class {
+		onSettingChanged = jest.fn();
+	},
 	Room: {
 		removeUserFromRoom: jest.fn(),
 	},

@@ -1,6 +1,7 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
 import type { CallEvents } from './CallEvents';
+import type { IMediaStreamWrapper } from '../media/IMediaStreamWrapper';
 
 export type CallActorType = 'user' | 'sip';
 
@@ -18,7 +19,7 @@ export type CallRole = 'caller' | 'callee';
 
 export type CallService = 'webrtc';
 
-export const callFeatureList = ['audio'] as const;
+export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold'] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
 
@@ -79,6 +80,7 @@ export interface IClientMediaCall {
 	role: CallRole;
 	service: CallService | null;
 	flags: readonly CallFlag[];
+	features: readonly CallFeature[];
 
 	state: CallState;
 	ignored: boolean;
@@ -95,8 +97,9 @@ export interface IClientMediaCall {
 
 	contact: CallContact;
 	transferredBy: CallContact | null;
-	audioLevel: number;
-	localAudioLevel: number;
+
+	/** The timestamp of the moment the call was marked as active for the first time */
+	activeTimestamp?: Date;
 
 	/** if the call was requested by this session, then this will have the ID used to request the call, otherwise it will be the same as callId */
 	readonly tempCallId: string;
@@ -105,13 +108,18 @@ export interface IClientMediaCall {
 
 	emitter: Emitter<CallEvents>;
 
-	getRemoteMediaStream(): MediaStream | null;
+	getLocalMediaStream(tag?: string): IMediaStreamWrapper | null;
+	getRemoteMediaStream(tag?: string): IMediaStreamWrapper | null;
 
 	accept(): void;
 	reject(): void;
 	hangup(): void;
 	setMuted(muted: boolean): void;
 	setHeld(onHold: boolean): void;
+	requestScreenShare(requested: boolean): void;
+	setScreenVideoTrack(videoTrack: MediaStreamTrack | null): Promise<void>;
+	hasScreenVideoTrack(): boolean;
+	canHaveScreenVideoTrack(): boolean;
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;
