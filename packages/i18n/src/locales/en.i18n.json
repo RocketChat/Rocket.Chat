@@ -4019,6 +4019,7 @@
   "OpenClaw_Slash_Description": "Send a prompt to the OpenClaw AI agent",
   "OpenClaw_Slash_Params": "your_prompt_here",
   "OpenClaw_Usage_Hint": "Usage: `/openclaw <your prompt>` — Send a prompt to the OpenClaw AI agent.",
+  "OpenClaw_Room_Not_Found": "**OpenClaw:** Room not found.",
   "OpenClaw_Error_Not_Enabled": ":warning: **OpenClaw:** The integration is not enabled. Enable it in Admin → Settings → OpenClaw.",
   "OpenClaw_Error_Missing_API_URL": ":warning: **OpenClaw:** The API URL is not configured. Set it in Admin → Settings → OpenClaw.",
   "OpenClaw_Error_Missing_Auth_Token": ":warning: **OpenClaw:** The authentication token is not configured. Set it in Admin → Settings → OpenClaw.",

@@ -67,17 +67,15 @@ export async function sendToAgent(payload: OpenClawAgentPayload): Promise<OpenCl
 	const { apiUrl, authToken, model } = getConfig();
 	const url = `${apiUrl.replace(/\/+$/, '')}/hooks/agent`;
 
-	if (model && !payload.model) {
-		payload.model = model;
-	}
+	const finalPayload = model && !payload.model ? { ...payload, model } : payload;
 
-	openclawLogger.info({ msg: 'Sending message to OpenClaw agent', url, channel: payload.channel_id });
+	openclawLogger.info({ msg: 'Sending message to OpenClaw agent', url, channel: finalPayload.channel_id });
 	openclawLogger.debug({
 		msg: 'OpenClaw agent request metadata',
-		channel: payload.channel_id,
-		threadId: payload.thread_id,
-		model: payload.model,
-		hasCallbackUrl: Boolean(payload.callback_url),
+		channel: finalPayload.channel_id,
+		threadId: finalPayload.thread_id,
+		model: finalPayload.model,
+		hasCallbackUrl: Boolean(finalPayload.callback_url),
 	});
 
 	try {
@@ -87,7 +85,7 @@ export async function sendToAgent(payload: OpenClawAgentPayload): Promise<OpenCl
 				'Content-Type': 'application/json',
 				Authorization: `Bearer ${authToken}`,
 			},
-			body: JSON.stringify(payload),
+			body: JSON.stringify(finalPayload),
 			timeout: 30000,
 		});
 

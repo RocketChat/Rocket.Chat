@@ -7,11 +7,16 @@ import { settings } from '../../../settings/server';
 import { openclawLogger } from '../logger';
 import { getOpenClawBotUser, getRoomById } from '../lib/messageHandler';
 
-function safeCompare(a: string, b: string): boolean {
-	if (a.length !== b.length) {
+function safeCompare(a: unknown, b: string): boolean {
+	if (typeof a !== 'string') {
 		return false;
 	}
-	return timingSafeEqual(Buffer.from(a), Buffer.from(b));
+	const aBuffer = Buffer.from(a, 'utf8');
+	const bBuffer = Buffer.from(b, 'utf8');
+	if (aBuffer.length !== bBuffer.length) {
+		return false;
+	}
+	return timingSafeEqual(aBuffer, bBuffer);
 }
 
 API.v1.addRoute(
@@ -32,21 +37,21 @@ API.v1.addRoute(
 			}
 
 			const expectedToken = settings.get<string>('OpenClaw_Auth_Token');
-			const receivedToken = body.token as string | undefined;
+			const receivedToken = body.token;
 
-			if (!expectedToken || !receivedToken || !safeCompare(receivedToken, expectedToken)) {
+			if (!expectedToken || !safeCompare(receivedToken, expectedToken)) {
 				openclawLogger.warn({ msg: 'OpenClaw webhook token validation failed' });
 				return API.v1.unauthorized('Invalid webhook token');
 			}
 
-			const channelId = body.channel_id as string | undefined;
-			const text = body.text as string | undefined;
+			const channelId = typeof body.channel_id === 'string' ? body.channel_id : undefined;
+			const text = typeof body.text === 'string' ? body.text : undefined;
 
 			if (!channelId) {
 				return API.v1.failure('Missing required field: channel_id');
 			}
 
-			if (!text || text.trim().length === 0) {
+			if (!text?.trim()) {
 				return API.v1.failure('Missing required field: text');
 			}
 
@@ -62,12 +67,12 @@ API.v1.addRoute(
 				return API.v1.failure('Bot user not found');
 			}
 
-			const threadId = body.thread_id as string | undefined;
-			const alias = (body.alias as string) || 'OpenClaw AI';
-			const avatar = (body.avatar as string) || '';
-			const emoji = (body.emoji as string) || ':robot:';
+			const threadId = typeof body.thread_id === 'string' ? body.thread_id : undefined;
+			const alias = typeof body.alias === 'string' ? body.alias : 'OpenClaw AI';
+			const avatar = typeof body.avatar === 'string' ? body.avatar : '';
+			const emoji = typeof body.emoji === 'string' ? body.emoji : ':robot:';
 
-			const messagePayload: Record<string, unknown> = {
+			const messagePayload = {
 				text,
 				channel: `#${room._id}`,
 				...(threadId && { tmid: threadId }),

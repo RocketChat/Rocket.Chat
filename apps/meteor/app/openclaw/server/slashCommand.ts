@@ -2,7 +2,8 @@ import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
-import { forwardMessageToAgent, getRoomById } from './lib/messageHandler';
+import { sendMessage } from '../../lib/server/functions/sendMessage';
+import { forwardMessageToAgent, getRoomById, getOpenClawBotUser } from './lib/messageHandler';
 import { validateConfig } from './lib/openclawClient';
 import { openclawLogger } from './logger';
 import { i18n } from '../../../server/lib/i18n';
@@ -53,7 +54,7 @@ slashCommands.add({
 		if (!room) {
 			openclawLogger.error({ msg: 'Room not found for slash command', roomId: message.rid });
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: ':x: **OpenClaw:** Room not found.',
+				msg: `:x: ${i18n.t('OpenClaw_Room_Not_Found', { lng: userLanguage })}`,
 				...(message.tmid && { tmid: message.tmid }),
 			});
 			return;
@@ -81,10 +82,23 @@ slashCommands.add({
 
 		const respondInThread = settings.get<boolean>('OpenClaw_Respond_In_Thread');
 
-		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-			msg: responseText,
-			...(respondInThread && message.tmid && { tmid: message.tmid }),
-		});
+		const botUser = await getOpenClawBotUser();
+		if (botUser) {
+			await sendMessage(
+				botUser,
+				{
+					msg: responseText,
+					rid: message.rid,
+					...(respondInThread && message.tmid && { tmid: message.tmid }),
+				},
+				room,
+			);
+		} else {
+			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
+				msg: responseText,
+				...(respondInThread && message.tmid && { tmid: message.tmid }),
+			});
+		}
 
 		openclawLogger.info({
 			msg: 'OpenClaw slash command response delivered',
