@@ -199,7 +199,7 @@ jobs:
       - name: Pull EE/FIPS images
         if: (inputs.release == 'ee' || inputs.release == 'fips') && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
         run: |
-          docker compose $COMPOSE_FILES pull
+          docker compose $COMPOSE_FILES pull $(docker compose $COMPOSE_FILES config --services | grep -Ev '^openldap$')
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
@@ -220,7 +220,7 @@ jobs:
           }
 
           trap dump_startup_debug ERR
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --no-build
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --no-build $(docker compose $COMPOSE_FILES config --services | grep -Ev '^openldap$')
           trap - ERR
 
       - uses: ./.github/actions/setup-playwright
