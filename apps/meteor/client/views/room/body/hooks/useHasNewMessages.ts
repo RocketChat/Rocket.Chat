@@ -18,7 +18,7 @@ export const useHasNewMessages = (rid: string, uid: string | undefined) => {
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const handleNewMessageButtonClick = useCallback(() => {
-		virtualizerRef?.current?.scrollToEnd();
+		virtualizerRef?.current?.requestScrollToEnd();
 		setHasNewMessages(false);
 		chat.composer?.focus();
 	}, [chat.composer, virtualizerRef]);
@@ -30,7 +30,7 @@ export const useHasNewMessages = (rid: string, uid: string | undefined) => {
 
 	const handleComposerResize = useCallback((): void => {
 		if (virtualizerRef?.current?.isAtBottom()) {
-			virtualizerRef.current.scrollToEnd();
+			virtualizerRef.current.requestScrollToEnd();
 		}
 		setHasNewMessages(false);
 	}, [virtualizerRef]);
@@ -55,7 +55,7 @@ export const useHasNewMessages = (rid: string, uid: string | undefined) => {
 			'afterSaveMessage',
 			(msg: IMessage) => {
 				if (msg.u._id === uid) {
-					virtualizerRef?.current?.scrollToEnd();
+					virtualizerRef?.current?.requestScrollToEnd();
 					setHasNewMessages(false);
 				}
 			},

@@ -7,15 +7,17 @@ import { useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ScrollToOptions, VirtualItem } from '@tanstack/react-virtual';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { MutableRefObject, Ref } from 'react';
-import { useEffect, useImperativeHandle, useRef } from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MessageListItem } from './MessageListItem';
 import { isMessageSequential } from './lib/isMessageSequential';
 import { setHighlightMessage, clearHighlightMessage } from './providers/messageHighlightSubscription';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
 import type { VirtualizerHandle } from '../../../components/message/list/MessageListContext';
 import { useMessageListVirtualizer } from '../../../components/message/list/MessageListContext';
+import { RoomManager } from '../../../lib/RoomManager';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
@@ -75,17 +77,38 @@ export function VirtualizedMessageList({
 		initialOffset: Infinity,
 	});
 
+	const scrollToEnd = useCallback(
+		(opts?: ScrollToOptions) => {
+			virtualizer.scrollToIndex(virtualizer.options.count - 1, { align: 'end', ...opts });
+		},
+		[virtualizer],
+	);
+
+	const isAtBottom = useCallback(() => {
+		return virtualizer.getVirtualItems()[virtualizer.getVirtualItems().length - 1]?.index === virtualizer.options.count - 1;
+	}, [virtualizer]);
+
+	const requestScrollToEnd = useCallback(() => {
+		shouldScrollToEndRef.current = true;
+	}, []);
+
+	const clearRequestScrollToEnd = useCallback(() => {
+		shouldScrollToEndRef.current = false;
+	}, []);
+
 	const contextVirtualizerRef = useMessageListVirtualizer();
 	useImperativeHandle(
 		contextVirtualizerRef,
 		() => ({
 			scrollToIndex: (...args: Parameters<typeof virtualizer.scrollToIndex>) => virtualizer.scrollToIndex(...args),
 			scrollToOffset: (...args: Parameters<typeof virtualizer.scrollToOffset>) => virtualizer.scrollToOffset(...args),
-			scrollToEnd: (opts?: ScrollToOptions) => virtualizer.scrollToIndex(virtualizer.options.count - 1, { align: 'end', ...opts }),
+			scrollToEnd,
 			getTotalSize: () => virtualizer.getTotalSize(),
-			isAtBottom: () => virtualizer.getVirtualItems()[virtualizer.getVirtualItems().length - 1]?.index === virtualizer.options.count - 1,
+			isAtBottom,
+			scrollElement: virtualizer.scrollElement,
+			requestScrollToEnd,
 		}),
-		[virtualizer],
+		[scrollToEnd, isAtBottom, virtualizer, requestScrollToEnd],
 	);
 
 	const totalSize = virtualizer.getTotalSize();
@@ -93,9 +116,6 @@ export function VirtualizedMessageList({
 
 	const jumpToMessageParam = useSearchParameter('msg');
 	const jumpedToMsgRef = useRef<string | null>(null);
-
-	const jumpToMessageParamRef = useRef(jumpToMessageParam);
-	jumpToMessageParamRef.current = jumpToMessageParam;
 
 	// Guards concurrent fetches.
 	const isFetchingRef = useRef(false);
@@ -114,7 +134,7 @@ export function VirtualizedMessageList({
 
 	// Trigger loading previous messages when the first item is visible (index === 0).
 	useEffect(() => {
-		if (isLoadingMoreMessages || isFetchingRef.current || jumpToMessageParamRef.current) {
+		if (isLoadingMoreMessages || isFetchingRef.current || jumpToMessageParam) {
 			return;
 		}
 
@@ -123,18 +143,18 @@ export function VirtualizedMessageList({
 			if (messages.length > 0) {
 				firstVisibleIdRef.current = messages[0]?._id ?? null;
 			} else {
-				shouldScrollToEndRef.current = true;
+				requestScrollToEnd();
 			}
 			isFetchingRef.current = true;
 			RoomHistoryManager.getMore(rid).finally(() => {
 				isFetchingRef.current = false;
 			});
 		}
-	}, [virtualItems, hasMorePreviousMessages, isLoadingMoreMessages, messages, rid]);
+	}, [virtualItems, hasMorePreviousMessages, isLoadingMoreMessages, messages, rid, requestScrollToEnd, jumpToMessageParam]);
 
 	// Trigger loading next messages when the last item is visible.
 	useEffect(() => {
-		if (isLoadingMoreMessages || isFetchingRef.current || jumpToMessageParamRef.current) {
+		if (isLoadingMoreMessages || isFetchingRef.current || jumpToMessageParam) {
 			return;
 		}
 
@@ -145,30 +165,56 @@ export function VirtualizedMessageList({
 				isFetchingRef.current = false;
 			});
 		}
-	}, [virtualItems, hasMoreNextMessages, isLoadingMoreMessages, messages.length, rid]);
+	}, [virtualItems, hasMoreNextMessages, isLoadingMoreMessages, messages.length, rid, jumpToMessageParam]);
 
-	// Scroll restoration: runs after messages update following a prepend or initial load.
 	useEffect(() => {
+		// Controls scroll to end
 		if (shouldScrollToEndRef.current && messages.length > 0) {
-			virtualizer.scrollToIndex(messages.length - 1, { align: 'end' });
-			shouldScrollToEndRef.current = false;
+			clearRequestScrollToEnd();
+			scrollToEnd();
+		}
+
+		// if (firstVisibleIdRef.current) {
+		// 	const anchorIndex = messages.findIndex((m) => m._id === firstVisibleIdRef.current);
+		// 	firstVisibleIdRef.current = null;
+		// 	if (anchorIndex >= 0) {
+		// 		virtualizer.scrollToIndex(anchorIndex, { align: 'start' });
+		// 	}
+		// }
+	}, [clearRequestScrollToEnd, messages, scrollToEnd, virtualizer]);
+
+	// useRestoreScrollPosition functionality
+	// TODO: decide if we will keep this with the other effects, if we will use effects or if another approach
+	useEffect(() => {
+		const store = RoomManager.getStore(rid);
+		if (store?.atBottom) {
+			requestScrollToEnd();
+		} else if (store?.scroll !== undefined) {
+			virtualizer.scrollToOffset(store.scroll);
+		}
+
+		const scrollEl = virtualizer.scrollElement;
+		if (!scrollEl) {
 			return;
 		}
 
-		if (firstVisibleIdRef.current) {
-			const anchorIndex = messages.findIndex((m) => m._id === firstVisibleIdRef.current);
-			firstVisibleIdRef.current = null;
-			if (anchorIndex >= 0) {
-				virtualizer.scrollToIndex(anchorIndex, { align: 'start' });
-			}
-		}
-	}, [messages, virtualizer, firstVisibleIdRef, shouldScrollToEndRef]);
+		const handleScroll = withThrottling({ wait: 100 })((e: Event) => {
+			const target = e.target as HTMLElement;
+			const currentStore = RoomManager.getStore(rid);
+			currentStore?.update({ scroll: target.scrollTop, atBottom: isAtBottom() });
+		});
+
+		scrollEl.addEventListener('scroll', handleScroll, { passive: true });
+		return () => {
+			handleScroll.cancel();
+			scrollEl.removeEventListener('scroll', handleScroll);
+		};
+	}, [rid, virtualizer, isAtBottom, requestScrollToEnd]);
 
 	const isSurroundingLoadingRef = useRef(false);
 
 	useEffect(() => {
 		if (!jumpToMessageParam) {
-			jumpedToMsgRef.current = null;
 			isSurroundingLoadingRef.current = false;
 			return;
 		}
@@ -213,45 +259,43 @@ export function VirtualizedMessageList({
 					</>
 				) : null}
 
-				{messages.length > 0 &&
-					virtualItems.map((virtualRow: VirtualItem) => {
-						const message = messages[virtualRow.index];
-						if (!message) {
-							return null;
-						}
-						const previous = messages[virtualRow.index - 1];
-						const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
-						const showUnreadDivider = firstUnreadMessageId === message._id;
-						const system = MessageTypes.isSystemMessage(message);
-						const visible = !isThreadMessage(message) && !system;
+				{virtualItems.map((virtualRow: VirtualItem) => {
+					const message = messages[virtualRow.index];
+					if (!message) {
+						return null;
+					}
+					const previous = messages[virtualRow.index - 1];
+					const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
+					const showUnreadDivider = firstUnreadMessageId === message._id;
+					const system = MessageTypes.isSystemMessage(message);
+					const visible = !isThreadMessage(message) && !system;
 
-						return (
-							<Box
-								key={virtualRow.key}
-								data-index={virtualRow.index}
-								ref={virtualizer.measureElement}
-								style={{
-									position: 'absolute',
-									top: 0,
-									left: 0,
-									width: '100%',
-									transform: `translateY(${virtualRow.start}px)`,
-								}}
-							>
-								<MessageListItem
-									message={message}
-									previous={previous}
-									showUnreadDivider={showUnreadDivider}
-									showUserAvatar={showUserAvatar}
-									sequential={sequential}
-									visible={visible}
-									subscription={subscription}
-									system={system}
-								/>
-							</Box>
-						);
-					})}
-
+					return (
+						<Box
+							key={virtualRow.key}
+							data-index={virtualRow.index}
+							ref={virtualizer.measureElement}
+							style={{
+								position: 'absolute',
+								top: 0,
+								left: 0,
+								width: '100%',
+								transform: `translateY(${virtualRow.start}px)`,
+							}}
+						>
+							<MessageListItem
+								message={message}
+								previous={previous}
+								showUnreadDivider={showUnreadDivider}
+								showUserAvatar={showUserAvatar}
+								sequential={sequential}
+								visible={visible}
+								subscription={subscription}
+								system={system}
+							/>
+						</Box>
+					);
+				})}
 				{hasMoreNextMessages ? <li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li> : null}
 			</ul>
 		</VirtualScrollbars>

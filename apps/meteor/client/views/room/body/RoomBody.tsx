@@ -26,7 +26,6 @@ import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
-import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
@@ -95,10 +94,7 @@ const RoomBody = (): ReactElement => {
 	// ref Needed, it handles the date bubble on top of the message list, not related to scroll position
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	// need to update
-	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
-
-	const jumpToRef = useMergedRefsV2(jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
+	const jumpToRef = useMergedRefsV2(jumpToRefGetMoreImperative);
 
 	const {
 		uploads,
@@ -108,7 +104,6 @@ const RoomBody = (): ReactElement => {
 	} = useFileUpload();
 
 	const { messageListRef } = useMessageListNavigation();
-	// need to update
 	const { selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
 	const scrollContainerRef = useRef<HTMLElement | null>(null);
@@ -126,7 +121,6 @@ const RoomBody = (): ReactElement => {
 	const innerRef = useMergedRefsV2(
 		scrollContainerRefCallback,
 		dateScrollInnerRef,
-		restoreScrollPositionInnerRef,
 		unreadBarInnerRef,
 		messageListRef,
 		jumpToRefGetMoreImperativeInnerRef,

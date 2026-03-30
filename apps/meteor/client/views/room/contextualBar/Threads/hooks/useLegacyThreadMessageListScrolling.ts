@@ -8,7 +8,7 @@ import { useListIsAtBottom } from '../../../body/hooks/useListIsAtBottom';
 import { useRoom } from '../../../contexts/RoomContext';
 
 export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
-	const { atBottomRef, innerRef, sendToBottom, sendToBottomIfNecessary, isAtBottom, jumpToRef } = useListIsAtBottom();
+	const { atBottomRef, innerRef, sendToBottom, sendToBottomIfNecessary, jumpToRef } = useListIsAtBottom();
 	const room = useRoom();
 	const uid = useUserId();
 	useEffect(() => {
@@ -33,5 +33,5 @@ export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
 		};
 	}, [room._id, atBottomRef, sendToBottomIfNecessary, uid, mainMessage._id]);
 
-	return { atBottomRef, innerRef, sendToBottom, sendToBottomIfNecessary, isAtBottom, jumpToRef };
+	return { atBottomRef, innerRef, sendToBottom, sendToBottomIfNecessary, jumpToRef };
 };

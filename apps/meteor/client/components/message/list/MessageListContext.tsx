@@ -13,6 +13,10 @@ export type VirtualizerHandle = {
 	scrollToEnd: (opts?: ScrollToOptions) => void;
 	getTotalSize: () => number;
 	isAtBottom: () => boolean;
+	scrollElement: HTMLElement | null;
+	requestScrollToEnd: () => void;
+	requestJumpToMessage: (messageId: string) => void;
+	clearRequestJumpToMessage: () => void;
 };
 
 export type MessageListContextValue = {
