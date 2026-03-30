@@ -11,7 +11,7 @@ Use when writing, designing, or reviewing manual test cases, QA test plans, or w
 ## Required context
 
 Before creating test cases, load this reference file:
-- [test-cases.json](.cursor/files/test-cases.json) — reference format and existing test case structures
+- [test-cases.json](../../.cursor/files/test-cases.json) — reference format and existing test case structures
 
 ## Test case format
 
