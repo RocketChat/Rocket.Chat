@@ -157,15 +157,6 @@ export const createMessageSettings = () =>
 			actionText: 'clear',
 			i18nLabel: 'clear_cache_now',
 		});
-		await this.add('API_Embed_test_endpoint_action', '', {
-			type: 'action',
-			actionText: 'Test_Endpoint_Action',
-			i18nLabel: 'Test_Endpoint_Action',
-			actionEndpoint: {
-				method: 'GET' as const,
-				path: '/v1/info',
-			},
-		});
 		// TODO: deprecate this setting in favor of App
 		await this.add('API_EmbedIgnoredHosts', 'localhost, 127.0.0.1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16', {
 			type: 'string',
