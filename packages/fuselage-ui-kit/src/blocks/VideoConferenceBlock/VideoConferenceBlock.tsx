@@ -109,9 +109,24 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps): ReactElemen
 			: t('joined');
 	}, [displayAvatars, t, result.data?.users.length]);
 
-	if (result.isPending || result.isError) {
-		// TODO: error handling
+	if (result.isPending) {
 		return <VideoConfMessageSkeleton />;
+	}
+
+	if (result.isError) {
+		return (
+			<VideoConfMessage>
+				<VideoConfMessageRow>
+					<VideoConfMessageContent>
+						<VideoConfMessageIcon />
+						<VideoConfMessageText>{t('Call_not_found')}</VideoConfMessageText>
+					</VideoConfMessageContent>
+				</VideoConfMessageRow>
+				<VideoConfMessageFooter>
+					<VideoConfMessageFooterText>{t('Call_not_found_error')}</VideoConfMessageFooterText>
+				</VideoConfMessageFooter>
+			</VideoConfMessage>
+		);
 	}
 
 	const { data } = result;
