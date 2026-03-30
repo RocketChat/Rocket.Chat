@@ -530,6 +530,7 @@ jobs:
       CI_MONGO_URL: ${{ secrets.CI_MONGO_URL }}
       NETBIRD_SETUP_KEY: ${{ secrets.NETBIRD_SETUP_KEY }}
       NETBIRD_PSK: ${{ secrets.NETBIRD_PSK }}
+      NETBIRD_TEST_IP: ${{ secrets.NETBIRD_TEST_IP }}
 
   test-api-livechat:
     name: 🔨 Test API Livechat (CE)
@@ -550,6 +551,7 @@ jobs:
       CI_MONGO_URL: ${{ secrets.CI_MONGO_URL }}
       NETBIRD_SETUP_KEY: ${{ secrets.NETBIRD_SETUP_KEY }}
       NETBIRD_PSK: ${{ secrets.NETBIRD_PSK }}
+      NETBIRD_TEST_IP: ${{ secrets.NETBIRD_TEST_IP }}
 
   test-ui:
     name: 🔨 Test UI (CE)
@@ -579,6 +581,7 @@ jobs:
       CI_MONGO_URL: ${{ secrets.CI_MONGO_URL }}
       NETBIRD_SETUP_KEY: ${{ secrets.NETBIRD_SETUP_KEY }}
       NETBIRD_PSK: ${{ secrets.NETBIRD_PSK }}
+      NETBIRD_TEST_IP: ${{ secrets.NETBIRD_TEST_IP }}
 
   test-api-ee:
     name: 🔨 Test API (EE)
@@ -603,6 +606,7 @@ jobs:
       CI_MONGO_URL: ${{ secrets.CI_MONGO_URL }}
       NETBIRD_SETUP_KEY: ${{ secrets.NETBIRD_SETUP_KEY }}
       NETBIRD_PSK: ${{ secrets.NETBIRD_PSK }}
+      NETBIRD_TEST_IP: ${{ secrets.NETBIRD_TEST_IP }}
 
   test-api-livechat-ee:
     name: 🔨 Test API Livechat (EE)
@@ -627,6 +631,7 @@ jobs:
       CI_MONGO_URL: ${{ secrets.CI_MONGO_URL }}
       NETBIRD_SETUP_KEY: ${{ secrets.NETBIRD_SETUP_KEY }}
       NETBIRD_PSK: ${{ secrets.NETBIRD_PSK }}
+      NETBIRD_TEST_IP: ${{ secrets.NETBIRD_TEST_IP }}
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
@@ -659,6 +664,7 @@ jobs:
       CI_MONGO_URL: ${{ secrets.CI_MONGO_URL }}
       NETBIRD_SETUP_KEY: ${{ secrets.NETBIRD_SETUP_KEY }}
       NETBIRD_PSK: ${{ secrets.NETBIRD_PSK }}
+      NETBIRD_TEST_IP: ${{ secrets.NETBIRD_TEST_IP }}
 
   test-federation-matrix:
     name: 🔨 Test Federation Matrix
