@@ -21,6 +21,7 @@ import type { ComponentProps, ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import {
 	useIsSelecting,
 	useToggleSelect,
@@ -49,7 +50,8 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 
 	const showRealName = useMessageListShowRealName();
 	const user = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
+	const normalizedUsername = normalizeUsername(user.username);
+	const usernameAndRealNameAreSame = !user.name || normalizedUsername === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const displayName = useUserDisplayName(user);
 
@@ -82,7 +84,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						{showUsername && (
 							<>
 								{' '}
-								<MessageUsername data-username={user.username}>@{user.username}</MessageUsername>
+								<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
 							</>
 						)}
 					</MessageNameContainer>
