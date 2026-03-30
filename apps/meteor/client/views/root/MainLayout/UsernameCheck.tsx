@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 
 import PasswordChangeCheck from './PasswordChangeCheck';
 import RegisterUsername from './RegisterUsername';
+import PageSkeleton from '../../../components/PageSkeleton';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
@@ -30,11 +31,15 @@ const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 		return !hasUsername;
 	}, [userData?.user, userId, allowAnonymousRead]);
 
-	console.log({ isLoading, shouldRegisterUsername, user: userData?.user });
+	console.log({ isLoading, shouldRegisterUsername, userId, user: userData?.user });
 
 	if (!isLoading && shouldRegisterUsername) {
 		console.log('RegisterUsername');
 		return <RegisterUsername />;
+	}
+
+	if (isLoading) {
+		return <PageSkeleton />;
 	}
 
 	console.log('Home');
