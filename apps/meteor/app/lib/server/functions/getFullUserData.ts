@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, IUserEmail } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 
@@ -75,23 +75,24 @@ const getFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => ({
 	...getCustomFields(canViewAllInfo),
 });
 
-export async function getFullUserDataByIdOrUsernameOrImportId(
+export async function getFullUserDataByIdOrUsernameOrImportIdOrEmail(
 	userId: string,
 	searchValue: string,
-	searchType: 'id' | 'username' | 'importId',
+	searchType: 'id' | 'username' | 'importId' | 'email',
 ): Promise<IUser | null> {
-	const caller = await Users.findOneById(userId, { projection: { username: 1, importIds: 1 } });
+	const caller = await Users.findOneById(userId, { projection: { username: 1, importIds: 1, emails: 1 } });
 	if (!caller) {
 		return null;
 	}
 	const myself =
 		(searchType === 'id' && searchValue === userId) ||
 		(searchType === 'username' && searchValue === caller.username) ||
-		(searchType === 'importId' && caller.importIds?.includes(searchValue));
+		(searchType === 'importId' && caller.importIds?.includes(searchValue)) ||
+		(searchType === 'email' && caller.emails?.some((email: IUserEmail) => email.address === searchValue));
 	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
 
-	// Only search for importId if the user has permission to view the import id
-	if (searchType === 'importId' && !canViewAllInfo) {
+	// Only search for importId/email if the user has permission to view them
+	if ((searchType === 'importId' && !canViewAllInfo) || (searchType === 'email' && !canViewAllInfo)) {
 		return null;
 	}
 
@@ -104,9 +105,15 @@ export async function getFullUserDataByIdOrUsernameOrImportId(
 		},
 	};
 
-	const user = await (searchType === 'importId'
-		? Users.findOneByImportId(searchValue, options)
-		: Users.findOneByIdOrUsername(searchValue, options));
+	let user;
+	if (searchType === 'importId') {
+		user = await Users.findOneByImportId(searchValue, options);
+	} else if (searchType === 'email') {
+		user = await Users.findOneByEmailAddress(searchValue, options);
+	} else {
+		user = await Users.findOneByIdOrUsername(searchValue, options);
+	}
+
 	if (!user) {
 		return null;
 	}
