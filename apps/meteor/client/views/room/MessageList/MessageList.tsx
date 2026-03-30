@@ -21,7 +21,6 @@ type MessageListProps = {
 	room: IRoom;
 	retentionPolicy: RetentionPolicy;
 	innerRef: Ref<HTMLElement>;
-	atBottomRef: MutableRefObject<boolean>;
 };
 
 export const MessageList = function MessageList({
@@ -36,7 +35,6 @@ export const MessageList = function MessageList({
 	room,
 	retentionPolicy,
 	innerRef,
-	atBottomRef,
 }: MessageListProps) {
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
@@ -63,7 +61,6 @@ export const MessageList = function MessageList({
 					user={user}
 					room={room}
 					retentionPolicy={retentionPolicy}
-					atBottomRef={atBottomRef}
 				/>
 			</SelectedMessagesProvider>
 		</MessageListProvider>

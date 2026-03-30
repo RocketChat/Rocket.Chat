@@ -26,7 +26,6 @@ import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
-import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
@@ -77,10 +76,13 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
+	// need to update
 	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
 
 	useLoadSurroundingMessages();
 
+	// TODO: REMOVE THIS COMMENTARY WHEN READY FOR REVIEW
+	// ref Needed, it handles the unread reading tracking, not related to scroll position
 	const {
 		wrapperRef,
 		innerRef: unreadBarInnerRef,
@@ -89,10 +91,11 @@ const RoomBody = (): ReactElement => {
 		counter: [unread],
 	} = useHandleUnread(room, subscription);
 
+	// TODO: REMOVE THIS COMMENTARY WHEN READY FOR REVIEW
+	// ref Needed, it handles the date bubble on top of the message list, not related to scroll position
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
-
+	// need to update
 	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
 
 	const jumpToRef = useMergedRefsV2(jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
@@ -105,6 +108,7 @@ const RoomBody = (): ReactElement => {
 	} = useFileUpload();
 
 	const { messageListRef } = useMessageListNavigation();
+	// need to update
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
 	const scrollContainerRef = useRef<HTMLElement | null>(null);
@@ -114,19 +118,15 @@ const RoomBody = (): ReactElement => {
 		setScrollContainerReady((prev) => (el ? true : prev));
 	}, []);
 
-	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
-		useHasNewMessages(room._id, user?._id, atBottomRef, {
-			sendToBottom,
-			sendToBottomIfNecessary,
-			isAtBottom,
-		});
+	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages } = useHasNewMessages(
+		room._id,
+		user?._id,
+	);
 
 	const innerRef = useMergedRefsV2(
 		scrollContainerRefCallback,
 		dateScrollInnerRef,
 		restoreScrollPositionInnerRef,
-		isAtBottomInnerRef,
-		newMessagesScrollRef,
 		unreadBarInnerRef,
 		selectAndScrollRef,
 		messageListRef,
@@ -251,7 +251,6 @@ const RoomBody = (): ReactElement => {
 											room={room}
 											retentionPolicy={retentionPolicy}
 											innerRef={innerRef}
-											atBottomRef={atBottomRef}
 										/>
 									</MessageListErrorBoundary>
 								</div>

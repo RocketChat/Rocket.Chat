@@ -1,28 +1,15 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import { clientCallbacks } from '@rocket.chat/ui-client';
-import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { useMessageListVirtualizer } from '../../../../components/message/list/MessageListContext';
 import { useChat } from '../../contexts/ChatContext';
 
-export const useHasNewMessages = (
-	rid: string,
-	uid: string | undefined,
-	atBottomRef: MutableRefObject<boolean>,
-	{
-		sendToBottom,
-		sendToBottomIfNecessary,
-		isAtBottom,
-	}: {
-		sendToBottom: () => void;
-		sendToBottomIfNecessary: () => void;
-		isAtBottom: (threshold?: number) => boolean;
-	},
-) => {
+export const useHasNewMessages = (rid: string, uid: string | undefined) => {
 	const chat = useChat();
+	const virtualizerRef = useMessageListVirtualizer();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');
@@ -31,22 +18,22 @@ export const useHasNewMessages = (
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const handleNewMessageButtonClick = useCallback(() => {
-		atBottomRef.current = true;
-		sendToBottomIfNecessary();
+		virtualizerRef?.current?.scrollToEnd();
 		setHasNewMessages(false);
 		chat.composer?.focus();
-	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
+	}, [chat.composer, virtualizerRef]);
 
 	const handleJumpToRecentButtonClick = useCallback(() => {
-		atBottomRef.current = true;
 		RoomHistoryManager.clear(rid);
 		RoomHistoryManager.getMoreIfIsEmpty(rid);
-	}, [atBottomRef, rid]);
+	}, [rid]);
 
 	const handleComposerResize = useCallback((): void => {
-		sendToBottomIfNecessary();
+		if (virtualizerRef?.current?.isAtBottom()) {
+			virtualizerRef.current.scrollToEnd();
+		}
 		setHasNewMessages(false);
-	}, [sendToBottomIfNecessary]);
+	}, [virtualizerRef]);
 
 	useEffect(() => {
 		clientCallbacks.add(
@@ -56,7 +43,7 @@ export const useHasNewMessages = (
 					return;
 				}
 
-				if (!isAtBottom()) {
+				if (!virtualizerRef?.current?.isAtBottom()) {
 					setHasNewMessages(true);
 				}
 			},
@@ -68,7 +55,7 @@ export const useHasNewMessages = (
 			'afterSaveMessage',
 			(msg: IMessage) => {
 				if (msg.u._id === uid) {
-					sendToBottom();
+					virtualizerRef?.current?.scrollToEnd();
 					setHasNewMessages(false);
 				}
 			},
@@ -80,29 +67,9 @@ export const useHasNewMessages = (
 			clientCallbacks.remove('streamNewMessage', rid);
 			clientCallbacks.remove('afterSaveMessage', rid);
 		};
-	}, [isAtBottom, rid, sendToBottom, uid]);
-
-	const ref = useCallback(
-		(node: HTMLElement | null) => {
-			if (!node) {
-				return;
-			}
-
-			node.addEventListener(
-				'scroll',
-				withThrottling({ wait: 100 })(() => {
-					atBottomRef.current && setHasNewMessages(false);
-				}),
-				{
-					passive: true,
-				},
-			);
-		},
-		[atBottomRef],
-	);
+	}, [rid, uid, virtualizerRef]);
 
 	return {
-		newMessagesScrollRef: ref,
 		handleNewMessageButtonClick,
 		handleJumpToRecentButtonClick,
 		handleComposerResize,

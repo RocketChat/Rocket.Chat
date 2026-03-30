@@ -31,8 +31,6 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 
 	// Checks if is videoconf message to limit toolbox actions
 	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
-
-
 	return (
 		<Message
 			role='listitem'

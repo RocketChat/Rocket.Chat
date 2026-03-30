@@ -42,7 +42,6 @@ type VirtualizedMessageListProps = {
 	user: IUser | null;
 	room: IRoom;
 	retentionPolicy: RetentionPolicy;
-	atBottomRef: MutableRefObject<boolean>;
 };
 
 export function VirtualizedMessageList({
@@ -61,7 +60,6 @@ export function VirtualizedMessageList({
 	user,
 	room,
 	retentionPolicy,
-	atBottomRef,
 }: VirtualizedMessageListProps) {
 	const { t } = useTranslation();
 	const router = useRouter();
@@ -143,11 +141,11 @@ export function VirtualizedMessageList({
 		const lastItem = virtualItems[virtualItems.length - 1];
 		if (lastItem && lastItem.index >= messages.length - 1 && hasMoreNextMessages) {
 			isFetchingRef.current = true;
-			RoomHistoryManager.getMoreNext(rid, atBottomRef).finally(() => {
+			RoomHistoryManager.getMoreNext(rid).finally(() => {
 				isFetchingRef.current = false;
 			});
 		}
-	}, [virtualItems, hasMoreNextMessages, isLoadingMoreMessages, messages.length, rid, atBottomRef]);
+	}, [virtualItems, hasMoreNextMessages, isLoadingMoreMessages, messages.length, rid]);
 
 	// Scroll restoration: runs after messages update following a prepend or initial load.
 	useEffect(() => {

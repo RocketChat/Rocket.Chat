@@ -47,21 +47,21 @@ export const useListIsAtBottom = () => {
 					return;
 				}
 
-				// const observer = new ResizeObserver(() => {
-				// 	if (jumpToRef.current) {
-				// 		atBottomRef.current = false;
-				// 	}
+				const observer = new ResizeObserver(() => {
+					if (jumpToRef.current) {
+						atBottomRef.current = false;
+					}
 
-				// 	if (atBottomRef.current === true) {
-				// 		if (virtualizerRef?.current) {
-				// 			virtualizerRef.current.scrollToEnd();
-				// 		} else {
-				// 			node.scrollTo({ left: 30, top: node.scrollHeight });
-				// 		}
-				// 	}
-				// });
+					if (atBottomRef.current === true) {
+						if (virtualizerRef?.current) {
+							virtualizerRef.current.scrollToEnd();
+						} else {
+							node.scrollTo({ left: 30, top: node.scrollHeight });
+						}
+					}
+				});
 
-				// observer.observe(messageList);
+				observer.observe(messageList);
 
 				const handleScroll = withThrottling({ wait: 100 })(() => {
 					atBottomRef.current = isAtBottom(100);
@@ -72,11 +72,11 @@ export const useListIsAtBottom = () => {
 				});
 
 				return () => {
-					// observer.disconnect();
+					observer.disconnect();
 					node.removeEventListener('scroll', handleScroll);
 				};
 			},
-			[isAtBottom],
+			[isAtBottom, virtualizerRef],
 		),
 	);
 
@@ -85,7 +85,6 @@ export const useListIsAtBottom = () => {
 		innerRef: useMergedRefs(ref, innerBoxRef) as unknown as MutableRefObject<HTMLDivElement | null>,
 		sendToBottom,
 		sendToBottomIfNecessary,
-		isAtBottom,
 		jumpToRef,
 	};
 };
