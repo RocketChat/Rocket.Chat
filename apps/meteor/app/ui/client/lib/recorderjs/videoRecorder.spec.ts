@@ -174,6 +174,10 @@ describe('VideoRecorder', () => {
 			expect(VideoRecorder.getSupportedMimeTypes()).toBe('video/webm; codecs=vp8,opus');
 		});
 
+		it('should return false when stopRecording is called without active recording', () => {
+			expect(VideoRecorder.stopRecording()).toBe(false);
+		});
+
 		it('should handle permission errors', async () => {
 			getUserMediaMock.mockRejectedValue(new Error('Permission denied'));
 
