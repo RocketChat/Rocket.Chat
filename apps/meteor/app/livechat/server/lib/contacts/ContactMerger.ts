@@ -92,8 +92,8 @@ export class ContactMerger {
 	}
 
 	private async loadDataForFields(session: ClientSession | undefined, ...fieldLists: FieldAndValue[][]): Promise<void> {
-		for await (const fieldList of fieldLists) {
-			for await (const field of fieldList) {
+		for (const fieldList of fieldLists) {
+			for (const field of fieldList) {
 				if (field.type !== 'manager' || 'id' in field.value) {
 					continue;
 				}

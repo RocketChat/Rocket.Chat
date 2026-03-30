@@ -132,7 +132,7 @@ API.v1.addRoute(
 			const rooms = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
 
 			if (rooms.length) {
-				for await (const room of rooms) {
+				for (const room of rooms) {
 					await eraseRoom(room, this.user);
 				}
 			}

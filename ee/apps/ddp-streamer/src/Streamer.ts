@@ -57,7 +57,7 @@ export class Stream<N extends StreamNames> extends Streamer<N> {
 			normal: [Buffer.concat(WebSocket.Sender.frame(Buffer.from(getMsg), options))],
 		};
 
-		for await (const { subscription } of subscriptions) {
+		for (const { subscription } of subscriptions) {
 			// if the connection state is not open anymore, it somehow got to a weird state,
 			// we'll emit close so it can clean up the weird state, and so we stop emitting to it
 			if (subscription.client.ws.readyState !== WebSocket.OPEN) {

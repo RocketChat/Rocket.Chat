@@ -63,7 +63,7 @@ async function createUsersSubscriptions({
 
 		await FederationMatrix.ensureFederatedUsersExistLocally(membersToInvite);
 
-		for await (const memberUsername of membersToInvite) {
+		for (const memberUsername of membersToInvite) {
 			const member = await Users.findOneByUsername(memberUsername);
 			if (!member) {
 				throw new Error('Federated user not found locally');
@@ -139,7 +139,6 @@ async function createUsersSubscriptions({
 	await Rooms.incUsersCountById(room._id, subs.length);
 }
 
-// eslint-disable-next-line complexity
 export const createRoom = async <T extends RoomType>(
 	type: T,
 	name: T extends 'd' ? undefined : string,
