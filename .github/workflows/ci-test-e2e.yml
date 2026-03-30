@@ -213,7 +213,7 @@ jobs:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
         run: |
-          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --wait --no-build
+          DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --no-build
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
