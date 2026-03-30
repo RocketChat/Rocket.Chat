@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Box } from '@rocket.chat/fuselage';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
 import { action } from '@storybook/addon-actions';
@@ -58,14 +57,14 @@ export const WithDefaultValues: Story = {
 		defaultValues: {
 			templateId: 'template-1',
 			templateParameters: {
-				header: [{ type: 'text', format: 'text', value: 'Dentist' }],
+				header: [{ type: 'text', format: 'text', value: 'Dentist', placeholder: '{{1}}' }],
 				body: [
-					{ type: 'text', format: 'text', value: 'John Doe' },
-					{ type: 'text', format: 'text', value: 'tomorrow' },
-					{ type: 'text', format: 'text', value: '10:00 AM' },
-					{ type: 'text', format: 'text', value: '14:00 PM' },
-					{ type: 'text', format: 'text', value: 'slot' },
-					{ type: 'text', format: 'text', value: 'John Doe' },
+					{ type: 'text', format: 'text', value: 'John Doe', placeholder: '{{2}}' },
+					{ type: 'text', format: 'text', value: 'tomorrow', placeholder: '{{3}}' },
+					{ type: 'text', format: 'text', value: '10:00 AM', placeholder: '{{4}}' },
+					{ type: 'text', format: 'text', value: '14:00 PM', placeholder: '{{5}}' },
+					{ type: 'text', format: 'text', value: 'slot', placeholder: '{{6}}' },
+					{ type: 'text', format: 'text', value: 'John Doe', placeholder: '{{7}}' },
 				],
 			},
 		},
