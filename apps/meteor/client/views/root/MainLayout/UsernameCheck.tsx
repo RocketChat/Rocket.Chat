@@ -9,7 +9,7 @@ import HomeSkeleton from '../../home/HomeSkeleton';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	const userId = useUserId();
-	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' });
+	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' }, { enabled: !!userId });
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
 
@@ -28,12 +28,12 @@ const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 		return !hasUsername;
 	}, [userData?.user, userId, allowAnonymousRead]);
 
-	if (!isLoading && shouldRegisterUsername) {
-		return <RegisterUsername />;
-	}
-
 	if (isLoading) {
 		return <HomeSkeleton />;
+	}
+
+	if (shouldRegisterUsername) {
+		return <RegisterUsername />;
 	}
 
 	return <PasswordChangeCheck>{children}</PasswordChangeCheck>;
