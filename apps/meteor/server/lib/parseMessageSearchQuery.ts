@@ -249,37 +249,48 @@ class MessageSearchQueryParser {
 
 	if (!text || text.length < 2) {
 		delete this.query.$or;
+		delete this.query.$text;
 		return '';
 	}
 
-	let regex: string;
-	let options = 'i';
-
 	const match = text.match(/^\/(.+)\/([imxs]*)$/);
 
-	if (match) {
-		regex = match[1];
-		options = match[2];
+	if (match || this.forceRegex) {
+		let regex: string;
+		let options = 'i';
+
+		if (match) {
+			regex = match[1];
+			options = match[2];
+		} else {
+			regex = text;
+		}
+
+		this.query.$or = [
+			{ msg: { $regex: regex, $options: options } },
+			{ 'attachments.text': { $regex: regex, $options: options } },
+			{ 'attachments.title': { $regex: regex, $options: options } },
+			{ 'attachments.description': { $regex: regex, $options: options } },
+		];
+
+		delete this.query.$text;
 	}
 
-	else if (this.forceRegex) {
-		regex = text;
-	}
-	
 	else {
-		regex = escapeRegExp(text);
-	}
+	
+		this.query.$text = { $search: text };
 
-	this.query.$or = [
-		{ msg: { $regex: regex, $options: options } },
-		{ 'attachments.text': { $regex: regex, $options: options } },
-		{ 'attachments.title': { $regex: regex, $options: options } },
-		{ 'attachments.description': { $regex: regex, $options: options } },
-	];
+		const escaped = escapeRegExp(text);
+		
+		this.query.$or = [
+			{ 'attachments.text': { $regex: escaped, $options: 'i' } },
+			{ 'attachments.title': { $regex: escaped, $options: 'i' } },
+			{ 'attachments.description': { $regex: escaped, $options: 'i' } },
+		];
+	}
 
 	return text;
 }
-
 	parse(text: string) {
 		[
 			(input: string) => this.consumeFrom(input),
