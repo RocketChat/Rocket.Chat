@@ -259,7 +259,7 @@ class MessageSearchQueryParser {
 
 	if (match) {
 		regex = match[1];
-		options = match[2] || 'i';
+		options = match[2];
 	}
 
 	else if (this.forceRegex) {
