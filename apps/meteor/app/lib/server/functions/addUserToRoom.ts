@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Team, Room } from '@rocket.chat/core-services';
-import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
+import { Message, Team, Room } from '@rocket.chat/core-services';
+import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -48,12 +48,6 @@ export const addUserToRoom = async (
 		throw new Meteor.Error('user-not-found');
 	}
 
-	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription) {
-		return;
-	}
-
 	if (
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.JOIN, userToBeAdded._id)) &&
 		!(await roomDirectives.allowMemberAction(room, RoomMemberActions.INVITE, userToBeAdded._id))
@@ -96,6 +90,21 @@ export const addUserToRoom = async (
 
 		// Keep the current event
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	if (subscription) {
+		if (!isBannedSubscription(subscription)) {
+			return true;
+		}
+		const deleteCount = await Subscriptions.removeByUserId(userToBeAdded._id);
+		if (!deleteCount) {
+			return true;
+		}
+
+		if (!skipSystemMessage && inviter) {
+			await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username!, inviter, { ts: now });
+		}
 	}
 
 	await Room.createUserSubscription({

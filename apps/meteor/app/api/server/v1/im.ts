@@ -155,11 +155,8 @@ const DmClosePropsSchema = {
 		roomId: {
 			type: 'string',
 		},
-		userId: {
-			type: 'string',
-		},
 	},
-	required: ['roomId', 'userId'],
+	required: ['roomId'],
 	additionalProperties: false,
 };
 

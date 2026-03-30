@@ -42,9 +42,9 @@ test.describe('prune-messages', () => {
 			} = poHomeChannel;
 
 			await content.sendFileMessage('any_file.txt');
-			await content.descriptionInput.fill('a message with a file');
-			await content.btnModalConfirm.click();
-			await expect(content.lastMessageFileName).toHaveText('any_file.txt');
+			await expect(content.composer.getFileByName('any_file.txt')).toBeVisible();
+			await poHomeChannel.composer.btnSend.click();
+			await expect(content.getLastMessageByFileName('any_file.txt')).toBeVisible();
 
 			await sendTargetChannelMessage(api, targetChannel.fname as string, {
 				msg: 'a message without files',
@@ -110,9 +110,8 @@ test.describe('prune-messages', () => {
 			} = poHomeChannel;
 
 			await content.sendFileMessage('any_file.txt');
-			await content.descriptionInput.fill('a message with a file');
-			await content.btnModalConfirm.click();
-			await expect(content.lastMessageFileName).toHaveText('any_file.txt');
+			await poHomeChannel.composer.btnSend.click();
+			await expect(content.getLastMessageByFileName('any_file.txt')).toBeVisible();
 
 			await test.step('prune files only', async () => {
 				await pruneMessages.filesOnly.check({ force: true });
@@ -124,7 +123,7 @@ test.describe('prune-messages', () => {
 			});
 
 			await test.step('check message list for prune message-attachment', async () => {
-				await expect(content.lastMessageFileName).not.toBeVisible();
+				await expect(content.getLastMessageByFileName('any_file.txt')).not.toBeVisible();
 				await expect(content.lastMessageTextAttachment, 'Prune message attachment replaces file attachment').toHaveText(
 					'File removed by prune',
 				);
@@ -145,12 +144,10 @@ test.describe('prune-messages', () => {
 			const { content } = poHomeChannel;
 
 			await content.sendFileMessage('any_file.txt');
-			await content.descriptionInput.fill('a message with a file');
-			await content.btnModalConfirm.click();
-			await expect(content.lastMessageFileName).toHaveText('any_file.txt');
+			await poHomeChannel.composer.btnSend.click();
+			await expect(content.getLastMessageByFileName('any_file.txt')).toBeVisible();
 
-			await content.lastUserMessage.hover();
-			await content.lastUserMessage.getByTitle('Reply in thread').click();
+			await content.openReplyInThread();
 			expect(
 				(
 					await api.post('/rooms.cleanHistory', {
@@ -163,7 +160,7 @@ test.describe('prune-messages', () => {
 			).toBe(200);
 
 			await test.step('check main thread message for prune message-attachment', async () => {
-				await expect(content.lastThreadMessageFileName).not.toBeVisible();
+				await expect(content.getLastThreadMessageByFileName('any_file.txt')).not.toBeVisible();
 				await expect(content.lastThreadMessageTextAttachment, 'Prune message attachment replaces file attachment').toHaveText(
 					'File removed by prune',
 				);

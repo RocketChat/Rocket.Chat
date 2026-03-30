@@ -141,7 +141,7 @@ export async function getAvatarSuggestionForUser(
 
 	const avatars = [];
 
-	for await (const avatarProvider of Object.values(avatarProviders)) {
+	for (const avatarProvider of Object.values(avatarProviders)) {
 		const avatar = await avatarProvider(user);
 		if (avatar) {
 			if (Array.isArray(avatar)) {
@@ -153,7 +153,7 @@ export async function getAvatarSuggestionForUser(
 	}
 
 	const validAvatars: Record<string, { blob: string; contentType: string; service: string; url: string }> = {};
-	for await (const avatar of avatars) {
+	for (const avatar of avatars) {
 		try {
 			const response = await fetch(avatar.url, {
 				ignoreSsrfValidation: false,
