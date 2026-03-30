@@ -61,6 +61,10 @@ let smallScreen = false;
 let scrollPosition: number;
 let widgetHeight: number;
 let popoutWindow: Window | null = null;
+let messageListener: ((event: MessageEvent<LivechatMessageEventData<InternalWidgetAPI>>) => void) | null = null;
+let navigationIntervalId: ReturnType<typeof setInterval> | null = null;
+let mediaQueryList: MediaQueryList | null = null;
+let mediaQueryListener: ((event: MediaQueryList | MediaQueryListEvent) => void) | null = null;
 
 export const VALID_CALLBACKS = [
 	'chat-maximized',
@@ -101,6 +105,43 @@ function clearAllCallbacks() {
 	callbacks.events().forEach((callback) => {
 		callbacks.off(callback, () => undefined);
 	});
+}
+
+function clearWidgetListeners() {
+	if (messageListener) {
+		window.removeEventListener('message', messageListener);
+		messageListener = null;
+	}
+
+	if (mediaQueryList && mediaQueryListener) {
+		if (typeof mediaQueryList.removeEventListener === 'function') {
+			mediaQueryList.removeEventListener('change', mediaQueryListener);
+		} else {
+			mediaQueryList.removeListener(mediaQueryListener as (event: MediaQueryListEvent) => void);
+		}
+		mediaQueryList = null;
+		mediaQueryListener = null;
+	}
+
+	if (navigationIntervalId !== null) {
+		clearInterval(navigationIntervalId);
+		navigationIntervalId = null;
+	}
+}
+
+function cleanupWidget() {
+	clearWidgetListeners();
+
+	if (widget && widget.parentNode) {
+		widget.parentNode.removeChild(widget);
+	}
+
+	widget = null;
+	iframe = null;
+	popoutWindow = null;
+	ready = false;
+	currentPage.href = document.location.href;
+	currentPage.title = document.title;
 }
 
 const formatMessage = (action: keyof HooksWidgetAPI, ...params: Parameters<HooksWidgetAPI[keyof HooksWidgetAPI]>) => ({
@@ -215,8 +256,15 @@ const createWidget = (url: string) => {
 		callHook('setParentUrl', window.location.href);
 	};
 
-	const mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
-	mediaQueryList.addListener(handleMediaQueryTest);
+	mediaQueryList = window.matchMedia('screen and (max-device-width: 480px)');
+	mediaQueryListener = handleMediaQueryTest;
+
+	if (typeof mediaQueryList.addEventListener === 'function') {
+		mediaQueryList.addEventListener('change', mediaQueryListener);
+	} else {
+		mediaQueryList.addListener(mediaQueryListener);
+	}
+
 	handleMediaQueryTest(mediaQueryList);
 };
 
@@ -503,7 +551,7 @@ const api: InternalWidgetAPI = {
 	},
 
 	removeWidget() {
-		document.body.removeChild(widget as Node);
+		cleanupWidget();
 	},
 
 	callback(eventName, data) {
@@ -681,11 +729,20 @@ function listenForMessageOnce<K extends keyof InternalWidgetAPI>(
 }
 
 const attachMessageListener = () => {
-	window.addEventListener('message', onNewMessage, false);
+	if (messageListener) {
+		window.removeEventListener('message', messageListener);
+	}
+
+	messageListener = onNewMessage;
+	window.addEventListener('message', messageListener, false);
 };
 
 const trackNavigation = () => {
-	setInterval(() => {
+	if (navigationIntervalId !== null) {
+		clearInterval(navigationIntervalId);
+	}
+
+	navigationIntervalId = window.setInterval(() => {
 		if (document.location.href !== currentPage.href) {
 			pageVisited('url');
 			currentPage.href = document.location.href;
@@ -699,6 +756,8 @@ const trackNavigation = () => {
 };
 
 const init = (url: string) => {
+	cleanupWidget();
+
 	const trimmedUrl = url.trim();
 	if (!trimmedUrl) {
 		return;
