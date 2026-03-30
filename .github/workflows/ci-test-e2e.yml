@@ -213,7 +213,15 @@ jobs:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
         run: |
+          dump_startup_debug() {
+            echo "EE/FIPS startup failed - dumping compose status and logs"
+            docker compose $COMPOSE_FILES ps || true
+            docker compose $COMPOSE_FILES logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service || true
+          }
+
+          trap dump_startup_debug ERR
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose $COMPOSE_FILES up -d --no-build
+          trap - ERR
 
       - uses: ./.github/actions/setup-playwright
         if: inputs.type == 'ui'
