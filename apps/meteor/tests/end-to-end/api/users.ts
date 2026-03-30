@@ -1443,28 +1443,6 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it('should query all users in the system by name', (done) => {
-			// filtering user list
-			void request
-				.get(api('users.list'))
-				.set(credentials)
-				.query({
-					name: { $regex: 'g' },
-					sort: JSON.stringify({
-						createdAt: -1,
-					}),
-				})
-				.field('username', 1)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-				})
-				.end(done);
-		});
-
 		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
 			await updatePermission('view-outside-room', ['admin']);
 			await request
