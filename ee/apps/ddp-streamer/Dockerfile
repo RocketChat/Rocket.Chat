@@ -1,4 +1,4 @@
-FROM node:22.16.0-alpine3.21 AS builder
+FROM node:22.16.0-alpine3.22 AS builder
 
 ARG SERVICE
 
@@ -91,7 +91,7 @@ WORKDIR /app/ee/apps/${SERVICE}
 
 RUN yarn workspaces focus --production
 
-FROM node:22.16.0-alpine3.21
+FROM node:22.16.0-alpine3.22
 
 ARG SERVICE
 
@@ -101,7 +101,7 @@ ENV NODE_ENV=production \
 RUN apk update && \
     apk --no-cache --virtual deps add shadow && \
     # Update OpenSSL
-    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.21
+    # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.22
     apk upgrade --no-cache openssl && \
     rm -rf /var/cache/apk/* && \
     groupmod -n rocketchat nogroup && \
