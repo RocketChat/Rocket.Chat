@@ -8986,6 +8986,7 @@ __metadata:
   resolution: "@rocket.chat/account-utils@workspace:packages/account-utils"
   dependencies:
     eslint: "npm:~9.39.3"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9002,6 +9003,7 @@ __metadata:
     human-interval: "npm:^2.0.1"
     moment-timezone: "npm:~0.5.48"
     mongodb: "npm:6.16.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9070,6 +9072,7 @@ __metadata:
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~9.39.3"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9116,6 +9119,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     jest: "npm:~30.2.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9127,6 +9131,7 @@ __metadata:
     cheerio: "npm:1.0.0"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9153,6 +9158,7 @@ __metadata:
     jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
     prettier: "npm:~3.3.3"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9190,6 +9196,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~9.39.3"
     mongodb: "npm:6.16.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9335,6 +9342,7 @@ __metadata:
   resolution: "@rocket.chat/favicon@workspace:packages/favicon"
   dependencies:
     eslint: "npm:~9.39.3"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9369,6 +9377,7 @@ __metadata:
     pino: "npm:10.3.1"
     pino-pretty: "npm:13.1.3"
     reflect-metadata: "npm:^0.2.2"
+    rimraf: "npm:^6.0.1"
     sanitize-html: "npm:~2.17.0"
     tsyringe: "npm:^4.10.0"
     tweetnacl: "npm:^1.0.3"
@@ -9499,6 +9508,7 @@ __metadata:
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:^4.12.0"
     rimraf: "npm:^6.0.1"
+    shx: "npm:^0.3.4"
     storybook: "npm:^8.6.17"
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.9.3"
@@ -9592,6 +9602,8 @@ __metadata:
     react-i18next: "npm:~13.2.2"
     react-stately: "npm:~3.17.0"
     react-virtuoso: "npm:^4.12.0"
+    rimraf: "npm:^6.0.1"
+    shx: "npm:^0.3.4"
     storybook: "npm:^8.6.17"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.99.9"
@@ -9627,6 +9639,7 @@ __metadata:
     hono: "npm:^4.12.5"
     jest: "npm:~30.2.0"
     qs: "npm:^6.14.1"
+    rimraf: "npm:^6.0.1"
     supertest: "npm:~7.1.4"
     ts-jest: "npm:~29.4.6"
     typescript: "npm:~5.9.3"
@@ -9643,6 +9656,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/tools": "workspace:~"
@@ -9667,6 +9681,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     mongodb: "npm:6.16.0"
     prettier: "npm:~3.3.3"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9703,6 +9718,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
     jose: "npm:^4.15.9"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9839,6 +9855,7 @@ __metadata:
     chalk: "npm:^4.1.2"
     ejson: "npm:^2.2.3"
     eslint: "npm:~9.39.3"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9850,6 +9867,7 @@ __metadata:
     "@rocket.chat/emitter": "npm:^0.32.0"
     eslint: "npm:~9.39.3"
     pino: "npm:10.3.1"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9880,6 +9898,8 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     drachtio-srf: "patch:drachtio-srf@npm%3A5.0.12#~/.yarn/patches/drachtio-srf-npm-5.0.12-b0b1afaad6.patch"
     eslint: "npm:~9.39.3"
+    rimraf: "npm:^6.0.1"
+    shx: "npm:^0.3.4"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9895,6 +9915,8 @@ __metadata:
     ajv: "npm:^8.17.1"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
+    rimraf: "npm:^6.0.1"
+    shx: "npm:^0.3.4"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -9942,6 +9964,7 @@ __metadata:
     i18next: "npm:~23.4.9"
     jest: "npm:~30.2.0"
     moment: "npm:^2.30.1"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   peerDependencies:
     date-fns: ~4.1.0
@@ -10363,6 +10386,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
+    rimraf: "npm:^6.0.1"
     storybook: "npm:^8.6.17"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -10379,6 +10403,7 @@ __metadata:
     "@types/node-rsa": "npm:^1.1.4"
     eslint: "npm:~9.39.3"
     mongodb: "npm:6.16.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10401,6 +10426,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
     node-rsa: "npm:^1.1.1"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10413,6 +10439,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   peerDependencies:
     mongodb: 6.10.0
@@ -10462,6 +10489,7 @@ __metadata:
     jest: "npm:~30.2.0"
     mem: "npm:^8.1.1"
     mongodb: "npm:6.16.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10479,6 +10507,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
     mongodb: "npm:6.16.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10515,6 +10544,7 @@ __metadata:
     mongo-message-queue: "npm:^1.1.0"
     mongodb: "npm:6.16.0"
     pino: "npm:10.3.1"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10593,6 +10623,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10606,6 +10637,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10640,6 +10672,8 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
+    rimraf: "npm:^6.0.1"
+    shx: "npm:^0.3.4"
     storybook: "npm:^8.6.17"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -10776,6 +10810,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10826,6 +10861,7 @@ __metadata:
     ajv-formats: "npm:^3.0.1"
     eslint: "npm:~9.39.3"
     mongodb: "npm:6.16.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10857,6 +10893,7 @@ __metadata:
     jest: "npm:^29.7.0"
     node-fetch: "npm:2.7.0"
     proxy-from-env: "npm:^1.1.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10869,6 +10906,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10896,6 +10934,8 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
+    rimraf: "npm:^6.0.1"
+    shx: "npm:^0.3.4"
     storybook: "npm:^8.6.17"
     storybook-dark-mode: "npm:^4.0.2"
     typescript: "npm:~5.9.3"
@@ -10945,6 +10985,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
     moment-timezone: "npm:^0.5.48"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -10959,6 +11000,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
+    rimraf: "npm:^6.0.1"
     ts-jest: "npm:~29.4.6"
     typescript: "npm:~5.9.3"
   languageName: unknown
@@ -10987,6 +11029,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -11037,6 +11080,7 @@ __metadata:
     react-hook-form: "npm:~7.45.4"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:^4.12.0"
+    rimraf: "npm:^6.0.1"
     storybook: "npm:^8.6.17"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -11083,6 +11127,8 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
+    rimraf: "npm:^6.0.1"
+    shx: "npm:^0.3.4"
     storybook: "npm:^8.6.17"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.99.9"
@@ -11121,6 +11167,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
+    rimraf: "npm:^6.0.1"
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/core-typings": "workspace:^"
@@ -11188,6 +11235,7 @@ __metadata:
     react: "npm:~18.3.1"
     react-dom: "npm:~18.3.1"
     react-virtuoso: "npm:^4.12.0"
+    rimraf: "npm:^6.0.1"
     storybook: "npm:^8.6.17"
     typescript: "npm:~5.9.3"
     webpack: "npm:~5.99.9"
@@ -11255,6 +11303,7 @@ __metadata:
     react-dom: "npm:~18.3.1"
     react-i18next: "npm:~13.2.2"
     react-virtuoso: "npm:^4.12.0"
+    rimraf: "npm:^6.0.1"
     storybook: "npm:^8.6.17"
     typescript: "npm:~5.9.3"
   peerDependencies:
@@ -23485,7 +23534,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^7.0.3, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.2.0":
+"glob@npm:^7.0.0, glob@npm:^7.0.3, glob@npm:^7.1.3, glob@npm:^7.1.4, glob@npm:^7.1.6, glob@npm:^7.2.0":
   version: 7.2.3
   resolution: "glob@npm:7.2.3"
   dependencies:
@@ -24751,6 +24800,13 @@ __metadata:
   version: 1.0.1
   resolution: "internmap@npm:1.0.1"
   checksum: 10/429cb9e28f393f10c73a826d71ba9e359711b7e42345bd684aba708f43b8139ce90f09b15abbf977a981474ac61615294854e5b9520d3f65187d0f6a2ff27665
+  languageName: node
+  linkType: hard
+
+"interpret@npm:^1.0.0":
+  version: 1.4.0
+  resolution: "interpret@npm:1.4.0"
+  checksum: 10/5beec568d3f60543d0f61f2c5969d44dffcb1a372fe5abcdb8013968114d4e4aaac06bc971a4c9f5bd52d150881d8ebad72a8c60686b1361f5f0522f39c0e1a3
   languageName: node
   linkType: hard
 
@@ -32933,6 +32989,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rechoir@npm:^0.6.2":
+  version: 0.6.2
+  resolution: "rechoir@npm:0.6.2"
+  dependencies:
+    resolve: "npm:^1.1.6"
+  checksum: 10/fe76bf9c21875ac16e235defedd7cbd34f333c02a92546142b7911a0f7c7059d2e16f441fe6fb9ae203f459c05a31b2bcf26202896d89e390eda7514d5d2702b
+  languageName: node
+  linkType: hard
+
 "rechoir@npm:^0.8.0":
   version: 0.8.0
   resolution: "rechoir@npm:0.8.0"
@@ -33369,6 +33434,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"resolve@npm:^1.1.6":
+  version: 1.22.11
+  resolution: "resolve@npm:1.22.11"
+  dependencies:
+    is-core-module: "npm:^2.16.1"
+    path-parse: "npm:^1.0.7"
+    supports-preserve-symlinks-flag: "npm:^1.0.0"
+  bin:
+    resolve: bin/resolve
+  checksum: 10/e1b2e738884a08de03f97ee71494335eba8c2b0feb1de9ae065e82c48997f349f77a2b10e8817e147cf610bfabc4b1cb7891ee8eaf5bf80d4ad514a34c4fab0a
+  languageName: node
+  linkType: hard
+
 "resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.11.1, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.2, resolve@npm:^1.22.4, resolve@npm:^1.22.8":
   version: 1.22.8
   resolution: "resolve@npm:1.22.8"
@@ -33408,6 +33486,19 @@ __metadata:
   bin:
     resolve: bin/resolve
   checksum: 10/c95cb98b8d3f9e2a979e6eb8b7e0b0e13f08da62607a45207275f151d640152244568a9a9cd01662a21e3746792177cbf9be1dacb88f7355edf4db49d9ee27e5
+  languageName: node
+  linkType: hard
+
+"resolve@patch:resolve@npm%3A^1.1.6#optional!builtin<compat/resolve>":
+  version: 1.22.11
+  resolution: "resolve@patch:resolve@npm%3A1.22.11#optional!builtin<compat/resolve>::version=1.22.11&hash=c3c19d"
+  dependencies:
+    is-core-module: "npm:^2.16.1"
+    path-parse: "npm:^1.0.7"
+    supports-preserve-symlinks-flag: "npm:^1.0.0"
+  bin:
+    resolve: bin/resolve
+  checksum: 10/fd342cad25e52cd6f4f3d1716e189717f2522bfd6641109fe7aa372f32b5714a296ed7c238ddbe7ebb0c1ddfe0b7f71c9984171024c97cf1b2073e3e40ff71a8
   languageName: node
   linkType: hard
 
@@ -33573,6 +33664,8 @@ __metadata:
     eslint: "npm:~9.39.3"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
     node-gyp: "npm:^10.2.0"
+    rimraf: "npm:^6.0.1"
+    shx: "npm:^0.3.4"
     ts-node: "npm:^10.9.2"
     turbo: "npm:2.8.12"
     typescript: "npm:~5.9.3"
@@ -33619,6 +33712,7 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     pino: "npm:10.3.1"
     pino-pretty: "npm:13.1.3"
+    rimraf: "npm:^6.0.1"
     sodium-native: "npm:^4.3.3"
     sodium-plus: "npm:^0.9.0"
     ts-node: "npm:^10.9.2"
@@ -34360,6 +34454,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"shelljs@npm:^0.8.5":
+  version: 0.8.5
+  resolution: "shelljs@npm:0.8.5"
+  dependencies:
+    glob: "npm:^7.0.0"
+    interpret: "npm:^1.0.0"
+    rechoir: "npm:^0.6.2"
+  bin:
+    shjs: bin/shjs
+  checksum: 10/f2178274b97b44332bbe9ddb78161137054f55ecf701c7a99db9552cb5478fe279ad5f5131d8a7c2f0730e01ccf0c629d01094143f0541962ce1a3d0243d23f7
+  languageName: node
+  linkType: hard
+
 "shimmer@npm:^1.2.1":
   version: 1.2.1
   resolution: "shimmer@npm:1.2.1"
@@ -34374,6 +34481,18 @@ __metadata:
     any-base: "npm:^1.1.0"
     uuid: "npm:^8.3.2"
   checksum: 10/fcd0cef08c5f3f4c1e5d1f716a9a92efbadf8131a22ba6e399f7cf9257e7f18084995e6dc3e950cc705bcdee4c4e982a752872caf1305314713fc86357d68480
+  languageName: node
+  linkType: hard
+
+"shx@npm:^0.3.4":
+  version: 0.3.4
+  resolution: "shx@npm:0.3.4"
+  dependencies:
+    minimist: "npm:^1.2.3"
+    shelljs: "npm:^0.8.5"
+  bin:
+    shx: lib/cli.js
+  checksum: 10/5271b60f7e322540799102ad6935121f10c857a995a1321357a7bffd1628674a4758a602153dc5cc126d8dc94d3489586587d3dee54dc3cac0222ca08a78e33a
   languageName: node
   linkType: hard
 

@@ -8,7 +8,7 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "tsc -p tsconfig.build.json && cp -r src/public dist/public",
+		"build": "tsc -p tsconfig.build.json && shx cp -r src/public dist/public",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
@@ -46,6 +46,8 @@
 		"i18next": "~23.4.9",
 		"jest": "~30.2.0",
 		"react-dom": "~18.3.1",
+		"rimraf": "^6.0.1",
+		"shx": "^0.3.4",
 		"storybook": "^8.6.17",
 		"typescript": "~5.9.3"
 	},

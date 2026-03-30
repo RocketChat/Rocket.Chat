@@ -12,8 +12,8 @@
 		"/preview.d.ts"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc && yarn run copy-svg",
-		"copy-svg": "cp -r ./src/logo.svg ./dist/logo.svg",
+		"build": "rimraf dist && tsc && yarn run copy-svg",
+		"copy-svg": "shx cp -r ./src/logo.svg ./dist/logo.svg",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix ."
@@ -43,6 +43,8 @@
 		"eslint": "~9.39.3",
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
+		"rimraf": "^6.0.1",
+		"shx": "^0.3.4",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {

@@ -8,7 +8,7 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.json",
+		"build": "rimraf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
@@ -20,6 +20,7 @@
 		"eslint": "~9.39.3",
 		"jest": "~30.2.0",
 		"mongodb": "6.16.0",
+		"rimraf": "^6.0.1",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {

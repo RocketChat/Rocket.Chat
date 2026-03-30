@@ -8,8 +8,8 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/media-signaling",
+		"build": "rimraf dist && tsc -p tsconfig.json",
+		"build-preview": "shx mkdir -p ../../.preview && shx cp -r ./dist ../../.preview/media-signaling",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
@@ -25,6 +25,8 @@
 		"@types/jest": "~30.0.0",
 		"eslint": "~9.39.3",
 		"jest": "~30.2.0",
+		"rimraf": "^6.0.1",
+		"shx": "^0.3.4",
 		"typescript": "~5.9.3"
 	}
 }

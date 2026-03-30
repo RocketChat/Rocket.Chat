@@ -23,7 +23,7 @@
 		"/dist"
 	],
 	"scripts": {
-		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/fuselage-ui-kit",
+		".:build-preview-move": "shx mkdir -p ../../.preview/ && shx cp -r ./storybook-static ../../.preview/fuselage-ui-kit",
 		".:build:clean": "rimraf dist",
 		".:build:tsc": "tsc -p tsconfig.build.json",
 		"build": "run-s .:build:clean .:build:tsc",
@@ -83,6 +83,7 @@
 		"react-i18next": "~13.2.2",
 		"react-virtuoso": "^4.12.0",
 		"rimraf": "^6.0.1",
+		"shx": "^0.3.4",
 		"storybook": "^8.6.17",
 		"storybook-dark-mode": "^4.0.2",
 		"typescript": "~5.9.3",

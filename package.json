@@ -58,6 +58,8 @@
 		"@types/node": "~22.16.5",
 		"eslint": "~9.39.3",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
+		"rimraf": "^6.0.1",
+		"shx": "^0.3.4",
 		"ts-node": "^10.9.2",
 		"turbo": "2.8.12",
 		"typescript": "~5.9.3"
