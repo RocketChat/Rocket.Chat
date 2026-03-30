@@ -3,9 +3,10 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import { useLayout, useRouter, useUserPreference, useUserId, useUserCard, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { UIEvent } from 'react';
 import { useCallback, memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { normalizeUsername } from '../../lib/utils/normalizeUsername';
 import { detectEmoji } from '../lib/utils/detectEmoji';
@@ -30,6 +31,8 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const highlights = useMessageListHighlights();
 	const { triggerProps, openUserCard } = useUserCard();
+	const dispatchToastMessage = useToastMessageDispatch();
+	const { t } = useTranslation();
 
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
@@ -99,7 +102,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 
 	const onChannelMentionClick = useCallback(
 		({ _id: rid }: ChannelMention) =>
-			(event: UIEvent): void => {
+			async (event: UIEvent): Promise<void> => {
 				if (isEmbedded) {
 					fireGlobalEvent('click-mention-link', {
 						path: router.buildRoutePath({
@@ -111,9 +114,16 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				}
 
 				event.stopPropagation();
-				goToRoom(rid);
+				try {
+					await goToRoom(rid);
+				} catch (error) {
+					dispatchToastMessage({
+						type: 'error',
+						message: t('No_access_to_room'),
+					});
+				}
 			},
-		[router, isEmbedded, goToRoom],
+		[router, isEmbedded, goToRoom, dispatchToastMessage, t],
 	);
 
 	return (
