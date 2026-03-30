@@ -1809,6 +1809,146 @@ import { SynapseClient } from '../helper/synapse-client';
 			});
 		});
 
+		describe('Re-inviting a RC user from Synapse after leaving or being kicked', () => {
+			describe('Kick a RC user from Synapse, send a message, then re-invite the same user', () => {
+				let matrixRoomId: string;
+				let channelName: string;
+
+				beforeAll(async () => {
+					channelName = `federated-channel-reinvite-kicked-${Date.now()}`;
+
+					// Step 1: Create a room on Synapse
+					matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+					// Step 2: Invite RC user from Synapse
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					// Step 3: RC user accepts the invite
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+					expect(pendingInvitation).not.toBeUndefined();
+
+					const rid = pendingInvitation!.rid!;
+					await acceptRoomInvite(rid, rc1AdminRequestConfig);
+
+					// Wait for join to propagate to Synapse
+					await retry(
+						'waiting for RC user join to propagate to Synapse',
+						async () => {
+							const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+							expect(member?.membership).toBe('join');
+						},
+						{ delayMs: 500 },
+					);
+
+					// Step 4: Kick RC user from Synapse
+					await hs1AdminApp.matrixClient.kick(matrixRoomId, federationConfig.rc1.adminMatrixUserId, 'Kicked for re-invite test');
+
+					// Wait for kick to propagate to Synapse
+					await retry(
+						'waiting for RC user kick to propagate to Synapse',
+						async () => {
+							const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+							expect(member?.membership).toBe('leave');
+						},
+						{ delayMs: 500 },
+					);
+
+					// Step 5: Send a message from Synapse (while RC user is kicked)
+					await hs1AdminApp.matrixClient.sendTextMessage(matrixRoomId, 'Message sent after kicking RC user');
+				}, 30000);
+
+				it('should allow re-inviting the same RC user after being kicked', async () => {
+					// Step 6: Re-invite the same RC user from Synapse
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					// Step 7: Validate the invite was created successfully on the RC side
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+
+					expect(pendingInvitation).not.toBeUndefined();
+					expect(pendingInvitation).toHaveProperty('rid');
+					expect(pendingInvitation).toHaveProperty('fname');
+					expect(pendingInvitation!.fname).toContain(channelName);
+				});
+			});
+
+			describe('RC user leaves the room, Synapse sends a message, then re-invites the same user', () => {
+				let matrixRoomId: string;
+				let channelName: string;
+
+				beforeAll(async () => {
+					channelName = `federated-channel-reinvite-left-${Date.now()}`;
+
+					// Step 1: Create a room on Synapse
+					matrixRoomId = await hs1AdminApp.createRoom(channelName);
+
+					// Step 2: Invite RC user from Synapse
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					// Step 3: RC user accepts the invite
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+					expect(pendingInvitation).not.toBeUndefined();
+
+					const rid = pendingInvitation!.rid!;
+					await acceptRoomInvite(rid, rc1AdminRequestConfig);
+
+					// Wait for join to propagate to Synapse
+					await retry(
+						'waiting for RC user join to propagate to Synapse',
+						async () => {
+							const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+							expect(member?.membership).toBe('join');
+						},
+						{ delayMs: 500 },
+					);
+
+					// Step 4: RC user leaves the room
+					await rc1AdminRequestConfig.request
+						.post(api('rooms.leave'))
+						.set(rc1AdminRequestConfig.credentials)
+						.send({ roomId: rid })
+						.expect(200);
+
+					// Wait for leave to propagate to Synapse
+					await retry(
+						'waiting for RC user leave to propagate to Synapse',
+						async () => {
+							const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.adminMatrixUserId);
+							expect(member?.membership).toBe('leave');
+						},
+						{ delayMs: 500 },
+					);
+
+					// Step 5: Send a message from Synapse (while RC user has left)
+					await hs1AdminApp.matrixClient.sendTextMessage(matrixRoomId, 'Message sent after RC user left');
+				}, 30000);
+
+				it('should allow re-inviting the same RC user after they left', async () => {
+					// Step 6: Re-invite the same RC user from Synapse
+					await hs1AdminApp.matrixClient.invite(matrixRoomId, federationConfig.rc1.adminMatrixUserId);
+
+					// Step 7: Validate the invite was created successfully on the RC side
+					const subscriptions = await getSubscriptions(rc1AdminRequestConfig);
+					const pendingInvitation = subscriptions.update.find(
+						(subscription) => subscription.status === 'INVITED' && subscription.fname?.includes(channelName),
+					);
+
+					expect(pendingInvitation).not.toBeUndefined();
+					expect(pendingInvitation).toHaveProperty('rid');
+					expect(pendingInvitation).toHaveProperty('fname');
+					expect(pendingInvitation!.fname).toContain(channelName);
+				});
+			});
+		});
+
 		describe.skip('Synchronizing user names across federated servers', () => {
 			const ts = Date.now();
 
