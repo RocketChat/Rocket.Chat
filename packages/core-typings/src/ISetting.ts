@@ -126,6 +126,10 @@ interface ISettingAction extends ISettingBase {
 	type: 'action';
 	value: string;
 	actionText?: string;
+	actionEndpoint?: {
+		method: 'GET' | 'POST' | 'DELETE' | 'PUT';
+		path: string;
+	};
 }
 
 export interface ISettingAsset extends ISettingBase {

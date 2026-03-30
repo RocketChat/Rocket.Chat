@@ -67,6 +67,10 @@ type MemoizedSettingProps = {
 	required?: boolean;
 	showUpgradeButton?: ReactNode;
 	actionText?: string;
+	actionEndpoint?: {
+		method: 'GET' | 'POST' | 'DELETE' | 'PUT';
+		path: string;
+	};
 };
 
 const MemoizedSetting = ({
