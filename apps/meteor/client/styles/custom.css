@@ -1,0 +1,45 @@
+/* 
+ * Fix: Ensure proper wrapping of long text inside message containers.
+ *
+ * Problem:
+ * Long unbroken text (URLs, emails, continuous strings) was not wrapping,
+ * causing overflow and breaking the chat layout.
+ *
+ * Solution:
+ * - Enabled normal white-space behavior
+ * - Applied word-break and overflow-wrap to handle long tokens
+ * - Allowed content to remain visible within container boundaries
+ */
+
+.rcx-message-thread__message,
+.rcx-message-thread__origin,
+.rcx-message-body {
+	white-space: normal !important;
+	word-break: break-word;
+	overflow-wrap: break-word;
+	overflow: visible !important;
+}
+
+/* 
+ * Fix: Disable line-clamp in thread preview to prevent text truncation issues.
+ *
+ * Problem:
+ * The use of -webkit-line-clamp with overflow: hidden prevented proper
+ * wrapping of long unbroken text, leading to text overlap and layout break.
+ *
+ * Solution:
+ * - Disabled line-clamp behavior
+ * - Restored default block layout for proper text flow
+ * - Allowed full content rendering to ensure correct wrapping
+ *
+ * Note:
+ * This may display full message content instead of a truncated preview,
+ * but ensures UI stability for edge cases.
+ */
+
+.rcx-message-body--clamp {
+	display: block !important;
+	line-clamp: unset !important;
+	-webkit-line-clamp: unset !important;
+	overflow: visible !important;
+}
