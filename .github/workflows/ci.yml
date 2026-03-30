@@ -1040,6 +1040,11 @@ jobs:
             [[ -d "$service_dir" ]] || continue
             service="$(basename "$service_dir")"
 
+            if [[ "$service" == 'rocketchat-cov' ]]; then
+              echo "Skipping $service for DockerHub publish"
+              continue
+            fi
+
             echo "Promoting $service"
 
             if [[ "${service}" == 'rocketchat' ]]; then
