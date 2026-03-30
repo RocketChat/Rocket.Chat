@@ -8,7 +8,10 @@ import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 	const userId = useUserId();
-	const { data: userData, isLoading } = useUserInfoQuery({ userId: userId || '' });
+	const { data: userData, isLoading } = useUserInfoQuery(
+		useMemo(() => ({ userId: userId || '' }), [userId]),
+		{ enabled: !!userId },
+	);
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
 
