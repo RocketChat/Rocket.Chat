@@ -53,7 +53,16 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 		formState: { isDirty, isSubmitting, errors },
 	} = useForm({ defaultValues: { users: [] } });
 
-	const handleSave = useEffectEvent(async ({ users }: { users: string[] }) => {
+	const handleSave = useEffectEvent(async ({ users, unbanConfirmed }: { users: string[]; unbanConfirmed?: boolean }) => {
+		if (unbanConfirmed) {
+			const { bannedUsers } = await getBannedUsers({ roomId: rid });
+			const bannedSet = new Set(bannedUsers.map((u) => u.username));
+			const usersToUnban = users.filter((username) => bannedSet.has(username));
+
+			if (usersToUnban.length) {
+				await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
+			}
+		}
 		await saveAction({ rid, users });
 		dispatchToastMessage({ type: 'success', message: t(roomIsFederated && !isFederationBlocked ? 'Users_invited' : 'Users_added') });
 		onClickBack();
@@ -74,6 +83,8 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 						<BannedUsersUnbanModal
 							onClose={() => setModal(null)}
 							onConfirm={async () => {
+								console.log('usersToUnban', usersToUnban);
+
 								await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
 								await saveAction({ rid, users });
 								setModal(null);

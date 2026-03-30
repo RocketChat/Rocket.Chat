@@ -23,7 +23,7 @@ type AddMatrixUsersModalProps = {
 	matrixIdVerifiedStatus: Map<string, string>;
 	completeUserList: string[];
 	onClose: () => void;
-	onSave: (args_0: any) => Promise<void>;
+	onSave: (args_0: { users: string[]; unbanConfirmed?: boolean }) => Promise<void>;
 };
 
 type FormValues = {
@@ -64,7 +64,7 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 		setLoading(true);
 		setError(undefined);
 		try {
-			await onSave({ users: data.usersToInvite });
+			await onSave({ users: data.usersToInvite, unbanConfirmed });
 			onClose();
 		} catch (err: any) {
 			if (err?.error === 'error-user-is-banned') {
