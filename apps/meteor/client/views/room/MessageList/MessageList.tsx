@@ -3,7 +3,7 @@ import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, MutableRefObject, Ref, RefObject } from 'react';
 
 import { VirtualizedMessageList } from './VirtualizedMessageList';
-import type { VirtualizerHandle } from './VirtualizedMessageList';
+import type { VirtualizerHandle } from '../../../../components/message/list/MessageListContext';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';

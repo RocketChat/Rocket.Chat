@@ -4,7 +4,7 @@ import { useCallback, useRef } from 'react';
 
 import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
-import type { VirtualizerHandle } from '../../MessageList/MessageList';
+import type { VirtualizerHandle } from '../../../../../components/message/list/MessageListContext';
 
 export const useListIsAtBottom = (virtualizerRef?: RefObject<VirtualizerHandle | null>) => {
 	const atBottomRef = useRef(true);

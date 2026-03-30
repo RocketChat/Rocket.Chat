@@ -8,7 +8,7 @@ import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
-import type { VirtualizerHandle } from '../MessageList';
+import type { VirtualizerHandle } from '../../../../components/message/list/MessageListContext';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';

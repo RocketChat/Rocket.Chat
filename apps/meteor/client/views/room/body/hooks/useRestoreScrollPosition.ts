@@ -5,7 +5,7 @@ import { useCallback, useRef } from 'react';
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { RoomManager } from '../../../../lib/RoomManager';
-import type { VirtualizerHandle } from '../../MessageList/MessageList';
+import type { VirtualizerHandle } from '../../../../../components/message/list/MessageListContext';
 
 export function useRestoreScrollPosition(rid: string, virtualizerRef?: RefObject<VirtualizerHandle | null>, wait = 100) {
 	const jumpToRef = useRef<HTMLElement>(undefined);

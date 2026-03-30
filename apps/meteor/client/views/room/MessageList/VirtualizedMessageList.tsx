@@ -14,16 +14,13 @@ import { MessageListItem } from './MessageListItem';
 import { isMessageSequential } from './lib/isMessageSequential';
 import { setHighlightMessage, clearHighlightMessage } from './providers/messageHighlightSubscription';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
+import type { VirtualizerHandle } from '../../../components/message/list/MessageListContext';
+import { useMessageListVirtualizer } from '../../../components/message/list/MessageListContext';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
 
-export type VirtualizerHandle = {
-	scrollToIndex: (index: number, opts?: ScrollToOptions) => void;
-	scrollToOffset: (offset: number, opts?: ScrollToOptions) => void;
-	scrollToEnd: (opts?: ScrollToOptions) => void;
-	getTotalSize: () => number;
-};
+export type { VirtualizerHandle };
 
 const ESTIMATE_SIZE = 84;
 const OVERSCAN = 5;
@@ -87,7 +84,20 @@ export function VirtualizedMessageList({
 		() => ({
 			scrollToIndex: (...args: Parameters<typeof virtualizer.scrollToIndex>) => virtualizer.scrollToIndex(...args),
 			scrollToOffset: (...args: Parameters<typeof virtualizer.scrollToOffset>) => virtualizer.scrollToOffset(...args),
-			scrollToEnd: (opts) => virtualizer.scrollToIndex(virtualizer.options.count - 1, { align: 'end', ...opts }),
+			scrollToEnd: (opts?: ScrollToOptions) => virtualizer.scrollToIndex(virtualizer.options.count - 1, { align: 'end', ...opts }),
+			getTotalSize: () => virtualizer.getTotalSize(),
+			isAtBottom: () => virtualizer.getVirtualItems()[virtualizer.getVirtualItems().length - 1]?.index === virtualizer.options.count - 1,
+		}),
+		[virtualizer],
+	);
+
+	const contextVirtualizerRef = useMessageListVirtualizer();
+	useImperativeHandle(
+		contextVirtualizerRef,
+		() => ({
+			scrollToIndex: (...args: Parameters<typeof virtualizer.scrollToIndex>) => virtualizer.scrollToIndex(...args),
+			scrollToOffset: (...args: Parameters<typeof virtualizer.scrollToOffset>) => virtualizer.scrollToOffset(...args),
+			scrollToEnd: (opts?: ScrollToOptions) => virtualizer.scrollToIndex(virtualizer.options.count - 1, { align: 'end', ...opts }),
 			getTotalSize: () => virtualizer.getTotalSize(),
 			isAtBottom: () => virtualizer.getVirtualItems()[virtualizer.getVirtualItems().length - 1]?.index === virtualizer.options.count - 1,
 		}),
