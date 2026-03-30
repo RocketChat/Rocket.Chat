@@ -297,14 +297,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		if (!(await this.isAvailable())) {
-			pdpLogger.warn({
-				msg: 'Virtru PDP is unavailable, skipping room attributes evaluation — no users will be removed',
-				roomId: room._id,
-			});
-			return [];
-		}
-
 		const users = Users.findActiveByRoomIds([room._id], {
 			projection: { _id: 1, emails: 1, username: 1 },
 		});

@@ -2942,6 +2942,21 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			await deleteUser(newUser);
 		});
+
+		it('should deny room attribute changes when PDP is unavailable', async () => {
+			await mockServerReset();
+			await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' });
+
+			await request
+				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+				.set(credentials)
+				.send({ values: ['beta'] })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-pdp-unavailable');
+				});
+		});
 	});
 
 	describe('Selective DENY: only non-permitted users are removed', () => {

@@ -24,6 +24,7 @@ import {
 	AbacInvalidAttributeValuesError,
 	AbacUnsupportedObjectTypeError,
 	AbacUnsupportedOperationError,
+	PdpUnavailableError,
 } from './errors';
 import {
 	getAbacRoom,
@@ -416,6 +417,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
+		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
 
 		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
@@ -438,6 +440,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
+		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
@@ -514,6 +517,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
+		await this.ensurePdpAvailable();
 		await ensureAttributeDefinitionsExist([{ key, values }]);
 
 		const room = await getAbacRoom(rid);
@@ -536,6 +540,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
+		await this.ensurePdpAvailable();
 		await ensureAttributeDefinitionsExist([{ key, values }]);
 
 		const room = await getAbacRoom(rid);
@@ -648,6 +653,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private pdpType: 'local' | 'virtru' = 'local';
+
+	private async ensurePdpAvailable(): Promise<void> {
+		if (!(await this.pdp?.isAvailable())) {
+			throw new PdpUnavailableError();
+		}
+	}
 
 	private async removeUserFromRoom(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
 		return Room.removeUserFromRoom(room._id, user, {
