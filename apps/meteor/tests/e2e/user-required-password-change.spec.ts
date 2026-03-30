@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
-import { Registration } from './page-objects';
+import { Login, Registration } from './page-objects';
 import { Navbar, RoomSidebar } from './page-objects/fragments';
 import { getSettingValueById, setSettingValueById } from './utils';
 import { test, expect } from './utils/test';
@@ -9,6 +9,7 @@ import type { ITestUser } from './utils/user-helpers';
 import { createTestUser } from './utils/user-helpers';
 
 test.describe('User - Password change required', () => {
+	let poLogin: Login;
 	let poRegistration: Registration;
 	let navbar: Navbar;
 	let sidebar: RoomSidebar;
@@ -27,6 +28,7 @@ test.describe('User - Password change required', () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
+		poLogin = new Login(page);
 		poRegistration = new Registration(page);
 		navbar = new Navbar(page);
 		sidebar = new RoomSidebar(page);
@@ -45,9 +47,7 @@ test.describe('User - Password change required', () => {
 
 	test('should redirect to home after successful password change for new user', async ({ page }) => {
 		await test.step('login with temporary password', async () => {
-			await poRegistration.username.fill(userRequiringPasswordChange.data.username);
-			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
-			await poRegistration.btnLogin.click();
+			await poLogin.login(userRequiringPasswordChange.data.username, DEFAULT_USER_CREDENTIALS.password);
 		});
 
 		await test.step('should be redirected to password change screen', async () => {
@@ -79,9 +79,7 @@ test.describe('User - Password change required', () => {
 
 	test('should show error when password confirmation does not match', async () => {
 		await test.step('login with temporary password', async () => {
-			await poRegistration.username.fill(userNotAbleToLogin.data.username);
-			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
-			await poRegistration.btnLogin.click();
+			await poLogin.login(userNotAbleToLogin.data.username, DEFAULT_USER_CREDENTIALS.password);
 		});
 
 		await test.step('should be redirected to password change screen', async () => {
@@ -105,9 +103,7 @@ test.describe('User - Password change required', () => {
 
 	test('should show error when user tries to use the same password as current', async () => {
 		await test.step('login with temporary password', async () => {
-			await poRegistration.username.fill(userNotAbleToLogin.data.username);
-			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
-			await poRegistration.btnLogin.click();
+			await poLogin.login(userNotAbleToLogin.data.username, DEFAULT_USER_CREDENTIALS.password);
 		});
 
 		await test.step('should be redirected to password change screen', async () => {
@@ -131,7 +127,7 @@ test.describe('User - Password change required', () => {
 });
 
 test.describe('User - Password change not required', () => {
-	let poRegistration: Registration;
+	let poLogin: Login;
 	let navbar: Navbar;
 	let sidebar: RoomSidebar;
 	let userNotRequiringPasswordChange: ITestUser;
@@ -143,7 +139,7 @@ test.describe('User - Password change not required', () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
-		poRegistration = new Registration(page);
+		poLogin = new Login(page);
 		navbar = new Navbar(page);
 		sidebar = new RoomSidebar(page);
 		await page.goto('/home');
@@ -158,9 +154,7 @@ test.describe('User - Password change not required', () => {
 
 	test('should not require password change if the requirePasswordChange is disabled', async ({ page }) => {
 		await test.step('login with user not requiring password change', async () => {
-			await poRegistration.username.fill(userNotRequiringPasswordChange.data.username);
-			await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
-			await poRegistration.btnLogin.click();
+			await poLogin.login(userNotRequiringPasswordChange.data.username, DEFAULT_USER_CREDENTIALS.password);
 		});
 
 		await test.step('verify user is properly logged in', async () => {

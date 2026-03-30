@@ -1089,7 +1089,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	// FIND
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		const query = { 'u._id': userId };
+		const query: Filter<ISubscription> = { 'u._id': userId, 'status': { $ne: 'BANNED' as const } };
 
 		return this.find(query, options);
 	}
@@ -1857,13 +1857,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
-			fname: room.fname,
+			...(room.fname && { fname: room.fname }),
 			...(room.customFields && { customFields: room.customFields }),
 			t: room.t,
 			u: {
 				_id: user._id,
 				username: user.username,
-				name: user.name,
+				...(user.name && { name: user.name }),
 			},
 			...(room.prid && { prid: room.prid }),
 			...extraData,
@@ -1894,13 +1894,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
-			fname: room.fname,
+			...(room.fname && { fname: room.fname }),
 			...(room.customFields && { customFields: room.customFields }),
 			t: room.t,
 			u: {
 				_id: user._id,
 				username: user.username,
-				name: user.name,
+				...(user.name && { name: user.name }),
 			},
 			...(room.prid && { prid: room.prid }),
 			...extraData,
@@ -2114,6 +2114,44 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		);
 	}
 
+	async findOneBannedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null> {
+		return this.findOne({
+			'rid': roomId,
+			'u._id': userId,
+			'status': 'BANNED',
+		});
+	}
+
+	findBannedByRoomId(roomId: ISubscription['rid']) {
+		return this.find({
+			rid: roomId,
+			status: 'BANNED',
+		});
+	}
+
+	async banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ 'rid': roomId, 'u._id': userId },
+			{
+				$set: {
+					status: 'BANNED' as const,
+					open: false,
+					alert: false,
+				},
+			},
+		);
+	}
+
+	async unbanByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ 'rid': roomId, 'u._id': userId, 'status': 'BANNED' },
+			{
+				$unset: { status: 1 },
+				$set: { open: true, alert: false },
+			},
+		);
+	}
+
 	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult> {
 		const query = {
 			'rid': roomId,
@@ -2127,5 +2165,15 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	findJoinedByUserId<T extends Document = ISubscription>(userId: ISubscription['u']['_id'], options?: FindOptions<T>): FindCursor<T> {
+		return this.find(
+			{
+				'u._id': userId,
+				'status': { $exists: false },
+			},
+			options,
+		);
 	}
 }

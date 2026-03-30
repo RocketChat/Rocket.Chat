@@ -6,6 +6,7 @@ const config: OauthConfig = {
 	serverURL: 'https://github.com',
 	identityPath: 'https://api.github.com/user',
 	tokenPath: 'https://github.com/login/oauth/access_token',
+	emailPath: 'https://api.github.com/user/emails',
 	scope: 'user:email',
 	mergeUsers: false,
 	addAutopublishFields: {

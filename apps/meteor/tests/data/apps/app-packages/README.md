@@ -180,3 +180,116 @@ export class NestedRequestsApp extends App implements IPostMessageSent {
 ```
 
 </details>
+
+#### Update Status Test
+
+File name: `update-status-test_0.0.1.zip`
+
+An app that provides two public API endpoints to test the `updateStatus` and `updateStatusText` bridge methods. A `username` parameter is required to specify the target user.
+
+**Endpoints:**
+
+- `POST /update-status` — Calls `updateStatus(user, statusText, status)`. Expects `{ username: string, status: string, statusText?: string }`.
+- `POST /update-status-text` — Calls `updateStatusText(user, statusText)`. Expects `{ username: string, statusText: string }`.
+
+<details>
+<summary>App source code</summary>
+
+**UpdateStatusTestApp.ts**
+```typescript
+import {
+    IAppAccessors,
+    IConfigurationExtend,
+    ILogger,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { UpdateStatusEndpoint } from './endpoints/UpdateStatusEndpoint';
+import { UpdateStatusTextEndpoint } from './endpoints/UpdateStatusTextEndpoint';
+
+export class UpdateStatusTestApp extends App {
+    constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+        super(info, logger, accessors);
+    }
+
+    protected async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+        await configuration.api.provideApi({
+            visibility: ApiVisibility.PUBLIC,
+            security: ApiSecurity.UNSECURE,
+            endpoints: [
+                new UpdateStatusEndpoint(this),
+                new UpdateStatusTextEndpoint(this),
+            ],
+        });
+    }
+}
+```
+
+**endpoints/UpdateStatusEndpoint.ts**
+```typescript
+import { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
+
+export class UpdateStatusEndpoint extends ApiEndpoint {
+    public path = 'update-status';
+
+    public async post(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse> {
+        const { status, statusText = '', username } = request.content || {};
+
+        if (!status) {
+            return { status: 400, content: 'status is required' };
+        }
+
+        if (!username) {
+            return { status: 400, content: 'username is required' };
+        }
+
+        const user = await read.getUserReader().getByUsername(username) as IUser;
+
+        if (!user) {
+            return { status: 404, content: 'User not found' };
+        }
+
+        await modify.getUpdater().getUserUpdater().updateStatus(user, statusText, status);
+
+        return this.success(JSON.stringify({ status, statusText }));
+    }
+}
+```
+
+**endpoints/UpdateStatusTextEndpoint.ts**
+```typescript
+import { IHttp, IModify, IPersistence, IRead } from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+import { IUser } from '@rocket.chat/apps-engine/definition/users';
+
+export class UpdateStatusTextEndpoint extends ApiEndpoint {
+    public path = 'update-status-text';
+
+    public async post(request: IApiRequest, endpoint: IApiEndpointInfo, read: IRead, modify: IModify, http: IHttp, persis: IPersistence): Promise<IApiResponse> {
+        const { statusText, username } = request.content || {};
+
+        if (typeof statusText !== 'string') {
+            return { status: 400, content: 'statusText is required' };
+        }
+
+        if (!username) {
+            return { status: 400, content: 'username is required' };
+        }
+
+        const user = await read.getUserReader().getByUsername(username) as IUser;
+
+        if (!user) {
+            return { status: 404, content: 'User not found' };
+        }
+
+        await modify.getUpdater().getUserUpdater().updateStatusText(user, statusText);
+
+        return this.success(JSON.stringify({ statusText }));
+    }
+}
+```
+
+</details>
