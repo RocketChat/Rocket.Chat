@@ -109,7 +109,7 @@ const RoomBody = (): ReactElement => {
 
 	const { messageListRef } = useMessageListNavigation();
 	// need to update
-	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
+	const { selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
 	const scrollContainerRef = useRef<HTMLElement | null>(null);
 	const [, setScrollContainerReady] = useState(false);
@@ -128,7 +128,6 @@ const RoomBody = (): ReactElement => {
 		dateScrollInnerRef,
 		restoreScrollPositionInnerRef,
 		unreadBarInnerRef,
-		selectAndScrollRef,
 		messageListRef,
 		jumpToRefGetMoreImperativeInnerRef,
 	);

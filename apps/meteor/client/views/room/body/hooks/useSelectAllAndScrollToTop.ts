@@ -1,15 +1,14 @@
-import { useRef } from 'react';
-
+import { useMessageListVirtualizer } from '../../../../components/message/list/MessageListContext';
 import { useToggleSelectAll } from '../../MessageList/contexts/SelectedMessagesContext';
 
 export const useSelectAllAndScrollToTop = () => {
-	const ref = useRef<HTMLElement>(null);
+	const virtualizerRef = useMessageListVirtualizer();
 	const handleToggleAll = useToggleSelectAll();
 
 	const selectAllAndScrollToTop = () => {
-		ref.current?.scrollTo({ top: 0, behavior: 'smooth' });
+		virtualizerRef?.current?.scrollToOffset(0, { behavior: 'smooth' });
 		handleToggleAll();
 	};
 
-	return { innerRef: ref, selectAllAndScrollToTop };
+	return { selectAllAndScrollToTop };
 };
