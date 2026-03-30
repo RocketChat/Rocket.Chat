@@ -10,6 +10,7 @@ export enum AbacErrorCode {
 	AbacUnsupportedObjectType = 'error-abac-unsupported-object-type',
 	AbacUnsupportedOperation = 'error-abac-unsupported-operation',
 	OnlyCompliantCanBeAddedToRoom = 'error-only-compliant-users-can-be-added-to-abac-rooms',
+	PdpUnavailable = 'error-pdp-unavailable',
 }
 
 export class AbacError extends Error {
@@ -89,5 +90,11 @@ export class AbacUnsupportedOperationError extends AbacError {
 export class OnlyCompliantCanBeAddedToRoomError extends AbacError {
 	constructor(details?: unknown) {
 		super(AbacErrorCode.OnlyCompliantCanBeAddedToRoom, details);
+	}
+}
+
+export class PdpUnavailableError extends AbacError {
+	constructor(details?: unknown) {
+		super(AbacErrorCode.PdpUnavailable, details);
 	}
 }
