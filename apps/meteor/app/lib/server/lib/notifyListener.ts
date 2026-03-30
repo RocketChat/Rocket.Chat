@@ -487,7 +487,7 @@ export const notifyOnSubscriptionChanged = async (subscription: ISubscription, c
 export const notifyOnSubscriptionChangedByRoomIdAndUserId = async (
 	rid: ISubscription['rid'],
 	uid: ISubscription['u']['_id'],
-	clientAction: ClientAction = 'updated',
+	clientAction: Exclude<ClientAction, 'removed'> = 'updated',
 ): Promise<void> => {
 	const cursor = Subscriptions.findByUserIdAndRoomIds(uid, [rid], { projection: subscriptionFields });
 
