@@ -1,10 +1,9 @@
 import { useUserId, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 
 import PasswordChangeCheck from './PasswordChangeCheck';
 import RegisterUsername from './RegisterUsername';
-import { useReactiveValue } from '../../../hooks/useReactiveValue';
 import { useUserInfoQuery } from '../../../hooks/useUserInfoQuery';
 
 const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
@@ -13,27 +12,29 @@ const UsernameCheck = ({ children }: { children: ReactNode }): ReactElement => {
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
 
-	const shouldRegisterUsername = useReactiveValue(
-		useCallback(() => {
-			const hasUserInCollection = !!userData?.user;
-			const hasUsername = !!userData?.user?.username;
+	const shouldRegisterUsername = useMemo(() => {
+		const hasUserInCollection = !!userData?.user;
+		const hasUsername = !!userData?.user?.username;
 
-			if (!userId) {
-				return !allowAnonymousRead;
-			}
+		if (!userId) {
+			return !allowAnonymousRead;
+		}
 
-			if (!hasUserInCollection) {
-				return true;
-			}
+		if (!hasUserInCollection) {
+			return true;
+		}
 
-			return !hasUsername;
-		}, [userData?.user, userId, allowAnonymousRead]),
-	);
+		return !hasUsername;
+	}, [userData?.user, userId, allowAnonymousRead]);
+
+	console.log({ isLoading, shouldRegisterUsername, user: userData?.user });
 
 	if (!isLoading && shouldRegisterUsername) {
+		console.log('RegisterUsername');
 		return <RegisterUsername />;
 	}
 
+	console.log('Home');
 	return <PasswordChangeCheck>{children}</PasswordChangeCheck>;
 };
 
