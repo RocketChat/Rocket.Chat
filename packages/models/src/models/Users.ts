@@ -485,16 +485,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	findOneWithoutLDAPByUsernameIgnoringCase<T extends Document = IUser>(username: string, options?: FindOptions<IUser>) {
-		const expression = new RegExp(`^${escapeRegExp(username)}$`, 'i');
-
 		const query = {
-			'username': expression,
+			username,
 			'services.ldap': {
 				$exists: false,
 			},
 		};
 
-		return this.findOne<T>(query, options);
+		return this.findOne<T>(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	async findOneByLDAPId<T extends Document = IUser>(id: string, attribute?: string) {
@@ -2309,18 +2310,17 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	}
 
 	findOneByUsernameAndServiceNameIgnoringCase(
-		username: string | RegExp,
+		username: string,
 		userId: IUser['_id'],
 		serviceName: string,
 		options?: FindOptions<IUser>,
 	) {
-		if (typeof username === 'string') {
-			username = new RegExp(`^${escapeRegExp(username)}$`, 'i');
-		}
-
 		const query = { username, [`services.${serviceName}.id`]: userId };
 
-		return this.findOne(query, options);
+		return this.findOne(query, {
+			collation: { locale: 'en', strength: 2 }, // Case insensitive
+			...options,
+		});
 	}
 
 	findOneByEmailAddressAndServiceNameIgnoringCase(
