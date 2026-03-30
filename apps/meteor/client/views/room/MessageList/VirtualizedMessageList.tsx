@@ -6,7 +6,7 @@ import { VirtualScrollbars } from '@rocket.chat/ui-client';
 import { useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ScrollToOptions, VirtualItem } from '@tanstack/react-virtual';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import type { MutableRefObject, Ref, RefObject } from 'react';
+import type { MutableRefObject, Ref } from 'react';
 import { useEffect, useImperativeHandle, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -34,7 +34,6 @@ type VirtualizedMessageListProps = {
 	firstUnreadMessageId: string | undefined;
 	showUserAvatar: boolean;
 	subscription: ISubscription | undefined;
-	virtualizerRef?: RefObject<VirtualizerHandle | null>;
 	innerRef: Ref<HTMLElement>;
 	isLoadingMoreMessages: boolean;
 	canPreview: boolean;
@@ -54,7 +53,6 @@ export function VirtualizedMessageList({
 	firstUnreadMessageId,
 	showUserAvatar,
 	subscription,
-	virtualizerRef,
 	innerRef,
 	isLoadingMoreMessages,
 	canPreview,
@@ -78,18 +76,6 @@ export function VirtualizedMessageList({
 		getItemKey: (index: number) => messages[index]?._id ?? index,
 		initialOffset: Infinity,
 	});
-
-	useImperativeHandle(
-		virtualizerRef,
-		() => ({
-			scrollToIndex: (...args: Parameters<typeof virtualizer.scrollToIndex>) => virtualizer.scrollToIndex(...args),
-			scrollToOffset: (...args: Parameters<typeof virtualizer.scrollToOffset>) => virtualizer.scrollToOffset(...args),
-			scrollToEnd: (opts?: ScrollToOptions) => virtualizer.scrollToIndex(virtualizer.options.count - 1, { align: 'end', ...opts }),
-			getTotalSize: () => virtualizer.getTotalSize(),
-			isAtBottom: () => virtualizer.getVirtualItems()[virtualizer.getVirtualItems().length - 1]?.index === virtualizer.options.count - 1,
-		}),
-		[virtualizer],
-	);
 
 	const contextVirtualizerRef = useMessageListVirtualizer();
 	useImperativeHandle(

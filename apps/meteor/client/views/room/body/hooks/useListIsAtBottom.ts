@@ -1,12 +1,13 @@
 import { useMergedRefs, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
-import type { MutableRefObject, RefObject } from 'react';
+import type { MutableRefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import { isAtBottom as isAtBottomLib } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
-import type { VirtualizerHandle } from '../../../../../components/message/list/MessageListContext';
+import { useMessageListVirtualizer } from '../../../../components/message/list/MessageListContext';
 
-export const useListIsAtBottom = (virtualizerRef?: RefObject<VirtualizerHandle | null>) => {
+export const useListIsAtBottom = () => {
+	const virtualizerRef = useMessageListVirtualizer();
 	const atBottomRef = useRef(true);
 
 	const jumpToRef = useRef<HTMLElement>(undefined);
@@ -75,7 +76,7 @@ export const useListIsAtBottom = (virtualizerRef?: RefObject<VirtualizerHandle |
 					node.removeEventListener('scroll', handleScroll);
 				};
 			},
-			[isAtBottom, virtualizerRef],
+			[isAtBottom],
 		),
 	);
 

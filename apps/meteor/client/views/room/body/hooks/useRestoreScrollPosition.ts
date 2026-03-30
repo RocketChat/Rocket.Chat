@@ -1,13 +1,13 @@
 import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
-import type { RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import { useMessageListVirtualizer } from '../../../../components/message/list/MessageListContext';
 import { RoomManager } from '../../../../lib/RoomManager';
-import type { VirtualizerHandle } from '../../../../../components/message/list/MessageListContext';
 
-export function useRestoreScrollPosition(rid: string, virtualizerRef?: RefObject<VirtualizerHandle | null>, wait = 100) {
+export function useRestoreScrollPosition(rid: string, wait = 100) {
+	const virtualizerRef = useMessageListVirtualizer();
 	const jumpToRef = useRef<HTMLElement>(undefined);
 	const ref = useSafeRefCallback(
 		useCallback(

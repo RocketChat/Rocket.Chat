@@ -1,22 +1,18 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MutableRefObject, Ref, RefObject } from 'react';
+import type { ComponentProps, MutableRefObject, Ref } from 'react';
 
 import { VirtualizedMessageList } from './VirtualizedMessageList';
-import type { VirtualizerHandle } from '../../../../components/message/list/MessageListContext';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
 import MessageListProvider from './providers/MessageListProvider';
 
-export type { VirtualizerHandle };
-
 type MessageListProps = {
 	rid: IRoom['_id'];
 	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
 	scrollContainerRef?: MutableRefObject<HTMLElement | null>;
-	virtualizerRef?: RefObject<VirtualizerHandle | null>;
 	isLoadingMoreMessages: boolean;
 	canPreview: boolean;
 	hasMorePreviousMessages: boolean;
@@ -32,7 +28,6 @@ export const MessageList = function MessageList({
 	rid,
 	messageListRef,
 	scrollContainerRef,
-	virtualizerRef,
 	isLoadingMoreMessages,
 	canPreview,
 	hasMorePreviousMessages,
@@ -60,7 +55,6 @@ export const MessageList = function MessageList({
 					firstUnreadMessageId={firstUnreadMessageId}
 					showUserAvatar={showUserAvatar}
 					subscription={subscription}
-					virtualizerRef={virtualizerRef}
 					innerRef={innerRef}
 					isLoadingMoreMessages={isLoadingMoreMessages}
 					canPreview={canPreview}

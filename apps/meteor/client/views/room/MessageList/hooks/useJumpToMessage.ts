@@ -1,10 +1,10 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
-import type { VirtualizerHandle } from '../../../../components/message/list/MessageListContext';
+import { useMessageListVirtualizer } from '../../../../components/message/list/MessageListContext';
 
-export const useJumpToMessageImperative = (virtualizerRef?: RefObject<VirtualizerHandle | null>) => {
+export const useJumpToMessageImperative = () => {
+	const virtualizerRef = useMessageListVirtualizer();
 	const jumpToRef = useRef<HTMLDivElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 

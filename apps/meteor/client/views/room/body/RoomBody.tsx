@@ -8,7 +8,6 @@ import { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
-import type { VirtualizerHandle } from '../../../../components/message/list/MessageListContext';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
@@ -78,10 +77,7 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
-
-	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } =
-		useJumpToMessageImperative(virtualizerRef);
+	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
 
 	useLoadSurroundingMessages();
 
@@ -95,18 +91,9 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const {
-		innerRef: isAtBottomInnerRef,
-		atBottomRef,
-		sendToBottom,
-		sendToBottomIfNecessary,
-		isAtBottom,
-	} = useListIsAtBottom(virtualizerRef);
+	const { innerRef: isAtBottomInnerRef, atBottomRef, sendToBottom, sendToBottomIfNecessary, isAtBottom } = useListIsAtBottom();
 
-	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(
-		room._id,
-		virtualizerRef,
-	);
+	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
 
 	const jumpToRef = useMergedRefsV2(jumpToRefRestoreScrollPosition, jumpToRefGetMoreImperative);
 
@@ -256,7 +243,6 @@ const RoomBody = (): ReactElement => {
 											rid={room._id}
 											messageListRef={jumpToRef}
 											scrollContainerRef={scrollContainerRef}
-											virtualizerRef={virtualizerRef}
 											isLoadingMoreMessages={isLoadingMoreMessages}
 											canPreview={canPreview}
 											hasMorePreviousMessages={hasMorePreviousMessages}
