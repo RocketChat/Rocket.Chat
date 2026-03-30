@@ -52,10 +52,10 @@ const RoomsTableFilters = ({ setFilters }: { setFilters: Dispatch<SetStateAction
 
 	const handleClearFilters = () => {
 		setRoomTypeSelectedOptions([]);
-		setText(");
+		setText("");
 				
 		setFilters({
-		searchText: ",
+		searchText:"",
 		types:[],
 		});
 };
