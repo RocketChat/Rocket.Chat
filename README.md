@@ -101,10 +101,19 @@ Join [#support](https://open.rocket.chat/channel/support) and [#general](https:/
 
 ![Alt](https://repobeats.axiom.co/api/embed/1efe0f0a7c366bd58068a1ab1f555ab912ec3895.svg "Repobeats analytics image")
 
-# 👥 Contributions
+## 🚦 Start Here: New Contributor Quickstart
 
-Rocket.Chat is an open-source project, and we are very happy to accept community contributions. Refer to the [Contribution guide](https://developer.rocket.chat/docs/contribute-to-rocketchat) for more details.
+Welcome! Rocket.Chat is an open-source project, and we are very happy to accept community contributions. If you’re new to Rocket.Chat, follow these steps to make your first contribution:
 
+1. **Read our [Code of Conduct](https://developer.rocket.chat/docs/code-of-conduct)** to help keep our community welcoming.
+2. **Review the [Contribution Process](https://developer.rocket.chat/docs/contribution-process)** for how to open issues and pull requests.
+3. **Explore [Modes of Contribution](https://developer.rocket.chat/docs/modes-of-contribution)**—you can code, test, report bugs, improve docs, and more!
+4. **Sign the [Contributor License Agreement (CLA)](https://cla-assistant.io/RocketChat/Rocket.Chat)** before your first PR.
+5. **Find a [good first issue](https://github.com/RocketChat/Rocket.Chat/labels/good%20first%20issue)** or check our [open issues](https://github.com/RocketChat/Rocket.Chat/issues).
+6. **Join our [community server](https://open.rocket.chat/channel/support)** for help and to meet other contributors.
+7. **See our [CONTRIBUTING.md](.github/CONTRIBUTING.md)** for more tips.
+
+For full details, visit our [Contributor Guide](https://developer.rocket.chat/docs/contribute-to-rocketchat).
 
 # 💼 Become a Rocketeer
 
