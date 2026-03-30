@@ -58,7 +58,7 @@ runs:
       if: inputs.service == 'rocketchat'
       uses: actions/download-artifact@v6
       with:
-        name: build-${{ inputs.type }}
+        name: build-${{ (inputs.type == 'fips' && github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'coverage' || (inputs.type == 'fips' && 'production' || inputs.type) }}
         path: /tmp/build
 
     - name: Unpack meteor build
@@ -68,6 +68,9 @@ runs:
         cd /tmp/build
         tar xzf Rocket.Chat.tar.gz
         rm Rocket.Chat.tar.gz
+        if [[ "${{ inputs.type }}" == 'fips' ]]; then
+          cp "${GITHUB_WORKSPACE}/apps/meteor/.docker/fips.js" /tmp/build/fips.js
+        fi
 
     - name: Set up Docker
       if: inputs.setup-docker == true
