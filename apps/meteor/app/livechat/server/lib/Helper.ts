@@ -145,6 +145,9 @@ export const prepareLivechatRoom = async (
 		priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
 		estimatedWaitingTimeQueue: DEFAULT_SLA_CONFIG.ESTIMATED_WAITING_TIME_QUEUE,
 		...extraRoomInfo,
+		// marker field for unique index - only new rooms have this field (see #39087)
+		// allows index creation to succeed even if old duplicates exist
+		_enforceSingleRoom: true,
 	} as InsertionModel<IOmnichannelRoom>;
 };
 
@@ -724,7 +727,7 @@ export const forwardRoomToDepartment = async (room: IOmnichannelRoom, guest: ILi
 	}
 
 	const { servedBy, chatQueued } = roomTaken;
-	if (!chatQueued && oldServedBy && servedBy && oldServedBy._id === servedBy._id) {
+	if (!chatQueued && oldServedBy && oldServedBy._id === servedBy?._id) {
 		if (!department?.fallbackForwardDepartment?.length) {
 			logger.debug({
 				msg: 'Cannot forward room. Chat assigned to agent instead',

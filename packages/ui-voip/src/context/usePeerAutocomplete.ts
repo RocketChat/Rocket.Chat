@@ -3,9 +3,9 @@ import { useUserPresence } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import type { PeerInfo } from './MediaCallContext';
-import { useMediaCallContext } from './MediaCallContext';
+import type { PeerInfo } from './definitions';
 import type { PeerAutocompleteOptions } from '../components';
+import { useMediaCallInstance } from './MediaCallInstanceContext';
 import { mediaCallQueryKeys } from '../utils/queryKeys';
 
 const PREFIX_FIRST_OPTION = 'rcx-first-option-';
@@ -19,7 +19,7 @@ const getFirstOption = (filter: string): PeerAutocompleteOptions => {
 };
 
 export const usePeerAutocomplete = (onSelectPeer: (peerInfo: PeerInfo) => void, peerInfo: PeerInfo | undefined) => {
-	const { getAutocompleteOptions } = useMediaCallContext();
+	const { getAutocompleteOptions } = useMediaCallInstance();
 	const [filter, setFilter] = useState('');
 
 	const debouncedFilter = useDebouncedValue(filter, 400);

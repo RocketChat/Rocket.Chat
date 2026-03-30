@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { bold, inlineCode, italic, paragraph, plain, strike } from '../src/utils';
+import { bold, inlineCode, italic, paragraph, plain, strike } from './helpers';
 
 test.each([
 	['~~`Striking Inline Code`~~', [paragraph([strike([inlineCode(plain('Striking Inline Code'))])])]],

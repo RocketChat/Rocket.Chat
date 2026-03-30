@@ -69,6 +69,7 @@ type ReportErrorsServerInteraction = {
 	type: 'errors';
 	triggerId: string;
 	appId: string;
+	// eslint-disable-next-line @typescript-eslint/no-duplicate-type-constituents
 	viewId: ModalView['id'] | BannerView['viewId'] | ContextualBarView['id'];
 	errors: { [field: string]: string }[];
 };

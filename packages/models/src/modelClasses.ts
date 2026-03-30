@@ -3,7 +3,6 @@ export * from './models/AbacAttributes';
 export * from './models/Analytics';
 export * from './models/Apps';
 export * from './models/AppsPersistence';
-export * from './models/AppsTokens';
 export * from './models/AppLogsModel';
 export * from './models/Avatars';
 export * from './models/Banners';

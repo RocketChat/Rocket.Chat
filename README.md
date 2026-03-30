@@ -99,6 +99,7 @@ Develop your own apps that can be integrated with Rocket.Chat. We provide an [op
 Join thousands of members worldwide in our [community server](https://open.rocket.chat).
 Join [#support](https://open.rocket.chat/channel/support) and [#general](https://open.rocket.chat/channel/general) for help from the community.
 
+![Alt](https://repobeats.axiom.co/api/embed/1efe0f0a7c366bd58068a1ab1f555ab912ec3895.svg "Repobeats analytics image")
 
 # 👥 Contributions
 

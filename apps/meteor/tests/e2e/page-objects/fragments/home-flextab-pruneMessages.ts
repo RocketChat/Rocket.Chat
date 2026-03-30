@@ -12,11 +12,11 @@ export class HomeFlextabPruneMessages {
 	}
 
 	get doNotPrunePinned(): Locator {
-		return this.form.getByRole('checkbox', { name: 'Do not prune pinned messages', exact: true });
+		return this.form.locator('label', { hasText: 'Do not prune pinned messages' });
 	}
 
 	get filesOnly(): Locator {
-		return this.form.getByRole('checkbox', { name: 'Only remove the attached files, keep messages', exact: true });
+		return this.form.locator('label', { hasText: 'Only remove the attached files, keep messages' });
 	}
 
 	async prune(): Promise<void> {

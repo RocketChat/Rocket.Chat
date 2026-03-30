@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { heading, lineBreak, mentionChannel, paragraph, plain } from '../src/utils';
+import { heading, lineBreak, mentionChannel, paragraph, plain } from './helpers';
 
 test.each([
 	['# h1', [heading([plain('h1')], 1)]],

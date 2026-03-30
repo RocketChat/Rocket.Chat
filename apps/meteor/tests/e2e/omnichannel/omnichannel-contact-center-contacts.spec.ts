@@ -132,7 +132,7 @@ test.describe('OC - Contact Center - Contacts', () => {
 		await test.step('validate email format', async () => {
 			await poContacts.editContact.btnAddEmail.click();
 			await poContacts.editContact.inputEmail.fill('invalidemail');
-			await page.keyboard.press('Tab');
+			await page.keyboard.press('Enter');
 			await expect(poContacts.editContact.getErrorMessage(ERROR.invalidEmail)).toBeVisible();
 		});
 
@@ -207,7 +207,7 @@ test.describe('OC - Contact Center - Contacts', () => {
 
 		await test.step('validate email format', async () => {
 			await poContacts.editContact.inputEmail.fill('invalidemail');
-			await page.keyboard.press('Tab');
+			await page.keyboard.press('Enter');
 			await expect(poContacts.editContact.getErrorMessage(ERROR.invalidEmail)).toBeVisible();
 		});
 
