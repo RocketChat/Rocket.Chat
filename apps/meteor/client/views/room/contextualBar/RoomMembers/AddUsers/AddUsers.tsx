@@ -83,7 +83,6 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 						<BannedUsersUnbanModal
 							onClose={() => setModal(null)}
 							onConfirm={async () => {
-
 								await Promise.all(usersToUnban.map((username) => unbanUser({ roomId: rid, username })));
 								await saveAction({ rid, users });
 								setModal(null);
