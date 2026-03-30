@@ -229,7 +229,7 @@ jobs:
 
             for attempt in $(seq 1 "$retries"); do
               local is_primary
-              is_primary=$(docker compose $COMPOSE_FILES exec -T mongo mongosh --quiet --eval "try { const hello = db.hello(); print((hello.isWritablePrimary || hello.ismaster) ? '1' : '0'); } catch (e) { print('0'); }" 2>/dev/null | tail -n1)
+              is_primary=$(docker compose $COMPOSE_FILES exec -T mongo mongosh --quiet --eval "try { const hello = db.hello(); print((hello.isWritablePrimary || hello.ismaster) ? '1' : '0'); } catch (e) { print('0'); }" 2>/dev/null | tail -n1 || true)
 
               if [[ "$is_primary" == '1' ]]; then
                 echo "Mongo replica set primary is ready"
