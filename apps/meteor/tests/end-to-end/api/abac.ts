@@ -10,6 +10,7 @@ import {
 	mockServerHealthy,
 	mockServerReset,
 	mockServerSet,
+	seedBulkDecisionByEntity,
 	seedDefaultMocks,
 	seedGetDecisionBulk,
 	seedGetDecisions,
@@ -17,7 +18,7 @@ import {
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { deleteTeam } from '../../data/teams.helper';
-import { password } from '../../data/user';
+import { adminEmail, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
@@ -2943,7 +2944,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	describe('DENY all on attribute set, then lighten to recover', () => {
+	describe('Selective DENY: only non-permitted users are removed', () => {
 		let room: IRoom;
 		let user: IUser;
 
@@ -2951,7 +2952,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			this.timeout(15000);
 
 			user = await createUser();
-			room = (await createRoom({ type: 'p', name: `extpdp-denyall-${Date.now()}` })).body.group;
+			room = (await createRoom({ type: 'p', name: `extpdp-selective-${Date.now()}` })).body.group;
 			await request
 				.post('/api/v1/groups.invite')
 				.set(credentials)
@@ -2960,10 +2961,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			await mockServerReset();
 			await seedDefaultMocks();
-			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
-				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
-			]);
+			await seedBulkDecisionByEntity([adminEmail], 'DECISION_DENY');
 
 			await request
 				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
@@ -2973,19 +2971,23 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
-			await Promise.all([request.post('/api/v1/rooms.delete').set(credentials).send({ roomId: room._id }), deleteUser(user)]);
+			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
 		});
 
-		it('admin loses access after DENY-all', async () => {
-			await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(400);
+		it('admin (permitted) remains in the room', async () => {
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+			const memberIds = res.body.members.map((m: IUser) => m._id);
+			expect(memberIds).to.include(credentials['X-User-Id']);
 		});
 
-		it('removing ABAC attributes lightens the room', async () => {
-			await request.delete(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`).set(credentials).expect(200);
+		it('user (denied) was removed from the room', async () => {
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+			const usernames = res.body.members.map((m: IUser) => m.username);
+			expect(usernames).to.not.include(user.username);
 		});
 	});
 
-	describe('Tightening attributes: DENY all removes everyone', () => {
+	describe('Tightening attributes: selective DENY removes only denied users', () => {
 		let room: IRoom;
 		let user: IUser;
 
@@ -3014,17 +3016,15 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
-			await Promise.all([request.post('/api/v1/rooms.delete').set(credentials).send({ roomId: room._id }), deleteUser(user)]);
+			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
 		});
 
-		it('tightening with DENY-all removes everyone', async function () {
+		it('user is removed when attributes are tightened and PDP denies them', async function () {
 			this.timeout(10000);
+
 			await mockServerReset();
 			await seedDefaultMocks();
-			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
-				{ resourceDecisions: [{ decision: 'DECISION_DENY', ephemeralResourceId: room._id }] },
-			]);
+			await seedBulkDecisionByEntity([adminEmail], 'DECISION_DENY');
 
 			await request
 				.put(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
@@ -3032,7 +3032,15 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.send({ values: ['alpha', 'beta'] })
 				.expect(200);
 
-			await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(400);
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+			const usernames = res.body.members.map((m: IUser) => m.username);
+			expect(usernames).to.not.include(user.username);
+		});
+
+		it('admin remains in the room after tightening', async () => {
+			const res = await request.get('/api/v1/groups.members').set(credentials).query({ roomId: room._id }).expect(200);
+			const memberIds = res.body.members.map((m: IUser) => m._id);
+			expect(memberIds).to.include(credentials['X-User-Id']);
 		});
 	});
 });

@@ -6,50 +6,44 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"sync"
 	"time"
 )
 
-// MockResponse defines what a mocked endpoint should return.
 type MockResponse struct {
-	StatusCode int             `json:"status_code"`
+	StatusCode int               `json:"status_code"`
 	Headers    map[string]string `json:"headers,omitempty"`
-	Body       json.RawMessage `json:"body"`
-	// Times: how many times to serve this mock. 0 = unlimited (sticky).
-	Times int `json:"times,omitempty"`
+	Body       json.RawMessage   `json:"body"`
+	Times      int               `json:"times,omitempty"`
 }
 
-// MockRule is a queued mock for a specific method+path.
 type MockRule struct {
 	MockResponse
 	remaining int // -1 = unlimited
 }
 
+type DynamicBulkRule struct {
+	PermitValues    []string `json:"permit_values"`
+	DefaultDecision string   `json:"default_decision"`
+}
+
 type server struct {
-	mu    sync.Mutex
-	mocks map[string][]*MockRule // key = "METHOD /path"
-	log   []RequestLog
+	mu          sync.Mutex
+	mocks       map[string][]*MockRule
+	dynamicBulk *DynamicBulkRule
+	log         []RequestLog
 }
 
-// RequestLog records each proxied request for later inspection.
 type RequestLog struct {
-	Timestamp string          `json:"timestamp"`
-	Method    string          `json:"method"`
-	Path      string          `json:"path"`
+	Timestamp string            `json:"timestamp"`
+	Method    string            `json:"method"`
+	Path      string            `json:"path"`
 	Headers   map[string]string `json:"headers"`
-	Body      json.RawMessage `json:"body,omitempty"`
-	Matched   bool            `json:"matched"`
+	Body      json.RawMessage   `json:"body,omitempty"`
+	Matched   bool              `json:"matched"`
 }
 
-// --- Control plane handlers ---
-
-// POST /__mock/set — register a mock response.
-//
-//	{
-//	  "method": "POST",
-//	  "path": "/protocol/openid-connect/token",
-//	  "response": { "status_code": 200, "body": {...}, "headers": {...}, "times": 1 }
-//	}
 func (s *server) handleSet(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Method   string       `json:"method"`
@@ -69,7 +63,7 @@ func (s *server) handleSet(w http.ResponseWriter, r *http.Request) {
 
 	remaining := req.Response.Times
 	if remaining == 0 {
-		remaining = -1 // unlimited
+		remaining = -1
 	}
 
 	key := req.Method + " " + req.Path
@@ -83,7 +77,6 @@ func (s *server) handleSet(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `{"ok":true,"key":%q}`, key)
 }
 
-// POST /__mock/set-many — register multiple mocks at once.
 func (s *server) handleSetMany(w http.ResponseWriter, r *http.Request) {
 	var reqs []struct {
 		Method   string       `json:"method"`
@@ -116,10 +109,38 @@ func (s *server) handleSetMany(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, `{"ok":true,"count":%d}`, len(reqs))
 }
 
-// DELETE /__mock/reset — clear all mocks and logs.
+// POST /__mock/set-bulk-decision — register a dynamic bulk decision handler.
+//
+//	{
+//	  "permit_values": ["admin@test.com"],
+//	  "default_decision": "DECISION_DENY"
+//	}
+//
+// When a GetDecisionBulk request comes in, the mock inspects each entity's
+// emailAddress or id field. If the value is in permit_values → DECISION_PERMIT,
+// otherwise → default_decision.
+func (s *server) handleSetBulkDecision(w http.ResponseWriter, r *http.Request) {
+	var rule DynamicBulkRule
+	if err := json.NewDecoder(r.Body).Decode(&rule); err != nil {
+		http.Error(w, fmt.Sprintf(`{"error":%q}`, err.Error()), http.StatusBadRequest)
+		return
+	}
+	if rule.DefaultDecision == "" {
+		rule.DefaultDecision = "DECISION_DENY"
+	}
+
+	s.mu.Lock()
+	s.dynamicBulk = &rule
+	s.mu.Unlock()
+
+	w.Header().Set("Content-Type", "application/json")
+	fmt.Fprint(w, `{"ok":true}`)
+}
+
 func (s *server) handleReset(w http.ResponseWriter, r *http.Request) {
 	s.mu.Lock()
 	s.mocks = make(map[string][]*MockRule)
+	s.dynamicBulk = nil
 	s.log = nil
 	s.mu.Unlock()
 
@@ -127,7 +148,6 @@ func (s *server) handleReset(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, `{"ok":true}`)
 }
 
-// GET /__mock/log — return captured requests.
 func (s *server) handleLog(w http.ResponseWriter, r *http.Request) {
 	s.mu.Lock()
 	logs := s.log
@@ -137,22 +157,98 @@ func (s *server) handleLog(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(logs)
 }
 
-// GET /__mock/health — liveness check.
 func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	fmt.Fprint(w, `{"status":"ok"}`)
 }
 
-// --- Catch-all handler ---
+// buildDynamicBulkResponse inspects a GetDecisionBulk request body and returns
+// per-entity decisions based on the dynamic rule.
+func (s *server) buildDynamicBulkResponse(rule *DynamicBulkRule, body json.RawMessage) json.RawMessage {
+	var req struct {
+		DecisionRequests []struct {
+			EntityIdentifier struct {
+				EntityChain struct {
+					Entities []json.RawMessage `json:"entities"`
+				} `json:"entityChain"`
+			} `json:"entityIdentifier"`
+			Resources []struct {
+				EphemeralId string `json:"ephemeralId"`
+			} `json:"resources"`
+		} `json:"decisionRequests"`
+	}
+	if err := json.Unmarshal(body, &req); err != nil {
+		log.Printf("dynamic bulk: failed to parse request: %v", err)
+		return []byte(`{"decisionResponses":[]}`)
+	}
+
+	permitSet := make(map[string]bool, len(rule.PermitValues))
+	for _, v := range rule.PermitValues {
+		permitSet[strings.ToLower(v)] = true
+	}
+
+	type resourceDecision struct {
+		Decision            string `json:"decision"`
+		EphemeralResourceId string `json:"ephemeralResourceId,omitempty"`
+	}
+	type decisionResponse struct {
+		ResourceDecisions []resourceDecision `json:"resourceDecisions"`
+	}
+
+	var responses []decisionResponse
+	for _, dr := range req.DecisionRequests {
+		entityValue := extractEntityValue(dr.EntityIdentifier.EntityChain.Entities)
+		decision := rule.DefaultDecision
+		if permitSet[strings.ToLower(entityValue)] {
+			decision = "DECISION_PERMIT"
+		}
+
+		var rds []resourceDecision
+		for _, res := range dr.Resources {
+			rds = append(rds, resourceDecision{
+				Decision:            decision,
+				EphemeralResourceId: res.EphemeralId,
+			})
+		}
+		if len(rds) == 0 {
+			rds = append(rds, resourceDecision{Decision: decision})
+		}
+		responses = append(responses, decisionResponse{ResourceDecisions: rds})
+	}
+
+	result, _ := json.Marshal(map[string]interface{}{
+		"decisionResponses": responses,
+	})
+	return result
+}
+
+// extractEntityValue pulls the emailAddress or id from an entity object.
+func extractEntityValue(entities []json.RawMessage) string {
+	for _, raw := range entities {
+		var entity map[string]interface{}
+		if err := json.Unmarshal(raw, &entity); err != nil {
+			continue
+		}
+		if v, ok := entity["emailAddress"].(string); ok {
+			return v
+		}
+		if v, ok := entity["id"].(string); ok {
+			return v
+		}
+	}
+	return ""
+}
 
 func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// Route control-plane endpoints.
 	switch {
 	case r.URL.Path == "/__mock/set" && r.Method == http.MethodPost:
 		s.handleSet(w, r)
 		return
 	case r.URL.Path == "/__mock/set-many" && r.Method == http.MethodPost:
 		s.handleSetMany(w, r)
+		return
+	case r.URL.Path == "/__mock/set-bulk-decision" && r.Method == http.MethodPost:
+		s.handleSetBulkDecision(w, r)
 		return
 	case r.URL.Path == "/__mock/reset" && (r.Method == http.MethodDelete || r.Method == http.MethodPost):
 		s.handleReset(w, r)
@@ -165,7 +261,6 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Record the incoming request.
 	var bodyBytes json.RawMessage
 	if r.Body != nil {
 		_ = json.NewDecoder(r.Body).Decode(&bodyBytes)
@@ -184,10 +279,25 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Body:      bodyBytes,
 	}
 
-	// Find a matching mock.
 	key := r.Method + " " + r.URL.Path
 
 	s.mu.Lock()
+
+	// Check for dynamic bulk decision handler first (only for GetDecisionBulk).
+	if strings.HasSuffix(r.URL.Path, "/GetDecisionBulk") && s.dynamicBulk != nil {
+		rule := s.dynamicBulk
+		entry.Matched = true
+		s.log = append(s.log, entry)
+		s.mu.Unlock()
+
+		responseBody := s.buildDynamicBulkResponse(rule, bodyBytes)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(responseBody)
+		log.Printf("HIT  %s %s → 200 (dynamic bulk)", r.Method, r.URL.Path)
+		return
+	}
+
 	rules := s.mocks[key]
 	var matched *MockRule
 	if len(rules) > 0 {
@@ -195,11 +305,9 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if matched.remaining > 0 {
 			matched.remaining--
 			if matched.remaining == 0 {
-				// Remove exhausted rule.
 				s.mocks[key] = rules[1:]
 			}
 		}
-		// remaining == -1 means unlimited, keep it.
 	}
 	entry.Matched = matched != nil
 	s.log = append(s.log, entry)
@@ -213,7 +321,6 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Serve the mocked response.
 	for k, v := range matched.Headers {
 		w.Header().Set(k, v)
 	}

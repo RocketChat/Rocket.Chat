@@ -74,3 +74,14 @@ export const seedGetDecisionBulk = async (
 ) => {
 	await mockServerSet('POST', '/authorization.v2.AuthorizationService/GetDecisionBulk', { decisionResponses: responses }, 200, times);
 };
+
+export const seedBulkDecisionByEntity = async (permitValues: string[], defaultDecision: Decision = 'DECISION_DENY') => {
+	const res = await fetch(`${MOCK_SERVER_URL}/__mock/set-bulk-decision`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ permit_values: permitValues, default_decision: defaultDecision }),
+	});
+	if (!res.ok) {
+		throw new Error(`Failed to program mock-server (set-bulk-decision): ${res.status} ${await res.text()}`);
+	}
+};
