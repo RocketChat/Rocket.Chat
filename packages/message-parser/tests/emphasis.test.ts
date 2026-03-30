@@ -12,7 +12,7 @@ import {
 	mentionChannel,
 	mentionUser,
 	inlineCode,
-} from '../src/utils';
+} from './helpers';
 
 test.each([
 	['_:smile:_', [paragraph([italic([emoji('smile')])])]],

@@ -12,13 +12,24 @@ export default {
 		actions: { argTypesRegex: '^on.*' },
 	},
 	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	args: {
+		text: 'filter',
+		type: 'online',
+		setText: action('setText'),
+		setType: action('setType'),
+		loadMoreItems: action('loadMoreItems'),
+		reload: action('reload'),
+		rid: 'GENERAL',
+		isTeam: false,
+		isDirect: false,
+	},
 } satisfies Meta<typeof RoomMembers>;
 
 const Template: StoryFn<typeof RoomMembers> = (args) => <RoomMembers {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-	loading: false,
+	isSuccess: true,
 	members: [
 		{
 			_id: 'rocket.cat',
@@ -32,30 +43,16 @@ Default.args = {
 			},
 		},
 	],
-	text: 'filter',
-	type: 'online',
-	setText: action('Lorem Ipsum'),
-	setType: action('online'),
-	total: 123,
-	loadMoreItems: action('loadMoreItems'),
-	rid: '!roomId',
-	isTeam: false,
-	isDirect: false,
-	reload: action('reload'),
 };
 
 export const Loading = Template.bind({});
 Loading.args = {
-	loading: true,
-	setText: action('setText'),
-	setType: action('setType'),
-	loadMoreItems: action('loadMoreItems'),
-	reload: action('reload'),
+	isPending: true,
 };
 
 export const WithABACRoom = Template.bind({});
 WithABACRoom.args = {
-	loading: false,
+	isSuccess: true,
 	members: [
 		{
 			_id: 'rocket.cat',
@@ -69,22 +66,12 @@ WithABACRoom.args = {
 			},
 		},
 	],
-	text: 'filter',
-	type: 'online',
-	setText: action('Lorem Ipsum'),
-	setType: action('online'),
-	total: 123,
-	loadMoreItems: action('loadMoreItems'),
-	rid: '!roomId',
-	isTeam: false,
-	isDirect: false,
-	reload: action('reload'),
 	isABACRoom: true,
 };
 
 export const WithInvitedMember = Template.bind({});
 WithInvitedMember.args = {
-	loading: false,
+	isSuccess: true,
 	members: [
 		{
 			_id: 'rocket.cat',
@@ -98,15 +85,11 @@ WithInvitedMember.args = {
 			name: 'Rocket.Cat',
 		},
 	],
-	text: 'filter',
-	type: 'online',
-	setText: action('Lorem Ipsum'),
-	setType: action('online'),
-	total: 123,
-	loadMoreItems: action('loadMoreItems'),
-	rid: '!roomId',
-	isTeam: false,
-	isDirect: false,
-	reload: action('reload'),
-	isABACRoom: true,
+};
+
+export const Empty = Template.bind({});
+Empty.args = {
+	isSuccess: true,
+	members: [],
+	total: 0,
 };

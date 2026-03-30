@@ -205,7 +205,7 @@ API.v1.addRoute(
 		async get() {
 			const findResult = await findChannelByIdOrName({ params: this.queryParams });
 
-			const roles = await executeGetRoomRoles(findResult._id, this.userId);
+			const roles = await executeGetRoomRoles(findResult._id, this.user);
 
 			return API.v1.success({
 				roles,
@@ -309,7 +309,7 @@ API.v1.addRoute(
 				rid: findResult._id,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
-				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
+				...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
 				_hidden: { $ne: true },
 			};
 
@@ -783,7 +783,6 @@ API.v1.addRoute(
 				const teamMembers = [];
 
 				for (const team of teams) {
-					// eslint-disable-next-line no-await-in-loop
 					const { records: members } = await Team.members(this.userId, team._id, canSeeAllTeams, {
 						offset: 0,
 						count: Number.MAX_SAFE_INTEGER,

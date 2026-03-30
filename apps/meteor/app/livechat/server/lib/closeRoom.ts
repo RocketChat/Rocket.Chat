@@ -42,7 +42,9 @@ export async function closeRoom(params: CloseRoomParams, attempts = 2): Promise<
 		removedInquiryObj = removedInquiry;
 	} catch (e) {
 		logger.error({ err: e, msg: 'Failed to close room', afterAttempts: attempts });
-		await session.abortTransaction();
+		if (session.inTransaction()) {
+			await session.abortTransaction();
+		}
 		// Dont propagate transaction errors
 		if (shouldRetryTransaction(e)) {
 			if (attempts > 0) {
@@ -186,7 +188,7 @@ async function doCloseRoom(
 	}
 
 	const updatedRoom = await LivechatRooms.closeRoomById(rid, closeData, { session });
-	if (!params.forceClose && (!updatedRoom || updatedRoom.modifiedCount !== 1)) {
+	if (!params.forceClose && updatedRoom?.modifiedCount !== 1) {
 		throw new Error('Error closing room');
 	}
 
