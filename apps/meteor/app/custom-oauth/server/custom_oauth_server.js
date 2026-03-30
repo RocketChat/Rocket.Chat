@@ -471,6 +471,14 @@ export class CustomOAuth {
 				return true;
 			}
 
+			// Ensure OAuth users respect the ManuallyApproveNewUsers setting.
+			// Without this, new OAuth users are created with active: false (pending)
+			// because onCreateUserAsync only sets active if user.active is undefined,
+			// and the custom OAuth path never sets it explicitly (unlike SAML).
+			if (user.active === undefined) {
+				user.active = !settings.get('Accounts_ManuallyApproveNewUsers');
+			}
+
 			if (this.usernameField) {
 				user.username = user.services[this.name].username;
 			}
