@@ -347,7 +347,7 @@ URL
   = $(URLScheme URLAuthority URLBody*)
   / $(URLAuthorityHost URLBody*)
 
-URLScheme = $([A-Za-z0-9+-] |1..32| ":")
+URLScheme = $([A-Za-z0-9+-] |1..32| ":") &"//"
 
 URLBody
   = (
