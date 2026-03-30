@@ -1,4 +1,4 @@
-import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 
 import FileItemIcon from './FileItemIcon';
@@ -9,11 +9,12 @@ import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFr
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
 type FileItemProps = {
+	rid: IRoom['_id'];
 	fileData: IUploadWithUser;
 	onClickDelete: (id: IUpload['_id']) => void;
 };
 
-const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
+const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
 
@@ -57,7 +58,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					</Box>
 				</Box>
 			)}
-			<FileItemMenu fileData={fileData} onClickDelete={onClickDelete} />
+			<FileItemMenu rid={rid} fileData={fileData} onClickDelete={onClickDelete} />
 		</>
 	);
 };
