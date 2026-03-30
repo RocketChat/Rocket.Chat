@@ -79,6 +79,9 @@ runs:
         daemon-config: |
           {
             "debug": false,
+            "registry-mirrors": [
+              "https://mirror.gcr.io"
+            ],
             "features": {
               "containerd-snapshotter": true
             }
