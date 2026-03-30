@@ -126,7 +126,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 							<InfoPanelField>
 								<InfoPanelLabel>{t('Teams_channels')}</InfoPanelLabel>
 								<InfoPanelText>
-									<Button onClick={onClickViewChannels} small>
+									<Button type="button" onClick={onClickViewChannels} small>
 										{t('View_channels')}
 									</Button>
 								</InfoPanelText>
