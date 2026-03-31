@@ -1021,31 +1021,39 @@ const groupsListEndpoint = API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+const groupsListAllEndpoint = API.v1.get(
 	'groups.listAll',
-	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
 	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-			const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
-
-			const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				groups: await Promise.all(rooms.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				offset,
-				count: rooms.length,
-				total,
-			});
+		authRequired: true,
+		permissionsRequired: ['view-room-administration'],
+		query: isGroupsListQuery,
+		response: {
+			200: groupsListResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+		const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
+
+		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			groups: await Promise.all(rooms.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			offset,
+			count: rooms.length,
+			total,
+		});
 	},
 );
 
@@ -1662,6 +1670,7 @@ type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint
 type GroupsFilesEndpoint = ExtractRoutesFromAPI<typeof groupsFilesEndpoint>;
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
 type GroupsListEndpoint = ExtractRoutesFromAPI<typeof groupsListEndpoint>;
+type GroupsListAllEndpoint = ExtractRoutesFromAPI<typeof groupsListAllEndpoint>;
 type GroupsMembersEndpoint = ExtractRoutesFromAPI<typeof groupsMembersEndpoint>;
 type GroupsModeratorsEndpoint = ExtractRoutesFromAPI<typeof groupsModeratorsEndpoint>;
 type GroupsOnlineEndpoint = ExtractRoutesFromAPI<typeof groupsOnlineEndpoint>;
@@ -1673,6 +1682,7 @@ declare module '@rocket.chat/rest-typings' {
 			GroupsFilesEndpoint,
 			GroupsInfoEndpoint,
 			GroupsListEndpoint,
+			GroupsListAllEndpoint,
 			GroupsMembersEndpoint,
 			GroupsModeratorsEndpoint,
 			GroupsOnlineEndpoint,
