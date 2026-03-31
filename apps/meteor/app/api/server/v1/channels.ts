@@ -568,6 +568,28 @@ const channelsAnonymousReadResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const channelsMessagesResponse = ajv.compile<{
+	messages: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		messages: {
+			type: 'array',
+			items: { type: 'object', additionalProperties: true },
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
 const isChannelsListJoinedProps = ajvQuery.compile<{
 	_id?: string;
 	roomId?: string;
@@ -782,64 +804,70 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsMessagesEndpoint = API.v1.get(
 	'channels.messages',
 	{
 		authRequired: true,
-		validateParams: isChannelsMessagesProps,
+		query: isChannelsMessagesProps,
 		permissionsRequired: ['view-c-room'],
-	},
-	{
-		async get() {
-			const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const findResult = await findChannelByIdOrName({
-				params: { roomId },
-				checkedArchived: false,
-			});
-
-			const parseIds = (ids: string | undefined, field: string) =>
-				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
-
-			const ourQuery = {
-				...query,
-				rid: findResult._id,
-				...parseIds(mentionIds, 'mentions._id'),
-				...parseIds(starredIds, 'starred._id'),
-				...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
-				_hidden: { $ne: true },
-			};
-
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			// Special check for the permissions
-			if (
-				(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
-				!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
-			) {
-				return API.v1.forbidden();
-			}
-
-			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
-				sort: sort || { ts: -1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(messages, this.userId),
-				count: messages.length,
-				offset,
-				total,
-			});
+		response: {
+			200: channelsMessagesResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId, mentionIds, starredIds, pinned } = this.queryParams;
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const findResult = await findChannelByIdOrName({
+			params: { roomId },
+			checkedArchived: false,
+		});
+
+		const parseIds = (ids: string | undefined, field: string) =>
+			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
+
+		const ourQuery = {
+			...query,
+			rid: findResult._id,
+			...parseIds(mentionIds, 'mentions._id'),
+			...parseIds(starredIds, 'starred._id'),
+			...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
+			_hidden: { $ne: true },
+		};
+
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
+		}
+
+		// Special check for the permissions
+		if (
+			(await hasPermissionAsync(this.userId, 'view-joined-room')) &&
+			!(await Subscriptions.findOneByRoomIdAndUserId(findResult._id, this.userId, { projection: { _id: 1 } }))
+		) {
+			return API.v1.forbidden();
+		}
+
+		const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			messages: await normalizeMessagesForUser(messages, this.userId),
+			count: messages.length,
+			offset,
+			total,
+		});
+	},
+);
 	},
 );
 
@@ -2064,6 +2092,7 @@ type ChannelsListEndpoint = ExtractRoutesFromAPI<typeof channelsListEndpoint>;
 type ChannelsGetIntegrationsEndpoint = ExtractRoutesFromAPI<typeof channelsGetIntegrationsEndpoint>;
 type ChannelsHistoryEndpoint = ExtractRoutesFromAPI<typeof channelsHistoryEndpoint>;
 type ChannelsAnonymousReadEndpoint = ExtractRoutesFromAPI<typeof channelsAnonymousReadEndpoint>;
+type ChannelsMessagesEndpoint = ExtractRoutesFromAPI<typeof channelsMessagesEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -2080,5 +2109,6 @@ declare module '@rocket.chat/rest-typings' {
 			ChannelsListEndpoint,
 			ChannelsGetIntegrationsEndpoint,
 			ChannelsHistoryEndpoint,
-			ChannelsAnonymousReadEndpoint {}
+			ChannelsAnonymousReadEndpoint,
+			ChannelsMessagesEndpoint {}
 }
