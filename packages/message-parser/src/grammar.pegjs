@@ -555,9 +555,12 @@ BoldEmoticon = emo:Emoticon & (EmoticonNeighbor / BoldContentPreferentialItem) {
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
 
-StrikethroughContent = text:(EscapedTimestampRules / TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
+StrikethroughContent = text:(StrikePlainRunFull / EscapedTimestampRules / TimestampRules / Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeBold / Emoji / Emoticon / AnyStrike / Line)+ {
       return strike(reducePlainTexts(text));
     }
+
+// Like StrikePlainRun but also excludes chars that start inline rules inside strike
+StrikePlainRunFull = run:$[^\x0a\~ *_:`@#\[\]\\<!\x7C\uD83C\uD83D\uD83E\u2300-\u27BF\u2600-\u26FF]+ { return plain(run); }
 
 // Exclude _ and ~ so nested italic/strike can be parsed
 BoldPlainRun = run:$[^\x0a\* _~ ]+ { return plain(run); }
