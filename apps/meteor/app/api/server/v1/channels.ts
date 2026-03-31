@@ -198,6 +198,84 @@ const channelsCountersResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+type ChannelsMembersProps =
+	| {
+			roomId: string;
+			status?: string[];
+			filter?: string;
+			query?: string;
+			sort?: string;
+			count?: number;
+			offset?: number;
+	  }
+	| {
+			roomName: string;
+			status?: string[];
+			filter?: string;
+			query?: string;
+			sort?: string;
+			count?: number;
+			offset?: number;
+	  };
+
+const isChannelsMembersProps = ajvQuery.compile<ChannelsMembersProps>({
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+				status: { type: 'array', items: { type: 'string' } },
+				filter: { type: 'string' },
+				query: { type: 'string' },
+				sort: { type: 'string' },
+				count: { type: 'number' },
+				offset: { type: 'number' },
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: { type: 'string' },
+				status: { type: 'array', items: { type: 'string' } },
+				filter: { type: 'string' },
+				query: { type: 'string' },
+				sort: { type: 'string' },
+				count: { type: 'number' },
+				offset: { type: 'number' },
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+});
+
+const channelsMembersResponse = ajv.compile<{
+	members: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		members: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['members', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'channels.addAll',
 	{
@@ -1186,54 +1264,61 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsMembersEndpoint = API.v1.get(
 	'channels.members',
-	{ authRequired: true },
 	{
-		async get() {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
-			});
-
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
-				return API.v1.forbidden();
-			}
-
-			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
-			const { sort = {} } = await this.parseJsonQuery();
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
-			const { status, filter } = this.queryParams;
-
-			const { cursor, totalCount } = await findUsersOfRoom({
-				rid: findResult._id,
-				...(status && { status: { $in: status as UserStatus[] } }),
-				skip,
-				limit,
-				filter,
-				...(sort?.username && { sort: { username: sort.username } }),
-			});
-
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				members,
-				count: members.length,
-				offset: skip,
-				total,
-			});
+		authRequired: true,
+		query: isChannelsMembersProps,
+		response: {
+			200: channelsMembersResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findChannelByIdOrName({
+			params: this.queryParams,
+			checkedArchived: false,
+		});
+
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
+		}
+
+		if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult._id))) {
+			return API.v1.forbidden();
+		}
+
+		const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+		const { sort = {} } = await this.parseJsonQuery();
+
+		check(
+			this.queryParams,
+			Match.ObjectIncluding({
+				status: Match.Maybe([String]),
+				filter: Match.Maybe(String),
+			}),
+		);
+		const { status, filter } = this.queryParams;
+
+		const { cursor, totalCount } = await findUsersOfRoom({
+			rid: findResult._id,
+			...(status && { status: { $in: status as UserStatus[] } }),
+			skip,
+			limit,
+			filter,
+			...(sort?.username && { sort: { username: sort.username } }),
+		});
+
+		const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			members,
+			count: members.length,
+			offset: skip,
+			total,
+		});
 	},
 );
 
@@ -1605,8 +1690,9 @@ API.v1.addRoute(
 
 type ChannelsInfoEndpoint = ExtractRoutesFromAPI<typeof channelsInfoEndpoint>;
 type ChannelsCountersEndpoint = ExtractRoutesFromAPI<typeof channelsCountersEndpoint>;
+type ChannelsMembersEndpoint = ExtractRoutesFromAPI<typeof channelsMembersEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChannelsInfoEndpoint, ChannelsCountersEndpoint {}
+	interface Endpoints extends ChannelsInfoEndpoint, ChannelsCountersEndpoint, ChannelsMembersEndpoint {}
 }
