@@ -277,17 +277,17 @@ InlineItemPattern
   = & [ \t]  @Whitespace
   / & "\\"   @(EscapedTimestampRules / KatexInline / Escaped)
   / & "["    @MaybeReferences
+  / & "<"    @(TimestampRules / MaybeReferences)
   / & "!"    @Image
   / & "|"    @Spoiler
   / & "@"    @UserMention
   / & "`"    @InlineCode
   / & "+"    @AutolinkedPhone
+  / & "$"    @KatexInline
   / InlineItemSlowPath
 
 InlineItemSlowPath
-  = TimestampRules
-  / MaybeReferences
-  / AutolinkedEmail
+  = AutolinkedEmail
   / PlainUnderscoreThenDomain
   / AutolinkedURL
   / EmphasisWithWhitespace
