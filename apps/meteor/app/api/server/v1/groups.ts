@@ -6,6 +6,7 @@ import {
 	ajvQuery,
 	isGroupsCountersProps,
 	isGroupsFilesProps,
+	isGroupsGetIntegrationsProps,
 	isGroupsInfoProps,
 	isGroupsModeratorsProps,
 	isGroupsMessagesProps,
@@ -409,6 +410,31 @@ const groupsListResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const groupsGetIntegrationsResponse = ajv.compile<{
+	integrations: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		integrations: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['integrations', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
 const isGroupsListQuery = ajvQuery.compile<{
 	query?: string;
 	count?: number;
@@ -747,10 +773,11 @@ const groupsFilesEndpoint = API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+const groupsGetIntegrationsEndpoint = API.v1.get(
 	'groups.getIntegrations',
 	{
 		authRequired: true,
+		query: isGroupsGetIntegrationsProps,
 		permissionsRequired: {
 			GET: {
 				permissions: [
@@ -762,47 +789,51 @@ API.v1.addRoute(
 				operation: 'hasAny',
 			},
 		},
-	},
-	{
-		async get() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
-				userId: this.userId,
-				checkedArchived: false,
-			});
-
-			let includeAllPrivateGroups = true;
-			if (this.queryParams.includeAllPrivateGroups) {
-				includeAllPrivateGroups = this.queryParams.includeAllPrivateGroups === 'true';
-			}
-
-			const channelsToSearch = [`#${findResult.name}`];
-			if (includeAllPrivateGroups) {
-				channelsToSearch.push('all_private_groups');
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields: projection, query } = await this.parseJsonQuery();
-
-			const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, {
-				channel: { $in: channelsToSearch },
-			}) as Filter<IIntegration>;
-			const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
-				sort: sort || { _createdAt: 1 },
-				skip: offset,
-				limit: count,
-				projection,
-			});
-
-			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				integrations,
-				count: integrations.length,
-				offset,
-				total,
-			});
+		response: {
+			200: groupsGetIntegrationsResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.queryParams,
+			userId: this.userId,
+			checkedArchived: false,
+		});
+
+		let includeAllPrivateGroups = true;
+		if (this.queryParams.includeAllPrivateGroups) {
+			includeAllPrivateGroups = this.queryParams.includeAllPrivateGroups === 'true';
+		}
+
+		const channelsToSearch = [`#${findResult.name}`];
+		if (includeAllPrivateGroups) {
+			channelsToSearch.push('all_private_groups');
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields: projection, query } = await this.parseJsonQuery();
+
+		const ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, {
+			channel: { $in: channelsToSearch },
+		}) as Filter<IIntegration>;
+		const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
+			sort: sort || { _createdAt: 1 },
+			skip: offset,
+			limit: count,
+			projection,
+		});
+
+		const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			integrations,
+			count: integrations.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -1668,6 +1699,7 @@ API.v1.addRoute(
 
 type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint>;
 type GroupsFilesEndpoint = ExtractRoutesFromAPI<typeof groupsFilesEndpoint>;
+type GroupsGetIntegrationsEndpoint = ExtractRoutesFromAPI<typeof groupsGetIntegrationsEndpoint>;
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
 type GroupsListEndpoint = ExtractRoutesFromAPI<typeof groupsListEndpoint>;
 type GroupsListAllEndpoint = ExtractRoutesFromAPI<typeof groupsListAllEndpoint>;
@@ -1680,6 +1712,7 @@ declare module '@rocket.chat/rest-typings' {
 	interface Endpoints
 		extends GroupsCountersEndpoint,
 			GroupsFilesEndpoint,
+			GroupsGetIntegrationsEndpoint,
 			GroupsInfoEndpoint,
 			GroupsListEndpoint,
 			GroupsListAllEndpoint,
