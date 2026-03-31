@@ -213,12 +213,12 @@ jobs:
         run: |
           set -o xtrace
 
-          npm run testapi
+          npm run testapi || s=$?
 
           docker compose -f ../../docker-compose-ci.yml stop
 
           ls -la "$COVERAGE_DIR"
-          exit "$s"
+          exit "${s:-0}"
 
       - name: E2E Test API (Livechat)
         if: inputs.type == 'api-livechat'
@@ -229,12 +229,12 @@ jobs:
         run: |
           set -o xtrace
 
-          npm run testapi:livechat
+          npm run testapi:livechat || s=$?
 
           docker compose -f ../../docker-compose-ci.yml stop
 
           ls -la "$COVERAGE_DIR"
-          exit "$s"
+          exit "${s:-0}"
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
