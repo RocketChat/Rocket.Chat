@@ -349,6 +349,35 @@ const channelsOnlineResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const channelsModeratorsResponse = ajv.compile<{
+	moderators: {
+		_id: string;
+		username: string;
+		name?: string | null;
+	}[];
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		moderators: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					username: { type: 'string' },
+					name: { type: 'string', nullable: true },
+				},
+				required: ['_id', 'username'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['moderators', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'channels.addAll',
 	{
@@ -705,32 +734,36 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsModeratorsEndpoint = API.v1.get(
 	'channels.moderators',
 	{
 		authRequired: true,
-		validateParams: isChannelsModeratorsProps,
-	},
-	{
-		async get() {
-			const { ...params } = this.queryParams;
-
-			const findResult = await findChannelByIdOrName({ params });
-
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			const moderators = await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
-				projection: { u: 1, _id: 0 },
-			})
-				.map((sub) => sub.u)
-				.toArray();
-
-			return API.v1.success({
-				moderators,
-			});
+		query: isChannelsModeratorsProps,
+		response: {
+			200: channelsModeratorsResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { ...params } = this.queryParams;
+
+		const findResult = await findChannelByIdOrName({ params });
+
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
+		}
+
+		const moderators = await Subscriptions.findByRoomIdAndRoles(findResult._id, ['moderator'], {
+			projection: { u: 1, _id: 0 },
+		})
+			.map((sub) => sub.u)
+			.toArray();
+
+		return API.v1.success({
+			moderators,
+		});
 	},
 );
 
@@ -1776,6 +1809,7 @@ type ChannelsCountersEndpoint = ExtractRoutesFromAPI<typeof channelsCountersEndp
 type ChannelsMembersEndpoint = ExtractRoutesFromAPI<typeof channelsMembersEndpoint>;
 type ChannelsRolesEndpoint = ExtractRoutesFromAPI<typeof channelsRolesEndpoint>;
 type ChannelsOnlineEndpoint = ExtractRoutesFromAPI<typeof channelsOnlineEndpoint>;
+type ChannelsModeratorsEndpoint = ExtractRoutesFromAPI<typeof channelsModeratorsEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -1784,5 +1818,6 @@ declare module '@rocket.chat/rest-typings' {
 			ChannelsCountersEndpoint,
 			ChannelsMembersEndpoint,
 			ChannelsRolesEndpoint,
-			ChannelsOnlineEndpoint {}
+			ChannelsOnlineEndpoint,
+			ChannelsModeratorsEndpoint {}
 }
