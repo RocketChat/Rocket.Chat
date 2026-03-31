@@ -23,6 +23,7 @@ import {
 	GETAbacAuditEventsQuerySchema,
 	GETAbacAuditEventsResponseSchema,
 	GETAbacPdpHealthResponseSchema,
+	GETAbacPdpHealthErrorResponseSchema,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
@@ -363,15 +364,24 @@ const abacEndpoints = API.v1
 		{
 			authRequired: true,
 			permissionsRequired: ['abac-management'],
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
 			response: {
 				200: GETAbacPdpHealthResponseSchema,
+				400: GETAbacPdpHealthErrorResponseSchema,
 				401: validateUnauthorizedErrorResponse,
 				403: validateUnauthorizedErrorResponse,
 			},
 		},
 		async function action() {
-			const available = await Abac.isPdpAvailable();
-			return API.v1.success({ available });
+			try {
+				await Abac.getPdpHealth();
+				return API.v1.success({ available: true, message: 'ABAC_PDP_Health_OK' });
+			} catch (err) {
+				return API.v1.failure((err as Error).message);
+			}
 		},
 	)
 	.get(

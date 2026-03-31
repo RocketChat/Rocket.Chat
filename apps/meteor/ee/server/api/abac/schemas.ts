@@ -342,15 +342,21 @@ export const POSTAbacUsersSyncBodySchema = ajv.compile<{
 
 export const GenericErrorSchema = ajv.compile<{ success: boolean; message: string }>(GenericError);
 
-export const GETAbacPdpHealthResponseSchema = ajv.compile<{ available: boolean }>({
+export const GETAbacPdpHealthResponseSchema = ajv.compile<{
+	available: boolean;
+	message: string;
+}>({
 	type: 'object',
 	properties: {
 		success: { type: 'boolean', enum: [true] },
 		available: { type: 'boolean' },
+		message: { type: 'string' },
 	},
-	required: ['available'],
+	required: ['available', 'message'],
 	additionalProperties: false,
 });
+
+export const GETAbacPdpHealthErrorResponseSchema = ajv.compile<{ success: boolean; message: string }>(GenericError);
 
 const GETAbacRoomsListQuerySchema = {
 	type: 'object',

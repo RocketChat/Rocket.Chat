@@ -4,6 +4,7 @@
     "specifiers": {
       "jsr:@std/bytes@^1.0.6": "jsr:@std/bytes@1.0.6",
       "jsr:@std/cli@^1.0.9": "jsr:@std/cli@1.0.13",
+      "jsr:@std/io@^0.225.3": "jsr:@std/io@0.225.3",
       "jsr:@std/streams@^1.0.16": "jsr:@std/streams@1.0.16",
       "npm:@msgpack/msgpack@3.0.0-beta2": "npm:@msgpack/msgpack@3.0.0-beta2",
       "npm:@rocket.chat/ui-kit@^0.31.22": "npm:@rocket.chat/ui-kit@0.31.25_@rocket.chat+icons@0.32.0",
@@ -21,6 +22,12 @@
       },
       "@std/cli@1.0.13": {
         "integrity": "5db2d95ab2dca3bca9fb6ad3c19908c314e93d6391c8b026725e4892d4615a69"
+      },
+      "@std/io@0.225.3": {
+        "integrity": "27b07b591384d12d7b568f39e61dff966b8230559122df1e9fd11cc068f7ddd1",
+        "dependencies": [
+          "jsr:@std/bytes@^1.0.6"
+        ]
       },
       "@std/streams@1.0.16": {
         "integrity": "85030627befb1767c60d4f65cb30fa2f94af1d6ee6e5b2515b76157a542e89c4",

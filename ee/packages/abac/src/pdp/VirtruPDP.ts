@@ -57,6 +57,40 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		}
 	}
 
+	async getHealthStatus(): Promise<void> {
+		const token = await this.getClientToken();
+
+		const healthResponse = await serverFetch(`${this.config.baseUrl}/healthz`, {
+			method: 'GET',
+			// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
+			ignoreSsrfValidation: true,
+		});
+
+		if (!healthResponse.ok) {
+			throw new Error('ABAC_PDP_Health_Platform_Failed');
+		}
+
+		const data = (await healthResponse.json()) as { status?: string };
+		if (data.status !== 'SERVING') {
+			throw new Error('ABAC_PDP_Health_Platform_Failed');
+		}
+
+		const authResponse = await serverFetch(`${this.config.baseUrl}/authorization.AuthorizationService/GetDecisions`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`,
+			},
+			body: JSON.stringify({ decisionRequests: [] }),
+			// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
+			ignoreSsrfValidation: true,
+		});
+
+		if (!authResponse.ok) {
+			throw new Error('ABAC_PDP_Health_Authorization_Failed');
+		}
+	}
+
 	private async getClientToken(): Promise<string> {
 		if (this.tokenCache && Date.now() < this.tokenCache.expiresAt) {
 			return this.tokenCache.accessToken;

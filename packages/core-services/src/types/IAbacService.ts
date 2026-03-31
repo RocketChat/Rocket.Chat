@@ -47,5 +47,5 @@ export interface IAbacService {
 	): Promise<boolean>;
 	addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>, actor: AbacActor | undefined): Promise<void>;
 	evaluateRoomMembership(): Promise<void>;
-	isPdpAvailable(): Promise<boolean>;
+	getPdpHealth(): Promise<void>;
 }

@@ -742,12 +742,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	async isPdpAvailable(): Promise<boolean> {
+	async getPdpHealth(): Promise<void> {
 		if (!this.pdp) {
-			return false;
+			throw new Error('ABAC_PDP_Health_No_PDP');
 		}
 
-		return this.pdp.isAvailable();
+		await this.pdp.getHealthStatus();
 	}
 
 	async evaluateRoomMembership(): Promise<void> {
