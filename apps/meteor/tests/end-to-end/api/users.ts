@@ -1168,7 +1168,7 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		describe('fetch by user email', () => {
+		describe('querying by user email', () => {
 			after(async () => {
 				await restorePermissionToRoles('view-full-other-user-info');
 			});
@@ -1179,11 +1179,13 @@ describe('[Users]', () => {
 				});
 
 				it('should query information about a user by email', async () => {
+					const targetEmail = targetUser.emails[0].address;
+
 					await request
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							email: targetUser.emails[0].address,
+							email: targetEmail,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -1191,6 +1193,7 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('user.username', targetUser.username);
 							expect(res.body).to.have.nested.property('user._id', targetUser._id);
+							expect(res.body).to.have.nested.property('user.emails[0].address', targetEmail);
 						});
 				});
 				it('should return an error when querying by an email that does not exist', async () => {
