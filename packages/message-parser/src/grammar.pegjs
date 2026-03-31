@@ -10,7 +10,6 @@
     emoji,
     emojiUnicode,
     emoticon,
-    extractFirstResult,
     heading,
     image,
     inlineCode,
@@ -476,56 +475,24 @@ Emphasis = MaybeBold / MaybeItalic / MaybeStrikethrough
 BlockedByJavascript = 'unreachable'
 
 MaybeBold
-  = result:(
-    & {
-      if (skipBold) { return false; }
-      skipBold = true;
-      return true;
-    }
-    (
-      (text:Bold { skipBold = false; return text; })
-      / (& { skipBold = false; return false; } BlockedByJavascript)
-    )
-  ) { return extractFirstResult(result); }
+  = & { if (skipBold) { return false; } skipBold = true; return true; }
+    @( text:Bold { skipBold = false; return text; }
+     / & { skipBold = false; return false; } BlockedByJavascript )
 
 MaybeStrikethrough
-  = result:(
-    & {
-      if (skipStrikethrough) { return false; }
-      skipStrikethrough = true;
-      return true;
-    }
-    (
-      (text:Strikethrough { skipStrikethrough = false; return text; })
-      / (& { skipStrikethrough = false; return false; } BlockedByJavascript)
-    )
-  ) { return extractFirstResult(result); }
+  = & { if (skipStrikethrough) { return false; } skipStrikethrough = true; return true; }
+    @( text:Strikethrough { skipStrikethrough = false; return text; }
+     / & { skipStrikethrough = false; return false; } BlockedByJavascript )
 
 MaybeItalic
-  = result:(
-    & {
-      if (skipItalic) { return false; }
-      skipItalic = true;
-      return true;
-    }
-    (
-      (text:Italic { skipItalic = false; return text; })
-      / (& { skipItalic = false; return false; } BlockedByJavascript)
-    )
-  ) { return extractFirstResult(result); }
+  = & { if (skipItalic) { return false; } skipItalic = true; return true; }
+    @( text:Italic { skipItalic = false; return text; }
+     / & { skipItalic = false; return false; } BlockedByJavascript )
 
 MaybeReferences
-  = result:(
-    & {
-      if (skipReferences) { return false; }
-      skipReferences = true;
-      return true;
-    }
-    (
-      (text:References { skipReferences = false; return text; })
-      / (& { skipReferences = false; return false; } BlockedByJavascript)
-    )
-  ) { return extractFirstResult(result); }
+  = & { if (skipReferences) { return false; } skipReferences = true; return true; }
+    @( text:References { skipReferences = false; return text; }
+     / & { skipReferences = false; return false; } BlockedByJavascript )
 
 /* Italic */
 Italic
