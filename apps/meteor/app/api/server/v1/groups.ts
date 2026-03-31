@@ -332,6 +332,33 @@ const groupsModeratorsResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const groupsOnlineResponse = ajv.compile<{
+	online: {
+		_id: string;
+		username: string;
+	}[];
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		online: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					username: { type: 'string' },
+				},
+				required: ['_id', 'username'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['online', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'groups.addAll',
 	{ authRequired: true },
@@ -1044,57 +1071,64 @@ API.v1.addRoute(
 );
 
 // TODO: CACHE: same as channels.online
-API.v1.addRoute(
+const groupsOnlineEndpoint = API.v1.get(
 	'groups.online',
-	{ authRequired: true, validateParams: isGroupsOnlineProps },
 	{
-		async get() {
-			const { query } = await this.parseJsonQuery();
-			const { _id } = this.queryParams;
-
-			if ((!query || Object.keys(query).length === 0) && !_id) {
-				return API.v1.failure('Invalid query');
-			}
-
-			const filter = {
-				...query,
-				...(_id ? { _id } : {}),
-				t: 'p',
-			};
-
-			const room = await Rooms.findOne(filter as Record<string, any>);
-			if (!room) {
-				return API.v1.failure('Group does not exists');
-			}
-
-			if (!(await canAccessRoomAsync(room, this.user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
-			}
-
-			const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
-				projection: {
-					username: 1,
-				},
-			}).toArray();
-
-			const onlineInRoom = await Promise.all(
-				online.map(async (user) => {
-					const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-						projection: { _id: 1, username: 1 },
-					});
-					if (subscription) {
-						return {
-							_id: user._id,
-							username: user.username,
-						};
-					}
-				}),
-			);
-
-			return API.v1.success({
-				online: onlineInRoom.filter(Boolean) as IUser[],
-			});
+		authRequired: true,
+		query: isGroupsOnlineProps,
+		response: {
+			200: groupsOnlineResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { query } = await this.parseJsonQuery();
+		const { _id } = this.queryParams;
+
+		if ((!query || Object.keys(query).length === 0) && !_id) {
+			return API.v1.failure('Invalid query');
+		}
+
+		const filter = {
+			...query,
+			...(_id ? { _id } : {}),
+			t: 'p',
+		};
+
+		const room = await Rooms.findOne(filter as Record<string, any>);
+		if (!room) {
+			return API.v1.failure('Group does not exists');
+		}
+
+		if (!(await canAccessRoomAsync(room, this.user))) {
+			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+		}
+
+		const online: Pick<IUser, '_id' | 'username'>[] = await Users.findUsersNotOffline({
+			projection: {
+				username: 1,
+			},
+		}).toArray();
+
+		const onlineInRoom = await Promise.all(
+			online.map(async (user) => {
+				const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
+					projection: { _id: 1, username: 1 },
+				});
+				if (subscription) {
+					return {
+						_id: user._id,
+						username: user.username,
+					};
+				}
+			}),
+		);
+
+		return API.v1.success({
+			online: onlineInRoom.filter(Boolean) as IUser[],
+		});
 	},
 );
 
@@ -1546,6 +1580,7 @@ type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
 type GroupsMembersEndpoint = ExtractRoutesFromAPI<typeof groupsMembersEndpoint>;
 type GroupsModeratorsEndpoint = ExtractRoutesFromAPI<typeof groupsModeratorsEndpoint>;
+type GroupsOnlineEndpoint = ExtractRoutesFromAPI<typeof groupsOnlineEndpoint>;
 type GroupsRolesEndpoint = ExtractRoutesFromAPI<typeof groupsRolesEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
@@ -1554,5 +1589,6 @@ declare module '@rocket.chat/rest-typings' {
 			GroupsInfoEndpoint,
 			GroupsMembersEndpoint,
 			GroupsModeratorsEndpoint,
+			GroupsOnlineEndpoint,
 			GroupsRolesEndpoint {}
 }
