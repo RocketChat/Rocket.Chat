@@ -459,6 +459,81 @@ const groupsMessagesResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const groupsHistoryResponse = ajv.compile<{
+	messages: object[];
+	firstUnread?: object;
+	unreadNotLoaded?: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		messages: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		firstUnread: {
+			type: 'object',
+			nullable: true,
+			additionalProperties: true,
+		},
+		unreadNotLoaded: { type: 'number', nullable: true },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'success'],
+	additionalProperties: false,
+});
+
+const isGroupsHistoryQuery = ajvQuery.compile<{
+	roomId?: string;
+	roomName?: string;
+	latest?: string;
+	oldest?: string;
+	inclusive?: string;
+	unreads?: string;
+	showThreadMessages?: string;
+	count?: number;
+	offset?: number;
+	sort?: string;
+}>({
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+				latest: { type: 'string', nullable: true },
+				oldest: { type: 'string', nullable: true },
+				inclusive: { type: 'string', nullable: true },
+				unreads: { type: 'string', nullable: true },
+				showThreadMessages: { type: 'string', nullable: true },
+				count: { type: 'number', nullable: true },
+				offset: { type: 'number', nullable: true },
+				sort: { type: 'string', nullable: true },
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: { type: 'string' },
+				latest: { type: 'string', nullable: true },
+				oldest: { type: 'string', nullable: true },
+				inclusive: { type: 'string', nullable: true },
+				unreads: { type: 'string', nullable: true },
+				showThreadMessages: { type: 'string', nullable: true },
+				count: { type: 'number', nullable: true },
+				offset: { type: 'number', nullable: true },
+				sort: { type: 'string', nullable: true },
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+});
+
 const isGroupsMessagesQuery = ajvQuery.compile<{
 	roomId?: string;
 	roomName?: string;
@@ -888,61 +963,68 @@ const groupsGetIntegrationsEndpoint = API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+const groupsHistoryEndpoint = API.v1.get(
 	'groups.history',
-	{ authRequired: true },
 	{
-		async get() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
-				userId: this.userId,
-				checkedArchived: false,
-			});
-
-			let latestDate = new Date();
-			if (this.queryParams.latest) {
-				latestDate = new Date(this.queryParams.latest);
-			}
-
-			let oldestDate = undefined;
-			if (this.queryParams.oldest) {
-				oldestDate = new Date(this.queryParams.oldest);
-			}
-
-			const inclusive = this.queryParams.inclusive === 'true';
-
-			let count = 20;
-			if (this.queryParams.count) {
-				count = parseInt(String(this.queryParams.count));
-			}
-
-			let offset = 0;
-			if (this.queryParams.offset) {
-				offset = parseInt(String(this.queryParams.offset));
-			}
-
-			const unreads = this.queryParams.unreads === 'true';
-
-			const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
-
-			const result = await getChannelHistory({
-				rid: findResult.rid,
-				fromUserId: this.userId,
-				latest: latestDate,
-				oldest: oldestDate,
-				inclusive,
-				offset,
-				count,
-				unreads,
-				showThreadMessages,
-			});
-
-			if (!result) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success(result);
+		authRequired: true,
+		query: isGroupsHistoryQuery,
+		response: {
+			200: groupsHistoryResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.queryParams,
+			userId: this.userId,
+			checkedArchived: false,
+		});
+
+		let latestDate = new Date();
+		if (this.queryParams.latest) {
+			latestDate = new Date(this.queryParams.latest);
+		}
+
+		let oldestDate = undefined;
+		if (this.queryParams.oldest) {
+			oldestDate = new Date(this.queryParams.oldest);
+		}
+
+		const inclusive = this.queryParams.inclusive === 'true';
+
+		let count = 20;
+		if (this.queryParams.count) {
+			count = parseInt(String(this.queryParams.count));
+		}
+
+		let offset = 0;
+		if (this.queryParams.offset) {
+			offset = parseInt(String(this.queryParams.offset));
+		}
+
+		const unreads = this.queryParams.unreads === 'true';
+
+		const showThreadMessages = this.queryParams.showThreadMessages !== 'false';
+
+		const result = await getChannelHistory({
+			rid: findResult.rid,
+			fromUserId: this.userId,
+			latest: latestDate,
+			oldest: oldestDate,
+			inclusive,
+			offset,
+			count,
+			unreads,
+			showThreadMessages,
+		});
+
+		if (!result) {
+			return API.v1.forbidden();
+		}
+
+		return API.v1.success(result);
 	},
 );
 
@@ -1762,6 +1844,7 @@ API.v1.addRoute(
 type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint>;
 type GroupsFilesEndpoint = ExtractRoutesFromAPI<typeof groupsFilesEndpoint>;
 type GroupsGetIntegrationsEndpoint = ExtractRoutesFromAPI<typeof groupsGetIntegrationsEndpoint>;
+type GroupsHistoryEndpoint = ExtractRoutesFromAPI<typeof groupsHistoryEndpoint>;
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
 type GroupsListEndpoint = ExtractRoutesFromAPI<typeof groupsListEndpoint>;
 type GroupsListAllEndpoint = ExtractRoutesFromAPI<typeof groupsListAllEndpoint>;
@@ -1776,6 +1859,7 @@ declare module '@rocket.chat/rest-typings' {
 		extends GroupsCountersEndpoint,
 			GroupsFilesEndpoint,
 			GroupsGetIntegrationsEndpoint,
+			GroupsHistoryEndpoint,
 			GroupsInfoEndpoint,
 			GroupsListEndpoint,
 			GroupsListAllEndpoint,
