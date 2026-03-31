@@ -1527,6 +1527,73 @@ describe('[Users]', () => {
 					});
 				});
 		});
+
+		it('should return the specific user with the "emails" property when querying by email and having "view-full-other-user-info" permission', async () => {
+			const targetEmail = user.emails[0].address;
+
+			await request
+				.get(api('users.list'))
+				.query({ email: targetEmail })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').that.is.an('array').with.lengthOf(1);
+
+					const returnedUser = res.body.users[0];
+					expect(returnedUser).to.have.property('_id', user._id);
+					expect(returnedUser).to.have.property('emails').that.is.an('array');
+					expect(returnedUser).to.have.nested.property('emails[0].address', targetEmail);
+				});
+		});
+
+		it('should return 403 Forbidden when querying by email and the user DOES NOT have "view-full-other-user-info" permission', async () => {
+			const targetEmail = user.emails[0].address;
+
+			await request
+				.get(api('users.list'))
+				.query({ email: targetEmail })
+				.set(user2Credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(403)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'unauthorized');
+				});
+		});
+
+		it('should return an empty array when querying by an email that does not exist', async () => {
+			await request
+				.get(api('users.list'))
+				.query({ email: 'this_email_does_not_exist@invalid.com' })
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').that.is.an('array').with.lengthOf(0);
+					expect(res.body).to.have.property('count', 0);
+				});
+		});
+
+		it('should NOT return the "emails" property for users when the caller lacks "view-full-other-user-info" permission', async () => {
+			await updatePermission('view-full-other-user-info', ['admin']);
+
+			await request
+				.get(api('users.list'))
+				.set(user2Credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('users').that.is.an('array');
+
+					res.body.users.forEach((u: IUser) => {
+						expect(u).to.not.have.property('emails');
+					});
+				});
+		});
 	});
 
 	describe('Avatars', () => {
