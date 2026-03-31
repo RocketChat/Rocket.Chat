@@ -428,6 +428,52 @@ const channelsFilesResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const channelsListResponse = ajv.compile<{
+	channels: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		channels: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['channels', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const isChannelsListJoinedProps = ajvQuery.compile<{
+	_id?: string;
+	roomId?: string;
+	query?: string;
+	count?: number;
+	offset?: number;
+	sort?: string;
+}>({
+	type: 'object',
+	properties: {
+		_id: { type: 'string', nullable: true },
+		roomId: { type: 'string', nullable: true },
+		query: { type: 'string', nullable: true },
+		count: { type: 'number', nullable: true },
+		offset: { type: 'number', nullable: true },
+		sort: { type: 'string', nullable: true },
+	},
+	required: [],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'channels.addAll',
 	{
@@ -1394,42 +1440,48 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsListJoinedEndpoint = API.v1.get(
 	'channels.list.joined',
-	{ authRequired: true },
 	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields } = await this.parseJsonQuery();
-
-			const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
-			const rids = subs.map(({ rid }) => rid).filter(Boolean);
-
-			if (rids.length === 0) {
-				return API.v1.success({
-					channels: [],
-					offset,
-					count: 0,
-					total: 0,
-				});
-			}
-
-			const { cursor, totalCount } = Rooms.findPaginatedByTypeAndIds('c', rids, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				offset,
-				count: channels.length,
-				total,
-			});
+		authRequired: true,
+		query: isChannelsListJoinedProps,
+		response: {
+			200: channelsListResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields } = await this.parseJsonQuery();
+
+		const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['c'], { projection: { rid: 1 } }).toArray();
+		const rids = subs.map(({ rid }) => rid).filter(Boolean);
+
+		if (rids.length === 0) {
+			return API.v1.success({
+				channels: [],
+				offset,
+				count: 0,
+				total: 0,
+			});
+		}
+
+		const { cursor, totalCount } = Rooms.findPaginatedByTypeAndIds('c', rids, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			offset,
+			count: channels.length,
+			total,
+		});
 	},
 );
 
@@ -1872,6 +1924,7 @@ type ChannelsOnlineEndpoint = ExtractRoutesFromAPI<typeof channelsOnlineEndpoint
 type ChannelsModeratorsEndpoint = ExtractRoutesFromAPI<typeof channelsModeratorsEndpoint>;
 type ChannelsGetAllUserMentionsByChannelEndpoint = ExtractRoutesFromAPI<typeof channelsGetAllUserMentionsByChannelEndpoint>;
 type ChannelsFilesEndpoint = ExtractRoutesFromAPI<typeof channelsFilesEndpoint>;
+type ChannelsListJoinedEndpoint = ExtractRoutesFromAPI<typeof channelsListJoinedEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -1883,5 +1936,6 @@ declare module '@rocket.chat/rest-typings' {
 			ChannelsOnlineEndpoint,
 			ChannelsModeratorsEndpoint,
 			ChannelsGetAllUserMentionsByChannelEndpoint,
-			ChannelsFilesEndpoint {}
+			ChannelsFilesEndpoint,
+			ChannelsListJoinedEndpoint {}
 }
