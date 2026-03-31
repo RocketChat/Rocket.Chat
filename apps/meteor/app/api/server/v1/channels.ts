@@ -16,6 +16,7 @@ import {
 	isChannelsOpenProps,
 	isChannelsSetAnnouncementProps,
 	isChannelsGetAllUserMentionsByChannelProps,
+	isChannelsGetIntegrationsProps,
 	isChannelsModeratorsProps,
 	isChannelsConvertToTeamProps,
 	isChannelsSetReadOnlyProps,
@@ -450,6 +451,31 @@ const channelsListResponse = ajv.compile<{
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['channels', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const channelsGetIntegrationsResponse = ajv.compile<{
+	integrations: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		integrations: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['integrations', 'count', 'offset', 'total', 'success'],
 	additionalProperties: false,
 });
 
@@ -1250,10 +1276,11 @@ const channelsFilesEndpoint = API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+const channelsGetIntegrationsEndpoint = API.v1.get(
 	'channels.getIntegrations',
 	{
 		authRequired: true,
+		query: isChannelsGetIntegrationsProps,
 		permissionsRequired: {
 			GET: {
 				permissions: [
@@ -1265,55 +1292,59 @@ API.v1.addRoute(
 				operation: 'hasAny',
 			},
 		},
-	},
-	{
-		async get() {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
-			});
-
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			let includeAllPublicChannels = true;
-			if (typeof this.queryParams.includeAllPublicChannels !== 'undefined') {
-				includeAllPublicChannels = this.queryParams.includeAllPublicChannels === 'true';
-			}
-
-			let ourQuery: { channel: string | { $in: string[] } } = {
-				channel: `#${findResult.name}`,
-			};
-
-			if (includeAllPublicChannels) {
-				ourQuery.channel = {
-					$in: [ourQuery.channel as string, 'all_public_channels'],
-				};
-			}
-
-			const params = this.queryParams;
-			const { offset, count } = await getPaginationItems(params);
-			const { sort, fields: projection, query } = await this.parseJsonQuery();
-
-			ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
-
-			const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
-				sort: sort || { _createdAt: 1 },
-				skip: offset,
-				limit: count,
-				projection,
-			});
-
-			const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				integrations,
-				count: integrations.length,
-				offset,
-				total,
-			});
+		response: {
+			200: channelsGetIntegrationsResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findChannelByIdOrName({
+			params: this.queryParams,
+			checkedArchived: false,
+		});
+
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
+		}
+
+		let includeAllPublicChannels = true;
+		if (typeof this.queryParams.includeAllPublicChannels !== 'undefined') {
+			includeAllPublicChannels = this.queryParams.includeAllPublicChannels === 'true';
+		}
+
+		let ourQuery: { channel: string | { $in: string[] } } = {
+			channel: `#${findResult.name}`,
+		};
+
+		if (includeAllPublicChannels) {
+			ourQuery.channel = {
+				$in: [ourQuery.channel as string, 'all_public_channels'],
+			};
+		}
+
+		const params = this.queryParams;
+		const { offset, count } = await getPaginationItems(params);
+		const { sort, fields: projection, query } = await this.parseJsonQuery();
+
+		ourQuery = Object.assign(await mountIntegrationQueryBasedOnPermissions(this.userId), query, ourQuery);
+
+		const { cursor, totalCount } = await Integrations.findPaginated(ourQuery, {
+			sort: sort || { _createdAt: 1 },
+			skip: offset,
+			limit: count,
+			projection,
+		});
+
+		const [integrations, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			integrations,
+			count: integrations.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -1930,6 +1961,7 @@ type ChannelsGetAllUserMentionsByChannelEndpoint = ExtractRoutesFromAPI<typeof c
 type ChannelsFilesEndpoint = ExtractRoutesFromAPI<typeof channelsFilesEndpoint>;
 type ChannelsListJoinedEndpoint = ExtractRoutesFromAPI<typeof channelsListJoinedEndpoint>;
 type ChannelsListEndpoint = ExtractRoutesFromAPI<typeof channelsListEndpoint>;
+type ChannelsGetIntegrationsEndpoint = ExtractRoutesFromAPI<typeof channelsGetIntegrationsEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -1943,5 +1975,6 @@ declare module '@rocket.chat/rest-typings' {
 			ChannelsGetAllUserMentionsByChannelEndpoint,
 			ChannelsFilesEndpoint,
 			ChannelsListJoinedEndpoint,
-			ChannelsListEndpoint {}
+			ChannelsListEndpoint,
+			ChannelsGetIntegrationsEndpoint {}
 }
