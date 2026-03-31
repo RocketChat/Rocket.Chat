@@ -146,6 +146,58 @@ const channelsInfoResponse = ajv.compile<{ channel: IRoom; success: true }>({
 	additionalProperties: false,
 });
 
+type ChannelsCountersProps = ({ roomId: string } | { roomName: string }) & {
+	userId?: string;
+};
+
+const isChannelsCountersProps = ajvQuery.compile<ChannelsCountersProps>({
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+				userId: { type: 'string', nullable: true },
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: { type: 'string' },
+				userId: { type: 'string', nullable: true },
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+});
+
+const channelsCountersResponse = ajv.compile<{
+	joined: boolean;
+	members: number | null;
+	unreads: number | null;
+	unreadsFrom: string | null;
+	msgs: number | null;
+	latest: string | null;
+	userMentions: number | null;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		joined: { type: 'boolean' },
+		members: { type: 'number', nullable: true },
+		unreads: { type: 'number', nullable: true },
+		unreadsFrom: { type: 'string', nullable: true },
+		msgs: { type: 'number', nullable: true },
+		latest: { type: 'string', nullable: true },
+		userMentions: { type: 'number', nullable: true },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['joined', 'members', 'unreads', 'unreadsFrom', 'msgs', 'latest', 'userMentions', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'channels.addAll',
 	{
@@ -660,57 +712,64 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsCountersEndpoint = API.v1.get(
 	'channels.counters',
-	{ authRequired: true },
 	{
-		async get() {
-			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
-			const { userId } = this.queryParams;
-			let user = this.userId;
-			let unreads = null;
-			let userMentions = null;
-			let unreadsFrom = null;
-			let joined = false;
-			let msgs = null;
-			let latest = null;
-			let members = null;
-
-			if (userId) {
-				if (!access) {
-					return API.v1.forbidden();
-				}
-				user = userId;
-			}
-			const room = await findChannelByIdOrName({
-				params: this.queryParams,
-			});
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user);
-			const lm = room.lm ? room.lm : room._updatedAt;
-
-			if (subscription?.open) {
-				unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls ?? new Date(0), lm);
-				unreadsFrom = subscription.ls || subscription.ts;
-				userMentions = subscription.userMentions;
-				joined = true;
-			}
-
-			if (access || joined) {
-				msgs = room.msgs;
-				latest = lm;
-				members = await Users.countActiveUsersInNonDMRoom(room._id);
-			}
-
-			return API.v1.success({
-				joined,
-				members,
-				unreads,
-				unreadsFrom,
-				msgs,
-				latest,
-				userMentions,
-			});
+		authRequired: true,
+		query: isChannelsCountersProps,
+		response: {
+			200: channelsCountersResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const access = await hasPermissionAsync(this.userId, 'view-room-administration');
+		const { userId } = this.queryParams;
+		let user = this.userId;
+		let unreads = null;
+		let userMentions = null;
+		let unreadsFrom = null;
+		let joined = false;
+		let msgs = null;
+		let latest = null;
+		let members = null;
+
+		if (userId) {
+			if (!access) {
+				return API.v1.forbidden();
+			}
+			user = userId;
+		}
+		const room = await findChannelByIdOrName({
+			params: this.queryParams,
+		});
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user);
+		const lm = room.lm ? room.lm : room._updatedAt;
+
+		if (subscription?.open) {
+			unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls ?? new Date(0), lm);
+			unreadsFrom = subscription.ls || subscription.ts;
+			userMentions = subscription.userMentions;
+			joined = true;
+		}
+
+		if (access || joined) {
+			msgs = room.msgs;
+			latest = lm;
+			members = await Users.countActiveUsersInNonDMRoom(room._id);
+		}
+
+		return API.v1.success({
+			joined,
+			members,
+			unreads,
+			unreadsFrom,
+			msgs,
+			latest,
+			userMentions,
+		});
 	},
 );
 
@@ -1545,8 +1604,9 @@ API.v1.addRoute(
 );
 
 type ChannelsInfoEndpoint = ExtractRoutesFromAPI<typeof channelsInfoEndpoint>;
+type ChannelsCountersEndpoint = ExtractRoutesFromAPI<typeof channelsCountersEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChannelsInfoEndpoint {}
+	interface Endpoints extends ChannelsInfoEndpoint, ChannelsCountersEndpoint {}
 }
