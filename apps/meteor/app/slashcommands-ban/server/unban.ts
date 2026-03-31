@@ -28,7 +28,7 @@ slashCommands.add({
 
 		if (!isRoomNativeFederated(room)) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: i18n.t('error-ban-not-supported', { lng: settings.get('Language') || 'en' }),
+				msg: i18n.t('error-room-action-not-supported', { lng: settings.get('Language') || 'en' }),
 			});
 			return;
 		}
