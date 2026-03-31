@@ -271,27 +271,34 @@ EscapedTimestampRules
       return plain(`<t:${rawDate}>`);
     }
 
-InlineItemPattern = Whitespace
-  / EscapedTimestampRules
-  / TimestampRules
+// First-character dispatch: exclusive chars skip the full alternative chain.
+// Chars that only belong to one rule are dispatched directly; the rest
+// fall through to InlineItemSlowPath which preserves the original order.
+InlineItemPattern
+  = & [ \t]  @Whitespace
+  / & "\\"   @(EscapedTimestampRules / KatexInline / Escaped)
+  / & "["    @MaybeReferences
+  / & "!"    @Image
+  / & "|"    @Spoiler
+  / & "@"    @UserMention
+  / & "`"    @InlineCode
+  / & "+"    @AutolinkedPhone
+  / InlineItemSlowPath
+
+InlineItemSlowPath
+  = TimestampRules
   / MaybeReferences
-  / AutolinkedPhone
   / AutolinkedEmail
   / PlainUnderscoreThenDomain
   / AutolinkedURL
-  / Spoiler
   / EmphasisWithWhitespace
   / Emphasis
-  / UserMention
   / ChannelMention
   / InlineEmoji
-  / InlineCode
-  / Image
   / PlainRunBeforeEmoticon
   / InlineEmoticon
   / Color
   / KatexInline
-  / Escaped
   / PlainRun
 
 /**
