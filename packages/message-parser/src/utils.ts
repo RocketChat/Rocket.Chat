@@ -333,11 +333,3 @@ export const timestampFromIsoTime = ({
 		0;
 	return date.toString();
 };
-
-export const extractFirstResult = (value: Types[keyof Types]['value']): Types[keyof Types]['value'] => {
-	if (typeof value !== 'object' || !Array.isArray(value)) {
-		return value;
-	}
-
-	return value.find(Boolean) as Types[keyof Types]['value'];
-};

@@ -279,7 +279,7 @@ InlineItemPattern
   / & "<"    @(TimestampRules / MaybeReferences / InlineEmoticon)
   / & "!"    @Image
   / & "|"    @Spoiler
-  / & "@"    @UserMention
+  / & "@"    @UserMentionDirect
   / & "`"    @InlineCode
   / & "+"    @AutolinkedPhone
   / & "$"    @KatexInline
@@ -593,13 +593,18 @@ TildeWithWhitespace = a:$"~"+ w:$Space+ b:$"~"+ { return plain(a + w + b); }
  * e.g: @user, #channel
  *
 */
+// Direct form: starts with @, used by dispatch
+UserMentionDirect
+  = "@"+ user:$(UTF8NamesValidation ([:@] UTF8NamesValidation)?) & { return !user.endsWith('__'); } {
+      return mentionUser(user);
+    }
+
+// Full form: includes text@user fallback, used by SlowPath
 UserMention
   = t:Text "@"+ user:AlphaNumericChar {
       return reducePlainTexts([t, plain('@' + user)])[0];
     }
-  / "@"+ user:$(UTF8NamesValidation ([:@] UTF8NamesValidation)?) & { return !user.endsWith('__'); } {
-      return mentionUser(user);
-    }
+  / UserMentionDirect
 
 ChannelMention
   = t:Text "#" channel:AlphaNumericChar {
@@ -631,18 +636,18 @@ EmoticonNeighbor = EndOfLine / Whitespace / [\x2A] / !.
 
 // Emoticon first-char dispatch: group alternatives by starting character
 EmoticonPattern
-  = & "<"  @EmoticonLT
-  / & ":"  @EmoticonColon
-  / & "="  @EmoticonEquals
+  = & ":"  @EmoticonColon
+  / & ";"  @EmoticonSemicolon
+  / & "<"  @EmoticonLT
   / & ">"  @EmoticonGT
+  / & "="  @EmoticonEquals
+  / & "D"  @EmoticonD
+  / & "B"  @EmoticonB
+  / & "8"  @Emoticon8
   / & "'"  @EmoticonApostrophe
   / & "O"  @EmoticonO
   / & "0"  @EmoticonZero
-  / & ";"  @EmoticonSemicolon
   / & "*"  @EmoticonAsterisk
-  / & "B"  @EmoticonB
-  / & "8"  @Emoticon8
-  / & "D"  @EmoticonD
   / & "X"  @EmoticonX
   / & "#"  @EmoticonHash
   / & "%"  @EmoticonPercent
