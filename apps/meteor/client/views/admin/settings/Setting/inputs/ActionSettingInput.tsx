@@ -1,5 +1,6 @@
+import { isActionSettingWithEndpoint } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import type { Method, PathPattern } from '@rocket.chat/rest-typings';
+import type { PathPattern, Method } from '@rocket.chat/rest-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
@@ -8,21 +9,17 @@ import MethodActionInput from './MethodActionInput';
 import type { SettingInputProps } from './types';
 
 type ActionSettingInputProps = SettingInputProps & {
-	value: keyof ServerMethods;
+	value: keyof ServerMethods | { method: Method; path: PathPattern };
 	actionText: TranslationKey;
 	sectionChanged: boolean;
-	actionEndpoint?: {
-		method: Method;
-		path: PathPattern;
-	};
 };
 
-function ActionSettingInput({ actionEndpoint, ...rest }: ActionSettingInputProps): ReactElement {
-	if (actionEndpoint) {
-		return <EndpointActionInput actionEndpoint={actionEndpoint} {...rest} />;
+function ActionSettingInput({ value, ...rest }: ActionSettingInputProps): ReactElement {
+	if (isActionSettingWithEndpoint(value)) {
+		return <EndpointActionInput endpoint={{ method: value.method, path: value.path }} {...rest} />;
 	}
 
-	return <MethodActionInput {...rest} />;
+	return <MethodActionInput value={value} {...rest} />;
 }
 
 export default ActionSettingInput;

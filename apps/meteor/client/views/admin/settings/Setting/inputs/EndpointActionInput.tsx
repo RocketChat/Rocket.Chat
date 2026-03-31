@@ -5,14 +5,14 @@ import type { ActionInputBaseProps } from './ActionInputBase';
 import ActionInputBase from './ActionInputBase';
 
 type EndpointActionInputProps = Omit<ActionInputBaseProps, 'onAction'> & {
-	actionEndpoint: {
+	endpoint: {
 		method: Method;
 		path: PathPattern;
 	};
 };
 
-function EndpointActionInput({ actionEndpoint, ...rest }: EndpointActionInputProps) {
-	const callEndpoint = useEndpoint(actionEndpoint.method, actionEndpoint.path);
+function EndpointActionInput({ endpoint, ...rest }: EndpointActionInputProps) {
+	const callEndpoint = useEndpoint(endpoint.method, endpoint.path);
 	return <ActionInputBase onAction={() => callEndpoint({} as never)} {...rest} />;
 }
 

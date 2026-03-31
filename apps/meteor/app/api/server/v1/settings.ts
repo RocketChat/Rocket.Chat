@@ -6,8 +6,9 @@ import type {
 	TwitterOAuthConfiguration,
 	OAuthConfiguration,
 } from '@rocket.chat/core-typings';
-import { isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
+import { isActionSettingWithEndpoint, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import {
 	ajv,
 	isSettingsUpdatePropDefault,
@@ -349,8 +350,22 @@ API.v1.post(
 		const { bodyParams } = this;
 
 		if (isSettingAction(setting) && isSettingsUpdatePropsActions(bodyParams) && bodyParams.execute) {
-			await Meteor.callAsync(setting.value);
-			return API.v1.success();
+			if (!isActionSettingWithEndpoint(setting.value)) {
+				await Meteor.callAsync(setting.value);
+				return API.v1.success();
+			}
+
+			const { method, path } = setting.value;
+			const baseUrl = settings.get<string>('Site_Url');
+			// SECURITY: Endpoint is internal
+			const response = await fetch(`${baseUrl}/api/v1${path}`, { method, ignoreSsrfValidation: true });
+
+			if (!response.ok) {
+				throw new Meteor.Error('error-action-endpoint-failed', `Endpoint ${method} ${path} returned ${response.status}`);
+			}
+
+			const data = await response.json();
+			return API.v1.success(data);
 		}
 
 		const auditSettingOperation = updateAuditedByUser({
