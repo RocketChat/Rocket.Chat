@@ -403,6 +403,31 @@ const channelsGetAllUserMentionsByChannelResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const channelsFilesResponse = ajv.compile<{
+	files: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		files: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['files', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'channels.addAll',
 	{
@@ -1123,52 +1148,59 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsFilesEndpoint = API.v1.get(
 	'channels.files',
-	{ authRequired: true, validateParams: isChannelsFilesListProps },
 	{
-		async get() {
-			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
-
-			const findResult = await findChannelByIdOrName({
-				params: {
-					...(roomId ? { roomId } : {}),
-					...(roomName ? { roomName } : {}),
-				},
-				checkedArchived: false,
-			});
-
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const filter = {
-				rid: findResult._id,
-				...query,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
-				...(typeGroup ? { typeGroup } : {}),
-				...(onlyConfirmed && { expiresAt: { $exists: false } }),
-			};
-
-			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				files: await addUserToFileObj(files),
-				count: files.length,
-				offset,
-				total,
-			});
+		authRequired: true,
+		query: isChannelsFilesListProps,
+		response: {
+			200: channelsFilesResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
+
+		const findResult = await findChannelByIdOrName({
+			params: {
+				...(roomId ? { roomId } : {}),
+				...(roomName ? { roomName } : {}),
+			},
+			checkedArchived: false,
+		});
+
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const filter = {
+			rid: findResult._id,
+			...query,
+			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+			...(typeGroup ? { typeGroup } : {}),
+			...(onlyConfirmed && { expiresAt: { $exists: false } }),
+		};
+
+		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			files: await addUserToFileObj(files),
+			count: files.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -1839,6 +1871,7 @@ type ChannelsRolesEndpoint = ExtractRoutesFromAPI<typeof channelsRolesEndpoint>;
 type ChannelsOnlineEndpoint = ExtractRoutesFromAPI<typeof channelsOnlineEndpoint>;
 type ChannelsModeratorsEndpoint = ExtractRoutesFromAPI<typeof channelsModeratorsEndpoint>;
 type ChannelsGetAllUserMentionsByChannelEndpoint = ExtractRoutesFromAPI<typeof channelsGetAllUserMentionsByChannelEndpoint>;
+type ChannelsFilesEndpoint = ExtractRoutesFromAPI<typeof channelsFilesEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -1849,5 +1882,6 @@ declare module '@rocket.chat/rest-typings' {
 			ChannelsRolesEndpoint,
 			ChannelsOnlineEndpoint,
 			ChannelsModeratorsEndpoint,
-			ChannelsGetAllUserMentionsByChannelEndpoint {}
+			ChannelsGetAllUserMentionsByChannelEndpoint,
+			ChannelsFilesEndpoint {}
 }
