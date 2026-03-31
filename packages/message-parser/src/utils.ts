@@ -82,13 +82,20 @@ export const link = (src: string, label?: Markup[]): Link => ({
 	value: { src: plain(src), label: label ?? [plain(src)] },
 });
 
+let cachedAutoLinkDomains: string[] | undefined | null = null;
+let cachedAutoLinkOptions: { detectIp: boolean; allowPrivateDomains: boolean; validHosts: string[] };
+
 export const autoLink = (src: string, customDomains?: string[]) => {
-	const validHosts = ['localhost', ...(customDomains ?? [])];
-	const { isIcann, isIp, isPrivate, domain } = tldParse(src, {
-		detectIp: true,
-		allowPrivateDomains: true,
-		validHosts,
-	});
+	if (cachedAutoLinkDomains !== customDomains) {
+		cachedAutoLinkDomains = customDomains;
+		cachedAutoLinkOptions = {
+			detectIp: true,
+			allowPrivateDomains: true,
+			validHosts: ['localhost', ...(customDomains ?? [])],
+		};
+	}
+	const validHosts = cachedAutoLinkOptions.validHosts;
+	const { isIcann, isIp, isPrivate, domain } = tldParse(src, cachedAutoLinkOptions);
 
 	if (!(isIcann || isIp || isPrivate || (domain && validHosts.includes(domain)))) {
 		return plain(src);
@@ -99,13 +106,12 @@ export const autoLink = (src: string, customDomains?: string[]) => {
 	return link(href, [plain(src)]);
 };
 
+const autoEmailTldOptions = { detectIp: false, allowPrivateDomains: true } as const;
+
 export const autoEmail = (src: string) => {
 	const href = `mailto:${src}`;
 
-	const { isIcann, isIp, isPrivate } = tldParse(href, {
-		detectIp: false,
-		allowPrivateDomains: true,
-	});
+	const { isIcann, isIp, isPrivate } = tldParse(href, autoEmailTldOptions);
 
 	if (!(isIcann || isIp || isPrivate)) {
 		return plain(src);
