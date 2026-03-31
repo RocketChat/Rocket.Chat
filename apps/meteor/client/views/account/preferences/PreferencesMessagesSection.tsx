@@ -8,13 +8,10 @@ import { useTranslation } from 'react-i18next';
 const PreferencesMessagesSection = () => {
 	const { t } = useTranslation();
 	const { control } = useFormContext();
-	// Remove id associations after `FieldLink` is added to fuselage-forms
+
 	const messageTimeFormatLabelId = useId();
-	const messageTimeFormatLinkId = useId();
 	const hideUsernamesLabelId = useId();
-	const hideUsernamesLinkId = useId();
 	const hideRolesLabelId = useId();
-	const hideRolesLinkId = useId();
 
 	const alsoSendThreadMessageToChannelOptions = useMemo(
 		(): SelectOption[] => [
@@ -73,7 +70,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldLabel id={messageTimeFormatLabelId}>{t('Message_TimeFormat')}</FieldLabel>
-					<FieldLink id={messageTimeFormatLinkId} aria-labelledby={messageTimeFormatLabelId} href='/account/accessibility-and-appearance'>
+					<FieldLink aria-describedby={messageTimeFormatLabelId} href='/account/accessibility-and-appearance'>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
 				</Field>
@@ -129,13 +126,13 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldLabel id={hideUsernamesLabelId}>{t('Hide_usernames')}</FieldLabel>
-					<FieldLink id={hideUsernamesLinkId} aria-labelledby={hideUsernamesLabelId} href='/account/accessibility-and-appearance'>
+					<FieldLink aria-describedby={hideUsernamesLabelId} href='/account/accessibility-and-appearance'>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
 				</Field>
 				<Field>
 					<FieldLabel id={hideRolesLabelId}>{t('Hide_roles')}</FieldLabel>
-					<FieldLink id={hideRolesLinkId} aria-labelledby={hideRolesLabelId} href='/account/accessibility-and-appearance'>
+					<FieldLink aria-describedby={hideRolesLabelId} href='/account/accessibility-and-appearance'>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
 				</Field>
