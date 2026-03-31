@@ -197,7 +197,7 @@ UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return li
 
 UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
 
-UnorderedListItemContentItem = item:(InlineItemPattern / !"*" @Any) { return item }
+UnorderedListItemContentItem = InlineItemPattern / !"*" @Any
 
 /**
  *
@@ -252,11 +252,7 @@ Paragraph = value:Inline { return paragraph(value); }
  * Inline
  *
 */
-Inline = value:InlinePattern+ EndOfLine? { return reducePlainTexts(value); }
-
-InlinePattern = InlineItem / InlineItemFallback
-
-InlineItem = item:InlineItemPattern { return item; }
+Inline = value:(InlineItemPattern / Any)+ EndOfLine? { return reducePlainTexts(value); }
 
 InlineEmoji = emo:Emoji { return emo; }
 
@@ -265,7 +261,7 @@ InlineEmoticon = emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { return 
 // Match "-" only when "-_-" is followed by more (so "-_-italic" → plain+italic); don't match when "-_-" is the full emoticon
 PlainRunBeforeEmoticon = "-" &("_" "-" .) { return plain('-'); }
 
-PlainRun = run:[^*_~`:\n<\[\]! \t()\\|]+ { return plain(run.join('')); }
+PlainRun = run:$[^*_~`:\n<\[\]! \t()\\|]+ { return plain(run); }
 
 EscapedTimestampRules
   = "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" {
@@ -298,8 +294,6 @@ InlineItemPattern = Whitespace
   / Escaped
   / PlainRun
 
-InlineItemFallback = item:Any { return item; }
-
 /**
  *
  * Spoiler
@@ -311,11 +305,7 @@ Spoiler = "||" text:SpoilerContentItems "||" { return spoiler(text); }
 SpoilerContentItems = text:SpoilerContentItem+ { return reducePlainTexts(text); }
 
 // Ensure we consume at least one character and do not accidentally match the closing "||"
-SpoilerContentItem = !"||" item:SpoilerInlineItem { return item; } / !"||" item:SpoilerInlineItemFallback { return item; }
-
-SpoilerInlineItem = item:InlineItemPattern { return item; }
-
-SpoilerInlineItemFallback = item:Any { return item; }
+SpoilerContentItem = !"||" @InlineItemPattern / !"||" @Any
 
 /**
  *
@@ -592,15 +582,15 @@ StrikethroughContent = text:(EscapedTimestampRules / TimestampRules / Whitespace
     }
 
 // Exclude _ and ~ so nested italic/strike can be parsed
-BoldPlainRun = run:[^\x0a\* _~ ]+ { return plain(run.join('')); }
+BoldPlainRun = run:$[^\x0a\* _~ ]+ { return plain(run); }
 AnyBold = t:[^\x0a\* ] { return plain(t); }
 
 // Exclude * and ~ so nested bold/strike can be parsed
-ItalicPlainRun = run:[^\x0a\_ *~]+ { return plain(run.join('')); }
+ItalicPlainRun = run:$[^\x0a\_ *~]+ { return plain(run); }
 AnyItalic = t:[^\x0a\_ ] { return plain(t); }
 
 // Exclude * and _ so nested bold/italic can be parsed
-StrikePlainRun = run:[^\x0a\~ *_]+ { return plain(run.join('')); }
+StrikePlainRun = run:$[^\x0a\~ *_]+ { return plain(run); }
 AnyStrike = t:[^\x0a\~ ] { return plain(t); }
 
 /**
@@ -624,9 +614,9 @@ TildeWithWhitespace = first:Tilde second:Whitespace third:Tilde
   return reducePlainTexts([first,second,third])[0];
 }
 
-Asterisk = t:"*"+ {return plain(t.join(""))}
-Underscore = t:"_"+ {return plain(t.join(""))}
-Tilde = t:"~"+ {return plain(t.join(""))}
+Asterisk = t:$"*"+ { return plain(t); }
+Underscore = t:$"_"+ { return plain(t); }
+Tilde = t:$"~"+ { return plain(t); }
 
 /**
  *
@@ -817,7 +807,7 @@ Space = " " / "\t"
 
 Escaped = "\\" t:[*_~`#.] { return plain(t); }
 
-Any = !EndOfLine t:. { return plain(t); }
+Any = t:[^\r\n] { return plain(t); }
 
 AnyText = [\x20-\x27\x2B-\x40\x41-\x5A\x61-\x7A] / NonASCII
 
