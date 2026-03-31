@@ -1,4 +1,5 @@
 name: 'Meteor Build'
+description: 'Build Meteor bundle for production or coverage'
 
 inputs:
   type:
@@ -8,22 +9,18 @@ inputs:
   reset-meteor:
     required: false
     description: 'Reset Meteor'
-    type: boolean
   node-version:
     required: true
     description: 'Node version'
-    type: string
   NPM_TOKEN:
     required: false
     description: 'NPM token'
   deno-version:
     required: true
     description: 'Deno version'
-    type: string
   source-hash:
     required: true
     description: 'RC cache id (e.g. packages-build-cache-key + meteor apps/meteor archive hash from CI)'
-    type: string
 
 runs:
   using: composite

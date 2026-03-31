@@ -1,4 +1,5 @@
 name: 'Build Docker'
+description: 'Build Docker images for Rocket.Chat and related services'
 
 inputs:
   CR_USER:
@@ -8,7 +9,6 @@ inputs:
   deno-version:
     required: true
     description: 'Deno version'
-    type: string
   arch:
     required: false
     description: 'Architecture'
@@ -16,7 +16,6 @@ inputs:
   service:
     required: false
     description: 'Container to build'
-    type: string
   publish-image:
     required: false
     description: 'Publish image'
@@ -24,7 +23,7 @@ inputs:
   setup-docker:
     required: false
     description: 'Setup Docker'
-    default: true
+    default: 'true'
   type:
     required: false
     description: 'production or coverage'
