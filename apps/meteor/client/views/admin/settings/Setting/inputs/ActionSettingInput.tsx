@@ -1,4 +1,5 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
+import type { Method, PathPattern } from '@rocket.chat/rest-typings';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
@@ -11,8 +12,8 @@ type ActionSettingInputProps = SettingInputProps & {
 	actionText: TranslationKey;
 	sectionChanged: boolean;
 	actionEndpoint?: {
-		method: 'GET' | 'POST' | 'DELETE' | 'PUT';
-		path: string;
+		method: Method;
+		path: PathPattern;
 	};
 };
 

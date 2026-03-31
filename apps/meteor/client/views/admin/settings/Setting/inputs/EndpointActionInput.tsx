@@ -11,8 +11,8 @@ type EndpointActionInputProps = SettingInputProps & {
 	actionText: TranslationKey;
 	sectionChanged: boolean;
 	actionEndpoint: {
-		method: 'GET' | 'POST' | 'DELETE' | 'PUT';
-		path: string;
+		method: Method;
+		path: PathPattern;
 	};
 };
 
@@ -22,8 +22,7 @@ function EndpointActionInput({ actionText, actionEndpoint, hint, disabled, secti
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	// The path is dynamic (comes from a setting), so it can't satisfy the PathPattern union at compile time.
-	const callEndpoint = useEndpoint(actionEndpoint.method as Method, actionEndpoint.path as PathPattern);
+	const callEndpoint = useEndpoint(actionEndpoint.method, actionEndpoint.path);
 
 	const handleClick = async (): Promise<void> => {
 		try {
