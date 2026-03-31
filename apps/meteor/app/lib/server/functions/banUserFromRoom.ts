@@ -72,5 +72,5 @@ export const banUserFromRoom = async function (rid: string, user: IUser, byUser:
 
 	await performUserBan(room, user, byUser);
 
-	void afterBanFromRoomCallback.run({ bannedUser: user, userWhoBanned: byUser }, room);
+	await afterBanFromRoomCallback.run({ bannedUser: user, userWhoBanned: byUser }, room);
 };

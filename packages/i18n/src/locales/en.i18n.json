@@ -6210,6 +6210,7 @@
   "error-cannot-delete-app-user": "Deleting app user is not allowed, uninstall the corresponding app to remove it.",
   "error-cannot-place-chat-on-hold": "You cannot place chat on-hold",
   "error-cant-add-federated-users": "Can't add federated users to a non-federated room",
+  "error-ban-not-supported": "Unable to ban. This action is not supported for this room type.",
   "error-cant-invite-for-direct-room": "Can't invite user to direct rooms",
   "error-channels-setdefault-is-same": "The channel default setting is the same as what it would be changed to.",
   "error-channels-setdefault-missing-default-param": "The bodyParam 'default' is required",
