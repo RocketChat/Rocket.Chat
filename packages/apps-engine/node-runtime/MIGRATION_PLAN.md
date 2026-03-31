@@ -134,10 +134,11 @@ These Web APIs are available in both Deno and Node (global scope):
 
 ### 3.1 Deno Permissions → Node Permissions
 
-| Deno Flag | Purpose | Node Equivalent |
+| Deno Flag | Purpose | Node Equivalent (used with `--permission` flag) |
 |-----------|---------|-----------------|
-| `--allow-read=<dirs>` | Filesystem read | `--allow-fs-read=<dirs>` |
-| `--allow-env=<vars>` | Environment variable access | Not granular per-var; use `--permission` flag which blocks all env unless explicitly granted. Alternative: strip env before spawning |
+| `--allow-read=<dirs>` | Filesystem read | `--permission --allow-fs-read=<dirs>` |
+| `--allow-write=<dirs>` | Filesystem write | `--permission --allow-fs-write=<dirs>` |
+| `--allow-env=<vars>` | Environment variable access | Not granular per-var; `--permission` blocks all env unless explicitly granted. Alternative: strip env before spawning |
 | `--allow-net` | Network access | No direct equivalent. `--permission` blocks `child_process` but doesn't restrict `net`/`http` |
 | `--cached-only` | Prevent network fetch of modules | Not applicable — Node doesn't fetch modules over network |
 
@@ -203,8 +204,9 @@ The deno-runtime code uses:
 
 Use `--experimental-transform-types` flag when spawning the Node subprocess:
 ```
-node --experimental-transform-types --permission --allow-fs-read=<paths> main.ts
+node --experimental-transform-types --permission --allow-fs-read=<paths> --allow-fs-write=<temp-path> main.ts
 ```
+Note: `--allow-fs-write` may be needed if apps write to temp directories.
 
 This handles all TypeScript syntax used in the codebase. The `enum` in `logger.ts` is the only construct requiring transform (not just strip).
 
