@@ -1,19 +1,23 @@
+import type { IUpload } from '@rocket.chat/core-typings';
+import type { IUpload as IAppsUpload } from '@rocket.chat/apps-engine/definition/uploads';
 import { Uploads } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
 
 export class AppUploadsConverter {
-	constructor(orch) {
+	private orch: any;
+
+	constructor(orch: any) {
 		this.orch = orch;
 	}
 
-	async convertById(id) {
+	async convertById(id: string): Promise<IAppsUpload | undefined> {
 		const upload = await Uploads.findOneById(id);
 
 		return this.convertToApp(upload);
 	}
 
-	async convertToApp(upload) {
+	async convertToApp(upload: any): Promise<IAppsUpload | undefined> {
 		if (!upload) {
 			return undefined;
 		}
@@ -35,12 +39,12 @@ export class AppUploadsConverter {
 			url: 'url',
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
-			room: async (upload) => {
+			room: async (upload: any) => {
 				const result = await this.orch.getConverters().get('rooms').convertById(upload.rid);
 				delete upload.rid;
 				return result;
 			},
-			user: async (upload) => {
+			user: async (upload: any) => {
 				if (!upload.userId) {
 					return undefined;
 				}
@@ -49,7 +53,7 @@ export class AppUploadsConverter {
 				delete upload.userId;
 				return result;
 			},
-			visitor: async (upload) => {
+			visitor: async (upload: any) => {
 				if (!upload.visitorToken) {
 					return undefined;
 				}
@@ -60,19 +64,19 @@ export class AppUploadsConverter {
 			},
 		};
 
-		return transformMappedData(upload, map);
+		return transformMappedData(upload, map) as unknown as IAppsUpload;
 	}
 
-	convertToRocketChat(upload) {
+	convertToRocketChat(upload: any): IUpload | undefined {
 		if (!upload) {
 			return undefined;
 		}
 
 		const { id: userId } = upload.user || {};
 		const { token: visitorToken } = upload.visitor || {};
-		const { id: rid } = upload.room;
+		const { id: rid } = (upload.room || {}) as any;
 
-		const newUpload = {
+		const newUpload: any = {
 			_id: upload.id,
 			name: upload.name,
 			size: upload.size,
@@ -93,6 +97,6 @@ export class AppUploadsConverter {
 			visitorToken,
 		};
 
-		return Object.assign(newUpload, upload._unmappedProperties_);
+		return Object.assign(newUpload, (upload as any)._unmappedProperties_) as IUpload;
 	}
-}
+} 
