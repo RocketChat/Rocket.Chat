@@ -479,6 +479,33 @@ const channelsGetIntegrationsResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const channelsHistoryResponse = ajv.compile<{
+	messages: object[];
+	firstUnread?: object;
+	unreadNotLoaded?: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		messages: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		firstUnread: {
+			type: 'object',
+			nullable: true,
+			additionalProperties: true,
+		},
+		unreadNotLoaded: { type: 'number', nullable: true },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'success'],
+	additionalProperties: false,
+});
+
 const isChannelsListJoinedProps = ajvQuery.compile<{
 	_id?: string;
 	roomId?: string;
@@ -561,40 +588,44 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsHistoryEndpoint = API.v1.get(
 	'channels.history',
 	{
 		authRequired: true,
-		validateParams: isChannelsHistoryProps,
-	},
-	{
-		async get() {
-			const { unreads, oldest, latest, showThreadMessages, inclusive, ...params } = this.queryParams;
-			const findResult = await findChannelByIdOrName({
-				params,
-				checkedArchived: false,
-			});
-
-			const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
-
-			const result = await getChannelHistory({
-				rid: findResult._id,
-				fromUserId: this.userId,
-				latest: latest ? new Date(latest) : new Date(),
-				oldest: oldest ? new Date(oldest) : undefined,
-				inclusive: inclusive === 'true',
-				offset,
-				count,
-				unreads: unreads === 'true',
-				showThreadMessages: showThreadMessages === 'true',
-			});
-
-			if (!result) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success(result);
+		query: isChannelsHistoryProps,
+		response: {
+			200: channelsHistoryResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { unreads, oldest, latest, showThreadMessages, inclusive, ...params } = this.queryParams;
+		const findResult = await findChannelByIdOrName({
+			params,
+			checkedArchived: false,
+		});
+
+		const { count = 20, offset = 0 } = await getPaginationItems(this.queryParams);
+
+		const result = await getChannelHistory({
+			rid: findResult._id,
+			fromUserId: this.userId,
+			latest: latest ? new Date(latest) : new Date(),
+			oldest: oldest ? new Date(oldest) : undefined,
+			inclusive: inclusive === 'true',
+			offset,
+			count,
+			unreads: unreads === 'true',
+			showThreadMessages: showThreadMessages === 'true',
+		});
+
+		if (!result) {
+			return API.v1.forbidden();
+		}
+
+		return API.v1.success(result);
 	},
 );
 
@@ -1962,6 +1993,7 @@ type ChannelsFilesEndpoint = ExtractRoutesFromAPI<typeof channelsFilesEndpoint>;
 type ChannelsListJoinedEndpoint = ExtractRoutesFromAPI<typeof channelsListJoinedEndpoint>;
 type ChannelsListEndpoint = ExtractRoutesFromAPI<typeof channelsListEndpoint>;
 type ChannelsGetIntegrationsEndpoint = ExtractRoutesFromAPI<typeof channelsGetIntegrationsEndpoint>;
+type ChannelsHistoryEndpoint = ExtractRoutesFromAPI<typeof channelsHistoryEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -1976,5 +2008,6 @@ declare module '@rocket.chat/rest-typings' {
 			ChannelsFilesEndpoint,
 			ChannelsListJoinedEndpoint,
 			ChannelsListEndpoint,
-			ChannelsGetIntegrationsEndpoint {}
+			ChannelsGetIntegrationsEndpoint,
+			ChannelsHistoryEndpoint {}
 }
