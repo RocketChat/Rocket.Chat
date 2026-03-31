@@ -10,8 +10,8 @@ inputs:
     required: false
 
 runs:
-  using: "node20"
-  main: "dist/index.js"
+  using: "node24"
+  main: "src/index.ts"
 
 branding:
   icon: "package"
