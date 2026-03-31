@@ -1,7 +1,7 @@
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, IconButton, Palette, PaletteStyleTag, Throbber, padding } from '@rocket.chat/fuselage';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,8 @@ import 'swiper/swiper.css';
 import 'swiper/modules/zoom.css';
 
 import { usePreventPropagation } from '../../hooks/usePreventPropagation';
+
+const ZOOM_WHEEL_COOLDOWN_MS = 200;
 
 const swiperStyle = css`
 	.swiper {
@@ -118,6 +120,60 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 	const handleResize = () => handleZoom(-(zoomScale - 1));
 
 	const preventPropagation = usePreventPropagation();
+	const lastZoomTimeRef = useRef(0);
+
+	useEffect(() => {
+		const onWheel = (event: WheelEvent): void => {
+			const target = event.target as HTMLElement;
+			const zoomContainer = target.closest('.swiper-zoom-container');
+
+			if (!zoomContainer) {
+				return;
+			}
+
+			const gallery = zoomContainer.closest('.image-gallery');
+			if (!gallery) {
+				return;
+			}
+
+			const now = Date.now();
+			if (now - lastZoomTimeRef.current < ZOOM_WHEEL_COOLDOWN_MS) {
+				event.preventDefault();
+				event.stopPropagation();
+				return;
+			}
+
+			const zoomInBtn = gallery.querySelector('button[name="zoom-in"]') as HTMLButtonElement | null;
+			const zoomOutBtn = gallery.querySelector('button[name="zoom-out"]') as HTMLButtonElement | null;
+
+			if (!zoomInBtn || !zoomOutBtn) {
+				return;
+			}
+
+			let handled = false;
+
+			if (event.deltaY < 0) {
+				if (!zoomInBtn.disabled) {
+					zoomInBtn.click();
+					handled = true;
+				}
+			} else if (event.deltaY > 0) {
+				if (!zoomOutBtn.disabled) {
+					zoomOutBtn.click();
+					handled = true;
+				}
+			}
+
+			if (handled) {
+				lastZoomTimeRef.current = now;
+				event.preventDefault();
+				event.stopPropagation();
+			}
+		};
+
+		window.addEventListener('wheel', onWheel, { passive: false, capture: true });
+		return () => window.removeEventListener('wheel', onWheel, { capture: true });
+	}, []);
 
 	return createPortal(
 		<>
