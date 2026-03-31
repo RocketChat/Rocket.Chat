@@ -58,7 +58,12 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 	}
 
 	async getHealthStatus(): Promise<void> {
-		const token = await this.getClientToken();
+		let token: string;
+		try {
+			token = await this.getClientToken();
+		} catch (err) {
+			throw new Error('ABAC_PDP_Health_IdP_Failed');
+		}
 
 		const healthResponse = await serverFetch(`${this.config.baseUrl}/healthz`, {
 			method: 'GET',

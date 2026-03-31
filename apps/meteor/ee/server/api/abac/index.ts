@@ -380,7 +380,7 @@ const abacEndpoints = API.v1
 				await Abac.getPdpHealth();
 				return API.v1.success({ available: true, message: 'ABAC_PDP_Health_OK' });
 			} catch (err) {
-				return API.v1.failure((err as Error).message);
+				return API.v1.failure({ available: false, message: (err as Error).message });
 			}
 		},
 	)

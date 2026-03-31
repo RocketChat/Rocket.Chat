@@ -356,7 +356,16 @@ export const GETAbacPdpHealthResponseSchema = ajv.compile<{
 	additionalProperties: false,
 });
 
-export const GETAbacPdpHealthErrorResponseSchema = ajv.compile<{ success: boolean; message: string }>(GenericError);
+export const GETAbacPdpHealthErrorResponseSchema = ajv.compile<{ available: boolean; message: string }>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		available: { type: 'boolean', enum: [false] },
+		message: { type: 'string' },
+	},
+	required: ['available', 'message'],
+	additionalProperties: false,
+});
 
 const GETAbacRoomsListQuerySchema = {
 	type: 'object',
