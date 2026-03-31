@@ -11,16 +11,13 @@ inputs:
   install:
     required: false
     description: 'Install dependencies'
-    type: boolean
   type:
     required: false
     description: 'development or production'
-    type: string
     default: 'development'
   deno-version:
     required: true
     description: 'Deno version'
-    type: string
   NPM_TOKEN:
     required: false
     description: 'NPM token'
