@@ -34,7 +34,7 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 	async getClientRoomInfo(): Promise<IExternalComponentRoomInfo> {
 		const room = RoomManager.opened ? Rooms.state.get(RoomManager.opened) : undefined;
 		if (!room) {
-			throw new Error('Room not found');
+			throw new Error('RealAppsEngineUIHost: room is null in getClientRoomInfo');
 		}
 		const { name: slugifiedName, _id: id } = room;
 
@@ -42,17 +42,18 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		try {
 			const { members } = await sdk.rest.get('/v1/groups.members', { roomId: id });
 
-			cachedMembers = members
-				.filter(({ username }) => username != null)
-				.map(
-					({ _id, username }): IExternalComponentUserInfo => ({
+			cachedMembers = members.reduce<IExternalComponentUserInfo[]>((acc, { _id, username }) => {
+				if (typeof username === 'string' && username.length > 0) {
+					acc.push({
 						id: _id,
-						username: username as string,
-						avatarUrl: this.getUserAvatarUrl(username as string),
-					}),
-				);
+						username,
+						avatarUrl: this.getUserAvatarUrl(username),
+					});
+				}
+				return acc;
+			}, []);
 		} catch (error) {
-			console.warn(error);
+			console.warn('RealAppsEngineUIHost: failed to fetch room members', error);
 		}
 
 		return {
@@ -66,13 +67,13 @@ export class RealAppsEngineUIHost extends AppsEngineUIHost {
 		const user = getUser();
 
 		if (!user) {
-			throw new Error('User not found');
+			throw new Error('RealAppsEngineUIHost: user is null in getClientUserInfo');
 		}
 
 		const { username, _id } = user;
 
 		if (!username) {
-			throw new Error('User username is missing');
+			throw new Error('RealAppsEngineUIHost: username is missing on authenticated user');
 		}
 
 		return {
