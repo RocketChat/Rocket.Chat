@@ -1368,75 +1368,79 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsListEndpoint = API.v1.get(
 	'channels.list',
 	{
 		authRequired: true,
 		permissionsRequired: {
 			GET: { permissions: ['view-c-room', 'view-joined-room'], operation: 'hasAny' },
 		},
-		validateParams: isChannelsListProps,
-	},
-	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-			const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
-
-			const { _id } = this.queryParams;
-
-			const ourQuery = {
-				...query,
-				...(_id ? { _id } : {}),
-				t: 'c',
-			};
-
-			if (!hasPermissionToSeeAllPublicChannels) {
-				const roomIds = (
-					await Subscriptions.findByUserIdAndType(this.userId, 'c', {
-						projection: { rid: 1 },
-					}).toArray()
-				).map((s) => s.rid);
-				ourQuery._id = { $in: roomIds };
-			}
-
-			// teams filter - I would love to have a way to apply this filter @ db level :(
-			const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
-				(item: Record<string, any>) => item.rid,
-			);
-
-			ourQuery.$or = [
-				{
-					teamId: {
-						$exists: false,
-					},
-				},
-				{
-					teamId: {
-						$exists: true,
-					},
-					_id: {
-						$in: ids,
-					},
-				},
-			];
-
-			const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				count: channels.length,
-				offset,
-				total,
-			});
+		query: isChannelsListProps,
+		response: {
+			200: channelsListResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+		const hasPermissionToSeeAllPublicChannels = await hasPermissionAsync(this.userId, 'view-c-room');
+
+		const { _id } = this.queryParams;
+
+		const ourQuery = {
+			...query,
+			...(_id ? { _id } : {}),
+			t: 'c',
+		};
+
+		if (!hasPermissionToSeeAllPublicChannels) {
+			const roomIds = (
+				await Subscriptions.findByUserIdAndType(this.userId, 'c', {
+					projection: { rid: 1 },
+				}).toArray()
+			).map((s) => s.rid);
+			ourQuery._id = { $in: roomIds };
+		}
+
+		// teams filter - I would love to have a way to apply this filter @ db level :(
+		const ids = (await Subscriptions.findByUserId(this.userId, { projection: { rid: 1 } }).toArray()).map(
+			(item: Record<string, any>) => item.rid,
+		);
+
+		ourQuery.$or = [
+			{
+				teamId: {
+					$exists: false,
+				},
+			},
+			{
+				teamId: {
+					$exists: true,
+				},
+				_id: {
+					$in: ids,
+				},
+			},
+		];
+
+		const { cursor, totalCount } = Rooms.findPaginated(ourQuery, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [channels, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			channels: await Promise.all(channels.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			count: channels.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -1925,6 +1929,7 @@ type ChannelsModeratorsEndpoint = ExtractRoutesFromAPI<typeof channelsModerators
 type ChannelsGetAllUserMentionsByChannelEndpoint = ExtractRoutesFromAPI<typeof channelsGetAllUserMentionsByChannelEndpoint>;
 type ChannelsFilesEndpoint = ExtractRoutesFromAPI<typeof channelsFilesEndpoint>;
 type ChannelsListJoinedEndpoint = ExtractRoutesFromAPI<typeof channelsListJoinedEndpoint>;
+type ChannelsListEndpoint = ExtractRoutesFromAPI<typeof channelsListEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -1937,5 +1942,6 @@ declare module '@rocket.chat/rest-typings' {
 			ChannelsModeratorsEndpoint,
 			ChannelsGetAllUserMentionsByChannelEndpoint,
 			ChannelsFilesEndpoint,
-			ChannelsListJoinedEndpoint {}
+			ChannelsListJoinedEndpoint,
+			ChannelsListEndpoint {}
 }
