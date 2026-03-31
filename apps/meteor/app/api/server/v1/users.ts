@@ -23,6 +23,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -511,7 +512,11 @@ API.v1.addRoute(
 				if (!canViewFullOtherUserInfo) {
 					return API.v1.forbidden();
 				}
-				nonEmptyQuery['emails.address'] = this.queryParams.email;
+				const escapedEmail = escapeRegExp(this.queryParams.email as string);
+				nonEmptyQuery['emails.address'] = {
+					$regex: `^${escapedEmail}$`,
+					$options: 'i',
+				};
 			}
 
 			// if user provided a query, validate it with their allowed operators
