@@ -2,6 +2,8 @@ import { Team, Room } from '@rocket.chat/core-services';
 import { TeamType, type IRoom, type ISubscription, type IUser, type RoomType, type UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
+	ajv,
+	ajvQuery,
 	isChannelsAddAllProps,
 	isChannelsArchiveProps,
 	isChannelsHistoryProps,
@@ -21,6 +23,9 @@ import {
 	isChannelsListProps,
 	isChannelsFilesListProps,
 	isChannelsOnlineProps,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -51,6 +56,7 @@ import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom'
 import { getUserMentionsByChannel } from '../../../mentions/server/methods/getUserMentionsByChannel';
 import { settings } from '../../../settings/server';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -96,6 +102,49 @@ async function findChannelByIdOrName({
 
 	return room;
 }
+
+type ChannelsInfoParams = { roomId: string } | { roomName: string };
+
+const isChannelsInfoProps = ajvQuery.compile<ChannelsInfoParams>({
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: {
+					type: 'string',
+				},
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+});
+
+const channelsInfoResponse = ajv.compile<{ channel: IRoom; success: true }>({
+	type: 'object',
+	properties: {
+		channel: {
+			type: 'object',
+			additionalProperties: true,
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['channel', 'success'],
+	additionalProperties: false,
+});
 
 API.v1.addRoute(
 	'channels.addAll',
@@ -916,25 +965,32 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsInfoEndpoint = API.v1.get(
 	'channels.info',
-	{ authRequired: true },
 	{
-		async get() {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
-				userId: this.userId,
-			});
-
-			if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-				return API.v1.forbidden();
-			}
-
-			return API.v1.success({
-				channel: findResult,
-			});
+		authRequired: true,
+		query: isChannelsInfoProps,
+		response: {
+			200: channelsInfoResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findChannelByIdOrName({
+			params: this.queryParams,
+			checkedArchived: false,
+			userId: this.userId,
+		});
+
+		if (!(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+			return API.v1.forbidden();
+		}
+
+		return API.v1.success({
+			channel: findResult,
+		});
 	},
 );
 
@@ -1487,3 +1543,10 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type ChannelsInfoEndpoint = ExtractRoutesFromAPI<typeof channelsInfoEndpoint>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ChannelsInfoEndpoint {}
+}
