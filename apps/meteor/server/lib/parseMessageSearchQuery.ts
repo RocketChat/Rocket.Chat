@@ -274,17 +274,19 @@ class MessageSearchQueryParser {
 		];
 
 		delete this.query.$text;
-	}
+	} else {
+		// ✅ NORMAL SEARCH (NO $text)
+		const escaped = escapeRegExp(text);
 
-	else {
-	// NORMAL SEARCH
-	this.query.$or = [
-		{ $text: { $search: text } },
-		{ 'attachments.text': { $regex: escapeRegExp(text), $options: 'i' } },
-		{ 'attachments.title': { $regex: escapeRegExp(text), $options: 'i' } },
-		{ 'attachments.description': { $regex: escapeRegExp(text), $options: 'i' } },
-	];
-}
+		this.query.$or = [
+			{ msg: { $regex: escaped, $options: 'i' } },
+			{ 'attachments.text': { $regex: escaped, $options: 'i' } },
+			{ 'attachments.title': { $regex: escaped, $options: 'i' } },
+			{ 'attachments.description': { $regex: escaped, $options: 'i' } },
+		];
+
+		delete this.query.$text;
+	}
 
 	return text;
 }
