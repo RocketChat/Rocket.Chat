@@ -580,24 +580,12 @@ AnyStrike = t:[^\x0a\~ ] { return plain(t); }
 */
 EmphasisWithWhitespace = AsteriskWithWhitespace / UnderscoreWithWhitespace / TildeWithWhitespace
 
-AsteriskWithWhitespace = first:Asterisk second:Whitespace third:Asterisk
-{
-  return reducePlainTexts([first,second,third])[0];
-}
+AsteriskWithWhitespace = a:$"*"+ w:$Space+ b:$"*"+ { return plain(a + w + b); }
 
-UnderscoreWithWhitespace = first:Underscore second:Whitespace third:Underscore
-{
-  return reducePlainTexts([first,second,third])[0];
-}
+UnderscoreWithWhitespace = a:$"_"+ w:$Space+ b:$"_"+ { return plain(a + w + b); }
 
-TildeWithWhitespace = first:Tilde second:Whitespace third:Tilde
-{
-  return reducePlainTexts([first,second,third])[0];
-}
+TildeWithWhitespace = a:$"~"+ w:$Space+ b:$"~"+ { return plain(a + w + b); }
 
-Asterisk = t:$"*"+ { return plain(t); }
-Underscore = t:$"_"+ { return plain(t); }
-Tilde = t:$"~"+ { return plain(t); }
 
 /**
  *
