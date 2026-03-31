@@ -27,6 +27,7 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateNotFoundErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -503,6 +504,67 @@ const channelsHistoryResponse = ajv.compile<{
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['messages', 'success'],
+	additionalProperties: false,
+});
+
+const isChannelsAnonymousReadProps = ajvQuery.compile<{
+	roomId?: string;
+	roomName?: string;
+	query?: string;
+	count?: number;
+	offset?: number;
+	sort?: string;
+	fields?: string;
+}>({
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+				query: { type: 'string', nullable: true },
+				count: { type: 'number', nullable: true },
+				offset: { type: 'number', nullable: true },
+				sort: { type: 'string', nullable: true },
+				fields: { type: 'string', nullable: true },
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: { type: 'string' },
+				query: { type: 'string', nullable: true },
+				count: { type: 'number', nullable: true },
+				offset: { type: 'number', nullable: true },
+				sort: { type: 'string', nullable: true },
+				fields: { type: 'string', nullable: true },
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+});
+
+const channelsAnonymousReadResponse = ajv.compile<{
+	messages: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		messages: {
+			type: 'array',
+			items: { type: 'object', additionalProperties: true },
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'count', 'offset', 'total', 'success'],
 	additionalProperties: false,
 });
 
@@ -1933,52 +1995,59 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsAnonymousReadEndpoint = API.v1.get(
 	'channels.anonymousread',
-	{ authOrAnonRequired: true },
 	{
-		async get() {
-			const findResult = await findChannelByIdOrName({
-				params: this.queryParams,
-				checkedArchived: false,
+		authOrAnonRequired: true,
+		query: isChannelsAnonymousReadProps,
+		response: {
+			200: channelsAnonymousReadResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const findResult = await findChannelByIdOrName({
+			params: this.queryParams,
+			checkedArchived: false,
+		});
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const ourQuery = Object.assign({}, query, { rid: findResult._id });
+
+		if (!settings.get<boolean>('Accounts_AllowAnonymousRead')) {
+			throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
+				method: 'channels.anonymousread',
 			});
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+		}
 
-			const ourQuery = Object.assign({}, query, { rid: findResult._id });
-
-			if (!settings.get<boolean>('Accounts_AllowAnonymousRead')) {
-				throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
-					method: 'channels.anonymousread',
-				});
-			}
-
-			// Public rooms of private teams should be accessible only by team members
-			if (findResult.teamId) {
-				const team = await Team.getOneById(findResult.teamId);
-				if (team?.type === TeamType.PRIVATE) {
-					if (!this.userId || !(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
-						return API.v1.notFound('Room not found');
-					}
+		// Public rooms of private teams should be accessible only by team members
+		if (findResult.teamId) {
+			const team = await Team.getOneById(findResult.teamId);
+			if (team?.type === TeamType.PRIVATE) {
+				if (!this.userId || !(await canAccessRoomAsync(findResult, { _id: this.userId }))) {
+					return API.v1.notFound('Room not found');
 				}
 			}
+		}
 
-			const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {
-				sort: sort || { ts: -1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
+		const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
 
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+		const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(messages, this.userId || ''),
-				count: messages.length,
-				offset,
-				total,
-			});
-		},
+		return API.v1.success({
+			messages: await normalizeMessagesForUser(messages, this.userId || ''),
+			count: messages.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -1994,6 +2063,7 @@ type ChannelsListJoinedEndpoint = ExtractRoutesFromAPI<typeof channelsListJoined
 type ChannelsListEndpoint = ExtractRoutesFromAPI<typeof channelsListEndpoint>;
 type ChannelsGetIntegrationsEndpoint = ExtractRoutesFromAPI<typeof channelsGetIntegrationsEndpoint>;
 type ChannelsHistoryEndpoint = ExtractRoutesFromAPI<typeof channelsHistoryEndpoint>;
+type ChannelsAnonymousReadEndpoint = ExtractRoutesFromAPI<typeof channelsAnonymousReadEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -2009,5 +2079,6 @@ declare module '@rocket.chat/rest-typings' {
 			ChannelsListJoinedEndpoint,
 			ChannelsListEndpoint,
 			ChannelsGetIntegrationsEndpoint,
-			ChannelsHistoryEndpoint {}
+			ChannelsHistoryEndpoint,
+			ChannelsAnonymousReadEndpoint {}
 }
