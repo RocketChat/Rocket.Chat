@@ -2225,7 +2225,6 @@
   "Federation_Service_EDU_Process_Presence": "处理在线状态事件",
   "Federation_Service_EDU_Process_Presence_Description": "在联邦服务器之间发送和接收用户在线状态（在线、离线等）事件。",
   "Federation_Service_EDU_Process_Presence_Alert": "启用在线状态事件可能会显著增加服务器负载和网络流量，尤其是在用户较多时。仅在你了解其影响并具备处理额外负载的资源时启用此选项。",
-  "Federation_Service_Alert": "<strong>测试功能：适用于非关键部署</strong><br/>此功能正在进行最终的性能与韧性审计，<strong>尚不推荐用于关键生产数据。</strong> 功能仍可能出现间歇性问题。用户必须由工作区管理员明确授予 'access-federation' 权限才能与联邦房间交互。",
   "Federation_Service_Domain": "联邦域名",
   "Federation_Service_Domain_Description": "此服务器应响应的域名，例如：`acme.com`。该域名将作为用户 ID 的后缀（如 `@user:acme.com`）。<br/>如果你的聊天服务器可通过与联邦域名不同的域名访问，请按文档在 Web 服务器上配置 `.well-known` 文件。",
   "Federation_Service_Domain_Alert": "仅填写域名，不要包含 http(s)://、斜杠或其后的路径。<br/>请使用 `acme.com`，而不是 `https://acme.com/chat`。",
