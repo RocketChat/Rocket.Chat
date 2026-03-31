@@ -4,8 +4,10 @@ description: 'Build Docker images for Rocket.Chat and related services'
 inputs:
   CR_USER:
     required: true
+    description: 'GitHub Container Registry username'
   CR_PAT:
     required: true
+    description: 'GitHub Container Registry Personal Access Token'
   deno-version:
     required: true
     description: 'Deno version'
@@ -57,7 +59,7 @@ runs:
         rm Rocket.Chat.tar.gz
 
     - name: Set up Docker
-      if: inputs.setup-docker == true
+      if: inputs.setup-docker == 'true'
       uses: docker/setup-docker-action@v4
       with:
         daemon-config: |
