@@ -46,6 +46,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 
 	const { trigger, control, handleSubmit, formState, clearErrors, setValue } = useForm<RecipientFormData>({
 		mode: 'onChange',
+		reValidateMode: 'onChange',
 		defaultValues: {
 			contactId: defaultValues?.contactId ?? '',
 			providerId: defaultValues?.providerId ?? '',

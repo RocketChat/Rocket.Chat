@@ -43,10 +43,20 @@ jobs:
 
       - uses: rharkor/caching-for-turbo@v1.8
 
-      - uses: ./.github/actions/restore-packages
+      - name: Restore packages build
+        uses: actions/download-artifact@v7
+        with:
+          name: packages-build
+          path: /tmp
+
+      - name: Unpack packages build
+        shell: bash
+        run: |
+          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
 
       - name: Cache TypeCheck
         uses: actions/cache@v5
+        if: matrix.check == 'ts'
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
@@ -56,6 +66,7 @@ jobs:
             typecheck-cache
 
       - name: Install Meteor
+        if: matrix.check == 'ts'
         shell: bash
         run: |
           # Restore bin from cache
@@ -77,7 +88,7 @@ jobs:
 
       - name: TS TypeCheck
         if: matrix.check == 'ts'
-        run: yarn turbo run typecheck --concurrency=5
+        run: yarn turbo run typecheck
 
       - name: Cache eslint
         uses: actions/cache@v5

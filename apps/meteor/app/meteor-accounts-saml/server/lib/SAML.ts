@@ -74,7 +74,7 @@ export class SAML {
 			case 'logout':
 				return this.processLogoutAction(req, res, service);
 			case 'sloRedirect':
-				return this.processSLORedirectAction(req, res, service);
+				return this.processSLORedirectAction(req, res);
 			case 'authorize':
 				return this.processAuthorizeAction(res, service, samlObject);
 			case 'validate':
@@ -295,7 +295,7 @@ export class SAML {
 			}
 
 			let timeoutHandler: NodeJS.Timeout | undefined = undefined;
-			const redirect = (url?: string): void => {
+			const redirect = (url?: string | undefined): void => {
 				if (!timeoutHandler) {
 					// If the handler is null, then we already ended the response;
 					return;
@@ -384,58 +384,18 @@ export class SAML {
 				await logOutUser(inResponseTo);
 			} finally {
 				res.writeHead(302, {
-					Location: Meteor.absoluteUrl(),
+					Location: req.query.RelayState,
 				});
 				res.end();
 			}
 		});
 	}
 
-	private static processSLORedirectAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
-		const { idpSLORedirectURL } = service;
-		const userRedirect = req.query.redirect as string;
-
-		if (!idpSLORedirectURL) {
-			res.writeHead(500);
-			res.end('SLO redirect not configured');
-			return;
-		}
-
-		if (!userRedirect || typeof userRedirect !== 'string') {
-			res.writeHead(400);
-			res.end('Missing redirect parameter');
-			return;
-		}
-
-		let configuredURL: URL;
-		let requestURL: URL;
-
-		try {
-			configuredURL = new URL(idpSLORedirectURL);
-			requestURL = new URL(userRedirect);
-		} catch {
-			res.writeHead(400);
-			res.end('Invalid URL format');
-			return;
-		}
-
-		if (configuredURL.origin !== requestURL.origin) {
-			res.writeHead(403);
-			res.end('Unauthorized redirect origin');
-			return;
-		}
-
-		const normalizePath = (p: string): string => p.replace(/\/+$/, '') || '/';
-		if (normalizePath(configuredURL.pathname) !== normalizePath(requestURL.pathname)) {
-			res.writeHead(403);
-			res.end('Unauthorized redirect path');
-			return;
-		}
-
+	private static processSLORedirectAction(req: IIncomingMessage, res: ServerResponse): void {
 		res.writeHead(302, {
-			Location: requestURL.toString(),
+			// credentialToken here is the SAML LogOut Request that we'll send back to IDP
+			Location: req.query.redirect,
 		});
-
 		res.end();
 	}
 
@@ -533,7 +493,7 @@ export class SAML {
 	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): Promise<void> {
 		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
-			for (let roomName of channels) {
+			for await (let roomName of channels) {
 				roomName = roomName.trim();
 				if (!roomName) {
 					continue;

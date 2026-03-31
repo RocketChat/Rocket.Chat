@@ -13,7 +13,7 @@ import type { Credentials } from './Credentials';
 import type { Middleware, RestClientInterface } from './RestClientInterface';
 import { hasRequiredTwoFactorMethod, isTotpInvalidError, isTotpRequiredError } from './errors';
 
-export type { RestClientInterface, Credentials };
+export { RestClientInterface, Credentials };
 
 const pipe =
 	<T extends (...args: any[]) => any>(fn: T) =>

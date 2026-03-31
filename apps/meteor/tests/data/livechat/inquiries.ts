@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';

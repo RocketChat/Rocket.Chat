@@ -14,24 +14,21 @@ import {
 	ContextualbarSection,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, FormEventHandler, ComponentProps, MouseEvent, ElementType } from 'react';
-import { useId, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useMemo } from 'react';
 import { GroupedVirtuoso } from 'react-virtuoso';
 
 import { MembersListDivider } from './MembersListDivider';
 import RoomMembersRow from './RoomMembersRow';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
-import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
 type RoomMembersProps = {
 	rid: IRoom['_id'];
 	isTeam?: boolean;
 	isDirect?: boolean;
-	isPending: boolean;
-	isSuccess: boolean;
+	loading: boolean;
 	text: string;
 	type: string;
 	setText: FormEventHandler<HTMLInputElement>;
@@ -50,8 +47,7 @@ type RoomMembersProps = {
 };
 
 const RoomMembers = ({
-	isPending,
-	isSuccess,
+	loading,
 	members = [],
 	text,
 	type = 'online',
@@ -71,8 +67,7 @@ const RoomMembers = ({
 	reload,
 	isABACRoom = false,
 }: RoomMembersProps): ReactElement => {
-	const { t } = useTranslation();
-	const membersListId = useId();
+	const t = useTranslation();
 	const inputRef = useAutoFocus<HTMLInputElement>(true);
 	const itemData = useMemo(() => ({ onClickView, rid }), [onClickView, rid]);
 
@@ -148,63 +143,55 @@ const RoomMembers = ({
 			<ContextualbarSection>
 				<TextInput
 					placeholder={t('Search_by_username')}
-					aria-label={t('Search_by_username')}
-					aria-controls={isSuccess ? membersListId : undefined}
 					value={text}
 					ref={inputRef}
 					onChange={setText}
 					addon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box w='x144' mis={8}>
-					<Select
-						aria-controls={isSuccess ? membersListId : undefined}
-						options={options}
-						value={type}
-						onChange={(value): void => setType(value as 'online' | 'all')}
-					/>
+					<Select onChange={(value): void => setType(value as 'online' | 'all')} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent p={0} pb={12}>
-				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
-				{isPending && (
+				{loading && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
+
 				{error && (
 					<Box pi={24} pb={12}>
 						<Callout type='danger'>{error.message}</Callout>
 					</Box>
 				)}
-				{isSuccess && (
+
+				{!loading && members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
+
+				{!loading && members.length > 0 && (
 					<>
-						{members.length > 0 && (
-							<Box pi={24} pb={12}>
-								<Box is='span' color='hint' fontScale='p2'>
-									{t('Showing_current_of_total', { current: members.length, total })}
-								</Box>
+						<Box pi={24} pb={12}>
+							<Box is='span' color='hint' fontScale='p2'>
+								{t('Showing_current_of_total', { current: members.length, total })}
 							</Box>
-						)}
-						<Box id={membersListId} w='full' h='full' overflow='hidden' flexShrink={1}>
-							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
-							{members.length > 0 && (
-								<VirtualizedScrollbars>
-									<GroupedVirtuoso
-										style={{
-											height: '100%',
-											width: '100%',
-										}}
-										overscan={50}
-										groupCounts={counts}
-										groupContent={(index): ReactElement => titles[index]}
-										// eslint-disable-next-line react/no-multi-comp
-										components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
-										itemContent={(index): ReactElement => (
-											<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
-										)}
-									/>
-								</VirtualizedScrollbars>
-							)}
+						</Box>
+
+						<Box w='full' h='full' overflow='hidden' flexShrink={1}>
+							<VirtualizedScrollbars>
+								<GroupedVirtuoso
+									style={{
+										height: '100%',
+										width: '100%',
+									}}
+									overscan={50}
+									groupCounts={counts}
+									groupContent={(index): ReactElement => titles[index]}
+									// eslint-disable-next-line react/no-multi-comp
+									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} /> }}
+									itemContent={(index): ReactElement => (
+										<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
+									)}
+								/>
+							</VirtualizedScrollbars>
 						</Box>
 					</>
 				)}

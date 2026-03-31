@@ -134,7 +134,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
-		for (let language of targetLanguages) {
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.slice(0, 2);
 			}
@@ -157,7 +157,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 				if (
 					result.status === 200 &&
-					body.data?.translations &&
+					body.data &&
+					body.data.translations &&
 					Array.isArray(body.data.translations) &&
 					body.data.translations.length > 0
 				) {
@@ -182,7 +183,7 @@ class GoogleAutoTranslate extends AutoTranslate {
 		const translations: { [k: string]: string } = {};
 		const supportedLanguages = await this.getSupportedLanguages('en');
 
-		for (let language of targetLanguages) {
+		for await (let language of targetLanguages) {
 			if (language.indexOf('-') !== -1 && !_.findWhere(supportedLanguages, { language })) {
 				language = language.slice(0, 2);
 			}
@@ -205,7 +206,8 @@ class GoogleAutoTranslate extends AutoTranslate {
 
 				if (
 					result.status === 200 &&
-					body.data?.translations &&
+					body.data &&
+					body.data.translations &&
 					Array.isArray(body.data.translations) &&
 					body.data.translations.length > 0
 				) {

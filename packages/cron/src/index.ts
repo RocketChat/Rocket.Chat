@@ -130,7 +130,7 @@ export class AgendaCronJobs {
 
 		await this.scheduler.start();
 
-		for (const job of this.reservedJobs) {
+		for await (const job of this.reservedJobs) {
 			if (job.timestamped) {
 				await this.addAtTimestamp(job.name, job.when, job.callback);
 			} else {

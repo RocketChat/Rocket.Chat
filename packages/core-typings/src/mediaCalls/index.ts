@@ -1,3 +1,3 @@
-export type * from './IMediaCall';
-export type * from './IMediaCallChannel';
-export type * from './IMediaCallNegotiation';
+export * from './IMediaCall';
+export * from './IMediaCallChannel';
+export * from './IMediaCallNegotiation';

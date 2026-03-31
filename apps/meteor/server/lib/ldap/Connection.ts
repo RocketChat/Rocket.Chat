@@ -719,6 +719,7 @@ export class LDAPConnection {
 			connectTimeout: this.options.connectionTimeout,
 			idleTimeout: this.options.idleTimeout,
 			reconnect: this.options.reconnect,
+			log: connLogger,
 		};
 
 		const tlsOptions: Record<string, any> = {

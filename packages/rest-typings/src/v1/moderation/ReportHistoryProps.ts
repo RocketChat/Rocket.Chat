@@ -1,5 +1,5 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 type ReportHistoryProps = {
 	latest?: string;
@@ -42,4 +42,4 @@ const reportHistoryPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isReportHistoryProps = ajvQuery.compile<ReportHistoryPropsGET>(reportHistoryPropsSchema);
+export const isReportHistoryProps = ajv.compile<ReportHistoryPropsGET>(reportHistoryPropsSchema);

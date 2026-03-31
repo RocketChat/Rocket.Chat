@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import ParentRoomButton from './ParentRoomButton';
 import { useTeamInfoQuery } from '../../../../hooks/useTeamInfoQuery';
-import { useGoToRoom } from '../../hooks/useGoToRoom';
+import { goToRoomById } from '../../../../lib/utils/goToRoomById';
 import { useUserTeamsQuery } from '../../hooks/useUserTeamsQuery';
 
 type APIErrorResult = { success: boolean; error: string };
@@ -40,15 +40,13 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 	const isPublicTeam = teamInfo?.type === TeamType.PUBLIC;
 	const shouldDisplayTeam = isPublicTeam || userBelongsToTeam;
 
-	const goToRoom = useGoToRoom();
-
 	const redirectToMainRoom = (): void => {
 		const rid = teamInfo?.roomId;
 		if (!rid) {
 			return;
 		}
 
-		goToRoom(rid);
+		goToRoomById(rid);
 	};
 
 	if (teamInfoError || !shouldDisplayTeam) {

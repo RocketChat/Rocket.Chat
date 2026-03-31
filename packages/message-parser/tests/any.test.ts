@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { paragraph, plain } from './helpers';
+import { paragraph, plain } from '../src/utils';
 
 test.each([
 	['free text', [paragraph([plain('free text')])]],

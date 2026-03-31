@@ -14,7 +14,7 @@ export const FullWidget: StoryFn<typeof Widget> = () => {
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title='Incoming Call...'>
-				<IconButton name='close' icon='cross' aria-label='Close' mini />
+				<IconButton name='close' icon='cross' mini />
 			</WidgetHeader>
 			<WidgetInfo
 				slots={[

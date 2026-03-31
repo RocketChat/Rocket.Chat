@@ -1,5 +1,5 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 type ReportsByMsgIdParams = {
 	msgId: string;
@@ -35,4 +35,4 @@ const schema = {
 	additionalProperties: false,
 };
 
-export const isReportsByMsgIdParams = ajvQuery.compile<ReportsByMsgIdParamsGET>(schema);
+export const isReportsByMsgIdParams = ajv.compile<ReportsByMsgIdParamsGET>(schema);

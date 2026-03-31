@@ -31,11 +31,6 @@ const roomAccessValidators: RoomAccessValidatorConverted[] = [
 			return false;
 		}
 
-		// if user is banned from this room, deny access
-		if (user?._id && (await Subscriptions.findOneBannedSubscription(room._id, user._id))) {
-			return false;
-		}
-
 		// if team is public, access is allowed if the user can access public rooms
 		const team = await Team.findOneById<Pick<ITeam, 'type'>>(room.teamId, {
 			projection: { type: 1 },
@@ -55,11 +50,6 @@ const roomAccessValidators: RoomAccessValidatorConverted[] = [
 
 	async function _validateAccessToPublicRooms(room, user): Promise<boolean> {
 		if (!room?._id || room.t !== 'c' || room?.teamId) {
-			return false;
-		}
-
-		// if user is banned from this room, deny access
-		if (user?._id && (await Subscriptions.findOneBannedSubscription(room._id, user._id))) {
 			return false;
 		}
 
@@ -105,7 +95,7 @@ const roomAccessValidators: RoomAccessValidatorConverted[] = [
 	canAccessRoomLivechat,
 ];
 
-export const isPartialUser = (user: IUser | Pick<IUser, '_id'> | undefined): user is Pick<IUser, '_id'> => {
+const isPartialUser = (user: IUser | Pick<IUser, '_id'> | undefined): user is Pick<IUser, '_id'> => {
 	return Boolean(user && Object.keys(user).length === 1 && '_id' in user);
 };
 

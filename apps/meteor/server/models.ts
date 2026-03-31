@@ -4,6 +4,7 @@ import {
 	AppsLogsModel,
 	AppsModel,
 	AppsPersistenceModel,
+	AppsTokensRaw,
 	AvatarsRaw,
 	BannersDismissRaw,
 	BannersRaw,
@@ -85,6 +86,7 @@ registerModel('IAnalyticsModel', new AnalyticsRaw(db));
 registerModel('IAppLogsModel', new AppsLogsModel(db));
 registerModel('IAppsModel', new AppsModel(db));
 registerModel('IAppsPersistenceModel', new AppsPersistenceModel(db));
+registerModel('IAppsTokensModel', new AppsTokensRaw(db));
 registerModel('IAvatarsModel', new AvatarsRaw(db));
 registerModel('IBannersDismissModel', new BannersDismissRaw(db));
 registerModel('IBannersModel', new BannersRaw(db));

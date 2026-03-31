@@ -1,6 +1,5 @@
 import { useSession } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
 
 import GuestForm from './GuestForm';
 import { LoginForm } from './LoginForm';
@@ -17,13 +16,12 @@ export const RegistrationPageRouter = ({
 	defaultRoute?: LoginRoutes;
 	children?: ReactNode;
 }): ReactElement | null => {
-	const { t } = useTranslation();
 	const defaultRouteSession = useSession('loginDefaultState') as LoginRoutes | undefined;
 	const [route, setLoginRoute] = useLoginRouter(defaultRouteSession || defaultRoute);
 
 	if (route === 'guest') {
 		return (
-			<RegisterTemplate aria-label={t('Guest')}>
+			<RegisterTemplate>
 				<GuestForm setLoginRoute={setLoginRoute} />
 			</RegisterTemplate>
 		);
@@ -31,7 +29,7 @@ export const RegistrationPageRouter = ({
 
 	if (route === 'login') {
 		return (
-			<RegisterTemplate aria-label={t('Login')}>
+			<RegisterTemplate>
 				<LoginForm setLoginRoute={setLoginRoute} />
 			</RegisterTemplate>
 		);
@@ -39,7 +37,7 @@ export const RegistrationPageRouter = ({
 
 	if (route === 'reset-password') {
 		return (
-			<RegisterTemplate aria-label={t('Reset_password')}>
+			<RegisterTemplate>
 				<ResetPasswordForm setLoginRoute={setLoginRoute} />
 			</RegisterTemplate>
 		);

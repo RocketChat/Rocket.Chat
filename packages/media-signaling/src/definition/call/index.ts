@@ -1,2 +1,2 @@
-export type * from './CallEvents';
+export * from './CallEvents';
 export * from './IClientMediaCall';

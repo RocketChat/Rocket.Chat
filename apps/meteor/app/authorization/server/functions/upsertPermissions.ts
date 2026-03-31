@@ -8,7 +8,7 @@ import { getSettingPermissionId, CONSTANTS } from '../../lib';
 import { permissions } from '../constant/permissions';
 
 export const upsertPermissions = async (): Promise<void> => {
-	for (const permission of permissions) {
+	for await (const permission of permissions) {
 		await Permissions.create(permission._id, permission.roles);
 	}
 
@@ -18,7 +18,6 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'leader', scope: 'Subscriptions', description: 'Leader' },
 		{ name: 'owner', scope: 'Subscriptions', description: 'Owner' },
 		{ name: 'user', scope: 'Users', description: '' },
-		{ name: 'federated-external', scope: 'Users', description: 'External Federated User' },
 		{ name: 'bot', scope: 'Users', description: '' },
 		{ name: 'app', scope: 'Users', description: '' },
 		{ name: 'guest', scope: 'Users', description: '' },
@@ -27,7 +26,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		{ name: 'livechat-manager', scope: 'Users', description: 'Livechat Manager' },
 	] as const;
 
-	for (const role of defaultRoles) {
+	for await (const role of defaultRoles) {
 		await createOrUpdateProtectedRoleAsync(role.name, role);
 	}
 
@@ -53,9 +52,8 @@ export const upsertPermissions = async (): Promise<void> => {
 			level: CONSTANTS.SETTINGS_LEVEL as 'settings' | undefined,
 			// copy those setting-properties which are needed to properly publish the setting-based permissions
 			settingId: setting._id,
-			// TODO: migrate settings with group and section with null to undefined
-			...(setting.group && { group: setting.group }),
-			...(setting.section && { section: setting.section }),
+			group: setting.group,
+			section: setting.section ?? undefined,
 			sorter: setting.sorter,
 			roles: [],
 		};
@@ -102,7 +100,7 @@ export const upsertPermissions = async (): Promise<void> => {
 		}
 
 		// remove permissions for non-existent settings
-		for (const obsoletePermission of Object.keys(previousSettingPermissions)) {
+		for await (const obsoletePermission of Object.keys(previousSettingPermissions)) {
 			if (previousSettingPermissions.hasOwnProperty(obsoletePermission)) {
 				await Permissions.deleteOne({ _id: obsoletePermission });
 			}

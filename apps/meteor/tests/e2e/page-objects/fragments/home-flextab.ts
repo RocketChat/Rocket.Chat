@@ -72,6 +72,10 @@ export class HomeFlextab {
 		return this.page.locator('role=menuitem[name="Enable E2E encryption"]');
 	}
 
+	get flexTabViewThreadMessage(): Locator {
+		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
+	}
+
 	get userInfoUsername(): Locator {
 		return this.page.locator('[data-qa="UserInfoUserName"]');
 	}

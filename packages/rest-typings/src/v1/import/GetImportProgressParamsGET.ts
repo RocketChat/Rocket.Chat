@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 export type GetImportProgressParamsGET = Record<string, unknown>;
 
@@ -9,4 +9,4 @@ const GetImportProgressParamsGETSchema = {
 	required: [],
 };
 
-export const isGetImportProgressParamsGET = ajvQuery.compile<GetImportProgressParamsGET>(GetImportProgressParamsGETSchema);
+export const isGetImportProgressParamsGET = ajv.compile<GetImportProgressParamsGET>(GetImportProgressParamsGETSchema);

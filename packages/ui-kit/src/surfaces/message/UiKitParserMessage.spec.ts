@@ -38,9 +38,9 @@ class TestParser extends UiKitParserMessage<unknown> {
 			props: {
 				key: index,
 				children: [
-					...(element.text ? [this.renderTextObject(element.text, key++, BlockContext.SECTION)] : []),
-					...(element.fields?.map((field: any) => this.renderTextObject(field, key++, BlockContext.SECTION)) ?? []),
-					...(element.accessory ? [this.renderSectionAccessoryBlockElement(element.accessory, key++)] : []),
+					...(element.text ? [this.text(element.text, BlockContext.SECTION, key++)] : []),
+					...(element.fields?.map((field: any) => this.text(field, BlockContext.SECTION, key++)) ?? []),
+					...(element.accessory ? [this.renderAccessories(element.accessory, BlockContext.SECTION, undefined, key++)] : []),
 				],
 				block: context === BlockContext.BLOCK,
 			},
@@ -51,7 +51,7 @@ class TestParser extends UiKitParserMessage<unknown> {
 		component: 'actions',
 		props: {
 			key: index,
-			children: element.elements.map((element: any, key: number) => this.renderActionsBlockElement(element, key)),
+			children: element.elements.map((element: any, key: number) => this.renderActions(element, BlockContext.ACTION, undefined, key)),
 			block: context === BlockContext.BLOCK,
 		},
 	});
@@ -60,7 +60,7 @@ class TestParser extends UiKitParserMessage<unknown> {
 		component: 'context',
 		props: {
 			key: index,
-			children: element.elements.map((element: any, key: number) => this.renderContextBlockElement(element, key)),
+			children: element.elements.map((element: any, key: number) => this.renderContext(element, BlockContext.CONTEXT, undefined, key)),
 			block: context === BlockContext.BLOCK,
 		},
 	});
@@ -69,7 +69,7 @@ class TestParser extends UiKitParserMessage<unknown> {
 		component: 'button',
 		props: {
 			key: index,
-			children: element.text ? [this.renderTextObject(element.text, 0, BlockContext.SECTION)] : [],
+			children: element.text ? [this.text(element.text, BlockContext.SECTION, 0)] : [],
 			...(element.url && { href: element.url }),
 			...(element.value && { value: element.value }),
 			variant: element.style ?? 'normal',
@@ -79,6 +79,7 @@ class TestParser extends UiKitParserMessage<unknown> {
 
 	image = (element: any, context: any, index: any): any => {
 		if (context === BlockContext.BLOCK) {
+			let key = 0;
 			return {
 				component: 'image-container',
 				props: {
@@ -87,13 +88,13 @@ class TestParser extends UiKitParserMessage<unknown> {
 						{
 							component: 'image',
 							props: {
-								key: 0,
+								key: key++,
 								src: element.imageUrl,
 								alt: element.altText,
 								block: false,
 							},
 						},
-						...(element.title ? [this.plain_text(element.title, BlockContext.NONE, 1)] : []),
+						...(element.title ? [this.plainText(element.title, -1, key++)] : []),
 					],
 					block: true,
 				},
@@ -119,10 +120,7 @@ class TestParser extends UiKitParserMessage<unknown> {
 				component: 'menu-item',
 				props: {
 					key,
-					children: [
-						this.renderTextObject(option.text, 0),
-						...(option.description ? [this.plain_text(option.description, BlockContext.NONE, 1)] : []),
-					],
+					children: [this.text(option.text, -1, 0), ...(option.description ? [this.plainText(option.description, -1, 1)] : [])],
 					value: option.value,
 					...(option.url && { url: option.url }),
 				},
@@ -130,33 +128,33 @@ class TestParser extends UiKitParserMessage<unknown> {
 		},
 	});
 
-	datepicker = (element: any, _context: any, index: any): any => ({
+	datePicker = (element: any, _context: any, index: any): any => ({
 		component: 'input',
 		props: {
 			key: index,
 			type: 'date',
 			...(element.placeholder && {
-				placeholder: this.renderTextObject(element.placeholder, 0),
+				placeholder: this.text(element.placeholder, -1, 0),
 			}),
 			...(element.initialDate && { defaultValue: element.initialDate }),
 		},
 	});
 
-	static_select = (element: any, _context: any, index: any): any => ({
+	staticSelect = (element: any, _context: any, index: any): any => ({
 		component: 'select',
 		props: {
 			key: index,
 			...(element.placeholder && {
-				placeholder: this.renderTextObject(element.placeholder, 0),
+				placeholder: this.text(element.placeholder, -1, 0),
 			}),
 			children: element.options.map((option: any, key: any) => ({
 				component: 'option',
 				props: {
 					key,
-					children: this.renderTextObject(option.text, 0),
+					children: this.text(option.text, -1, 0),
 					value: option.value,
 					...(option.description && {
-						description: this.renderTextObject(option.description, 0),
+						description: this.text(option.description, -1, 0),
 					}),
 				},
 			})),
@@ -166,22 +164,22 @@ class TestParser extends UiKitParserMessage<unknown> {
 		},
 	});
 
-	multi_static_select = (element: any, _context: any, index: any): any => ({
+	multiStaticSelect = (element: any, _context: any, index: any): any => ({
 		component: 'select',
 		props: {
 			key: index,
 			...(element.placeholder && {
-				placeholder: this.renderTextObject(element.placeholder, 0),
+				placeholder: this.text(element.placeholder, -1, 0),
 			}),
 			multiple: true,
 			children: element.options.map((option: any, key: any) => ({
 				component: 'option',
 				props: {
 					key,
-					children: this.renderTextObject(option.text, 0),
+					children: this.text(option.text, -1, 0),
 					value: option.value,
 					...(option.description && {
-						description: this.renderTextObject(option.description, 0),
+						description: this.text(option.description, -1, 0),
 					}),
 				},
 			})),

@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { bold, plain, orderedList, listItem, emoji } from './helpers';
+import { bold, plain, orderedList, listItem, emoji } from '../src/utils';
 
 test.each([
 	[

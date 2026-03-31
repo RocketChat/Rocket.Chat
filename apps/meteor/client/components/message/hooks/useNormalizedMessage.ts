@@ -40,16 +40,16 @@ const normalizeAttachments = (attachments: MessageAttachment[], name?: string, t
 
 		if (isFileAttachment(attachment)) {
 			if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {
-				attachment.title_link = `/file-decrypt${attachment.title_link}?key=${encodeURIComponent(key)}`;
+				attachment.title_link = `/file-decrypt${attachment.title_link}?key=${key}`;
 			}
 			if (isFileImageAttachment(attachment) && !attachment.image_url.startsWith('/file-decrypt/')) {
-				attachment.image_url = `/file-decrypt${attachment.image_url}?key=${encodeURIComponent(key)}`;
+				attachment.image_url = `/file-decrypt${attachment.image_url}?key=${key}`;
 			}
 			if (isFileAudioAttachment(attachment) && !attachment.audio_url.startsWith('/file-decrypt/')) {
-				attachment.audio_url = `/file-decrypt${attachment.audio_url}?key=${encodeURIComponent(key)}`;
+				attachment.audio_url = `/file-decrypt${attachment.audio_url}?key=${key}`;
 			}
 			if (isFileVideoAttachment(attachment) && !attachment.video_url.startsWith('/file-decrypt/')) {
-				attachment.video_url = `/file-decrypt${attachment.video_url}?key=${encodeURIComponent(key)}`;
+				attachment.video_url = `/file-decrypt${attachment.video_url}?key=${key}`;
 			}
 		}
 

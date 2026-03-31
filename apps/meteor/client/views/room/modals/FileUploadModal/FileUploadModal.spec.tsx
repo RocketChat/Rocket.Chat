@@ -13,12 +13,17 @@ const defaultProps = {
 	onClose: () => undefined,
 	file: new File([], 'testing.png', { type: 'image/png' }),
 	fileName: 'testing.png',
+	fileDescription: '',
 	onSubmit: () => undefined,
+	invalidContentType: false,
+	showDescription: true,
 };
 
 const defaultWrapper = mockAppRoot().withTranslations('en', 'core', {
-	Update: 'Update',
+	Cannot_upload_file_character_limit: 'Cannot upload file, description is over the {{count}} character limit',
+	Send: 'Send',
 	Upload_file_name: 'File name',
+	Upload_file_description: 'File description',
 	FileUpload_MediaType_NotAccepted__type__: 'Media type not accepted: {{type}}',
 });
 
@@ -34,6 +39,19 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	expect(results).toHaveNoViolations();
 });
 
+it('should display error message when description exceeds character limit', async () => {
+	render(<FileUploadModal {...defaultProps} />, {
+		wrapper: defaultWrapper.withSetting('Message_MaxAllowedSize', 10).build(),
+	});
+
+	const input = await screen.findByRole('textbox', { name: 'File description' });
+	expect(input).toBeInTheDocument();
+	await userEvent.type(input, '12345678910');
+	await userEvent.tab();
+
+	expect(screen.getByText('Cannot upload file, description is over the 10 character limit')).toBeInTheDocument();
+});
+
 it('should not send a renamed file with not allowed mime-type', async () => {
 	render(<FileUploadModal {...defaultProps} />, {
 		wrapper: defaultWrapper.withSetting('FileUpload_MediaTypeBlackList', 'image/svg+xml').build(),
@@ -42,7 +60,7 @@ it('should not send a renamed file with not allowed mime-type', async () => {
 	const input = await screen.findByRole('textbox', { name: 'File name' });
 	await userEvent.type(input, 'testing.svg');
 
-	const button = await screen.findByRole('button', { name: 'Update' });
+	const button = await screen.findByRole('button', { name: 'Send' });
 	await userEvent.click(button);
 
 	expect(screen.getByText('Media type not accepted: image/svg+xml')).toBeInTheDocument();

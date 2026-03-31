@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { inlineCode, paragraph, plain } from './helpers';
+import { inlineCode, paragraph, plain } from '../src/utils';
 
 test.each([
 	['`[asd](https://localhost)`', [paragraph([inlineCode(plain('[asd](https://localhost)'))])]],

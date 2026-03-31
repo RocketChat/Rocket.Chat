@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 import type { GroupsBaseProps } from './BaseProps';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
@@ -52,4 +52,4 @@ const GroupsFilesPropsSchema = {
 	additionalProperties: true, // keep additional properties for backwards compatibility, otherwise this would be a breaking change
 };
 
-export const isGroupsFilesProps = ajvQuery.compile<GroupsFilesProps>(GroupsFilesPropsSchema);
+export const isGroupsFilesProps = ajv.compile<GroupsFilesProps>(GroupsFilesPropsSchema);

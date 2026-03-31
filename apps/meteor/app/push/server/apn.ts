@@ -1,5 +1,5 @@
 import apn from '@parse/node-apn';
-import type { IPushToken, RequiredField } from '@rocket.chat/core-typings';
+import type { IAppsTokens, RequiredField } from '@rocket.chat/core-typings';
 import EJSON from 'ejson';
 
 import type { PushOptions, PendingPushNotification } from './definition';
@@ -24,7 +24,7 @@ export const sendAPN = ({
 }: {
 	userToken: string;
 	notification: PendingPushNotification & { topic: string };
-	_removeToken: (token: IPushToken['token']) => void;
+	_removeToken: (token: IAppsTokens['token']) => void;
 }) => {
 	if (!apnConnection) {
 		throw new Error('Apn Connection not initialized.');

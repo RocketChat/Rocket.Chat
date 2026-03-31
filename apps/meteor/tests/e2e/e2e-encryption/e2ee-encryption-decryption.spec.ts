@@ -96,17 +96,13 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await test.step('upload the file with encryption', async () => {
 			// Upload a file
 			await encryptedRoomPage.dragAndDropTxtFile();
-
-			// Update file name and send
-			await encryptedRoomPage.composer.getFileByName('any_file.txt').click();
 			await fileUploadModal.setName(fileName);
-			await fileUploadModal.update();
-			await expect(encryptedRoomPage.composer.getFileByName(fileName)).toBeVisible();
+			await fileUploadModal.setDescription(fileDescription);
+			await fileUploadModal.send();
 
-			await encryptedRoomPage.composer.inputMessage.fill(fileDescription);
-			await encryptedRoomPage.composer.btnSend.click();
+			// Check the file upload
 			await expect(encryptedRoomPage.lastMessage.encryptedIcon).toBeVisible();
-			await expect(encryptedRoomPage.lastMessage.getFileUploadByName(fileName)).toContainText(fileName);
+			await expect(encryptedRoomPage.lastMessage.fileUploadName).toContainText(fileName);
 			await expect(encryptedRoomPage.lastMessage.body).toHaveText(fileDescription);
 		});
 
@@ -117,17 +113,12 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		await test.step('upload the file without encryption', async () => {
 			await encryptedRoomPage.dragAndDropTxtFile();
-
-			// Update file name and send
-			await encryptedRoomPage.composer.getFileByName('any_file.txt').click();
 			await fileUploadModal.setName(fileName);
-			await fileUploadModal.update();
-			await expect(encryptedRoomPage.composer.getFileByName(fileName)).toBeVisible();
+			await fileUploadModal.setDescription(fileDescription);
+			await fileUploadModal.send();
 
-			await encryptedRoomPage.composer.inputMessage.fill(fileDescription);
-			await encryptedRoomPage.composer.btnSend.click();
 			await expect(encryptedRoomPage.lastMessage.encryptedIcon).not.toBeVisible();
-			await expect(encryptedRoomPage.lastMessage.getFileUploadByName(fileName)).toContainText(fileName);
+			await expect(encryptedRoomPage.lastMessage.fileUploadName).toContainText(fileName);
 			await expect(encryptedRoomPage.lastMessage.body).toHaveText(fileDescription);
 		});
 
@@ -153,7 +144,7 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 		await expect(encryptedRoomPage.lastNthMessage(1).encryptedIcon).toBeVisible();
 
 		await expect(encryptedRoomPage.lastMessage.encryptedIcon).not.toBeVisible();
-		await expect(encryptedRoomPage.lastMessage.getFileUploadByName(fileName)).toContainText(fileName);
+		await expect(encryptedRoomPage.lastMessage.fileUploadName).toContainText(fileName);
 		await expect(encryptedRoomPage.lastMessage.body).toHaveText(fileDescription);
 	});
 

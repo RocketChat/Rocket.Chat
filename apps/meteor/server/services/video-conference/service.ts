@@ -37,7 +37,6 @@ import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { Meteor } from 'meteor/meteor';
 import { MongoInternals } from 'meteor/mongo';
 
 import { RocketChatAssets } from '../../../app/assets/server';
@@ -401,30 +400,19 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			readPreference: readSecondaryPreferred(db),
 		};
 
-		const [videoConferenceStarted, videoConferenceEnded, directCalling, directStarted, directEnded, livechatStarted, livechatEnded] =
-			await Promise.all([
-				VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.STARTED, options),
-				VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.ENDED, options),
-				VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.CALLING, options),
-				VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.STARTED, options),
-				VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.ENDED, options),
-				VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.STARTED, options),
-				VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.ENDED, options),
-			]);
-
 		return {
 			videoConference: {
-				started: videoConferenceStarted,
-				ended: videoConferenceEnded,
+				started: await VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.STARTED, options),
+				ended: await VideoConferenceModel.countByTypeAndStatus('videoconference', VideoConferenceStatus.ENDED, options),
 			},
 			direct: {
-				calling: directCalling,
-				started: directStarted,
-				ended: directEnded,
+				calling: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.CALLING, options),
+				started: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.STARTED, options),
+				ended: await VideoConferenceModel.countByTypeAndStatus('direct', VideoConferenceStatus.ENDED, options),
 			},
 			livechat: {
-				started: livechatStarted,
-				ended: livechatEnded,
+				started: await VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.STARTED, options),
+				ended: await VideoConferenceModel.countByTypeAndStatus('livechat', VideoConferenceStatus.ENDED, options),
 			},
 			settings: {
 				provider: settings.get<string>('VideoConf_Default_Provider'),

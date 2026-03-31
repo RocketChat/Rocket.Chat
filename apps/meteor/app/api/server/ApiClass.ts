@@ -18,7 +18,8 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-import { checkPermissions, parseDeprecation } from './api.helpers';
+import type { PermissionsPayload } from './api.helpers';
+import { checkPermissionsForInvocation, checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
 	ForbiddenResult,
@@ -40,9 +41,6 @@ import type {
 } from './definition';
 import { getUserInfo } from './helpers/getUserInfo';
 import { parseJsonQuery } from './helpers/parseJsonQuery';
-import { authenticationMiddlewareForHono } from './middlewares/authenticationHono';
-import { permissionsMiddleware } from './middlewares/permissions';
-import type { APIActionContext } from './router';
 import { RocketChatAPIRouter } from './router';
 import { license } from '../../../ee/app/api-enterprise/server/middlewares/license';
 import { isObject } from '../../../lib/utils/isObject';
@@ -59,7 +57,7 @@ const logger = new Logger('API');
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
-export const applyBreakingChanges = shouldBreakInVersion('9.0.0');
+const applyBreakingChanges = shouldBreakInVersion('9.0.0');
 type MinimalRoute = {
 	method: 'GET' | 'POST' | 'PUT' | 'DELETE';
 	path: string;
@@ -168,7 +166,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 	private _routes: { path: string; options: Options; endpoints: Record<string, string> }[] = [];
 
-	public authMethods: ((routeContext: APIActionContext) => Promise<IUser | undefined>)[];
+	public authMethods: ((routeContext: GenericRouteExecutionContext) => Promise<IUser | undefined>)[];
 
 	protected helperMethods: Map<string, () => any> = new Map();
 
@@ -250,7 +248,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		return parseJsonQuery(routeContext);
 	}
 
-	public addAuthMethod(func: (routeContext: APIActionContext) => Promise<IUser | undefined>): void {
+	public addAuthMethod(func: (routeContext: GenericRouteExecutionContext) => Promise<IUser | undefined>): void {
 		this.authMethods.push(func);
 	}
 
@@ -278,7 +276,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			body: result,
 		} as SuccessResult<T>;
 
-		return finalResult;
+		return finalResult as SuccessResult<T>;
 	}
 
 	public redirect<T, C extends RedirectStatusCodes>(code: C, result: T): RedirectResult<T, C> {
@@ -373,7 +371,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public forbidden<T = string>(msg?: T): ForbiddenResult<T> {
+	public forbidden<T>(msg?: T): ForbiddenResult<T> {
 		return {
 			statusCode: 403,
 			body: {
@@ -781,7 +779,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 		const operations = endpoints;
 
-		checkPermissions(options);
+		const shouldVerifyPermissions = checkPermissions(options);
 
 		// Allow for more than one route using the same option and endpoints
 		if (!Array.isArray(subpaths)) {
@@ -801,7 +799,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				const { tags = ['Missing Documentation'] } = _options as Record<string, any>;
 
 				if (typeof operations[method as keyof Operations<TPathPattern, TOptions>] === 'function') {
-					(operations as Record<string, any>)[method] = {
+					(operations as Record<string, any>)[method as string] = {
 						action: operations[method as keyof Operations<TPathPattern, TOptions>],
 					};
 				} else {
@@ -827,8 +825,28 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						this.queryFields = options.queryFields;
 						this.logger = logger;
 
+						const user = await api.authenticatedRoute(this);
+						this.user = user!;
+						this.userId = this.user?._id;
 						const authToken = this.request.headers.get('x-auth-token');
 						this.token = Accounts._hashLoginToken(String(authToken))!;
+
+						const shouldPreventAnonymousRead = !this.user && options.authOrAnonRequired && !settings.get('Accounts_AllowAnonymousRead');
+						const shouldPreventUserRead = !this.user && options.authRequired;
+
+						if (shouldPreventAnonymousRead || shouldPreventUserRead) {
+							console.log('shouldPreventAnonymousRead', shouldPreventAnonymousRead);
+							const result = api.unauthorized('You must be logged in to do this.');
+							// compatibility with the old API
+							// TODO: MAJOR
+							if (!applyBreakingChanges) {
+								Object.assign(result.body, {
+									status: 'error',
+									message: 'You must be logged in to do this.',
+								});
+							}
+							return result;
+						}
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
@@ -856,6 +874,31 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
+							if (shouldVerifyPermissions) {
+								if (!this.userId) {
+									if (applyBreakingChanges) {
+										throw new Meteor.Error('error-unauthorized', 'You must be logged in to do this');
+									}
+									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action');
+								}
+								if (
+									!(await checkPermissionsForInvocation(
+										this.userId,
+										_options.permissionsRequired as PermissionsPayload,
+										this.request.method as Method,
+									))
+								) {
+									if (applyBreakingChanges) {
+										throw new Meteor.Error('error-forbidden', 'User does not have the permissions required for this action', {
+											permissions: _options.permissionsRequired,
+										});
+									}
+									throw new Meteor.Error('error-unauthorized', 'User does not have the permissions required for this action', {
+										permissions: _options.permissionsRequired,
+									});
+								}
+							}
+
 							if (
 								this.userId &&
 								(await api.processTwoFactor({
@@ -910,15 +953,8 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				this.router[method.toLowerCase() as 'get' | 'post' | 'put' | 'delete'](
 					`/${route}`.replaceAll('//', '/'),
 					{ ..._options, tags } as TypedOptions,
-					authenticationMiddlewareForHono(this, {
-						authRequired: options.authRequired,
-						authOrAnonRequired: options.authOrAnonRequired,
-						userWithoutUsername: options.userWithoutUsername,
-						logger,
-					}),
-					permissionsMiddleware(_options as TypedOptions),
 					license(_options as TypedOptions, License),
-					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action,
+					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action as any,
 				);
 				this._routes.push({
 					path: route,
@@ -934,7 +970,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		});
 	}
 
-	public async authenticatedRoute(routeContext: APIActionContext): Promise<IUser | null> {
+	protected async authenticatedRoute(routeContext: GenericRouteExecutionContext): Promise<IUser | null> {
 		const userId = routeContext.request.headers.get('x-user-id');
 		const userToken = routeContext.request.headers.get('x-auth-token');
 
@@ -951,6 +987,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		}
 
 		for (const method of this.authMethods) {
+			// eslint-disable-next-line no-await-in-loop -- we want serial execution
 			const user = await method(routeContext);
 
 			if (user) {
@@ -1039,7 +1076,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 		(this as APIClass<'/v1'>).addRoute(
 			'login',
-			{ authRequired: false, userWithoutUsername: true },
+			{ authRequired: false },
 			{
 				async post() {
 					const request = this.request as unknown as Request;

@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 export type GetLatestImportOperationsParamsGET = Record<string, unknown>;
 
@@ -9,6 +9,6 @@ const GetLatestImportOperationsParamsGETSchema = {
 	required: [],
 };
 
-export const isGetLatestImportOperationsParamsGET = ajvQuery.compile<GetLatestImportOperationsParamsGET>(
+export const isGetLatestImportOperationsParamsGET = ajv.compile<GetLatestImportOperationsParamsGET>(
 	GetLatestImportOperationsParamsGETSchema,
 );

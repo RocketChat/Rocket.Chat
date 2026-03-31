@@ -36,8 +36,11 @@ test.describe('image-upload', () => {
 
 		test('should show error indicator when upload fails', async () => {
 			await poHomeChannel.content.sendFileMessage('bad-orientation.jpeg');
+			await poHomeChannel.content.fileNameInput.fill('bad-orientation.jpeg');
+			await poHomeChannel.content.descriptionInput.fill('bad-orientation_description');
+			await poHomeChannel.content.btnModalConfirm.click();
 
-			await expect(poHomeChannel.composer.getFileByName('bad-orientation.jpeg')).toHaveAttribute('readonly');
+			await expect(poHomeChannel.statusUploadError).toBeVisible();
 		});
 	});
 
@@ -49,10 +52,12 @@ test.describe('image-upload', () => {
 		});
 
 		test('should succeed upload of bad-orientation.jpeg', async () => {
-			const imgName = 'bad-orientation.jpeg';
-			await poHomeChannel.content.sendFileMessage(imgName);
-			await poHomeChannel.composer.btnSend.click();
-			await expect(poHomeChannel.content.lastUserMessage).toContainText(imgName);
+			await poHomeChannel.content.sendFileMessage('bad-orientation.jpeg');
+			await poHomeChannel.content.fileNameInput.fill('bad-orientation.jpeg');
+			await poHomeChannel.content.descriptionInput.fill('bad-orientation_description');
+			await poHomeChannel.content.btnModalConfirm.click();
+
+			await expect(poHomeChannel.content.getFileDescription).toHaveText('bad-orientation_description');
 		});
 	});
 });

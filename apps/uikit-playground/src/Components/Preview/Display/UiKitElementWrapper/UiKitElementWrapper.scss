@@ -45,12 +45,9 @@
 }
 
 .uikit-element-delete-btn{
-    all: initial;
-    appearance: none;
-    padding: 0;
     position: absolute !important;
     top: 50%;
-    right: 0;
+    right: -19px;
     width: 20px;
     height: 20px;
     visibility: hidden;

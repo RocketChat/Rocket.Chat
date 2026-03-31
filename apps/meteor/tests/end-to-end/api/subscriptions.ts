@@ -59,7 +59,7 @@ describe('[Subscriptions]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', "must have required property 'roomId'");
+					expect(res.body).to.have.property('error', "must have required property 'roomId' [invalid-params]");
 				})
 				.end(done);
 		});
@@ -277,7 +277,7 @@ describe('[Subscriptions]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', 'error-invalid-subscription');
 				})
 				.end(done);
 		});

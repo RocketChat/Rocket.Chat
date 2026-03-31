@@ -15,15 +15,13 @@ const SectionBlock = ({ appId, blockId, text, fields, accessory, parser }: Secti
 		<div className={createClassName(styles, 'uikit-section-block')}>
 			<div className={createClassName(styles, 'uikit-section-block__content')}>
 				{text && (
-					<div className={createClassName(styles, 'uikit-section-block__text')}>
-						{parser.renderTextObject(text, 0, uikit.BlockContext.SECTION)}
-					</div>
+					<div className={createClassName(styles, 'uikit-section-block__text')}>{parser.text(text, uikit.BlockContext.SECTION)}</div>
 				)}
 				{Array.isArray(fields) && fields.length > 0 && (
 					<div className={createClassName(styles, 'uikit-section-block__fields')}>
 						{fields.map((field, i) => (
 							<div key={i} className={createClassName(styles, 'uikit-section-block__field')}>
-								{parser.renderTextObject(field, 0, uikit.BlockContext.SECTION)}
+								{parser.text(field, uikit.BlockContext.SECTION)}
 							</div>
 						))}
 					</div>
@@ -31,7 +29,7 @@ const SectionBlock = ({ appId, blockId, text, fields, accessory, parser }: Secti
 			</div>
 			{accessory && (
 				<div className={createClassName(styles, 'uikit-section-block__accessory')}>
-					{parser.renderSectionAccessoryBlockElement(accessory, 0)}
+					{parser.renderAccessories(accessory, uikit.BlockContext.SECTION, undefined, 0)}
 				</div>
 			)}
 		</div>

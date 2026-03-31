@@ -2,7 +2,7 @@ import { proxify } from './lib/proxify';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
 import type { IAnalyticsService } from './types/IAnalyticsService';
-import type { IApiService } from './types/IApiService';
+import { IApiService } from './types/IApiService';
 import type { IAppsEngineService } from './types/IAppsEngineService';
 import type { IAuthorization, RoomAccessValidator } from './types/IAuthorization';
 import type { IAuthorizationLivechat } from './types/IAuthorizationLivechat';
@@ -54,29 +54,28 @@ import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFil
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
 
-export type { AppStatusReport } from './types/IAppsEngineService';
-export type { IAbacService, AbacActor } from './types/IAbacService';
+export { AppStatusReport } from './types/IAppsEngineService';
+export { IAbacService, AbacActor } from './types/IAbacService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { MeteorError, isMeteorError } from './MeteorError';
 export { api } from './api';
-export type { EventSignatures } from './events/Events';
+export { EventSignatures } from './events/Events';
 export { LocalBroker } from './LocalBroker';
 
-export type { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker';
+export { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker';
 
-export type { IServiceContext, IServiceClass } from './types/ServiceClass';
-export { ServiceClass, ServiceClassInternal } from './types/ServiceClass';
+export { IServiceContext, ServiceClass, IServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
-export type {
+export {
 	IFederationService,
 	IFederationServiceEE,
 	IFederationJoinExternalPublicRoomInput,
 	FederationConfigurationStatus,
 } from './types/IFederationService';
 
-export type { IFederationMatrixService } from './types/IFederationMatrixService';
+export { IFederationMatrixService } from './types/IFederationMatrixService';
 
-export type {
+export {
 	ConversationData,
 	AgentOverviewDataOptions,
 	ChartDataOptions,
@@ -88,9 +87,9 @@ export type {
 export { getConnection, getTrashCollection } from './lib/mongo';
 export { ServiceStarter } from './lib/ServiceStarter';
 
-export type { ICreateRoomOptions } from './types/IRoomService';
+export { ICreateRoomOptions } from './types/IRoomService';
 
-export type {
+export {
 	AutoUpdateRecord,
 	IAccount,
 	IAnalyticsService,
@@ -133,6 +132,7 @@ export type {
 	IVideoConfService,
 	NPSCreatePayload,
 	NPSVotePayload,
+	proxify,
 	ResizeResult,
 	RoomAccessValidator,
 	TelemetryEvents,
@@ -154,7 +154,6 @@ export type {
 	IOmnichannelAnalyticsService,
 	IUserService,
 };
-export { proxify };
 
 // TODO think in a way to not have to pass the service name to proxify here as well
 export const Authorization = proxify<IAuthorization>('authorization');
@@ -190,7 +189,6 @@ export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-
 export const Import = proxify<IImportService>('import');
 export const OmnichannelAnalytics = proxify<IOmnichannelAnalyticsService>('omnichannel-analytics');
 export const User = proxify<IUserService>('user');
-export const Push = proxify<IPushService>('push');
 
 // Calls without wait. Means that the service is optional and the result may be an error
 // of service/method not available

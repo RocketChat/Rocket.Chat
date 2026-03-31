@@ -12,7 +12,6 @@ import RoomE2EESetup from './E2EESetup/RoomE2EESetup';
 import Header from './Header';
 import MessageHighlightProvider from './MessageList/providers/MessageHighlightProvider';
 import RoomInvite from './RoomInvite';
-import MediaCallRoom from './body/MediaCallRoom';
 import RoomBody from './body/RoomBody';
 import { useRoom, useRoomSubscription } from './contexts/RoomContext';
 import { useAppsContextualBar } from './hooks/useAppsContextualBar';
@@ -55,15 +54,7 @@ const Room = (): ReactElement => {
 							data-qa-rc-room={room._id}
 							aria-label={roomLabel}
 							header={<Header room={room} />}
-							body={
-								shouldDisplayE2EESetup ? (
-									<RoomE2EESetup />
-								) : (
-									<MediaCallRoom>
-										<RoomBody />
-									</MediaCallRoom>
-								)
-							}
+							body={shouldDisplayE2EESetup ? <RoomE2EESetup /> : <RoomBody />}
 							aside={
 								(toolbox.tab?.tabComponent && (
 									<ErrorBoundary fallback={null}>

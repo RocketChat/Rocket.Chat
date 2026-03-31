@@ -15,5 +15,4 @@ export type OauthConfig = {
 	mergeUsers?: boolean;
 	responseType?: string;
 	loginStyle?: 'popup' | 'redirect';
-	emailPath?: string;
 };

@@ -1,16 +1,16 @@
 import { faker } from '@faker-js/faker';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
-import { Authenticated, Login } from './page-objects';
+import { Registration, Authenticated } from './page-objects';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
 test.describe.parallel('Login', () => {
-	let poLogin: Login;
+	let poRegistration: Registration;
 	let poAuth: Authenticated;
 
 	test.beforeEach(async ({ page }) => {
-		poLogin = new Login(page);
+		poRegistration = new Registration(page);
 		poAuth = new Authenticated(page);
 
 		await page.goto('/home');
@@ -27,16 +27,20 @@ test.describe.parallel('Login', () => {
 
 	test('Login with invalid credentials', async () => {
 		await test.step('expect to have username and password marked as invalid', async () => {
-			await poLogin.login(faker.internet.email(), 'any_password');
+			await poRegistration.username.type(faker.internet.email());
+			await poRegistration.inputPassword.type('any_password');
+			await poRegistration.btnLogin.click();
 
-			await expect(poLogin.form.username).toBeInvalid();
-			await expect(poLogin.form.inputPassword).toBeInvalid();
+			await expect(poRegistration.username).toBeInvalid();
+			await expect(poRegistration.inputPassword).toBeInvalid();
 		});
 	});
 
 	test('Login with valid username and password', async () => {
 		await test.step('expect successful login', async () => {
-			await poLogin.login('user1', DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.username.type('user1');
+			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.btnLogin.click();
 
 			await poAuth.waitForDisplay();
 		});
@@ -44,7 +48,9 @@ test.describe.parallel('Login', () => {
 
 	test('Login with valid email and password', async () => {
 		await test.step('expect successful login', async () => {
-			await poLogin.login('user1@email.com', DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.username.type('user1@email.com');
+			await poRegistration.inputPassword.type(DEFAULT_USER_CREDENTIALS.password);
+			await poRegistration.btnLogin.click();
 
 			await poAuth.waitForDisplay();
 		});

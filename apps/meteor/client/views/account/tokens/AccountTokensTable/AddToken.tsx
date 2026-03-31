@@ -2,9 +2,10 @@ import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, TextInput, Button, Margins, Select, FieldError, FieldGroup, Field, FieldRow } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useUserId, useMethod } from '@rocket.chat/ui-contexts';
+import DOMPurify from 'dompurify';
 import { useCallback, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 type AddTokenFormData = {
 	name: string;
@@ -52,9 +53,16 @@ const AddToken = ({ reload }: AddTokenProps) => {
 
 				setModal(
 					<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={handleDismissModal} onClose={handleDismissModal}>
-						<Box>
-							<Trans i18nKey='API_Personal_Access_Token_Generated_Text_Token_s_UserId_s' values={{ token, userId }} />
-						</Box>
+						<Box
+							dangerouslySetInnerHTML={{
+								__html: DOMPurify.sanitize(
+									t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
+										token,
+										userId,
+									}),
+								),
+							}}
+						/>
 					</GenericModal>,
 				);
 			} catch (error) {

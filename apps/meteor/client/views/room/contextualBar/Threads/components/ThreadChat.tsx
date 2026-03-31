@@ -20,11 +20,7 @@ type ThreadChatProps = {
 };
 
 const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
-	const chat = useChat();
-
-	if (!chat) {
-		throw new Error('No ChatContext provided');
-	}
+	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 
 	const sendToChannelPreference = useUserPreference<'always' | 'never' | 'default'>('alsoSendThreadToChannel');
 
@@ -51,7 +47,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 		closeTab();
 	}, [closeTab]);
 
-	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
+	const chat = useChat();
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat?.messageEditing.toPreviousMessage();
@@ -60,6 +56,13 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 	const handleNavigateToNextMessage = useCallback((): void => {
 		chat?.messageEditing.toNextMessage();
 	}, [chat?.messageEditing]);
+
+	const handleUploadFiles = useCallback(
+		(files: readonly File[]): void => {
+			chat?.flows.uploadFiles(files);
+		},
+		[chat?.flows],
+	);
 
 	const room = useRoom();
 	const readThreads = useMethod('readThreads');
@@ -112,6 +115,7 @@ const ThreadChat = ({ mainMessage }: ThreadChatProps) => {
 							onEscape={handleComposerEscape}
 							onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 							onNavigateToNextMessage={handleNavigateToNextMessage}
+							onUploadFiles={handleUploadFiles}
 							tshow={sendToChannel}
 						>
 							<Field marginBlock={8}>

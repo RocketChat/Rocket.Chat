@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { plain, tasks, task, mentionUser, mentionChannel, link, bold, emoji } from './helpers';
+import { plain, tasks, task, mentionUser, mentionChannel, link, bold, emoji } from '../src/utils';
 
 test.each([
 	[

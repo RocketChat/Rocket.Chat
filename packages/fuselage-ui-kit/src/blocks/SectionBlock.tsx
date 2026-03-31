@@ -28,7 +28,7 @@ const SectionBlock = ({ className, block, surfaceRenderer }: SectionBlockProps):
 			<GridItem>
 				{text && (
 					<Box is='span' fontScale='p2' color='default'>
-						{surfaceRenderer.renderTextObject(text, 0)}
+						{surfaceRenderer.text(text)}
 					</Box>
 				)}
 				{fields && <Fields fields={fields} surfaceRenderer={surfaceRenderer} />}

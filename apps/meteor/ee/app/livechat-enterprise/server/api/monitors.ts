@@ -8,7 +8,6 @@ import {
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { findMonitors, findMonitorByUsername } from './lib/monitors';
 import { API } from '../../../../../app/api/server';

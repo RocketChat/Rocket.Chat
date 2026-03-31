@@ -54,11 +54,6 @@ const tStub = sinon.stub();
 const { sendTranscript } = p.noCallThru().load('../../../../../../app/livechat/server/lib/sendTranscript', {
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/logger': { Logger: mockLogger },
-	'meteor/meteor': {
-		Meteor: {
-			Error: globalThis.Error,
-		},
-	},
 	'meteor/check': { check: checkMock },
 	'../../../../server/lib/callbacks': {
 		callbacks: {

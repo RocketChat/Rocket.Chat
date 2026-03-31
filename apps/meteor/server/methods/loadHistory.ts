@@ -31,13 +31,14 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async loadHistory(rid, end, limit = 20, ls, showThreadMessages = true) {
 		check(rid, String);
-		const fromUser = await Meteor.userAsync();
 
-		if (!fromUser && settings.get('Accounts_AllowAnonymousRead') === false) {
+		if (!Meteor.userId() && settings.get('Accounts_AllowAnonymousRead') === false) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
 				method: 'loadHistory',
 			});
 		}
+
+		const fromId = Meteor.userId();
 
 		const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1 } });
 		if (!room) {
@@ -45,21 +46,21 @@ Meteor.methods<ServerMethods>({
 		}
 
 		// this checks the Allow Anonymous Read setting, so no need to check again
-		if (!(await canAccessRoomAsync(room, fromUser || undefined))) {
+		if (!(await canAccessRoomAsync(room, fromId ? { _id: fromId } : undefined))) {
 			return false;
 		}
 
 		// if fromId is undefined and it passed the previous check, the user is reading anonymously
-		if (!fromUser) {
+		if (!fromId) {
 			return loadMessageHistory({ rid, end, limit, ls, showThreadMessages });
 		}
 
-		const canPreview = await hasPermissionAsync(fromUser._id, 'preview-c-room');
+		const canPreview = await hasPermissionAsync(fromId, 'preview-c-room');
 
-		if (room.t === 'c' && !canPreview && !(await Subscriptions.findOneByRoomIdAndUserId(rid, fromUser._id, { projection: { _id: 1 } }))) {
+		if (room.t === 'c' && !canPreview && !(await Subscriptions.findOneByRoomIdAndUserId(rid, fromId, { projection: { _id: 1 } }))) {
 			return false;
 		}
 
-		return loadMessageHistory({ userId: fromUser._id, rid, end, limit, ls, showThreadMessages });
+		return loadMessageHistory({ userId: fromId, rid, end, limit, ls, showThreadMessages });
 	},
 });

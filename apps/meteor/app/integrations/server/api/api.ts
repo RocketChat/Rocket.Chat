@@ -16,7 +16,6 @@ import type { FailureResult, GenericRouteExecutionContext, SuccessResult, Unavai
 import { loggerMiddleware } from '../../../api/server/middlewares/logger';
 import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
 import { tracerSpanMiddleware } from '../../../api/server/middlewares/tracer';
-import type { APIActionContext } from '../../../api/server/router';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
 import { metrics } from '../../../metrics/server';
@@ -28,6 +27,7 @@ import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingInt
 
 const ivmEngine = new IsolatedVMScriptEngine(true);
 
+// eslint-disable-next-line no-unused-vars
 function getEngine(_integration: IIntegration): IsolatedVMScriptEngine<true> {
 	return ivmEngine;
 }
@@ -59,7 +59,7 @@ async function createIntegration(options: IntegrationOptions, user: IUser): Prom
 			if (options.data == null) {
 				options.data = {};
 			}
-			if (options.data.channel_name?.indexOf('#') === -1) {
+			if (options.data.channel_name != null && options.data.channel_name.indexOf('#') === -1) {
 				options.data.channel_name = `#${options.data.channel_name}`;
 			}
 			return addOutgoingIntegration(user._id, {
@@ -190,6 +190,7 @@ async function executeIntegrationRest(
 	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
 		const buffers = [];
 		const reader = this.request.body.getReader();
+		// eslint-disable-next-line no-await-in-loop
 		for (let result = await reader.read(); !result.done; result = await reader.read()) {
 			buffers.push(result.value);
 		}
@@ -358,7 +359,7 @@ function integrationInfoRest(): { statusCode: number; body: { success: boolean }
 }
 
 class WebHookAPI extends APIClass<'/hooks'> {
-	override async authenticatedRoute(routeContext: APIActionContext): Promise<IUser | null> {
+	override async authenticatedRoute(routeContext: IntegrationThis): Promise<IUser | null> {
 		const { integrationId, token } = routeContext.urlParams;
 		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, decodeURIComponent(token));
 
@@ -370,10 +371,9 @@ class WebHookAPI extends APIClass<'/hooks'> {
 
 		routeContext.request.headers.set('x-auth-token', token);
 
-		const req = routeContext.request as Request & { integration?: IIncomingIntegration };
-		req.integration = integration;
+		routeContext.request.integration = integration;
 
-		return Users.findOneById(req.integration.userId);
+		return Users.findOneById(routeContext.request.integration.userId);
 	}
 
 	override shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {

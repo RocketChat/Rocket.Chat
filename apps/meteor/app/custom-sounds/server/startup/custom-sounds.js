@@ -8,7 +8,7 @@ import { settings } from '../../../settings/server';
 
 export let RocketChatFileCustomSoundsInstance;
 
-const initializeCustomSoundsStorage = () => {
+Meteor.startup(() => {
 	let storeType = 'GridFS';
 
 	if (settings.get('CustomSounds_Storage_Type')) {
@@ -37,10 +37,7 @@ const initializeCustomSoundsStorage = () => {
 		name: 'custom_sounds',
 		absolutePath: path,
 	});
-};
 
-Meteor.startup(() => {
-	initializeCustomSoundsStorage();
 	return WebApp.connectHandlers.use('/custom-sounds/', async (req, res /* , next*/) => {
 		const fileId = decodeURIComponent(req.url.replace(/^\//, '').replace(/\?.*$/, ''));
 
@@ -100,5 +97,3 @@ Meteor.startup(() => {
 		file.readStream.pipe(res);
 	});
 });
-
-settings.watchMultiple(['CustomSounds_Storage_Type', 'CustomSounds_FileSystemPath'], initializeCustomSoundsStorage);

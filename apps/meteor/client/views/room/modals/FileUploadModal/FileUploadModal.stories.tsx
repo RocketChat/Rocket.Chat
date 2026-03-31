@@ -11,6 +11,8 @@ export default {
 	args: {
 		file: new File(['The lazy brown fox jumped over the lazy brown fox.'], 'test.txt', { type: 'text/plain' }),
 		fileName: 'test.txt',
+		fileDescription: '',
+		invalidContentType: false,
 	},
 } satisfies Meta<typeof FileUploadModal>;
 

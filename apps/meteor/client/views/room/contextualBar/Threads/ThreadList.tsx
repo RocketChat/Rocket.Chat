@@ -14,22 +14,19 @@ import {
 } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { FormEvent } from 'react';
-import { useMemo, useState, useCallback, useId } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
-import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useGoToThread } from '../../hooks/useGoToThread';
 
 type ThreadType = 'all' | 'following' | 'unread';
 
-// TODO: Refactor this component to isolate the data from the visual
 const ThreadList = () => {
 	const t = useTranslation();
-	const threadListId = useId();
 
 	const { closeTab } = useRoomToolbox();
 
@@ -128,8 +125,6 @@ const ThreadList = () => {
 			</ContextualbarHeader>
 			<ContextualbarSection>
 				<TextInput
-					aria-label={t('Search_Messages')}
-					aria-controls={isSuccess ? threadListId : undefined}
 					placeholder={t('Search_Messages')}
 					addon={<Icon name='magnifier' size='x20' />}
 					ref={autoFocusRef}
@@ -137,54 +132,49 @@ const ThreadList = () => {
 					onChange={handleSearchTextChange}
 				/>
 				<Box w='x144' mis={8}>
-					<Select
-						aria-controls={isSuccess ? threadListId : undefined}
-						options={typeOptions}
-						value={type}
-						onChange={(value) => handleTypeChange(String(value))}
-					/>
+					<Select options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
-				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
+			<ContextualbarContent paddingInline={0}>
 				{isPending && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
+
 				{error && (
 					<Callout mi={24} type='danger'>
 						{getErrorMessage(error, t('Something_went_wrong'))}
 					</Callout>
 				)}
-				{isSuccess && (
-					<Box id={threadListId} w='full' h='full' overflow='hidden' flexShrink={1}>
-						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
-						{items.length > 0 && (
-							<VirtualizedScrollbars>
-								<Virtuoso
-									style={{
-										height: blockSize,
-										width: inlineSize,
-									}}
-									totalCount={itemCount}
-									endReached={() => fetchNextPage()}
-									overscan={25}
-									data={items}
-									itemContent={(_index, data: IThreadMainMessage) => (
-										<ThreadListItem
-											thread={data}
-											unread={subscription?.tunread ?? []}
-											unreadUser={subscription?.tunreadUser ?? []}
-											unreadGroup={subscription?.tunreadGroup ?? []}
-											onClick={handleThreadClick}
-										/>
-									)}
-								/>
-							</VirtualizedScrollbars>
-						)}
-					</Box>
-				)}
+
+				{isSuccess && itemCount === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
+
+				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={ref}>
+					{!error && itemCount > 0 && items.length > 0 && (
+						<VirtualizedScrollbars>
+							<Virtuoso
+								style={{
+									height: blockSize,
+									width: inlineSize,
+								}}
+								totalCount={itemCount}
+								endReached={() => fetchNextPage()}
+								overscan={25}
+								data={items}
+								itemContent={(_index, data: IThreadMainMessage) => (
+									<ThreadListItem
+										thread={data}
+										unread={subscription?.tunread ?? []}
+										unreadUser={subscription?.tunreadUser ?? []}
+										unreadGroup={subscription?.tunreadGroup ?? []}
+										onClick={handleThreadClick}
+									/>
+								)}
+							/>
+						</VirtualizedScrollbars>
+					)}
+				</Box>
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);

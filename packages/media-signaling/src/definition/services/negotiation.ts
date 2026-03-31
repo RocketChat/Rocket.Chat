@@ -1,3 +1,4 @@
+import type { IClientMediaCall } from '../call';
 import type { IMediaSignalLogger } from '../logger';
 
 export type NegotiationManagerEvents = {
@@ -23,3 +24,7 @@ export type NegotiationData = {
 
 	remoteOffer: RTCSessionDescriptionInit | null;
 };
+
+export interface INegotiationCompatibleMediaCall extends IClientMediaCall {
+	hasInputTrack(): boolean;
+}

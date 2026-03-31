@@ -8,7 +8,6 @@ import { roomsQueryKeys } from '../queryKeys';
 
 const allowedUserActionsInFederatedRooms: ValueOf<typeof RoomMemberActions>[] = [
 	RoomMemberActions.REMOVE_USER,
-	RoomMemberActions.BAN,
 	RoomMemberActions.SET_AS_OWNER,
 	RoomMemberActions.SET_AS_MODERATOR,
 ];
@@ -54,10 +53,9 @@ export const actionAllowed = (
 			return displayingUserRoomRoles.includes('owner') ? myself : true;
 		}
 
-		if (action === RoomMemberActions.REMOVE_USER || action === RoomMemberActions.BAN) {
+		if (action === RoomMemberActions.REMOVE_USER) {
 			return !displayingUserRoomRoles.includes('owner');
 		}
-
 		const allowedForOwnersOverDefaultUsers = allowedUserActionsInFederatedRooms.includes(action);
 
 		return allowedForOwnersOverDefaultUsers;
@@ -75,8 +73,7 @@ export const actionAllowed = (
 			return false;
 		}
 
-		const allowedForModeratorsOverDefaultUsers =
-			action === RoomMemberActions.SET_AS_MODERATOR || action === RoomMemberActions.REMOVE_USER || action === RoomMemberActions.BAN;
+		const allowedForModeratorsOverDefaultUsers = action === RoomMemberActions.SET_AS_MODERATOR || action === RoomMemberActions.REMOVE_USER;
 
 		return allowedForModeratorsOverDefaultUsers;
 	}

@@ -23,10 +23,10 @@ const DiscussionListContextBar = () => {
 		[room._id, debouncedText],
 	);
 
-	const { isPending, isSuccess, error, data, fetchNextPage } = useDiscussionsList(options);
+	const { isPending, error, data, fetchNextPage } = useDiscussionsList(options);
 
 	const discussions = data?.items || [];
-	const itemCount = data?.itemCount ?? 0;
+	const totalItemCount = data?.itemCount ?? 0;
 
 	const handleTextChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		setText(e.currentTarget.value);
@@ -41,9 +41,8 @@ const DiscussionListContextBar = () => {
 			onClose={closeTab}
 			error={error}
 			discussions={discussions}
-			itemCount={itemCount}
-			isPending={isPending}
-			isSuccess={isSuccess}
+			total={totalItemCount}
+			loading={isPending}
 			loadMoreItems={() => fetchNextPage()}
 			text={text}
 			onChangeFilter={handleTextChange}

@@ -35,7 +35,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { useEncryptedRoomDescription } from './useEncryptedRoomDescription';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
-import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateTeamModalInputs = {
 	name: string;
@@ -119,8 +119,6 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 	const canChangeEncrypted = isPrivate && e2eEnabled;
 	const getEncryptedHint = useEncryptedRoomDescription('team');
 
-	const goToRoom = useGoToRoom();
-
 	const handleCreateTeam = async ({
 		name,
 		members,
@@ -147,10 +145,11 @@ const CreateTeamModal = ({ onClose }: CreateTeamModalProps) => {
 		try {
 			const { team } = await createTeamAction(params);
 			dispatchToastMessage({ type: 'success', message: t('Team_has_been_created') });
-			goToRoom(team.roomId);
-			onClose();
+			goToRoomById(team.roomId);
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			onClose();
 		}
 	};
 

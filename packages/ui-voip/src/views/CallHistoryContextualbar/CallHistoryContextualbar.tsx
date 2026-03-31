@@ -18,7 +18,8 @@ import type { HistoryActionCallbacks } from './CallHistoryActions';
 import CallHistoryActions from './CallHistoryActions';
 import { useFullStartDate } from './useFullStartDate';
 import { CallHistoryExternalUser, CallHistoryInternalUser } from '../../components';
-import { usePeekMediaSessionState } from '../../context/usePeekMediaSessionState';
+import { useMediaCallExternalContext } from '../../context';
+import { isCallingBlocked } from '../../context/MediaCallContext';
 import { getHistoryMessagePayload } from '../../ui-kit/getHistoryMessagePayload';
 
 export type InternalCallHistoryContact = {
@@ -65,7 +66,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 
 	const { voiceCall, directMessage } = actions;
 	const { duration, callId, direction, startedAt } = data;
-	const state = usePeekMediaSessionState();
+	const { state } = useMediaCallExternalContext();
 
 	const date = useFullStartDate(startedAt);
 	return (
@@ -122,8 +123,8 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 						<Button
 							success
 							onClick={voiceCall}
-							disabled={state !== 'available'}
-							title={state !== 'available' ? t('Call_in_progress') : undefined}
+							disabled={isCallingBlocked(state)}
+							title={isCallingBlocked(state) ? t('Call_in_progress') : undefined}
 						>
 							<Icon name='phone' size='x20' mie='x4' />
 							{t('Call')}

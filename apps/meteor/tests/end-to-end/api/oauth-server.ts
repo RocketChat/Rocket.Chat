@@ -174,27 +174,5 @@ describe('[OAuth Server]', () => {
 					expect(res.body).to.have.nested.property('user._id', 'rocketchat.internal.admin.test');
 				});
 		});
-
-		const malformedTokenPayloads = [
-			{ query: { 'access_token[$ne]': 'null' }, description: '$ne operator' },
-			{ query: { 'access_token[$exists]': 'true' }, description: '$exists operator' },
-			{ query: { 'access_token[$gt]': '' }, description: '$gt operator' },
-			{ query: { 'access_token[$regex]': '.*' }, description: '$regex operator' },
-			{ query: { access_token: 'invalid-token' }, description: 'invalid string token' },
-		];
-
-		malformedTokenPayloads.forEach(({ query, description }) => {
-			it(`should reject access_token with ${description}`, async () => {
-				await request
-					.get(api('me'))
-					.query(query)
-					.expect('Content-Type', 'application/json')
-					.expect(401)
-					.expect((res: Response) => {
-						expect(res.body).to.have.property('status', 'error');
-						expect(res.body).to.have.property('message', 'You must be logged in to do this.');
-					});
-			});
-		});
 	});
 });

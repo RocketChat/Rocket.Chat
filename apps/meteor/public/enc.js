@@ -1,9 +1,9 @@
-self.addEventListener('install', function (event) {
-	event.waitUntil(self.skipWaiting()); // Activate worker immediately
+self.addEventListener('install', function(event) {
+    event.waitUntil(self.skipWaiting()); // Activate worker immediately
 });
 
-self.addEventListener('activate', function (event) {
-	event.waitUntil(self.clients.claim()); // Become available to all pages
+self.addEventListener('activate', function(event) {
+    event.waitUntil(self.clients.claim()); // Become available to all pages
 });
 
 function base64Decode(string) {
@@ -32,13 +32,7 @@ const decrypt = async (key, iv, file) => {
 const getUrlParams = (url) => {
 	const urlObj = new URL(url, location.origin);
 
-	const rawKey = urlObj.searchParams.get('key');
-	if (!rawKey) {
-		throw new Error('Missing "key" query param');
-	}
-
-
-	const k = base64DecodeString(decodeURIComponent(rawKey));
+	const k = base64DecodeString(urlObj.searchParams.get('key'));
 
 	urlObj.searchParams.delete('key');
 
@@ -80,7 +74,7 @@ self.addEventListener('fetch', (event) => {
 						const result = await decrypt(key, iv, file);
 
 						const newHeaders = new Headers(res.headers);
-						newHeaders.set('Content-Disposition', 'inline; filename="' + name + '"');
+						newHeaders.set('Content-Disposition', 'inline; filename="'+name+'"');
 						newHeaders.set('Content-Type', type);
 
 						const response = new Response(result, {
@@ -120,17 +114,18 @@ self.addEventListener('message', async (event) => {
 
 	const file = await res.arrayBuffer();
 	const result = await decrypt(key, iv, file);
-	event.source.postMessage({
-		id: event.data.id,
-		type: 'attachment-download-result',
-		result,
-	});
-	// .catch((error) => {
-	// 	console.error('Posting message failed:', error);
-	// 	event.source.postMessage({
-	// 		id: event.data.id,
-	// 		type: 'attachment-download-result',
-	// 		error,
-	// 	});
-	// });
+	event.source
+		.postMessage({
+			id: event.data.id,
+			type: 'attachment-download-result',
+			result,
+		});
+		// .catch((error) => {
+		// 	console.error('Posting message failed:', error);
+		// 	event.source.postMessage({
+		// 		id: event.data.id,
+		// 		type: 'attachment-download-result',
+		// 		error,
+		// 	});
+		// });
 });

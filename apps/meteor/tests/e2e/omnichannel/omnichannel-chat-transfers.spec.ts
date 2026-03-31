@@ -4,7 +4,6 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createManager } from '../utils/omnichannel/managers';
@@ -95,7 +94,6 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 				departments: [{ departmentId: departmentB._id }],
 			}),
 		]);
-		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).status()).toBe(200);
 	});
 
 	// Create sessions
@@ -118,7 +116,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		await Promise.all(sessions.map(({ page }) => page.close()));
 	});
 
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			...monitors.map((monitor) => monitor.delete()),
@@ -126,7 +124,6 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 			...units.map((unit) => unit.delete()),
 			...departments.map((department) => department.delete()),
 		]);
-		await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 	});
 
 	test(`OC - Chat transfers [Monitor role] - Transfer to department with no online agents should fail`, async ({ api }) => {

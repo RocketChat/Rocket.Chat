@@ -2,7 +2,6 @@ import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
 import {
 	ajv,
-	ajvQuery,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -58,7 +57,7 @@ const permissionUpdatePropsSchema = {
 	additionalProperties: false,
 };
 
-const isPermissionsListAll = ajvQuery.compile<PermissionsListAllProps>(permissionListAllSchema);
+const isPermissionsListAll = ajv.compile<PermissionsListAllProps>(permissionListAllSchema);
 
 const isBodyParamsValidPermissionUpdate = ajv.compile<PermissionsUpdateProps>(permissionUpdatePropsSchema);
 
@@ -174,7 +173,7 @@ const permissionsEndpoints = API.v1
 				return API.v1.failure('Invalid role', 'error-invalid-role');
 			}
 
-			for (const permission of bodyParams.permissions) {
+			for await (const permission of bodyParams.permissions) {
 				await Permissions.setRoles(permission._id, permission.roles);
 				void notifyOnPermissionChangedById(permission._id);
 			}

@@ -2,7 +2,6 @@ import type { IOAuthApps } from '@rocket.chat/core-typings';
 import { OAuthApps } from '@rocket.chat/models';
 import {
 	ajv,
-	ajvQuery,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -115,14 +114,14 @@ const oauthAppsGetParamsSchema = {
 	],
 };
 
-const isOauthAppsGetParams = ajvQuery.compile<OauthAppsGetParams>(oauthAppsGetParamsSchema);
+const isOauthAppsGetParams = ajv.compile<OauthAppsGetParams>(oauthAppsGetParamsSchema);
 
 const oauthAppsEndpoints = API.v1
 	.get(
 		'oauth-apps.list',
 		{
 			authRequired: true,
-			query: ajvQuery.compile<{ uid?: string }>({
+			query: ajv.compile<{ uid?: string }>({
 				type: 'object',
 				properties: {
 					uid: {

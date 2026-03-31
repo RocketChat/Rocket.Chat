@@ -1,4 +1,4 @@
-export type { FederationKey } from './FederationKey';
-export type { IFederationServer } from './IFederationServer';
+export { FederationKey } from './FederationKey';
+export { IFederationServer } from './IFederationServer';
 export { eventTypes } from './events';
-export type { IFederationEvent } from './IFederationEvent';
+export { IFederationEvent } from './IFederationEvent';

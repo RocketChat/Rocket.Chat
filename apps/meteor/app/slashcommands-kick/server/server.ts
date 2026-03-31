@@ -5,14 +5,13 @@ import { Users } from '@rocket.chat/models';
 
 import { i18n } from '../../../server/lib/i18n';
 import { removeUserFromRoomMethod } from '../../../server/methods/removeUserFromRoom';
-import { sanitizeUsername } from '../../lib/server/methods/addUsersToRoom';
 import { settings } from '../../settings/server';
 import { slashCommands } from '../../utils/server/slashCommand';
 
 slashCommands.add({
 	command: 'kick',
 	callback: async ({ params, message, userId }: SlashCommandCallbackParams<'kick'>): Promise<void> => {
-		const username = sanitizeUsername(params.trim());
+		const username = params.trim().replace('@', '');
 		if (username === '') {
 			return;
 		}

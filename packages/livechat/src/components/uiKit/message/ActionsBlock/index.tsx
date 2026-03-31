@@ -1,15 +1,16 @@
 import type * as uikit from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import { useState, useMemo, useCallback } from 'preact/compat';
 import { useTranslation } from 'react-i18next';
 
-import type { MessageParser } from '..';
 import { createClassName } from '../../../../helpers/createClassName';
 import { Button } from '../../../Button';
 import Block from '../Block';
 import styles from './styles.scss';
 
 type ActionsBlockProps = uikit.ActionsBlock & {
-	parser: MessageParser;
+	parser: any;
+	t: any;
 };
 
 const ActionsBlock = ({ appId, blockId, elements, parser }: ActionsBlockProps) => {
@@ -27,7 +28,7 @@ const ActionsBlock = ({ appId, blockId, elements, parser }: ActionsBlockProps) =
 		<Block appId={appId} blockId={blockId}>
 			<div className={createClassName(styles, 'uikit-actions-block')}>
 				{renderableElements.map((element, key) => {
-					const renderedElement = parser.renderActionsBlockElement(element, key);
+					const renderedElement = parser.renderActions(element, BlockContext.ACTION);
 
 					if (!renderedElement) {
 						return null;

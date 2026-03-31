@@ -1,6 +1,8 @@
-import type { TextObject } from './TextObject';
-
-export const TextObjectType = {
-	PLAIN_TEXT: 'plain_text',
-	MRKDWN: 'mrkdwn',
-} as const satisfies Record<Uppercase<TextObject['type']>, TextObject['type']>;
+export enum TextObjectType {
+	/** @deprecated */
+	PLAINTEXT = 'plain_text',
+	PLAIN_TEXT = 'plain_text',
+	/** @deprecated */
+	MARKDOWN = 'mrkdwn',
+	MRKDWN = 'mrkdwn',
+}

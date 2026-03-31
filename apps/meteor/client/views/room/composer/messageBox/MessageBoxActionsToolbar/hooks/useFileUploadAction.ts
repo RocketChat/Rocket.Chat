@@ -31,7 +31,7 @@ export const useFileUploadAction = (disabled: boolean): GenericMenuItemProps => 
 				});
 				return file;
 			});
-			chat?.flows.uploadFiles({ files: filesToUpload, resetFileInput });
+			chat?.flows.uploadFiles(filesToUpload, resetFileInput);
 		};
 
 		fileInputRef.current?.addEventListener('change', handleUploadChange);

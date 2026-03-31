@@ -1,5 +1,5 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 export type ChannelsHistoryProps = PaginatedRequest<
 	({ roomId: string } | { roomName: string }) & {
@@ -111,4 +111,4 @@ const channelsHistoryPropsSchema = {
 	],
 };
 
-export const isChannelsHistoryProps = ajvQuery.compile<ChannelsHistoryProps>(channelsHistoryPropsSchema);
+export const isChannelsHistoryProps = ajv.compile<ChannelsHistoryProps>(channelsHistoryPropsSchema);

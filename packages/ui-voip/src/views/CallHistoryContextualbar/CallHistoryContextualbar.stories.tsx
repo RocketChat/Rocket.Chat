@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 import type { ReactElement } from 'react';
 
 import CallHistoryContextualbar from './CallHistoryContextualbar';
-import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const noop = () => undefined;
 
@@ -31,11 +30,7 @@ const meta = {
 			})
 			.withDefaultLanguage('en-US')
 			.buildStoryDecorator(),
-		(Story): ReactElement => (
-			<MockedMediaCallProvider>
-				<Story />
-			</MockedMediaCallProvider>
-		),
+		(Story): ReactElement => <Story />,
 	],
 } satisfies Meta<typeof CallHistoryContextualbar>;
 

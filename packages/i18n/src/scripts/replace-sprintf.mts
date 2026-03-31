@@ -71,7 +71,7 @@ const replaceSprintfParams = async (translationKey: string): Promise<void> => {
 	}
 
 	// Process all translation files
-	for (const language of languages) {
+	for await (const language of languages) {
 		const resource = await readResource(language);
 
 		if (resource[translationKey]) {
@@ -116,7 +116,7 @@ if (import.meta.url.startsWith('file:')) {
 			exit(1);
 		}
 
-		for (const arg of positionals) {
+		for await (const arg of positionals) {
 			await replaceSprintfParams(arg).catch((error) => {
 				console.error(error);
 				exit(1);

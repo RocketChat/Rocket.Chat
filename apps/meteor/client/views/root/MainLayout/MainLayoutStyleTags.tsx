@@ -1,5 +1,5 @@
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
-import { useThemeMode } from '@rocket.chat/ui-client';
+import { useThemeMode } from '@rocket.chat/ui-theming';
 
 import { codeBlock } from '../lib/codeBlockStyles';
 

@@ -72,6 +72,7 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 				id='reaction-message'
 				icon='add-reaction'
 				title={t('Add_Reaction')}
+				qa='Add_Reaction'
 				onClick={(event) => {
 					event.stopPropagation();
 					chat?.emojiPicker.open(event.currentTarget, (emoji) => {

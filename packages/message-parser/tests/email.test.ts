@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { link, paragraph, plain } from './helpers';
+import { link, paragraph, plain } from '../src/utils';
 
 test.each([
 	['joe@joe.com', [paragraph([link('mailto:joe@joe.com', [plain('joe@joe.com')])])]],

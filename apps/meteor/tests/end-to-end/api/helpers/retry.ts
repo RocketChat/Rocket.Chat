@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 /**
  * Retry a given function N times until it succeeds.

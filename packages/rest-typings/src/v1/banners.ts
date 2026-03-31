@@ -1,6 +1,6 @@
 import type { BannerPlatform, IBanner } from '@rocket.chat/core-typings';
 
-import { ajv, ajvQuery } from './Ajv';
+import { ajv } from './Ajv';
 
 type BannersId = {
 	platform: BannerPlatform;
@@ -22,7 +22,7 @@ const BannersSchema = {
 	additionalProperties: false,
 };
 
-export const isBannersProps = ajvQuery.compile<Banners>(BannersSchema);
+export const isBannersProps = ajv.compile<Banners>(BannersSchema);
 
 type BannersDismiss = {
 	bannerId: string;

@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { emoji, bigEmoji, paragraph, plain, emojiUnicode } from './helpers';
+import { emoji, bigEmoji, paragraph, plain, emojiUnicode } from '../src/utils';
 
 test.each([
 	[':smile: asd', [paragraph([emoji('smile'), plain(' asd')])]],

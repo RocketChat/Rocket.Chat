@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 export type ChannelsModeratorsProps =
 	| { roomId: string; userId?: string; username?: string; user?: string }
@@ -51,4 +51,4 @@ const channelsModeratorsPropsSchema = {
 	],
 };
 
-export const isChannelsModeratorsProps = ajvQuery.compile<ChannelsModeratorsProps>(channelsModeratorsPropsSchema);
+export const isChannelsModeratorsProps = ajv.compile<ChannelsModeratorsProps>(channelsModeratorsPropsSchema);

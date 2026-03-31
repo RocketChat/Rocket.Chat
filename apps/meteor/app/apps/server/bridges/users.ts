@@ -9,7 +9,6 @@ import { Random } from '@rocket.chat/random';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getUserCreatedByApp } from '../../../lib/server/functions/getUserCreatedByApp';
-import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { notifyOnUserChange, notifyOnUserChangeById } from '../../../lib/server/lib/notifyListener';
@@ -128,31 +127,20 @@ export class AppUserBridge extends UserBridge {
 			throw new Error('User not provided');
 		}
 
-		const { status, statusText, ...updateFields } = fields;
-
-		if (status) {
-			await Presence.setStatus(user.id, status as UserStatus, statusText);
-		} else if (typeof statusText === 'string') {
-			await setStatusText(
-				{
-					_id: user.id,
-					username: user.username,
-					name: user.name,
-					status: user.status as UserStatus,
-					roles: user.roles,
-					statusText: user.statusText,
-				},
-				statusText,
-			);
-		}
-
-		if (!Object.keys(updateFields).length) {
+		if (!Object.keys(fields).length) {
 			return true;
 		}
 
-		await Users.updateOne({ _id: user.id }, { $set: updateFields as any });
+		const { status } = fields;
+		delete fields.status;
 
-		void notifyOnUserChange({ clientAction: 'updated', id: user.id, diff: updateFields });
+		if (status) {
+			await Presence.setStatus(user.id, status as UserStatus, fields.statusText);
+		}
+
+		await Users.updateOne({ _id: user.id }, { $set: fields as any });
+
+		void notifyOnUserChange({ clientAction: 'updated', id: user.id, diff: fields });
 
 		return true;
 	}

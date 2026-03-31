@@ -39,7 +39,7 @@ import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultip
 import { useCreateChannelTypePermission } from '../../../hooks/useCreateChannelTypePermission';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useIsFederationEnabled } from '../../../hooks/useIsFederationEnabled';
-import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
+import { goToRoomById } from '../../../lib/utils/goToRoomById';
 
 type CreateChannelModalProps = {
 	teamId?: string;
@@ -111,6 +111,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		setValue,
 		watch,
 	} = useForm({
+		mode: 'onBlur',
 		defaultValues: {
 			members: [],
 			name: '',
@@ -159,8 +160,6 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		}
 	};
 
-	const goToRoom = useGoToRoom();
-
 	const handleCreateChannel = async ({ name, members, readOnly, topic, broadcast, encrypted, federated }: CreateChannelModalPayload) => {
 		let roomData;
 		const params = {
@@ -179,17 +178,18 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload }: CreateCh
 		try {
 			if (isPrivate) {
 				roomData = await createPrivateChannel(params);
-				if (!teamId) goToRoom(roomData.group._id);
+				!teamId && goToRoomById(roomData.group._id);
 			} else {
 				roomData = await createChannel(params);
-				if (!teamId) goToRoom(roomData.channel._id);
+				!teamId && goToRoomById(roomData.channel._id);
 			}
 
 			dispatchToastMessage({ type: 'success', message: t('Room_has_been_created') });
 			reload?.();
-			onClose();
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			onClose();
 		}
 	};
 

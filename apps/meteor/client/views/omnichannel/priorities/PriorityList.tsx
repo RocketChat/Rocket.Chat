@@ -28,7 +28,7 @@ const PriorityList = ({ priorityId, onClose, onSave }: PriorityListProps): React
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent height='100%'>
-				<PriorityEditFormWithData priorityId={priorityId} onSave={onSave} />
+				<PriorityEditFormWithData priorityId={priorityId} onSave={onSave} onCancel={onClose} />
 			</ContextualbarScrollableContent>
 		</ContextualbarDialog>
 	);

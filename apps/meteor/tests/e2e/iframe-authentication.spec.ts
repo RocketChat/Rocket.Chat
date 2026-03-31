@@ -2,14 +2,14 @@ import fs from 'fs';
 import path from 'path';
 
 import { Users } from './fixtures/userStates';
-import { Authenticated, Login } from './page-objects';
+import { Registration, Authenticated } from './page-objects';
 import { test, expect } from './utils/test';
 
 const IFRAME_URL = 'http://iframe.rocket.chat';
 const API_URL = 'http://auth.rocket.chat/api/login';
 
 test.describe('iframe-authentication', () => {
-	let poLogin: Login;
+	let poRegistration: Registration;
 	let poAuth: Authenticated;
 
 	test.beforeAll(async ({ api }) => {
@@ -27,7 +27,7 @@ test.describe('iframe-authentication', () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
-		poLogin = new Login(page);
+		poRegistration = new Registration(page);
 		poAuth = new Authenticated(page);
 
 		await page.route(API_URL, async (route) => {
@@ -52,7 +52,7 @@ test.describe('iframe-authentication', () => {
 	test('should render iframe instead of login page', async ({ page }) => {
 		await page.goto('/home');
 
-		await expect(poLogin.loginIframeForm).toBeVisible();
+		await expect(poRegistration.loginIframeForm).toBeVisible();
 	});
 
 	test('should render iframe login page if API returns error', async ({ page }) => {
@@ -64,7 +64,7 @@ test.describe('iframe-authentication', () => {
 
 		await page.goto('/home');
 
-		await expect(poLogin.loginIframeForm).toBeVisible();
+		await expect(poRegistration.loginIframeForm).toBeVisible();
 	});
 
 	test('should login with token when API returns valid token', async ({ page }) => {
@@ -90,15 +90,15 @@ test.describe('iframe-authentication', () => {
 		});
 
 		await page.goto('/home');
-		await expect(poLogin.loginIframeForm).toBeVisible();
+		await expect(poRegistration.loginIframeForm).toBeVisible();
 	});
 
 	test('should login through iframe', async ({ page }) => {
 		await page.goto('/home');
 
-		await expect(poLogin.loginIframeForm).toBeVisible();
+		await expect(poRegistration.loginIframeForm).toBeVisible();
 
-		await poLogin.loginIframeSubmitButton.click();
+		await poRegistration.loginIframeSubmitButton.click();
 
 		await poAuth.waitForDisplay();
 	});
@@ -116,11 +116,11 @@ test.describe('iframe-authentication', () => {
 
 		await page.goto('/home');
 
-		await expect(poLogin.loginIframeForm).toBeVisible();
+		await expect(poRegistration.loginIframeForm).toBeVisible();
 
-		await poLogin.loginIframeSubmitButton.click();
+		await poRegistration.loginIframeSubmitButton.click();
 
-		await expect(poLogin.loginIframeError).toBeVisible();
+		await expect(poRegistration.loginIframeError).toBeVisible();
 	});
 
 	test.describe('incomplete settings', () => {
@@ -144,8 +144,8 @@ test.describe('iframe-authentication', () => {
 			});
 
 			await page.goto('/home');
-			await poLogin.waitForDisplay();
-			await expect(poLogin.loginIframeForm).not.toBeVisible();
+			await expect(poRegistration.btnLogin).toBeVisible();
+			await expect(poRegistration.loginIframeForm).not.toBeVisible();
 		});
 	});
 });

@@ -2,11 +2,10 @@ export interface IPermission {
 	_id: string;
 	_updatedAt: Date;
 	roles: string[];
-	// TODO: migrate settings with group and section with null to undefined
-	group?: string | null;
-	section?: string | null;
+	group?: string;
 	groupPermissionId?: string;
 	level?: 'settings';
+	section?: string;
 	sectionPermissionId?: string;
 	settingId?: string;
 	sorter?: number;

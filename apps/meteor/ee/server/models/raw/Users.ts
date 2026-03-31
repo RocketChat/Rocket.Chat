@@ -1,5 +1,5 @@
 import type { RocketChatRecordDeleted, IUser, AvailableAgentsAggregation } from '@rocket.chat/core-typings';
-import { queryStatusAgentOnline, UsersRaw } from '@rocket.chat/models';
+import { UsersRaw } from '@rocket.chat/models';
 import type { Db, Collection, Filter } from 'mongodb';
 
 import { readSecondaryPreferred } from '../../../../server/database/readSecondaryPreferred';
@@ -9,7 +9,6 @@ declare module '@rocket.chat/model-typings' {
 		getUnavailableAgents(
 			departmentId: string,
 			customFilter: Filter<AvailableAgentsAggregation>,
-			enabledWhenIdle?: boolean,
 		): Promise<Pick<AvailableAgentsAggregation, 'username'>[]>;
 	}
 }
@@ -22,7 +21,6 @@ export class UsersEE extends UsersRaw {
 	override getUnavailableAgents(
 		departmentId: string,
 		customFilter: Filter<AvailableAgentsAggregation>,
-		enabledWhenIdle = false,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]> {
 		// if department is provided, remove the agents that are not from the selected department
 		const departmentFilter = departmentId
@@ -53,7 +51,11 @@ export class UsersEE extends UsersRaw {
 			.aggregate<AvailableAgentsAggregation>(
 				[
 					{
-						$match: queryStatusAgentOnline({}, enabledWhenIdle),
+						$match: {
+							status: { $exists: true, $ne: 'offline' },
+							statusLivechat: 'available',
+							roles: 'livechat-agent',
+						},
 					},
 					...departmentFilter,
 					{

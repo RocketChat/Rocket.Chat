@@ -4,7 +4,9 @@ import userEvent from '@testing-library/user-event';
 
 import CreateTeamModal from './CreateTeamModal';
 
-jest.mock('../../../lib/rooms/roomCoordinator', () => ({}));
+jest.mock('../../../lib/utils/goToRoomById', () => ({
+	goToRoomById: jest.fn(),
+}));
 
 describe('CreateTeamModal', () => {
 	it('should render with encryption option disabled and set to off when E2E_Enable=false and E2E_Enabled_Default_PrivateRooms=false', async () => {

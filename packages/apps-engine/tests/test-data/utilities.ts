@@ -1,5 +1,3 @@
-import * as os from 'os';
-
 import { TestsAppBridges } from './bridges/appBridges';
 import { TestSourceStorage } from './storage/TestSourceStorage';
 import { TestsAppLogStorage } from './storage/logStorage';
@@ -17,7 +15,7 @@ import type {
 	IOutboundMessage,
 	IOutboundPhoneMessageProvider,
 	ProviderMetadata,
-} from '../../src/definition/outboundCommunication';
+} from '../../src/definition/outboundComunication';
 import type { IRoom } from '../../src/definition/rooms';
 import { RoomType } from '../../src/definition/rooms';
 import type { ISetting } from '../../src/definition/settings';
@@ -75,7 +73,7 @@ export class TestInfastructureSetup {
 	private runtimeManager: AppRuntimeManager;
 
 	constructor() {
-		this.appStorage = TestsAppStorage.getInstance();
+		this.appStorage = new TestsAppStorage();
 		this.logStorage = new TestsAppLogStorage();
 		this.bridges = new TestsAppBridges();
 		this.sourceStorage = new TestSourceStorage();
@@ -132,12 +130,8 @@ export class TestInfastructureSetup {
 			getRuntime: () => {
 				return this.runtimeManager;
 			},
-			getTempFilePath: this.getTempFilePath,
+			getTempFilePath: () => 'temp-file-path',
 		} as unknown as AppManager;
-	}
-
-	public getTempFilePath(): string {
-		return os.tmpdir();
 	}
 
 	public getAppStorage(): AppMetadataStorage {

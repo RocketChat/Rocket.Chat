@@ -25,24 +25,25 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 						return;
 					}
 
-					if (jumpToRef.current) {
-						return;
-					}
-
-					if (RoomHistoryManager.isLoading(rid)) {
-						return;
-					}
+					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
 
 					if (msgIdRef.current && !RoomHistoryManager.isLoaded(rid)) {
 						return;
 					}
 
-					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
-
 					const lastScrollTopRef = scrollTop;
 					const height = clientHeight;
+					const isLoading = RoomHistoryManager.isLoading(rid);
 					const hasMore = RoomHistoryManager.hasMore(rid);
 					const hasMoreNext = RoomHistoryManager.hasMoreNext(rid);
+
+					if (jumpToRef.current) {
+						return;
+					}
+
+					if (isLoading) {
+						return;
+					}
 
 					if (hasMore === true && lastScrollTopRef <= height / 3) {
 						await RoomHistoryManager.getMore(rid);
@@ -50,11 +51,6 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 						if (jumpToRef.current) {
 							return;
 						}
-
-						if (!element.isConnected) {
-							return;
-						}
-
 						flushSync(() => {
 							RoomHistoryManager.restoreScroll(rid);
 						});

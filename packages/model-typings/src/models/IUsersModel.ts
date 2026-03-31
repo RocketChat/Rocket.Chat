@@ -255,7 +255,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	getUnavailableAgents(
 		departmentId?: string,
 		extraQuery?: Filter<AvailableAgentsAggregation>,
-		isLivechatEnabledWhenIdle?: boolean,
 	): Promise<Pick<AvailableAgentsAggregation, 'username'>[]>;
 	findOneOnlineAgentByUserList(
 		userList: string[] | string,

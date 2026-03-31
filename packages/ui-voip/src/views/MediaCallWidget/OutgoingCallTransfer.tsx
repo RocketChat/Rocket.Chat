@@ -2,15 +2,12 @@ import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker, WidgetInfo } from '../../components';
-import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { useMediaCallContext } from '../../context';
 
 const OutgoingCallTransfer = () => {
 	const { t } = useTranslation();
 
-	const {
-		sessionState: { peerInfo, connectionState, transferredBy },
-		onEndCall,
-	} = useMediaCallView();
+	const { onEndCall, peerInfo, connectionState, transferredBy } = useMediaCallContext();
 
 	if (!peerInfo) {
 		throw new Error('Peer info is required');

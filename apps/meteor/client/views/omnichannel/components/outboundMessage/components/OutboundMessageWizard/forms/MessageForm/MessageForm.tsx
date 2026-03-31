@@ -50,6 +50,7 @@ const MessageForm = (props: MessageFormProps) => {
 		setValue,
 	} = useForm<MessageFormData>({
 		mode: 'onChange',
+		reValidateMode: 'onChange',
 		defaultValues: {
 			templateParameters: defaultValues?.templateParameters ?? {},
 			templateId: defaultValues?.templateId ?? '',

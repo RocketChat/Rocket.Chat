@@ -145,7 +145,6 @@ describe('LIVECHAT - rooms', () => {
 		});
 		(IS_EE ? it : it.skip)('should prevent create a room for visitor if an app throws an error', async () => {
 			// this test relies on the app installed by the insertApp fixture
-			// TODO: this visitor should be created on before block and deleted on after block
 			const visitor = await createVisitor(undefined, 'visitor prevent from app');
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
 
@@ -153,7 +152,6 @@ describe('LIVECHAT - rooms', () => {
 			await deleteVisitor(visitor.token);
 		});
 		it('should create a room for visitor', async () => {
-			// TODO: this visitor should be created on before block and deleted on after block
 			const visitor = await createVisitor();
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
 
@@ -166,7 +164,6 @@ describe('LIVECHAT - rooms', () => {
 			await deleteVisitor(visitor.token);
 		});
 		it('should return an existing open room when visitor has one available', async () => {
-			// TODO: this visitor should be created on before block and deleted on after block
 			const visitor = await createVisitor();
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
 
@@ -185,7 +182,6 @@ describe('LIVECHAT - rooms', () => {
 			await deleteVisitor(visitor.token);
 		});
 		it('should return a room for the visitor when rid points to a valid open room', async () => {
-			// TODO: this visitor should be created on before block and deleted on after block
 			const visitor = await createVisitor();
 			const room = await createLivechatRoom(visitor.token);
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token, rid: room._id });
@@ -198,7 +194,6 @@ describe('LIVECHAT - rooms', () => {
 			await deleteVisitor(visitor.token);
 		});
 		it('should properly read widget cookies', async () => {
-			// TODO: this visitor should be created on before block and deleted on after block
 			const visitor = await createVisitor();
 			const { body } = await request
 				.get(api('livechat/room'))

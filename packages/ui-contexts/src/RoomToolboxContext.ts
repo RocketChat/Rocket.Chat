@@ -27,7 +27,7 @@ export type RoomToolboxActionConfig = {
 	tabComponent?: ComponentType<{
 		onClickBack?: () => void;
 	}>;
-	type?: 'organization' | 'communication' | 'customization' | 'apps' | 'moderation';
+	type?: 'organization' | 'communication' | 'customization' | 'apps';
 	variant?: 'danger';
 };
 

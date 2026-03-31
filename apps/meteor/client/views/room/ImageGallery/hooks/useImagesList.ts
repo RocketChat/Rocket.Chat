@@ -40,7 +40,7 @@ export const useImagesList = ({ roomId, startingFromId }: { roomId: IRoom['_id']
 								type: decrypted.type,
 							}),
 						);
-						decrypted.path = `/file-decrypt${decrypted.path}?key=${encodeURIComponent(key)}`;
+						decrypted.path = `/file-decrypt${decrypted.path}?key=${key}`;
 						Object.assign(file, decrypted);
 					}
 				}

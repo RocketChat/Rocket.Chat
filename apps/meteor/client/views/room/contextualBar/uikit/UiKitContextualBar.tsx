@@ -16,6 +16,7 @@ import {
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
+import { BlockContext } from '@rocket.chat/ui-kit';
 import type { FormEvent, UIEvent } from 'react';
 import { memo } from 'react';
 
@@ -90,7 +91,7 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 			<ContextualbarDialog>
 				<ContextualbarHeader>
 					<Avatar url={getURL(`/api/apps/${view.appId}/icon`)} />
-					<ContextualbarTitle>{contextualBarParser.renderTextObject(view.title, 0)}</ContextualbarTitle>
+					<ContextualbarTitle>{contextualBarParser.text(view.title, BlockContext.NONE, 0)}</ContextualbarTitle>
 					{handleClose && <ContextualbarClose onClick={handleClose} />}
 				</ContextualbarHeader>
 				<ContextualbarScrollableContent>
@@ -102,13 +103,13 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps): JSX.Eleme
 					<ButtonGroup stretch>
 						{view.close && (
 							<Button danger={view.close.style === 'danger'} onClick={handleCancel}>
-								{contextualBarParser.renderTextObject(view.close.text, 0)}
+								{contextualBarParser.text(view.close.text, BlockContext.NONE, 0)}
 							</Button>
 						)}
 
 						{view.submit && (
 							<Button {...getButtonStyle(view.submit)} onClick={handleSubmit}>
-								{contextualBarParser.renderTextObject(view.submit.text, 1)}
+								{contextualBarParser.text(view.submit.text, BlockContext.NONE, 1)}
 							</Button>
 						)}
 					</ButtonGroup>

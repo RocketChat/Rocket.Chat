@@ -1,9 +1,8 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
-import type { PaginatedResult } from '@rocket.chat/rest-typings';
+import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import {
 	isCustomSoundsGetOneProps,
-	isCustomSoundsListProps,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateNotFoundErrorResponse,
@@ -15,6 +14,38 @@ import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
+
+type CustomSoundsList = PaginatedRequest<{ name?: string }>;
+
+const CustomSoundsListSchema = {
+	type: 'object',
+	properties: {
+		count: {
+			type: 'number',
+			nullable: true,
+		},
+		offset: {
+			type: 'number',
+			nullable: true,
+		},
+		sort: {
+			type: 'string',
+			nullable: true,
+		},
+		name: {
+			type: 'string',
+			nullable: true,
+		},
+		query: {
+			type: 'string',
+			nullable: true,
+		},
+	},
+	required: [],
+	additionalProperties: false,
+};
+
+export const isCustomSoundsListProps = ajv.compile<CustomSoundsList>(CustomSoundsListSchema);
 
 const customSoundsEndpoints = API.v1
 	.get(

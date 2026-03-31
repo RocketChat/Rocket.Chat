@@ -1,14 +1,23 @@
 import { Box } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
-import { Trans } from 'react-i18next';
+import DOMPurify from 'dompurify';
+import { useTranslation } from 'react-i18next';
 
-const NewBot = () => (
-	<Box pb={20} fontScale='h4' key='bots'>
-		<Trans
-			i18nKey='additional_integrations_Bots'
-			components={{ a: <ExternalLink to='https://github.com/RocketChat/hubot-rocketchat' /> }}
+const NewBot = () => {
+	const { t } = useTranslation();
+
+	return (
+		<Box
+			pb={20}
+			fontScale='h4'
+			key='bots'
+			dangerouslySetInnerHTML={{
+				__html: DOMPurify.sanitize(t('additional_integrations_Bots'), {
+					ALLOWED_TAGS: ['a'],
+					ALLOWED_ATTR: ['href', 'target'],
+				}),
+			}}
 		/>
-	</Box>
-);
+	);
+};
 
 export default NewBot;

@@ -4,7 +4,6 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelUnits } from '../page-objects/omnichannel';
-import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { createMonitor } from '../utils/omnichannel/monitors';
@@ -41,17 +40,12 @@ test.describe('OC - Manage Units', () => {
 		monitor2 = await createMonitor(api, 'user3');
 	});
 
-	test.beforeAll(async ({ api }) => {
-		await setSettingValueById(api, 'Omnichannel_enable_department_removal', true);
-	});
-
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await department.delete();
 		await department2.delete();
 		await monitor.delete();
 		await monitor2.delete();
 		await agent.delete();
-		await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
@@ -66,7 +60,7 @@ test.describe('OC - Manage Units', () => {
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelUnits.createNew();
 			await expect(poOmnichannelUnits.manageUnit.root).toBeVisible();
-			await expect(poOmnichannelUnits.manageUnit.btnSave).toBeEnabled();
+			await expect(poOmnichannelUnits.manageUnit.btnSave).toBeDisabled();
 			await expect(poOmnichannelUnits.manageUnit.btnCancel).toBeEnabled();
 			await poOmnichannelUnits.manageUnit.btnCancel.click();
 			await expect(poOmnichannelUnits.manageUnit.root).not.toBeVisible();

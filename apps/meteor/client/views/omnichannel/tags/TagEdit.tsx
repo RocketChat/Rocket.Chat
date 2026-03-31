@@ -1,5 +1,6 @@
 import type { ILivechatDepartment, ILivechatTag, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, FieldGroup, Box } from '@rocket.chat/fuselage';
+import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
@@ -14,7 +15,6 @@ import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useRemoveTag } from './useRemoveTag';
-import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 
 type TagEditPayload = {
@@ -44,6 +44,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 		formState: { isDirty, errors },
 		handleSubmit,
 	} = useForm<TagEditPayload>({
+		mode: 'onBlur',
 		values: {
 			name: name || '',
 			description: description || '',
@@ -51,27 +52,25 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 		},
 	});
 
-	const handleSave = useFormSubmitWithDirtyCheck(
-		async ({ name, description, departments }: TagEditPayload) => {
-			const departmentsId = departments?.map((dep) => dep.value) || [''];
+	const handleSave = useEffectEvent(async ({ name, description, departments }: TagEditPayload) => {
+		const departmentsId = departments?.map((dep) => dep.value) || [''];
 
-			try {
-				await saveTag({
-					_id,
-					tagData: { name, description },
-					...(departmentsId.length > 0 && { tagDepartments: departmentsId }),
-				});
-				dispatchToastMessage({ type: 'success', message: t('Saved') });
-				queryClient.invalidateQueries({
-					queryKey: ['livechat-tags'],
-				});
-				onClose();
-			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: error });
-			}
-		},
-		{ isDirty },
-	);
+		try {
+			await saveTag({
+				_id,
+				tagData: { name, description },
+				...(departmentsId.length > 0 && { tagDepartments: departmentsId }),
+			});
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
+			queryClient.invalidateQueries({
+				queryKey: ['livechat-tags'],
+			});
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		} finally {
+			onClose();
+		}
+	});
 
 	const formId = useId();
 	const nameField = useId();
@@ -131,7 +130,7 @@ const TagEdit = ({ tagData, currentDepartments, onClose }: TagEditProps) => {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary>
+					<Button form={formId} disabled={!isDirty} type='submit' primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

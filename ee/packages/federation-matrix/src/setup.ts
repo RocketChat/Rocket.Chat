@@ -42,7 +42,6 @@ export function configureFederationMatrixSettings(settings: {
 	allowedNonPrivateRooms: boolean;
 	processEDUTyping: boolean;
 	processEDUPresence: boolean;
-	processEDUReceipt: boolean;
 }) {
 	const {
 		instanceId,
@@ -54,7 +53,6 @@ export function configureFederationMatrixSettings(settings: {
 		allowedNonPrivateRooms,
 		processEDUTyping,
 		processEDUPresence,
-		processEDUReceipt,
 	} = settings;
 
 	if (!validateDomain(serverName)) {
@@ -96,7 +94,6 @@ export function configureFederationMatrixSettings(settings: {
 		edu: {
 			processTyping: processEDUTyping,
 			processPresence: processEDUPresence,
-			processReceipt: processEDUReceipt,
 		},
 	});
 }

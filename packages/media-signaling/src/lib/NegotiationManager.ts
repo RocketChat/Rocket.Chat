@@ -1,6 +1,6 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { IClientMediaCall, IWebRTCProcessor, NegotiationManagerEvents, NegotiationManagerConfig } from '../definition';
+import type { INegotiationCompatibleMediaCall, IWebRTCProcessor, NegotiationManagerEvents, NegotiationManagerConfig } from '../definition';
 import { Negotiation } from './services/webrtc/Negotiation';
 
 export class NegotiationManager {
@@ -37,7 +37,7 @@ export class NegotiationManager {
 	protected highestFinishedNegotiationId: string | null;
 
 	constructor(
-		protected readonly call: IClientMediaCall,
+		protected readonly call: INegotiationCompatibleMediaCall,
 		protected readonly config: NegotiationManagerConfig,
 	) {
 		this.negotiations = new Map();
@@ -247,8 +247,8 @@ export class NegotiationManager {
 		}
 
 		// Wait for the input track before negotiating, to avoid potentially having to renegotiate immediately
-		if (!this.webrtcProcessor.streams.hasAllRequiredTracks()) {
-			this.config.logger?.debug('Delaying WebRTC negotiations due to missing required track.');
+		if (!this.call.hasInputTrack()) {
+			this.config.logger?.debug('Delaying WebRTC negotiations due to missing input track.');
 			return false;
 		}
 

@@ -1,11 +1,9 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { useMediaCallContext } from '@rocket.chat/ui-voip';
 import { act, renderHook } from '@testing-library/react';
 
 import { useUserMediaCallAction } from './useUserMediaCallAction';
 import { createFakeRoom, createFakeSubscription, createFakeUser } from '../../../../../../tests/mocks/data';
-
-const usePeekMediaSessionStateMock = jest.fn().mockReturnValue('available');
-const toggleWidgetMock = jest.fn();
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	...jest.requireActual('@rocket.chat/ui-contexts'),
@@ -15,9 +13,13 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 
 jest.mock('@rocket.chat/ui-voip', () => ({
 	...jest.requireActual('@rocket.chat/ui-voip'),
-	useWidgetExternalControls: jest.fn().mockReturnValue({ toggleWidget: (...args: any[]) => toggleWidgetMock(...args) }),
-	usePeekMediaSessionState: () => usePeekMediaSessionStateMock(),
+	useMediaCallContext: jest.fn().mockImplementation(() => ({
+		state: 'closed',
+		onToggleWidget: jest.fn(),
+	})),
 }));
+
+const useMediaCallContextMocked = jest.mocked(useMediaCallContext);
 
 describe('useUserMediaCallAction', () => {
 	const fakeUser = createFakeUser({ _id: 'own-uid' });
@@ -25,10 +27,6 @@ describe('useUserMediaCallAction', () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
-	});
-
-	beforeEach(() => {
-		usePeekMediaSessionStateMock.mockReturnValue('available');
 	});
 
 	it('should return undefined if room is federated', () => {
@@ -43,7 +41,13 @@ describe('useUserMediaCallAction', () => {
 	});
 
 	it('should return undefined if state is unauthorized', () => {
-		usePeekMediaSessionStateMock.mockReturnValueOnce('unavailable');
+		useMediaCallContextMocked.mockReturnValueOnce({
+			state: 'unauthorized',
+			onToggleWidget: undefined,
+			onEndCall: undefined,
+			peerInfo: undefined,
+			setOpenRoomId: undefined,
+		});
 
 		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid), { wrapper: mockAppRoot().build() });
 		expect(result.current).toBeUndefined();
@@ -105,13 +109,20 @@ describe('useUserMediaCallAction', () => {
 	});
 
 	it('should call onClick handler correctly', () => {
-		usePeekMediaSessionStateMock.mockReturnValueOnce('available');
+		const mockOnToggleWidget = jest.fn();
+		useMediaCallContextMocked.mockReturnValueOnce({
+			state: 'closed',
+			onToggleWidget: mockOnToggleWidget,
+			peerInfo: undefined,
+			onEndCall: () => undefined,
+			setOpenRoomId: () => undefined,
+		});
 
 		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid));
 
 		act(() => result.current?.onClick());
 
-		expect(toggleWidgetMock).toHaveBeenCalledWith({
+		expect(mockOnToggleWidget).toHaveBeenCalledWith({
 			userId: fakeUser._id,
 			displayName: fakeUser.name,
 			avatarUrl: 'avatar-url',
@@ -119,7 +130,13 @@ describe('useUserMediaCallAction', () => {
 	});
 
 	it('should be disabled if state is not closed, new, or unlicensed', () => {
-		usePeekMediaSessionStateMock.mockReturnValueOnce('calling');
+		useMediaCallContextMocked.mockReturnValueOnce({
+			state: 'calling',
+			onToggleWidget: jest.fn(),
+			peerInfo: undefined,
+			onEndCall: () => undefined,
+			setOpenRoomId: () => undefined,
+		});
 
 		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid));
 

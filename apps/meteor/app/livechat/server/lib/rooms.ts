@@ -21,7 +21,6 @@ import {
 	Users,
 	ReadReceipts,
 } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { normalizeTransferredByData } from './Helper';
 import { QueueManager } from './QueueManager';

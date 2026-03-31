@@ -2,8 +2,8 @@ import type {
 	IOutboundEmailMessageProvider,
 	IOutboundMessageProviders,
 	IOutboundPhoneMessageProvider,
-} from '../../../src/definition/outboundCommunication';
-import { OutboundMessageBridge } from '../../../src/server/bridges';
+} from '@rocket.chat/apps-engine/definition/outboundCommunication';
+import { OutboundMessageBridge } from '@rocket.chat/apps-engine/server/bridges';
 
 export class TestOutboundCommunicationBridge extends OutboundMessageBridge {
 	protected async registerPhoneProvider(provider: IOutboundPhoneMessageProvider, appId: string): Promise<void> {

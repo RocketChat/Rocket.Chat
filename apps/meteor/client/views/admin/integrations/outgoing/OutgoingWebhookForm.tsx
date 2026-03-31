@@ -21,7 +21,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useId, useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
@@ -177,12 +177,21 @@ const OutgoingWebhookForm = () => {
 									/>
 								</FieldRow>
 								<FieldHint id={`${channelField}-hint-1`}>{t('Channel_to_listen_on')}</FieldHint>
-								<FieldHint id={`${channelField}-hint-2`}>
-									<Trans i18nKey='Start_with_s_for_user_or_s_for_channel_Eg_s_or_s' components={{ code: <code className='inline' /> }} />
-								</FieldHint>
-								<FieldHint id={`${channelField}-hint-3`}>
-									<Trans i18nKey='Integrations_for_all_channels' />
-								</FieldHint>
+								<FieldHint
+									id={`${channelField}-hint-2`}
+									dangerouslySetInnerHTML={{
+										__html: DOMPurify.sanitize(
+											t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
+												postProcess: 'sprintf',
+												sprintf: ['@', '#', '@john', '#general'],
+											}),
+										),
+									}}
+								/>
+								<FieldHint
+									id={`${channelField}-hint-3`}
+									dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Integrations_for_all_channels')) }}
+								/>
 							</Field>
 						)}
 						{showTriggerWords && (
@@ -220,9 +229,17 @@ const OutgoingWebhookForm = () => {
 									/>
 								</FieldRow>
 								<FieldHint id={`${targetRoomField}-hint-1`}>{t('TargetRoom_Description')}</FieldHint>
-								<FieldHint id={`${targetRoomField}-hint-2`}>
-									<Trans i18nKey='Start_with_s_for_user_or_s_for_channel_Eg_s_or_s' components={{ code: <code className='inline' /> }} />
-								</FieldHint>
+								<FieldHint
+									id={`${targetRoomField}-hint-2`}
+									dangerouslySetInnerHTML={{
+										__html: DOMPurify.sanitize(
+											t('Start_with_s_for_user_or_s_for_channel_Eg_s_or_s', {
+												postProcess: 'sprintf',
+												sprintf: ['@', '#', '@john', '#general'],
+											}),
+										),
+									}}
+								/>
 							</Field>
 						)}
 						<Field>
@@ -348,9 +365,10 @@ const OutgoingWebhookForm = () => {
 								/>
 							</FieldRow>
 							<FieldHint id={`${emojiField}-hint-1`}>{t('You_can_use_an_emoji_as_avatar')}</FieldHint>
-							<FieldHint id={`${emojiField}-hint-2`}>
-								<Trans i18nKey='Example_s' values={{ value: ':ghost:' }} components={{ code: <code className='inline' /> }} />
-							</FieldHint>
+							<FieldHint
+								id={`${emojiField}-hint-2`}
+								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Example_s', { postProcess: 'sprintf', sprintf: [':ghost:'] })) }}
+							/>
 						</Field>
 						<Field>
 							<FieldLabel htmlFor={tokenField} required>
@@ -477,9 +495,10 @@ const OutgoingWebhookForm = () => {
 									)}
 								/>
 							</FieldRow>
-							<FieldHint id={`${retryDelayField}-hint`}>
-								<Trans i18nKey='Integration_Retry_Delay_Description' components={{ code: <code className='inline' /> }} />
-							</FieldHint>
+							<FieldHint
+								id={`${retryDelayField}-hint`}
+								dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Integration_Retry_Delay_Description')) }}
+							/>
 						</Field>
 						{event === 'sendMessage' && (
 							<FieldGroup>

@@ -114,7 +114,7 @@ const VideoConfListItem = ({
 													data-tooltip={user.username}
 													key={user.username}
 													username={user.username}
-													etag={user.avatarETag ?? undefined}
+													etag={user.avatarETag}
 													size='x28'
 												/>
 											),

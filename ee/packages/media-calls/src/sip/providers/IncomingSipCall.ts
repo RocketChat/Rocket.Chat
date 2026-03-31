@@ -11,7 +11,6 @@ import type { SipMessage, SrfRequest, SrfResponse } from 'drachtio-srf';
 import type Srf from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
-import { SIP_CALL_FEATURES } from '../../constants';
 import { logger } from '../../logger';
 import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
@@ -104,7 +103,6 @@ export class IncomingSipCall extends BaseSipCall {
 			callee,
 			callerAgent,
 			calleeAgent,
-			features: SIP_CALL_FEATURES,
 		});
 
 		const negotiationId = await mediaCallDirector.startNewNegotiation(call, 'caller', webrtcOffer);
@@ -303,7 +301,7 @@ export class IncomingSipCall extends BaseSipCall {
 	}
 
 	private async getPendingInboundNegotiation(): Promise<IncomingSipCallNegotiation | null> {
-		for (const localNegotiation of this.inboundRenegotiations.values()) {
+		for await (const localNegotiation of this.inboundRenegotiations.values()) {
 			if (localNegotiation.answer) {
 				continue;
 			}

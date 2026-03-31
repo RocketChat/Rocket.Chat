@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { MenuItem, MenuItemContent, MenuSection, Menu, Skeleton } from '@rocket.chat/fuselage';
+import { MenuItem, MenuItemContent, MenuSection, MenuV2, Skeleton } from '@rocket.chat/fuselage';
 import { useHandleMenuAction } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +31,7 @@ const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
 	}
 
 	return (
-		<Menu title={t('More_options')} onAction={onAction} disabledKeys={disabledKeys} detached>
+		<MenuV2 title={t('More_options')} onAction={onAction} disabledKeys={disabledKeys} detached>
 			{sections.map(({ items }, idx) => (
 				<MenuSection key={idx} items={items}>
 					{items.map((option) => (
@@ -41,7 +41,7 @@ const AppMenu = ({ app, isAppDetailsPage }: AppMenuProps) => {
 					))}
 				</MenuSection>
 			))}
-		</Menu>
+		</MenuV2>
 	);
 };
 

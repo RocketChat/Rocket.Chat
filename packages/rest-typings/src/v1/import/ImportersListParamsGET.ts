@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 export type ImportersListParamsGET = Record<string, unknown>;
 
@@ -9,4 +9,4 @@ const ImportersListParamsGETSchema = {
 	required: [],
 };
 
-export const isImportersListParamsGET = ajvQuery.compile<ImportersListParamsGET>(ImportersListParamsGETSchema);
+export const isImportersListParamsGET = ajv.compile<ImportersListParamsGET>(ImportersListParamsGETSchema);

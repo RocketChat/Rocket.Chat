@@ -91,7 +91,6 @@ export const processSlashCommand = async (chat: ChatAPI, message: IMessage): Pro
 			chat.ActionManager.notifyBusy();
 		}
 
-		chat.composer?.clear();
 		const result = await sdk.call('slashCommand', { cmd: commandName, params, msg: message, triggerId });
 
 		handleResult?.(undefined, result, data);

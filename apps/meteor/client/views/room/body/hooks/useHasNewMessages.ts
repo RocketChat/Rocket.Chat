@@ -56,10 +56,6 @@ export const useHasNewMessages = (
 					return;
 				}
 
-				if (msg.u._id === uid) {
-					return;
-				}
-
 				if (!isAtBottom()) {
 					setHasNewMessages(true);
 				}

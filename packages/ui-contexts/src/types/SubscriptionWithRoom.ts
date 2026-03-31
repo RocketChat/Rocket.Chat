@@ -15,7 +15,6 @@ export type SubscriptionWithRoom = ISubscription &
 		| 'muted'
 		| 'federated'
 		| 'lm'
-		| 'abacAttributes'
 	> &
 	Pick<
 		IOmnichannelRoom,

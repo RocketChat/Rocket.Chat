@@ -19,8 +19,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useId, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { goToRoomById } from '../../lib/utils/goToRoomById';
 import { useEncryptedRoomDescription } from '../../navbar/NavBarPagesGroup/actions/useEncryptedRoomDescription';
-import { useGoToRoom } from '../../views/room/hooks/useGoToRoom';
 import RoomAutoComplete from '../RoomAutoComplete';
 import UserAutoCompleteMultiple from '../UserAutoCompleteMultiple';
 import DefaultParentRoomField from './DefaultParentRoomField';
@@ -60,6 +60,7 @@ const CreateDiscussion = ({
 		watch,
 		setValue,
 	} = useForm({
+		mode: 'onBlur',
 		defaultValues: {
 			name: nameSuggestion || '',
 			parentRoom: '',
@@ -82,12 +83,10 @@ const CreateDiscussion = ({
 
 	const createDiscussion = useEndpoint('POST', '/v1/rooms.createDiscussion');
 
-	const goToRoom = useGoToRoom();
-
 	const createDiscussionMutation = useMutation({
 		mutationFn: createDiscussion,
 		onSuccess: ({ discussion }) => {
-			goToRoom(discussion._id);
+			goToRoomById(discussion._id);
 			onClose();
 		},
 	});

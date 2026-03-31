@@ -125,7 +125,7 @@ export const updateIncomingIntegration = async (
 		}
 	}
 
-	for (let channel of channels) {
+	for await (let channel of channels) {
 		const channelType = channel[0];
 		channel = channel.slice(1);
 		let record;
@@ -206,6 +206,7 @@ export const updateIncomingIntegration = async (
 };
 
 Meteor.methods<ServerMethods>({
+	// eslint-disable-next-line complexity
 	async updateIncomingIntegration(integrationId, integration) {
 		if (!this.userId) {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user', {

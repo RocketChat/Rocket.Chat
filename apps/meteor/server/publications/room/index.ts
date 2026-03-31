@@ -57,8 +57,8 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const user = await Meteor.userAsync();
-		const isAnonymous = !user?._id;
+		const userId = Meteor.userId();
+		const isAnonymous = !userId;
 
 		if (isAnonymous) {
 			const allowAnon = settings.get('Accounts_AllowAnonymousRead');
@@ -80,17 +80,21 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (
-			user &&
-			!(await canAccessRoomAsync(room, user, {
-				includeInvitations: true,
-			}))
+			userId &&
+			!(await canAccessRoomAsync(
+				room,
+				{ _id: userId },
+				{
+					includeInvitations: true,
+				},
+			))
 		) {
 			throw new Meteor.Error('error-no-permission', 'No permission', {
 				method: 'getRoomByTypeAndName',
 			});
 		}
 
-		if (settings.get('Store_Last_Message') && user && !(await hasPermissionAsync(user._id, 'preview-c-room'))) {
+		if (settings.get('Store_Last_Message') && userId && !(await hasPermissionAsync(userId, 'preview-c-room'))) {
 			delete room.lastMessage;
 		}
 

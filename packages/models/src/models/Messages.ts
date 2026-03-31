@@ -889,12 +889,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdAfterTimestamp(
-		roomId: string,
-		timestamp: Date,
-		showThreadMessages = true,
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage> {
+	findVisibleByRoomIdAfterTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -903,16 +898,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ts: {
 				$gt: timestamp,
 			},
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
 		};
 
 		return this.find(query, options);
@@ -928,12 +913,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.find(query, options);
 	}
 
-	findVisibleByRoomIdBeforeTimestamp(
-		roomId: string,
-		timestamp: Date,
-		showThreadMessages = true,
-		options?: FindOptions<IMessage>,
-	): FindCursor<IMessage> {
+	findVisibleByRoomIdBeforeTimestamp(roomId: string, timestamp: Date, options?: FindOptions<IMessage>): FindCursor<IMessage> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -942,16 +922,6 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			ts: {
 				$lt: timestamp,
 			},
-			...(!showThreadMessages && {
-				$or: [
-					{
-						tmid: { $exists: false },
-					},
-					{
-						tshow: true,
-					},
-				],
-			}),
 		};
 
 		return this.find(query, options);

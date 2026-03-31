@@ -1,5 +1,3 @@
-import { Meteor } from 'meteor/meteor';
-
 import type { IdMap } from './IdMap';
 import { clone, hasOwn, equals } from './common';
 import type { Observer, OrderedObserver, UnorderedObserver } from './observers';

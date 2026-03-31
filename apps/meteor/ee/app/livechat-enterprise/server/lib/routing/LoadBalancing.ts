@@ -31,15 +31,14 @@ class LoadBalancing {
 	}
 
 	async getNextAgent(department?: string, ignoreAgentId?: string) {
-		const enabledWhenIdle = settings.get<boolean>('Livechat_enabled_when_agent_idle');
 		const extraQuery = await getChatLimitsQuery(department);
-		const unavailableUsers = await Users.getUnavailableAgents(department, extraQuery, enabledWhenIdle);
-		logger.debug({ msg: 'Ignoring unavailable agents from assignment', unavailableUsers, department, enabledWhenIdle });
+		const unavailableUsers = await Users.getUnavailableAgents(department, extraQuery);
+		logger.debug({ msg: 'Ignoring unavailable agents from assignment', unavailableUsers, department });
 
 		const nextAgent = await Users.getNextLeastBusyAgent(
 			department,
 			ignoreAgentId,
-			enabledWhenIdle,
+			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
 			unavailableUsers.map((u) => u.username),
 		);
 		if (!nextAgent) {

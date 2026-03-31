@@ -41,13 +41,7 @@ export const userAvatarByUsername = async function (request: IncomingMessage, re
 		return;
 	}
 
-	const file = await Avatars.findOneByName(requestUsername);
-	if (file) {
-		void serveAvatarFile(file, req, res, next);
-		return;
-	}
-
-	// if still not found and starts with @, return SVG with username without @
+	// if request starts with @ always return the svg letters
 	if (requestUsername[0] === '@') {
 		serveSvgAvatarInRequestedFormat({
 			nameOrUsername: requestUsername.slice(1),
@@ -55,6 +49,12 @@ export const userAvatarByUsername = async function (request: IncomingMessage, re
 			res,
 			useAllInitials: settings.get('UI_Use_Name_Avatar'),
 		});
+		return;
+	}
+
+	const file = await Avatars.findOneByName(requestUsername);
+	if (file) {
+		void serveAvatarFile(file, req, res, next);
 		return;
 	}
 

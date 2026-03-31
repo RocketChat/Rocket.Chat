@@ -11,6 +11,8 @@ import { Users } from '@rocket.chat/models';
 export async function createOrUpdateFederatedUser(options: { username: string; name?: string; origin: string }): Promise<IUser> {
 	const { username, name = username, origin } = options;
 
+	console.log('createOrUpdateFederatedUser ->', options);
+
 	// TODO: Have a specific method to handle this upsert
 	const user = await Users.findOneAndUpdate(
 		{
@@ -23,7 +25,7 @@ export async function createOrUpdateFederatedUser(options: { username: string; n
 				type: 'user' as const,
 				status: UserStatus.OFFLINE,
 				active: true,
-				roles: ['federated-external'],
+				roles: ['user'],
 				requirePasswordChange: false,
 				federated: true,
 				federation: {

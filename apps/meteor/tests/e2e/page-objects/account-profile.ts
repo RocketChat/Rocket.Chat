@@ -1,14 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { Account } from './account';
-import { DeleteAccountModal } from './fragments';
 
 export class AccountProfile extends Account {
-	readonly deleteAccountModal: DeleteAccountModal;
-
 	constructor(page: Page) {
 		super(page);
-		this.deleteAccountModal = new DeleteAccountModal(page);
 	}
 
 	get inputName(): Locator {
@@ -112,11 +108,31 @@ export class AccountProfile extends Account {
 		return this.page.getByRole('button', { name: 'Save changes', exact: true });
 	}
 
-	get profileTitle(): Locator {
-		return this.page.getByRole('heading', { name: 'Profile' });
-	}
-
 	get btnDeleteMyAccount(): Locator {
 		return this.page.getByRole('button', { name: 'Delete my account' });
+	}
+
+	get deleteAccountDialog(): Locator {
+		return this.page.getByRole('dialog', { name: 'Delete account?' });
+	}
+
+	get deleteAccountDialogMessageWithPassword(): Locator {
+		return this.deleteAccountDialog.getByText('Enter your password to delete your account. This cannot be undone.');
+	}
+
+	get inputDeleteAccountPassword(): Locator {
+		return this.deleteAccountDialog.getByRole('textbox', { name: 'Enter your password to delete your account. This cannot be undone.' });
+	}
+
+	get btnDeleteAccountConfirm(): Locator {
+		return this.deleteAccountDialog.getByRole('button', { name: 'Delete Account' });
+	}
+
+	get btnDeleteAccountCancel(): Locator {
+		return this.deleteAccountDialog.getByRole('button', { name: 'Cancel' });
+	}
+
+	get profileTitle(): Locator {
+		return this.page.getByRole('heading', { name: 'Profile' });
 	}
 }

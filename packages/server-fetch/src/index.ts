@@ -65,6 +65,7 @@ async function getFetchAgentWithValidation<U extends string>(
 	let resolvedIp: string | undefined;
 
 	if (!ignoreSsrfValidation) {
+		// eslint-disable-next-line no-await-in-loop
 		const ssrfResult = await checkForSsrfWithIp(url, allowList);
 		if (!ssrfResult.allowed) {
 			logger.error({ msg: 'SSRF validation failed for URL', url });
@@ -118,6 +119,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 
 	try {
 		for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
+			// eslint-disable-next-line no-await-in-loop
 			const { agent, pinnedUrl, originalHostname, resolvedIp } = await getFetchAgentWithValidation(
 				currentUrl,
 				allowSelfSignedCerts,
@@ -165,6 +167,7 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 				}
 			}
 
+			// eslint-disable-next-line no-await-in-loop
 			const response = await fetch(url.toString(), {
 				// @ts-expect-error - This complained when types were moved to file :/
 				signal: controller.signal,
@@ -193,5 +196,5 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 }
 
 export { Response };
-export type { ExtendedFetchOptions };
+export { ExtendedFetchOptions };
 export { parseSsrfAllowlist };

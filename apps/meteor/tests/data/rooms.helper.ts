@@ -294,8 +294,10 @@ export const findRoomMember = async (
 		await new Promise((resolve) => setTimeout(resolve, initialDelay));
 	}
 
+	// eslint-disable-next-line no-await-in-loop
 	for (let attempt = 1; attempt <= maxRetries; attempt++) {
 		try {
+			// eslint-disable-next-line no-await-in-loop
 			const membersResponse = await getRoomMembers(roomId, config);
 			const member = membersResponse.members.find((member: IUser) => member.username === username);
 
@@ -304,12 +306,14 @@ export const findRoomMember = async (
 			}
 
 			if (attempt < maxRetries) {
+				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		} catch (error) {
 			console.warn(`Attempt ${attempt} to find room member failed:`, error);
 
 			if (attempt < maxRetries) {
+				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		}

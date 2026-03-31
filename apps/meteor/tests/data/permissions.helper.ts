@@ -13,14 +13,7 @@ export const updatePermission = (permission: string, roles: string[]): Promise<v
 			.send({ permissions: [{ _id: permission, roles }] })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
-			.end((err?: Error) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-
-				resolve();
-			});
+			.end((err?: Error) => setTimeout(() => (!err && resolve()) || reject(err), 100));
 	});
 
 export const updateEEPermission = (permission: string, roles: string[]): Promise<void | Error> =>

@@ -1,6 +1,5 @@
-import { Emitter } from '@rocket.chat/emitter';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { MediaCallProvider as MediaCallProviderBase, MediaCallInstanceContext } from '@rocket.chat/ui-voip';
+import { MediaCallProvider as MediaCallProviderBase, MediaCallContext } from '@rocket.chat/ui-voip';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
@@ -14,20 +13,17 @@ const MediaCallProvider = ({ children }: { children: ReactNode }) => {
 
 	const unauthorizedContextValue = useMemo(
 		() => ({
-			inRoomView: false,
-			setInRoomView: () => undefined,
-			instance: undefined,
-			signalEmitter: new Emitter<any>(),
-			audioElement: undefined,
-			openRoomId: undefined,
-			setOpenRoomId: () => undefined,
-			getAutocompleteOptions: () => Promise.resolve([]),
+			state: 'unauthorized' as const,
+			onToggleWidget: undefined,
+			onEndCall: undefined,
+			peerInfo: undefined,
+			setOpenRoomId: undefined,
 		}),
 		[],
 	);
 
 	if (!hasModule || (!canMakeInternalCall && !canMakeExternalCall)) {
-		return <MediaCallInstanceContext.Provider value={unauthorizedContextValue}>{children}</MediaCallInstanceContext.Provider>;
+		return <MediaCallContext.Provider value={unauthorizedContextValue}>{children}</MediaCallContext.Provider>;
 	}
 
 	return <MediaCallProviderBase>{children}</MediaCallProviderBase>;

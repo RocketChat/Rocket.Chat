@@ -20,7 +20,6 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCallChannels, MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
-import { DEFAULT_CALL_FEATURES } from '../../constants';
 import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import { logger } from '../../logger';
 import { mediaCallDirector } from '../../server/CallDirector';
@@ -138,7 +137,7 @@ export class UserActorSignalProcessor {
 			case 'ack':
 				return this.clientIsReachable();
 			case 'accept':
-				return this.clientHasAccepted(signal.supportedFeatures || DEFAULT_CALL_FEATURES);
+				return this.clientHasAccepted(signal.supportedFeatures || ['audio']);
 			case 'unavailable':
 				return this.clientIsUnavailable();
 			case 'reject':

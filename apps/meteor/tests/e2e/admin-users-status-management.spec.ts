@@ -2,7 +2,7 @@ import type { BrowserContext, Page } from '@playwright/test';
 
 import { DEFAULT_USER_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { AdminUsers, Authenticated, Login } from './page-objects';
+import { AdminUsers, Registration, Authenticated } from './page-objects';
 import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
 import { createTestUser } from './utils/user-helpers';
@@ -21,13 +21,13 @@ test.describe.serial('Admin > Users', () => {
 	test.describe('Login', () => {
 		let context: BrowserContext;
 		let page: Page;
-		let poLogin: Login;
+		let poRegistration: Registration;
 		let poAuth: Authenticated;
 
 		test.beforeAll(async ({ browser }) => {
 			context = await browser.newContext();
 			page = await context.newPage();
-			poLogin = new Login(page);
+			poRegistration = new Registration(page);
 			poAuth = new Authenticated(page);
 		});
 
@@ -38,7 +38,9 @@ test.describe.serial('Admin > Users', () => {
 		test('Login as a newly created user and verify its status is active', async () => {
 			await page.goto('/login');
 			await test.step('should log in as the newly created user', async () => {
-				await poLogin.login(user.data.username, DEFAULT_USER_CREDENTIALS.password);
+				await poRegistration.username.fill(user.data.username);
+				await poRegistration.inputPassword.fill(DEFAULT_USER_CREDENTIALS.password);
+				await poRegistration.btnLogin.click();
 			});
 
 			await test.step('Assert user is logged in', async () => {

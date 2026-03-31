@@ -15,7 +15,6 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 	const canCreateGroup = usePermission('create-p');
 
 	const teamId = room.teamId || '';
-	const teamMain = room.teamMain || '';
 	const { data: teamInfo } = useTeamInfoQuery(teamId);
 
 	const canCreateTeamChannel = usePermission('create-team-channel', teamInfo?.roomId);
@@ -23,8 +22,8 @@ export const useEditRoomPermissions = (room: IRoom | IRoomWithRetentionPolicy) =
 
 	const canChangeType = getCanChangeType(
 		room,
-		teamId && !teamMain ? canCreateTeamChannel : canCreateChannel,
-		teamId && !teamMain ? canCreateTeamGroup : canCreateGroup,
+		teamId ? canCreateTeamChannel : canCreateChannel,
+		teamId ? canCreateTeamGroup : canCreateGroup,
 		isAdmin,
 	);
 	const canSetReadOnly = usePermission('set-readonly', room._id);

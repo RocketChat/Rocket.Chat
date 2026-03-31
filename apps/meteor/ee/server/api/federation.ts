@@ -1,7 +1,7 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
 import { getFederationRoutes } from '@rocket.chat/federation-matrix';
 import { Logger } from '@rocket.chat/logger';
-import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
@@ -14,7 +14,7 @@ API.v1.get(
 	'/federation/matrixIds.verify',
 	{
 		authRequired: true,
-		query: ajvQuery.compile<{
+		query: ajv.compile<{
 			matrixIds: string[];
 		}>({
 			type: 'object',

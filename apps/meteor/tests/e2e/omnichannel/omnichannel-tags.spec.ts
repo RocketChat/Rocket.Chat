@@ -4,7 +4,6 @@ import type { Page } from '@playwright/test';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { OmnichannelTags } from '../page-objects/omnichannel';
-import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { createDepartment } from '../utils/omnichannel/departments';
 import { createTag } from '../utils/omnichannel/tags';
@@ -30,15 +29,10 @@ test.describe('OC - Manage Tags', () => {
 		agent = await createAgent(api, 'user2');
 	});
 
-	test.beforeAll(async ({ api }) => {
-		await setSettingValueById(api, 'Omnichannel_enable_department_removal', true);
-	});
-
-	test.afterAll(async ({ api }) => {
+	test.afterAll(async () => {
 		await department.delete();
 		await department2.delete();
 		await agent.delete();
-		await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
 	});
 
 	test.beforeEach(async ({ page }: { page: Page }) => {
@@ -54,7 +48,7 @@ test.describe('OC - Manage Tags', () => {
 		await test.step('expect correct form default state', async () => {
 			await poOmnichannelTags.createNew();
 			await expect(poOmnichannelTags.editTag.root).toBeVisible();
-			await expect(poOmnichannelTags.editTag.btnSave).toBeEnabled();
+			await expect(poOmnichannelTags.editTag.btnSave).toBeDisabled();
 			await expect(poOmnichannelTags.editTag.btnCancel).toBeEnabled();
 			await poOmnichannelTags.editTag.btnCancel.click();
 			await expect(poOmnichannelTags.editTag.root).not.toBeVisible();

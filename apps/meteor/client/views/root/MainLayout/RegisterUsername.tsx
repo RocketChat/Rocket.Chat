@@ -53,7 +53,9 @@ const RegisterUsername = () => {
 		setError,
 		control,
 		formState: { errors },
-	} = useForm<RegisterUsernamePayload>();
+	} = useForm<RegisterUsernamePayload>({
+		mode: 'onBlur',
+	});
 
 	useEffect(() => {
 		if (data?.result && getValues('username') === '') {
@@ -71,8 +73,6 @@ const RegisterUsername = () => {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Username_has_been_updated') });
 			queryClient.invalidateQueries({ queryKey: ['users.info'] });
-			// Reload to redo any onLogin request that may have failed without an username
-			location.reload();
 		},
 		onError: (error: any, { username }) => {
 			if ([error.error, error.errorType].includes('error-blocked-username')) {

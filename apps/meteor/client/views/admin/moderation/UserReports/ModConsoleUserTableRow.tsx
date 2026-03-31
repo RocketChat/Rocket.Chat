@@ -2,7 +2,6 @@ import type { IUser, UserReport, Serialized } from '@rocket.chat/core-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 
 import ModConsoleUserActions from './ModConsoleUserActions';
-import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import UserColumn from '../helpers/UserColumn';
 
@@ -14,8 +13,7 @@ export type ModConsoleUserRowProps = {
 
 const ModConsoleUserTableRow = ({ report, onClick, isDesktopOrLarger }: ModConsoleUserRowProps): JSX.Element => {
 	const { reportedUser, count, ts } = report;
-	const { _id, name, createdAt, emails } = reportedUser;
-	const username = reportedUser.username ? normalizeUsername(reportedUser.username) : undefined;
+	const { _id, username, name, createdAt, emails } = reportedUser;
 
 	const formatDateAndTime = useFormatDateAndTime();
 

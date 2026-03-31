@@ -22,9 +22,6 @@ describe('[Cloud]', function () {
 			return request
 				.post(api('cloud.manualRegister'))
 				.expect('Content-Type', 'application/json')
-				.send({
-					cloudBlob: 'test-blob',
-				})
 				.expect(401)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('status', 'error');
@@ -41,7 +38,7 @@ describe('[Cloud]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', "must have required property 'cloudBlob'");
+					expect(res.body).to.have.property('error', "must have required property 'cloudBlob' [invalid-params]");
 				});
 		});
 
@@ -75,10 +72,6 @@ describe('[Cloud]', function () {
 			return request
 				.post(api('cloud.createRegistrationIntent'))
 				.expect('Content-Type', 'application/json')
-				.send({
-					email: 'test-mail@example.com',
-					resend: true,
-				})
 				.expect(401)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('status', 'error');
@@ -98,7 +91,7 @@ describe('[Cloud]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', "must have required property 'resend'");
+					expect(res.body).to.have.property('error', "must have required property 'resend' [invalid-params]");
 				});
 		});
 
@@ -114,7 +107,7 @@ describe('[Cloud]', function () {
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error', "must have required property 'email'");
+					expect(res.body).to.have.property('error', "must have required property 'email' [invalid-params]");
 				});
 		});
 
@@ -148,9 +141,6 @@ describe('[Cloud]', function () {
 		it('should fail if user is not authenticated', async () => {
 			return request
 				.get(api('cloud.confirmationPoll'))
-				.query({
-					deviceCode: 'test-code',
-				})
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
@@ -167,8 +157,8 @@ describe('[Cloud]', function () {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
-					expect(res.body).to.have.property('error', "must have required property 'deviceCode'");
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error', "must have required property 'deviceCode' [invalid-params]");
 				});
 		});
 

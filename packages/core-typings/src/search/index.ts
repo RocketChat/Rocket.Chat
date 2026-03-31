@@ -1,2 +1,2 @@
-export type * from './IMessageSearchSuggestion';
-export type * from './IMessageSearchProvider';
+export * from './IMessageSearchSuggestion';
+export * from './IMessageSearchProvider';

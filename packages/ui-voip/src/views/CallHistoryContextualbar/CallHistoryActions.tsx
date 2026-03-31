@@ -3,8 +3,8 @@ import { ContextualbarActions, ContextualbarClose, GenericMenu } from '@rocket.c
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import type { PeekMediaSessionStateReturn } from '../../context/usePeekMediaSessionState';
-import { usePeekMediaSessionState } from '../../context/usePeekMediaSessionState';
+import type { MediaCallState } from '../../context';
+import { isCallingBlocked, useMediaCallExternalContext } from '../../context/MediaCallContext';
 
 type HistoryActions = 'voiceCall' | 'videoCall' | 'jumpToMessage' | 'directMessage' | 'userInfo';
 
@@ -33,11 +33,11 @@ const i18nDictionary: Record<HistoryActions, string> = {
 	userInfo: 'User_info',
 } as const;
 
-const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: PeekMediaSessionStateReturn) => {
+const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: MediaCallState) => {
 	return (Object.entries(actions) as [HistoryActions, () => void][])
 		.filter(([_, callback]) => callback)
 		.map(([action, callback]) => {
-			const disabled = action === 'voiceCall' && state !== 'available';
+			const disabled = action === 'voiceCall' && isCallingBlocked(state);
 			return {
 				id: action,
 				icon: iconDictionary[action],
@@ -52,7 +52,7 @@ const getItems = (actions: HistoryActionCallbacks, t: TFunction, state: PeekMedi
 const CallHistoryActions = ({ onClose, actions }: CallHistoryActionsProps) => {
 	const { t } = useTranslation();
 
-	const state = usePeekMediaSessionState();
+	const { state } = useMediaCallExternalContext();
 	const items = getItems(actions, t, state);
 	return (
 		<ContextualbarActions>

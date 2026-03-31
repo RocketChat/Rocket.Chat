@@ -7,7 +7,6 @@ import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from 
 import type { UIEvent } from 'react';
 import { useCallback, memo, useMemo } from 'react';
 
-import { normalizeUsername } from '../../lib/utils/normalizeUsername';
 import { detectEmoji } from '../lib/utils/detectEmoji';
 import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
@@ -64,9 +63,11 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				return undefined;
 			}
 
+			const normalizedMention = mention.startsWith('@') ? mention.substring(1) : mention;
 			const filterUser = ({ username, type }: UserMention) => {
 				if (!username || type === 'team') return false;
-				return normalizeUsername(username) === normalizeUsername(mention);
+				const normalizedUsername = username.startsWith('@') ? username.substring(1) : username;
+				return normalizedUsername === normalizedMention;
 			};
 			const filterTeam = ({ name, type }: UserMention) => type === 'team' && name === mention;
 

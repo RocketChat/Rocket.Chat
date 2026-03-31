@@ -131,7 +131,6 @@ export class ModerationReportsRaw extends BaseRaw<IModerationReport> implements 
 					isUserDeleted: { $cond: ['$user', false, true] },
 					count: 1,
 					rooms: 1,
-					roomIds: { $map: { input: '$rooms', as: 'r', in: '$$r._id' } },
 				},
 			},
 		];

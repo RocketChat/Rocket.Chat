@@ -1,4 +1,5 @@
-import type { Server } from 'net';
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { Server } from 'net';
 
 declare global {
 	interface Navigator {

@@ -24,7 +24,6 @@ import {
 	useMessageListFormatDateAndTime,
 	useMessageListFormatTime,
 } from './list/MessageListContext';
-import { normalizeUsername } from '../../../lib/utils/normalizeUsername';
 
 type MessageHeaderProps = {
 	message: IMessage;
@@ -43,7 +42,6 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 	const usernameAndRealNameAreSame = !user.name || user.username === user.name;
 	const showUsername = useMessageListShowUsername() && showRealName && !usernameAndRealNameAreSame;
 	const displayName = useUserDisplayName(user);
-	const normalizedUsername = normalizeUsername(user.username);
 
 	const showRoles = useMessageListShowRoles();
 	const roles = useMessageRoles(message.u._id, message.rid, showRoles);
@@ -59,15 +57,18 @@ const MessageHeader = ({ message }: MessageHeaderProps): ReactElement => {
 				{...triggerProps}
 			>
 				<MessageName
-					title={!showUsername && !usernameAndRealNameAreSame ? `@${normalizedUsername}` : undefined}
-					data-username={normalizedUsername}
+					{...(!showUsername && { 'data-qa-type': 'username' })}
+					title={!showUsername && !usernameAndRealNameAreSame ? `@${user.username}` : undefined}
+					data-username={user.username}
 				>
 					{message.alias || displayName}
 				</MessageName>
 				{showUsername && (
 					<>
 						{' '}
-						<MessageUsername data-username={normalizedUsername}>@{normalizedUsername}</MessageUsername>
+						<MessageUsername data-username={user.username} data-qa-type='username'>
+							@{user.username}
+						</MessageUsername>
 					</>
 				)}
 			</MessageNameContainer>

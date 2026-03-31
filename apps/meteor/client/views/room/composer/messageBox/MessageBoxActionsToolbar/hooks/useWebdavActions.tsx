@@ -8,7 +8,7 @@ import { useChat } from '../../../../contexts/ChatContext';
 import AddWebdavAccountModal from '../../../../webdav/AddWebdavAccountModal';
 import WebdavFilePickerModal from '../../../../webdav/WebdavFilePickerModal';
 
-export const useWebdavActions = (disabled: boolean): GenericMenuItemProps[] => {
+export const useWebdavActions = (): GenericMenuItemProps[] => {
 	const enabled = useSetting('Webdav_Integration_Enabled', false);
 
 	const { isSuccess, data } = useWebDAVAccountIntegrationsQuery({ enabled });
@@ -19,7 +19,10 @@ export const useWebdavActions = (disabled: boolean): GenericMenuItemProps[] => {
 	const setModal = useSetModal();
 	const handleAddWebDav = () => setModal(<AddWebdavAccountModal onClose={() => setModal(null)} onConfirm={() => setModal(null)} />);
 
-	const handleUpload = async (file: File) => chat?.flows.uploadFiles({ files: [file] });
+	const handleUpload = async (file: File, description?: string) =>
+		chat?.uploads.send(file, {
+			description,
+		});
 
 	const handleOpenWebdav = (account: IWebdavAccountIntegration) =>
 		setModal(<WebdavFilePickerModal account={account} onUpload={handleUpload} onClose={() => setModal(null)} />);
@@ -37,7 +40,6 @@ export const useWebdavActions = (disabled: boolean): GenericMenuItemProps[] => {
 					id: account._id,
 					content: account.name,
 					icon: 'cloud-plus' as const,
-					disabled,
 					onClick: () => handleOpenWebdav(account),
 				}))
 			: []),

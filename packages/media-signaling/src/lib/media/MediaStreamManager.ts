@@ -10,11 +10,7 @@ export class MediaStreamManager implements IMediaStreamManager {
 
 	public readonly mainLocal: MediaStreamWrapper;
 
-	public readonly screenShareLocal: MediaStreamWrapper;
-
 	public readonly mainRemote: MediaStreamWrapper;
-
-	public readonly screenShareRemote: MediaStreamWrapper;
 
 	constructor(
 		protected readonly peer: RTCPeerConnection,
@@ -22,14 +18,11 @@ export class MediaStreamManager implements IMediaStreamManager {
 	) {
 		this.emitter = new Emitter();
 		this.mainLocal = this.createStream(false, 'main');
-		this.screenShareLocal = this.createStream(false, 'screen-share');
 		this.mainRemote = this.createStream(true, 'main');
-		this.screenShareRemote = this.createStream(true, 'screen-share');
 	}
 
 	public stopRemoteStreams(): void {
 		this.mainRemote.stop();
-		this.screenShareRemote.stop();
 	}
 
 	public setRemoteIds(streams: MediaStreamIdentification[]): void {
@@ -66,11 +59,11 @@ export class MediaStreamManager implements IMediaStreamManager {
 	}
 
 	public getLocalStreams(): MediaStreamWrapper[] {
-		return [this.mainLocal, this.screenShareLocal];
+		return [this.mainLocal];
 	}
 
 	public getRemoteStreams(): MediaStreamWrapper[] {
-		return [this.mainRemote, this.screenShareRemote];
+		return [this.mainRemote];
 	}
 
 	public getLocalStreamByTag(tag: string): MediaStreamWrapper | null {
@@ -79,10 +72,6 @@ export class MediaStreamManager implements IMediaStreamManager {
 
 	public getRemoteStreamByTag(tag: string): MediaStreamWrapper | null {
 		return this.getRemoteStreams().find((stream) => stream.tag === tag) || null;
-	}
-
-	public hasAllRequiredTracks(): boolean {
-		return this.mainLocal.hasAudio();
 	}
 
 	private findStreamWrappersForRemoteTrack(track: MediaStreamTrack, streams: readonly MediaStream[]): MediaStreamWrapper[] {

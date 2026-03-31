@@ -4,10 +4,12 @@ import { createContext } from 'react';
 export type CustomSoundContextValue = {
 	play: (
 		soundId: string,
-		options?: {
-			volume?: number | undefined;
-			loop?: boolean | undefined;
-		},
+		options?:
+			| {
+					volume?: number | undefined;
+					loop?: boolean | undefined;
+			  }
+			| undefined,
 	) => void;
 	pause: (sound: ICustomSound['_id']) => void;
 	stop: (sound: ICustomSound['_id']) => void;
@@ -38,7 +40,7 @@ export type CustomSoundContextValue = {
 };
 
 export const CustomSoundContext = createContext<CustomSoundContextValue>({
-	play: () => undefined,
+	play: () => new Promise(() => undefined),
 	pause: () => undefined,
 	stop: () => undefined,
 	callSounds: {

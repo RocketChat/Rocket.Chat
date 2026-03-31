@@ -9,30 +9,16 @@ type Slot = {
 
 type WidgetInfoProps = {
 	slots?: Slot[];
-	variant?: 'default' | 'card-content';
 };
 
-const WidgetInfo = ({ slots, variant = 'default' }: WidgetInfoProps) => {
+const WidgetInfo = ({ slots }: WidgetInfoProps) => {
 	if (!slots?.length) {
 		return null;
 	}
 	return (
-		<Box
-			is='span'
-			display='flex'
-			flexDirection='row'
-			justifyContent={variant === 'card-content' ? 'center' : 'space-between'}
-			mi={12}
-			mbs={4}
-			mbe={variant === 'card-content' ? 0 : 4}
-		>
+		<Box is='span' display='flex' flexDirection='row' justifyContent='space-between' mi={12} mb={4}>
 			{slots.map((slot) => (
-				<Box
-					is='span'
-					color={slot.type === 'warning' ? 'status-font-on-warning' : undefined}
-					fontScale={variant === 'card-content' ? 'c1' : 'p2'}
-					key={slot.text}
-				>
+				<Box color={slot.type === 'warning' ? 'status-font-on-warning' : undefined} fontScale='p2' key={slot.text}>
 					{slot.icon && <Icon name={slot.icon} mbe={4} />} {slot.text}
 				</Box>
 			))}

@@ -1,6 +1,5 @@
 declare module 'meteor/oauth' {
 	import type { IRocketChatRecord } from '@rocket.chat/core-typings';
-	import type { Meteor } from 'meteor/meteor';
 	import type { Mongo } from 'meteor/mongo';
 
 	// These functions may only be used on the client's Mongo.Collection

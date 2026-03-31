@@ -1,5 +1,4 @@
 {
-	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
 		"target": "ESNext",
 		"lib": ["DOM", "DOM.Iterable", "ESNext"],
@@ -21,5 +20,6 @@
 		"noFallthroughCasesInSwitch": true
 	},
 	"include": ["src", "src/module.d.ts", "vite.config.ts"],
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules"],
+	"extends": "@rocket.chat/tsconfig/client.json"
 }

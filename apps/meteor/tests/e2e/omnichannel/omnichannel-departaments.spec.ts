@@ -49,9 +49,20 @@ test.describe('OC - Manage Departments', () => {
 
 			await test.step('expect name and email to be required', async () => {
 				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredName)).not.toBeVisible();
-				await poOmnichannelDepartments.btnSave.click();
+				await poOmnichannelDepartments.inputName.fill('any_text');
+				await poOmnichannelDepartments.inputName.fill('');
 				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredName)).toBeVisible();
+				await poOmnichannelDepartments.inputName.fill('any_text');
+				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredName)).not.toBeVisible();
+
+				await poOmnichannelDepartments.inputEmail.fill('any_text');
+				await expect(poOmnichannelDepartments.errorMessage(ERROR.invalidEmail)).toBeVisible();
+
+				await poOmnichannelDepartments.inputEmail.fill('');
 				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).toBeVisible();
+
+				await poOmnichannelDepartments.inputEmail.fill(faker.internet.email());
+				await expect(poOmnichannelDepartments.errorMessage(ERROR.requiredEmail)).not.toBeVisible();
 			});
 
 			await test.step('expect to fill required fields', async () => {
@@ -191,6 +202,10 @@ test.describe('OC - Manage Departments', () => {
 			const tagName = faker.string.sample(5);
 			await poOmnichannelDepartments.getDepartmentMenuByName(department.name).click();
 			await poOmnichannelDepartments.menuEditOption.click();
+
+			await test.step('should form save button be disabled', async () => {
+				await expect(poOmnichannelDepartments.btnSave).toBeDisabled();
+			});
 
 			await test.step('should be able to add a tag properly', async () => {
 				await poOmnichannelDepartments.inputConversationClosingTags.fill(tagName);

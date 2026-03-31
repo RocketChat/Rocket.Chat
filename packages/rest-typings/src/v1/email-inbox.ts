@@ -1,6 +1,6 @@
 import type { IEmailInbox } from '@rocket.chat/core-typings';
 
-import { ajv, ajvQuery } from './Ajv';
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -30,7 +30,7 @@ const EmailInboxListPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isEmailInboxList = ajvQuery.compile<EmailInboxListProps>(EmailInboxListPropsSchema);
+export const isEmailInboxList = ajv.compile<EmailInboxListProps>(EmailInboxListPropsSchema);
 
 type EmailInboxProps = {
 	_id?: string;
@@ -53,7 +53,6 @@ type EmailInboxProps = {
 		secure: boolean;
 		server: string;
 		username: string;
-		maxRetries?: number;
 	};
 };
 
@@ -124,16 +123,13 @@ const EmailInboxPropsSchema = {
 				username: {
 					type: 'string',
 				},
-				maxRetries: {
-					type: 'number',
-				},
 			},
 			required: ['password', 'port', 'secure', 'server', 'username'],
 			additionalProperties: false,
 		},
 	},
 
-	required: ['name', 'email', 'active', 'smtp', 'imap'],
+	required: ['name', 'email', 'active', 'description', 'senderInfo', 'department', 'smtp', 'imap'],
 	additionalProperties: false,
 };
 
@@ -154,7 +150,7 @@ const EmailInboxSearchPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isEmailInboxSearch = ajvQuery.compile<EmailInboxSearchProps>(EmailInboxSearchPropsSchema);
+export const isEmailInboxSearch = ajv.compile<EmailInboxSearchProps>(EmailInboxSearchPropsSchema);
 
 export type EmailInboxEndpoints = {
 	'/v1/email-inbox.list': {

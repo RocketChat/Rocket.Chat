@@ -4,7 +4,6 @@ import url from 'url';
 import { validate } from '@rocket.chat/cas-validate';
 import type { ICredentialToken, RequiredField } from '@rocket.chat/core-typings';
 import { CredentialTokens } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { logger } from './logger';

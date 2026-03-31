@@ -1,39 +1,5 @@
 # @rocket.chat/apps-engine
 
-## 1.61.0-rc.0
-
-### Minor Changes
-
-- ([#39268](https://github.com/RocketChat/Rocket.Chat/pull/39268)) refactor(ui-kit): Remove UiKit deprecations
-
-### Patch Changes
-
-- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
-
-## 1.60.0
-
-### Minor Changes
-
-- ([#38099](https://github.com/RocketChat/Rocket.Chat/pull/38099)) Adds file metadata to the Apps.Engine for messages with multiple files
-
-### Patch Changes
-
-- ([#38374](https://github.com/RocketChat/Rocket.Chat/pull/38374)) Fixes an issue where apps logs were being lost in nested requests
-
-- ([#38513](https://github.com/RocketChat/Rocket.Chat/pull/38513)) Fixes an issue where app-defined API endpoints with dynamic paths could fail to receive requests when using path parameters like `:param`.
-
-## 1.60.0-rc.0
-
-### Minor Changes
-
-- ([#38099](https://github.com/RocketChat/Rocket.Chat/pull/38099)) Adds file metadata to the Apps.Engine for messages with multiple files
-
-### Patch Changes
-
-- ([#38374](https://github.com/RocketChat/Rocket.Chat/pull/38374)) Fixes an issue where apps logs were being lost in nested requests
-
-- ([#38513](https://github.com/RocketChat/Rocket.Chat/pull/38513)) Fixes an issue where app-defined API endpoints with dynamic paths could fail to receive requests when using path parameters like `:param`.
-
 ## 1.59.1
 
 ### Patch Changes

@@ -15,7 +15,7 @@ import PlainText from './PlainText';
 import SectionBlock from './SectionBlock';
 import StaticSelectElement from './StaticSelectElement';
 
-export class MessageParser extends UiKitParserMessage<ComponentChild> {
+class MessageParser extends UiKitParserMessage<ComponentChild> {
 	divider = (element: any, context: any, index: any) => {
 		if (context !== BlockContext.BLOCK) {
 			return null;
@@ -96,7 +96,7 @@ export class MessageParser extends UiKitParserMessage<ComponentChild> {
 		return <OverflowElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	datepicker = (element: any, context: any, index: any) => {
+	datePicker = (element: any, context: any, index: any) => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -104,7 +104,7 @@ export class MessageParser extends UiKitParserMessage<ComponentChild> {
 		return <DatePickerElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	static_select = (element: any, context: any, index: any) => {
+	staticSelect = (element: any, context: any, index: any) => {
 		if (context === BlockContext.BLOCK) {
 			return null;
 		}
@@ -112,7 +112,7 @@ export class MessageParser extends UiKitParserMessage<ComponentChild> {
 		return <StaticSelectElement key={index} {...element} parser={this} context={context} />;
 	};
 
-	multi_static_select = () => null;
+	multiStaticSelect = () => null;
 }
 
 export const parser = new MessageParser();

@@ -46,14 +46,6 @@ export const MessageTypesValues: Array<{ key: MessageTypesValuesType; i18nLabel:
 		i18nLabel: 'Message_HideType_mute_unmute',
 	},
 	{
-		key: 'user-banned',
-		i18nLabel: 'Message_HideType_user_banned',
-	},
-	{
-		key: 'user-unbanned',
-		i18nLabel: 'Message_HideType_user_unbanned',
-	},
-	{
 		key: 'r', // room name changed
 		i18nLabel: 'Message_HideType_r',
 	},

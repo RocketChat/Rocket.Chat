@@ -5,7 +5,6 @@ import {
 	isUseInviteTokenProps,
 	isValidateInviteTokenProps,
 	isSendInvitationEmailParams,
-	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { findOrCreateInvite } from '../../../invites/server/functions/findOrCreateInvite';
@@ -171,89 +170,43 @@ const invites = API.v1
 
 			return API.v1.success((await findOrCreateInvite(this.userId, { rid, days, maxUses })) as IInvite);
 		},
-	)
-	.delete(
-		'removeInvite/:_id',
-		{
-			authRequired: true,
-			response: {
-				200: ajv.compile({
-					type: 'boolean',
-					enum: [true],
-				}),
-				400: validateBadRequestErrorResponse,
-				401: ajv.compile({
-					type: 'object',
-					properties: { error: { type: 'string' }, success: { type: 'boolean', enum: [false] } },
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
-			},
-		},
-		async function action() {
+	);
+
+API.v1.addRoute(
+	'removeInvite/:_id',
+	{ authRequired: true },
+	{
+		async delete() {
 			const { _id } = this.urlParams;
 
 			return API.v1.success(await removeInvite(this.userId, { _id }));
 		},
-	)
-	.post(
-		'useInviteToken',
-		{
-			authRequired: true,
-			body: isUseInviteTokenProps,
-			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						room: {
-							type: 'object',
-							properties: {
-								rid: { type: 'string' },
-								prid: { type: 'string', nullable: true },
-								fname: { type: 'string', nullable: true },
-								name: { type: 'string', nullable: true },
-								t: { type: 'string' },
-							},
-							required: ['rid', 't'],
-							additionalProperties: false,
-						},
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['room', 'success'],
-					additionalProperties: false,
-				}),
-				400: validateBadRequestErrorResponse,
-				401: ajv.compile({
-					type: 'object',
-					properties: { error: { type: 'string' }, success: { type: 'boolean', enum: [false] } },
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
-			},
-		},
-		async function action() {
+	},
+);
+
+API.v1.addRoute(
+	'useInviteToken',
+	{
+		authRequired: true,
+		validateParams: isUseInviteTokenProps,
+	},
+	{
+		async post() {
 			const { token } = this.bodyParams;
+			// eslint-disable-next-line react-hooks/rules-of-hooks
 			return API.v1.success(await useInviteToken(this.userId, token));
 		},
-	)
-	.post(
-		'validateInviteToken',
-		{
-			authRequired: false,
-			body: isValidateInviteTokenProps,
-			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						valid: { type: 'boolean' },
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['valid', 'success'],
-					additionalProperties: false,
-				}),
-			},
-		},
-		async function action() {
+	},
+);
+
+API.v1.addRoute(
+	'validateInviteToken',
+	{
+		authRequired: false,
+		validateParams: isValidateInviteTokenProps,
+	},
+	{
+		async post() {
 			const { token } = this.bodyParams;
 			try {
 				return API.v1.success({ valid: Boolean(await validateInviteToken(token)) });
@@ -261,42 +214,26 @@ const invites = API.v1
 				return API.v1.success({ valid: false });
 			}
 		},
-	)
-	.post(
-		'sendInvitationEmail',
-		{
-			authRequired: true,
-			body: isSendInvitationEmailParams,
-			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: { success: { type: 'boolean' } },
-					required: ['success'],
-					additionalProperties: false,
-				}),
-				400: ajv.compile({
-					type: 'object',
-					properties: { error: { type: 'string' }, success: { type: 'boolean', enum: [false] } },
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
-				401: ajv.compile({
-					type: 'object',
-					properties: { error: { type: 'string' }, success: { type: 'boolean', enum: [false] } },
-					required: ['success', 'error'],
-					additionalProperties: false,
-				}),
-			},
-		},
-		async function action() {
+	},
+);
+
+API.v1.addRoute(
+	'sendInvitationEmail',
+	{
+		authRequired: true,
+		validateParams: isSendInvitationEmailParams,
+	},
+	{
+		async post() {
 			const { emails } = this.bodyParams;
 			try {
 				return API.v1.success({ success: Boolean(await sendInvitationEmail(this.userId, emails)) });
-			} catch (e: unknown) {
-				return API.v1.failure({ error: e instanceof Error ? e.message : String(e) });
+			} catch (e: any) {
+				return API.v1.failure({ error: e.message });
 			}
 		},
-	);
+	},
+);
 
 type InvitesEndpoints = ExtractRoutesFromAPI<typeof invites>;
 

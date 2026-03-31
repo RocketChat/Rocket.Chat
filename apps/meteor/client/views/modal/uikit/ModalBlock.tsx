@@ -12,7 +12,7 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
-import type * as UiKit from '@rocket.chat/ui-kit';
+import * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, FormEventHandler, ReactElement } from 'react';
 import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
 import { FocusScope } from 'react-aria';
@@ -113,7 +113,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					if (!ref.current) {
 						return;
 					}
-					const elements = Array.from(ref.current.querySelectorAll<HTMLElement>(focusableElementsString));
+					const elements = Array.from(ref.current.querySelectorAll(focusableElementsString)) as HTMLElement[];
 					const [first] = elements;
 					const last = elements.pop();
 
@@ -161,7 +161,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 			if (!container.contains(e.target as HTMLElement)) {
 				return;
 			}
-			return handleKeyDown(e);
+			return handleKeyDown(e as KeyboardEvent);
 		};
 
 		document.addEventListener('keydown', ignoreIfNotContains);
@@ -178,7 +178,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 				<Modal aria-labelledby={`${id}-title`} open id={id} ref={ref}>
 					<ModalHeader>
 						{view.showIcon ? <ModalThumb url={getURL(`/api/apps/${view.appId}/icon`)} /> : null}
-						<ModalTitle id={`${id}-title`}>{modalParser.renderTextObject(view.title, 0)}</ModalTitle>
+						<ModalTitle id={`${id}-title`}>{modalParser.text(view.title, UiKit.BlockContext.NONE, 0)}</ModalTitle>
 						<ModalClose tabIndex={-1} onClick={onClose} />
 					</ModalHeader>
 					<ModalContent>
@@ -190,12 +190,12 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 						<ModalFooterControllers>
 							{view.close && (
 								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
-									{modalParser.renderTextObject(view.close.text, 0)}
+									{modalParser.text(view.close.text, UiKit.BlockContext.NONE, 0)}
 								</Button>
 							)}
 							{view.submit && (
 								<Button {...getButtonStyle(view.submit)} onClick={onSubmit}>
-									{modalParser.renderTextObject(view.submit.text, 1)}
+									{modalParser.text(view.submit.text, UiKit.BlockContext.NONE, 1)}
 								</Button>
 							)}
 						</ModalFooterControllers>

@@ -86,7 +86,7 @@ export class AppSchedulerManager {
 	}
 
 	public async cleanUp(appId: string): Promise<void> {
-		await (this.bridge as IInternalSchedulerBridge & SchedulerBridge).cancelAllJobs(appId);
+		(this.bridge as IInternalSchedulerBridge & SchedulerBridge).cancelAllJobs(appId);
 	}
 
 	private isNotToRunJob(status: AppStatus, previousStatus: AppStatus): boolean {

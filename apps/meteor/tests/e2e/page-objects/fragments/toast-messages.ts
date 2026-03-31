@@ -18,7 +18,7 @@ export class ToastMessages {
 	waitForDisplay({ type, message }: { type: 'success' | 'error'; message?: string } = { type: 'success' }) {
 		if (message) {
 			return expect(
-				this.toastByType[type].last().locator(`[role=${type === 'error' ? '"alert"' : '"status"'}]`, {
+				this.toastByType[type].last().locator('[role="alert"]', {
 					hasText: message,
 				}),
 			).toBeVisible();

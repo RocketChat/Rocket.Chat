@@ -28,7 +28,6 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			suspended: boolean;
 			filter: unknown;
 			clear: () => void;
-			update: () => void;
 	  }
 	| {
 			option: undefined;
@@ -40,7 +39,6 @@ type ComposerBoxPopupResult<T extends { _id: string; sort?: number }> =
 			suspended: undefined;
 			filter: unknown;
 			clear: () => void;
-			update: () => void;
 	  };
 
 const keys = {
@@ -271,7 +269,6 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 			suspended: undefined,
 			filter: undefined,
 			clear,
-			update: setOptionByInput,
 		};
 	}
 
@@ -285,6 +282,5 @@ export const useComposerBoxPopup = <T extends { _id: string; sort?: number }>(
 		suspended,
 		filter,
 		clear,
-		update: setOptionByInput,
 	};
 };

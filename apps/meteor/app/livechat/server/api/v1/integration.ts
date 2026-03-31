@@ -26,18 +26,9 @@ API.v1.addRoute(
 			} = this.bodyParams;
 
 			const settingsIds = [
-				typeof LivechatWebhookUrl !== 'undefined' && {
-					_id: 'Livechat_webhookUrl',
-					value: trim(String(LivechatWebhookUrl ?? '')),
-				},
-				typeof LivechatSecretToken !== 'undefined' && {
-					_id: 'Livechat_secret_token',
-					value: trim(String(LivechatSecretToken ?? '')),
-				},
-				typeof LivechatHttpTimeout !== 'undefined' && {
-					_id: 'Livechat_http_timeout',
-					value: Number(LivechatHttpTimeout ?? 0),
-				},
+				typeof LivechatWebhookUrl !== 'undefined' && { _id: 'Livechat_webhookUrl', value: trim(LivechatWebhookUrl) },
+				typeof LivechatSecretToken !== 'undefined' && { _id: 'Livechat_secret_token', value: trim(LivechatSecretToken) },
+				typeof LivechatHttpTimeout !== 'undefined' && { _id: 'Livechat_http_timeout', value: LivechatHttpTimeout },
 				typeof LivechatWebhookOnStart !== 'undefined' && { _id: 'Livechat_webhook_on_start', value: !!LivechatWebhookOnStart },
 				typeof LivechatWebhookOnClose !== 'undefined' && { _id: 'Livechat_webhook_on_close', value: !!LivechatWebhookOnClose },
 				typeof LivechatWebhookOnChatTaken !== 'undefined' && { _id: 'Livechat_webhook_on_chat_taken', value: !!LivechatWebhookOnChatTaken },
@@ -62,7 +53,7 @@ API.v1.addRoute(
 
 			const auditSettingOperation = updateAuditedByUser({
 				_id: this.userId,
-				username: this.user.username,
+				username: this.user.username!,
 				ip: this.requestIp,
 				useragent: this.request.headers.get('user-agent') || '',
 			});

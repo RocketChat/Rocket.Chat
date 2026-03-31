@@ -11,8 +11,8 @@ export interface ICalendarEvent extends IRocketChatRecord {
 	description: string;
 	notificationSent: boolean;
 
-	externalId?: string | null;
-	meetingUrl?: string | null;
+	externalId?: string;
+	meetingUrl?: string;
 
 	reminderMinutesBeforeStart?: number;
 	reminderTime?: Date;

@@ -1,5 +1,4 @@
 import debounce from 'lodash.debounce';
-import { Accounts } from 'meteor/accounts-base';
 import { RoutePolicy } from 'meteor/routepolicy';
 import { WebApp } from 'meteor/webapp';
 

@@ -166,7 +166,7 @@ export async function processWebhookMessage(
 
 	const message = buildMessage(messageObj, defaultValues);
 
-	for (const channel of channels) {
+	for await (const channel of channels) {
 		const channelType = channel[0];
 		const channelValue = channel.slice(1);
 		let room: IRoom | null = null;
@@ -189,7 +189,7 @@ export async function processWebhookMessage(
 		}
 	}
 
-	for (const roomData of rooms) {
+	for await (const roomData of rooms) {
 		if ('error' in roomData && roomData.error) {
 			if (messageObj.separateResponse) {
 				sentData.push({ channel: roomData.channel, error: roomData.error });

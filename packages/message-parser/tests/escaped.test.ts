@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { paragraph, plain, bold } from './helpers';
+import { paragraph, plain, bold } from '../src/utils';
 
 test.each([
 	['¯\\\\_(ツ)_/¯', [paragraph([plain('¯\\_(ツ)_/¯')])]],

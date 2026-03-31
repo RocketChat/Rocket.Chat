@@ -1,7 +1,7 @@
 import type { EventID } from '@rocket.chat/federation-sdk';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
-import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
+import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
 
 import { canAccessResourceMiddleware } from '../middlewares/canAccessResource';
 import { isAuthenticatedMiddleware } from '../middlewares/isAuthenticated';
@@ -287,7 +287,7 @@ const BackfillQuerySchema = {
 	additionalProperties: false,
 };
 
-const isBackfillQueryProps = ajvQuery.compile<{
+const isBackfillQueryProps = ajv.compile<{
 	limit: number;
 	v: string | string[];
 }>(BackfillQuerySchema);

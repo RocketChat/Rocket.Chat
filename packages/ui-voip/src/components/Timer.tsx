@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { useEffect, useState } from 'react';
 
 type VoipTimerProps = { startAt?: Date };
@@ -41,10 +40,10 @@ const VoipTimer = ({ startAt }: VoipTimerProps) => {
 	const secondsStr = seconds.toString().padStart(2, '0');
 
 	return (
-		<Box is='time' dateTime={`PT${hours}H${minutes}M${seconds}S`} fontScale='p1b'>
+		<time dateTime={`PT${hours}H${minutes}M${seconds}S`}>
 			{hoursStr !== '00' ? `${hours}:` : ''}
 			{minutesStr}:{secondsStr}
-		</Box>
+		</time>
 	);
 };
 

@@ -1,4 +1,4 @@
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 export type AutotranslateGetSupportedLanguagesParamsGET = {
 	targetLanguage: string;
@@ -15,6 +15,6 @@ const AutotranslateGetSupportedLanguagesParamsGETSchema = {
 	additionalProperties: false,
 };
 
-export const isAutotranslateGetSupportedLanguagesParamsGET = ajvQuery.compile<AutotranslateGetSupportedLanguagesParamsGET>(
+export const isAutotranslateGetSupportedLanguagesParamsGET = ajv.compile<AutotranslateGetSupportedLanguagesParamsGET>(
 	AutotranslateGetSupportedLanguagesParamsGETSchema,
 );

@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { color, paragraph, plain } from './helpers';
+import { color, paragraph, plain } from '../src/utils';
 
 test.each([
 	['color:#ccc', [paragraph([color(0xcc, 0xcc, 0xcc)])], [paragraph([plain('color:#ccc')])]],

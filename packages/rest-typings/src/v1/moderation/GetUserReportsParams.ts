@@ -1,5 +1,5 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 type GetUserReportsParams = {
 	userId: string;
@@ -37,4 +37,4 @@ const ajvParams = {
 	additionalProperties: false,
 };
 
-export const isGetUserReportsParams = ajvQuery.compile<GetUserReportsParamsGET>(ajvParams);
+export const isGetUserReportsParams = ajv.compile<GetUserReportsParamsGET>(ajvParams);

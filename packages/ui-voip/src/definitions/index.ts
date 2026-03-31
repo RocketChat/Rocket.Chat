@@ -1,1 +1,1 @@
-export type * from './IceServer';
+export * from './IceServer';

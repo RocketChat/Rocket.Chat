@@ -1,2 +1,2 @@
-export type * from './ILDAPEEService';
-export type * from './IMessageReadsService';
+export * from './ILDAPEEService';
+export * from './IMessageReadsService';

@@ -3,19 +3,17 @@ import { useMemo } from 'react';
 
 import { useSetting } from './useSetting';
 
-export const useAccountsCustomFields = () => {
+export const useAccountsCustomFields = (): CustomFieldMetadata[] => {
 	const accountsCustomFieldsJSON = useSetting('Accounts_CustomFields');
 
-	return useMemo((): CustomFieldMetadata[] => {
+	return useMemo(() => {
 		if (typeof accountsCustomFieldsJSON !== 'string' || accountsCustomFieldsJSON.trim() === '') {
 			return [];
 		}
 		try {
-			return Object.entries<Omit<CustomFieldMetadata, 'name'>>(JSON.parse(accountsCustomFieldsJSON)).map(
-				([fieldName, fieldData]): CustomFieldMetadata => {
-					return { ...fieldData, name: fieldName };
-				},
-			);
+			return Object.entries(JSON.parse(accountsCustomFieldsJSON)).map(([fieldName, fieldData]) => {
+				return { ...(fieldData as any), name: fieldName };
+			});
 		} catch {
 			console.error('Invalid JSON for Accounts_CustomFields');
 		}

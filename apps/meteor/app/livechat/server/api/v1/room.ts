@@ -28,7 +28,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../../server/lib/callbacks';
 import { i18n } from '../../../../../server/lib/i18n';
@@ -68,7 +67,7 @@ API.v1.addRoute(
 				agentId: Match.Maybe(String),
 			});
 
-			check(this.queryParams, extraCheckParams);
+			check(this.queryParams, extraCheckParams as any);
 
 			const { token, rid, agentId, ...extraParams } = this.queryParams;
 
@@ -292,7 +291,7 @@ API.v1.addRoute(
 			};
 
 			const room = await LivechatRooms.findOneById(this.bodyParams.roomId);
-			if (room?.t !== 'l') {
+			if (!room || room.t !== 'l') {
 				throw new Error('error-invalid-room');
 			}
 
@@ -359,7 +358,7 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 		}
 		const room = await LivechatRooms.findOneById(rid);
 
-		if (room?.t !== 'l') {
+		if (!room || room.t !== 'l') {
 			return API.v1.failure('error-invalid-room');
 		}
 
@@ -464,7 +463,7 @@ API.v1.addRoute(
 
 			const firstError = result.find((item) => item.status === 'rejected');
 			if (firstError) {
-				throw new Error(firstError.reason.error);
+				throw new Error((firstError as PromiseRejectedResult).reason.error);
 			}
 
 			await callbacks.run('livechat.saveInfo', await LivechatRooms.findOneById(roomData._id), {

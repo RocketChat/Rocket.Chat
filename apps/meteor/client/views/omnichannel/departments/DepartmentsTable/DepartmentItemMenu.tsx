@@ -19,6 +19,7 @@ type DepartmentItemMenuProps = {
 	archived: boolean;
 };
 
+// TODO: Use MenuV2 instead of Menu
 const DepartmentItemMenu = ({ department, archived }: DepartmentItemMenuProps): ReactElement => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();

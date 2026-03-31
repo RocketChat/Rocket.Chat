@@ -32,14 +32,15 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 				lastModified: Date.now(),
 			});
 
-			chat.composer?.clear();
 			imperativeModal.close();
-			await chat.flows.uploadFiles({ files: [file] });
+			await chat.flows.uploadFiles([file]);
 
 			resolve();
 		};
 
 		const onClose = (): void => {
+			chat.composer?.setText(msg);
+
 			imperativeModal.close();
 			resolve();
 		};

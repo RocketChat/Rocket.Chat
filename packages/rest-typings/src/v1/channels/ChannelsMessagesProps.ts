@@ -1,7 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
-import { ajvQuery } from '../Ajv';
+import { ajv } from '../Ajv';
 
 export type ChannelsMessagesProps = PaginatedRequest<
 	{
@@ -50,4 +50,4 @@ const channelsMessagesPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isChannelsMessagesProps = ajvQuery.compile<ChannelsMessagesProps>(channelsMessagesPropsSchema);
+export const isChannelsMessagesProps = ajv.compile<ChannelsMessagesProps>(channelsMessagesPropsSchema);

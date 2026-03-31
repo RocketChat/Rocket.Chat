@@ -97,7 +97,7 @@ export async function registerContact(
 	const rooms: IOmnichannelRoom[] = await LivechatRooms.findByVisitorId(visitorId, {}, extraQuery).toArray();
 
 	if (rooms?.length) {
-		for (const room of rooms) {
+		for await (const room of rooms) {
 			const { _id: rid } = room;
 
 			const responses = await Promise.all([
