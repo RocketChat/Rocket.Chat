@@ -359,6 +359,31 @@ const groupsOnlineResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const groupsFilesResponse = ajv.compile<{
+	files: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		files: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['files', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'groups.addAll',
 	{ authRequired: true },
@@ -628,46 +653,53 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const groupsFilesEndpoint = API.v1.get(
 	'groups.files',
-	{ authRequired: true, validateParams: isGroupsFilesProps },
 	{
-		async get() {
-			const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
-
-			const findResult = await findPrivateGroupByIdOrName({
-				params: roomId ? { roomId } : { roomName },
-				userId: this.userId,
-				checkedArchived: false,
-			});
-
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const filter = {
-				...query,
-				rid: findResult.rid,
-				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
-				...(typeGroup ? { typeGroup } : {}),
-				...(onlyConfirmed && { expiresAt: { $exists: false } }),
-			};
-
-			const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				files: await addUserToFileObj(files),
-				count: files.length,
-				offset,
-				total,
-			});
+		authRequired: true,
+		query: isGroupsFilesProps,
+		response: {
+			200: groupsFilesResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { typeGroup, name, roomId, roomName, onlyConfirmed } = this.queryParams;
+
+		const findResult = await findPrivateGroupByIdOrName({
+			params: roomId ? { roomId } : { roomName },
+			userId: this.userId,
+			checkedArchived: false,
+		});
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const filter = {
+			...query,
+			rid: findResult.rid,
+			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
+			...(typeGroup ? { typeGroup } : {}),
+			...(onlyConfirmed && { expiresAt: { $exists: false } }),
+		};
+
+		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			files: await addUserToFileObj(files),
+			count: files.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -1577,6 +1609,7 @@ API.v1.addRoute(
 );
 
 type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint>;
+type GroupsFilesEndpoint = ExtractRoutesFromAPI<typeof groupsFilesEndpoint>;
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
 type GroupsMembersEndpoint = ExtractRoutesFromAPI<typeof groupsMembersEndpoint>;
 type GroupsModeratorsEndpoint = ExtractRoutesFromAPI<typeof groupsModeratorsEndpoint>;
@@ -1586,6 +1619,7 @@ type GroupsRolesEndpoint = ExtractRoutesFromAPI<typeof groupsRolesEndpoint>;
 declare module '@rocket.chat/rest-typings' {
 	interface Endpoints
 		extends GroupsCountersEndpoint,
+			GroupsFilesEndpoint,
 			GroupsInfoEndpoint,
 			GroupsMembersEndpoint,
 			GroupsModeratorsEndpoint,
