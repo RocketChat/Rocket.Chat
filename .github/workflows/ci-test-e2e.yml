@@ -59,6 +59,8 @@ on:
         required: false
       REPORTER_JIRA_ROCKETCHAT_API_KEY:
         required: false
+      NPM_TOKEN:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
