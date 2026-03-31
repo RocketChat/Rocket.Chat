@@ -1,7 +1,16 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isGroupsFilesProps,
+	isGroupsInfoProps,
+	isGroupsMessagesProps,
+	isGroupsOnlineProps,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -31,6 +40,7 @@ import { executeGetRoomRoles } from '../../../lib/server/methods/getRoomRoles';
 import { leaveRoomMethod } from '../../../lib/server/methods/leaveRoom';
 import { executeUnarchiveRoom } from '../../../lib/server/methods/unarchiveRoom';
 import { normalizeMessagesForUser } from '../../../utils/server/lib/normalizeMessagesForUser';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { addUserToFileObj } from '../helpers/addUserToFileObj';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
@@ -123,6 +133,22 @@ async function findPrivateGroupByIdOrName({
 		broadcast: Boolean(room.broadcast),
 	};
 }
+
+const groupsInfoResponse = ajv.compile<{ group: IRoom; success: true }>({
+	type: 'object',
+	properties: {
+		group: {
+			type: 'object',
+			additionalProperties: true,
+		},
+		success: {
+			type: 'boolean',
+			enum: [true],
+		},
+	},
+	required: ['group', 'success'],
+	additionalProperties: false,
+});
 
 API.v1.addRoute(
 	'groups.addAll',
@@ -546,27 +572,34 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const groupsInfoEndpoint = API.v1.get(
 	'groups.info',
-	{ authRequired: true },
 	{
-		async get() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
-				userId: this.userId,
-				checkedArchived: false,
-			});
-
-			const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
-
-			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			return API.v1.success({
-				group: await composeRoomWithLastMessage(room, this.userId),
-			});
+		authRequired: true,
+		query: isGroupsInfoProps,
+		response: {
+			200: groupsInfoResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.queryParams,
+			userId: this.userId,
+			checkedArchived: false,
+		});
+
+		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
+
+		if (!room) {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		}
+
+		return API.v1.success({
+			group: await composeRoomWithLastMessage(room, this.userId),
+		});
 	},
 );
 
@@ -1300,3 +1333,9 @@ API.v1.addRoute(
 		},
 	},
 );
+
+type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
+
+declare module '@rocket.chat/rest-typings' {
+	interface Endpoints extends GroupsInfoEndpoint {}
+}
