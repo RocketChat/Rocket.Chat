@@ -384,6 +384,11 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			return Promise.resolve();
 		}
 
+
+		// Temporary workaround for legacy data.
+		// Some old records have 'visitorEmails' or 'phone' set to 'null', which breaks the $addToSet below.
+		// Pending Product decision: either run a proper DB migration to fix all nulls,
+		// or deprecate this feature entirely. Remove this once a decision is made.
 		if (saveEmail.length) {
 			await this.updateOne({ _id, visitorEmails: null as any }, { $set: { visitorEmails: [] } });
 		}
