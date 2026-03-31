@@ -8,6 +8,7 @@ import {
 	isGroupsFilesProps,
 	isGroupsInfoProps,
 	isGroupsMessagesProps,
+	isGroupsRolesProps,
 	isGroupsOnlineProps,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -253,6 +254,52 @@ const isGroupsMembersQuery = ajvQuery.compile<GroupsMembersQuery>({
 			additionalProperties: false,
 		},
 	],
+});
+
+const groupsRolesResponse = ajv.compile<{
+	roles: {
+		_id: string;
+		rid: string;
+		u: {
+			_id: string;
+			username: string;
+		};
+		roles: string[];
+	}[];
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		roles: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					rid: { type: 'string' },
+					u: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							username: { type: 'string' },
+							name: { type: 'string', nullable: true },
+						},
+						required: ['_id', 'username'],
+						additionalProperties: false,
+					},
+					roles: {
+						type: 'array',
+						items: { type: 'string' },
+					},
+				},
+				required: ['_id', 'rid', 'u', 'roles'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['roles', 'success'],
+	additionalProperties: false,
 });
 
 API.v1.addRoute(
@@ -1334,22 +1381,28 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const groupsRolesEndpoint = API.v1.get(
 	'groups.roles',
-	{ authRequired: true },
 	{
-		async get() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
-				userId: this.userId,
-			});
-
-			const roles = await executeGetRoomRoles(findResult.rid, this.user);
-
-			return API.v1.success({
-				roles,
-			});
+		authRequired: true,
+		query: isGroupsRolesProps,
+		response: {
+			200: groupsRolesResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.queryParams,
+			userId: this.userId,
+		});
+
+		const roles = await executeGetRoomRoles(findResult.rid, this.user);
+
+		return API.v1.success({
+			roles,
+		});
 	},
 );
 
@@ -1456,7 +1509,8 @@ API.v1.addRoute(
 type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint>;
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
 type GroupsMembersEndpoint = ExtractRoutesFromAPI<typeof groupsMembersEndpoint>;
+type GroupsRolesEndpoint = ExtractRoutesFromAPI<typeof groupsRolesEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	interface Endpoints extends GroupsCountersEndpoint, GroupsInfoEndpoint, GroupsMembersEndpoint {}
+	interface Endpoints extends GroupsCountersEndpoint, GroupsInfoEndpoint, GroupsMembersEndpoint, GroupsRolesEndpoint {}
 }
