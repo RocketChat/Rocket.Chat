@@ -122,22 +122,22 @@ const PreferencesNotificationsSection = () => {
 					<FieldHint>{t('Only_works_with_chrome_version_greater_50')}</FieldHint>
 				</Field>
 				<Field>
-					<FieldRow>
-						<FieldLabel>{t('Notification_Desktop_show_voice_calls')}</FieldLabel>
-						<Controller
-							name='desktopNotificationVoiceCalls'
-							control={control}
-							render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
-						/>
-					</FieldRow>
-				</Field>
-				<Field>
 					<FieldLabel>{t('Notification_Desktop_Default_For')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='desktopNotifications'
 							control={control}
 							render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={desktopNotificationOptions} />}
+						/>
+					</FieldRow>
+				</Field>
+				<Field>
+					<FieldRow>
+						<FieldLabel>{t('Notification_Desktop_show_voice_calls')}</FieldLabel>
+						<Controller
+							name='desktopNotificationVoiceCalls'
+							control={control}
+							render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
 						/>
 					</FieldRow>
 				</Field>
