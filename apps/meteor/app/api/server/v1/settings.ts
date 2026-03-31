@@ -364,7 +364,7 @@ API.v1.post(
 				throw new Meteor.Error('error-action-endpoint-failed', `Endpoint ${method} ${path} returned ${response.status}`);
 			}
 
-			const data = await response.json();
+			await response.json();
 			return API.v1.success();
 		}
 
