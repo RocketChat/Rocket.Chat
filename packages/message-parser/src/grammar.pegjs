@@ -143,11 +143,13 @@ CodeChunk = text:$(CodeChunkChar)+ { return plain(text); }
  * #### Heading 4
  *
 */
-Heading = count:HeadingStart [ \t]+ text:HeadingChunk { return heading(text, count); }
+Heading = count:HeadingStart [ \t]+ text:HeadingChunk EndOfLine? { return heading(text, count); }
 
 HeadingStart = value:"#" |1..4| { return value.length; }
 
-HeadingChunk = text:$([^\r\n]+) { return plain(text); }
+HeadingChunk = items:HeadingInlineItem+ { return reducePlainTexts(items); }
+
+HeadingInlineItem = InlineItemPattern / !EndOfLine @Any
 
 /**
  *
@@ -279,26 +281,21 @@ InlineItemPattern = Whitespace
   / MaybeReferences
   / AutolinkedPhone
   / AutolinkedEmail
+  / PlainUnderscoreThenDomain
   / AutolinkedURL
   / Spoiler
   / EmphasisWithWhitespace
   / Emphasis
   / UserMention
   / ChannelMention
-  / AutolinkedEmail
-  / AutolinkedPhone
-  / PlainUnderscoreThenDomain
-  / AutolinkedURL
-  / EmphasisWithWhitespace
-  / Emphasis
+  / InlineEmoji
+  / InlineCode
+  / Image
   / PlainRunBeforeEmoticon
   / InlineEmoticon
-  / MaybeReferences
-  / TimestampRules
-  / Image
   / Color
   / KatexInline
-  / Spoiler
+  / Escaped
   / PlainRun
 
 InlineItemFallback = item:Any { return item; }
