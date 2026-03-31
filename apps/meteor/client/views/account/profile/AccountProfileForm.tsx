@@ -76,14 +76,22 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	}, [email, previousEmail, mutateConfirmationEmail]);
 
 	const validateUsername = async (username: string): Promise<string | undefined> => {
-		if (!username) return;
+		if (!username) {
+			return;
+		}
 
-		if (username === previousUsername) return;
+		if (username === previousUsername) {
+			return;
+		}
 
-		if (!namesRegex.test(username)) return t('error-invalid-username');
+		if (!namesRegex.test(username)) {
+			return t('error-invalid-username');
+		}
 
 		const { result: isAvailable } = await checkUsernameAvailability({ username });
-		if (!isAvailable) return t('Username_already_exist');
+		if (!isAvailable) {
+			return t('Username_already_exist');
+		}
 	};
 
 	const updateOwnBasicInfo = useEndpoint('POST', '/v1/users.updateOwnBasicInfo');
@@ -136,7 +144,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						)}
 					/>
 				</Field>
-
 				<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} style={{ gap: '16px' }}>
 					<Field flexShrink={1}>
 						<FieldLabel required={requireName}>{t('Name')}</FieldLabel>
@@ -153,7 +160,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						{errors.name && <FieldError>{errors.name.message}</FieldError>}
 						{!allowRealNameChange && <FieldHint>{t('RealName_Change_Disabled')}</FieldHint>}
 					</Field>
-
 					<Field flexShrink={1}>
 						<FieldLabel required>{t('Username')}</FieldLabel>
 						<FieldRow>
@@ -179,7 +185,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
 					</Field>
 				</Box>
-
 				<Field>
 					<FieldLabel>{t('StatusMessage')}</FieldLabel>
 					<FieldRow>
@@ -215,7 +220,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					{errors.statusText && <FieldError>{errors.statusText.message}</FieldError>}
 					{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
 				</Field>
-
 				<Field>
 					<FieldLabel>{t('Nickname')}</FieldLabel>
 					<FieldRow>
@@ -226,7 +230,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 						/>
 					</FieldRow>
 				</Field>
-
 				<Field>
 					<FieldLabel>{t('Bio')}</FieldLabel>
 					<FieldRow>
@@ -249,7 +252,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					</FieldRow>
 					{errors.bio && <FieldError>{errors.bio.message}</FieldError>}
 				</Field>
-
 				<Field>
 					<FieldLabel required>{t('Email')}</FieldLabel>
 					<FieldRow
@@ -288,7 +290,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 					{errors.email && <FieldError>{errors.email.message}</FieldError>}
 					{!allowEmailChange && <FieldHint>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
-
 				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 			</FieldGroup>
 		</Box>
