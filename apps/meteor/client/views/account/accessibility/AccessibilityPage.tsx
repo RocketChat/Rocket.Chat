@@ -1,5 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
+import type { ThemePreference } from '@rocket.chat/core-typings';
 import {
 	FieldDescription,
 	Accordion,
@@ -17,9 +18,10 @@ import {
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
+import { useThemePreview } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
+import { useId, useMemo, useEffect } from 'react';
 import { VisuallyHidden } from 'react-aria';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -35,6 +37,7 @@ const AccessibilityPage = () => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const preferencesValues = useAccessiblityPreferencesValues();
+	const { setPreviewTheme, clearPreviewTheme, previewTheme } = useThemePreview();
 
 	const createFontStyleElement = useCreateFontStyleElement();
 	const displayRolesEnabled = useSetting('UI_DisplayRoles');
@@ -56,23 +59,44 @@ const AccessibilityPage = () => {
 	const hideRolesId = useId();
 	const linkListId = useId();
 
+	// Compute default values with preview theme synchronized early to avoid race conditions
+	const defaultFormValues = useMemo(
+		() => ({
+			...preferencesValues,
+			// If there's an active preview, initialize the form with it to ensure sync before render
+			...(previewTheme && { themeAppearence: previewTheme as any }),
+		}),
+		[preferencesValues, previewTheme],
+	);
+
 	const {
 		formState: { isDirty, dirtyFields, isSubmitting },
 		handleSubmit,
 		control,
 		reset,
 		watch,
+
+		setValue,
 	} = useForm({
-		defaultValues: preferencesValues,
+		defaultValues: defaultFormValues,
 	});
 
 	const currentData = watch();
+
+	useEffect(() => {
+		if (previewTheme) {
+			setValue('themeAppearence', previewTheme as any, { shouldDirty: true });
+		}
+	}, [previewTheme, setValue]);
 
 	const setUserPreferencesEndpoint = useEndpoint('POST', '/v1/users.setPreferences');
 
 	const setPreferencesAction = useMutation({
 		mutationFn: setUserPreferencesEndpoint,
-		onSuccess: () => dispatchToastMessage({ type: 'success', message: t('Preferences_saved') }),
+		onSuccess: () => {
+			dispatchToastMessage({ type: 'success', message: t('Preferences_saved') });
+			clearPreviewTheme();
+		},
 		onError: (error) => dispatchToastMessage({ type: 'error', message: error }),
 		onSettled: (_data, _error, { data: { fontSize } }) => {
 			reset(currentData);
@@ -83,6 +107,21 @@ const AccessibilityPage = () => {
 	const handleSaveData = (formData: AccessibilityPreferencesData) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		setPreferencesAction.mutateAsync({ data });
+	};
+
+	const handleCancel = () => {
+		clearPreviewTheme();
+		reset(preferencesValues);
+	};
+
+	const handleThemeChange = (newTheme: string) => {
+		//Apply preview theme immediately for live preview
+		// If the selected theme matches the saved theme, clear the preview
+		if (newTheme === preferencesValues.themeAppearence) {
+			clearPreviewTheme();
+		} else {
+			setPreviewTheme(newTheme as ThemePreference);
+		}
 	};
 
 	return (
@@ -120,7 +159,15 @@ const AccessibilityPage = () => {
 												control={control}
 												name='themeAppearence'
 												render={({ field: { onChange, value, ref } }) => (
-													<RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />
+													<RadioButton
+														id={id}
+														ref={ref}
+														onChange={() => {
+															onChange(id);
+															handleThemeChange(id);
+														}}
+														checked={(previewTheme ?? value) === id}
+													/>
 												)}
 											/>
 										</FieldRow>
@@ -145,7 +192,7 @@ const AccessibilityPage = () => {
 											control={control}
 											name='fontSize'
 											render={({ field: { onChange, value } }) => (
-												<Select id={fontSizeId} value={value} onChange={onChange} options={fontSizes(t)} />
+												<Select id={fontSizeId} aria-label={t('Font_size')} value={value} onChange={onChange} options={fontSizes(t)} />
 											)}
 										/>
 									</FieldRow>
@@ -178,7 +225,7 @@ const AccessibilityPage = () => {
 											name='clockMode'
 											control={control}
 											render={({ field: { value, onChange } }) => (
-												<Select id={clockModeId} value={`${value}`} onChange={onChange} options={timeFormatOptions} />
+												<Select id={clockModeId} aria-label={t('Message_TimeFormat')} value={`${value}`} onChange={onChange} options={timeFormatOptions} />
 											)}
 										/>
 									</FieldRow>
@@ -226,10 +273,10 @@ const AccessibilityPage = () => {
 					</Accordion>
 				</Box>
 			</PageScrollableContentWithShadow>
-			<PageFooter isDirty={isDirty}>
+			<PageFooter isDirty={isDirty || !!previewTheme}>
 				<ButtonGroup>
-					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
-					<Button primary disabled={!isDirty} loading={isSubmitting} form={pageFormId} type='submit'>
+					<Button onClick={handleCancel}>{t('Cancel')}</Button>
+					<Button primary disabled={!isDirty && !previewTheme} loading={isSubmitting} form={pageFormId} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
