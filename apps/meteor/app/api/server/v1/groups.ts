@@ -7,6 +7,7 @@ import {
 	isGroupsCountersProps,
 	isGroupsFilesProps,
 	isGroupsInfoProps,
+	isGroupsModeratorsProps,
 	isGroupsMessagesProps,
 	isGroupsRolesProps,
 	isGroupsOnlineProps,
@@ -299,6 +300,35 @@ const groupsRolesResponse = ajv.compile<{
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['roles', 'success'],
+	additionalProperties: false,
+});
+
+const groupsModeratorsResponse = ajv.compile<{
+	moderators: {
+		_id: string;
+		username: string;
+		name?: string | null;
+	}[];
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		moderators: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					username: { type: 'string' },
+					name: { type: 'string', nullable: true },
+				},
+				required: ['_id', 'username'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['moderators', 'success'],
 	additionalProperties: false,
 });
 
@@ -1406,26 +1436,32 @@ const groupsRolesEndpoint = API.v1.get(
 	},
 );
 
-API.v1.addRoute(
+const groupsModeratorsEndpoint = API.v1.get(
 	'groups.moderators',
-	{ authRequired: true },
 	{
-		async get() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
-				userId: this.userId,
-			});
-
-			const moderators = await Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
-				projection: { u: 1, _id: 0 },
-			})
-				.map((sub) => sub.u)
-				.toArray();
-
-			return API.v1.success({
-				moderators,
-			});
+		authRequired: true,
+		query: isGroupsModeratorsProps,
+		response: {
+			200: groupsModeratorsResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.queryParams,
+			userId: this.userId,
+		});
+
+		const moderators = await Subscriptions.findByRoomIdAndRoles(findResult.rid, ['moderator'], {
+			projection: { u: 1, _id: 0 },
+		})
+			.map((sub) => sub.u)
+			.toArray();
+
+		return API.v1.success({
+			moderators,
+		});
 	},
 );
 
@@ -1509,8 +1545,14 @@ API.v1.addRoute(
 type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint>;
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
 type GroupsMembersEndpoint = ExtractRoutesFromAPI<typeof groupsMembersEndpoint>;
+type GroupsModeratorsEndpoint = ExtractRoutesFromAPI<typeof groupsModeratorsEndpoint>;
 type GroupsRolesEndpoint = ExtractRoutesFromAPI<typeof groupsRolesEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	interface Endpoints extends GroupsCountersEndpoint, GroupsInfoEndpoint, GroupsMembersEndpoint, GroupsRolesEndpoint {}
+	interface Endpoints
+		extends GroupsCountersEndpoint,
+			GroupsInfoEndpoint,
+			GroupsMembersEndpoint,
+			GroupsModeratorsEndpoint,
+			GroupsRolesEndpoint {}
 }
