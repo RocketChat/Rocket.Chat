@@ -276,6 +276,52 @@ const channelsMembersResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const channelsRolesResponse = ajv.compile<{
+	roles: {
+		_id: string;
+		rid: string;
+		u: {
+			_id: string;
+			username: string;
+		};
+		roles: string[];
+	}[];
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		roles: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					rid: { type: 'string' },
+					u: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							username: { type: 'string' },
+							name: { type: 'string', nullable: true },
+						},
+						required: ['_id', 'username'],
+						additionalProperties: false,
+					},
+					roles: {
+						type: 'array',
+						items: { type: 'string' },
+					},
+				},
+				required: ['_id', 'rid', 'u', 'roles'],
+				additionalProperties: false,
+			},
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['roles', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'channels.addAll',
 	{
@@ -374,22 +420,25 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsRolesEndpoint = API.v1.get(
 	'channels.roles',
 	{
 		authRequired: true,
-		validateParams: isChannelsRolesProps,
-	},
-	{
-		async get() {
-			const findResult = await findChannelByIdOrName({ params: this.queryParams });
-
-			const roles = await executeGetRoomRoles(findResult._id, this.user);
-
-			return API.v1.success({
-				roles,
-			});
+		query: isChannelsRolesProps,
+		response: {
+			200: channelsRolesResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findChannelByIdOrName({ params: this.queryParams });
+
+		const roles = await executeGetRoomRoles(findResult._id, this.user);
+
+		return API.v1.success({
+			roles,
+		});
 	},
 );
 
@@ -1691,8 +1740,9 @@ API.v1.addRoute(
 type ChannelsInfoEndpoint = ExtractRoutesFromAPI<typeof channelsInfoEndpoint>;
 type ChannelsCountersEndpoint = ExtractRoutesFromAPI<typeof channelsCountersEndpoint>;
 type ChannelsMembersEndpoint = ExtractRoutesFromAPI<typeof channelsMembersEndpoint>;
+type ChannelsRolesEndpoint = ExtractRoutesFromAPI<typeof channelsRolesEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends ChannelsInfoEndpoint, ChannelsCountersEndpoint, ChannelsMembersEndpoint {}
+	interface Endpoints extends ChannelsInfoEndpoint, ChannelsCountersEndpoint, ChannelsMembersEndpoint, ChannelsRolesEndpoint {}
 }
