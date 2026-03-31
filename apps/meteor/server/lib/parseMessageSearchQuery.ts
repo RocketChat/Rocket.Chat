@@ -277,17 +277,14 @@ class MessageSearchQueryParser {
 	}
 
 	else {
-	
-		this.query.$text = { $search: text };
-
-		const escaped = escapeRegExp(text);
-		
-		this.query.$or = [
-			{ 'attachments.text': { $regex: escaped, $options: 'i' } },
-			{ 'attachments.title': { $regex: escaped, $options: 'i' } },
-			{ 'attachments.description': { $regex: escaped, $options: 'i' } },
-		];
-	}
+	// NORMAL SEARCH
+	this.query.$or = [
+		{ $text: { $search: text } },
+		{ 'attachments.text': { $regex: escapeRegExp(text), $options: 'i' } },
+		{ 'attachments.title': { $regex: escapeRegExp(text), $options: 'i' } },
+		{ 'attachments.description': { $regex: escapeRegExp(text), $options: 'i' } },
+	];
+}
 
 	return text;
 }
