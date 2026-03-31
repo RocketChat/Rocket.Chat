@@ -185,8 +185,34 @@ const joinEmoji = (current: Inlines, previous: Inlines | undefined, next: Inline
 };
 
 export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value'] => {
-	const result: Paragraph['value'] = [];
 	const flattenableValues = values as Array<Inlines | Inlines[]>;
+
+	// Fast path: no nested arrays and no emojis (the common case)
+	let needsSlowPath = false;
+	for (let i = 0; i < flattenableValues.length; i++) {
+		const v = flattenableValues[i];
+		if (Array.isArray(v) || (v as Inlines).type === 'EMOJI') {
+			needsSlowPath = true;
+			break;
+		}
+	}
+
+	if (!needsSlowPath) {
+		const result: Paragraph['value'] = [];
+		for (let i = 0; i < flattenableValues.length; i++) {
+			const current = flattenableValues[i] as Inlines;
+			const previous = result[result.length - 1];
+			if (previous && current.type === 'PLAIN_TEXT' && previous.type === 'PLAIN_TEXT') {
+				previous.value += current.value;
+			} else {
+				result.push(current);
+			}
+		}
+		return result;
+	}
+
+	// Slow path: handles nested arrays and emoji joining
+	const result: Paragraph['value'] = [];
 
 	let previousInline = undefined as Inlines | undefined;
 	let pendingInline = undefined as Inlines | undefined;
