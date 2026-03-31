@@ -209,7 +209,7 @@ UnorderedListItemContentItem = InlineItemPattern / !"*" @Any
  * \end{cases}$$
  *
  */
-Katex = KatexStart content:$(!KatexEnd .)* KatexEnd { return katex(content); }
+Katex = KatexStart content:$([^$\\] / !KatexEnd .)* KatexEnd { return katex(content); }
 
 KatexStart
   = & { return options.katex?.parenthesisSyntax; } "\\["
@@ -220,7 +220,7 @@ KatexEnd
   / & { return options.katex?.dollarSyntax; } "$$"
 
 KatexInline
-  = KatexInlineStart content:$(!KatexInlineEnd .)* KatexInlineEnd {
+  = KatexInlineStart content:$([^$\\\r\n] / !KatexInlineEnd .)* KatexInlineEnd {
       return inlineKatex(content);
     }
 
@@ -319,8 +319,11 @@ References
   = "[" title:LinkTitle* "](" href:MarkdownLinkRef ")" { return title.length ? link(href, reducePlainTexts(title)) : link(href); }
   / "<" href:LinkRef "|" title:LinkTitle2 ">" { return link(href, [plain(title)]); }
 
-// Hot path: complex negative lookahead for ]( and ] [ ... ](
-LinkTitle = (Whitespace / Emphasis) / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
+// Fast-path: bulk consume chars that can't start ]( or ] [ and aren't emphasis markers
+LinkTitle
+  = (Whitespace / Emphasis)
+  / anyTitle:$[^\]()*_~ \t\r\n]+ { return plain(anyTitle) }
+  / anyTitle:$(!("](" .) !("] [" [^\]]* "](") .) { return plain(anyTitle) }
 
 LinkTitle2 = $([\x20-\x3B\x3D\x3F-\x60\x61-\x7B\x7D-\xFF] / NonASCII)+
 
@@ -385,7 +388,6 @@ DomainName
 
 DomainNameLabel = $(DomainChar+ ("-" DomainChar+)*)
 
-// Hot path: multiple negative lookaheads per character; consider post-validate if profiling shows cost
 DomainChar = !Extra ([\__-] / !Safe) !EndOfLine !Space ![\\/|><%`\[\]] .
 
 /**
@@ -445,7 +447,9 @@ AutolinkedURL = u:AutoLinkURL { return autoLink(u, options.customDomains); }
 AutoLinkURL
   = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
 
-AutoLinkURLBody =  !(Extra* (Whitespace / EndOfLine / !.)) .
+AutoLinkURLBody
+  = [^ \t\r\n.,!%~*\"':;()=~]
+  / !(Extra* (Whitespace / EndOfLine / !.)) .
 
 /**
  *
