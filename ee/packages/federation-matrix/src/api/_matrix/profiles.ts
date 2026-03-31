@@ -152,7 +152,7 @@ const MakeJoinParamsSchema = {
 };
 
 // @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const isMakeJoinParamsProps = ajv.compile(MakeJoinParamsSchema);
 
 const MakeJoinQuerySchema = {
@@ -178,7 +178,7 @@ const MakeJoinQuerySchema = {
 };
 
 // @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const isMakeJoinQueryProps = ajv.compile(MakeJoinQuerySchema);
 
 const MakeJoinResponseSchema = {
@@ -264,7 +264,7 @@ const MakeJoinResponseSchema = {
 };
 
 // @ts-ignore
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 const isMakeJoinResponseProps = ajv.compile(MakeJoinResponseSchema);
 
 const GetMissingEventsParamsSchema = {
@@ -373,14 +373,14 @@ export const getMatrixProfilesRoutes = () => {
 				if (field) {
 					return {
 						body: {
-							[field]: response[field as 'displayname' | 'avatar_url'] || null,
+							[field]: response?.[field as 'displayname' | 'avatar_url'] || null,
 						},
 						statusCode: 200,
 					};
 				}
 
 				return {
-					body: response,
+					body: response ?? {},
 					statusCode: 200,
 				};
 			},
