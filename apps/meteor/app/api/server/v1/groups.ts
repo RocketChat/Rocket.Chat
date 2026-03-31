@@ -384,6 +384,50 @@ const groupsFilesResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const groupsListResponse = ajv.compile<{
+	groups: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		groups: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['groups', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const isGroupsListQuery = ajvQuery.compile<{
+	query?: string;
+	count?: number;
+	offset?: number;
+	sort?: string;
+	fields?: string;
+}>({
+	type: 'object',
+	properties: {
+		query: { type: 'string', nullable: true },
+		count: { type: 'number', nullable: true },
+		offset: { type: 'number', nullable: true },
+		sort: { type: 'string', nullable: true },
+		fields: { type: 'string', nullable: true },
+	},
+	required: [],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'groups.addAll',
 	{ authRequired: true },
@@ -932,42 +976,48 @@ API.v1.addRoute(
 );
 
 // List Private Groups a user has access to
-API.v1.addRoute(
+const groupsListEndpoint = API.v1.get(
 	'groups.list',
-	{ authRequired: true },
 	{
-		async get() {
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields } = await this.parseJsonQuery();
-
-			const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['p'], { projection: { rid: 1 } }).toArray();
-			const rids = subs.map(({ rid }) => rid).filter(Boolean);
-
-			if (rids.length === 0) {
-				return API.v1.success({
-					groups: [],
-					offset,
-					count: 0,
-					total: 0,
-				});
-			}
-
-			const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('p', rids, {
-				sort: sort || { name: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [groups, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				groups: await Promise.all(groups.map((room) => composeRoomWithLastMessage(room, this.userId))),
-				offset,
-				count: groups.length,
-				total,
-			});
+		authRequired: true,
+		query: isGroupsListQuery,
+		response: {
+			200: groupsListResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields } = await this.parseJsonQuery();
+
+		const subs = await Subscriptions.findByUserIdAndTypes(this.userId, ['p'], { projection: { rid: 1 } }).toArray();
+		const rids = subs.map(({ rid }) => rid).filter(Boolean);
+
+		if (rids.length === 0) {
+			return API.v1.success({
+				groups: [],
+				offset,
+				count: 0,
+				total: 0,
+			});
+		}
+
+		const { cursor, totalCount } = await Rooms.findPaginatedByTypeAndIds('p', rids, {
+			sort: sort || { name: 1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [groups, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			groups: await Promise.all(groups.map((room) => composeRoomWithLastMessage(room, this.userId))),
+			offset,
+			count: groups.length,
+			total,
+		});
 	},
 );
 
@@ -1611,6 +1661,7 @@ API.v1.addRoute(
 type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint>;
 type GroupsFilesEndpoint = ExtractRoutesFromAPI<typeof groupsFilesEndpoint>;
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
+type GroupsListEndpoint = ExtractRoutesFromAPI<typeof groupsListEndpoint>;
 type GroupsMembersEndpoint = ExtractRoutesFromAPI<typeof groupsMembersEndpoint>;
 type GroupsModeratorsEndpoint = ExtractRoutesFromAPI<typeof groupsModeratorsEndpoint>;
 type GroupsOnlineEndpoint = ExtractRoutesFromAPI<typeof groupsOnlineEndpoint>;
@@ -1621,6 +1672,7 @@ declare module '@rocket.chat/rest-typings' {
 		extends GroupsCountersEndpoint,
 			GroupsFilesEndpoint,
 			GroupsInfoEndpoint,
+			GroupsListEndpoint,
 			GroupsMembersEndpoint,
 			GroupsModeratorsEndpoint,
 			GroupsOnlineEndpoint,
