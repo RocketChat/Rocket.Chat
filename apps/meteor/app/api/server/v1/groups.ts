@@ -9,7 +9,6 @@ import {
 	isGroupsGetIntegrationsProps,
 	isGroupsInfoProps,
 	isGroupsModeratorsProps,
-	isGroupsMessagesProps,
 	isGroupsRolesProps,
 	isGroupsOnlineProps,
 	validateBadRequestErrorResponse,
@@ -432,6 +431,58 @@ const groupsGetIntegrationsResponse = ajv.compile<{
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['integrations', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const groupsMessagesResponse = ajv.compile<{
+	messages: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		messages: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['messages', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const isGroupsMessagesQuery = ajvQuery.compile<{
+	roomId?: string;
+	roomName?: string;
+	mentionIds?: string;
+	starredIds?: string;
+	pinned?: string;
+	query?: string;
+	count?: number;
+	offset?: number;
+	sort?: string;
+}>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string', nullable: true },
+		roomName: { type: 'string', nullable: true },
+		mentionIds: { type: 'string', nullable: true },
+		starredIds: { type: 'string', nullable: true },
+		pinned: { type: 'string', nullable: true },
+		query: { type: 'string', nullable: true },
+		count: { type: 'number', nullable: true },
+		offset: { type: 'number', nullable: true },
+		sort: { type: 'string', nullable: true },
+	},
+	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 	additionalProperties: false,
 });
 
@@ -1143,51 +1194,62 @@ const groupsMembersEndpoint = API.v1.get(
 	},
 );
 
-API.v1.addRoute(
-	'groups.messages',
-	{ authRequired: true, validateParams: isGroupsMessagesProps },
+const groupsMessagesEndpoint = API.v1.get(
+		'groups.messages',
 	{
-		async get() {
-			const { roomId, roomName, mentionIds, starredIds, pinned } = this.queryParams;
-
-			const findResult = await findPrivateGroupByIdOrName({
-				params: {
-					...(roomId && { roomId }),
-					...(roomName && { roomName }),
-				},
-				userId: this.userId,
-			});
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			const parseIds = (ids: string | undefined, field: string) =>
-				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
-
-			const ourQuery = {
-				...query,
-				rid: findResult.rid,
-				...parseIds(mentionIds, 'mentions._id'),
-				...parseIds(starredIds, 'starred._id'),
-				...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
-				_hidden: { $ne: true },
-			};
-
-			const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
-				sort: sort || { ts: -1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				messages: await normalizeMessagesForUser(messages, this.userId),
-				count: messages.length,
-				offset,
-				total,
-			});
+		authRequired: true,
+		query: isGroupsMessagesQuery,
+		response: {
+			200: groupsMessagesResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId, roomName, mentionIds, starredIds, pinned } = this.queryParams;
+
+		if (roomId && roomName) {
+			return API.v1.failure('invalid-params', 'invalid-params');
+		}
+
+		const findResult = await findPrivateGroupByIdOrName({
+			params: {
+				...(roomId && { roomId }),
+				...(roomName && { roomName }),
+			},
+			userId: this.userId,
+		});
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort, fields, query } = await this.parseJsonQuery();
+
+		const parseIds = (ids: string | undefined, field: string) =>
+			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
+
+		const ourQuery = {
+			...query,
+			rid: findResult.rid,
+			...parseIds(mentionIds, 'mentions._id'),
+			...parseIds(starredIds, 'starred._id'),
+			...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
+			_hidden: { $ne: true },
+		};
+
+		const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+			projection: fields,
+		});
+
+		const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			messages: await normalizeMessagesForUser(messages, this.userId),
+			count: messages.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -1704,6 +1766,7 @@ type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
 type GroupsListEndpoint = ExtractRoutesFromAPI<typeof groupsListEndpoint>;
 type GroupsListAllEndpoint = ExtractRoutesFromAPI<typeof groupsListAllEndpoint>;
 type GroupsMembersEndpoint = ExtractRoutesFromAPI<typeof groupsMembersEndpoint>;
+type GroupsMessagesEndpoint = ExtractRoutesFromAPI<typeof groupsMessagesEndpoint>;
 type GroupsModeratorsEndpoint = ExtractRoutesFromAPI<typeof groupsModeratorsEndpoint>;
 type GroupsOnlineEndpoint = ExtractRoutesFromAPI<typeof groupsOnlineEndpoint>;
 type GroupsRolesEndpoint = ExtractRoutesFromAPI<typeof groupsRolesEndpoint>;
@@ -1717,6 +1780,7 @@ declare module '@rocket.chat/rest-typings' {
 			GroupsListEndpoint,
 			GroupsListAllEndpoint,
 			GroupsMembersEndpoint,
+			GroupsMessagesEndpoint,
 			GroupsModeratorsEndpoint,
 			GroupsOnlineEndpoint,
 			GroupsRolesEndpoint {}
