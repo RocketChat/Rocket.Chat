@@ -50,33 +50,29 @@ test.describe('Omnichannel SLA Policies', () => {
 		await test.step('Add new SLA', async () => {
 			await poOmnichannelSlaPolicies.createNew();
 
-			await test.step('field name is required', async () => {
-				await poOmnichannelSlaPolicies.manageSlaPolicy.inputName.fill('any_text');
-				await poOmnichannelSlaPolicies.manageSlaPolicy.inputName.fill('');
+			await test.step('should not submit form with empty required fields: name and estimated wait time', async () => {
+				await poOmnichannelSlaPolicies.manageSlaPolicy.btnSave.click();
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.errorMessage(ERROR.nameRequired)).toBeVisible();
+				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.errorMessage(ERROR.estimatedWaitTimeRequired)).toBeVisible();
 			});
 
 			await test.step('input a valid name', async () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.inputName.fill(INITIAL_SLA.name);
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.errorMessage(ERROR.nameRequired)).not.toBeVisible();
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.btnSave).toBeDisabled();
 			});
 
 			await test.step('input a valid description', async () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.inputDescription.fill(INITIAL_SLA.description);
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.btnSave).toBeDisabled();
 			});
 
 			await test.step('only allow numbers on estimated wait time field', async () => {
-				await poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime.type('a');
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime).toHaveValue('');
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.btnSave).toBeDisabled();
+				await poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime.pressSequentially('a');
+				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime).toHaveValue('0');
 			});
 
 			await test.step('not allow 0 on estimated wait time field', async () => {
 				await poOmnichannelSlaPolicies.manageSlaPolicy.inputEstimatedWaitTime.fill('0');
 				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.errorMessage(ERROR.estimatedWaitTimeRequired)).toBeVisible();
-				await expect(poOmnichannelSlaPolicies.manageSlaPolicy.btnSave).toBeDisabled();
 			});
 
 			await test.step('input a valid estimated wait time', async () => {

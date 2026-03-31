@@ -117,6 +117,51 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
+
+		this.onEvent('user.avatarUpdate', async ({ username, avatarETag }): Promise<void> => {
+			if (!username || username.includes(':')) {
+				return;
+			}
+
+			const localUser = await Users.findOneByUsername(username, {
+				projection: { _id: 1, username: 1, name: 1, federated: 1, federation: 1 },
+			});
+
+			if (!localUser?.username) {
+				return;
+			}
+
+			if (isUserNativeFederated(localUser)) {
+				this.logger.warn(`Skipping avatar update for federated user ${username} (remote user)`);
+				return;
+			}
+
+			this.logger.info(`Sending avatar update for ${username} to federated rooms`);
+
+			const matrixUserId = `@${localUser.username}:${this.serverName}`;
+
+			// if no avatarETag is provided, it means the user removed his avatar, so we need to send an empty string to Matrix to remove the avatar from their side as well
+			const avatarUrl = avatarETag ? `mxc://${this.serverName}/${avatarETag}` : null;
+
+			const roomsUserIsMemberOf = await Subscriptions.findUserFederatedRoomIds(localUser._id);
+
+			// TODO add user avatar update events to a fanout queue
+			for await (const { externalRoomId } of roomsUserIsMemberOf) {
+				if (!externalRoomId) {
+					continue;
+				}
+
+				try {
+					await federationSDK.updateUserProfile(externalRoomId, matrixUserId, {
+						displayname: localUser.name || localUser.username,
+						avatar_url: avatarUrl,
+					});
+					this.logger.debug({ msg: 'Sent avatar update', username, roomId: externalRoomId });
+				} catch (error) {
+					this.logger.error({ err: error, msg: `Failed to send avatar update for ${username} to room ${externalRoomId}` });
+				}
+			}
+		});
 	}
 
 	override async started(): Promise<void> {

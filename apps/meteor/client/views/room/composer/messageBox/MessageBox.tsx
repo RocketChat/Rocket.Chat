@@ -1,6 +1,6 @@
 /* eslint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
-import { useContentBoxSize, useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useContentBoxSize, useEffectEvent, useMediaQuery, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -142,7 +142,8 @@ const MessageBox = ({
 		[chat, storageID, quoteChainLimit, room._id, tmid],
 	);
 
-	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
+	const isTouchDevice = useMediaQuery('(pointer: coarse)');
+	const autofocusRef = useMessageBoxAutoFocus(!isTouchDevice);
 
 	const useEmojis = useUserPreference<boolean>('useEmojis');
 
