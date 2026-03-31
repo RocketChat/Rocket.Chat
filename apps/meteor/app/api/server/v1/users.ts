@@ -18,6 +18,7 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	isUsersGetAvatarParamsGET,
 	isUsersPresenceParamsGET,
 	isUsersRequestDataDownloadParamsGET,
 	isUsersGetPresenceParamsGET,
@@ -86,21 +87,28 @@ import { getUploadFormData } from '../lib/getUploadFormData';
 import { isValidQuery } from '../lib/isValidQuery';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
-API.v1.addRoute(
+const usersGetAvatarRedirectResponse = ajv.compile<string>({
+	type: 'string',
+});
+
+API.v1.get(
 	'users.getAvatar',
-	{ authRequired: true },
 	{
-		async get() {
-			const user = await getUserFromParams(this.queryParams);
-
-			const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
-			this.response.headers.set('Location', url);
-
-			return {
-				statusCode: 307,
-				body: url,
-			};
+		authRequired: true,
+		query: isUsersGetAvatarParamsGET,
+		response: {
+			307: usersGetAvatarRedirectResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const user = await getUserFromParams(this.queryParams);
+
+		const url = getURL(`/avatar/${user.username}`, { cdn: false, full: true });
+		this.response.headers.set('Location', url);
+
+		return API.v1.redirect(307, url);
 	},
 );
 
