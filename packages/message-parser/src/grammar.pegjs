@@ -510,11 +510,9 @@ ItalicContent = text:ItalicContentItems { return italic(text); }
 
 ItalicContentItems = text:ItalicContentItem+ { return reducePlainTexts(text); }
 
-ItalicContentItem = ItalicContentPreferentialItem / ItalicContentFallbackItem
+ItalicContentItem = ItalicContentPreferentialItem / ItalicPlainRun / AnyItalic / Line
 
-ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { return item; }
-
-ItalicContentPreferentialItemPattern = Whitespace
+ItalicContentPreferentialItem = Whitespace
   / InlineCode
   / TimestampRules
   / MaybeReferences
@@ -525,10 +523,6 @@ ItalicContentPreferentialItemPattern = Whitespace
   / ItalicEmoji
   / ItalicEmoticon
 
-ItalicContentFallbackItem = item:ItalicContentFallbackItemPattern { return item; }
-
-ItalicContentFallbackItemPattern = ItalicPlainRun / AnyItalic / Line
-
 ItalicEmoji = emo:Emoji { return emo; }
 
 ItalicEmoticon = emo:Emoticon & (EmoticonNeighbor / ItalicContentPreferentialItem / [\x5F]) { return emo; }
@@ -538,15 +532,9 @@ Bold = [\x2A] [\x2A] @BoldContent [\x2A] [\x2A] / [\x2A] @BoldContent [\x2A]
 
 BoldContent = text:BoldContentItem+ { return bold(reducePlainTexts(text)); }
 
-BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { return item; }
+BoldContentPreferentialItem = Whitespace / InlineCode / TimestampRules / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
 
-BoldContentPreferentialItemPattern = Whitespace / InlineCode / TimestampRules / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
-
-BoldContentFallbackItem = item:BoldContentFallbackItemPattern { return item; }
-
-BoldContentFallbackItemPattern = BoldPlainRun / AnyBold / Line
-
-BoldContentItem = BoldContentPreferentialItem / BoldContentFallbackItem
+BoldContentItem = BoldContentPreferentialItem / BoldPlainRun / AnyBold / Line
 
 BoldEmoji = emo:Emoji { return emo; }
 
