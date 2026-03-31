@@ -378,6 +378,31 @@ const channelsModeratorsResponse = ajv.compile<{
 	additionalProperties: false,
 });
 
+const channelsGetAllUserMentionsByChannelResponse = ajv.compile<{
+	mentions: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		mentions: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['mentions', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'channels.addAll',
 	{
@@ -704,33 +729,36 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const channelsGetAllUserMentionsByChannelEndpoint = API.v1.get(
 	'channels.getAllUserMentionsByChannel',
 	{
 		authRequired: true,
-		validateParams: isChannelsGetAllUserMentionsByChannelProps,
-	},
-	{
-		async get() {
-			const { roomId } = this.queryParams;
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort } = await this.parseJsonQuery();
-
-			const mentions = await getUserMentionsByChannel(this.userId, roomId, {
-				sort: sort || { ts: 1 },
-				skip: offset,
-				limit: count,
-			});
-
-			const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
-
-			return API.v1.success({
-				mentions,
-				count: mentions.length,
-				offset,
-				total: allMentions.length,
-			});
+		query: isChannelsGetAllUserMentionsByChannelProps,
+		response: {
+			200: channelsGetAllUserMentionsByChannelResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId } = this.queryParams;
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+
+		const mentions = await getUserMentionsByChannel(this.userId, roomId, {
+			sort: sort || { ts: 1 },
+			skip: offset,
+			limit: count,
+		});
+
+		const allMentions = await getUserMentionsByChannel(this.userId, roomId, {});
+
+		return API.v1.success({
+			mentions,
+			count: mentions.length,
+			offset,
+			total: allMentions.length,
+		});
 	},
 );
 
@@ -1810,6 +1838,7 @@ type ChannelsMembersEndpoint = ExtractRoutesFromAPI<typeof channelsMembersEndpoi
 type ChannelsRolesEndpoint = ExtractRoutesFromAPI<typeof channelsRolesEndpoint>;
 type ChannelsOnlineEndpoint = ExtractRoutesFromAPI<typeof channelsOnlineEndpoint>;
 type ChannelsModeratorsEndpoint = ExtractRoutesFromAPI<typeof channelsModeratorsEndpoint>;
+type ChannelsGetAllUserMentionsByChannelEndpoint = ExtractRoutesFromAPI<typeof channelsGetAllUserMentionsByChannelEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -1819,5 +1848,6 @@ declare module '@rocket.chat/rest-typings' {
 			ChannelsMembersEndpoint,
 			ChannelsRolesEndpoint,
 			ChannelsOnlineEndpoint,
-			ChannelsModeratorsEndpoint {}
+			ChannelsModeratorsEndpoint,
+			ChannelsGetAllUserMentionsByChannelEndpoint {}
 }
