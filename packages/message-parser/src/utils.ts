@@ -88,7 +88,7 @@ export const autoLink = (src: string, customDomains?: string[]) => {
 			validHosts: ['localhost', ...(customDomains ?? [])],
 		};
 	}
-	const validHosts = cachedAutoLinkOptions.validHosts;
+	const { validHosts } = cachedAutoLinkOptions;
 	const { isIcann, isIp, isPrivate, domain } = tldParse(src, cachedAutoLinkOptions);
 
 	if (!(isIcann || isIp || isPrivate || (domain && validHosts.includes(domain)))) {

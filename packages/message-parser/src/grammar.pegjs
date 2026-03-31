@@ -270,22 +270,27 @@ EscapedTimestampRules
       return plain(`<t:${rawDate}>`);
     }
 
-// First-character dispatch: exclusive chars skip the full alternative chain.
-// Chars that only belong to one rule are dispatched directly; the rest
-// fall through to InlineItemSlowPath which preserves the original order.
+// First-character dispatch: skip the full alternative chain by routing
+// each character to only the rules that can start with it.
 InlineItemPattern
   = & [ \t]  @Whitespace
   / & "\\"   @(EscapedTimestampRules / KatexInline / Escaped)
   / & "["    @MaybeReferences
-  / & "<"    @(TimestampRules / MaybeReferences)
+  / & "<"    @(TimestampRules / MaybeReferences / InlineEmoticon)
   / & "!"    @Image
   / & "|"    @Spoiler
   / & "@"    @UserMention
   / & "`"    @InlineCode
   / & "+"    @AutolinkedPhone
   / & "$"    @KatexInline
+  / & ":"    @(InlineEmoji / InlineEmoticon)
+  / & "*"    @(EmphasisWithWhitespace / Emphasis / InlineEmoticon)
+  / & "~"    @(EmphasisWithWhitespace / Emphasis)
+  / & "-"    @(PlainRunBeforeEmoticon / InlineEmoticon)
   / InlineItemSlowPath
 
+// Non-dispatched chars: emphasis with _, URLs, emails, emoticons, color, plain text
+// Preserves original rule ordering to maintain parsing behavior
 InlineItemSlowPath
   = AutolinkedEmail
   / PlainUnderscoreThenDomain
@@ -297,7 +302,12 @@ InlineItemSlowPath
   / PlainRunBeforeEmoticon
   / InlineEmoticon
   / Color
-  / KatexInline
+  / PlainRun
+
+// Letters/digits: try email/URL (with cheap guards), then plain text
+InlineItemAlphaPath
+  = AutolinkedEmail
+  / AutolinkedURL
   / PlainRun
 
 /**
@@ -436,7 +446,8 @@ LocalPartChar = AlphaNumericOrMarkChar+ LocalPartSpecialChars*
 
 LocalPartSpecialChars = [!#$%&'*+/=?^_\`{|}~-]
 
-AutolinkedEmail = e:Email { return autoEmail(e); }
+// Guard: only attempt email parse if @ exists ahead on this line
+AutolinkedEmail = &([^ \t\r\n@]* "@") e:Email { return autoEmail(e); }
 
 /**
  *
@@ -448,7 +459,8 @@ AutolinkedEmail = e:Email { return autoEmail(e); }
 // _example.com (underscore + domain without closing _) → plain
 PlainUnderscoreThenDomain = "_" d:DomainName &(EndOfLine / !. / [^\x5F]) { return plain('_' + d); }
 
-AutolinkedURL = u:AutoLinkURL { return autoLink(u, options.customDomains); }
+// Guard: only attempt URL parse if :// or . exists ahead on this line
+AutolinkedURL = &([^ \t\r\n:./@]* ("://" / ".")) u:AutoLinkURL { return autoLink(u, options.customDomains); }
 
 AutoLinkURL
   = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
@@ -617,76 +629,110 @@ Emoticon = & { return options.emoticons; } @EmoticonPattern
 
 EmoticonNeighbor = EndOfLine / Whitespace / [\x2A] / !.
 
+// Emoticon first-char dispatch: group alternatives by starting character
 EmoticonPattern
-  = e:$"<3" { return emoticon(e, 'heart'); }
-  / e:$"</3" { return emoticon(e, 'broken_heart'); }
-  / e:$(":D" / ":-D" / "=D") { return emoticon(e, 'smiley'); }
-  / e:$(">:)" / ">;)" / ">:-)" / ">=)") { return emoticon(e, 'laughing'); }
-  / e:$("':)" / "':-)" / "'=)" / "':D" / "':-D" / "'=D") {
-      return emoticon(e, 'sweat_smile');
-    }
+  = & "<"  @EmoticonLT
+  / & ":"  @EmoticonColon
+  / & "="  @EmoticonEquals
+  / & ">"  @EmoticonGT
+  / & "'"  @EmoticonApostrophe
+  / & "O"  @EmoticonO
+  / & "0"  @EmoticonZero
+  / & ";"  @EmoticonSemicolon
+  / & "*"  @EmoticonAsterisk
+  / & "B"  @EmoticonB
+  / & "8"  @Emoticon8
+  / & "D"  @EmoticonD
+  / & "X"  @EmoticonX
+  / & "#"  @EmoticonHash
+  / & "%"  @EmoticonPercent
+  / & "("  @EmoticonParen
+  / & "-"  @EmoticonDash
+  / & "\\" @EmoticonBackslash
+
+EmoticonLT
+  = e:$"</3" { return emoticon(e, 'broken_heart'); }
+  / e:$"<3" { return emoticon(e, 'heart'); }
+
+EmoticonColon
+  = e:$(":-D" / ":D") { return emoticon(e, 'smiley'); }
   / e:$(":')" / ":'-)") { return emoticon(e, 'joy'); }
-  / e:$(
-    "O:-)"
-    / "0:-3"
-    / "0:3"
-    / "0:-)"
-    / "0:)"
-    / "0;^)"
-    / "O:)"
-    / "O;-)"
-    / "O=)"
-    / "0;-)"
-    / "O:-3"
-    / "O:3"
-  ) { return emoticon(e, 'innocent'); }
-  / e:$(":)" / ":-)" / "=]" / "=)" / ":]") {
-      return emoticon(e, 'slight_smile');
-    }
-  / e:$(";)" / ";-)" / "*-)" / "*)" / ";-]" / ";]" / ";D" / ";^)") {
-      return emoticon(e, 'wink');
-    }
-  / e:$(":*" / ":-*" / "=*" / ":^*") { return emoticon(e, 'kissing_heart'); }
-  / e:$(":P" / ":-P" / "=P" / ":-\u00de" / ":\u00de" / ":-b" / ":b") {
-      return emoticon(e, 'stuck_out_tongue');
-    }
-  / e:$(">:P" / "X-P") { return emoticon(e, 'stuck_out_tongue_winking_eye'); }
-  / e:$("B-)" / "B)" / "8)" / "8-)" / "B-D" / "8-D") {
-      return emoticon(e, 'sunglasses');
-    }
-  / e:$(">:[" / ":-(" / ":(" / ":-[" / ":[" / "=(") {
-      return emoticon(e, 'disappointed');
-    }
-  / e:$(
-    ">:\\"
-    / ">:\/"
-    / ":-\/"
-    / ":-."
-    / ":\/"
-    / ":\\"
-    / "=\/"
-    / "=\\"
-    / ":L"
-    / "=L"
-  ) { return emoticon(e, 'confused'); }
+  / e:$(":-)" / ":)" / ":]") { return emoticon(e, 'slight_smile'); }
+  / e:$(":-*" / ":*" / ":^*") { return emoticon(e, 'kissing_heart'); }
+  / e:$(":-P" / ":P" / ":-\u00de" / ":\u00de" / ":-b" / ":b") { return emoticon(e, 'stuck_out_tongue'); }
+  / e:$(":-(" / ":(" / ":-[" / ":[") { return emoticon(e, 'disappointed'); }
+  / e:$(":-/" / ":-." / ":/" / ":\\" / ":L") { return emoticon(e, 'confused'); }
+  / e:$(":'(" / "':-(") { return emoticon(e, 'cry'); }
+  / e:$":@" { return emoticon(e, 'angry'); }
+  / e:$(":$") { return emoticon(e, 'flushed'); }
+  / e:$(":-X" / ":X" / ":-#" / ":#") { return emoticon(e, 'no_mouth'); }
+  / e:$(":-O" / ":O") { return emoticon(e, 'open_mouth'); }
+
+EmoticonEquals
+  = e:$"=D" { return emoticon(e, 'smiley'); }
+  / e:$("=]" / "=)") { return emoticon(e, 'slight_smile'); }
+  / e:$"=*" { return emoticon(e, 'kissing_heart'); }
+  / e:$"=P" { return emoticon(e, 'stuck_out_tongue'); }
+  / e:$"=(" { return emoticon(e, 'disappointed'); }
+  / e:$("=/" / "=\\" / "=L") { return emoticon(e, 'confused'); }
+  / e:$("=$") { return emoticon(e, 'flushed'); }
+  / e:$("=X" / "=#") { return emoticon(e, 'no_mouth'); }
+
+EmoticonGT
+  = e:$(">:)" / ">;)" / ">:-)" / ">=)") { return emoticon(e, 'laughing'); }
   / e:$">.<" { return emoticon(e, 'persevere'); }
-  / e:$(":'(" / ":'-(" / ";(" / ";-(") { return emoticon(e, 'cry'); }
-  / e:$(">:(" / ">:-(" / ":@") { return emoticon(e, 'angry'); }
-  / e:$(":$" / "=$") { return emoticon(e, 'flushed'); }
-  / e:$"D:" { return emoticon(e, 'fearful'); }
+  / e:$">:P" { return emoticon(e, 'stuck_out_tongue_winking_eye'); }
+  / e:$(">:\\" / ">;/") { return emoticon(e, 'confused'); }
+  / e:$(">:(" / ">:-(") { return emoticon(e, 'angry'); }
+  / e:$(">:[") { return emoticon(e, 'disappointed'); }
+  / e:$">:O" { return emoticon(e, 'open_mouth'); }
+
+EmoticonApostrophe
+  = e:$("':)" / "':-)" / "'=)" / "':D" / "':-D" / "'=D") { return emoticon(e, 'sweat_smile'); }
   / e:$("':(" / "':-(" / "'=(") { return emoticon(e, 'sweat'); }
-  / e:$(":-X" / ":X" / ":-#" / ":#" / "=X" / "=#") {
-      return emoticon(e, 'no_mouth');
-    }
-  / e:$("-_-" / "-__-" / "-___-") { return emoticon(e, 'expressionless'); }
-  / e:$(":-O" / ":O" / "O_O" / ">:O") { return emoticon(e, 'open_mouth'); }
-  / e:$("#-)" / "#)" / "%-)" / "%)" / "X)" / "X-)") {
-      return emoticon(e, 'dizzy_face');
-    }
-  / e:$"(y)" { return emoticon(e, 'thumbsup'); }
-  / e:$("*\\0\/*" / "\\0\/" / "*\\O\/*" / "\\O\/") {
-      return emoticon(e, 'person_gesturing_ok');
-    }
+
+EmoticonO
+  = e:$("O:-)" / "O:)" / "O;-)" / "O=)" / "O:-3" / "O:3") { return emoticon(e, 'innocent'); }
+  / e:$"O_O" { return emoticon(e, 'open_mouth'); }
+
+EmoticonZero
+  = e:$("0:-3" / "0:3" / "0:-)" / "0:)" / "0;^)" / "0;-)") { return emoticon(e, 'innocent'); }
+
+EmoticonSemicolon
+  = e:$(";)" / ";-)" / ";-]" / ";]" / ";D" / ";^)") { return emoticon(e, 'wink'); }
+  / e:$(";(" / ";-(") { return emoticon(e, 'cry'); }
+
+EmoticonAsterisk
+  = e:$("*-)" / "*)") { return emoticon(e, 'wink'); }
+  / e:$("*\\0\/*" / "*\\O\/*") { return emoticon(e, 'person_gesturing_ok'); }
+
+EmoticonB
+  = e:$("B-)" / "B)" / "B-D") { return emoticon(e, 'sunglasses'); }
+
+Emoticon8
+  = e:$("8)" / "8-)" / "8-D") { return emoticon(e, 'sunglasses'); }
+
+EmoticonD
+  = e:$"D:" { return emoticon(e, 'fearful'); }
+
+EmoticonX
+  = e:$"X-P" { return emoticon(e, 'stuck_out_tongue_winking_eye'); }
+  / e:$("X)" / "X-)") { return emoticon(e, 'dizzy_face'); }
+
+EmoticonHash
+  = e:$("#-)" / "#)") { return emoticon(e, 'dizzy_face'); }
+
+EmoticonPercent
+  = e:$("%-)" / "%)") { return emoticon(e, 'dizzy_face'); }
+
+EmoticonParen
+  = e:$"(y)" { return emoticon(e, 'thumbsup'); }
+
+EmoticonDash
+  = e:$("-___-" / "-__-" / "-_-") { return emoticon(e, 'expressionless'); }
+
+EmoticonBackslash
+  = e:$("\\0\\/" / "\\O\\/") { return emoticon(e, 'person_gesturing_ok'); }
 
 /* Unicode emojis */
 UnicodeEmoji
