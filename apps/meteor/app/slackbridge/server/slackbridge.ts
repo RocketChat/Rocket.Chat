@@ -1,8 +1,3 @@
-// This is a JS File that was renamed to TS so it won't lose its git history when converted to TS
-// TODO: Remove the following lint/ts instructions when the file gets properly converted
-/* eslint-disable @typescript-eslint/no-floating-promises */
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
 import { debounce } from 'lodash';
 
 import RocketAdapter from './RocketAdapter';
@@ -10,25 +5,53 @@ import SlackAdapter from './SlackAdapter';
 import { classLogger, connLogger } from './logger';
 import { settings } from '../../settings/server';
 
-/**
- * SlackBridge interfaces between this Rocket installation and a remote Slack installation.
- */
+interface AppCredential {
+	botToken: string;
+	appToken: string;
+	signingSecret: string;
+}
+
 class SlackBridgeClass {
+	isEnabled: boolean;
+
+	isLegacyRTM: boolean;
+
+	slackAdapters: SlackAdapter[];
+
+	rocket: RocketAdapter;
+
+	reactionsMap: Map<string, unknown>;
+
+	connected: boolean;
+
+	apiTokens: string;
+
+	botTokens: string;
+
+	appTokens: string;
+
+	signingSecrets: string;
+
+	aliasFormat: string;
+
+	excludeBotnames: string;
+
+	isReactionsEnabled: boolean;
+
 	constructor() {
 		this.isEnabled = false;
 		this.isLegacyRTM = true;
 		this.slackAdapters = [];
 		this.rocket = new RocketAdapter(this);
-		this.reactionsMap = new Map(); // Sync object between rocket and slack
+		this.reactionsMap = new Map();
 
 		this.connected = false;
 		this.rocket.clearSlackAdapters();
 
-		// Settings that we cache versus looking up at runtime
-		this.apiTokens = false;
-		this.botTokens = false;
-		this.appTokens = false;
-		this.signingSecrets = false;
+		this.apiTokens = '';
+		this.botTokens = '';
+		this.appTokens = '';
+		this.signingSecrets = '';
 		this.aliasFormat = '';
 		this.excludeBotnames = '';
 		this.isReactionsEnabled = true;
@@ -36,7 +59,7 @@ class SlackBridgeClass {
 		this.processSettings();
 	}
 
-	connect() {
+	connect(): void {
 		if (this.connected === false) {
 			this.slackAdapters = [];
 			this.rocket.clearSlackAdapters();
@@ -53,17 +76,16 @@ class SlackBridgeClass {
 					slack.connect({ apiToken }).catch((err) => connLogger.error({ msg: 'error connecting to slack', err }));
 				});
 			} else {
-				const botTokenList = this.botTokens.split('\n'); // Bot token list
-				const appTokenList = this.appTokens.split('\n'); // App token list
-				const signingSecretList = this.signingSecrets.split('\n'); // Signing secret list
+				const botTokenList = this.botTokens.split('\n');
+				const appTokenList = this.appTokens.split('\n');
+				const signingSecretList = this.signingSecrets.split('\n');
 
-				// Check if the number of tokens are the same
 				if (botTokenList.length !== appTokenList.length || botTokenList.length !== signingSecretList.length) {
 					connLogger.error('error connecting to slack: number of tokens are not the same');
 					return;
 				}
 
-				const appCredentials = botTokenList.map((botToken, i) => ({
+				const appCredentials: AppCredential[] = botTokenList.map((botToken, i) => ({
 					botToken,
 					appToken: appTokenList[i],
 					signingSecret: signingSecretList[i],
@@ -88,9 +110,8 @@ class SlackBridgeClass {
 		}
 	}
 
-	async reconnect() {
+	async reconnect(): Promise<void> {
 		await this.disconnect();
-		// connect if either apiTokens or appCredentials are set
 		if (this.isLegacyRTM && this.apiTokens) {
 			this.connect();
 		} else if (!this.isLegacyRTM && this.botTokens && this.appTokens && this.signingSecrets) {
@@ -104,7 +125,7 @@ class SlackBridgeClass {
 		}
 	}, 500);
 
-	async disconnect() {
+	async disconnect(): Promise<void> {
 		try {
 			if (this.connected === true) {
 				await this.rocket.disconnect();
@@ -118,9 +139,8 @@ class SlackBridgeClass {
 		}
 	}
 
-	processSettings() {
-		// Check if legacy realtime api is enabled
-		settings.watch('SlackBridge_UseLegacy', (value) => {
+	processSettings(): void {
+		settings.watch('SlackBridge_UseLegacy', (value: boolean) => {
 			if (value !== this.isLegacyRTM) {
 				this.isLegacyRTM = value;
 				this.debouncedReconnectIfEnabled();
@@ -128,24 +148,23 @@ class SlackBridgeClass {
 			classLogger.debug({ msg: 'Setting: SlackBridge_UseLegacy', value });
 		});
 
-		// Slack installtion Bot token
-		settings.watch('SlackBridge_BotToken', (value) => {
+		settings.watch('SlackBridge_BotToken', (value: string) => {
 			if (value !== this.botTokens) {
 				this.botTokens = value;
 				this.debouncedReconnectIfEnabled();
 			}
 			classLogger.debug({ msg: 'Setting: SlackBridge_BotToken', value });
 		});
-		// Slack installtion App token
-		settings.watch('SlackBridge_AppToken', (value) => {
+
+		settings.watch('SlackBridge_AppToken', (value: string) => {
 			if (value !== this.appTokens) {
 				this.appTokens = value;
 				this.debouncedReconnectIfEnabled();
 			}
 			classLogger.debug({ msg: 'Setting: SlackBridge_AppToken', value });
 		});
-		// Slack installtion Signing token
-		settings.watch('SlackBridge_SigningSecret', (value) => {
+
+		settings.watch('SlackBridge_SigningSecret', (value: string) => {
 			if (value !== this.signingSecrets) {
 				this.signingSecrets = value;
 				this.debouncedReconnectIfEnabled();
@@ -153,8 +172,7 @@ class SlackBridgeClass {
 			classLogger.debug({ msg: 'Setting: SlackBridge_SigningSecret', value });
 		});
 
-		// Slack installation API token
-		settings.watch('SlackBridge_APIToken', (value) => {
+		settings.watch('SlackBridge_APIToken', (value: string) => {
 			if (value !== this.apiTokens) {
 				this.apiTokens = value;
 				this.debouncedReconnectIfEnabled();
@@ -163,26 +181,22 @@ class SlackBridgeClass {
 			classLogger.debug({ msg: 'Setting: SlackBridge_APIToken', value });
 		});
 
-		// Import messages from Slack with an alias; %s is replaced by the username of the user. If empty, no alias will be used.
-		settings.watch('SlackBridge_AliasFormat', (value) => {
+		settings.watch('SlackBridge_AliasFormat', (value: string) => {
 			this.aliasFormat = value;
 			classLogger.debug({ msg: 'Setting: SlackBridge_AliasFormat', value });
 		});
 
-		// Do not propagate messages from bots whose name matches the regular expression above. If left empty, all messages from bots will be propagated.
-		settings.watch('SlackBridge_ExcludeBotnames', (value) => {
+		settings.watch('SlackBridge_ExcludeBotnames', (value: string) => {
 			this.excludeBotnames = value;
 			classLogger.debug({ msg: 'Setting: SlackBridge_ExcludeBotnames', value });
 		});
 
-		// Reactions
-		settings.watch('SlackBridge_Reactions_Enabled', (value) => {
+		settings.watch('SlackBridge_Reactions_Enabled', (value: boolean) => {
 			this.isReactionsEnabled = value;
 			classLogger.debug({ msg: 'Setting: SlackBridge_Reactions_Enabled', value });
 		});
 
-		// Is this entire SlackBridge enabled
-		settings.watch('SlackBridge_Enabled', (value) => {
+		settings.watch('SlackBridge_Enabled', (value: boolean) => {
 			if (this.isEnabled !== value) {
 				this.isEnabled = value;
 				if (this.isEnabled) {
