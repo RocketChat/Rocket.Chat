@@ -1,44 +1,16 @@
 import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Button, FieldRow, FieldHint } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useMethod, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useMethod } from '@rocket.chat/ui-contexts';
 
-import type { SettingInputProps } from './types';
+import type { ActionInputBaseProps } from './ActionInputBase';
+import ActionInputBase from './ActionInputBase';
 
-type MethodActionInputProps = SettingInputProps & {
+type MethodActionInputProps = Omit<ActionInputBaseProps, 'onAction'> & {
 	value: keyof ServerMethods;
-	actionText: TranslationKey;
-	sectionChanged: boolean;
 };
 
-function MethodActionInput({ actionText, value, hint, disabled, sectionChanged }: MethodActionInputProps): ReactElement {
-	const { t } = useTranslation();
-	const dispatchToastMessage = useToastMessageDispatch();
+function MethodActionInput({ value, ...rest }: MethodActionInputProps) {
 	const actionMethod = useMethod(value);
-
-	const handleClick = async (): Promise<void> => {
-		try {
-			const data: { message: TranslationKey; params?: string[] } = await actionMethod();
-			const params = data.params || [];
-			dispatchToastMessage({ type: 'success', message: t(data.message, { postProcess: 'sprintf', sprintf: params }) });
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	};
-
-	return (
-		<>
-			<FieldRow>
-				<Button disabled={disabled || sectionChanged} primary onClick={handleClick}>
-					{t(actionText)}
-				</Button>
-			</FieldRow>
-			{sectionChanged && <FieldHint>{t('Save_to_enable_this_action')}</FieldHint>}
-			{hint && <FieldHint>{hint}</FieldHint>}
-		</>
-	);
+	return <ActionInputBase onAction={actionMethod} {...rest} />;
 }
 
 export default MethodActionInput;

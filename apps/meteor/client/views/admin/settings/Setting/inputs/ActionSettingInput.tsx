@@ -21,6 +21,7 @@ function ActionSettingInput({ actionEndpoint, ...rest }: ActionSettingInputProps
 	if (actionEndpoint) {
 		return <EndpointActionInput actionEndpoint={actionEndpoint} {...rest} />;
 	}
+
 	return <MethodActionInput {...rest} />;
 }
 
