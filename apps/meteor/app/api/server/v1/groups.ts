@@ -3,6 +3,7 @@ import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.c
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	isGroupsCountersProps,
 	isGroupsFilesProps,
 	isGroupsInfoProps,
@@ -174,6 +175,84 @@ const groupsCountersResponse = ajv.compile<{
 	},
 	required: ['joined', 'members', 'unreads', 'unreadsFrom', 'msgs', 'latest', 'userMentions', 'success'],
 	additionalProperties: false,
+});
+
+const groupsMembersResponse = ajv.compile<{
+	members: object[];
+	count: number;
+	offset: number;
+	total: number;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		members: {
+			type: 'array',
+			items: {
+				type: 'object',
+				additionalProperties: true,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['members', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+type GroupsMembersQuery =
+	| {
+			roomId: string;
+			status?: string[];
+			filter?: string;
+			query?: string;
+			sort?: string;
+			count?: number;
+			offset?: number;
+	  }
+	| {
+			roomName: string;
+			status?: string[];
+			filter?: string;
+			query?: string;
+			sort?: string;
+			count?: number;
+			offset?: number;
+	  };
+
+const isGroupsMembersQuery = ajvQuery.compile<GroupsMembersQuery>({
+	oneOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+				status: { type: 'array', items: { type: 'string' } },
+				filter: { type: 'string' },
+				query: { type: 'string' },
+				sort: { type: 'string' },
+				count: { type: 'number' },
+				offset: { type: 'number' },
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: { type: 'string' },
+				status: { type: 'array', items: { type: 'string' } },
+				filter: { type: 'string' },
+				query: { type: 'string' },
+				sort: { type: 'string' },
+				count: { type: 'number' },
+				offset: { type: 'number' },
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
 });
 
 API.v1.addRoute(
@@ -784,51 +863,58 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const groupsMembersEndpoint = API.v1.get(
 	'groups.members',
-	{ authRequired: true },
 	{
-		async get() {
-			const findResult = await findPrivateGroupByIdOrName({
-				params: this.queryParams,
-				userId: this.userId,
-			});
-
-			if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
-				return API.v1.forbidden();
-			}
-
-			const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
-			const { sort = {} } = await this.parseJsonQuery();
-
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					status: Match.Maybe([String]),
-					filter: Match.Maybe(String),
-				}),
-			);
-
-			const { status, filter } = this.queryParams;
-
-			const { cursor, totalCount } = await findUsersOfRoom({
-				rid: findResult.rid,
-				...(status && { status: { $in: status as UserStatus[] } }),
-				skip,
-				limit,
-				filter,
-				...(sort?.username && { sort: { username: sort.username } }),
-			});
-
-			const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				members,
-				count: members.length,
-				offset: skip,
-				total,
-			});
+		authRequired: true,
+		query: isGroupsMembersQuery,
+		response: {
+			200: groupsMembersResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const findResult = await findPrivateGroupByIdOrName({
+			params: this.queryParams,
+			userId: this.userId,
+		});
+
+		if (findResult.broadcast && !(await hasPermissionAsync(this.userId, 'view-broadcast-member-list', findResult.rid))) {
+			return API.v1.forbidden();
+		}
+
+		const { offset: skip, count: limit } = await getPaginationItems(this.queryParams);
+		const { sort = {} } = await this.parseJsonQuery();
+
+		check(
+			this.queryParams,
+			Match.ObjectIncluding({
+				status: Match.Maybe([String]),
+				filter: Match.Maybe(String),
+			}),
+		);
+
+		const { status, filter } = this.queryParams;
+
+		const { cursor, totalCount } = await findUsersOfRoom({
+			rid: findResult.rid,
+			...(status && { status: { $in: status as UserStatus[] } }),
+			skip,
+			limit,
+			filter,
+			...(sort?.username && { sort: { username: sort.username } }),
+		});
+
+		const [members, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			members,
+			count: members.length,
+			offset: skip,
+			total,
+		});
 	},
 );
 
@@ -1369,7 +1455,8 @@ API.v1.addRoute(
 
 type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint>;
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
+type GroupsMembersEndpoint = ExtractRoutesFromAPI<typeof groupsMembersEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	interface Endpoints extends GroupsCountersEndpoint, GroupsInfoEndpoint {}
+	interface Endpoints extends GroupsCountersEndpoint, GroupsInfoEndpoint, GroupsMembersEndpoint {}
 }
