@@ -3,12 +3,12 @@ import { Emitter } from '@rocket.chat/emitter';
 import { differenceInMilliseconds } from 'date-fns';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
-import type { MutableRefObject } from 'react';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getUserId } from '../../../../client/lib/user';
 import { callWithErrorHandling } from '../../../../client/lib/utils/callWithErrorHandling';
 import { getConfig } from '../../../../client/lib/utils/getConfig';
+import { waitForElement } from '../../../../client/lib/utils/waitForElement';
 import { Messages, Subscriptions } from '../../../../client/stores';
 import { getUserPreference } from '../../../utils/client';
 
@@ -58,6 +58,10 @@ class RoomHistoryManagerClass extends Emitter {
 			firstUnread: ReactiveVar<IMessage | undefined>;
 			loaded: number | undefined;
 			oldestTs?: Date;
+			scroll?: {
+				scrollHeight: number;
+				scrollTop: number;
+			};
 		}
 	> = {};
 
@@ -114,7 +118,13 @@ class RoomHistoryManagerClass extends Emitter {
 		this.run(() => this.emit(requestId));
 	}
 
-	public async getMore(rid: IRoom['_id'], { limit = defaultLimit }: { limit?: number } = {}): Promise<void> {
+	public async getMore(
+		rid: IRoom['_id'],
+		{
+			limit = defaultLimit,
+			scrollPositionCallback,
+		}: { limit?: number; scrollPositionCallback?: () => { scrollHeight: number; scrollTop: number } } = {},
+	): Promise<void> {
 		const room = this.getRoom(rid);
 
 		if (Tracker.nonreactive(() => room.hasMore.get()) !== true) {
@@ -157,6 +167,10 @@ class RoomHistoryManagerClass extends Emitter {
 				room.oldestTs = messages[messages.length - 1].ts;
 			}
 
+			if (scrollPositionCallback) {
+				room.scroll = scrollPositionCallback();
+			}
+
 			await upsertMessageBulk({
 				msgs: messages.filter((msg) => msg.t !== 'command'),
 				subscription,
@@ -185,6 +199,12 @@ class RoomHistoryManagerClass extends Emitter {
 			room.isLoading.set(false);
 			await waitAfterFlush();
 		}
+	}
+
+	public getStoredScrollPosition(rid: IRoom['_id']) {
+		const room = this.getRoom(rid);
+
+		return room.scroll;
 	}
 
 	public async getMoreNext(rid: IRoom['_id']) {
@@ -266,25 +286,33 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		return this.loadSurroundingMessages(message, true);
+	}
+
+	public async getSurroundingChannelMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		return this.loadSurroundingMessages(message, false);
+	}
+
+	private async loadSurroundingMessages(message: (Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) | undefined, showThreadMessages: boolean) {
 		if (!message?.rid) {
-			return false;
+			return;
 		}
 
 		const messageAlreadyLoaded = Messages.state.some((record) => record._id === message._id && record._hidden !== true);
 
 		if (messageAlreadyLoaded) {
-			return true;
+			return;
 		}
 
 		const room = this.getRoom(message.rid);
 
 		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
-		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
+		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit, showThreadMessages);
 
 		this.clear(message.rid);
 
 		if (!result) {
-			return false;
+			return;
 		}
 		const { messages = [] } = result;
 
@@ -305,8 +333,6 @@ class RoomHistoryManagerClass extends Emitter {
 		room.loaded += result.messages.length;
 		room.hasMore.set(result.moreBefore);
 		room.hasMoreNext.set(result.moreAfter);
-
-		return false;
 	}
 }
 

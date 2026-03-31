@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, ReactElement } from 'react';
+import type { MouseEvent, ReactElement, RefCallback } from 'react';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
@@ -26,10 +26,10 @@ import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
+import { useStoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
-import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
-import { useLoadSurroundingMessages } from '../MessageList/hooks/useLoadSurroundingMessages';
+import type { VirtualizerHandle } from '../MessageList/VirtualizedMessageList';
 
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
@@ -59,6 +59,8 @@ const RoomBody = (): ReactElement => {
 
 	const subscribed = !!subscription;
 
+	const virtualizerHandle = useRef<VirtualizerHandle>(null);
+
 	const canPreview = useMemo(() => {
 		if (room && room.t !== 'c') {
 			return true;
@@ -75,13 +77,6 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	// need to update
-	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
-
-	useLoadSurroundingMessages();
-
-	// TODO: REMOVE THIS COMMENTARY WHEN READY FOR REVIEW
-	// ref Needed, it handles the unread reading tracking, not related to scroll position
 	const {
 		wrapperRef,
 		innerRef: unreadBarInnerRef,
@@ -90,11 +85,7 @@ const RoomBody = (): ReactElement => {
 		counter: [unread],
 	} = useHandleUnread(room, subscription);
 
-	// TODO: REMOVE THIS COMMENTARY WHEN READY FOR REVIEW
-	// ref Needed, it handles the date bubble on top of the message list, not related to scroll position
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
-
-	const jumpToRef = useMergedRefsV2(jumpToRefGetMoreImperative);
 
 	const {
 		uploads,
@@ -107,7 +98,9 @@ const RoomBody = (): ReactElement => {
 	const { selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
 	const scrollContainerRef = useRef<HTMLElement | null>(null);
+
 	const [, setScrollContainerReady] = useState(false);
+
 	const scrollContainerRefCallback = useCallback((el: HTMLElement | null) => {
 		scrollContainerRef.current = el;
 		setScrollContainerReady((prev) => (el ? true : prev));
@@ -118,12 +111,14 @@ const RoomBody = (): ReactElement => {
 		user?._id,
 	);
 
+	const { innerRef: scrollContainerInnerRef } = useStoreScrollPosition(room._id, 100, virtualizerHandle);
+
 	const innerRef = useMergedRefsV2(
 		scrollContainerRefCallback,
 		dateScrollInnerRef,
 		unreadBarInnerRef,
 		messageListRef,
-		jumpToRefGetMoreImperativeInnerRef,
+		scrollContainerInnerRef,
 	);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
@@ -233,8 +228,9 @@ const RoomBody = (): ReactElement => {
 								>
 									<MessageListErrorBoundary>
 										<MessageList
+											virtualizerHandle={virtualizerHandle}
 											rid={room._id}
-											messageListRef={jumpToRef}
+											messageListRef={messageListRef}
 											scrollContainerRef={scrollContainerRef}
 											isLoadingMoreMessages={isLoadingMoreMessages}
 											canPreview={canPreview}

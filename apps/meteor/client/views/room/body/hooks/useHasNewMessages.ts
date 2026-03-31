@@ -4,12 +4,11 @@ import { clientCallbacks } from '@rocket.chat/ui-client';
 import { useCallback, useEffect, useState } from 'react';
 
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
-import { useMessageListVirtualizer } from '../../../../components/message/list/MessageListContext';
+import type { VirtualizerHandle } from '../../MessageList/VirtualizedMessageList';
 import { useChat } from '../../contexts/ChatContext';
 
-export const useHasNewMessages = (rid: string, uid: string | undefined) => {
+export const useHasNewMessages = (rid: string, uid: string | undefined, virtualizerRef: RefObject<VirtualizerHandle>) => {
 	const chat = useChat();
-	const virtualizerRef = useMessageListVirtualizer();
 
 	if (!chat) {
 		throw new Error('No ChatContext provided');

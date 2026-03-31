@@ -1,10 +1,10 @@
 import { isRoomFederated, isThreadMainMessage } from '@rocket.chat/core-typings';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ReactNode, RefCallback } from 'react';
-import { useMemo, useRef, memo } from 'react';
+import { useMemo, memo } from 'react';
 
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../../app/highlight-words/client/helper';
-import type { MessageListContextValue, VirtualizerHandle } from '../../../../components/message/list/MessageListContext';
+import type { MessageListContextValue } from '../../../../components/message/list/MessageListContext';
 import { MessageListContext } from '../../../../components/message/list/MessageListContext';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
@@ -59,7 +59,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 	const formatTime = useFormatTime();
 	const formatDate = useFormatDate();
 	const hasSubscription = Boolean(subscription);
-	const messageListVirtualizerRef = useRef<VirtualizerHandle | null>(null);
 
 	const chat = useChat();
 
@@ -93,7 +92,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			showRealName,
 			showUsername,
 			messageListRef,
-			messageListVirtualizer: messageListVirtualizerRef,
 			...(katexEnabled && {
 				katex: {
 					dollarSyntaxEnabled: katexDollarSyntaxEnabled,

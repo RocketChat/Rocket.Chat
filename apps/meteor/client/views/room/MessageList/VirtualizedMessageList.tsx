@@ -6,7 +6,7 @@ import { VirtualScrollbars } from '@rocket.chat/ui-client';
 import { useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { ScrollToOptions, VirtualItem } from '@tanstack/react-virtual';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import type { MutableRefObject, Ref } from 'react';
+import type { MutableRefObject, Ref, RefObject } from 'react';
 import { useCallback, useEffect, useImperativeHandle, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,18 +15,26 @@ import { isMessageSequential } from './lib/isMessageSequential';
 import { setHighlightMessage, clearHighlightMessage } from './providers/messageHighlightSubscription';
 import { RoomHistoryManager } from '../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../lib/utils/highOrderFunctions';
-import type { VirtualizerHandle } from '../../../components/message/list/MessageListContext';
-import { useMessageListVirtualizer } from '../../../components/message/list/MessageListContext';
 import { RoomManager } from '../../../lib/RoomManager';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
 
-export type { VirtualizerHandle };
-
 const ESTIMATE_SIZE = 84;
 const OVERSCAN = 5;
 const DEFAULT_MAX_RENDERED = 50;
+
+export type VirtualizerHandle = {
+	scrollToIndex: (index: number, opts?: ScrollToOptions) => void;
+	scrollToOffset: (offset: number, opts?: ScrollToOptions) => void;
+	scrollToEnd: (opts?: ScrollToOptions) => void;
+	getTotalSize: () => number;
+	isAtBottom: () => boolean;
+	scrollElement: HTMLElement | null;
+	requestScrollToEnd: () => void;
+	requestJumpToMessage: (messageId: string) => void;
+	clearRequestJumpToMessage: () => void;
+};
 
 type VirtualizedMessageListProps = {
 	rid: IRoom['_id'];
@@ -44,6 +52,7 @@ type VirtualizedMessageListProps = {
 	user: IUser | null;
 	room: IRoom;
 	retentionPolicy: RetentionPolicy;
+	virtualizerHandle: RefObject<VirtualizerHandle>;
 };
 
 export function VirtualizedMessageList({
@@ -62,6 +71,7 @@ export function VirtualizedMessageList({
 	user,
 	room,
 	retentionPolicy,
+	virtualizerHandle,
 }: VirtualizedMessageListProps) {
 	const { t } = useTranslation();
 	const router = useRouter();
@@ -74,7 +84,7 @@ export function VirtualizedMessageList({
 		estimateSize: () => ESTIMATE_SIZE,
 		overscan,
 		getItemKey: (index: number) => messages[index]?._id ?? index,
-		initialOffset: Infinity,
+		useFlushSync: false,
 	});
 
 	const scrollToEnd = useCallback(
@@ -85,6 +95,11 @@ export function VirtualizedMessageList({
 	);
 
 	const isAtBottom = useCallback(() => {
+		console.log(
+			'isAtBottom',
+			virtualizer.getVirtualItems()[virtualizer.getVirtualItems().length - 1]?.index,
+			virtualizer.options.count - 1,
+		);
 		return virtualizer.getVirtualItems()[virtualizer.getVirtualItems().length - 1]?.index === virtualizer.options.count - 1;
 	}, [virtualizer]);
 
@@ -96,20 +111,22 @@ export function VirtualizedMessageList({
 		shouldScrollToEndRef.current = false;
 	}, []);
 
-	const contextVirtualizerRef = useMessageListVirtualizer();
-	useImperativeHandle(
-		contextVirtualizerRef,
-		() => ({
-			scrollToIndex: (...args: Parameters<typeof virtualizer.scrollToIndex>) => virtualizer.scrollToIndex(...args),
-			scrollToOffset: (...args: Parameters<typeof virtualizer.scrollToOffset>) => virtualizer.scrollToOffset(...args),
-			scrollToEnd,
-			getTotalSize: () => virtualizer.getTotalSize(),
-			isAtBottom,
-			scrollElement: virtualizer.scrollElement,
-			requestScrollToEnd,
-		}),
-		[scrollToEnd, isAtBottom, virtualizer, requestScrollToEnd],
-	);
+	useImperativeHandle(virtualizerHandle, () => ({
+		scrollToIndex: (...args: Parameters<typeof virtualizer.scrollToIndex>) => virtualizer.scrollToIndex(...args),
+		scrollToOffset: (...args: Parameters<typeof virtualizer.scrollToOffset>) => virtualizer.scrollToOffset(...args),
+		scrollToEnd,
+		getTotalSize: () => virtualizer.getTotalSize(),
+		isAtBottom,
+		scrollElement: virtualizer.scrollElement,
+		requestScrollToEnd,
+	}));
+
+	// useEffect(() => {
+	// 	if (!innerRef?.current) {
+	// 		return;
+	// 	}
+	// 	innerRef.current = virtualizer.scrollElement;
+	// }, [virtualizer.scrollElement, innerRef]);
 
 	const totalSize = virtualizer.getTotalSize();
 	const virtualItems = virtualizer.getVirtualItems();
@@ -187,6 +204,7 @@ export function VirtualizedMessageList({
 	// TODO: decide if we will keep this with the other effects, if we will use effects or if another approach
 	useEffect(() => {
 		const store = RoomManager.getStore(rid);
+		console.log('store', store, store?.atBottom, store?.scroll);
 		if (store?.atBottom) {
 			requestScrollToEnd();
 		} else if (store?.scroll !== undefined) {
@@ -224,8 +242,6 @@ export function VirtualizedMessageList({
 		const index = messages.findIndex((m) => m._id === jumpToMessageParam);
 		if (index === -1) {
 			// Message not in current window — load surrounding messages.
-			// getSurroundingMessages is idempotent; safe to call even if
-			// useLoadSurroundingMessages already triggered it.
 			if (!isSurroundingLoadingRef.current) {
 				isSurroundingLoadingRef.current = true;
 				RoomHistoryManager.getSurroundingMessages({ _id: jumpToMessageParam, rid }).finally(() => {
@@ -245,7 +261,13 @@ export function VirtualizedMessageList({
 
 	return messages.length > 0 ? (
 		<VirtualScrollbars ref={innerRef} viewportRef={scrollContainerRef} key={room._id}>
-			<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages} style={{ height: `${totalSize}px` }}>
+			<Box
+				is='ul'
+				className='messages-list'
+				aria-label={t('Message_list')}
+				aria-busy={isLoadingMoreMessages}
+				style={{ height: `${totalSize}px` }}
+			>
 				{canPreview ? (
 					<>
 						{hasMorePreviousMessages ? (
@@ -297,7 +319,7 @@ export function VirtualizedMessageList({
 					);
 				})}
 				{hasMoreNextMessages ? <li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li> : null}
-			</ul>
+			</Box>
 		</VirtualScrollbars>
 	) : null;
 }

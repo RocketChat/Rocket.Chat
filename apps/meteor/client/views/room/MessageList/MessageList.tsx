@@ -1,7 +1,8 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MutableRefObject, Ref } from 'react';
+import type { ComponentProps, MutableRefObject, Ref, RefObject } from 'react';
 
+import type { VirtualizerHandle } from './VirtualizedMessageList';
 import { VirtualizedMessageList } from './VirtualizedMessageList';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
@@ -21,6 +22,7 @@ type MessageListProps = {
 	room: IRoom;
 	retentionPolicy: RetentionPolicy;
 	innerRef: Ref<HTMLElement>;
+	virtualizerHandle: RefObject<VirtualizerHandle>;
 };
 
 export const MessageList = function MessageList({
@@ -35,6 +37,7 @@ export const MessageList = function MessageList({
 	room,
 	retentionPolicy,
 	innerRef,
+	virtualizerHandle,
 }: MessageListProps) {
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
@@ -61,6 +64,7 @@ export const MessageList = function MessageList({
 					user={user}
 					room={room}
 					retentionPolicy={retentionPolicy}
+					virtualizerHandle={virtualizerHandle}
 				/>
 			</SelectedMessagesProvider>
 		</MessageListProvider>

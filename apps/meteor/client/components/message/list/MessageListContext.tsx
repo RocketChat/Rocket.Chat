@@ -1,23 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ScrollToOptions } from '@tanstack/react-virtual';
-import type { KeyboardEvent, MouseEvent, RefCallback, RefObject } from 'react';
+import type { KeyboardEvent, MouseEvent, RefCallback } from 'react';
 import { createContext, useContext } from 'react';
 
 import type { useFormatDate } from '../../../hooks/useFormatDate';
 import type { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 import type { useFormatTime } from '../../../hooks/useFormatTime';
-
-export type VirtualizerHandle = {
-	scrollToIndex: (index: number, opts?: ScrollToOptions) => void;
-	scrollToOffset: (offset: number, opts?: ScrollToOptions) => void;
-	scrollToEnd: (opts?: ScrollToOptions) => void;
-	getTotalSize: () => number;
-	isAtBottom: () => boolean;
-	scrollElement: HTMLElement | null;
-	requestScrollToEnd: () => void;
-	requestJumpToMessage: (messageId: string) => void;
-	clearRequestJumpToMessage: () => void;
-};
 
 export type MessageListContextValue = {
 	autoTranslate: {
@@ -55,7 +42,6 @@ export type MessageListContextValue = {
 	formatTime: ReturnType<typeof useFormatTime>;
 	formatDate: ReturnType<typeof useFormatDate>;
 	messageListRef?: RefCallback<HTMLElement | undefined>;
-	messageListVirtualizer?: RefObject<VirtualizerHandle | null>;
 };
 
 export const messageListContextDefaultValue: MessageListContextValue = {
@@ -87,7 +73,6 @@ export const messageListContextDefaultValue: MessageListContextValue = {
 	formatTime: () => '',
 	formatDate: () => '',
 	messageListRef: undefined,
-	messageListVirtualizer: undefined,
 };
 
 export const MessageListContext = createContext<MessageListContextValue>(messageListContextDefaultValue);
@@ -129,6 +114,3 @@ export const useMessageListFormatDateAndTime = (): MessageListContextValue['form
 
 export const useMessageListFormatTime = (): MessageListContextValue['formatTime'] => useContext(MessageListContext).formatTime;
 export const useMessageListFormatDate = (): MessageListContextValue['formatDate'] => useContext(MessageListContext).formatDate;
-
-export const useMessageListVirtualizer = (): MessageListContextValue['messageListVirtualizer'] =>
-	useContext(MessageListContext).messageListVirtualizer;
