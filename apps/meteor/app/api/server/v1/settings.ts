@@ -365,7 +365,7 @@ API.v1.post(
 			}
 
 			const data = await response.json();
-			return API.v1.success(data);
+			return API.v1.success();
 		}
 
 		const auditSettingOperation = updateAuditedByUser({
