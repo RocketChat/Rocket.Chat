@@ -70,7 +70,7 @@ jobs:
           METEOR_TOOL_DIRECTORY=$(dirname "$METEOR_SYMLINK_TARGET")
           set -e
           LAUNCHER=$HOME/.meteor/$METEOR_TOOL_DIRECTORY/scripts/admin/launch-meteor
-          if [ -e $LAUNCHER ]
+          if [ -e "$LAUNCHER" ]
           then
             echo "Cached Meteor bin found, restoring it"
             sudo cp "$LAUNCHER" "/usr/local/bin/meteor"
