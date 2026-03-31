@@ -3,6 +3,7 @@ import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.c
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
 	ajv,
+	isGroupsCountersProps,
 	isGroupsFilesProps,
 	isGroupsInfoProps,
 	isGroupsMessagesProps,
@@ -150,6 +151,31 @@ const groupsInfoResponse = ajv.compile<{ group: IRoom; success: true }>({
 	additionalProperties: false,
 });
 
+const groupsCountersResponse = ajv.compile<{
+	joined: boolean;
+	members: number | null;
+	unreads: number | null;
+	unreadsFrom: string | null;
+	msgs: number | null;
+	latest: string | null;
+	userMentions: number | null;
+	success: true;
+}>({
+	type: 'object',
+	properties: {
+		joined: { type: 'boolean' },
+		members: { type: 'number', nullable: true },
+		unreads: { type: 'number', nullable: true },
+		unreadsFrom: { type: 'string', nullable: true },
+		msgs: { type: 'number', nullable: true },
+		latest: { type: 'string', nullable: true },
+		userMentions: { type: 'number', nullable: true },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['joined', 'members', 'unreads', 'unreadsFrom', 'msgs', 'latest', 'userMentions', 'success'],
+	additionalProperties: false,
+});
+
 API.v1.addRoute(
 	'groups.addAll',
 	{ authRequired: true },
@@ -272,73 +298,80 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const groupsCountersEndpoint = API.v1.get(
 	'groups.counters',
-	{ authRequired: true },
 	{
-		async get() {
-			const access = await hasPermissionAsync(this.userId, 'view-room-administration');
-			const params = this.queryParams;
-			let user = this.userId;
-			let room;
-			let unreads = null;
-			let userMentions = null;
-			let unreadsFrom = null;
-			let joined = false;
-			let msgs = null;
-			let latest = null;
-			let members = null;
-
-			if (('roomId' in params && !params.roomId) || ('roomName' in params && !params.roomName)) {
-				throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
-			}
-
-			if ('roomId' in params) {
-				room = await Rooms.findOneById(params.roomId || '');
-			} else if ('roomName' in params) {
-				room = await Rooms.findOneByName(params.roomName || '');
-			}
-
-			if (room?.t !== 'p') {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
-			}
-
-			if (room.archived) {
-				throw new Meteor.Error('error-room-archived', `The private group, ${room.name}, is archived`);
-			}
-
-			if (params.userId) {
-				if (!access) {
-					return API.v1.forbidden();
-				}
-				user = params.userId;
-			}
-			const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user);
-			const lm = room.lm ? room.lm : room._updatedAt;
-
-			if (subscription?.open) {
-				unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls || subscription.ts, lm);
-				unreadsFrom = subscription.ls || subscription.ts;
-				userMentions = subscription.userMentions;
-				joined = true;
-			}
-
-			if (access || joined) {
-				msgs = room.msgs;
-				latest = lm;
-				members = await Users.countActiveUsersInNonDMRoom(room._id);
-			}
-
-			return API.v1.success({
-				joined,
-				members,
-				unreads,
-				unreadsFrom,
-				msgs,
-				latest,
-				userMentions,
-			});
+		authRequired: true,
+		query: isGroupsCountersProps,
+		response: {
+			200: groupsCountersResponse,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+	},
+	async function action() {
+		const access = await hasPermissionAsync(this.userId, 'view-room-administration');
+		const params = this.queryParams;
+		let user = this.userId;
+		let room;
+		let unreads = null;
+		let userMentions = null;
+		let unreadsFrom = null;
+		let joined = false;
+		let msgs = null;
+		let latest = null;
+		let members = null;
+
+		if (('roomId' in params && !params.roomId) || ('roomName' in params && !params.roomName)) {
+			throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+		}
+
+		if ('roomId' in params) {
+			room = await Rooms.findOneById(params.roomId || '');
+		} else if ('roomName' in params) {
+			room = await Rooms.findOneByName(params.roomName || '');
+		}
+
+		if (room?.t !== 'p') {
+			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		}
+
+		if (room.archived) {
+			throw new Meteor.Error('error-room-archived', `The private group, ${room.name}, is archived`);
+		}
+
+		if (params.userId) {
+			if (!access) {
+				return API.v1.forbidden();
+			}
+			user = params.userId;
+		}
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user);
+		const lm = room.lm ? room.lm : room._updatedAt;
+
+		if (subscription?.open) {
+			unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls || subscription.ts, lm);
+			unreadsFrom = subscription.ls || subscription.ts;
+			userMentions = subscription.userMentions;
+			joined = true;
+		}
+
+		if (access || joined) {
+			msgs = room.msgs;
+			latest = lm;
+			members = await Users.countActiveUsersInNonDMRoom(room._id);
+		}
+
+		return API.v1.success({
+			joined,
+			members,
+			unreads,
+			unreadsFrom,
+			msgs,
+			latest,
+			userMentions,
+		});
 	},
 );
 
@@ -1334,8 +1367,9 @@ API.v1.addRoute(
 	},
 );
 
+type GroupsCountersEndpoint = ExtractRoutesFromAPI<typeof groupsCountersEndpoint>;
 type GroupsInfoEndpoint = ExtractRoutesFromAPI<typeof groupsInfoEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	interface Endpoints extends GroupsInfoEndpoint {}
+	interface Endpoints extends GroupsCountersEndpoint, GroupsInfoEndpoint {}
 }
