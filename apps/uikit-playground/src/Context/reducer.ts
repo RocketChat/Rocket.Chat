@@ -294,6 +294,10 @@ const reducer = (state: initialStateType, action: IAction) => {
 			screensIds?.forEach((id) => delete state.screens[id]);
 			delete state.projects[action.payload];
 
+			if (action.payload !== activeProject) {
+				return { ...state };
+			}
+
 			const remainingProjectIds = Object.keys(state.projects);
 			if (remainingProjectIds.length > 0) {
 				const nextProjectId = remainingProjectIds[0];
