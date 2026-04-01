@@ -404,6 +404,10 @@ const roomsCleanHistoryEndpoint = API.v1.post('rooms.cleanHistory',
 				users: { type: 'array', items: { type: 'string' } }
 			},
 			required: ['latest', 'oldest'],
+			anyOf: [
+				{ required: ['roomId'] },
+				{ required: ['roomName'] }
+			],
 			additionalProperties: false
 		}),
 		response: {
