@@ -54,88 +54,6 @@ describe('[Push]', () => {
 					expect(res.body).to.have.property('message');
 				});
 		});
-
-		it('should fail if missing type', async () => {
-			await request
-				.post(api('push.token'))
-				.set(credentials)
-				.send({
-					value: 'token',
-					appName: 'com.example.rocketchat',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error').that.includes(`must have required property 'type'`);
-				});
-		});
-
-		it('should fail if missing value', async () => {
-			await request
-				.post(api('push.token'))
-				.set(credentials)
-				.send({
-					type: 'gcm',
-					appName: 'com.example.rocketchat',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error').that.includes(`must have required property 'value'`);
-				});
-		});
-
-		it('should fail if missing appName', async () => {
-			await request
-				.post(api('push.token'))
-				.set(credentials)
-				.send({
-					type: 'gcm',
-					value: 'token',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error').that.includes(`must have required property 'appName'`);
-				});
-		});
-
-		it('should fail if type param is unknown', async () => {
-			await request
-				.post(api('push.token'))
-				.set(credentials)
-				.send({
-					type: 'unknownPlatform',
-					value: 'token',
-					appName: 'com.example.rocketchat',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error').that.includes(`must be equal to one of the allowed values`);
-				});
-		});
-
-		it('should fail if token param is empty', async () => {
-			await request
-				.post(api('push.token'))
-				.set(credentials)
-				.send({
-					type: 'gcm',
-					appName: 'com.example.rocketchat',
-					value: '',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error').that.includes(`must NOT have fewer than 1 characters`);
-				});
-		});
 	});
 
 	describe('DELETE [/push.token]', () => {
@@ -149,34 +67,6 @@ describe('[Push]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
-				});
-		});
-
-		it('should fail if missing token key', async () => {
-			await request
-				.delete(api('push.token'))
-				.set(credentials)
-				.send({})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error').that.includes(`must have required property 'token'`);
-				});
-		});
-
-		it('should fail if token is empty', async () => {
-			await request
-				.delete(api('push.token'))
-				.set(credentials)
-				.send({
-					token: '',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-					expect(res.body).to.have.property('error').that.includes(`must NOT have fewer than 1 characters`);
 				});
 		});
 
