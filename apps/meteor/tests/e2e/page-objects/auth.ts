@@ -80,6 +80,10 @@ export class Registration extends Main {
 		super(page.getByRole('main'));
 	}
 
+	async waitForCalloutPage(): Promise<void> {
+		await this.page.getByRole('heading', { level: 2 }).waitFor();
+	}
+
 	get btnSendInstructions(): Locator {
 		return this.page.locator('role=button[name="Send instructions"]');
 	}
@@ -146,5 +150,9 @@ export class Registration extends Main {
 
 	get registrationDisabledCallout(): Locator {
 		return this.page.locator('role=status >> text=/New user registration is currently disabled/');
+	}
+
+	get registrationInvalidUrlCallout(): Locator {
+		return this.page.getByRole('heading', { level: 2, name: 'The URL provided is invalid.' });
 	}
 }
