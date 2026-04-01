@@ -16,7 +16,7 @@ const PreferencesUserPresenceSection = () => {
 						<Controller
 							name='enableAutoAway'
 							control={control}
-							render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -26,7 +26,7 @@ const PreferencesUserPresenceSection = () => {
 						<Controller
 							name='idleTimeLimit'
 							control={control}
-							render={({ field: { ref, value, onChange } }) => <NumberInput ref={ref} value={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <NumberInput {...field} value={value} />}
 						/>
 					</FieldRow>
 				</Field>
