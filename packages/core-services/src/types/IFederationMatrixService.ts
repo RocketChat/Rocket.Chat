@@ -12,6 +12,8 @@ export interface IFederationMatrixService {
 	getEventById(eventId: string): Promise<EventStore | null>;
 	leaveRoom(rid: IRoomFederated['_id'], user: IUser, kicker?: IUser): Promise<void>;
 	kickUser(room: IRoomNativeFederated, removedUser: IUser, userWhoRemoved: IUser): Promise<void>;
+	banUser(room: IRoomNativeFederated, bannedUser: IUser, userWhoBanned: IUser): Promise<void>;
+	unbanUser(room: IRoomNativeFederated, unbannedUser: IUser, userWhoUnbanned: IUser): Promise<void>;
 	updateMessage(room: IRoomNativeFederated, message: IMessage): Promise<void>;
 	updateRoomName(rid: string, displayName: string, user: IUser): Promise<void>;
 	updateRoomTopic(
@@ -30,4 +32,6 @@ export interface IFederationMatrixService {
 	verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }>;
 	handleInvite(subscriptionId: ISubscription['_id'], userId: IUser['_id'], action: 'accept' | 'reject'): Promise<void>;
 	canUserAccessFederation(user: IUser): Promise<boolean>;
+	notifyRoomRead(params: { room: IRoomNativeFederated; userId: string; threadId?: string }): Promise<void>;
+	updateUserName(user: IUser): Promise<void>;
 }

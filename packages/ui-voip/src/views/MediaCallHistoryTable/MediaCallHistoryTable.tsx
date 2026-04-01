@@ -7,7 +7,7 @@ type SortBy = 'contact' | 'type' | 'status' | 'timestamp';
 type SortProps = {
 	sortBy: SortBy;
 	sortDirection: 'asc' | 'desc';
-	setSort: (sortBy: SortBy, direction?: 'asc' | 'desc' | undefined) => void;
+	setSort: (sortBy: SortBy, direction?: 'asc' | 'desc') => void;
 };
 
 type MediaCallHistoryTableProps = {

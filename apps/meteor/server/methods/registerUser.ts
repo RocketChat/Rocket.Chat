@@ -98,7 +98,7 @@ export const registerUser = async (
 	const userData = {
 		email: trim(formData.email.toLowerCase()),
 		password: formData.pass,
-		name: formData.name,
+		...(formData.name?.trim() && { name: formData.name?.trim() }),
 		reason: formData.reason,
 	};
 
@@ -116,8 +116,6 @@ export const registerUser = async (
 
 		throw new Meteor.Error(String(e));
 	}
-
-	await Users.setName(userId, trim(formData.name));
 
 	const reason = trim(formData.reason);
 	if (manuallyApproveNewUsers && reason) {

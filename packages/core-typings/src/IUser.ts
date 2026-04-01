@@ -277,6 +277,11 @@ export type IUserDataEvent = {
 	  }
 );
 
+export type IDirectoryUserResult = Pick<
+	IUser,
+	'_id' | 'createdAt' | 'username' | 'name' | 'nickname' | 'bio' | 'emails' | 'federation' | 'avatarETag'
+>;
+
 export type IUserInRole = Pick<
 	IUser,
 	'_id' | 'name' | 'username' | 'emails' | 'avatarETag' | 'createdAt' | 'roles' | 'type' | 'active' | '_updatedAt'
