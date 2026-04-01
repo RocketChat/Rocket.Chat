@@ -40,7 +40,7 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='unreadAlert'
 							control={control}
-							render={({ field: { value, onChange, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -50,7 +50,7 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='showThreadsInMainChannel'
 							control={control}
-							render={({ field: { value, onChange, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 					<FieldHint>{t('Accounts_Default_User_Preferences_showThreadsInMainChannel_Description')}</FieldHint>
@@ -61,9 +61,7 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='alsoSendThreadToChannel'
 							control={control}
-							render={({ field: { value, onChange } }) => (
-								<Select value={value} onChange={onChange} options={alsoSendThreadMessageToChannelOptions} />
-							)}
+							render={({ field }) => <Select {...field} options={alsoSendThreadMessageToChannelOptions} />}
 						/>
 					</FieldRow>
 					<FieldHint>{t('Accounts_Default_User_Preferences_alsoSendThreadToChannel_Description')}</FieldHint>
@@ -80,7 +78,7 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='useEmojis'
 							control={control}
-							render={({ field: { value, onChange, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -90,7 +88,7 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='convertAsciiEmoji'
 							control={control}
-							render={({ field: { value, onChange, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -100,7 +98,7 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='autoImageLoad'
 							control={control}
-							render={({ field: { value, onChange, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -110,7 +108,7 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='saveMobileBandwidth'
 							control={control}
-							render={({ field: { value, onChange, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -120,7 +118,7 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='collapseMediaByDefault'
 							control={control}
-							render={({ field: { value, onChange, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -142,7 +140,7 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='hideFlexTab'
 							control={control}
-							render={({ field: { value, onChange, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -152,18 +150,14 @@ const PreferencesMessagesSection = () => {
 						<Controller
 							name='displayAvatars'
 							control={control}
-							render={({ field: { value, onChange, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Enter_Behaviour')}</FieldLabel>
 					<FieldRow>
-						<Controller
-							name='sendOnEnter'
-							control={control}
-							render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={sendOnEnterOptions} />}
-						/>
+						<Controller name='sendOnEnter' control={control} render={({ field }) => <Select {...field} options={sendOnEnterOptions} />} />
 					</FieldRow>
 					<FieldHint>{t('Enter_Behaviour_Description')}</FieldHint>
 				</Field>
