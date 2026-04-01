@@ -195,22 +195,27 @@ const reducer = (state: initialStateType, action: IAction) => {
 		}
 		case ActionTypes.DeleteScreen: {
 			delete state.screens[action.payload];
-			state.projects[activeProject].screens = [...state.projects[activeProject].screens.filter((id) => id !== action.payload)];
-			if (state.projects[activeProject].screens.length > 0) {
-				state.activeScreen = state.projects[activeProject].screens[0];
-			} else if (state.projects[activeProject].screens.length === 0) {
-				if (Object.keys(state.projects).length > 0) {
-					delete state.projects[activeProject];
+			const project = state.projects[activeProject];
+			project.screens = project.screens.filter((id) => id !== action.payload);
+			project.flowEdges = project.flowEdges.filter(
+				(edge) => edge.source !== action.payload && edge.target !== action.payload,
+			);
+			project.flowNodes = project.flowNodes.filter((node) => node.id !== action.payload);
+
+			if (project.screens.length > 0) {
+				state.activeScreen = project.screens[0];
+			} else {
+				delete state.projects[activeProject];
+				const remainingProjectIds = Object.keys(state.projects);
+				if (remainingProjectIds.length > 0) {
+					const nextProjectId = remainingProjectIds[0];
+					state.activeProject = nextProjectId;
+					state.activeScreen = state.projects[nextProjectId].screens[0] || '';
+				} else {
 					state.activeProject = '';
 					state.activeScreen = '';
 				}
 			}
-
-			state.projects[activeProject].flowEdges = state.projects[activeProject].flowEdges.filter(
-				(edge) => edge.source !== action.payload && edge.target !== action.payload,
-			);
-
-			state.projects[activeProject].flowNodes = state.projects[activeProject].flowNodes.filter((node) => node.id !== action.payload);
 
 			return { ...state };
 		}
@@ -285,10 +290,20 @@ const reducer = (state: initialStateType, action: IAction) => {
 		}
 
 		case ActionTypes.DeleteProject: {
-			window.console.log(state.projects[action.payload]?.screens);
 			const screensIds = state.projects[action.payload]?.screens;
-			screensIds?.map((id) => delete state.screens[id]);
+			screensIds?.forEach((id) => delete state.screens[id]);
 			delete state.projects[action.payload];
+
+			const remainingProjectIds = Object.keys(state.projects);
+			if (remainingProjectIds.length > 0) {
+				const nextProjectId = remainingProjectIds[0];
+				return {
+					...state,
+					activeProject: nextProjectId,
+					activeScreen: state.projects[nextProjectId].screens[0] || '',
+				};
+			}
+
 			return {
 				...state,
 				activeProject: '',
