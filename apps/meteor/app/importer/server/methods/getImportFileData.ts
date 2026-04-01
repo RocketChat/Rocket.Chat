@@ -11,6 +11,16 @@ import { hasPermissionAsync } from '../../../authorization/server/functions/hasP
 import { ProgressStep } from '../../lib/ImporterProgressStep';
 import { RocketChatImportFileInstance } from '../startup/store';
 
+const VALID_CSV_CONTENT_TYPES = ['text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel', 'text/comma-separated-values'];
+
+const updateImportOperationStatus = async (operationId: string, status: IImportProgress['step'], valid: boolean): Promise<void> => {
+	const importsModel = Imports as unknown as {
+		updateOne: (selector: { _id: string }, update: { $set: { status: IImportProgress['step']; valid: boolean } }) => Promise<unknown>;
+	};
+
+	await importsModel.updateOne({ _id: operationId }, { $set: { status, valid } });
+};
+
 export const executeGetImportFileData = async (): Promise<IImporterSelection | { waiting: true }> => {
 	const operation = await Imports.findLastImport();
 	if (!operation) {
@@ -34,17 +44,15 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 		ProgressStep.PREPARING_CONTACTS,
 		ProgressStep.PREPARING_STARTED,
 	];
+
 	if (waitingSteps.indexOf(instance.progress.step) >= 0) {
-		const validCsvContentTypes = ['text/csv', 'text/plain', 'application/csv', 'application/vnd.ms-excel'];
-		const isInvalidCSV = operation.importerKey === 'csv' && !validCsvContentTypes.includes(operation.contentType ?? '');
+		const isInvalidCSV = operation.importerKey === 'csv' && !VALID_CSV_CONTENT_TYPES.includes(operation.contentType ?? '');
 
 		if (instance.importRecord?.valid && !isInvalidCSV) {
 			return { waiting: true };
 		}
-		await Imports.updateOne(
-			{ _id: operation._id },
-			{ $set: { status: ProgressStep.ERROR, valid: false } }
-		);
+
+		await updateImportOperationStatus(operation._id, ProgressStep.ERROR, false);
 		throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', 'getImportFileData');
 	}
 

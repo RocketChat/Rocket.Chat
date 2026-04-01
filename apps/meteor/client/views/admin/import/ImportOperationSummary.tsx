@@ -21,7 +21,6 @@ type ImportOperationSummaryProps = {
 	file?: string;
 	user: string;
 	small?: boolean;
-	contentType?: string;
 	count?: {
 		users?: number;
 		channels?: number;
@@ -40,7 +39,6 @@ function ImportOperationSummary({
 	file = '',
 	user,
 	small,
-	contentType,
 	count: { users = 0, channels = 0, messages = 0, total = 0, contacts = 0 } = {},
 	valid,
 }: ImportOperationSummaryProps) {
@@ -89,11 +87,11 @@ function ImportOperationSummary({
 
 	const props = hasAction
 		? {
-			tabIndex: 0,
-			role: 'link',
-			action: true,
-			onClick: handleClick,
-		}
+				tabIndex: 0,
+				role: 'link',
+				action: true,
+				onClick: handleClick,
+			}
 		: {};
 
 	return (
@@ -103,10 +101,10 @@ function ImportOperationSummary({
 			{!small && (
 				<>
 					<TableCell>
-						{status && (valid === false
-							? t('importer_status_import_failed' as TranslationKey)
-							: t(status.replace('importer_', 'importer_status_') as TranslationKey)
-						)}
+						{status &&
+							(valid === false
+								? t('importer_status_import_failed' as TranslationKey)
+								: t(status.replace('importer_', 'importer_status_') as TranslationKey))}
 					</TableCell>
 					<TableCell>{fileName}</TableCell>
 					<TableCell align='center'>{users}</TableCell>
