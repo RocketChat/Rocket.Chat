@@ -26,11 +26,7 @@ const PreferencesSoundSection = () => {
 					<FieldLabel>{t('Master_volume')}</FieldLabel>
 					<FieldHint mbe={4}>{t('Master_volume_hint')}</FieldHint>
 					<FieldRow>
-						<Controller
-							name='masterVolume'
-							control={control}
-							render={({ field: { onChange, value } }) => <Slider value={value} minValue={0} maxValue={100} onChange={onChange} />}
-						/>
+						<Controller name='masterVolume' control={control} render={({ field }) => <Slider {...field} minValue={0} maxValue={100} />} />
 					</FieldRow>
 				</Field>
 				<Field>
@@ -40,12 +36,12 @@ const PreferencesSoundSection = () => {
 						<Controller
 							name='notificationsSoundVolume'
 							control={control}
-							render={({ field: { onChange, value } }) => (
+							render={({ field: { onChange, ...field } }) => (
 								<Slider
-									value={value}
+									{...field}
 									minValue={0}
 									maxValue={100}
-									onChange={(value) => {
+									onChange={(value: number) => {
 										const soundVolume = (notificationsSoundVolume * masterVolume) / 100;
 										customSound.play(newMessageNotification, { volume: soundVolume / 100 });
 										onChange(value);
@@ -62,12 +58,12 @@ const PreferencesSoundSection = () => {
 						<Controller
 							name='voipRingerVolume'
 							control={control}
-							render={({ field: { onChange, value } }) => (
+							render={({ field: { onChange, ...field } }) => (
 								<Slider
-									value={value}
+									{...field}
 									minValue={0}
 									maxValue={100}
-									onChange={(value) => {
+									onChange={(value: number) => {
 										const soundVolume = (voipRingerVolume * masterVolume) / 100;
 										customSound.play('telephone', { volume: soundVolume / 100 });
 										onChange(value);
@@ -83,9 +79,9 @@ const PreferencesSoundSection = () => {
 						<Controller
 							name='newRoomNotification'
 							control={control}
-							render={({ field: { value, onChange } }) => (
+							render={({ field: { onChange, ...field } }) => (
 								<Select
-									value={value}
+									{...field}
 									options={soundsList}
 									onChange={(value) => {
 										onChange(value);
@@ -102,9 +98,9 @@ const PreferencesSoundSection = () => {
 						<Controller
 							name='newMessageNotification'
 							control={control}
-							render={({ field: { value, onChange } }) => (
+							render={({ field: { onChange, ...field } }) => (
 								<Select
-									value={value}
+									{...field}
 									options={soundsList}
 									onChange={(value) => {
 										onChange(value);
@@ -121,7 +117,7 @@ const PreferencesSoundSection = () => {
 						<Controller
 							name='muteFocusedConversations'
 							control={control}
-							render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
