@@ -9,10 +9,10 @@ import { settings } from '../../../settings/server';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
-let emailDomainBlackList = [];
-let emailDomainWhiteList = [];
+let emailDomainBlackList: string[] = [];
+let emailDomainWhiteList: string[] = [];
 
-settings.watch('Accounts_BlockedDomainsList', (value) => {
+settings.watch('Accounts_BlockedDomainsList', (value: string) => {
 	if (!value) {
 		emailDomainBlackList = [];
 		return;
@@ -23,7 +23,8 @@ settings.watch('Accounts_BlockedDomainsList', (value) => {
 		.filter(Boolean)
 		.map((domain) => domain.trim());
 });
-settings.watch('Accounts_AllowedDomainsList', (value) => {
+
+settings.watch('Accounts_AllowedDomainsList', (value: string) => {
 	if (!value) {
 		emailDomainWhiteList = [];
 		return;
@@ -35,7 +36,7 @@ settings.watch('Accounts_AllowedDomainsList', (value) => {
 		.map((domain) => domain.trim());
 });
 
-export const validateEmailDomain = async function (email) {
+export const validateEmailDomain = async function (email: string): Promise<void> {
 	if (!validateEmail(email)) {
 		throw new Meteor.Error('error-invalid-email', `Invalid email ${email}`, {
 			function: 'RocketChat.validateEmailDomain',
@@ -50,11 +51,14 @@ export const validateEmailDomain = async function (email) {
 			function: 'RocketChat.validateEmailDomain',
 		});
 	}
-	if (
-		emailDomainBlackList.length &&
-		(emailDomainBlackList.indexOf(emailDomain) !== -1 ||
-			(settings.get('Accounts_UseDefaultBlockedDomainsList') && emailDomainDefaultBlackList.indexOf(emailDomain) !== -1))
-	) {
+
+	if (emailDomainBlackList.length && emailDomainBlackList.indexOf(emailDomain) !== -1) {
+		throw new Meteor.Error('error-email-domain-blacklisted', 'The email domain is blacklisted', {
+			function: 'RocketChat.validateEmailDomain',
+		});
+	}
+
+	if (settings.get('Accounts_UseDefaultBlockedDomainsList') && emailDomainDefaultBlackList.indexOf(emailDomain) !== -1) {
 		throw new Meteor.Error('error-email-domain-blacklisted', 'The email domain is blacklisted', {
 			function: 'RocketChat.validateEmailDomain',
 		});
