@@ -58,40 +58,54 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 	}
 
 	async getHealthStatus(): Promise<void> {
-		let token: string;
+		await this.checkPlatformHealth();
+		const token = await this.checkIdpConnectivity();
+		await this.checkAuthorizedAccess(token);
+	}
+
+	private async checkIdpConnectivity(): Promise<string> {
 		try {
-			token = await this.getClientToken();
-		} catch (err) {
+			return await this.getClientToken();
+		} catch {
 			throw new Error('ABAC_PDP_Health_IdP_Failed');
 		}
+	}
 
-		const healthResponse = await serverFetch(`${this.config.baseUrl}/healthz`, {
-			method: 'GET',
-			// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
-			ignoreSsrfValidation: true,
-		});
+	private async checkPlatformHealth(): Promise<void> {
+		try {
+			const response = await serverFetch(`${this.config.baseUrl}/healthz`, {
+				method: 'GET',
+				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
+			});
 
-		if (!healthResponse.ok) {
+			if (!response.ok) {
+				throw new Error();
+			}
+
+			const data = (await response.json()) as { status?: string };
+			if (data.status !== 'SERVING') {
+				throw new Error();
+			}
+		} catch {
 			throw new Error('ABAC_PDP_Health_Platform_Failed');
 		}
+	}
 
-		const data = (await healthResponse.json()) as { status?: string };
-		if (data.status !== 'SERVING') {
-			throw new Error('ABAC_PDP_Health_Platform_Failed');
-		}
+	private async checkAuthorizedAccess(token: string): Promise<void> {
+		try {
+			const response = await serverFetch(`${this.config.baseUrl}/authorization.AuthorizationService/GetDecisions`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+				body: JSON.stringify({ decisionRequests: [] }),
+				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
+			});
 
-		const authResponse = await serverFetch(`${this.config.baseUrl}/authorization.AuthorizationService/GetDecisions`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				'Authorization': `Bearer ${token}`,
-			},
-			body: JSON.stringify({ decisionRequests: [] }),
-			// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
-			ignoreSsrfValidation: true,
-		});
-
-		if (!authResponse.ok) {
+			if (!response.ok) {
+				throw new Error();
+			}
+		} catch {
 			throw new Error('ABAC_PDP_Health_Authorization_Failed');
 		}
 	}
