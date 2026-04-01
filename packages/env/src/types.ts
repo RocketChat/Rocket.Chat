@@ -1,0 +1,74 @@
+export interface RocketChatEnv {
+	// Required
+	MONGO_URL: string;
+
+	// Optional with defaults — strings
+	ADMIN_NAME: string;
+	ADMIN_USERNAME: string;
+	BIND_IP: string;
+	DEPLOY_METHOD: string;
+	DEPLOY_PLATFORM: string;
+	INSTANCE_IP: string;
+
+	// Optional with defaults — numbers
+	EVENT_LOOP_LAG_MS: number;
+	HEAP_USAGE_PERCENT: number;
+	HTTP_FORWARDED_COUNT: number;
+	MAX_RESUME_LOGIN_TOKENS: number;
+	PORT: number;
+
+	// Optional strings
+	ADMIN_EMAIL?: string;
+	ADMIN_PASS?: string;
+	BUGSNAG_CLIENT?: string;
+	CLOUD_SUPPORTED_VERSIONS?: string;
+	CLOUD_SUPPORTED_VERSIONS_TOKEN?: string;
+	DEPLOYMENT_ID?: string;
+	FILE_STORAGE_CUSTOM_USER_AGENT?: string;
+	INITIAL_USER?: string;
+	OVERWRITE_INTERNAL_MARKETPLACE_URL?: string;
+	OVERWRITE_INTERNAL_RELEASE_URL?: string;
+	RATE_LIMITER_LOGGER?: string;
+	RC_DISABLE_STATISTICS_REPORTING?: string;
+	REG_TOKEN?: string;
+	ROCKET_CHAT_DEPRECATION_THROW_ERRORS_FOR_VERSIONS_UNDER?: string;
+	ROCKETCHAT_LICENSE?: string;
+	SETTINGS_BLOCKED?: string;
+	SETTINGS_HIDDEN?: string;
+	SETTINGS_REQUIRED_ON_WIZARD?: string;
+	TCP_PORT?: string;
+	TRANSPORTER?: string;
+	TRANSPORTER_EXTRA?: string;
+
+	// Optional booleans
+	ADMIN_EMAIL_VERIFIED?: boolean;
+	ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?: boolean;
+	AUTO_ACCEPT_FINGERPRINT?: boolean;
+	BYPASS_MONGO_VALIDATION?: boolean;
+	BYPASS_NODEJS_VALIDATION?: boolean;
+	DEBUG_DISABLE_USER_AUDIT?: boolean;
+	DEBUG_SETTINGS?: boolean;
+	DISABLE_ANIMATION?: boolean;
+	DISABLE_CUSTOM_SCRIPTS?: boolean;
+	DISABLE_INTEGRATION_SCRIPTS?: boolean;
+	DISABLE_MESSAGE_PARSER?: boolean;
+	DISABLE_MESSAGE_ROUNDTRIP_TRACKING?: boolean;
+	DISABLE_PRIVATE_APP_INSTALLATION?: boolean;
+	EXIT_UNHANDLEDPROMISEREJECTION?: boolean;
+	FREEZE_INTEGRATION_SCRIPTS?: boolean;
+	IMPORTER_SKIP_APPS_EVENT?: boolean;
+	SKIP_MONGODEPRECATION_CHECK?: boolean;
+	TEST_MODE?: boolean;
+
+	// Optional numbers
+	HTTP_DEFAULT_TIMEOUT?: number;
+	PROMETHEUS_PORT?: number;
+	RATE_LIMITER_SLOWDOWN_RATE?: number;
+
+	// System pass-through
+	HOME?: string;
+	HOMEPATH?: string;
+	NODE_ENV?: string;
+	TMPDIR?: string;
+	USERPROFILE?: string;
+}
