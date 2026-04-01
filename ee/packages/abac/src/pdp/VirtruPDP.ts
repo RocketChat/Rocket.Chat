@@ -21,6 +21,8 @@ import type {
 
 const pdpLogger = logger.section('VirtruPDP');
 
+const HEALTH_CHECK_TIMEOUT = 10000;
+
 export class VirtruPDP implements IPolicyDecisionPoint {
 	private tokenCache: ITokenCache | null = null;
 
@@ -54,6 +56,62 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		} catch (err) {
 			pdpLogger.warn({ msg: 'Virtru PDP is not reachable', err });
 			return false;
+		}
+	}
+
+	async getHealthStatus(): Promise<void> {
+		await this.checkPlatformHealth();
+		const token = await this.checkIdpConnectivity();
+		await this.checkAuthorizedAccess(token);
+	}
+
+	private async checkIdpConnectivity(): Promise<string> {
+		try {
+			this.tokenCache = null;
+			return await this.getClientToken();
+		} catch {
+			throw new Error('ABAC_PDP_Health_IdP_Failed');
+		}
+	}
+
+	private async checkPlatformHealth(): Promise<void> {
+		try {
+			const response = await serverFetch(`${this.config.baseUrl}/healthz`, {
+				method: 'GET',
+				timeout: HEALTH_CHECK_TIMEOUT,
+				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
+			});
+
+			if (!response.ok) {
+				throw new Error();
+			}
+
+			const data = (await response.json()) as { status?: string };
+			if (data.status !== 'SERVING') {
+				throw new Error();
+			}
+		} catch {
+			throw new Error('ABAC_PDP_Health_Platform_Failed');
+		}
+	}
+
+	private async checkAuthorizedAccess(token: string): Promise<void> {
+		try {
+			const response = await serverFetch(`${this.config.baseUrl}/authorization.AuthorizationService/GetDecisions`, {
+				method: 'POST',
+				timeout: HEALTH_CHECK_TIMEOUT,
+				headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+				body: JSON.stringify({ decisionRequests: [] }),
+				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
+			});
+
+			if (!response.ok) {
+				throw new Error();
+			}
+		} catch {
+			throw new Error('ABAC_PDP_Health_Authorization_Failed');
 		}
 	}
 

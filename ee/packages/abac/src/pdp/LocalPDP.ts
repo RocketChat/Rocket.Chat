@@ -10,6 +10,10 @@ export class LocalPDP implements IPolicyDecisionPoint {
 		return true;
 	}
 
+	async getHealthStatus(): Promise<void> {
+		// Local PDP is always available, nothing to check
+	}
+
 	async canAccessObject(
 		room: AtLeast<IRoom, '_id' | 'abacAttributes'>,
 		user: AtLeast<IUser, '_id'>,
