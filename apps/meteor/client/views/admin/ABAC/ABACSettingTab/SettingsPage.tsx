@@ -31,6 +31,7 @@ const SettingsPage = () => {
 								<SettingField settingId='ABAC_Virtru_Default_Entity_Key' />
 								<SettingField settingId='ABAC_Virtru_Attribute_Namespace' />
 								<SettingField settingId='ABAC_Virtru_Sync_Interval' />
+								<SettingField settingId='ABAC_Virtru_Test_Connection' />
 							</Margins>
 						</AccordionItem>
 					</Accordion>
