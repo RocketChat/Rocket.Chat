@@ -45,7 +45,6 @@ const AccessibilityPage = () => {
 	);
 
 	const pageFormId = useId();
-
 	const linkListId = useId();
 
 	const {
@@ -111,8 +110,8 @@ const AccessibilityPage = () => {
 											<Controller
 												control={control}
 												name='themeAppearence'
-												render={({ field: { onChange, value, ref } }) => (
-													<RadioButton id={id} ref={ref} onChange={() => onChange(id)} checked={value === id} />
+												render={({ field: { value, onChange, ...field } }) => (
+													<RadioButton id={id} {...field} onChange={() => onChange(id)} checked={value === id} />
 												)}
 											/>
 										</FieldRow>
@@ -131,11 +130,7 @@ const AccessibilityPage = () => {
 								<Field>
 									<FieldLabel mbe={12}>{t('Font_size')}</FieldLabel>
 									<FieldRow>
-										<Controller
-											control={control}
-											name='fontSize'
-											render={({ field: { onChange, value } }) => <Select value={value} onChange={onChange} options={fontSizes(t)} />}
-										/>
+										<Controller control={control} name='fontSize' render={({ field }) => <Select {...field} options={fontSizes(t)} />} />
 									</FieldRow>
 									<FieldDescription mb={12}>{t('Adjustable_font_size_description')}</FieldDescription>
 								</Field>
@@ -145,7 +140,7 @@ const AccessibilityPage = () => {
 										<Controller
 											control={control}
 											name='mentionsWithSymbol'
-											render={({ field: { onChange, value, ref } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+											render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 										/>
 									</FieldRow>
 									<FieldDescription
@@ -163,9 +158,7 @@ const AccessibilityPage = () => {
 										<Controller
 											name='clockMode'
 											control={control}
-											render={({ field: { value, onChange } }) => (
-												<Select value={`${value}`} onChange={onChange} options={timeFormatOptions} />
-											)}
+											render={({ field: { value, ...field } }) => <Select {...field} value={`${value}`} options={timeFormatOptions} />}
 										/>
 									</FieldRow>
 								</Field>
@@ -175,8 +168,8 @@ const AccessibilityPage = () => {
 										<Controller
 											name='hideUsernames'
 											control={control}
-											render={({ field: { value, onChange, ref } }) => (
-												<ToggleSwitch ref={ref} checked={!value} onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)} />
+											render={({ field: { value, onChange, ...field } }) => (
+												<ToggleSwitch {...field} checked={!value} onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)} />
 											)}
 										/>
 									</FieldRow>
@@ -189,8 +182,8 @@ const AccessibilityPage = () => {
 											<Controller
 												name='hideRoles'
 												control={control}
-												render={({ field: { value, onChange, ref } }) => (
-													<ToggleSwitch ref={ref} checked={!value} onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)} />
+												render={({ field: { value, onChange, ...field } }) => (
+													<ToggleSwitch {...field} checked={!value} onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)} />
 												)}
 											/>
 										</FieldRow>
