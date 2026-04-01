@@ -116,7 +116,7 @@ const PreferencesNotificationsSection = () => {
 						<Controller
 							name='desktopNotificationRequireInteraction'
 							control={control}
-							render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 					<FieldHint>{t('Only_works_with_chrome_version_greater_50')}</FieldHint>
@@ -127,7 +127,7 @@ const PreferencesNotificationsSection = () => {
 						<Controller
 							name='desktopNotifications'
 							control={control}
-							render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={desktopNotificationOptions} />}
+							render={({ field }) => <Select {...field} options={desktopNotificationOptions} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -137,7 +137,7 @@ const PreferencesNotificationsSection = () => {
 						<Controller
 							name='desktopNotificationVoiceCalls'
 							control={control}
-							render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+							render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -147,7 +147,7 @@ const PreferencesNotificationsSection = () => {
 						<Controller
 							name='pushNotifications'
 							control={control}
-							render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={mobileNotificationOptions} />}
+							render={({ field }) => <Select {...field} options={mobileNotificationOptions} />}
 						/>
 					</FieldRow>
 				</Field>
@@ -157,9 +157,7 @@ const PreferencesNotificationsSection = () => {
 						<Controller
 							name='emailNotificationMode'
 							control={control}
-							render={({ field: { value, onChange } }) => (
-								<Select disabled={!canChangeEmailNotification} value={value} onChange={onChange} options={emailNotificationOptions} />
-							)}
+							render={({ field }) => <Select disabled={!canChangeEmailNotification} {...field} options={emailNotificationOptions} />}
 						/>
 					</FieldRow>
 					<FieldHint>
@@ -174,7 +172,7 @@ const PreferencesNotificationsSection = () => {
 							<Controller
 								name='receiveLoginDetectionEmail'
 								control={control}
-								render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+								render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 							/>
 						</FieldRow>
 						<FieldHint>{t('Receive_Login_Detection_Emails_Description')}</FieldHint>
@@ -187,7 +185,7 @@ const PreferencesNotificationsSection = () => {
 							<Controller
 								name='notifyCalendarEvents'
 								control={control}
-								render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+								render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 							/>
 						</FieldRow>
 					</Field>
@@ -199,7 +197,7 @@ const PreferencesNotificationsSection = () => {
 							<Controller
 								name='enableMobileRinging'
 								control={control}
-								render={({ field: { ref, value, onChange } }) => <ToggleSwitch ref={ref} checked={value} onChange={onChange} />}
+								render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 							/>
 						</FieldRow>
 					</Field>
