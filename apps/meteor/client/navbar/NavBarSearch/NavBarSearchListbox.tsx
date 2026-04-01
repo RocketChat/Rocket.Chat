@@ -29,7 +29,6 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	const { filterText } = watch();
 
 	const debouncedFilter = useDebouncedValue(filterText, 500);
-	const resultLabel = filterText ? t('Results') : t('Recent');
 
 	const handleSelect = useEffectEvent(() => {
 		state.close();
@@ -54,11 +53,11 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 		>
 			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} />
 			<CustomScrollbars>
-				<div {...overlayProps} role='listbox' aria-label={resultLabel} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
+				<div {...overlayProps} role='listbox' aria-label={t('Channels')} aria-busy={isLoading} tabIndex={-1} onKeyDown={handleKeyDown}>
 					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
 					{items.length > 0 && (
 						<Box color='titles-labels' fontScale='c1' fontWeight='bold' pi={12} mbe={4} role='presentation' aria-hidden>
-							{resultLabel}
+							{filterText ? t('Results') : t('Recent')}
 						</Box>
 					)}
 					{items.map((item) => (
