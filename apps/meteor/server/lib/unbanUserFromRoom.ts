@@ -17,7 +17,7 @@ export const unbanUserFromRoom = async (fromId: string, data: { rid: string; use
 	}
 
 	if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BAN, fromId))) {
-		throw new Error('Not allowed');
+		throw new Error('error-not-allowed');
 	}
 
 	const fromUser = await Users.findOneById(fromId);
