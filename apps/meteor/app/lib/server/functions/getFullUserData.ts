@@ -75,6 +75,12 @@ const getFields = (canViewAllInfo: boolean): Record<string, 0 | 1> => ({
 	...getCustomFields(canViewAllInfo),
 });
 
+const findTargetUser = (type: string, value: string, opts: any) => {
+	if (type === 'importId') return Users.findOneByImportId(value, opts);
+	if (type === 'email') return Users.findOneByEmailAddress(value, opts);
+	return Users.findOneByIdOrUsername(value, opts);
+};
+
 export async function getFullUserDataByIdOrUsernameOrImportIdOrEmail(
 	userId: string,
 	searchValue: string,
@@ -106,14 +112,7 @@ export async function getFullUserDataByIdOrUsernameOrImportIdOrEmail(
 		},
 	};
 
-	let user;
-	if (searchType === 'importId') {
-		user = await Users.findOneByImportId(searchValue, options);
-	} else if (searchType === 'email') {
-		user = await Users.findOneByEmailAddress(searchValue, options);
-	} else {
-		user = await Users.findOneByIdOrUsername(searchValue, options);
-	}
+	const user = await findTargetUser(searchType, searchValue, options);
 
 	if (!user) {
 		return null;
