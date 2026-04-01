@@ -7,6 +7,7 @@ import { onClientMessageReceived } from '../../../../client/lib/onClientMessageR
 import { settings } from '../../../../client/lib/settings';
 import { dispatchToastMessage } from '../../../../client/lib/toast';
 import { getUser, getUserId } from '../../../../client/lib/user';
+import { upsertThreadMessageInCache } from '../../../../client/lib/utils/threadMessageUtils';
 import { Messages, Rooms } from '../../../../client/stores';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { t } from '../../../utils/lib/i18n';
@@ -42,9 +43,14 @@ Meteor.methods<ServerMethods>({
 			return;
 		}
 
-		await onClientMessageReceived(message as IMessage).then((message) => {
-			Messages.state.store(message);
-			return clientCallbacks.run('afterSaveMessage', message, { room, user });
+		await onClientMessageReceived(message as IMessage).then((msg) => {
+			Messages.state.store(msg);
+
+			if (msg.tmid) {
+				upsertThreadMessageInCache(msg, msg.rid, msg.tmid);
+			}
+
+			return clientCallbacks.run('afterSaveMessage', msg, { room, user });
 		});
 	},
 });
