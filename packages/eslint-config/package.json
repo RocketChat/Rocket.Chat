@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/eslint-config",
-	"version": "0.7.0",
+	"version": "0.8.0-rc.0",
 	"description": "Rocket.Chat's JS/TS ESLint config",
 	"type": "module",
 	"main": "./index.js",
