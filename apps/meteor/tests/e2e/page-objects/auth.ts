@@ -81,7 +81,7 @@ export class Registration extends Main {
 	}
 
 	async waitForCalloutPage(): Promise<void> {
-		await this.page.getByRole('heading', { level: 2 }).waitFor();
+		await this.page.getByRole('status').waitFor();
 	}
 
 	get btnSendInstructions(): Locator {
@@ -149,10 +149,10 @@ export class Registration extends Main {
 	}
 
 	get registrationDisabledCallout(): Locator {
-		return this.page.locator('role=status >> text=/New user registration is currently disabled/');
+		return this.page.getByRole('status').filter({ hasText: 'New user registration is currently disabled' });
 	}
 
 	get registrationInvalidUrlCallout(): Locator {
-		return this.page.getByRole('heading', { level: 2, name: 'The URL provided is invalid.' });
+		return this.page.getByRole('status').filter({ hasText: 'The URL provided is invalid' });
 	}
 }
