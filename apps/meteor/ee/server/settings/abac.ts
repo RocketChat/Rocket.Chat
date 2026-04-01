@@ -102,7 +102,7 @@ export function addSettings(): Promise<void> {
 					i18nDescription: 'ABAC_Virtru_Sync_Interval_Description',
 					enableQuery: virtruPdpQuery,
 				});
-				await this.add('ABAC_Virtru_Test_Connection', { method: 'GET', path: '/v1/abac/pdp/health' } as any, {
+				await this.add('ABAC_Virtru_Test_Connection', { method: 'GET', path: '/v1/abac/pdp/health' }, {
 					type: 'action',
 					actionText: 'ABAC_Virtru_Test_Connection_Action',
 					invalidValue: '',
