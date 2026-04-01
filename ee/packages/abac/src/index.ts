@@ -742,7 +742,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	async getPdpHealth(): Promise<void> {
+	async getPDPHealth(): Promise<void> {
 		if (!this.pdp) {
 			throw new Error('ABAC_PDP_Health_No_PDP');
 		}
