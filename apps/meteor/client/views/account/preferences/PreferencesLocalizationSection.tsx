@@ -20,11 +20,7 @@ const PreferencesLocalizationSection = () => {
 				<Field>
 					<FieldLabel>{t('Language')}</FieldLabel>
 					<FieldRow>
-						<Controller
-							control={control}
-							name='language'
-							render={({ field: { value, onChange } }) => <Select value={value} onChange={onChange} options={languageOptions} />}
-						/>
+						<Controller control={control} name='language' render={({ field }) => <Select {...field} options={languageOptions} />} />
 					</FieldRow>
 				</Field>
 			</FieldGroup>
