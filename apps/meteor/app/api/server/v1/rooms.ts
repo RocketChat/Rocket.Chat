@@ -76,12 +76,12 @@ export async function findRoomByIdOrName({
 	checkedArchived = true,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	checkedArchived?: boolean;
 }): Promise<IRoom> {
 	if (
@@ -372,54 +372,94 @@ const roomsSaveNotificationEndpoint = API.v1.post(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.cleanHistory',
-	{ authRequired: true, validateParams: isRoomsCleanHistoryProps },
+const roomsCleanHistoryEndpoint = API.v1.post('rooms.cleanHistory',
 	{
-		async post() {
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-			const { _id } = room;
+		authRequired: true,
+		body: ajv.compile<{
+			roomId?: string;
+			roomName?: string;
+			latest: string;
+			oldest: string;
+			inclusive?: boolean;
+			limit?: number;
+			excludePinned?: boolean | string | number;
+			filesOnly?: boolean | string | number;
+			ignoreThreads?: boolean | string | number;
+			ignoreDiscussion?: boolean | string | number;
+			users?: string[];
 
-			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
-			}
-
-			const {
-				latest,
-				oldest,
-				inclusive = false,
-				limit,
-				excludePinned,
-				filesOnly,
-				ignoreThreads,
-				ignoreDiscussion,
-				users,
-			} = this.bodyParams;
-
-			if (!latest) {
-				return API.v1.failure('Body parameter "latest" is required.');
-			}
-
-			if (!oldest) {
-				return API.v1.failure('Body parameter "oldest" is required.');
-			}
-
-			const count = await cleanRoomHistoryMethod(this.userId, {
-				roomId: _id,
-				latest: new Date(latest),
-				oldest: new Date(oldest),
-				inclusive,
-				limit,
-				excludePinned: [true, 'true', 1, '1'].includes(excludePinned ?? false),
-				filesOnly: [true, 'true', 1, '1'].includes(filesOnly ?? false),
-				ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads ?? false),
-				ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
-				fromUsers: users?.filter(isTruthy) || [],
-			});
-
-			return API.v1.success({ _id, count });
+		}>({
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+				roomName: { type: 'string' },
+				latest: { type: 'string', description: 'The end date of the range' },
+				oldest: { type: 'string', description: 'The start date of the range' },
+				inclusive: { type: 'boolean' },
+				limit: { type: 'number' },
+				excludePinned: { type: ['boolean', 'string', 'number'] },
+				filesOnly: { type: ['boolean', 'string', 'number'] },
+				ignoreThreads: { type: ['boolean', 'string', 'number'] },
+				ignoreDiscussion: { type: ['boolean', 'string', 'number'] },
+				users: { type: 'array', items: { type: 'string' } }
+			},
+			required: ['latest', 'oldest'],
+			additionalProperties: false
+		}),
+		response: {
+			200: ajv.compile<{
+				_id: string;
+				count: number;
+				success: true;
+			}>({
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					count: { type: 'number' },
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['_id', 'count', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
 	},
+	async function action() {
+		const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+			return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
+		}
+		const { _id } = room;
+
+		const {
+			latest,
+			oldest,
+			inclusive = false,
+			limit,
+			excludePinned,
+			filesOnly,
+			ignoreThreads,
+			ignoreDiscussion,
+			users,
+		} = this.bodyParams;
+
+		const count = await cleanRoomHistoryMethod(this.userId, {
+			roomId: _id,
+			latest: new Date(latest),
+			oldest: new Date(oldest),
+			inclusive,
+			limit,
+			excludePinned: [true, 'true', 1, '1'].includes(excludePinned ?? false),
+			filesOnly: [true, 'true', 1, '1'].includes(filesOnly ?? false),
+			ignoreThreads: [true, 'true', 1, '1'].includes(ignoreThreads ?? false),
+			ignoreDiscussion: [true, 'true', 1, '1'].includes(ignoreDiscussion ?? false),
+			fromUsers: users?.filter(isTruthy) || [],
+		});
+
+		return API.v1.success({ _id, count });
+	}
 );
 
 API.v1.addRoute(
@@ -970,21 +1010,21 @@ API.v1.addRoute(
 
 type RoomsFavorite =
 	| {
-			roomId: string;
-			favorite: boolean;
-	  }
+		roomId: string;
+		favorite: boolean;
+	}
 	| {
-			roomName: string;
-			favorite: boolean;
-	  };
+		roomName: string;
+		favorite: boolean;
+	};
 
 type RoomsLeave =
 	| {
-			roomId: string;
-	  }
+		roomId: string;
+	}
 	| {
-			roomName: string;
-	  };
+		roomName: string;
+	};
 
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
@@ -1377,9 +1417,10 @@ export const roomEndpoints = API.v1
 	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsCleanHistoryEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RoomEndpoints {}
+	interface Endpoints extends RoomEndpoints { }
 }

@@ -854,9 +854,6 @@ export type RoomsEndpoints = {
 		};
 	};
 
-	'/v1/rooms.cleanHistory': {
-		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean };
-	};
 
 	'/v1/rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
