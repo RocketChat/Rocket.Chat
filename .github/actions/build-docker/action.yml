@@ -85,7 +85,6 @@ runs:
         GITHUB_REF: ${{ github.ref }}
       run: |
         set -o xtrace
-        export DENO_VERSION="$DENO_VERSION"
 
         # Removes unnecessary swc cores and sharp binaries to reduce image size
         swc_arch='x64'
