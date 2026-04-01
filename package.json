@@ -47,6 +47,7 @@
 		"@react-pdf/layout@npm:^4.4.2": "patch:@react-pdf/layout@npm%3A4.4.2#~/.yarn/patches/@react-pdf-layout-npm-4.4.2-6c2e3312fa.patch"
 	},
 	"dependencies": {
+		"@tanstack/react-virtual": "^3.13.23",
 		"@types/stream-buffers": "^3.0.8",
 		"node-gyp": "^10.2.0"
 	},
