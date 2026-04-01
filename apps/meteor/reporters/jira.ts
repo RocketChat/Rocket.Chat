@@ -82,7 +82,7 @@ class JIRAReporter implements Reporter {
 		// first search and check if there is an existing issue
 		// replace all ()[]- with nothing
 		const search = await fetch(
-			`${this.url}/rest/api/3/search?${new URLSearchParams({
+			`${this.url}/rest/api/3/search/jql?${new URLSearchParams({
 				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[\(\)\[\]-]/g, '')}'`,
 			})}`,
 			{
@@ -97,7 +97,7 @@ class JIRAReporter implements Reporter {
 		if (!search.ok) {
 			throw new Error(
 				`JIRA: Failed to search for existing issue: ${search.statusText}.` +
-					`${this.url}/rest/api/3/search${new URLSearchParams({
+					`${this.url}/rest/api/3/search/jql?${new URLSearchParams({
 						jql: `project = FLAKY AND summary ~ '${payload.name}'`,
 					})}`,
 			);
