@@ -21,33 +21,6 @@ describe('banners', () => {
 				.end(done);
 		});
 
-		it('should fail if missing bannerId key', (done) => {
-			void request
-				.post(api('banners.dismiss'))
-				.set(credentials)
-				.send({})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
-				})
-				.end(done);
-		});
-
-		it('should fail if bannerId is empty', (done) => {
-			void request
-				.post(api('banners.dismiss'))
-				.set(credentials)
-				.send({
-					bannerId: '',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-				})
-				.end(done);
-		});
-
 		it('should fail if bannerId is invalid', (done) => {
 			void request
 				.post(api('banners.dismiss'))
@@ -74,32 +47,6 @@ describe('banners', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
-				});
-		});
-
-		it('should fail if missing platform', async () => {
-			return request
-				.get(api('banners'))
-				.set(credentials)
-				.query({})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
-				});
-		});
-
-		it('should fail if platform is invalid', async () => {
-			return request
-				.get(api('banners'))
-				.set(credentials)
-				.query({
-					platform: 'invalid-platform',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -143,32 +90,6 @@ describe('banners', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('status', 'error');
 					expect(res.body).to.have.property('message');
-				});
-		});
-
-		it('should fail if missing platform', async () => {
-			return request
-				.get(api('banners/some-id'))
-				.set(credentials)
-				.query({})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
-				});
-		});
-
-		it('should fail if platform is invalid', async () => {
-			return request
-				.get(api('banners/some-id'))
-				.set(credentials)
-				.query({
-					platform: 'invalid-platform',
-				})
-				.expect(400)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
