@@ -1,4 +1,4 @@
-export interface RocketChatEnv {
+export interface IRocketChatEnv {
 	// Required
 	MONGO_URL: string;
 

@@ -1,9 +1,9 @@
 import Ajv from 'ajv';
 
 import { envSchema } from './schema';
-import type { RocketChatEnv } from './types';
+import type { IRocketChatEnv } from './types';
 
-const BOOLEAN_KEYS: (keyof RocketChatEnv)[] = [
+const BOOLEAN_KEYS: (keyof IRocketChatEnv)[] = [
 	'ADMIN_EMAIL_VERIFIED',
 	'ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS',
 	'AUTO_ACCEPT_FINGERPRINT',
@@ -47,7 +47,7 @@ function stripUndefined(obj: Record<string, unknown>): Record<string, unknown> {
 	return result;
 }
 
-export function parseEnv(raw: Record<string, string | undefined> = process.env): Readonly<RocketChatEnv> {
+export function parseEnv(raw: Record<string, string | undefined> = process.env): Readonly<IRocketChatEnv> {
 	const ajv = new Ajv({
 		coerceTypes: true,
 		useDefaults: true,
@@ -55,7 +55,7 @@ export function parseEnv(raw: Record<string, string | undefined> = process.env):
 		allErrors: true,
 	});
 
-	const validate = ajv.compile<RocketChatEnv>(envSchema);
+	const validate = ajv.compile<IRocketChatEnv>(envSchema);
 	const normalized = normalizeBooleans(raw);
 	const data = stripUndefined(normalized);
 

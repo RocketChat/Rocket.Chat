@@ -1,4 +1,4 @@
 import { parseEnv } from './parse';
-import type { RocketChatEnv } from './types';
+import type { IRocketChatEnv } from './types';
 
-export const env: Readonly<RocketChatEnv> = parseEnv();
+export const env: Readonly<IRocketChatEnv> = parseEnv();
