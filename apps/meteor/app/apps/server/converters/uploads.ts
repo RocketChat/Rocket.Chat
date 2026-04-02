@@ -96,6 +96,7 @@ export class AppUploadsConverter {
 
 		const { id: userId } = upload.user ?? {};
 		const { token: visitorToken } = upload.visitor ?? {};
+		const uploadWithExtras = upload as IAppsUploadWithDescription & { path?: IUpload['path'] };
 
 		const newUpload: Record<string, unknown> = {
 			_id: upload.id,
@@ -103,7 +104,8 @@ export class AppUploadsConverter {
 			size: upload.size as unknown as number,
 			type: upload.type,
 			extension: upload.extension,
-			description: (upload as IAppsUploadWithDescription).description,
+			description: uploadWithExtras.description,
+			path: uploadWithExtras.path,
 			store: upload.store,
 			etag: upload.etag,
 			complete: upload.complete,
