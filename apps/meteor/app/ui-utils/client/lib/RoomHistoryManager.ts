@@ -199,21 +199,11 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 	}
 
-	public restoreScroll(rid: IRoom['_id']) {
+	public getRestoreScrollValue(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
-		const wrapper = document.querySelector('.messages-box .wrapper [data-overlayscrollbars-viewport]');
-
-		if (room.scroll === undefined) {
-			return;
-		}
-
-		if (!wrapper) {
-			return;
-		}
-
-		const heightDiff = wrapper.scrollHeight - (room.scroll.scrollHeight ?? NaN);
-		wrapper.scrollTop = room.scroll.scrollTop + heightDiff;
+		const returnScroll = room.scroll;
 		room.scroll = undefined;
+		return returnScroll;
 	}
 
 	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {

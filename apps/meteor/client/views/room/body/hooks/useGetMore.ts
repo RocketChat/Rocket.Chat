@@ -1,17 +1,18 @@
 import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
+import type { MutableRefObject, RefObject } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
-import { flushSync } from 'react-dom';
 
-import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
+import type { VirtualizerHelpers } from '../../MessageList';
 
-export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) => {
+export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>, virtualizerHelpersRef: RefObject<VirtualizerHelpers>) => {
 	const msgId = useSearchParameter('msg');
 	const msgIdRef = useRef(msgId);
 	const jumpToRef = useRef<HTMLElement>(undefined);
+	// TODO: Improve this logic
+	const initializedRef = useRef(false);
 
 	useEffect(() => {
 		msgIdRef.current = msgId;
@@ -21,6 +22,11 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 		useCallback(
 			(element: HTMLElement) => {
 				const checkPositionAndGetMore = withThrottling({ wait: 100 })(async () => {
+					if (initializedRef.current === false && !RoomHistoryManager.isLoading(rid)) {
+						await RoomHistoryManager.getMore(rid);
+						initializedRef.current = true;
+						return;
+					}
 					if (!element.isConnected) {
 						return;
 					}
@@ -37,28 +43,16 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 						return;
 					}
 
-					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
+					if (!virtualizerHelpersRef.current) {
+						return;
+					}
 
-					const lastScrollTopRef = scrollTop;
-					const height = clientHeight;
 					const hasMore = RoomHistoryManager.hasMore(rid);
 					const hasMoreNext = RoomHistoryManager.hasMoreNext(rid);
 
-					if (hasMore === true && lastScrollTopRef <= height / 3) {
+					if (hasMore === true && virtualizerHelpersRef.current.shouldGetMore() === true) {
 						await RoomHistoryManager.getMore(rid);
-
-						if (jumpToRef.current) {
-							return;
-						}
-
-						if (!element.isConnected) {
-							return;
-						}
-
-						flushSync(() => {
-							RoomHistoryManager.restoreScroll(rid);
-						});
-					} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= scrollHeight - height) {
+					} else if (hasMoreNext === true && virtualizerHelpersRef.current.shouldGetMoreNext() === true) {
 						await RoomHistoryManager.getMoreNext(rid, atBottomRef);
 						atBottomRef.current = false;
 					}
@@ -93,7 +87,7 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 					element.removeEventListener('scroll', handleScroll);
 				};
 			},
-			[rid, atBottomRef],
+			[rid, virtualizerHelpersRef, atBottomRef],
 		),
 	);
 

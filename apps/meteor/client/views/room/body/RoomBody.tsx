@@ -7,6 +7,7 @@ import { memo, useCallback, useMemo, useRef, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
+import type { VirtualizerHelpers } from '../MessageList';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
@@ -66,6 +67,8 @@ const RoomBody = (): ReactElement => {
 
 	const subscribed = !!subscription;
 
+	const virtualizerHelpersRef = useRef<VirtualizerHelpers>(null);
+
 	const canPreview = useMemo(() => {
 		if (room && room.t !== 'c') {
 			return true;
@@ -105,7 +108,7 @@ const RoomBody = (): ReactElement => {
 		jumpToRef: jumpToRefIsAtBottom,
 	} = useListIsAtBottom();
 
-	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
+	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef, virtualizerHelpersRef);
 
 	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
 
@@ -242,7 +245,7 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<VirtualScrollbars ref={innerRef} viewportRef={scrollContainerRef} key={room._id}>
+										<VirtualScrollbars ref={innerRef} key={room._id}>
 											<Box
 												is='ul'
 												className='messages-list'
@@ -267,6 +270,7 @@ const RoomBody = (): ReactElement => {
 													messageListRef={jumpToRef}
 													scrollContainerRef={scrollContainerRef}
 													totalSize={totalSize}
+													virtualizerHelpersRef={virtualizerHelpersRef}
 												/>
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>

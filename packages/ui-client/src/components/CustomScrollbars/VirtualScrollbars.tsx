@@ -9,7 +9,6 @@ type VirtualScrollbarsProps = {
 	children: ReactElement;
 	overflowX?: boolean;
 	onScroll?: (args: OverlayScrollbars) => void;
-	viewportRef?: RefObject<HTMLElement>;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'is' | 'onScroll'>;
 
 const VirtualScrollbars = forwardRef<HTMLElement, VirtualScrollbarsProps>(function VirtualScrollbars(

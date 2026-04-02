@@ -5,7 +5,7 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { VirtualItem } from '@tanstack/react-virtual';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import type { ComponentProps, MutableRefObject, RefObject } from 'react';
+import { useImperativeHandle, type ComponentProps, type MutableRefObject, type RefObject } from 'react';
 
 import { MessageListItem } from './MessageListItem';
 import { useRoomSubscription } from '../contexts/RoomContext';
@@ -15,18 +15,29 @@ import { useMessages } from './hooks/useMessages';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
 
-const ESTIMATE_SIZE = 84;
-const OVERSCAN = 5;
-const DEFAULT_MAX_RENDERED = 50;
+const ESTIMATE_SIZE = 200;
+
+export type VirtualizerHelpers = {
+	scrollToOffset: (offset: number) => void;
+	shouldGetMore: () => boolean;
+	shouldGetMoreNext: () => boolean;
+};
 
 type MessageListProps = {
 	rid: IRoom['_id'];
 	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
 	scrollContainerRef: RefObject<HTMLElement>;
 	totalSize: MutableRefObject<number>;
+	virtualizerHelpersRef: RefObject<VirtualizerHelpers>;
 };
 
-export const MessageList = function MessageList({ rid, messageListRef, scrollContainerRef, totalSize }: MessageListProps) {
+export const MessageList = function MessageList({
+	rid,
+	messageListRef,
+	scrollContainerRef,
+	totalSize,
+	virtualizerHelpersRef,
+}: MessageListProps) {
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -37,13 +48,29 @@ export const MessageList = function MessageList({ rid, messageListRef, scrollCon
 		count: messages?.length ?? 0,
 		getScrollElement: () => scrollContainerRef.current,
 		estimateSize: () => ESTIMATE_SIZE,
-		overscan: Math.min(OVERSCAN, Math.max(0, Math.floor(DEFAULT_MAX_RENDERED / 2) - 2)),
+		overscan: 5,
 		getItemKey: (index: number) => messages[index]?._id ?? index,
-		useFlushSync: false,
+		// useFlushSync: false,
 		onChange: (instance) => {
 			totalSize.current = instance.getTotalSize();
 		},
 	});
+
+	useImperativeHandle(virtualizerHelpersRef, () => ({
+		scrollToOffset: (offset: number) => {
+			virtualizer.scrollToOffset(offset);
+		},
+		shouldGetMore: () => {
+			const [firstItem] = [...virtualizer.getVirtualItems()];
+
+			return firstItem.index === 0;
+		},
+		shouldGetMoreNext: () => {
+			const [lastItem] = [...virtualizer.getVirtualItems()].reverse();
+
+			return lastItem.index >= messages.length - 1;
+		},
+	}));
 
 	const virtualItems = virtualizer.getVirtualItems();
 
