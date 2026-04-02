@@ -1,4 +1,4 @@
-import { isBannedSubscription } from '@rocket.chat/core-typings';
+import { isBannedSubscription, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users, Roles } from '@rocket.chat/models';
 
 import { roomCoordinator } from './rooms/roomCoordinator';
@@ -15,7 +15,11 @@ export const banUserFromRoomMethod = async (fromId: string, data: { rid: string;
 
 	const room = await Rooms.findOneById(data.rid);
 
-	if (!room || !(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BAN, fromId))) {
+	if (!room || !isRoomNativeFederated(room)) {
+		throw new Error('Invalid room');
+	}
+
+	if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BAN, fromId))) {
 		throw new Error('Not allowed');
 	}
 

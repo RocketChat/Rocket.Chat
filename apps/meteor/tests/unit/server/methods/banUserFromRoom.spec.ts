@@ -35,6 +35,8 @@ const RoomMemberActions = {
 const { banUserFromRoomMethod } = p.noCallThru().load('../../../../server/lib/banUserFromRoom.ts', {
 	'@rocket.chat/core-typings': {
 		isBannedSubscription: (sub: { status?: string } | null) => sub?.status === 'BANNED',
+		isRoomNativeFederated: (room: { federated?: boolean; federation?: Record<string, unknown> } | null) =>
+			room?.federated === true && room?.federation !== undefined,
 	},
 	'@rocket.chat/models': modelsMock,
 	'../../app/authorization/server': { canAccessRoomAsync: canAccessRoomAsyncMock },
@@ -69,12 +71,19 @@ describe('banUserFromRoomMethod', () => {
 		hasPermissionAsyncMock.resolves(true);
 		modelsMock.Rooms.findOneById.resolves(null);
 
-		await expect(banUserFromRoomMethod('fromUserId', { rid: 'room1', username: 'testuser' })).to.be.rejectedWith('Not allowed');
+		await expect(banUserFromRoomMethod('fromUserId', { rid: 'room1', username: 'testuser' })).to.be.rejectedWith('Invalid room');
+	});
+
+	it('should throw if room is not natively federated', async () => {
+		hasPermissionAsyncMock.resolves(true);
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+
+		await expect(banUserFromRoomMethod('fromUserId', { rid: 'room1', username: 'testuser' })).to.be.rejectedWith('Invalid room');
 	});
 
 	it('should throw if BAN action is not allowed for the room type', async () => {
 		hasPermissionAsyncMock.resolves(true);
-		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c', federated: true, federation: {} });
 		roomCoordinatorMock.getRoomDirectives.returns({
 			allowMemberAction: sinon.stub().resolves(false),
 		});
@@ -84,7 +93,7 @@ describe('banUserFromRoomMethod', () => {
 
 	it('should throw if fromUser does not exist', async () => {
 		hasPermissionAsyncMock.resolves(true);
-		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c', federated: true, federation: {} });
 		roomCoordinatorMock.getRoomDirectives.returns({
 			allowMemberAction: sinon.stub().resolves(true),
 		});
@@ -95,7 +104,7 @@ describe('banUserFromRoomMethod', () => {
 
 	it('should throw if fromUser cannot access the room', async () => {
 		hasPermissionAsyncMock.resolves(true);
-		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c', federated: true, federation: {} });
 		roomCoordinatorMock.getRoomDirectives.returns({
 			allowMemberAction: sinon.stub().resolves(true),
 		});
@@ -109,7 +118,7 @@ describe('banUserFromRoomMethod', () => {
 
 	it('should throw if the user to ban does not exist', async () => {
 		hasPermissionAsyncMock.resolves(true);
-		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c', federated: true, federation: {} });
 		roomCoordinatorMock.getRoomDirectives.returns({
 			allowMemberAction: sinon.stub().resolves(true),
 		});
@@ -122,7 +131,7 @@ describe('banUserFromRoomMethod', () => {
 
 	it('should throw if the user to ban is not in the room', async () => {
 		hasPermissionAsyncMock.resolves(true);
-		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c', federated: true, federation: {} });
 		roomCoordinatorMock.getRoomDirectives.returns({
 			allowMemberAction: sinon.stub().resolves(true),
 		});
@@ -138,7 +147,7 @@ describe('banUserFromRoomMethod', () => {
 
 	it('should throw if user is already banned', async () => {
 		hasPermissionAsyncMock.resolves(true);
-		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c', federated: true, federation: {} });
 		roomCoordinatorMock.getRoomDirectives.returns({
 			allowMemberAction: sinon.stub().resolves(true),
 		});
@@ -154,7 +163,7 @@ describe('banUserFromRoomMethod', () => {
 
 	it('should throw if user is the last owner', async () => {
 		hasPermissionAsyncMock.resolves(true);
-		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c', federated: true, federation: {} });
 		roomCoordinatorMock.getRoomDirectives.returns({
 			allowMemberAction: sinon.stub().resolves(true),
 		});
@@ -170,7 +179,7 @@ describe('banUserFromRoomMethod', () => {
 
 	it('should allow banning if user is owner but not the last one', async () => {
 		hasPermissionAsyncMock.resolves(true);
-		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c', federated: true, federation: {} });
 		roomCoordinatorMock.getRoomDirectives.returns({
 			allowMemberAction: sinon.stub().resolves(true),
 		});
@@ -190,7 +199,7 @@ describe('banUserFromRoomMethod', () => {
 
 	it('should successfully ban a user and return true', async () => {
 		hasPermissionAsyncMock.resolves(true);
-		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c' });
+		modelsMock.Rooms.findOneById.resolves({ _id: 'room1', t: 'c', federated: true, federation: {} });
 		roomCoordinatorMock.getRoomDirectives.returns({
 			allowMemberAction: sinon.stub().resolves(true),
 		});

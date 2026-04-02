@@ -1,7 +1,6 @@
 import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
-import { isRoomNativeFederated } from '@rocket.chat/core-typings';
-import { Rooms, Users } from '@rocket.chat/models';
+import { Users } from '@rocket.chat/models';
 
 import { i18n } from '../../../server/lib/i18n';
 import { unbanUserFromRoom } from '../../../server/lib/unbanUserFromRoom';
@@ -15,21 +14,6 @@ slashCommands.add({
 		const username = sanitizeUsername(params.trim());
 
 		if (!username) {
-			return;
-		}
-
-		const room = await Rooms.findOneById(message.rid);
-		if (!room) {
-			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: i18n.t('error-invalid-room', { lng: settings.get('Language') || 'en' }),
-			});
-			return;
-		}
-
-		if (!isRoomNativeFederated(room)) {
-			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
-				msg: i18n.t('error-room-action-not-supported', { lng: settings.get('Language') || 'en' }),
-			});
 			return;
 		}
 

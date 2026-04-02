@@ -1,3 +1,4 @@
+import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 
 import { roomCoordinator } from './rooms/roomCoordinator';
@@ -12,12 +13,12 @@ export const unbanUserFromRoom = async (fromId: string, data: { rid: string; use
 	}
 
 	const room = await Rooms.findOneById(data.rid);
-	if (!room) {
+	if (!room || !isRoomNativeFederated(room)) {
 		throw new Error('Invalid room');
 	}
 
 	if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BAN, fromId))) {
-		throw new Error('error-not-allowed');
+		throw new Error('Not allowed');
 	}
 
 	const fromUser = await Users.findOneById(fromId);
