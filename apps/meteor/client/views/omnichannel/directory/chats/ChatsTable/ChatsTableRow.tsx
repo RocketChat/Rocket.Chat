@@ -86,7 +86,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 			<GenericTableCell withTruncatedText title={getTimeFromNow(ts)}>
 				{formatDate(ts)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText title={getTimeFromNow(lm)}>
+			<GenericTableCell withTruncatedText title={lm ? getTimeFromNow(lm) : undefined}>
 				{lm ? formatDate(lm) : undefined}
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>
