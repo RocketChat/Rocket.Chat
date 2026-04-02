@@ -13,6 +13,7 @@ export type SettingInputProps<V = string, R = V> = {
 	hint?: string;
 	editor?: string;
 	hasResetButton: boolean;
+	hasValue?: boolean;
 	onChangeValue: (value: R) => void;
 	onResetButtonClick?: () => void;
 	onChangeEditor?: (value: string | undefined) => void;

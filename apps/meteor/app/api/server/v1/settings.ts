@@ -22,6 +22,7 @@ import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
+import { maskSecretSettingValue, shouldSkipSecretWrite } from '../../../../server/settings/lib/maskSecretSettingValue';
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { disableCustomScripts } from '../../../lib/server/functions/disableCustomScripts';
@@ -44,13 +45,14 @@ async function fetchSettings(
 		sort: sort || { _id: 1 },
 		skip: offset,
 		limit: count,
-		projection: { _id: 1, value: 1, enterprise: 1, invalidValue: 1, modules: 1, ...fields },
+		projection: { _id: 1, value: 1, secret: 1, type: 1, enterprise: 1, invalidValue: 1, modules: 1, ...fields },
 	});
 
 	const [settingsList, total] = await Promise.all([cursor.toArray(), totalCount]);
 
+	// Emit before masking so EE listeners can substitute enterprise setting values first
 	SettingsEvents.emit('fetch-settings', settingsList);
-	return { settings: settingsList, totalCount: total };
+	return { settings: settingsList.map(maskSecretSettingValue), totalCount: total };
 }
 
 const settingsPublicResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
@@ -96,11 +98,12 @@ const settingsListResponseSchema = ajv.compile<{ settings: ISetting[]; count: nu
 	additionalProperties: false,
 });
 
-const settingByIdGetResponseSchema = ajv.compile<Pick<ISetting, '_id' | 'value'>>({
+const settingByIdGetResponseSchema = ajv.compile<Pick<ISetting, '_id' | 'value'> & { hasValue?: boolean }>({
 	type: 'object',
 	properties: {
 		_id: { type: 'string' },
 		value: {},
+		hasValue: { type: 'boolean' },
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['_id', 'value', 'success'],
@@ -305,7 +308,7 @@ API.v1.get(
 		if (!setting) {
 			return API.v1.failure();
 		}
-		return API.v1.success(_.pick(setting, '_id', 'value'));
+		return API.v1.success(_.pick(maskSecretSettingValue(setting), '_id', 'value', 'hasValue'));
 	},
 );
 
@@ -347,6 +350,12 @@ API.v1.post(
 		}
 
 		const { bodyParams } = this;
+
+		// Guard: ignore empty-string submissions for secret/password settings that already have a value.
+		// Empty string is the masked sentinel returned to clients and should not overwrite the real value.
+		if (shouldSkipSecretWrite(setting, bodyParams.value)) {
+			return API.v1.success();
+		}
 
 		if (isSettingAction(setting) && isSettingsUpdatePropsActions(bodyParams) && bodyParams.execute) {
 			await Meteor.callAsync(setting.value);

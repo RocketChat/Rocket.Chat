@@ -54,3 +54,12 @@ WithResetButton.args = {
 	placeholder: 'Placeholder',
 	hasResetButton: true,
 };
+
+export const Masked = Template.bind({});
+Masked.args = {
+	_id: 'setting_id',
+	label: 'Label',
+	placeholder: 'Placeholder',
+	value: '',
+	hasValue: true,
+};

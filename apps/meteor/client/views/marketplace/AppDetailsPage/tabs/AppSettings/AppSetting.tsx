@@ -9,7 +9,7 @@ import MarkdownText from '../../../../../components/MarkdownText';
 import MemoizedSetting from '../../../../admin/settings/Setting/MemoizedSetting';
 import { useAppTranslation } from '../../../hooks/useAppTranslation';
 
-const AppSetting = ({ id, type, i18nLabel, i18nDescription, values, value, packageValue, ...props }: ISetting): ReactElement => {
+const AppSetting = ({ id, type, i18nLabel, i18nDescription, values, value, packageValue, hasValue, ...props }: ISetting & { hasValue?: boolean }): ReactElement => {
 	const appId = useRouteParameter('id');
 	const tApp = useAppTranslation(appId || '');
 
@@ -36,7 +36,7 @@ const AppSetting = ({ id, type, i18nLabel, i18nDescription, values, value, packa
 
 	return (
 		<Controller
-			defaultValue={value || packageValue}
+			defaultValue={value ?? packageValue}
 			name={id}
 			control={control}
 			render={({ field: { onChange, value } }) => (
@@ -46,6 +46,7 @@ const AppSetting = ({ id, type, i18nLabel, i18nDescription, values, value, packa
 					label={label}
 					hint={hint}
 					_id={id}
+					hasValue={hasValue}
 					{...(translatedValues && { values: translatedValues })}
 					{...props}
 					onChangeValue={onChange}

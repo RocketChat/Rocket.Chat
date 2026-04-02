@@ -6,6 +6,7 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { updateAuditedByUser } from '../../../../server/settings/lib/auditedSettingUpdates';
+import { shouldSkipSecretWrite } from '../../../../server/settings/lib/maskSecretSettingValue';
 import { twoFactorRequired } from '../../../2fa/server/twoFactorRequired';
 import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -52,6 +53,7 @@ Meteor.methods<ServerMethods>({
 	) {
 		const uid = Meteor.userId();
 		const settingsNotAllowed: ISetting['_id'][] = [];
+		const settingsToSkip: ISetting['_id'][] = [];
 		if (uid === null) {
 			throw new Meteor.Error('error-action-not-allowed', 'Editing settings is not allowed', {
 				method: 'saveSetting',
@@ -89,6 +91,13 @@ Meteor.methods<ServerMethods>({
 				}
 
 				const setting = await Settings.findOneById(_id);
+
+				// Guard: do not overwrite a configured secret/password setting with an empty string.
+				// An empty string is the masked sentinel returned to clients — submitting it back should be a no-op.
+				if (setting && shouldSkipSecretWrite(setting, value)) {
+					return settingsToSkip.push(_id);
+				}
+
 				// Verify the value is what it should be
 				switch (setting?.type) {
 					case 'roomPick':
@@ -134,11 +143,12 @@ Meteor.methods<ServerMethods>({
 			useragent: this.connection!.httpHeaders['user-agent'] || '',
 		});
 
-		const promises = params.map(({ _id, value }) => auditSettingOperation(Settings.updateValueById, _id, value));
+		const paramsToUpdate = params.filter(({ _id }) => !settingsToSkip.includes(_id));
+		const promises = paramsToUpdate.map(({ _id, value }) => auditSettingOperation(Settings.updateValueById, _id, value));
 
 		(await Promise.all(promises)).forEach((value, index) => {
 			if (value?.modifiedCount) {
-				void notifyOnSettingChangedById(params[index]._id);
+				void notifyOnSettingChangedById(paramsToUpdate[index]._id);
 			}
 		});
 

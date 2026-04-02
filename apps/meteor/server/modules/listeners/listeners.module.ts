@@ -9,6 +9,7 @@ import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
 import { parse } from '@rocket.chat/message-parser';
 
 import { settings } from '../../../app/settings/server/cached';
+import { maskSecretSettingValue } from '../../settings/lib/maskSecretSettingValue';
 import type { NotificationsModule } from '../notifications/notifications.module';
 
 const isMessageParserDisabled = process.env.DISABLE_MESSAGE_PARSER === 'true';
@@ -298,14 +299,16 @@ export class ListenersModule {
 				return;
 			}
 
+			const masked = maskSecretSettingValue(setting);
 			const value = {
-				_id: setting._id,
-				value: setting.value,
+				_id: masked._id,
+				value: masked.value,
+				hasValue: masked.hasValue,
 				...(isSettingColor(setting) && { editor: setting.editor }),
 				properties: setting.properties,
 				enterprise: setting.enterprise,
 				requiredOnWizard: setting.requiredOnWizard,
-			} as ISetting;
+			} as unknown as ISetting;
 
 			if (setting.public === true) {
 				notifications.notifyAllInThisInstance('public-settings-changed', clientAction, value);
@@ -474,8 +477,9 @@ export class ListenersModule {
 		});
 
 		service.onEvent('apps.settingUpdated', (appId: string, setting: AppsSetting) => {
-			notifications.streamApps.emitWithoutBroadcast('app/settingUpdated', { appId, setting });
-			notifications.streamApps.emitWithoutBroadcast('apps', ['app/settingUpdated', [{ appId, setting }]]);
+			const maskedSetting = maskSecretSettingValue(setting) as AppsSetting;
+			notifications.streamApps.emitWithoutBroadcast('app/settingUpdated', { appId, setting: maskedSetting });
+			notifications.streamApps.emitWithoutBroadcast('apps', ['app/settingUpdated', [{ appId, setting: maskedSetting }]]);
 		});
 
 		service.onEvent('command.added', (command: string) => {

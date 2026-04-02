@@ -46,6 +46,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 		await this.add('Federation_Service_Matrix_Signing_Key', randomKey, {
 			type: 'password',
 			public: false,
+			secret: true,
 			enterprise: true,
 			modules: ['federation'],
 			invalidValue: '',

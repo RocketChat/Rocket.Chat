@@ -7,6 +7,7 @@ import type { WithId } from 'mongodb';
 import { getSettingPermissionId } from '../../../app/authorization/lib';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
 import { SettingsEvents } from '../../../app/settings/server';
+import { maskSecretSettingValue } from '../../settings/lib/maskSecretSettingValue';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -24,10 +25,11 @@ Meteor.methods<ServerMethods>({
 	async 'public-settings/get'(updatedAt) {
 		if (updatedAt instanceof Date) {
 			const records = await Settings.findNotHiddenPublicUpdatedAfter(updatedAt).toArray();
+			// Emit before masking so EE listeners can substitute enterprise setting values first
 			SettingsEvents.emit('fetch-settings', records);
 
 			return {
-				update: records,
+				update: records.map(maskSecretSettingValue),
 				remove: await Settings.trashFindDeletedAfter(
 					updatedAt,
 					{
@@ -49,7 +51,7 @@ Meteor.methods<ServerMethods>({
 		const publicSettings = (await Settings.findNotHiddenPublic().toArray()) as ISetting[];
 		SettingsEvents.emit('fetch-settings', publicSettings);
 
-		return publicSettings;
+		return publicSettings.map(maskSecretSettingValue);
 	},
 	async 'private-settings/get'(updatedAfter) {
 		const uid = Meteor.userId();
@@ -80,11 +82,15 @@ Meteor.methods<ServerMethods>({
 				)
 			).filter(Boolean) as ISetting[];
 
-		const getAuthorizedSettings = async (updatedAfter: Date | undefined, privilegedSetting: boolean): Promise<ISetting[]> =>
-			applyFilter(
+		const getAuthorizedSettings = async (updatedAfter: Date | undefined, privilegedSetting: boolean): Promise<ISetting[]> => {
+			const authorized = await applyFilter(
 				privilegedSetting ? bypass : getAuthorizedSettingsFiltered,
 				await Settings.findNotHidden(updatedAfter && { updatedAfter }).toArray(),
 			);
+			// Emit before masking so EE listeners can substitute enterprise setting values first
+			SettingsEvents.emit('fetch-settings', authorized);
+			return authorized.map(maskSecretSettingValue);
+		};
 
 		if (!(updatedAfter instanceof Date)) {
 			// this does not only imply an unfiltered setting range, it also identifies the caller's context:

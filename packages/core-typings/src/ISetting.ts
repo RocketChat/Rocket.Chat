@@ -71,6 +71,7 @@ export interface ISettingBase extends IRocketChatRecord {
 	invalidValue?: SettingValue;
 	valueSource?: 'packageValue' | 'processEnvValue';
 	secret?: boolean;
+	hasValue?: boolean;
 	i18nDescription?: string;
 	autocomplete?: boolean;
 	processEnvValue?: SettingValue;

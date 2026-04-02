@@ -30,6 +30,7 @@ import { i18n } from '../../../../server/lib/i18n';
 import { sendMessagesToAdmins } from '../../../../server/lib/sendMessagesToAdmins';
 import { AppsEngineNoNodesFoundError } from '../../../../server/services/apps-engine/service';
 import { canEnableApp } from '../../../app/license/server/canEnableApp';
+import { maskSecretSettingValue, shouldSkipSecretWrite } from '../../../../server/settings/lib/maskSecretSettingValue';
 import { fetchAppsStatusFromCluster } from '../../../lib/misc/fetchAppsStatusFromCluster';
 import { formatAppInstanceForRest } from '../../../lib/misc/formatAppInstanceForRest';
 import { notifyMarketplace } from '../marketplace/appInstall';
@@ -1147,6 +1148,8 @@ export class AppsRestApi {
 						Object.keys(settings).forEach((k) => {
 							if (settings[k].hidden) {
 								delete settings[k];
+							} else {
+								settings[k] = maskSecretSettingValue(settings[k]) as typeof settings[typeof k];
 							}
 						});
 
@@ -1170,9 +1173,16 @@ export class AppsRestApi {
 					const updated = [];
 
 					for await (const s of this.bodyParams.settings) {
-						if (settings[s.id] && settings[s.id].value !== s.value) {
+						const current = settings[s.id];
+						if (!current) {
+							continue;
+						}
+						// Guard: do not overwrite a configured secret/password setting with the masked sentinel
+						if (shouldSkipSecretWrite(current, s.value)) {
+							continue;
+						}
+						if (current.value !== s.value) {
 							await manager.getSettingsManager().updateAppSetting(this.urlParams.id, s);
-							// Updating?
 							updated.push(s);
 						}
 					}
@@ -1190,7 +1200,7 @@ export class AppsRestApi {
 					try {
 						const setting = manager.getSettingsManager().getAppSetting(this.urlParams.id, this.urlParams.settingId);
 
-						return API.v1.success({ setting });
+						return API.v1.success({ setting: maskSecretSettingValue(setting) });
 					} catch (e: any) {
 						if (e.message.includes('No setting found')) {
 							return API.v1.notFound(`No Setting found on the App by the id of: "${this.urlParams.settingId}"`);
@@ -1207,7 +1217,16 @@ export class AppsRestApi {
 					}
 
 					try {
-						await manager.getSettingsManager().updateAppSetting(this.urlParams.id, this.bodyParams.setting);
+						const { setting: settingToUpdate } = this.bodyParams;
+						const prl = manager.getOneById(this.urlParams.id);
+						if (prl) {
+							const currentSetting = prl.getStorageItem().settings[this.urlParams.settingId];
+							// Guard: do not overwrite a configured secret/password setting with the masked sentinel
+							if (currentSetting && shouldSkipSecretWrite(currentSetting, settingToUpdate.value)) {
+								return API.v1.success();
+							}
+						}
+						await manager.getSettingsManager().updateAppSetting(this.urlParams.id, settingToUpdate);
 
 						return API.v1.success();
 					} catch (e: any) {

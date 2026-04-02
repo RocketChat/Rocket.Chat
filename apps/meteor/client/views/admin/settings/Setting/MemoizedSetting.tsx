@@ -63,6 +63,7 @@ type MemoizedSettingProps = {
 	label?: ReactNode;
 	sectionChanged?: boolean;
 	hasResetButton?: boolean;
+	hasValue?: boolean;
 	disabled?: boolean;
 	required?: boolean;
 	showUpgradeButton?: ReactNode;

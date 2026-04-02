@@ -39,9 +39,18 @@ WithValue.args = {
 };
 
 export const WithResetButton = Template.bind({});
-WithValue.args = {
+WithResetButton.args = {
 	_id: 'setting_id',
 	label: 'Label',
 	placeholder: 'Placeholder',
 	hasResetButton: true,
+};
+
+export const Masked = Template.bind({});
+Masked.args = {
+	_id: 'setting_id',
+	label: 'Label',
+	placeholder: 'Placeholder',
+	value: '',
+	hasValue: true,
 };
