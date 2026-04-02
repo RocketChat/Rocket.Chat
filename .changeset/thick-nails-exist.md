@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": patch
+'@rocket.chat/meteor': minor
 ---
 
-Adds support for ban management in federated rooms, enabling authorized users to ban and unban members via UI and slash commands.
+Adds support for ban management in rooms, enabling authorized users to ban and unban members via UI and slash commands.
