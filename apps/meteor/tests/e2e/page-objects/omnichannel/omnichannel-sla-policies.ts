@@ -14,7 +14,7 @@ class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 	}
 
 	get inputEstimatedWaitTime(): Locator {
-		return this.root.locator('[name="dueTimeInMinutes"]');
+		return this.root.getByRole('spinbutton', { name: 'Estimated wait time (time in minutes)', exact: true });
 	}
 }
 
