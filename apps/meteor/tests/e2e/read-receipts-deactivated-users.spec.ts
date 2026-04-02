@@ -25,19 +25,22 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 	test.skip(!IS_EE, 'Enterprise Only');
 
 	test.beforeAll(async ({ api }) => {
-		testUser1 = await createTestUser(api);
-		testUser2 = await createTestUser(api);
+		[testUser1, testUser2] = await Promise.all([createTestUser(api), createTestUser(api)]);
 
 		[testUser1State, testUser2State] = await Promise.all([loginTestUser(api, testUser1), loginTestUser(api, testUser2)]);
 
 		targetChannel = await createTargetChannel(api, { members: [testUser1.data.username, testUser2.data.username] });
-		await setSettingValueById(api, 'Message_Read_Receipt_Enabled', true);
-		await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true);
+		await Promise.all([
+			setSettingValueById(api, 'Message_Read_Receipt_Enabled', true),
+			setSettingValueById(api, 'Message_Read_Receipt_Store_Users', true),
+		]);
 	});
 
 	test.afterAll(async ({ api }) => {
-		await setSettingValueById(api, 'Message_Read_Receipt_Enabled', false);
-		await setSettingValueById(api, 'Message_Read_Receipt_Store_Users', false);
+		await Promise.all([
+			setSettingValueById(api, 'Message_Read_Receipt_Enabled', false),
+			setSettingValueById(api, 'Message_Read_Receipt_Store_Users', false),
+		]);
 
 		await deleteChannel(api, targetChannel);
 		await Promise.all([testUser1?.delete(), testUser2?.delete()]);
@@ -49,12 +52,7 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 	});
 
 	test.afterEach(async () => {
-		if (user1Context) {
-			await user1Context.page.close();
-		}
-		if (user2Context) {
-			await user2Context.page.close();
-		}
+		await Promise.all([user1Context?.page.close(), user2Context?.page.close()]);
 		user1Context = undefined;
 		user2Context = undefined;
 	});
@@ -68,15 +66,19 @@ test.describe.serial('read-receipts-deactivated-users', () => {
 		const user2Ctx = { page: page2, poHomeChannel: new HomeChannel(page2) };
 		user2Context = user2Ctx;
 
-		await poHomeChannel.navbar.openChat(targetChannel);
-		await user1Ctx.poHomeChannel.navbar.openChat(targetChannel);
-		await user2Ctx.poHomeChannel.navbar.openChat(targetChannel);
+		await Promise.all([
+			poHomeChannel.navbar.openChat(targetChannel),
+			user1Ctx.poHomeChannel.navbar.openChat(targetChannel),
+			user2Ctx.poHomeChannel.navbar.openChat(targetChannel),
+		]);
 
 		await test.step('when all users are active', async () => {
 			await poHomeChannel.content.sendMessage('Message 1: All three users active');
 
-			await expect(user1Ctx.poHomeChannel.content.lastUserMessage).toBeVisible();
-			await expect(user2Ctx.poHomeChannel.content.lastUserMessage).toBeVisible();
+			await Promise.all([
+				expect(user1Ctx.poHomeChannel.content.lastUserMessage).toBeVisible(),
+				expect(user2Ctx.poHomeChannel.content.lastUserMessage).toBeVisible(),
+			]);
 
 			await expect(poHomeChannel.content.lastUserMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
 
