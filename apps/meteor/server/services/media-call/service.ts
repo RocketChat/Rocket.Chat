@@ -12,10 +12,11 @@ import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-ca
 import { type CallFeature, isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
-import { getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
+import { callStateToTranslationKey, getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
+import { i18n } from '../../lib/i18n';
 import { createDirectMessage } from '../../methods/createDirectMessage';
 
 const logger = new Logger('media-call service');
@@ -187,6 +188,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 	}
 
+	private getLanguageForUser(user: IUser): string {
+		return user.language || settings.get('Language') || 'en';
+	}
+
 	private async sendHistoryMessage(call: IMediaCall, room: IRoom): Promise<void> {
 		const userId = call.caller.id || call.createdBy?.id; // I think this should always be the caller, since during a transfer the createdBy contact is the one that transferred the call
 
@@ -196,12 +201,16 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 
 		const state = this.getCallHistoryItemState(call);
+		const skipNotifications = state !== 'not-answered' || call.hangupReason === 'rejected';
+		const i18nKey = callStateToTranslationKey(state).i18n?.key;
+
+		const msg = i18nKey ? i18n.t(i18nKey, { lng: this.getLanguageForUser(user) }) : '';
 		const duration = this.getCallDuration(call);
 
-		const record = getHistoryMessagePayload(state, duration, call._id);
+		const record = getHistoryMessagePayload(state, duration, call._id, msg);
 
 		try {
-			const message = await sendMessage(user, record, room);
+			const message = await sendMessage(user, record, room, { skipNotifications });
 
 			if ('_id' in message) {
 				await CallHistory.updateMany({ callId: call._id }, { $set: { messageId: message._id } });
