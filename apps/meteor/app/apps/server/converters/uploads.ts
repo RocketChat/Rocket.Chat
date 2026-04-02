@@ -4,20 +4,34 @@ import { Uploads } from '@rocket.chat/models';
 
 import { transformMappedData } from './transformMappedData';
 
-export class AppUploadsConverter {
-	private orch: any;
+interface IConverters {
+	get(name: 'rooms'): { convertById(id: string): Promise<IAppsUpload['room']| undefined> };
+	get(name: 'users'): { convertById(id: string): Promise<IAppsUpload['user']| undefined> };
+	get(name: 'visitors'): { convertByToken(token: string): Promise<IAppsUpload['visitor']| undefined> };
+}
 
-	constructor(orch: any) {
+interface IOrchestrator {
+	getConverters(): IConverters;
+}
+
+type AppUploadWithUnmapped = IAppsUpload & { _unmappedProperties_?: Partial<IUpload> };
+type IUploadWithVisitorToken = IUpload & { visitorToken?: string };
+type IAppsUploadWithDescription = IAppsUpload & { description?: string };              
+
+export class AppUploadsConverter {
+	private orch: IOrchestrator;
+
+	constructor(orch: IOrchestrator) {
 		this.orch = orch;
 	}
 
 	async convertById(id: string): Promise<IAppsUpload | undefined> {
 		const upload = await Uploads.findOneById(id);
 
-		return this.convertToApp(upload);
+		return this.convertToApp(upload ?? undefined);
 	}
 
-	async convertToApp(upload: any): Promise<IAppsUpload | undefined> {
+	async convertToApp(upload: IUpload | undefined): Promise<IAppsUpload | undefined> {
 		if (!upload) {
 			return undefined;
 		}
@@ -39,27 +53,30 @@ export class AppUploadsConverter {
 			url: 'url',
 			updatedAt: '_updatedAt',
 			uploadedAt: 'uploadedAt',
-			room: async (upload: any) => {
+			room: async (upload: IUpload) => {
+				if (!upload.rid) {
+					throw new Error('Invalid upload payload: missing rid');
+				}
 				const result = await this.orch.getConverters().get('rooms').convertById(upload.rid);
-				delete upload.rid;
+				delete (upload as Partial<IUpload>).rid;              
 				return result;
 			},
-			user: async (upload: any) => {
+			user: async (upload: IUpload) => {
 				if (!upload.userId) {
 					return undefined;
 				}
 
 				const result = await this.orch.getConverters().get('users').convertById(upload.userId);
-				delete upload.userId;
+				delete (upload as Partial<IUpload>).userId;           
 				return result;
 			},
-			visitor: async (upload: any) => {
-				if (!upload.visitorToken) {
+			visitor: async (upload: IUpload) => {
+				const uploadWithToken = upload as IUploadWithVisitorToken;
+				if (!uploadWithToken.visitorToken) {
 					return undefined;
 				}
-
-				const result = await this.orch.getConverters().get('visitors').convertByToken(upload.visitorToken);
-				delete upload.visitorToken;
+				const result = await this.orch.getConverters().get('visitors').convertByToken(uploadWithToken.visitorToken);
+				delete (upload as IUploadWithVisitorToken).visitorToken;
 				return result;
 			},
 		};
@@ -67,22 +84,26 @@ export class AppUploadsConverter {
 		return transformMappedData(upload, map) as unknown as IAppsUpload;
 	}
 
-	convertToRocketChat(upload: any): IUpload | undefined {
+	convertToRocketChat(upload: IAppsUpload | undefined): IUpload | undefined {
 		if (!upload) {
 			return undefined;
 		}
 
-		const { id: userId } = upload.user || {};
-		const { token: visitorToken } = upload.visitor || {};
-		const { id: rid } = (upload.room || {}) as any;
+		const rid = upload.room?.id;
+		if (!rid) {
+			throw new Error('Invalid app upload payload: missing room.id');
+		}
 
-		const newUpload: any = {
+		const { id: userId } = upload.user ?? {};
+		const { token: visitorToken } = upload.visitor ?? {};
+
+		const newUpload: Record<string, unknown> = {
 			_id: upload.id,
 			name: upload.name,
-			size: upload.size,
+			size: upload.size as unknown as number,
 			type: upload.type,
 			extension: upload.extension,
-			description: upload.description,
+			description: (upload as IAppsUploadWithDescription).description,
 			store: upload.store,
 			etag: upload.etag,
 			complete: upload.complete,
@@ -97,6 +118,6 @@ export class AppUploadsConverter {
 			visitorToken,
 		};
 
-		return Object.assign(newUpload, (upload as any)._unmappedProperties_) as IUpload;
+		return Object.assign(newUpload, (upload as AppUploadWithUnmapped)._unmappedProperties_) as IUpload;
 	}
-} 
+}
