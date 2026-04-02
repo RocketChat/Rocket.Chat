@@ -858,12 +858,6 @@ export type RoomsEndpoints = {
 		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean };
 	};
 
-	'/v1/rooms.createDiscussion': {
-		POST: (params: RoomsCreateDiscussionProps) => {
-			discussion: IRoom & { rid: IRoom['_id'] };
-		};
-	};
-
 	'/v1/rooms.export': {
 		POST: (params: RoomsExportProps) => {
 			missing?: string[];

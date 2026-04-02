@@ -76,12 +76,12 @@ export async function findRoomByIdOrName({
 	checkedArchived = true,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	checkedArchived?: boolean;
 }): Promise<IRoom> {
 	if (
@@ -456,41 +456,78 @@ TO-DO: 8.0.0 should use the ajv validation
 which will change this endpoint's
 response errors.
 */
-API.v1.addRoute(
+const roomsCreateDiscussionEndpoint = API.v1.post(
 	'rooms.createDiscussion',
-	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
-		async post() {
-			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
-			if (!prid) {
-				return API.v1.failure('Body parameter "prid" is required.');
-			}
-			if (!t_name) {
-				return API.v1.failure('Body parameter "t_name" is required.');
-			}
-			if (users && !Array.isArray(users)) {
-				return API.v1.failure('Body parameter "users" must be an array.');
-			}
+		authRequired: true,
 
-			if (encrypted !== undefined && typeof encrypted !== 'boolean') {
-				return API.v1.failure('Body parameter "encrypted" must be a boolean when included.');
-			}
-
-			const discussion = await applyAirGappedRestrictionsValidation(() =>
-				createDiscussion(this.userId, {
-					prid,
-					pmid,
-					t_name,
-					reply,
-					users: users?.filter(isTruthy) || [],
-					encrypted,
-					topic,
-				}),
-			);
-
-			return API.v1.success({ discussion });
+		body: ajv.compile<{
+			prid: string;
+			pmid?: string;
+			reply?: string;
+			t_name: string;
+			users?: string[];
+			encrypted?: boolean;
+			topic?: string;
+		}>({
+			type: 'object',
+			properties: {
+				prid: { type: 'string', description: 'Parent room ID' },
+				pmid: { type: 'string' },
+				reply: { type: 'string' },
+				t_name: { type: 'string', description: 'Discussion name' },
+				users: { type: 'array', items: { type: 'string' } },
+				encrypted: { type: 'boolean' },
+				topic: { type: 'string' }
+			},
+			required: ['prid', 't_name'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{
+				success: true;
+				discussion: Record<string, unknown>;
+			}>({
+				type: 'object',
+				properties: {
+					discussion: { type: 'object' },
+					success: { type: 'boolean', enum: [true] }
+				},
+				required: ['discussion', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
 	},
+	async function action(this: any) {
+
+		const {
+			prid,
+			pmid,
+			reply,
+			t_name,
+			users,
+			encrypted,
+			topic
+		} = this.bodyParams;
+
+		const discussion = await applyAirGappedRestrictionsValidation(() =>
+			createDiscussion(this.userId, {
+				prid,
+				pmid,
+				t_name,
+				reply,
+				users: users?.filter(isTruthy) || [],
+				encrypted,
+				topic,
+			}),
+		);
+
+		return API.v1.success({
+			discussion
+		});
+	}
 );
 
 API.v1.addRoute(
@@ -970,21 +1007,21 @@ API.v1.addRoute(
 
 type RoomsFavorite =
 	| {
-			roomId: string;
-			favorite: boolean;
-	  }
+		roomId: string;
+		favorite: boolean;
+	}
 	| {
-			roomName: string;
-			favorite: boolean;
-	  };
+		roomName: string;
+		favorite: boolean;
+	};
 
 type RoomsLeave =
 	| {
-			roomId: string;
-	  }
+		roomId: string;
+	}
 	| {
-			roomName: string;
-	  };
+		roomName: string;
+	};
 
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
@@ -1377,9 +1414,10 @@ export const roomEndpoints = API.v1
 	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsCreateDiscussionEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RoomEndpoints {}
+	interface Endpoints extends RoomEndpoints { }
 }
