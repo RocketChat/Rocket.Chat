@@ -101,7 +101,7 @@ export class AppUploadsConverter {
 		const newUpload: Record<string, unknown> = {
 			_id: upload.id,
 			name: upload.name,
-			size: upload.size as unknown as number,
+			size: upload.size !== undefined ? Number(upload.size) : undefined,
 			type: upload.type,
 			extension: upload.extension,
 			description: uploadWithExtras.description,
