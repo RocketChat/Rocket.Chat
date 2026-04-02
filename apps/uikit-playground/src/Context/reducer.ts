@@ -194,6 +194,7 @@ const reducer = (state: initialStateType, action: IAction) => {
 			return { ...state };
 		}
 		case ActionTypes.DeleteScreen: {
+			const deletedScreenIndex = state.projects[activeProject].screens.indexOf(action.payload);
 			delete state.screens[action.payload];
 			const project = state.projects[activeProject];
 			project.screens = project.screens.filter((id) => id !== action.payload);
@@ -203,17 +204,37 @@ const reducer = (state: initialStateType, action: IAction) => {
 			project.flowNodes = project.flowNodes.filter((node) => node.id !== action.payload);
 
 			if (project.screens.length > 0) {
-				state.activeScreen = project.screens[0];
+				if (action.payload === activeScreen) {
+					const newIndex = Math.min(deletedScreenIndex, project.screens.length - 1);
+					state.activeScreen = project.screens[newIndex];
+				}
 			} else {
 				delete state.projects[activeProject];
 				const remainingProjectIds = Object.keys(state.projects);
 				if (remainingProjectIds.length > 0) {
 					const nextProjectId = remainingProjectIds[0];
 					state.activeProject = nextProjectId;
-					state.activeScreen = state.projects[nextProjectId].screens[0] || '';
+					state.activeScreen = state.projects[nextProjectId].screens[0];
 				} else {
-					state.activeProject = '';
-					state.activeScreen = '';
+					const newProjectId = getUniqueId();
+					const newScreenId = getUniqueId();
+					state.projects[newProjectId] = {
+						id: newProjectId,
+						name: 'Untitled Project',
+						screens: [newScreenId],
+						date: getDate(),
+						flowEdges: [],
+						flowNodes: [],
+					};
+					state.screens[newScreenId] = {
+						id: newScreenId,
+						name: 'Untitled Screen',
+						date: getDate(),
+						payload: { surface: SurfaceOptions.Message, blocks: [] },
+						actionPreview: {},
+					};
+					state.activeProject = newProjectId;
+					state.activeScreen = newScreenId;
 				}
 			}
 
@@ -304,14 +325,37 @@ const reducer = (state: initialStateType, action: IAction) => {
 				return {
 					...state,
 					activeProject: nextProjectId,
-					activeScreen: state.projects[nextProjectId].screens[0] || '',
+					activeScreen: state.projects[nextProjectId].screens[0],
 				};
 			}
 
+			const newProjectId = getUniqueId();
+			const newScreenId = getUniqueId();
 			return {
 				...state,
-				activeProject: '',
-				activeScreen: '',
+				projects: {
+					...state.projects,
+					[newProjectId]: {
+						id: newProjectId,
+						name: 'Untitled Project',
+						screens: [newScreenId],
+						date: getDate(),
+						flowEdges: [],
+						flowNodes: [],
+					},
+				},
+				screens: {
+					...state.screens,
+					[newScreenId]: {
+						id: newScreenId,
+						name: 'Untitled Screen',
+						date: getDate(),
+						payload: { surface: SurfaceOptions.Message, blocks: [] },
+						actionPreview: {},
+					},
+				},
+				activeProject: newProjectId,
+				activeScreen: newScreenId,
 			};
 		}
 		case ActionTypes.RenameProject: {
