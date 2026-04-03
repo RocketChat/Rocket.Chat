@@ -115,8 +115,9 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 		return () => {
 			clearRecordingInterval();
 			VideoRecorder.stop();
+			UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 		};
-	}, [dispatchToastMessage, handleCancel, clearRecordingInterval, t]);
+	}, [dispatchToastMessage, handleCancel, clearRecordingInterval, rid, tmid, t]);
 
 	return (
 		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
