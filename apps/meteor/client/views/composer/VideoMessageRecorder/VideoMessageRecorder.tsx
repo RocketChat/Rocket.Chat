@@ -4,7 +4,7 @@ import { Box, ButtonGroup, Button, Icon, PositionAnimated } from '@rocket.chat/f
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useTranslation, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes, RefObject } from 'react';
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, useCallback } from 'react';
 
 import { UserAction, USER_ACTIVITIES } from '../../../../app/ui/client/lib/UserAction';
 import { VideoRecorder } from '../../../../app/ui/client/lib/recorderjs/videoRecorder';
@@ -43,23 +43,30 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 
 	const [time, setTime] = useState<string | undefined>();
 	const [recordingState, setRecordingState] = useState<'idle' | 'loading' | 'recording'>('idle');
-	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
+	const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 	const isRecording = recordingState === 'recording';
 	const sendButtonDisabled = !(VideoRecorder.cameraStarted.get() && !(recordingState === 'recording'));
 
 	const chat = useChat();
 
-	const stopVideoRecording = async (rid: IRoom['_id'], tmid?: IMessage['_id']) => {
-		if (recordingInterval) {
-			clearInterval(recordingInterval);
+	const clearRecordingInterval = useCallback(() => {
+		if (recordingIntervalRef.current) {
+			clearInterval(recordingIntervalRef.current);
+			recordingIntervalRef.current = null;
 		}
-		setRecordingInterval(null);
-		VideoRecorder.stopRecording();
-		UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
-		setRecordingState('idle');
-	};
+	}, []);
 
-	const handleRecord = async () => {
+	const stopVideoRecording = useCallback(
+		(rid: IRoom['_id'], tmid?: IMessage['_id']) => {
+			clearRecordingInterval();
+			VideoRecorder.stopRecording();
+			UserAction.stop(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
+			setRecordingState('idle');
+		},
+		[clearRecordingInterval],
+	);
+
+	const handleRecord = useCallback(async () => {
 		if (recordingState === 'recording') {
 			stopVideoRecording(rid, tmid);
 		} else {
@@ -68,17 +75,15 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 			UserAction.performContinuously(rid, USER_ACTIVITIES.USER_RECORDING, { tmid });
 			setTime('00:00');
 			const startTime = new Date();
-			setRecordingInterval(
-				setInterval(() => {
-					const now = new Date();
-					const distance = (now.getTime() - startTime.getTime()) / 1000;
-					const minutes = Math.floor(distance / 60);
-					const seconds = Math.floor(distance % 60);
-					setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
-				}, 1000),
-			);
+			recordingIntervalRef.current = setInterval(() => {
+				const now = new Date();
+				const distance = (now.getTime() - startTime.getTime()) / 1000;
+				const minutes = Math.floor(distance / 60);
+				const seconds = Math.floor(distance % 60);
+				setTime(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+			}, 1000);
 		}
-	};
+	}, [recordingState, rid, tmid, stopVideoRecording]);
 
 	const handleSendRecord = async () => {
 		const cb = async (blob: Blob) => {
@@ -108,9 +113,10 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 		VideoRecorder.start(videoRef.current ?? undefined, (success) => (!success ? handleCancel() : undefined));
 
 		return () => {
+			clearRecordingInterval();
 			VideoRecorder.stop();
 		};
-	}, [dispatchToastMessage, handleCancel, t]);
+	}, [dispatchToastMessage, handleCancel, clearRecordingInterval, t]);
 
 	return (
 		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
