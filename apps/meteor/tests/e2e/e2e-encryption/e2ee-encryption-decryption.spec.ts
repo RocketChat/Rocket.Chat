@@ -61,7 +61,6 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		// Log out
 		await navbar.logout();
-		await loginPage.waitForIt();
 
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
@@ -139,7 +138,6 @@ test.describe('E2EE Encryption and Decryption - Basic Features', () => {
 
 		// Log out
 		await navbar.logout();
-		await loginPage.waitForIt();
 
 		// Login again
 		await loginPage.loginByUserState(Users.admin);
