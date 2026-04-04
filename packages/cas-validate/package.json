@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cas-validate",
-	"version": "0.0.3",
+	"version": "0.0.4-rc.0",
 	"private": true,
 	"description": "Fork of https://github.com/kcbanner/node-cas",
 	"main": "./dist/index.js",

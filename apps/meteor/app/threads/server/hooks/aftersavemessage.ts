@@ -4,6 +4,7 @@ import { Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../server/lib/callbacks';
+import type { SendMessageOptions } from '../../../lib/server/functions/sendMessage';
 import { notifyOnMessageChange } from '../../../lib/server/lib/notifyListener';
 import { updateThreadUsersSubscriptions, getMentions } from '../../../lib/server/lib/notifyUsersOnMessage';
 import { sendMessageNotifications } from '../../../lib/server/lib/sendNotificationsOnMessage';
@@ -39,7 +40,7 @@ const notification = async (message: IMessage, room: IRoom, replies: string[]) =
 	return message;
 };
 
-export async function processThreads(message: IMessage, room: IRoom) {
+export async function processThreads(message: IMessage, room: IRoom, options?: SendMessageOptions) {
 	if (!message.tmid) {
 		return message;
 	}
@@ -61,7 +62,9 @@ export async function processThreads(message: IMessage, room: IRoom) {
 
 	await notifyUsersOnReply(message, replies);
 	await metaData(message, parentMessage, replies);
-	await notification(message, room, replies);
+	if (!options?.skipNotifications) {
+		await notification(message, room, replies);
+	}
 	void notifyOnMessageChange({
 		id: message.tmid,
 	});
@@ -77,8 +80,8 @@ Meteor.startup(() => {
 		}
 		callbacks.add(
 			'afterSaveMessage',
-			async (message, { room }) => {
-				return processThreads(message, room);
+			async (message, { room, options }) => {
+				return processThreads(message, room, options);
 			},
 			callbacks.priority.LOW,
 			'threads-after-save-message',
