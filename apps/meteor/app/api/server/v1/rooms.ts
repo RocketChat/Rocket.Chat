@@ -76,12 +76,12 @@ export async function findRoomByIdOrName({
 	checkedArchived = true,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	checkedArchived?: boolean;
 }): Promise<IRoom> {
 	if (
@@ -493,39 +493,80 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.getDiscussions',
-	{ authRequired: true },
-	{
-		async get() {
-			const room = await findRoomByIdOrName({ params: this.queryParams });
-			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
-
-			if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-				return API.v1.failure('not-allowed', 'Not Allowed');
-			}
-
-			const ourQuery = Object.assign(query, { prid: room._id });
-
-			const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
-				sort: sort || { fname: 1 },
-				skip: offset,
-				limit: count,
-				projection: fields,
-			});
-
-			const [discussions, total] = await Promise.all([cursor.toArray(), totalCount]);
-
-			return API.v1.success({
-				discussions,
-				count: discussions.length,
-				offset,
-				total,
-			});
+const roomsGetDiscussionsEndpoint = API.v1.get('rooms.getDiscussions', {
+	authRequired: true,
+	query: ajv.compile<{
+		roomId?: string;
+		roomName?: string;
+		offset?: number;
+		count?: number;
+	}>({
+		type: 'object',
+		properties: {
+			roomId: { type: 'string', description: 'The ID of the room' },
+			roomName: { type: 'string', description: 'The name of the room' },
+			offset: { type: 'number', description: 'Number of items to skip' },
+			count: { type: 'number', description: 'Number of items to return' },
 		},
+		anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+		additionalProperties: false,
+	}),
+	response: {
+		200: ajv.compile<{
+			success: true;
+			discussions: Record<string, unknown>[];
+			count: number;
+			offset: number;
+			total: number;
+		}>({
+			type: 'object',
+			properties: {
+				discussions: {
+					type: 'array',
+					items: { type: 'object' },
+				},
+				count: { type: 'number' },
+				offset: { type: 'number' },
+				total: { type: 'number' },
+				success: { type: 'boolean', enum: [true] },
+			},
+			required: ['discussions', 'count', 'offset', 'total', 'success'],
+			additionalProperties: false,
+		}),
+		400: validateBadRequestErrorResponse,
+		401: validateUnauthorizedErrorResponse,
 	},
-);
+}, async function action() {
+	const room = await findRoomByIdOrName({ params: this.queryParams });
+
+	if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
+		return API.v1.failure('not-allowed', 'Not Allowed');
+	}
+
+	const { offset, count } = await getPaginationItems(this.queryParams);
+	const { sort, fields, query } = await this.parseJsonQuery();
+
+	const ourQuery = Object.assign(query, { prid: room._id });
+
+	const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+		sort: sort || { fname: 1 },
+		skip: offset,
+		limit: count,
+		projection: fields,
+	});
+
+	const [discussions, total] = await Promise.all([
+		cursor.toArray(),
+		totalCount,
+	]);
+
+	return API.v1.success({
+		discussions,
+		count: discussions.length,
+		offset,
+		total,
+	});
+});
 
 API.v1.addRoute(
 	'rooms.images',
@@ -970,21 +1011,21 @@ API.v1.addRoute(
 
 type RoomsFavorite =
 	| {
-			roomId: string;
-			favorite: boolean;
-	  }
+		roomId: string;
+		favorite: boolean;
+	}
 	| {
-			roomName: string;
-			favorite: boolean;
-	  };
+		roomName: string;
+		favorite: boolean;
+	};
 
 type RoomsLeave =
 	| {
-			roomId: string;
-	  }
+		roomId: string;
+	}
 	| {
-			roomName: string;
-	  };
+		roomName: string;
+	};
 
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
@@ -1377,9 +1418,10 @@ export const roomEndpoints = API.v1
 	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsGetDiscussionsEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RoomEndpoints {}
+	interface Endpoints extends RoomEndpoints { }
 }

@@ -493,7 +493,6 @@ export type Notifications = {
 	emailNotifications?: string;
 };
 
-type RoomsGetDiscussionsProps = PaginatedRequest<BaseRoomsProps>;
 
 type RoomsMuteUnmuteUser = { userId: string; roomId: string } | { username: string; roomId: string };
 
@@ -926,12 +925,6 @@ export type RoomsEndpoints = {
 			update: IRoom[];
 			remove: IRoom[];
 		};
-	};
-
-	'/v1/rooms.getDiscussions': {
-		GET: (params: RoomsGetDiscussionsProps) => PaginatedResult<{
-			discussions: IRoom[];
-		}>;
 	};
 
 	'/v1/rooms.isMember': {
