@@ -26,7 +26,7 @@
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "~0.31.25",
 		"@rocket.chat/emitter": "^0.32.0",
-		"@rocket.chat/fuselage": "^0.74.0",
+		"@rocket.chat/fuselage": "^0.75.0",
 		"@rocket.chat/fuselage-hooks": "^0.41.0",
 		"@rocket.chat/fuselage-tokens": "~0.33.2",
 		"@rocket.chat/icons": "~0.47.0",

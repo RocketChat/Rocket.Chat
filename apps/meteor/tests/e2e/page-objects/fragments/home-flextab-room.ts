@@ -131,4 +131,8 @@ export class HomeFlextabRoom {
 		await this.checkboxChannels.click();
 		await this.checkboxDiscussions.click();
 	}
+
+	get panelChannelInfo(): Locator {
+		return this.page.getByRole('dialog', { name: 'Channel info' });
+	}
 }
