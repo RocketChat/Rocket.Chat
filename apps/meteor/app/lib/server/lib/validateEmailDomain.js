@@ -32,7 +32,7 @@ settings.watch('Accounts_AllowedDomainsList', (value) => {
 	emailDomainWhiteList = value
 		.split(',')
 		.filter(Boolean)
-		.map((domain) => domain.trim());
+		.map((domain) => domain.trim().toLowerCase());
 });
 
 export const validateEmailDomain = async function (email) {
