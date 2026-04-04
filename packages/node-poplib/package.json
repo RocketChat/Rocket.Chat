@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/poplib",
-	"version": "0.0.2",
+	"version": "0.0.3-rc.0",
 	"private": true,
 	"main": "./src/index.js",
 	"devDependencies": {

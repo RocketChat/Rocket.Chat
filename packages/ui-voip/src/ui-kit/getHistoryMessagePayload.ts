@@ -76,13 +76,14 @@ export const getHistoryMessagePayload = (
 	callState: CallHistoryItemState,
 	callDuration: number | undefined,
 	callId?: string,
+	msg: string = '',
 ): Pick<IMessage, 'msg' | 'groupable'> & { blocks: [InfoCardBlock] } => {
 	const callStateTranslationKey = callStateToTranslationKey(callState);
 	const icon = callStateToIcon(callState);
 	const callDurationFormatted = getFormattedCallDuration(callDuration);
 
 	return {
-		msg: '',
+		msg,
 		groupable: false,
 		blocks: [
 			{

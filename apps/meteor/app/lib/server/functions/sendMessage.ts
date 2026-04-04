@@ -13,9 +13,10 @@ import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
 
-type SendMessageOptions = {
+export type SendMessageOptions = {
 	upsert?: boolean;
 	previewUrls?: string[];
+	skipNotifications?: boolean;
 };
 
 // TODO: most of the types here are wrong, but I don't want to change them now
@@ -289,7 +290,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 		void Apps.self?.triggerEvent(messageEvent, message);
 	}
 
-	await afterSaveMessage(message, room, user);
+	await afterSaveMessage(message, room, user, { options });
 
 	void notifyOnRoomChangedById(message.rid);
 

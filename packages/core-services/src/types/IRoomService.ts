@@ -71,7 +71,11 @@ export interface IRoomService {
 		status?: 'INVITED';
 		roles?: ISubscription['roles'];
 	}): Promise<string | undefined>;
-	updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean>;
+	updateDirectMessageRoomName(
+		room: IRoom,
+		ignoreStatusFromSubs?: string[],
+		updatedNames?: AtLeast<IUser, '_id' | 'name' | 'username'>[],
+	): Promise<boolean>;
 	markAsRead(room: IRoom, userId: string, readThreads?: boolean): Promise<void>;
 	readThread(params: { user: IUser; room: IRoom; tmid: string }): Promise<void>;
 }

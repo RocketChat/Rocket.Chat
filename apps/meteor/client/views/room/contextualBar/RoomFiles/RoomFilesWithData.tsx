@@ -16,7 +16,7 @@ const RoomFilesWithData = () => {
 
 	const debouncedText = useDebouncedValue(text, 400);
 
-	const { isPending, data, fetchNextPage, refetch } = useFilesList({
+	const { isPending, isSuccess, data, fetchNextPage, refetch } = useFilesList({
 		rid: room._id,
 		type,
 		text: debouncedText,
@@ -30,7 +30,9 @@ const RoomFilesWithData = () => {
 
 	return (
 		<RoomFiles
-			loading={isPending}
+			rid={room._id}
+			isPending={isPending}
+			isSuccess={isSuccess}
 			type={type}
 			text={text}
 			filesItems={data?.filesItems ?? []}
