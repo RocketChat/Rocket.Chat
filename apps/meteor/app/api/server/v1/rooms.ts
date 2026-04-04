@@ -495,7 +495,7 @@ API.v1.addRoute(
 
 const roomsGetDiscussionsEndpoint = API.v1.get('rooms.getDiscussions', {
 	authRequired: true,
-	query: ajv.compile<{
+	query: ajvQuery.compile<{
 		roomId?: string;
 		roomName?: string;
 		offset?: number;
