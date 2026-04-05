@@ -1,4 +1,4 @@
-import type { Locator } from 'playwright-core';
+import type { Locator } from '@playwright/test';
 
 import { Modal } from './modal';
 
