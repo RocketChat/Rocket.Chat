@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
 import { MenuMore } from '../menu';
-import { ConfirmDeleteTeamModal } from '../modals';
+import { ConfirmDeleteTeamModal, ConfirmDeleteRoomModal } from '../modals';
 import { Modal } from '../modals/modal';
 
 class ConfirmLeaveRoomModal extends Modal {
@@ -16,21 +16,6 @@ class ConfirmLeaveRoomModal extends Modal {
 
 	async confirmLeave() {
 		await this.btnLeave.click();
-		await this.waitForDismissal();
-	}
-}
-
-class ConfirmDeleteRoomModal extends Modal {
-	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Delete' }));
-	}
-
-	private get btnDelete() {
-		return this.root.getByRole('button', { name: 'Yes, delete', exact: true });
-	}
-
-	async confirmDelete() {
-		await this.btnDelete.click();
 		await this.waitForDismissal();
 	}
 }
