@@ -143,4 +143,51 @@ describe('member avatar validation', () => {
 		expect(downloadFromRemoteServerMock).toHaveBeenCalledWith('remote.server', 'fallback');
 		expect(setFederationAvatarUrlByIdMock).toHaveBeenCalledWith('u1', 'mxc://remote.server/fallback');
 	});
+
+	it('does not treat missing avatar_url as removal when profile query fails', async () => {
+		findOneByUsernameMock.mockResolvedValue({
+			_id: 'u1',
+			username: '@alice:remote.server',
+			name: 'Alice',
+			federation: { avatarUrl: 'mxc://remote.server/old' },
+		} as any);
+		findOneFederatedByMridMock.mockResolvedValue({ _id: 'r1', t: 'c' } as any);
+		findOneByRoomIdAndUserIdMock.mockResolvedValue({ _id: 's1' } as any);
+		queryProfileMock.mockRejectedValue(new Error('profile unavailable'));
+
+		await emitJoinEvent({});
+
+		expect(downloadFromRemoteServerMock).not.toHaveBeenCalled();
+		expect(setUserAvatarMock).not.toHaveBeenCalled();
+		expect(resetUserAvatarMock).not.toHaveBeenCalled();
+		expect(setFederationAvatarUrlByIdMock).not.toHaveBeenCalled();
+	});
+
+	it('coalesces concurrent profile lookups for the same user', async () => {
+		findOneByUsernameMock.mockResolvedValue({
+			_id: 'u1',
+			username: '@alice:remote.server',
+			name: 'Alice',
+			federation: { avatarUrl: 'mxc://remote.server/same' },
+		} as any);
+		findOneFederatedByMridMock.mockResolvedValue({ _id: 'r1', t: 'c' } as any);
+		findOneByRoomIdAndUserIdMock.mockResolvedValue({ _id: 's1' } as any);
+
+		let resolveProfile: ((value: { avatar_url: string }) => void) | undefined;
+		const pendingProfile = new Promise<{ avatar_url: string }>((resolve) => {
+			resolveProfile = resolve;
+		});
+
+		queryProfileMock.mockImplementation(() => pendingProfile as any);
+
+		const firstJoin = emitJoinEvent({ avatarUrl: 'mxc://remote.server/old' });
+		const secondJoin = emitJoinEvent({ avatarUrl: 'mxc://remote.server/old' });
+
+		resolveProfile?.({ avatar_url: 'mxc://remote.server/same' });
+
+		await Promise.all([firstJoin, secondJoin]);
+
+		expect(queryProfileMock).toHaveBeenCalledTimes(1);
+		expect(downloadFromRemoteServerMock).not.toHaveBeenCalled();
+	});
 });

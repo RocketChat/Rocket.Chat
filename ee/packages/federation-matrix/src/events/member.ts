@@ -14,14 +14,28 @@ import { MatrixMediaService } from '../services/MatrixMediaService';
 
 const logger = new Logger('federation-matrix:member');
 
-async function getCurrentFederatedAvatarUrl(userId: string, fallbackAvatarUrl: string | null): Promise<string | null> {
-	try {
-		const profile = await federationSDK.queryProfile(userId);
+const inFlightFederatedAvatarLookupsByUserId = new Map<string, Promise<string | null | undefined>>();
 
-		return profile?.avatar_url ?? null;
+async function getCurrentFederatedAvatarUrl(
+	userId: string,
+	fallbackAvatarUrl: string | null | undefined,
+): Promise<string | null | undefined> {
+	let lookupPromise = inFlightFederatedAvatarLookupsByUserId.get(userId);
+
+	if (!lookupPromise) {
+		lookupPromise = federationSDK.queryProfile(userId).then((profile) => profile?.avatar_url);
+		inFlightFederatedAvatarLookupsByUserId.set(userId, lookupPromise);
+	}
+
+	try {
+		return await lookupPromise;
 	} catch (error) {
 		logger.warn({ err: error, userId, msg: 'Failed to query current federated profile avatar, falling back to event payload' });
 		return fallbackAvatarUrl;
+	} finally {
+		if (inFlightFederatedAvatarLookupsByUserId.get(userId) === lookupPromise) {
+			inFlightFederatedAvatarLookupsByUserId.delete(userId);
+		}
 	}
 }
 
@@ -308,10 +322,11 @@ async function handleJoin({
 
 	// handle avatar updates to membership events
 	if (senderServerName !== federationSDK.getConfig('serverName')) {
-		const currentAvatarUrl = await getCurrentFederatedAvatarUrl(userId, content.avatar_url || null);
+		const fallbackAvatarUrl = 'avatar_url' in content ? content.avatar_url ?? null : undefined;
+		const currentAvatarUrl = await getCurrentFederatedAvatarUrl(userId, fallbackAvatarUrl);
 		const storedAvatarUrl = joiningUser.federation?.avatarUrl || null;
 
-		if (currentAvatarUrl !== storedAvatarUrl) {
+		if (currentAvatarUrl !== undefined && currentAvatarUrl !== storedAvatarUrl) {
 			void downloadAndSetAvatarDebounced(joiningUser._id, joiningUser, currentAvatarUrl);
 		}
 	}
