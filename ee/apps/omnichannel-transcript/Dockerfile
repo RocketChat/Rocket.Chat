@@ -99,7 +99,7 @@ ENV NODE_ENV=production
 
 WORKDIR /app/ee/apps/${SERVICE}
 
-RUN yarn workspaces focus --production --immutable
+RUN yarn workspaces focus --production
 
 FROM node:22.16.0-alpine3.22
 

@@ -76,7 +76,7 @@ RUN apk update && \
     # Update OpenSSL
     # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.22
     apk upgrade --no-cache openssl && \
-    yarn workspaces focus --production --immutable && \
+    yarn workspaces focus --production && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies
 

@@ -97,7 +97,7 @@ runs:
     - name: yarn install production
       if: inputs.install && inputs.type == 'production'
       shell: bash
-      run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn workspaces focus --all --production --immutable
+      run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn workspaces focus --all --production
 
     - name: restore yarn config file
       if: inputs.install
