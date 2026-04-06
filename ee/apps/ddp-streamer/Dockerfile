@@ -89,7 +89,7 @@ ENV NODE_ENV=production
 
 WORKDIR /app/ee/apps/${SERVICE}
 
-RUN yarn workspaces focus --production --frozen-lockfile
+RUN yarn workspaces focus --production --immutable
 
 FROM node:22.16.0-alpine3.22
 

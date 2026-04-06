@@ -92,12 +92,12 @@ runs:
     - name: yarn install
       if: inputs.install && inputs.type == 'development'
       shell: bash
-      run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn --frozen-lockfile
+      run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn --immutable
 
     - name: yarn install production
       if: inputs.install && inputs.type == 'production'
       shell: bash
-      run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn workspaces focus --all --production --frozen-lockfile
+      run: YARN_ENABLE_HARDENED_MODE=${{ inputs.HARDENED_MODE }} yarn workspaces focus --all --production --immutable
 
     - name: restore yarn config file
       if: inputs.install

@@ -23,7 +23,7 @@ COPY ./packages/models packages/models
 
 COPY ./apps/meteor/ee/server/services apps/meteor/ee/server/services
 
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 RUN yarn workspace @rocket.chat/core-typings run build \
     && yarn workspace @rocket.chat/rest-typings run build
@@ -76,7 +76,7 @@ RUN apk update && \
     # Update OpenSSL
     # CVE -> https://scout.docker.com/vulnerabilities/id/CVE-2025-9230?s=alpine&n=openssl&ns=alpine&t=apk&osn=alpine&osv=3.22
     apk upgrade --no-cache openssl && \
-    yarn workspaces focus --production --frozen-lockfile && \
+    yarn workspaces focus --production --immutable && \
     rm -rf /var/cache/apk/* && \
     apk del build-dependencies
 
