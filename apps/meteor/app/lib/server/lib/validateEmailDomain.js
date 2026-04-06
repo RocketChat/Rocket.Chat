@@ -26,12 +26,7 @@ settings.watch('Accounts_BlockedDomainsList', (value) => {
 		return;
 	}
 
-	emailDomainBlackSet = new Set(
-		value
-			.split(',')
-			.filter(Boolean)
-			.map(normalize)
-	);
+	emailDomainBlackSet = new Set(value.split(',').filter(Boolean).map(normalize));
 });
 
 settings.watch('Accounts_AllowedDomainsList', (value) => {
@@ -40,12 +35,7 @@ settings.watch('Accounts_AllowedDomainsList', (value) => {
 		return;
 	}
 
-	emailDomainWhiteSet = new Set(
-		value
-			.split(',')
-			.filter(Boolean)
-			.map(normalize)
-	);
+	emailDomainWhiteSet = new Set(value.split(',').filter(Boolean).map(normalize));
 });
 
 export const validateEmailDomain = async function (email) {
@@ -75,16 +65,7 @@ export const validateEmailDomain = async function (email) {
 	}
 
 	// Step 4: Blacklist enforcement (takes priority)
-	if (
-		emailDomainBlackSet.size > 0 &&
-		(
-			emailDomainBlackSet.has(emailDomain) ||
-			(
-				settings.get('Accounts_UseDefaultBlockedDomainsList') &&
-				defaultBlackSet.has(emailDomain)
-			)
-		)
-	) {
+	if (emailDomainBlackSet.has(emailDomain) || (settings.get('Accounts_UseDefaultBlockedDomainsList') && defaultBlackSet.has(emailDomain))) {
 		throw new Meteor.Error('error-email-domain-blacklisted', 'The email domain is blacklisted', {
 			function: 'RocketChat.validateEmailDomain',
 		});
