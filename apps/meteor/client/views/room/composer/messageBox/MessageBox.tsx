@@ -174,6 +174,11 @@ const MessageBox = ({
 		setIsImportantActive(false);
 	});
 
+	const handleImportantToggle = useEffectEvent((active: boolean) => {
+		setIsImportantActive(active);
+		textareaRef.current?.focus();
+	});
+
 	const closeEditing = (event: KeyboardEvent | MouseEvent<HTMLElement>) => {
 		const mid = chat.currentEditingMessage.getMID();
 		if (mid) {
@@ -462,7 +467,7 @@ const MessageBox = ({
 							isRecording={isRecording}
 							variant={sizes.inlineSize < 480 ? 'small' : 'large'}
 							isImportantActive={isImportantActive}
-							onImportantToggle={setIsImportantActive}
+							onImportantToggle={handleImportantToggle}
 						/>
 					</MessageComposerToolbarActions>
 					<MessageComposerToolbarSubmit>
