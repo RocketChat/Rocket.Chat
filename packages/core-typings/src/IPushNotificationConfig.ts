@@ -15,7 +15,7 @@ export interface IPushNotificationConfig {
 		image: string;
 	};
 	apn?: {
-		category: string;
+		category?: string;
 		expirationSeconds?: number;
 	};
 	useVoipToken?: boolean;
