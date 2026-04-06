@@ -26,7 +26,7 @@ settings.watch('Accounts_BlockedDomainsList', (value) => {
 		return;
 	}
 
-	emailDomainBlackSet = new Set(value.split(',').filter(Boolean).map(normalize));
+	emailDomainBlackSet = new Set(value.split(',').map(normalize).filter(Boolean));
 });
 
 settings.watch('Accounts_AllowedDomainsList', (value) => {
@@ -35,7 +35,7 @@ settings.watch('Accounts_AllowedDomainsList', (value) => {
 		return;
 	}
 
-	emailDomainWhiteSet = new Set(value.split(',').filter(Boolean).map(normalize));
+	emailDomainWhiteSet = new Set(value.split(',').map(normalize).filter(Boolean));
 });
 
 export const validateEmailDomain = async function (email) {
