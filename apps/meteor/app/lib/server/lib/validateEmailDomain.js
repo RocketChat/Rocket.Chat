@@ -9,33 +9,47 @@ import { settings } from '../../../settings/server';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
-let emailDomainBlackList = [];
-let emailDomainWhiteList = [];
+yarn devlet emailDomainBlackSet = new Set();
+let emailDomainWhiteSet = new Set();
+let defaultBlackSet = new Set();
 
+// Normalization helper (single source of truth)
+const normalize = (domain) => domain.trim().toLowerCase();
+
+// Normalize default blacklist once at startup
+defaultBlackSet = new Set(emailDomainDefaultBlackList.map(normalize));
+
+// Watch for admin config changes → normalize at ingestion
 settings.watch('Accounts_BlockedDomainsList', (value) => {
 	if (!value) {
-		emailDomainBlackList = [];
+		emailDomainBlackSet = new Set();
 		return;
 	}
 
-	emailDomainBlackList = value
-		.split(',')
-		.filter(Boolean)
-		.map((domain) => domain.trim());
+	emailDomainBlackSet = new Set(
+		value
+			.split(',')
+			.filter(Boolean)
+			.map(normalize)
+	);
 });
+
 settings.watch('Accounts_AllowedDomainsList', (value) => {
 	if (!value) {
-		emailDomainWhiteList = [];
+		emailDomainWhiteSet = new Set();
 		return;
 	}
 
-	emailDomainWhiteList = value
-		.split(',')
-		.filter(Boolean)
-		.map((domain) => domain.trim());
+	emailDomainWhiteSet = new Set(
+		value
+			.split(',')
+			.filter(Boolean)
+			.map(normalize)
+	);
 });
 
 export const validateEmailDomain = async function (email) {
+	// Step 1: Validate basic email format
 	if (!validateEmail(email)) {
 		throw new Meteor.Error('error-invalid-email', `Invalid email ${email}`, {
 			function: 'RocketChat.validateEmailDomain',
@@ -43,23 +57,40 @@ export const validateEmailDomain = async function (email) {
 		});
 	}
 
-	const emailDomain = email.substr(email.lastIndexOf('@') + 1);
+	// Step 2: Extract + normalize domain
+	const atIndex = email.lastIndexOf('@');
+	if (atIndex === -1) {
+		throw new Meteor.Error('error-invalid-email', `Invalid email ${email}`, {
+			function: 'RocketChat.validateEmailDomain',
+		});
+	}
 
-	if (emailDomainWhiteList.length && !emailDomainWhiteList.includes(emailDomain)) {
+	const emailDomain = normalize(email.slice(atIndex + 1));
+
+	// Step 3: Whitelist enforcement
+	if (emailDomainWhiteSet.size > 0 && !emailDomainWhiteSet.has(emailDomain)) {
 		throw new Meteor.Error('error-invalid-domain', 'The email domain is not in whitelist', {
 			function: 'RocketChat.validateEmailDomain',
 		});
 	}
+
+	// Step 4: Blacklist enforcement (takes priority)
 	if (
-		emailDomainBlackList.length &&
-		(emailDomainBlackList.indexOf(emailDomain) !== -1 ||
-			(settings.get('Accounts_UseDefaultBlockedDomainsList') && emailDomainDefaultBlackList.indexOf(emailDomain) !== -1))
+		emailDomainBlackSet.size > 0 &&
+		(
+			emailDomainBlackSet.has(emailDomain) ||
+			(
+				settings.get('Accounts_UseDefaultBlockedDomainsList') &&
+				defaultBlackSet.has(emailDomain)
+			)
+		)
 	) {
 		throw new Meteor.Error('error-email-domain-blacklisted', 'The email domain is blacklisted', {
 			function: 'RocketChat.validateEmailDomain',
 		});
 	}
 
+	// Step 5: DNS validation (optional)
 	if (settings.get('Accounts_UseDNSDomainCheck')) {
 		try {
 			await dnsResolveMx(emailDomain);
