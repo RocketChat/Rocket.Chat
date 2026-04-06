@@ -9,7 +9,7 @@ import { settings } from '../../../settings/server';
 
 const dnsResolveMx = util.promisify(dns.resolveMx);
 
-yarn devlet emailDomainBlackSet = new Set();
+let emailDomainBlackSet = new Set();
 let emailDomainWhiteSet = new Set();
 let defaultBlackSet = new Set();
 
