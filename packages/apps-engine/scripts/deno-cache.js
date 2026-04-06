@@ -45,7 +45,7 @@ try {
 	}
 
 	if (installedVersion !== denoToolVersion) {
-		const message = `Incorrect Deno version. Required '${denoToolVersion}', found '${installedVersion}'.${!CI && " The server will likely work, but it may cause your deno.lock to change - do not to commit it. Make sure your Deno version matches the required one so you don't see this message again."}`;
+		const message = `Incorrect Deno version. Required '${denoToolVersion}', found '${installedVersion}'.${CI ? '' : " The server will likely work, but it may cause your deno.lock to change - do not commit it. Make sure your Deno version matches the required one so you don't see this message again."}`;
 
 		if (CI) {
 			throw new Error(message);
@@ -66,7 +66,7 @@ try {
 			),
 		);
 	} else {
-		console.error(e, e.message, e.message?.startsWith('Error: Incorrect deno version.'));
+		console.error(e);
 	}
 
 	process.exit(1);
@@ -76,7 +76,7 @@ const rootPath = path.join(__dirname, '..');
 const denoRuntimePath = path.join(rootPath, 'deno-runtime');
 const DENO_DIR = process.env.DENO_DIR ?? path.join(rootPath, '.deno-cache');
 
-// In CI envs, break if lockfile changes; in dev envs, don't update the lockfile
+// In CI envs, break if lockfile changes; in dev envs, it's alright
 const commandLine = CI ? 'deno install --frozen --entrypoint main.ts' : 'deno install --entrypoint main.ts';
 
 childProcess.execSync(commandLine, {
