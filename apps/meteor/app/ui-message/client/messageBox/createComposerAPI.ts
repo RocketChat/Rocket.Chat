@@ -1,6 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
-import { Accounts } from 'meteor/accounts-base';
 import type { RefObject } from 'react';
 
 import { limitQuoteChain } from './limitQuoteChain';
@@ -11,7 +10,8 @@ import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
 export const createComposerAPI = (
 	input: HTMLTextAreaElement,
-	storageID: string,
+	persistDraft: (value: string) => void,
+	initialDraft: string,
 	quoteChainLimit: number,
 	composerRef: RefObject<HTMLElement>,
 ): ComposerAPI => {
@@ -36,13 +36,12 @@ export const createComposerAPI = (
 
 	let _quotedMessages: IMessage[] = [];
 
-	const persist = withDebouncing({ wait: 300 })(() => {
-		if (input.value) {
-			Accounts.storageLocation.setItem(storageID, input.value);
-			return;
-		}
+	let ready = false;
 
-		Accounts.storageLocation.removeItem(storageID);
+	const persist = withDebouncing({ wait: 300 })(() => {
+		if (ready) {
+			persistDraft(input.value);
+		}
 	});
 
 	const notifyQuotedMessagesUpdate = (): void => {
@@ -269,9 +268,11 @@ export const createComposerAPI = (
 
 	const insertNewLine = (): void => insertText('\n');
 
-	setText(Accounts.storageLocation.getItem(storageID) ?? '', {
+	setText(initialDraft, {
 		skipFocus: true,
 	});
+
+	ready = true;
 
 	// Gets the text that is connected to the cursor and replaces it with the given text
 	const replaceText = (text: string, selection: { readonly start: number; readonly end: number }): void => {

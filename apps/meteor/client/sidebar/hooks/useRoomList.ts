@@ -6,7 +6,6 @@ import { useUserPreference, useUserSubscriptions, useSetting } from '@rocket.cha
 import { useVideoConfIncomingCalls } from '@rocket.chat/ui-video-conf';
 import { useMemo } from 'react';
 
-import { useDraftRoomIds } from './useDraftRoomIds';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
@@ -56,8 +55,6 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 
 	const incomingCalls = useVideoConfIncomingCalls();
 
-	const draftRoomIds = useDraftRoomIds(sidebarDrafts);
-
 	const queue = inquiries.enabled ? inquiries.queue : emptyQueue;
 
 	const { groupsCount, groupsList, roomList, groupedUnreadInfo } = useDebouncedValue(
@@ -89,7 +86,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 					return unread.add(room);
 				}
 
-				if (sidebarDrafts && draftRoomIds.has(room.rid)) {
+				if (sidebarDrafts && room.draft) {
 					return drafts.add(room);
 				}
 
@@ -206,7 +203,7 @@ export const useRoomList = ({ collapsedGroups }: { collapsedGroups?: string[] })
 			rooms,
 			showOmnichannel,
 			inquiries.enabled,
-			draftRoomIds,
+			sidebarDrafts,
 			queue,
 			sidebarShowUnread,
 			favoritesEnabled,

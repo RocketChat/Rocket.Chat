@@ -33,7 +33,7 @@ import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
 import VideoMessageRecorder from '../../../composer/VideoMessageRecorder';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
-import { useRoom } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import ComposerBoxPopup from '../ComposerBoxPopup';
 import ComposerBoxPopupPreview from '../ComposerBoxPopupPreview';
 import ComposerUserActionIndicator from '../ComposerUserActionIndicator';
@@ -41,6 +41,7 @@ import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
 import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
+import { useDraft } from './hooks/useDraft';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
@@ -126,20 +127,22 @@ const MessageBox = ({
 	const textareaRef = useRef(null);
 	const messageComposerRef = useRef<HTMLElement>(null);
 
-	const storageID = `messagebox_${room._id}${tmid ? `-${tmid}` : ''}`;
+	const subscription = useRoomSubscription();
+	const { initialValue, persistLocal, flushDraft } = useDraft(room._id, tmid ? undefined : subscription?.draft, tmid);
 
 	const callbackRef = useCallback(
 		(node: HTMLTextAreaElement) => {
 			if (node === null && chat.composer) {
+				flushDraft();
 				return chat.setComposerAPI();
 			}
 
 			if (chat.composer) {
 				return;
 			}
-			chat.setComposerAPI(createComposerAPI(node, storageID, quoteChainLimit, messageComposerRef));
+			chat.setComposerAPI(createComposerAPI(node, persistLocal, initialValue, quoteChainLimit, messageComposerRef));
 		},
-		[chat, storageID, quoteChainLimit],
+		[chat, persistLocal, flushDraft, initialValue, quoteChainLimit],
 	);
 
 	const autofocusRef = useMessageBoxAutoFocus(!isMobile);
