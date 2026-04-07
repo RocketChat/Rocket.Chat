@@ -7,10 +7,10 @@ import {
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	isPushGetProps,
 } from '@rocket.chat/rest-typings';
 import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { executePushTest } from '../../../../server/lib/pushConfig';
@@ -222,59 +222,91 @@ const pushTokenEndpoints = API.v1
 		},
 	);
 
-API.v1.addRoute(
-	'push.get',
-	{ authRequired: true },
-	{
-		async get() {
-			const params = this.queryParams;
-			check(
-				params,
-				Match.ObjectIncluding({
-					id: String,
+const pushGetAndInfoEndpoints = API.v1
+	.get(
+		'push.get',
+		{
+			authRequired: true,
+			query: isPushGetProps,
+			response: {
+				200: ajv.compile<PushEndpoints['/v1/push.get']['GET']>({
+					type: 'object',
+					properties: {
+						data: {
+							type: 'object',
+							properties: {
+								message: { type: 'object' },
+								notification: { type: 'object' },
+							},
+							required: ['message', 'notification'],
+							additionalProperties: true,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['data', 'success'],
+					additionalProperties: false,
 				}),
-			);
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+				404: validateNotFoundErrorResponse,
+			},
+		},
+		async function action() {
+			const { id } = this.queryParams;
 
 			const receiver = await Users.findOneById(this.userId);
 			if (!receiver) {
-				throw new Error('error-user-not-found');
+				return API.v1.notFound('error-user-not-found');
 			}
 
-			const message = await Messages.findOneById(params.id);
+			const message = await Messages.findOneById(id);
 			if (!message) {
-				throw new Error('error-message-not-found');
+				return API.v1.notFound('error-message-not-found');
 			}
 
 			const room = await Rooms.findOneById(message.rid);
 			if (!room) {
-				throw new Error('error-room-not-found');
+				return API.v1.notFound('error-room-not-found');
 			}
 
 			if (!(await canAccessRoomAsync(room, receiver))) {
-				throw new Error('error-not-allowed');
+				return API.v1.forbidden('error-not-allowed');
 			}
 
 			const data = await PushNotification.getNotificationForMessageId({ receiver, room, message });
 
 			return API.v1.success({ data });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'push.info',
-	{ authRequired: true },
-	{
-		async get() {
+	)
+	.get(
+		'push.info',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<PushEndpoints['/v1/push.info']['GET']>({
+					type: 'object',
+					properties: {
+						pushGatewayEnabled: { type: 'boolean' },
+						defaultPushGateway: { type: 'boolean' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['pushGatewayEnabled', 'defaultPushGateway', 'success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
 			const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
+			
 			return API.v1.success({
 				pushGatewayEnabled: settings.get('Push_enable'),
 				defaultPushGateway,
 			});
 		},
-	},
-);
+	);
 
 const pushTestEndpoints = API.v1.post(
 	'push.test',
@@ -320,7 +352,9 @@ type PushTestEndpoints = ExtractRoutesFromAPI<typeof pushTestEndpoints>;
 
 type PushTokenEndpoints = ExtractRoutesFromAPI<typeof pushTokenEndpoints>;
 
-type PushEndpoints = PushTestEndpoints & PushTokenEndpoints;
+type PushGetAndInfoEndpoints = ExtractRoutesFromAPI<typeof pushGetAndInfoEndpoints>;
+
+type PushEndpoints = PushTestEndpoints & PushTokenEndpoints & PushGetAndInfoEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
