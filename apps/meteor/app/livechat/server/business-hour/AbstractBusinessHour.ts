@@ -4,7 +4,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatBusinessHoursModel, IUsersModel } from '@rocket.chat/model-typings';
 import { LivechatBusinessHours, Users } from '@rocket.chat/models';
 import type { IWorkHoursCronJobsWrapper } from '@rocket.chat/models';
-import { format, addHours, isBefore, isSameSecond } from 'date-fns';
+import { isBefore, isSameSecond } from 'date-fns';
 import type { UpdateFilter } from 'mongodb';
 
 import { notifyOnUserChange } from '../../../lib/server/lib/notifyListener';
@@ -153,8 +153,12 @@ export abstract class AbstractBusinessHourType {
 	}
 
 	private formatDayOfTheWeekFromServerTimezoneAndUtcHour(utc: Date, fmt: 'dddd' | 'HH:mm'): string {
-		const serverOffsetMinutes = new Date().getTimezoneOffset();
-		const local = addHours(utc, -serverOffsetMinutes / 60);
-		return fmt === 'dddd' ? format(local, 'EEEE') : format(local, 'HH:mm');
+		// Convert UTC date to server local timezone by adding the server's UTC offset
+		const serverOffsetMs = -new Date().getTimezoneOffset() * 60_000;
+		const local = new Date(utc.getTime() + serverOffsetMs);
+		if (fmt === 'dddd') {
+			return DAY_NAMES[local.getUTCDay()];
+		}
+		return `${String(local.getUTCHours()).padStart(2, '0')}:${String(local.getUTCMinutes()).padStart(2, '0')}`;
 	}
 }
