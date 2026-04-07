@@ -320,7 +320,7 @@ export class MessageUpdaterTestApp extends App {
                 const user = await read.getUserReader().getAppUser();
 
                 if (!user) {
-                    this.app.getLogger().error(`Could't find app user`);
+                    this.app.getLogger().error(`Couldn't find app user`);
                     return;
                 }
 
