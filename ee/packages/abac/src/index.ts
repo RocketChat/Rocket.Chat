@@ -42,6 +42,8 @@ import { LocalPDP, VirtruPDP } from './pdp';
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
 
+const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');
+
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
@@ -77,7 +79,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		this.onSettingChanged('ABAC_Virtru_Base_URL', async ({ setting }): Promise<void> => {
-			this.virtruPdpConfig.baseUrl = (setting.value as string).replace(/\/+$/, '');
+			this.virtruPdpConfig.baseUrl = stripTrailingSlashes(setting.value as string);
 			this.syncVirtruPdpConfig();
 		});
 
@@ -92,7 +94,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		this.onSettingChanged('ABAC_Virtru_OIDC_Endpoint', async ({ setting }): Promise<void> => {
-			this.virtruPdpConfig.oidcEndpoint = (setting.value as string).replace(/\/+$/, '');
+			this.virtruPdpConfig.oidcEndpoint = stripTrailingSlashes(setting.value as string);
 			this.syncVirtruPdpConfig();
 		});
 
@@ -155,10 +157,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 		]);
 
 		this.virtruPdpConfig = {
-			baseUrl: (baseUrl || '').replace(/\/+$/, ''),
+			baseUrl: stripTrailingSlashes(baseUrl || ''),
 			clientId: clientId || '',
 			clientSecret: clientSecret || '',
-			oidcEndpoint: (oidcEndpoint || '').replace(/\/+$/, ''),
+			oidcEndpoint: stripTrailingSlashes(oidcEndpoint || ''),
 			defaultEntityKey: (defaultEntityKey as VirtruPDPConfig['defaultEntityKey']) || 'emailAddress',
 			attributeNamespace: attributeNamespace || 'example.com',
 		};

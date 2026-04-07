@@ -2,6 +2,7 @@ import { Abac } from '@rocket.chat/core-services';
 import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
+import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../app/settings/server';
@@ -43,10 +44,17 @@ Meteor.startup(async () => {
 
 				const cronValue = settings.get<string>('ABAC_Virtru_Sync_Interval');
 
+				if (!cronValue || !isValidCron(cronValue)) {
+					return;
+				}
+
 				await cronJobs.add(VIRTRU_PDP_SYNC_JOB, cronValue, () => Abac.evaluateRoomMembership());
 			}
 
-			stopCronWatcher = settings.watchMultiple(['ABAC_PDP_Type', 'ABAC_Virtru_Sync_Interval'], () => configureVirtruPdpSync());
+			stopCronWatcher = settings.watchMultiple(
+				['ABAC_Enabled', 'ABAC_PDP_Type', 'ABAC_Virtru_Sync_Interval'],
+				() => void configureVirtruPdpSync(),
+			);
 		},
 		down: async () => {
 			stopWatcher?.();
