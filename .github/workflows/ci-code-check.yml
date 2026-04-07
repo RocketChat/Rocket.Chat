@@ -57,7 +57,9 @@ jobs:
 
       - name: Cache observability (typecheck)
         if: matrix.check == 'ts'
-        run: echo "typecheck-cache-exact-hit=${{ steps.restore-typecheck.outputs.cache-hit }}"
+        run: |
+          echo "### TypeScript incremental cache" >> $GITHUB_STEP_SUMMARY
+          echo "- **exact hit**: \`${{ steps.restore-typecheck.outputs.cache-hit }}\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Install Meteor
         shell: bash
@@ -102,7 +104,9 @@ jobs:
 
       - name: Cache observability (eslint)
         if: matrix.check == 'lint'
-        run: echo "eslint-cache-exact-hit=${{ steps.restore-eslint.outputs.cache-hit }}"
+        run: |
+          echo "### ESLint cache" >> $GITHUB_STEP_SUMMARY
+          echo "- **exact hit**: \`${{ steps.restore-eslint.outputs.cache-hit }}\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Lint
         if: matrix.check == 'lint'

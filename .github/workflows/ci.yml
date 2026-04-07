@@ -98,7 +98,7 @@ jobs:
           set -euo pipefail
           PACKAGES_HASH=$(cat yarn.lock .yarnrc.yml package.json turbo.json | sha256sum | awk '{print $1}')
           echo "packages-build-cache-key=${PACKAGES_HASH}" >> "$GITHUB_OUTPUT"
-          METEOR_HASH=$(git archive HEAD apps/meteor 2>/dev/null | sha256sum | awk '{print $1}')
+          METEOR_HASH=$(git archive HEAD apps/meteor | sha256sum | awk '{print $1}')
           echo "meteor-rc-cache-key=${METEOR_HASH}" >> "$GITHUB_OUTPUT"
 
       - id: by-tag
@@ -189,8 +189,9 @@ jobs:
 
       - name: Cache observability (packages-build)
         run: |
-          echo "packages-build-cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
-          echo "packages-build-cache-key=${{ needs.release-versions.outputs.packages-build-cache-key }}"
+          echo "### 📦 packages-build cache" >> $GITHUB_STEP_SUMMARY
+          echo "- **hit**: \`${{ steps.packages-cache-build.outputs.cache-hit }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **key**: \`${{ needs.release-versions.outputs.packages-build-cache-key }}\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
@@ -216,8 +217,9 @@ jobs:
       - name: Cache observability (node_modules)
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: |
-          echo "deno-cache-exact-hit=${{ steps.setup-node-packages.outputs.cache-deno-hit }}"
-          du -sh node_modules 2>/dev/null || true
+          echo "### 🟢 node_modules cache" >> $GITHUB_STEP_SUMMARY
+          echo "- **deno cache hit**: \`${{ steps.setup-node-packages.outputs.cache-deno-hit }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **node_modules size**: \`$(du -sh node_modules 2>/dev/null | cut -f1 || echo 'n/a')\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Cache vite
         uses: actions/cache@v5

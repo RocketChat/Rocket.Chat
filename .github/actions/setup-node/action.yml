@@ -69,7 +69,7 @@ runs:
       uses: actions/cache@v5
       with:
         path: ${{ runner.temp }}/mongodb-memory-server
-        key: mongoms-${{ runner.arch }}-${{ runner.os }}-v1
+        key: mongoms-${{ runner.arch }}-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
     - name: Configure mongodb-memory-server cache
       shell: bash
