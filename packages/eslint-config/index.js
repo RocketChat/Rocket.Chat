@@ -11,7 +11,7 @@ export default defineConfig(
 	{
 		name: 'rocket.chat/linter',
 		linterOptions: {
-			reportUnusedDisableDirectives: true,
+			reportUnusedDisableDirectives: 'warn',
 		},
 	},
 	{
