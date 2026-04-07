@@ -1,9 +1,9 @@
-import { Settings } from '@rocket.chat/models';
+import { Settings, indexes } from '@rocket.chat/models';
 import type { UpdateResult } from 'mongodb';
 
 import { upsertPermissions } from '../../../app/authorization/server/functions/upsertPermissions';
 import { settings } from '../../../app/settings/server';
-import { migrateDatabase, onServerVersionChange } from '../../lib/migrations';
+import { migrateDatabase, shouldRunServerVersionChange } from '../../lib/migrations';
 import { ensureCloudWorkspaceRegistered } from '../cloudRegistration';
 
 const { MIGRATION_VERSION = 'latest' } = process.env;
@@ -57,10 +57,15 @@ const moveRetentionSetting = async () => {
 
 export const performMigrationProcedure = async (): Promise<void> => {
 	await migrateDatabase(version === 'latest' ? version : parseInt(version), subcommands);
-	// perform operations when the server is starting with a different version
-	await onServerVersionChange(async () => {
-		await upsertPermissions();
-		await ensureCloudWorkspaceRegistered();
-		await moveRetentionSetting();
-	});
+
+	if (!(await shouldRunServerVersionChange())) {
+		indexes.cancel();
+		return;
+	}
+
+	indexes.ensureIndexes();
+
+	await upsertPermissions();
+	await ensureCloudWorkspaceRegistered();
+	await moveRetentionSetting();
 };

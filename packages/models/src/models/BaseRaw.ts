@@ -1,4 +1,5 @@
 import type { RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { Emitter } from '@rocket.chat/emitter';
 import type { IBaseModel, DefaultFields, ResultFields, FindPaginated, InsertionModel } from '@rocket.chat/model-typings';
 import { traceInstanceMethods } from '@rocket.chat/tracing';
 import { ObjectId } from 'mongodb';
@@ -46,6 +47,30 @@ type ModelOptions = {
 	collection?: CollectionOptions;
 };
 
+export type IndexRegisterFn = () => Promise<void>;
+const ee = new Emitter<{
+	added: IndexRegisterFn;
+}>();
+// The idea is to accumulate the indexes that should be created in a set, and then create them all at once.
+// in case of a lazy model, we need to create the indexes when the model is instantiated.
+
+const indexesThatShouldBeCreated = new Set<IndexRegisterFn>();
+const onAdded = (fn: IndexRegisterFn) => indexesThatShouldBeCreated.add(fn);
+const onAddedExecute = (fn: IndexRegisterFn) => fn();
+ee.on('added', onAdded);
+export const indexes = {
+	ensureIndexes: () => {
+		indexesThatShouldBeCreated.forEach((fn) => fn());
+		indexesThatShouldBeCreated.clear();
+		ee.off('added', onAdded);
+		ee.on('added', onAddedExecute);
+	},
+	cancel: () => {
+		ee.off('added', onAdded);
+		indexesThatShouldBeCreated.clear();
+	},
+} as const;
+
 export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
@@ -79,9 +104,9 @@ export abstract class BaseRaw<
 
 		this.col = this.db.collection(this.collectionName, options?.collection || {});
 
-		void this.createIndexes();
-
 		this.preventSetUpdatedAt = options?.preventSetUpdatedAt ?? false;
+
+		void ee.emit('added', () => this.createIndexes());
 
 		return traceInstanceMethods(this);
 	}
@@ -363,7 +388,7 @@ export abstract class BaseRaw<
 			throw e;
 		}
 
-		return doc as WithId<T>;
+		return doc;
 	}
 
 	async deleteMany(filter: Filter<T>, options?: DeleteOptions & { onTrash?: (record: ResultFields<T, C>) => void }): Promise<DeleteResult> {
