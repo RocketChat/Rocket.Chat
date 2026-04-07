@@ -24,13 +24,14 @@ export class BlockSplitter {
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i];
 
-			const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
-			if (headingMatch) {
+			// Check for heading: # ## ### ####
+			const headingResult = this.parseHeading(line);
+			if (headingResult) {
 				this.flush(blocks, currentBlock);
 				currentBlock = {
 					type: BlockType.HEADING,
-					content: headingMatch[2],
-					level: headingMatch[1].length,
+					content: headingResult.content,
+					level: headingResult.level,
 				};
 				this.flush(blocks, currentBlock);
 				currentBlock = null;
@@ -60,26 +61,31 @@ export class BlockSplitter {
 				continue;
 			}
 
-			if (line.trim() === '') {
-				this.flush(blocks, currentBlock);
-				currentBlock = null;
+			// Check for blank line - don't flush lists if the blank line has leading spaces
+			const isBlank = line.trim() === '';
+			if (isBlank) {
+				const hasLeadingSpaces = line.length > 0 && line.charCodeAt(0) === 32; // ' '
+				if (!(hasLeadingSpaces && currentBlock?.type === BlockType.LIST)) {
+					this.flush(blocks, currentBlock);
+					currentBlock = null;
+				}
 				continue;
 			}
 
-			const listMatch = line.match(/^(\s*)([-*+]|\d+\.)\s+(.+)$/);
-			const isIndented = /^\s+/.test(line);
+			// Check for list item
+			const listResult = this.parseListItem(line);
+			const isIndented = line.length > 0 && line.charCodeAt(0) === 32;
 
-			if (listMatch) {
-				const isOrdered = /^\d+\./.test(listMatch[2]);
+			if (listResult) {
 				if (currentBlock?.type !== BlockType.LIST) {
 					this.flush(blocks, currentBlock);
 					currentBlock = {
 						type: BlockType.LIST,
 						content: line,
-						ordered: isOrdered,
+						ordered: listResult.isOrdered,
 					};
 				} else {
-					if (currentBlock.ordered !== undefined && currentBlock.ordered !== isOrdered) {
+					if (currentBlock.ordered !== undefined && currentBlock.ordered !== listResult.isOrdered) {
 						currentBlock.ordered = undefined;
 					}
 					currentBlock.content += `\n${line}`;
@@ -118,6 +124,84 @@ export class BlockSplitter {
 
 		this.flush(blocks, currentBlock);
 		return blocks;
+	}
+
+	private static parseHeading(line: string): { level: number; content: string } | null {
+		let level = 0;
+		let pos = 0;
+
+		// Count leading '#' characters (max 6 for heading)
+		while (pos < line.length && line.charCodeAt(pos) === 35 /* '#' */ && level < 6) {
+			level++;
+			pos++;
+		}
+
+		if (level === 0) {
+			return null;
+		}
+
+		// Must have at least one space after '#'
+		if (pos >= line.length || line.charCodeAt(pos) !== 32 /* ' ' */) {
+			return null;
+		}
+
+		// Skip the space and get content
+		pos++;
+		const content = line.slice(pos);
+
+		// Content must not be empty
+		if (content.length === 0) {
+			return null;
+		}
+
+		return { level, content };
+	}
+
+	private static parseListItem(line: string): { isOrdered: boolean } | null {
+		let pos = 0;
+
+		// Skip leading spaces
+		while (pos < line.length && line.charCodeAt(pos) === 32 /* ' ' */) {
+			pos++;
+		}
+
+		const start = pos;
+
+		// Check for ordered list (digits followed by '.')
+		if (pos < line.length && line.charCodeAt(pos) >= 48 && line.charCodeAt(pos) <= 57 /* 0-9 */) {
+			while (pos < line.length && line.charCodeAt(pos) >= 48 && line.charCodeAt(pos) <= 57) {
+				pos++;
+			}
+			if (pos < line.length && line.charCodeAt(pos) === 46 /* '.' */) {
+				pos++;
+				// Must have space after '.'
+				if (pos < line.length && line.charCodeAt(pos) === 32 /* ' ' */) {
+					pos++;
+					// Must have content after space
+					if (pos < line.length) {
+						return { isOrdered: true };
+					}
+				}
+			}
+			// Reset if ordered list pattern didn't match
+			pos = start;
+		}
+
+		// Check for unordered list (-, *, or +)
+		const char = line.charCodeAt(pos);
+		if (char === 45 /* '-' */ || char === 42 /* '*' */ || char === 43 /* '+' */) {
+			pos++;
+			// Must have space after marker
+			if (pos < line.length && line.charCodeAt(pos) === 32 /* ' ' */) {
+				pos++;
+				// Must have content after space
+				if (pos < line.length) {
+					return { isOrdered: false };
+				}
+			}
+		}
+
+		return null;
 	}
 
 	private static flush(blocks: Block[], block: Block | null) {
