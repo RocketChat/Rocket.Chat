@@ -18,19 +18,19 @@ export type MediaSessionControls = {
 export const useMediaSessionControls = (instance?: MediaSignalingSession): MediaSessionControls => {
 	return useMemo(() => {
 		const toggleMute = () => {
-			const mainCall = instance?.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance?.getState();
+			if (!instanceState) {
 				return;
 			}
-			mainCall.setMuted(!mainCall.muted);
+			instanceState.localParticipant.setMuted(!instanceState.localParticipant.muted);
 		};
 
 		const toggleHold = () => {
-			const mainCall = instance?.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance?.getState();
+			if (!instanceState) {
 				return;
 			}
-			mainCall.setHeld(!mainCall.held);
+			instanceState.localParticipant.setHeld(!instanceState.localParticipant.held);
 		};
 
 		const endCall = getEndCall(instance);
@@ -39,11 +39,11 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			if (!instance) {
 				return;
 			}
-			const call = instance.getMainCall();
-			if (call?.state !== 'ringing') {
+			const instanceState = instance.getState();
+			if (!instanceState?.confirmed || instanceState.state !== 'ringing') {
 				return;
 			}
-			call.accept();
+			instanceState.call.accept();
 		};
 
 		const startCall = async (id: string, kind: 'user' | 'sip') => {
@@ -68,23 +68,24 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 			if (!instance) {
 				return;
 			}
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance.getState();
+			if (!instanceState?.confirmed) {
 				return;
 			}
-			mainCall.transfer({ type, id });
+			instanceState.call.transfer({ type, id });
 		};
 
 		const sendTone = (tone: string) => {
 			if (!instance) {
 				return;
 			}
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance.getState();
+			if (!instanceState?.confirmed) {
 				return;
 			}
+
 			try {
-				mainCall.sendDTMF(tone);
+				instanceState.call.sendDTMF(tone);
 			} catch (error) {
 				console.error('Error sending tone', error);
 			}
@@ -95,13 +96,13 @@ export const useMediaSessionControls = (instance?: MediaSignalingSession): Media
 				return;
 			}
 
-			const mainCall = instance.getMainCall();
-			if (!mainCall) {
+			const instanceState = instance.getState();
+			if (!instanceState?.confirmed) {
 				return;
 			}
 
 			try {
-				mainCall.requestScreenShare(!mainCall.hasScreenVideoTrack());
+				instanceState.call.requestScreenShare(!instanceState.call.hasScreenVideoTrack());
 			} catch (error) {
 				console.error('Error toggling screen share', error);
 			}
