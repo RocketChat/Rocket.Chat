@@ -1,41 +1,71 @@
-import { isMailerProps, isMailerUnsubscribeProps } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	isMailerProps,
+	isMailerUnsubscribeProps,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+} from '@rocket.chat/rest-typings';
 
 import { sendMail } from '../../../mail-messages/server/functions/sendMail';
 import { Mailer } from '../../../mail-messages/server/lib/Mailer';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
-API.v1.addRoute(
-	'mailer',
-	{
-		authRequired: true,
-		validateParams: isMailerProps,
-		permissionsRequired: ['send-mail'],
-	},
-	{
-		async post() {
+const mailerEndpoints = API.v1
+	.post(
+		'mailer',
+		{
+			authRequired: true,
+			body: isMailerProps,
+			permissionsRequired: ['send-mail'],
+			response: {
+				200: ajv.compile<{ success: boolean }>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { from, subject, body, dryrun, query } = this.bodyParams;
 
-			const result = await sendMail({ from, subject, body, dryrun: Boolean(dryrun), query });
+			await sendMail({ from, subject, body, dryrun: Boolean(dryrun), query });
 
-			return API.v1.success(result);
+			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'mailer.unsubscribe',
-	{
-		authRequired: true,
-		validateParams: isMailerUnsubscribeProps,
-		rateLimiterOptions: { intervalTimeInMS: 60000, numRequestsAllowed: 1 },
-	},
-	{
-		async post() {
+	)
+	.post(
+		'mailer.unsubscribe',
+		{
+			authRequired: true,
+			body: isMailerUnsubscribeProps,
+			rateLimiterOptions: { intervalTimeInMS: 60000, numRequestsAllowed: 1 },
+			response: {
+				200: ajv.compile<{ success: boolean }>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { _id, createdAt } = this.bodyParams;
 
 			await Mailer.unsubscribe(_id, createdAt);
 
 			return API.v1.success();
 		},
-	},
-);
+	);
+
+export type ServerMailerEndpoints = ExtractRoutesFromAPI<typeof mailerEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	interface Endpoints extends ServerMailerEndpoints {}
+}
