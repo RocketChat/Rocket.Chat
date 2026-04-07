@@ -40,6 +40,7 @@ export default [
 			'import/ignore': ['meteor/.+'],
 		},
 		rules: {
+			// Import rules kept in ESLint (not in oxlint)
 			'import/named': 'error',
 			'import/no-unresolved': [
 				'error',
@@ -49,7 +50,7 @@ export default [
 					ignore: ['meteor/.+'],
 				},
 			],
-			'react-hooks/exhaustive-deps': 'warn',
+			// Lodash rules — NOT covered by oxlint
 			'you-dont-need-lodash-underscore/concat': 'error',
 			'you-dont-need-lodash-underscore/drop': 'error',
 			'you-dont-need-lodash-underscore/drop-right': 'error',
@@ -214,22 +215,6 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.spec.ts'],
-		rules: {
-			'jest/expect-expect': 'off',
-			'jest/no-conditional-expect': 'off',
-			'jest/no-done-callback': 'off',
-			'jest/no-export': 'off',
-			'jest/no-identical-title': 'off',
-			'jest/no-standalone-expect': 'off',
-			'jest/no-test-prefixes': 'off',
-			'jest/valid-describe-callback': 'off',
-			'jest/valid-expect-in-promise': 'off',
-			'jest/valid-expect': 'off',
-			'jest/valid-title': 'off',
-		},
-	},
-	{
 		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.ts'],
 		rules: {
 			'@typescript-eslint/no-unused-expressions': 'off',
@@ -257,7 +242,6 @@ export default [
 		},
 		rules: {
 			'@typescript-eslint/no-floating-promises': 'error',
-			'import/named': 'error',
 			'import/order': [
 				'error',
 				{
@@ -394,57 +378,7 @@ export default [
 					},
 				},
 			],
-			'jsx-a11y/alt-text': 'off',
-			'jsx-a11y/click-events-have-key-events': 'off',
-			'jsx-a11y/media-has-caption': 'off',
-			'jsx-a11y/no-static-element-interactions': 'off',
 			'jsx-quotes': ['error', 'prefer-single'],
-			'react/jsx-curly-brace-presence': 'off',
-			'react/display-name': [
-				'warn',
-				{
-					ignoreTranspilerName: false,
-				},
-			],
-			'react/jsx-fragments': ['error', 'syntax'],
-			'react/jsx-key': 'off',
-			'react/jsx-no-bind': [
-				'warn',
-				{
-					ignoreRefs: true,
-					allowFunctions: true,
-					allowArrowFunctions: true,
-				},
-			],
-			'react/jsx-no-comment-textnodes': 'error',
-			'react/jsx-no-duplicate-props': 'error',
-			'react/jsx-no-target-blank': 'error',
-			'react/jsx-no-undef': 'error',
-			'react/jsx-tag-spacing': [
-				'error',
-				{
-					beforeSelfClosing: 'always',
-				},
-			],
-			'react/jsx-uses-react': 'error',
-			'react/jsx-uses-vars': 'error',
-			'react/no-children-prop': 'error',
-			'react/no-danger': 'warn',
-			'react/no-deprecated': 'error',
-			'react/no-did-mount-set-state': 'error',
-			'react/no-did-update-set-state': 'error',
-			'react/no-direct-mutation-state': 'warn',
-			'react/no-find-dom-node': 'error',
-			'react/no-is-mounted': 'error',
-			'react/no-multi-comp': 'off',
-			'react/no-string-refs': 'error',
-			'react/no-unknown-property': ['error', { ignore: ['class'] }],
-			'react/prefer-es6-class': 'error',
-			'react/prefer-stateless-function': 'warn',
-			'react/require-render-return': 'error',
-			'react/self-closing-comp': 'error',
-			'react-hooks/rules-of-hooks': 'error',
-			'react-hooks/exhaustive-deps': 'warn',
 			'no-sequences': 'off',
 		},
 	},
@@ -515,14 +449,6 @@ export default [
 					capIsNewExceptions: ['SHA256'],
 				},
 			],
-		},
-	},
-	// FIXME: React 19 useEffectEvent conflicts with fuselage-hooks
-	{
-		files: ['**/*.@(ts|tsx)'],
-		rules: {
-			'react-hooks/exhaustive-deps': 'warn',
-			'react-hooks/rules-of-hooks': 'warn',
 		},
 	},
 	// FIXME: these rules require type information and the files are not included in the main tsconfig.json

@@ -1,12 +1,7 @@
-import eslint from '@eslint/js';
 import { defineConfig } from 'eslint/config';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
 import importPlugin from 'eslint-plugin-import';
-import jestPlugin from 'eslint-plugin-jest';
-import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import prettierPluginRecommended from 'eslint-plugin-prettier/recommended';
-import reactPlugin from 'eslint-plugin-react';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import storybookPlugin from 'eslint-plugin-storybook';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import globals from 'globals';
@@ -23,7 +18,7 @@ export default defineConfig(
 		name: 'rocket.chat/ignored',
 		ignores: ['**/dist', '**/coverage', '**/storybook-static'],
 	},
-	eslint.configs.recommended,
+	// TypeScript recommended (type-checked) — NOT covered by oxlint
 	tseslint.configs.recommendedTypeChecked,
 	{
 		languageOptions: {
@@ -32,80 +27,18 @@ export default defineConfig(
 			},
 		},
 	},
+	// Import plugin — only rules NOT covered by oxlint
 	importPlugin.flatConfigs.recommended,
 	importPlugin.flatConfigs.typescript,
-	jsxA11yPlugin.flatConfigs.recommended,
-	{
-		name: 'rocket.chat/jsx-a11y',
-		rules: {
-			'jsx-a11y/no-autofocus': ['error', { ignoreNonDOM: true }],
-		},
-	},
-	reactPlugin.configs.flat.recommended,
-	reactPlugin.configs.flat['jsx-runtime'],
-	{
-		name: 'rocket.chat/react',
-		settings: {
-			react: {
-				version: 'detect',
-			},
-		},
-		rules: {
-			'react/jsx-curly-brace-presence': 'error',
-			'react/jsx-fragments': ['error', 'syntax'],
-			'react/jsx-key': ['error', { checkFragmentShorthand: true, checkKeyMustBeforeSpread: true, warnOnDuplicates: true }],
-			'react/jsx-no-target-blank': 'warn',
-			'react/no-multi-comp': 'error',
-			'react/no-unescaped-entities': 'warn',
-			'react/prop-types': 'warn',
-		},
-	},
-	reactHooksPlugin.configs.flat.recommended,
-	{
-		name: 'rocket.chat/react-hooks',
-		rules: {
-			// Core hooks rules
-			'react-hooks/exhaustive-deps': 'error',
-
-			// React Compiler rules (currently not in use)
-			'react-hooks/component-hook-factories': 'off',
-			'react-hooks/config': 'off',
-			'react-hooks/error-boundaries': 'off',
-			'react-hooks/gating': 'off',
-			'react-hooks/globals': 'off',
-			'react-hooks/immutability': 'off',
-			'react-hooks/incompatible-library': 'off',
-			'react-hooks/preserve-manual-memoization': 'off',
-			'react-hooks/purity': 'off',
-			'react-hooks/refs': 'off',
-			'react-hooks/set-state-in-effect': 'off',
-			'react-hooks/set-state-in-render': 'off',
-			'react-hooks/static-components': 'off',
-			'react-hooks/unsupported-syntax': 'off',
-			'react-hooks/use-memo': 'off',
-		},
-	},
+	// Testing files config — testing-library NOT covered by oxlint
 	{
 		files: ['**/*.@(spec|test).@(ts|tsx|js|jsx|mjs|cjs)'],
-		...jestPlugin.configs['flat/recommended'],
 		...testingLibraryPlugin.configs['flat/react'],
 		plugins: {
-			...jestPlugin.configs['flat/recommended'].plugins,
 			...testingLibraryPlugin.configs['flat/react'].plugins,
 		},
 		rules: {
-			...jestPlugin.configs['flat/recommended'].rules,
 			...testingLibraryPlugin.configs['flat/react'].rules,
-			'jest/no-conditional-expect': 'warn',
-			'jest/no-done-callback': 'warn',
-			'jest/no-export': 'warn',
-			'jest/no-identical-title': 'warn',
-			'jest/no-standalone-expect': 'warn',
-			'jest/no-test-prefixes': 'warn',
-			'jest/valid-describe-callback': 'warn',
-			'jest/valid-expect-in-promise': 'warn',
-			'jest/valid-expect': 'warn',
-			'jest/valid-title': 'warn',
 			'testing-library/no-await-sync-events': 'warn',
 			'testing-library/no-container': 'warn',
 			'testing-library/no-manual-cleanup': 'warn',
@@ -118,7 +51,9 @@ export default defineConfig(
 			'testing-library/render-result-naming-convention': 'warn',
 		},
 	},
+	// Storybook — NOT covered by oxlint
 	...storybookPlugin.configs['flat/recommended'],
+	// Anti-trojan source — NOT covered by oxlint
 	{
 		name: 'rocket.chat/anti-trojan',
 		plugins: {
@@ -128,6 +63,7 @@ export default defineConfig(
 			'anti-trojan-source/no-bidi': 'error',
 		},
 	},
+	// Prettier — NOT covered by oxlint
 	prettierPluginRecommended,
 	{
 		name: 'rocket.chat/ecmascript',
@@ -167,16 +103,12 @@ export default defineConfig(
 		files: ['**/*.@(js|jsx|mjs|cjs)'],
 		...tseslint.configs.disableTypeChecked,
 	},
+	// Rules NOT covered by oxlint — keep in ESLint
 	{
-		name: 'rocket.chat/best-practices',
+		name: 'rocket.chat/best-practices-eslint-only',
 		rules: {
-			'array-callback-return': ['error', { allowImplicit: true }],
-			'block-scoped-var': 'error',
 			'complexity': ['warn', 31],
 			'dot-notation': ['error', { allowKeywords: true }],
-			'eqeqeq': ['error', 'allow-null'],
-			'guard-for-in': 'error',
-			'no-caller': 'error',
 			'no-div-regex': 'off',
 			'no-else-return': ['error', { allowElseIf: false }],
 			'no-empty-function': [
@@ -185,18 +117,9 @@ export default defineConfig(
 					allow: ['arrowFunctions', 'functions', 'methods'],
 				},
 			],
-			'no-eval': 'error',
-			'no-extend-native': 'error',
-			'no-extra-bind': 'error',
-			'no-extra-label': 'error',
 			'no-implied-eval': 'error',
 			'no-invalid-this': 'off',
-			'no-iterator': 'error',
-			'no-lone-blocks': 'error',
 			'no-loop-func': 'error',
-			'no-multi-str': 'error',
-			'no-new-wrappers': 'error',
-			'no-proto': 'error',
 			'no-restricted-properties': [
 				'error',
 				{
@@ -212,48 +135,13 @@ export default defineConfig(
 					property: 'only',
 				},
 			],
-			'no-return-assign': ['error', 'always'],
 			'no-return-await': 'error',
-			'no-self-compare': 'error',
-			'no-sequences': 'error',
-			'no-throw-literal': 'error',
-			'no-useless-call': 'off',
-			'no-useless-catch': 'warn',
-			'no-useless-concat': 'error',
-			'no-useless-return': 'error',
 			'no-void': 'off',
 			'preserve-caught-error': 'warn',
-			'yoda': 'error',
 		},
 	},
 	{
-		name: 'rocket.chat/common-mistakes',
-		rules: {
-			'getter-return': ['error', { allowImplicit: true }],
-			'no-async-promise-executor': 'warn',
-			'no-case-declarations': 'warn',
-			'no-constant-binary-expression': 'warn',
-			'no-debugger': 'error',
-			'no-inner-declarations': ['error', 'functions'],
-			'no-negated-in-lhs': 'error',
-			'no-prototype-builtins': 'warn',
-			'no-unsafe-optional-chaining': 'warn',
-			'no-useless-assignment': 'warn',
-			'require-atomic-updates': 'off',
-			'valid-typeof': ['error', { requireStringLiterals: true }],
-		},
-	},
-	// TODO: disable, as they are not available in all environments
-	{
-		name: 'rocket.chat/node-globals',
-		languageOptions: {
-			globals: {
-				...globals.node,
-			},
-		},
-	},
-	{
-		name: 'rocket.chat/stylistic',
+		name: 'rocket.chat/stylistic-eslint-only',
 		rules: {
 			'lines-between-class-members': ['error', 'always', { exceptAfterSingleLine: false }],
 			'lines-around-directive': [
@@ -265,55 +153,10 @@ export default defineConfig(
 			],
 			'max-depth': ['off', 4],
 			'new-cap': 'error',
-			'no-array-constructor': 'error',
-			'no-lonely-if': 'error',
-			'no-multi-assign': 'error',
-			'no-nested-ternary': 'error',
-			'no-unneeded-ternary': ['error', { defaultAssignment: false }],
-			'no-useless-escape': 'warn',
 			'one-var': ['error', 'never'],
 			'operator-assignment': ['error', 'always'],
 			'prefer-object-spread': 'off',
-		},
-	},
-	{
-		name: 'rocket.chat/variables',
-		rules: {
-			'no-unused-vars': [
-				'error',
-				{
-					vars: 'all',
-					args: 'after-used',
-					ignoreRestSiblings: true,
-					caughtErrors: 'none',
-				},
-			],
-			'no-use-before-define': ['error', { functions: true, classes: true, variables: true }],
-		},
-	},
-	{
-		name: 'rocket.chat/es2015',
-		rules: {
-			'no-duplicate-imports': 'off',
-			'no-useless-computed-key': 'error',
-			'no-useless-constructor': 'error',
-			'no-useless-rename': [
-				'error',
-				{
-					ignoreDestructuring: false,
-					ignoreImport: false,
-					ignoreExport: false,
-				},
-			],
-			'no-var': 'error',
 			'object-shorthand': 'error',
-			'prefer-const': [
-				'error',
-				{
-					destructuring: 'any',
-					ignoreReadBeforeAssign: true,
-				},
-			],
 			'prefer-destructuring': [
 				'error',
 				{
@@ -330,12 +173,17 @@ export default defineConfig(
 					enforceForRenamedProperties: false,
 				},
 			],
-			'prefer-rest-params': 'error',
-			'prefer-template': 'error',
 		},
 	},
 	{
-		name: 'rocket.chat/import',
+		name: 'rocket.chat/variables-eslint-only',
+		rules: {
+			'no-use-before-define': ['error', { functions: true, classes: true, variables: true }],
+			'no-duplicate-imports': 'off',
+		},
+	},
+	{
+		name: 'rocket.chat/import-eslint-only',
 		settings: {
 			'import/resolver': {
 				node: true,
@@ -343,6 +191,7 @@ export default defineConfig(
 			},
 		},
 		rules: {
+			// Rules NOT covered by oxlint — keep in ESLint
 			'import/no-unresolved': [
 				'error',
 				{
@@ -353,11 +202,8 @@ export default defineConfig(
 			'import/named': 'off',
 			'import/default': 'off',
 			'import/namespace': 'off',
-			'import/export': 'error',
 			'import/no-named-as-default': 'off',
 			'import/no-named-as-default-member': 'off',
-			'import/first': 'error',
-			'import/no-duplicates': 'error',
 			'import/order': [
 				'error',
 				{
@@ -369,13 +215,21 @@ export default defineConfig(
 				},
 			],
 			'import/newline-after-import': 'error',
-			'import/no-absolute-path': 'error',
 			'import/no-dynamic-require': 'error',
-			'import/no-self-import': 'error',
-			'import/no-cycle': 'off',
 			'import/no-useless-path-segments': 'error',
+			'import/no-cycle': 'off',
 		},
 	},
+	// TODO: disable, as they are not available in all environments
+	{
+		name: 'rocket.chat/node-globals',
+		languageOptions: {
+			globals: {
+				...globals.node,
+			},
+		},
+	},
+	// ── TypeScript rules (NOT covered by oxlint) ──
 	{
 		files: ['**/*.@(ts|tsx|cts|mts)'],
 		rules: {
@@ -554,14 +408,6 @@ export default defineConfig(
 		files: ['**/*.d.ts'],
 		rules: {
 			'@typescript-eslint/naming-convention': 'off',
-		},
-	},
-	{
-		name: 'rocket.chat/react-testing',
-		files: ['**/*.stories.@(ts|tsx|mts|cts|js|jsx|mjs|cjs)', '**/*.spec.@(ts|tsx|js|jsx|mjs|cjs)'],
-		rules: {
-			'react/display-name': 'off',
-			'react/no-multi-comp': 'off',
 		},
 	},
 );
