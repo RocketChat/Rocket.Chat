@@ -11,8 +11,9 @@ import {
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useMethod, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useId } from 'react';
+import { useToastMessageDispatch, useMethod, useRoomToolbox, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import { useId, useMemo } from 'react';
 import type { ReactElement } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -41,6 +42,34 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 
 	const { closeTab } = useRoomToolbox();
 	const saveAction = useMethod('addUsersToRoom');
+
+	// Fetch existing room members to exclude them from autocomplete
+	// Note: Limited to 100 members due to API_Upper_Count_Limit setting
+	// In very large channels (>100 members), some existing members might still appear in autocomplete
+	const getRoomMembers = useEndpoint('GET', '/v1/rooms.membersOrderedByRole');
+	const { data: membersData, isError: isMembersQueryError } = useQuery({
+		queryKey: ['room-members', rid],
+		queryFn: () => getRoomMembers({ roomId: rid, offset: 0, count: 100 }),
+		// Disable query if room type is not supported
+		enabled: room.t === 'c' || room.t === 'p',
+	});
+
+	const existingMemberUsernames = useMemo(() => {
+		// If the query is disabled or failed, return empty array (no exceptions)
+		// This means existing members might appear in autocomplete, but backend will handle duplicates
+		if (isMembersQueryError || !membersData?.members) {
+			return [];
+		}
+		// Use single iteration with reduce for better performance
+		return membersData.members
+			.reduce<string[]>((acc, member) => {
+				if (member.username) {
+					acc.push(member.username);
+				}
+				return acc;
+			}, [])
+			.sort(); // Sort here for consistent query cache keys
+	}, [membersData, isMembersQueryError]);
 
 	const {
 		handleSubmit,
@@ -84,6 +113,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps): ReactElement => 
 									federated={isFederated}
 									placeholder={t('Choose_users')}
 									aria-describedby={`${usersFieldId}-error`}
+									exceptions={existingMemberUsernames}
 									{...field}
 								/>
 							)}

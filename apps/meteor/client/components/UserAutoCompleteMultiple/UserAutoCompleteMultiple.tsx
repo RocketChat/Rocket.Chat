@@ -15,6 +15,7 @@ type UserAutoCompleteMultipleProps = {
 	placeholder?: string;
 	federated?: boolean;
 	error?: string;
+	exceptions?: string[];
 } & Omit<AllHTMLAttributes<HTMLInputElement>, 'is' | 'onChange' | 'value'>;
 
 type UserAutoCompleteOptionType = {
@@ -29,7 +30,7 @@ type UserAutoCompleteOptions = {
 
 const matrixRegex = new RegExp('@(.*:.*)');
 
-const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, ...props }: UserAutoCompleteMultipleProps): ReactElement => {
+const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, exceptions = [], ...props }: UserAutoCompleteMultipleProps): ReactElement => {
 	const [filter, setFilter] = useState('');
 	const [selectedCache, setSelectedCache] = useState<UserAutoCompleteOptions>({});
 
@@ -37,10 +38,10 @@ const UserAutoCompleteMultiple = ({ onChange, value, placeholder, federated, ...
 	const getUsers = useEndpoint('GET', '/v1/users.autocomplete');
 
 	const { data } = useQuery({
-		queryKey: usersQueryKeys.userAutoComplete(debouncedFilter, federated ?? false),
+		queryKey: usersQueryKeys.userAutoComplete(debouncedFilter, federated ?? false, exceptions),
 
 		queryFn: async () => {
-			const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter }) });
+			const users = await getUsers({ selector: JSON.stringify({ term: debouncedFilter, exceptions }) });
 			const options = users.items.map((item): [string, UserAutoCompleteOptionType] => [item.username, item]);
 
 			// Add extra option if filter text matches `username:server`
