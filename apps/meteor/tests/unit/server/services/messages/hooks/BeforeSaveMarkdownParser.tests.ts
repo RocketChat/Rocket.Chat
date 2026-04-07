@@ -48,5 +48,4 @@ describe('Markdown parser', () => {
 
 		expect(message).to.have.property('md');
 	});
-
 });

@@ -30,7 +30,6 @@ export class BeforeSaveMarkdownParser {
 			if (message.msg) {
 				message.md = parse(message.msg, config);
 			}
-
 		} catch (e) {
 			console.error(e); // errors logged while the parser is at experimental stage
 		}
