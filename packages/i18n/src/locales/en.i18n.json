@@ -3664,7 +3664,6 @@
   "Navigation": "Navigation",
   "Navigation_History": "Navigation History",
   "Navigation_bar": "Navigation bar",
-  "Navigation_bar_description": "Introducing the navigation bar — a higher-level navigation designed to help users quickly find what they need. With its compact design and intuitive organization, this streamlined sidebar optimizes screen space while providing easy access to essential software features and sections.",
   "Never": "Never",
   "New": "New",
   "New_Application": "New Application",
@@ -7110,6 +7109,10 @@
   "__count__messages_selected": "{{count}} messages selected",
   "__count__replies": "{{count}} replies",
   "__count__replies__date__": "{{count}} replies, {{date}}",
+  "__count__result_found": {
+     "one": "{{count}} result found",
+    "other": "{{count}} results found"
+  },
   "__count__tags__and__count__conversations__period__": "{{count}} tags and {{conversations}} conversations, {{period}}",
   "__count__without__assignee__": "{{count}} without assignee",
   "__count__without__department__": "{{count}} without department",

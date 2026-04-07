@@ -1,5 +1,11 @@
 # @rocket.chat/eslint-config
 
+## 0.8.0-rc.0
+
+### Minor Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
 ## 0.7.0
 
 ### Minor Changes
