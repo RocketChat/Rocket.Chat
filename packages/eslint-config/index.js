@@ -1,7 +1,7 @@
 import { defineConfig } from 'eslint/config';
+import prettierConfig from 'eslint-config-prettier';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
 import importPlugin from 'eslint-plugin-import';
-import prettierConfig from 'eslint-config-prettier';
 import jestPlugin from 'eslint-plugin-jest';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
