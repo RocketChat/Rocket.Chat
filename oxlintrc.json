@@ -1,0 +1,90 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "typescript",
+    "import",
+    "react",
+    "react-hooks",
+    "jest",
+    "jsx-a11y",
+    "unicorn",
+    "promise",
+    "oxc"
+  ],
+  "categories": {
+    "correctness": "off",
+    "suspicious": "off",
+    "pedantic": "off",
+    "perf": "off",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "rules": {
+    "no-debugger": "warn",
+    "no-async-promise-executor": "warn",
+    "no-constant-binary-expression": "warn",
+    "no-unsafe-optional-chaining": "warn",
+    "getter-return": "warn",
+    "valid-typeof": "warn",
+    "no-caller": "warn",
+    "no-eval": "warn",
+    "no-extend-native": "warn",
+    "no-extra-bind": "warn",
+    "no-iterator": "warn",
+    "no-new-wrappers": "warn",
+    "no-proto": "warn",
+    "no-self-compare": "warn",
+    "no-useless-call": "warn",
+    "no-useless-concat": "warn",
+    "no-useless-return": "warn",
+    "no-useless-computed-key": "warn",
+    "no-useless-rename": "warn",
+    "no-return-assign": "warn",
+    "no-throw-literal": "warn",
+    "array-callback-return": "warn",
+
+    "import/no-self-import": "warn",
+    "import/no-duplicates": "warn",
+    "import/first": "warn",
+    "import/no-absolute-path": "warn",
+
+    "react/jsx-key": "warn",
+    "react/jsx-no-comment-textnodes": "warn",
+    "react/jsx-no-duplicate-props": "warn",
+    "react/jsx-no-undef": "warn",
+    "react/no-children-prop": "warn",
+    "react/no-direct-mutation-state": "warn",
+    "react/no-find-dom-node": "warn",
+    "react/no-is-mounted": "warn",
+    "react/no-string-refs": "warn",
+    "react/require-render-return": "warn",
+
+    "jest/no-identical-title": "warn",
+    "jest/valid-expect": "warn",
+    "jest/valid-title": "warn",
+
+    "jsx-a11y/alt-text": "warn",
+
+    "unicorn/no-useless-spread": "warn",
+    "unicorn/no-single-promise-in-promise-methods": "warn",
+    "unicorn/no-await-in-promise-methods": "warn",
+    "unicorn/no-unnecessary-await": "warn",
+    "unicorn/prefer-array-flat-map": "warn",
+
+    "oxc/const-comparisons": "warn",
+    "oxc/erasing-op": "warn"
+  },
+  "ignorePatterns": [
+    "dist",
+    "node_modules",
+    "coverage",
+    "storybook-static",
+    ".turbo",
+    "apps/meteor/.meteor",
+    "apps/meteor/**/public",
+    "apps/meteor/**/private",
+    "apps/meteor/**/packages",
+    "packages/apps-engine"
+  ]
+}

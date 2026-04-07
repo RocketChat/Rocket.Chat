@@ -1,6 +1,7 @@
 import { fileURLToPath } from 'node:url';
 
 import rocketChatConfig from '@rocket.chat/eslint-config';
+import oxlint from 'eslint-plugin-oxlint';
 import youDontNeedLodashUnderscorePlugin from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
 
@@ -566,4 +567,6 @@ export default [
 			'import/order': 'warn',
 		},
 	},
+	// oxlint: auto-disable ESLint rules that are covered by oxlint
+	...oxlint.configs['flat/recommended'],
 ];
