@@ -48,7 +48,7 @@ jobs:
       - name: Restore TypeScript incremental cache
         id: restore-typecheck
         if: matrix.check == 'ts'
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -85,7 +85,7 @@ jobs:
 
       - name: Save TypeScript incremental cache
         if: matrix.check == 'ts' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
           key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -93,7 +93,7 @@ jobs:
       - name: Restore ESLint cache
         id: restore-eslint
         if: matrix.check == 'lint'
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: ./apps/meteor/.eslintcache
           key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
@@ -110,7 +110,7 @@ jobs:
 
       - name: Save ESLint cache
         if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v5
         with:
           path: ./apps/meteor/.eslintcache
           key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
