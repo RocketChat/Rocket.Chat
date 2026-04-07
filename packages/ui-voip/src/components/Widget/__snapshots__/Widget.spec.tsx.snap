@@ -50,23 +50,23 @@ exports[`renders FullWidget without crashing 1`] = `
         </div>
       </header>
       <span
-        class="rcx-box rcx-box--full rcx-css-65g3x"
+        class="rcx-box rcx-box--full rcx-css-1k2ffyh"
       >
-        <div
+        <span
           class="rcx-box rcx-box--full rcx-css-1gd28qh"
         >
            
           On hold
-        </div>
-        <div
+        </span>
+        <span
           class="rcx-box rcx-box--full rcx-css-1fn7tui"
         >
            
           Muted
-        </div>
+        </span>
       </span>
       <section
-        class="rcx-box rcx-box--full rcx-css-1mjdwp7"
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
       >
         The content of the widget
       </section>

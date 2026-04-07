@@ -8,7 +8,7 @@ Meteor.startup(async () => {
 		{ _id: 'start-discussion-other-user', roles: ['admin', 'user', 'owner', 'app'] },
 	];
 
-	for await (const permission of permissions) {
+	for (const permission of permissions) {
 		await Permissions.create(permission._id, permission.roles);
 	}
 });

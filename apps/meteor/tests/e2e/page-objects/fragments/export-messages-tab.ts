@@ -50,11 +50,19 @@ export class ExportMessagesTab extends FlexTab {
 	}
 
 	async setAdditionalEmail(email: string) {
-		await this.toAdditionalEmailsInput.fill(email);
+		await this.inputAdditionalEmails.fill(email);
 	}
 
 	getMessageCheckbox(messageText: string): Locator {
 		return this.root.page().getByRole('listitem').filter({ hasText: messageText }).getByRole('checkbox');
+	}
+
+	get inputUsers() {
+		return this.root.getByLabel('To users');
+	}
+
+	get inputAdditionalEmails() {
+		return this.root.getByRole('textbox', { name: 'To additional emails' });
 	}
 
 	get method() {
@@ -63,10 +71,6 @@ export class ExportMessagesTab extends FlexTab {
 
 	get outputFormat() {
 		return this.root.page().getByTestId('export-messages-output-format');
-	}
-
-	get toAdditionalEmailsInput() {
-		return this.root.getByRole('textbox', { name: 'To additional emails' });
 	}
 
 	get downloadButton() {

@@ -28,7 +28,7 @@ export class SlackAPI {
 
 		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
 			channels = channels.concat(response.channels);
-			if (response.response_metadata && response.response_metadata.next_cursor) {
+			if (response.response_metadata?.next_cursor) {
 				const nextChannels = await this.getChannels(response.response_metadata.next_cursor);
 				channels = channels.concat(nextChannels);
 			}
@@ -56,7 +56,7 @@ export class SlackAPI {
 
 		if (response && response && Array.isArray(response.channels) && response.channels.length > 0) {
 			groups = groups.concat(response.channels);
-			if (response.response_metadata && response.response_metadata.next_cursor) {
+			if (response.response_metadata?.next_cursor) {
 				const nextGroups = await this.getGroups(response.response_metadata.next_cursor);
 				groups = groups.concat(nextGroups);
 			}
@@ -87,7 +87,6 @@ export class SlackAPI {
 		let members = [];
 		let currentCursor = '';
 		for (let index = 0; index < num_members; index += MAX_MEMBERS_PER_CALL) {
-			// eslint-disable-next-line no-await-in-loop
 			const request = await fetch('https://slack.com/api/conversations.members', {
 				// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
 				ignoreSsrfValidation: true,
@@ -100,11 +99,10 @@ export class SlackAPI {
 					...(currentCursor && { cursor: currentCursor }),
 				},
 			});
-			// eslint-disable-next-line no-await-in-loop
 			const response = await request.json();
 			if (response && response && request.status === 200 && request.ok && Array.isArray(response.members)) {
 				members = members.concat(response.members);
-				const hasMoreItems = response.response_metadata && response.response_metadata.next_cursor;
+				const hasMoreItems = response.response_metadata?.next_cursor;
 				if (hasMoreItems) {
 					currentCursor = response.response_metadata.next_cursor;
 				}

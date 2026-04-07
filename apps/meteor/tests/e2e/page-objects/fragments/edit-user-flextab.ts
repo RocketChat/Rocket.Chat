@@ -39,8 +39,8 @@ export class EditUserFlexTab extends FlexTab {
 		return this.root.locator('//label[text()="Join default channels"]');
 	}
 
-	get userRole(): Locator {
-		return this.root.locator('button[role="option"]:has-text("user")');
+	get chipUserRole(): Locator {
+		return this.root.getByRole('button', { name: 'user', exact: true });
 	}
 
 	get setupSmtpLink(): Locator {

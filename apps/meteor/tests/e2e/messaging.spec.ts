@@ -187,9 +187,8 @@ test.describe('Messaging', () => {
 				);
 
 				for (const element of ['edited msg2 a', 'edited msg2 b', 'edited msg2 c', 'edited msg2 d', 'edited msg2 e']) {
-					// eslint-disable-next-line no-await-in-loop
 					await page.keyboard.press('ArrowUp');
-					// eslint-disable-next-line no-await-in-loop
+
 					await poHomeChannel.content.sendMessage(element, false);
 				}
 
