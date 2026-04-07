@@ -201,7 +201,7 @@ services:
     image: kong/httpbin
 
   mock-server:
-    image: docker.io/kaleman14/mockserver:latest
+    image: kaleman14/mockserver:latest
     profiles:
       - api
     ports:
