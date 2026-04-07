@@ -3,7 +3,7 @@ import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
-import { Babel } from 'meteor/babel-compiler';
+import { transformSync } from '@babel/core';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
@@ -111,10 +111,14 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		integration.script.trim() !== ''
 	) {
 		try {
-			let babelOptions = Babel.getDefaultOptions({ runtime: false });
-			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
+			const result = transformSync(integration.script, {
+				presets: ['@babel/preset-env'],
+				compact: true,
+				minified: true,
+				comments: false,
+			});
 
-			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+			integrationData.scriptCompiled = result?.code ?? undefined;
 			delete integrationData.scriptError;
 		} catch (e) {
 			integrationData.scriptCompiled = undefined;

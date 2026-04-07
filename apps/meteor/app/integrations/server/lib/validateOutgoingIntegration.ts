@@ -1,7 +1,7 @@
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
-import { Babel } from 'meteor/babel-compiler';
+import { transformSync } from '@babel/core';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -179,13 +179,14 @@ export const validateOutgoingIntegration = async function (
 		integration.script.trim() !== ''
 	) {
 		try {
-			const babelOptions = Object.assign(Babel.getDefaultOptions({ runtime: false }), {
+			const result = transformSync(integration.script, {
+				presets: ['@babel/preset-env'],
 				compact: true,
 				minified: true,
 				comments: false,
 			});
 
-			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+			integrationData.scriptCompiled = result?.code ?? undefined;
 			integrationData.scriptError = undefined;
 		} catch (e) {
 			integrationData.scriptCompiled = undefined;
