@@ -1146,6 +1146,7 @@ export const wordlist = [
 	'model',
 	'modify',
 	'mom',
+	'moment',
 	'monitor',
 	'monkey',
 	'monster',

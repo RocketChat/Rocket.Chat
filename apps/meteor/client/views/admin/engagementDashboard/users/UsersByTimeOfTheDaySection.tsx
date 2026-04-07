@@ -53,12 +53,12 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 			};
 		}
 
-		const timezoneOffsetHours = -new Date().getTimezoneOffset() / 60;
+		const timezoneOffsetMinutes = -new Date().getTimezoneOffset();
 
 		for (const { users, hour, day, month, year } of data.week) {
 			const d = utc ? new Date(Date.UTC(year, month - 1, day, hour, 0, 0, 0)) : new Date(year, month - 1, day, hour, 0, 0, 0);
 			if (!utc) {
-				d.setHours(d.getHours() + timezoneOffsetHours);
+				d.setMinutes(d.getMinutes() + timezoneOffsetMinutes);
 			}
 
 			const include = utc || (!isSameDay(d, endDate) && !isSameDay(new Date(d.getFullYear(), d.getMonth(), d.getDate()), startDate));
