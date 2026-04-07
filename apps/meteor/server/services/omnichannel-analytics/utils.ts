@@ -32,9 +32,10 @@ export async function* hourIterator(day: Date): AsyncGenerator<Date> {
 	}
 }
 
-/** Parse YYYY-MM-DD in timezone and return start/end of day as UTC Date */
+/** Parse YYYY-MM-DD (or ISO 8601) in timezone and return start/end of day as UTC Date */
 export function parseRangeInTimezone(dateStr: string, timezone: string): { start: Date; end: Date } {
-	const [y, m, d] = dateStr.split('-').map(Number);
+	const dateOnly = dateStr.slice(0, 10); // Extract YYYY-MM-DD from any format
+	const [y, m, d] = dateOnly.split('-').map(Number);
 	const startTz = new TZDate(y, m - 1, d, 0, 0, 0, 0, timezone);
 	const endTz = new TZDate(y, m - 1, d, 23, 59, 59, 999, timezone);
 	return { start: new Date(startTz.getTime()), end: new Date(endTz.getTime()) };
