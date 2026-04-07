@@ -7,7 +7,6 @@ accounts-password@3.2.2
 accounts-twitter@1.5.2
 allow-deny@2.1.0
 autoupdate@2.0.1
-babel-compiler@7.13.0
 babel-runtime@1.5.2
 base64@1.0.13
 binary-heap@1.0.12
