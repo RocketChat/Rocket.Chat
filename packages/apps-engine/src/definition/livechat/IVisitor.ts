@@ -3,7 +3,7 @@ import type { IVisitorPhone } from './IVisitorPhone';
 
 export interface IVisitorExternalIdentifier {
 	source?: string;
-	userId: string;
+	entityId: string;
 	username?: string;
 }
 

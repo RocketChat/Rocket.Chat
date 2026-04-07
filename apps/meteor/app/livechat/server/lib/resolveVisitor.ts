@@ -10,7 +10,7 @@ type ResolveVisitorParams = {
 };
 
 export async function resolveVisitor({ source, externalId, contactData }: ResolveVisitorParams): Promise<ILivechatVisitor | null> {
-	const visitorByExternalId = await LivechatVisitors.findOneByExternalId(source, externalId.userId);
+	const visitorByExternalId = await LivechatVisitors.findOneByExternalId(source, externalId.entityId);
 	if (visitorByExternalId) {
 		return visitorByExternalId;
 	}

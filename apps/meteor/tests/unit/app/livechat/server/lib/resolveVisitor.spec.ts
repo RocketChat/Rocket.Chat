@@ -27,14 +27,14 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-123',
 			token: 'token-123',
 			username: 'guest-1',
-			externalIds: [{ source: appId, userId: 'bsuid-123' }],
+			externalIds: [{ source: appId, entityId: 'bsuid-123' }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(existingVisitor);
 
 		const result = await resolveVisitor({
 			source: appId,
-			externalId: { userId: 'bsuid-123' },
+			externalId: { entityId: 'bsuid-123' },
 			contactData: { phone: '1234567890' },
 		});
 
@@ -44,7 +44,7 @@ describe('resolveVisitor', () => {
 	});
 
 	it('should find by phone, enrich with external ID, and return visitor when not found by external ID', async () => {
-		const externalId = { userId: 'bsuid-456', username: '@johndoe' };
+		const externalId = { entityId: 'bsuid-456', username: '@johndoe' };
 		const contactData = { phone: '9876543210' };
 		const updatedVisitor = {
 			_id: 'visitor-456',
@@ -65,7 +65,7 @@ describe('resolveVisitor', () => {
 	});
 
 	it('should find by email, enrich with external ID, and return visitor when not found by external ID', async () => {
-		const externalId = { userId: 'bsuid-email', username: '@emailuser' };
+		const externalId = { entityId: 'bsuid-email', username: '@emailuser' };
 		const contactData = { email: 'test@example.com' };
 		const updatedVisitor = {
 			_id: 'visitor-email',
@@ -86,7 +86,7 @@ describe('resolveVisitor', () => {
 	});
 
 	it('should update existing externalIds when visitor already has some', async () => {
-		const newExternalId = { userId: 'bsuid-789', username: '@newuser' };
+		const newExternalId = { entityId: 'bsuid-789', username: '@newuser' };
 		const contactData = { phone: '5555555555' };
 		const updatedVisitor = {
 			_id: 'visitor-789',
@@ -106,7 +106,7 @@ describe('resolveVisitor', () => {
 	it('should return null when not found by external ID and no contact data provided', async () => {
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 
-		const result = await resolveVisitor({ source: appId, externalId: { userId: 'bsuid-unknown' } });
+		const result = await resolveVisitor({ source: appId, externalId: { entityId: 'bsuid-unknown' } });
 
 		expect(result).to.be.null;
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnce).to.be.true;
@@ -119,7 +119,7 @@ describe('resolveVisitor', () => {
 
 		const result = await resolveVisitor({
 			source: appId,
-			externalId: { userId: 'bsuid-unknown' },
+			externalId: { entityId: 'bsuid-unknown' },
 			contactData: { phone: '0000000000' },
 		});
 
@@ -133,7 +133,7 @@ describe('resolveVisitor', () => {
 
 		const result = await resolveVisitor({
 			source: appId,
-			externalId: { userId: 'bsuid-123' },
+			externalId: { entityId: 'bsuid-123' },
 			contactData: { phone: '' },
 		});
 
@@ -146,7 +146,7 @@ describe('resolveVisitor', () => {
 
 		const result = await resolveVisitor({
 			source: appId,
-			externalId: { userId: 'bsuid-123' },
+			externalId: { entityId: 'bsuid-123' },
 			contactData: { email: '' },
 		});
 

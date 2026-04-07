@@ -16,7 +16,7 @@ export interface IVisitorEmail {
 
 export interface IVisitorExternalIdentifier {
 	source: string;
-	userId: string;
+	entityId: string;
 	username?: string;
 }
 

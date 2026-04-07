@@ -146,14 +146,14 @@ An app that tests the `ILivechatCreator.resolveVisitor()` API for resolving live
 **Request body:**
 ```json
 {
-  "externalId": { "userId": "bsuid-123", "username": "@johndoe" },
+  "externalId": { "entityId": "bsuid-123", "username": "@johndoe" },
   "phone": "+1234567890"
 }
 ```
 or with email fallback:
 ```json
 {
-  "externalId": { "userId": "ext-456" },
+  "externalId": { "entityId": "ext-456" },
   "email": "user@example.com"
 }
 ```

@@ -12,7 +12,7 @@ export interface ILivechatCreator {
 	/**
 	 * Resolves a visitor by external identifier (e.g., WhatsApp BSUID) with contact data fallback.
 	 * If found by contact data (phone or email) but not by externalId, enriches the visitor record with the externalId.
-	 * @param externalId The external identifier containing userId and optional username
+	 * @param externalId The external identifier containing entityId and optional username
 	 * @param contactData Optional contact data for fallback lookup. Use `{ phone: '+1234567890' }` or `{ email: 'user@example.com' }`
 	 * @returns The visitor if found, undefined otherwise
 	 */
