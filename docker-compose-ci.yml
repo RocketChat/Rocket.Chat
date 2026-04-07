@@ -201,9 +201,9 @@ services:
     image: kong/httpbin
 
   mock-server:
-    build:
-      context: ./development/mockServer
-      dockerfile: Dockerfile
+    image: kaleman14/mockserver:latest
+    profiles:
+      - api
     ports:
       - 4000:8080
     healthcheck:
