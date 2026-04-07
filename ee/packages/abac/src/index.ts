@@ -623,6 +623,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return true;
 		}
 
+		if (!(await this.pdp.isAvailable())) {
+			return false;
+		}
+
 		let decision: { granted: boolean; userToRemove?: IUser };
 		try {
 			decision = await this.pdp.canAccessObject(room, user);
@@ -647,6 +651,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
+		await this.ensurePdpAvailable();
 		await this.pdp.checkUsernamesMatchAttributes(usernames, attributes, object);
 
 		usernames.forEach((username) => {
@@ -728,6 +733,10 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
+		if (!(await this.pdp.isAvailable())) {
+			return;
+		}
+
 		try {
 			const nonCompliantRooms = await this.pdp.onSubjectAttributesChanged(user, _next);
 
@@ -753,7 +762,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async evaluateRoomMembership(): Promise<void> {
-		if (!this.pdp) {
+		if (!this.pdp || !(await this.pdp.isAvailable())) {
 			return;
 		}
 

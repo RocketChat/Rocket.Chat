@@ -253,11 +253,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return { granted: true };
 		}
 
-		if (!(await this.isAvailable())) {
-			pdpLogger.warn({ msg: 'Virtru PDP is unavailable, failing closed', roomId: room._id, userId: user._id });
-			return { granted: false };
-		}
-
 		const fullUser = await Users.findOneById(user._id);
 		if (!fullUser) {
 			return { granted: false };
@@ -300,11 +295,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {
 		if (!usernames.length || !attributes.length) {
 			return;
-		}
-
-		if (!(await this.isAvailable())) {
-			pdpLogger.warn({ msg: 'Virtru PDP is unavailable, failing closed — refusing to add users', roomId: object._id });
-			throw new OnlyCompliantCanBeAddedToRoomError();
 		}
 
 		const users = await Users.findByUsernames(usernames, { projection: { _id: 1, emails: 1, username: 1 } }).toArray();
@@ -410,11 +400,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			rooms: AtLeast<IRoom, '_id' | 'abacAttributes'>[];
 		}>,
 	): Promise<Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }>> {
-		if (!(await this.isAvailable())) {
-			pdpLogger.warn({ msg: 'Virtru PDP is unavailable, skipping bulk room membership evaluation — no users will be removed' });
-			return [];
-		}
-
 		const requestIndex: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: AtLeast<IRoom, '_id' | 'abacAttributes'> }> = [];
 		const allRequests: IGetDecisionBulkRequest[] = [];
 
@@ -465,14 +450,6 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 	async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<IRoom[]> {
 		const roomIds = user.__rooms;
 		if (!roomIds?.length) {
-			return [];
-		}
-
-		if (!(await this.isAvailable())) {
-			pdpLogger.warn({
-				msg: 'Virtru PDP is unavailable, skipping subject attributes evaluation — no users will be removed',
-				userId: user._id,
-			});
 			return [];
 		}
 

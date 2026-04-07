@@ -41,7 +41,7 @@ export function addSettings(): Promise<void> {
 					public: true,
 					section: 'ABAC',
 					invalidValue: 0,
-					enableQuery: [abacEnabledQuery],
+					enableQuery: abacEnabledQuery,
 				});
 
 				// Virtru PDP Configuration
