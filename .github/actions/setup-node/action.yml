@@ -41,7 +41,7 @@ runs:
     - name: Cache Node Modules & Deno
       if: inputs.cache-modules
       id: cache-node-modules
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       with:
         # We need to cache node_modules for all workspaces with "hoistingLimits" defined
         path: |
