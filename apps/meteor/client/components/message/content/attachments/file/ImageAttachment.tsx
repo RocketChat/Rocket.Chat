@@ -15,6 +15,7 @@ const ImageAttachment = ({
 		width: 368,
 		height: 368,
 	},
+	description,
 	title_link: link,
 	title_link_download: hasDownload,
 	collapsed,
@@ -33,6 +34,7 @@ const ImageAttachment = ({
 					src={getURL(url)}
 					previewUrl={`data:image/png;base64,${imagePreview}`}
 					id={id}
+					alt={description}
 				/>
 			</MessageCollapsible>
 		</>

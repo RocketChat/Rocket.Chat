@@ -14,7 +14,7 @@ import FileUploadModal from '../../modals/FileUploadModal';
 type MessageComposerFileItemProps = {
 	upload: Upload;
 	onRemove: (id: string) => void;
-	onEdit: (id: Upload['id'], fileName: string) => void;
+	onEdit: (id: Upload['id'], fileName: string, description?: string) => void;
 	onCancel: (id: Upload['id']) => void;
 	disabled: boolean;
 };
@@ -35,11 +35,12 @@ const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled,
 
 		setModal(
 			<FileUploadModal
-				onSubmit={(name) => {
-					onEdit(upload.id, name);
+				onSubmit={(name, description) => {
+					onEdit(upload.id, name, description);
 					setModal(null);
 				}}
 				fileName={upload.file.name}
+				fileDescription={upload.description}
 				file={upload.file}
 				onClose={() => setModal(null)}
 			/>,
