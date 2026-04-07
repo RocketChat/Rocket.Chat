@@ -251,7 +251,7 @@ const RoomBody = (): ReactElement => {
 												className='messages-list'
 												aria-label={t('Message_list')}
 												aria-busy={isLoadingMoreMessages}
-												style={{ height: `${totalSize.current}px` }}
+												style={{ height: `${virtualizerHelpersRef.current?.getTotalSize() ?? 0}px` }}
 											>
 												{canPreview ? (
 													<>
@@ -269,8 +269,8 @@ const RoomBody = (): ReactElement => {
 													rid={room._id}
 													messageListRef={jumpToRef}
 													scrollContainerRef={scrollContainerRef}
-													totalSize={totalSize}
 													virtualizerHelpersRef={virtualizerHelpersRef}
+													isLoadingMoreMessages={isLoadingMoreMessages}
 												/>
 												{hasMoreNextMessages ? (
 													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>

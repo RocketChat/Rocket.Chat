@@ -15,7 +15,7 @@ import { useMessages } from './hooks/useMessages';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
 
-const ESTIMATE_SIZE = 200;
+const ESTIMATE_SIZE = 90;
 
 export type VirtualizerHelpers = {
 	scrollToOffset: (offset: number) => void;
@@ -27,7 +27,7 @@ type MessageListProps = {
 	rid: IRoom['_id'];
 	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
 	scrollContainerRef: RefObject<HTMLElement>;
-	totalSize: MutableRefObject<number>;
+	isLoadingMoreMessages: boolean;
 	virtualizerHelpersRef: RefObject<VirtualizerHelpers>;
 };
 
@@ -35,8 +35,8 @@ export const MessageList = function MessageList({
 	rid,
 	messageListRef,
 	scrollContainerRef,
-	totalSize,
 	virtualizerHelpersRef,
+	isLoadingMoreMessages,
 }: MessageListProps) {
 	const messages = useMessages({ rid });
 	const subscription = useRoomSubscription();
@@ -49,30 +49,38 @@ export const MessageList = function MessageList({
 		getScrollElement: () => scrollContainerRef.current,
 		estimateSize: () => ESTIMATE_SIZE,
 		overscan: 5,
-		getItemKey: (index: number) => messages[index]?._id ?? index,
-		// useFlushSync: false,
-		onChange: (instance) => {
-			totalSize.current = instance.getTotalSize();
-		},
+		// getItemKey: (index: number) => messages[index]?._id ?? index,
+		useFlushSync: false,
 	});
+
+	virtualizer.shouldAdjustScrollPositionOnItemSizeChange = () => true;
 
 	useImperativeHandle(virtualizerHelpersRef, () => ({
 		scrollToOffset: (offset: number) => {
 			virtualizer.scrollToOffset(offset);
 		},
 		shouldGetMore: () => {
+			if (isLoadingMoreMessages) {
+				return false;
+			}
 			const [firstItem] = [...virtualizer.getVirtualItems()];
 
 			return firstItem.index === 0;
 		},
 		shouldGetMoreNext: () => {
+			if (isLoadingMoreMessages) {
+				return false;
+			}
 			const [lastItem] = [...virtualizer.getVirtualItems()].reverse();
 
 			return lastItem.index >= messages.length - 1;
 		},
+		getTotalSize: () => virtualizer.getTotalSize(),
 	}));
 
 	const virtualItems = virtualizer.getVirtualItems();
+
+	console.log('virtualItems', virtualItems);
 
 	return (
 		<MessageListProvider messageListRef={messageListRef}>
