@@ -51,7 +51,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 			);
 		}
 
-		router.subscribeToRouteChange(() => {
+		return router.subscribeToRouteChange(() => {
 			if (!isValidTab(tab)) {
 				router.navigate(
 					{
