@@ -78,15 +78,23 @@ const TelemetryPayloadSchema = {
 				properties: {
 					eventName: { type: 'string' },
 					timestamp: { type: 'number', nullable: true },
-					command: { type: 'string', nullable: true },
-					settingsId: { type: 'string', nullable: true },
+					command: { type: 'string' },
+					settingsId: { type: 'string' },
 				},
 				required: ['eventName'],
+				anyOf: [
+					{
+						required: ['command'],
+					},
+					{
+						required: ['settingsId'],
+					},
+				],
 				additionalProperties: true,
 			},
 		},
 	},
-	required: [],
+	required: ['params'],
 	additionalProperties: false,
 };
 
