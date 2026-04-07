@@ -53,7 +53,9 @@ const ActiveUsersSection = ({ timezone }: ActiveUsersSectionProps): ReactElement
 		const prevMauValue = createPoint(-1);
 
 		const usersListsMap = data.month.reduce<{ [x: number]: string[] }>((map, dayData) => {
-			const d = utc ? new Date(Date.UTC(dayData.year, dayData.month - 1, dayData.day)) : new Date(dayData.year, dayData.month - 1, dayData.day);
+			const d = utc
+				? new Date(Date.UTC(dayData.year, dayData.month - 1, dayData.day))
+				: new Date(dayData.year, dayData.month - 1, dayData.day);
 			const date = utc ? new Date(Date.UTC(dayData.year, dayData.month - 1, dayData.day, 23, 59, 59, 999)) : endOfDay(d);
 			const dateOffset = differenceInDays(date, startDate);
 			if (dateOffset >= 0 && dauValuesLocal[dateOffset]) {
