@@ -298,7 +298,7 @@
 		"tweetnacl": "^1.0.3",
 		"twilio": "^5.4.2",
 		"twit": "^2.2.11",
-		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch",
+		"typia": "~9.7.2",
 		"ua-parser-js": "~1.0.41",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",
