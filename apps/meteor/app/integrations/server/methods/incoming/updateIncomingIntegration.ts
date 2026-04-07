@@ -1,8 +1,8 @@
+import { transformSync } from '@babel/core';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
-import { transformSync } from '@babel/core';
 import { Meteor } from 'meteor/meteor';
 
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';

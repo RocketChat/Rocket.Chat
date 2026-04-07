@@ -1,9 +1,9 @@
+import { transformSync } from '@babel/core';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
-import { transformSync } from '@babel/core';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';

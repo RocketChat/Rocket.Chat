@@ -1,7 +1,7 @@
+import { transformSync } from '@babel/core';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
-import { transformSync } from '@babel/core';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
