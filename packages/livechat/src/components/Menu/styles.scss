@@ -1,5 +1,5 @@
 @use 'sass:math';
-@use "sass:color";
+@use 'sass:color';
 @use '../../styles/colors';
 @use '../../styles/variables';
 
@@ -48,7 +48,7 @@
 
 			margin: 14px 16px;
 
-			content: "";
+			content: '';
 
 			border: 1px solid colors.$bg-color-grey;
 		}

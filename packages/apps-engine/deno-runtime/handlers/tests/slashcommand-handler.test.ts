@@ -71,7 +71,9 @@ describe('handlers > slashcommand', () => {
 
 		const mockRequest = createMockRequest({ method: 'slashcommand:executor-only:executor', params: [mockContext] });
 
-		await handleExecutor({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorOnly, 'executor', [mockContext]);
+		await handleExecutor({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorOnly, 'executor', [
+			mockContext,
+		]);
 
 		const context = _spy.calls[0].args[0];
 
@@ -102,7 +104,9 @@ describe('handlers > slashcommand', () => {
 
 		const mockRequest = createMockRequest({ method: 'slashcommand:executor-and-preview:previewer', params: [mockContext] });
 
-		await handleExecutor({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorAndPreview, 'previewer', [mockContext]);
+		await handleExecutor({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorAndPreview, 'previewer', [
+			mockContext,
+		]);
 
 		const context = _spy.calls[0].args[0];
 
@@ -137,9 +141,15 @@ describe('handlers > slashcommand', () => {
 
 		const _spy = spy(mockCommandExecutorAndPreview, 'executePreviewItem');
 
-		const mockRequest = createMockRequest({ method: 'slashcommand:executor-and-preview:executePreviewItem', params: [mockPreviewItem, mockContext] });
+		const mockRequest = createMockRequest({
+			method: 'slashcommand:executor-and-preview:executePreviewItem',
+			params: [mockPreviewItem, mockContext],
+		});
 
-		await handlePreviewItem({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorAndPreview, [mockPreviewItem, mockContext]);
+		await handlePreviewItem({ AppAccessorsInstance: mockAppAccessors, request: mockRequest }, mockCommandExecutorAndPreview, [
+			mockPreviewItem,
+			mockContext,
+		]);
 
 		const context = _spy.calls[0].args[1];
 

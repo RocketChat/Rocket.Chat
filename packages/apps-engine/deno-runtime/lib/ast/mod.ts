@@ -51,7 +51,7 @@ function fixAst(ast: Program): boolean {
 export function fixBrokenSynchronousAPICalls(appSource: string): string {
 	const astRootNode = parse(appSource, {
 		// Latest ecma version supported by this version of acorn.
-		ecmaVersion: "latest",
+		ecmaVersion: 'latest',
 		// Allow everything, we don't want to complain if code is badly written
 		// Also, since the code itself has been transpiled, the chance of getting
 		// shenanigans is lower

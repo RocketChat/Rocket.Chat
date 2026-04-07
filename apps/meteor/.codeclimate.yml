@@ -13,8 +13,8 @@
 # http://docs.codeclimate.com/article/296-engines-available-engines
 
 engines:
-# to turn on an engine, add it here and set enabled to `true`
-# to turn off an engine, set enabled to `false` or remove it
+  # to turn on an engine, add it here and set enabled to `true`
+  # to turn off an engine, set enabled to `false` or remove it
   coffeelint:
     enabled: true
   eslint:
@@ -31,14 +31,14 @@ engines:
 
 ratings:
   paths:
-  - "**.coffee"
-  - "**.js"
-  - "**.css"
+    - '**.coffee'
+    - '**.js'
+    - '**.css'
 
 # You can globally exclude files from being analyzed by any engine using the
 # exclude_paths key.
 
 exclude_paths:
-- "private/moment-locales/**/*"
-- "packages/rocketchat-favico/favico.js"
+  - 'private/moment-locales/**/*'
+  - 'packages/rocketchat-favico/favico.js'
 #- "vendor/**/*""

@@ -6,15 +6,15 @@ As a user of Rocket.Chat, someone with a Rocket.Chat account, you need to be awa
 
 In particular:
 
-- Rocket.Chat Technologies Corp. do not have access to these servers.  
-- Rocket.Chat Technologies Corp. do not and cannot control or regulate how these servers are operated.   
+- Rocket.Chat Technologies Corp. do not have access to these servers.
+- Rocket.Chat Technologies Corp. do not and cannot control or regulate how these servers are operated.
 - Rocket.Chat Technologies Corp. cannot access, determine or regulate any contents or information flow on these servers.
 
 ## PUBLIC SERVER
 
 For total transparency, Rocket.Chat Technologies Corp. owns and operates only ONE publicly available Rocket.Chat server in the world. The server that Rocket.Chat Technologies Corp. operates can only be accessed at:
 
-https://open.rocket.chat     
+https://open.rocket.chat
 
 Any other Rocket.Chat server you access is not operated by Rocket.Chat Technologies Corp. and is subjected to the usage warning above.
 

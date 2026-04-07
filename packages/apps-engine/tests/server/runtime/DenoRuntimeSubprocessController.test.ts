@@ -45,7 +45,7 @@ describe('DenoRuntimeSubprocessController', () => {
 	beforeEach(async () => {
 		controller = new DenoRuntimeSubprocessController(manager, appPackage, appStorageItem);
 		await controller.setupApp();
-	})
+	});
 
 	afterEach(async () => {
 		await controller?.stopApp();
@@ -56,7 +56,7 @@ describe('DenoRuntimeSubprocessController', () => {
 		await fs.unlink(path.join(os.tmpdir(), 'deno-runtime')).catch((reason) => {
 			console.warn('Failed to delete temporary Deno runtime symlink', reason);
 		});
-	})
+	});
 
 	it('correctly identifies a call to the HTTP accessor', async () => {
 		const httpBridge = manager.getBridges().getHttpBridge();

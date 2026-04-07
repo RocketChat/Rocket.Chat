@@ -320,9 +320,11 @@ describe('AppVideoConfProviderManager', () => {
 		const test2Provider = (manager as any).videoConfProviders.get('testing').get('test2') as AppVideoConfProvider;
 		const differentProvider = (manager as any).videoConfProviders.get('secondApp').get('differentprovider') as AppVideoConfProvider;
 
-		mock.method(testProvider, 'runCustomizeUrl', (_call: any, user: any) => user ? 'test/first-call#caller' : 'test/first-call#');
-		mock.method(test2Provider, 'runCustomizeUrl', (_call: any, user: any) => user ? 'test2/first-call#caller' : 'test2/first-call#');
-		mock.method(differentProvider, 'runCustomizeUrl', (_call: any, user: any) => user ? 'differentProvider/first-call#caller' : 'differentProvider/first-call#');
+		mock.method(testProvider, 'runCustomizeUrl', (_call: any, user: any) => (user ? 'test/first-call#caller' : 'test/first-call#'));
+		mock.method(test2Provider, 'runCustomizeUrl', (_call: any, user: any) => (user ? 'test2/first-call#caller' : 'test2/first-call#'));
+		mock.method(differentProvider, 'runCustomizeUrl', (_call: any, user: any) =>
+			user ? 'differentProvider/first-call#caller' : 'differentProvider/first-call#',
+		);
 
 		assert.strictEqual(await manager.customizeUrl('test', call, user, {}), 'test/first-call#caller');
 		assert.strictEqual(await manager.customizeUrl('test', call, undefined, {}), 'test/first-call#');

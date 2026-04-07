@@ -5,7 +5,8 @@
 $form-input-border-width: variables.$default-border;
 $form-input-border-radius: variables.$default-border-radius;
 $form-input-padding: (0.75 * variables.$default-gap - variables.$default-border);
-$form-input-small-padding: (0.25 * variables.$default-gap - math.div(variables.$default-border, 2)) (0.75 * variables.$default-gap - variables.$default-border);
+$form-input-small-padding: (0.25 * variables.$default-gap - math.div(variables.$default-border, 2))
+	(0.75 * variables.$default-gap - variables.$default-border);
 $form-input-color: colors.$color-text-dark;
 $form-input-placeholder-color: colors.$color-text-light;
 $form-input-background-color: colors.$bg-color-white;
@@ -29,10 +30,10 @@ $form-input-disabled-opacity: variables.$disabled-opacity;
 		padding: $form-input-padding;
 
 		transition:
-		border-color variables.$default-time-animation,
-		color variables.$default-time-animation,
-		background-color variables.$default-time-animation,
-		trasform variables.$default-time-animation;
+			border-color variables.$default-time-animation,
+			color variables.$default-time-animation,
+			background-color variables.$default-time-animation,
+			trasform variables.$default-time-animation;
 
 		color: $form-input-color;
 		border: $form-input-border-width solid $form-input-border-color;

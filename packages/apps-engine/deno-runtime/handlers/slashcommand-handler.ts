@@ -52,9 +52,9 @@ export default async function slashCommandHandler(request: RequestContext): Prom
 }
 
 type Deps = {
-	AppAccessorsInstance: AppAccessors,
+	AppAccessorsInstance: AppAccessors;
 	request: RequestContext;
-}
+};
 
 /**
  * @param deps Dependencies that need to be injected into the slashcommand

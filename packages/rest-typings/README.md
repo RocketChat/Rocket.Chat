@@ -1,13 +1,12 @@
-
-#  @rocket.chat/rest-typings
+# @rocket.chat/rest-typings
 
 Package containing all Rocket.Chat rest endpoint definitions
-
 
 ## Contributing
 
 Contributions are always welcome!
 However we have some recommendations.
+
 - Check if your implementation matches your definitions, a bad definition is worse than none.
 - Use the generic types we created for paging.
 - Create functions that assert properties (very useful for the backend)
@@ -19,11 +18,10 @@ However we have some recommendations.
 #### If you have an endpoint that accepts name or id, both are not optional, one of them is required
 
 ```typescript
-    
-    type EndPointTestGetParams = { name?: string; id?: string; } // WRONG!
+type EndPointTestGetParams = { name?: string; id?: string }; // WRONG!
 
-    type EndPointTestGetParams = { name: string; } | { id: string; } // Better :)
-````
+type EndPointTestGetParams = { name: string } | { id: string }; // Better :)
+```
 
 #### If you have an endpoint that accepts name or id, both are not optional, one of them is required
 
@@ -31,8 +29,8 @@ However we have some recommendations.
     export const isEndPointTestGetParams = (props: any) is EndPointTestGetParams => 'name' in prop || 'id' in prop; // WRONG!
 
     // .... Better
-    
-    
+
+
     import Ajv from 'ajv';
 
     const ajv = new Ajv();
@@ -63,23 +61,23 @@ However we have some recommendations.
 
     export const isEndPointTestGetParams = ajv.compile<EndPointTestGetParams>(endPointTestGetParams);
 ```
+
 ## Optimizations
 
 we use interfaces to register endpoints, so if you use a custom version, or miss an endpoint, you don't necessarily need to recompile the code, you can do it in your own code
 
 ```typescript
-    declare module '@rocket.chat/rest-typings' {
-        interface Endpoints {
-            'custom/endpoint': {
-                GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
-                    some: string[];
-                }>;
-            };
-        }
-    }
+declare module '@rocket.chat/rest-typings' {
+	interface Endpoints {
+		'custom/endpoint': {
+			GET: (params: PaginatedRequest<{ query: string }>) => PaginatedResult<{
+				some: string[];
+			}>;
+		};
+	}
+}
 ```
 
 ## License
 
 MIT
-

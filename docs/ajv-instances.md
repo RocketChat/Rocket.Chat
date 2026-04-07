@@ -9,11 +9,11 @@ The `@rocket.chat/rest-typings` package uses two [AJV](https://ajv.js.org/) inst
 Both are created in `packages/rest-typings/src/v1/Ajv.ts` with the same configuration except for one option:
 
 | Option            | `ajv`   | `ajvQuery` |
-|-------------------|---------|------------|
-| `coerceTypes`     | `false` | `true`    |
-| `allowUnionTypes` | `true`  | `true`    |
-| `code.source`     | `true`  | `true`    |
-| `discriminator`   | `true`  | `true`    |
+| ----------------- | ------- | ---------- |
+| `coerceTypes`     | `false` | `true`     |
+| `allowUnionTypes` | `true`  | `true`     |
+| `code.source`     | `true`  | `true`     |
+| `discriminator`   | `true`  | `true`     |
 
 In short:
 
@@ -30,7 +30,7 @@ Custom formats (`addFormats`) and keywords (e.g. `isNotEmpty`) are registered on
 
 In HTTP requests, **query parameters** (everything after `?` in the URL) reach the server as **strings**. HTTP does not carry type information; the server receives, for example:
 
-- `?count=25`  → `count` is the string `"25"`
+- `?count=25` → `count` is the string `"25"`
 - `?open=true` → `open` is the string `"true"`
 
 If the schema expects `count` as `number` or `open` as `boolean`, a validator that does **not** coerce will reject:
@@ -82,10 +82,10 @@ export const isPOSTLivechatRoomCloseParams = ajv.compile<POSTLivechatRoomClosePa
 
 ## Quick reference
 
-| Data source                    | Instance   | Reason |
-|--------------------------------|------------|--------|
+| Data source                          | Instance   | Reason                                                                                               |
+| ------------------------------------ | ---------- | ---------------------------------------------------------------------------------------------------- |
 | **Query string** (GET, query params) | `ajvQuery` | Query values are strings; `coerceTypes: true` converts to number/boolean when the schema expects it. |
-| **Body** (JSON in POST/PUT/PATCH)    | `ajv`      | JSON already has types; strict validation without mutating values. |
+| **Body** (JSON in POST/PUT/PATCH)    | `ajv`      | JSON already has types; strict validation without mutating values.                                   |
 
 ---
 
@@ -116,11 +116,13 @@ Schemas using `oneOf` with strict enum discriminators (e.g. `type: { enum: ['dir
 ## Common mistakes
 
 1. **Using `ajv` for query params** when the schema expects `number` or `boolean`:
+
    - Client sends `?count=25`.
    - Validator expects `number` but receives the string `"25"`.
    - Result: "must be number" / "invalid-params" error.
 
 2. **Using `ajvQuery` for body**:
+
    - Usually works, but coercion can hide incorrect types (e.g. string where a number was expected). For body, the standard is to use `ajv` and require the client to send the correct types in the JSON.
 
 3. **Response schemas with `null` fields** (test mode only):

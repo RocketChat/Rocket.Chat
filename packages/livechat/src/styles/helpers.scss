@@ -1,9 +1,15 @@
-@use "sass:map";
-@use "sass:meta";
+@use 'sass:map';
+@use 'sass:meta';
 $breakpoints: (
-	'small':  ( min-width:  767px ),
-	'medium': ( min-width:  992px ),
-	'large':  ( min-width: 1200px )
+	'small': (
+		min-width: 767px,
+	),
+	'medium': (
+		min-width: 992px,
+	),
+	'large': (
+		min-width: 1200px,
+	),
 ) !default;
 
 @mixin md($breakpoint) {
@@ -22,7 +28,7 @@ $breakpoints: (
 	}
 }
 
-@mixin keyframes( $animationName ) {
+@mixin keyframes($animationName) {
 	@-webkit-keyframes #{$animationName} {
 		@content;
 	}
@@ -61,7 +67,7 @@ $breakpoints: (
 	&::before {
 		position: absolute;
 
-		content: "";
+		content: '';
 		cursor: pointer;
 		inset: (-$border-width);
 	}

@@ -56,7 +56,7 @@
 		height: 0;
 		margin-right: 2px;
 
-		content: "";
+		content: '';
 
 		transition:
 			opacity math.div(variables.$default-time-animation, 2),
@@ -71,11 +71,7 @@
 
 		border-style: solid;
 
-		border-color:
-			currentColor
-			currentColor
-			currentColor
-			transparent;
+		border-color: currentColor currentColor currentColor transparent;
 		border-radius: 50%;
 	}
 

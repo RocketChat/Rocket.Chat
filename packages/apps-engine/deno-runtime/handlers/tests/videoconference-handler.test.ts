@@ -14,7 +14,8 @@ describe('handlers > videoconference', () => {
 	// deno-lint-ignore no-unused-vars
 	const mockMethodWithOneParam = (call: any, read: any, modify: any, http: any, persis: any): Promise<string> => Promise.resolve('ok one');
 	// deno-lint-ignore no-unused-vars
-	const mockMethodWithTwoParam = (call: any, user: any, read: any, modify: any, http: any, persis: any): Promise<string> => Promise.resolve('ok two');
+	const mockMethodWithTwoParam = (call: any, user: any, read: any, modify: any, http: any, persis: any): Promise<string> =>
+		Promise.resolve('ok two');
 	// deno-lint-ignore no-unused-vars
 	const mockMethodWithThreeParam = (call: any, user: any, options: any, read: any, modify: any, http: any, persis: any): Promise<string> =>
 		Promise.resolve('ok three');
@@ -73,7 +74,9 @@ describe('handlers > videoconference', () => {
 	it('correctly handles execution of a videoconf method with three params', async () => {
 		const _spy = spy(mockProvider, 'three');
 
-		const result = await videoconfHandler(createMockRequest({ method: 'videoconference:test-provider:three', params: ['call', 'user', 'options'] }));
+		const result = await videoconfHandler(
+			createMockRequest({ method: 'videoconference:test-provider:three', params: ['call', 'user', 'options'] }),
+		);
 
 		assertEquals(result, 'ok three');
 		assertEquals(_spy.calls[0].args.length, 7);

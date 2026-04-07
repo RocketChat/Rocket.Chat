@@ -17,6 +17,6 @@ export default function handleOnEnable(request: RequestContext): Promise<boolean
 	return app.onEnable.call(
 		wrapAppForRequest(app, request),
 		AppAccessorsInstance.getEnvironmentRead(),
-		AppAccessorsInstance.getConfigurationModify()
+		AppAccessorsInstance.getConfigurationModify(),
 	);
 }

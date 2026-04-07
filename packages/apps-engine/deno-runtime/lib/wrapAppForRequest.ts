@@ -32,7 +32,7 @@ function findAppProperty(v: NonNullable<unknown>): [string, App] | undefined {
 		return undefined;
 	}
 
-	const entry = Object.entries(v).find(([_,v]) => isApp(v)) as [string, App] | undefined;
+	const entry = Object.entries(v).find(([_, v]) => isApp(v)) as [string, App] | undefined;
 
 	composedCache.set(v, entry);
 
@@ -56,5 +56,5 @@ export function wrapComposedApp<T extends NonNullable<unknown>>(composed: T, req
 
 			return Reflect.get(target, property, receiver);
 		},
-	})
+	});
 }

@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": "./src",
-		"declaration": true,
+		"declaration": true
 	},
 	"include": ["./src/**/*", "../../../apps/meteor/definition/externals/meteor"],
 	"exclude": ["./dist"]

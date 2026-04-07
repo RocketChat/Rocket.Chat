@@ -1,6 +1,6 @@
 ---
-"@rocket.chat/rest-typings": minor
-"@rocket.chat/meteor": patch
+'@rocket.chat/rest-typings': minor
+'@rocket.chat/meteor': patch
 ---
 
 Splits the single AJV validator instance into two: `ajv` (coerceTypes: false) for request **body** validation and `ajvQuery` (coerceTypes: true) for **query parameter** validation.

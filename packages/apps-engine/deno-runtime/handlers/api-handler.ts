@@ -8,7 +8,7 @@ import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
 
 export default async function apiHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
 	const { method: call, params } = request;
-	const [/* always "api" */, ...parts] = call.split(':');
+	const [, /* always "api" */ ...parts] = call.split(':');
 	const httpMethod = parts.pop();
 	const path = parts.join(':');
 

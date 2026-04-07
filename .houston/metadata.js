@@ -1,8 +1,8 @@
 const { execSync } = require('child_process');
 
-const getMongoVersion = async function({ version, git }) {
+const getMongoVersion = async function ({ version, git }) {
 	try {
-		const workflows = await git.show([`${ version }:.github/workflows/ci.yml`]);
+		const workflows = await git.show([`${version}:.github/workflows/ci.yml`]);
 
 		const mongoMatch = workflows.match(/compatibleMongoVersions\\": \[([^\]]+)\]/);
 		if (!mongoMatch) {
@@ -16,16 +16,18 @@ const getMongoVersion = async function({ version, git }) {
 	return [];
 };
 
-const getNodeNpmVersions = async function({ version, git, request }) {
+const getNodeNpmVersions = async function ({ version, git, request }) {
 	try {
-		const meteorRelease = await git.show([`${ version }:apps/meteor/.meteor/release`]);
+		const meteorRelease = await git.show([`${version}:apps/meteor/.meteor/release`]);
 		if (!/^METEOR@(\d+\.){1,2}\d/.test(meteorRelease)) {
 			return {};
 		}
 
 		const meteorVersion = meteorRelease.replace(/\n|\s/g, '');
 
-		const requestResult = await request(`https://raw.githubusercontent.com/meteor/meteor/release/${ meteorVersion }/scripts/build-dev-bundle-common.sh`);
+		const requestResult = await request(
+			`https://raw.githubusercontent.com/meteor/meteor/release/${meteorVersion}/scripts/build-dev-bundle-common.sh`,
+		);
 
 		return {
 			node_version: requestResult.match(/NODE_VERSION=((?:\d+\.){2}\d+)/m)[1],
@@ -38,7 +40,7 @@ const getNodeNpmVersions = async function({ version, git, request }) {
 	return {};
 };
 
-const getAppsEngineVersion = async function({ version, git }) {
+const getAppsEngineVersion = async function ({ version, git }) {
 	try {
 		const result = execSync('yarn why @rocket.chat/apps-engine --json');
 
@@ -55,14 +57,11 @@ const getAppsEngineVersion = async function({ version, git }) {
 	return undefined;
 };
 
-module.exports = async function({ version, git, request }) {
+module.exports = async function ({ version, git, request }) {
 	const mongo_versions = await getMongoVersion({ version, git });
 	const apps_engine_version = await getAppsEngineVersion({ version, git });
 
-	const {
-		node_version,
-		npm_version,
-	} = await getNodeNpmVersions({ version, git, request });
+	const { node_version, npm_version } = await getNodeNpmVersions({ version, git, request });
 
 	return {
 		node_version,
@@ -71,4 +70,3 @@ module.exports = async function({ version, git, request }) {
 		mongo_versions,
 	};
 };
-

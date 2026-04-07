@@ -6,7 +6,8 @@
 $button-border-width: variables.$default-border;
 $button-border-radius: variables.$default-border-radius;
 $button-padding: (0.75 * variables.$default-gap - variables.$default-border) (1.5 * variables.$default-gap - variables.$default-border);
-$button-small-padding: (0.25 * variables.$default-gap - math.div(variables.$default-border, 2)) (1.5 * variables.$default-gap - variables.$default-border);
+$button-small-padding: (0.25 * variables.$default-gap - math.div(variables.$default-border, 2))
+	(1.5 * variables.$default-gap - variables.$default-border);
 
 $button-active-displacement: 2px;
 
@@ -153,7 +154,7 @@ $button-icon-padding: 10px;
 			width: $button-line-height;
 			height: $button-line-height;
 
-			content: "";
+			content: '';
 			animation: button-loading-rotation 1s linear infinite;
 
 			border: $button-loading-border-width solid;
@@ -164,11 +165,7 @@ $button-icon-padding: 10px;
 
 		&.button--danger::after,
 		&.button--secondary::after {
-			border-color:
-				$button-loading-color
-				rgba($button-loading-color, 0.5)
-				rgba($button-loading-color, 0.5)
-				rgba($button-loading-color, 0.5);
+			border-color: $button-loading-color rgba($button-loading-color, 0.5) rgba($button-loading-color, 0.5) rgba($button-loading-color, 0.5);
 		}
 	}
 

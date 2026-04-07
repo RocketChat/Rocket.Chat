@@ -45,7 +45,7 @@
 			&::before {
 				position: absolute;
 
-				content: "";
+				content: '';
 
 				border: $tail-size solid colors.$bg-color-darker;
 				@content;

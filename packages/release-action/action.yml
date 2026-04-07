@@ -3,16 +3,16 @@ description: Action to cut and publish releases using changesets
 
 inputs:
   action:
-    description: "The main action to perform: publish, publish-final, bump or patch"
+    description: 'The main action to perform: publish, publish-final, bump or patch'
     required: true
   base-ref:
-    description: "Base ref to use for the release"
+    description: 'Base ref to use for the release'
     required: false
 
 runs:
-  using: "node20"
-  main: "dist/index.js"
+  using: 'node20'
+  main: 'dist/index.js'
 
 branding:
-  icon: "package"
-  color: "blue"
+  icon: 'package'
+  color: 'blue'

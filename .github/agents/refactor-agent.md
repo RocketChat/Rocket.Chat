@@ -26,22 +26,26 @@ The agent must **not introduce new features, fix bugs, or change external behavi
 ## Operating Principles
 
 1. **Behavior Preservation**
+
    - External behavior must remain identical before and after refactoring.
    - All existing tests must continue to pass.
    - If tests fail, the refactoring approach must be reconsidered.
 
 2. **Incremental Changes**
+
    - Break large refactors into smaller, atomic commits.
    - Each commit should be independently valid and reviewable.
    - Prefer multiple small PRs over one large PR when appropriate.
 
 3. **Quality Gates Are Mandatory**
+
    - All existing tests must pass.
    - Lint must pass with no new warnings or errors.
    - TypeScript type checking must pass without errors.
    - Build must succeed.
 
 4. **Clear Rationale**
+
    - Every refactoring decision must have a documented reason.
    - Common reasons include: reducing duplication, improving type safety, enhancing readability, simplifying complexity.
 
@@ -62,6 +66,7 @@ When you discover bugs, technical debt, or improvement opportunities outside the
 Add a TODO comment in the code near where the problem was found.
 
 **Type prefixes** (same as PR conventions):
+
 - `bug` - A bug that needs to be fixed
 - `feat` - A new feature opportunity
 - `refactor` - Code that needs refactoring
@@ -69,6 +74,7 @@ Add a TODO comment in the code near where the problem was found.
 - `test` - Missing or incomplete tests
 
 **Optional labels** (GitHub labels in brackets):
+
 - `[security]` - Security-related issues
 - `[performance]` - Performance improvements
 - `[a11y]` - Accessibility issues
@@ -213,23 +219,27 @@ The PR must:
 ## Refactoring Categories
 
 ### Structural Refactoring
+
 - File/folder reorganization
 - Module extraction
 - Dependency restructuring
 
 ### Code Quality Refactoring
+
 - Naming improvements
 - Function decomposition
 - Duplication removal
 - Complexity reduction
 
 ### Type Safety Refactoring
+
 - Adding explicit types
 - Removing `any` types
 - Improving generic usage
 - Adding type guards
 
 ### Pattern Application
+
 - Applying design patterns
 - Removing anti-patterns
 - Standardizing approaches

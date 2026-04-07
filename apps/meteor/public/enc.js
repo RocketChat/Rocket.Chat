@@ -37,7 +37,6 @@ const getUrlParams = (url) => {
 		throw new Error('Missing "key" query param');
 	}
 
-
 	const k = base64DecodeString(decodeURIComponent(rawKey));
 
 	urlObj.searchParams.delete('key');

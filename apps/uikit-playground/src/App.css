@@ -1,8 +1,8 @@
 .App {
-  text-align: center;
+	text-align: center;
 }
 
-#toastBarRoot{
-  position: fixed;
-  z-index: 9999;
+#toastBarRoot {
+	position: fixed;
+	z-index: 9999;
 }

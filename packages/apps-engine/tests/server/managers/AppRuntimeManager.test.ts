@@ -119,9 +119,7 @@ describe('AppRuntimeManager', () => {
 	it('Starts multiple runtimes for app successfully with force option', async () => {
 		await assert.doesNotReject(() => runtimeManager.startRuntimeForApp(mockAppPackage, mockStorageItem));
 
-		await assert.doesNotReject(() =>
-			runtimeManager.startRuntimeForApp(mockAppPackage, mockStorageItem, { force: true }),
-		);
+		await assert.doesNotReject(() => runtimeManager.startRuntimeForApp(mockAppPackage, mockStorageItem, { force: true }));
 
 		/* eslint-disable-next-line dot-notation -- We need to access the property like this for the compile not to complain */
 		assert.strictEqual(runtimeManager['subprocesses'][mockAppPackage.info.id], mockSubprocessController);

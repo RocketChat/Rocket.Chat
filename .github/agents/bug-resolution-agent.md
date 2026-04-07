@@ -26,15 +26,18 @@ The agent must **not introduce refactors, performance optimizations, or scope ex
 ## Operating Principles
 
 1. **Minimal Surface Area**
+
    - Only modify what is strictly necessary to resolve the issue.
    - Do not refactor unrelated code.
    - Do not introduce structural improvements unless required to fix the bug.
 
 2. **Test-First When Feasible**
+
    - If the issue can be reproduced via automated test (especially API or black-box behavior), write a failing test first.
    - The test must fail before the fix and pass after the fix.
 
 3. **Quality Gates Are Mandatory**
+
    - All existing tests must pass.
    - Lint must pass with no new warnings or errors.
    - TypeScript type checking must pass without errors.
@@ -55,6 +58,7 @@ When you discover problems outside the current scope during your work, **do not 
 Add a TODO comment in the code near where the problem was found.
 
 **Type prefixes** (same as PR conventions):
+
 - `bug` - A bug that needs to be fixed
 - `feat` - A new feature opportunity
 - `refactor` - Code that needs refactoring
@@ -62,6 +66,7 @@ Add a TODO comment in the code near where the problem was found.
 - `test` - Missing or incomplete tests
 
 **Optional labels** (GitHub labels in brackets):
+
 - `[security]` - Security-related issues
 - `[performance]` - Performance improvements
 - `[a11y]` - Accessibility issues

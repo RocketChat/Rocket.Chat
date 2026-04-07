@@ -27,32 +27,38 @@ The agent must **focus only on the specified feature scope** and avoid scope cre
 ## Operating Principles
 
 1. **Requirements First**
+
    - Fully understand the feature before writing code.
    - Clarify ambiguities before implementation.
    - Define acceptance criteria upfront.
 
 2. **Design Before Code**
+
    - Plan the architecture and approach.
    - Consider edge cases and error handling.
    - Identify integration points with existing code.
 
 3. **Test-Driven Development**
+
    - Write tests that define expected behavior.
    - Tests should cover happy paths and edge cases.
    - Tests serve as living documentation.
 
 4. **Quality Gates Are Mandatory**
+
    - All tests (new and existing) must pass.
    - Lint must pass with no new warnings or errors.
    - TypeScript type checking must pass without errors.
    - Build must succeed.
 
 5. **Incremental Delivery**
+
    - Break features into deliverable increments.
    - Each increment should be functional and valuable.
    - Prefer feature flags for large features.
 
 6. **Consistency**
+
    - Follow existing code patterns and conventions.
    - Maintain consistency with the codebase style.
    - Reuse existing utilities and components.
@@ -74,6 +80,7 @@ When you discover bugs, technical debt, or improvement opportunities outside the
 Add a TODO comment in the code near where the problem was found.
 
 **Type prefixes** (same as PR conventions):
+
 - `bug` - A bug that needs to be fixed
 - `feat` - A new feature opportunity
 - `refactor` - Code that needs refactoring
@@ -81,6 +88,7 @@ Add a TODO comment in the code near where the problem was found.
 - `test` - Missing or incomplete tests
 
 **Optional labels** (GitHub labels in brackets):
+
 - `[security]` - Security-related issues
 - `[performance]` - Performance improvements
 - `[a11y]` - Accessibility issues
@@ -177,6 +185,7 @@ Plan tests at multiple levels:
 - **E2E Tests**: User workflows (if applicable)
 
 Define:
+
 - Happy path scenarios
 - Edge cases
 - Error scenarios
@@ -189,21 +198,25 @@ Define:
 For each implementation increment:
 
 #### 5.1 Write Tests First
+
 - Define expected behavior through tests.
 - Tests should initially fail (TDD red phase).
 
 #### 5.2 Implement the Code
+
 - Write the minimum code to pass tests.
 - Follow existing patterns and conventions.
 - Add proper TypeScript types.
 - Include error handling.
 
 #### 5.3 Refactor if Needed
+
 - Clean up the implementation.
 - Ensure code quality standards are met.
 - Keep tests passing.
 
 #### 5.4 Verify Quality Gates
+
 - Run all tests.
 - Run lint.
 - Run TypeScript compilation.
@@ -251,29 +264,34 @@ The PR must include:
 ## Implementation Guidelines
 
 ### Code Structure
+
 - Place code in appropriate directories following project conventions.
 - Create new files for distinct functionality.
 - Keep files focused and reasonably sized.
 
 ### Type Safety
+
 - Define explicit types for all new code.
 - Avoid `any` types.
 - Use generics where appropriate.
 - Export types that consumers need.
 
 ### Error Handling
+
 - Handle all expected error cases.
 - Provide meaningful error messages.
 - Use appropriate error types/codes.
 - Log errors appropriately.
 
 ### Security
+
 - Validate all inputs.
 - Sanitize outputs where needed.
 - Follow authentication/authorization patterns.
 - Never expose sensitive data.
 
 ### Performance
+
 - Consider performance implications.
 - Avoid unnecessary computations.
 - Use appropriate data structures.
@@ -284,24 +302,28 @@ The PR must include:
 ## Feature Categories
 
 ### API Features
+
 - Define clear endpoint contracts.
 - Follow REST/GraphQL conventions.
 - Include proper validation.
 - Document request/response schemas.
 
 ### UI Features
+
 - Follow design system patterns.
 - Ensure accessibility (a11y).
 - Support internationalization (i18n).
 - Handle loading and error states.
 
 ### Backend Features
+
 - Design for scalability.
 - Consider data migration needs.
 - Handle edge cases gracefully.
 - Add appropriate logging.
 
 ### Integration Features
+
 - Define clear interfaces.
 - Handle external service failures.
 - Add retry logic where appropriate.

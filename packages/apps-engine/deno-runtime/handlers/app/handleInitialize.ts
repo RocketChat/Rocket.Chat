@@ -17,7 +17,7 @@ export default async function handleInitialize(request: RequestContext): Promise
 	await app.initialize.call(
 		wrapAppForRequest(app, request),
 		AppAccessorsInstance.getConfigurationExtend(),
-		AppAccessorsInstance.getEnvironmentRead()
+		AppAccessorsInstance.getEnvironmentRead(),
 	);
 
 	return true;

@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"declaration": true,
 		"outDir": "./dist",
-		"rootDir": "./src",
+		"rootDir": "./src"
 	},
 	"files": ["./src/Presence.ts"]
 }

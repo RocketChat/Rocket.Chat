@@ -28,13 +28,10 @@ describe('ServerSettingRead', () => {
 		assert.deepStrictEqual(await ssr.getValueById('testing'), setting.packageValue);
 		setting.value = 'theValue';
 		assert.strictEqual(await ssr.getValueById('testing'), 'theValue');
-		await assert.rejects(
-			async () => ssr.getValueById('fake'),
-			{
-				name: 'Error',
-				message: 'No Server Setting found, or it is unaccessible, by the id of "fake".',
-			},
-		);
+		await assert.rejects(async () => ssr.getValueById('fake'), {
+			name: 'Error',
+			message: 'No Server Setting found, or it is unaccessible, by the id of "fake".',
+		});
 		assert.throws(() => ssr.getAll(), {
 			name: 'Error',
 			message: 'Method not implemented.',

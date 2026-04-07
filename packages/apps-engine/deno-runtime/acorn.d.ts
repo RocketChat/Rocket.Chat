@@ -263,7 +263,23 @@ export interface AssignmentExpression extends Node {
 	right: Expression;
 }
 
-export type AssignmentOperator = '=' | '+=' | '-=' | '*=' | '/=' | '%=' | '<<=' | '>>=' | '>>>=' | '|=' | '^=' | '&=' | '**=' | '||=' | '&&=' | '??=';
+export type AssignmentOperator =
+	| '='
+	| '+='
+	| '-='
+	| '*='
+	| '/='
+	| '%='
+	| '<<='
+	| '>>='
+	| '>>>='
+	| '|='
+	| '^='
+	| '&='
+	| '**='
+	| '||='
+	| '&&='
+	| '??=';
 
 export interface LogicalExpression extends Node {
 	type: 'LogicalExpression';
@@ -537,10 +553,7 @@ export type Statement =
 	| ForOfStatement
 	| Declaration;
 
-export type Declaration =
-	| FunctionDeclaration
-	| VariableDeclaration
-	| ClassDeclaration;
+export type Declaration = FunctionDeclaration | VariableDeclaration | ClassDeclaration;
 
 export type Expression =
 	| Identifier
@@ -570,19 +583,9 @@ export type Expression =
 	| ImportExpression
 	| ParenthesizedExpression;
 
-export type Pattern =
-	| Identifier
-	| MemberExpression
-	| ObjectPattern
-	| ArrayPattern
-	| RestElement
-	| AssignmentPattern;
+export type Pattern = Identifier | MemberExpression | ObjectPattern | ArrayPattern | RestElement | AssignmentPattern;
 
-export type ModuleDeclaration =
-	| ImportDeclaration
-	| ExportNamedDeclaration
-	| ExportDefaultDeclaration
-	| ExportAllDeclaration;
+export type ModuleDeclaration = ImportDeclaration | ExportNamedDeclaration | ExportDefaultDeclaration | ExportAllDeclaration;
 
 export type AnyNode =
 	| Statement
@@ -621,12 +624,38 @@ export function parse(input: string, options: Options): Program;
 
 export function parseExpressionAt(input: string, pos: number, options: Options): Expression;
 
-export function tokenizer(input: string, options: Options): {
+export function tokenizer(
+	input: string,
+	options: Options,
+): {
 	getToken(): Token;
 	[Symbol.iterator](): Iterator<Token>;
 };
 
-export type ecmaVersion = 3 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 2015 | 2016 | 2017 | 2018 | 2019 | 2020 | 2021 | 2022 | 2023 | 2024 | 'latest';
+export type ecmaVersion =
+	| 3
+	| 5
+	| 6
+	| 7
+	| 8
+	| 9
+	| 10
+	| 11
+	| 12
+	| 13
+	| 14
+	| 15
+	| 2015
+	| 2016
+	| 2017
+	| 2018
+	| 2019
+	| 2020
+	| 2021
+	| 2022
+	| 2023
+	| 2024
+	| 'latest';
 
 export interface Options {
 	/**
@@ -739,16 +768,7 @@ export interface Options {
 	 * Note that you are not allowed to call the
 	 * parser from the callback—that will corrupt its internal state.
 	 */
-	onComment?:
-		| ((
-			isBlock: boolean,
-			text: string,
-			start: number,
-			end: number,
-			startLoc?: Position,
-			endLoc?: Position,
-		) => void)
-		| Comment[];
+	onComment?: ((isBlock: boolean, text: string, start: number, end: number, startLoc?: Position, endLoc?: Position) => void) | Comment[];
 
 	/**
 	 * Nodes have their start and end characters offsets recorded in
@@ -796,7 +816,10 @@ export class Parser {
 
 	static parse(input: string, options: Options): Program;
 	static parseExpressionAt(input: string, pos: number, options: Options): Expression;
-	static tokenizer(input: string, options: Options): {
+	static tokenizer(
+		input: string,
+		options: Options,
+	): {
 		getToken(): Token;
 		[Symbol.iterator](): Iterator<Token>;
 	};

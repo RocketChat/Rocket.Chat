@@ -4,7 +4,7 @@
 		"module": "esnext",
 		"rootDir": ".",
 		"outDir": "./dist",
-		"declaration": true,
+		"declaration": true
 	},
-	"include": ["./src/**/*", "./tests/**/*"],
+	"include": ["./src/**/*", "./tests/**/*"]
 }

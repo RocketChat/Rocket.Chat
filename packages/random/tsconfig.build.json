@@ -6,7 +6,7 @@
 		"module": "CommonJS",
 		"declaration": true,
 		"declarationMap": true,
-		"sourceMap": true,
+		"sourceMap": true
 	},
 	"exclude": ["**/*.spec.ts"]
 }

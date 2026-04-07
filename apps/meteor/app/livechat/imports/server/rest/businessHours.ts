@@ -47,7 +47,7 @@ const livechatBusinessHoursEndpoints = API.v1
 			const result = await businessHourManager.saveBusinessHour(params as unknown as ILivechatBusinessHour);
 
 			return API.v1.success(result);
-		}
+		},
 	)
 	.post(
 		'livechat/business-hours.remove',
@@ -66,7 +66,7 @@ const livechatBusinessHoursEndpoints = API.v1
 			await businessHourManager.removeBusinessHourByIdAndType(_id, type);
 
 			return API.v1.success();
-		}
+		},
 	);
 
 type LivechatBusinessHoursEndpoints = ExtractRoutesFromAPI<typeof livechatBusinessHoursEndpoints>;

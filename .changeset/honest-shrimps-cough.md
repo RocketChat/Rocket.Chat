@@ -1,5 +1,5 @@
 ---
-"@rocket.chat/meteor": patch
+'@rocket.chat/meteor': patch
 ---
 
 Fixes inconsistent username formatting causing '@@username' for federated users

@@ -1,5 +1,5 @@
 bot:
-  name: "@rocket-cat"
+  name: '@rocket-cat'
 whitelist:
   users:
     - wreiske
@@ -8,12 +8,12 @@ whitelist:
     - JSzaszvari
     - reetp
   labels:
-    - "Contributions: welcome"
-    - "Contributions: only core team"
-    - "Feature: Request"
-    - "Feature: Planned"
-    - "type: bug"
-    - "help wanted"    
+    - 'Contributions: welcome'
+    - 'Contributions: only core team'
+    - 'Feature: Request'
+    - 'Feature: Planned'
+    - 'type: bug'
+    - 'help wanted'
     - duplicate
     - enhancement
     - invalid

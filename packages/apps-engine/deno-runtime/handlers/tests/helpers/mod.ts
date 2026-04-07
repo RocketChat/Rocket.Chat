@@ -14,7 +14,7 @@ export function createMockRequest({ method, params }: RequestDescriptor): Reques
 			logger: new Logger(method),
 		},
 		serialize: () => '',
-	}
+	};
 }
 
 export function createMockApp(): App {

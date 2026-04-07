@@ -83,7 +83,9 @@ describe('handlers > upload', () => {
 	});
 
 	it('fails when "file" is not a proper IUploadDetails object', async () => {
-		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file: { nope: "bad" }, path }] }));
+		const result = await handleUploadEvents(
+			createMockRequest({ method: 'app:executePreFileUpload', params: [{ file: { nope: 'bad' }, path }] }),
+		);
 
 		assertInstanceOf(result, JsonRpcError);
 		assertStringIncludes(result.data.err, 'Expected IUploadDetails');
@@ -102,6 +104,6 @@ describe('handlers > upload', () => {
 		const result = await handleUploadEvents(createMockRequest({ method: 'app:executePreFileUpload', params: [{ file, path }] }));
 
 		assertInstanceOf(result, JsonRpcError);
-		assertEquals(result.data.code, "ENOENT");
+		assertEquals(result.data.code, 'ENOENT');
 	});
 });

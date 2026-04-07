@@ -9,4 +9,5 @@ yarn run test:e2e:federation
 ```
 
 ## Important
+
 Make sure to increase the rate limiter for the user register api under Admin => Rate Limiter => Feature limiting. This is necessary since we are registering new users programatically.

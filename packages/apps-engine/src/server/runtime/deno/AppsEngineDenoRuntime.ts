@@ -139,11 +139,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		 * The temp directory is the same we are given by the host to store temporary upload files
 		 */
 		try {
-			fs.symlinkSync(
-				path.dirname(this.denoConfigPath),
-				path.dirname(this.denoRuntimePath),
-				'dir'
-			);
+			fs.symlinkSync(path.dirname(this.denoConfigPath), path.dirname(this.denoRuntimePath), 'dir');
 		} catch (reason: unknown) {
 			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
 				throw reason;

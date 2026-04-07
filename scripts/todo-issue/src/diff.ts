@@ -20,7 +20,10 @@ function extractMentions(text: string): { cleaned: string; mentions: string[] } 
 	}
 	MENTION_REGEX.lastIndex = 0;
 
-	const cleaned = text.replace(MENTION_REGEX, '').replace(/\s{2,}/g, ' ').trim();
+	const cleaned = text
+		.replace(MENTION_REGEX, '')
+		.replace(/\s{2,}/g, ' ')
+		.trim();
 	return { cleaned, mentions };
 }
 

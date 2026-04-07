@@ -79,7 +79,7 @@ $form-field-error-border-color: colors.$color-red;
 
 	&--required {
 		.form-field__label::after {
-			content: " *";
+			content: ' *';
 		}
 	}
 }

@@ -7,8 +7,8 @@
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
-		"plugins": [{ "transform": "typia/lib/transform" }],
+		"plugins": [{ "transform": "typia/lib/transform" }]
 	},
 	"include": ["./src/**/*.ts"],
-	"exclude": [],
+	"exclude": []
 }

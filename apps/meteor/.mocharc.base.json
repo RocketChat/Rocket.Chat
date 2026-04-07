@@ -2,13 +2,6 @@
 	"ui": "bdd",
 	"reporter": "spec",
 	"extension": ["js", "ts", "tsx"],
-	"require": [
-		"tsx",
-		"./tests/setup/chaiPlugins.ts"
-	],
-	"watch-files": [
-		"./**/*.js",
-		"./**/*.ts",
-		"./**/*.tsx"
-	]
+	"require": ["tsx", "./tests/setup/chaiPlugins.ts"],
+	"watch-files": ["./**/*.js", "./**/*.ts", "./**/*.tsx"]
 }

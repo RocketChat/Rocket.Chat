@@ -137,7 +137,10 @@ export async function sendMethodNotFound(id: jsonrpc.ID): Promise<void> {
 	await Queue.enqueue(rpc);
 }
 
-export async function errorResponse({ error: { message, code = -32000, data = {} }, id }: ErrorResponseDescriptor, req?: RequestContext): Promise<void> {
+export async function errorResponse(
+	{ error: { message, code = -32000, data = {} }, id }: ErrorResponseDescriptor,
+	req?: RequestContext,
+): Promise<void> {
 	const { logger } = req?.context || {};
 
 	if (logger?.hasEntries()) {
