@@ -23,7 +23,7 @@ import type {
 const pdpLogger = logger.section('VirtruPDP');
 
 const HEALTH_CHECK_TIMEOUT = 10000;
-const HEALTH_CACHE_TTL_MS = 5 * 60 * 1000;
+const HEALTH_CACHE_TTL_MS = Number(process.env.ABAC_HEALTH_CACHE_TTL_MS) || 5 * 60 * 1000;
 
 export class VirtruPDP implements IPolicyDecisionPoint {
 	private tokenCache: ITokenCache | null = null;
