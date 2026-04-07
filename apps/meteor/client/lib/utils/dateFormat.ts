@@ -1,4 +1,4 @@
-import { format, formatDistanceToNow, formatDuration, intervalToDuration } from 'date-fns';
+import { format, formatDistanceToNow, formatDuration, intervalToDuration, differenceInCalendarDays } from 'date-fns';
 import type { Locale } from 'date-fns';
 
 export type DateInput = string | Date | number;
@@ -66,8 +66,7 @@ export const formatTimeAgo = (
 ): string => {
 	const d = typeof date === 'object' && date instanceof Date ? date : new Date(date);
 	const now = new Date();
-	const diffMs = now.getTime() - d.getTime();
-	const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+	const diffDays = differenceInCalendarDays(now, d);
 
 	if (diffDays === 0) {
 		return format(d, momentFormatToDateFns(options.sameDayFormat), locale ? { locale } : undefined);

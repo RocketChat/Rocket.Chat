@@ -14,7 +14,7 @@ export const timeAgo = (date: string | Date | number) => {
 	const sameDay = (typeof clockMode === 'number' ? dayFormat[clockMode - 1] : undefined) || messageTimeFormat;
 
 	return formatTimeAgo(date, {
-		yesterdayLabel: `[${t('yesterday')}]`,
+		yesterdayLabel: t('yesterday'),
 		sameDayFormat: sameDay,
 		lastWeekFormat: 'dddd',
 		otherFormat: 'MMM d',

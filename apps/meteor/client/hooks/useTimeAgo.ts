@@ -15,7 +15,7 @@ export const useTimeAgo = () => {
 		(time: string | Date | number) => {
 			return formatTimeAgo(time, {
 				sameDayFormat: format,
-				yesterdayLabel: `${t('Yesterday')} at `,
+				yesterdayLabel: t('Yesterday_at'),
 				lastDayFormat: format,
 				lastWeekFormat: `dddd ${format}`,
 				otherFormat: 'LL',
@@ -35,7 +35,7 @@ export const useShortTimeAgo = () => {
 		(time: string | Date | number) =>
 			formatTimeAgo(time, {
 				sameDayFormat: format,
-				yesterdayLabel: `[${t('Yesterday')}]`,
+				yesterdayLabel: t('Yesterday'),
 				lastWeekFormat: 'dddd',
 				otherFormat: 'MMM Do',
 				otherYearFormat: 'LL',
