@@ -1,4 +1,5 @@
 import { transformSync } from '@babel/core';
+import presetEnv from '@babel/preset-env';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
@@ -180,7 +181,7 @@ export const validateOutgoingIntegration = async function (
 	) {
 		try {
 			const result = transformSync(integration.script, {
-				presets: ['@babel/preset-env'],
+				presets: [presetEnv],
 				compact: true,
 				minified: true,
 				comments: false,

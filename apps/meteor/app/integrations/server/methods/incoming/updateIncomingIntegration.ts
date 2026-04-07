@@ -1,4 +1,5 @@
 import { transformSync } from '@babel/core';
+import presetEnv from '@babel/preset-env';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
@@ -90,7 +91,7 @@ export const updateIncomingIntegration = async (
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 			try {
 				const result = transformSync(integration.script, {
-					presets: ['@babel/preset-env'],
+					presets: [presetEnv],
 					compact: true,
 					minified: true,
 					comments: false,
