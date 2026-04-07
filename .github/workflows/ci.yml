@@ -96,14 +96,7 @@ jobs:
       - id: ci-cache-keys
         run: |
           set -euo pipefail
-          PACKAGES_HASH=$(
-            (
-              cat yarn.lock .yarnrc.yml package.json turbo.json
-              find packages -name package.json ! -path '*/node_modules/*' | LC_ALL=C sort | while IFS= read -r f; do
-                [ -f "$f" ] && cat "$f"
-              done
-            ) | sha256sum | awk '{print $1}'
-          )
+          PACKAGES_HASH=$(cat yarn.lock .yarnrc.yml package.json turbo.json | sha256sum | awk '{print $1}')
           echo "packages-build-cache-key=${PACKAGES_HASH}" >> "$GITHUB_OUTPUT"
           METEOR_HASH=$(git archive HEAD apps/meteor 2>/dev/null | sha256sum | awk '{print $1}')
           echo "meteor-rc-cache-key=${METEOR_HASH}" >> "$GITHUB_OUTPUT"
