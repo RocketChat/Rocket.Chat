@@ -81,10 +81,12 @@
     "coverage",
     "storybook-static",
     ".turbo",
+    ".claude",
     "apps/meteor/.meteor",
     "apps/meteor/**/public",
     "apps/meteor/**/private",
     "apps/meteor/**/packages",
+    "apps/meteor/definition/externals",
     "packages/apps-engine"
   ]
 }

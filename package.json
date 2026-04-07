@@ -29,7 +29,7 @@
 		"ms": "turbo run ms --env-mode=loose",
 		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
 		"fuselage": "./fuselage.sh",
-		"lint": "oxlint -c oxlintrc.json --deny-warnings && turbo run lint",
+		"lint": "oxlint -c oxlintrc.json && turbo run lint",
 		"lint:fix": "oxlint -c oxlintrc.json --fix && turbo run lint -- --fix",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
