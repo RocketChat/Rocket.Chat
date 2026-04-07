@@ -69,6 +69,8 @@
 		"@aws-sdk/client-s3": "^3.862.0",
 		"@aws-sdk/lib-storage": "^3.862.0",
 		"@aws-sdk/s3-request-presigner": "^3.862.0",
+		"@babel/core": "~7.28.6",
+		"@babel/preset-env": "~7.28.6",
 		"@babel/runtime": "~7.28.6",
 		"@bugsnag/js": "~7.20.2",
 		"@bugsnag/plugin-react": "~7.19.0",
@@ -311,8 +313,6 @@
 	},
 	"devDependencies": {
 		"@axe-core/playwright": "^4.10.2",
-		"@babel/core": "~7.28.6",
-		"@babel/preset-env": "~7.28.6",
 		"@babel/preset-react": "~7.27.1",
 		"@babel/register": "~7.28.6",
 		"@faker-js/faker": "~8.0.2",
