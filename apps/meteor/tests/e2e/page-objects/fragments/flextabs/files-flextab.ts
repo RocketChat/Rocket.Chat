@@ -1,8 +1,8 @@
 import type { Page } from '@playwright/test';
 
 import { FlexTab } from './flextab';
-import { MenuMore } from './menu';
-import { ConfirmDeleteModal } from './modals';
+import { MenuMore } from '../menu';
+import { ConfirmDeleteModal } from '../modals';
 
 export class FilesFlexTab extends FlexTab {
 	readonly menu: MenuMore;

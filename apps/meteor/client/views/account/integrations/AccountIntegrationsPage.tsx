@@ -1,9 +1,9 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { SelectLegacy, Box, Button, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Box, Button } from '@rocket.chat/fuselage';
+import { Select, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useId, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -37,11 +37,9 @@ const AccountIntegrationsPage = () => {
 		},
 	});
 
-	const handleSubmitForm = useEffectEvent(({ accountSelected }: { accountSelected: string }) => {
+	const handleSubmitForm = ({ accountSelected }: { accountSelected: string }) => {
 		removeMutation.mutate({ accountSelected });
-	});
-
-	const accountSelectedId = useId();
+	};
 
 	return (
 		<Page>
@@ -55,17 +53,13 @@ const AccountIntegrationsPage = () => {
 								control={control}
 								name='accountSelected'
 								rules={{ required: t('Required_field', { field: t('WebDAV_Accounts') }) }}
-								render={({ field }) => <SelectLegacy {...field} options={options} placeholder={t('Select_an_option')} />}
+								render={({ field }) => <Select {...field} options={options} placeholder={t('Select_an_option')} />}
 							/>
 							<Button type='submit' danger>
 								{t('Remove')}
 							</Button>
 						</FieldRow>
-						{errors?.accountSelected && (
-							<FieldError aria-live='assertive' id={`${accountSelectedId}-error`}>
-								{errors.accountSelected.message}
-							</FieldError>
-						)}
+						{errors?.accountSelected && <FieldError>{errors.accountSelected.message}</FieldError>}
 					</Field>
 				</Box>
 			</PageScrollableContentWithShadow>
