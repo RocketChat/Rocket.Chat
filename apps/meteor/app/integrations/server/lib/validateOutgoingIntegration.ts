@@ -1,4 +1,5 @@
 import { transformSync } from '@babel/core';
+// @ts-expect-error: @babel/preset-env has no type declarations
 import presetEnv from '@babel/preset-env';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
