@@ -30,7 +30,7 @@ runs:
 
   steps:
     - name: Cache build
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       id: cache-build
       with:
         path: /tmp/Rocket.Chat.tar.gz
@@ -69,7 +69,7 @@ runs:
     #     df -h
 
     - name: Cache vite
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./node_modules/.vite
@@ -78,7 +78,7 @@ runs:
           vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
     - name: Cache meteor local
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./apps/meteor/.meteor/local
@@ -87,7 +87,7 @@ runs:
           meteor-local-cache-${{ runner.arch }}-${{ runner.os }}-${{ inputs.type }}-
 
     - name: Cache meteor
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ~/.meteor
