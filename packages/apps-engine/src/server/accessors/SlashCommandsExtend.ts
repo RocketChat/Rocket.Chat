@@ -8,7 +8,7 @@ export class SlashCommandsExtend implements ISlashCommandsExtend {
 		private readonly appId: string,
 	) {}
 
-	public provideSlashCommand(slashCommand: ISlashCommand): Promise<void> {
-		return Promise.resolve(this.manager.addCommand(this.appId, slashCommand));
+	public async provideSlashCommand(slashCommand: ISlashCommand): Promise<void> {
+		await this.manager.addCommand(this.appId, slashCommand);
 	}
 }

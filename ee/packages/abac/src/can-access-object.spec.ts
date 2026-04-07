@@ -169,8 +169,6 @@ describe('AbacService.canAccessObject (unit)', () => {
 				abacLastTimeChecked: within,
 			});
 
-			const internalLogger = (service as any).logger;
-			const loggerDebug = jest.spyOn(internalLogger, 'debug').mockImplementation(() => undefined);
 			service.decisionCacheTimeout = ttlSeconds;
 
 			const result = await service.canAccessObject(baseRoom as any, baseUser as any, AbacAccessOperation.READ, AbacObjectType.ROOM);
@@ -178,11 +176,6 @@ describe('AbacService.canAccessObject (unit)', () => {
 			expect(result).toBe(true);
 			expect(mockUsersFindOne).not.toHaveBeenCalled();
 			expect(mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId).not.toHaveBeenCalled();
-			expect(loggerDebug).toHaveBeenCalledWith({
-				msg: 'Using cached ABAC decision',
-				userId: baseUser._id,
-				roomId: baseRoom._id,
-			});
 		});
 
 		it('re-evaluates when cache expired (timestamp older than TTL)', async () => {

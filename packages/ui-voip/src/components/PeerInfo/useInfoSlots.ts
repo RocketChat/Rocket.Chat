@@ -23,7 +23,7 @@ const getMutedSlot = (muted: boolean, t: ReturnType<typeof useTranslation>['t'])
 const getHeldSlot = (held: boolean, t: ReturnType<typeof useTranslation>['t']) => {
 	if (held) {
 		return {
-			text: t('On hold'),
+			text: t('On_Hold'),
 			type: 'info',
 		} as const;
 	}

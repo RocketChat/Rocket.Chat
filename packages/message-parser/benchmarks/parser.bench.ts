@@ -189,7 +189,7 @@ async function run() {
 	console.log();
 
 	// Benchmarks must run sequentially to avoid interference
-	// eslint-disable-next-line no-restricted-syntax
+
 	for (const category of categories) {
 		const bench = new Bench({
 			time: category.time ?? 1000,
@@ -200,7 +200,6 @@ async function run() {
 			bench.add(fixture.name, () => parse(fixture.input, fixture.options));
 		}
 
-		// eslint-disable-next-line no-await-in-loop
 		await bench.run();
 
 		console.log(`── ${category.name} ${'─'.repeat(Math.max(0, 56 - category.name.length))}`);

@@ -1,4 +1,4 @@
-import { type IThreadMessage } from '@rocket.chat/core-typings';
+import type { IThreadMessage } from '@rocket.chat/core-typings';
 import {
 	Skeleton,
 	ThreadMessage,
@@ -77,7 +77,6 @@ const ThreadMessagePreview = ({ message, showUserAvatar, sequential, ...props }:
 			onClick={handleThreadClick}
 			onKeyDown={(e) => e.code === 'Enter' && handleThreadClick()}
 			isSelected={isSelected}
-			data-qa-selected={isSelected}
 			{...props}
 		>
 			{!sequential && (
