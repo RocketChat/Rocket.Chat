@@ -24,6 +24,8 @@
 		"eslint-plugin-anti-trojan-source": "~1.1.2",
 		"eslint-plugin-import": "~2.32.0",
 		"eslint-plugin-oxlint": "^1.58.0",
+		"eslint-plugin-react": "~7.37.5",
+		"eslint-plugin-react-hooks": "~7.0.1",
 		"eslint-plugin-storybook": "~10.2.12",
 		"eslint-plugin-testing-library": "~7.16.0",
 		"globals": "~17.3.0",
