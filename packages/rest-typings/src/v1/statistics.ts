@@ -1,6 +1,6 @@
 import type { IStats } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type SlashCommand = { command: string };
@@ -66,7 +66,7 @@ const StatisticsListSchema = {
 	additionalProperties: false,
 };
 
-export const isStatisticsListProps = ajv.compile<StatisticsListProps>(StatisticsListSchema);
+export const isStatisticsListProps = ajvQuery.compile<StatisticsListProps>(StatisticsListSchema);
 
 const TelemetryPayloadSchema = {
 	type: 'object',
