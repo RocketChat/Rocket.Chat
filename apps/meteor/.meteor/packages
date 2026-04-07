@@ -60,4 +60,4 @@ autoupdate@2.0.1
 # photoswipe
 
 zodern:types
-zodern:standard-minifier-js
+standard-minifier-js
