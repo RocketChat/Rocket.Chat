@@ -62,8 +62,7 @@
 		"version": "node .scripts/version.js"
 	},
 	"browserslist": [
-		"last 2 versions",
-		"Firefox ESR"
+		"defaults"
 	],
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.862.0",
@@ -298,7 +297,7 @@
 		"tweetnacl": "^1.0.3",
 		"twilio": "^5.4.2",
 		"twit": "^2.2.11",
-		"typia": "~9.7.2",
+		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch",
 		"ua-parser-js": "~1.0.41",
 		"underscore": "^1.13.7",
 		"universal-perf-hooks": "^1.0.1",
@@ -465,15 +464,6 @@
 			"server": "server/main.ts"
 		},
 		"modern": true
-	},
-	"browserslist": [
-		"defaults"
-	],
-	"volta": {
-		"extends": "../../package.json"
-	},
-	"installConfig": {
-		"hoistingLimits": "workspaces"
 	},
 	"rocketchat": {
 		"minimumClientVersions": {
