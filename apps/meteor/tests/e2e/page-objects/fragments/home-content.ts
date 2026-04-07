@@ -317,14 +317,6 @@ export class HomeContent {
 		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
 	}
 
-	get userCard(): Locator {
-		return this.page.getByRole('dialog', { name: 'User card', exact: true });
-	}
-
-	get linkUserCard(): Locator {
-		return this.userCard.locator('a');
-	}
-
 	get btnContactInformation(): Locator {
 		return this.page.getByRole('button', { name: 'User Info' });
 	}
@@ -361,7 +353,7 @@ export class HomeContent {
 		return this.imageGallery.locator(`button[name="${name}"]`);
 	}
 
-	async dragAndDropTxtFile(): Promise<void> {
+	async dragAndDropTxtFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {
 		const contract = await fs.readFile(getFilePath('any_file.txt'), 'utf-8');
 		const dataTransfer = await this.page.evaluateHandle((contract) => {
 			const data = new DataTransfer();
@@ -372,9 +364,12 @@ export class HomeContent {
 			return data;
 		}, contract);
 
+		const responsePromise = waitForResponse ? createMediaResponsePromise(this.page) : null;
 		await this.composer.inputMessage.dispatchEvent('dragenter', { dataTransfer });
-
 		await this.page.locator('[role=dialog][data-qa="DropTargetOverlay"]').dispatchEvent('drop', { dataTransfer });
+		if (responsePromise) {
+			await responsePromise;
+		}
 	}
 
 	async dragAndDropLstFile({ waitForResponse = true }: { waitForResponse?: boolean } = {}): Promise<void> {

@@ -14,18 +14,20 @@ import {
 } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, MouseEvent, RefObject } from 'react';
-import { useCallback } from 'react';
+import { useCallback, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import DiscussionsListRow from './DiscussionsListRow';
+import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 type DiscussionsListProps = {
-	total: number;
+	itemCount: number;
 	discussions: Array<IDiscussionMessage>;
 	loadMoreItems: (start: number, end: number) => void;
-	loading: boolean;
+	isPending: boolean;
+	isSuccess: boolean;
 	onClose: () => void;
 	error: unknown;
 	text: string;
@@ -33,16 +35,19 @@ type DiscussionsListProps = {
 };
 
 function DiscussionsList({
-	total = 10,
+	itemCount,
 	discussions = [],
 	loadMoreItems,
-	loading,
+	isPending,
+	isSuccess,
 	onClose,
 	error,
 	text,
 	onChangeFilter,
 }: DiscussionsListProps) {
 	const { t } = useTranslation();
+	const discussionListId = useId();
+
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
 
@@ -70,6 +75,8 @@ function DiscussionsList({
 			<ContextualbarSection>
 				<TextInput
 					placeholder={t('Search_Messages')}
+					aria-label={t('Search_Messages')}
+					aria-controls={isSuccess ? discussionListId : undefined}
 					value={text}
 					onChange={onChangeFilter}
 					ref={inputRef as RefObject<HTMLInputElement>}
@@ -77,37 +84,37 @@ function DiscussionsList({
 				/>
 			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0} ref={ref}>
-				{loading && (
+				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
+				{isPending && (
 					<Box pi={24} pb={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
-
 				{error instanceof Error && (
 					<Callout mi={24} type='danger'>
 						{error.toString()}
 					</Callout>
 				)}
-
-				{!loading && total === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
-
-				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
-					{!error && total > 0 && discussions.length > 0 && (
-						<VirtualizedScrollbars>
-							<Virtuoso
-								style={{
-									height: blockSize,
-									width: inlineSize,
-								}}
-								totalCount={total}
-								endReached={loading ? () => undefined : (start) => loadMoreItems(start, Math.min(50, total - start))}
-								overscan={25}
-								data={discussions}
-								itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
-							/>
-						</VirtualizedScrollbars>
-					)}
-				</Box>
+				{isSuccess && (
+					<Box id={discussionListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
+						{discussions.length > 0 && (
+							<VirtualizedScrollbars>
+								<Virtuoso
+									style={{
+										height: blockSize,
+										width: inlineSize,
+									}}
+									totalCount={itemCount}
+									endReached={isPending ? () => undefined : (start) => loadMoreItems(start, Math.min(50, itemCount - start))}
+									overscan={25}
+									data={discussions}
+									itemContent={(_, data) => <DiscussionsListRow discussion={data} showRealNames={showRealNames} onClick={onClick} />}
+								/>
+							</VirtualizedScrollbars>
+						)}
+					</Box>
+				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>
 	);

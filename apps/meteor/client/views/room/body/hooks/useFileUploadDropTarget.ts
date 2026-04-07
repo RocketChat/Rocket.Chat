@@ -5,15 +5,12 @@ import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
 import { useDropTarget } from './useDropTarget';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
-import type { UploadsAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { useIsRoomOverMacLimit } from '../../../omnichannel/hooks/useIsRoomOverMacLimit';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 
-export const useFileUploadDropTarget = (
-	uploadsStore: UploadsAPI,
-): readonly [
+export const useFileUploadDropTarget = (): readonly [
 	fileUploadTriggerProps: {
 		onDragEnter: (event: DragEvent<Element>) => void;
 	},
@@ -66,7 +63,7 @@ export const useFileUploadDropTarget = (
 			return file;
 		});
 
-		chat?.flows.uploadFiles({ files: uploads, uploadsStore });
+		chat?.flows.uploadFiles({ files: uploads });
 	});
 
 	const allOverlayProps = useMemo(() => {
