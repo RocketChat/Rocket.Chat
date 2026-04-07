@@ -23,7 +23,7 @@ export class UserInfoFlexTab extends FlexTab {
 		return this.menu.root.getByRole('menuitem', { name: 'Delete' });
 	}
 
-	get userName(): Locator {
+	get username(): Locator {
 		return this.root.getByLabel('Username');
 	}
 

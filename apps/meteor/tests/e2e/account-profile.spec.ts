@@ -39,7 +39,7 @@ test.describe.serial('settings-account-profile', () => {
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
 			await poHomeChannel.userCard.openUserInfo();
 
-			await expect(poHomeChannel.tabs.userInfo.userName).toHaveText(newUsername);
+			await expect(poHomeChannel.tabs.userInfo.username).toHaveText(newUsername);
 		});
 
 		test.describe('Avatar', () => {
