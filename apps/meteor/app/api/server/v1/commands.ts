@@ -2,7 +2,17 @@ import { Apps } from '@rocket.chat/apps';
 import type { SlashCommand } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	ajvQuery,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	isCommandsListProps,
+	isCommandsRunProps,
+	isCommandsPreviewGETProps,
+	isCommandsPreviewPOSTProps,
+} from '@rocket.chat/rest-typings';
+import type { CommandsEndpoints as ClientCommandsEndpoints } from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
 import { canAccessRoomIdAsync } from '../../../authorization/server/functions/canAccessRoom';
@@ -190,11 +200,65 @@ const processQueryOptionsOnResult = <T extends { _id?: string } & Record<string,
 	return result;
 };
 
-API.v1.addRoute(
-	'commands.list',
-	{ authRequired: true },
-	{
-		async get() {
+	.get(
+		'commands.list',
+		{
+			authRequired: true,
+			query: isCommandsListProps,
+			response: {
+				200: ajv.compile<ClientCommandsEndpoints['/v1/commands.list']['GET']>({
+					type: 'object',
+					properties: {
+						commands: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									clientOnly: { type: 'boolean' },
+									command: { type: 'string' },
+									description: { type: 'string' },
+									params: { type: 'string' },
+									providesPreview: { type: 'boolean' },
+									appId: { type: 'string' },
+								},
+								required: ['command', 'providesPreview'],
+								additionalProperties: true,
+							},
+						},
+						appsLoaded: { type: 'boolean' },
+						offset: { type: 'number' },
+						count: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['commands', 'appsLoaded', 'offset', 'count', 'total', 'success'],
+					additionalProperties: true,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				202: ajv.compile<{
+					commands: [];
+					appsLoaded: boolean;
+					offset: number;
+					count: number;
+					total: number;
+					success: boolean;
+				}>({
+					type: 'object',
+					properties: {
+						commands: { type: 'array', maxItems: 0 },
+						appsLoaded: { type: 'boolean', enum: [false] },
+						offset: { type: 'number' },
+						count: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['commands', 'appsLoaded', 'offset', 'count', 'total'],
+					additionalProperties: true,
+				}),
+			},
+		},
+		async function action() {
 			if (!Apps.self?.isLoaded()) {
 				return {
 					statusCode: 202, // Accepted - apps are not ready, so the list is incomplete. Retry later
@@ -204,6 +268,7 @@ API.v1.addRoute(
 						offset: 0,
 						count: 0,
 						total: 0,
+						success: true,
 					},
 				};
 			}
@@ -232,32 +297,30 @@ API.v1.addRoute(
 				total: totalCount,
 			});
 		},
-	},
-);
+	)
 
-// Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
-API.v1.addRoute(
-	'commands.run',
-	{ authRequired: true },
-	{
-		async post() {
+	// Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
+	.post(
+		'commands.run',
+		{
+			authRequired: true,
+			body: isCommandsRunProps,
+			response: {
+				200: ajv.compile<ClientCommandsEndpoints['/v1/commands.run']['POST'] & { success: boolean }>({
+					type: 'object',
+					properties: {
+						result: {},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: true,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const body = this.bodyParams;
-
-			if (typeof body.command !== 'string') {
-				return API.v1.failure('You must provide a command to run.');
-			}
-
-			if (body.params && typeof body.params !== 'string') {
-				return API.v1.failure('The parameters for the command must be a single string.');
-			}
-
-			if (typeof body.roomId !== 'string') {
-				return API.v1.failure("The room's id where to execute this command must be provided and be a string.");
-			}
-
-			if (body.tmid && typeof body.tmid !== 'string') {
-				return API.v1.failure('The tmid parameter when provided must be a string.');
-			}
 
 			const cmd = body.command.toLowerCase();
 			if (!slashCommands.commands[cmd]) {
@@ -289,28 +352,37 @@ API.v1.addRoute(
 
 			return API.v1.success({ result });
 		},
-	},
-);
+	)
 
-API.v1.addRoute(
-	'commands.preview',
-	{ authRequired: true },
-	{
-		// Expects these query params: command: 'giphy', params: 'mine', roomId: 'value'
-		async get() {
+	.get(
+		'commands.preview',
+		{
+			authRequired: true,
+			query: isCommandsPreviewGETProps,
+			response: {
+				200: ajv.compile<ClientCommandsEndpoints['/v1/commands.preview']['GET'] & { success: boolean }>({
+					type: 'object',
+					properties: {
+						preview: {
+							type: 'object',
+							properties: {
+								i18nTitle: { type: 'string' },
+								items: { type: 'array' },
+							},
+							required: ['i18nTitle', 'items'],
+							additionalProperties: true,
+						},
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['preview', 'success'],
+					additionalProperties: true,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const query = this.queryParams;
-
-			if (typeof query.command !== 'string') {
-				return API.v1.failure('You must provide a command to get the previews from.');
-			}
-
-			if (query.params && typeof query.params !== 'string') {
-				return API.v1.failure('The parameters for the command must be a single string.');
-			}
-
-			if (typeof query.roomId !== 'string') {
-				return API.v1.failure("The room's id where the previews are being displayed must be provided and be a string.");
-			}
 
 			const cmd = query.command.toLowerCase();
 			if (!slashCommands.commands[cmd]) {
@@ -332,38 +404,25 @@ API.v1.addRoute(
 
 			return API.v1.success({ preview });
 		},
-
-		// Expects a body format of: { command: 'giphy', params: 'mine', roomId: 'value', tmid: 'value', triggerId: 'value', previewItem: { id: 'sadf8' type: 'image', value: 'https://dev.null/gif' } }
-		async post() {
+	)
+	.post(
+		'commands.preview',
+		{
+			authRequired: true,
+			body: isCommandsPreviewPOSTProps,
+			response: {
+				200: ajv.compile<{ success: boolean }>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const body = this.bodyParams;
-
-			if (typeof body.command !== 'string') {
-				return API.v1.failure('You must provide a command to run the preview item on.');
-			}
-
-			if (body.params && typeof body.params !== 'string') {
-				return API.v1.failure('The parameters for the command must be a single string.');
-			}
-
-			if (typeof body.roomId !== 'string') {
-				return API.v1.failure("The room's id where the preview is being executed in must be provided and be a string.");
-			}
-
-			if (typeof body.previewItem === 'undefined') {
-				return API.v1.failure('The preview item being executed must be provided.');
-			}
-
-			if (!body.previewItem.id || !body.previewItem.type || typeof body.previewItem.value === 'undefined') {
-				return API.v1.failure('The preview item being executed is in the wrong format.');
-			}
-
-			if (body.tmid && typeof body.tmid !== 'string') {
-				return API.v1.failure('The tmid parameter when provided must be a string.');
-			}
-
-			if (body.triggerId && typeof body.triggerId !== 'string') {
-				return API.v1.failure('The triggerId parameter when provided must be a string.');
-			}
 
 			const cmd = body.command.toLowerCase();
 			if (!slashCommands.commands[cmd]) {
@@ -400,8 +459,7 @@ API.v1.addRoute(
 
 			return API.v1.success();
 		},
-	},
-);
+	);
 
 export type CommandsEndpoints = ExtractRoutesFromAPI<typeof commandsEndpoints>;
 
