@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiDateTime from 'chai-datetime';
-import { beforeEach, describe, it } from 'mocha';
 import { addSeconds } from 'date-fns';
+import { beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 

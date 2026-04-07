@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
 import { addMinutes } from 'date-fns';
+import { describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
