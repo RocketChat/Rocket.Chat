@@ -56,7 +56,6 @@ services:
         SERVICE: authorization-service
     image: ghcr.io/${LOWERCASE_REPOSITORY}/authorization-service:${DOCKER_TAG}
     environment:
-      - ABAC_HEALTH_CACHE_TTL_MS=1
       - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
       - 'TRANSPORTER=${TRANSPORTER:-}'
       - MOLECULER_LOG_LEVEL=info
