@@ -1,0 +1,14 @@
+dist
+node_modules
+coverage
+storybook-static
+.turbo
+.meteor
+yarn.lock
+**/*.min.js
+**/*.min.css
+apps/meteor/**/public
+apps/meteor/**/private
+apps/meteor/**/packages
+apps/meteor/definition/externals
+packages/apps-engine

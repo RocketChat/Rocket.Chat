@@ -1,7 +1,7 @@
 import { defineConfig } from 'eslint/config';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
 import importPlugin from 'eslint-plugin-import';
-import prettierPluginRecommended from 'eslint-plugin-prettier/recommended';
+import prettierConfig from 'eslint-config-prettier';
 import storybookPlugin from 'eslint-plugin-storybook';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import globals from 'globals';
@@ -63,8 +63,9 @@ export default defineConfig(
 			'anti-trojan-source/no-bidi': 'error',
 		},
 	},
-	// Prettier — NOT covered by oxlint
-	prettierPluginRecommended,
+	// Prettier config — disables ESLint rules that conflict with Prettier
+	// Formatting is now enforced via `prettier --check` as a separate step
+	prettierConfig,
 	{
 		name: 'rocket.chat/ecmascript',
 		languageOptions: {
