@@ -1,4 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import type { RouterContextValue } from '@rocket.chat/ui-contexts';
 import { useRouter, useRouteParameter } from '@rocket.chat/ui-contexts';
 import { render } from '@testing-library/react';
 
@@ -37,7 +38,7 @@ const wrapper = mockAppRoot()
 
 beforeEach(() => {
 	jest.clearAllMocks();
-	mockUseHasLicenseModule.mockReturnValue({ isPending: false, data: true } as any);
+	mockUseHasLicenseModule.mockReturnValue({ isPending: false, data: true } as unknown as ReturnType<typeof useHasLicenseModule>);
 	mockUseUpsellActions.mockReturnValue({
 		shouldShowUpsell: false,
 		cloudWorkspaceHadTrial: false,
@@ -51,7 +52,7 @@ describe('EngagementDashboardRoute - route change subscription', () => {
 	it('calls subscribeToRouteChange on mount', () => {
 		const unsubscribe = jest.fn();
 		const subscribeToRouteChange = jest.fn(() => unsubscribe);
-		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate: jest.fn() } as any);
+		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate: jest.fn() } as unknown as RouterContextValue);
 
 		render(<EngagementDashboardRoute />, { wrapper });
 
@@ -61,7 +62,7 @@ describe('EngagementDashboardRoute - route change subscription', () => {
 	it('calls the unsubscribe function returned by subscribeToRouteChange when unmounted', () => {
 		const unsubscribe = jest.fn();
 		const subscribeToRouteChange = jest.fn(() => unsubscribe);
-		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate: jest.fn() } as any);
+		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate: jest.fn() } as unknown as RouterContextValue);
 
 		const { unmount } = render(<EngagementDashboardRoute />, { wrapper });
 
@@ -74,17 +75,17 @@ describe('EngagementDashboardRoute - route change subscription', () => {
 
 	it('does not navigate when the current tab is valid', () => {
 		const navigate = jest.fn();
-		let capturedCallback: (() => void) | undefined;
+		let capturedCallback = (): void => undefined;
 		const subscribeToRouteChange = jest.fn((cb: () => void) => {
 			capturedCallback = cb;
 			return jest.fn();
 		});
-		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate } as any);
+		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate } as unknown as RouterContextValue);
 
 		render(<EngagementDashboardRoute />, { wrapper });
 
-		expect(capturedCallback).toBeDefined();
-		capturedCallback!();
+		expect(subscribeToRouteChange).toHaveBeenCalledTimes(1);
+		capturedCallback();
 
 		expect(navigate).not.toHaveBeenCalled();
 	});
@@ -93,17 +94,17 @@ describe('EngagementDashboardRoute - route change subscription', () => {
 		mockUseRouteParameter.mockReturnValue(undefined);
 
 		const navigate = jest.fn();
-		let capturedCallback: (() => void) | undefined;
+		let capturedCallback = (): void => undefined;
 		const subscribeToRouteChange = jest.fn((cb: () => void) => {
 			capturedCallback = cb;
 			return jest.fn();
 		});
-		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate } as any);
+		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate } as unknown as RouterContextValue);
 
 		render(<EngagementDashboardRoute />, { wrapper });
 
-		expect(capturedCallback).toBeDefined();
-		capturedCallback!();
+		expect(subscribeToRouteChange).toHaveBeenCalledTimes(1);
+		capturedCallback();
 
 		expect(navigate).toHaveBeenCalledWith({ pattern: '/admin/engagement/:tab?', params: { tab: 'users' } }, { replace: true });
 	});
@@ -112,7 +113,7 @@ describe('EngagementDashboardRoute - route change subscription', () => {
 		const firstUnsubscribe = jest.fn();
 		const subscribeToRouteChange = jest.fn().mockReturnValueOnce(firstUnsubscribe).mockReturnValue(jest.fn());
 		const navigate = jest.fn();
-		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate } as any);
+		mockUseRouter.mockReturnValue({ subscribeToRouteChange, navigate } as unknown as RouterContextValue);
 
 		const { rerender } = render(<EngagementDashboardRoute />, { wrapper });
 
