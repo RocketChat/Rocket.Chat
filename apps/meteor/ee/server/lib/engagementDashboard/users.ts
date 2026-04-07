@@ -1,11 +1,15 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users, Analytics, Sessions } from '@rocket.chat/models';
-import { subDays, subHours } from 'date-fns';
+import { isValid, subDays, subHours } from 'date-fns';
 
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = async (user: IUser): Promise<IUser> => {
 	if (user.roles?.includes('anonymous')) {
+		return user;
+	}
+
+	if (!isValid(user.createdAt)) {
 		return user;
 	}
 

@@ -1,4 +1,4 @@
-import { format, parse, differenceInDays } from 'date-fns';
+import { format, parse, differenceInDays, isValid } from 'date-fns';
 import mem from 'mem';
 
 export const isDateISOString = mem(
@@ -17,7 +17,12 @@ export const mapDateForAPI = (input: string): Date => {
 	return new Date(Date.parse(input));
 };
 
-export const convertDateToInt = (date: Date): number => parseInt(format(date, 'yyyyMMdd'), 10);
+export const convertDateToInt = (date: Date): number => {
+	if (!isValid(date)) {
+		throw new Error(`convertDateToInt: invalid date received: ${String(date)}`);
+	}
+	return parseInt(format(date, 'yyyyMMdd'), 10);
+};
 export const convertIntToDate = (intValue: number): Date => parse(String(intValue), 'yyyyMMdd', new Date());
 const diffBetweenDays = (start: string | number | Date, end: string | number | Date): number =>
 	differenceInDays(new Date(end), new Date(start));
