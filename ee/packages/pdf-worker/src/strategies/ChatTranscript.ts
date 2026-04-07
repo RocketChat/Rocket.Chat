@@ -7,6 +7,29 @@ import type { ChatTranscriptData, PDFMessage } from '../types/ChatTranscriptData
 import type { IStrategy } from '../types/IStrategy';
 import type { MessageData, WorkerData } from '../types/WorkerData';
 
+const momentTokenMap: Record<string, string> = {
+	LT: 'p',
+	LTS: 'pp',
+	LLLL: 'EEEE, PPP p',
+	LLL: 'PPP p',
+	LL: 'PPP',
+	L: 'P',
+	YYYY: 'yyyy',
+	YY: 'yy',
+	DD: 'dd',
+	D: 'd',
+	Do: 'do',
+};
+
+function momentFormatToDateFns(momentFormat: string): string {
+	let out = momentFormat;
+	const entries = Object.entries(momentTokenMap).sort(([a], [b]) => b.length - a.length);
+	for (const [mom, df] of entries) {
+		out = out.replace(new RegExp(mom.replace(/([.*+?^${}()|[\]\\])/g, '\\$1'), 'g'), df);
+	}
+	return out;
+}
+
 function formatInTimezone(ts: Date | number, timezone: string, fmt: string): string {
 	const d = new TZDate(new Date(ts).getTime(), timezone);
 	const y = d.getFullYear();
@@ -16,8 +39,7 @@ function formatInTimezone(ts: Date | number, timezone: string, fmt: string): str
 	const min = d.getMinutes();
 	const s = d.getSeconds();
 	const date = new Date(y, m, day, h, min, s);
-	if (fmt === 'H:mm:ss') return format(date, 'H:mm:ss');
-	return format(date, fmt.replace(/YYYY/g, 'yyyy').replace(/DD/g, 'dd').replace(/D/g, 'd').replace(/MM/g, 'MM').replace(/M/g, 'M'));
+	return format(date, momentFormatToDateFns(fmt));
 }
 
 function isSameDayInTimezone(ts1: Date | number, ts2: Date | number, timezone: string): boolean {
