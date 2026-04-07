@@ -39,7 +39,7 @@ export class HomeOmnichannel extends HomeChannel {
 		this.cannedResponses = new OmnichannelCannedResponses(page);
 		this.contacts = new OmnichannelContactCenterContacts(page);
 		this.chats = new OmnichannelContactCenterChats(page);
-		this.roomInfo = new OmnichannelRoomInfoFlexTab(page.getByRole('dialog', { name: 'Room Information' }), page);
+		this.roomInfo = new OmnichannelRoomInfoFlexTab(page);
 		this.quickActionsRoomToolbar = new OmnichannelQuickActionsRoomToolbar(page);
 		this.content = new HomeOmnichannelContent(page);
 		this.roomToolbar = new OmnichannelRoomToolbar(page);

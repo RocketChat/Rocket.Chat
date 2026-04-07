@@ -71,7 +71,7 @@ export class HomeChannel {
 		this._tabs = {
 			members: new MembersFlexTab(page),
 			userInfo: new UserInfoFlexTab(page),
-			room: new RoomInfoFlexTab(page.getByRole('dialog', { name: 'Channel info' }), page),
+			room: new RoomInfoFlexTab(page.getByRole('dialog', { name: 'Channel info' })),
 			editRoom: new EditRoomFlexTab(page.getByRole('dialog', { name: 'Edit channel' })),
 			channels: new ChannelsFlexTab(page),
 			notificationPreferences: new NotificationPreferencesFlexTab(page),

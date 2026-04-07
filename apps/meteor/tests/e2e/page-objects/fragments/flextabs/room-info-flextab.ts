@@ -27,11 +27,11 @@ export class RoomInfoFlexTab extends FlexTab {
 
 	readonly confirmDeleteModal: ConfirmDeleteRoomModal;
 
-	constructor(root: Locator, page: Page) {
+	constructor(root: Locator) {
 		super(root);
-		this.menu = new MenuMore(page);
-		this.confirmLeaveModal = new ConfirmLeaveRoomModal(page);
-		this.confirmDeleteModal = new ConfirmDeleteRoomModal(page);
+		this.menu = new MenuMore(root.page());
+		this.confirmLeaveModal = new ConfirmLeaveRoomModal(root.page());
+		this.confirmDeleteModal = new ConfirmDeleteRoomModal(root.page());
 	}
 
 	get btnEdit(): Locator {
@@ -83,7 +83,7 @@ export class TeamInfoFlexTab extends RoomInfoFlexTab {
 	readonly confirmConvertIntoChannelModal: ConfirmConvertIntoChannelModal;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Team info' }), page);
+		super(page.getByRole('dialog', { name: 'Team info' }));
 		this.confirmDeleteTeamModal = new ConfirmDeleteTeamModal(page);
 		this.confirmConvertIntoChannelModal = new ConfirmConvertIntoChannelModal(page);
 	}
@@ -102,6 +102,10 @@ export class TeamInfoFlexTab extends RoomInfoFlexTab {
 }
 
 export class OmnichannelRoomInfoFlexTab extends RoomInfoFlexTab {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Room Information' }));
+	}
+
 	getInfo(value: string): Locator {
 		return this.root.locator(`span >> text="${value}"`);
 	}
