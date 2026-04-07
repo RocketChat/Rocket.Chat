@@ -1,5 +1,6 @@
 import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
-import { Box, Button, Avatar, TextInput, IconButton, Label, FieldError } from '@rocket.chat/fuselage';
+import { Box, Button, Avatar, IconButton } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
@@ -10,6 +11,7 @@ import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
+import { isSafeAvatarUrl } from '../../../lib/utils/isSafeAvatarUrl';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
 type UserAvatarEditorProps = {
@@ -20,15 +22,6 @@ type UserAvatarEditorProps = {
 	etag: IUser['avatarETag'];
 	name: IUser['name'];
 };
-
-function isUrl(myUrlString: string) {
-	try {
-		new URL(myUrlString);
-		return true;
-	} catch {
-		return false;
-	}
-}
 
 function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disabled, etag }: UserAvatarEditorProps): ReactElement {
 	const { t } = useTranslation();
@@ -59,9 +52,10 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
 	const handleAddUrl = (): void => {
-		if (isUrl(avatarFromUrl)) {
+		if (isSafeAvatarUrl(avatarFromUrl)) {
 			setNewAvatarSource(avatarFromUrl);
 			setAvatarObj({ avatarUrl: avatarFromUrl });
+			setAvatarUrlError(undefined);
 		} else {
 			setAvatarUrlError(t('error-invalid-image-url'));
 		}
@@ -107,7 +101,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					}}
 					onError={() => setAvatarUrlError(t('error-invalid-image-url'))}
 				/>
-				<Box display='flex' flexDirection='column' flexGrow='1' justifyContent='space-between' mis={4}>
+				<Box display='flex' flexDirection='column' flexGrow='1' mis={4}>
 					<Box display='flex' flexDirection='row' mbs='none'>
 						<Button square disabled={disabled} mi={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
 							<Avatar url={`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`} />
@@ -123,22 +117,25 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						/>
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
-					<Label htmlFor={imageUrlField} mis={4}>
-						{t('Use_url_for_avatar')}
-					</Label>
-					<TextInput
-						id={imageUrlField}
-						flexGrow={0}
-						placeholder={t('Use_url_for_avatar')}
-						value={avatarFromUrl}
-						mis={4}
-						onChange={handleAvatarFromUrlChange}
-					/>
-					{avatarUrlError && (
-						<FieldError aria-live='assertive' id={`${imageUrlField}-error`}>
-							{avatarUrlError}
-						</FieldError>
-					)}
+					<Field mis={4} mbs={16}>
+						<FieldLabel htmlFor={imageUrlField}>{t('Use_url_for_avatar')}</FieldLabel>
+						<FieldRow>
+							<TextInput
+								id={imageUrlField}
+								placeholder={t('Use_url_for_avatar')}
+								value={avatarFromUrl}
+								onChange={handleAvatarFromUrlChange}
+								error={avatarUrlError}
+								aria-invalid={!!avatarUrlError}
+								aria-describedby={avatarUrlError ? `${imageUrlField}-error` : undefined}
+							/>
+						</FieldRow>
+						{avatarUrlError && (
+							<FieldError aria-live='assertive' id={`${imageUrlField}-error`}>
+								{avatarUrlError}
+							</FieldError>
+						)}
+					</Field>
 				</Box>
 			</Box>
 		</Box>
