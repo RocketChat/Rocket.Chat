@@ -31,8 +31,9 @@
 		"fuselage": "./fuselage.sh",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
-		"lint": "oxlint -c oxlintrc.json && prettier --check . && turbo run lint",
+		"lint": "oxlint -c oxlintrc.json && turbo run lint",
 		"lint:fix": "oxlint -c oxlintrc.json --fix && prettier --write . && turbo run lint -- --fix",
+		"_comment:lint": "After merging PR #40062 (prettier --write), add 'prettier --check .' to the lint script",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
 		"testunit": "turbo run testunit"
