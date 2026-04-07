@@ -1,9 +1,16 @@
 import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 import { CustomUserStatus } from '@rocket.chat/models';
-import { ajv, ajvQuery, validateUnauthorizedErrorResponse, validateBadRequestErrorResponse } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	ajvQuery,
+	validateUnauthorizedErrorResponse,
+	validateBadRequestErrorResponse,
+	isCustomUserStatusCreateProps,
+	isCustomUserStatusDeleteProps,
+	isCustomUserStatusUpdateProps,
+} from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { deleteCustomUserStatus } from '../../../user-status/server/methods/deleteCustomUserStatus';
@@ -118,19 +125,27 @@ const customUserStatusEndpoints = API.v1.get(
 			offset,
 			total,
 		});
-	},
-);
-
-API.v1.addRoute(
-	'custom-user-status.create',
-	{ authRequired: true },
-	{
-		async post() {
-			check(this.bodyParams, {
-				name: String,
-				statusType: Match.Maybe(String),
-			});
-
+	})
+	.post(
+		'custom-user-status.create',
+		{
+			authRequired: true,
+			body: isCustomUserStatusCreateProps,
+			response: {
+				200: ajv.compile<{ customUserStatus: ICustomUserStatus; success: boolean }>({
+					type: 'object',
+					properties: {
+						customUserStatus: { $ref: '#/components/schemas/ICustomUserStatus' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['customUserStatus', 'success'],
+					additionalProperties: true,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const userStatusData = {
 				name: this.bodyParams.name,
 				statusType: this.bodyParams.statusType || '',
@@ -140,53 +155,66 @@ API.v1.addRoute(
 
 			const customUserStatus = await CustomUserStatus.findOneByName(userStatusData.name);
 			if (!customUserStatus) {
-				throw new Meteor.Error('error-creating-custom-user-status', 'Error creating custom user status');
+				return API.v1.failure('error-creating-custom-user-status');
 			}
 
 			return API.v1.success({
 				customUserStatus,
 			});
 		},
-	},
-);
-
-API.v1.addRoute(
-	'custom-user-status.delete',
-	{ authRequired: true },
-	{
-		async post() {
+	)
+	.post(
+		'custom-user-status.delete',
+		{
+			authRequired: true,
+			body: isCustomUserStatusDeleteProps,
+			response: {
+				200: ajv.compile<{ success: boolean }>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const { customUserStatusId } = this.bodyParams;
-			if (!customUserStatusId) {
-				return API.v1.failure('The "customUserStatusId" params is required!');
-			}
 
 			await deleteCustomUserStatus(this.userId, customUserStatusId);
 
 			return API.v1.success();
 		},
-	},
-);
-
-API.v1.addRoute(
-	'custom-user-status.update',
-	{ authRequired: true },
-	{
-		async post() {
-			check(this.bodyParams, {
-				_id: String,
-				name: String,
-				statusType: Match.Maybe(String),
-			});
-
+	)
+	.post(
+		'custom-user-status.update',
+		{
+			authRequired: true,
+			body: isCustomUserStatusUpdateProps,
+			response: {
+				200: ajv.compile<{ customUserStatus: ICustomUserStatus; success: boolean }>({
+					type: 'object',
+					properties: {
+						customUserStatus: { $ref: '#/components/schemas/ICustomUserStatus' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['customUserStatus', 'success'],
+					additionalProperties: true,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const userStatusData = {
 				_id: this.bodyParams._id,
-				name: this.bodyParams.name,
+				name: this.bodyParams.name as string,
 				statusType: this.bodyParams.statusType,
 			};
 
 			const customUserStatusToUpdate = await CustomUserStatus.findOneById(userStatusData._id);
 
-			// Ensure the message exists
 			if (!customUserStatusToUpdate) {
 				return API.v1.failure(`No custom user status found with the id of "${userStatusData._id}".`);
 			}
@@ -196,15 +224,14 @@ API.v1.addRoute(
 			const customUserStatus = await CustomUserStatus.findOneById(userStatusData._id);
 
 			if (!customUserStatus) {
-				throw new Meteor.Error('error-updating-custom-user-status', 'Error updating custom user status');
+				return API.v1.failure('error-updating-custom-user-status');
 			}
 
 			return API.v1.success({
 				customUserStatus,
 			});
 		},
-	},
-);
+	);
 
 export type CustomUserStatusEndpoints = ExtractRoutesFromAPI<typeof customUserStatusEndpoints>;
 
