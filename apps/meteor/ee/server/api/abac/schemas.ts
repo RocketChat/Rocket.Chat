@@ -352,7 +352,7 @@ export const GETAbacPdpHealthResponseSchema = ajv.compile<{
 		available: { type: 'boolean' },
 		message: { type: 'string' },
 	},
-	required: ['available', 'message'],
+	required: ['success', 'available', 'message'],
 	additionalProperties: false,
 });
 
@@ -363,7 +363,7 @@ export const GETAbacPdpHealthErrorResponseSchema = ajv.compile<{ available: bool
 		available: { type: 'boolean', enum: [false] },
 		message: { type: 'string' },
 	},
-	required: ['available', 'message'],
+	required: ['success', 'available', 'message'],
 	additionalProperties: false,
 });
 

@@ -2,6 +2,7 @@ import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.ch
 import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
 import { isTruthy } from '@rocket.chat/tools';
+import mem from 'mem';
 import pLimit from 'p-limit';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
@@ -22,22 +23,27 @@ import type {
 const pdpLogger = logger.section('VirtruPDP');
 
 const HEALTH_CHECK_TIMEOUT = 10000;
+const HEALTH_CACHE_TTL_MS = 5 * 60 * 1000;
 
 export class VirtruPDP implements IPolicyDecisionPoint {
 	private tokenCache: ITokenCache | null = null;
 
 	private config: IVirtruPDPConfig;
 
+	isAvailable: () => Promise<boolean>;
+
 	constructor(config: IVirtruPDPConfig) {
 		this.config = config;
+		this.isAvailable = mem(this._checkAvailability.bind(this), { maxAge: HEALTH_CACHE_TTL_MS });
 	}
 
 	updateConfig(config: IVirtruPDPConfig): void {
 		this.config = config;
 		this.tokenCache = null;
+		mem.clear(this.isAvailable);
 	}
 
-	async isAvailable(): Promise<boolean> {
+	private async _checkAvailability(): Promise<boolean> {
 		try {
 			const response = await serverFetch(`${this.config.baseUrl}/healthz`, {
 				method: 'GET',
