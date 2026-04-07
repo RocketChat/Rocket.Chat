@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelContactCenter } from './omnichannel-contact-center';
-import { FlexTab } from '../../fragments/flextab';
+import { FlexTab } from '../../fragments/flextabs/flextab';
 import { Listbox } from '../../fragments/listbox';
 import { OmnichannelConfirmRemoveChat } from '../../fragments/modals';
 import { Table } from '../../fragments/table';
