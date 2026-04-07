@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
-import { FlexTab } from '../fragments/flextab';
+import { FlexTab } from '../fragments/flextabs/flextab';
 import { Table } from '../fragments/table';
 
 class OmnichannelManageCustomFieldsFlexTab extends FlexTab {
