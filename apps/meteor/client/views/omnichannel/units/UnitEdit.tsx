@@ -7,7 +7,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { FieldError, Field, TextInput, Button, Select, ButtonGroup, FieldGroup, Box, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
@@ -20,6 +19,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
 import AutoCompleteMonitors from '../components/AutoCompleteMonitors';
 
@@ -82,7 +82,6 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 		handleSubmit,
 		watch,
 	} = useForm<UnitEditFormData>({
-		mode: 'onBlur',
 		values: {
 			name: unitData?.name || '',
 			visibility: unitData?.visibility || '',
@@ -93,36 +92,39 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 
 	const { departments, monitors } = watch();
 
-	const handleSave = useEffectEvent(async ({ name, visibility }: UnitEditFormData) => {
-		const departmentsData = departments.map((department) => ({ departmentId: department.value }));
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async ({ name, visibility }: UnitEditFormData) => {
+			const departmentsData = departments.map((department) => ({ departmentId: department.value }));
 
-		const monitorsData = monitors.map((monitor) => ({
-			monitorId: monitor.value,
-			username: monitor.label,
-		}));
+			const monitorsData = monitors.map((monitor) => ({
+				monitorId: monitor.value,
+				username: monitor.label,
+			}));
 
-		const payload = {
-			unitData: { name, visibility },
-			unitMonitors: monitorsData,
-			unitDepartments: departmentsData,
-		};
+			const payload = {
+				unitData: { name, visibility },
+				unitMonitors: monitorsData,
+				unitDepartments: departmentsData,
+			};
 
-		try {
-			if (_id && onUpdate) {
-				await onUpdate(payload);
-			} else {
-				await saveUnit(payload);
+			try {
+				if (_id && onUpdate) {
+					await onUpdate(payload);
+				} else {
+					await saveUnit(payload);
+				}
+
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				queryClient.invalidateQueries({
+					queryKey: ['livechat-units'],
+				});
+				onClose();
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
-
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			queryClient.invalidateQueries({
-				queryKey: ['livechat-units'],
-			});
-			onClose();
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
+		},
+		{ isDirty },
+	);
 
 	const formId = useId();
 	const nameField = useId();
@@ -263,7 +265,7 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} disabled={!isDirty} type='submit' primary>
+					<Button form={formId} type='submit' primary>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

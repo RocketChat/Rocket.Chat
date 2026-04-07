@@ -41,17 +41,21 @@ import { removeRoomOwner } from '../../methods/removeRoomOwner';
 export class RoomService extends ServiceClassInternal implements IRoomService {
 	protected name = 'room';
 
-	async updateDirectMessageRoomName(room: IRoom, ignoreStatusFromSubs?: string[]): Promise<boolean> {
+	async updateDirectMessageRoomName(
+		room: IRoom,
+		ignoreStatusFromSubs?: string[],
+		updatedNames?: AtLeast<IUser, '_id' | 'name' | 'username'>[],
+	): Promise<boolean> {
 		if (room.t !== 'd') {
 			throw new Error('Invalid room type');
 		}
 		const subs = await Subscriptions.findByRoomId(room._id, { projection: { u: 1, status: 1 } }).toArray();
 
-		const uids = subs.map((sub) => sub.u._id);
+		const uids = subs.map((sub) => sub.u._id).filter((uid) => !updatedNames?.some((user) => user._id === uid));
 
 		const roomMembers = await Users.findUsersByIds(uids, { projection: { name: 1, username: 1 } }).toArray();
 
-		const roomNames = getNameForDMs(roomMembers);
+		const roomNames = getNameForDMs([...roomMembers, ...(updatedNames ?? [])]);
 
 		for await (const sub of subs) {
 			// don't update the name if the user is invited but hasn't accepted yet
