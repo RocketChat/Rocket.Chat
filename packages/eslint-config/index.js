@@ -2,6 +2,8 @@ import { defineConfig } from 'eslint/config';
 import antiTrojanSourcePlugin from 'eslint-plugin-anti-trojan-source';
 import importPlugin from 'eslint-plugin-import';
 import prettierConfig from 'eslint-config-prettier';
+import jestPlugin from 'eslint-plugin-jest';
+import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import storybookPlugin from 'eslint-plugin-storybook';
@@ -29,13 +31,15 @@ export default defineConfig(
 			},
 		},
 	},
-	// Register react plugins so eslint-disable comments for react/* rules are recognized
-	// All react rules are handled by oxlint — these are only for namespace registration
+	// Register plugins so eslint-disable comments for their rules are recognized
+	// All rules from these plugins are handled by oxlint — only namespace registration here
 	{
-		name: 'rocket.chat/react-plugin-registration',
+		name: 'rocket.chat/oxlint-plugin-registration',
 		plugins: {
-			react: reactPlugin,
+			'react': reactPlugin,
 			'react-hooks': reactHooksPlugin,
+			'jest': jestPlugin,
+			'jsx-a11y': jsxA11yPlugin,
 		},
 		settings: {
 			react: {
