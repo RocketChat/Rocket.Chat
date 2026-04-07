@@ -8,14 +8,10 @@ import type {
 	MediaSignalTransport,
 	MediaStreamFactory,
 	RandomStringFactory,
-	ServerMediaCallSignal,
-	ServerMediaSessionSignal,
 	ServerMediaSignal,
-	ServerMediaSignalRegistered,
 } from '../definition';
 import type { IClientMediaCall, CallActorType, CallContact, CallFeature } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
-import { SessionRegistration } from './components/SessionRegistration';
 
 export type MediaSignalingEvents = {
 	sessionStateChange: void;
@@ -23,7 +19,6 @@ export type MediaSignalingEvents = {
 	acceptedCall: { call: IClientMediaCall };
 	endedCall: void;
 	hiddenCall: void;
-	registered: { activeCalls: IClientMediaCall['callId'][] };
 };
 
 export type MediaSignalingSessionConfig = {
@@ -72,18 +67,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private sessionEnded = false;
 
-	private registration: SessionRegistration;
-
 	public get sessionId(): string {
 		return this._sessionId;
 	}
 
 	public get userId(): string {
 		return this._userId;
-	}
-
-	public get registered(): boolean {
-		return this.registration.registered;
 	}
 
 	constructor(private config: MediaSignalingSessionConfig) {
@@ -101,10 +90,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.lastState = { hasCall: false, hasVisibleCall: false, hasBusyCall: false };
 
 		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
-		this.registration = new SessionRegistration({
-			logger: config.logger,
-			registerFn: () => this.sendRegisterSignal(),
-		});
 
 		this.register();
 		this.enableStateReport(STATE_REPORT_INTERVAL);
@@ -131,7 +116,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public endSession(): void {
 		this.sessionEnded = true;
-		this.registration.sessionEnded = true;
 		this.disableStateReport();
 
 		// best‑effort: stop capturing audio
@@ -183,11 +167,27 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			return;
 		}
 		this.config.logger?.debug('MediaSignalingSession.processSignal', signal);
-		if ('callId' in signal) {
-			return this.processCallSignal(signal);
+		if (this.isCallIgnored(signal.callId)) {
+			return;
 		}
 
-		return this.processSessionSignal(signal);
+		const call = this.getOrCreateCallBySignal(signal);
+
+		if (signal.type === 'notification' && signal.signedContractId) {
+			if (signal.signedContractId === this._sessionId) {
+				call.setContractState('signed');
+			} else if (signal.notification === 'accepted') {
+				// The server accepted a contract, but it wasn't ours - ignore the call in this session
+				call.setContractState('ignored');
+			}
+		} else if ('toContractId' in signal) {
+			call.setContractState(signal.toContractId === this._sessionId ? 'signed' : 'ignored');
+		} else if (signal.type === 'new' && signal.self.contractId) {
+			call.setContractState(signal.self.contractId === this._sessionId ? 'signed' : 'ignored');
+		}
+
+		const oldCall = this.getReplacedCallBySignal(signal);
+		await call.processSignal(signal, oldCall);
 	}
 
 	public async setDeviceId(deviceId: ConstrainDOMString | null): Promise<void> {
@@ -220,7 +220,13 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public register(): void {
-		this.registration.reRegister();
+		this.lastRegisterTimestamp = new Date();
+
+		this.transporter.sendSignal({
+			type: 'register',
+			contractId: this._sessionId,
+			...(this.config.oldSessionId && { oldContractId: this.config.oldSessionId }),
+		});
 	}
 
 	public setIceGatheringTimeout(newTimeout: number): void {
@@ -251,7 +257,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 	}
 
-	private getExistingCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall | null {
+	private getExistingCallBySignal(signal: ServerMediaSignal): ClientMediaCall | null {
 		const existingCall = this.knownCalls.get(signal.callId);
 		if (existingCall) {
 			return existingCall;
@@ -277,7 +283,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return null;
 	}
 
-	private getOrCreateCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall {
+	private getOrCreateCallBySignal(signal: ServerMediaSignal): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.getOrCreateCallBySignal', signal);
 		const existingCall = this.getExistingCallBySignal(signal);
 		if (existingCall) {
@@ -327,7 +333,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			}
 		}
 
-		this.registration.register();
+		this.register();
 	}
 
 	private async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
@@ -523,62 +529,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await this.setScreenVideoTrack(track, call);
 	}
 
-	private sendRegisterSignal(): void {
-		this.lastRegisterTimestamp = new Date();
-		this.transporter.sendSignal({
-			type: 'register',
-			contractId: this._sessionId,
-			...(this.config.oldSessionId && { oldContractId: this.config.oldSessionId }),
-		});
-	}
-
-	private async processCallSignal(signal: ServerMediaCallSignal): Promise<void> {
-		if (this.isCallIgnored(signal.callId)) {
-			return;
-		}
-
-		const call = this.getOrCreateCallBySignal(signal);
-
-		if (signal.type === 'notification' && signal.signedContractId) {
-			if (signal.signedContractId === this._sessionId) {
-				call.setContractState('signed');
-			} else if (signal.notification === 'accepted') {
-				// The server accepted a contract, but it wasn't ours - ignore the call in this session
-				call.setContractState('ignored');
-			}
-		} else if ('toContractId' in signal) {
-			call.setContractState(signal.toContractId === this._sessionId ? 'signed' : 'ignored');
-		} else if (signal.type === 'new' && signal.self.contractId) {
-			call.setContractState(signal.self.contractId === this._sessionId ? 'signed' : 'ignored');
-		}
-
-		const oldCall = this.getReplacedCallBySignal(signal);
-		await call.processSignal(signal, oldCall);
-	}
-
-	private processSessionSignal(signal: ServerMediaSessionSignal): void {
-		if (signal.toContractId !== this._sessionId) {
-			return;
-		}
-
-		switch (signal.type) {
-			case 'registered':
-				return this.confirmSessionRegistered(signal);
-		}
-	}
-
-	private confirmSessionRegistered(signal: ServerMediaSignalRegistered): void {
-		this.config.logger?.debug('MediaSignalingSession.sessionRegistered');
-		const wasRegistered = this.registered;
-		this.registration.confirmRegistration();
-
-		this.emit('registered', { activeCalls: signal.activeCalls });
-
-		if (!wasRegistered) {
-			this.onSessionStateChange();
-		}
-	}
-
 	private createCall(callId: string): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
@@ -681,11 +631,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private onSessionStateChange(): void {
 		if (this.sessionEnded) {
-			return;
-		}
-
-		if (!this.registered) {
-			this.config.logger?.debug('skipping session events on unregistered session');
 			return;
 		}
 
