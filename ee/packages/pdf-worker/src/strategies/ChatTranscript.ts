@@ -138,15 +138,17 @@ export class ChatTranscript implements IStrategy {
 
 	parseTemplateData(data: WorkerData, i18n: i18n): ChatTranscriptData {
 		const closedAt = data.closedAt ?? new Date();
+		const dateFormat = data.dateFormat || 'LL';
+		const timeAndDateFormat = data.timeAndDateFormat || 'LLL';
 		return {
 			header: {
 				visitor: data.visitor,
 				agent: data.agent,
 				siteName: data.siteName,
-				date: formatInTimezone(closedAt, data.timezone, String(data.dateFormat)),
+				date: formatInTimezone(closedAt, data.timezone, dateFormat),
 				time: `${formatInTimezone(closedAt, data.timezone, 'H:mm:ss')} ${data.timezone}`,
 			},
-			messages: this.parserMessages(data.messages, data.dateFormat, data.timeAndDateFormat, data.timezone),
+			messages: this.parserMessages(data.messages, dateFormat, timeAndDateFormat, data.timezone),
 			i18n,
 		};
 	}
