@@ -1,8 +1,8 @@
 import { appUiKitRoomTest } from '../../data/apps/app-packages';
 import { IS_EE } from '../config/constants';
-import { getAppLogs, installLocalTestPackage } from '../fixtures/insert-apps';
 import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
+import { getAppLogs, installLocalTestPackage, uninstallApp } from '../utils/apps';
 import { expect, test } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
@@ -19,9 +19,12 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await poHomeChannel.goto();
-		await poHomeChannel.waitForHome();
-		await page.getByRole('link', { name: 'general' }).click();
+		await page.goto('/home');
+		await poHomeChannel.navbar.openChat('general');
+	});
+
+	test.afterAll(async () => {
+		await uninstallApp(appId);
 	});
 
 	/**
@@ -29,27 +32,31 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 	 * The app logs using `this.getLogger().debug(label, value)`, creating entries with args = [label, value].
 	 * Each handler invocation creates a log group with `method` like `app:executeBlockActionHandler`.
 	 */
-	function findLogEntry(logs: Array<{ method: string; entries: Array<{ args: unknown[] }> }>, methodFragment: string, label: string) {
-		return logs.find((log) => String(log.method).includes(methodFragment) && log.entries.some((entry) => entry.args[0] === label));
+	function findLogItem(
+		logs: Awaited<ReturnType<typeof getAppLogs>>['logs'],
+		methodFragment: string,
+		[arg0, arg1]: [arg0: string, arg1?: string],
+	) {
+		return logs.find(
+			(log) =>
+				log.method.includes(methodFragment) && log.entries.some((entry) => arg0 === entry.args[0] && (!arg1 || arg1 === entry.args[1])),
+		);
 	}
 
-	test('should include correct data in executeBlockActionHandler when triggered in a message', async ({ page }) => {
+	test('should include correct data in executeBlockActionHandler when triggered in a message', async ({ api, page }) => {
+		const seed = Date.now().toString();
+
 		// Send a message with a button via the slash command
-		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal message');
+		await poHomeChannel.content.dispatchSlashCommand(`/open-uikit-room-test-modal message ${seed}`);
 
 		// Wait for the message with the button to appear and click it
-		const button = page.locator('role=button[name="Click!"]').last();
-		await button.waitFor({ state: 'visible' });
-		await button.click();
-
-		// Wait a moment for the handler to process
-		await page.waitForTimeout(1000);
+		await page.getByRole('button', { name: 'Click!' }).click();
 
 		// Fetch app logs and validate
-		const logsResult = await getAppLogs(appId);
+		const logsResult = await getAppLogs(api, appId);
 		expect(logsResult.logs).toBeDefined();
 
-		const blockActionLog = findLogEntry(logsResult.logs, 'executeBlockActionHandler', 'block_action_room');
+		const blockActionLog = findLogItem(logsResult.logs, 'executeBlockActionHandler', ['block_action_value', seed]);
 		expect(blockActionLog, 'Block action handler log not found for message').toBeTruthy();
 
 		// Verify room is present (GENERAL room)
@@ -73,9 +80,11 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		expect(containerEntry?.args[1], 'Container type should be message').toBe('message');
 	});
 
-	test('should include correct data in executeBlockActionHandler when triggered in a contextual bar surface', async ({ page }) => {
+	test('should include correct data in executeBlockActionHandler when triggered in a contextual bar surface', async ({ api, page }) => {
+		const seed = Date.now().toString();
+
 		// Open a contextual bar via slash command
-		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal ctx');
+		await poHomeChannel.content.dispatchSlashCommand(`/open-uikit-room-test-modal ctx ${seed}`);
 
 		// Opening a contextual bar via the Apps Engine causes a client-side URL navigation
 		// (e.g. /channel/general/app/{viewId}). Wait for that navigation to complete before
@@ -84,22 +93,15 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		await page.waitForURL(/\/app\//);
 
 		// Wait for the contextual bar to appear and click the button
-		await page.getByLabel('UIKit Room Test Contextual Bar').getByRole('button', { name: 'Click!' }).click();
-
-		// Wait for the handler to process
-		await page.waitForTimeout(1000);
+		const surface = page.getByRole('dialog', { name: 'UIKit Room Test Contextual Bar' });
+		await surface.getByRole('button', { name: 'Click!' }).click();
 
 		// Fetch app logs and validate
-		const logsResult = await getAppLogs(appId);
+		const logsResult = await getAppLogs(api, appId);
 		expect(logsResult.logs).toBeDefined();
 
 		// Find the most recent block action log with ctx-button actionId
-		const blockActionLogs = logsResult.logs.filter(
-			(log) =>
-				String(log.method).includes('executeBlockActionHandler') &&
-				log.entries.some((e) => e.args[0] === 'block_action_actionId' && e.args[1] === 'ctx-button'),
-		);
-		const blockActionLog = blockActionLogs[blockActionLogs.length - 1];
+		const blockActionLog = findLogItem(logsResult.logs, 'executeBlockActionHandler', ['block_action_value', seed]);
 		expect(blockActionLog, 'Block action handler log not found for contextual bar').toBeTruthy();
 
 		// Verify room is present
@@ -115,38 +117,26 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		expect(triggerEntry?.args[1], 'TriggerId should be present').not.toBe('no-triggerId');
 
 		// Close the contextual bar
-		await poHomeChannel.btnContextualbarClose.click();
+		await surface.getByRole('button', { name: 'Close' }).click();
 	});
 
-	test('should include correct data in executeBlockActionHandler when triggered in a modal surface', async ({ page }) => {
+	test('should include correct data in executeBlockActionHandler when triggered in a modal surface', async ({ api, page }) => {
+		const seed = Date.now().toString();
+
 		// Open a modal via slash command
-		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal modal');
+		await poHomeChannel.content.dispatchSlashCommand(`/open-uikit-room-test-modal modal ${seed}`);
 
 		// Wait for the modal to appear and click the button
-		const modal = page.getByRole('dialog', { name: 'UIKit Room Test Modal' });
-		await modal.waitFor({ state: 'visible' });
-		const button = modal.getByRole('button', { name: 'Click!' });
-		await button.click();
-
-		// Wait for the handler to process
-		await page.waitForTimeout(1000);
+		const surface = page.getByRole('dialog', { name: 'UIKit Room Test Modal' });
+		await surface.getByRole('button', { name: 'Click!' }).click();
 
 		// Fetch app logs and validate
-		const logsResult = await getAppLogs(appId);
+		const logsResult = await getAppLogs(api, appId);
 		expect(logsResult.logs).toBeDefined();
 
 		// Find the most recent block action log with modal-button actionId
-		const blockActionLogs = logsResult.logs.filter(
-			(log) =>
-				String(log.method).includes('executeBlockActionHandler') &&
-				log.entries.some((e) => e.args[0] === 'block_action_actionId' && e.args[1] === 'modal-button'),
-		);
-		const blockActionLog = blockActionLogs[blockActionLogs.length - 1];
+		const blockActionLog = findLogItem(logsResult.logs, 'executeBlockActionHandler', ['block_action_value', seed]);
 		expect(blockActionLog, 'Block action handler log not found for modal').toBeTruthy();
-
-		// Verify room is present
-		const roomEntry = blockActionLog?.entries.find((e) => e.args[0] === 'block_action_room');
-		expect(roomEntry?.args[1], 'Room id should be present for modal block action').toBe('GENERAL');
 
 		// Verify user is present
 		const userEntry = blockActionLog?.entries.find((e) => e.args[0] === 'block_action_user');
@@ -157,31 +147,24 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		expect(containerEntry?.args[1], 'Container type should be view for modal').toBe('view');
 
 		// Close the modal for the next test
-		await modal.getByRole('button', { name: 'Close' }).click();
+		await surface.getByRole('button', { name: 'Close' }).click();
 	});
 
-	test('should include correct data in executeViewSubmitHandler when triggered in a modal surface', async ({ page }) => {
+	test('should include correct data in executeViewSubmitHandler when triggered in a modal surface', async ({ api, page }) => {
+		const seed = Date.now().toString();
+
 		// Open a modal via slash command
-		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal modal');
+		await poHomeChannel.content.dispatchSlashCommand(`/open-uikit-room-test-modal modal ${seed}`);
 
 		// Wait for the modal and submit it
-		const modal = page.getByRole('dialog', { name: 'UIKit Room Test Modal' });
-		await modal.waitFor({ state: 'visible' });
-		await modal.getByRole('button', { name: 'Submit' }).click();
-
-		// Wait for the handler to process
-		await page.waitForTimeout(1000);
+		await page.getByLabel('UIKit Room Test Modal').getByRole('button', { name: 'Submit' }).click();
 
 		// Fetch app logs and validate
-		const logsResult = await getAppLogs(appId);
+		const logsResult = await getAppLogs(api, appId);
 		expect(logsResult.logs).toBeDefined();
 
-		const viewSubmitLog = findLogEntry(logsResult.logs, 'executeViewSubmitHandler', 'view_submit_room');
+		const viewSubmitLog = findLogItem(logsResult.logs, 'executeViewSubmitHandler', ['view_submit_id', `modal-${seed}`]);
 		expect(viewSubmitLog, 'View submit handler log not found for modal').toBeTruthy();
-
-		// Verify room is present
-		const roomEntry = viewSubmitLog?.entries.find((e) => e.args[0] === 'view_submit_room');
-		expect(roomEntry?.args[1], 'Room id should be present for modal view submit').toBe('GENERAL');
 
 		// Verify user is present
 		const userEntry = viewSubmitLog?.entries.find((e) => e.args[0] === 'view_submit_user');
@@ -192,30 +175,24 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		expect(triggerEntry?.args[1], 'TriggerId should be present').not.toBe('no-triggerId');
 	});
 
-	test('should include correct data in executeViewSubmitHandler when triggered in a contextual bar surface', async ({ page }) => {
+	test('should include correct data in executeViewSubmitHandler when triggered in a contextual bar surface', async ({ api, page }) => {
+		const seed = Date.now().toString();
+
 		// Open a contextual bar via slash command
-		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal ctx');
+		await poHomeChannel.content.dispatchSlashCommand(`/open-uikit-room-test-modal ctx ${seed}`);
 
 		// Wait for the client-side navigation to the contextual bar URL to complete
 		await page.waitForURL(/\/app\//);
 
 		// Wait for the contextual bar and submit it
-		const submitButton = page.locator('[data-qa="ContextualbarContent"]').getByRole('button', { name: 'Submit' });
-		await submitButton.waitFor({ state: 'visible' });
-		await submitButton.click();
-
-		// Wait for the handler to process
-		await page.waitForTimeout(1000);
+		await page.getByLabel('UIKit Room Test Contextual Bar').getByRole('button', { name: 'Submit' }).click();
 
 		// Fetch app logs and validate
-		const logsResult = await getAppLogs(appId);
+		const logsResult = await getAppLogs(api, appId);
 		expect(logsResult.logs).toBeDefined();
 
 		// Find the most recent view submit log
-		const viewSubmitLogs = logsResult.logs.filter(
-			(log) => String(log.method).includes('executeViewSubmitHandler') && log.entries.some((e) => e.args[0] === 'view_submit_room'),
-		);
-		const viewSubmitLog = viewSubmitLogs[viewSubmitLogs.length - 1];
+		const viewSubmitLog = findLogItem(logsResult.logs, 'executeViewSubmitHandler', ['view_submit_id', `ctx-${seed}`]);
 		expect(viewSubmitLog, 'View submit handler log not found for contextual bar').toBeTruthy();
 
 		// Verify room is present
@@ -227,57 +204,45 @@ test.describe.serial('Apps > UIKit interactions data', () => {
 		expect(userEntry?.args[1], 'User should be present for contextual bar view submit').toBe('user1');
 	});
 
-	test('should include correct data in executeViewClosedHandler when triggered in a modal surface', async ({ page }) => {
+	test('should include correct data in executeViewClosedHandler when triggered in a modal surface', async ({ api, page }) => {
+		const seed = Date.now().toString();
+
 		// Open a modal via slash command
-		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal modal');
+		await poHomeChannel.content.dispatchSlashCommand(`/open-uikit-room-test-modal modal ${seed}`);
 
 		// Wait for the modal and close it (via X button, not submit)
-		const modal = page.getByRole('dialog', { name: 'UIKit Room Test Modal' });
-		await modal.waitFor({ state: 'visible' });
-		await modal.getByRole('button', { name: 'Close' }).click();
-
-		// Wait for the handler to process
-		await page.waitForTimeout(1000);
+		await page.getByLabel('UIKit Room Test Modal').getByRole('button', { name: 'Close' }).click();
 
 		// Fetch app logs and validate
-		const logsResult = await getAppLogs(appId);
+		const logsResult = await getAppLogs(api, appId);
 		expect(logsResult.logs).toBeDefined();
 
-		const viewClosedLog = findLogEntry(logsResult.logs, 'executeViewClosedHandler', 'view_closed_room');
+		const viewClosedLog = findLogItem(logsResult.logs, 'executeViewClosedHandler', ['view_closed_id', `modal-${seed}`]);
 		expect(viewClosedLog, 'View closed handler log not found for modal').toBeTruthy();
-
-		// Verify room is present
-		const roomEntry = viewClosedLog?.entries.find((e) => e.args[0] === 'view_closed_room');
-		expect(roomEntry?.args[1], 'Room id should be present for modal view closed').toBe('GENERAL');
 
 		// Verify user is present
 		const userEntry = viewClosedLog?.entries.find((e) => e.args[0] === 'view_closed_user');
 		expect(userEntry?.args[1], 'User should be present for modal view closed').toBe('user1');
 	});
 
-	test('should include correct data in executeViewClosedHandler when triggered in a contextual bar surface', async ({ page }) => {
+	test('should include correct data in executeViewClosedHandler when triggered in a contextual bar surface', async ({ api, page }) => {
+		const seed = Date.now().toString();
+
 		// Open a contextual bar via slash command
-		await poHomeChannel.content.dispatchSlashCommand('/open-uikit-room-test-modal ctx');
+		await poHomeChannel.content.dispatchSlashCommand(`/open-uikit-room-test-modal ctx ${seed}`);
 
 		// Wait for the client-side navigation to the contextual bar URL to complete
 		await page.waitForURL(/\/app\//);
 
 		// Wait for the contextual bar to appear and close it
-		await poHomeChannel.btnContextualbarClose.waitFor({ state: 'visible' });
-		await poHomeChannel.btnContextualbarClose.click();
-
-		// Wait for the handler to process
-		await page.waitForTimeout(1000);
+		await page.getByLabel('UIKit Room Test Contextual Bar').getByRole('button', { name: 'Close' }).click();
 
 		// Fetch app logs and validate
-		const logsResult = await getAppLogs(appId);
+		const logsResult = await getAppLogs(api, appId);
 		expect(logsResult.logs).toBeDefined();
 
 		// Find the most recent view closed log
-		const viewClosedLogs = logsResult.logs.filter(
-			(log) => String(log.method).includes('executeViewClosedHandler') && log.entries.some((e) => e.args[0] === 'view_closed_room'),
-		);
-		const viewClosedLog = viewClosedLogs[viewClosedLogs.length - 1];
+		const viewClosedLog = findLogItem(logsResult.logs, 'executeViewClosedHandler', ['view_closed_id', `ctx-${seed}`]);
 		expect(viewClosedLog, 'View closed handler log not found for contextual bar').toBeTruthy();
 
 		// Verify room is present

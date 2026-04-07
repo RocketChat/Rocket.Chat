@@ -489,7 +489,9 @@ An app that validates room context propagation and interaction data in UIKit int
 - `ctx` - Opens a contextual bar with a button and submit action
 - `message` - Sends a message with a button
 
-Each interaction handler (`executeBlockActionHandler`, `executeViewSubmitHandler`, `executeViewClosedHandler`) logs detailed data including room ID, user, triggerId, actionId, and container type. These logs are used by Playwright e2e tests to verify that interaction data is correctly propagated.
+It also takes a second argument with a random "seed" used to identify the current execution context.
+
+Each interaction handler (`executeBlockActionHandler`, `executeViewSubmitHandler`, `executeViewClosedHandler`) logs detailed data including room ID, user name, view id, block value, triggerId, actionId, and container type. These logs are used by Playwright e2e tests to verify that interaction data is correctly propagated.
 
 <details>
 <summary>App source code</summary>
@@ -534,6 +536,7 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 		this.getLogger().debug('block_action_user', data.user ? data.user.username : 'no-user');
 		this.getLogger().debug('block_action_triggerId', data.triggerId || 'no-triggerId');
 		this.getLogger().debug('block_action_actionId', data.actionId || 'no-actionId');
+		this.getLogger().debug('block_action_value', data.value);
 		this.getLogger().debug('block_action_container', data.container ? data.container.type : 'no-container');
 		return context.getInteractionResponder().successResponse();
 	}
@@ -548,7 +551,9 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 		const data = context.getInteractionData();
 		this.getLogger().debug('view_submit_room', data.room ? data.room.id : 'no-room');
 		this.getLogger().debug('view_submit_user', data.user ? data.user.username : 'no-user');
+		this.getLogger().debug('view_submit_id', data.view.id);
 		this.getLogger().debug('view_submit_triggerId', data.triggerId || 'no-triggerId');
+		this.getLogger().debug('view_submit_actionId', data.actionId || 'no-actionId');
 		return context.getInteractionResponder().successResponse();
 	}
 
@@ -562,7 +567,9 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 		const data = context.getInteractionData();
 		this.getLogger().debug('view_closed_room', data.room ? data.room.id : 'no-room');
 		this.getLogger().debug('view_closed_user', data.user ? data.user.username : 'no-user');
+		this.getLogger().debug('view_closed_id', data.view.id);
 		this.getLogger().debug('view_closed_triggerId', data.triggerId || 'no-triggerId');
+		this.getLogger().debug('view_closed_actionId', data.actionId || 'no-actionId');
 		return context.getInteractionResponder().successResponse();
 	}
 
@@ -573,7 +580,7 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 			i18nParamsExample: '',
 			providesPreview: false,
 			executor: async (context, _read, modify, _http, _persis) => {
-				const [action] = context.getArguments();
+				const [action, seed] = context.getArguments();
 				const triggerId = context.getTriggerId();
 
 				if (!triggerId) {
@@ -584,6 +591,7 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 				if (action === 'modal') {
 					await modify.getUiController().openSurfaceView(
 						{
+							id: `modal-${seed}`,
 							title: { type: 'plain_text', text: 'UIKit Room Test Modal' },
 							type: UIKitSurfaceType.MODAL,
 							blocks: [
@@ -593,12 +601,12 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 								},
 								{
 									type: 'actions',
-									elements: [{ type: 'button', actionId: 'modal-button', text: { type: 'plain_text', text: 'Click!' } }],
+									elements: [{ type: 'button', value: seed, actionId: 'modal-button', text: { type: 'plain_text', text: 'Click!' } }],
 								},
 							],
 							submit: {
 								type: 'button',
-								actionId: 'modal-submit',
+								actionId: `modal-submit-${seed}`,
 								text: { type: 'plain_text', text: 'Submit' },
 							},
 						},
@@ -610,6 +618,7 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 				if (action === 'ctx') {
 					await modify.getUiController().openSurfaceView(
 						{
+							id: `ctx-${seed}`,
 							title: { type: 'plain_text', text: 'UIKit Room Test Contextual Bar' },
 							type: UIKitSurfaceType.CONTEXTUAL_BAR,
 							blocks: [
@@ -619,12 +628,12 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 								},
 								{
 									type: 'actions',
-									elements: [{ type: 'button', actionId: 'ctx-button', text: { type: 'plain_text', text: 'Click!' } }],
+									elements: [{ type: 'button', value: seed, actionId: 'ctx-button', text: { type: 'plain_text', text: 'Click!' } }],
 								},
 							],
 							submit: {
 								type: 'button',
-								actionId: 'ctxbar-submit',
+								actionId: `ctxbar-submit-${seed}`,
 								text: { type: 'plain_text', text: 'Submit' },
 							},
 						},
@@ -635,19 +644,19 @@ export class UiKitRoomTestApp extends App implements IUIKitInteractionHandler {
 
 				if (action === 'message') {
 					const msg = modify
-						.getCreator()
-						.startMessage()
-						.setRoom(context.getRoom())
-						.setBlocks([
-							{
-								type: 'section',
-								text: { type: 'plain_text', text: 'This message tests room context.' },
-							},
-							{
-								type: 'actions',
-								elements: [{ type: 'button', actionId: 'msg-button', text: { type: 'plain_text', text: 'Click!' } }],
-							},
-						]);
+					.getCreator()
+					.startMessage()
+					.setRoom(context.getRoom())
+					.setBlocks([
+						{
+							type: 'section',
+							text: { type: 'plain_text', text: 'This message tests room context.' },
+						},
+						{
+							type: 'actions',
+							elements: [{ type: 'button', value: seed, actionId: 'msg-button', text: { type: 'plain_text', text: 'Click!' } }],
+						},
+					]);
 
 					await modify.getCreator().finish(msg);
 				}

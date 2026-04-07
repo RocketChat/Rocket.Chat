@@ -1,13 +1,14 @@
 import fs from 'fs';
 
 import { request } from '@playwright/test';
+import type { Endpoints } from '@rocket.chat/rest-typings';
 
-import { Users } from './userStates';
+import { expect, type BaseTest } from './test';
 import { APP_URL } from '../../data/apps/apps-data';
 import { BASE_API_URL, BASE_URL } from '../config/constants';
-import { expect } from '../utils/test';
+import { Users } from '../fixtures/userStates';
 
-export default async function insertApp(): Promise<void> {
+export async function insertDefaultTestApp(): Promise<void> {
 	const api = await request.newContext();
 
 	const headers = {
@@ -34,9 +35,7 @@ export async function installLocalTestPackage(packagePath: string): Promise<{ ap
 	return response.json();
 }
 
-export async function getAppLogs(
-	appId: string,
-): Promise<{ success: boolean; logs: Array<{ method: string; entries: Array<{ args: unknown[] }> }> }> {
+export async function uninstallApp(appId: string): Promise<void> {
 	const api = await request.newContext();
 
 	const headers = {
@@ -44,7 +43,15 @@ export async function getAppLogs(
 		'X-User-Id': Users.admin.data.username,
 	};
 
-	const response = await api.get(`${BASE_URL}/api/apps/${appId}/logs`, { headers });
+	const response = await api.delete(`${BASE_URL}/api/apps/${appId}`, { headers });
+
+	await expect(response).toBeOK();
+}
+
+export async function getAppLogs(api: BaseTest['api'], appId: string): Promise<ReturnType<Endpoints['/apps/:id/logs']['GET']>> {
+	const response = await api.get(`/apps/${appId}/logs`, undefined, '/api');
+
+	await expect(response).toBeOK();
 
 	return response.json();
 }
