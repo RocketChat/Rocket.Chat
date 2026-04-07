@@ -25,7 +25,7 @@ export const convertDateToInt = (date: Date): number => {
 };
 export const convertIntToDate = (intValue: number): Date => parse(String(intValue), 'yyyyMMdd', new Date());
 const diffBetweenDays = (start: string | number | Date, end: string | number | Date): number =>
-	differenceInDays(new Date(end), new Date(start));
+	differenceInDays(new Date(start), new Date(end));
 export const diffBetweenDaysInclusive = (start: string | number | Date, end: string | number | Date): number =>
 	diffBetweenDays(start, end) + 1;
 
