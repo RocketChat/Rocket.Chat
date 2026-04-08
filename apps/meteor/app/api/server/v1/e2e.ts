@@ -2,6 +2,7 @@ import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import {
 	ajv,
+	ajvQuery,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
@@ -164,7 +165,9 @@ const ise2eGetUsersOfRoomWithoutKeyParamsGET = ajv.compile<e2eGetUsersOfRoomWith
 
 const ise2eUpdateGroupKeyParamsPOST = ajv.compile<e2eUpdateGroupKeyParamsPOST>(e2eUpdateGroupKeyParamsPOSTSchema);
 
-const isE2EFetchUsersWaitingForGroupKeyProps = ajv.compile<E2EFetchUsersWaitingForGroupKeyProps>(E2EFetchUsersWaitingForGroupKeySchema);
+const isE2EFetchUsersWaitingForGroupKeyProps = ajvQuery.compile<E2EFetchUsersWaitingForGroupKeyProps>(
+	E2EFetchUsersWaitingForGroupKeySchema,
+);
 
 const isE2EProvideUsersGroupKeyProps = ajv.compile<E2EProvideUsersGroupKeyProps>(E2EProvideUsersGroupKeySchema);
 
@@ -181,10 +184,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -210,16 +209,14 @@ const e2eEndpoints = API.v1
 					properties: {
 						public_key: { type: 'string' },
 						private_key: { type: 'string' },
-						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['success'],
 				}),
 			},
 		},
 		async function action() {
 			const result = await Users.fetchKeysByUserId(this.userId);
 
-			return API.v1.success(result);
+			return API.v1.success(result as { public_key?: string; private_key?: string });
 		},
 	)
 	.get(
@@ -252,9 +249,8 @@ const e2eEndpoints = API.v1
 								required: ['_id'],
 							},
 						},
-						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['users', 'success'],
+					required: ['users'],
 				}),
 			},
 		},
@@ -277,10 +273,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -303,10 +295,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -346,9 +334,8 @@ const e2eEndpoints = API.v1
 								},
 							},
 						},
-						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['usersWaitingForE2EKeys', 'success'],
+					required: ['usersWaitingForE2EKeys'],
 				}),
 			},
 		},
@@ -379,10 +366,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -404,10 +387,6 @@ const e2eEndpoints = API.v1
 				401: validateUnauthorizedErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -434,10 +413,6 @@ const e2eEndpoints = API.v1
 				403: validateForbiddenErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
-					properties: {
-						success: { type: 'boolean', enum: [true] },
-					},
-					required: ['success'],
 				}),
 			},
 		},
@@ -466,6 +441,34 @@ const e2eEndpoints = API.v1
 			} finally {
 				LockMap.delete(rid);
 			}
+		},
+	)
+	.post(
+		'e2e.setUserPublicAndPrivateKeys',
+		{
+			authRequired: true,
+			body: ise2eSetUserPublicAndPrivateKeysParamsPOST,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				401: validateUnauthorizedErrorResponse,
+				400: validateBadRequestErrorResponse,
+			},
+		},
+		async function action() {
+			const { public_key, private_key, force } = this.bodyParams;
+
+			await setUserPublicAndPrivateKeysMethod(this.userId, {
+				public_key,
+				private_key,
+				force,
+			});
+
+			return API.v1.success();
 		},
 	);
 
@@ -502,27 +505,6 @@ const e2eEndpoints = API.v1
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-API.v1.addRoute(
-	'e2e.setUserPublicAndPrivateKeys',
-	{
-		authRequired: true,
-		validateParams: ise2eSetUserPublicAndPrivateKeysParamsPOST,
-	},
-	{
-		async post() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
-			const { public_key, private_key, force } = this.bodyParams;
-
-			await setUserPublicAndPrivateKeysMethod(this.userId, {
-				public_key,
-				private_key,
-				force,
-			});
-
-			return API.v1.success();
-		},
-	},
-);
 
 type E2eEndpoints = ExtractRoutesFromAPI<typeof e2eEndpoints>;
 

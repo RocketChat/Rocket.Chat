@@ -6,7 +6,7 @@ export async function addParsedContacts(this: ImportDataConverter, parsedContact
 	const columnNames = parsedContacts.shift();
 	let addedContacts = 0;
 
-	for await (const parsedData of parsedContacts) {
+	for (const parsedData of parsedContacts) {
 		const contactData = parsedData.reduce(
 			(acc, value, index) => {
 				const columnName = columnNames && index < columnNames.length ? columnNames[index] : `column${index}`;

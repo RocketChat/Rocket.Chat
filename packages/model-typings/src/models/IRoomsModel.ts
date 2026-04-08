@@ -1,4 +1,13 @@
-import type { IDirectMessageRoom, IMessage, IOmnichannelGenericRoom, IRoom, IRoomFederated, ITeam, IUser } from '@rocket.chat/core-typings';
+import type {
+	IDirectMessageRoom,
+	IMessage,
+	IOmnichannelGenericRoom,
+	IRoom,
+	IRoomFederated,
+	IRoomNativeFederated,
+	ITeam,
+	IUser,
+} from '@rocket.chat/core-typings';
 import type {
 	AggregationCursor,
 	DeleteResult,
@@ -336,4 +345,5 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	updateAbacAttributeValuesArrayFilteredById(rid: IRoom['_id'], key: string, values: string[]): Promise<IRoom | null>;
 	removeAbacAttributeByRoomIdAndKey(rid: IRoom['_id'], key: string): Promise<UpdateResult>;
 	removeUserReferenceFromDMsById(roomId: string, username: string, userId: string): Promise<UpdateResult>;
+	findFederatedByIds<T extends Document = IRoomNativeFederated>(ids: Array<IRoom['_id']>, options?: FindOptions<T>): FindCursor<T>;
 }
