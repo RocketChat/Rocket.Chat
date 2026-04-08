@@ -51,3 +51,4 @@ jobs:
           flags: unit
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+          files: apps/meteor/coverage/jest/lcov.info,apps/meteor/coverage/nyc/lcov.info

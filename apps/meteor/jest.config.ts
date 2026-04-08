@@ -55,4 +55,5 @@ export default {
 	],
 	coverageProvider: 'v8',
 	collectCoverage: true,
+	coverageDirectory: 'coverage/jest',
 } satisfies Config;
