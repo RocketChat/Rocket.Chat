@@ -19,11 +19,11 @@ describe('RetentionPolicyWarning', () => {
 		expect(screen.getByRole('alert')).toHaveTextContent('1 minute June 1, 2024 at 12:30 AM');
 	});
 
-	it('Should render callout with next December date when cron is restricted to December', () => {
+	it('Should not render callout if settings are invalid', () => {
 		const fakeRoom = createFakeRoom({ t: 'c' });
 		render(<RetentionPolicyWarning room={fakeRoom} />, {
 			wrapper: createMock({ appliesToChannels: true, TTLChannels: 60000, advancedPrecisionCron: '* * * 12 *', advancedPrecision: true }),
 		});
-		expect(screen.getByRole('alert')).toHaveTextContent('1 minute December 1, 2024 at 12:00 AM');
+		expect(screen.queryByRole('alert')).not.toBeInTheDocument();
 	});
 });
