@@ -2,7 +2,7 @@ import type { IOmnichannelRoom, IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage, isMessageFromVisitor, isSystemMessage } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { LivechatRooms, LivechatContacts, LivechatInquiry } from '@rocket.chat/models';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
@@ -23,7 +23,7 @@ export async function markRoomResponded(
 		return;
 	}
 
-	const monthYear = moment().format('YYYY-MM');
+	const monthYear = format(new Date(), 'yyyy-MM');
 	const isContactActive = await LivechatContacts.isContactActiveOnPeriod({ visitorId: room.v._id, source: room.source }, monthYear);
 
 	// Case: agent answers & visitor is not active, we mark visitor as active

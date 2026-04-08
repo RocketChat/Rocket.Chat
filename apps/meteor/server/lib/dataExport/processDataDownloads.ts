@@ -5,7 +5,7 @@ import { access, mkdir, rm, writeFile } from 'node:fs/promises';
 import type { IExportOperation, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Avatars, ExportOperations, UserDataFiles, Subscriptions } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/string-helpers';
-import moment from 'moment';
+import { differenceInDays } from 'date-fns';
 
 import { FileUpload } from '../../../app/file-upload/server';
 import { settings } from '../../../app/settings/server';
@@ -206,7 +206,7 @@ const continueExportOperation = async function (exportOperation: IExportOperatio
 		const zipFolder = settings.get<string>('UserData_FileSystemZipPath')?.trim() || '/tmp/zipFiles';
 
 		if (exportOperation.status === 'downloading') {
-			for await (const attachmentData of exportOperation.fileList) {
+			for (const attachmentData of exportOperation.fileList) {
 				await copyFileUpload(attachmentData, exportOperation.assetsPath);
 			}
 
@@ -259,7 +259,7 @@ export async function processDataDownloads(): Promise<void> {
 
 	if (operation.status !== 'pending') {
 		// If the operation has started but was not updated in over a day, then skip it
-		if (operation._updatedAt && moment().diff(moment(operation._updatedAt), 'days') > 1) {
+		if (operation._updatedAt && differenceInDays(new Date(), operation._updatedAt) > 1) {
 			operation.status = 'skipped';
 			await ExportOperations.updateOperation(operation);
 			return processDataDownloads();

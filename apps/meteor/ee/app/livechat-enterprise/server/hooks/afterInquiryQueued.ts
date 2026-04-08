@@ -1,5 +1,5 @@
 import type { ILivechatInquiryRecord } from '@rocket.chat/core-typings';
-import moment from 'moment';
+import { addMinutes } from 'date-fns';
 
 import { afterInquiryQueued } from '../../../../../app/livechat/server/lib/hooks';
 import { settings } from '../../../../../app/settings/server';
@@ -12,8 +12,8 @@ export const afterInquiryQueuedFunc = async (inquiry: ILivechatInquiryRecord) =>
 	}
 
 	// schedule individual jobs instead of property for close inactivty
-	const newQueueTime = moment(inquiry._updatedAt).add(timer, 'minutes');
-	await OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, new Date(newQueueTime.format()));
+	const newQueueTime = addMinutes(new Date(inquiry._updatedAt), timer);
+	await OmnichannelQueueInactivityMonitor.scheduleInquiry(inquiry._id, newQueueTime);
 };
 
 afterInquiryQueued.patch(async (originalFn: any, inquiry: ILivechatInquiryRecord) => {

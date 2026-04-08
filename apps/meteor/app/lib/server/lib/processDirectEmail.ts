@@ -1,7 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Messages, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import type { ParsedMail } from 'mailparser';
-import moment from 'moment';
 
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -25,7 +24,7 @@ export const processDirectEmail = async function (email: ParsedMail): Promise<vo
 
 	const ts = new Date(email.date);
 
-	const tsDiff = Math.abs(moment(ts).diff(new Date()));
+	const tsDiff = Math.abs(ts.getTime() - Date.now());
 
 	let msg = email.text.split('\n\n').join('\n');
 

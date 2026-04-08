@@ -1,8 +1,8 @@
 import type { ISocketConnection } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { format } from 'date-fns';
 import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 import { UAParser } from 'ua-parser-js';
 
 import * as Mailer from '../../../../app/mailer/server/api';
@@ -55,8 +55,7 @@ export const listenSessionLogin = () => {
 			return;
 		}
 
-		const dateFormat = settings.get('Message_TimeAndDateFormat');
-
+		const dateFormat = settings.get<string>('Message_TimeAndDateFormat') ?? 'yyyy-MM-dd HH:mm';
 		const {
 			name,
 			username,
@@ -75,7 +74,7 @@ export const listenSessionLogin = () => {
 			}`,
 			ipInfo: clientAddress,
 			userAgent: '',
-			date: moment().format(String(dateFormat)),
+			date: format(new Date(), dateFormat),
 		};
 
 		switch (device.type) {

@@ -4,7 +4,6 @@ import { isDirectMessageRoom, isEditedMessage, isOmnichannelRoom, isRoomFederate
 import { Subscriptions, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
 import type { ActionsBlock } from '@rocket.chat/ui-kit';
-import moment from 'moment';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 import { i18n } from '../../../../server/lib/i18n';
@@ -57,7 +56,7 @@ callbacks.add(
 		// TODO: check if I need to test this 60 second rule.
 		// If the message was edited, or is older than 60 seconds (imported)
 		// the notifications will be skipped, so we can also skip this validation
-		if (isEditedMessage(message) || (message.ts && Math.abs(moment(message.ts).diff(moment())) > 60000) || !message.mentions) {
+		if (isEditedMessage(message) || (message.ts && Math.abs(new Date(message.ts).getTime() - Date.now()) > 60000) || !message.mentions) {
 			return message;
 		}
 
