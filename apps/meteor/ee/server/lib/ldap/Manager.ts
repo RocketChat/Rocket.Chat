@@ -200,12 +200,11 @@ export class LDAPEEManager extends LDAPManager {
 	public static async syncAvatarAndAbacAttributes(): Promise<void> {
 		const syncAvatars = settings.get('LDAP_Background_Sync_Avatars');
 		const syncAbac = settings.get('LDAP_Background_Sync_ABAC_Attributes') && License.hasModule('abac') && settings.get('ABAC_Enabled');
+		const abacMapping = syncAbac && this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
 
 		if (!syncAvatars && !syncAbac) {
 			return;
 		}
-
-		const abacMapping = syncAbac && this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
 
 		try {
 			const ldap = new LDAPConnection();
@@ -223,12 +222,7 @@ export class LDAPEEManager extends LDAPManager {
 						await LDAPManager.syncUserAvatar(user, ldapUser);
 					}
 
-					if (syncAbac) {
-						if (!abacMapping) {
-							logger.error('LDAP to ABAC attribute mapping is not valid JSON');
-							continue;
-						}
-
+					if (syncAbac && abacMapping) {
 						await Abac.addSubjectAttributes(user, ldapUser, abacMapping, undefined);
 					}
 				}
