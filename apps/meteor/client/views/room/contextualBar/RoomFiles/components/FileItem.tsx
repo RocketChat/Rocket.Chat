@@ -1,27 +1,30 @@
-import type { IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
+import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 
 import FileItemIcon from './FileItemIcon';
 import FileItemMenu from './FileItemMenu';
 import ImageItem from './ImageItem';
+import { normalizeUsername } from '../../../../../../lib/utils/normalizeUsername';
 import { useDownloadFromServiceWorker } from '../../../../../hooks/useDownloadFromServiceWorker';
 import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
 
 type FileItemProps = {
+	rid: IRoom['_id'];
 	fileData: IUploadWithUser;
 	onClickDelete: (id: IUpload['_id']) => void;
 };
 
-const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
+const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
 	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
 
 	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
+	const normalizedUsername = user?.username ? normalizeUsername(user.username) : undefined;
 
 	return (
 		<>
 			{typeGroup === 'image' ? (
-				<ImageItem id={_id} url={path} name={name} username={user?.username} timestamp={format(uploadedAt)} />
+				<ImageItem id={_id} url={path} name={name} username={normalizedUsername} timestamp={format(uploadedAt)} />
 			) : (
 				<Box
 					is='a'
@@ -46,7 +49,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 						</Box>
 						{user?.username && (
 							<Box withTruncatedText color='hint' fontScale='p2'>
-								@{user?.username}
+								@{normalizedUsername}
 							</Box>
 						)}
 						<Box color='hint' fontScale='micro'>
@@ -55,7 +58,7 @@ const FileItem = ({ fileData, onClickDelete }: FileItemProps) => {
 					</Box>
 				</Box>
 			)}
-			<FileItemMenu fileData={fileData} onClickDelete={onClickDelete} />
+			<FileItemMenu rid={rid} fileData={fileData} onClickDelete={onClickDelete} />
 		</>
 	);
 };
