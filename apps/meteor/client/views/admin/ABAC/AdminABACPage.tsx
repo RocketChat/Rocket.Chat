@@ -14,8 +14,8 @@ import RoomsPage from './ABACRoomsTab/RoomsPage';
 import SettingsPage from './ABACSettingTab/SettingsPage';
 import AdminABACTabs from './AdminABACTabs';
 import { useIsABACAvailable } from './hooks/useIsABACAvailable';
-import { useLdapSync } from '../../../hooks/useLdapSync';
 import { useExternalLink } from '../../../hooks/useExternalLink';
+import { useLdapSync } from '../../../hooks/useLdapSync';
 import { links } from '../../../lib/links';
 
 type AdminABACPageProps = {

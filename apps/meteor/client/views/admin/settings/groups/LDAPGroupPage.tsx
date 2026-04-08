@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next';
 
 import BaseGroupPage from './BaseGroupPage';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
-import { links } from '../../../../lib/links';
 import { useLdapSync } from '../../../../hooks/useLdapSync';
+import { links } from '../../../../lib/links';
 import { useEditableSettings } from '../../EditableSettingsContext';
 
 type LDAPGroupPageProps = ISetting & {
