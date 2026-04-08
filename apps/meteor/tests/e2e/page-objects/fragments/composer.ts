@@ -1,8 +1,38 @@
 import type { Locator, Page } from 'playwright-core';
 
+import { Popup } from './popup';
+
+class VideoRecorderPopup extends Popup {
+	constructor(root: Locator) {
+		super(root);
+	}
+
+	get btnRecord(): Locator {
+		return this.root.getByRole('button', { name: 'Record' });
+	}
+
+	get btnStopRecording(): Locator {
+		return this.root.getByRole('button', { name: 'Stop Recording' });
+	}
+
+	get btnSend(): Locator {
+		return this.root.getByRole('button', { name: 'Send' });
+	}
+
+	async record() {
+		await this.btnRecord.click();
+		await this.btnStopRecording.waitFor({ state: 'visible' }).then(() => this.btnStopRecording.click());
+		await this.btnSend.click();
+		await this.waitForDismissal();
+	}
+}
+
 export abstract class Composer {
+	readonly videoRecorderPopup: VideoRecorderPopup;
+
 	constructor(protected root: Locator) {
 		this.root = root;
+		this.videoRecorderPopup = new VideoRecorderPopup(this.root.page().getByRole('dialog', { name: 'Video record' }));
 	}
 
 	get inputMessage(): Locator {

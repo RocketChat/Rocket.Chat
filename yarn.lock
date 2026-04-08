@@ -9137,7 +9137,7 @@ __metadata:
   dependencies:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.6.0"
+    "@rocket.chat/federation-sdk": "npm:0.6.3"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -9347,7 +9347,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/federation-sdk": "npm:0.6.0"
+    "@rocket.chat/federation-sdk": "npm:0.6.3"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -9376,9 +9376,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.6.0":
-  version: 0.6.0
-  resolution: "@rocket.chat/federation-sdk@npm:0.6.0"
+"@rocket.chat/federation-sdk@npm:0.6.3":
+  version: 0.6.3
+  resolution: "@rocket.chat/federation-sdk@npm:0.6.3"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -9391,7 +9391,7 @@ __metadata:
     zod: "npm:~4.3.6"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/704e01164679b9945907b499e48923e20ab699212dd0f282080f805a95d616d2a4e4c6bb85c9473284c56d18ccdff05af599c75ddbba388d51b5f8a69751974d
+  checksum: 10/71c8667f3d63e0b4ef0d82ee2b7c7c707494c286cfadf0c6be7e0feed7abc8817b0dfd44bb249861f8411c7747fdcfcde996a1c63d9c2396bba19d7ecb5689ac
   languageName: node
   linkType: hard
 
@@ -9600,7 +9600,7 @@ __metadata:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-tokens": "*"
-    "@rocket.chat/message-parser": 0.31.35-rc.0
+    "@rocket.chat/message-parser": 0.31.35
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9998,7 +9998,7 @@ __metadata:
     "@rocket.chat/emitter": "npm:^0.32.0"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.6.0"
+    "@rocket.chat/federation-sdk": "npm:0.6.3"
     "@rocket.chat/fuselage": "npm:^0.75.0"
     "@rocket.chat/fuselage-forms": "npm:^1.1.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
@@ -11362,8 +11362,8 @@ __metadata:
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/tools": 0.2.5-rc.0
-    "@rocket.chat/ui-contexts": 29.0.0-rc.1
+    "@rocket.chat/tools": 0.2.5
+    "@rocket.chat/ui-contexts": 29.0.0
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"

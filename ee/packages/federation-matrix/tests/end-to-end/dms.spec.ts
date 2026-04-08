@@ -186,88 +186,6 @@ const waitForRoomEvent = async (
 				});
 			});
 
-			describe('Display name changes', () => {
-				let rcUser: TestUser<IUser>;
-				let rcUserConfig: IRequestConfig;
-				let hs1Room: Room;
-				let rcRoom: IRoom;
-
-				const userDm = `dm-federation-displayname-user-${Date.now()}`;
-				const userDmId = `@${userDm}:${federationConfig.rc1.domain}`;
-				const initialDisplayName = `DM User ${Date.now()}`;
-				const updatedDisplayName = `Updated Display Name ${Date.now()}`;
-
-				beforeAll(async () => {
-					rcUser = await createUser(
-						{
-							username: userDm,
-							password: 'random',
-							email: `${userDm}@rocket.chat`,
-							name: initialDisplayName,
-						},
-						rc1AdminRequestConfig,
-					);
-
-					rcUserConfig = await getRequestConfig(federationConfig.rc1.url, rcUser.username, 'random');
-
-					hs1Room = (await hs1AdminApp.createDM([userDmId])) as Room;
-
-					await retry('waiting for the room to be created in RC', async () => {
-						const roomsResponse = await rcUserConfig.request.get(api('rooms.get')).set(rcUserConfig.credentials).expect(200);
-
-						rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
-
-						expect(rcRoom).toHaveProperty('_id');
-					});
-				});
-
-				afterAll(async () => {
-					await deleteUser(rcUser, {}, rc1AdminRequestConfig);
-
-					// Reset display name back to original
-					await hs1AdminApp.matrixClient.setDisplayName(federationConfig.hs1.adminUser);
-
-					// wait until the name change is reflected in RC before finishing the test
-					await retry(
-						'waiting for Synapse user displayname to propagate to RC',
-						async () => {
-							const response = await rc1AdminRequestConfig.request
-								.get(api('users.info'))
-								.set(rc1AdminRequestConfig.credentials)
-								.query({ username: federationConfig.hs1.adminMatrixUserId })
-								.expect(200);
-
-							expect(response.body.user).toHaveProperty('name', federationConfig.hs1.adminUser);
-						},
-						{ retries: 15, delayMs: 1000 },
-					);
-				});
-
-				it('should accept the DM invitation from RC', async () => {
-					const response = await acceptRoomInvite(rcRoom._id, rcUserConfig);
-					expect(response.success).toBe(true);
-				});
-
-				it('should update DM room name after Synapse user changes their display name', async () => {
-					// Verify initial state: room name should be the Synapse admin initial display name
-					const initialSub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
-					expect(initialSub).toHaveProperty('fname', federationConfig.hs1.adminUser);
-
-					// Action: update the Synapse user's displayname
-					await hs1AdminApp.matrixClient.setDisplayName(updatedDisplayName);
-
-					// Verify: the DM room name should be updated after the debounced name update completes
-					await retry(
-						'waiting for DM room name to be updated after display name change',
-						async () => {
-							const updatedSub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
-							expect(updatedSub).toHaveProperty('fname', updatedDisplayName);
-						},
-						{ delayMs: 1000 },
-					);
-				});
-			});
-
 			describe('Permission validations', () => {
 				let rcUser: TestUser<IUser>;
 				let rcUserConfig: IRequestConfig;
@@ -366,6 +284,99 @@ const waitForRoomEvent = async (
 					expect(response.body).toHaveProperty('success', true);
 
 					await leaveEventPromise;
+				});
+			});
+
+			describe('Display name changes', () => {
+				let rcUser: TestUser<IUser>;
+				let rcUserConfig: IRequestConfig;
+				let hs1Room: Room;
+				let rcRoom: IRoom;
+
+				const userDm = `dm-federation-displayname-user-${Date.now()}`;
+				const userDmId = `@${userDm}:${federationConfig.rc1.domain}`;
+				const initialDisplayName = `DM User ${Date.now()}`;
+				const updatedDisplayName = `Updated Display Name ${Date.now()}`;
+
+				beforeAll(async () => {
+					rcUser = await createUser(
+						{
+							username: userDm,
+							password: 'random',
+							email: `${userDm}@rocket.chat`,
+							name: initialDisplayName,
+						},
+						rc1AdminRequestConfig,
+					);
+
+					rcUserConfig = await getRequestConfig(federationConfig.rc1.url, rcUser.username, 'random');
+
+					hs1Room = (await hs1AdminApp.createDM([userDmId])) as Room;
+
+					await retry('waiting for the room to be created in RC', async () => {
+						const roomsResponse = await rcUserConfig.request.get(api('rooms.get')).set(rcUserConfig.credentials).expect(200);
+
+						rcRoom = roomsResponse.body.update.find((room: IRoomNativeFederated) => room.federation.mrid === hs1Room.roomId);
+
+						expect(rcRoom).toHaveProperty('_id');
+					});
+				});
+
+				afterAll(async () => {
+					// Reset display name back to original before deleting the user
+					await hs1AdminApp.matrixClient.setDisplayName(federationConfig.hs1.adminUser);
+
+					// wait until the name change is reflected in RC before finishing the test
+					await retry(
+						'waiting for Synapse user displayname to propagate to RC',
+						async () => {
+							const response = await rc1AdminRequestConfig.request
+								.get(api('users.info'))
+								.set(rc1AdminRequestConfig.credentials)
+								.query({ username: federationConfig.hs1.adminMatrixUserId })
+								.expect(200);
+
+							expect(response.body.user).toHaveProperty('name', federationConfig.hs1.adminUser);
+						},
+						{ retries: 15, delayMs: 1000 },
+					);
+
+					// Also wait for the DM subscription fname to be updated, since this propagates
+					// asynchronously after the user name change via debounced Room.updateDirectMessageRoomName
+					await retry(
+						'waiting for subscription fname to reflect reset display name',
+						async () => {
+							const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
+							expect(sub).toHaveProperty('fname', federationConfig.hs1.adminUser);
+						},
+						{ retries: 10, delayMs: 1000 },
+					);
+
+					await deleteUser(rcUser, {}, rc1AdminRequestConfig);
+				});
+
+				it('should accept the DM invitation from RC', async () => {
+					const response = await acceptRoomInvite(rcRoom._id, rcUserConfig);
+					expect(response.success).toBe(true);
+				});
+
+				it('should update DM room name after Synapse user changes their display name', async () => {
+					// Verify initial state: room name should be the Synapse admin initial display name
+					const initialSub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
+					expect(initialSub).toHaveProperty('fname', federationConfig.hs1.adminUser);
+
+					// Action: update the Synapse user's displayname
+					await hs1AdminApp.matrixClient.setDisplayName(updatedDisplayName);
+
+					// Verify: the DM room name should be updated after the debounced name update completes
+					await retry(
+						'waiting for DM room name to be updated after display name change',
+						async () => {
+							const updatedSub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
+							expect(updatedSub).toHaveProperty('fname', updatedDisplayName);
+						},
+						{ delayMs: 1000 },
+					);
 				});
 			});
 		});
