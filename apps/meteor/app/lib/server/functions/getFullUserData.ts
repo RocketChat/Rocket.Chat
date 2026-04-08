@@ -99,7 +99,7 @@ export async function getFullUserDataByIdOrUsernameOrImportIdOrEmail(
 	const canViewAllInfo = !!myself || (await hasPermissionAsync(userId, 'view-full-other-user-info'));
 
 	// Only search for importId/email if the user has permission to view them
-	if ((searchType === 'importId' && !canViewAllInfo) || (searchType === 'email' && !canViewAllInfo)) {
+	if (['importId', 'email'].includes(searchType) && !canViewAllInfo) {
 		return null;
 	}
 
