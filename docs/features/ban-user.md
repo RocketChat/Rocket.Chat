@@ -34,14 +34,39 @@ Banning prevents a user from participating in a specific room. Unlike kicking (w
 
 **Important:** after unban the user **does not become a member** of the room again. The banned subscription is deleted. The user must be invited or join again.
 
-## Re-entry After Unban
+## Join / Invite / Re-entry Behavior
 
-In `addUserToRoom`, if the user being added has a subscription with `status: 'BANNED'`:
-- Removes the banned subscription.
-- Saves a `user-unbanned` system message.
-- Creates a new subscription normally.
+A banned user **cannot** re-enter the room through any path. The ban must be explicitly lifted first. Below is how each entry point enforces this for both normal and federated rooms.
 
-This means inviting/adding a banned user automatically unbans them.
+### Invite via API / UI (`groups.invite`, `channels.invite`, "Add Users")
+
+`addUsersToRoom` checks for a `BANNED` subscription before calling `addUserToRoom`:
+- Returns `error-user-is-banned` — the invite is rejected.
+- The UI shows a warning modal asking the admin to unban first.
+- Applies equally to normal and federated rooms (the check is in the method layer, before the room-type branch).
+
+### Invite link (`useInviteToken`)
+
+`useInviteToken` checks for a `BANNED` subscription before saving the invite token or calling `addUserToRoom`:
+- Returns `error-user-is-banned` — the token is not consumed.
+- Because the check runs before `Users.updateInviteToken`, the secondary path through `setUsername` (for users who register via invite link) is also blocked.
+
+### Direct join (`channels.join`, `joinRoom`)
+
+`Room.join` calls `canAccessRoom` before `addUserToRoom`:
+- For **public rooms** and **public rooms inside teams**, the `canAccessRoom` validators explicitly check `findOneBannedSubscription` and deny access.
+- For **private rooms**, `countByRoomIdAndUserId` excludes `BANNED` subscriptions (`status: { $exists: false }`), so the "already joined" validator returns false and access is denied.
+
+### Federation invite events
+
+When a Matrix homeserver sends an invite for a user who is banned locally:
+- `handleInvite` in `federation-matrix/src/events/member.ts` finds the existing (banned) subscription and returns early without creating a new one.
+- The user never receives an `INVITED` subscription, so `handleJoin` is never reached.
+
+### Expected flow
+
+1. **Unban** the user via `POST /v1/rooms.unbanUser`, `/unban @username`, or the "Banned Users" contextual bar. This deletes the banned subscription.
+2. **Invite or join** — the user can now be invited (API, UI, invite link) or join (public rooms) normally.
 
 ## Access Control
 
@@ -49,7 +74,7 @@ The `canAccessRoom` validators check for bans in two public room scenarios:
 - **Public rooms inside teams** — if banned, access is denied.
 - **Regular public rooms** — if banned, access is denied.
 
-For private rooms, access is already controlled by the subscription (which is marked as `BANNED`).
+For private rooms, access is controlled by the subscription: `countByRoomIdAndUserId` excludes `BANNED` subscriptions, so a banned user has no valid subscription and cannot access the room.
 
 ## UI
 
