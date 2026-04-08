@@ -2,10 +2,12 @@
 
 ## Problem
 
-Today, a route's **definition** (path, method, auth, permissions, validators, response schemas) is mixed with its **implementation** (action handler) inside `apps/meteor/app/api/server/v1/*.ts`. This creates 3 problems:
+Today, a route's **definition** (path, method, auth, permissions, validators, response schemas) is mixed with its **implementation** (action handler) inside `apps/meteor/app/api/server/v1/*.ts`. This creates 4 problems:
 
 1. **Cannot test definitions without loading Meteor** — importing any route file pulls the entire dependency graph (models, services, Meteor)
 2. **Cannot generate documentation without the server** — route metadata only exists at runtime, after the server loads
+3. **Cannot propagate endpoint definitions to the SDK layer** — definitions declared inside `apps/meteor` stay in the application layer, so lower-level consumers cannot inherit or expose those contracts
+4. **Cannot expose app-declared contracts as a reusable dependency** — the SDK should consume endpoint typings from a package dependency, but it cannot depend on `apps/meteor`
 
 ## Vision
 
@@ -16,6 +18,8 @@ rest-typings          →  Pure TS types (path, params, response)       [already
 api-definitions (NEW) →  Runtime definitions (validators, auth, permissions, schemas)
 apps/meteor           →  Implementation (action handlers)
 ```
+
+This separation also puts endpoint contracts in a layer that can be consumed by other packages. In particular, it avoids declaring endpoint metadata only inside `apps/meteor`, where the SDK cannot inherit it.
 
 ## What goes into the new package
 
@@ -152,6 +156,16 @@ export function defineRoute<TPath extends string, TMethod extends HttpMethod>(
 
 The new `api-definitions` **imports** validators and schemas from `rest-typings`, and adds the route metadata layer (auth, permissions, tags).
 
+This also gives us a stable layer from which SDK-facing contracts can be derived. Today, when definitions live only in `apps/meteor`, the SDK cannot consume or re-export them because it sits below the application layer in the dependency graph.
+
+The intended mechanism is **module augmentation**:
+
+- `@rocket.chat/rest-typings` continues to expose the base endpoint contract surface
+- `@rocket.chat/api-definitions` augments that contract incrementally as endpoints are migrated
+- consumers that need the augmented contract can depend on the augmenting package without depending on `apps/meteor`
+
+This is important not only for type sharing, but also for package granularity. With augmentation happening in a package layer, we can expose narrower entrypoints and sub-imports for specific endpoint groups, instead of forcing consumers to load a single application-level declaration source.
+
 ```
 rest-typings  ←──depends──  api-definitions  ←──depends──  apps/meteor
  (types +                    (route defs +                   (handlers)
@@ -268,7 +282,24 @@ const spec = {
 console.log(JSON.stringify(spec, null, 2));
 ```
 
-### 3. Metadata test (safety net)
+### 3. SDK contract propagation
+
+Definitions declared in `apps/meteor` are not available to lower-level dependencies, so the SDK cannot inherit those endpoint contracts directly.
+
+By moving route definitions to a package below the app layer, we unlock a path where:
+
+- endpoint contracts can be imported by tooling without depending on Meteor
+- SDK-facing typings can be derived from the same source of truth
+- route metadata and public contract definitions stop being trapped inside the server application
+
+With module augmentation in a package layer, we also gain more flexibility in how consumers import those contracts:
+
+- the SDK can consume the augmented endpoint surface without depending on the app layer
+- specific endpoint groups can be exposed through sub-imports
+- consumers can depend on smaller type entrypoints when only a subset of endpoints is relevant
+- this improves cache reuse and reduces unnecessary rebuilds when unrelated endpoint groups change
+
+### 4. Metadata test (safety net)
 
 ```typescript
 // packages/api-definitions/src/__tests__/metadata.spec.ts
@@ -296,7 +327,7 @@ describe('API metadata invariants', () => {
 });
 ```
 
-### 4. Type-safe registration
+### 5. Type-safe registration
 
 ```typescript
 // In APIClass, a new type-safe `register` method:
@@ -391,6 +422,9 @@ API.v1.register(channelsAddAll, async function action() { /* ... */ });
 | Required response schemas | Optional for now — legacy endpoints don't have them. Metadata test can warn but not fail. |
 | `validateParams` (old) vs `query`/`body` (new) | `defineRoute` only accepts `query`/`body`. Legacy endpoints using `validateParams` need to be converted when migrating. |
 | Where success response schemas live | In `api-definitions` under `common/responses.ts` (generic) and in each resource file (specific). Error schemas already live in `rest-typings`. |
+| How the SDK consumes contracts | The SDK cannot depend on `apps/meteor`. Contracts that need to be shared externally must live in a package layer below the app, or be generated from that layer. |
+| How type sharing stays incremental | Endpoint sharing should happen via module augmentation from package entrypoints, so migrated resources can be published gradually without forcing a single monolithic import surface. |
+| Build/cache granularity | Package-level augmentation enables sub-imports by resource area, which helps consumers reuse cache and avoid broad rebuilds when unrelated endpoint definitions change. |
 
 ## Existing infrastructure to be reused
 
