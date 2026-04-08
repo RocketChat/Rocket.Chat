@@ -113,6 +113,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/cli@^1.0.9",
+      "jsr:@std/io@^0.225.3",
       "jsr:@std/streams@^1.0.16",
       "npm:@msgpack/msgpack@3.0.0-beta2",
       "npm:@rocket.chat/ui-kit@^0.31.22",

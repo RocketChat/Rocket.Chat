@@ -2,7 +2,7 @@ import { useContext } from 'react';
 
 import { DeviceContext, isDeviceContextEnabled } from '../DeviceContext';
 
-export const requestDevice = async ({
+const requestDevice = async ({
 	onAccept,
 	onReject,
 	constraints = { audio: true },
@@ -14,7 +14,8 @@ export const requestDevice = async ({
 	if (!navigator.mediaDevices) {
 		return;
 	}
-	navigator.mediaDevices.getUserMedia(constraints).then(onAccept, onReject);
+
+	await navigator.mediaDevices.getUserMedia(constraints).then(onAccept, onReject);
 };
 
 const isPermissionDenied = (state: PermissionState): state is 'denied' => {

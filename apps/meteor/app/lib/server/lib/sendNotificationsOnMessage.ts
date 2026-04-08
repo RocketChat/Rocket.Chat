@@ -417,7 +417,13 @@ settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 
 	callbacks.add(
 		'afterSaveMessage',
-		(message, { room }) => sendAllNotifications(message, room),
+		(message, { room, options }) => {
+			if (options?.skipNotifications) {
+				return message;
+			}
+
+			return sendAllNotifications(message, room);
+		},
 		callbacks.priority.LOW,
 		'sendNotificationsOnMessage',
 	);

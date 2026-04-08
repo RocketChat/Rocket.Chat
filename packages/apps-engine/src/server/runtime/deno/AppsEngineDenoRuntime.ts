@@ -1,4 +1,5 @@
 import * as child_process from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
 import { inspect as utilInspect } from 'util';
@@ -11,7 +12,7 @@ import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
 import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
-import { AppInterface, AppMethod } from '../../../definition/metadata';
+import { AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
@@ -75,13 +76,13 @@ export function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACC
 	return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
 
-export function getDenoWrapperPath(): string {
+export function getDenoConfigPath(): string {
 	try {
 		// This path is relative to the compiled version of the Apps-Engine source
-		return require.resolve('../../../deno-runtime/main.ts');
+		return require.resolve('../../../deno-runtime/deno.jsonc');
 	} catch {
-		// This path is relative to the original Apps-Engine files
-		return require.resolve('../../../../deno-runtime/main.ts');
+		// This path is relative to the original Apps-Engine files - used during tests
+		return require.resolve('../../../../deno-runtime/deno.jsonc');
 	}
 }
 
@@ -117,13 +118,37 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 	private readonly tempFilePath: string;
 
-	// We need to keep the appSource around in case the Deno process needs to be restarted
+	private readonly denoRuntimePath: string;
+
+	private readonly denoConfigPath: string;
+
 	constructor(
 		manager: AppManager,
+		// We need to keep the appSource around in case the Deno process needs to be restarted
 		private readonly appPackage: IParseAppPackageResult,
 		private readonly storageItem: IAppStorageItem,
 	) {
 		super();
+
+		this.tempFilePath = manager.getTempFilePath();
+		this.denoRuntimePath = path.join(this.tempFilePath, 'deno-runtime', 'main.ts');
+		this.denoConfigPath = getDenoConfigPath();
+
+		/**
+		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
+		 * The temp directory is the same we are given by the host to store temporary upload files
+		 */
+		try {
+			fs.symlinkSync(
+				path.dirname(this.denoConfigPath),
+				path.dirname(this.denoRuntimePath),
+				'dir'
+			);
+		} catch (reason: unknown) {
+			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
+				throw reason;
+			}
+		}
 
 		this.debug = baseDebug.extend(appPackage.info.id);
 		this.messenger = new ProcessMessenger();
@@ -139,31 +164,26 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		this.api = manager.getApiManager();
 		this.logStorage = manager.getLogStorage();
 		this.bridges = manager.getBridges();
-		this.tempFilePath = manager.getTempFilePath();
 	}
 
 	public spawnProcess(): void {
 		try {
 			const denoExePath = 'deno';
 
-			const denoWrapperPath = getDenoWrapperPath();
+			const denoWrapperPath = this.denoRuntimePath;
 			// During development, the appsEngineDir is enough to run the deno process
-			const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
+			const appsEngineDir = path.dirname(path.join(this.denoConfigPath, '..'));
 			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
 			// When running in production, we're likely inside a node_modules which the Deno
 			// process must be able to read in order to include files that use NPM packages
 			const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
 
-			const allowedDirs = [appsEngineDir, parentNodeModulesDir];
-
-			// If the app handles file upload events, it needs to be able to read the temp dir
-			if (this.appPackage.implemented.doesImplement(AppInterface.IPreFileUpload)) {
-				allowedDirs.push(this.tempFilePath);
-			}
+			const allowedDirs = [appsEngineDir, parentNodeModulesDir, this.tempFilePath];
 
 			const options = [
 				'run',
 				'--cached-only',
+				`--config=${this.denoConfigPath}`,
 				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
 				denoWrapperPath,
@@ -188,6 +208,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				},
 			};
 
+			// SECURITY: We control the command, the arguments and the script that will be executed.
 			this.deno = child_process.spawn(denoExePath, options, environment);
 			this.messenger.setReceiver(this.deno);
 			this.livenessManager.attach(this.deno);

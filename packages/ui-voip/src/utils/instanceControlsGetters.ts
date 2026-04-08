@@ -4,14 +4,19 @@ export const getEndCall = (instance?: MediaSignalingSession) => () => {
 	if (!instance) {
 		return;
 	}
-	const mainCall = instance.getMainCall();
-	if (!mainCall) {
+	const instanceState = instance.getState();
+	if (!instanceState) {
 		return;
 	}
-	const { role } = mainCall;
-	if (role === 'caller' || mainCall.state !== 'ringing') {
-		mainCall.hangup();
+
+	const {
+		call,
+		localParticipant: { role },
+	} = instanceState;
+
+	if (role === 'caller' || instanceState.state !== 'ringing') {
+		call.hangup();
 		return;
 	}
-	mainCall.reject();
+	call.reject();
 };

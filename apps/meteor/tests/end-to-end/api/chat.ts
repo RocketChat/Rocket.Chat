@@ -28,14 +28,32 @@ const pinMessage = ({ msgId }: { msgId: IMessage['_id'] }) => {
 describe('[Chat]', () => {
 	let testChannel: IRoom;
 	let message: { _id: IMessage['_id'] };
+	let protectedChannel: IRoom;
 
 	before((done) => getCredentials(done));
 
 	before(async () => {
 		testChannel = (await createRoom({ type: 'c', name: `chat.api-test-${Date.now()}` })).body.channel;
+		protectedChannel = (await createRoom({ type: 'c', name: `chat.api-protected-test-${Date.now()}` })).body.channel;
+
+		await request
+			.post(api('rooms.saveRoomSettings'))
+			.set(credentials)
+			.send({
+				rid: protectedChannel._id,
+				joinCode: 'super-secret-password',
+			})
+			.expect('Content-Type', 'application/json')
+			.expect(200)
+			.expect((res) => {
+				expect(res.body).to.have.property('success', true);
+			});
 	});
 
-	after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
+	after(async () => {
+		await deleteRoom({ type: 'c', roomId: testChannel._id });
+		await deleteRoom({ type: 'c', roomId: protectedChannel._id });
+	});
 
 	describe('/chat.postMessage', () => {
 		it('should throw an error when at least one of required parameters(channel, roomId) is not sent', (done) => {
@@ -584,6 +602,34 @@ describe('[Chat]', () => {
 					expect(res.body).to.have.nested.property('message.attachments[0].fields[0].title', 'This is title');
 				})
 				.end(done);
+		});
+
+		it('should allow forwarding a message into the same password protected room', async () => {
+			const postResponse = await request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					roomId: [protectedChannel._id],
+					text: 'Message to be forwarded',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(postResponse.body).to.have.property('success', true);
+			const originalMessageId = postResponse.body.message._id as IMessage['_id'];
+
+			const forwardResponse = await request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					roomId: [protectedChannel._id],
+					text: `[](http://localhost:3000/channel/${protectedChannel.name}?msg=${originalMessageId}`,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(forwardResponse.body).to.have.property('success', true);
+			expect(forwardResponse.body).to.have.nested.property('message.rid', protectedChannel._id);
 		});
 
 		it('should return statusCode 200 when postMessage successfully', (done) => {
