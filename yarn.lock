@@ -10848,6 +10848,7 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.4"
     jest: "npm:~30.2.0"
+    moment-timezone: "npm:^0.5.48"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -28669,7 +28670,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"moment@npm:^2.10.2":
+"moment-timezone@npm:^0.5.48":
+  version: 0.5.48
+  resolution: "moment-timezone@npm:0.5.48"
+  dependencies:
+    moment: "npm:^2.29.4"
+  checksum: 10/8e0b7a05577623552293b28eeee4e60634b8be87fdb74084fa6d5ccc516771eb42d88f29c5a5e50a94c494048d14cdef94f94526a9dfd5e1b0050ff29d0a6c0a
+  languageName: node
+  linkType: hard
+
+"moment@npm:^2.10.2, moment@npm:^2.29.4":
   version: 2.30.1
   resolution: "moment@npm:2.30.1"
   checksum: 10/ae42d876d4ec831ef66110bdc302c0657c664991e45cf2afffc4b0f6cd6d251dde11375c982a5c0564ccc0fa593fc564576ddceb8c8845e87c15f58aa6baca69
