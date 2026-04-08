@@ -1,12 +1,9 @@
 import { OmnichannelAnalytics } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { LivechatRooms, Users, LivechatVisitors, LivechatAgentActivity } from '@rocket.chat/models';
+import { format } from 'date-fns';
 import mem from 'mem';
-import moment from 'moment';
 
-import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
-import { settings } from '../../../../settings/server';
-import { getAnalyticsOverviewDataCachedForRealtime } from '../AnalyticsTyped';
 import {
 	findPercentageOfAbandonedRoomsAsync,
 	findAllAverageOfChatDurationTimeAsync,
@@ -14,6 +11,9 @@ import {
 	findAllNumberOfAbandonedRoomsAsync,
 	findAllAverageServiceTimeAsync,
 } from './departments';
+import { secondsToHHMMSS } from '../../../../../lib/utils/secondsToHHMMSS';
+import { settings } from '../../../../settings/server';
+import { getAnalyticsOverviewDataCachedForRealtime } from '../AnalyticsTyped';
 
 const findAllChatsStatusAsync = async ({ start, end, departmentId = undefined }: { start: Date; end: Date; departmentId?: string }) => {
 	if (!start || !end) {
@@ -91,7 +91,7 @@ const getAgentsProductivityMetricsAsync = async ({
 	// TODO: check type of date
 	const averageOfAvailableServiceTime = (
 		await LivechatAgentActivity.findAllAverageAvailableServiceTime({
-			date: parseInt(moment(start).format('YYYYMMDD')) as any,
+			date: parseInt(format(new Date(start), 'yyyyMMdd'), 10) as any,
 			departmentId,
 		})
 	)[0];

@@ -1,6 +1,5 @@
 import { isGETDashboardConversationsByType } from '@rocket.chat/rest-typings';
-import type { Moment } from 'moment';
-import moment from 'moment';
+import { isValid, startOfDay, differenceInYears, isAfter } from 'date-fns';
 
 import {
 	findAllConversationsBySourceCached,
@@ -12,20 +11,25 @@ import {
 import { API } from '../../../../../app/api/server';
 import { restrictQuery } from '../lib/restrictQuery';
 
-const checkDates = (start: Moment, end: Moment) => {
-	if (!start.isValid()) {
+const parseDate = (input: string): Date => {
+	const d = new Date(input);
+	if (!isValid(d)) {
+		throw new Error('The date query parameter must be a valid date.');
+	}
+	return d;
+};
+
+const checkDates = (start: Date, end: Date) => {
+	if (!isValid(start)) {
 		throw new Error('The "start" query parameter must be a valid date.');
 	}
-	if (!end.isValid()) {
+	if (!isValid(end)) {
 		throw new Error('The "end" query parameter must be a valid date.');
 	}
-	// Check dates are no more than 1 year apart using moment
-	// 1.01 === "we allow to pass year by some hours/days"
-	if (moment(end).startOf('day').diff(moment(start).startOf('day'), 'year', true) > 1.01) {
+	if (differenceInYears(startOfDay(end), startOfDay(start)) > 1.01) {
 		throw new Error('The "start" and "end" query parameters must be less than 1 year apart.');
 	}
-
-	if (start.isAfter(end)) {
+	if (isAfter(start, end)) {
 		throw new Error('The "start" query parameter must be before the "end" query parameter.');
 	}
 };
@@ -42,13 +46,13 @@ API.v1.addRoute(
 		async get() {
 			const { start, end } = this.queryParams;
 
-			const startDate = moment(start);
-			const endDate = moment(end);
+			const startDate = parseDate(start);
+			const endDate = parseDate(end);
 
 			checkDates(startDate, endDate);
 
 			const extraQuery = await restrictQuery({ userId: this.userId });
-			const result = await findAllConversationsBySourceCached({ start: startDate.toDate(), end: endDate.toDate(), extraQuery });
+			const result = await findAllConversationsBySourceCached({ start: startDate, end: endDate, extraQuery });
 
 			return API.v1.success(result);
 		},
@@ -67,12 +71,12 @@ API.v1.addRoute(
 		async get() {
 			const { start, end } = this.queryParams;
 
-			const startDate = moment(start);
-			const endDate = moment(end);
+			const startDate = parseDate(start);
+			const endDate = parseDate(end);
 
 			checkDates(startDate, endDate);
 			const extraQuery = await restrictQuery({ userId: this.userId });
-			const result = await findAllConversationsByStatusCached({ start: startDate.toDate(), end: endDate.toDate(), extraQuery });
+			const result = await findAllConversationsByStatusCached({ start: startDate, end: endDate, extraQuery });
 
 			return API.v1.success(result);
 		},
@@ -92,12 +96,12 @@ API.v1.addRoute(
 			const { start, end } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 
-			const startDate = moment(start);
-			const endDate = moment(end);
+			const startDate = parseDate(start);
+			const endDate = parseDate(end);
 
 			checkDates(startDate, endDate);
 			const extraQuery = await restrictQuery({ userId: this.userId });
-			const result = await findAllConversationsByDepartmentCached({ start: startDate.toDate(), end: endDate.toDate(), sort, extraQuery });
+			const result = await findAllConversationsByDepartmentCached({ start: startDate, end: endDate, sort, extraQuery });
 
 			return API.v1.success(result);
 		},
@@ -117,12 +121,12 @@ API.v1.addRoute(
 			const { start, end } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 
-			const startDate = moment(start);
-			const endDate = moment(end);
+			const startDate = parseDate(start);
+			const endDate = parseDate(end);
 
 			checkDates(startDate, endDate);
 			const extraQuery = await restrictQuery({ userId: this.userId });
-			const result = await findAllConversationsByTagsCached({ start: startDate.toDate(), end: endDate.toDate(), sort, extraQuery });
+			const result = await findAllConversationsByTagsCached({ start: startDate, end: endDate, sort, extraQuery });
 
 			return API.v1.success(result);
 		},
@@ -142,12 +146,12 @@ API.v1.addRoute(
 			const { start, end } = this.queryParams;
 			const { sort } = await this.parseJsonQuery();
 
-			const startDate = moment(start);
-			const endDate = moment(end);
+			const startDate = parseDate(start);
+			const endDate = parseDate(end);
 
 			checkDates(startDate, endDate);
 			const extraQuery = await restrictQuery({ userId: this.userId });
-			const result = await findAllConversationsByAgentsCached({ start: startDate.toDate(), end: endDate.toDate(), sort, extraQuery });
+			const result = await findAllConversationsByAgentsCached({ start: startDate, end: endDate, sort, extraQuery });
 
 			return API.v1.success(result);
 		},

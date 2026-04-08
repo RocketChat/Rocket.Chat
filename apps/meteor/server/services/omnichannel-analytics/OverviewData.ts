@@ -1,9 +1,10 @@
 /* eslint-disable new-cap */
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import type { ILivechatRoomsModel } from '@rocket.chat/model-typings';
-import moment from 'moment-timezone';
+import { differenceInDays } from 'date-fns';
 import type { Filter } from 'mongodb';
 
+import { formatInTimezone, formatHourInTimezone, parseRangeInTimezone } from './utils';
 import { secondsToHHMMSS } from '../../../lib/utils/secondsToHHMMSS';
 
 type OverviewDataValidActions = 'Conversations' | 'Productivity';
@@ -20,7 +21,7 @@ export class OverviewData {
 
 	callAction<T extends OverviewDataValidActions>(
 		action: T,
-		...args: [moment.Moment, moment.Moment, string?, string?, ((v: string) => string)?, Filter<IOmnichannelRoom>?]
+		...args: [Date, Date, string?, string?, ((v: string) => string)?, Filter<IOmnichannelRoom>?]
 	) {
 		switch (action) {
 			case 'Conversations':
@@ -82,8 +83,8 @@ export class OverviewData {
 	}
 
 	async Conversations(
-		from: moment.Moment,
-		to: moment.Moment,
+		from: Date,
+		to: Date,
 		departmentId?: string,
 		timezone = 'UTC',
 		t = (v: string): string => v,
@@ -93,12 +94,9 @@ export class OverviewData {
 		let openConversations = 0; // open conversations
 		let totalMessages = 0; // total msgs
 		let totalConversations = 0; // Total conversations
-		const days = to.diff(from, 'days') + 1; // total days
+		const days = differenceInDays(to, from) + 1; // total days
 
-		const date = {
-			gte: moment.tz(from, timezone).startOf('day').utc(),
-			lte: moment.tz(to, timezone).endOf('day').utc(),
-		};
+		const date = { gte: from, lte: to };
 
 		// @ts-expect-error - Check extraquery usage on this func
 		const cursor = this.roomsModel.getAnalyticsBetweenDate(date, { departmentId }, extraQuery);
@@ -109,8 +107,8 @@ export class OverviewData {
 			if (room.metrics && !room.metrics.chatDuration && !room.onHold) {
 				openConversations++;
 			}
-			const creationDay = moment.tz(room.ts, timezone).format('DD-MM-YYYY'); // @string: 01-01-2021
-			const creationHour = moment.tz(room.ts, timezone).format('H'); // @int : 0, 1, ... 23
+			const creationDay = formatInTimezone(new Date(room.ts), timezone, 'DD-MM-YYYY'); // @string: 01-01-2021
+			const creationHour = formatInTimezone(new Date(room.ts), timezone, 'H'); // @int : 0, 1, ... 23
 
 			if (!analyticsMap.has(creationDay)) {
 				analyticsMap.set(creationDay, new Map());
@@ -130,9 +128,16 @@ export class OverviewData {
 		const onHoldConversations = await this.roomsModel.getOnHoldConversationsBetweenDate(from, to, departmentId, extraQuery);
 		const busiestDayFromMap = this.getBusiestDay(analyticsMap); // returns busiest day based on the number of messages sent on that day
 		const busiestHour = this.getKeyHavingMaxValue<number>(analyticsMap.get(busiestDayFromMap) || new Map(), -1); // returns key with max value
-		const busiestTimeFrom = busiestHour >= 0 ? moment.tz(`${busiestHour}`, 'H', timezone).format('hA') : ''; // @string: 12AM, 1AM ...
-		const busiestTimeTo = busiestHour >= 0 ? moment.tz(`${busiestHour}`, 'H', timezone).add(1, 'hour').format('hA') : ''; // @string: 1AM, 2AM ...
-		const busiestDay = busiestDayFromMap !== '-' ? moment.tz(busiestDayFromMap, 'DD-MM-YYYY', timezone).format('dddd') : ''; // @string: Monday, Tuesday ...
+		const busiestTimeFrom = busiestHour >= 0 ? formatHourInTimezone(Number(busiestHour), timezone) : ''; // @string: 12AM, 1AM ...
+		const busiestTimeTo = busiestHour >= 0 ? formatHourInTimezone(Number(busiestHour) + 1, timezone) : ''; // @string: 1AM, 2AM ...
+		const busiestDay =
+			busiestDayFromMap !== '-'
+				? (() => {
+						const [dd, mm, yyyy] = busiestDayFromMap.split('-');
+						const dayStart = parseRangeInTimezone(`${yyyy}-${mm}-${dd}`, timezone).start;
+						return formatInTimezone(dayStart, timezone, 'dddd');
+					})()
+				: ''; // @string: Monday, Tuesday ...
 
 		return [
 			{
@@ -167,8 +172,8 @@ export class OverviewData {
 	}
 
 	async Productivity(
-		from: moment.Moment,
-		to: moment.Moment,
+		from: Date,
+		to: Date,
 		departmentId?: string,
 		_timezone?: string,
 		_t = (v: string): string => v,
@@ -179,10 +184,7 @@ export class OverviewData {
 		let avgReactionTime = 0;
 		let count = 0;
 
-		const date = {
-			gte: from.toDate(),
-			lte: to.toDate(),
-		};
+		const date = { gte: from, lte: to };
 
 		await this.roomsModel.getAnalyticsMetricsBetweenDate('l', date, { departmentId }, extraQuery).forEach(({ metrics }) => {
 			if (metrics?.response && metrics.reaction) {
