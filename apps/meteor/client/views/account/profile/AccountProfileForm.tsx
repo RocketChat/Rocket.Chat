@@ -56,6 +56,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 	} = useFormContext<AccountProfileFormValues>();
 
 	const { email, avatar, username, name: userFullName } = watch();
+	const originalAvatarEtag = user?.avatarETag;
 
 	const previousEmail = user ? getUserEmailAddress(user) : '';
 	const previousUsername = user?.username || '';
@@ -113,7 +114,10 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>): ReactEle
 				customFields,
 			});
 
-			await updateAvatar();
+			if (avatar && avatar !== 'reset') {
+				await updateAvatar();
+			}
+
 			dispatchToastMessage({ type: 'success', message: t('Profile_saved_successfully') });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });

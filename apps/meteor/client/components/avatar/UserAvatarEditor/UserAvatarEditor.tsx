@@ -12,6 +12,15 @@ import { readFileAsDataURL } from './readFileAsDataURL';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 import { isValidImageFormat } from '../../../lib/utils/isValidImageFormat';
 
+const isValidHttpUrl = (value: string): boolean => {
+	try {
+		const url = new URL(value);
+		return url.protocol === 'http:' || url.protocol === 'https:';
+	} catch {
+		return false;
+	}
+};
+
 type UserAvatarEditorProps = {
 	currentUsername: IUser['username'];
 	username: IUser['username'];
@@ -49,9 +58,20 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
 	const handleAddUrl = (): void => {
-		setNewAvatarSource(avatarFromUrl);
-		setAvatarObj({ avatarUrl: avatarFromUrl });
-	};
+	if (!isValidHttpUrl(avatarFromUrl)) {
+		dispatchToastMessage({ type: 'error', message: t('error-invalid-image-url') });
+
+		// clear invalid state
+		setAvatarFromUrl('');
+		setAvatarObj('reset');
+		setNewAvatarSource(undefined);
+
+		return;
+	}
+
+	  setNewAvatarSource(avatarFromUrl);
+	  setAvatarObj({ avatarUrl: avatarFromUrl });
+   };
 
 	const clickReset = (): void => {
 		setNewAvatarSource(`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`);
