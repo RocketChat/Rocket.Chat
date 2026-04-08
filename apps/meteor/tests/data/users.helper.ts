@@ -188,7 +188,7 @@ const connectWS = (port: string): Promise<WebSocket> =>
 		ws.onerror = () => reject(new Error(`WS connection failed on ${port}`));
 	});
 
-const waitForDDP = (ws: WebSocket, id: string | 'handshake', sendAction: () => void): Promise<any> => {
+const waitForDDP = (ws: WebSocket, id: string | 'handshake', stringifiedJsonPayload: string): Promise<any> => {
 	return new Promise((resolve, reject) => {
 		const timeout = setTimeout(() => {
 			cleanup();
@@ -237,7 +237,7 @@ const waitForDDP = (ws: WebSocket, id: string | 'handshake', sendAction: () => v
 		ws.addEventListener('close', onClose);
 		ws.addEventListener('error', onError);
 
-		sendAction();
+		ws.send(stringifiedJsonPayload);
 	});
 };
 
@@ -245,9 +245,9 @@ export const ddpLogin = async (resume: string): Promise<WebSocket> => {
 	const ws = await connectWS(process.env.DDP_LOGIN_PORT || '3000');
 	const loginId = `login-${Date.now()}`;
 
-	await waitForDDP(ws, 'handshake', () => ws.send(JSON.stringify({ msg: 'connect', version: '1', support: ['1'] })));
+	await waitForDDP(ws, 'handshake', JSON.stringify({ msg: 'connect', version: '1', support: ['1'] }));
 
-	await waitForDDP(ws, loginId, () => ws.send(JSON.stringify({ msg: 'method', id: loginId, method: 'login', params: [{ resume }] })));
+	await waitForDDP(ws, loginId, JSON.stringify({ msg: 'method', id: loginId, method: 'login', params: [{ resume }] }));
 
 	return ws;
 };
@@ -255,7 +255,7 @@ export const ddpLogin = async (resume: string): Promise<WebSocket> => {
 export const setUserAwayWS = async (ws: WebSocket): Promise<void> => {
 	const id = `away-${Date.now()}`;
 
-	await waitForDDP(ws, id, () => ws.send(JSON.stringify({ msg: 'method', method: 'UserPresence:away', params: [], id })));
+	await waitForDDP(ws, id, JSON.stringify({ msg: 'method', method: 'UserPresence:away', params: [], id }));
 };
 
 export const setUserOnline = (overrideCredentials = credentials, config?: IRequestConfig) => {
