@@ -14,7 +14,7 @@ type ABACEnabledToggleProps = {
 	className?: string;
 };
 
-const ABACEnabledToggle = ({ className = undefined, hasABAC }: ABACEnabledToggleProps) => {
+const ABACEnabledToggle = ({ className, hasABAC }: ABACEnabledToggleProps) => {
 	const setting = useEditableSetting('ABAC_Enabled');
 	const setModal = useSetModal();
 	const dispatch = useSettingsDispatch();

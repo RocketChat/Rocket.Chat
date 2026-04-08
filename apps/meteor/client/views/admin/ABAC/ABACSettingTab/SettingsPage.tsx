@@ -10,7 +10,7 @@ const SettingsPage = () => {
 	const { t } = useTranslation();
 	const { data: hasABAC = false } = useHasLicenseModule('abac');
 	return (
-		<Box maxWidth='x600' w='full' alignSelf='center' overflow='auto' m={24}>
+		<Box maxWidth='x600' w='full' alignSelf='center' overflow='auto' mb={24}>
 			<FieldGroup>
 				<AbacEnabledToggle hasABAC={hasABAC} />
 				<SettingField settingId='ABAC_ShowAttributesInRooms' />
