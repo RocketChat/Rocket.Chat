@@ -1,12 +1,16 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseActiveUsersOptions = { utc: boolean };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useActiveUsers = ({ utc }: UseActiveUsersOptions) => {
+type UseActiveUsersData = Awaited<ReturnType<ReturnType<typeof useEndpoint<'GET', '/v1/engagement-dashboard/users/active-users'>>>> & {
+	start: Date;
+	end: Date;
+};
+
+export const useActiveUsers = ({ utc }: UseActiveUsersOptions): UseQueryResult<UseActiveUsersData | undefined, Error> => {
 	const getActiveUsers = useEndpoint('GET', '/v1/engagement-dashboard/users/active-users');
 
 	return useQuery({
@@ -22,10 +26,10 @@ export const useActiveUsers = ({ utc }: UseActiveUsersOptions) => {
 
 			return response
 				? {
-						...response,
-						start,
-						end,
-					}
+					...response,
+					start,
+					end,
+				}
 				: undefined;
 		},
 

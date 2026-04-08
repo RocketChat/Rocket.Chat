@@ -1,13 +1,19 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 
 import type { Period } from '../../../../components/dashboards/periods';
 import { getPeriodRange } from '../../../../components/dashboards/periods';
 
 type UseTopFivePopularChannelsOptions = { period: Period['key'] };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsOptions) => {
+type UseTopFivePopularChannelsData = Awaited<
+	ReturnType<ReturnType<typeof useEndpoint<'GET', '/v1/engagement-dashboard/messages/top-five-popular-channels'>>>
+> & {
+	start: Date;
+	end: Date;
+};
+
+export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsOptions): UseQueryResult<UseTopFivePopularChannelsData | undefined, Error> => {
 	const getTopFivePopularChannels = useEndpoint('GET', '/v1/engagement-dashboard/messages/top-five-popular-channels');
 
 	return useQuery({
@@ -23,10 +29,10 @@ export const useTopFivePopularChannels = ({ period }: UseTopFivePopularChannelsO
 
 			return response
 				? {
-						...response,
-						start,
-						end,
-					}
+					...response,
+					start,
+					end,
+				}
 				: undefined;
 		},
 

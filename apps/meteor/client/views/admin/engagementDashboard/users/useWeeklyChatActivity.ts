@@ -1,5 +1,5 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, type UseQueryResult } from '@tanstack/react-query';
 import moment from 'moment';
 
 type UseWeeklyChatActivityOptions = {
@@ -7,8 +7,13 @@ type UseWeeklyChatActivityOptions = {
 	utc: boolean;
 };
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivityOptions) => {
+type UseWeeklyChatActivityData = Awaited<
+	ReturnType<ReturnType<typeof useEndpoint<'GET', '/v1/engagement-dashboard/users/chat-busier/weekly-data'>>>
+> & {
+	day: Date;
+};
+
+export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivityOptions): UseQueryResult<UseWeeklyChatActivityData | undefined, Error> => {
 	const getWeeklyChatActivity = useEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/weekly-data');
 
 	return useQuery({
@@ -23,9 +28,9 @@ export const useWeeklyChatActivity = ({ displacement, utc }: UseWeeklyChatActivi
 
 			return response
 				? {
-						...response,
-						day,
-					}
+					...response,
+					day,
+				}
 				: undefined;
 		},
 
