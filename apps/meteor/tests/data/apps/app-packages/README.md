@@ -146,7 +146,7 @@ An app that tests the `ILivechatCreator.resolveVisitor()` API for resolving live
 **Request body:**
 ```json
 {
-  "externalId": { "entityId": "bsuid-123", "username": "@johndoe" },
+  "externalId": { "entityId": "bsuid-123", "metadata": { "username": "@johndoe" } },
   "phone": "+1234567890"
 }
 ```

@@ -44,7 +44,7 @@ describe('resolveVisitor', () => {
 	});
 
 	it('should find by phone, enrich with external ID, and return visitor when not found by external ID', async () => {
-		const externalId = { entityId: 'bsuid-456', username: '@johndoe' };
+		const externalId = { entityId: 'bsuid-456', metadata: { username: '@johndoe' } };
 		const contactData = { phone: '9876543210' };
 		const updatedVisitor = {
 			_id: 'visitor-456',
@@ -65,7 +65,7 @@ describe('resolveVisitor', () => {
 	});
 
 	it('should find by email, enrich with external ID, and return visitor when not found by external ID', async () => {
-		const externalId = { entityId: 'bsuid-email', username: '@emailuser' };
+		const externalId = { entityId: 'bsuid-email', metadata: { username: '@emailuser' } };
 		const contactData = { email: 'test@example.com' };
 		const updatedVisitor = {
 			_id: 'visitor-email',
@@ -86,7 +86,7 @@ describe('resolveVisitor', () => {
 	});
 
 	it('should update existing externalIds when visitor already has some', async () => {
-		const newExternalId = { entityId: 'bsuid-789', username: '@newuser' };
+		const newExternalId = { entityId: 'bsuid-789', metadata: { username: '@newuser' } };
 		const contactData = { phone: '5555555555' };
 		const updatedVisitor = {
 			_id: 'visitor-789',

@@ -4,7 +4,7 @@ import type { IVisitorPhone } from './IVisitorPhone';
 export interface IVisitorExternalIdentifier {
 	source?: string;
 	entityId: string;
-	username?: string;
+	metadata?: Record<string, unknown>;
 }
 
 export type ResolveVisitorContactData = { phone: string } | { email: string };

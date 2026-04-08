@@ -17,7 +17,7 @@ export interface IVisitorEmail {
 export interface IVisitorExternalIdentifier {
 	source: string;
 	entityId: string;
-	username?: string;
+	metadata?: Record<string, unknown>;
 }
 
 export interface ILivechatVisitor extends IRocketChatRecord {
