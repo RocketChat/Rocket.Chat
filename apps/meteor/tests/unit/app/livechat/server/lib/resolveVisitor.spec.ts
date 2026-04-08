@@ -27,13 +27,13 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-123',
 			token: 'token-123',
 			username: 'guest-1',
-			externalIds: [{ source: appId, entityId: 'bsuid-123' }],
+			externalIds: [{ appId, entityId: 'bsuid-123' }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(existingVisitor);
 
 		const result = await resolveVisitor({
-			source: appId,
+			appId,
 			externalId: { entityId: 'bsuid-123' },
 			contactData: { phone: '1234567890' },
 		});
@@ -50,13 +50,13 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-456',
 			token: 'token-456',
 			username: 'guest-2',
-			externalIds: [{ source: appId, ...externalId }],
+			externalIds: [{ appId, ...externalId }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 		modelsMock.LivechatVisitors.findOneVisitorByPhoneOrEmailAndAddExternalId.resolves(updatedVisitor);
 
-		const result = await resolveVisitor({ source: appId, externalId, contactData });
+		const result = await resolveVisitor({ appId, externalId, contactData });
 
 		expect(result).to.deep.equal(updatedVisitor);
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnce).to.be.true;
@@ -71,13 +71,13 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-email',
 			token: 'token-email',
 			username: 'guest-email',
-			externalIds: [{ source: appId, ...externalId }],
+			externalIds: [{ appId, ...externalId }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 		modelsMock.LivechatVisitors.findOneVisitorByPhoneOrEmailAndAddExternalId.resolves(updatedVisitor);
 
-		const result = await resolveVisitor({ source: appId, externalId, contactData });
+		const result = await resolveVisitor({ appId, externalId, contactData });
 
 		expect(result).to.deep.equal(updatedVisitor);
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnce).to.be.true;
@@ -92,30 +92,30 @@ describe('resolveVisitor', () => {
 			_id: 'visitor-789',
 			token: 'token-789',
 			username: 'guest-3',
-			externalIds: [{ source: appId, ...newExternalId }],
+			externalIds: [{ appId, ...newExternalId }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 		modelsMock.LivechatVisitors.findOneVisitorByPhoneOrEmailAndAddExternalId.resolves(updatedVisitor);
 
-		const result = await resolveVisitor({ source: appId, externalId: newExternalId, contactData });
+		const result = await resolveVisitor({ appId, externalId: newExternalId, contactData });
 
 		expect(result).to.deep.equal(updatedVisitor);
 	});
 
-	it('should find visitor by entityId regardless of source (different app version)', async () => {
+	it('should find visitor by entityId regardless of appId (different app version)', async () => {
 		const differentAppId = 'different-app-id-from-old-version';
 		const existingVisitor = {
 			_id: 'visitor-cross-app',
 			token: 'token-cross-app',
 			username: 'guest-cross',
-			externalIds: [{ source: differentAppId, entityId: 'bsuid-shared' }],
+			externalIds: [{ appId: differentAppId, entityId: 'bsuid-shared' }],
 		};
 
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(existingVisitor);
 
 		const result = await resolveVisitor({
-			source: appId,
+			appId,
 			externalId: { entityId: 'bsuid-shared' },
 		});
 
@@ -126,7 +126,7 @@ describe('resolveVisitor', () => {
 	it('should return null when not found by external ID and no contact data provided', async () => {
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 
-		const result = await resolveVisitor({ source: appId, externalId: { entityId: 'bsuid-unknown' } });
+		const result = await resolveVisitor({ appId, externalId: { entityId: 'bsuid-unknown' } });
 
 		expect(result).to.be.null;
 		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnce).to.be.true;
@@ -138,7 +138,7 @@ describe('resolveVisitor', () => {
 		modelsMock.LivechatVisitors.findOneVisitorByPhoneOrEmailAndAddExternalId.resolves(null);
 
 		const result = await resolveVisitor({
-			source: appId,
+			appId,
 			externalId: { entityId: 'bsuid-unknown' },
 			contactData: { phone: '0000000000' },
 		});
@@ -152,7 +152,7 @@ describe('resolveVisitor', () => {
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 
 		const result = await resolveVisitor({
-			source: appId,
+			appId,
 			externalId: { entityId: 'bsuid-123' },
 			contactData: { phone: '' },
 		});
@@ -165,7 +165,7 @@ describe('resolveVisitor', () => {
 		modelsMock.LivechatVisitors.findOneByExternalId.resolves(null);
 
 		const result = await resolveVisitor({
-			source: appId,
+			appId,
 			externalId: { entityId: 'bsuid-123' },
 			contactData: { email: '' },
 		});

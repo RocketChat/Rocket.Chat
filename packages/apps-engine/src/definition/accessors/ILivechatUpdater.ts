@@ -33,8 +33,8 @@ export interface ILivechatUpdater {
 
 	/**
 	 * Updates or adds an external identifier for a visitor.
-	 * The source is automatically set to the calling app's ID.
-	 * If an externalId with the same source already exists, it will be replaced.
+	 * The appId is automatically set to the calling app's ID.
+	 * If an externalId with the same appId already exists, it will be replaced.
 	 *
 	 * @param visitorId The visitor's ID
 	 * @param externalId The external identifier containing entityId and optional metadata
@@ -43,6 +43,6 @@ export interface ILivechatUpdater {
 	 */
 	updateVisitorExternalId(
 		visitorId: string,
-		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
 	): Promise<IVisitor | undefined>;
 }

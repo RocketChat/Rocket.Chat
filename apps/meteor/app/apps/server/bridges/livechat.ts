@@ -237,8 +237,8 @@ export class AppLivechatBridge extends LivechatBridge {
 	protected async createAndReturnVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is creating a livechat visitor.`);
 
-		// Add source (appId) to each externalId entry
-		const externalIds = visitor.externalIds?.map((entry) => ({ ...entry, source: appId }));
+		// Add appId to each externalId entry
+		const externalIds = visitor.externalIds?.map((entry) => ({ ...entry, appId }));
 
 		const registerData = {
 			department: visitor.department,
@@ -351,14 +351,14 @@ export class AppLivechatBridge extends LivechatBridge {
 	}
 
 	protected async resolveVisitor(
-		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
 		contactData: ResolveVisitorContactData | undefined,
 		appId: string,
 	): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is resolving a livechat visitor by external ID.`);
 
 		const visitor = await resolveVisitor({
-			source: appId,
+			appId,
 			externalId,
 			contactData,
 		});
@@ -368,7 +368,7 @@ export class AppLivechatBridge extends LivechatBridge {
 
 	protected async updateVisitorExternalId(
 		visitorId: string,
-		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
 		appId: string,
 	): Promise<IVisitor | undefined> {
 		this.orch.debugLog(`The App ${appId} is updating externalId for visitor ${visitorId}.`);

@@ -52,14 +52,14 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	findOneVisitorByPhoneOrEmailAndAddExternalId(
 		contactData: { phone: string } | { email: string },
-		source: string,
-		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
 	): Promise<ILivechatVisitor | null> {
 		const query =
 			'phone' in contactData ? { 'phone.phoneNumber': contactData.phone } : { 'visitorEmails.address': contactData.email.toLowerCase() };
 
 		// Use aggregation pipeline update to upsert into the array:
-		// 1. Filter out any existing entry with the same source
+		// 1. Filter out any existing entry with the same appId
 		// 2. Add the new entry
 		return this.findOneAndUpdate(
 			query,
@@ -68,8 +68,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 					$set: {
 						externalIds: {
 							$concatArrays: [
-								{ $filter: { input: { $ifNull: ['$externalIds', []] }, cond: { $ne: ['$$this.source', source] } } },
-								[{ source, ...externalId }],
+								{ $filter: { input: { $ifNull: ['$externalIds', []] }, cond: { $ne: ['$$this.appId', appId] } } },
+								[{ appId, ...externalId }],
 							],
 						},
 					},
@@ -87,11 +87,11 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 
 	updateExternalIdById(
 		_id: string,
-		source: string,
-		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
 	): Promise<ILivechatVisitor | null> {
 		// Use aggregation pipeline update to upsert into the array:
-		// 1. Filter out any existing entry with the same source
+		// 1. Filter out any existing entry with the same appId
 		// 2. Add the new entry
 		return this.findOneAndUpdate(
 			{ _id },
@@ -100,8 +100,8 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 					$set: {
 						externalIds: {
 							$concatArrays: [
-								{ $filter: { input: { $ifNull: ['$externalIds', []] }, cond: { $ne: ['$$this.source', source] } } },
-								[{ source, ...externalId }],
+								{ $filter: { input: { $ifNull: ['$externalIds', []] }, cond: { $ne: ['$$this.appId', appId] } } },
+								[{ appId, ...externalId }],
 							],
 						},
 					},

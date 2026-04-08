@@ -52,17 +52,13 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 
 	findOneVisitorByPhoneOrEmailAndAddExternalId(
 		contactData: { phone: string } | { email: string },
-		source: string,
-		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
+		appId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
 	): Promise<ILivechatVisitor | null>;
 
 	findOneByExternalId(entityId: string): Promise<ILivechatVisitor | null>;
 
-	updateExternalIdById(
-		_id: string,
-		source: string,
-		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
-	): Promise<ILivechatVisitor | null>;
+	updateExternalIdById(_id: string, appId: string, externalId: Omit<IVisitorExternalIdentifier, 'appId'>): Promise<ILivechatVisitor | null>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 

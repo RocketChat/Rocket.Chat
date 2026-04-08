@@ -69,7 +69,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor.id).to.equal(visitor._id);
-			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			const appExternalId = response.body.visitor.externalIds.find((e: { appId: string }) => e.appId === app.id);
 			expect(appExternalId.entityId).to.equal(externalId.entityId);
 			expect(appExternalId.metadata.username).to.equal(externalId.metadata.username);
 		});
@@ -86,7 +86,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			// To update visitor data, apps should use other methods like ILivechatUpdater.
 			const response = await callResolveVisitor({ entityId: externalId.entityId, metadata: { username: '@changed' } });
 
-			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			const appExternalId = response.body.visitor.externalIds.find((e: { appId: string }) => e.appId === app.id);
 			expect(appExternalId.metadata.username).to.equal('@original');
 		});
 	});
@@ -101,7 +101,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor.id).to.equal(visitor._id);
-			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			const appExternalId = response.body.visitor.externalIds.find((e: { appId: string }) => e.appId === app.id);
 			expect(appExternalId.entityId).to.equal(externalId.entityId);
 			expect(appExternalId.metadata.username).to.equal(externalId.metadata.username);
 		});
@@ -115,7 +115,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			const newExternalId = { entityId: `second-${Date.now()}`, metadata: { username: '@second' } };
 			const response = await callResolveVisitor(newExternalId, { phone });
 
-			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			const appExternalId = response.body.visitor.externalIds.find((e: { appId: string }) => e.appId === app.id);
 			expect(appExternalId.entityId).to.equal(newExternalId.entityId);
 			expect(appExternalId.metadata.username).to.equal('@second');
 		});
@@ -145,7 +145,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor.id).to.equal(visitor._id);
-			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			const appExternalId = response.body.visitor.externalIds.find((e: { appId: string }) => e.appId === app.id);
 			expect(appExternalId.entityId).to.equal(externalId.entityId);
 			expect(appExternalId.metadata.username).to.equal(externalId.metadata.username);
 		});
@@ -159,7 +159,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			const newExternalId = { entityId: `second-email-${Date.now()}`, metadata: { username: '@second' } };
 			const response = await callResolveVisitor(newExternalId, { email });
 
-			const appExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			const appExternalId = response.body.visitor.externalIds.find((e: { appId: string }) => e.appId === app.id);
 			expect(appExternalId.entityId).to.equal(newExternalId.entityId);
 			expect(appExternalId.metadata.username).to.equal('@second');
 		});
@@ -179,8 +179,9 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 		});
 	});
 
-	describe('cross-appId lookup (app reinstallation scenario)', () => {
-		const addExternalIdToVisitor = async (visitorId: string, externalId: { source: string; entityId: string }) => {
+	describe('cross-appId lookup', () => {
+		// Direct MongoDB to inject externalId with a different appId, avoiding the need to install a second test app
+		const addExternalIdToVisitor = async (visitorId: string, externalId: { appId: string; entityId: string }) => {
 			const connection = await MongoClient.connect(URL_MONGODB);
 			try {
 				await connection
@@ -198,44 +199,38 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			const oldAppId = 'old-app-version-id-12345';
 			const entityId = `cross-app-${Date.now()}`;
-			await addExternalIdToVisitor(visitor._id, { source: oldAppId, entityId });
+			await addExternalIdToVisitor(visitor._id, { appId: oldAppId, entityId });
 
-			// App searches by entityId only - should find visitor even though source is different
+			// App searches by entityId only - should find visitor even though appId is different
 			const response = await callResolveVisitor({ entityId });
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor.id).to.equal(visitor._id);
-			// Verify the externalId belongs to the old app
-			const oldExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === oldAppId);
+			const oldExternalId = response.body.visitor.externalIds.find((e: { appId: string }) => e.appId === oldAppId);
 			expect(oldExternalId.entityId).to.equal(entityId);
 		});
 
 		it('should allow app to add its own externalId using updateVisitorExternalId', async () => {
-			// Create visitor without phone - we'll use updateVisitorExternalId directly
 			const visitor = await createVisitorWithCustomData({ ignorePhone: true });
 
 			const oldAppId = 'old-app-version-id-67890';
 			const entityId = `cross-app-update-${Date.now()}`;
-			await addExternalIdToVisitor(visitor._id, { source: oldAppId, entityId });
+			await addExternalIdToVisitor(visitor._id, { appId: oldAppId, entityId });
 
-			// First, verify app finds visitor by entityId (from old app)
 			const lookupResponse = await callResolveVisitor({ entityId });
 			expect(lookupResponse.body.visitor.id).to.equal(visitor._id);
 
-			// App detects source is different, uses updateVisitorExternalId to add its own entry
 			const newExternalId = { entityId, metadata: { username: '@newversion' } };
 			const updateResponse = await callUpdateExternalId(visitor._id, newExternalId);
 
 			expect(updateResponse.status).to.equal(200);
 			expect(updateResponse.body.visitor.id).to.equal(visitor._id);
 
-			// Verify both externalIds exist - old app's and new app's
-			const oldEntry = updateResponse.body.visitor.externalIds.find((e: { source: string }) => e.source === oldAppId);
-			const newEntry = updateResponse.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+			const oldEntry = updateResponse.body.visitor.externalIds.find((e: { appId: string }) => e.appId === oldAppId);
+			const newEntry = updateResponse.body.visitor.externalIds.find((e: { appId: string }) => e.appId === app.id);
 
 			expect(oldEntry).to.exist;
 			expect(oldEntry.entityId).to.equal(entityId);
-
 			expect(newEntry).to.exist;
 			expect(newEntry.entityId).to.equal(entityId);
 			expect(newEntry.metadata.username).to.equal('@newversion');

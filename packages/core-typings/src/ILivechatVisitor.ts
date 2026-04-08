@@ -15,7 +15,7 @@ export interface IVisitorEmail {
 }
 
 export interface IVisitorExternalIdentifier {
-	source: string;
+	appId: string;
 	entityId: string;
 	metadata?: Record<string, unknown>;
 }
