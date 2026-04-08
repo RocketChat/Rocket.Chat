@@ -28,6 +28,7 @@ export class ChatTranscript implements IStrategy {
 						visitor: requestData.visitor
 							? {
 									...requestData.visitor,
+									externalIds: undefined,
 									ts: moment(requestData.visitor.ts).tz(timezone).format(timeAndDateFormat),
 									lastChat: requestData.visitor.lastChat
 										? {
