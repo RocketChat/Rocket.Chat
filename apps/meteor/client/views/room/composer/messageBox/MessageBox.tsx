@@ -20,13 +20,14 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
-import { handleSelectionWrapping } from './wrapSelection';
 import MessageComposerFiles from './MessageComposerFiles';
+import { handleSelectionWrapping } from './wrapSelection';
 import { createComposerAPI } from '../../../../../app/ui-message/client/messageBox/createComposerAPI';
 import type { FormattingButton } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { formattingButtons } from '../../../../../app/ui-message/client/messageBox/messageBoxFormatting';
 import { getImageExtensionFromMime } from '../../../../../lib/getImageExtensionFromMime';
 import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
+import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 import { useReactiveValue } from '../../../../hooks/useReactiveValue';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
@@ -46,7 +47,6 @@ import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 import { useMessageComposerMergedRefs } from '../hooks/useMessageComposerMergedRefs';
 import { useMessageBoxAutoFocus } from './hooks/useMessageBoxAutoFocus';
 import { useMessageBoxPlaceholder } from './hooks/useMessageBoxPlaceholder';
-import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
 const reducer = (_: unknown, event: FormEvent<HTMLInputElement>): boolean => {
 	const target = event.target as HTMLInputElement;
