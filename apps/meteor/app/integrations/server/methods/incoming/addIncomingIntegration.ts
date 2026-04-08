@@ -120,6 +120,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 				comments: false,
 			});
 
+			// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
 			integrationData.scriptCompiled = result?.code ?? undefined;
 			delete integrationData.scriptError;
 		} catch (e) {

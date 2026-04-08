@@ -188,6 +188,7 @@ export const validateOutgoingIntegration = async function (
 				comments: false,
 			});
 
+			// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
 			integrationData.scriptCompiled = result?.code ?? undefined;
 			integrationData.scriptError = undefined;
 		} catch (e) {
