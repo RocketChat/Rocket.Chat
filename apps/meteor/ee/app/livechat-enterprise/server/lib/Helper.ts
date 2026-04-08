@@ -14,7 +14,7 @@ import {
 	LivechatInquiry,
 	Users,
 } from '@rocket.chat/models';
-import moment from 'moment';
+import { addSeconds, addMinutes } from 'date-fns';
 import type { Document } from 'mongodb';
 
 import { OmnichannelQueueInactivityMonitor } from './QueueInactivityMonitor';
@@ -263,7 +263,7 @@ export const setPredictedVisitorAbandonmentTime = async (
 		return;
 	}
 
-	const willBeAbandonedAt = moment(room.responseBy.firstResponseTs).add(Number(secondsToAdd), 'seconds').toDate();
+	const willBeAbandonedAt = addSeconds(new Date(room.responseBy.firstResponseTs), Number(secondsToAdd));
 	if (roomUpdater) {
 		await LivechatRooms.getPredictedVisitorAbandonmentByRoomIdUpdateQuery(willBeAbandonedAt, roomUpdater);
 	} else {
@@ -294,9 +294,9 @@ export const updateQueueInactivityTimeout = async () => {
 	}
 
 	await LivechatInquiry.getQueuedInquiries({ projection: { _updatedAt: 1 } }).forEach((inq) => {
-		const aggregatedDate = moment(inq._updatedAt).add(queueTimeout, 'minutes');
+		const aggregatedDate = addMinutes(new Date(inq._updatedAt), queueTimeout);
 		try {
-			void OmnichannelQueueInactivityMonitor.scheduleInquiry(inq._id, new Date(aggregatedDate.format()));
+			void OmnichannelQueueInactivityMonitor.scheduleInquiry(inq._id, aggregatedDate);
 		} catch (e) {
 			// this will usually happen if other instance attempts to re-create a job
 			logger.error({ err: e });

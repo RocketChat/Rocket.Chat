@@ -1,9 +1,9 @@
 import type { IEditedMessage, IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Users } from '@rocket.chat/models';
+import { differenceInMinutes } from 'date-fns';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import moment from 'moment';
 
 import { canSendMessageAsync } from '../../../authorization/server/functions/canSendMessage';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
@@ -65,13 +65,9 @@ export async function executeUpdateMessage(
 
 	if (!bypassBlockTimeLimit && Match.test(blockEditInMinutes, Number) && blockEditInMinutes !== 0) {
 		let currentTsDiff = 0;
-		let msgTs;
 
 		if (originalMessage.ts instanceof Date || Match.test(originalMessage.ts, Number)) {
-			msgTs = moment(originalMessage.ts);
-		}
-		if (msgTs) {
-			currentTsDiff = moment().diff(msgTs, 'minutes');
+			currentTsDiff = differenceInMinutes(new Date(), originalMessage.ts);
 		}
 		if (currentTsDiff >= blockEditInMinutes) {
 			throw new Meteor.Error('error-message-editing-blocked', 'Message editing is blocked', {

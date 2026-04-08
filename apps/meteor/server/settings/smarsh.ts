@@ -1,5 +1,3 @@
-import moment from 'moment-timezone';
-
 import { settingsRegistry } from '../../app/settings/server';
 
 export const smarshIntervalValuesToCronMap: Record<string, string> = {
@@ -34,12 +32,12 @@ export const createSmarshSettings = () =>
 			placeholder: 'no-email@example.com',
 		});
 
-		const zoneValues = moment.tz.names().map(function _timeZonesToSettings(name) {
-			return {
-				key: name,
-				i18nLabel: name,
-			};
-		});
+		const intl = Intl as typeof Intl & { supportedValuesOf?(key: 'timeZone'): string[] };
+		const zoneNames = typeof intl.supportedValuesOf === 'function' ? intl.supportedValuesOf('timeZone') : [];
+		const zoneValues = zoneNames.map((name) => ({
+			key: name,
+			i18nLabel: name,
+		}));
 		await this.add('Smarsh_Timezone', 'America/Los_Angeles', {
 			type: 'select',
 			values: zoneValues,
