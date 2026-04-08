@@ -7,4 +7,4 @@ export const guessTimezoneFromOffset = (offset: string | number): string => {
 	return `Etc/GMT${hours > 0 ? '-' : '+'}${Math.abs(hours)}`;
 };
 
-export const guessTimezone = (): string => Intl.DateTimeFormat().resolvedOptions().timeZone;
+export const guessTimezone = (): string => new Intl.DateTimeFormat().resolvedOptions().timeZone;
