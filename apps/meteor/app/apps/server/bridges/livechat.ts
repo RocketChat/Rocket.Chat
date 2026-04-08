@@ -366,6 +366,18 @@ export class AppLivechatBridge extends LivechatBridge {
 		return this.orch.getConverters()?.get('visitors').convertVisitor(visitor);
 	}
 
+	protected async updateVisitorExternalId(
+		visitorId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
+		appId: string,
+	): Promise<IVisitor | undefined> {
+		this.orch.debugLog(`The App ${appId} is updating externalId for visitor ${visitorId}.`);
+
+		const visitor = await LivechatVisitors.updateExternalIdById(visitorId, appId, externalId);
+
+		return this.orch.getConverters()?.get('visitors').convertVisitor(visitor);
+	}
+
 	protected async findDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {
 		this.orch.debugLog(`The App ${appId} is looking for livechat departments.`);
 

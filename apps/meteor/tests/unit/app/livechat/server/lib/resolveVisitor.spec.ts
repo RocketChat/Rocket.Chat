@@ -39,7 +39,7 @@ describe('resolveVisitor', () => {
 		});
 
 		expect(result).to.deep.equal(existingVisitor);
-		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnceWith(appId, 'bsuid-123')).to.be.true;
+		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnceWith('bsuid-123')).to.be.true;
 		expect(modelsMock.LivechatVisitors.findOneVisitorByPhoneOrEmailAndAddExternalId.called).to.be.false;
 	});
 
@@ -101,6 +101,26 @@ describe('resolveVisitor', () => {
 		const result = await resolveVisitor({ source: appId, externalId: newExternalId, contactData });
 
 		expect(result).to.deep.equal(updatedVisitor);
+	});
+
+	it('should find visitor by entityId regardless of source (different app version)', async () => {
+		const differentAppId = 'different-app-id-from-old-version';
+		const existingVisitor = {
+			_id: 'visitor-cross-app',
+			token: 'token-cross-app',
+			username: 'guest-cross',
+			externalIds: [{ source: differentAppId, entityId: 'bsuid-shared' }],
+		};
+
+		modelsMock.LivechatVisitors.findOneByExternalId.resolves(existingVisitor);
+
+		const result = await resolveVisitor({
+			source: appId,
+			externalId: { entityId: 'bsuid-shared' },
+		});
+
+		expect(result).to.deep.equal(existingVisitor);
+		expect(modelsMock.LivechatVisitors.findOneByExternalId.calledOnceWith('bsuid-shared')).to.be.true;
 	});
 
 	it('should return null when not found by external ID and no contact data provided', async () => {

@@ -56,7 +56,13 @@ export interface ILivechatVisitorsModel extends IBaseModel<ILivechatVisitor> {
 		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
 	): Promise<ILivechatVisitor | null>;
 
-	findOneByExternalId(source: string, externalEntityId: string): Promise<ILivechatVisitor | null>;
+	findOneByExternalId(entityId: string): Promise<ILivechatVisitor | null>;
+
+	updateExternalIdById(
+		_id: string,
+		source: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'source'>,
+	): Promise<ILivechatVisitor | null>;
 
 	removeDepartmentById(_id: string): Promise<Document | UpdateResult>;
 

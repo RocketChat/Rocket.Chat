@@ -139,28 +139,31 @@ export class TestEndpoint extends ApiEndpoint {
 
 File name: `external-id-test_0.0.1.zip`
 
-An app that tests the `ILivechatCreator.resolveVisitor()` API for resolving livechat visitors by external identifiers with phone/email fallback. This is used to test the WhatsApp BSUID (Business Scoped User ID) support and progressive visitor enrichment.
+An app that tests the `ILivechatCreator.resolveVisitor()` and `ILivechatUpdater.updateVisitorExternalId()` APIs for resolving and updating livechat visitors by external identifiers. This is used to test the WhatsApp BSUID (Business Scoped User ID) support and progressive visitor enrichment.
 
-**Endpoint:** `POST /api/apps/public/:appId/resolve-visitor`
+**Endpoints:**
 
-**Request body:**
+1. `POST /api/apps/public/:appId/resolve-visitor` - Resolve visitor by externalId with phone/email fallback
+2. `POST /api/apps/public/:appId/update-external-id` - Update visitor's externalId for this app
+
+**Request body (resolve-visitor):**
 ```json
 {
   "externalId": { "entityId": "bsuid-123", "metadata": { "username": "@johndoe" } },
   "phone": "+1234567890"
 }
 ```
-or with email fallback:
+
+**Request body (update-external-id):**
 ```json
 {
-  "externalId": { "entityId": "ext-456" },
-  "email": "user@example.com"
+  "visitorId": "visitor-123",
+  "externalId": { "entityId": "bsuid-123", "metadata": { "username": "@johndoe" } }
 }
 ```
 
 **Response:**
-- Returns the visitor if found (by externalId or contact data fallback)
-- Enriches visitor with externalId when found by phone/email
+- Returns the visitor if found/updated
 - Returns `{ visitor: null }` if not found
 
 <details>
@@ -177,6 +180,7 @@ import { App } from '@rocket.chat/apps-engine/definition/App';
 import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
 import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
 import { ResolveVisitorEndpoint } from './ResolveVisitorEndpoint';
+import { UpdateExternalIdEndpoint } from './UpdateExternalIdEndpoint';
 
 export class ExternalIdTestApp extends App {
 	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
@@ -187,7 +191,7 @@ export class ExternalIdTestApp extends App {
 		await configuration.api.provideApi({
 			visibility: ApiVisibility.PUBLIC,
 			security: ApiSecurity.UNSECURE,
-			endpoints: [new ResolveVisitorEndpoint(this)],
+			endpoints: [new ResolveVisitorEndpoint(this), new UpdateExternalIdEndpoint(this)],
 		});
 	}
 }
@@ -226,6 +230,47 @@ export class ResolveVisitorEndpoint extends ApiEndpoint {
 		}
 
 		const visitor = await modify.getCreator().getLivechatCreator().resolveVisitor(externalId, contactData);
+
+		return {
+			status: HttpStatusCode.OK,
+			content: { visitor: visitor || null },
+		};
+	}
+}
+```
+
+**UpdateExternalIdEndpoint.ts**
+```typescript
+import {
+	HttpStatusCode,
+	IHttp,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+
+export class UpdateExternalIdEndpoint extends ApiEndpoint {
+	public override path = 'update-external-id';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		_read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { visitorId, externalId } = request.content;
+
+		if (!visitorId || !externalId) {
+			return {
+				status: HttpStatusCode.BAD_REQUEST,
+				content: { error: 'visitorId and externalId are required' },
+			};
+		}
+
+		const visitor = await modify.getUpdater().getLivechatUpdater().updateVisitorExternalId(visitorId, externalId);
 
 		return {
 			status: HttpStatusCode.OK,

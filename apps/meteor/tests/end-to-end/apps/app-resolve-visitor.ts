@@ -1,14 +1,15 @@
-import type { App } from '@rocket.chat/core-typings';
+import type { App, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { appExternalIdTest } from '../../data/apps/app-packages';
 import { apps } from '../../data/apps/apps-data';
 import { cleanupApps } from '../../data/apps/helper';
-import { createVisitor, createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
+import { createVisitor, createVisitorWithCustomData, createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { updateSetting } from '../../data/permissions.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Apps - resolveVisitor API', () => {
 	let app: App;
@@ -40,6 +41,13 @@ import { IS_EE } from '../../e2e/config/constants';
 			.post(apps(`/public/${app.id}/resolve-visitor`))
 			.set(credentials)
 			.send({ externalId, phone: contactData?.phone, email: contactData?.email });
+	};
+
+	const callUpdateExternalId = async (visitorId: string, externalId: { entityId: string; metadata?: Record<string, unknown> }) => {
+		return request
+			.post(apps(`/public/${app.id}/update-external-id`))
+			.set(credentials)
+			.send({ visitorId, externalId });
 	};
 
 	describe('externalId lookup', () => {
@@ -168,6 +176,69 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			expect(response.status).to.equal(200);
 			expect(response.body.visitor).to.be.null;
+		});
+	});
+
+	describe('cross-appId lookup (app reinstallation scenario)', () => {
+		const addExternalIdToVisitor = async (visitorId: string, externalId: { source: string; entityId: string }) => {
+			const connection = await MongoClient.connect(URL_MONGODB);
+			try {
+				await connection
+					.db()
+					.collection<ILivechatVisitor>('livechat_visitor')
+					.updateOne({ _id: visitorId }, { $push: { externalIds: externalId } });
+			} finally {
+				await connection.close();
+			}
+		};
+
+		it('should find visitor by entityId even when externalId was saved by different appId', async () => {
+			// Create visitor without phone to ensure we're testing entityId lookup only
+			const visitor = await createVisitorWithCustomData({ ignorePhone: true });
+
+			const oldAppId = 'old-app-version-id-12345';
+			const entityId = `cross-app-${Date.now()}`;
+			await addExternalIdToVisitor(visitor._id, { source: oldAppId, entityId });
+
+			// App searches by entityId only - should find visitor even though source is different
+			const response = await callResolveVisitor({ entityId });
+
+			expect(response.status).to.equal(200);
+			expect(response.body.visitor.id).to.equal(visitor._id);
+			// Verify the externalId belongs to the old app
+			const oldExternalId = response.body.visitor.externalIds.find((e: { source: string }) => e.source === oldAppId);
+			expect(oldExternalId.entityId).to.equal(entityId);
+		});
+
+		it('should allow app to add its own externalId using updateVisitorExternalId', async () => {
+			// Create visitor without phone - we'll use updateVisitorExternalId directly
+			const visitor = await createVisitorWithCustomData({ ignorePhone: true });
+
+			const oldAppId = 'old-app-version-id-67890';
+			const entityId = `cross-app-update-${Date.now()}`;
+			await addExternalIdToVisitor(visitor._id, { source: oldAppId, entityId });
+
+			// First, verify app finds visitor by entityId (from old app)
+			const lookupResponse = await callResolveVisitor({ entityId });
+			expect(lookupResponse.body.visitor.id).to.equal(visitor._id);
+
+			// App detects source is different, uses updateVisitorExternalId to add its own entry
+			const newExternalId = { entityId, metadata: { username: '@newversion' } };
+			const updateResponse = await callUpdateExternalId(visitor._id, newExternalId);
+
+			expect(updateResponse.status).to.equal(200);
+			expect(updateResponse.body.visitor.id).to.equal(visitor._id);
+
+			// Verify both externalIds exist - old app's and new app's
+			const oldEntry = updateResponse.body.visitor.externalIds.find((e: { source: string }) => e.source === oldAppId);
+			const newEntry = updateResponse.body.visitor.externalIds.find((e: { source: string }) => e.source === app.id);
+
+			expect(oldEntry).to.exist;
+			expect(oldEntry.entityId).to.equal(entityId);
+
+			expect(newEntry).to.exist;
+			expect(newEntry.entityId).to.equal(entityId);
+			expect(newEntry.metadata.username).to.equal('@newversion');
 		});
 	});
 });
