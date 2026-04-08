@@ -356,13 +356,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should not route to an idle user', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
+			const firstAwayUserWebSocket = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(firstAwayUserWebSocket);
+			await setUserAwayWS(firstAwayUserWebSocket);
 			await setUserStatus(testUser3.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser3.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
+			const secondAwayUserWebSocket = await ddpLogin(testUser3.credentials['X-Auth-Token']);
+			sockets.push(secondAwayUserWebSocket);
+			await setUserAwayWS(secondAwayUserWebSocket);
 
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
@@ -514,13 +514,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should not route to an idle user', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
+			const firstAwayUserWebSocket = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(firstAwayUserWebSocket);
+			await setUserAwayWS(firstAwayUserWebSocket);
 			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
+			const secondAwayUserWebSocket = await ddpLogin(testUser2.credentials['X-Auth-Token']);
+			sockets.push(secondAwayUserWebSocket);
+			await setUserAwayWS(secondAwayUserWebSocket);
 
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
@@ -534,13 +534,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should route to agents even if theyre idle when setting is enabled', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', true);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
+			const firstAwayUserWebSocket = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(firstAwayUserWebSocket);
+			await setUserAwayWS(firstAwayUserWebSocket);
 			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
+			const secondAwayUserWebSocket = await ddpLogin(testUser2.credentials['X-Auth-Token']);
+			sockets.push(secondAwayUserWebSocket);
+			await setUserAwayWS(secondAwayUserWebSocket);
 
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
@@ -633,13 +633,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should not route to an idle user', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', false);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
+			const firstAwayUserWebSocket = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(firstAwayUserWebSocket);
+			await setUserAwayWS(firstAwayUserWebSocket);
 			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
+			const secondAwayUserWebSocket = await ddpLogin(testUser2.credentials['X-Auth-Token']);
+			sockets.push(secondAwayUserWebSocket);
+			await setUserAwayWS(secondAwayUserWebSocket);
 
 			// Agent is available but should be ignored
 			await switchLivechatStatus('available', testUser.credentials);
@@ -653,13 +653,13 @@ import { IS_EE } from '../../../e2e/config/constants';
 		it('should route to agents even if theyre idle when setting is enabled', async () => {
 			await updateSetting('Livechat_enabled_when_agent_idle', true);
 			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
+			const firstAwayUserWebSocket = await ddpLogin(testUser.credentials['X-Auth-Token']);
+			sockets.push(firstAwayUserWebSocket);
+			await setUserAwayWS(firstAwayUserWebSocket);
 			await setUserStatus(testUser2.credentials, UserStatus.AWAY);
-			const ws2 = await ddpLogin(testUser2.credentials['X-Auth-Token']);
-			sockets.push(ws2);
-			await setUserAwayWS(ws2);
+			const secondAwayUserWebSocket = await ddpLogin(testUser2.credentials['X-Auth-Token']);
+			sockets.push(secondAwayUserWebSocket);
+			await setUserAwayWS(secondAwayUserWebSocket);
 
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
