@@ -9912,6 +9912,7 @@ __metadata:
     "@types/ejson": "npm:^2.2.2"
     "@types/express": "npm:^4.17.25"
     "@types/express-rate-limit": "npm:^5.1.3"
+    "@types/fast-redact": "npm:^3"
     "@types/google-libphonenumber": "npm:^7.4.30"
     "@types/gravatar": "npm:^1.8.6"
     "@types/he": "npm:^1.2.3"
@@ -10018,6 +10019,7 @@ __metadata:
     express: "npm:^4.21.2"
     express-rate-limit: "npm:^5.5.1"
     fast-glob: "npm:^3.3.3"
+    fast-redact: "npm:^3.5.0"
     fastq: "npm:^1.17.1"
     fflate: "npm:^0.8.2"
     file-type: "npm:^16.5.4"
@@ -14164,6 +14166,13 @@ __metadata:
     "@types/qs": "npm:*"
     "@types/serve-static": "npm:^1"
   checksum: 10/c309fdb79fb8569b5d8d8f11268d0160b271f8b38f0a82c20a0733e526baf033eb7a921cd51d54fe4333c616de9e31caf7d4f3ef73baaf212d61f23f460b0369
+  languageName: node
+  linkType: hard
+
+"@types/fast-redact@npm:^3":
+  version: 3.0.4
+  resolution: "@types/fast-redact@npm:3.0.4"
+  checksum: 10/d130c7c2d322e761c65ec8ecd821bf56e132672cd9de1703a53a65e051d2f43af6062040d3f0afdd48b364e1e4b29b858a748517ba9a6a7f1dab12ce7000103a
   languageName: node
   linkType: hard
 
@@ -22302,6 +22311,13 @@ __metadata:
   version: 2.0.6
   resolution: "fast-levenshtein@npm:2.0.6"
   checksum: 10/eb7e220ecf2bab5159d157350b81d01f75726a4382f5a9266f42b9150c4523b9795f7f5d9fbbbeaeac09a441b2369f05ee02db48ea938584205530fe5693cfe1
+  languageName: node
+  linkType: hard
+
+"fast-redact@npm:^3.5.0":
+  version: 3.5.0
+  resolution: "fast-redact@npm:3.5.0"
+  checksum: 10/24b27e2023bd5a62f908d97a753b1adb8d89206b260f97727728e00b693197dea2fc2aa3711147a385d0ec6e713569fd533df37a4ef947e08cb65af3019c7ad5
   languageName: node
   linkType: hard
 

@@ -3,10 +3,34 @@ import type { IAppLogStorageFindOptions } from '@rocket.chat/apps-engine/server/
 import { AppLogStorage } from '@rocket.chat/apps-engine/server/storage';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import type { AppLogs } from '@rocket.chat/models';
+import fastRedact, { type redactFnNoSerialize } from 'fast-redact';
 
 export class AppRealLogStorage extends AppLogStorage {
+	private readonly redact: redactFnNoSerialize;
+
 	constructor(private db: typeof AppLogs) {
 		super('mongodb');
+
+		this.redact = fastRedact({
+			paths: [
+				'headers.cookie',
+				'headers["x-auth-token"]',
+				'headers.authorization',
+				'headers.access_token',
+				'query["x-auth-token"]',
+				'query.authorization',
+				'query.access_token',
+				'query.customFields.*',
+				'params["x-auth-token"]',
+				'params.authorization',
+				'params.access_token',
+				'params.customFields.*',
+				'user.customFields.*',
+				'user.emails[*].address',
+			],
+			serialize: false,
+			strict: false,
+		});
 	}
 
 	async find(
@@ -40,6 +64,10 @@ export class AppRealLogStorage extends AppLogStorage {
 
 	async storeEntries(logEntry: ILoggerStorageEntry): Promise<ILoggerStorageEntry> {
 		logEntry.instanceId = InstanceStatus.id();
+
+		logEntry.entries.forEach((entry) => {
+			entry.args.forEach((arg) => void (typeof arg === 'object' && arg !== null ? this.redact(arg) : arg));
+		});
 
 		const id = (await this.db.insertOne(logEntry)).insertedId;
 
