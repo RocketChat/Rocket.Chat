@@ -1,7 +1,7 @@
-import { Box, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarDialog, Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
-import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { GenericModal, ContextualbarDialog, Page, PageContent, PageHeader } from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch, useSetting, useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { Trans, useTranslation } from 'react-i18next';
 
 import AttributesContextualBar from './ABACAttributesTab/AttributesContextualBar';
@@ -29,6 +29,46 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 	const context = useRouteParameter('context');
 	const learnMore = useExternalLink();
 	const isABACAvailable = useIsABACAvailable();
+	const ldapEnabled = useSetting('LDAP_Enable');
+	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
+	const testConnection = useEndpoint('POST', '/v1/ldap.testConnection');
+	const syncNow = useEndpoint('POST', '/v1/ldap.syncNow');
+
+	const handleSyncNowButtonClick = async (): Promise<void> => {
+		try {
+			await testConnection();
+		} catch {
+			dispatchToastMessage({ type: 'error', message: t('Connection_failed') });
+			return;
+		}
+
+		const confirmSync = async (): Promise<void> => {
+			setModal();
+
+			try {
+				const { message } = await syncNow();
+				dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
+			} catch (error) {
+				if (error instanceof Error) {
+					dispatchToastMessage({ type: 'error', message: error });
+				}
+			}
+		};
+
+		setModal(
+			<GenericModal
+				variant='info'
+				confirmText={t('Sync')}
+				cancelText={t('Cancel')}
+				title={t('Execute_Synchronization_Now')}
+				onConfirm={confirmSync}
+				onClose={() => setModal()}
+			>
+				{t('LDAP_Sync_Now_Description')}
+			</GenericModal>,
+		);
+	};
 
 	const handleCloseContextualbar = useEffectEvent((): void => {
 		if (!context) {
@@ -48,9 +88,14 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('ABAC')}>
-					<Button icon='new-window' secondary onClick={() => learnMore(links.go.abacDocs)}>
-						{t('ABAC_Learn_More')}
-					</Button>
+					<ButtonGroup>
+						<Button disabled={!ldapEnabled} onClick={handleSyncNowButtonClick}>
+							{t('LDAP_Sync_Now')}
+						</Button>
+						<Button icon='new-window' secondary onClick={() => learnMore(links.go.abacDocs)}>
+							{t('ABAC_Learn_More')}
+						</Button>
+					</ButtonGroup>
 				</PageHeader>
 				{shouldShowWarning && (
 					<Box mi={24} mb={16}>
