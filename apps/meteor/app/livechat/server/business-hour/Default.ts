@@ -1,6 +1,6 @@
 import type { ILivechatBusinessHour } from '@rocket.chat/core-typings';
 import { LivechatBusinessHourTypes } from '@rocket.chat/core-typings';
-import moment from 'moment-timezone';
+import { guessTimezone } from '@rocket.chat/tools';
 
 import type { IBusinessHourType } from './AbstractBusinessHour';
 import { AbstractBusinessHourType } from './AbstractBusinessHour';
@@ -23,7 +23,7 @@ export class DefaultBusinessHour extends AbstractBusinessHourType implements IBu
 			return businessHourData;
 		}
 		businessHourData.timezone = {
-			name: timezoneName || moment.tz.guess(),
+			name: timezoneName || guessTimezone(),
 			utc: this.getUTCFromTimezone(timezoneName),
 		};
 		await this.baseSaveBusinessHour(businessHourData);

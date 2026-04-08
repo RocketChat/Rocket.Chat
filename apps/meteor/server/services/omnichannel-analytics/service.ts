@@ -1,4 +1,3 @@
-/* eslint-disable new-cap */
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type {
 	AgentOverviewDataOptions,
@@ -7,13 +6,13 @@ import type {
 	IOmnichannelAnalyticsService,
 } from '@rocket.chat/core-services';
 import { LivechatRooms } from '@rocket.chat/models';
-import moment from 'moment-timezone';
+import { isValid, differenceInDays, addHours, endOfHour, endOfDay } from 'date-fns';
 
 import { AgentOverviewData } from './AgentData';
 import { ChartData } from './ChartData';
 import { OverviewData } from './OverviewData';
 import { serviceLogger } from './logger';
-import { dayIterator } from './utils';
+import { dayIterator, parseRangeInTimezone, formatHourInTimezone } from './utils';
 import { getTimezone } from '../../../app/utils/server/lib/getTimezone';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
@@ -40,16 +39,10 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 	async getAgentOverviewData(options: AgentOverviewDataOptions) {
 		const { departmentId, utcOffset, daterange: { from: fDate, to: tDate } = {}, chartOptions: { name } = {}, executedBy } = options;
 		const timezone = getTimezone({ utcOffset });
-		const from = moment
-			.tz(fDate || '', 'YYYY-MM-DD', timezone)
-			.startOf('day')
-			.utc();
-		const to = moment
-			.tz(tDate || '', 'YYYY-MM-DD', timezone)
-			.endOf('day')
-			.utc();
+		const fromDate = parseRangeInTimezone(fDate || '', timezone).start;
+		const toDate = parseRangeInTimezone(tDate || '', timezone).end;
 
-		if (!moment(from).isValid() || !moment(to).isValid()) {
+		if (!isValid(fromDate) || !isValid(toDate)) {
 			serviceLogger.error('AgentOverview -> Invalid dates');
 			return;
 		}
@@ -60,7 +53,7 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		}
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: executedBy });
-		return this.agentOverview.callAction(name, from, to, departmentId, extraQuery);
+		return this.agentOverview.callAction(name, fromDate, toDate, departmentId, extraQuery);
 	}
 
 	async getAnalyticsChartData(options: ChartDataOptions) {
@@ -79,20 +72,15 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 		}
 
 		const timezone = getTimezone({ utcOffset });
-		const from = moment
-			.tz(fDate || '', 'YYYY-MM-DD', timezone)
-			.startOf('day')
-			.utc();
-		const to = moment
-			.tz(tDate || '', 'YYYY-MM-DD', timezone)
-			.endOf('day')
-			.utc();
-		const isSameDay = from.diff(to, 'days') === 0;
+		const from = parseRangeInTimezone(fDate || '', timezone).start;
+		const to = parseRangeInTimezone(tDate || '', timezone).end;
 
-		if (!moment(from).isValid() || !moment(to).isValid()) {
+		if (!isValid(from) || !isValid(to)) {
 			serviceLogger.error('ChartData -> Invalid dates');
 			return;
 		}
+
+		const isSameDay = differenceInDays(to, from) === 0;
 
 		const data: {
 			chartLabel: string;
@@ -106,32 +94,20 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: executedBy });
 		if (isSameDay) {
-			// data for single day
-			const m = moment(from);
-			for await (const currentHour of Array.from({ length: HOURS_IN_DAY }, (_, i) => i)) {
-				const hour = parseInt(m.add(currentHour ? 1 : 0, 'hour').format('H'));
-				const label = {
-					from: moment.utc().set({ hour }).tz(timezone).format('hA'),
-					to: moment.utc().set({ hour }).endOf('hour').tz(timezone).format('hA'),
-				};
-				data.dataLabels.push(`${label.from}-${label.to}`);
+			for (let hour = 0; hour < HOURS_IN_DAY; hour++) {
+				const hourStart = addHours(from, hour);
+				const hourEnd = endOfHour(hourStart);
+				data.dataLabels.push(`${formatHourInTimezone(hour, timezone)}-${formatHourInTimezone(hour + 1, timezone)}`);
 
-				const date = {
-					gte: m.toDate(),
-					lte: moment(m).endOf('hour').toDate(),
-				};
-
+				const date = { gte: hourStart, lte: hourEnd };
+				// eslint-disable-next-line no-await-in-loop
 				data.dataPoints.push(await this.chart.callAction(chartLabel, date, departmentId, extraQuery));
 			}
 		} else {
 			for await (const m of dayIterator(from, to)) {
-				data.dataLabels.push(m.format('M/D'));
+				data.dataLabels.push(`${m.getUTCMonth() + 1}/${m.getUTCDate()}`);
 
-				const date = {
-					gte: m.toDate(),
-					lte: moment(m).endOf('day').toDate(),
-				};
-
+				const date = { gte: m, lte: endOfDay(m) };
 				data.dataPoints.push(await this.chart.callAction(chartLabel, date, departmentId, extraQuery));
 			}
 		}
@@ -149,16 +125,10 @@ export class OmnichannelAnalyticsService extends ServiceClassInternal implements
 			executedBy,
 		} = options;
 		const timezone = getTimezone({ utcOffset });
-		const from = moment
-			.tz(fDate || '', 'YYYY-MM-DD', timezone)
-			.startOf('day')
-			.utc();
-		const to = moment
-			.tz(tDate || '', 'YYYY-MM-DD', timezone)
-			.endOf('day')
-			.utc();
+		const from = parseRangeInTimezone(fDate || '', timezone).start;
+		const to = parseRangeInTimezone(tDate || '', timezone).end;
 
-		if (!moment(from).isValid() || !moment(to).isValid()) {
+		if (!isValid(from) || !isValid(to)) {
 			serviceLogger.error('OverviewData -> Invalid dates');
 			return;
 		}

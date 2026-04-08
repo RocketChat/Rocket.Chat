@@ -3,8 +3,8 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
+import { subDays, differenceInSeconds, startOfDay, format } from 'date-fns';
 import { before, after, describe, it } from 'mocha';
-import moment from 'moment';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -22,6 +22,13 @@ import { sleep } from '../../../data/livechat/utils';
 import { removePermissionFromAllRoles, restorePermissionToRoles, updateEESetting, updateSetting } from '../../../data/permissions.helper';
 import { deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
+
+/** Parse HH:mm:ss or H:mm:ss to total seconds */
+function durationAsSeconds(value: string): number {
+	const parts = String(value).trim().split(':').map(Number);
+	const [h = 0, m = 0, s = 0] = parts.length === 3 ? parts : [0, 0, parts[0]];
+	return (h || 0) * 3600 + (m || 0) * 60 + (s || 0);
+}
 
 describe('LIVECHAT - dashboards', function () {
 	// This test is expected to take more time since we're simulating real time conversations to verify analytics
@@ -103,7 +110,7 @@ describe('LIVECHAT - dashboards', function () {
 		agents.push(agent1);
 		agents.push(agent2);
 
-		const roomCreationStart = moment();
+		const roomCreationStart = new Date();
 		// start a few chats
 		const promises = Array.from(Array(TOTAL_ROOMS).keys()).map((i) => {
 			// 2 rooms by agent 1
@@ -126,12 +133,12 @@ describe('LIVECHAT - dashboards', function () {
 		await placeRoomOnHold(chatInfo[1].room._id);
 		// close a chat
 		await closeOmnichannelRoom(chatInfo[4].room._id);
-		const room5ChatDuration = moment().diff(roomCreationStart, 'seconds');
+		const room5ChatDuration = differenceInSeconds(new Date(), roomCreationStart);
 		// close an abandoned chat
 		await sendAgentMessage(chatInfo[5].room._id);
 		await sleep(inactivityTimeout * 1000); // wait for the chat to be considered abandoned
 		await closeOmnichannelRoom(chatInfo[5].room._id);
-		const room6ChatDuration = moment().diff(roomCreationStart, 'seconds');
+		const room6ChatDuration = differenceInSeconds(new Date(), roomCreationStart);
 
 		avgClosedRoomChatDuration = (room5ChatDuration + room6ChatDuration) / 2;
 	});
@@ -189,8 +196,8 @@ describe('LIVECHAT - dashboards', function () {
 				});
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
-			const start = moment().subtract(1, 'days').toISOString();
-			const end = moment().toISOString();
+			const start = subDays(new Date(), 1).toISOString();
+			const end = new Date().toISOString();
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/conversation-totalizers'))
@@ -261,8 +268,8 @@ describe('LIVECHAT - dashboards', function () {
 				});
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
-			const start = moment().subtract(1, 'days').toISOString();
-			const end = moment().toISOString();
+			const start = subDays(new Date(), 1).toISOString();
+			const end = new Date().toISOString();
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/productivity-totalizers'))
@@ -286,7 +293,7 @@ describe('LIVECHAT - dashboards', function () {
 			const avgWaitingTime = result.body.totalizers.find((item: any) => item.title === 'Avg_of_waiting_time');
 			expect(avgWaitingTime).to.not.be.undefined;
 
-			/* const avgWaitingTimeValue = moment.duration(avgWaitingTime.value).asSeconds();
+			/* const avgWaitingTimeValue = durationAsSeconds(avgWaitingTime.value);
 			expect(avgWaitingTimeValue).to.be.closeTo(DELAY_BETWEEN_MESSAGES.max / 1000, 5); */
 		});
 	});
@@ -325,8 +332,8 @@ describe('LIVECHAT - dashboards', function () {
 				});
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
-			const start = moment().subtract(1, 'days').toISOString();
-			const end = moment().toISOString();
+			const start = subDays(new Date(), 1).toISOString();
+			const end = new Date().toISOString();
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/chats-totalizers'))
@@ -354,7 +361,7 @@ describe('LIVECHAT - dashboards', function () {
 			const resultAverageChatDuration = result.body.totalizers.find((item: any) => item.title === 'Avg_of_chat_duration_time');
 			expect(resultAverageChatDuration).to.not.be.undefined;
 
-			const resultAverageChatDurationValue = moment.duration(resultAverageChatDuration.value).asSeconds();
+			const resultAverageChatDurationValue = durationAsSeconds(resultAverageChatDuration.value);
 			expect(resultAverageChatDurationValue).to.be.closeTo(avgClosedRoomChatDuration, 5); // Keep a margin of 3 seconds
 		});
 	});
@@ -393,8 +400,8 @@ describe('LIVECHAT - dashboards', function () {
 				});
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
-			const start = moment().subtract(1, 'days').toISOString();
-			const end = moment().toISOString();
+			const start = subDays(new Date(), 1).toISOString();
+			const end = new Date().toISOString();
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
@@ -416,7 +423,7 @@ describe('LIVECHAT - dashboards', function () {
 			const avgServiceTime = result.body.totalizers.find((item: any) => item.title === 'Avg_of_service_time');
 
 			expect(avgServiceTime).to.not.be.undefined;
-			const avgServiceTimeValue = moment.duration(avgServiceTime.value).asSeconds();
+			const avgServiceTimeValue = durationAsSeconds(avgServiceTime.value);
 			const minChatDuration = (DELAY_BETWEEN_MESSAGES.min * TOTAL_MESSAGES.min) / 1000;
 			const maxChatDuration = (DELAY_BETWEEN_MESSAGES.max * TOTAL_MESSAGES.max) / 1000;
 			expect(avgServiceTimeValue).to.be.closeTo((minChatDuration + maxChatDuration) / 2, 10);
@@ -455,8 +462,8 @@ describe('LIVECHAT - dashboards', function () {
 				});
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
-			const start = moment().subtract(1, 'days').toISOString();
-			const end = moment().toISOString();
+			const start = subDays(new Date(), 1).toISOString();
+			const end = new Date().toISOString();
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/charts/chats'))
@@ -509,8 +516,8 @@ describe('LIVECHAT - dashboards', function () {
 				});
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
-			const start = moment().subtract(1, 'days').toISOString();
-			const end = moment().toISOString();
+			const start = subDays(new Date(), 1).toISOString();
+			const end = new Date().toISOString();
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
@@ -563,8 +570,8 @@ describe('LIVECHAT - dashboards', function () {
 				});
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
-			const start = moment().subtract(1, 'days').toISOString();
-			const end = moment().toISOString();
+			const start = subDays(new Date(), 1).toISOString();
+			const end = new Date().toISOString();
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/charts/agents-status'))
@@ -618,8 +625,8 @@ describe('LIVECHAT - dashboards', function () {
 				});
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
-			const start = moment().subtract(1, 'days').toISOString();
-			const end = moment().toISOString();
+			const start = subDays(new Date(), 1).toISOString();
+			const end = new Date().toISOString();
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
@@ -680,8 +687,8 @@ describe('LIVECHAT - dashboards', function () {
 				});
 		});
 		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
-			const start = moment().subtract(1, 'days').toISOString();
-			const end = moment().toISOString();
+			const start = subDays(new Date(), 1).toISOString();
+			const end = new Date().toISOString();
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/charts/timings'))
@@ -724,8 +731,8 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/dashboards/charts-data', () => {
 		it('should return the correct data structure for the charts', async () => {
-			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 
 			const result = await request
 				.get(api('livechat/analytics/dashboards/charts-data'))
@@ -790,8 +797,8 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body.data).to.be.an('array');
 		});
 		(IS_EE ? it : it.skip)('should return agent overview data with correct values', async () => {
-			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
@@ -816,7 +823,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(user2Data).to.have.property('value', '71.43%');
 		});
 		(IS_EE ? it : it.skip)('should only return results in the provided date interval when searching for total conversations', async () => {
-			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+			const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
@@ -836,7 +843,7 @@ describe('LIVECHAT - dashboards', function () {
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for average chat durations',
 			async () => {
-				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+				const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 				const result = await request
 					.get(api('livechat/analytics/agent-overview'))
@@ -855,7 +862,7 @@ describe('LIVECHAT - dashboards', function () {
 			},
 		);
 		(IS_EE ? it : it.skip)('should only return results in the provided date interval when searching for total messages', async () => {
-			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+			const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
@@ -875,7 +882,7 @@ describe('LIVECHAT - dashboards', function () {
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for average first response times',
 			async () => {
-				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+				const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 				const result = await request
 					.get(api('livechat/analytics/agent-overview'))
@@ -896,7 +903,7 @@ describe('LIVECHAT - dashboards', function () {
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for best first response times',
 			async () => {
-				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+				const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 				const result = await request
 					.get(api('livechat/analytics/agent-overview'))
@@ -917,7 +924,7 @@ describe('LIVECHAT - dashboards', function () {
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for average response times',
 			async () => {
-				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+				const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 				const result = await request
 					.get(api('livechat/analytics/agent-overview'))
@@ -938,7 +945,7 @@ describe('LIVECHAT - dashboards', function () {
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for average reaction times',
 			async () => {
-				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+				const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 				const result = await request
 					.get(api('livechat/analytics/agent-overview'))
@@ -993,7 +1000,7 @@ describe('LIVECHAT - dashboards', function () {
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
@@ -1018,7 +1025,7 @@ describe('LIVECHAT - dashboards', function () {
 			await sleep(firstDelayInSeconds * 1000);
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: today, to: today, name: 'Avg_first_response_time' })
@@ -1037,7 +1044,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.not.be.undefined;
 			expect(agentData).to.have.property('name', agent.user.username);
 			expect(agentData).to.have.property('value');
-			originalFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			originalFirstResponseTimeInSeconds = durationAsSeconds(agentData.value);
 			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(firstDelayInSeconds);
 		});
 
@@ -1052,7 +1059,7 @@ describe('LIVECHAT - dashboards', function () {
 
 			await sendAgentMessage(roomId, 'first response from agent', botAgent.credentials);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: today, to: today, name: 'Avg_first_response_time' })
@@ -1095,7 +1102,7 @@ describe('LIVECHAT - dashboards', function () {
 
 			await sendAgentMessage(roomId, 'first response from forwarded agent', agent.credentials);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: today, to: today, name: 'Avg_first_response_time' })
@@ -1115,7 +1122,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.not.be.undefined;
 			expect(agentData).to.have.property('name', agent.user.username);
 			expect(agentData).to.have.property('value');
-			const averageFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			const averageFirstResponseTimeInSeconds = durationAsSeconds(agentData.value);
 			expect(originalFirstResponseTimeInSeconds).to.be.equal(averageFirstResponseTimeInSeconds);
 
 			// A room's first response time should be attached to the agent who first responded to it even if it has been forwarded
@@ -1125,7 +1132,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(forwardAgentData).to.not.be.undefined;
 			expect(forwardAgentData).to.have.property('name', forwardAgent.user.username);
 			expect(forwardAgentData).to.have.property('value');
-			const forwardAgentAverageFirstResponseTimeInSeconds = moment.duration(forwardAgentData.value).asSeconds();
+			const forwardAgentAverageFirstResponseTimeInSeconds = durationAsSeconds(forwardAgentData.value);
 			expect(originalFirstResponseTimeInSeconds).to.be.greaterThan(forwardAgentAverageFirstResponseTimeInSeconds);
 		});
 
@@ -1138,7 +1145,7 @@ describe('LIVECHAT - dashboards', function () {
 			await sleep(secondDelayInSeconds * 1000);
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: today, to: today, name: 'Avg_first_response_time' })
@@ -1157,7 +1164,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.not.be.undefined;
 			expect(agentData).to.have.property('name', agent.user.username);
 			expect(agentData).to.have.property('value');
-			const averageFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			const averageFirstResponseTimeInSeconds = durationAsSeconds(agentData.value);
 			expect(averageFirstResponseTimeInSeconds).to.be.greaterThan(originalFirstResponseTimeInSeconds);
 			expect(averageFirstResponseTimeInSeconds).to.be.greaterThanOrEqual((firstDelayInSeconds + secondDelayInSeconds) / 2);
 			expect(averageFirstResponseTimeInSeconds).to.be.lessThan(secondDelayInSeconds);
@@ -1188,7 +1195,7 @@ describe('LIVECHAT - dashboards', function () {
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
@@ -1215,7 +1222,7 @@ describe('LIVECHAT - dashboards', function () {
 
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: today, to: today, name: 'Best_first_response_time' })
@@ -1234,7 +1241,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.not.be.undefined;
 			expect(agentData).to.have.property('name', agent.user.username);
 			expect(agentData).to.have.property('value');
-			originalBestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			originalBestFirstResponseTimeInSeconds = durationAsSeconds(agentData.value);
 			expect(originalBestFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(delayInSeconds);
 		});
 
@@ -1249,7 +1256,7 @@ describe('LIVECHAT - dashboards', function () {
 
 			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: today, to: today, name: 'Best_first_response_time' })
@@ -1268,7 +1275,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.not.be.undefined;
 			expect(agentData).to.have.property('name', agent.user.username);
 			expect(agentData).to.have.property('value');
-			const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			const bestFirstResponseTimeInSeconds = durationAsSeconds(agentData.value);
 			expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
 		});
 
@@ -1296,7 +1303,7 @@ describe('LIVECHAT - dashboards', function () {
 
 			await sendAgentMessage(roomId, 'first response from forwarded agent', agent.credentials);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: today, to: today, name: 'Best_first_response_time' })
@@ -1316,7 +1323,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.not.be.undefined;
 			expect(agentData).to.have.property('name', agent.user.username);
 			expect(agentData).to.have.property('value');
-			const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+			const bestFirstResponseTimeInSeconds = durationAsSeconds(agentData.value);
 			expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
 
 			// A room's first response time should be attached to the agent who first responded to it even if it has been forwarded
@@ -1326,7 +1333,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(forwardAgentData).to.not.be.undefined;
 			expect(forwardAgentData).to.have.property('name', forwardAgent.user.username);
 			expect(forwardAgentData).to.have.property('value');
-			const forwardAgentBestFirstResponseTimeInSeconds = moment.duration(forwardAgentData.value).asSeconds();
+			const forwardAgentBestFirstResponseTimeInSeconds = durationAsSeconds(forwardAgentData.value);
 			expect(forwardAgentBestFirstResponseTimeInSeconds).to.be.lessThan(originalBestFirstResponseTimeInSeconds);
 		});
 	});
@@ -1376,8 +1383,8 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body[0]).to.have.property('value', 0);
 		});
 		(IS_EE ? it : it.skip)('should return analytics overview data with correct values', async () => {
-			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
-			const today = moment().startOf('day').format('YYYY-MM-DD');
+			const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
+			const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
 
 			const result = await request
 				.get(api('livechat/analytics/overview'))
@@ -1414,7 +1421,7 @@ describe('LIVECHAT - dashboards', function () {
 		(IS_EE ? it : it.skip)(
 			'should only consider conversations in the provided time range when returning analytics conversations overview data',
 			async () => {
-				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+				const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 				const result = await request
 					.get(api('livechat/analytics/overview'))
@@ -1442,7 +1449,7 @@ describe('LIVECHAT - dashboards', function () {
 		(IS_EE ? it : it.skip)(
 			'should only consider conversations in the provided time range when returning analytics productivity overview data',
 			async () => {
-				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+				const yesterday = format(subDays(new Date(), 1), 'yyyy-MM-dd');
 
 				const result = await request
 					.get(api('livechat/analytics/overview'))
