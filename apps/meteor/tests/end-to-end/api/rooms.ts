@@ -4699,7 +4699,38 @@ describe('[Rooms]', () => {
 			expect(roomIds).to.not.include(privateChannel._id);
 		});
 
-		it('should re-invite banned User B back to the private channel', async () => {
+		it('should fail to re-invite banned User B directly', async () => {
+			await request
+				.post(api('groups.invite'))
+				.set(credentials)
+				.send({
+					roomId: privateChannel._id,
+					userId: userB._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-user-is-banned');
+				});
+		});
+
+		it('should unban User B before re-inviting', async () => {
+			await request
+				.post(api('rooms.unbanUser'))
+				.set(credentials)
+				.send({
+					roomId: privateChannel._id,
+					userId: userB._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should re-invite User B back to the private channel after unban', async () => {
 			await request
 				.post(api('groups.invite'))
 				.set(credentials)
