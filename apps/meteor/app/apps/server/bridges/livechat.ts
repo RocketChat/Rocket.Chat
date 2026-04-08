@@ -129,12 +129,13 @@ export class AppLivechatBridge extends LivechatBridge {
 					type: OmnichannelSourceType.APP,
 					id: appId,
 					alias: this.orch.getManager()?.getOneById(appId)?.getName(),
-					...(source?.type === 'app' && {
-						sidebarIcon: source.sidebarIcon,
-						defaultIcon: source.defaultIcon,
-						label: source.label,
-						destination: source.destination,
-					}),
+					...(source &&
+						source.type === 'app' && {
+							sidebarIcon: source.sidebarIcon,
+							defaultIcon: source.defaultIcon,
+							label: source.label,
+							destination: source.destination,
+						}),
 				},
 			},
 			agent: agentRoom,
