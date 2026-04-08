@@ -9,3 +9,8 @@ declare module 'express' {
 		unauthorized?: boolean;
 	}
 }
+declare global {
+	namespace Express {
+		type User = IUser;
+	}
+}
