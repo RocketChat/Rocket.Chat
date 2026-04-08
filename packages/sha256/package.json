@@ -6,7 +6,7 @@
 	"main": "./dist/sha256.js",
 	"types": "./dist/sha256.d.ts",
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"build": "rimraf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
@@ -19,6 +19,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"eslint": "~9.39.3",
 		"jest": "~30.2.0",
+		"rimraf": "^6.0.1",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

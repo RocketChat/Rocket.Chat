@@ -8,8 +8,8 @@
 		"/dist"
 	],
 	"scripts": {
-		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./storybook-static ../../.preview/ui-composer",
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		".:build-preview-move": "shx mkdir -p ../../.preview/ && shx cp -r ./storybook-static ../../.preview/ui-composer",
+		"build": "rimraf dist && tsc -p tsconfig.build.json",
 		"build-preview": "storybook build",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
@@ -44,6 +44,8 @@
 		"react": "~18.3.1",
 		"react-dom": "~18.3.1",
 		"react-virtuoso": "^4.12.0",
+		"rimraf": "^6.0.1",
+		"shx": "^0.3.4",
 		"storybook": "^8.6.17",
 		"typescript": "~5.9.3",
 		"webpack": "~5.99.9"

@@ -8,7 +8,7 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"build": "rimraf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
@@ -31,6 +31,7 @@
 		"@types/node-fetch": "~2.6.13",
 		"eslint": "~9.39.3",
 		"jest": "^29.7.0",
+		"rimraf": "^6.0.1",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

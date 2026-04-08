@@ -23,7 +23,7 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"clean": "rm -rf ./dist",
+		"clean": "rimraf ./dist",
 		"lint": "eslint ."
 	},
 	"dependencies": {

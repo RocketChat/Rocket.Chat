@@ -8,7 +8,7 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"build": "rimraf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
@@ -58,6 +58,7 @@
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
 		"react-virtuoso": "^4.12.0",
+		"rimraf": "^6.0.1",
 		"storybook": "^8.6.17",
 		"typescript": "~5.9.3"
 	},
