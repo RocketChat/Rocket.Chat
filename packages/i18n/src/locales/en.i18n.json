@@ -84,6 +84,7 @@
   "ABAC_Room_Attributes": "Room Attributes",
   "ABAC_Logs": "Logs",
   "ABAC_Invalid_attribute": "Invalid characters in attribute name or values",
+  "Enable_ABAC_and_LDAP_to_sync": "Enable ABAC and LDAP to be able to sync",
   "AI_Actions": "AI actions",
   "API": "API",
   "API_Add_Personal_Access_Token": "Add new Personal Access Token",
