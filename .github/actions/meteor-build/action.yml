@@ -157,7 +157,16 @@ runs:
         # check if BABEL_ENV is set to coverage
         if [[ $BABEL_ENV == "coverage" ]]; then
           echo -e "rocketchat:coverage\n" >> ./apps/meteor/.meteor/packages
-          echo "Coverage enabled"
+          # Inject swc-plugin-coverage-instrument into .swcrc for istanbul-compatible coverage
+          node -e "
+            const fs = require('fs');
+            const swcrc = JSON.parse(fs.readFileSync('./apps/meteor/.swcrc', 'utf8'));
+            swcrc.jsc.experimental = swcrc.jsc.experimental || {};
+            swcrc.jsc.experimental.plugins = swcrc.jsc.experimental.plugins || [];
+            swcrc.jsc.experimental.plugins.push(['swc-plugin-coverage-instrument', {}]);
+            fs.writeFileSync('./apps/meteor/.swcrc', JSON.stringify(swcrc, null, 2) + '\n');
+          "
+          echo "Coverage enabled (SWC istanbul plugin injected)"
         fi
 
         # Restore original package.json so meteor should not copy devDependencies
