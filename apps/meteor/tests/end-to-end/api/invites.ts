@@ -1,12 +1,13 @@
-import type { IInvite, IRoom, IUser } from '@rocket.chat/core-typings';
 import type { Credentials } from '@rocket.chat/api-client';
+import type { IInvite, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
+import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
-import { createUser, deleteUser, login, password } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
 
 describe('Invites', () => {
 	let testInviteID: IInvite['_id'];
