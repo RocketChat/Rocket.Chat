@@ -15,6 +15,7 @@ import AttachmentText from './structure/AttachmentText';
 import AttachmentThumb from './structure/AttachmentThumb';
 import AttachmentTitle from './structure/AttachmentTitle';
 import MarkdownText from '../../../MarkdownText';
+import GazzodownText from '../../../GazzodownText';
 import { useCollapse } from '../../hooks/useCollapse';
 
 const applyMarkdownIfRequires = (
@@ -22,9 +23,16 @@ const applyMarkdownIfRequires = (
 	key: MarkdownFields,
 	text: string,
 	variant: ComponentProps<typeof MarkdownText>['variant'] = 'inline',
-): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant={variant} content={text} /> : text);
+	searchText?: string,
+): ReactNode => {
+	if (list?.includes(key)) {
+		const markdownContent = <MarkdownText parseEmoji variant={variant} content={text} />;
+		return searchText ? <GazzodownText searchText={searchText}>{markdownContent}</GazzodownText> : markdownContent;
+	}
+	return searchText ? <GazzodownText searchText={searchText}>{text}</GazzodownText> : text;
+};
 
-type DefaultAttachmentProps = MessageAttachmentDefault;
+type DefaultAttachmentProps = MessageAttachmentDefault & { searchText?: string };
 
 const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => {
 	const [collapsed, collapse] = useCollapse(!!attachment.collapsed);
@@ -34,7 +42,7 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 			color={attachment.color}
 			pre={
 				attachment.pretext && (
-					<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'pretext', attachment.pretext)}</AttachmentText>
+					<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'pretext', attachment.pretext, 'inline', attachment.searchText)}</AttachmentText>
 				)
 			}
 		>
@@ -72,7 +80,7 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 				{!collapsed && (
 					<>
 						{attachment.text && (
-							<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text, 'document')}</AttachmentText>
+							<AttachmentText>{applyMarkdownIfRequires(attachment.mrkdwn_in, 'text', attachment.text, 'document', attachment.searchText)}</AttachmentText>
 						)}
 						{/* {attachment.fields && <FieldsAttachment fields={attachment.mrkdwn_in?.includes('fields') ? attachment.fields.map(({ value, ...rest }) => ({ ...rest, value: <MarkdownText withRichContent={null} content={value} /> })) : attachment.fields} />} */}
 						{attachment.fields && (
