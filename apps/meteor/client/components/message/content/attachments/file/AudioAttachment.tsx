@@ -26,7 +26,7 @@ const AudioAttachment = ({
 	return (
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
-			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed}>
+			<MessageCollapsible title={title} hasDownload={hasDownload} link={getURL(link || url)} size={size} isCollapsed={collapsed} storageId={link || url}>
 				<AudioPlayer src={src} type={type} ref={mediaRef} />
 			</MessageCollapsible>
 		</>
