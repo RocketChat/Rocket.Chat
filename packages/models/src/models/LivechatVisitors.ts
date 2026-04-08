@@ -50,7 +50,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
-	findOneVisitorByPhoneOrEmailAndAddExternalId(
+	async findOneVisitorByPhoneOrEmailAndAddExternalId(
 		contactData: { phone: string } | { email: string },
 		appId: string,
 		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
@@ -58,25 +58,17 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		const query =
 			'phone' in contactData ? { 'phone.phoneNumber': contactData.phone } : { 'visitorEmails.address': contactData.email.toLowerCase() };
 
-		// Use aggregation pipeline update to upsert into the array:
-		// 1. Filter out any existing entry with the same appId
-		// 2. Add the new entry
-		return this.findOneAndUpdate(
-			query,
-			[
-				{
-					$set: {
-						externalIds: {
-							$concatArrays: [
-								{ $filter: { input: { $ifNull: ['$externalIds', []] }, cond: { $ne: ['$$this.appId', appId] } } },
-								[{ appId, ...externalId }],
-							],
-						},
-					},
-				},
-			],
-			{ returnDocument: 'after' },
-		);
+		const visitor = await this.findOne(query);
+		if (!visitor) {
+			return null;
+		}
+
+		const filteredIds = visitor.externalIds?.filter((e) => e.appId !== appId) ?? [];
+		const newExternalIds = [...filteredIds, { appId, ...externalId }];
+
+		await this.updateOne({ _id: visitor._id }, { $set: { externalIds: newExternalIds } });
+
+		return { ...visitor, externalIds: newExternalIds };
 	}
 
 	findOneByExternalId(entityId: string): Promise<ILivechatVisitor | null> {
@@ -85,30 +77,22 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		});
 	}
 
-	updateExternalIdById(
+	async updateExternalIdById(
 		_id: string,
 		appId: string,
 		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
 	): Promise<ILivechatVisitor | null> {
-		// Use aggregation pipeline update to upsert into the array:
-		// 1. Filter out any existing entry with the same appId
-		// 2. Add the new entry
-		return this.findOneAndUpdate(
-			{ _id },
-			[
-				{
-					$set: {
-						externalIds: {
-							$concatArrays: [
-								{ $filter: { input: { $ifNull: ['$externalIds', []] }, cond: { $ne: ['$$this.appId', appId] } } },
-								[{ appId, ...externalId }],
-							],
-						},
-					},
-				},
-			],
-			{ returnDocument: 'after' },
-		);
+		const visitor = await this.findOne({ _id });
+		if (!visitor) {
+			return null;
+		}
+
+		const filteredIds = visitor.externalIds?.filter((e) => e.appId !== appId) ?? [];
+		const newExternalIds = [...filteredIds, { appId, ...externalId }];
+
+		await this.updateOne({ _id }, { $set: { externalIds: newExternalIds } });
+
+		return { ...visitor, externalIds: newExternalIds };
 	}
 
 	async findOneGuestByEmailAddress(emailAddress: string): Promise<ILivechatVisitor | null> {
