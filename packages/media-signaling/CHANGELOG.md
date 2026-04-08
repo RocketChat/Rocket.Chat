@@ -1,5 +1,15 @@
 # @rocket.chat/media-signaling
 
+## 0.2.0
+
+### Minor Changes
+
+- ([#37922](https://github.com/RocketChat/Rocket.Chat/pull/37922)) Introduces native screen sharing for internal voice calls. This feature is currently in beta and can be disabled through admin settings.
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
 ## 0.2.0-rc.0
 
 ### Minor Changes
