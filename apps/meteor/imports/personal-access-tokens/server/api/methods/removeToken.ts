@@ -34,10 +34,10 @@ export const removePersonalAccessTokenOfUser = async (tokenName: string, userId:
 			name: tokenName,
 		},
 	});
-}
+};
 
 Meteor.methods<ServerMethods>({
-	'personalAccessTokens:removeToken': twoFactorRequired(async function ({ tokenName }) {
+	'personalAccessTokens:removeToken': twoFactorRequired(async function ({ tokenName }: { tokenName: string }) {
 		const uid = Meteor.userId();
 		if (!uid) {
 			throw new Meteor.Error('not-authorized', 'Not Authorized', {

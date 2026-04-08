@@ -4,10 +4,8 @@ import { PassThrough } from 'stream';
 import { Email } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
 
-const shouldUseNativeOplog = ['yes', 'true'].includes(String(process.env.USE_NATIVE_OPLOG).toLowerCase());
-if (!shouldUseNativeOplog) {
-	Package['disable-oplog'] = {};
-}
+// we always want Meteor to disable oplog tailing
+Package['disable-oplog'] = {};
 
 // FIX For TLS error see more here https://github.com/RocketChat/Rocket.Chat/issues/9316
 // TODO: Remove after NodeJS fix it, more information

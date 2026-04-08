@@ -1,10 +1,9 @@
 {
 	"name": "@rocket.chat/poplib",
-	"version": "0.0.2",
+	"version": "0.0.3-rc.0",
 	"private": true,
 	"main": "./src/index.js",
 	"devDependencies": {
-		"eslint": "~8.45.0",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

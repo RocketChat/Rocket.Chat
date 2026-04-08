@@ -1,5 +1,209 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.4.53-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.1
+  - @rocket.chat/omnichannel-services@0.3.50-rc.1
+  - @rocket.chat/pdf-worker@0.3.32-rc.1
+  - @rocket.chat/core-services@0.13.2-rc.1
+  - @rocket.chat/model-typings@2.1.2-rc.1
+  - @rocket.chat/models@2.1.2-rc.1
+  - @rocket.chat/network-broker@0.2.32-rc.1
+  </details>
+
+## 0.4.53-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, e2068892bf1ffc88b15ab71ad743cf84e5d31ed5, cd2fc208d351032c0b729755af4886665dca08b6, 652ff8cfe26b9068a776c39132c0eb5440702894, 539659af22bc19880eda047dfc0b152472ccb65c, 1741a20dd86c353755becfc706cd9ad63df09cfa, 85c0ac7d8c7a5b7b89ef58f4a42b18467a8e2dd4, c217b0bde182e5f76dbe1892d9b37d61ffab71db, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, eae3fb3136bd0b48294c050a71b0a36d05ca02b0, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/model-typings@2.1.2-rc.0
+  - @rocket.chat/models@2.1.2-rc.0
+  - @rocket.chat/i18n@2.2.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.50-rc.0
+  - @rocket.chat/network-broker@0.2.32-rc.0
+  - @rocket.chat/pdf-worker@0.3.32-rc.0
+  - @rocket.chat/core-services@0.13.2-rc.0
+  - @rocket.chat/core-typings@8.3.0-rc.0
+  - @rocket.chat/tracing@0.0.2-rc.0
+  - @rocket.chat/logger@1.0.1-rc.0
+  - @rocket.chat/tools@0.2.5-rc.0
+  </details>
+
+## 0.4.52
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.1
+  - @rocket.chat/omnichannel-services@0.3.49
+  - @rocket.chat/pdf-worker@0.3.31
+  - @rocket.chat/core-services@0.13.1
+  - @rocket.chat/model-typings@2.1.1
+  - @rocket.chat/models@2.1.1
+  - @rocket.chat/network-broker@0.2.31
+  </details>
+
+## 0.4.51
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 11e1c51f0867a35c69ce9b6eeca25dbbe2c71872, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 87faec13b3c0efc3e85627f9b70c4561b7231416, 508b4a17d76dc1cd7d3a55bdba826216f51432e2, 123aebec2caa74b17d2b5dcbd2a2db2e687cf3ac]:</summary>
+
+  - @rocket.chat/model-typings@2.1.0
+  - @rocket.chat/core-typings@8.2.0
+  - @rocket.chat/models@2.1.0
+  - @rocket.chat/core-services@0.13.0
+  - @rocket.chat/i18n@2.1.0
+  - @rocket.chat/omnichannel-services@0.3.48
+  - @rocket.chat/pdf-worker@0.3.30
+  - @rocket.chat/network-broker@0.2.30
+  </details>
+
+## 0.4.51-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.2
+  - @rocket.chat/omnichannel-services@0.3.48-rc.2
+  - @rocket.chat/pdf-worker@0.3.30-rc.2
+  - @rocket.chat/core-services@0.13.0-rc.2
+  - @rocket.chat/model-typings@2.1.0-rc.2
+  - @rocket.chat/models@2.1.0-rc.2
+  - @rocket.chat/network-broker@0.2.30-rc.2
+  </details>
+
+## 0.4.51-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.1
+  - @rocket.chat/omnichannel-services@0.3.48-rc.1
+  - @rocket.chat/pdf-worker@0.3.30-rc.1
+  - @rocket.chat/core-services@0.13.0-rc.1
+  - @rocket.chat/model-typings@2.1.0-rc.1
+  - @rocket.chat/models@2.1.0-rc.1
+  - @rocket.chat/network-broker@0.2.30-rc.1
+  </details>
+
+## 0.4.51-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 11e1c51f0867a35c69ce9b6eeca25dbbe2c71872, 3b003e6b69c11b280d55bcc8db2f3e4ae7a4a573, 87faec13b3c0efc3e85627f9b70c4561b7231416, 508b4a17d76dc1cd7d3a55bdba826216f51432e2, 123aebec2caa74b17d2b5dcbd2a2db2e687cf3ac]:</summary>
+
+  - @rocket.chat/model-typings@2.1.0-rc.0
+  - @rocket.chat/core-typings@8.2.0-rc.0
+  - @rocket.chat/models@2.1.0-rc.0
+  - @rocket.chat/core-services@0.13.0-rc.0
+  - @rocket.chat/i18n@2.1.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.48-rc.0
+  - @rocket.chat/pdf-worker@0.3.30-rc.0
+  - @rocket.chat/network-broker@0.2.30-rc.0
+  </details>
+
+## 0.4.50
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.1.1
+  - @rocket.chat/omnichannel-services@0.3.47
+  - @rocket.chat/pdf-worker@0.3.29
+  - @rocket.chat/core-services@0.12.3
+  - @rocket.chat/model-typings@2.0.3
+  - @rocket.chat/models@2.0.3
+  - @rocket.chat/network-broker@0.2.29
+  </details>
+
+## 0.4.49
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, e639382ee1faee44cfce44bdf6113d1b56da8692, 7b51ba84340480fa28e85c8f35d9d2f947d3250e, 9a205633c25065fda9024184c406ac9675c3f23f, 6654c5b481f91bdcb03d68ee0f3a12d58201137e, 020dfbcab6a940ca2e03d802d0f6b54714a34aa2, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e]:</summary>
+
+  - @rocket.chat/model-typings@2.0.2
+  - @rocket.chat/models@2.0.2
+  - @rocket.chat/pdf-worker@0.3.28
+  - @rocket.chat/core-services@0.12.2
+  - @rocket.chat/i18n@2.0.1
+  - @rocket.chat/core-typings@8.1.0
+  - @rocket.chat/omnichannel-services@0.3.46
+  - @rocket.chat/network-broker@0.2.28
+  </details>
+
+## 0.4.49-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/pdf-worker@0.3.28-rc.2
+  - @rocket.chat/core-services@0.12.2-rc.2
+  - @rocket.chat/core-typings@8.1.0-rc.2
+  - @rocket.chat/network-broker@0.2.28-rc.2
+  - @rocket.chat/omnichannel-services@0.3.46-rc.2
+  - @rocket.chat/model-typings@2.0.2-rc.2
+  - @rocket.chat/models@2.0.2-rc.2
+  </details>
+
+## 0.4.49-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/omnichannel-services@0.3.45-rc.1
+  - @rocket.chat/core-services@0.12.1-rc.1
+  - @rocket.chat/models@2.0.1-rc.1
+  - @rocket.chat/network-broker@0.2.27-rc.1
+  - @rocket.chat/core-typings@8.1.0-rc.1
+  - @rocket.chat/pdf-worker@0.3.27-rc.1
+  - @rocket.chat/model-typings@2.0.1-rc.1
+  </details>
+
+## 0.4.49-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [f4fa393fccb6abefbe6fb6550563e8ca21fc792d, e639382ee1faee44cfce44bdf6113d1b56da8692, 7b51ba84340480fa28e85c8f35d9d2f947d3250e, 9a205633c25065fda9024184c406ac9675c3f23f, 6654c5b481f91bdcb03d68ee0f3a12d58201137e, 020dfbcab6a940ca2e03d802d0f6b54714a34aa2, 5fa150953b86ff36face25083ed49e8c97a8044d, 05c415b94cb91907de39a39c6d277579258f334e]:</summary>
+
+  - @rocket.chat/model-typings@2.0.1-rc.0
+  - @rocket.chat/models@2.0.1-rc.0
+  - @rocket.chat/pdf-worker@0.3.27-rc.0
+  - @rocket.chat/core-services@0.12.1-rc.0
+  - @rocket.chat/i18n@2.0.1-rc.0
+  - @rocket.chat/core-typings@8.1.0-rc.0
+  - @rocket.chat/omnichannel-services@0.3.45-rc.0
+  - @rocket.chat/network-broker@0.2.27-rc.0
+  </details>
+
+## 0.4.48
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.0.1
+  - @rocket.chat/omnichannel-services@0.3.45
+  - @rocket.chat/pdf-worker@0.3.27
+  - @rocket.chat/core-services@0.12.1
+  - @rocket.chat/model-typings@2.0.1
+  - @rocket.chat/models@2.0.1
+  - @rocket.chat/network-broker@0.2.27
+  </details>
+
 ## 0.4.47
 
 ### Patch Changes

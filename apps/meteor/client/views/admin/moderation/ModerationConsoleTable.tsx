@@ -105,7 +105,7 @@ const ModerationConsoleTable = () => {
 			{isLoading && (
 				<GenericTable>
 					<GenericTableHeader>{headers}</GenericTableHeader>
-					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
+					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={headers.length} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (

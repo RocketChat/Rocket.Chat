@@ -99,6 +99,7 @@ Develop your own apps that can be integrated with Rocket.Chat. We provide an [op
 Join thousands of members worldwide in our [community server](https://open.rocket.chat).
 Join [#support](https://open.rocket.chat/channel/support) and [#general](https://open.rocket.chat/channel/general) for help from the community.
 
+![Alt](https://repobeats.axiom.co/api/embed/1efe0f0a7c366bd58068a1ab1f555ab912ec3895.svg "Repobeats analytics image")
 
 # 👥 Contributions
 
@@ -115,7 +116,7 @@ We're hiring developers, technical support, and product managers all the time. C
 - [Twitter](https://twitter.com/RocketChat)
 - [Facebook](https://www.facebook.com/RocketChatApp)
 - [LinkedIn](https://www.linkedin.com/company/rocket-chat)
-- [Youtube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
+- [YouTube](https://www.youtube.com/channel/UCin9nv7mUjoqrRiwrzS5UVQ)
 
 # 🗒️ Credits
 

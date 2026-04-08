@@ -14,7 +14,9 @@ export const useCreateDiscussionAction = (room?: IRoom): GenericMenuItemProps =>
 	}
 
 	const handleCreateDiscussion = () =>
-		setModal(<CreateDiscussion onClose={() => setModal(null)} defaultParentRoom={room?.prid || room?._id} />);
+		setModal(
+			<CreateDiscussion onClose={() => setModal(null)} defaultParentRoom={room?.prid || room?._id} encryptedParentRoom={room?.encrypted} />,
+		);
 
 	const discussionEnabled = useSetting('Discussion_enabled', true);
 	const canStartDiscussion = usePermission('start-discussion', room._id);

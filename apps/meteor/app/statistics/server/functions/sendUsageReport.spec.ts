@@ -21,6 +21,9 @@ const mocks = {
 	logger: {
 		error: sandbox.stub(),
 	},
+	Info: {
+		version: '3.0.1',
+	},
 };
 
 const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
@@ -29,6 +32,7 @@ const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
 	'..': { statistics: mocks.statistics },
 	'../../../cloud/server': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },
 	'meteor/meteor': { Meteor: mocks.Meteor },
+	'../../../utils/rocketchat.info': { Info: mocks.Info },
 });
 
 describe('sendUsageReport', () => {
@@ -59,5 +63,43 @@ describe('sendUsageReport', () => {
 		expect(mocks.serverFetch.calledOnce).to.be.true;
 		expect(mocks.serverFetch.calledWith('https://collector.rocket.chat/', sinon.match({ method: 'POST' }))).to.be.true;
 		expect(result).to.be.undefined;
+	});
+
+	it('should generate new statistics when version changes', async () => {
+		mocks.Statistics.findLast.resolves({
+			_id: 'stats-id',
+			version: '2.9.0',
+			createdAt: new Date(),
+		});
+
+		mocks.statistics.save.resolves({ _id: 'new-stats-id' });
+
+		const result = await sendUsageReport(mocks.logger);
+
+		expect(mocks.statistics.save.calledOnce).to.be.true;
+		expect(result).to.be.undefined;
+	});
+
+	it('should NOT generate new statistics if last version equals current version', async () => {
+		mocks.Statistics.findLast.resolves({
+			_id: 'stats-id',
+			version: '3.0.1',
+			createdAt: new Date(),
+			statsToken: 'token',
+		});
+
+		const result = await sendUsageReport(mocks.logger);
+
+		expect(mocks.statistics.save.called).to.be.false;
+		expect(result).to.equal('token');
+	});
+
+	it('should generate new statistics when no previous stats exist', async () => {
+		mocks.Statistics.findLast.resolves(undefined);
+		mocks.statistics.save.resolves({ _id: 'new-stats-id' });
+
+		await sendUsageReport(mocks.logger);
+
+		expect(mocks.statistics.save.calledOnce).to.be.true;
 	});
 });

@@ -11,7 +11,7 @@ import { getMongoInfo } from '../../app/utils/server/functions/getMongoInfo';
 // import { i18n } from '../lib/i18n';
 // import { isRunningMs } from '../lib/isRunningMs';
 // import { sendMessagesToAdmins } from '../lib/sendMessagesToAdmins';
-import { showErrorBox, showSuccessBox } from '../lib/logger/showBox';
+import { showErrorBox, showSuccessBox, showWarningBox } from '../lib/logger/showBox';
 
 const exitIfNotBypassed = (ignore: string | undefined, errorCode = 1) => {
 	if (typeof ignore === 'string' && ['yes', 'true'].includes(ignore.toLowerCase())) {
@@ -21,7 +21,10 @@ const exitIfNotBypassed = (ignore: string | undefined, errorCode = 1) => {
 	process.exit(errorCode);
 };
 
-// const skipMongoDbDeprecationCheck = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase());
+const skipMongoDbDeprecationCheck =
+	['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_CHECK).toLowerCase()) ||
+	process.env.TEST_MODE === 'true' ||
+	process.env.NODE_ENV === 'development';
 // const skipMongoDbDeprecationBanner = ['yes', 'true'].includes(String(process.env.SKIP_MONGODEPRECATION_BANNER).toLowerCase());
 
 Meteor.startup(async () => {
@@ -72,7 +75,7 @@ Meteor.startup(async () => {
 		const mongoSemver = semver.coerce(mongoVersion);
 
 		if (!mongoSemver || semver.satisfies(mongoSemver, '<7.0.0')) {
-			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED BY ROCKET.CHAT,', 'PLEASE UPGRADE TO VERSION 7.0 OR LATER'].join('\n');
+			msg += ['', '', 'YOUR CURRENT MONGODB VERSION IS NOT SUPPORTED BY ROCKET.CHAT,', 'PLEASE UPGRADE TO VERSION 8.0 OR LATER'].join('\n');
 			showErrorBox('SERVER ERROR', msg);
 
 			exitIfNotBypassed(process.env.BYPASS_MONGO_VALIDATION);
@@ -81,42 +84,42 @@ Meteor.startup(async () => {
 		showSuccessBox('SERVER RUNNING', msg);
 
 		// Deprecation
-		// if (!skipMongoDbDeprecationCheck && semver.satisfies(semver.coerce(mongoVersion), '<7.0.0')) {
-		// 	msg = [
-		// 		`YOUR CURRENT MONGODB VERSION (${mongoVersion}) IS DEPRECATED.`,
-		// 		'IT WILL NOT BE SUPPORTED ON ROCKET.CHAT VERSION 8.0.0 AND GREATER,',
-		// 		'PLEASE UPGRADE MONGODB TO VERSION 6.0 OR GREATER',
-		// 	].join('\n');
-		// 	showWarningBox('DEPRECATION', msg);
+		if (!skipMongoDbDeprecationCheck && semver.satisfies(semver.coerce(mongoVersion)!, '<8.0.0')) {
+			msg = [
+				`DEPRECATED: MONGODB VERSION ${mongoVersion}.`,
+				'SUPPORT FOR MONGODB <8.0 WILL BE REMOVED IN ROCKET.CHAT 9.0.0',
+				'PLEASE UPGRADE MONGODB TO VERSION 8.0 OR GREATER',
+			].join('\n');
+			showWarningBox('DEPRECATION', msg);
 
-		// 	const id = `mongodbDeprecation_${mongoVersion.replace(/[^0-9]/g, '_')}`;
-		// 	const title = 'MongoDB_Deprecated';
-		// 	const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
-		// 	const link = 'https://go.rocket.chat/i/mongodb-deprecated';
+			// const id = `mongodbDeprecation_${mongoVersion.replace(/[^0-9]/g, '_')}`;
+			// const title = 'MongoDB_Deprecated';
+			// const text = 'MongoDB_version_s_is_deprecated_please_upgrade_your_installation';
+			// const link = 'https://go.rocket.chat/i/mongodb-deprecated';
 
-		// 	if (!(await Users.bannerExistsById(id))) {
-		// 		if (skipMongoDbDeprecationBanner || process.env.TEST_MODE) {
-		// 			return;
-		// 		}
-		// 		sendMessagesToAdmins({
-		// 			msgs: async ({ adminUser }) => [
-		// 				{
-		// 					msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(text, { postProcess: 'sprintf', sprintf: [mongoVersion] }, adminUser.language)}\n${link}`,
-		// 				},
-		// 			],
-		// 			banners: [
-		// 				{
-		// 					id,
-		// 					priority: 100,
-		// 					title,
-		// 					text,
-		// 					textArguments: [mongoVersion],
-		// 					modifiers: ['danger'],
-		// 					link,
-		// 				},
-		// 			],
-		// 		});
-		// 	}
-		// }
+			// if (!(await Users.bannerExistsById(id))) {
+			// 	if (skipMongoDbDeprecationBanner || process.env.TEST_MODE) {
+			// 		return;
+			// 	}
+			// 	sendMessagesToAdmins({
+			// 		msgs: async ({ adminUser }) => [
+			// 			{
+			// 				msg: `*${i18n.t(title, adminUser.language)}*\n${i18n.t(text, { postProcess: 'sprintf', sprintf: [mongoVersion] }, adminUser.language)}\n${link}`,
+			// 			},
+			// 		],
+			// 		banners: [
+			// 			{
+			// 				id,
+			// 				priority: 100,
+			// 				title,
+			// 				text,
+			// 				textArguments: [mongoVersion],
+			// 				modifiers: ['danger'],
+			// 				link,
+			// 			},
+			// 		],
+			// 	});
+			// }
+		}
 	}, 100);
 });

@@ -104,14 +104,14 @@ const validators: RoomSettingsValidators = {
 			return;
 		}
 
-		if (value === 'c' && !room.teamId && !(await hasPermissionAsync(userId, 'create-c'))) {
+		if (value === 'c' && (!room.teamId || room.teamMain) && !(await hasPermissionAsync(userId, 'create-c'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a private group to a public channel is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
 			});
 		}
 
-		if (value === 'p' && !room.teamId && !(await hasPermissionAsync(userId, 'create-p'))) {
+		if (value === 'p' && (!room.teamId || room.teamMain) && !(await hasPermissionAsync(userId, 'create-p'))) {
 			throw new Meteor.Error('error-action-not-allowed', 'Changing a public channel to a private room is not allowed', {
 				method: 'saveRoomSettings',
 				action: 'Change_Room_Type',
@@ -125,7 +125,7 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 
-		if (!room.teamId) {
+		if (!room.teamId || room.teamMain) {
 			return;
 		}
 		const team = await Team.getInfoById(room.teamId);
@@ -489,7 +489,7 @@ export async function saveRoomSettings(
 	}
 
 	// validations
-	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
+	for (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await validate(setting, {
 			userId,
 			value: settings[setting],
@@ -506,7 +506,7 @@ export async function saveRoomSettings(
 	}
 
 	// saving data
-	for await (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
+	for (const setting of Object.keys(settings) as (keyof RoomSettings)[]) {
 		await save(setting, {
 			userId,
 			user: user as RequiredField<IUser, 'username' | 'name'>,

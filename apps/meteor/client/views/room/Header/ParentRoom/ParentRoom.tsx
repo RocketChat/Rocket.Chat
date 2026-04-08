@@ -4,12 +4,6 @@ import ParentDiscussion from './ParentDiscussion';
 import ParentTeam from './ParentTeam';
 
 const ParentRoom = ({ room }: { room: IRoom }) => {
-	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
-
-	if (!parentRoomId) {
-		return null;
-	}
-
 	if (room.prid) {
 		return <ParentDiscussion room={room} />;
 	}
@@ -17,6 +11,8 @@ const ParentRoom = ({ room }: { room: IRoom }) => {
 	if (room.teamId && !room.teamMain) {
 		return <ParentTeam room={room} />;
 	}
+
+	return null;
 };
 
 export default ParentRoom;

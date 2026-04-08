@@ -5,7 +5,7 @@ import { Users } from '@rocket.chat/models';
 
 import { logger } from './Logger';
 import type { ConverterCache } from '../../../app/importer/server/classes/converters/ConverterCache';
-import { type RecordConverterOptions } from '../../../app/importer/server/classes/converters/RecordConverter';
+import type { RecordConverterOptions } from '../../../app/importer/server/classes/converters/RecordConverter';
 import { UserConverter, type UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { settings } from '../../../app/settings/server';
 

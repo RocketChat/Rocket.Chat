@@ -22,7 +22,7 @@ Meteor.startup(async () => {
 				throw new Error("Couldn't register with token.  Please make sure token is valid or hasn't already been used");
 			}
 
-			console.log('Successfully registered with token provided by REG_TOKEN!');
+			SystemLogger.info('Successfully registered with token provided by REG_TOKEN!');
 		} catch (err: any) {
 			SystemLogger.error({ msg: 'An error occurred registering with token.', err });
 		}

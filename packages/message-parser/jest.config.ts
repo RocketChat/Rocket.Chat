@@ -9,4 +9,5 @@ export default {
 		'\\.pegjs$': resolve(__dirname, './loaders/pegtransform.js'),
 	},
 	moduleFileExtensions: ['js', 'ts', 'pegjs'],
+	testPathIgnorePatterns: ['/node_modules/', '\\.bench\\.ts$'],
 } satisfies Config;

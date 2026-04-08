@@ -2421,10 +2421,12 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', "The 'roomId' param is required");
+					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('error').include("must have required property 'roomId'");
 				})
 				.end(done);
 		});
+
 		it('should delete a room when the request is correct', (done) => {
 			void request
 				.post(api('rooms.delete'))
@@ -4254,6 +4256,461 @@ describe('[Rooms]', () => {
 			expect(response.body.roles[0].roles).to.be.an('array');
 			// it should contain owner role
 			expect(response.body.roles[0].roles).to.include('owner');
+		});
+	});
+
+	describe('/rooms.banUser', () => {
+		let testChannel: IRoom;
+		let bannableUser: TestUser<IUser>;
+		let bannableUserCredentials: Credentials;
+
+		before(async () => {
+			bannableUser = await createUser();
+			bannableUserCredentials = await login(bannableUser.username, password);
+
+			const result = await createRoom({ type: 'c', name: `ban-test-${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			// Invite the user to the channel
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect(200);
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+			await deleteUser(bannableUser);
+		});
+
+		it('should fail if not authenticated', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401);
+		});
+
+		it('should fail if roomId is missing', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should fail if userId and username are both missing', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should ban a user from the room', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should fail if user is already banned', () => {
+			return request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error');
+				});
+		});
+
+		it('should prevent banned user from sending messages', () => {
+			return request
+				.post(api('chat.sendMessage'))
+				.set(bannableUserCredentials)
+				.send({
+					message: {
+						rid: testChannel._id,
+						msg: 'This should fail',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+		});
+
+		it('should not list the banned user in channel members', () => {
+			return request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const usernames = res.body.members.map((m: IUser) => m.username);
+					expect(usernames).to.not.include(bannableUser.username);
+				});
+		});
+
+		describe('unban via re-invite', () => {
+			it('should unban the user when re-invited', () => {
+				return request
+					.post(api('channels.invite'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						userId: bannableUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+
+			// Non Federated room should replace the status from BANNED to member since invite is not in place yet
+			it('should set the re-invited user subscription to INVITED status', async () => {
+				const res = await request
+					.get(api('subscriptions.getOne'))
+					.set(bannableUserCredentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.subscription).not.to.have.property('status');
+			});
+
+			it('should list the re-invited user in channel members', () => {
+				return request
+					.get(api('channels.members'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const usernames = res.body.members.map((m: IUser) => m.username);
+						expect(usernames).to.include(bannableUser.username);
+					});
+			});
+
+			it('should no longer list the user as banned', () => {
+				return request
+					.get(api('rooms.bannedUsers'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+						const userIds = res.body.bannedUsers.map((u: IUser) => u._id);
+						expect(userIds).to.not.include(bannableUser._id);
+					});
+			});
+		});
+	});
+
+	describe('/rooms.unbanUser', () => {
+		let testChannel: IRoom;
+		let bannableUser: TestUser<IUser>;
+
+		before(async () => {
+			bannableUser = await createUser();
+			await login(bannableUser.username, password);
+
+			const result = await createRoom({ type: 'c', name: `unban-test-${Date.now()}-${Math.random()}` });
+			testChannel = result.body.channel;
+
+			// Invite the user to the channel
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect(200);
+
+			// Ban the user
+			await request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect(200);
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'c', roomId: testChannel._id });
+			await deleteUser(bannableUser);
+		});
+
+		it('should fail if not authenticated', () => {
+			return request
+				.post(api('rooms.unbanUser'))
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(401);
+		});
+
+		it('should unban a user from the room', () => {
+			return request
+				.post(api('rooms.unbanUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should NOT list the unbanned user in channel members', () => {
+			return request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const usernames = res.body.members.map((m: IUser) => m.username);
+					expect(usernames).to.not.include(bannableUser.username);
+				});
+		});
+
+		it('should NOT list the user as banned after unban', () => {
+			return request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const userIds = res.body.bannedUsers.map((u: IUser) => u._id);
+					expect(userIds).to.not.include(bannableUser._id);
+				});
+		});
+
+		it('should allow re-inviting the unbanned user as a fresh invite', async () => {
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+
+			// Verify the user is now listed in channel members
+			await request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: testChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					const usernames = res.body.members.map((m: IUser) => m.username);
+					expect(usernames).to.include(bannableUser.username);
+				});
+		});
+
+		it('should fail to unban a user that is not banned', () => {
+			return request
+				.post(api('rooms.unbanUser'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					userId: bannableUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'error-user-not-banned');
+				});
+		});
+	});
+
+	describe('Re-inviting a banned user should preserve other subscriptions', () => {
+		let privateChannel: IRoom;
+		let otherChannel1: IRoom;
+		let otherChannel2: IRoom;
+		let userB: TestUser<IUser>;
+		let userBCredentials: Credentials;
+
+		before(async () => {
+			userB = await createUser();
+			userBCredentials = await login(userB.username, password);
+
+			// Create the private channel (owned by admin / User A)
+			const result = await createRoom({ type: 'p', name: `ban-reinvite-test-${Date.now()}` });
+			privateChannel = result.body.group;
+
+			// Create two additional channels that User B will be a member of
+			const ch1 = await createRoom({ type: 'c', name: `other-ch1-${Date.now()}` });
+			otherChannel1 = ch1.body.channel;
+
+			const ch2 = await createRoom({ type: 'c', name: `other-ch2-${Date.now()}` });
+			otherChannel2 = ch2.body.channel;
+
+			// Add User B to all three channels
+			await request.post(api('groups.invite')).set(credentials).send({ roomId: privateChannel._id, userId: userB._id }).expect(200);
+			await request.post(api('channels.invite')).set(credentials).send({ roomId: otherChannel1._id, userId: userB._id }).expect(200);
+			await request.post(api('channels.invite')).set(credentials).send({ roomId: otherChannel2._id, userId: userB._id }).expect(200);
+		});
+
+		after(async () => {
+			await deleteRoom({ type: 'p', roomId: privateChannel._id });
+			await deleteRoom({ type: 'c', roomId: otherChannel1._id });
+			await deleteRoom({ type: 'c', roomId: otherChannel2._id });
+			await deleteUser(userB);
+		});
+
+		it('should confirm User B is a member of all three channels', async () => {
+			const res = await request.get(api('subscriptions.get')).set(userBCredentials).expect(200);
+			expect(res.body).to.have.property('success', true);
+
+			const roomIds = res.body.update.map((sub: { rid: string }) => sub.rid);
+			expect(roomIds).to.include(privateChannel._id);
+			expect(roomIds).to.include(otherChannel1._id);
+			expect(roomIds).to.include(otherChannel2._id);
+		});
+
+		it('should ban User B from the private channel', async () => {
+			await request
+				.post(api('rooms.banUser'))
+				.set(credentials)
+				.send({
+					roomId: privateChannel._id,
+					userId: userB._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should still have User B subscribed to the other channels after being banned', async () => {
+			const res = await request.get(api('subscriptions.get')).set(userBCredentials).expect(200);
+			expect(res.body).to.have.property('success', true);
+
+			const roomIds = res.body.update.map((sub: { rid: string }) => sub.rid);
+			expect(roomIds).to.include(otherChannel1._id);
+			expect(roomIds).to.include(otherChannel2._id);
+			expect(roomIds).to.not.include(privateChannel._id);
+		});
+
+		it('should re-invite banned User B back to the private channel', async () => {
+			await request
+				.post(api('groups.invite'))
+				.set(credentials)
+				.send({
+					roomId: privateChannel._id,
+					userId: userB._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+
+		it('should list User B as a member of the private channel again', async () => {
+			const res = await request
+				.get(api('groups.members'))
+				.set(credentials)
+				.query({
+					roomId: privateChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			const usernames = res.body.members.map((m: IUser) => m.username);
+			expect(usernames).to.include(userB.username);
+		});
+
+		it('should no longer list User B as banned', async () => {
+			const res = await request
+				.get(api('rooms.bannedUsers'))
+				.set(credentials)
+				.query({
+					roomId: privateChannel._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			const userIds = res.body.bannedUsers.map((u: IUser) => u._id);
+			expect(userIds).to.not.include(userB._id);
+		});
+
+		it('should preserve all other channel subscriptions after re-invite', async () => {
+			const res = await request.get(api('subscriptions.get')).set(userBCredentials).expect(200);
+			expect(res.body).to.have.property('success', true);
+
+			const roomIds = res.body.update.map((sub: { rid: string }) => sub.rid);
+			expect(roomIds).to.include(privateChannel._id, 'User B should be re-subscribed to the private channel');
+			expect(roomIds).to.include(otherChannel1._id, 'User B should still be subscribed to otherChannel1');
+			expect(roomIds).to.include(otherChannel2._id, 'User B should still be subscribed to otherChannel2');
 		});
 	});
 });

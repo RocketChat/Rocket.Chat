@@ -2,17 +2,22 @@ import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 
-import { parseUrlsInMessage } from './parseUrlsInMessage';
 import { isRelativeURL } from '../../../../lib/utils/isRelativeURL';
-import { isURL } from '../../../../lib/utils/isURL';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { FileUpload } from '../../../file-upload/server';
 import { settings } from '../../../settings/server';
 import { afterSaveMessage } from '../lib/afterSaveMessage';
 import { notifyOnRoomChangedById } from '../lib/notifyListener';
 import { validateCustomMessageFields } from '../lib/validateCustomMessageFields';
+
+export type SendMessageOptions = {
+	upsert?: boolean;
+	previewUrls?: string[];
+	skipNotifications?: boolean;
+};
 
 // TODO: most of the types here are wrong, but I don't want to change them now
 
@@ -28,7 +33,7 @@ import { validateCustomMessageFields } from '../lib/validateCustomMessageFields'
 const validFullURLParam = Match.Where((value) => {
 	check(value, String);
 
-	if (!isURL(value) && !value.startsWith(FileUpload.getPath())) {
+	if (!isAbsoluteURL(value) && !value.startsWith(FileUpload.getPath())) {
 		throw new Error('Invalid href value provided');
 	}
 
@@ -42,7 +47,7 @@ const validFullURLParam = Match.Where((value) => {
 const validPartialURLParam = Match.Where((value) => {
 	check(value, String);
 
-	if (!isRelativeURL(value) && !isURL(value) && !value.startsWith(FileUpload.getPath())) {
+	if (!isRelativeURL(value) && !isAbsoluteURL(value) && !value.startsWith(FileUpload.getPath())) {
 		throw new Error('Invalid href value provided');
 	}
 
@@ -217,7 +222,9 @@ export function prepareMessageObject(
  * Caller of the function should verify the Message_MaxAllowedSize if needed.
  * There might be same use cases which needs to override this setting. Example - sending error logs.
  */
-export const sendMessage = async function (user: any, message: any, room: any, upsert = false, previewUrls?: string[]) {
+export const sendMessage = async function (user: any, message: any, room: any, options: SendMessageOptions = {}) {
+	const { upsert = false, previewUrls } = options;
+
 	if (!user || !message || !room._id) {
 		return false;
 	}
@@ -250,9 +257,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		}
 	}
 
-	parseUrlsInMessage(message, previewUrls);
-
-	message = await Message.beforeSave({ message, room, user });
+	message = await Message.beforeSave({ message, room, user, previewUrls, parseUrls: message.parseUrls });
 
 	if (!message) {
 		return;
@@ -285,7 +290,7 @@ export const sendMessage = async function (user: any, message: any, room: any, u
 		void Apps.self?.triggerEvent(messageEvent, message);
 	}
 
-	await afterSaveMessage(message, room, user);
+	await afterSaveMessage(message, room, user, { options });
 
 	void notifyOnRoomChangedById(message.rid);
 
