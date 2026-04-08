@@ -53,3 +53,10 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: apps/meteor/coverage/jest/lcov.info,apps/meteor/coverage/nyc/lcov.info
           disable_search: true
+
+      - uses: codecov/codecov-action@v5
+        with:
+          flags: packages
+          verbose: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+          exclude: apps/meteor/coverage/**

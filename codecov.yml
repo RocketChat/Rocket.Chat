@@ -14,6 +14,8 @@ coverage:
 flags:
   unit:
     carryforward: true
+  packages:
+    carryforward: true
   e2e:
     paths:
       - apps/meteor/
