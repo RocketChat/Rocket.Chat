@@ -46,6 +46,17 @@ jobs:
       - name: Unit Test
         run: yarn testunit --concurrency=1
 
+      - name: Debug coverage files
+        run: |
+          echo "=== Jest lcov (first 20 lines) ==="
+          head -20 apps/meteor/coverage/jest/lcov.info || echo "FILE NOT FOUND"
+          echo ""
+          echo "=== nyc lcov (first 20 lines) ==="
+          head -20 apps/meteor/coverage/nyc/lcov.info || echo "FILE NOT FOUND"
+          echo ""
+          echo "=== File sizes ==="
+          wc -l apps/meteor/coverage/jest/lcov.info apps/meteor/coverage/nyc/lcov.info || true
+
       - uses: codecov/codecov-action@v6
         with:
           flags: unit
@@ -54,7 +65,7 @@ jobs:
           files: apps/meteor/coverage/jest/lcov.info,apps/meteor/coverage/nyc/lcov.info
           disable_search: true
 
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v6
         with:
           flags: packages
           verbose: true
