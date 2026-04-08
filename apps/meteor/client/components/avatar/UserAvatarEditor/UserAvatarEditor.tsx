@@ -2,10 +2,11 @@ import type { IUser, AvatarObject } from '@rocket.chat/core-typings';
 import { Box, Button, Avatar, TextInput, IconButton, Label } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
+import type { ChangeEvent, ReactElement } from 'react';
 import { useId, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import AvatarCropModal from './AvatarCropModal';
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
 import UserAvatarSuggestions from './UserAvatarSuggestions';
 import { readFileAsDataURL } from './readFileAsDataURL';
@@ -27,26 +28,28 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
+	const [imageToCrop, setImageToCrop] = useState<string | null>(null);
 	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const setUploadedPreview = useCallback(
-		async (file: File, avatarObj: AvatarObject) => {
-			setAvatarObj(avatarObj);
+		async (file: File) => {
 			try {
 				const dataURL = await readFileAsDataURL(file);
 
 				if (await isValidImageFormat(dataURL)) {
-					setNewAvatarSource(dataURL);
+					setImageToCrop(dataURL);
 				}
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+			} finally {
+				resetUpload();
 			}
 		},
-		[setAvatarObj, t, dispatchToastMessage],
+		[t, dispatchToastMessage],
 	);
 
-	const [clickUpload] = useSingleFileInput(setUploadedPreview);
+	const [clickUpload, resetUpload] = useSingleFileInput(setUploadedPreview);
 
 	const handleAddUrl = (): void => {
 		setNewAvatarSource(avatarFromUrl);
@@ -118,6 +121,17 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					/>
 				</Box>
 			</Box>
+			{imageToCrop && (
+				<AvatarCropModal
+					imageSrc={imageToCrop}
+					onCancel={() => setImageToCrop(null)}
+					onApply={(croppedImage) => {
+						setImageToCrop(null);
+						setNewAvatarSource(croppedImage);
+						setAvatarObj({ avatarUrl: croppedImage } as unknown as AvatarObject);
+					}}
+				/>
+			)}
 		</Box>
 	);
 }
