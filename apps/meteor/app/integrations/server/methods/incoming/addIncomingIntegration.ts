@@ -1,5 +1,4 @@
 import { transformSync } from '@babel/core';
-// @ts-expect-error: @babel/preset-env has no type declarations
 import presetEnv from '@babel/preset-env';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
