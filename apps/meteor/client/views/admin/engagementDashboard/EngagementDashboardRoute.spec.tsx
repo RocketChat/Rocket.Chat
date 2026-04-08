@@ -64,74 +64,72 @@ beforeEach(() => {
 	});
 });
 
-describe('EngagementDashboardRoute', () => {
-	it('subscribes to route changes on mount', () => {
-		const { subscribeToRouteChange } = createSubscribeTracker();
+it('subscribes to route changes on mount', () => {
+	const { subscribeToRouteChange } = createSubscribeTracker();
 
-		render(<EngagementDashboardRoute />, {
-			wrapper: buildWrapper({ subscribeToRouteChange }, 'users'),
-		});
-
-		expect(subscribeToRouteChange).toHaveBeenCalled();
+	render(<EngagementDashboardRoute />, {
+		wrapper: buildWrapper({ subscribeToRouteChange }, 'users'),
 	});
 
-	it('unsubscribes all listeners on unmount', () => {
-		const { subscribeToRouteChange, allUnsubscribed } = createSubscribeTracker();
+	expect(subscribeToRouteChange).toHaveBeenCalled();
+});
 
-		const { unmount } = render(<EngagementDashboardRoute />, {
-			wrapper: buildWrapper({ subscribeToRouteChange }, 'users'),
-		});
+it('unsubscribes all listeners on unmount', () => {
+	const { subscribeToRouteChange, allUnsubscribed } = createSubscribeTracker();
 
-		unmount();
-		expect(allUnsubscribed()).toBe(true);
+	const { unmount } = render(<EngagementDashboardRoute />, {
+		wrapper: buildWrapper({ subscribeToRouteChange }, 'users'),
 	});
 
-	it('does not redirect when the tab is valid', () => {
-		const navigate = jest.fn();
-		const { subscribeToRouteChange, getLastRouteChangeCallback } = createSubscribeTracker();
+	unmount();
+	expect(allUnsubscribed()).toBe(true);
+});
 
-		render(<EngagementDashboardRoute />, {
-			wrapper: buildWrapper({ subscribeToRouteChange, navigate }, 'users'),
-		});
+it('does not redirect when the tab is valid', () => {
+	const navigate = jest.fn();
+	const { subscribeToRouteChange, getLastRouteChangeCallback } = createSubscribeTracker();
 
-		const routeChangeCallback = getLastRouteChangeCallback();
-		routeChangeCallback();
-
-		expect(navigate).not.toHaveBeenCalled();
+	render(<EngagementDashboardRoute />, {
+		wrapper: buildWrapper({ subscribeToRouteChange, navigate }, 'users'),
 	});
 
-	it('redirects to the users tab when the tab is invalid', () => {
-		const navigate = jest.fn();
-		const { subscribeToRouteChange, getLastRouteChangeCallback } = createSubscribeTracker();
+	const routeChangeCallback = getLastRouteChangeCallback();
+	routeChangeCallback();
 
-		render(<EngagementDashboardRoute />, {
-			wrapper: buildWrapper({ subscribeToRouteChange, navigate }),
-		});
+	expect(navigate).not.toHaveBeenCalled();
+});
 
-		const routeChangeCallback = getLastRouteChangeCallback();
-		routeChangeCallback();
+it('redirects to the users tab when the tab is invalid', () => {
+	const navigate = jest.fn();
+	const { subscribeToRouteChange, getLastRouteChangeCallback } = createSubscribeTracker();
 
-		expect(navigate).toHaveBeenCalledWith({ pattern: '/admin/engagement/:tab?', params: { tab: 'users' } }, { replace: true });
+	render(<EngagementDashboardRoute />, {
+		wrapper: buildWrapper({ subscribeToRouteChange, navigate }),
 	});
 
-	it('cleans up all subscriptions on unmount and resubscribes on remount', () => {
-		const first = createSubscribeTracker();
+	const routeChangeCallback = getLastRouteChangeCallback();
+	routeChangeCallback();
 
-		const { unmount } = render(<EngagementDashboardRoute />, {
-			wrapper: buildWrapper({ subscribeToRouteChange: first.subscribeToRouteChange }, 'users'),
-		});
+	expect(navigate).toHaveBeenCalledWith({ pattern: '/admin/engagement/:tab?', params: { tab: 'users' } }, { replace: true });
+});
 
-		expect(first.subscribeToRouteChange).toHaveBeenCalled();
-		unmount();
-		expect(first.allUnsubscribed()).toBe(true);
+it('cleans up all subscriptions on unmount and resubscribes on remount', () => {
+	const first = createSubscribeTracker();
 
-		const second = createSubscribeTracker();
-
-		render(<EngagementDashboardRoute />, {
-			wrapper: buildWrapper({ subscribeToRouteChange: second.subscribeToRouteChange }, 'messages'),
-		});
-
-		expect(second.subscribeToRouteChange).toHaveBeenCalled();
-		expect(second.noneUnsubscribed()).toBe(true);
+	const { unmount } = render(<EngagementDashboardRoute />, {
+		wrapper: buildWrapper({ subscribeToRouteChange: first.subscribeToRouteChange }, 'users'),
 	});
+
+	expect(first.subscribeToRouteChange).toHaveBeenCalled();
+	unmount();
+	expect(first.allUnsubscribed()).toBe(true);
+
+	const second = createSubscribeTracker();
+
+	render(<EngagementDashboardRoute />, {
+		wrapper: buildWrapper({ subscribeToRouteChange: second.subscribeToRouteChange }, 'messages'),
+	});
+
+	expect(second.subscribeToRouteChange).toHaveBeenCalled();
+	expect(second.noneUnsubscribed()).toBe(true);
 });
