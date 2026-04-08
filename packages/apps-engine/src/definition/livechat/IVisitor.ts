@@ -2,7 +2,7 @@ import type { IVisitorEmail } from './IVisitorEmail';
 import type { IVisitorPhone } from './IVisitorPhone';
 
 export interface IVisitorExternalIdentifier {
-	appId?: string;
+	appId: string;
 	entityId: string;
 	metadata?: Record<string, unknown>;
 }
