@@ -40,6 +40,7 @@ export interface IRoomService {
 	performUserBan(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
 	performUserUnban(room: IRoom, user: IUser, byUser: IUser): Promise<void>;
 	performAcceptRoomInvite(room: IRoom, subscription: ISubscription, user: IUser): Promise<void>;
+	revokeInvite(room: IRoom, user: IUser): Promise<void>;
 	removeUserFromRoom(
 		roomId: string,
 		user: IUser,

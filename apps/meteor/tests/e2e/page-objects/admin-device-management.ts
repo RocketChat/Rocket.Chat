@@ -2,7 +2,7 @@ import type { Locator, Page } from '@playwright/test';
 
 import { Admin } from './admin';
 import { MenuOptions, DevicesTable } from './fragments';
-import { DeviceInfoFlexTab } from './fragments/device-info-flextab';
+import { DeviceInfoFlexTab } from './fragments/flextabs';
 import { ConfirmLogoutModal } from './fragments/modals';
 
 export class AdminDeviceManagement extends Admin {
