@@ -169,11 +169,11 @@ test.describe.serial('message-actions', () => {
 			await sendTargetChannelMessage(api, targetChannel, { msg: 'message from admin for reply in DM' });
 		});
 
-		test('expect option not be visible without create-d permission and no existing DM', async ({ page, api }) => {
+		test('expect option not be visible without create-d permission and no existing DM', async ({ api }) => {
 			expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin'] }] })).status()).toBe(200);
 
 			await poHomeChannel.content.openLastMessageMenu();
-			await expect(page.locator('role=menuitem[name="Reply in direct message"]')).toBeHidden();
+			await expect(poHomeChannel.content.btnOptionReplyInDm).toBeHidden();
 		});
 
 		test('expect option be visible and redirect to DM', async ({ page, api }) => {
@@ -182,7 +182,7 @@ test.describe.serial('message-actions', () => {
 			).toBe(200);
 
 			await poHomeChannel.content.openLastMessageMenu();
-			await page.locator('role=menuitem[name="Reply in direct message"]').click();
+			await poHomeChannel.content.btnOptionReplyInDm.click();
 
 			await expect(page).toHaveURL(/.*reply/);
 		});
@@ -209,7 +209,7 @@ test.describe.serial('message-actions', () => {
 		test('expect reply the message in direct', async ({ page }) => {
 			await poHomeChannel.content.sendMessage('this is a message for reply in direct');
 			await poHomeChannel.content.openLastMessageMenu();
-			await page.locator('role=menuitem[name="Reply in direct message"]').click();
+			await poHomeChannel.content.btnOptionReplyInDm.click();
 
 			await expect(page).toHaveURL(/.*reply/);
 		});
