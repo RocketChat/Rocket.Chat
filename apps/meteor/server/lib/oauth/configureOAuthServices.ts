@@ -1,16 +1,17 @@
 import { type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
 
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
+import type { ICachedSettings } from '../../../app/settings/server/CachedSettings';
 import { oAuthRouter } from '../../configuration/configurePassport';
 
-export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[]) => {
+export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[], settings: ICachedSettings) => {
 	oauthServiceConfig.forEach((config) => {
 		const Strategy = config.strategy;
+		const siteUrl = settings.get<string>('Site_Url');
 
 		passport.unuse(config.provider);
 
@@ -20,7 +21,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[])
 				{
 					clientID: config.clientId,
 					clientSecret: config.clientSecret,
-					callbackURL: `${Meteor.absoluteUrl()}oauth/${config.provider}/callback`,
+					callbackURL: `${siteUrl}oauth/${config.provider}/callback`,
 					state: true,
 					pkce: true,
 					scope: config.scope,
@@ -70,7 +71,8 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[])
 				const oAuthUser = req.user as IUser;
 
 				if (!oAuthUser) {
-					return res.redirect('/login');
+					// return res.redirect('/login');
+					return res.redirect('/noOauthUser');
 				}
 
 				const stampedToken = Accounts._generateStampedLoginToken();

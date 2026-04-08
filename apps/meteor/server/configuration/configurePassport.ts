@@ -43,7 +43,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 	settings.watchByRegex(/^(Accounts_OAuth_)[a-z0-9_]+$/i, () => {
 		const services = getOAuthServices(settings);
 		const oauthServiceConfigs = createOAuthServiceConfig(settings, services);
-		configureOAuthServices(oauthServiceConfigs);
+		configureOAuthServices(oauthServiceConfigs, settings);
 	});
 
 	WebApp.rawConnectHandlers.use(oAuthRouter);
