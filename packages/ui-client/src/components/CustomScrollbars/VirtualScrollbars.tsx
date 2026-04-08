@@ -1,5 +1,5 @@
 import { useOverlayScrollbars } from 'overlayscrollbars-react';
-import type { HTMLAttributes, ReactElement, RefObject } from 'react';
+import type { HTMLAttributes, ReactElement } from 'react';
 import { useEffect, useRef, forwardRef, memo } from 'react';
 
 import type { OverlayScrollbars } from '.';
