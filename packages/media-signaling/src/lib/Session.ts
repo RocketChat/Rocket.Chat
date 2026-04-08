@@ -10,7 +10,7 @@ import type {
 	RandomStringFactory,
 	ServerMediaSignal,
 } from '../definition';
-import type { IClientMediaCall, CallActorType, CallContact, CallFeature } from '../definition/call';
+import type { IClientMediaCall, CallActorType, CallContact, CallFeature, AnyMediaCallData } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
 
 export type MediaSignalingEvents = {
@@ -132,9 +132,23 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return this.knownCalls.get(callId) || null;
 	}
 
-	public getMainCall(skipLocal = false): IClientMediaCall | null {
-		let ringingCall: IClientMediaCall | null = null;
-		let pendingCall: IClientMediaCall | null = null;
+	public getState(skipLocal = false): (AnyMediaCallData & { call: IClientMediaCall }) | null {
+		const call = this.getMainCall(skipLocal);
+		if (!call) {
+			return null;
+		}
+
+		const state = call.callStateData;
+
+		return {
+			...state,
+			call,
+		};
+	}
+
+	private getMainCall(skipLocal = false): ClientMediaCall | null {
+		let ringingCall: ClientMediaCall | null = null;
+		let pendingCall: ClientMediaCall | null = null;
 
 		for (const call of this.knownCalls.values()) {
 			if (call.state === 'hangup' || call.ignored) {
@@ -527,6 +541,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	private createCall(callId: string): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.createCall');
 		const config = {
+			userId: this.config.userId,
 			logger: this.config.logger,
 			transporter: this.transporter,
 			processorFactories: this.config.processorFactories,

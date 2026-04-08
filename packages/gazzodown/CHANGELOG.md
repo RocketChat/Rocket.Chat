@@ -1,5 +1,52 @@
 # @rocket.chat/gazzodown
 
+## 29.0.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, 43d0cfc6a70e8a31d5f3d24162216dae6b07efdd, d83a1a9753464ee916845b3c88757bbcf76884a5, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/message-parser@0.31.35
+  - @rocket.chat/core-typings@8.3.0
+  - @rocket.chat/ui-contexts@29.0.0
+  - @rocket.chat/ui-client@29.0.0
+  </details>
+
+## 29.0.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.4
+  - @rocket.chat/ui-client@29.0.0-rc.4
+  - @rocket.chat/ui-contexts@29.0.0-rc.4
+  </details>
+
+## 29.0.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.3
+  - @rocket.chat/ui-client@29.0.0-rc.3
+  - @rocket.chat/ui-contexts@29.0.0-rc.3
+  </details>
+
+## 29.0.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.2
+  - @rocket.chat/ui-client@29.0.0-rc.2
+  - @rocket.chat/ui-contexts@29.0.0-rc.2
+  </details>
+
 ## 29.0.0-rc.1
 
 ### Patch Changes

@@ -46,7 +46,7 @@ jobs:
       - name: Unit Test
         run: yarn testunit --concurrency=1
 
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v6
         with:
           flags: unit
           verbose: true
