@@ -28,6 +28,7 @@ const FileSystemUploads = new FileUploadClass({
 
 			file = FileUpload.addExtensionTo(file);
 
+			res.setHeader('Accept-Ranges', 'bytes');
 			res.setHeader('Content-Disposition', `${getContentDisposition(req)}; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 			file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 			res.setHeader('Content-Type', file.type || 'application/octet-stream');
@@ -115,12 +116,27 @@ const FileSystemUserDataFiles = new FileUploadClass({
 
 			if (stat?.isFile()) {
 				file = FileUpload.addExtensionTo(file);
+				res.setHeader('Accept-Ranges', 'bytes');
 				res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file.name || '')}`);
 				file.uploadedAt && res.setHeader('Last-Modified', file.uploadedAt.toUTCString());
 				res.setHeader('Content-Type', file.type || '');
-				res.setHeader('Content-Length', file.size || 0);
-
-				(await this.store.getReadStream(file._id, file)).pipe(res);
+				const options: { start?: number; end?: number } = {};
+				if (_req.headers.range) {
+					const range = getFileRange(file, _req);
+					if (range) {
+						setRangeHeaders(range, file, res);
+						if (range.outOfRange) {
+							return;
+						}
+						options.start = range.start;
+						options.end = range.stop;
+					}
+				}
+				// set content-length if range has not been set by setRangeHeaders
+				if (!res.getHeader('Content-Length')) {
+					res.setHeader('Content-Length', file.size || 0);
+				}
+				(await this.store.getReadStream(file._id, file, options)).pipe(res);
 			}
 		} catch (e) {
 			res.writeHead(404);

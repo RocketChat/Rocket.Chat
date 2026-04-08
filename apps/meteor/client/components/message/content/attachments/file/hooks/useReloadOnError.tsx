@@ -1,7 +1,7 @@
 import { useEffectEvent, useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useRef, useState } from 'react';
 
-const events = ['error', 'stalled', 'play'];
+const events = ['error', 'stalled'];
 
 function toURL(urlString: string): URL {
 	try {
@@ -53,6 +53,10 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 	const firstRecoveryAttempted = useRef(false);
 
 	const handleMediaURLRecovery = useEffectEvent(async (event: Event) => {
+		if ((event.target as HTMLMediaElement)?.seeking) {
+			return;
+		}
+
 		if (isRecovering.current) {
 			console.debug(`Media URL recovery already in progress, skipping ${event.type} event`);
 			return;
@@ -71,12 +75,7 @@ export const useReloadOnError = (url: string, type: 'video' | 'audio') => {
 				isRecovering.current = false;
 				return;
 			}
-		} else if (event.type === 'play') {
-			// The user has initiated a playback for the first time, probably we should wait for the stalled or error event
-			// the url may still be valid since we dont know the expiration time yet
-			isRecovering.current = false;
-			return;
-		}
+		} 
 
 		firstRecoveryAttempted.current = true;
 
