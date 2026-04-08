@@ -2,7 +2,7 @@ import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { CreateNewDiscussionModal } from './page-objects/fragments';
-import { createTargetChannel, createTargetTeam } from './utils';
+import { createTargetChannel, createTargetTeam, sendTargetChannelMessage } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
 
@@ -13,7 +13,7 @@ test.describe.serial('message-actions', () => {
 	let forwardChannel: string;
 	let forwardTeam: string;
 	test.beforeAll(async ({ api }) => {
-		targetChannel = await createTargetChannel(api);
+		targetChannel = await createTargetChannel(api, { members: ['user2'] });
 		forwardChannel = await createTargetChannel(api);
 		forwardTeam = await createTargetTeam(api);
 	});
@@ -21,13 +21,6 @@ test.describe.serial('message-actions', () => {
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
 		await poHomeChannel.navbar.openChat(targetChannel);
-	});
-	test('expect reply the message in direct', async ({ page }) => {
-		await poHomeChannel.content.sendMessage('this is a message for reply in direct');
-		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('role=menuitem[name="Reply in direct message"]').click();
-
-		await expect(page).toHaveURL(/.*reply/);
 	});
 
 	test('expect reply the message', async ({ page }) => {
@@ -167,6 +160,38 @@ test.describe.serial('message-actions', () => {
 
 		const clipboardText = await page.evaluate('navigator.clipboard.readText()');
 		expect(clipboardText).toContain('http');
+	});
+
+	test.describe.serial('expect reply in direct message', () => {
+		test.use({ storageState: Users.user2.state });
+
+		test.beforeAll(async ({ api }) => {
+			await sendTargetChannelMessage(api, targetChannel, { msg: 'message from admin for reply in DM' });
+		});
+
+		test('expect option not be visible without create-d permission and no existing DM', async ({ page, api }) => {
+			expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin'] }] })).status()).toBe(200);
+
+			await poHomeChannel.content.openLastMessageMenu();
+			await expect(page.locator('role=menuitem[name="Reply in direct message"]')).toBeHidden();
+		});
+
+		test('expect option be visible and redirect to DM', async ({ page, api }) => {
+			expect(
+				(await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin', 'user', 'bot', 'app'] }] })).status(),
+			).toBe(200);
+
+			await poHomeChannel.content.openLastMessageMenu();
+			await page.locator('role=menuitem[name="Reply in direct message"]').click();
+
+			await expect(page).toHaveURL(/.*reply/);
+		});
+
+		test.afterAll(async ({ api }) => {
+			expect(
+				(await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin', 'user', 'bot', 'app'] }] })).status(),
+			).toBe(200);
+		});
 	});
 
 	test.describe('Preference Hide Contextual Bar by clicking outside of it Enabled', () => {
