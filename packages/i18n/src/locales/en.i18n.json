@@ -7159,5 +7159,6 @@
   "message_body": "message body",
   "message_attachment": "message attachment",
   "system_message_body": "system message body",
-  "No_changes_to_save": "No changes to save"
+  "No_changes_to_save": "No changes to save",
+  "Avatar_preview_updated": "Avatar preview updated"
 }

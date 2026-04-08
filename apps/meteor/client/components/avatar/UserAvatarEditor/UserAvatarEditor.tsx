@@ -4,7 +4,7 @@ import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useToastMessageDispatch, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent } from 'react';
-import { useId, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { UserAvatarSuggestion } from './UserAvatarSuggestion';
@@ -29,7 +29,6 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 	const rotateImages = useSetting('FileUpload_RotateImages');
 	const [avatarFromUrl, setAvatarFromUrl] = useState('');
 	const [newAvatarSource, setNewAvatarSource] = useState<string>();
-	const imageUrlField = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [avatarUrlError, setAvatarUrlError] = useState<string | undefined>(undefined);
 
@@ -56,6 +55,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 			setNewAvatarSource(avatarFromUrl);
 			setAvatarObj({ avatarUrl: avatarFromUrl });
 			setAvatarUrlError(undefined);
+			dispatchToastMessage({ type: 'info', message: t('Avatar_preview_updated') });
 		} else {
 			setAvatarUrlError(t('error-invalid-image-url'));
 		}
@@ -117,24 +117,22 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						/>
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
-					<Field mis={4} mbs={16}>
-						<FieldLabel htmlFor={imageUrlField}>{t('Use_url_for_avatar')}</FieldLabel>
+					<Field mis={4} mbs={12}>
+						<FieldLabel>{t('Use_url_for_avatar')}</FieldLabel>
 						<FieldRow>
 							<TextInput
-								id={imageUrlField}
 								placeholder={t('Use_url_for_avatar')}
 								value={avatarFromUrl}
 								onChange={handleAvatarFromUrlChange}
 								error={avatarUrlError}
-								aria-invalid={!!avatarUrlError}
-								aria-describedby={avatarUrlError ? `${imageUrlField}-error` : undefined}
+								onKeyDown={(event): void => {
+									if (event.key === 'Enter') {
+										handleAddUrl();
+									}
+								}}
 							/>
 						</FieldRow>
-						{avatarUrlError && (
-							<FieldError aria-live='assertive' id={`${imageUrlField}-error`}>
-								{avatarUrlError}
-							</FieldError>
-						)}
+						{avatarUrlError && <FieldError>{avatarUrlError}</FieldError>}
 					</Field>
 				</Box>
 			</Box>
