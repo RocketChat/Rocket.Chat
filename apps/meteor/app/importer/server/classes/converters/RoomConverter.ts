@@ -47,8 +47,19 @@ export class RoomConverter extends RecordConverter<IImportChannelRecord> {
 			await this.insertRoom(data, startedByUserId);
 		}
 
+		this.registerImportedRoomIdsInCache(data);
+
 		if (data.archived && data._id) {
 			await this.archiveRoomById(data._id);
+		}
+	}
+
+	private registerImportedRoomIdsInCache(roomData: IImportChannel): void {
+		for (const importId of roomData.importIds) {
+			this._cache.addRoom(importId, roomData._id as string);
+			if (roomData.name) {
+				this._cache.addRoomName(importId, roomData.name);
+			}
 		}
 	}
 
