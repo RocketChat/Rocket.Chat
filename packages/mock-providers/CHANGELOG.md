@@ -1,5 +1,44 @@
 # @rocket.chat/mock-providers
 
+## 0.4.13
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [652ff8cfe26b9068a776c39132c0eb5440702894, 539659af22bc19880eda047dfc0b152472ccb65c, 1741a20dd86c353755becfc706cd9ad63df09cfa, 85c0ac7d8c7a5b7b89ef58f4a42b18467a8e2dd4, c217b0bde182e5f76dbe1892d9b37d61ffab71db, 43d0cfc6a70e8a31d5f3d24162216dae6b07efdd, d83a1a9753464ee916845b3c88757bbcf76884a5, 788c161bb6c9544bec37034c93e2f60de1a6c316]:</summary>
+
+  - @rocket.chat/i18n@2.2.0
+  - @rocket.chat/ui-contexts@29.0.0
+  </details>
+
+## 0.4.13-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.0-rc.4
+  </details>
+
+## 0.4.13-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.0-rc.3
+  </details>
+
+## 0.4.13-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/ui-contexts@29.0.0-rc.2
+  </details>
+
 ## 0.4.13-rc.1
 
 ### Patch Changes
