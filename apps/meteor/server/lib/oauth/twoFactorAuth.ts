@@ -2,11 +2,18 @@ import type { IUser } from '@rocket.chat/core-typings';
 
 import { getRememberDate } from '../../../app/2fa/server/code';
 import { EmailCheckForOAuth } from '../../../app/2fa/server/code/EmailCheckForOAuth';
+import { TOTPCheckForOAuth } from '../../../app/2fa/server/code/TOTPCheckForOAuth';
 
-const emailCheckForOAuth = new EmailCheckForOAuth();
+export const emailCheckForOAuth = new EmailCheckForOAuth();
+export const totpCheckForOAuth = new TOTPCheckForOAuth();
 
-export const twoFACheckMethodsForOAuth = {
-	[emailCheckForOAuth.name]: emailCheckForOAuth,
+const twoFACheckMethodsForOAuth = {
+	[emailCheckForOAuth.method]: emailCheckForOAuth,
+	[totpCheckForOAuth.method]: totpCheckForOAuth,
+};
+
+export const getTwoFAMethodForOAuth = (method: 'email' | 'totp') => {
+	return twoFACheckMethodsForOAuth[method];
 };
 
 const getSecondFactorMethod = (user: IUser) => {
@@ -15,8 +22,6 @@ const getSecondFactorMethod = (user: IUser) => {
 
 export const doesUserRquire2FA = (user: IUser) => {
 	const rememberAfterRegistration = getRememberDate(user.createdAt);
-
-	console.log('rememberAfterRegistration - ', rememberAfterRegistration);
 
 	if (rememberAfterRegistration && rememberAfterRegistration > new Date()) {
 		console.log('remembering after registration');

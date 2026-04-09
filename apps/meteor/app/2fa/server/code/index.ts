@@ -6,7 +6,6 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { EmailCheck } from './EmailCheck';
-import { EmailCheckForOAuth } from './EmailCheckForOAuth';
 import type { ICodeCheck } from './ICodeCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { TOTPCheck } from './TOTPCheck';
@@ -21,7 +20,6 @@ export interface ITwoFactorOptions {
 
 const totpCheck = new TOTPCheck();
 export const emailCheck = new EmailCheck();
-export const emailCheckForOAuth = new EmailCheckForOAuth();
 const passwordCheckFallback = new PasswordCheckFallback();
 
 const checkMethods = new Map<string, ICodeCheck>();

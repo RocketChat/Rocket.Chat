@@ -77,13 +77,9 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[])
 				const secondFactorMethod = doesUserRquire2FA(oAuthUser);
 
 				if (secondFactorMethod) {
-					console.log('2fa required');
-					const challengeId = await secondFactorMethod.sendEmailTwoFactorChallenge(oAuthUser);
-					console.log('challengeId - ', challengeId);
+					const challengeId = await secondFactorMethod.sendTwoFactorChallenge(oAuthUser);
 					return res.redirect(`/2fa/${secondFactorMethod.method}/${challengeId}`);
 				}
-
-				console.log('no 2fa required');
 
 				const stampedToken = Accounts._generateStampedLoginToken();
 				Accounts._insertLoginToken(oAuthUser._id, stampedToken);

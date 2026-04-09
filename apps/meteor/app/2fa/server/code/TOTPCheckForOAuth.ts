@@ -1,23 +1,21 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { TwoFactorChallenges } from '@rocket.chat/models';
 
-import { EmailCheck } from './EmailCheck';
+import { TOTPCheck } from './TOTPCheck';
 
-export class EmailCheckForOAuth extends EmailCheck {
-	public override readonly name = 'email-oauth';
+export class TOTPCheckForOAuth extends TOTPCheck {
+	public override readonly name = 'totp-oauth';
 
-	public readonly method = 'email';
+	public readonly method = 'totp';
 
 	public async sendTwoFactorChallenge(user: IUser): Promise<string> {
 		const now = new Date();
 		const challenge = await TwoFactorChallenges.insertOne({
 			userId: user._id,
-			method: 'email',
+			method: 'totp',
 			createdAt: now,
 			expireAt: new Date(now.getTime() + 1000 * 60 * 5),
 		});
-		console.log('challenge - ', challenge);
-		await this.sendEmailCode(user);
 		return challenge.insertedId;
 	}
 

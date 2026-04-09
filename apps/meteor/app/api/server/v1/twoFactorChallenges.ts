@@ -2,7 +2,8 @@ import { TwoFactorChallenges } from '@rocket.chat/models';
 import { isTwoFactorChallengesSendEmailCodeParamsPOST, isTwoFactorChallengesVerifyChallengeParamsPOST } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
 
-import { getUserForCheck, emailCheckForOAuth } from '../../../2fa/server/code';
+import { emailCheckForOAuth, getTwoFAMethodForOAuth } from '../../../../server/lib/oauth/twoFactorAuth';
+import { getUserForCheck } from '../../../2fa/server/code';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -66,7 +67,9 @@ API.v1.addRoute(
 				throw new Meteor.Error('error-user-not-found', 'user not found');
 			}
 
-			const isCodeValid = await emailCheckForOAuth.verifyEmailTwoFactorChallenge(user, challengeId, code);
+			const twoFAMethod = getTwoFAMethodForOAuth(challenge.method);
+
+			const isCodeValid = await twoFAMethod.verify(user, code);
 
 			if (!isCodeValid) {
 				return API.v1.failure('error-invalid-code', 'Invalid code');
