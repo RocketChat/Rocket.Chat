@@ -4,14 +4,14 @@ import { memo, useMemo } from 'react';
 
 const availablePercentualWidths = [47, 68, 75, 82];
 
-type MessageListSkeletonProps = {
-	messageCount?: number;
+type ListSkeletonProps = {
+	listCount?: number;
 };
 
-const MessageListSkeleton = ({ messageCount = 2 }: MessageListSkeletonProps): ReactElement => {
+const ListSkeleton = ({ listCount = 2 }: ListSkeletonProps): ReactElement => {
 	const widths = useMemo(
-		() => Array.from({ length: messageCount }, (_, index) => `${availablePercentualWidths[index % availablePercentualWidths.length]}%`),
-		[messageCount],
+		() => Array.from({ length: listCount }, (_, index) => `${availablePercentualWidths[index % availablePercentualWidths.length]}%`),
+		[listCount],
 	);
 
 	return (
@@ -31,4 +31,4 @@ const MessageListSkeleton = ({ messageCount = 2 }: MessageListSkeletonProps): Re
 	);
 };
 
-export default memo(MessageListSkeleton);
+export default memo(ListSkeleton);
