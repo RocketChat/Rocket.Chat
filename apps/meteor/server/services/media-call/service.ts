@@ -72,7 +72,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 	}
 
-	public async getUserState(uid: IUser['_id'], contractId: string): Promise<{ calls: IMediaCall[]; signals: ServerMediaSignal[] }> {
+	public async getUserStateSignals(uid: IUser['_id'], contractId: string): Promise<ServerMediaSignal[]> {
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
 
 		const signals: ServerMediaSignal[] = [];
@@ -81,10 +81,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			signals.push(...callSignals);
 		}
 
-		return {
-			calls,
-			signals,
-		};
+		return signals;
 	}
 
 	private async saveCallToHistory(callId: IMediaCall['_id']): Promise<void> {
