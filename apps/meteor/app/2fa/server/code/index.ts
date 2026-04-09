@@ -6,6 +6,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { EmailCheck } from './EmailCheck';
+import { EmailCheckForOAuth } from './EmailCheckForOAuth';
 import type { ICodeCheck } from './ICodeCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { TOTPCheck } from './TOTPCheck';
@@ -20,6 +21,7 @@ export interface ITwoFactorOptions {
 
 const totpCheck = new TOTPCheck();
 export const emailCheck = new EmailCheck();
+export const emailCheckForOAuth = new EmailCheckForOAuth();
 const passwordCheckFallback = new PasswordCheckFallback();
 
 const checkMethods = new Map<string, ICodeCheck>();
@@ -63,8 +65,8 @@ function getFingerprintFromConnection(connection: IMethodConnection): string {
 	return crypto.createHash('md5').update(data).digest('hex');
 }
 
-function getRememberDate(from: Date = new Date()): Date | undefined {
-	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor') as string, 10);
+export function getRememberDate(from: Date = new Date()): Date | undefined {
+	const rememberFor = parseInt(settings.get('Accounts_TwoFactorAuthentication_RememberFor'), 10);
 
 	if (rememberFor <= 0) {
 		return;
@@ -146,7 +148,7 @@ interface ICheckCodeForUser {
 	connection?: IMethodConnection;
 }
 
-const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
+export const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
 	// try first getting one of the available methods or the one that was already provided
 	const selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
 	if (selectedMethod) {
@@ -165,16 +167,16 @@ const getSecondFactorMethod = (user: IUser, method: string | undefined, options:
 };
 
 export async function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): Promise<boolean> {
-	if (process.env.TEST_MODE && !options.requireSecondFactor) {
-		return true;
-	}
+	// if (process.env.TEST_MODE && !options.requireSecondFactor) {
+	// 	return true;
+	// }
 
-	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
-		return true;
-	}
+	// if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+	// 	return true;
+	// }
 
 	let existingUser: IUser | null;
-
+	console.log('checkCodeForUser', JSON.stringify({ code, method, options }, null, 2));
 	if (typeof user === 'string') {
 		existingUser = await getUserForCheck(user);
 	} else {
