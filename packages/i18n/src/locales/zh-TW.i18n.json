@@ -1442,8 +1442,6 @@
   "Entertainment": "娛樂",
   "Error": "錯誤",
   "Error_404": "錯誤：404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "錯誤：Rocket.Chat在多個實例中運行時需要oplog拖尾",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "請確保您的MongoDB處於ReplicaSet模式，並且MONGO_OPLOG_URL環境變量已在應用程序服務器上正確定義",
   "Error_Site_URL": "無效的 Site_Url",
   "Error_Site_URL_description": "請更新您的 \"Site_Url\" 設定且更多資訊在[這裡](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": "密碼變更失敗",

@@ -2067,8 +2067,6 @@
   "Error": "Error",
   "Error_404": "Error:404",
   "Error_encrypting_file": "Error while encrypting file",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Error: Rocket.Chat requires oplog tailing when running in multiple instances",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Please make sure your MongoDB is on ReplicaSet mode and MONGO_OPLOG_URL environment variable is defined correctly on the application server",
   "Error_Site_URL": "Invalid Site_Url",
   "Error_Site_URL_description": "Please, update your \"Site_Url\" setting find more information [here](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": "Error changing password",
