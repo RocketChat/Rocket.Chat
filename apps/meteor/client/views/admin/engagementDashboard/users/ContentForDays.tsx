@@ -104,7 +104,6 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 												},
 											},
 										}}
-										role='img'
 									/>
 								</Box>
 							</Box>
