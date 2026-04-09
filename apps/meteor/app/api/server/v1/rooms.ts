@@ -76,12 +76,12 @@ export async function findRoomByIdOrName({
 	checkedArchived = true,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	checkedArchived?: boolean;
 }): Promise<IRoom> {
 	if (
@@ -215,65 +215,106 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const roomsMediaRidEndpoint = API.v1.post(
 	'rooms.media/:rid',
-	{ authRequired: true },
 	{
-		async post() {
-			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.forbidden();
-			}
-
-			const { file, fields } = await MultipartUploadHandler.parseRequest(this.incoming, {
-				field: 'file',
-				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
-			});
-
-			if (!file) {
-				throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
-			}
-
-			const expiresAt = new Date();
-			expiresAt.setHours(expiresAt.getHours() + 24);
-
-			let content;
-
-			if (fields.content) {
-				try {
-					content = JSON.parse(fields.content);
-				} catch (e) {
-					console.error(e);
-					throw new Meteor.Error('invalid-field-content');
+		authRequired: true,
+		params: ajv.compile<{
+			rid: string;
+		}>({
+			type: 'object',
+			properties: {
+				rid: {
+					type: 'string',
+					description: 'The ID of the room'
 				}
-			}
-
-			const details = {
-				name: file.filename,
-				size: file.size,
-				type: file.mimetype,
-				rid: this.urlParams.rid,
-				userId: this.userId,
-				content,
-				expiresAt,
-			};
-
-			// TODO: In the future, we should isolate file receival from storage and post-processing.
-			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, file.tempFilePath);
-
-			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
-
-			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
-
-			return API.v1.success({
+			},
+			required: ['rid'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<{
+				success: true;
 				file: {
-					_id: uploadedFile._id,
-					url: uploadedFile.path,
+					_id: string;
+					url: string;
+				};
+			}>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+					file: {
+						type: 'object',
+						properties: {
+							_id: { type: 'string' },
+							url: { type: 'string', description: 'File URL' }
+						},
+						required: ['_id', 'url'],
+						additionalProperties: false,
+					},
 				},
-			});
+				required: ['success', 'file'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
+
 	},
-);
+	async function action(this: any) {
+		if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
+			return API.v1.forbidden("Not allowed");
+		};
+
+		const { file, fields } = await MultipartUploadHandler.parseRequest(this.incoming, {
+			field: 'file',
+			maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+		});
+
+		if (!file) {
+			throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
+		};
+
+		const expiresAt = new Date();
+		expiresAt.setHours(expiresAt.getHours() + 24);
+
+		let content;
+
+		if (fields.content) {
+			try {
+				content = JSON.parse(fields.content);
+			} catch (e) {
+				console.error(e);
+				throw new Meteor.Error('invalid-field-content');
+			}
+		};
+
+		const details = {
+			name: file.filename,
+			size: file.size,
+			type: file.mimetype,
+			rid: this.urlParams.rid,
+			userId: this.userId,
+			content,
+			expiresAt,
+		};
+
+		const fileStore = FileUpload.getStore('Uploads');
+		const uploadedFile = await fileStore.insert(details, file.tempFilePath);
+
+		uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
+
+		await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
+
+		return API.v1.success({
+			file: {
+				_id: uploadedFile._id,
+				url: uploadedFile.path,
+			},
+		});
+	}
+)
 
 API.v1.addRoute(
 	'rooms.mediaConfirm/:rid/:fileId',
@@ -970,21 +1011,21 @@ API.v1.addRoute(
 
 type RoomsFavorite =
 	| {
-			roomId: string;
-			favorite: boolean;
-	  }
+		roomId: string;
+		favorite: boolean;
+	}
 	| {
-			roomName: string;
-			favorite: boolean;
-	  };
+		roomName: string;
+		favorite: boolean;
+	};
 
 type RoomsLeave =
 	| {
-			roomId: string;
-	  }
+		roomId: string;
+	}
 	| {
-			roomName: string;
-	  };
+		roomName: string;
+	};
 
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
@@ -1377,9 +1418,10 @@ export const roomEndpoints = API.v1
 	);
 type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
-	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsMediaRidEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
-	interface Endpoints extends RoomEndpoints {}
+	interface Endpoints extends RoomEndpoints { }
 }
