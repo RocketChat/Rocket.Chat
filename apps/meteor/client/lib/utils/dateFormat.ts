@@ -77,7 +77,7 @@ export const formatTimeAgo = (
 		}
 		return options.yesterdayLabel;
 	}
-	if (diffDays < 7) {
+	if (diffDays > 1 && diffDays < 7) {
 		return format(d, momentFormatToDateFns(options.lastWeekFormat), locale ? { locale } : undefined);
 	}
 	const diffYears = now.getFullYear() - d.getFullYear();
