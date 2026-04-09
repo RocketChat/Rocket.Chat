@@ -20,6 +20,7 @@
 		"@rocket.chat/password-policies": "workspace:^"
 	},
 	"devDependencies": {
+		"@react-aria/button": "~3.11.1",
 		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "^0.32.0",

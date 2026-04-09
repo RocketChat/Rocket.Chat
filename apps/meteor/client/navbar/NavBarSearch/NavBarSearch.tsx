@@ -1,7 +1,8 @@
 import { Box, Icon, IconButton, TextInput } from '@rocket.chat/fuselage';
 import { useEffectEvent, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect, useRef } from 'react';
-import { useFocusManager, useOverlayTrigger } from 'react-aria';
+import { useFocusManager } from '@react-aria/focus';
+import { useOverlayTrigger } from '@react-aria/overlays';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useOverlayTriggerState } from 'react-stately';

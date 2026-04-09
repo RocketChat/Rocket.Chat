@@ -22,6 +22,8 @@
 		"dompurify": "~3.3.2"
 	},
 	"devDependencies": {
+		"@react-aria/dialog": "~3.5.22",
+		"@react-aria/focus": "~3.19.1",
 		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "~0.31.25",
