@@ -224,7 +224,7 @@ export const createComposerAPI = (
 		stopFormatterTracker.stop();
 	};
 
-	const wrapSelection = (pattern: string): void => {
+	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 		const initText = input.value.slice(0, selectionStart);
 		const selectedText = input.value.slice(selectionStart, selectionEnd);
@@ -254,7 +254,11 @@ export const createComposerAPI = (
 				triggerEvent(input, 'change');
 
 				focus();
-				return;
+				return {
+					selectionStart: input.selectionStart,
+					selectionEnd: input.selectionEnd,
+					value: input.value,
+				};
 			}
 		}
 
@@ -268,6 +272,12 @@ export const createComposerAPI = (
 		triggerEvent(input, 'change');
 
 		focus();
+
+		return {
+			selectionStart: input.selectionStart,
+			selectionEnd: input.selectionEnd,
+			value: input.value,
+		};
 	};
 
 	const insertNewLine = (): void => insertText('\n');
