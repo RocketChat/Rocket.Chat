@@ -6,6 +6,7 @@ import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
 
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
+import { doesUserRquire2FA } from './twoFactorAuth';
 import { oAuthRouter } from '../../configuration/configurePassport';
 
 export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[]) => {
@@ -37,9 +38,9 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[])
 							accessToken,
 							refreshToken,
 							name: profile.displayName,
-							email: profile?.emails?.[0]?.value,
 							...restProfile,
 							..._json,
+							email: profile?.emails?.[0]?.value,
 						},
 						{},
 					);
@@ -72,6 +73,17 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[])
 				if (!oAuthUser) {
 					return res.redirect('/login');
 				}
+
+				const secondFactorMethod = doesUserRquire2FA(oAuthUser);
+
+				if (secondFactorMethod) {
+					console.log('2fa required');
+					const challengeId = await secondFactorMethod.sendEmailTwoFactorChallenge(oAuthUser);
+					console.log('challengeId - ', challengeId);
+					return res.redirect(`/2fa/${secondFactorMethod.method}/${challengeId}`);
+				}
+
+				console.log('no 2fa required');
 
 				const stampedToken = Accounts._generateStampedLoginToken();
 				Accounts._insertLoginToken(oAuthUser._id, stampedToken);
