@@ -113,21 +113,25 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 							<Avatar url={`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`} />
 						</Button>
 						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} mi={4} onClick={clickUpload} />
-						<IconButton
-							icon='permalink'
-							secondary
-							disabled={disabled || !avatarFromUrl || !!avatarUrlError}
-							title={t('Add_URL')}
-							mi={4}
-							onClick={handleAddUrl}
-						/>
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
-					<Field mis={4} mbs={12}>
+					<Field pis={4} mbs={12}>
 						<FieldLabel>{t('Use_url_for_avatar')}</FieldLabel>
 						<FieldRow>
 							<TextInput
 								placeholder={t('Use_url_for_avatar')}
+								addon={
+									<IconButton
+										icon='permalink'
+										secondary
+										small
+										disabled={disabled || !avatarFromUrl || !!avatarUrlError}
+										title={t('Add_URL')}
+										onClick={handleAddUrl}
+										mb={-4}
+										mie={-4}
+									/>
+								}
 								value={avatarFromUrl}
 								onChange={handleAvatarFromUrlChange}
 								error={avatarUrlError}
