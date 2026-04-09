@@ -145,6 +145,11 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
+		const needsSignals = signal.requestSignals ?? true;
+		if (!needsSignals) {
+			return;
+		}
+
 		const signals = await getSignalsForExistingCall(call, uid, signal.contractId);
 
 		for (const signal of signals) {

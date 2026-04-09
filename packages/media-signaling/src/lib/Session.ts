@@ -34,6 +34,7 @@ export type MediaSignalingSessionConfig = {
 	iceGatheringTimeout?: number;
 	iceServers?: RTCIceServer[];
 	features: CallFeature[];
+	requestInitialStateSignals?: boolean;
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -89,7 +90,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
 
-		this.register();
+		this.register(config.requestInitialStateSignals ?? true);
 		this.enableStateReport(STATE_REPORT_INTERVAL);
 	}
 
@@ -228,12 +229,13 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
 	}
 
-	public register(): void {
+	public register(requestSignals = true): void {
 		this.lastRegisterTimestamp = new Date();
 
 		this.transporter.sendSignal({
 			type: 'register',
 			contractId: this._sessionId,
+			requestSignals,
 			...(this.config.oldSessionId && { oldContractId: this.config.oldSessionId }),
 		});
 	}
