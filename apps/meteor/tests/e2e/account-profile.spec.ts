@@ -64,6 +64,13 @@ test.describe.serial('settings-account-profile', () => {
 
 				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
 			});
+
+			test('should show inline error if url does not point to an image', async () => {
+				await poAccountProfile.inputAvatarLink.fill('https://google.com');
+				await poAccountProfile.btnSetAvatarLink.click();
+
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
+			});
 		});
 	});
 

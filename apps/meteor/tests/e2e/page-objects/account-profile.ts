@@ -125,6 +125,6 @@ export class AccountProfile extends Account {
 	}
 
 	get errorInvalidUrl(): Locator {
-		return this.getErrorAlertByText('Please enter a valid URL');
+		return this.getErrorAlertByText('Invalid image URL');
 	}
 }
