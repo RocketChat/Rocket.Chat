@@ -12,21 +12,21 @@ import { Method } from './TwoFactorModal';
 type TwoFactorEmailModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
-	emailOrUsername: string;
+	resendEmail?: () => Promise<null>;
 	invalidAttempt?: boolean;
 };
 
-const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername, invalidAttempt }: TwoFactorEmailModalProps): ReactElement => {
+const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail, invalidAttempt }: TwoFactorEmailModalProps): ReactElement => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { t } = useTranslation();
 	const [code, setCode] = useState<string>('');
 	const ref = useAutoFocus<HTMLInputElement>();
 
-	const sendEmailCode = useEndpoint('POST', '/v1/users.2fa.sendEmailCode');
-
 	const onClickResendCode = async (): Promise<void> => {
 		try {
-			await sendEmailCode({ emailOrUsername });
+			if (resendEmail) {
+				await resendEmail();
+			}
 			dispatchToastMessage({ type: 'success', message: t('Email_sent') });
 		} catch (error) {
 			dispatchToastMessage({

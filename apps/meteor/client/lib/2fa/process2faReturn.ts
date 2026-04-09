@@ -5,6 +5,7 @@ import { lazy } from 'react';
 
 import type { LoginCallback } from './overrideLoginMethod';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
+import { sdk } from '../../../app/utils/client/lib/SDKClient';
 import { getUser } from '../user';
 
 const TwoFactorModal = lazy(() => import('../../components/TwoFactorModal'));
@@ -31,7 +32,9 @@ const hasRequiredTwoFactorMethod = (
 function assertModalProps(props: {
 	method: TwoFactorMethod;
 	emailOrUsername?: string;
-}): asserts props is { method: 'totp' } | { method: 'password' } | { method: 'email'; emailOrUsername: string } {
+}): asserts props is
+	| { method: 'totp' | 'password'; invalidAttempt?: boolean }
+	| { method: 'email'; emailOrUsername: string; invalidAttempt?: boolean } {
 	if (props.method === 'email' && typeof props.emailOrUsername !== 'string') {
 		throw new Error('Invalid Two Factor method');
 	}
@@ -74,7 +77,7 @@ export async function process2faReturn({
 
 	const props = {
 		...getProps(error.details.method, emailOrUsername || error.details.emailOrUsername),
-		// eslint-disable-next-line no-nested-ternary
+
 		invalidAttempt: isTotpInvalidError(error),
 	};
 
@@ -111,7 +114,7 @@ export async function process2faAsyncReturn<TResult>({
 	const props = {
 		method: error.details.method,
 		emailOrUsername: emailOrUsername || error.details.emailOrUsername || getUser()?.username,
-		// eslint-disable-next-line no-nested-ternary
+
 		invalidAttempt: isTotpInvalidError(error),
 	};
 
@@ -141,7 +144,8 @@ export const invokeTwoFactorModal = async (props: {
 		imperativeModal.open({
 			component: TwoFactorModal,
 			props: {
-				...props,
+				method: props.method,
+				invalidAttempt: props.invalidAttempt,
 				onConfirm: (code: string, method: string): void => {
 					imperativeModal.close();
 					resolve(method === 'password' ? SHA256(code) : code);
@@ -150,6 +154,10 @@ export const invokeTwoFactorModal = async (props: {
 					imperativeModal.close();
 					reject(new Meteor.Error('totp-canceled'));
 				},
+				...(props.method === 'email' &&
+					props.emailOrUsername && {
+						resendEmail: (): Promise<null> => sdk.rest.post('/v1/users.2fa.sendEmailCode', { emailOrUsername: props.emailOrUsername }),
+					}),
 			},
 		});
 	});
