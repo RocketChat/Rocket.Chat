@@ -238,7 +238,6 @@ export * from './v1/users/UsersUpdateOwnBasicInfoParamsPOST';
 export * from './v1/users/UsersUpdateParamsPOST';
 export * from './v1/users/UsersCheckUsernameAvailabilityParamsGET';
 export * from './v1/users/UsersSendConfirmationEmailParamsPOST';
-export * from './v1/users/UsersListParamsGET';
 export * from './v1/moderation';
 export * from './v1/server-events';
 
