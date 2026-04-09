@@ -1,9 +1,12 @@
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
+import { ErrorBoundary } from 'react-error-boundary'; 
 
 import { FuselageSurfaceRenderer, renderTextObject } from './FuselageSurfaceRenderer';
 import VideoConferenceBlock from '../blocks/VideoConferenceBlock';
 import { AppIdProvider } from '../contexts/AppIdContext';
+import { ComponentErrorFallback } from '@rocket.chat/ui-client'; 
+import { errorTrackingService } from '@rocket.chat/ui-client'; 
 
 export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
 	public constructor() {
@@ -11,18 +14,27 @@ export class FuselageMessageSurfaceRenderer extends FuselageSurfaceRenderer {
 	}
 
 	override plain_text = renderTextObject;
-
 	override mrkdwn = renderTextObject;
 
 	video_conf(block: UiKit.VideoConferenceBlock, context: UiKit.BlockContext, index: number): ReactElement | null {
 		if (context === UiKit.BlockContext.BLOCK) {
 			return (
-				<AppIdProvider key={index} appId={block.appId}>
-					<VideoConferenceBlock block={block} context={context} index={index} surfaceRenderer={this} />
-				</AppIdProvider>
+				<ErrorBoundary 
+					key={index} 
+					fallback={<ComponentErrorFallback />}
+					onError={(error) => errorTrackingService.reportError(error, {
+						scope: 'component',
+						severity: 'medium',
+						recoverable: true,
+						componentPath: 'FuselageMessageSurfaceRenderer.video_conf'
+					})}
+				>
+					<AppIdProvider appId={block.appId}>
+						<VideoConferenceBlock block={block} context={context} index={index} surfaceRenderer={this} />
+					</AppIdProvider>
+				</ErrorBoundary>
 			);
 		}
-
 		return null;
 	}
 }
