@@ -270,7 +270,6 @@ export class AppMessagesConverter {
 				button_alignment: attachment.actionButtonsAlignment,
 				actions: attachment.actions,
 				type: attachment.type,
-				description: attachment.description,
 				...attachment._unmappedProperties_,
 			}),
 		);

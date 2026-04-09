@@ -51,7 +51,7 @@ export const parseMessageAttachment = <T extends MessageAttachment>(
 	autoTranslateOptions: { autoTranslateLanguage?: string; translated: boolean },
 ): T => {
 	const { translated, autoTranslateLanguage } = autoTranslateOptions;
-	if (!attachment.text && !attachment.description) {
+	if (!attachment.text) {
 		return attachment;
 	}
 
@@ -62,7 +62,6 @@ export const parseMessageAttachment = <T extends MessageAttachment>(
 	const text =
 		(isTranslatedAttachment(attachment) && autoTranslateLanguage && attachment?.translations?.[autoTranslateLanguage]) ||
 		attachment.text ||
-		attachment.description ||
 		'';
 
 	return {

@@ -182,9 +182,9 @@ describe('parseMessageTextToAstMarkdown', () => {
 				...translatedMessage,
 				attachments: [
 					{
-						description: 'description',
+						text: 'text',
 						translations: {
-							en: 'description translated',
+							en: 'text translated',
 						},
 					},
 				],
@@ -194,9 +194,9 @@ describe('parseMessageTextToAstMarkdown', () => {
 				md: translatedMessageParsed,
 				attachments: [
 					{
-						description: 'description',
+						text: 'text',
 						translations: {
-							en: 'description translated',
+							en: 'text translated',
 						},
 						md: [
 							{
@@ -204,7 +204,7 @@ describe('parseMessageTextToAstMarkdown', () => {
 								value: [
 									{
 										type: 'PLAIN_TEXT',
-										value: 'description translated',
+										value: 'text translated',
 									},
 								],
 							},
@@ -378,7 +378,7 @@ describe('parseMessageAttachments', () => {
 
 	const attachmentMessage = [
 		{
-			description: 'message **bold** _italic_ and ~strike~',
+			text: 'message **bold** _italic_ and ~strike~',
 			md: messageParserTokenMessage,
 		},
 	];
@@ -400,18 +400,18 @@ describe('parseMessageAttachments', () => {
 				autoTranslateLanguage: 'en',
 			};
 
-			it('should return correct attachment description translated parsed md when translate is active', () => {
-				const descriptionAttachment = [
+			it('should return correct attachment text translated parsed md when translate is active', () => {
+				const textAttachment = [
 					{
 						...attachmentMessage[0],
-						description: 'attachment not translated',
+						text: 'attachment not translated',
 						translationProvider: 'provider',
 						translations: {
 							en: 'attachment translated',
 						},
 					},
 				];
-				const descriptionAttachmentParsed: Root = [
+				const textAttachmentParsed: Root = [
 					{
 						type: 'PARAGRAPH',
 						value: [
@@ -423,23 +423,23 @@ describe('parseMessageAttachments', () => {
 					},
 				];
 
-				expect(parseMessageAttachments(descriptionAttachment, parseOptions, enabledAutoTranslatedOptions)[0].md).toStrictEqual(
-					descriptionAttachmentParsed,
+				expect(parseMessageAttachments(textAttachment, parseOptions, enabledAutoTranslatedOptions)[0].md).toStrictEqual(
+					textAttachmentParsed,
 				);
 			});
 
-			it('should return correct attachment description parsed md when translate is active and auto translate language is undefined', () => {
-				const descriptionAttachment = [
+			it('should return correct attachment text parsed md when translate is active and auto translate language is undefined', () => {
+				const textAttachment = [
 					{
 						...attachmentMessage[0],
-						description: 'attachment not translated',
+						text: 'attachment not translated',
 						translationProvider: 'provider',
 						translations: {
 							en: 'attachment translated',
 						},
 					},
 				];
-				const descriptionAttachmentParsed: Root = [
+				const textAttachmentParsed: Root = [
 					{
 						type: 'PARAGRAPH',
 						value: [
@@ -452,11 +452,11 @@ describe('parseMessageAttachments', () => {
 				];
 
 				expect(
-					parseMessageAttachments(descriptionAttachment, parseOptions, {
+					parseMessageAttachments(textAttachment, parseOptions, {
 						...enabledAutoTranslatedOptions,
 						autoTranslateLanguage: undefined,
 					})[0].md,
-				).toStrictEqual(descriptionAttachmentParsed);
+				).toStrictEqual(textAttachmentParsed);
 			});
 
 			it('should return correct attachment text translated parsed md when translate is active', () => {

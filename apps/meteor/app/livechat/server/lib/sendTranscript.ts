@@ -116,9 +116,6 @@ export async function sendTranscript({
 		let filesHTML = '';
 
 		if (message.attachments && message.attachments?.length > 0) {
-			messageContent = message.attachments[0].description || '';
-			escapeHtml(messageContent);
-
 			for await (const attachment of message.attachments) {
 				if (!isFileAttachment(attachment)) {
 					continue;
