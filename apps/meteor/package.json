@@ -305,6 +305,7 @@
 		"ua-parser-js": "~1.0.41",
 		"underscore": "^1.13.8",
 		"universal-perf-hooks": "^1.0.1",
+		"virtua": "^0.49.0",
 		"webdav": "^4.11.5",
 		"xml-crypto": "~3.2.1",
 		"xml-encryption": "~4.0.0",

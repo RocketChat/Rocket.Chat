@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { isTruthy } from '@rocket.chat/tools';
-import { CustomScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
+import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
 import { memo, useCallback, useMemo } from 'react';
@@ -10,9 +10,6 @@ import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
-import LoadingMessagesIndicator from './LoadingMessagesIndicator';
-import RetentionPolicyWarning from './RetentionPolicyWarning';
-import RoomForeword from './RoomForeword/RoomForeword';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
@@ -233,26 +230,19 @@ const RoomBody = (): ReactElement => {
 										.join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomScrollbars ref={innerRef} key={room._id}>
-											<ul className='messages-list' aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
-												{canPreview ? (
-													<>
-														{hasMorePreviousMessages ? (
-															<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-														) : (
-															<li>
-																<RoomForeword user={user} room={room} />
-																{retentionPolicy?.isActive ? <RetentionPolicyWarning room={room} /> : null}
-															</li>
-														)}
-													</>
-												) : null}
-												<MessageList rid={room._id} messageListRef={jumpToRef} />
-												{hasMoreNextMessages ? (
-													<li className='load-more'>{isLoadingMoreMessages ? <LoadingMessagesIndicator /> : null}</li>
-												) : null}
-											</ul>
-										</CustomScrollbars>
+										<CustomVirtuaScrollbars ref={innerRef} key={room._id}>
+											<MessageList
+												rid={room._id}
+												messageListRef={jumpToRef}
+												canPreview={canPreview}
+												hasMorePreviousMessages={hasMorePreviousMessages}
+												isLoadingMoreMessages={isLoadingMoreMessages}
+												user={user}
+												room={room}
+												retentionPolicy={retentionPolicy}
+												hasMoreNextMessages={hasMoreNextMessages}
+											/>
+										</CustomVirtuaScrollbars>
 									</MessageListErrorBoundary>
 								</div>
 							</div>
