@@ -16,6 +16,8 @@ export const MockedRouterContext = ({ children, router }: { children: ReactNode;
 				navigate: () => undefined,
 				defineRoutes: () => () => undefined,
 				getRoomRoute: () => ({ path: '/' }),
+				getCanGoBack: () => false,
+				getCanGoForward: () => false,
 				...router,
 			}}
 		>
