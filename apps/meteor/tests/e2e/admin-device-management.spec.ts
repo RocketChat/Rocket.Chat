@@ -69,4 +69,34 @@ test.describe('Admin Device Management Page', () => {
 
 		await user2Page.close();
 	});
+
+	test('Should search for user with result/ without result', async () => {
+		const adminUsername = 'rocketchat.internal.admin.test';
+		await test.step('should show results when searching for a user', async () => {
+			await adminDeviceManagement.searchUserDevice(adminUsername);
+			const count = await adminDeviceManagement.getDeviceRowCountForUser(adminUsername);
+			await expect(count).toBeGreaterThanOrEqual(1);
+		});
+
+		await test.step('should show no results when searching for a non-existent user', async () => {
+			const noResultQuery = 'nonexistentuser';
+			await adminDeviceManagement.searchUserDevice(noResultQuery);
+			const count = await adminDeviceManagement.getDeviceRowCountForUser(noResultQuery);
+			await expect(count).toBe(0);
+			await expect(adminDeviceManagement.emptyState).toHaveText('No results found');
+		});
+	});
+
+	test('should not access device-management when user has no view-device-management permission', async ({ browser }) => {
+		const user2Page = await browser.newPage({ storageState: Users.user2.state });
+		const poUser2Home = new Registration(user2Page);
+		await user2Page.goto('/admin/device-management');
+		await poUser2Home.waitForDisplay();
+
+		const user2DeviceManagement = new AdminDeviceManagement(user2Page);
+		await expect(user2DeviceManagement.notAuthorizedMessage).toBeVisible();
+		await expect(user2DeviceManagement.adminPageContent).not.toBeVisible();
+
+		await user2Page.close();
+	});
 });

@@ -26,6 +26,14 @@ export class AdminDeviceManagement extends Admin {
 		return this.page.getByRole('main').filter({ has: this.page.getByRole('heading', { name: 'Device management' }) });
 	}
 
+	get emptyState(): Locator {
+		return this.adminPageContent.getByRole('heading', { name: 'No results found' });
+	}
+
+	get notAuthorizedMessage(): Locator {
+		return this.page.getByRole('main').getByText('You are not authorized to view this page');
+	}
+
 	async searchUserDevice(user: string): Promise<void> {
 		await this.adminPageContent.getByRole('textbox', { name: 'Search devices or users' }).fill(user);
 	}
@@ -39,6 +47,18 @@ export class AdminDeviceManagement extends Admin {
 			.getAttribute('aria-label');
 
 		return deviceId || '';
+	}
+
+	async countRowsForUsername(username: string): Promise<number> {
+		return this.adminPageContent
+			.getByRole('row')
+			.filter({ has: this.page.getByRole('cell', { name: username }) })
+			.count();
+	}
+
+	async getDeviceRowCountForUser(username: string): Promise<number> {
+		await this.searchUserDevice(username);
+		return this.countRowsForUsername(username);
 	}
 
 	async openDeviceOptionsById(deviceId: string) {
