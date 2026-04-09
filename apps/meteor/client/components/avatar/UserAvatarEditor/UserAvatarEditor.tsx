@@ -50,15 +50,21 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 
 	const [clickUpload] = useSingleFileInput(setUploadedPreview);
 
-	const handleAddUrl = (): void => {
-		if (isSafeAvatarUrl(avatarFromUrl)) {
-			setNewAvatarSource(avatarFromUrl);
-			setAvatarObj({ avatarUrl: avatarFromUrl });
-			setAvatarUrlError(undefined);
-			dispatchToastMessage({ type: 'info', message: t('Avatar_preview_updated') });
-		} else {
+	const handleAddUrl = async (): Promise<void> => {
+		if (!isSafeAvatarUrl(avatarFromUrl)) {
 			setAvatarUrlError(t('error-invalid-image-url'));
+			return;
 		}
+
+		if (!(await isValidImageFormat(avatarFromUrl))) {
+			setAvatarUrlError(t('error-invalid-image-url'));
+			return;
+		}
+
+		setNewAvatarSource(avatarFromUrl);
+		setAvatarObj({ avatarUrl: avatarFromUrl });
+		setAvatarUrlError(undefined);
+		dispatchToastMessage({ type: 'info', message: t('Avatar_preview_updated') });
 	};
 
 	const clickReset = (): void => {
