@@ -108,7 +108,7 @@ export async function sendTranscript({
 
 		const messageType = MessageTypes.getType(message);
 
-		let messageContent = messageType?.system
+		const messageContent = messageType?.system
 			? DOMPurify.sanitize(`
 				<i>${messageType.text(i18n.cloneInstance({ interpolation: { escapeValue: false } }).t, message)}}</i>`)
 			: escapeHtml(message.msg);

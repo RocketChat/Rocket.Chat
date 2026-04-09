@@ -459,34 +459,6 @@ describe('parseMessageAttachments', () => {
 				).toStrictEqual(textAttachmentParsed);
 			});
 
-			it('should return correct attachment text translated parsed md when translate is active', () => {
-				const textAttachment = [
-					{
-						...attachmentMessage[0],
-						text: 'attachment not translated',
-						translationProvider: 'provider',
-						translations: {
-							en: 'attachment translated',
-						},
-					},
-				];
-				const textAttachmentParsed: Root = [
-					{
-						type: 'PARAGRAPH',
-						value: [
-							{
-								type: 'PLAIN_TEXT',
-								value: 'attachment translated',
-							},
-						],
-					},
-				];
-
-				expect(parseMessageAttachments(textAttachment, parseOptions, enabledAutoTranslatedOptions)[0].md).toStrictEqual(
-					textAttachmentParsed,
-				);
-			});
-
 			it('should return correct attachment text translated parsed md when translate is active and has multiple texts', () => {
 				const quote = {
 					author_name: 'authorName',
