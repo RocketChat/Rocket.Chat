@@ -1229,8 +1229,6 @@
   "Entertainment": "Zábava",
   "Error": "Chyba",
   "Error_404": "Chyba: 404 nenalezeno",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Chyba: Rocket.Chat vyžaduje tail oplogu pokud běží na více instancích.",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Prověřte, že je MongoDB v ReplicaSet módu a proměnná prostředí MONGO_OPLOG_URL je na aplikačním serveru nastavena správně",
   "Error_Site_URL": "Chybné Site_Url",
   "Error_Site_URL_description": "Prosím aktualizujte nastavení \"Site_Url\", více informací naleznete [zde](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": "Chyba změny hesla",

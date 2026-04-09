@@ -1709,8 +1709,6 @@
   "Entertainment": "मनोरंजन",
   "Error": "गलती",
   "Error_404": "त्रुटि 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "त्रुटि: रॉकेट.चैट को कई उदाहरणों में चलाने पर ओप्लॉग टेलिंग की आवश्यकता होती है",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "कृपया सुनिश्चित करें कि आपका MongoDB रेप्लिकासेट मोड पर है और MONGO_OPLOG_URL पर्यावरण चर एप्लिकेशन सर्वर पर सही ढंग से परिभाषित है",
   "Error_Site_URL": "अमान्य साइट_यूआरएल",
   "Error_Site_URL_description": "कृपया, अपनी \"साइट_यूआरएल\" सेटिंग अपडेट करें और अधिक जानकारी पाएं [यहां](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": "पासवर्ड बदलने में त्रुटि",

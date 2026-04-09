@@ -185,7 +185,7 @@ jobs:
         with:
           path: |
             /tmp/RocketChat-packages-build.tar.gz
-          key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.packages-build-cache-key }}
+          key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
 
       - name: Cache observability (packages-build)
         run: |

@@ -1169,8 +1169,6 @@
   "Entertainment": "გართობა",
   "Error": "შეცდომა",
   "Error_404": "შეცდომა: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "შეცდომა: Rocket.Chat მოითხოვს ოპლოგის დაბოლოებას ხშირ შემთხვევაში",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "გთხოვთ დარწმუნდეთ, რომ თქვენი MongoDB ჩართულია ReplicaSet რეჟიმში და MONGO_OPLOG_URL გარემოს ცვლადი სწორად არის განსაზღვრული პროგრამის სერვერზე",
   "Error_Site_URL": "ვებგვერდის მისამართი არასწორია",
   "Error_Site_URL_description": "გთხოვთ, განაახლოთ თქვენი \"Site_Url\" პარამეტრები, იხილეთ მეტი ინფორმაცია [ აქ ](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": " შეცდომა პაროლის შეცვლისას",
