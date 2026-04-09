@@ -1,10 +1,14 @@
-import QueryString from 'querystring';
 import URL from 'url';
 
-import type { MessageAttachment, IMessage, IUser, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
+import type { MessageAttachment, MessageUrl, IMessage, IUser, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { isOmnichannelRoom, isQuoteAttachment } from '@rocket.chat/core-typings';
 
 import { createQuoteAttachment } from '../../../../lib/createQuoteAttachment';
+
+const getMessageIdFromUrl = (url: string): string | undefined => {
+	const { query } = URL.parse(url, true);
+	return typeof query?.msg === 'string' ? query.msg : undefined;
+};
 
 const recursiveRemoveAttachments = (attachments: MessageAttachment, deep = 1, quoteChainLimit: number): MessageAttachment => {
 	if (attachments && isQuoteAttachment(attachments)) {
@@ -80,7 +84,6 @@ export class BeforeSaveJumpToMessage {
 		user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>;
 		config: {
 			chainLimit: number;
-			siteUrl: string;
 			useRealName: boolean;
 		};
 	}): Promise<IMessage> {
@@ -92,27 +95,15 @@ export class BeforeSaveJumpToMessage {
 			return message;
 		}
 
-		const linkedMessages = message.urls
-			.filter((item) => item.url.includes(config.siteUrl))
-			.map((item) => {
-				const urlObj = URL.parse(item.url);
+		const linkedMessages: { msgId: string; urlItem: MessageUrl }[] = [];
+		for (const urlItem of message.urls) {
+			const msgId = getMessageIdFromUrl(urlItem.url);
+			if (msgId) {
+				linkedMessages.push({ msgId, urlItem });
+			}
+		}
 
-				// if the URL doesn't have query params (doesn't reference message) skip
-				if (!urlObj.query) {
-					return;
-				}
-
-				const { msg: msgId } = QueryString.parse(urlObj.query);
-
-				if (typeof msgId !== 'string') {
-					return;
-				}
-
-				return { msgId, url: item.url };
-			})
-			.filter(Boolean);
-
-		const msgs = await this.getMessages(linkedMessages.map((linkedMsg) => linkedMsg?.msgId) as string[]);
+		const msgs = await this.getMessages(linkedMessages.map((linkedMsg) => linkedMsg.msgId));
 
 		const validMessages = msgs.filter((msg) => validateAttachmentDeepness(msg, config.chainLimit));
 
@@ -138,17 +129,8 @@ export class BeforeSaveJumpToMessage {
 
 		const quotes = [];
 
-		for (const item of message.urls) {
-			if (!item.url.includes(config.siteUrl)) {
-				continue;
-			}
-
-			const linkedMessage = linkedMessages.find((msg) => msg?.url === item.url);
-			if (!linkedMessage) {
-				continue;
-			}
-
-			const messageFromUrl = validMessages.find((msg) => msg._id === linkedMessage.msgId);
+		for (const { msgId, urlItem } of linkedMessages) {
+			const messageFromUrl = validMessages.find((msg) => msg._id === msgId);
 			if (!messageFromUrl) {
 				continue;
 			}
@@ -157,9 +139,10 @@ export class BeforeSaveJumpToMessage {
 				continue;
 			}
 
-			item.ignoreParse = true;
+			// prevent OEmbed from also fetching this URL for a link preview
+			urlItem.ignoreParse = true;
 
-			quotes.push(createQuoteAttachment(messageFromUrl, item.url, useRealName, this.getUserAvatarURL(messageFromUrl.u.username)));
+			quotes.push(createQuoteAttachment(messageFromUrl, urlItem.url, useRealName, this.getUserAvatarURL(messageFromUrl.u.username)));
 		}
 
 		if (quotes.length > 0) {

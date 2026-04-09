@@ -61,17 +61,13 @@ describe('Create attachments for message URLs', () => {
 		const message = await jumpToMessage.createAttachmentForMessageURLs({
 			message: createMessage('hey'),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		return expect(message).to.not.have.property('urls');
 	});
 
-	it('should do nothing if URL is not from SiteUrl', async () => {
+	it('should do nothing if URL does not have a msg query parameter', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
 			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
 			getRooms: async () => [createRoom()],
@@ -89,47 +85,14 @@ describe('Create attachments for message URLs', () => {
 				],
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('urls').of.length(1);
 		expect(message).to.not.have.property('attachments');
 	});
 
-	it('should do nothing if URL is from SiteUrl but not have a query string', async () => {
-		const jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
-			getRooms: async () => [createRoom()],
-			canAccessRoom: async () => true,
-			getUserAvatarURL: () => 'url',
-		});
-
-		const message = await jumpToMessage.createAttachmentForMessageURLs({
-			message: createMessage('hey', {
-				urls: [
-					{
-						url: 'https://open.rocket.chat',
-						meta: {},
-					},
-				],
-			}),
-			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
-		});
-
-		expect(message).to.have.property('urls').of.length(1);
-		expect(message).to.not.have.property('attachments');
-	});
-
-	it('should do nothing if URL is from SiteUrl but not have a msgId query string', async () => {
+	it('should do nothing if URL has a non-msg query parameter', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
 			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
 			getRooms: async () => [createRoom()],
@@ -147,18 +110,74 @@ describe('Create attachments for message URLs', () => {
 				],
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('urls').of.length(1);
 		expect(message).to.not.have.property('attachments');
 	});
 
-	it('should do nothing if it do not find a msg from the URL', async () => {
+	it('should reject query parameter pollution (msg[$gt]=)', async () => {
+		const jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
+			canAccessRoom: async () => true,
+			getUserAvatarURL: () => 'url',
+		});
+
+		const message = await jumpToMessage.createAttachmentForMessageURLs({
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'https://open.rocket.chat/?msg[$gt]=',
+						meta: {},
+					},
+				],
+			}),
+			user: createUser(),
+			config: { chainLimit: 10, useRealName: true },
+		});
+
+		expect(message).to.have.property('urls').of.length(1);
+		expect(message).to.not.have.property('attachments');
+	});
+
+	it('should create quote attachment even when client hostname differs from server (e.g. localhost vs 127.0.0.1)', async () => {
+		const jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
+			canAccessRoom: async () => true,
+			getUserAvatarURL: () => 'url',
+		});
+
+		const message = await jumpToMessage.createAttachmentForMessageURLs({
+			message: createMessage('hey', {
+				urls: [
+					{
+						url: 'http://localhost:3000/channel/general?msg=linked',
+						meta: {},
+					},
+				],
+			}),
+			user: createUser(),
+			config: { chainLimit: 10, useRealName: true },
+		});
+
+		expect(message).to.have.property('urls').and.to.have.lengthOf(1);
+
+		const [url] = message.urls ?? [];
+		expect(url).to.include({
+			url: 'http://localhost:3000/channel/general?msg=linked',
+			ignoreParse: true,
+		});
+
+		expect(message).to.have.property('attachments').and.to.have.lengthOf(1);
+
+		const [attachment] = message.attachments ?? [];
+		expect(attachment).to.have.property('text', 'linked message');
+	});
+
+	it('should do nothing if it does not find a message from the URL', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
 			getMessages: async () => [],
 			getRooms: async () => [createRoom()],
@@ -176,11 +195,7 @@ describe('Create attachments for message URLs', () => {
 				],
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('urls').of.length(1);
@@ -205,18 +220,14 @@ describe('Create attachments for message URLs', () => {
 				],
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('urls').of.length(1);
 		expect(message).to.not.have.property('attachments');
 	});
 
-	it('should do nothing if user dont have access to the room of the message from the URL', async () => {
+	it('should do nothing if user does not have access to the room of the message from the URL', async () => {
 		const jumpToMessage = new BeforeSaveJumpToMessage({
 			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
 			getRooms: async () => [createRoom()],
@@ -234,11 +245,7 @@ describe('Create attachments for message URLs', () => {
 				],
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('urls').of.length(1);
@@ -272,11 +279,7 @@ describe('Create attachments for message URLs', () => {
 				],
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('urls').and.to.have.lengthOf(1);
@@ -317,11 +320,7 @@ describe('Create attachments for message URLs', () => {
 				],
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('attachments').and.to.have.lengthOf(0);
@@ -349,11 +348,7 @@ describe('Create attachments for message URLs', () => {
 				],
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('attachments').and.to.have.lengthOf(1);
@@ -379,11 +374,7 @@ describe('Create attachments for message URLs', () => {
 				],
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('urls').and.to.have.lengthOf(1);
@@ -453,7 +444,6 @@ describe('Create attachments for message URLs', () => {
 			user: createUser(),
 			config: {
 				chainLimit: 3,
-				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
 			},
 		});
@@ -536,7 +526,6 @@ describe('Create attachments for message URLs', () => {
 			user: createUser(),
 			config: {
 				chainLimit: 3,
-				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
 			},
 		});
@@ -567,11 +556,7 @@ describe('Create attachments for message URLs', () => {
 				token: 'livechatToken',
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('urls').and.to.have.lengthOf(1);
@@ -609,11 +594,7 @@ describe('Create attachments for message URLs', () => {
 				token: 'another-token',
 			}),
 			user: createUser(),
-			config: {
-				chainLimit: 10,
-				siteUrl: 'https://open.rocket.chat',
-				useRealName: true,
-			},
+			config: { chainLimit: 10, useRealName: true },
 		});
 
 		expect(message).to.have.property('urls').and.to.have.lengthOf(1);
@@ -653,7 +634,6 @@ describe('Create attachments for message URLs', () => {
 			user: createUser(),
 			config: {
 				chainLimit: 1,
-				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
 			},
 		});
@@ -708,7 +688,6 @@ describe('Create attachments for message URLs', () => {
 			user: createUser(),
 			config: {
 				chainLimit: 1,
-				siteUrl: 'https://open.rocket.chat',
 				useRealName: true,
 			},
 		});
