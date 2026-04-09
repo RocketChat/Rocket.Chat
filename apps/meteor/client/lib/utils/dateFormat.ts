@@ -18,6 +18,7 @@ export const momentFormatToDateFns = (momentFormat: string): string => {
 		// Common tokens
 		YYYY: 'yyyy',
 		YY: 'yy',
+		Y: 'yyyy',
 		MMMM: 'MMMM',
 		MMM: 'MMM',
 		MM: 'MM',
