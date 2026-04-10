@@ -1,4 +1,4 @@
-import { schemas } from '@rocket.chat/core-typings';
+import { schemas } from '@rocket.chat/core-typings/schemas';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 const components = schemas.components?.schemas;

@@ -132,4 +132,5 @@ export * from './Abac';
 export type * from './ServerAudit/IAuditServerAbacAction';
 export type * from './ServerAudit/IAuditUserChangedEvent';
 
-export { schemas } from './Ajv';
+// schemas exported separately via @rocket.chat/core-typings/schemas to avoid
+// bundling 97KB of typia-generated validation code in the client

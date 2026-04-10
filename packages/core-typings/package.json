@@ -4,6 +4,16 @@
 	"version": "8.4.0-develop",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./schemas": {
+			"types": "./dist/schemas.d.ts",
+			"default": "./dist/schemas.js"
+		}
+	},
 	"files": [
 		"/dist"
 	],
@@ -22,7 +32,7 @@
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch",
-		"zod": "~4.3.6"
+		"zod": "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
