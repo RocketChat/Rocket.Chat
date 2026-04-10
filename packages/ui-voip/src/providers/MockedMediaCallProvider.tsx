@@ -162,15 +162,7 @@ const MockedMediaCallProvider = ({
 
 	const instanceContextValue = {
 		instance: {
-			getMainCall: () => ({
-				contact: {
-					type: 'user',
-					id: '1234567890',
-				},
-				role: 'caller',
-				reject: () => undefined,
-				hangup: () => undefined,
-			}),
+			getState: () => null,
 			on: () => undefined,
 		} as unknown as MediaSignalingSession,
 		signalEmitter: new Emitter<Signals>(),
