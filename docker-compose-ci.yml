@@ -28,6 +28,7 @@ services:
       - Federation_Service_Enabled=true
       - 'Federation_Service_Domain=rc.host'
       - HEAP_USAGE_PERCENT=99
+      - 'DOCUMENTDB=${DOCUMENTDB:-}'
     depends_on:
       traefik:
         condition: service_started

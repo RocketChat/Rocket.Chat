@@ -188,6 +188,7 @@ jobs:
           echo "MONGO_URL=${FULL_URL}" >> $GITHUB_ENV
           echo "DOCKER_MONGO_URL=${FULL_URL}" >> $GITHUB_ENV
           echo "EXTERNAL_MONGO=true" >> $GITHUB_ENV
+          echo "DOCUMENTDB=true" >> $GITHUB_ENV
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
         if: runner.debug == '1'
