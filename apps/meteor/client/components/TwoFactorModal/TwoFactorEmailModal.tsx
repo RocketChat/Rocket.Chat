@@ -1,7 +1,7 @@
 import { Box, FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, Button } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ReactElement, ChangeEvent, SyntheticEvent } from 'react';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,9 +24,10 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, resendEmail, invalidAttempt }
 
 	const onClickResendCode = async (): Promise<void> => {
 		try {
-			if (resendEmail) {
-				await resendEmail();
+			if (!resendEmail) {
+				throw new Error('resendEmail is not defined');
 			}
+			await resendEmail();
 			dispatchToastMessage({ type: 'success', message: t('Email_sent') });
 		} catch (error) {
 			dispatchToastMessage({
