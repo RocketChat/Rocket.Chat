@@ -26,6 +26,10 @@ export class EmailCheckForOAuth extends EmailCheck {
 			return false;
 		}
 
+		if (challenge.expireAt && challenge.expireAt < new Date()) {
+			throw new Meteor.Error('error-challenge-expired', 'challenge expired');
+		}
+
 		const isCodeValid = await this.verify(user, code);
 
 		if (!isCodeValid) {
