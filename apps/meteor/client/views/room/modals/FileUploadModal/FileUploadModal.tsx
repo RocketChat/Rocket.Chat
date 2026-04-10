@@ -78,7 +78,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 				</ModalHeader>
 				<ModalContent>
 					<Box display='flex' maxHeight='x360' w='full' justifyContent='center' alignContent='center' mbe={16}>
-						<FilePreview file={file} />
+						<FilePreview file={file} description={fileDescription} />
 					</Box>
 					<FieldGroup>
 						<Field>
