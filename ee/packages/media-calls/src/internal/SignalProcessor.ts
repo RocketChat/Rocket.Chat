@@ -116,6 +116,19 @@ export class GlobalSignalProcessor {
 		logger.debug({ msg: 'GlobalSignalProcessor.processRegisterSignal', signal: stripSensitiveDataFromSignal(signal), uid });
 
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
+		const activeCalls = calls.filter(
+			({ callee, caller }) =>
+				(callee.type === 'user' && callee.id === uid && callee.contractId === signal.contractId) ||
+				(caller.type === 'user' && caller.id === uid && caller.contractId === signal.contractId),
+		);
+
+		this.sendSignal(uid, {
+			type: 'registered',
+			toContractId: signal.contractId,
+			calls: calls.map(({ _id }) => _id),
+			activeCalls: activeCalls.map(({ _id }) => _id),
+		});
+
 		if (!calls.length) {
 			return;
 		}
@@ -145,8 +158,7 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
-		const needsSignals = signal.requestSignals ?? true;
-		if (!needsSignals) {
+		if (!signal.requestSignals) {
 			return;
 		}
 

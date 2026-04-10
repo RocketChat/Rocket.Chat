@@ -6,7 +6,7 @@ export type ClientMediaSignalRegister = {
 	contractId: string;
 
 	oldContractId?: string;
-	// Unless explicitly false, signals for existing calls will be re-sent to the client
+	// If true, signals for existing calls will be re-sent to the client
 	requestSignals?: boolean;
 };
 
