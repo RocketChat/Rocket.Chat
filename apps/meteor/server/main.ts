@@ -1,5 +1,4 @@
 import './tracing';
-import '@rocket.chat/models/patchIndex';
 import './models';
 
 /**

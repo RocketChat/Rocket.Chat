@@ -4,16 +4,6 @@
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		},
-		"./patchIndex": {
-			"types": "./dist/patchIndex.d.ts",
-			"default": "./dist/patchIndex.js"
-		}
-	},
 	"files": [
 		"/dist"
 	],

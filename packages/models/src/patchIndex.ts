@@ -21,7 +21,11 @@ if (process.env.DOCUMENTDB === 'true' && !(Collection as any)[PATCHED]) {
 	const enqueue = <T>(collectionName: string, fn: () => Promise<T>): Promise<T> => {
 		const prev = queues.get(collectionName) ?? Promise.resolve();
 		const next = prev.then(fn, fn);
-		queues.set(collectionName, next.catch(() => {}));
+		queues.set(
+			collectionName,
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			next.catch(() => {}),
+		);
 		return next;
 	};
 
