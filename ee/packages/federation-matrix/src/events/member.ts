@@ -1,5 +1,5 @@
 import { Room, Upload } from '@rocket.chat/core-services';
-import { isBannedSubscription } from '@rocket.chat/core-typings';
+import { isBannedSubscription, isInviteSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { federationSDK, type HomeserverEventSignatures, type PduForType } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
@@ -355,6 +355,15 @@ async function handleLeave({
 	if (subscription && isBannedSubscription(subscription)) {
 		await Room.performUserUnban(room, leavingUser, senderUser);
 		logger.info({ msg: 'Unbanned user via federation leave event', userId: leavingUser._id, roomId: room._id });
+		return;
+	}
+
+	// PRD-313: When a user is unbanned and re-invited in a single operation, the unban sends
+	// a leave event to Matrix. If that leave event arrives after the new INVITED subscription
+	// has been created, we must NOT remove the subscription — the leave is stale, and the user
+	// has a valid pending invite.
+	if (subscription && isInviteSubscription(subscription)) {
+		logger.info({ msg: 'Ignoring stale leave event for user with pending invite', userId: leavingUser._id, roomId: room._id });
 		return;
 	}
 
