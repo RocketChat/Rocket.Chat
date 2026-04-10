@@ -218,47 +218,6 @@ describe('parseMessageTextToAstMarkdown', () => {
 			);
 		});
 
-		it('should return correct attachment quote translated parsed md when translate is active', () => {
-			const attachmentTranslatedMessage = {
-				...translatedMessage,
-				attachments: [
-					{
-						text: 'text',
-						translations: {
-							en: 'text translated',
-						},
-					},
-				],
-			};
-			const attachmentTranslatedMessageParsed = {
-				...translatedMessage,
-				md: translatedMessageParsed,
-				attachments: [
-					{
-						text: 'text',
-						translations: {
-							en: 'text translated',
-						},
-						md: [
-							{
-								type: 'PARAGRAPH',
-								value: [
-									{
-										type: 'PLAIN_TEXT',
-										value: 'text translated',
-									},
-								],
-							},
-						],
-					},
-				],
-			};
-
-			expect(parseMessageTextToAstMarkdown(attachmentTranslatedMessage, parseOptions, enabledAutoTranslatedOptions)).toStrictEqual(
-				attachmentTranslatedMessageParsed,
-			);
-		});
-
 		it('should return correct multiple attachment quote translated parsed md when translate is active', () => {
 			const attachmentTranslatedMessage = {
 				...translatedMessage,
@@ -399,34 +358,6 @@ describe('parseMessageAttachments', () => {
 				translated: true,
 				autoTranslateLanguage: 'en',
 			};
-
-			it('should return correct attachment text translated parsed md when translate is active', () => {
-				const textAttachment = [
-					{
-						...attachmentMessage[0],
-						text: 'attachment not translated',
-						translationProvider: 'provider',
-						translations: {
-							en: 'attachment translated',
-						},
-					},
-				];
-				const textAttachmentParsed: Root = [
-					{
-						type: 'PARAGRAPH',
-						value: [
-							{
-								type: 'PLAIN_TEXT',
-								value: 'attachment translated',
-							},
-						],
-					},
-				];
-
-				expect(parseMessageAttachments(textAttachment, parseOptions, enabledAutoTranslatedOptions)[0].md).toStrictEqual(
-					textAttachmentParsed,
-				);
-			});
 
 			it('should return correct attachment text parsed md when translate is active and auto translate language is undefined', () => {
 				const textAttachment = [

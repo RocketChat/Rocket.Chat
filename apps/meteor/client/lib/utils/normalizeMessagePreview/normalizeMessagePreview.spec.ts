@@ -48,7 +48,22 @@ describe('normalizeMessagePreview', () => {
 	});
 
 	describe('when message has attachments', () => {
-		it('should return attachment title when available', () => {
+		it('should return attachment title when description is available', () => {
+			const message = createFakeMessageWithAttachment({
+				msg: '',
+				attachments: [
+					{
+						title: 'Attachment title',
+						description: 'Attachment description',
+					},
+				],
+			});
+			const result = normalizeMessagePreview(message, mockT);
+
+			expect(result).toBe('Attachment title');
+		});
+
+		it('should return attachment title when message is not provided', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -62,7 +77,7 @@ describe('normalizeMessagePreview', () => {
 			expect(result).toBe('Attachment title');
 		});
 
-		it('should return translation when attachment has no title', () => {
+		it('should return translation when attachment has no title or description', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -87,11 +102,34 @@ describe('normalizeMessagePreview', () => {
 					{
 						title: 'Second attachment title',
 					},
+					{
+						description: 'Third attachment description',
+					},
 				],
 			});
 			const result = normalizeMessagePreview(message, mockT);
 
 			expect(result).toBe('Second attachment title');
+		});
+
+		it('should find first attachment title', () => {
+			const message = createFakeMessageWithAttachment({
+				msg: '',
+				attachments: [
+					{
+						type: 'file',
+					},
+					{
+						description: 'Second attachment description',
+					},
+					{
+						title: 'Third attachment title',
+					},
+				],
+			});
+			const result = normalizeMessagePreview(message, mockT);
+
+			expect(result).toBe('Third attachment title');
 		});
 
 		it('should escape HTML in attachment title', () => {
@@ -148,7 +186,7 @@ describe('normalizeMessagePreview', () => {
 		});
 	});
 
-	describe('when message has attachments but none have title', () => {
+	describe('when message has attachments but none have title or description', () => {
 		it('should return translation for Sent_an_attachment', () => {
 			const message = createFakeMessage({
 				msg: undefined,

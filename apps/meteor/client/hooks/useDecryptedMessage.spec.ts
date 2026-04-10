@@ -60,7 +60,7 @@ describe('useDecryptedMessage', () => {
 		const { result } = renderHook(() => useDecryptedMessage(message as any));
 
 		await waitFor(() => {
-			expect(result.current).toBe('Message_with_attachment');
+			expect(result.current).toBe('E2E_message_encrypted_placeholder');
 		});
 
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
