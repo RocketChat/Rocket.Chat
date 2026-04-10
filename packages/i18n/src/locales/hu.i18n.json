@@ -1575,8 +1575,6 @@
   "Entertainment": "Szórakozás",
   "Error": "Hiba",
   "Error_404": "Hiba: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Hiba: a Rocket.Chat a műveleti napló megfigyelését igényli a több példányban történő futtatáskor",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Győződjön meg arról, hogy a MongoDB ReplicaSet módban legyen, és a MONGO_OPLOG_URL környezeti változó helyesen legyen meghatározva az alkalmazáskiszolgálón",
   "Error_Site_URL": "Érvénytelen „Site_Url”",
   "Error_Site_URL_description": "Frissítse a „Site_Url” beállítást, további információkat [itt találhat](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": "Hiba a jelszó megváltoztatáskor",
