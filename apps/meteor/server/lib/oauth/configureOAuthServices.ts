@@ -5,7 +5,7 @@ import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
 
 import type { OAuthServiceConfig } from './createOAuthServiceConfig';
-import { doesUserRquire2FA } from './twoFactorAuth';
+import { doesUserRequire2FA } from './twoFactorAuth';
 import type { ICachedSettings } from '../../../app/settings/server/CachedSettings';
 import { oAuthRouter } from '../../configuration/configurePassport';
 
@@ -76,7 +76,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 					return res.redirect('/noOauthUser');
 				}
 
-				const secondFactorMethod = doesUserRquire2FA(oAuthUser);
+				const secondFactorMethod = doesUserRequire2FA(oAuthUser);
 
 				if (secondFactorMethod) {
 					const challengeId = await secondFactorMethod.sendTwoFactorChallenge(oAuthUser);
