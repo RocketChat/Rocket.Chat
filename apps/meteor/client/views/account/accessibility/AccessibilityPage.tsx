@@ -16,7 +16,7 @@ import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFo
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
-import { VisuallyHidden } from 'react-aria';
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { Controller, useForm } from 'react-hook-form';
 
 import { fontSizes } from './fontSizes';

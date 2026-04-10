@@ -1,6 +1,6 @@
 import { useLayout } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
-import type { OverlayTriggerState } from 'react-stately';
+import type { OverlayTriggerState } from '@react-stately/overlays';
 
 export const useSearchFocus = (state: OverlayTriggerState) => {
 	const { navbar } = useLayout();

@@ -1,6 +1,6 @@
 import { NavBarGroup, NavBarItem, Box } from '@rocket.chat/fuselage';
 import { useLayout, useRouter } from '@rocket.chat/ui-contexts';
-import { FocusScope } from 'react-aria';
+import { FocusScope } from '@react-aria/focus';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearch from './NavBarSearch';

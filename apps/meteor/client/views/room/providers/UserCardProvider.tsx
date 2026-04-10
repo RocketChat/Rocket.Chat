@@ -3,8 +3,8 @@ import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { useRoomToolbox, UserCardContext } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactNode, UIEvent } from 'react';
 import { Suspense, lazy, useCallback, useMemo, useRef, useState } from 'react';
-import { useOverlayTrigger } from 'react-aria';
-import { useOverlayTriggerState } from 'react-stately';
+import { useOverlayTrigger } from '@react-aria/overlays';
+import { useOverlayTriggerState } from '@react-stately/overlays';
 
 import { useRoom } from '../contexts/RoomContext';
 

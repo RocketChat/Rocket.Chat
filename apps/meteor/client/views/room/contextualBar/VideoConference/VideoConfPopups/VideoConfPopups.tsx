@@ -9,7 +9,7 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import { lazy, Suspense, useEffect, useMemo } from 'react';
-import { FocusScope } from 'react-aria';
+import { FocusScope } from '@react-aria/focus';
 
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 

@@ -3378,6 +3378,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@date-fns/tz@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@date-fns/tz@npm:1.4.1"
+  checksum: 10/062097590005cce3da4c7d9880f9c77d386cff5b4dd58fa3dde3c346a8b2e4f4a8025a613306351a7cad8eb71178a0f67b4840d5884f73aa4c759085fac92063
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -9968,6 +9975,7 @@ __metadata:
     "@bugsnag/js": "npm:~7.20.2"
     "@bugsnag/plugin-react": "npm:~7.19.0"
     "@datastructures-js/priority-queue": "npm:^6.3.5"
+    "@date-fns/tz": "npm:^1.4.1"
     "@faker-js/faker": "npm:~8.0.2"
     "@google-cloud/storage": "npm:^7.15.0"
     "@kaciras/deasync": "npm:^1.1.0"
@@ -10949,7 +10957,6 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
-    moment-timezone: "npm:^0.5.48"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -11309,7 +11316,6 @@ __metadata:
     codemirror: "npm:^6.0.2"
     eslint: "npm:~9.39.3"
     eslint4b-prebuilt: "npm:^6.7.2"
-    moment: "npm:^2.30.1"
     prettier: "npm:~3.3.3"
     rc-scrollbars: "npm:^1.1.6"
     react: "npm:~18.3.1"

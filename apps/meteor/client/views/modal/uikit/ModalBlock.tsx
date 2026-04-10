@@ -15,7 +15,7 @@ import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-u
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, FormEventHandler, ReactElement } from 'react';
 import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
-import { FocusScope } from 'react-aria';
+import { FocusScope } from '@react-aria/focus';
 
 import { getButtonStyle } from './getButtonStyle';
 import { getURL } from '../../../../app/utils/client/getURL';

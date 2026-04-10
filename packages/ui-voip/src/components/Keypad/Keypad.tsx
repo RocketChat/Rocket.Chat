@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { FocusScope } from 'react-aria';
+import { FocusScope } from '@react-aria/focus';
 
 import Key from './Key';
 

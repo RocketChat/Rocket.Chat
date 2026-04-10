@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useFocusManager } from 'react-aria';
+import { useFocusManager } from '@react-aria/focus';
 
 const isListItem = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-item');
 const isCollapseGroup = (node: EventTarget) => (node as HTMLElement).classList.contains('rcx-sidebar-v2-collapse-group__bar');
