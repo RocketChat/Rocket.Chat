@@ -74,7 +74,7 @@ const OAuthTwoFactorAuthenticationRouter = () => {
 		throw new Error('Invalid Two Factor method');
 	}, [method, challengeId, router, setModal, onConfirm, resendEmail, invalidAttempt, navigateToHome]);
 
-	return <Page></Page>;
+	return <Page />;
 };
 
 export default OAuthTwoFactorAuthenticationRouter;
