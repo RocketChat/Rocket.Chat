@@ -1,9 +1,11 @@
+import type { IMethodConnection } from '@rocket.chat/core-typings';
 import { TwoFactorChallenges } from '@rocket.chat/models';
 import { isTwoFactorChallengesSendEmailCodeParamsPOST, isTwoFactorChallengesVerifyChallengeParamsPOST } from '@rocket.chat/rest-typings';
 import { Accounts } from 'meteor/accounts-base';
 
 import { emailCheckForOAuth, getTwoFAMethodForOAuth } from '../../../../server/lib/oauth/twoFactorAuth';
-import { getUserForCheck } from '../../../2fa/server/code';
+import { getUserForCheck, rememberAuthorizationByToken } from '../../../2fa/server/code';
+import { generateConnection } from '../ApiClass';
 import { API } from '../api';
 
 API.v1.addRoute(
@@ -76,7 +78,19 @@ API.v1.addRoute(
 			}
 
 			const stampedToken = Accounts._generateStampedLoginToken();
-			Accounts._insertLoginToken(user._id, stampedToken);
+
+			// eslint-disable-next-line @typescript-eslint/await-thenable
+			await Accounts._insertLoginToken(user._id, stampedToken);
+
+			const hashedToken = Accounts._hashLoginToken(stampedToken.token);
+
+			const connection = {
+				...generateConnection(this.requestIp, this.request.headers),
+				token: hashedToken,
+			} as unknown as IMethodConnection;
+
+			// remember the 2FA authorization for the next requests
+			await rememberAuthorizationByToken(hashedToken, user._id, connection);
 
 			return API.v1.success({
 				loginToken: stampedToken.token,

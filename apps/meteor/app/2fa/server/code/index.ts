@@ -118,6 +118,25 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 	return true;
 }
 
+export async function rememberAuthorizationByToken(token: string, userId: IUser['_id'], connection: IMethodConnection): Promise<void> {
+	const user = await Users.findOneByIdAndLoginHashedToken(userId, token, { projection: { _id: 1, services: 1 } });
+	if (!user) {
+		throw new Meteor.Error('error-user-not-found', 'user not found');
+	}
+
+	const tokenObject = user.services?.resume?.loginTokens?.find((i) => i.hashedToken === token);
+	if (!tokenObject) {
+		throw new Meteor.Error('error-token-not-found', 'token not found');
+	}
+
+	const expires = getRememberDate();
+	if (!expires) {
+		throw new Meteor.Error('error-remember-date-not-found', 'remember date not found');
+	}
+
+	await Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, token, getFingerprintFromConnection(connection), expires);
+}
+
 async function rememberAuthorization(connection: IMethodConnection, user: IUser): Promise<void> {
 	const currentToken = Accounts._getLoginToken(connection.id);
 
