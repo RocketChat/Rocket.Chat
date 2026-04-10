@@ -7181,7 +7181,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/i18n@npm:^3.0.0-nightly-fb28ab3b4-241024, @react-aria/i18n@npm:^3.12.5":
+"@react-aria/i18n@npm:3.12.5":
   version: 3.12.5
   resolution: "@react-aria/i18n@npm:3.12.5"
   dependencies:
@@ -7197,6 +7197,25 @@ __metadata:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
   checksum: 10/bfbc3a63fd8a6aeda219b60fa447db17e27d05c7a6b24ee030171721cfe3da812880f5fd257552e174b6aea0a209f71807491704bb71ad45db8949718e3aeac0
+  languageName: node
+  linkType: hard
+
+"@react-aria/i18n@patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch":
+  version: 3.12.5
+  resolution: "@react-aria/i18n@patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch::version=3.12.5&hash=6bfd1c"
+  dependencies:
+    "@internationalized/date": "npm:^3.7.0"
+    "@internationalized/message": "npm:^3.1.6"
+    "@internationalized/number": "npm:^3.6.0"
+    "@internationalized/string": "npm:^3.2.5"
+    "@react-aria/ssr": "npm:^3.9.7"
+    "@react-aria/utils": "npm:^3.27.0"
+    "@react-types/shared": "npm:^3.27.0"
+    "@swc/helpers": "npm:^0.5.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+  checksum: 10/84664c647b2b6372536e7896a0c679727f668c2ca4b9b98d8d6be4928ec6c584efddb0e85c7d97a46ddfd97eedbbcfdd760c5b67026a31a2335629bd65a7b2d5
   languageName: node
   linkType: hard
 
@@ -38730,8 +38749,8 @@ __metadata:
 
 "zod@patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch":
   version: 4.3.6
-  resolution: "zod@patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch::version=4.3.6&hash=5b64de"
-  checksum: 10/7e9f9e3bef6a7aa9c859841837824b1bc95063c77afbe6dbb4bdb247b70c84aef505ddfc77a693e3dabe2e9182d2ccb497df6bd3f5b045a705e189c906dc8dfc
+  resolution: "zod@patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch::version=4.3.6&hash=18f503"
+  checksum: 10/2b771f17a72ced59fa57b522693a352140eb193d7158ae75092683f568cf19015c53be5ae6b3fa52dad2335deaff0f7beccba677cc1890744d06776d90a4fc7c
   languageName: node
   linkType: hard
 
