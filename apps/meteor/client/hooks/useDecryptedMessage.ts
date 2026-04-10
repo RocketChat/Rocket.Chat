@@ -18,6 +18,7 @@ export const useDecryptedMessage = (message: IMessage): string => {
 		e2e.decryptMessage(message).then((decryptedMsg) => {
 			if (decryptedMsg.msg) {
 				setDecryptedMessage(decryptedMsg.msg);
+				return;
 			}
 
 			if (decryptedMsg.attachments && decryptedMsg.attachments.length > 0) {
