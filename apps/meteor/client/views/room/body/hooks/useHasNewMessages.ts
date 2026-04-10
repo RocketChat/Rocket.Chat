@@ -11,16 +11,8 @@ import { useChat } from '../../contexts/ChatContext';
 export const useHasNewMessages = (
 	rid: string,
 	uid: string | undefined,
-	atBottomRef: MutableRefObject<boolean>,
-	{
-		sendToBottom,
-		sendToBottomIfNecessary,
-		isAtBottom,
-	}: {
-		sendToBottom: () => void;
-		sendToBottomIfNecessary: () => void;
-		isAtBottom: (threshold?: number) => boolean;
-	},
+	shouldJumpToBottom: MutableRefObject<boolean>,
+	isAtBottom: MutableRefObject<boolean>,
 ) => {
 	const chat = useChat();
 
@@ -31,22 +23,21 @@ export const useHasNewMessages = (
 	const [hasNewMessages, setHasNewMessages] = useState(false);
 
 	const handleNewMessageButtonClick = useCallback(() => {
-		atBottomRef.current = true;
-		sendToBottomIfNecessary();
+		shouldJumpToBottom.current = true;
 		setHasNewMessages(false);
 		chat.composer?.focus();
-	}, [atBottomRef, chat.composer, sendToBottomIfNecessary]);
+	}, [shouldJumpToBottom, chat.composer]);
 
 	const handleJumpToRecentButtonClick = useCallback(() => {
-		atBottomRef.current = true;
+		shouldJumpToBottom.current = true;
 		RoomHistoryManager.clear(rid);
 		RoomHistoryManager.getMoreIfIsEmpty(rid);
-	}, [atBottomRef, rid]);
+	}, [shouldJumpToBottom, rid]);
 
 	const handleComposerResize = useCallback((): void => {
-		sendToBottomIfNecessary();
+		shouldJumpToBottom.current = true;
 		setHasNewMessages(false);
-	}, [sendToBottomIfNecessary]);
+	}, [shouldJumpToBottom]);
 
 	useEffect(() => {
 		clientCallbacks.add(
@@ -60,7 +51,7 @@ export const useHasNewMessages = (
 					return;
 				}
 
-				if (!isAtBottom()) {
+				if (!isAtBottom.current) {
 					setHasNewMessages(true);
 				}
 			},
@@ -74,9 +65,8 @@ export const useHasNewMessages = (
 				if (msg.tmid) {
 					return;
 				}
-
 				if (msg.u._id === uid) {
-					sendToBottom();
+					shouldJumpToBottom.current = true;
 					setHasNewMessages(false);
 				}
 			},
@@ -88,7 +78,7 @@ export const useHasNewMessages = (
 			clientCallbacks.remove('streamNewMessage', rid);
 			clientCallbacks.remove('afterSaveMessage', rid);
 		};
-	}, [isAtBottom, rid, sendToBottom, uid]);
+	}, [isAtBottom, rid, shouldJumpToBottom, uid]);
 
 	const ref = useCallback(
 		(node: HTMLElement | null) => {
@@ -99,14 +89,14 @@ export const useHasNewMessages = (
 			node.addEventListener(
 				'scroll',
 				withThrottling({ wait: 100 })(() => {
-					atBottomRef.current && setHasNewMessages(false);
+					isAtBottom.current && setHasNewMessages(false);
 				}),
 				{
 					passive: true,
 				},
 			);
 		},
-		[atBottomRef],
+		[isAtBottom],
 	);
 
 	return {

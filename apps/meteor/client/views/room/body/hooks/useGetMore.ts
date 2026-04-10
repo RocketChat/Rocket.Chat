@@ -1,6 +1,5 @@
 import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
 
@@ -8,7 +7,7 @@ import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/li
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
-export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) => {
+export const useGetMore = (rid: string) => {
 	const msgId = useSearchParameter('msg');
 	const msgIdRef = useRef(msgId);
 	const jumpToRef = useRef<HTMLElement>(undefined);
@@ -59,8 +58,7 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 							RoomHistoryManager.restoreScroll(rid);
 						});
 					} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= scrollHeight - height) {
-						await RoomHistoryManager.getMoreNext(rid, atBottomRef);
-						atBottomRef.current = false;
+						await RoomHistoryManager.getMoreNext(rid);
 					}
 				});
 
@@ -93,7 +91,7 @@ export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) 
 					element.removeEventListener('scroll', handleScroll);
 				};
 			},
-			[rid, atBottomRef],
+			[rid],
 		),
 	);
 

@@ -3,7 +3,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent, ReactElement } from 'react';
-import { memo, useCallback, useMemo } from 'react';
+import { memo, useCallback, useMemo, useRef } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { BubbleDate } from '../BubbleDate';
@@ -29,7 +29,6 @@ import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
 import { useGetMore } from './hooks/useGetMore';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
-import { useListIsAtBottom } from './hooks/useListIsAtBottom';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
 import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
@@ -48,6 +47,9 @@ const RoomBody = (): ReactElement => {
 	const toolbox = useRoomToolbox();
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
+
+	const shouldJumpToBottom = useRef<boolean>(true);
+	const isAtBottom = useRef<boolean>(false);
 
 	const retentionPolicy = useRetentionPolicy(room);
 
@@ -93,21 +95,11 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const {
-		innerRef: isAtBottomInnerRef,
-		atBottomRef,
-		sendToBottom,
-		sendToBottomIfNecessary,
-		isAtBottom,
-		jumpToRef: jumpToRefIsAtBottom,
-	} = useListIsAtBottom();
-
-	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id, atBottomRef);
+	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id);
 
 	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
 
 	const jumpToRef = useMergedRefsV2(
-		jumpToRefIsAtBottom,
 		jumpToRefGetMore,
 		jumpToRefRestoreScrollPosition,
 		jumpToRefGetMoreImperative,
@@ -121,16 +113,11 @@ const RoomBody = (): ReactElement => {
 	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
 
 	const { handleNewMessageButtonClick, handleJumpToRecentButtonClick, handleComposerResize, hasNewMessages, newMessagesScrollRef } =
-		useHasNewMessages(room._id, user?._id, atBottomRef, {
-			sendToBottom,
-			sendToBottomIfNecessary,
-			isAtBottom,
-		});
+		useHasNewMessages(room._id, user?._id, shouldJumpToBottom, isAtBottom);
 
 	const innerRef = useMergedRefsV2(
 		dateScrollInnerRef,
 		restoreScrollPositionInnerRef,
-		isAtBottomInnerRef,
 		newMessagesScrollRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
@@ -233,6 +220,8 @@ const RoomBody = (): ReactElement => {
 										<CustomVirtuaScrollbars ref={innerRef} key={room._id}>
 											<MessageList
 												rid={room._id}
+												shouldJumpToBottom={shouldJumpToBottom}
+												isAtBottom={isAtBottom}
 												messageListRef={jumpToRef}
 												canPreview={canPreview}
 												hasMorePreviousMessages={hasMorePreviousMessages}

@@ -2,7 +2,6 @@ import type { IMessage, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { differenceInMilliseconds } from 'date-fns';
 import { useCallback, useSyncExternalStore } from 'react';
-import type { MutableRefObject } from 'react';
 
 import { onClientMessageReceived } from '../../../../client/lib/onClientMessageReceived';
 import { getUserId } from '../../../../client/lib/user';
@@ -225,14 +224,13 @@ class RoomHistoryManagerClass extends Emitter {
 		room.scroll = undefined;
 	}
 
-	public async getMoreNext(rid: IRoom['_id'], atBottomRef: MutableRefObject<boolean>) {
+	public async getMoreNext(rid: IRoom['_id']) {
 		const room = this.getRoom(rid);
 		if (room.hasMoreNext !== true) {
 			return;
 		}
 
 		await this.queue();
-		atBottomRef.current = false;
 
 		this.updateRoom(rid, { isLoading: true });
 

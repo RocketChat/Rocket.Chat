@@ -2,9 +2,10 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentProps } from 'react';
-import { Fragment, useLayoutEffect, useRef } from 'react';
+import type { ComponentProps, MutableRefObject } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
 
 import { MessageListItem } from './MessageListItem';
@@ -29,7 +30,11 @@ type MessageListProps = {
 	room: IRoom;
 	retentionPolicy: RetentionPolicy | undefined;
 	hasMoreNextMessages: boolean;
+	shouldJumpToBottom: MutableRefObject<boolean>;
+	isAtBottom: MutableRefObject<boolean>;
 };
+
+const lastViewportSize = 0;
 
 export const MessageList = function MessageList({
 	rid,
@@ -41,6 +46,8 @@ export const MessageList = function MessageList({
 	room,
 	retentionPolicy,
 	hasMoreNextMessages,
+	shouldJumpToBottom,
+	isAtBottom,
 }: MessageListProps) {
 	// Prepend ref needed for adjusting the message list shift
 	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
@@ -49,7 +56,31 @@ export const MessageList = function MessageList({
 		isPrepend.current = false;
 	});
 
+	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
+
 	const messages = useMessages({ rid });
+
+	// Scroll to bottom
+	useEffect(() => {
+		const handle = virtualizerRef.current;
+		const lastItemIndex = messages.length - 1;
+		console.log('Effect Called', shouldJumpToBottom.current);
+		if (shouldJumpToBottom.current === true) {
+			// When new messages arrive, this effect is triggered, but the latest message is not on the index, so it scrolls to the previous index
+			// TODO: Find if there is a better way to scroll to the latest message
+			handle?.scrollToIndex(lastItemIndex + 1, {
+				align: 'end',
+			});
+		}
+		// If new messages arrive and is at bottom, scroll to keep at bottom
+		if (isAtBottom.current && lastViewportSize !== handle?.viewportSize) {
+			handle?.scrollToIndex(lastItemIndex + 1, {
+				align: 'end',
+			});
+		}
+	}, [isAtBottom, messages, shouldJumpToBottom]);
+
+	console.log('isAtBottom', isAtBottom.current, shouldJumpToBottom.current);
 
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -60,6 +91,7 @@ export const MessageList = function MessageList({
 		<MessageListProvider messageListRef={messageListRef}>
 			<SelectedMessagesProvider>
 				<VList
+					ref={virtualizerRef}
 					shift={isPrepend.current === true}
 					style={{ height: '100%' }}
 					aria-label={t('Message_list')}
@@ -70,6 +102,20 @@ export const MessageList = function MessageList({
 						// if the prepend is enabled when a new message is added, the list will misalign.
 						if (offset < 200) {
 							isPrepend.current = true;
+						}
+
+						console.log(
+							'offset, scrollSize, viewportSize, total',
+							offset,
+							virtualizerRef.current?.scrollSize,
+							virtualizerRef.current?.viewportSize,
+							offset - (virtualizerRef.current?.scrollSize ?? 0) + (virtualizerRef.current?.viewportSize ?? 0),
+						);
+
+						isAtBottom.current = offset - (virtualizerRef.current?.scrollSize ?? 0) + (virtualizerRef.current?.viewportSize ?? 0) >= -20;
+
+						if (shouldJumpToBottom.current && isAtBottom.current) {
+							shouldJumpToBottom.current = false;
 						}
 					}}
 				>
