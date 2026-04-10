@@ -115,6 +115,7 @@ exports[`renders Default without crashing 1`] = `
               </button>
               <button
                 class="rcx-box rcx-box--full rcx-button--primary rcx-button"
+                disabled=""
                 type="submit"
               >
                 <span

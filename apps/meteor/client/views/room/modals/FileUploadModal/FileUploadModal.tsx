@@ -66,7 +66,9 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 				<Box
 					is='form'
 					id={fileUploadFormId}
-					onSubmit={handleSubmit(({ name, description }) => (!isDirty ? onClose() : onSubmit(name, description)))}
+					onSubmit={handleSubmit(({ name, description }) =>
+						!isDirty ? onClose() : onSubmit(name.trim(), description?.trim() || undefined),
+					)}
 					{...props}
 				/>
 			)}
@@ -112,7 +114,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 						<Button secondary onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' loading={isSubmitting}>
+						<Button primary type='submit' disabled={!isDirty} loading={isSubmitting}>
 							{t('Update')}
 						</Button>
 					</ModalFooterControllers>

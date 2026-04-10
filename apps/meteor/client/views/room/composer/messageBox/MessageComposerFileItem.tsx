@@ -9,6 +9,7 @@ import { getMimeType } from '../../../../../app/utils/lib/mimeTypes';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import type { Upload } from '../../../../lib/chats/Upload';
 import { formatBytes } from '../../../../lib/utils/formatBytes';
+import { useChat } from '../../contexts/ChatContext';
 import FileUploadModal from '../../modals/FileUploadModal';
 
 type MessageComposerFileItemProps = {
@@ -21,6 +22,7 @@ type MessageComposerFileItemProps = {
 
 const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled, ...props }: MessageComposerFileItemProps) => {
 	const { t } = useTranslation();
+	const chat = useChat();
 	const [isActive, setIsActive] = useState(false);
 	const setModal = useSetModal();
 
@@ -38,6 +40,7 @@ const MessageComposerFileItem = ({ upload, onRemove, onEdit, onCancel, disabled,
 				onSubmit={(name, description) => {
 					onEdit(upload.id, name, description);
 					setModal(null);
+					chat?.composer?.focus();
 				}}
 				fileName={upload.file.name}
 				fileDescription={upload.description}
