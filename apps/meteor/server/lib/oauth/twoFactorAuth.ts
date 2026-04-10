@@ -20,7 +20,7 @@ const getSecondFactorMethod = (user: IUser) => {
 	return Array.from(Object.values(twoFACheckMethodsForOAuth)).find((method) => method.isEnabled(user));
 };
 
-export const doesUserRquire2FA = (user: IUser) => {
+export const doesUserRequire2FA = (user: IUser) => {
 	const rememberAfterRegistration = getRememberDate(user.createdAt);
 
 	if (rememberAfterRegistration && rememberAfterRegistration > new Date()) {
