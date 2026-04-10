@@ -71,7 +71,7 @@ API.v1.addRoute(
 
 			const twoFAMethod = getTwoFAMethodForOAuth(challenge.method);
 
-			const isCodeValid = await twoFAMethod.verify(user, code);
+			const isCodeValid = await twoFAMethod.verifyEmailTwoFactorChallenge(user, challengeId, code);
 
 			if (!isCodeValid) {
 				return API.v1.failure('error-invalid-code', 'Invalid code');
