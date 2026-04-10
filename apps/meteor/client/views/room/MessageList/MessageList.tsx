@@ -3,7 +3,7 @@ import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
-import { Fragment } from 'react';
+import { Fragment, useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VList } from 'virtua';
 
@@ -42,7 +42,15 @@ export const MessageList = function MessageList({
 	retentionPolicy,
 	hasMoreNextMessages,
 }: MessageListProps) {
+	// Prepend ref needed for adjusting the message list shift
+	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
+	const isPrepend = useRef<boolean>(false);
+	useLayoutEffect(() => {
+		isPrepend.current = false;
+	});
+
 	const messages = useMessages({ rid });
+
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
@@ -51,7 +59,20 @@ export const MessageList = function MessageList({
 	return (
 		<MessageListProvider messageListRef={messageListRef}>
 			<SelectedMessagesProvider>
-				<VList shift style={{ height: '100%' }} aria-label={t('Message_list')} aria-busy={isLoadingMoreMessages}>
+				<VList
+					shift={isPrepend.current === true}
+					style={{ height: '100%' }}
+					aria-label={t('Message_list')}
+					aria-busy={isLoadingMoreMessages}
+					onScroll={(offset: number) => {
+						// If the offset is less than 200, it means the user is reaching the top of the list,
+						// so the prepend need to be enabled for smooth scrolling,
+						// if the prepend is enabled when a new message is added, the list will misalign.
+						if (offset < 200) {
+							isPrepend.current = true;
+						}
+					}}
+				>
 					{canPreview ? (
 						<>
 							{hasMorePreviousMessages ? (
