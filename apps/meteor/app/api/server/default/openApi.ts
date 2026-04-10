@@ -1,4 +1,4 @@
-import { schemas } from '@rocket.chat/core-typings/schemas';
+import { schemas } from '@rocket.chat/core-typings/dist/schemas';
 import type { Route } from '@rocket.chat/http-router';
 import { isOpenAPIJSONEndpoint } from '@rocket.chat/rest-typings';
 import express from 'express';
