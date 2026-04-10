@@ -1,4 +1,4 @@
-# Bundle Optimization: react-aria / react-stately barrel imports
+# Bundle Optimization: barrel import patches (react-aria, react-stately, zod)
 
 ## The Problem
 
@@ -46,12 +46,66 @@ import { useOverlayTriggerState } from '@react-stately/overlays';
 
 This is the correct long-term fix, but alone it was not enough because `@rocket.chat/fuselage` (published npm package) still uses `require("react-aria")` internally via its UMD build. The yarn patch covers that case.
 
-## Results
+## Results (react-aria + react-stately)
 
 | Metric | Before | After | Delta |
 |---|---|---|---|
 | Main JS (minified) | 3688 KB | 3199 KB | **-489 KB (-13%)** |
 | Main JS (gzip) | 939 KB | 841 KB | **-98 KB (-10%)** |
+
+---
+
+## Zod v4 locale barrel
+
+### The Problem
+
+Zod v4 re-exports all 50 locale files from its main entry point:
+
+```js
+// zod/v4/classic/external.js
+export * as locales from "../locales/index.js";
+```
+
+This means `import { z } from 'zod'` pulls in error messages for Arabic, Hebrew, Thai, Russian, and 46 other languages — even though Rocket.Chat only uses the English locale (loaded by default via `config(en())`).
+
+**Measured impact:** 147 KB (50 locale files) out of 278 KB total for zod — **53% of the zod bundle was unused locale data**.
+
+### The Solution
+
+A `yarn patch` on `zod@4.3.6` removes the `export * as locales` line from the barrel. The English locale (`en.js`) remains loaded since it's imported separately by `config(en())`. All other locales remain available for explicit import if needed:
+
+```typescript
+// Still works:
+import pt from 'zod/v4/locales/pt';
+import { config } from 'zod';
+config(pt());
+```
+
+### What requires attention
+
+#### Upgrading zod
+
+When upgrading zod, the patch must be re-created:
+
+1. Remove the old patch reference from `package.json` resolutions
+2. Delete `.yarn/patches/zod-*.patch`
+3. Run `yarn install`
+4. Run `yarn patch zod@npm:<new-version>`
+5. Remove the `export * as locales` line from `v4/classic/external.js`
+6. Remove the `exports.locales` require from `v4/classic/external.cjs`
+7. Run `yarn patch-commit -s <patch-folder>`
+
+#### If zod locales are needed at runtime
+
+If a feature requires localized zod error messages (e.g., form validation in the user's language), import the specific locale directly instead of relying on the barrel:
+
+```typescript
+import de from 'zod/v4/locales/de';
+import { config } from 'zod';
+config(de());
+```
+
+This loads only the one locale needed (~3 KB) instead of all 50 (~147 KB).
 
 ## What requires attention
 
@@ -95,7 +149,9 @@ If there are new exports, add them to the yarn patch.
 
 ### The long-term fix
 
-The yarn patches are a workaround. The proper fix is for `@rocket.chat/fuselage` to import from sub-packages directly instead of the barrel, which eliminates the need for the patch entirely. Once that is done, only the direct sub-package imports in source code are needed.
+The react-aria/react-stately yarn patches are a workaround. The proper fix is for `@rocket.chat/fuselage` to import from sub-packages directly instead of the barrel, which eliminates the need for those patches entirely. Once that is done, only the direct sub-package imports in source code are needed.
+
+The zod patch is a workaround for a design choice in zod v4 (`export * as locales` in the main barrel). This may be addressed upstream — track https://github.com/colinhacks/zod for changes to the locale export strategy.
 
 ## How to analyze the bundle
 
