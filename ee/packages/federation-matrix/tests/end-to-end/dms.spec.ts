@@ -35,9 +35,10 @@ const waitForRoomEvent = async (
 
 (IS_EE ? describe : describe.skip)('Federation DMs', () => {
 	let rc1AdminRequestConfig: IRequestConfig;
-	// let rc1User1RequestConfig: IRequestConfig;
 	let hs1AdminApp: SynapseClient;
-	// let hs1User1App: SynapseClient;
+	let hs1PrimaryApp: SynapseClient;
+	let hs1PrimaryUsername: string;
+	let hs1PrimaryMatrixUserId: string;
 
 	beforeAll(async () => {
 		// Create admin request config for RC1
@@ -62,33 +63,27 @@ const waitForRoomEvent = async (
 		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
 		await hs1AdminApp.initialize();
 
-		// Ensure the Synapse admin display name is reset to the expected value.
-		// A previous test run may have left it dirty if the "Display name changes"
-		// afterAll cleanup failed (federation propagation is inherently unreliable).
-		await hs1AdminApp.matrixClient.setDisplayName(federationConfig.hs1.adminUser);
-
-		await retry(
-			'waiting for Synapse admin displayname to be reset',
-			async () => {
-				const response = await rc1AdminRequestConfig.request
-					.get(api('users.info'))
-					.set(rc1AdminRequestConfig.credentials)
-					.query({ username: federationConfig.hs1.adminMatrixUserId })
-					.expect(200);
-
-				expect(response.body.user).toHaveProperty('name', federationConfig.hs1.adminUser);
-			},
-			{ retries: 5, delayMs: 1000 },
-		);
+		// Create dynamic primary Synapse user
+		const primaryUser = await SynapseClient.createAndInitializeUser(federationConfig.hs1.url, federationConfig.hs1.domain, {
+			sharedSecret: federationConfig.hs1.registrationSharedSecret,
+			admin: true,
+		});
+		hs1PrimaryApp = primaryUser.client;
+		hs1PrimaryUsername = primaryUser.username;
+		hs1PrimaryMatrixUserId = primaryUser.matrixUserId;
 	});
 
 	afterAll(async () => {
+		const adminAccessToken = hs1AdminApp?.matrixClient?.getAccessToken();
+		if (hs1PrimaryApp) {
+			await hs1PrimaryApp.close();
+		}
+		if (hs1PrimaryMatrixUserId && adminAccessToken) {
+			await SynapseClient.deactivateUser(federationConfig.hs1.url, hs1PrimaryMatrixUserId, adminAccessToken);
+		}
 		if (hs1AdminApp) {
 			await hs1AdminApp.close();
 		}
-		// if (hs1User1App) {
-		// 	await hs1User1App.close();
-		// }
 	});
 
 	describe('1:1 Direct Messages', () => {
@@ -125,7 +120,7 @@ const waitForRoomEvent = async (
 				});
 
 				it('should create a DM and invite user from rc', async () => {
-					hs1Room = (await hs1AdminApp.createDM([userDmId])) as Room;
+					hs1Room = (await hs1PrimaryApp.createDM([userDmId])) as Room;
 
 					expect(hs1Room).toHaveProperty('roomId');
 
@@ -147,7 +142,7 @@ const waitForRoomEvent = async (
 							subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
 							expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
-							expect(subscriptionInvite).toHaveProperty('fname', federationConfig.hs1.adminUser);
+							expect(subscriptionInvite).toHaveProperty('fname', hs1PrimaryUsername);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -176,11 +171,11 @@ const waitForRoomEvent = async (
 				it('should display the fname properly', async () => {
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
-					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminUser);
+					expect(sub).toHaveProperty('fname', hs1PrimaryUsername);
 				});
 
 				it('should return own user name as the room name when user is alone in the DM', async () => {
-					await hs1AdminApp.matrixClient.leave(hs1Room.roomId);
+					await hs1PrimaryApp.matrixClient.leave(hs1Room.roomId);
 
 					await retry(
 						'this is an async operation, so we need to wait for the event to be processed',
@@ -240,7 +235,7 @@ const waitForRoomEvent = async (
 				});
 
 				it('should create a DM and invite user from rc', async () => {
-					hs1Room = (await hs1AdminApp.createDM([userDmId])) as Room;
+					hs1Room = (await hs1PrimaryApp.createDM([userDmId])) as Room;
 
 					expect(hs1Room).toHaveProperty('roomId');
 
@@ -261,7 +256,7 @@ const waitForRoomEvent = async (
 							subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
 							expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
-							expect(subscriptionInvite).toHaveProperty('fname', federationConfig.hs1.adminUser);
+							expect(subscriptionInvite).toHaveProperty('fname', hs1PrimaryUsername);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -291,7 +286,7 @@ const waitForRoomEvent = async (
 				it('should display the fname properly', async () => {
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
-					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminUser);
+					expect(sub).toHaveProperty('fname', hs1PrimaryUsername);
 				});
 
 				it('should be able to leave the DM from Rocket.Chat', async () => {
@@ -317,6 +312,8 @@ const waitForRoomEvent = async (
 
 		describe('Rocket.Chat as the resident server', () => {
 			let hs1User: SynapseClient;
+			let hs1UserUsername: string;
+			let hs1UserMatrixUserId: string;
 			let rcUser: TestUser<IUser>;
 			let rcUserConfig: IRequestConfig;
 			let hs1Room: Room;
@@ -338,19 +335,24 @@ const waitForRoomEvent = async (
 
 				rcUserConfig = await getRequestConfig(federationConfig.rc1.url, rcUser.username, 'random');
 
-				// Create Synapse user
-				hs1User = new SynapseClient(
-					federationConfig.hs1.url,
-					federationConfig.hs1.additionalUser1.username,
-					federationConfig.hs1.additionalUser1.password,
-				);
-				await hs1User.initialize();
+				// Create dynamic Synapse user
+				const dynamicUser = await SynapseClient.createAndInitializeUser(federationConfig.hs1.url, federationConfig.hs1.domain, {
+					sharedSecret: federationConfig.hs1.registrationSharedSecret,
+					admin: true,
+				});
+				hs1User = dynamicUser.client;
+				hs1UserUsername = dynamicUser.username;
+				hs1UserMatrixUserId = dynamicUser.matrixUserId;
 			});
 
 			afterAll(async () => {
+				const adminAccessToken = hs1AdminApp?.matrixClient?.getAccessToken();
 				await deleteUser(rcUser, {}, rc1AdminRequestConfig);
 				if (hs1User) {
 					await hs1User.close();
+				}
+				if (hs1UserMatrixUserId && adminAccessToken) {
+					await SynapseClient.deactivateUser(federationConfig.hs1.url, hs1UserMatrixUserId, adminAccessToken);
 				}
 			});
 
@@ -363,7 +365,7 @@ const waitForRoomEvent = async (
 						.post(api('dm.create'))
 						.set(rcUserConfig.credentials)
 						.send({
-							username: federationConfig.hs1.additionalUser1.matrixUserId,
+							username: hs1UserMatrixUserId,
 						})
 						.expect(200);
 
@@ -420,7 +422,7 @@ const waitForRoomEvent = async (
 						.post(api('dm.create'))
 						.set(rcUserConfig.credentials)
 						.send({
-							username: federationConfig.hs1.additionalUser1.matrixUserId,
+							username: hs1UserMatrixUserId,
 						})
 						.expect(200);
 
@@ -453,7 +455,7 @@ const waitForRoomEvent = async (
 							const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
 							// After acceptance, should display the Synapse user's ID
-							expect(sub).toHaveProperty('fname', federationConfig.hs1.additionalUser1.username);
+							expect(sub).toHaveProperty('fname', hs1UserUsername);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -559,7 +561,7 @@ const waitForRoomEvent = async (
 
 			describe('Room list name validations', () => {
 				it('should create a group DM with multiple RC users', async () => {
-					hs1Room = (await hs1AdminApp.createDM([userDmId1, userDmId2])) as Room;
+					hs1Room = (await hs1PrimaryApp.createDM([userDmId1, userDmId2])) as Room;
 
 					expect(hs1Room).toHaveProperty('roomId');
 
@@ -594,7 +596,7 @@ const waitForRoomEvent = async (
 					pendingInvitation1 = await getSubscriptionByRoomId(rcRoom1._id, rcUserConfig1.credentials, rcUserConfig1.request);
 
 					expect(pendingInvitation1).toHaveProperty('status', 'INVITED');
-					expect(pendingInvitation1).toHaveProperty('fname', federationConfig.hs1.adminUser);
+					expect(pendingInvitation1).toHaveProperty('fname', hs1PrimaryUsername);
 				});
 
 				it('should have user1 as regular user of the group DM on RC', async () => {
@@ -606,7 +608,7 @@ const waitForRoomEvent = async (
 					pendingInvitation2 = await getSubscriptionByRoomId(rcRoom1._id, rcUserConfig2.credentials, rcUserConfig2.request);
 
 					expect(pendingInvitation2).toHaveProperty('status', 'INVITED');
-					expect(pendingInvitation2).toHaveProperty('fname', federationConfig.hs1.adminUser);
+					expect(pendingInvitation2).toHaveProperty('fname', hs1PrimaryUsername);
 				});
 
 				it('should have user2 as regular user of the group DM on RC', async () => {
@@ -630,8 +632,8 @@ const waitForRoomEvent = async (
 							const sub = await getSubscriptionByRoomId(rcRoom1._id, rcUserConfig1.credentials, rcUserConfig1.request);
 
 							expect(sub).not.toHaveProperty('status');
-							expect(sub).toHaveProperty('name', `${federationConfig.hs1.adminMatrixUserId}, ${userDm2}`);
-							expect(sub).toHaveProperty('fname', `${federationConfig.hs1.adminUser}, ${userDm2Name}`);
+							expect(sub).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${userDm2}`);
+							expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${userDm2Name}`);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -645,7 +647,7 @@ const waitForRoomEvent = async (
 				});
 
 				it('should update the display name if the inviter from Synapse leaves the group DM', async () => {
-					await hs1AdminApp.matrixClient.leave(hs1Room.roomId);
+					await hs1PrimaryApp.matrixClient.leave(hs1Room.roomId);
 
 					await retry(
 						'this is an async operation, so we need to wait for the event to be processed',
@@ -789,7 +791,7 @@ const waitForRoomEvent = async (
 					rcUserConfigB = await getRequestConfig(federationConfig.rc1.url, rcUserB.username, 'random');
 
 					// Create 1:1 DM from Synapse with userA
-					hs1RoomConverted = (await hs1AdminApp.createDM([userDmIdA])) as Room;
+					hs1RoomConverted = (await hs1PrimaryApp.createDM([userDmIdA])) as Room;
 
 					expect(hs1RoomConverted).toHaveProperty('roomId');
 
@@ -823,7 +825,7 @@ const waitForRoomEvent = async (
 					await waitForJoinEventPromise;
 
 					// Now add userB to convert it to a group DM
-					await hs1AdminApp.matrixClient.invite(hs1RoomConverted.roomId, userDmIdB);
+					await hs1PrimaryApp.matrixClient.invite(hs1RoomConverted.roomId, userDmIdB);
 				});
 
 				afterAll(async () => {
@@ -841,7 +843,7 @@ const waitForRoomEvent = async (
 							);
 
 							expect(pendingInvitationB).toHaveProperty('status', 'INVITED');
-							expect(pendingInvitationB).toHaveProperty('fname', federationConfig.hs1.adminUser);
+							expect(pendingInvitationB).toHaveProperty('fname', hs1PrimaryUsername);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -873,15 +875,15 @@ const waitForRoomEvent = async (
 							const subA = await getSubscriptionByRoomId(rcRoomConverted._id, rcUserConfigA.credentials, rcUserConfigA.request);
 
 							expect(subA).not.toHaveProperty('status');
-							expect(subA).toHaveProperty('name', `${federationConfig.hs1.adminMatrixUserId}, ${userDmB}`);
-							expect(subA).toHaveProperty('fname', `${federationConfig.hs1.adminUser}, ${userDmBName}`);
+							expect(subA).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${userDmB}`);
+							expect(subA).toHaveProperty('fname', `${hs1PrimaryUsername}, ${userDmBName}`);
 
 							// Check userB's subscription
 							const subB = await getSubscriptionByRoomId(rcRoomConverted._id, rcUserConfigB.credentials, rcUserConfigB.request);
 
 							expect(subB).not.toHaveProperty('status');
-							expect(subB).toHaveProperty('name', `${federationConfig.hs1.adminMatrixUserId}, ${userDmA}`);
-							expect(subB).toHaveProperty('fname', `${federationConfig.hs1.adminUser}, ${userDmAName}`);
+							expect(subB).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${userDmA}`);
+							expect(subB).toHaveProperty('fname', `${hs1PrimaryUsername}, ${userDmAName}`);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -897,18 +899,27 @@ const waitForRoomEvent = async (
 
 		describe('Rocket.Chat as the resident server', () => {
 			let hs1User1: SynapseClient;
+			let hs1User1Username: string;
+			let hs1User1MatrixUserId: string;
 
 			beforeAll(async () => {
-				hs1User1 = new SynapseClient(
-					federationConfig.hs1.url,
-					federationConfig.hs1.additionalUser1.username,
-					federationConfig.hs1.additionalUser1.password,
-				);
-				await hs1User1.initialize();
+				const dynamicUser = await SynapseClient.createAndInitializeUser(federationConfig.hs1.url, federationConfig.hs1.domain, {
+					sharedSecret: federationConfig.hs1.registrationSharedSecret,
+					admin: true,
+				});
+				hs1User1 = dynamicUser.client;
+				hs1User1Username = dynamicUser.username;
+				hs1User1MatrixUserId = dynamicUser.matrixUserId;
 			});
 
 			afterAll(async () => {
-				await hs1User1.close();
+				const adminAccessToken = hs1AdminApp?.matrixClient?.getAccessToken();
+				if (hs1User1) {
+					await hs1User1.close();
+				}
+				if (hs1User1MatrixUserId && adminAccessToken) {
+					await SynapseClient.deactivateUser(federationConfig.hs1.url, hs1User1MatrixUserId, adminAccessToken);
+				}
 			});
 
 			describe('Room list name validations', () => {
@@ -973,7 +984,7 @@ const waitForRoomEvent = async (
 						.post(api('dm.create'))
 						.set(rcUser1.config.credentials)
 						.send({
-							usernames: [federationConfig.hs1.adminMatrixUserId, rcUser2.username].join(','),
+							usernames: [hs1PrimaryMatrixUserId, rcUser2.username].join(','),
 						})
 						.expect(200);
 
@@ -994,7 +1005,7 @@ const waitForRoomEvent = async (
 					await retry(
 						'waiting for room invitation',
 						async () => {
-							hs1Room1 = (await hs1AdminApp.matrixClient.getRoom(rcRoom.federation.mrid)) as Room;
+							hs1Room1 = (await hs1PrimaryApp.matrixClient.getRoom(rcRoom.federation.mrid)) as Room;
 
 							expect(hs1Room1).toBeDefined();
 							expect(hs1Room1.getMyMembership()).toBe('invite');
@@ -1012,20 +1023,20 @@ const waitForRoomEvent = async (
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser1.config.credentials, rcUser1.config.request);
 
 					// Should contain both invited users in the name
-					expect(sub).toHaveProperty('name', `${federationConfig.hs1.adminMatrixUserId}, ${rcUser2.username}`);
-					expect(sub).toHaveProperty('fname', `${federationConfig.hs1.adminUser}, ${rcUser2.fullName}`);
+					expect(sub).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${rcUser2.username}`);
+					expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser2.fullName}`);
 				});
 
 				it("should display only the inviter's username for the invited user on Rocket.Chat", async () => {
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
 					expect(sub).toHaveProperty('status', 'INVITED');
-					expect(sub).toHaveProperty('name', `${federationConfig.hs1.adminMatrixUserId}, ${rcUser1.username}`);
-					expect(sub).toHaveProperty('fname', `${federationConfig.hs1.adminUser}, ${rcUser1.fullName}`);
+					expect(sub).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${rcUser1.username}`);
+					expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser1.fullName}`);
 				});
 
 				it('should accept the invitation on Synapse', async () => {
-					await hs1AdminApp.matrixClient.joinRoom(rcRoom.federation.mrid);
+					await hs1PrimaryApp.matrixClient.joinRoom(rcRoom.federation.mrid);
 
 					await retry(
 						'wait for the join to be processed',
@@ -1047,15 +1058,15 @@ const waitForRoomEvent = async (
 							const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
 							expect(sub).toHaveProperty('status', 'INVITED');
-							expect(sub).toHaveProperty('name', `${federationConfig.hs1.adminMatrixUserId}, ${rcUser1.username}`);
-							expect(sub).toHaveProperty('fname', `${federationConfig.hs1.adminUser}, ${rcUser1.fullName}`);
+							expect(sub).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${rcUser1.username}`);
+							expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser1.fullName}`);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
 				});
 
 				it('should update the fname when a user leaves the DM', async () => {
-					await hs1AdminApp.matrixClient.leave(rcRoom.federation.mrid);
+					await hs1PrimaryApp.matrixClient.leave(rcRoom.federation.mrid);
 
 					await retry(
 						'this is an async operation, so we need to wait for the event to be processed',
@@ -1142,7 +1153,7 @@ const waitForRoomEvent = async (
 						.post(api('dm.create'))
 						.set(rcUserConfig1.credentials)
 						.send({
-							usernames: [federationConfig.hs1.adminMatrixUserId, rcUser2.username].join(','),
+							usernames: [hs1PrimaryMatrixUserId, rcUser2.username].join(','),
 						})
 						.expect(200);
 
@@ -1163,7 +1174,7 @@ const waitForRoomEvent = async (
 					await retry(
 						'waiting for room invitation',
 						async () => {
-							hs1Room1 = (await hs1AdminApp.matrixClient.getRoom(rcRoom.federation.mrid)) as Room;
+							hs1Room1 = (await hs1PrimaryApp.matrixClient.getRoom(rcRoom.federation.mrid)) as Room;
 
 							expect(hs1Room1).toBeDefined();
 							expect(hs1Room1).toHaveProperty('roomId', rcRoom.federation.mrid);
@@ -1196,7 +1207,7 @@ const waitForRoomEvent = async (
 				});
 
 				it('should add another user by another user than the initial inviter', async () => {
-					await hs1AdminApp.matrixClient.joinRoom(rcRoom.federation.mrid);
+					await hs1PrimaryApp.matrixClient.joinRoom(rcRoom.federation.mrid);
 
 					await retry(
 						'waiting for join',
@@ -1209,7 +1220,7 @@ const waitForRoomEvent = async (
 						{ retries: 5, delayMs: 1000 },
 					);
 
-					await hs1AdminApp.inviteUserToRoom(hs1Room1.roomId, userDmId3);
+					await hs1PrimaryApp.inviteUserToRoom(hs1Room1.roomId, userDmId3);
 
 					await retry(
 						'waiting for user4 to receive invitation',
@@ -1293,7 +1304,7 @@ const waitForRoomEvent = async (
 								.post(api('dm.create'))
 								.set(rcUser1.config.credentials)
 								.send({
-									usernames: [rcUser2.username, federationConfig.hs1.adminMatrixUserId].join(','),
+									usernames: [rcUser2.username, hs1PrimaryMatrixUserId].join(','),
 								})
 								.expect(200);
 
@@ -1313,7 +1324,7 @@ const waitForRoomEvent = async (
 							await retry(
 								'waiting for room invitation',
 								async () => {
-									hs1Room1 = hs1AdminApp.matrixClient.getRoom(rcRoom.federation.mrid) as Room;
+									hs1Room1 = hs1PrimaryApp.matrixClient.getRoom(rcRoom.federation.mrid) as Room;
 
 									expect(hs1Room1).toBeDefined();
 									expect(hs1Room1).toHaveProperty('roomId', rcRoom.federation.mrid);
@@ -1323,7 +1334,7 @@ const waitForRoomEvent = async (
 							);
 
 							// Accept the invitation
-							await hs1AdminApp.matrixClient.joinRoom(rcRoom.federation.mrid);
+							await hs1PrimaryApp.matrixClient.joinRoom(rcRoom.federation.mrid);
 
 							await retry(
 								'wait for the join to be processed',
@@ -1333,7 +1344,7 @@ const waitForRoomEvent = async (
 									const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
 									// After acceptance, should display the Synapse user's ID
-									expect(sub).toHaveProperty('fname', `${federationConfig.hs1.adminUser}, ${rcUser1.fullName}`);
+									expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser1.fullName}`);
 								},
 								{ retries: 5, delayMs: 1000 },
 							);
@@ -1370,7 +1381,7 @@ const waitForRoomEvent = async (
 							expect(dmRooms.length).toBe(1);
 
 							// now the synapse user leaves the federated DM
-							await hs1AdminApp.matrixClient.leave(rcRoom.federation.mrid);
+							await hs1PrimaryApp.matrixClient.leave(rcRoom.federation.mrid);
 
 							await retry(
 								'wait for the leave to be processed',
@@ -1485,7 +1496,7 @@ const waitForRoomEvent = async (
 								.post(api('dm.create'))
 								.set(rcUser1.config.credentials)
 								.send({
-									username: federationConfig.hs1.adminMatrixUserId,
+									username: hs1PrimaryMatrixUserId,
 								})
 								.expect(200);
 
@@ -1506,7 +1517,7 @@ const waitForRoomEvent = async (
 							await retry(
 								'waiting for room invitation',
 								async () => {
-									hs1Room1 = hs1AdminApp.matrixClient.getRoom(rcRoom1on1.federation.mrid) as Room;
+									hs1Room1 = hs1PrimaryApp.matrixClient.getRoom(rcRoom1on1.federation.mrid) as Room;
 
 									expect(hs1Room1).toBeDefined();
 									expect(hs1Room1).toHaveProperty('roomId', rcRoom1on1.federation.mrid);
@@ -1516,7 +1527,7 @@ const waitForRoomEvent = async (
 							);
 
 							// Accept the invitation
-							await hs1AdminApp.matrixClient.joinRoom(rcRoom1on1.federation.mrid);
+							await hs1PrimaryApp.matrixClient.joinRoom(rcRoom1on1.federation.mrid);
 
 							await retry(
 								'wait for the join to be processed',
@@ -1526,7 +1537,7 @@ const waitForRoomEvent = async (
 									const sub = await getSubscriptionByRoomId(rcRoom1on1._id, rcUser1.config.credentials, rcUser1.config.request);
 
 									// After acceptance, should display the Synapse user's ID
-									expect(sub).toHaveProperty('fname', federationConfig.hs1.adminUser);
+									expect(sub).toHaveProperty('fname', hs1PrimaryUsername);
 								},
 								{ retries: 5, delayMs: 1000 },
 							);
@@ -1537,7 +1548,7 @@ const waitForRoomEvent = async (
 								.post(api('dm.create'))
 								.set(rcUser1.config.credentials)
 								.send({
-									usernames: [federationConfig.hs1.adminMatrixUserId, rcUser2.username].join(','),
+									usernames: [hs1PrimaryMatrixUserId, rcUser2.username].join(','),
 								})
 								.expect(200);
 
@@ -1558,7 +1569,7 @@ const waitForRoomEvent = async (
 							await retry(
 								'waiting for room invitation',
 								async () => {
-									hs1Room1 = hs1AdminApp.matrixClient.getRoom(rcRoom.federation.mrid) as Room;
+									hs1Room1 = hs1PrimaryApp.matrixClient.getRoom(rcRoom.federation.mrid) as Room;
 
 									expect(hs1Room1).toBeDefined();
 									expect(hs1Room1).toHaveProperty('roomId', rcRoom.federation.mrid);
@@ -1568,7 +1579,7 @@ const waitForRoomEvent = async (
 							);
 
 							// Accept the invitation
-							await hs1AdminApp.matrixClient.joinRoom(rcRoom.federation.mrid);
+							await hs1PrimaryApp.matrixClient.joinRoom(rcRoom.federation.mrid);
 
 							await retry(
 								'wait for the join to be processed',
@@ -1578,7 +1589,7 @@ const waitForRoomEvent = async (
 									const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
 									// After acceptance, should display the Synapse user's ID
-									expect(sub).toHaveProperty('fname', `${federationConfig.hs1.adminUser}, ${rcUser1.fullName}`);
+									expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser1.fullName}`);
 								},
 								{ retries: 5, delayMs: 1000 },
 							);
@@ -1606,7 +1617,7 @@ const waitForRoomEvent = async (
 									room.usernames &&
 									room.usernames.length === 2 &&
 									room.usernames.includes(rcUser1.username) &&
-									room.usernames.includes(federationConfig.hs1.adminMatrixUserId),
+									room.usernames.includes(hs1PrimaryMatrixUserId),
 							);
 
 							// at this time there should be only one DM with only two users (the non-federated one)
@@ -1656,7 +1667,7 @@ const waitForRoomEvent = async (
 									room.usernames &&
 									room.usernames.length === 2 &&
 									room.usernames.includes(rcUser1.username) &&
-									room.usernames.includes(federationConfig.hs1.adminMatrixUserId),
+									room.usernames.includes(hs1PrimaryMatrixUserId),
 							);
 
 							expect(dmRoomsAfterLeave.length).toBe(2);
@@ -1667,7 +1678,7 @@ const waitForRoomEvent = async (
 								.post(api('dm.create'))
 								.set(rcUser1.config.credentials)
 								.send({
-									username: federationConfig.hs1.adminMatrixUserId,
+									username: hs1PrimaryMatrixUserId,
 								})
 								.expect(200);
 
@@ -1752,7 +1763,7 @@ const waitForRoomEvent = async (
 					expect(dmCreate.body).toHaveProperty('room');
 
 					const response = await addUserToRoom({
-						usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
+						usernames: [hs1User1MatrixUserId],
 						rid: dmCreate.body.room._id,
 						config: rcUser1.config,
 					});
@@ -1772,7 +1783,7 @@ const waitForRoomEvent = async (
 						.post(api('dm.create'))
 						.set(rcUser1.config.credentials)
 						.send({
-							username: federationConfig.hs1.adminMatrixUserId,
+							username: hs1PrimaryMatrixUserId,
 						})
 						.expect(200);
 
@@ -1796,14 +1807,14 @@ const waitForRoomEvent = async (
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser1.config.credentials, rcUser1.config.request);
 
 					// Should contain both invited users in the name
-					expect(sub).toHaveProperty('name', federationConfig.hs1.adminMatrixUserId);
-					expect(sub).toHaveProperty('fname', federationConfig.hs1.adminUser);
+					expect(sub).toHaveProperty('name', hs1PrimaryMatrixUserId);
+					expect(sub).toHaveProperty('fname', hs1PrimaryUsername);
 				});
 
 				it('should send an invite to another Synapse user', async () => {
 					// invite from rocket.chat
 					const response = await addUserToRoom({
-						usernames: [federationConfig.hs1.additionalUser1.matrixUserId],
+						usernames: [hs1User1MatrixUserId],
 						rid: rcRoom._id,
 						config: rcUser1.config,
 					});
@@ -1829,11 +1840,8 @@ const waitForRoomEvent = async (
 							const subA = await getSubscriptionByRoomId(rcRoom._id, rcUser1.config.credentials, rcUser1.config.request);
 
 							expect(subA).not.toHaveProperty('status');
-							expect(subA).toHaveProperty(
-								'name',
-								`${federationConfig.hs1.adminMatrixUserId}, ${federationConfig.hs1.additionalUser1.matrixUserId}`,
-							);
-							expect(subA).toHaveProperty('fname', `${federationConfig.hs1.adminUser}, ${federationConfig.hs1.additionalUser1.username}`);
+							expect(subA).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${hs1User1MatrixUserId}`);
+							expect(subA).toHaveProperty('fname', `${hs1PrimaryUsername}, ${hs1User1Username}`);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -1867,8 +1875,8 @@ const waitForRoomEvent = async (
 							const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
 							expect(sub).toHaveProperty('status', 'INVITED');
-							expect(sub).toHaveProperty('name', federationConfig.hs1.additionalUser1.matrixUserId);
-							expect(sub).toHaveProperty('fname', federationConfig.hs1.additionalUser1.username);
+							expect(sub).toHaveProperty('name', hs1User1MatrixUserId);
+							expect(sub).toHaveProperty('fname', hs1User1Username);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -1901,7 +1909,7 @@ const waitForRoomEvent = async (
 
 			rcUserConfig = await getRequestConfig(federationConfig.rc1.url, rcUser.username, 'random');
 
-			hs1Room = (await hs1AdminApp.createDM([userDmId])) as Room;
+			hs1Room = (await hs1PrimaryApp.createDM([userDmId])) as Room;
 
 			await retry('waiting for the room to be created in RC', async () => {
 				const roomsResponse = await rcUserConfig.request.get(api('rooms.get')).set(rcUserConfig.credentials).expect(200);
@@ -1913,16 +1921,36 @@ const waitForRoomEvent = async (
 		});
 
 		afterAll(async () => {
-			await deleteUser(rcUser, {}, rc1AdminRequestConfig);
+			// Reset display name back to original before deleting the user
+			await hs1PrimaryApp.matrixClient.setDisplayName(hs1PrimaryUsername);
 
-			// Best-effort reset of the Synapse admin display name.
-			// The top-level beforeAll will also reset it on the next run,
-			// so this is not critical for test reliability.
-			try {
-				await hs1AdminApp.matrixClient.setDisplayName(federationConfig.hs1.adminUser);
-			} catch {
-				// ignore — the top-level beforeAll will handle it
-			}
+			// wait until the name change is reflected in RC before finishing the test
+			await retry(
+				'waiting for Synapse user displayname to propagate to RC',
+				async () => {
+					const response = await rc1AdminRequestConfig.request
+						.get(api('users.info'))
+						.set(rc1AdminRequestConfig.credentials)
+						.query({ username: hs1PrimaryMatrixUserId })
+						.expect(200);
+
+					expect(response.body.user).toHaveProperty('name', hs1PrimaryUsername);
+				},
+				{ retries: 15, delayMs: 1000 },
+			);
+
+			// Also wait for the DM subscription fname to be updated, since this propagates
+			// asynchronously after the user name change via debounced Room.updateDirectMessageRoomName
+			await retry(
+				'waiting for subscription fname to reflect reset display name',
+				async () => {
+					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
+					expect(sub).toHaveProperty('fname', hs1PrimaryUsername);
+				},
+				{ retries: 10, delayMs: 1000 },
+			);
+
+			await deleteUser(rcUser, {}, rc1AdminRequestConfig);
 		});
 
 		it('should accept the DM invitation from RC', async () => {
@@ -1933,10 +1961,10 @@ const waitForRoomEvent = async (
 		it('should update DM room name after Synapse user changes their display name', async () => {
 			// Verify initial state: room name should be the Synapse admin initial display name
 			const initialSub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
-			expect(initialSub).toHaveProperty('fname', federationConfig.hs1.adminUser);
+			expect(initialSub).toHaveProperty('fname', hs1PrimaryUsername);
 
 			// Action: update the Synapse user's displayname
-			await hs1AdminApp.matrixClient.setDisplayName(updatedDisplayName);
+			await hs1PrimaryApp.matrixClient.setDisplayName(updatedDisplayName);
 
 			// Verify: the DM room name should be updated after the debounced name update completes
 			await retry(
@@ -1945,7 +1973,7 @@ const waitForRoomEvent = async (
 					const updatedSub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 					expect(updatedSub).toHaveProperty('fname', updatedDisplayName);
 				},
-				{ retries: 5, delayMs: 1000 },
+				{ delayMs: 1000 },
 			);
 		});
 	});

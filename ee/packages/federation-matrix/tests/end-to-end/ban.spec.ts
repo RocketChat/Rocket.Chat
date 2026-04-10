@@ -14,6 +14,8 @@ import { SynapseClient } from '../helper/synapse-client';
 	let rc1AdminRequestConfig: IRequestConfig;
 	let rc1User1RequestConfig: IRequestConfig;
 	let hs1AdminApp: SynapseClient;
+	let hs1PrimaryApp: SynapseClient;
+	let hs1PrimaryMatrixUserId: string;
 
 	beforeAll(async () => {
 		rc1AdminRequestConfig = await getRequestConfig(
@@ -40,9 +42,23 @@ import { SynapseClient } from '../helper/synapse-client';
 
 		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
 		await hs1AdminApp.initialize();
+
+		const primaryUser = await SynapseClient.createAndInitializeUser(federationConfig.hs1.url, federationConfig.hs1.domain, {
+			sharedSecret: federationConfig.hs1.registrationSharedSecret,
+			admin: true,
+		});
+		hs1PrimaryApp = primaryUser.client;
+		hs1PrimaryMatrixUserId = primaryUser.matrixUserId;
 	});
 
 	afterAll(async () => {
+		const adminAccessToken = hs1AdminApp?.matrixClient?.getAccessToken();
+		if (hs1PrimaryApp) {
+			await hs1PrimaryApp.close();
+		}
+		if (hs1PrimaryMatrixUserId && adminAccessToken) {
+			await SynapseClient.deactivateUser(federationConfig.hs1.url, hs1PrimaryMatrixUserId, adminAccessToken);
+		}
 		if (hs1AdminApp) {
 			await hs1AdminApp.close();
 		}
@@ -58,7 +74,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			const createResponse = await createRoom({
 				type: 'p',
 				name: channelName,
-				members: [federationConfig.hs1.adminMatrixUserId, federationConfig.rc1.additionalUser1.username],
+				members: [hs1PrimaryMatrixUserId, federationConfig.rc1.additionalUser1.username],
 				extraData: { federated: true },
 				config: rc1AdminRequestConfig,
 			});
@@ -66,7 +82,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			federatedChannelId = createResponse.body.group._id;
 
 			// Accept invitation on Synapse side
-			await hs1AdminApp.acceptInvitationForRoomName(channelName);
+			await hs1PrimaryApp.acceptInvitationForRoomName(channelName);
 
 			// Accept invitation for the local RC user
 			await acceptRoomInvite(federatedChannelId, rc1User1RequestConfig);
@@ -75,7 +91,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			await retry(
 				'wait for RC user on Synapse',
 				async () => {
-					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
+					const member = await hs1PrimaryApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
 					expect(member).not.toBeNull();
 					expect(member!.membership).toBe('join');
 				},
@@ -110,7 +126,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			await retry(
 				'wait for ban on Synapse',
 				async () => {
-					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
+					const member = await hs1PrimaryApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
 					expect(member).not.toBeNull();
 					expect(member!.membership).toBe('ban');
 				},
@@ -149,7 +165,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			await retry(
 				'wait for unban on Synapse',
 				async () => {
-					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
+					const member = await hs1PrimaryApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
 					expect(member).not.toBeNull();
 					expect(member!.membership).not.toBe('ban');
 				},
@@ -168,7 +184,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			const createResponse = await createRoom({
 				type: 'p',
 				name: channelName,
-				members: [federationConfig.hs1.adminMatrixUserId, federationConfig.rc1.additionalUser1.username],
+				members: [hs1PrimaryMatrixUserId, federationConfig.rc1.additionalUser1.username],
 				extraData: { federated: true },
 				config: rc1AdminRequestConfig,
 			});
@@ -176,7 +192,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			federatedChannelId = createResponse.body.group._id;
 
 			// Accept invitation on Synapse side only — RC user stays as INVITED
-			await hs1AdminApp.acceptInvitationForRoomName(channelName);
+			await hs1PrimaryApp.acceptInvitationForRoomName(channelName);
 		}, 30000);
 
 		it('should ban the invited user before they accept', async () => {
@@ -228,10 +244,10 @@ import { SynapseClient } from '../helper/synapse-client';
 
 		beforeAll(async () => {
 			channelName = `fed-ban-synapse-${Date.now()}`;
-			synapseRoomId = await hs1AdminApp.createRoom(channelName, Visibility.Private);
+			synapseRoomId = await hs1PrimaryApp.createRoom(channelName, Visibility.Private);
 
-			await hs1AdminApp.inviteUserToRoom(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId);
-			await hs1AdminApp.inviteUserToRoom(synapseRoomId, federationConfig.rc1.adminMatrixUserId);
+			await hs1PrimaryApp.inviteUserToRoom(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId);
+			await hs1PrimaryApp.inviteUserToRoom(synapseRoomId, federationConfig.rc1.adminMatrixUserId);
 
 			const roomsResponse = await rc1AdminRequestConfig.request.get(api('rooms.get')).set(rc1AdminRequestConfig.credentials).expect(200);
 
@@ -254,7 +270,7 @@ import { SynapseClient } from '../helper/synapse-client';
 			await retry(
 				'wait for RC user on Synapse',
 				async () => {
-					const member = await hs1AdminApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
+					const member = await hs1PrimaryApp.findRoomMember(channelName, federationConfig.rc1.additionalUser1.matrixUserId);
 					expect(member).not.toBeNull();
 					expect(member!.membership).toBe('join');
 				},
@@ -263,7 +279,7 @@ import { SynapseClient } from '../helper/synapse-client';
 		}, 30000);
 
 		it('should ban the RC user from Synapse', async () => {
-			await hs1AdminApp.banUser(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId, 'federation ban test');
+			await hs1PrimaryApp.banUser(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId, 'federation ban test');
 		});
 
 		it('should reflect ban on RC side', async () => {
@@ -291,7 +307,7 @@ import { SynapseClient } from '../helper/synapse-client';
 		});
 
 		it('should unban the RC user from Synapse', async () => {
-			await hs1AdminApp.unbanUser(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId);
+			await hs1PrimaryApp.unbanUser(synapseRoomId, federationConfig.rc1.additionalUser1.matrixUserId);
 		});
 
 		it('should reflect unban on RC side', async () => {

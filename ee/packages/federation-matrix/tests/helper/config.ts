@@ -6,7 +6,7 @@
  * for end-to-end federation testing.
  */
 
-type FederationServerConfig = {
+type FederationRCServerConfig = {
 	url: string;
 	domain: string;
 	adminUser: string;
@@ -18,9 +18,19 @@ type FederationServerConfig = {
 		matrixUserId: string;
 	};
 };
+
+type FederationSynapseServerConfig = {
+	url: string;
+	domain: string;
+	adminUser: string;
+	adminPassword: string;
+	adminMatrixUserId: string;
+	registrationSharedSecret: string;
+};
+
 export interface IFederationConfig {
-	rc1: FederationServerConfig;
-	hs1: FederationServerConfig;
+	rc1: FederationRCServerConfig;
+	hs1: FederationSynapseServerConfig;
 }
 
 /**
@@ -64,8 +74,10 @@ function getFederationConfig(): IFederationConfig {
 	const hs1Domain = validateEnvVar('FEDERATION_SYNAPSE_DOMAIN', 'hs1');
 	const hs1AdminUser = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_USER', 'admin');
 	const hs1AdminPassword = validateEnvVar('FEDERATION_SYNAPSE_ADMIN_PASSWORD', 'admin');
-	const hs1AdditionalUser1 = validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1', 'alice');
-	const hs1AdditionalUser1Password = validateEnvVar('FEDERATION_SYNAPSE_ADDITIONAL_USER1_PASSWORD', 'alice');
+	const hs1RegistrationSharedSecret = validateEnvVar(
+		'FEDERATION_SYNAPSE_REGISTRATION_SHARED_SECRET',
+		'3l5H.Y5urc5@gKwYMe2^abk@nf.U_M6iyMgP,j&OL6pcSGrUQE',
+	);
 
 	return {
 		rc1: {
@@ -86,11 +98,7 @@ function getFederationConfig(): IFederationConfig {
 			adminUser: hs1AdminUser,
 			adminMatrixUserId: `@${hs1AdminUser}:${hs1Domain}`,
 			adminPassword: hs1AdminPassword,
-			additionalUser1: {
-				username: hs1AdditionalUser1,
-				password: hs1AdditionalUser1Password,
-				matrixUserId: `@${hs1AdditionalUser1}:${hs1Domain}`,
-			},
+			registrationSharedSecret: hs1RegistrationSharedSecret,
 		},
 	};
 }

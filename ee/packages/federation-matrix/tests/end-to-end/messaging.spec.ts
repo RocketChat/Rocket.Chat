@@ -17,7 +17,10 @@ import { SynapseClient } from '../helper/synapse-client';
 (IS_EE ? describe : describe.skip)('Federation', () => {
 	let rc1AdminRequestConfig: any;
 	let hs1AdminApp: SynapseClient;
+	let hs1PrimaryApp: SynapseClient;
+	let hs1PrimaryMatrixUserId: string;
 	let hs1User1App: SynapseClient;
+	let hs1User1MatrixUserId: string;
 
 	beforeAll(async () => {
 		// Create admin request config for RC1
@@ -42,21 +45,39 @@ import { SynapseClient } from '../helper/synapse-client';
 		hs1AdminApp = new SynapseClient(federationConfig.hs1.url, federationConfig.hs1.adminUser, federationConfig.hs1.adminPassword);
 		await hs1AdminApp.initialize();
 
-		// Create user1 Synapse client for HS1
-		hs1User1App = new SynapseClient(
-			federationConfig.hs1.url,
-			federationConfig.hs1.additionalUser1.matrixUserId,
-			federationConfig.hs1.additionalUser1.password,
-		);
-		await hs1User1App.initialize();
+		// Create dynamic primary Synapse user
+		const primaryUser = await SynapseClient.createAndInitializeUser(federationConfig.hs1.url, federationConfig.hs1.domain, {
+			sharedSecret: federationConfig.hs1.registrationSharedSecret,
+			admin: true,
+		});
+		hs1PrimaryApp = primaryUser.client;
+		hs1PrimaryMatrixUserId = primaryUser.matrixUserId;
+
+		// Create dynamic Synapse user for HS1
+		const dynamicUser = await SynapseClient.createAndInitializeUser(federationConfig.hs1.url, federationConfig.hs1.domain, {
+			sharedSecret: federationConfig.hs1.registrationSharedSecret,
+			admin: true,
+		});
+		hs1User1App = dynamicUser.client;
+		hs1User1MatrixUserId = dynamicUser.matrixUserId;
 	});
 
 	afterAll(async () => {
-		if (hs1AdminApp) {
-			await hs1AdminApp.close();
-		}
+		const adminAccessToken = hs1AdminApp?.matrixClient?.getAccessToken();
 		if (hs1User1App) {
 			await hs1User1App.close();
+		}
+		if (hs1User1MatrixUserId && adminAccessToken) {
+			await SynapseClient.deactivateUser(federationConfig.hs1.url, hs1User1MatrixUserId, adminAccessToken);
+		}
+		if (hs1PrimaryApp) {
+			await hs1PrimaryApp.close();
+		}
+		if (hs1PrimaryMatrixUserId && adminAccessToken) {
+			await SynapseClient.deactivateUser(federationConfig.hs1.url, hs1PrimaryMatrixUserId, adminAccessToken);
+		}
+		if (hs1AdminApp) {
+			await hs1AdminApp.close();
 		}
 	});
 
@@ -73,7 +94,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					const createResponse = await createRoom({
 						type: 'p',
 						name: channelName,
-						members: [federationConfig.hs1.adminMatrixUserId],
+						members: [hs1PrimaryMatrixUserId],
 						extraData: {
 							federated: true,
 						},
@@ -88,7 +109,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(federatedChannel).toHaveProperty('federated', true);
 
 					// Accept invitation for the federated user
-					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+					const acceptedRoomId = await hs1PrimaryApp.acceptInvitationForRoomName(channelName);
 					expect(acceptedRoomId).not.toBe('');
 				}, 10000);
 
@@ -111,7 +132,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(rcMessage?.msg).toBe(messageText);
 
 					// Synapse view: Verify message appears correctly on remote Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage?.content.body).toBe(messageText);
 				});
 
@@ -152,7 +173,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					// TODO: Verify emojis are correctly translated
 					// Synapse view: Verify message appears correctly on remote Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toBe(messageText);
 				});
@@ -191,7 +212,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					// TODO: Verify emojis are correctly translated
 					// Synapse view: Verify message appears correctly on remote Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage?.content.body).toBe(messageText);
 				});
 
@@ -222,7 +243,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(rcMessage?.md).toEqual(expectedMd);
 
 					// Synapse view: Verify message appears correctly on remote Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toContain(messageText);
 				});
@@ -248,7 +269,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(rcMessage).toBeDefined();
 
 					// Synapse view: Verify message appears correctly on remote Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage?.content.body).toBe(messageText);
 				});
 
@@ -299,7 +320,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(rcMessage?.md).toEqual(expectedMd);
 
 					// Synapse view: Verify message appears correctly on remote Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toBe(messageText);
 				});
@@ -337,7 +358,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(rcMessage?.md).toEqual(expectedMd);
 
 					// Synapse view: Verify message appears correctly on remote Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toBe(messageText);
 				});
@@ -386,7 +407,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(rcMessage?.md).toEqual(expectedMd);
 
 					// Synapse view: Verify message appears correctly on remote Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toBe(messageText);
 				});
@@ -403,7 +424,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					const createResponse = await createRoom({
 						type: 'p',
 						name: channelName,
-						members: [federationConfig.hs1.adminMatrixUserId],
+						members: [hs1PrimaryMatrixUserId],
 						extraData: {
 							federated: true,
 						},
@@ -418,7 +439,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(federatedChannel).toHaveProperty('federated', true);
 
 					// Accept invitation for the federated user
-					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+					const acceptedRoomId = await hs1PrimaryApp.acceptInvitationForRoomName(channelName);
 					expect(acceptedRoomId).not.toBe('');
 				}, 10000);
 
@@ -426,10 +447,10 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = 'Hello from Element';
 
 					// Synapse view: Send a text message from Element
-					await hs1AdminApp.sendTextMessage(channelName, messageText);
+					await hs1PrimaryApp.sendTextMessage(channelName, messageText);
 
 					// Synapse view: Verify message appears in Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
@@ -443,10 +464,10 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = 'Hello :rocket: from Element 🚀';
 
 					// Synapse view: Send a text message with emoji shortcut and system emoji from Element
-					await hs1AdminApp.sendTextMessage(channelName, messageText);
+					await hs1PrimaryApp.sendTextMessage(channelName, messageText);
 
 					// Synapse view: Verify message appears in Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toBe(messageText);
 
@@ -478,10 +499,10 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = ':smirk:';
 
 					// Synapse view: Send a single emoji shortcut from Element
-					await hs1AdminApp.sendTextMessage(channelName, messageText);
+					await hs1PrimaryApp.sendTextMessage(channelName, messageText);
 
 					// Synapse view: Verify message appears in Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
@@ -509,10 +530,10 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = '😀';
 
 					// Synapse view: Send a single system emoji from Element
-					await hs1AdminApp.sendTextMessage(channelName, messageText);
+					await hs1PrimaryApp.sendTextMessage(channelName, messageText);
 
 					// Synapse view: Verify message appears in Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toContain(messageText);
 
@@ -536,10 +557,10 @@ import { SynapseClient } from '../helper/synapse-client';
 					const htmlFormattedBody = 'Plain text <strong>bold</strong> <em>italic</em> <u>underline</u>';
 
 					// Synapse view: Send a formatted text message from Element with HTML formatting
-					await hs1AdminApp.sendHtmlMessage(channelName, messageText, htmlFormattedBody);
+					await hs1PrimaryApp.sendHtmlMessage(channelName, messageText, htmlFormattedBody);
 
 					// Synapse view: Verify message appears in Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage?.content.body).toBe(messageText);
 
 					// RC view: Verify message appears correctly on remote RC1
@@ -552,10 +573,10 @@ import { SynapseClient } from '../helper/synapse-client';
 					const messageText = 'Check this link: https://www.wikipedia.org';
 
 					// Synapse view: Send a message with plain link from Element
-					await hs1AdminApp.sendTextMessage(channelName, messageText);
+					await hs1PrimaryApp.sendTextMessage(channelName, messageText);
 
 					// Synapse view: Verify message appears in Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toBe(messageText);
 
@@ -599,10 +620,10 @@ import { SynapseClient } from '../helper/synapse-client';
 					const htmlFormattedBody = 'Check this <a href="google.com">google</a> link';
 
 					// Synapse view: Send a message with markdown link from Element with HTML formatting
-					await hs1AdminApp.sendHtmlMessage(channelName, messageText, htmlFormattedBody);
+					await hs1PrimaryApp.sendHtmlMessage(channelName, messageText, htmlFormattedBody);
 
 					// Synapse view: Verify message appears in Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toBe(messageText);
 
@@ -632,10 +653,10 @@ import { SynapseClient } from '../helper/synapse-client';
 					const htmlFormattedBody = 'Here is some code:<br><pre><code>const x = 1;</code></pre>';
 
 					// Synapse view: Send a message with code block from Element with HTML formatting
-					await hs1AdminApp.sendHtmlMessage(channelName, messageText, htmlFormattedBody);
+					await hs1PrimaryApp.sendHtmlMessage(channelName, messageText, htmlFormattedBody);
 
 					// Synapse view: Verify message appears in Element
-					const synapseMessage = await hs1AdminApp.findMessageInRoom(channelName, messageText);
+					const synapseMessage = await hs1PrimaryApp.findMessageInRoom(channelName, messageText);
 					expect(synapseMessage).not.toBeNull();
 					expect(synapseMessage?.content.body).toBe(messageText);
 
@@ -715,7 +736,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					const createResponse = await createRoom({
 						type: 'p',
 						name: channelName,
-						members: [federationConfig.hs1.adminMatrixUserId],
+						members: [hs1PrimaryMatrixUserId],
 						extraData: {
 							federated: true,
 						},
@@ -730,7 +751,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(federatedChannel).toHaveProperty('federated', true);
 
 					// Accept invitation for the federated user
-					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+					const acceptedRoomId = await hs1PrimaryApp.acceptInvitationForRoomName(channelName);
 					expect(acceptedRoomId).not.toBe('');
 				}, 10000);
 
@@ -767,7 +788,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcMessage?.federation?.eventId).not.toBe('');
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
 						expect(synapseMessage?.content.msgtype).toBe('m.image');
@@ -803,11 +824,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcFilesMatch).toBe(true);
 
 						// Element view: Download and verify binary match from Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.url).toBeDefined();
 
-						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						const synapseFilesMatch = await hs1PrimaryApp.downloadFileAndCompareBinary(
+							synapseMessage?.content.url as string,
+							fileInfo.path,
+						);
 						expect(synapseFilesMatch).toBe(true);
 					});
 				});
@@ -843,7 +867,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcMessage?.federation?.eventId).not.toBe('');
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
 						expect(synapseMessage?.content.msgtype).toBe('m.file');
@@ -879,11 +903,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcFilesMatch).toBe(true);
 
 						// Element view: Download and verify binary match from Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.url).toBeDefined();
 
-						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						const synapseFilesMatch = await hs1PrimaryApp.downloadFileAndCompareBinary(
+							synapseMessage?.content.url as string,
+							fileInfo.path,
+						);
 						expect(synapseFilesMatch).toBe(true);
 					});
 				});
@@ -921,7 +948,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcMessage?.federation?.eventId).not.toBe('');
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
 						expect(synapseMessage?.content.msgtype).toBe('m.video');
@@ -957,11 +984,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcFilesMatch).toBe(true);
 
 						// Element view: Download and verify binary match from Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.url).toBeDefined();
 
-						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						const synapseFilesMatch = await hs1PrimaryApp.downloadFileAndCompareBinary(
+							synapseMessage?.content.url as string,
+							fileInfo.path,
+						);
 						expect(synapseFilesMatch).toBe(true);
 					});
 				});
@@ -999,7 +1029,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcMessage?.federation?.eventId).not.toBe('');
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
 						expect(synapseMessage?.content.msgtype).toBe('m.audio');
@@ -1035,11 +1065,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcFilesMatch).toBe(true);
 
 						// Element view: Download and verify binary match from Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.url).toBeDefined();
 
-						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						const synapseFilesMatch = await hs1PrimaryApp.downloadFileAndCompareBinary(
+							synapseMessage?.content.url as string,
+							fileInfo.path,
+						);
 						expect(synapseFilesMatch).toBe(true);
 					});
 				});
@@ -1074,7 +1107,7 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcMessage?.federation?.eventId).not.toBe('');
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.body).toBe(fileInfo.fileName);
 						expect(synapseMessage?.content.msgtype).toBe('m.file');
@@ -1110,11 +1143,14 @@ import { SynapseClient } from '../helper/synapse-client';
 						expect(rcFilesMatch).toBe(true);
 
 						// Element view: Download and verify binary match from Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.url).toBeDefined();
 
-						const synapseFilesMatch = await hs1AdminApp.downloadFileAndCompareBinary(synapseMessage?.content.url as string, fileInfo.path);
+						const synapseFilesMatch = await hs1PrimaryApp.downloadFileAndCompareBinary(
+							synapseMessage?.content.url as string,
+							fileInfo.path,
+						);
 						expect(synapseFilesMatch).toBe(true);
 					});
 				});
@@ -1131,7 +1167,7 @@ import { SynapseClient } from '../helper/synapse-client';
 					const createResponse = await createRoom({
 						type: 'p',
 						name: channelName,
-						members: [federationConfig.hs1.adminMatrixUserId],
+						members: [hs1PrimaryMatrixUserId],
 						extraData: {
 							federated: true,
 						},
@@ -1146,17 +1182,17 @@ import { SynapseClient } from '../helper/synapse-client';
 					expect(federatedChannel).toHaveProperty('federated', true);
 
 					// Accept invitation for the federated user
-					const acceptedRoomId = await hs1AdminApp.acceptInvitationForRoomName(channelName);
+					const acceptedRoomId = await hs1PrimaryApp.acceptInvitationForRoomName(channelName);
 					expect(acceptedRoomId).not.toBe('');
 				}, 10000);
 
 				describe('Upload one image', () => {
 					it('should appear correctly on the remote RC as messages', async () => {
 						const fileInfo = testFiles.image;
-						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+						await hs1PrimaryApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.image');
 
@@ -1201,10 +1237,10 @@ import { SynapseClient } from '../helper/synapse-client';
 				describe('Upload one PDF', () => {
 					it('should appear correctly on the remote RC as messages', async () => {
 						const fileInfo = testFiles.pdf;
-						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+						await hs1PrimaryApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.file');
 
@@ -1247,10 +1283,10 @@ import { SynapseClient } from '../helper/synapse-client';
 				describe('Upload one Video', () => {
 					it('should appear correctly on the remote RC as messages', async () => {
 						const fileInfo = testFiles.video;
-						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+						await hs1PrimaryApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.video');
 
@@ -1293,10 +1329,10 @@ import { SynapseClient } from '../helper/synapse-client';
 				describe('Upload one Audio', () => {
 					it('should appear correctly on the remote RC as messages', async () => {
 						const fileInfo = testFiles.audio;
-						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+						await hs1PrimaryApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.audio');
 
@@ -1339,10 +1375,10 @@ import { SynapseClient } from '../helper/synapse-client';
 				describe('Upload one Text File', () => {
 					it('should appear correctly on the remote RC as messages', async () => {
 						const fileInfo = testFiles.text;
-						await hs1AdminApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
+						await hs1PrimaryApp.uploadFile(channelName, fileInfo.path, fileInfo.fileName);
 
 						// Element view: Verify in Element
-						const synapseMessage = await hs1AdminApp.findFileMessageInRoom(channelName, fileInfo.fileName);
+						const synapseMessage = await hs1PrimaryApp.findFileMessageInRoom(channelName, fileInfo.fileName);
 						expect(synapseMessage).not.toBeNull();
 						expect(synapseMessage?.content.msgtype).toBe('m.file');
 
