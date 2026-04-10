@@ -46,7 +46,9 @@
 		"yoga-layout@npm:^3.2.1": "patch:yoga-layout@npm%3A3.2.1#~/.yarn/patches/yoga-layout-npm-3.2.1-51ec934670.patch",
 		"@react-pdf/layout@npm:^4.4.2": "patch:@react-pdf/layout@npm%3A4.4.2#~/.yarn/patches/@react-pdf-layout-npm-4.4.2-6c2e3312fa.patch",
 		"react-aria@npm:~3.37.0": "patch:react-aria@npm%3A3.37.0#~/.yarn/patches/react-aria-npm-3.37.0-83959bd2fa.patch",
-		"react-stately@npm:~3.35.0": "patch:react-stately@npm%3A3.17.0#~/.yarn/patches/react-stately-npm-3.17.0-264cc7a43c.patch"
+		"react-stately@npm:~3.35.0": "patch:react-stately@npm%3A3.17.0#~/.yarn/patches/react-stately-npm-3.17.0-264cc7a43c.patch",
+		"zod@npm:^3.25.0 || ^4.0.0": "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch",
+		"zod@npm:~4.3.6": "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",

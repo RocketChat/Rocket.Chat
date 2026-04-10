@@ -1,0 +1,36 @@
+diff --git a/v4/classic/external.cjs b/v4/classic/external.cjs
+index ee133825d44ab44b86dd8aef6bd985653ebde06c..ea74468d20c2371f9c4d8941467e3b7fe93a00ef 100644
+--- a/v4/classic/external.cjs
++++ b/v4/classic/external.cjs
+@@ -29,7 +29,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
+     return (mod && mod.__esModule) ? mod : { "default": mod };
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+-exports.coerce = exports.iso = exports.ZodISODuration = exports.ZodISOTime = exports.ZodISODate = exports.ZodISODateTime = exports.locales = exports.fromJSONSchema = exports.toJSONSchema = exports.NEVER = exports.util = exports.TimePrecision = exports.flattenError = exports.formatError = exports.prettifyError = exports.treeifyError = exports.regexes = exports.clone = exports.$brand = exports.$input = exports.$output = exports.config = exports.registry = exports.globalRegistry = exports.core = void 0;
++exports.coerce = exports.iso = exports.ZodISODuration = exports.ZodISOTime = exports.ZodISODate = exports.ZodISODateTime = exports.fromJSONSchema = exports.toJSONSchema = exports.NEVER = exports.util = exports.TimePrecision = exports.flattenError = exports.formatError = exports.prettifyError = exports.treeifyError = exports.regexes = exports.clone = exports.$brand = exports.$input = exports.$output = exports.config = exports.registry = exports.globalRegistry = exports.core = void 0;
+ exports.core = __importStar(require("../core/index.cjs"));
+ __exportStar(require("./schemas.cjs"), exports);
+ __exportStar(require("./checks.cjs"), exports);
+@@ -60,7 +60,7 @@ var json_schema_processors_js_1 = require("../core/json-schema-processors.cjs");
+ Object.defineProperty(exports, "toJSONSchema", { enumerable: true, get: function () { return json_schema_processors_js_1.toJSONSchema; } });
+ var from_json_schema_js_1 = require("./from-json-schema.cjs");
+ Object.defineProperty(exports, "fromJSONSchema", { enumerable: true, get: function () { return from_json_schema_js_1.fromJSONSchema; } });
+-exports.locales = __importStar(require("../locales/index.cjs"));
++// locales removed from barrel
+ // iso
+ // must be exported from top-level
+ // https://github.com/colinhacks/zod/issues/4491
+diff --git a/v4/classic/external.js b/v4/classic/external.js
+index 9567900bbb57099481c0ea5864fbf697d62021a5..d1412a86bcd3d16cac1cb2f9e455df9ba667ace2 100644
+--- a/v4/classic/external.js
++++ b/v4/classic/external.js
+@@ -11,7 +11,8 @@ config(en());
+ export { globalRegistry, registry, config, $output, $input, $brand, clone, regexes, treeifyError, prettifyError, formatError, flattenError, TimePrecision, util, NEVER, } from "../core/index.js";
+ export { toJSONSchema } from "../core/json-schema-processors.js";
+ export { fromJSONSchema } from "./from-json-schema.js";
+-export * as locales from "../locales/index.js";
++// locales removed from barrel to avoid bundling all 50 locale files (~147 KB)
++// import individual locales via: import xx from 'zod/v4/locales/xx'
+ // iso
+ // must be exported from top-level
+ // https://github.com/colinhacks/zod/issues/4491
