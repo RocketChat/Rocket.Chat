@@ -101,11 +101,7 @@ const FileUploadModal = ({ onClose, file, fileName, fileDescription = '', onSubm
 								<FieldLabel>{t('Alternative_text')}</FieldLabel>
 								<FieldDescription>{t('Alt_text_description')}</FieldDescription>
 								<FieldRow>
-									<Controller
-										name='description'
-										control={control}
-										render={({ field }) => <TextAreaInput {...field} placeholder={t('Alt_text_placeholder')} />}
-									/>
+									<Controller name='description' control={control} render={({ field }) => <TextAreaInput {...field} />} />
 								</FieldRow>
 							</Field>
 						)}
