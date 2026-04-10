@@ -1,8 +1,41 @@
 import tls from 'tls';
 import { PassThrough } from 'stream';
+import { Collection } from 'mongodb';
 
 import { Email } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
+
+// DocumentDB only supports one index build at a time per collection.
+// Serialize all createIndex/createIndexes calls per collection at the native
+// driver level so Meteor packages (accounts-base, accounts-password, etc.)
+// and Rocket.Chat models (BaseRaw) don't race against each other.
+// This package loads before accounts-base (see .meteor/packages order).
+if (process.env.DOCUMENTDB === 'true') {
+	const PATCHED = Symbol.for('rocketchat.documentdb.index.patch');
+
+	if (!Collection[PATCHED]) {
+		Collection[PATCHED] = true;
+
+		const queues = new Map();
+
+		const enqueue = (collectionName, fn) => {
+			const prev = queues.get(collectionName) || Promise.resolve();
+			const next = prev.then(fn, fn);
+			queues.set(collectionName, next.catch(() => {}));
+			return next;
+		};
+
+		const originalCreateIndex = Collection.prototype.createIndex;
+		Collection.prototype.createIndex = function (...args) {
+			return enqueue(this.collectionName, () => originalCreateIndex.apply(this, args));
+		};
+
+		const originalCreateIndexes = Collection.prototype.createIndexes;
+		Collection.prototype.createIndexes = function (...args) {
+			return enqueue(this.collectionName, () => originalCreateIndexes.apply(this, args));
+		};
+	}
+}
 
 // we always want Meteor to disable oplog tailing
 Package['disable-oplog'] = {};
