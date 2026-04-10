@@ -165,16 +165,15 @@ export const getSecondFactorMethod = (user: IUser, method: string | undefined, o
 };
 
 export async function checkCodeForUser({ user, code, method, options = {}, connection }: ICheckCodeForUser): Promise<boolean> {
-	// if (process.env.TEST_MODE && !options.requireSecondFactor) {
-	// 	return true;
-	// }
+	if (process.env.TEST_MODE && !options.requireSecondFactor) {
+		return true;
+	}
 
-	// if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
-	// 	return true;
-	// }
+	if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
+		return true;
+	}
 
 	let existingUser: IUser | null;
-	console.log('checkCodeForUser', JSON.stringify({ code, method, options }, null, 2));
 	if (typeof user === 'string') {
 		existingUser = await getUserForCheck(user);
 	} else {

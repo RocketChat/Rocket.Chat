@@ -24,8 +24,6 @@ export const doesUserRquire2FA = (user: IUser) => {
 	const rememberAfterRegistration = getRememberDate(user.createdAt);
 
 	if (rememberAfterRegistration && rememberAfterRegistration > new Date()) {
-		console.log('remembering after registration');
-		console.log('time difference - ', rememberAfterRegistration.getTime() - new Date().getTime());
 		return false;
 	}
 

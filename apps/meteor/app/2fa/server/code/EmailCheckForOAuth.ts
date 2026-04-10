@@ -16,7 +16,6 @@ export class EmailCheckForOAuth extends EmailCheck {
 			createdAt: now,
 			expireAt: new Date(now.getTime() + 1000 * 60 * 5),
 		});
-		console.log('challenge - ', challenge);
 		await this.sendEmailCode(user);
 		return challenge.insertedId;
 	}
