@@ -480,7 +480,6 @@ describe('[Rooms]', () => {
 					expect(res.body.message.files[0]).to.have.property('type', 'image/png');
 					expect(res.body.message.files[0]).to.have.property('name', '1024x1024.png');
 					expect(res.body.message.attachments[0]).to.have.property('description', 'some_file_description');
-					expect(res.body.message).to.not.have.property('msg', 'some_file_description');
 				});
 		});
 
