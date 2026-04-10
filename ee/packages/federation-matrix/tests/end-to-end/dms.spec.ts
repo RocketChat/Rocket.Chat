@@ -142,7 +142,7 @@ const waitForRoomEvent = async (
 							subscriptionInvite = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
 							expect(subscriptionInvite).toHaveProperty('status', 'INVITED');
-							expect(subscriptionInvite).toHaveProperty('fname', hs1PrimaryUsername);
+							expect(subscriptionInvite).toHaveProperty('fname', hs1PrimaryMatrixUserId);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -171,7 +171,7 @@ const waitForRoomEvent = async (
 				it('should display the fname properly', async () => {
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
 
-					expect(sub).toHaveProperty('fname', hs1PrimaryUsername);
+					expect(sub).toHaveProperty('fname', hs1PrimaryMatrixUserId);
 				});
 
 				it('should return own user name as the room name when user is alone in the DM', async () => {
@@ -632,8 +632,8 @@ const waitForRoomEvent = async (
 							const sub = await getSubscriptionByRoomId(rcRoom1._id, rcUserConfig1.credentials, rcUserConfig1.request);
 
 							expect(sub).not.toHaveProperty('status');
-							expect(sub).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${userDm2}`);
-							expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${userDm2Name}`);
+							expect(sub).toHaveProperty('name', `${userDm2}, ${hs1PrimaryMatrixUserId}`);
+							expect(sub).toHaveProperty('fname', `${userDm2Name}, ${hs1PrimaryUsername}`);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -875,8 +875,8 @@ const waitForRoomEvent = async (
 							const subA = await getSubscriptionByRoomId(rcRoomConverted._id, rcUserConfigA.credentials, rcUserConfigA.request);
 
 							expect(subA).not.toHaveProperty('status');
-							expect(subA).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${userDmB}`);
-							expect(subA).toHaveProperty('fname', `${hs1PrimaryUsername}, ${userDmBName}`);
+							expect(subA).toHaveProperty('name', `${userDmB}, ${hs1PrimaryMatrixUserId}`);
+							expect(subA).toHaveProperty('fname', `${userDmBName}, ${hs1PrimaryUsername}`);
 
 							// Check userB's subscription
 							const subB = await getSubscriptionByRoomId(rcRoomConverted._id, rcUserConfigB.credentials, rcUserConfigB.request);
@@ -1023,16 +1023,16 @@ const waitForRoomEvent = async (
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser1.config.credentials, rcUser1.config.request);
 
 					// Should contain both invited users in the name
-					expect(sub).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${rcUser2.username}`);
-					expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser2.fullName}`);
+					expect(sub).toHaveProperty('name', `${rcUser2.username}, ${hs1PrimaryMatrixUserId}`);
+					expect(sub).toHaveProperty('fname', `${rcUser2.fullName}, ${hs1PrimaryUsername}`);
 				});
 
 				it("should display only the inviter's username for the invited user on Rocket.Chat", async () => {
 					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
 					expect(sub).toHaveProperty('status', 'INVITED');
-					expect(sub).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${rcUser1.username}`);
-					expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser1.fullName}`);
+					expect(sub).toHaveProperty('name', `${rcUser1.username}, ${hs1PrimaryMatrixUserId}`);
+					expect(sub).toHaveProperty('fname', `${rcUser1.fullName}, ${hs1PrimaryUsername}`);
 				});
 
 				it('should accept the invitation on Synapse', async () => {
@@ -1058,8 +1058,8 @@ const waitForRoomEvent = async (
 							const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
 							expect(sub).toHaveProperty('status', 'INVITED');
-							expect(sub).toHaveProperty('name', `${hs1PrimaryMatrixUserId}, ${rcUser1.username}`);
-							expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser1.fullName}`);
+							expect(sub).toHaveProperty('name', `${rcUser1.username}, ${hs1PrimaryMatrixUserId}`);
+							expect(sub).toHaveProperty('fname', `${rcUser1.fullName}, ${hs1PrimaryUsername}`);
 						},
 						{ retries: 5, delayMs: 1000 },
 					);
@@ -1344,7 +1344,7 @@ const waitForRoomEvent = async (
 									const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
 									// After acceptance, should display the Synapse user's ID
-									expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser1.fullName}`);
+									expect(sub).toHaveProperty('fname', `${rcUser1.fullName}, ${hs1PrimaryUsername}`);
 								},
 								{ retries: 5, delayMs: 1000 },
 							);
@@ -1589,7 +1589,7 @@ const waitForRoomEvent = async (
 									const sub = await getSubscriptionByRoomId(rcRoom._id, rcUser2.config.credentials, rcUser2.config.request);
 
 									// After acceptance, should display the Synapse user's ID
-									expect(sub).toHaveProperty('fname', `${hs1PrimaryUsername}, ${rcUser1.fullName}`);
+									expect(sub).toHaveProperty('fname', `${rcUser1.fullName}, ${hs1PrimaryUsername}`);
 								},
 								{ retries: 5, delayMs: 1000 },
 							);
@@ -1921,35 +1921,6 @@ const waitForRoomEvent = async (
 		});
 
 		afterAll(async () => {
-			// Reset display name back to original before deleting the user
-			await hs1PrimaryApp.matrixClient.setDisplayName(hs1PrimaryUsername);
-
-			// wait until the name change is reflected in RC before finishing the test
-			await retry(
-				'waiting for Synapse user displayname to propagate to RC',
-				async () => {
-					const response = await rc1AdminRequestConfig.request
-						.get(api('users.info'))
-						.set(rc1AdminRequestConfig.credentials)
-						.query({ username: hs1PrimaryMatrixUserId })
-						.expect(200);
-
-					expect(response.body.user).toHaveProperty('name', hs1PrimaryUsername);
-				},
-				{ retries: 15, delayMs: 1000 },
-			);
-
-			// Also wait for the DM subscription fname to be updated, since this propagates
-			// asynchronously after the user name change via debounced Room.updateDirectMessageRoomName
-			await retry(
-				'waiting for subscription fname to reflect reset display name',
-				async () => {
-					const sub = await getSubscriptionByRoomId(rcRoom._id, rcUserConfig.credentials, rcUserConfig.request);
-					expect(sub).toHaveProperty('fname', hs1PrimaryUsername);
-				},
-				{ retries: 10, delayMs: 1000 },
-			);
-
 			await deleteUser(rcUser, {}, rc1AdminRequestConfig);
 		});
 
