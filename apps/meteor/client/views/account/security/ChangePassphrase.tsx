@@ -2,7 +2,6 @@ import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Pa
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, usePasswordPolicy } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
 import { useEffect, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -99,12 +98,9 @@ export const ChangePassphrase = (): JSX.Element => {
 
 	return (
 		<>
-			<Box
-				is='p'
-				fontScale='p1'
-				id={e2ePasswordExplanationId}
-				dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('E2E_Encryption_Password_Explanation')) }}
-			/>
+			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
+				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
+			</Box>
 			<Box mbs={36} w='full'>
 				<Box is='h3' fontScale='h4' mbe={12}>
 					{t('Change_E2EE_password')}

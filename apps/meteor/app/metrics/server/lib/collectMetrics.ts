@@ -5,7 +5,6 @@ import { tracerSpan } from '@rocket.chat/tracing';
 import connect from 'connect';
 import { Facts } from 'meteor/facts-base';
 import { Meteor } from 'meteor/meteor';
-import { MongoInternals } from 'meteor/mongo';
 import client from 'prom-client';
 import gcStats from 'prometheus-gc-stats';
 import _ from 'underscore';
@@ -16,8 +15,6 @@ import { getControl } from '../../../../server/lib/migrations';
 import { settings } from '../../../settings/server';
 import { getAppsStatistics } from '../../../statistics/server/lib/getAppsStatistics';
 import { Info } from '../../../utils/rocketchat.info';
-
-const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
 
 Facts.incrementServerFact = function (pkg: 'pkg' | 'fact', fact: string | number, increment: number): void {
 	metrics.meteorFacts.inc({ pkg, fact }, increment);
@@ -46,9 +43,6 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.totalAppsEnabled.set(totalActive || 0);
 	metrics.totalAppsFailed.set(totalFailed || 0);
 
-	const oplogQueue = (mongo as any)._oplogHandle?._entryQueue?.length || 0;
-	metrics.oplogQueue.set(oplogQueue);
-
 	const statistics = await Statistics.findLast();
 	if (!statistics) {
 		return;
@@ -57,7 +51,6 @@ const setPrometheusData = async (): Promise<void> => {
 	metrics.version.set({ version: statistics.version }, 1);
 	metrics.migration.set((await getControl()).version);
 	metrics.instanceCount.set(statistics.instanceCount);
-	metrics.oplogEnabled.set({ enabled: `${statistics.oplogEnabled}` }, 1);
 
 	// User statistics
 	metrics.totalUsers.set(statistics.totalUsers);

@@ -1,7 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Team, Room } from '@rocket.chat/core-services';
-import { isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
+import { Message, Team, Room } from '@rocket.chat/core-services';
+import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -11,7 +11,7 @@ import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddU
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 /**
  * This function adds user to the given room.
@@ -46,12 +46,6 @@ export const addUserToRoom = async (
 
 	if (!userToBeAdded) {
 		throw new Meteor.Error('user-not-found');
-	}
-
-	// Check if user is already in room
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
-	if (subscription) {
-		return;
 	}
 
 	if (
@@ -96,6 +90,23 @@ export const addUserToRoom = async (
 
 		// Keep the current event
 		await callbacks.run('beforeJoinRoom', userToBeAdded, room);
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userToBeAdded._id);
+	if (subscription) {
+		if (!isBannedSubscription(subscription)) {
+			return true;
+		}
+
+		const deletedSub = await Subscriptions.removeByRoomIdAndUserId(rid, userToBeAdded._id);
+		if (!deletedSub) {
+			return true;
+		}
+		void notifyOnSubscriptionChanged(deletedSub, 'removed');
+
+		if (!skipSystemMessage && inviter) {
+			await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username!, inviter, { ts: now });
+		}
 	}
 
 	await Room.createUserSubscription({

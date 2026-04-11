@@ -57,7 +57,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 	return (
 		<>
 			{data?.sessions.length === 0 && isSuccess && <GenericNoResults />}
-			<GenericTable>
+			<GenericTable aria-label={t('Devices')}>
 				{data?.sessions && data.sessions.length > 0 && headers && <GenericTableHeader>{headers}</GenericTableHeader>}
 				<GenericTableBody>
 					{isPending && <GenericTableLoadingTable headerCells={headers.filter(Boolean).length} />}

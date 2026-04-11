@@ -20,7 +20,7 @@ exports[`renders Default without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-142wtci"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+            class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
           >
             <i
               aria-hidden="true"
@@ -28,12 +28,12 @@ exports[`renders Default without crashing 1`] = `
             >
               
             </i>
-            <div
+            <h5
               class="rcx-box rcx-box--full rcx-css-1spko5i"
               id="contextualbarTitle"
             >
               Call info
-            </div>
+            </h5>
             <div
               class="rcx-button-group rcx-button-group--align-start"
               role="group"
@@ -42,7 +42,7 @@ exports[`renders Default without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="true"
                 aria-label="Options"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                 id="react-aria-:r1:"
                 title="Options"
                 type="button"
@@ -56,7 +56,7 @@ exports[`renders Default without crashing 1`] = `
               </button>
               <button
                 aria-label="Close"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ue04py"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
@@ -285,7 +285,7 @@ exports[`renders Default without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button"
               type="button"
             >
               <span
@@ -301,7 +301,7 @@ exports[`renders Default without crashing 1`] = `
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--success rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--success rcx-button"
               type="button"
             >
               <span
@@ -386,7 +386,7 @@ exports[`renders ExternalContact without crashing 1`] = `
           class="rcx-box rcx-box--full rcx-css-142wtci"
         >
           <div
-            class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1tmbvtv"
+            class="rcx-box rcx-box--full rcx-css-1bdyjik rcx-css-1l4fxfb"
           >
             <i
               aria-hidden="true"
@@ -394,12 +394,12 @@ exports[`renders ExternalContact without crashing 1`] = `
             >
               
             </i>
-            <div
+            <h5
               class="rcx-box rcx-box--full rcx-css-1spko5i"
               id="contextualbarTitle"
             >
               Call info
-            </div>
+            </h5>
             <div
               class="rcx-button-group rcx-button-group--align-start"
               role="group"
@@ -408,7 +408,7 @@ exports[`renders ExternalContact without crashing 1`] = `
                 aria-expanded="false"
                 aria-haspopup="true"
                 aria-label="Options"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
                 id="react-aria-:r4:"
                 title="Options"
                 type="button"
@@ -422,7 +422,7 @@ exports[`renders ExternalContact without crashing 1`] = `
               </button>
               <button
                 aria-label="Close"
-                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-button-group__item rcx-css-ue04py"
+                class="rcx-box rcx-box--full rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
@@ -622,7 +622,7 @@ exports[`renders ExternalContact without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--success rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--success rcx-button"
               type="button"
             >
               <span

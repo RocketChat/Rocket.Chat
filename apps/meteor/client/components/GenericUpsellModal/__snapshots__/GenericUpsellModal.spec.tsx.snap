@@ -84,7 +84,7 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
               type="button"
             >
               <span
@@ -94,7 +94,7 @@ exports[`GenericUpsellModal renders Default without crashing 1`] = `
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span
@@ -200,7 +200,7 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
               type="button"
             >
               <span
@@ -210,7 +210,7 @@ exports[`GenericUpsellModal renders WithAnnotation without crashing 1`] = `
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span
@@ -311,7 +311,7 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
               type="button"
             >
               <span
@@ -321,7 +321,7 @@ exports[`GenericUpsellModal renders WithCustomButtons without crashing 1`] = `
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span
@@ -422,7 +422,7 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
               type="button"
             >
               <span
@@ -432,7 +432,7 @@ exports[`GenericUpsellModal renders WithCustomTagLine without crashing 1`] = `
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span
@@ -533,7 +533,7 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
             role="group"
           >
             <button
-              class="rcx-box rcx-box--full rcx-button--secondary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--secondary rcx-button"
               type="button"
             >
               <span
@@ -543,7 +543,7 @@ exports[`GenericUpsellModal renders WithFixedWidthAndHeight without crashing 1`]
               </span>
             </button>
             <button
-              class="rcx-box rcx-box--full rcx-button--primary rcx-button rcx-button-group__item"
+              class="rcx-box rcx-box--full rcx-button--primary rcx-button"
               type="button"
             >
               <span

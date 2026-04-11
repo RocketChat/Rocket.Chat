@@ -54,7 +54,7 @@ export async function getEmailContent({ message, user, room }) {
 		});
 	}
 
-	if (message.t === 'e2e' && !message.file && !message.files?.length) {
+	if (message.t === 'e2e') {
 		return settings.get('Email_notification_show_message') ? i18n.t('Encrypted_message_preview_unavailable', { lng }) : header;
 	}
 
@@ -77,13 +77,8 @@ export async function getEmailContent({ message, user, room }) {
 	}
 
 	if (hasFiles) {
-		const attachments = message.attachments || [];
-		const fileParts = files.map((file, index) => {
-			let part = escapeHTML(file.name);
-			if (attachments[index]?.description) {
-				part += `<br/><br/>${escapeHTML(attachments[index].description)}`;
-			}
-			return part;
+		const fileParts = files.map((file) => {
+			return escapeHTML(file.name);
 		});
 		contentParts.push(fileParts.join('<br/><br/>'));
 	}

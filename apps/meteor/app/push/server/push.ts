@@ -1,8 +1,9 @@
-import type { IAppsTokens, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
-import { AppsTokens } from '@rocket.chat/models';
+import type { IPushToken, RequiredField, Optional, IPushNotificationConfig } from '@rocket.chat/core-typings';
+import { PushToken } from '@rocket.chat/models';
+import { ajv } from '@rocket.chat/rest-typings';
+import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick, truncateString } from '@rocket.chat/tools';
-import Ajv from 'ajv';
 import { JWT } from 'google-auth-library';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -17,10 +18,6 @@ export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
 const PUSH_TITLE_LIMIT = 65;
 const PUSH_MESSAGE_BODY_LIMIT = 240;
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type FCMCredentials = {
 	type: string;
@@ -115,8 +112,8 @@ type GatewayNotification = {
 	query?: {
 		userId: any;
 	};
-	token?: IAppsTokens['token'];
-	tokens?: IAppsTokens['token'][];
+	token?: IPushToken['token'];
+	tokens?: IPushToken['token'][];
 	payload?: Record<string, any>;
 	delayUntil?: Date;
 	createdAt: Date;
@@ -126,8 +123,8 @@ type GatewayNotification = {
 export type NativeNotificationParameters = {
 	userTokens: string | string[];
 	notification: PendingPushNotification;
-	_replaceToken: (currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']) => void;
-	_removeToken: (token: IAppsTokens['token']) => void;
+	_replaceToken: (currentToken: IPushToken['token'], newToken: IPushToken['token']) => void;
+	_removeToken: (token: IPushToken['token']) => void;
 	options: RequiredField<PushOptions, 'gcm'>;
 };
 
@@ -170,12 +167,12 @@ class PushClass {
 		}
 	}
 
-	private replaceToken(currentToken: IAppsTokens['token'], newToken: IAppsTokens['token']): void {
-		void AppsTokens.updateMany({ token: currentToken }, { $set: { token: newToken } });
+	private replaceToken(currentToken: IPushToken['token'], newToken: IPushToken['token']): void {
+		void PushToken.updateMany({ token: currentToken }, { $set: { token: newToken } });
 	}
 
-	private removeToken(token: IAppsTokens['token']): void {
-		void AppsTokens.deleteOne({ token });
+	private removeToken(token: IPushToken['token']): void {
+		void PushToken.deleteOne({ token });
 	}
 
 	private shouldUseGateway(): boolean {
@@ -183,7 +180,7 @@ class PushClass {
 	}
 
 	private async sendNotificationNative(
-		app: IAppsTokens,
+		app: IPushToken,
 		notification: PendingPushNotification,
 		countApn: string[],
 		countGcm: string[],
@@ -263,20 +260,22 @@ class PushClass {
 		notification.uniqueId = this.options.uniqueId;
 
 		const options = {
+			// SECURITY: the URL is a default hardcoded value or an envvar/setting set by an admin. It's safe to disable this check.
+			ignoreSsrfValidation: true,
 			method: 'POST',
 			body: {
 				token,
 				options: notification,
 			},
 			...(token && this.options.getAuthorization && { headers: { Authorization: await this.options.getAuthorization() } }),
-		};
+		} as ExtendedFetchOptions;
 
 		const result = await fetch(`${gateway}/push/${service}/send`, options);
 		const response = await result.text();
 
 		if (result.status === 406) {
 			logger.info({ msg: 'removing push token', token });
-			await AppsTokens.deleteMany({
+			await PushToken.deleteMany({
 				$or: [
 					{
 						'token.apn': token,
@@ -326,7 +325,7 @@ class PushClass {
 	}
 
 	private async sendNotificationGateway(
-		app: IAppsTokens,
+		app: IPushToken,
 		notification: PendingPushNotification,
 		countApn: string[],
 		countGcm: string[],
@@ -379,7 +378,7 @@ class PushClass {
 			$or: [{ 'token.apn': { $exists: true } }, { 'token.gcm': { $exists: true } }],
 		};
 
-		const appTokens = AppsTokens.find(query);
+		const appTokens = PushToken.find(query);
 
 		for await (const app of appTokens) {
 			logger.debug({ msg: 'send to token', token: app.token });
@@ -403,15 +402,15 @@ class PushClass {
 			// Add some verbosity about the send result, making sure the developer
 			// understands what just happened.
 			if (!countApn.length && !countGcm.length) {
-				if ((await AppsTokens.estimatedDocumentCount()) === 0) {
+				if ((await PushToken.estimatedDocumentCount()) === 0) {
 					logger.debug('GUIDE: The "AppsTokens" is empty - No clients have registered on the server yet...');
 				}
 			} else if (!countApn.length) {
-				if ((await AppsTokens.countApnTokens()) === 0) {
+				if ((await PushToken.countApnTokens()) === 0) {
 					logger.debug('GUIDE: The "AppsTokens" - No APN clients have registered on the server yet...');
 				}
 			} else if (!countGcm.length) {
-				if ((await AppsTokens.countGcmTokens()) === 0) {
+				if ((await PushToken.countGcmTokens()) === 0) {
 					logger.debug('GUIDE: The "AppsTokens" - No GCM clients have registered on the server yet...');
 				}
 			}

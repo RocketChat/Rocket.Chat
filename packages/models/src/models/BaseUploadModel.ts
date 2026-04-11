@@ -134,4 +134,8 @@ export abstract class BaseUploadModelRaw extends BaseRaw<T> implements IBaseUplo
 	async deleteFile(fileId: string, options?: { session?: ClientSession }): Promise<DeleteResult> {
 		return this.deleteOne({ _id: fileId }, { session: options?.session });
 	}
+
+	async findOneByIdAndUserIdAndRoomId(fileId: string, userId: string, rid: string, options?: FindOptions<T>): Promise<T | null> {
+		return this.findOne({ _id: fileId, userId, rid }, options);
+	}
 }

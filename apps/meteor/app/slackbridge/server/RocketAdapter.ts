@@ -203,14 +203,11 @@ export default class RocketAdapter {
 
 		if (rocketMessage.file.name) {
 			let fileName = rocketMessage.file.name;
-			let text = rocketMessage.msg;
+			const text = rocketMessage.msg;
 
 			const attachment = this.getMessageAttachment(rocketMessage);
 			if (attachment) {
 				fileName = Meteor.absoluteUrl(attachment.title_link);
-				if (!text) {
-					text = attachment.description;
-				}
 			}
 
 			await slack.postMessage(slack.getSlackChannel(rocketMessage.rid), { ...rocketMessage, msg: `${text} ${fileName}` });
@@ -503,13 +500,13 @@ export default class RocketAdapter {
 						// Make sure that a message with the same bot_id and timestamp doesn't already exists
 						const msg = await Messages.findOneBySlackBotIdAndSlackTs(slackMessage.bot_id, slackMessage.ts);
 						if (!msg) {
-							void sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
+							void sendMessage(rocketUser, rocketMsgObj, rocketChannel, { upsert: true });
 						}
 					}
 				}, 500);
 			} else {
 				rocketLogger.debug('Send message to Rocket.Chat');
-				await sendMessage(rocketUser, rocketMsgObj, rocketChannel, true);
+				await sendMessage(rocketUser, rocketMsgObj, rocketChannel, { upsert: true });
 			}
 		}
 	}

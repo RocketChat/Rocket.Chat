@@ -1,7 +1,8 @@
+import { transformSync } from '@babel/core';
+import presetEnv from '@babel/preset-env';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { pick } from '@rocket.chat/tools';
-import { Babel } from 'meteor/babel-compiler';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
@@ -53,7 +54,7 @@ function _verifyRequiredFields(integration: INewOutgoingIntegration | IUpdateOut
 }
 
 async function _verifyUserHasPermissionForChannels(userId: IUser['_id'], channels: string[]): Promise<void> {
-	for await (let channel of channels) {
+	for (let channel of channels) {
 		if (scopedChannels.includes(channel)) {
 			if (channel === 'all_public_channels') {
 				// No special permissions needed to add integration to public channels
@@ -179,13 +180,15 @@ export const validateOutgoingIntegration = async function (
 		integration.script.trim() !== ''
 	) {
 		try {
-			const babelOptions = Object.assign(Babel.getDefaultOptions({ runtime: false }), {
+			const result = transformSync(integration.script, {
+				presets: [presetEnv],
 				compact: true,
 				minified: true,
 				comments: false,
 			});
 
-			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+			// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
+			integrationData.scriptCompiled = result?.code ?? undefined;
 			integrationData.scriptError = undefined;
 		} catch (e) {
 			integrationData.scriptCompiled = undefined;

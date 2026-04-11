@@ -118,9 +118,15 @@ export class MockedAppRootBuilder {
 		getStream: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
-		disconnect: () => Promise.reject(new Error('not implemented')),
-		reconnect: () => Promise.reject(new Error('not implemented')),
-		writeStream: () => Promise.reject(new Error('not implemented')),
+		disconnect: () => {
+			throw new Error('not implemented');
+		},
+		reconnect: () => {
+			throw new Error('not implemented');
+		},
+		writeStream: () => {
+			throw new Error('not implemented');
+		},
 	};
 
 	private router: ContextType<typeof RouterContext> = {
@@ -468,6 +474,17 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withRouter(overrides: Partial<ContextType<typeof RouterContext>>): this {
+		this.router = { ...this.router, ...overrides };
+		return this;
+	}
+
+	withRouteParameter(name: string, value: string): this {
+		const innerFn = this.router.getRouteParameters;
+		this.router.getRouteParameters = () => ({ ...innerFn(), [name]: value });
+		return this;
+	}
+
 	withRole(role: string): this {
 		if (!this.user.user) {
 			throw new Error('user is not defined');
@@ -643,12 +660,12 @@ export class MockedAppRootBuilder {
 	// To be used with languages other than the default one
 	withDefaultLanguage(lng: string): this {
 		if (this.i18n.isInitialized) {
-			this.i18n.changeLanguage(lng);
+			void this.i18n.changeLanguage(lng);
 			return this;
 		}
 
 		this.i18n.on('initialized', () => {
-			this.i18n.changeLanguage(lng);
+			void this.i18n.changeLanguage(lng);
 		});
 
 		return this;
@@ -721,7 +738,7 @@ export class MockedAppRootBuilder {
 
 		const getModalSnapshot = () => this.modal;
 
-		i18n.init();
+		void i18n.init();
 
 		return function MockedAppRoot({ children }) {
 			const [translation, updateTranslation] = useReducer(reduceTranslation, undefined, () => reduceTranslation());
