@@ -1,8 +1,7 @@
-import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Room } from '@rocket.chat/core-services';
-import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
-import { federationSDK } from '@rocket.chat/federation-sdk';
+import type { IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { member } from './member';
 
