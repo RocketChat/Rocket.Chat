@@ -7202,7 +7202,7 @@ __metadata:
 
 "@react-aria/i18n@patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch":
   version: 3.12.5
-  resolution: "@react-aria/i18n@patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch::version=3.12.5&hash=6bfd1c"
+  resolution: "@react-aria/i18n@patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch::version=3.12.5&hash=bf597e"
   dependencies:
     "@internationalized/date": "npm:^3.7.0"
     "@internationalized/message": "npm:^3.1.6"
@@ -7215,7 +7215,7 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/84664c647b2b6372536e7896a0c679727f668c2ca4b9b98d8d6be4928ec6c584efddb0e85c7d97a46ddfd97eedbbcfdd760c5b67026a31a2335629bd65a7b2d5
+  checksum: 10/7d3ba0f76e9a924c224445ed4332a859f172a92ac64a583fef536d0f0b75fa85154508a4f9997385d4bc95665b7a400985e9d5227f199b75104b3db953b132c3
   languageName: node
   linkType: hard
 
@@ -9200,7 +9200,7 @@ __metadata:
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
     typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
-    zod: "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch"
+    zod: "npm:~4.3.6"
   languageName: unknown
   linkType: soft
 
@@ -10366,7 +10366,7 @@ __metadata:
     xml2js: "npm:~0.6.2"
     yaqrcode: "npm:^0.2.1"
     yoga-layout: "patch:yoga-layout@npm%3A3.2.1#~/.yarn/patches/yoga-layout-npm-3.2.1-51ec934670.patch"
-    zod: "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch"
+    zod: "npm:~4.3.6"
     zustand: "npm:~5.0.10"
   languageName: unknown
   linkType: soft
@@ -24051,6 +24051,13 @@ __metadata:
   dependencies:
     parse-passwd: "npm:^1.0.0"
   checksum: 10/18dd4db87052c6a2179d1813adea0c4bfcfa4f9996f0e226fefb29eb3d548e564350fa28ec46b0bf1fbc0a1d2d6922ceceb80093115ea45ff8842a4990139250
+  languageName: node
+  linkType: hard
+
+"hono@npm:^4.10.7":
+  version: 4.12.12
+  resolution: "hono@npm:4.12.12"
+  checksum: 10/760617935cbc40fb20f2ffb4cbd5d59c3578a6838700be5f89a636a287bce59195d08f8e8e3551ca907796110457fb276327c155289d3776c151ed74ee02270f
   languageName: node
   linkType: hard
 
