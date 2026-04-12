@@ -17,3 +17,4 @@ export * from './truncateString';
 export * from './isTruthy';
 export * from './getHeader';
 export * from './isAbsoluteURL';
+export * from './censorUrl';
