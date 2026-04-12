@@ -7,6 +7,12 @@ describe('censorUrl', () => {
 		expect(censorUrl(input)).toBe(input);
 	});
 
+	it('returns relative URLs unchanged when no base is provided', () => {
+		const input = '/path/to/resource?query=secret&access_token=token';
+
+		expect(censorUrl(input)).toBe(input);
+	});
+
 	it('does not change URLs without sensitive parts', () => {
 		expect(censorUrl('https://example.com/path?foo=bar')).toBe('https://example.com/path?foo=bar');
 	});
@@ -35,5 +41,13 @@ describe('censorUrl', () => {
 		expect(censorUrl(new URL('https://user:password@example.com/path?query=secret'))).toBe(
 			'https://*Redacted*:*Redacted*@example.com/path?query=*Redacted*',
 		);
+	});
+
+	it('does not modify the original URL object', () => {
+		const input = new URL('https://user:password@example.com/path?query=secret&access_token=token');
+		const originalValue = input.toString();
+
+		expect(censorUrl(input)).toBe('https://*Redacted*:*Redacted*@example.com/path?query=*Redacted*&access_token=*Redacted*');
+		expect(input.toString()).toBe(originalValue);
 	});
 });
