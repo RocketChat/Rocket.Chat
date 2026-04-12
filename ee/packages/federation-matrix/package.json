@@ -14,6 +14,9 @@
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
 		"test:integration": "./tests/scripts/run-integration-tests.sh",
+		"test:integration:setup-local-stack": "./tests/scripts/run-integration-tests.sh --use-local-rc --keep-running --no-test",
+		"test:integration:start-rc-only": "./tests/scripts/run-integration-tests.sh --start-rc-only",
+		"test:integration:run-tests": "./tests/scripts/run-integration-tests.sh --test-only",
 		"test:federation": "jest --config jest.config.federation.ts",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"

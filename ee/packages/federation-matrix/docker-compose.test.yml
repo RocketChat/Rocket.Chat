@@ -77,15 +77,14 @@ services:
       - 'traefik.http.routers.hs1.tls=true'
       - 'traefik.http.services.hs1.loadbalancer.server.port=8008'
 
-  # Rocket.Chat rc1
+  # Rocket.Chat rc1 (Docker image — use profile rc-docker with test or element)
   rc1:
     build:
       context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
       dockerfile: ${ROCKETCHAT_DOCKERFILE:-../../../apps/meteor/.docker/Dockerfile.alpine}
     image: ${ROCKETCHAT_IMAGE:-rocketchat/rocket.chat:latest}
     profiles:
-      - test
-      - element
+      - rc-docker
     environment:
       ROOT_URL: https://rc1
       PORT: 3000
@@ -115,6 +114,28 @@ services:
       - 'traefik.http.routers.rc1.tls=true'
       - 'traefik.http.services.rc1.loadbalancer.server.port=3000'
       # HTTPS Redirect
+      - 'traefik.http.middlewares.rc1.redirectscheme.scheme=https'
+      - 'traefik.http.routers.rc1-http.rule=Host(`rc1`)'
+      - 'traefik.http.routers.rc1-http.middlewares=rc1'
+
+  # TCP bridge: Traefik -> host machine (Meteor dev). Mutually exclusive with rc1 (rc-docker vs rc-local).
+  rc1-host-proxy:
+    image: alpine/socat:latest
+    profiles:
+      - rc-local
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    command:
+      - TCP-LISTEN:3000,fork,reuseaddr
+      - TCP:host.docker.internal:${RC_LOCAL_METEOR_PORT:-3000}
+    networks:
+      - rc1-net
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.rc1.rule=Host(`rc1`)'
+      - 'traefik.http.routers.rc1.entrypoints=websecure'
+      - 'traefik.http.routers.rc1.tls=true'
+      - 'traefik.http.services.rc1.loadbalancer.server.port=3000'
       - 'traefik.http.middlewares.rc1.redirectscheme.scheme=https'
       - 'traefik.http.routers.rc1-http.rule=Host(`rc1`)'
       - 'traefik.http.routers.rc1-http.middlewares=rc1'
