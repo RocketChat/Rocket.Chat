@@ -1,7 +1,7 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import moment from 'moment';
+import { differenceInDays, addDays, format } from 'date-fns';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,13 +34,16 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactEleme
 			return [];
 		}
 
-		const values = Array.from({ length: moment(data.end).diff(data.start, 'days') + 1 }, (_, i) => ({
-			date: moment(data.start).add(i, 'days').toISOString(),
+		const startDate = new Date(data.start);
+		const endDate = new Date(data.end);
+		const daysCount = differenceInDays(endDate, startDate) + 1;
+		const values = Array.from({ length: daysCount }, (_, i) => ({
+			date: addDays(startDate, i).toISOString(),
 			newMessages: 0,
 		}));
 
 		for (const { day, messages } of data.days ?? []) {
-			const i = moment(day).diff(data.start, 'days');
+			const i = differenceInDays(new Date(day), startDate);
 			if (i >= 0) {
 				values[i].newMessages += messages;
 			}
@@ -114,7 +117,7 @@ const MessagesSentSection = ({ timezone }: MessagesSentSectionProps): ReactEleme
 											tickPadding: 8,
 											tickRotation: values.length > 31 ? 90 : 0,
 											truncateTickAt: 0,
-											format: (date): string => moment(date).format('DD/MM'),
+											format: (date): string => format(new Date(date), 'dd/MM'),
 										}}
 										axisLeft={{
 											tickSize: 0,

@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { FlexTab } from '../fragments/flextab';
+import { FlexTab } from '../fragments/flextabs/flextab';
 import { OmnichannelContactReviewModal } from '../fragments/modals';
 
 export class OmnichannelContactInfo extends FlexTab {
