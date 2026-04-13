@@ -2668,6 +2668,7 @@
   "Integration_Advanced_Settings": "Advanced Settings",
   "Integration_Delete_Warning": "Deleting an Integrations cannot be undone.",
   "Integration_History_Cleared": "Integration History Successfully Cleared",
+  "Integration_script_compiled_successfully": "Script compiled successfully.",
   "Integration_Incoming_WebHook": "Incoming WebHook Integration",
   "Integration_New": "New Integration",
   "Integration_Outgoing_WebHook": "Outgoing WebHook Integration",

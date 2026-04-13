@@ -319,6 +319,16 @@ const IncomingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IIncomi
 									)}
 								/>
 							</FieldRow>
+							{webhookData?.scriptEnabled && webhookData?.scriptError && (
+								<FieldError aria-live='assertive' id={`${scriptField}-error`}>
+									{webhookData.scriptError.name}: {webhookData.scriptError.message}
+								</FieldError>
+							)}
+							{webhookData?.scriptEnabled && webhookData?.scriptCompiled && !webhookData?.scriptError && (
+								<FieldHint id={`${scriptField}-success`}>
+									{t('Integration_script_compiled_successfully')}
+								</FieldHint>
+							)}
 						</Field>
 					</FieldGroup>
 				</AccordionItem>

@@ -97,7 +97,6 @@ export const updateIncomingIntegration = async (
 					comments: false,
 				});
 
-				// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
 				scriptCompiled = result?.code ?? undefined;
 				scriptError = undefined;
 				await Integrations.updateOne(
