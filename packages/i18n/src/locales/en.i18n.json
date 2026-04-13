@@ -3073,7 +3073,9 @@
   "Layout_Sidenav_Footer_description": "Footer size is 260 x 70px",
   "Layout_Terms_of_Service": "Terms of Service",
   "Lead_capture_email_regex": "Lead capture email regex",
+  "Lead_capture_email_regex_deprecation_alert": "This feature is deprecated and will be removed in version 9.0.0.",
   "Lead_capture_phone_regex": "Lead capture phone regex",
+  "Lead_capture_phone_regex_deprecation_alert": "This feature is deprecated and will be removed in version 9.0.0.",
   "Leaders": "Leaders",
   "Learn_how_to_unlock_the_myriad_possibilities_of_rocket_chat": "Learn how to unlock the myriad possibilities of Rocket.Chat.",
   "Learn_more": "Learn more",
@@ -7113,7 +7115,7 @@
   "__count__replies": "{{count}} replies",
   "__count__replies__date__": "{{count}} replies, {{date}}",
   "__count__result_found": {
-     "one": "{{count}} result found",
+    "one": "{{count}} result found",
     "other": "{{count}} results found"
   },
   "__count__tags__and__count__conversations__period__": "{{count}} tags and {{conversations}} conversations, {{period}}",

@@ -369,6 +369,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.deleteOne({ _id });
 	}
 
+	// TODO: Remove Livechat lead capture features in version 9.0.0
 	saveGuestEmailPhoneById(_id: string, emails: string[], phones: string[]): Promise<UpdateResult | Document | void> {
 		const saveEmail = ([] as string[])
 			.concat(emails)

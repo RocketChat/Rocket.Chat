@@ -30,6 +30,7 @@ function validateMessage(message: IMessage, room: IOmnichannelRoom) {
 	return true;
 }
 
+// TODO: Remove Livechat lead capture features in version 9.0.0
 callbacks.add(
 	'afterOmnichannelSaveMessage',
 	async (message, { room }) => {
