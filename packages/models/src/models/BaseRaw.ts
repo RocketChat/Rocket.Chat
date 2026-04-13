@@ -30,6 +30,7 @@ import type {
 } from 'mongodb';
 
 import { getCollectionName, UpdaterImpl } from '..';
+import { filterIndexesForDocumentDB } from '../filterIndexes';
 import type { Updater } from '../updater';
 import { setUpdatedAt } from './setUpdatedAt';
 
@@ -89,9 +90,15 @@ export abstract class BaseRaw<
 	private pendingIndexes: Promise<void> | undefined;
 
 	public async createIndexes() {
-		const indexes = this.modelIndexes();
+		const allIndexes = this.modelIndexes();
 
-		if (indexes?.length) {
+		if (allIndexes?.length) {
+			const indexes = filterIndexesForDocumentDB(allIndexes, this.collectionName);
+
+			if (!indexes.length) {
+				return;
+			}
+
 			if (this.pendingIndexes) {
 				await this.pendingIndexes;
 			}
