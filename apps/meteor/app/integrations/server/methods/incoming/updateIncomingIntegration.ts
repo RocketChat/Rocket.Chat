@@ -1,5 +1,3 @@
-import { transformSync } from '@babel/core';
-import presetEnv from '@babel/preset-env';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
@@ -10,6 +8,7 @@ import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles'
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
+import { validateScriptSyntax } from '../../lib/validateScriptSyntax';
 
 const validChannelChars = ['@', '#'];
 
@@ -84,49 +83,26 @@ export const updateIncomingIntegration = async (
 
 	const isFrozen = isScriptEngineFrozen(scriptEngine);
 
-	if (!isFrozen) {
-		let scriptCompiled: string | undefined;
-		let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
-
-		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
-			try {
-				const result = transformSync(integration.script, {
-					presets: [presetEnv],
-					compact: true,
-					minified: true,
-					comments: false,
-				});
-
-				// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
-				scriptCompiled = result?.code ?? undefined;
-				scriptError = undefined;
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptCompiled,
-						},
-						$unset: { scriptError: 1 as const },
-					},
-				);
-			} catch (e) {
-				scriptCompiled = undefined;
-				if (e instanceof Error) {
-					const { name, message, stack } = e;
-					scriptError = { name, message, stack };
-				}
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptError,
-						},
-						$unset: {
-							scriptCompiled: 1 as const,
-						},
-					},
-				);
-			}
+	if (!isFrozen && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+		// isolated-vm embeds modern V8 and runs the script natively, so no
+		// transpilation is needed. Syntax is still validated at save time.
+		const { script, error } = validateScriptSyntax(integration.script);
+		if (error) {
+			await Integrations.updateOne(
+				{ _id: integrationId },
+				{
+					$set: { scriptError: error },
+					$unset: { scriptCompiled: 1 as const },
+				},
+			);
+		} else {
+			await Integrations.updateOne(
+				{ _id: integrationId },
+				{
+					$set: { scriptCompiled: script },
+					$unset: { scriptError: 1 as const },
+				},
+			);
 		}
 	}
 
