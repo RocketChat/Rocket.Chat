@@ -165,6 +165,7 @@ const MessageBox = ({
 	});
 
 	const { hasUploads, handleUploadFiles, isUploading, isProcessingUploads } = useFileUpload();
+	const imageQualityTitle = t('Images');
 	const imageQualityOptions = useMemo<GenericMenuItemProps[]>(
 		() => [
 			{
@@ -507,8 +508,8 @@ const MessageBox = ({
 							icon='image'
 							detached
 							disabled={isRecording || !canSend}
-							title='Image quality'
-							sections={[{ title: 'Image quality', items: imageQualityOptions }]}
+							title={imageQualityTitle}
+							sections={[{ title: imageQualityTitle, items: imageQualityOptions }]}
 						/>
 						<MessageComposerActionsDivider />
 						{chat.composer && formatters.length > 0 && (

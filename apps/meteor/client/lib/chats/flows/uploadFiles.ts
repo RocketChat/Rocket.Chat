@@ -19,7 +19,12 @@ export const getImageQualityOption = (): ImageQualityOption => {
 		return 'medium';
 	}
 
-	const value = window.localStorage.getItem(IMAGE_QUALITY_STORAGE_KEY);
+	let value: string | null = null;
+	try {
+		value = window.localStorage.getItem(IMAGE_QUALITY_STORAGE_KEY);
+	} catch {
+		return 'medium';
+	}
 
 	if (value === 'low' || value === 'high' || value === 'medium') {
 		return value;
@@ -33,12 +38,101 @@ export const setImageQualityOption = (value: ImageQualityOption): void => {
 		return;
 	}
 
-	window.localStorage.setItem(IMAGE_QUALITY_STORAGE_KEY, value);
+	try {
+		window.localStorage.setItem(IMAGE_QUALITY_STORAGE_KEY, value);
+	} catch {
+		return;
+	}
 };
 
 const replaceFileExtension = (fileName: string, extension: string): string => {
 	const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
 	return `${nameWithoutExtension}.${extension}`;
+};
+
+const isAnimatedPng = (bytes: Uint8Array): boolean => {
+	const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+	if (!pngSignature.every((value, index) => bytes[index] === value)) {
+		return false;
+	}
+
+	let offset = 8;
+	while (offset + 8 <= bytes.length) {
+		const chunkLength =
+			(bytes[offset] << 24) | (bytes[offset + 1] << 16) | (bytes[offset + 2] << 8) | bytes[offset + 3];
+		const typeStart = offset + 4;
+		const chunkType = String.fromCharCode(
+			bytes[typeStart],
+			bytes[typeStart + 1],
+			bytes[typeStart + 2],
+			bytes[typeStart + 3],
+		);
+
+		if (chunkType === 'acTL') {
+			return true;
+		}
+
+		if (chunkType === 'IDAT') {
+			return false;
+		}
+
+		offset += 12 + chunkLength;
+	}
+
+	return false;
+};
+
+const isAnimatedWebP = (bytes: Uint8Array): boolean => {
+	if (bytes.length < 16) {
+		return false;
+	}
+
+	const riff = String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]);
+	const webp = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+	if (riff !== 'RIFF' || webp !== 'WEBP') {
+		return false;
+	}
+
+	let offset = 12;
+	while (offset + 8 <= bytes.length) {
+		const chunkType = String.fromCharCode(bytes[offset], bytes[offset + 1], bytes[offset + 2], bytes[offset + 3]);
+		const chunkLength =
+			bytes[offset + 4] | (bytes[offset + 5] << 8) | (bytes[offset + 6] << 16) | (bytes[offset + 7] << 24);
+
+		if (chunkType === 'ANIM' || chunkType === 'ANMF') {
+			return true;
+		}
+
+		if (chunkType === 'VP8X' && offset + 9 <= bytes.length) {
+			const featureFlags = bytes[offset + 8];
+			if ((featureFlags & 0x02) !== 0) {
+				return true;
+			}
+		}
+
+		offset += 8 + chunkLength + (chunkLength % 2);
+	}
+
+	return false;
+};
+
+const isAnimatedImage = async (file: File): Promise<boolean> => {
+	if (file.type !== 'image/png' && file.type !== 'image/webp') {
+		return false;
+	}
+
+	try {
+		const buffer = await file.arrayBuffer();
+		const bytes = new Uint8Array(buffer);
+
+		if (file.type === 'image/png') {
+			return isAnimatedPng(bytes);
+		}
+
+		return isAnimatedWebP(bytes);
+	} catch {
+		return false;
+	}
 };
 
 const compressImageFile = async (file: File): Promise<File> => {
@@ -47,6 +141,10 @@ const compressImageFile = async (file: File): Promise<File> => {
 	}
 
 	if (!file.type.startsWith('image/') || file.type === 'image/gif' || file.type === 'image/svg+xml') {
+		return file;
+	}
+
+	if (await isAnimatedImage(file)) {
 		return file;
 	}
 
@@ -78,7 +176,7 @@ const compressImageFile = async (file: File): Promise<File> => {
 			canvas.toBlob(resolve, targetType, quality);
 		});
 
-		if (!compressedBlob || compressedBlob.size >= file.size) {
+		if (!compressedBlob || compressedBlob.size >= file.size || compressedBlob.type.toLowerCase() !== targetType.toLowerCase()) {
 			return file;
 		}
 
