@@ -20,7 +20,7 @@ function getCallFlags(call: IMediaCall, role: CallRole): CallFlag[] {
 	return flags;
 }
 
-export function buildNewCallSignal(call: IMediaCall, role: CallRole): ServerMediaSignalNewCall {
+export function getNewCallSignal(call: IMediaCall, role: CallRole): ServerMediaSignalNewCall {
 	const self = role === 'caller' ? call.caller : call.callee;
 	const contact = role === 'caller' ? call.callee : call.caller;
 	const transferredBy = getNewCallTransferredBy(call);

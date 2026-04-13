@@ -15,7 +15,9 @@ import type { InternalCallParams, SignalProcessingOptions } from '../definition/
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
-import { buildNewCallSignal } from '../server/buildNewCallSignal';
+import { getCallRoleForUser } from '../server/getCallRoleForUser';
+import { getNewCallSignal } from '../server/signals/getNewCallSignal';
+import { getSignalsForExistingCall } from '../server/signals/getSignalsForExistingCall';
 import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
 export type SignalProcessorEvents = {
@@ -125,6 +127,19 @@ export class GlobalSignalProcessor {
 		logger.debug({ msg: 'GlobalSignalProcessor.processRegisterSignal', signal: stripSensitiveDataFromSignal(signal), uid });
 
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
+		const activeCalls = calls.filter(
+			({ callee, caller }) =>
+				(callee.type === 'user' && callee.id === uid && callee.contractId === signal.contractId) ||
+				(caller.type === 'user' && caller.id === uid && caller.contractId === signal.contractId),
+		);
+
+		this.sendSignal(uid, {
+			type: 'registered',
+			toContractId: signal.contractId,
+			calls: calls.map(({ _id }) => _id),
+			activeCalls: activeCalls.map(({ _id }) => _id),
+		});
+
 		if (!calls.length) {
 			return;
 		}
@@ -137,16 +152,11 @@ export class GlobalSignalProcessor {
 			return;
 		}
 
-		const isCaller = call.caller.type === 'user' && call.caller.id === uid;
-		const isCallee = call.callee.type === 'user' && call.callee.id === uid;
-
-		if (!isCaller && !isCallee) {
+		const role = getCallRoleForUser(call, uid);
+		if (!role) {
 			return;
 		}
-
-		const role = isCaller ? 'caller' : 'callee';
 		const actor = call[role];
-
 		// If this user's side of the call has already been signed
 		if (actor.contractId) {
 			// If it was signed by a session that the current session is replacing (as in a browser refresh)
@@ -159,22 +169,14 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, role));
+		if (!signal.requestSignals) {
+			return;
+		}
 
-		if (call.state === 'active') {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'notification',
-				notification: 'active',
-				...(actor.contractId && { signedContractId: actor.contractId }),
-			});
-		} else if (actor.contractId && !isPendingState(call.state)) {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'notification',
-				notification: 'accepted',
-				signedContractId: actor.contractId,
-			});
+		const signals = await getSignalsForExistingCall(call, uid, signal.contractId);
+
+		for (const signal of signals) {
+			this.sendSignal(uid, signal);
 		}
 	}
 
@@ -253,7 +255,7 @@ export class GlobalSignalProcessor {
 			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, 'caller'));
+		this.sendSignal(uid, getNewCallSignal(call, 'caller'));
 
 		return call;
 	}
