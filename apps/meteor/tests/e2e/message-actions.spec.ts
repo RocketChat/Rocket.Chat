@@ -165,12 +165,19 @@ test.describe.serial('message-actions', () => {
 	test.describe.serial('expect reply in direct message', () => {
 		test.use({ storageState: Users.user2.state });
 
-		let originalCreateDRoles: string[];
+		let defaultCreateDRoles: string[];
 
 		test.beforeAll(async ({ api }) => {
-			originalCreateDRoles = await getPermissionRoles(api, 'create-d');
+			defaultCreateDRoles = await getPermissionRoles(api, 'create-d');
 
 			await sendTargetChannelMessage(api, targetChannel, { msg: 'message from admin for reply in DM' });
+		});
+
+		test('expect option be visible and redirect to DM', async ({ page }) => {
+			await poHomeChannel.content.openLastMessageMenu();
+			await poHomeChannel.content.btnOptionReplyInDm.click();
+
+			await expect(page).toHaveURL(/.*reply/);
 		});
 
 		test('expect option not be visible without create-d permission and no existing DM', async ({ api }) => {
@@ -180,19 +187,8 @@ test.describe.serial('message-actions', () => {
 			await expect(poHomeChannel.content.btnOptionReplyInDm).toBeHidden();
 		});
 
-		test('expect option be visible and redirect to DM', async ({ page, api }) => {
-			expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: originalCreateDRoles }] })).status()).toBe(
-				200,
-			);
-
-			await poHomeChannel.content.openLastMessageMenu();
-			await poHomeChannel.content.btnOptionReplyInDm.click();
-
-			await expect(page).toHaveURL(/.*reply/);
-		});
-
 		test.afterAll(async ({ api }) => {
-			expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: originalCreateDRoles }] })).status()).toBe(
+			expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: defaultCreateDRoles }] })).status()).toBe(
 				200,
 			);
 		});
