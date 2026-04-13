@@ -39,7 +39,7 @@ const EmbeddedPreload = ({ children }: { children: ReactNode }): ReactElement =>
 
 	const shouldFetch = !!roomParams && !!uid;
 
-	const { isLoading } = useQuery({
+	const { isLoading, isSuccess, isError } = useQuery({
 		queryKey: roomParams ? roomsQueryKeys.roomReference(roomParams.reference, roomParams.type, uid ?? undefined) : [],
 		queryFn: async () => {
 			if (!roomParams) {
@@ -63,11 +63,11 @@ const EmbeddedPreload = ({ children }: { children: ReactNode }): ReactElement =>
 	});
 
 	useEffect(() => {
-		if (!shouldFetch || !isLoading) {
+		if (!shouldFetch || isSuccess || isError) {
 			SubscriptionsCachedStore.setReady(true);
 			RoomsCachedStore.setReady(true);
 		}
-	}, [shouldFetch, isLoading]);
+	}, [shouldFetch, isSuccess, isError]);
 
 	if (!ready || (shouldFetch && isLoading)) {
 		return <PageLoading />;
