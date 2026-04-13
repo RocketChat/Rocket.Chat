@@ -144,6 +144,8 @@ export interface ISessionsModel extends IBaseModel<ISession> {
 		logoutBy?: IUser['_id'];
 	}): Promise<UpdateResult | Document>;
 
+	logoutAllByUserId(userId: IUser['_id'], logoutBy: IUser['_id']): Promise<UpdateResult | Document>;
+
 	createBatch(sessions: OptionalId<ISession>[]): Promise<BulkWriteResult | undefined>;
 
 	updateDailySessionById(_id: ISession['_id'], record: Partial<ISession>): Promise<UpdateResult>;

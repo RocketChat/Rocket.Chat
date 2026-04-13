@@ -1,6 +1,6 @@
 import type { IExportOperation, ISubscription, ITeam, IUser, IPersonalAccessToken, UserStatus } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
+import { ajv } from './Ajv';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 import type { UserCreateParamsPOST } from './users/UserCreateParamsPOST';
@@ -17,10 +17,6 @@ import type { UsersSendWelcomeEmailParamsPOST } from './users/UsersSendWelcomeEm
 import type { UsersSetPreferencesParamsPOST } from './users/UsersSetPreferenceParamsPOST';
 import type { UsersUpdateOwnBasicInfoParamsPOST } from './users/UsersUpdateOwnBasicInfoParamsPOST';
 import type { UsersUpdateParamsPOST } from './users/UsersUpdateParamsPOST';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type UsersInfo = { userId?: IUser['_id']; username?: IUser['username'] };
 
@@ -259,20 +255,6 @@ export type UsersEndpoints = {
 		};
 	};
 
-	'/v1/users.getAvatarSuggestion': {
-		GET: () => {
-			suggestions: Record<
-				string,
-				{
-					blob: string;
-					contentType: string;
-					service: string;
-					url: string;
-				}
-			>;
-		};
-	};
-
 	'/v1/users.checkUsernameAvailability': {
 		GET: (params: { username: string }) => {
 			result: boolean;
@@ -286,15 +268,6 @@ export type UsersEndpoints = {
 	'/v1/users.getPreferences': {
 		GET: () => {
 			preferences: Required<IUser>['settings']['preferences'];
-		};
-	};
-
-	'/v1/users.createToken': {
-		POST: (params: { userId?: string; username?: string; user?: string }) => {
-			data: {
-				userId: string;
-				authToken: string;
-			};
 		};
 	};
 

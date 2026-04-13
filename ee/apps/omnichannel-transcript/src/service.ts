@@ -9,7 +9,7 @@ import { i18n } from './i18n';
 
 const PORT = process.env.PORT || 3036;
 
-(async () => {
+void (async () => {
 	const { db, client } = await getConnection();
 
 	startTracing({ service: 'omnichannel-transcript', db: client });

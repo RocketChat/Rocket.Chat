@@ -6,7 +6,6 @@ export type MessageAttachmentBase = {
 	ts?: Date;
 	collapsed?: boolean;
 	description?: string;
-	descriptionMd?: Root;
 	text?: string;
 	md?: Root;
 	size?: number;
@@ -20,4 +19,12 @@ export type MessageAttachmentBase = {
 	hashes?: {
 		sha256: string;
 	};
+};
+
+export type EncryptedMessageAttachment = MessageAttachmentBase & {
+	encryption: Required<MessageAttachmentBase>['encryption'];
+};
+
+export const isEncryptedMessageAttachment = (attachment: MessageAttachmentBase): attachment is EncryptedMessageAttachment => {
+	return attachment?.encryption !== undefined && typeof attachment.encryption === 'object';
 };

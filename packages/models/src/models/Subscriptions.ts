@@ -41,7 +41,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		super(db, 'subscription', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		// Add all indexes from constructor to here
 		return [
 			{ key: { E2EKey: 1 }, unique: true, sparse: true },
@@ -157,10 +157,11 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.find(query, options);
 	}
 
-	countByRoomIdAndUserId(rid: string, uid: string | undefined): Promise<number> {
+	countByRoomIdAndUserId(rid: string, uid: string | undefined, includeInvitations = false): Promise<number> {
 		const query = {
 			rid,
 			'u._id': uid,
+			...(includeInvitations ? { $or: [{ status: { $exists: false } }, { status: 'INVITED' as const }] } : { status: { $exists: false } }),
 		};
 
 		return this.countDocuments(query);
@@ -1088,7 +1089,7 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 
 	// FIND
 	findByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription> {
-		const query = { 'u._id': userId };
+		const query: Filter<ISubscription> = { 'u._id': userId, 'status': { $ne: 'BANNED' as const } };
 
 		return this.find(query, options);
 	}
@@ -1171,8 +1172,11 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.countDocuments(query);
 	}
 
-	countByUserId(userId: string): Promise<number> {
-		const query = { 'u._id': userId };
+	countByUserIdExceptType(userId: string, typeException: ISubscription['t']): Promise<number> {
+		const query: Filter<ISubscription> = {
+			'u._id': userId,
+			't': { $ne: typeException },
+		};
 
 		return this.countDocuments(query);
 	}
@@ -1853,13 +1857,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
-			fname: room.fname,
+			...(room.fname && { fname: room.fname }),
 			...(room.customFields && { customFields: room.customFields }),
 			t: room.t,
 			u: {
 				_id: user._id,
 				username: user.username,
-				name: user.name,
+				...(user.name && { name: user.name }),
 			},
 			...(room.prid && { prid: room.prid }),
 			...extraData,
@@ -1890,13 +1894,13 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 			ts: room.ts,
 			rid: room._id,
 			name: room.name,
-			fname: room.fname,
+			...(room.fname && { fname: room.fname }),
 			...(room.customFields && { customFields: room.customFields }),
 			t: room.t,
 			u: {
 				_id: user._id,
 				username: user.username,
-				name: user.name,
+				...(user.name && { name: user.name }),
 			},
 			...(room.prid && { prid: room.prid }),
 			...extraData,
@@ -2055,5 +2059,121 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.updateOne(query, update);
+	}
+
+	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }> {
+		return this.col.aggregate<{ _id: IRoom['_id']; externalRoomId: string }>([
+			{
+				$match: {
+					'u._id': userId,
+				},
+			},
+			{
+				$lookup: {
+					from: 'rocketchat_room',
+					localField: 'rid',
+					foreignField: '_id',
+					as: 'room',
+				},
+			},
+			{
+				$match: {
+					'room.federated': true,
+				},
+			},
+			{
+				$project: {
+					_id: '$rid',
+					externalRoomId: { $arrayElemAt: ['$room.federation.mrid', 0] },
+				},
+			},
+		]);
+	}
+
+	async findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null> {
+		return this.findOne({
+			'rid': roomId,
+			'u._id': userId,
+			'status': 'INVITED',
+		});
+	}
+
+	async acceptInvitationById(subscriptionId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: subscriptionId },
+			{
+				$unset: {
+					status: 1,
+					inviter: 1,
+				},
+				$set: {
+					open: true,
+					alert: false,
+				},
+			},
+		);
+	}
+
+	async findOneBannedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null> {
+		return this.findOne({
+			'rid': roomId,
+			'u._id': userId,
+			'status': 'BANNED',
+		});
+	}
+
+	findBannedByRoomId(roomId: ISubscription['rid']) {
+		return this.find({
+			rid: roomId,
+			status: 'BANNED',
+		});
+	}
+
+	async banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ 'rid': roomId, 'u._id': userId },
+			{
+				$set: {
+					status: 'BANNED' as const,
+					open: false,
+					alert: false,
+				},
+			},
+		);
+	}
+
+	async unbanByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ 'rid': roomId, 'u._id': userId, 'status': 'BANNED' },
+			{
+				$unset: { status: 1 },
+				$set: { open: true, alert: false },
+			},
+		);
+	}
+
+	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult> {
+		const query = {
+			'rid': roomId,
+			'u._id': userId,
+		};
+
+		const update: UpdateFilter<ISubscription> = {
+			$set: {
+				abacLastTimeChecked: time,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
+	findJoinedByUserId<T extends Document = ISubscription>(userId: ISubscription['u']['_id'], options?: FindOptions<T>): FindCursor<T> {
+		return this.find(
+			{
+				'u._id': userId,
+				'status': { $exists: false },
+			},
+			options,
+		);
 	}
 }

@@ -18,18 +18,18 @@ export async function getOnlineAgents(department?: string, agent?: SelectedAgent
 }
 
 export async function online(department?: string, skipNoAgentSetting = false, skipFallbackCheck = false): Promise<boolean> {
-	livechatLogger.debug(`Checking online agents ${department ? `for department ${department}` : ''}`);
+	livechatLogger.debug({ msg: 'Checking online agents', department });
 	if (!skipNoAgentSetting && settings.get('Livechat_accept_chats_with_no_agents')) {
 		livechatLogger.debug('Can accept without online agents: true');
 		return true;
 	}
 
 	if (settings.get('Livechat_assign_new_conversation_to_bot')) {
-		livechatLogger.debug(`Fetching online bot agents for department ${department}`);
+		livechatLogger.debug({ msg: 'Fetching online bot agents for department', department });
 		// get & count where doing the same, but get was getting data, while count was only counting.  We only need the count here
 		const botAgents = await countBotAgents(department);
 		if (botAgents) {
-			livechatLogger.debug(`Found ${botAgents} online`);
+			livechatLogger.debug({ msg: 'Found online bot agents', botAgents });
 			if (botAgents > 0) {
 				return true;
 			}
@@ -37,7 +37,7 @@ export async function online(department?: string, skipNoAgentSetting = false, sk
 	}
 
 	const agentsOnline = await checkOnlineAgents(department, undefined, skipFallbackCheck);
-	livechatLogger.debug(`Are online agents ${department ? `for department ${department}` : ''}?: ${agentsOnline}`);
+	livechatLogger.debug({ msg: 'Online agents status', department, agentsOnline });
 	return agentsOnline;
 }
 

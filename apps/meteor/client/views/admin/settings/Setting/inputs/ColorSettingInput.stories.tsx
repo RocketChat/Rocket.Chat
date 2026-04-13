@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import ColorSettingInput from './ColorSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/ColorSettingInput',
 	component: ColorSettingInput,
 	parameters: {
 		actions: {

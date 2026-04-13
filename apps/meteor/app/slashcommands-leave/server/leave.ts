@@ -1,6 +1,7 @@
 import { api } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../../server/lib/i18n';
 import { leaveRoomMethod } from '../../lib/server/methods/leaveRoom';
@@ -18,14 +19,15 @@ const Leave = async function Leave({ message, userId }: SlashCommandCallbackPara
 			return;
 		}
 		await leaveRoomMethod(user, message.rid);
-	} catch ({ error }: any) {
-		if (typeof error !== 'string') {
-			return;
+	} catch (error: any) {
+		if (typeof error.error !== 'string') {
+			throw error;
 		}
 		const user = await Users.findOneById(userId);
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg: i18n.t(error, { lng: user?.language || settings.get('Language') || 'en' }),
 		});
+		throw new Meteor.Error(error.error, error.message);
 	}
 };
 

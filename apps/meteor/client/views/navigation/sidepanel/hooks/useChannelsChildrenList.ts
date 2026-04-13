@@ -1,7 +1,7 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useShallow } from 'zustand/shallow';
 
-import { pipe } from '../../../../lib/cachedStores';
+import { pipe } from '../../../../lib/cachedStores/pipe';
 import { Subscriptions } from '../../../../stores';
 import { isUnreadSubscription } from '../../contexts/RoomsNavigationContext';
 

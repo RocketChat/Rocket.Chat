@@ -1,23 +1,22 @@
 import { Box, Pagination, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
-import { GenericModal } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
-import type { ReactElement, RefObject } from 'react';
-import { useMemo, useCallback } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import AccountTokensRow from './AccountTokensRow';
-import AddToken from './AddToken';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import {
+	GenericModal,
 	GenericTable,
 	GenericTableHeader,
 	GenericTableBody,
 	GenericTableLoadingTable,
 	GenericTableHeaderCell,
-} from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
+	usePagination,
+} from '@rocket.chat/ui-client';
+import { useSetModal, useToastMessageDispatch, useUserId, useMethod, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import type { ReactElement, RefObject } from 'react';
+import { useMemo, useCallback } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+
+import AccountTokensRow from './AccountTokensRow';
+import AddToken from './AddToken';
+import GenericNoResults from '../../../../components/GenericNoResults';
 import { useResizeInlineBreakpoint } from '../../../../hooks/useResizeInlineBreakpoint';
 import { miscQueryKeys } from '../../../../lib/queryKeys';
 
@@ -74,16 +73,9 @@ const AccountTokensTable = (): ReactElement => {
 
 					setModal(
 						<GenericModal title={t('API_Personal_Access_Token_Generated')} onConfirm={closeModal}>
-							<Box
-								dangerouslySetInnerHTML={{
-									__html: DOMPurify.sanitize(
-										t('API_Personal_Access_Token_Generated_Text_Token_s_UserId_s', {
-											token,
-											userId,
-										}),
-									),
-								}}
-							/>
+							<Box>
+								<Trans i18nKey='API_Personal_Access_Token_Generated_Text_Token_s_UserId_s' values={{ token, userId }} />
+							</Box>
 						</GenericModal>,
 					);
 
@@ -169,7 +161,7 @@ const AccountTokensTable = (): ReactElement => {
 								filteredTokens &&
 								filteredTokens.map((filteredToken) => (
 									<AccountTokensRow
-										key={filteredToken.createdAt}
+										key={filteredToken.lastTokenPart}
 										onRegenerate={handleRegenerate}
 										onRemove={handleRemove}
 										isMedium={isMedium}

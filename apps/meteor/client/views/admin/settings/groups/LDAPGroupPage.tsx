@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 
 import BaseGroupPage from './BaseGroupPage';
 import { useExternalLink } from '../../../../hooks/useExternalLink';
+import { links } from '../../../../lib/links';
 import { useEditableSettings } from '../../EditableSettingsContext';
 
 type LDAPGroupPageProps = ISetting & {
@@ -137,10 +138,16 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 			{...group}
 			headerButtons={
 				<>
-					<Button children={t('Test_Connection')} disabled={!ldapEnabled || changed} onClick={handleTestConnectionButtonClick} />
-					<Button children={t('Test_LDAP_Search')} disabled={!ldapEnabled || changed} onClick={handleSearchTestButtonClick} />
-					<Button children={t('LDAP_Sync_Now')} disabled={!ldapEnabled || changed} onClick={handleSyncNowButtonClick} />
-					<Button role='link' onClick={() => handleLinkClick('https://go.rocket.chat/i/ldap-docs')}>
+					<Button disabled={!ldapEnabled || changed} onClick={handleTestConnectionButtonClick}>
+						{t('Test_Connection')}
+					</Button>
+					<Button disabled={!ldapEnabled || changed} onClick={handleSearchTestButtonClick}>
+						{t('Test_LDAP_Search')}
+					</Button>
+					<Button disabled={!ldapEnabled || changed} onClick={handleSyncNowButtonClick}>
+						{t('LDAP_Sync_Now')}
+					</Button>
+					<Button role='link' onClick={() => handleLinkClick(links.go.ldapDocs)}>
 						{t('LDAP_Documentation')}
 					</Button>
 				</>

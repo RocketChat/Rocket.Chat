@@ -8,15 +8,17 @@ import { useTranslation } from 'react-i18next';
 
 import { UserInfoAction } from '../../../../components/UserInfo';
 import { useMemberExists } from '../../../hooks/useMemberExists';
+import type { UserInfoAction as UserInfoActionType } from '../../hooks/useUserInfoActions';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 type UserInfoActionsProps = {
 	user: Pick<IUser, '_id' | 'username' | 'name' | 'freeSwitchExtension'>;
 	rid: IRoom['_id'];
+	isInvited?: boolean;
 	backToList?: () => void;
 };
 
-const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): ReactElement => {
+const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsProps): ReactElement => {
 	const { t } = useTranslation();
 	const {
 		data: isMemberData,
@@ -31,8 +33,9 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 	const { actions: actionsDefinition, menuActions: menuOptions } = useUserInfoActions({
 		rid,
 		user: { _id: userId, username, name, freeSwitchExtension },
-		size: 3,
+		size: 2,
 		isMember,
+		isInvited,
 		reload: () => {
 			backToList?.();
 			refetch();
@@ -49,19 +52,16 @@ const UserInfoActions = ({ user, rid, backToList }: UserInfoActionsProps): React
 				button={<IconButton icon='kebab' secondary />}
 				title={t('More')}
 				key='menu'
-				data-qa-id='UserUserInfo-menu'
 				sections={menuOptions}
 				placement='bottom-end'
 				small={false}
-				data-qa='UserUserInfo-menu'
 			/>
 		);
 	}, [menuOptions, t]);
 
-	// TODO: sanitize Action type to avoid any
 	const actions = useMemo(() => {
-		const mapAction = ([key, { content, title, icon, onClick }]: any): ReactElement => (
-			<UserInfoAction key={key} title={title} label={content} onClick={onClick} icon={icon} />
+		const mapAction = ([key, action]: [string, UserInfoActionType]): ReactElement => (
+			<UserInfoAction key={key} title={action.title} label={action.content} onClick={action.onClick} icon={action.icon ?? 'kebab'} />
 		);
 
 		return [...actionsDefinition.map(mapAction), menu].filter(Boolean);

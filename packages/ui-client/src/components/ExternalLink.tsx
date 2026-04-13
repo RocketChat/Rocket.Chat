@@ -1,11 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
 type ExternalLinkProps = {
 	to: string;
-} & ComponentProps<typeof Box>;
+} & ComponentPropsWithoutRef<typeof Box>;
 
-export const ExternalLink: FC<ExternalLinkProps> = ({ children, to, ...props }) => (
+export const ExternalLink = ({ children, to, ...props }: ExternalLinkProps) => (
 	<Box is='a' href={to} target='_blank' rel='noopener noreferrer' {...props}>
 		{children || to}
 	</Box>

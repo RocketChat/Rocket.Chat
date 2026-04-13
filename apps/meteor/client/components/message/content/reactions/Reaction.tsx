@@ -6,8 +6,11 @@ import { useRef, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ReactionTooltip from './ReactionTooltip';
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { MessageListContext } from '../../list/MessageListContext';
+
+const normalizeUsernames = (names: string[]) => names.map<string>(normalizeUsername);
 
 // TODO: replace it with proper usage of i18next plurals
 type ReactionProps = {
@@ -47,7 +50,7 @@ const Reaction = ({ hasReacted, counter, name, names, messageId, onClick, ...pro
 					openTooltip(
 						<ReactionTooltip
 							emojiName={name}
-							usernames={names}
+							usernames={normalizeUsernames(names)}
 							mine={mine}
 							messageId={messageId}
 							showRealName={showRealName}

@@ -10,7 +10,7 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 		super(db, 'banner', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [{ key: { platform: 1, startAt: 1, expireAt: 1 } }, { key: { platform: 1, startAt: 1, expireAt: 1, active: 1 } }];
 	}
 
@@ -70,5 +70,9 @@ export class BannersRaw extends BaseRaw<IBanner> implements IBannersModel {
 		const { _id: bannerId, ...doc } = banner;
 
 		return this.updateOne({ _id: bannerId }, { $set: { active: true, ...doc } }, { upsert: true });
+	}
+
+	findByIds(bannerIds: string[]): FindCursor<IBanner> {
+		return this.find({ _id: { $in: bannerIds } });
 	}
 }

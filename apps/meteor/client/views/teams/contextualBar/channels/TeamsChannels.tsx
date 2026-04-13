@@ -2,13 +2,8 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
 import { useEffectEvent, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Virtuoso } from 'react-virtuoso';
-
-import TeamsChannelItem from './TeamsChannelItem';
 import {
+	VirtualizedScrollbars,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
@@ -18,8 +13,13 @@ import {
 	ContextualbarEmptyContent,
 	ContextualbarSection,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
-import { VirtualizedScrollbars } from '../../../../components/CustomScrollbars';
+} from '@rocket.chat/ui-client';
+import type { ChangeEvent, Dispatch, SetStateAction, SyntheticEvent } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Virtuoso } from 'react-virtuoso';
+
+import TeamsChannelItem from './TeamsChannelItem';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 
 type TeamsChannelsProps = {
@@ -28,13 +28,13 @@ type TeamsChannelsProps = {
 	mainRoom: IRoom;
 	text: string;
 	type: 'all' | 'autoJoin';
-	setType: Dispatch<SetStateAction<'all' | 'autoJoin'>>;
 	setText: (e: ChangeEvent<HTMLInputElement>) => void;
+	setType: Dispatch<SetStateAction<'all' | 'autoJoin'>>;
 	onClickClose: () => void;
 	onClickAddExisting: false | ((e: SyntheticEvent) => void);
 	onClickCreateNew: false | ((e: SyntheticEvent) => void);
 	total: number;
-	loadMoreItems: (start: number, end: number) => void;
+	loadMoreItems: () => void;
 	onClickView: (room: IRoom) => void;
 	reload: () => void;
 };
@@ -66,7 +66,7 @@ const TeamsChannels = ({
 		[t],
 	);
 
-	const lm = useEffectEvent((start: number) => !loading && loadMoreItems(start, Math.min(50, total - start)));
+	const lm = useEffectEvent(() => !loading && loadMoreItems());
 
 	const loadMoreChannels = useDebouncedCallback(
 		() => {
@@ -74,7 +74,7 @@ const TeamsChannels = ({
 				return;
 			}
 
-			lm(channels.length);
+			lm();
 		},
 		300,
 		[lm, channels],

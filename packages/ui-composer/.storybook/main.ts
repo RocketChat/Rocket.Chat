@@ -7,7 +7,7 @@ const config: StorybookConfig = {
 	addons: [
 		getAbsolutePath('@storybook/addon-a11y'),
 		getAbsolutePath('@storybook/addon-essentials'),
-		'./webpackAddon',
+		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 		getAbsolutePath('@storybook/addon-styling-webpack'),
 	],
 

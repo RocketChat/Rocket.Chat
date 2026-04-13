@@ -1,17 +1,30 @@
-import { isRoomFederated, isRoomNativeFederated, type IRoom } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import type { IRoomNativeFederated, IRoom } from '@rocket.chat/core-typings';
 
-import { isFederationEnabled, throwIfFederationNotEnabledOrNotReady } from '../../federation/utils';
+import { throwIfFederationNotEnabled } from '../../federation/utils';
 
 export class FederationActions {
+	public static shouldPerformFederationAction(room: IRoom): room is IRoomNativeFederated {
+		if (!isRoomFederated(room)) {
+			return false;
+		}
+
+		if (!isRoomNativeFederated(room)) {
+			throw new Error('Room is federated but its not native implementation');
+		}
+
+		return true;
+	}
+
 	public static blockIfRoomFederatedButServiceNotReady(room: IRoom) {
-		if (!isRoomNativeFederated(room) && !isRoomFederated(room)) {
+		if (!isRoomFederated(room)) {
 			return;
 		}
 
-		if (!isFederationEnabled()) {
-			return;
+		if (!isRoomNativeFederated(room)) {
+			throw new Error('Room is federated but its not native implementation');
 		}
 
-		throwIfFederationNotEnabledOrNotReady();
+		throwIfFederationNotEnabled();
 	}
 }

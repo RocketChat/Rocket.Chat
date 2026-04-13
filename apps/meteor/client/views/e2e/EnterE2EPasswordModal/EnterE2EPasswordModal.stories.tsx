@@ -5,7 +5,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import EnterE2EPasswordModal from '.';
 
 export default {
-	title: 'views/EnterE2EPasswordModal',
 	component: EnterE2EPasswordModal,
 	decorators: [mockAppRoot().withTranslations('en', 'core', {}).buildStoryDecorator()],
 } satisfies Meta<typeof EnterE2EPasswordModal>;

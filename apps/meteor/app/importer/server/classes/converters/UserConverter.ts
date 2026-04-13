@@ -7,7 +7,7 @@ import { Accounts } from 'meteor/accounts-base';
 
 import { RecordConverter, type RecordConverterOptions } from './RecordConverter';
 import { generateTempPassword } from './generateTempPassword';
-import { callbacks as systemCallbacks } from '../../../../../lib/callbacks';
+import { callbacks as systemCallbacks } from '../../../../../server/lib/callbacks';
 import { addUserToDefaultChannels } from '../../../../lib/server/functions/addUserToDefaultChannels';
 import { generateUsernameSuggestion } from '../../../../lib/server/functions/getUsernameSuggestion';
 import { saveUserIdentity } from '../../../../lib/server/functions/saveUserIdentity';
@@ -24,6 +24,7 @@ export type UserConverterOptions = {
 
 	quickUserInsertion?: boolean;
 	enableEmail2fa?: boolean;
+	syncVoipExtension?: boolean;
 };
 
 export class UserConverter extends RecordConverter<IImportUserRecord, UserConverterOptions & RecordConverterOptions> {
@@ -31,7 +32,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 
 	private updatedIds = new Set<IUser['_id']>();
 
-	protected async convertRecord(record: IImportUserRecord): Promise<boolean | undefined> {
+	protected override async convertRecord(record: IImportUserRecord): Promise<boolean | undefined> {
 		const { data, _id } = record;
 
 		data.importIds = data.importIds.filter((item) => item);
@@ -54,7 +55,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 		return !existingUser;
 	}
 
-	async convertData(userCallbacks: IConversionCallbacks = {}): Promise<void> {
+	override async convertData(userCallbacks: IConversionCallbacks = {}): Promise<void> {
 		this.insertedIds.clear();
 		this.updatedIds.clear();
 
@@ -280,7 +281,14 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 				...(userData.bio && { bio: userData.bio }),
 				...(userData.services?.ldap && { ldap: true }),
 				...(userData.avatarUrl && { _pendingAvatarUrl: userData.avatarUrl }),
+				...(this._options.syncVoipExtension && userData.voipExtension && { freeSwitchExtension: userData.voipExtension }),
 			}),
+			...(this._options.syncVoipExtension &&
+				!userData.voipExtension && {
+					$unset: {
+						freeSwitchExtension: 1,
+					},
+				}),
 		});
 
 		this.addCustomFields(updateData, userData);
@@ -353,7 +361,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			...(userData.importIds?.length && { importIds: userData.importIds }),
 			...(!!userData.customFields && { customFields: userData.customFields }),
 			...(userData.deleted !== undefined && { active: !userData.deleted }),
-			...(userData.voipExtension !== undefined && { freeSwitchExtension: userData.voipExtension }),
+			...(this._options.syncVoipExtension && userData.voipExtension && { freeSwitchExtension: userData.voipExtension }),
 			...(userData.federated !== undefined && { federated: userData.federated }),
 		};
 	}
@@ -416,7 +424,7 @@ export class UserConverter extends RecordConverter<IImportUserRecord, UserConver
 			.replace(/^\w/, (u) => u.toUpperCase());
 	}
 
-	protected getDataType(): 'user' {
+	protected override getDataType(): 'user' {
 		return 'user';
 	}
 }

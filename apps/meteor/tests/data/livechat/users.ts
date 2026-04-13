@@ -3,7 +3,7 @@ import type { Credentials } from '@rocket.chat/api-client';
 import { UserStatus, type ILivechatAgent, type IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 
-import { api, credentials, request, methodCall } from '../api-data';
+import { api, credentials, request } from '../api-data';
 import { password } from '../user';
 import { createUser, login, setUserAway, setUserStatus } from '../users.helper';
 import { createAgent, makeAgentAvailable, makeAgentUnavailable } from './rooms';
@@ -42,7 +42,7 @@ export const removeAgent = async (userId: string): Promise<void> => {
 		.expect(200);
 };
 
-export const createAnOnlineAgent = async (): Promise<{
+export const createAgentAndReLogin = async (): Promise<{
 	credentials: Credentials;
 	user: IUser & { username: string };
 }> => {
@@ -52,6 +52,18 @@ export const createAnOnlineAgent = async (): Promise<{
 	const agent = body.user;
 	const createdUserCredentials = await login(agent.username, password);
 	await createAgent(agent.username);
+
+	return {
+		credentials: createdUserCredentials,
+		user: agent,
+	};
+};
+
+export const createAnOnlineAgent = async (): Promise<{
+	credentials: Credentials;
+	user: IUser & { username: string };
+}> => {
+	const { credentials: createdUserCredentials, user: agent } = await createAgentAndReLogin();
 	await makeAgentAvailable(createdUserCredentials);
 
 	return {
@@ -104,15 +116,12 @@ export const updateLivechatSettingsForUser = async (
 	agentDepartments: string[] = [],
 ): Promise<void> => {
 	await request
-		.post(methodCall('livechat:saveAgentInfo'))
+		.post(api('livechat/agents.saveInfo'))
 		.set(credentials)
 		.send({
-			message: JSON.stringify({
-				method: 'livechat:saveAgentInfo',
-				params: [agentId, livechatSettings, agentDepartments],
-				id: 'id',
-				msg: 'method',
-			}),
+			agentId,
+			agentData: livechatSettings,
+			agentDepartments,
 		})
 		.expect('Content-Type', 'application/json')
 		.expect(200);

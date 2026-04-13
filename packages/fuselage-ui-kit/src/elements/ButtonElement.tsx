@@ -12,7 +12,7 @@ const ButtonElement = ({ block, context, surfaceRenderer }: ButtonElementProps):
 	const { style, url, text, value, secondary } = block;
 
 	const handleClick: MouseEventHandler = (e) => {
-		action({ target: e.currentTarget });
+		void action({ target: e.currentTarget });
 	};
 
 	if (url) {

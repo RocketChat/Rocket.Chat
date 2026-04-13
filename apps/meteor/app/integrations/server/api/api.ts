@@ -3,27 +3,31 @@ import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isIntegrationsHooksAddSchema, isIntegrationsHooksRemoveSchema } from '@rocket.chat/rest-typings';
 import type express from 'express';
-import type { Context, Next } from 'hono';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
+import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { APIClass } from '../../../api/server/ApiClass';
 import type { RateLimiterOptions } from '../../../api/server/api';
 import { API, defaultRateLimiterOptions } from '../../../api/server/api';
-import type { FailureResult, PartialThis, SuccessResult, UnavailableResult } from '../../../api/server/definition';
+import type { FailureResult, GenericRouteExecutionContext, SuccessResult, UnavailableResult } from '../../../api/server/definition';
+import { loggerMiddleware } from '../../../api/server/middlewares/logger';
+import { metricsMiddleware } from '../../../api/server/middlewares/metrics';
+import { tracerSpanMiddleware } from '../../../api/server/middlewares/tracer';
+import type { APIActionContext } from '../../../api/server/router';
 import type { WebhookResponseItem } from '../../../lib/server/functions/processWebhookMessage';
 import { processWebhookMessage } from '../../../lib/server/functions/processWebhookMessage';
+import { metrics } from '../../../metrics/server';
 import { settings } from '../../../settings/server';
 import { IsolatedVMScriptEngine } from '../lib/isolated-vm/isolated-vm';
-import { incomingLogger } from '../logger';
+import { incomingLogger, integrationLogger } from '../logger';
 import { addOutgoingIntegration } from '../methods/outgoing/addOutgoingIntegration';
 import { deleteOutgoingIntegration } from '../methods/outgoing/deleteOutgoingIntegration';
 
 const ivmEngine = new IsolatedVMScriptEngine(true);
 
-// eslint-disable-next-line no-unused-vars
 function getEngine(_integration: IIntegration): IsolatedVMScriptEngine<true> {
 	return ivmEngine;
 }
@@ -39,12 +43,11 @@ type IntegrationOptions = {
 	};
 };
 
-type IntegrationThis = Omit<PartialThis, 'user'> & {
+type IntegrationThis = GenericRouteExecutionContext & {
 	request: Request & {
 		integration: IIncomingIntegration;
 	};
-	urlParams: Record<string, string>;
-	user: IUser & { username: RequiredField<IUser, 'username'> };
+	user: RequiredField<IUser, 'username'>;
 };
 
 async function createIntegration(options: IntegrationOptions, user: IUser): Promise<IOutgoingIntegration | undefined> {
@@ -56,7 +59,7 @@ async function createIntegration(options: IntegrationOptions, user: IUser): Prom
 			if (options.data == null) {
 				options.data = {};
 			}
-			if (options.data.channel_name != null && options.data.channel_name.indexOf('#') === -1) {
+			if (options.data.channel_name?.indexOf('#') === -1) {
 				options.data.channel_name = `#${options.data.channel_name}`;
 			}
 			return addOutgoingIntegration(user._id, {
@@ -114,6 +117,42 @@ async function removeIntegration(options: { target_url: string }, user: IUser): 
 	return API.v1.success();
 }
 
+/**
+ * Slack/GitHub-style webhooks send JSON wrapped in a `payload` field
+ * with Content-Type: application/x-www-form-urlencoded (e.g. `payload={"text":"hello"}`).
+ * This function unwraps it so integrations receive the parsed JSON directly.
+ */
+function getBodyParams(bodyParams: unknown, request: Request): Record<string, unknown> {
+	if (!isPlainObject(bodyParams)) {
+		return {};
+	}
+
+	if (
+		request.headers.get('content-type')?.startsWith('application/x-www-form-urlencoded') &&
+		Object.keys(bodyParams).length === 1 &&
+		typeof bodyParams.payload === 'string'
+	) {
+		try {
+			const parsed = JSON.parse(bodyParams.payload);
+
+			// Valid JSON must be an object, not an array or primitive
+			if (!isPlainObject(parsed)) {
+				throw new Error('Integration payload must be a JSON object, not an array or primitive');
+			}
+
+			return parsed;
+		} catch (err) {
+			// Invalid JSON -> return original bodyParams (backward compatibility)
+			if (err instanceof SyntaxError) {
+				return bodyParams;
+			}
+			throw err;
+		}
+	}
+
+	return bodyParams;
+}
+
 async function executeIntegrationRest(
 	this: IntegrationThis,
 ): Promise<
@@ -138,35 +177,41 @@ async function executeIntegrationRest(
 
 	const scriptEngine = getEngine(this.request.integration);
 
-	let { bodyParams } = this;
-	const separateResponse = this.bodyParams?.separateResponse === true;
+	let bodyParams: Record<string, unknown>;
+	try {
+		bodyParams = getBodyParams(this.bodyParams, this.request);
+	} catch (err) {
+		return API.v1.failure(err instanceof Error ? err.message : String(err));
+	}
+
+	const separateResponse = bodyParams.separateResponse === true;
 	let scriptResponse: Record<string, any> | undefined;
 
 	if (scriptEngine.integrationHasValidScript(this.request.integration) && this.request.body) {
 		const buffers = [];
 		const reader = this.request.body.getReader();
-		// eslint-disable-next-line no-await-in-loop
 		for (let result = await reader.read(); !result.done; result = await reader.read()) {
 			buffers.push(result.value);
 		}
 		const contentRaw = Buffer.concat(buffers).toString('utf8');
 		const protocol = `${this.request.headers.get('x-forwarded-proto')}:` || 'http:';
 		const url = new URL(this.request.url, `${protocol}//${this.request.headers.get('host')}`);
+		const query = isPlainObject(this.queryParams) ? this.queryParams : {};
 
 		const request = {
 			url: {
+				query,
 				hash: url.hash,
 				search: url.search,
-				query: this.queryParams,
 				pathname: url.pathname,
 				path: this.request.url,
 			},
 			url_raw: this.request.url,
 			url_params: this.urlParams,
-			content: this.bodyParams,
+			content: bodyParams,
 			content_raw: contentRaw,
 			headers: Object.fromEntries(this.request.headers.entries()),
-			body: this.bodyParams,
+			body: bodyParams,
 			user: {
 				_id: this.user._id,
 				name: this.user.name || '',
@@ -187,11 +232,11 @@ async function executeIntegrationRest(
 				});
 				return API.v1.success();
 			}
-			if (result && result.error) {
+			if (result?.error) {
 				return API.v1.failure(result.error);
 			}
 
-			bodyParams = result && result.content;
+			bodyParams = result?.content;
 
 			if (!('separateResponse' in bodyParams)) {
 				bodyParams.separateResponse = separateResponse;
@@ -246,8 +291,9 @@ async function executeIntegrationRest(
 			return API.v1.success({ responses: messageResponse });
 		}
 		return API.v1.success();
-	} catch ({ error, message }: any) {
-		return API.v1.failure(error || message);
+	} catch (err: any) {
+		incomingLogger.error({ msg: 'Error processing webhook message', err });
+		return API.v1.failure(err?.error || err?.message || 'Unknown error');
 	}
 }
 
@@ -312,22 +358,25 @@ function integrationInfoRest(): { statusCode: number; body: { success: boolean }
 }
 
 class WebHookAPI extends APIClass<'/hooks'> {
-	async authenticatedRoute(this: IntegrationThis): Promise<IUser | null> {
-		const { integrationId, token } = this.urlParams;
+	override async authenticatedRoute(routeContext: APIActionContext): Promise<IUser | null> {
+		const { integrationId, token } = routeContext.urlParams;
 		const integration = await Integrations.findOneByIdAndToken<IIncomingIntegration>(integrationId, decodeURIComponent(token));
 
 		if (!integration) {
-			incomingLogger.info(`Invalid integration id ${integrationId} or token ${token}`);
+			incomingLogger.info({ msg: 'Invalid integration id or token', integrationId, token });
 
 			throw new Error('Invalid integration id or token provided.');
 		}
 
-		this.request.integration = integration;
+		routeContext.request.headers.set('x-auth-token', token);
 
-		return Users.findOneById(this.request.integration.userId);
+		const req = routeContext.request as Request & { integration?: IIncomingIntegration };
+		req.integration = integration;
+
+		return Users.findOneById(req.integration.userId);
 	}
 
-	shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {
+	override shouldAddRateLimitToRoute(options: { rateLimiterOptions?: RateLimiterOptions | boolean }): boolean {
 		const { rateLimiterOptions } = options;
 		return (
 			(typeof rateLimiterOptions === 'object' || rateLimiterOptions === undefined) &&
@@ -336,14 +385,14 @@ class WebHookAPI extends APIClass<'/hooks'> {
 		);
 	}
 
-	async shouldVerifyRateLimit(): Promise<boolean> {
+	override async shouldVerifyRateLimit(): Promise<boolean> {
 		return (
 			settings.get('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get('API_Enable_Rate_Limiter_Dev') === true)
 		);
 	}
 
-	async enforceRateLimit(
+	override async enforceRateLimit(
 		objectForRateLimitMatch: RateLimiterOptionsToCheck,
 		request: Request,
 		response: Response,
@@ -377,37 +426,10 @@ const Api = new WebHookAPI({
 	prettyJson: process.env.NODE_ENV === 'development',
 });
 
-const middleware = async (c: Context, next: Next): Promise<void> => {
-	const { req } = c;
-	if (req.raw.headers.get('content-type') !== 'application/x-www-form-urlencoded') {
-		return next();
-	}
-
-	try {
-		const content = await req.raw.clone().text();
-		const body = Object.fromEntries(new URLSearchParams(content));
-		if (!body || typeof body !== 'object' || Object.keys(body).length !== 1) {
-			return next();
-		}
-
-		if (body.payload) {
-			// need to compose the full payload in this weird way because body-parser thought it was a form
-			c.set('bodyParams-override', JSON.parse(body.payload));
-			return next();
-		}
-		incomingLogger.debug({
-			msg: 'Body received as application/x-www-form-urlencoded without the "payload" key, parsed as string',
-			content,
-		});
-		c.set('bodyParams-override', JSON.parse(content));
-	} catch (e: any) {
-		c.body(JSON.stringify({ success: false, error: e.message }), 400);
-	}
-
-	return next();
-};
-
-Api.router.use(middleware);
+Api.router
+	.use(loggerMiddleware(integrationLogger))
+	.use(metricsMiddleware({ basePathRegex: new RegExp(/^\/hooks\//), api: Api, settings, summary: metrics.rocketchatRestApi }))
+	.use(tracerSpanMiddleware);
 
 Api.addRoute(
 	':integrationId/:userId/:token',

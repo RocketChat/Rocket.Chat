@@ -12,10 +12,9 @@ import en from '@rocket.chat/i18n/dist/resources/en.i18n.json';
 import { capitalize } from '@rocket.chat/string-helpers';
 import { normalizeLanguage } from '@rocket.chat/tools';
 import type { TranslationContextValue } from '@rocket.chat/ui-contexts';
-import { useMethod, useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
+import { useSetting, TranslationContext } from '@rocket.chat/ui-contexts';
 import type i18next from 'i18next';
 import I18NextHttpBackend from 'i18next-http-backend';
-import moment from 'moment';
 import type { ReactElement, ReactNode } from 'react';
 import { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
@@ -189,8 +188,6 @@ type TranslationProviderProps = {
 };
 
 const TranslationProvider = ({ children }: TranslationProviderProps): ReactElement => {
-	const loadLocale = useMethod('loadLocale');
-
 	const language = useAutoLanguage();
 	const i18nextInstance = useI18next(language);
 	useCustomTranslations(i18nextInstance);
@@ -215,25 +212,6 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 		[language, i18nextInstance],
 	);
 
-	useEffect(() => {
-		if (moment.locales().includes(language.toLowerCase())) {
-			moment.locale(language);
-			return;
-		}
-
-		const locale = !availableLanguages.find((lng) => lng.key === language) ? language.split('-').shift() : language;
-
-		loadLocale(locale ?? language)
-			.then((localeSrc) => {
-				localeSrc && Function(localeSrc).call({ moment });
-				moment.locale(language);
-			})
-			.catch((error) => {
-				moment.locale('en');
-				console.error('Error loading moment locale:', error);
-			});
-	}, [language, loadLocale, availableLanguages]);
-
 	useEffect(
 		() =>
 			onLoggedIn(() => {
@@ -245,7 +223,7 @@ const TranslationProvider = ({ children }: TranslationProviderProps): ReactEleme
 
 	return (
 		<I18nextProvider i18n={i18nextInstance}>
-			<TranslationProviderInner children={children} availableLanguages={availableLanguages} />
+			<TranslationProviderInner availableLanguages={availableLanguages}>{children}</TranslationProviderInner>
 		</I18nextProvider>
 	);
 };
@@ -286,7 +264,7 @@ const TranslationProviderInner = ({
 		[availableLanguages, i18n, t],
 	);
 
-	return <TranslationContext.Provider children={children} value={value} />;
+	return <TranslationContext.Provider value={value}>{children}</TranslationContext.Provider>;
 };
 
 export default TranslationProvider;

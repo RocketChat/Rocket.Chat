@@ -4,9 +4,10 @@ import type { IActionManager } from '@rocket.chat/ui-contexts';
 
 import { CurrentEditingMessage } from './CurrentEditingMessage';
 import { UserAction } from './UserAction';
-import type { ChatAPI, ComposerAPI, DataAPI, UploadsAPI } from '../../../../client/lib/chats/ChatAPI';
+import type { ChatAPI, ComposerAPI, DataAPI } from '../../../../client/lib/chats/ChatAPI';
 import { createDataAPI } from '../../../../client/lib/chats/data';
 import { processMessageEditing } from '../../../../client/lib/chats/flows/processMessageEditing';
+import { processMessageUploads } from '../../../../client/lib/chats/flows/processMessageUploads';
 import { processSetReaction } from '../../../../client/lib/chats/flows/processSetReaction';
 import { processSlashCommand } from '../../../../client/lib/chats/flows/processSlashCommand';
 import { processTooLongMessage } from '../../../../client/lib/chats/flows/processTooLongMessage';
@@ -15,7 +16,6 @@ import { requestMessageDeletion } from '../../../../client/lib/chats/flows/reque
 import { sendMessage } from '../../../../client/lib/chats/flows/sendMessage';
 import { uploadFiles } from '../../../../client/lib/chats/flows/uploadFiles';
 import { ReadStateManager } from '../../../../client/lib/chats/readStateManager';
-import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { setHighlightMessage } from '../../../../client/views/room/MessageList/providers/messageHighlightSubscription';
 
 type DeepWritable<T> = T extends (...args: any) => any
@@ -25,7 +25,7 @@ type DeepWritable<T> = T extends (...args: any) => any
 		};
 
 export class ChatMessages implements ChatAPI {
-	public uid: string | null;
+	public uid: string | undefined;
 
 	public tmid?: IMessage['_id'];
 
@@ -41,8 +41,6 @@ export class ChatMessages implements ChatAPI {
 	public currentEditingMessage: CurrentEditingMessage;
 
 	public readStateManager: ReadStateManager;
-
-	public uploads: UploadsAPI;
 
 	public ActionManager: any;
 
@@ -121,7 +119,8 @@ export class ChatMessages implements ChatAPI {
 			await this.currentEditingMessage.stop();
 		},
 		editMessage: async (message: IMessage, { cursorAtStart = false }: { cursorAtStart?: boolean } = {}) => {
-			const text = (await this.data.getDraft(message._id)) || message.attachments?.[0]?.description || message.msg;
+			this.composer?.uploads.clear();
+			const text = (await this.data.getDraft(message._id)) || message.msg;
 
 			await this.currentEditingMessage.stop();
 
@@ -142,12 +141,11 @@ export class ChatMessages implements ChatAPI {
 
 	public flows: DeepWritable<ChatAPI['flows']>;
 
-	public constructor(params: { rid: IRoom['_id']; tmid?: IMessage['_id']; uid: IUser['_id'] | null; actionManager: IActionManager }) {
+	public constructor(params: { rid: IRoom['_id']; tmid?: IMessage['_id']; uid: IUser['_id'] | undefined; actionManager: IActionManager }) {
 		const { rid, tmid } = params;
 		this.tmid = tmid;
 		this.uid = params.uid;
 		this.data = createDataAPI({ rid, tmid });
-		this.uploads = createUploadsAPI({ rid, tmid });
 		this.ActionManager = params.actionManager;
 		this.currentEditingMessage = new CurrentEditingMessage(this);
 
@@ -180,6 +178,7 @@ export class ChatMessages implements ChatAPI {
 			processSlashCommand: processSlashCommand.bind(null, this),
 			processTooLongMessage: processTooLongMessage.bind(null, this),
 			processMessageEditing: processMessageEditing.bind(null, this),
+			processMessageUploads: processMessageUploads.bind(null, this),
 			processSetReaction: processSetReaction.bind(null, this),
 			requestMessageDeletion: requestMessageDeletion.bind(this, this),
 			replyBroadcast: replyBroadcast.bind(null, this),

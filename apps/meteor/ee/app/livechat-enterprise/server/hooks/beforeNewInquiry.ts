@@ -2,7 +2,7 @@ import type { ILivechatInquiryRecord, ILivechatPriority, IOmnichannelServiceLeve
 import { LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 callbacks.add(
 	'livechat.beforeInquiry',

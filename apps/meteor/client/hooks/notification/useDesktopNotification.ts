@@ -22,10 +22,14 @@ export const useDesktopNotification = () => {
 			return;
 		}
 
-		if (notification.payload.message?.t === 'e2e') {
+		const { message } = notification.payload;
+
+		if (message.t === 'e2e' && message.content) {
 			const e2eRoom = await e2e.getInstanceByRoomId(notification.payload.rid);
 			if (e2eRoom) {
-				notification.text = (await e2eRoom.decrypt(notification.payload.message.msg)).text;
+				const decrypted = await e2eRoom.decrypt(message.content);
+				// TODO(@cardoso): review backward compatibility
+				notification.text = decrypted.msg ?? '';
 			}
 		}
 

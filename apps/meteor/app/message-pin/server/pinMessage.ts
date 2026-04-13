@@ -4,10 +4,10 @@ import { isQuoteAttachment, isRegisterUser } from '@rocket.chat/core-typings';
 import type { IMessage, MessageAttachment, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Messages, Rooms, Subscriptions, Users, ReadReceipts } from '@rocket.chat/models';
+import { isTruthy } from '@rocket.chat/tools';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../lib/isTruthy';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization/server';
 import { hasPermissionAsync } from '../../authorization/server/functions/hasPermission';
 import { isTheLastMessage } from '../../lib/server/functions/isTheLastMessage';
@@ -109,7 +109,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	}
 
 	// App IPostMessagePinned event hook
-	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, me, originalMessage.pinned);
 
 	const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
 
@@ -119,6 +119,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 				text: originalMessage.msg,
 				author_name: originalMessage.u.username,
 				author_icon: getUserAvatarURL(originalMessage.u.username),
+				content: originalMessage.content,
 				ts: originalMessage.ts,
 				attachments: attachments.map(recursiveRemove),
 			},
@@ -188,7 +189,7 @@ export const unpinMessage = async (userId: string, message: IMessage) => {
 	}
 
 	// App IPostMessagePinned event hook
-	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, await Meteor.userAsync(), originalMessage.pinned);
+	await Apps.self?.triggerEvent(AppEvents.IPostMessagePinned, originalMessage, me, originalMessage.pinned);
 
 	await Messages.setPinnedByIdAndUserId(originalMessage._id, originalMessage.pinnedBy, originalMessage.pinned);
 	if (settings.get('Message_Read_Receipt_Store_Users')) {

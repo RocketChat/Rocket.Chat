@@ -13,14 +13,13 @@ import {
 	Callout,
 	Margins,
 } from '@rocket.chat/fuselage';
-import { useDefaultSettingFeaturePreviewList } from '@rocket.chat/ui-client';
+import { useDefaultSettingFeaturePreviewList, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useTranslation, useSettingsDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '../../../components/Page';
 import { useFeaturePreviewEnableQuery } from '../../../hooks/useFeaturePreviewEnableQuery';
 import { useEditableSetting } from '../EditableSettingsContext';
 import Setting from '../settings/Setting';

@@ -5,7 +5,7 @@ import type {
 	IOutboundPhoneMessageProvider,
 	ValidOutboundProvider,
 	IOutboundMessage,
-} from '../../definition/outboundComunication';
+} from '../../definition/outboundCommunication';
 import type { AppManager } from '../AppManager';
 import type { OutboundMessageBridge } from '../bridges';
 import { OutboundMessageProvider } from './AppOutboundCommunicationProvider';
@@ -69,45 +69,52 @@ export class AppOutboundCommunicationProviderManager {
 		}
 
 		for await (const [, providerInfo] of appProviders) {
+			if (providerInfo.isRegistered) {
+				continue;
+			}
+
 			if (providerInfo.provider.type === 'phone') {
 				await this.registerPhoneProvider(appId, providerInfo.provider);
+				providerInfo.setRegistered(true);
 			} else if (providerInfo.provider.type === 'email') {
 				await this.registerEmailProvider(appId, providerInfo.provider);
+				providerInfo.setRegistered(true);
 			}
 		}
 	}
 
-	public async unregisterProviders(appId: string): Promise<void> {
+	public async unregisterProviders(appId: string, opts?: { keepReferences: boolean }): Promise<void> {
 		if (!this.outboundMessageProviders.has(appId)) {
 			return;
 		}
 
 		const appProviders = this.outboundMessageProviders.get(appId);
 		for await (const [, providerInfo] of appProviders) {
-			await this.unregisterProvider(appId, providerInfo);
+			await this.unregisterProvider(appId, providerInfo, opts);
 		}
 
-		this.outboundMessageProviders.delete(appId);
+		if (!opts?.keepReferences) {
+			this.outboundMessageProviders.delete(appId);
+		}
 	}
 
-	private registerPhoneProvider(appId: string, provider: IOutboundPhoneMessageProvider): Promise<void> {
-		return this.bridge.doRegisterPhoneProvider(provider, appId);
+	private async registerPhoneProvider(appId: string, provider: IOutboundPhoneMessageProvider): Promise<void> {
+		await this.bridge.doRegisterPhoneProvider(provider, appId);
 	}
 
-	private registerEmailProvider(appId: string, provider: IOutboundEmailMessageProvider): Promise<void> {
-		return this.bridge.doRegisterEmailProvider(provider, appId);
+	private async registerEmailProvider(appId: string, provider: IOutboundEmailMessageProvider): Promise<void> {
+		await this.bridge.doRegisterEmailProvider(provider, appId);
 	}
 
-	private async unregisterProvider(appId: string, info: OutboundMessageProvider): Promise<void> {
+	private async unregisterProvider(appId: string, info: OutboundMessageProvider, opts?: { keepReferences: boolean }): Promise<void> {
 		const key = info.provider.type;
 
 		await this.bridge.doUnRegisterProvider(info.provider, appId);
 
-		info.isRegistered = false;
+		info.setRegistered(false);
 
-		const map = this.outboundMessageProviders.get(appId);
-		if (map) {
-			map.delete(key);
+		if (!opts?.keepReferences) {
+			this.outboundMessageProviders.get(appId)?.delete(key);
 		}
 	}
 

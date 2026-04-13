@@ -8,7 +8,7 @@ export default {
 	addons: [
 		getAbsolutePath('@storybook/addon-essentials'),
 		getAbsolutePath('storybook-dark-mode'),
-		'./webpackAddon',
+		getAbsolutePath('@storybook/addon-webpack5-compiler-swc'),
 		getAbsolutePath('@storybook/addon-styling-webpack'),
 	],
 

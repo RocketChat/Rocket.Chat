@@ -23,7 +23,6 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const [navBarSearchExpanded, setNavBarSearchExpanded] = useState(false);
 	const breakpoints = useBreakpoints(); // ["xs", "sm", "md", "lg", "xl", xxl"]
 	const [hiddenActions, setHiddenActions] = useState(hiddenActionsDefaultValue);
-	const enhancedNavigationEnabled = useFeaturePreview('newNavigation');
 	const secondSidebarEnabled = useFeaturePreview('secondarySidebar');
 
 	const router = useRouter();
@@ -33,7 +32,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 	const isMobile = !breakpoints.includes('md');
 	const isTablet = !breakpoints.includes('lg');
 
-	const shouldToggle = enhancedNavigationEnabled ? isTablet || isMobile : isMobile;
+	const shouldToggle = secondSidebarEnabled ? isTablet || isMobile : isMobile;
 	const shouldDisplaySidePanel = !isTablet || displaySidePanel;
 	const defaultSidebarWidth = secondSidebarEnabled ? '220px' : '240px';
 
@@ -55,7 +54,6 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 
 	return (
 		<LayoutContext.Provider
-			children={children}
 			value={useMemo(
 				() => ({
 					isMobile,
@@ -71,6 +69,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 						overlayed,
 						setOverlayed,
 						isCollapsed,
+						shouldToggle,
 						toggle: shouldToggle ? () => setIsCollapsed((isCollapsed) => !isCollapsed) : () => undefined,
 						collapse: () => setIsCollapsed(true),
 						expand: () => setIsCollapsed(false),
@@ -82,7 +81,7 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 						openSidePanel: () => setDisplaySidePanel(true),
 					},
 					size: {
-						sidebar: isTablet ? '280px' : defaultSidebarWidth,
+						sidebar: shouldToggle ? '280px' : defaultSidebarWidth,
 						// eslint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
@@ -108,7 +107,9 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					router,
 				],
 			)}
-		/>
+		>
+			{children}
+		</LayoutContext.Provider>
 	);
 };
 

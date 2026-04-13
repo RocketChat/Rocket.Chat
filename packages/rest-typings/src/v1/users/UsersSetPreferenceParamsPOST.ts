@@ -1,9 +1,7 @@
 import type { ThemePreference } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
 
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../Ajv';
+
 export type FontSize = '100%' | '14px' | '18px' | '20px' | '24px';
 
 export type UsersSetPreferencesParamsPOST = {
@@ -54,6 +52,7 @@ export type UsersSetPreferencesParamsPOST = {
 		omnichannelHideConversationAfterClosing?: boolean;
 		enableMobileRinging?: boolean;
 		mentionsWithSymbol?: boolean;
+		desktopNotificationVoiceCalls?: boolean;
 	};
 };
 
@@ -262,6 +261,10 @@ const UsersSetPreferencesParamsPostSchema = {
 					nullable: true,
 				},
 				mentionsWithSymbol: {
+					type: 'boolean',
+					nullable: true,
+				},
+				desktopNotificationVoiceCalls: {
 					type: 'boolean',
 					nullable: true,
 				},

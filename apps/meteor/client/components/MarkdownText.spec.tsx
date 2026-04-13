@@ -1,5 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
+import dompurify from 'dompurify';
 
 import MarkdownText, { supportedURISchemes } from './MarkdownText';
 
@@ -430,5 +431,71 @@ describe('code handling', () => {
 			wrapper: mockAppRoot().build(),
 		});
 		expect(screen.getByRole('code').outerHTML).toEqual(expected);
+	});
+});
+
+describe('line breaks handling', () => {
+	it('should convert newlines to <br> in document variant', () => {
+		const content = 'First Line\nSecond Line\nThird Line';
+		const { container } = render(<MarkdownText content={content} variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const html = container.innerHTML;
+		expect(html).toContain('First Line<br>Second Line<br>Third Line');
+	});
+
+	it('should convert newlines to <br> in inline variant', () => {
+		const content = 'First Line\nSecond Line\nThird Line';
+		const { container } = render(<MarkdownText content={content} variant='inline' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const html = container.innerHTML;
+		expect(html).not.toContain('<br>');
+	});
+
+	it('should not convert newlines to <br> in inlineWithoutBreaks variant', () => {
+		const content = 'First Line\nSecond Line\nThird Line';
+		const { container } = render(<MarkdownText content={content} variant='inlineWithoutBreaks' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		const html = container.innerHTML;
+		expect(html).not.toContain('<br>');
+	});
+});
+
+describe('DOMPurify hook registration', () => {
+	it('should register hook only once at module level', () => {
+		// Import the module to trigger hook registration
+
+		const addHookSpy = jest.spyOn(dompurify, 'addHook');
+
+		// Clear any previous calls from module initialization
+		addHookSpy.mockClear();
+
+		const { rerender, unmount } = render(<MarkdownText content='[Test Link](https://example.com)' variant='document' />, {
+			wrapper: mockAppRoot().build(),
+		});
+
+		// Hook should NOT be registered during component render (it's registered at module level)
+		expect(addHookSpy).toHaveBeenCalledTimes(0);
+
+		// Re-rendering with different props should not register hook again
+		rerender(<MarkdownText content='[Another Link](https://example.com)' variant='document' />);
+		expect(addHookSpy).toHaveBeenCalledTimes(0);
+
+		// Rendering another instance should not register hook again
+		render(<MarkdownText content='[Third Link](https://test.com)' variant='inline' />, {
+			wrapper: mockAppRoot().build(),
+		});
+		expect(addHookSpy).toHaveBeenCalledTimes(0);
+
+		// Unmounting should not affect the module-level hook
+		unmount();
+		expect(addHookSpy).toHaveBeenCalledTimes(0);
+
+		addHookSpy.mockRestore();
 	});
 });

@@ -17,11 +17,12 @@ type SurfaceProps = {
 
 const Surface = ({ children, dispatchAction }: SurfaceProps) => (
 	<SurfaceContext.Provider
-		children={children}
 		value={{
 			dispatchAction,
 		}}
-	/>
+	>
+		{children}
+	</SurfaceContext.Provider>
 );
 
 export const useDispatchAction = () => useContext(SurfaceContext).dispatchAction;

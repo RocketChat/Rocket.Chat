@@ -15,7 +15,7 @@ test.describe.serial('Quote Messages', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		await page.goto('/home');
-		await poHomeChannel.sidenav.openChat(targetChannel);
+		await poHomeChannel.navbar.openChat(targetChannel);
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -53,7 +53,7 @@ test.describe.serial('Quote Messages', () => {
 			await poHomeChannel.content.lastUserMessage.hover();
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionEditMessage.click();
-			await poHomeChannel.content.inputMessage.fill(editedQuoteText);
+			await poHomeChannel.composer.inputMessage.fill(editedQuoteText);
 			await page.keyboard.press('Enter');
 		});
 
@@ -155,7 +155,7 @@ test.describe.serial('Quote Messages', () => {
 		const quoteText = faker.lorem.sentence();
 
 		await test.step('Open DM with user', async () => {
-			await poHomeChannel.sidenav.openChat(Users.user1.data.username);
+			await poHomeChannel.navbar.openChat(Users.user1.data.username);
 			await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
 		});
 
@@ -211,16 +211,16 @@ test.describe.serial('Quote Messages', () => {
 		const quoteText = faker.lorem.sentence();
 
 		await test.step('Open DM and create thread', async () => {
-			await poHomeChannel.sidenav.openChat(Users.user1.data.username);
+			await poHomeChannel.navbar.openChat(Users.user1.data.username);
 			await poHomeChannel.content.sendMessage(messageText);
 			await poHomeChannel.content.openReplyInThread();
 			await expect(page).toHaveURL(/.*thread/);
 			await poHomeChannel.content.sendMessageInThread(threadMessage);
-			await expect(poHomeChannel.content.lastThreadMessageText).toContainText(threadMessage);
+			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText(threadMessage);
 		});
 
 		await test.step('Quote message in DM thread', async () => {
-			await poHomeChannel.content.lastThreadMessageText.hover();
+			await poHomeChannel.content.lastUserThreadMessage.hover();
 			await poHomeChannel.content.btnQuoteMessage.click();
 			await expect(poHomeChannel.content.threadQuotePreview).toBeVisible();
 			await expect(poHomeChannel.content.threadQuotePreview).toContainText(threadMessage);
@@ -228,9 +228,9 @@ test.describe.serial('Quote Messages', () => {
 		});
 
 		await test.step('Verify quoted message appears in DM thread', async () => {
-			await expect(poHomeChannel.content.lastThreadMessageText).toBeVisible();
-			await expect(poHomeChannel.content.lastThreadMessageText.locator('blockquote')).toBeVisible();
-			await expect(poHomeChannel.content.lastThreadMessageText).toContainText(quoteText);
+			await expect(poHomeChannel.content.lastUserThreadMessage).toBeVisible();
+			await expect(poHomeChannel.content.lastUserThreadMessage.locator('blockquote')).toBeVisible();
+			await expect(poHomeChannel.content.lastUserThreadMessage).toContainText(quoteText);
 		});
 	});
 });

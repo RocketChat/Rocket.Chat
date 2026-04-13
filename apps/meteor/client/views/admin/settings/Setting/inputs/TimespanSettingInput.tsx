@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
+import { Field, FieldHint, FieldLabel, FieldRow, InputBox, Select } from '@rocket.chat/fuselage';
 import type { FormEventHandler, Key, ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,6 +39,7 @@ function TimespanSettingInput({
 	_id,
 	label,
 	value,
+	hint,
 	placeholder,
 	readonly,
 	autocomplete,
@@ -87,11 +88,10 @@ function TimespanSettingInput({
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
-				{hasResetButton && <ResetSettingButton data-qa-reset-setting-id={_id} onClick={handleResetButtonClick} />}
+				{hasResetButton && <ResetSettingButton onClick={handleResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
 				<InputBox
-					data-qa-setting-id={_id}
 					id={_id}
 					type='number'
 					value={internalValue}
@@ -105,6 +105,7 @@ function TimespanSettingInput({
 			<FieldRow>
 				<Select value={timeUnit} disabled={disabled} options={timeUnitOptions} onChange={handleChangeTimeUnit} />
 			</FieldRow>
+			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>
 	);
 }

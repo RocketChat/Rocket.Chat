@@ -7,7 +7,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
       class="rcx-box rcx-box--full rcx-css-4jy2w6"
     >
       <div
-        class="rcx-box rcx-box--full rcx-css-1w4asan"
+        class="rcx-box rcx-box--full rcx-css-rovs2w"
       >
         <div
           class="rcx-box rcx-box--full rcx-css-1rfw4fq"
@@ -46,16 +46,19 @@ exports[`renders AppLogsItem without crashing 1`] = `
           </span>
         </button>
         <button
-          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button rcx-css-17zzf5z"
-          data-testid="menu"
+          aria-expanded="false"
+          aria-haspopup="true"
+          aria-label="Options"
+          class="rcx-box rcx-box--full rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
+          id="react-aria-:r0:"
           title="Options"
           type="button"
         >
           <i
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-icon--name-kebab rcx-icon rcx-css-1x2l7ts"
+            class="rcx-box rcx-box--full rcx-icon--name-menu rcx-icon rcx-css-1x2l7ts"
           >
-            
+            
           </i>
         </button>
       </div>

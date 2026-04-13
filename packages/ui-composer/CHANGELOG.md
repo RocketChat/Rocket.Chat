@@ -1,5 +1,37 @@
 # @rocket.chat/ui-composer
 
+## 0.6.0
+
+### Minor Changes
+
+- ([#39425](https://github.com/RocketChat/Rocket.Chat/pull/39425)) Adds support for multiple files in message composer, improving file upload experience
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+## 0.6.0-rc.0
+
+### Minor Changes
+
+- ([#39425](https://github.com/RocketChat/Rocket.Chat/pull/39425)) Adds support for multiple files in message composer, improving file upload experience
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+## 0.5.3
+
+### Patch Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
+## 0.5.3-rc.0
+
+### Patch Changes
+
+- ([#36207](https://github.com/RocketChat/Rocket.Chat/pull/36207)) Introduces the Outbound Message feature to Omnichannel, allowing organizations to initiate proactive communication with contacts through their preferred messaging channel directly from Rocket.Chat
+
 ## 0.5.2
 
 ### Patch Changes

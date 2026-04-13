@@ -3,7 +3,7 @@ import { isEditedMessage, isOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { settings } from '../../../settings/server';
 import { normalizeMessageFileUpload } from '../../../utils/server/functions/normalizeMessageFileUpload';
 import { getLivechatRoomGuestInfo } from '../lib/guests';
@@ -115,7 +115,7 @@ export async function sendToCRM(
 	}
 
 	if (messages) {
-		for await (const message of messages) {
+		for (const message of messages) {
 			if (message.t && !sendMessageType(message.t)) {
 				continue;
 			}

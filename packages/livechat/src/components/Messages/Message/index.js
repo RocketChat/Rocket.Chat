@@ -1,10 +1,8 @@
-import { format, formatDistance, isToday } from 'date-fns';
 import { memo } from 'preact/compat';
 import { withTranslation } from 'react-i18next';
 
 import { getAttachmentUrl } from '../../../helpers/baseUrl';
 import { normalizeTransferHistoryMessage } from '../../../helpers/normalizeTransferHistoryMessage';
-import { resolveDate } from '../../../helpers/resolveDate';
 import { default as AudioAttachment } from '../AudioAttachment';
 import { FileAttachment } from '../FileAttachment';
 import { ImageAttachment } from '../ImageAttachment';
@@ -26,7 +24,6 @@ import {
 	MESSAGE_TYPE_LIVECHAT_CLOSED,
 	MESSAGE_TYPE_LIVECHAT_STARTED,
 	MESSAGE_TYPE_LIVECHAT_TRANSFER_HISTORY,
-	MESSAGE_WEBRTC_CALL,
 } from '../constants';
 
 const renderContent = ({ text, system, quoted, me, blocks, attachments, attachmentResolver, mid, rid }) =>
@@ -55,15 +52,7 @@ const renderContent = ({ text, system, quoted, me, blocks, attachments, attachme
 		blocks && <MessageBlocks blocks={blocks} mid={mid} rid={rid} />,
 	].filter(Boolean);
 
-const resolveWebRTCEndCallMessage = ({ webRtcCallEndTs, ts, t }) => {
-	const callEndTime = resolveDate(webRtcCallEndTs);
-	const callStartTime = resolveDate(ts);
-	const callDuration = formatDistance(callEndTime, callStartTime);
-	const time = format(callEndTime, isToday(callEndTime) ? 'HH:mm' : 'dddd HH:mm');
-	return t('call_end_time', { time, callDuration });
-};
-
-const getSystemMessageText = ({ type, conversationFinishedMessage, transferData, u, webRtcCallEndTs, ts }, t) =>
+const getSystemMessageText = ({ type, conversationFinishedMessage, transferData, u }, t) =>
 	(type === MESSAGE_TYPE_ROOM_NAME_CHANGED && t('room_name_changed')) ||
 	(type === MESSAGE_TYPE_USER_ADDED && t('user_added_by')) ||
 	(type === MESSAGE_TYPE_USER_REMOVED && t('user_removed_by')) ||
@@ -72,8 +61,7 @@ const getSystemMessageText = ({ type, conversationFinishedMessage, transferData,
 	(type === MESSAGE_TYPE_WELCOME && t('welcome')) ||
 	(type === MESSAGE_TYPE_LIVECHAT_CLOSED && (conversationFinishedMessage || t('conversation_finished'))) ||
 	(type === MESSAGE_TYPE_LIVECHAT_STARTED && t('chat_started')) ||
-	(type === MESSAGE_TYPE_LIVECHAT_TRANSFER_HISTORY && normalizeTransferHistoryMessage(transferData, u, t)) ||
-	(type === MESSAGE_WEBRTC_CALL && webRtcCallEndTs && ts && resolveWebRTCEndCallMessage({ webRtcCallEndTs, ts, t }));
+	(type === MESSAGE_TYPE_LIVECHAT_TRANSFER_HISTORY && normalizeTransferHistoryMessage(transferData, u, t));
 
 const getMessageUsernames = (compact, message) => {
 	if (compact || !message.u) {

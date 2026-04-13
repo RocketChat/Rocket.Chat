@@ -32,7 +32,7 @@ const UsersTab = ({ form: { control } }: UsersTabProps): ReactElement => {
 			<FieldLabel>{t('Users')}</FieldLabel>
 			<FieldRow>
 				<UserAutoCompleteMultiple
-					error={!!usersFieldState.error}
+					error={usersFieldState.error?.message}
 					value={usersField.value}
 					onChange={usersField.onChange}
 					placeholder={t('Username_Placeholder')}

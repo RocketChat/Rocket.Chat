@@ -23,7 +23,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 		formState: { errors, isSubmitting },
 	} = useForm<{
 		email: string;
-	}>({ mode: 'onBlur' });
+	}>();
 
 	useEffect(() => {
 		if (forgotPasswordFormRef.current) {
@@ -40,7 +40,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: { setLoginRoute: DispatchLo
 			aria-labelledby={formLabelId}
 			aria-describedby='welcomeTitle'
 			onSubmit={handleSubmit((data) => {
-				mutateAsync({ email: data.email });
+				void mutateAsync({ email: data.email });
 			})}
 		>
 			<Form.Header>

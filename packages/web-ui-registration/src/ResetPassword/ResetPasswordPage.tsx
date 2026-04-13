@@ -56,9 +56,7 @@ const ResetPasswordPage = (): ReactElement => {
 	} = useForm<{
 		password: string;
 		passwordConfirmation: string;
-	}>({
-		mode: 'onBlur',
-	});
+	}>();
 
 	const password = watch('password');
 	const passwordIsValid = useValidatePassword(password);
