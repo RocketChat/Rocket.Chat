@@ -41,6 +41,10 @@ export class ChatTranscript implements IStrategy {
 												ts: moment(requestData.visitor.lastAgent.ts).tz(timezone).format(timeAndDateFormat),
 											}
 										: undefined,
+									externalIds: requestData.visitor.externalIds?.map((ext) => ({
+										...ext,
+										metadata: ext.metadata ? Object.fromEntries(Object.entries(ext.metadata).map(([key]) => [key, null])) : undefined,
+									})),
 									livechatData: requestData.visitor.livechatData
 										? Object.fromEntries(Object.entries(requestData.visitor.livechatData).map(([key]) => [key, null]))
 										: undefined,
@@ -57,9 +61,6 @@ export class ChatTranscript implements IStrategy {
 				...rest,
 				ts: formattedTs,
 				quotes: formattedQuotes,
-				// @ts-expect-error - Serialized<T> transforms Record<string, unknown> to Record<string, null>
-				// because unknown is not a serializable primitive. This affects externalIds.metadata in the visitor.
-				// The field is not used in PDF rendering, so this type mismatch is safe to ignore.
 				requestData: formattedRequestData,
 				webRtcCallEndTs: formattedWebRtcCallEndTs,
 				...(isDivider && { divider: moment(ts).tz(timezone).format(dateFormat) }),
