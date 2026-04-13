@@ -1,5 +1,20 @@
 # rocketchat-services
 
+## 2.0.38
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [fd20a26fe3d38468aac45286eb916f00562980f3]:</summary>
+
+  - @rocket.chat/apps-engine@1.56.2
+  - @rocket.chat/core-services@0.10.10
+  - @rocket.chat/core-typings@7.11.7
+  - @rocket.chat/rest-typings@7.11.7
+  - @rocket.chat/model-typings@1.8.7
+  - @rocket.chat/models@1.7.7
+  - @rocket.chat/network-broker@0.2.26
+  </details>
+
 ## 2.0.37
 
 ### Patch Changes

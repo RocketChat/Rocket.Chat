@@ -1,5 +1,19 @@
 # Change Log
 
+## 23.0.7
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [fd20a26fe3d38468aac45286eb916f00562980f3]:</summary>
+
+  - @rocket.chat/apps-engine@1.56.2
+  - @rocket.chat/core-typings@7.11.7
+  - @rocket.chat/gazzodown@23.0.7
+  - @rocket.chat/ui-avatar@19.0.7
+  - @rocket.chat/ui-contexts@23.0.7
+  - @rocket.chat/ui-video-conf@23.0.7
+  </details>
+
 ## 23.0.6
 
 ### Patch Changes
