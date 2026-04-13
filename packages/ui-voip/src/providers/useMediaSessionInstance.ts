@@ -102,6 +102,7 @@ class MediaSessionStore extends Emitter<{ change: void }> {
 			oldSessionId: this.getOldSessionId(userId),
 			logger: new MediaCallLogger(),
 			features: ['audio', 'screen-share', 'transfer', 'hold'],
+			autoSync: true,
 		});
 
 		if (window.sessionStorage) {

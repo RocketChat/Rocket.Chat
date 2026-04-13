@@ -7,8 +7,10 @@ import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import type { VoipPushNotificationEventType } from '../../definition/IMediaCallServer';
 import { logger } from '../../logger';
-import { buildNewCallSignal } from '../../server/buildNewCallSignal';
 import { getMediaCallServer } from '../../server/injection';
+import { getInitialOfferSignal } from '../../server/signals/getInitialOfferSignal';
+import { getNewCallSignal } from '../../server/signals/getNewCallSignal';
+import { getStateNotification } from '../../server/signals/getStateNotification';
 
 export class UserActorAgent extends BaseMediaCallAgent {
 	private pushNotificationsEnabled = true;
@@ -28,39 +30,26 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		getMediaCallServer().sendSignal(this.actorId, signal);
 	}
 
-	public async onCallAccepted(callId: string, data: { signedContractId: string; features: CallFeature[] }): Promise<void> {
-		await this.sendSignal({
-			callId,
-			type: 'notification',
-			notification: 'accepted',
-			...data,
-		});
+	public async onCallAccepted(call: IMediaCall): Promise<void> {
+		const stateSignal = getStateNotification(call, this.role);
+		if (stateSignal?.notification !== 'accepted') {
+			return;
+		}
+
+		await this.sendSignal(stateSignal);
 
 		if (this.role !== 'callee') {
 			return;
 		}
 
-		this.sendPushNotification({ callId, event: 'answer' });
+		this.sendPushNotification({ callId: call._id, event: 'answer' });
 
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(callId);
-		if (!negotiation?.offer) {
+		const initialOfferSignal = await getInitialOfferSignal(call, this.role);
+		if (!initialOfferSignal) {
 			logger.debug('The call was accepted but the webrtc offer is not yet available.');
 			return;
 		}
-
-		if (negotiation.offerer !== 'caller') {
-			logger.debug('onCallAccepted event was triggered with a renegotiation already in place.');
-			return;
-		}
-
-		await this.sendSignal({
-			callId,
-			toContractId: data.signedContractId,
-			type: 'remote-sdp',
-			sdp: negotiation.offer,
-			negotiationId: negotiation._id,
-			streams: negotiation.offerStreams,
-		});
+		await this.sendSignal(initialOfferSignal);
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
@@ -90,8 +79,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			await this.getOrCreateChannel(call, call.caller.contractId);
 		}
 
-		await this.sendSignal(buildNewCallSignal(call, this.role));
-
+		await this.sendSignal(getNewCallSignal(call, this.role));
 		if (this.role === 'callee') {
 			this.sendPushNotification({ callId: call._id, event: 'new' });
 		}
@@ -175,14 +163,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			requestedBy: call.transferredBy,
 			parentCallId: call._id,
 			features: call.features as CallFeature[],
-		});
-	}
-
-	public async onCallTrying(callId: string): Promise<void> {
-		await this.sendSignal({
-			callId,
-			type: 'notification',
-			notification: 'trying',
 		});
 	}
 

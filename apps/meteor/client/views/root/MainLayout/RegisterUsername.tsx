@@ -53,9 +53,7 @@ const RegisterUsername = () => {
 		setError,
 		control,
 		formState: { errors },
-	} = useForm<RegisterUsernamePayload>({
-		mode: 'onBlur',
-	});
+	} = useForm<RegisterUsernamePayload>();
 
 	useEffect(() => {
 		if (data?.result && getValues('username') === '') {

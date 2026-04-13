@@ -2,7 +2,6 @@ import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { isPendingState } from '@rocket.chat/media-signaling';
 import type {
-	CallFeature,
 	ClientMediaSignal,
 	ClientMediaSignalRegister,
 	ClientMediaSignalRequestCall,
@@ -16,7 +15,9 @@ import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
-import { buildNewCallSignal } from '../server/buildNewCallSignal';
+import { getCallRoleForUser } from '../server/getCallRoleForUser';
+import { getNewCallSignal } from '../server/signals/getNewCallSignal';
+import { getSignalsForExistingCall } from '../server/signals/getSignalsForExistingCall';
 import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
 export type SignalProcessorEvents = {
@@ -115,6 +116,19 @@ export class GlobalSignalProcessor {
 		logger.debug({ msg: 'GlobalSignalProcessor.processRegisterSignal', signal: stripSensitiveDataFromSignal(signal), uid });
 
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
+		const activeCalls = calls.filter(
+			({ callee, caller }) =>
+				(callee.type === 'user' && callee.id === uid && callee.contractId === signal.contractId) ||
+				(caller.type === 'user' && caller.id === uid && caller.contractId === signal.contractId),
+		);
+
+		this.sendSignal(uid, {
+			type: 'registered',
+			toContractId: signal.contractId,
+			calls: calls.map(({ _id }) => _id),
+			activeCalls: activeCalls.map(({ _id }) => _id),
+		});
+
 		if (!calls.length) {
 			return;
 		}
@@ -127,16 +141,11 @@ export class GlobalSignalProcessor {
 			return;
 		}
 
-		const isCaller = call.caller.type === 'user' && call.caller.id === uid;
-		const isCallee = call.callee.type === 'user' && call.callee.id === uid;
-
-		if (!isCaller && !isCallee) {
+		const role = getCallRoleForUser(call, uid);
+		if (!role) {
 			return;
 		}
-
-		const role = isCaller ? 'caller' : 'callee';
 		const actor = call[role];
-
 		// If this user's side of the call has already been signed
 		if (actor.contractId) {
 			// If it was signed by a session that the current session is replacing (as in a browser refresh)
@@ -149,30 +158,23 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
-		const agents = await mediaCallDirector.cast.getAgentsFromCall(call);
-		const { [role]: agent } = agents;
-
-		await agent.oppositeAgent?.onCallTrying(call._id);
-
-		if (!(agent instanceof UserActorAgent)) {
-			logger.error({
-				msg: 'Actor agent is not prepared to process signals',
-				method: 'reactToUnknownCall',
-				signal: stripSensitiveDataFromSignal(signal),
-				isCaller,
-				isCallee,
+		const otherActor = role === 'caller' ? call.callee : call.caller;
+		if (otherActor.type === 'user') {
+			this.sendSignal(otherActor.id, {
+				callId: call._id,
+				type: 'notification',
+				notification: 'trying',
 			});
-			throw new Error('internal-error');
 		}
 
-		agent.disablePushNotifications();
+		if (!signal.requestSignals) {
+			return;
+		}
 
-		await agent.onCallCreated(call);
+		const signals = await getSignalsForExistingCall(call, uid, signal.contractId);
 
-		if (call.state === 'active') {
-			await agent.onCallActive(call._id, actor.contractId ? { signedContractId: actor.contractId } : undefined);
-		} else if (actor.contractId && !isPendingState(call.state)) {
-			await agent.onCallAccepted(call._id, { signedContractId: actor.contractId, features: call.features as CallFeature[] });
+		for (const signal of signals) {
+			this.sendSignal(uid, signal);
 		}
 	}
 
@@ -251,7 +253,7 @@ export class GlobalSignalProcessor {
 			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, 'caller'));
+		this.sendSignal(uid, getNewCallSignal(call, 'caller'));
 
 		return call;
 	}
