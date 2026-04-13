@@ -6,7 +6,7 @@ import * as stories from './CustomSoundsTable.stories';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
-const mockSounds = Array.from({ length: 50 }, (_, i) => ({
+const mockSounds = Array.from({ length: 25 }, (_, i) => ({
 	_id: `sound-${i}`,
 	name: `Custom Sound ${i + 1}`,
 	extension: 'mp3',
@@ -14,7 +14,7 @@ const mockSounds = Array.from({ length: 50 }, (_, i) => ({
 
 const getMockedAppRoot = () =>
 	mockAppRoot().withEndpoint('GET', '/v1/custom-sounds.list', () => ({
-		sounds: mockSounds.slice(0, 25),
+		sounds: mockSounds,
 		total: 50,
 		count: 25,
 		offset: 0,
