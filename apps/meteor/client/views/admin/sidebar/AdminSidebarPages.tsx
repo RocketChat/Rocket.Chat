@@ -6,14 +6,15 @@ import { subscribeToAdminSidebarItems, getAdminSidebarItems } from '../sidebarIt
 
 type AdminSidebarPagesProps = {
 	currentPath: string;
+	onClick?: () => void;
 };
 
-const AdminSidebarPages = ({ currentPath }: AdminSidebarPagesProps) => {
+const AdminSidebarPages = ({ currentPath,onClick }: AdminSidebarPagesProps) => {
 	const items = useSyncExternalStore(subscribeToAdminSidebarItems, getAdminSidebarItems);
 
 	return (
 		<Box display='flex' flexDirection='column' flexShrink={0} pb={8}>
-			<SidebarItemsAssembler items={items} currentPath={currentPath} />
+			<SidebarItemsAssembler items={items} currentPath={currentPath} onClick={onClick} />
 		</Box>
 	);
 };
