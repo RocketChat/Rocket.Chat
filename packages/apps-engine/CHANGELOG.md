@@ -1,5 +1,11 @@
 # @rocket.chat/apps-engine
 
+## 1.58.1
+
+### Patch Changes
+
+- ([#40136](https://github.com/RocketChat/Rocket.Chat/pull/40136) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
 ## 1.58.0
 
 ### Minor Changes

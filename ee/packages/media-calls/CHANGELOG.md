@@ -1,5 +1,15 @@
 # @rocket.chat/media-calls
 
+## 0.1.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.6
+  - @rocket.chat/models@1.8.6
+  </details>
+
 ## 0.1.5
 
 ### Patch Changes

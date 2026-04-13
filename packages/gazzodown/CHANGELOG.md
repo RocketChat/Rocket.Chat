@@ -1,5 +1,16 @@
 # @rocket.chat/gazzodown
 
+## 25.0.6
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@7.13.6
+  - @rocket.chat/ui-client@25.0.6
+  - @rocket.chat/ui-contexts@25.0.6
+  </details>
+
 ## 25.0.5
 
 ### Patch Changes

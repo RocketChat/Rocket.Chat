@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/livechat",
-	"version": "1.23.20",
+	"version": "1.23.21",
 	"files": [
 		"/build"
 	],
