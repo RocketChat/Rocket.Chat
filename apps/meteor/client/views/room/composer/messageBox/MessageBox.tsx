@@ -173,8 +173,7 @@ const MessageBox = ({
 				content: t('Low'),
 				icon: imageQuality === 'low' ? 'check' : undefined,
 				onClick: () => {
-					setImageQualityOption('low');
-					setImageQuality('low');
+					setImageQuality(setImageQualityOption('low'));
 				},
 			},
 			{
@@ -182,8 +181,7 @@ const MessageBox = ({
 				content: t('Medium'),
 				icon: imageQuality === 'medium' ? 'check' : undefined,
 				onClick: () => {
-					setImageQualityOption('medium');
-					setImageQuality('medium');
+					setImageQuality(setImageQualityOption('medium'));
 				},
 			},
 			{
@@ -191,8 +189,7 @@ const MessageBox = ({
 				content: t('High'),
 				icon: imageQuality === 'high' ? 'check' : undefined,
 				onClick: () => {
-					setImageQualityOption('high');
-					setImageQuality('high');
+					setImageQuality(setImageQualityOption('high'));
 				},
 			},
 		],

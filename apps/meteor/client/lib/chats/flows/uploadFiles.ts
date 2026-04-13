@@ -33,21 +33,38 @@ export const getImageQualityOption = (): ImageQualityOption => {
 	return 'medium';
 };
 
-export const setImageQualityOption = (value: ImageQualityOption): void => {
+export const setImageQualityOption = (value: ImageQualityOption): ImageQualityOption => {
 	if (typeof window === 'undefined') {
-		return;
+		return 'medium';
 	}
 
 	try {
 		window.localStorage.setItem(IMAGE_QUALITY_STORAGE_KEY, value);
+		return getImageQualityOption();
 	} catch {
-		return;
+		return 'medium';
 	}
 };
 
 const replaceFileExtension = (fileName: string, extension: string): string => {
 	const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
 	return `${nameWithoutExtension}.${extension}`;
+};
+
+const readUint32BE = (bytes: Uint8Array, offset: number): number | null => {
+	if (offset < 0 || offset + 4 > bytes.length) {
+		return null;
+	}
+
+	return ((bytes[offset] << 24) | (bytes[offset + 1] << 16) | (bytes[offset + 2] << 8) | bytes[offset + 3]) >>> 0;
+};
+
+const readUint32LE = (bytes: Uint8Array, offset: number): number | null => {
+	if (offset < 0 || offset + 4 > bytes.length) {
+		return null;
+	}
+
+	return (bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16) | (bytes[offset + 3] << 24)) >>> 0;
 };
 
 const isAnimatedPng = (bytes: Uint8Array): boolean => {
@@ -58,8 +75,16 @@ const isAnimatedPng = (bytes: Uint8Array): boolean => {
 
 	let offset = 8;
 	while (offset + 8 <= bytes.length) {
-		const chunkLength =
-			(bytes[offset] << 24) | (bytes[offset + 1] << 16) | (bytes[offset + 2] << 8) | bytes[offset + 3];
+		const chunkLength = readUint32BE(bytes, offset);
+		if (chunkLength === null) {
+			return false;
+		}
+
+		const nextOffset = offset + 12 + chunkLength;
+		if (nextOffset <= offset || nextOffset > bytes.length) {
+			return false;
+		}
+
 		const typeStart = offset + 4;
 		const chunkType = String.fromCharCode(
 			bytes[typeStart],
@@ -76,7 +101,7 @@ const isAnimatedPng = (bytes: Uint8Array): boolean => {
 			return false;
 		}
 
-		offset += 12 + chunkLength;
+		offset = nextOffset;
 	}
 
 	return false;
@@ -96,8 +121,15 @@ const isAnimatedWebP = (bytes: Uint8Array): boolean => {
 	let offset = 12;
 	while (offset + 8 <= bytes.length) {
 		const chunkType = String.fromCharCode(bytes[offset], bytes[offset + 1], bytes[offset + 2], bytes[offset + 3]);
-		const chunkLength =
-			bytes[offset + 4] | (bytes[offset + 5] << 8) | (bytes[offset + 6] << 16) | (bytes[offset + 7] << 24);
+		const chunkLength = readUint32LE(bytes, offset + 4);
+		if (chunkLength === null) {
+			return false;
+		}
+
+		const nextOffset = offset + 8 + chunkLength + (chunkLength % 2);
+		if (nextOffset <= offset || nextOffset > bytes.length) {
+			return false;
+		}
 
 		if (chunkType === 'ANIM' || chunkType === 'ANMF') {
 			return true;
@@ -110,7 +142,7 @@ const isAnimatedWebP = (bytes: Uint8Array): boolean => {
 			}
 		}
 
-		offset += 8 + chunkLength + (chunkLength % 2);
+		offset = nextOffset;
 	}
 
 	return false;
