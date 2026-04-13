@@ -242,6 +242,10 @@ async function handleInvite({
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, inviteeUser._id);
 	if (subscription) {
+		// if subscription state says the user is banned, it means the user was previously banned and is now being re-invited, so we need to unban the user instead of creating a new invite
+		if (isBannedSubscription(subscription)) {
+			await Room.inviteUserAfterBan(subscription, inviterUser);
+		}
 		return;
 	}
 
