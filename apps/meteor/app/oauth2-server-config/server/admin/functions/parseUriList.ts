@@ -1,6 +1,11 @@
-export const parseUriList = (userUri: string) => {
+export const parseUriList = (userUri: string): string[] => {
+	if (!userUri || userUri.trim() === '') {
+		return [];
+	}
+
+	// If there are no separators, return a single-item array with the trimmed value
 	if (userUri.indexOf('\n') < 0 && userUri.indexOf(',') < 0) {
-		return userUri;
+		return [userUri.trim()];
 	}
 
 	const uriList: string[] = [];
@@ -13,5 +18,5 @@ export const parseUriList = (userUri: string) => {
 		uriList.push(uri);
 	});
 
-	return uriList.join(','); // TODO: This is a hack because the original code was returning a string or an array of strings
+	return uriList;
 };
