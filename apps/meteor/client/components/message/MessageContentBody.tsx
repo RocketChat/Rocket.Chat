@@ -11,11 +11,11 @@ type MessageContentBodyProps = Pick<MessageWithMdEnforced, 'mentions' | 'channel
 	searchText?: string;
 } & ComponentProps<typeof MessageBody>;
 
-const MessageContentBody = ({ mentions, channels, md, searchText, ...props }: MessageContentBodyProps) => {
+const MessageContentBody = ({ mentions, channels, md, searchText, style, ...props }: MessageContentBodyProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<MessageBody role='document' aria-roledescription={t('message_body')} dir='auto' {...props}>
+		<MessageBody role='document' aria-roledescription={t('message_body')} dir='auto' style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', whiteSpace: 'normal' }} {...props}>
 			<Suspense fallback={<Skeleton />}>
 				<GazzodownText channels={channels} mentions={mentions} searchText={searchText}>
 					<Markup tokens={md} />
