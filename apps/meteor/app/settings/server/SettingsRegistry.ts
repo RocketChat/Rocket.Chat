@@ -234,7 +234,16 @@ export class SettingsRegistry {
 		if (!this.store.has(_id)) {
 			options.ts = new Date();
 			this.store.set(options as ISetting);
-			await this.model.insertOne(options as ISetting);
+			try {
+				await this.model.insertOne(options as ISetting);
+			} catch (e: any) {
+				// Race with another process (main app + EE microservices boot in
+				// parallel). Same rationale as in `add` above — E11000 here means
+				// another caller wrote the group first; the desired state holds.
+				if (e?.code !== 11000) {
+					throw e;
+				}
+			}
 		}
 
 		if (!callback) {
