@@ -1,12 +1,12 @@
 import type { IMediaCall, IUser } from '@rocket.chat/core-typings';
-import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
+import type { ServerMediaCallSignal } from '@rocket.chat/media-signaling';
 
 import { getNewCallSignal } from './getNewCallSignal';
 import { getCallRoleForUser } from '../getCallRoleForUser';
 import { getInitialOfferSignal } from './getInitialOfferSignal';
 import { getStateNotification } from './getStateNotification';
 
-export async function getSignalsForExistingCall(call: IMediaCall, uid: IUser['_id'], contractId: string): Promise<ServerMediaSignal[]> {
+export async function getSignalsForExistingCall(call: IMediaCall, uid: IUser['_id'], contractId: string): Promise<ServerMediaCallSignal[]> {
 	if (call.state === 'hangup') {
 		return [];
 	}
@@ -16,7 +16,7 @@ export async function getSignalsForExistingCall(call: IMediaCall, uid: IUser['_i
 		return [];
 	}
 
-	const signals: ServerMediaSignal[] = [];
+	const signals: ServerMediaCallSignal[] = [];
 	signals.push(getNewCallSignal(call, role));
 
 	const stateSignal = getStateNotification(call, role);
