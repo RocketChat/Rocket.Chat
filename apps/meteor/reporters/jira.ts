@@ -44,12 +44,12 @@ class JIRAReporter implements Reporter {
 		this.pr = options.pr;
 	}
 
-	private static async ensureJiraOk(response: Response, context: string): Promise<void> {
+	private static async ensureJiraOk(response: Awaited<ReturnType<typeof fetch>>, context: string): Promise<void> {
 		if (response.ok) {
 			return;
 		}
 		const text = await response.text();
-		const preview = text.length > 800 ? `${text.slice(0, 800)}…` : text;
+		const preview = text.length > 800 ? `${text.slice(0, 800)}...` : text;
 		throw new Error(`${LOG} ${context}: HTTP ${response.status} ${response.statusText}. Body: ${preview}`);
 	}
 
@@ -94,7 +94,7 @@ class JIRAReporter implements Reporter {
 		// replace all ()[]- with nothing
 		const search = await fetch(
 			`${this.url}/rest/api/3/search/jql?${new URLSearchParams({
-				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[\(\)\[\]-]/g, '')}'`,
+				jql: `project = FLAKY AND summary ~ '${payload.name.replace(/[()[\]-]/g, '')}'`,
 			})}`,
 			{
 				method: 'GET',
@@ -107,20 +107,16 @@ class JIRAReporter implements Reporter {
 
 		await JIRAReporter.ensureJiraOk(search, 'search for existing issue');
 
-		const { issues } = (await search.json()) as {
+		const { issues } = JSON.parse(await search.text()) as {
 			issues: { key: string; fields: { summary: string } }[];
 		};
 
-		console.log(
-			`${LOG} JQL search returned ${issues.length} candidate issue(s) (exact summary match is applied next).`,
-		);
+		console.log(`${LOG} JQL search returned ${issues.length} candidate issue(s) (exact summary match is applied next).`);
 
 		const existing = issues.find((issue) => issue.fields.summary === payload.name);
 
 		if (existing) {
-			console.log(
-				`${LOG} exact summary match on ${existing.key}; no new issue will be created (comment / label only).`,
-			);
+			console.log(`${LOG} exact summary match on ${existing.key}; no new issue will be created (comment / label only).`);
 
 			const { location } = test;
 
@@ -206,7 +202,7 @@ ${this.run_url}
 
 		await JIRAReporter.ensureJiraOk(responseIssue, 'create issue');
 
-		const created = (await responseIssue.json()) as { key?: string };
+		const created = JSON.parse(await responseIssue.text()) as { key?: string };
 		const issue = created.key;
 		if (!issue) {
 			throw new Error(`${LOG} create issue response had no key: ${JSON.stringify(created)}`);
