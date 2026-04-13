@@ -1,6 +1,5 @@
 import type { IImportMessageRecord, IMessage as IDBMessage, IImportMessage, IImportMessageReaction } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
-import { removeEmpty } from '@rocket.chat/tools';
 import limax from 'limax';
 
 import type { UserIdentification, MentionedChannel } from './ConverterCache';
@@ -85,7 +84,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 		const mentions = data.mentions && (await this.convertMessageMentions(data));
 		const channels = data.channels && (await this.convertMessageChannels(data));
 
-		return removeEmpty({
+		return {
 			rid,
 			u: {
 				_id: creator._id,
@@ -111,7 +110,7 @@ export class MessageConverter extends RecordConverter<IImportMessageRecord> {
 			alias: data.alias,
 			...(data._id ? { _id: data._id } : {}),
 			...(data.reactions ? { reactions: await this.convertMessageReactions(data.reactions) } : {}),
-		});
+		};
 	}
 
 	protected async convertMessageChannels(message: IImportMessage): Promise<MentionedChannel[] | undefined> {

@@ -1,11 +1,5 @@
 # @rocket.chat/base64
 
-## 1.0.14
-
-### Patch Changes
-
-- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
-
 ## 1.0.14-rc.0
 
 ### Patch Changes

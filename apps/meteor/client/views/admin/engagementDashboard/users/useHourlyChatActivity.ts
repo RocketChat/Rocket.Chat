@@ -1,16 +1,13 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { endOfDay, subDays } from 'date-fns';
+import moment from 'moment';
 
 type UseHourlyChatActivityOptions = {
 	displacement: number;
 	utc: boolean;
 };
 
-function endOfDayUTC(d: Date): Date {
-	return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999));
-}
-
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivityOptions) => {
 	const getHourlyChatActivity = useEndpoint('GET', '/v1/engagement-dashboard/users/chat-busier/hourly-data');
 
@@ -18,20 +15,16 @@ export const useHourlyChatActivity = ({ displacement, utc }: UseHourlyChatActivi
 		queryKey: ['admin/engagement-dashboard/users/hourly-chat-activity', { displacement, utc }],
 
 		queryFn: async () => {
-			const end = utc ? endOfDayUTC(new Date()) : endOfDay(new Date());
-			const day = subDays(end, displacement);
+			const day = (utc ? moment.utc().endOf('day') : moment().endOf('day')).subtract(displacement, 'days').toDate();
 
 			const response = await getHourlyChatActivity({
 				start: day.toISOString(),
 			});
 
-			if (!utc && response) {
-				const dayStart = new Date(day);
-				dayStart.setHours(0, 0, 0, 0);
+			if (!utc) {
 				response.hours = response.hours.map((hours) => {
-					const utcDate = new Date(Date.UTC(dayStart.getUTCFullYear(), dayStart.getUTCMonth(), dayStart.getUTCDate(), hours.hour, 0, 0, 0));
 					return {
-						hour: utcDate.getHours(),
+						hour: moment(moment.utc().set({ hour: hours.hour, minute: 0, second: 0 }).toISOString()).hour(),
 						users: hours.users,
 					};
 				});

@@ -1,12 +1,15 @@
-import { startOfDay, endOfDay } from 'date-fns';
+import moment from 'moment';
 
 export const getDateRange = (): {
 	start: string;
 	end: string;
 } => {
-	const now = new Date();
+	const today = moment(new Date());
+	const start = moment(new Date(today.year(), today.month(), today.date(), 0, 0, 0));
+	const end = moment(new Date(today.year(), today.month(), today.date(), 23, 59, 59));
+
 	return {
-		start: startOfDay(now).toISOString(),
-		end: endOfDay(now).toISOString(),
+		start: start.toISOString(),
+		end: end.toISOString(),
 	};
 };

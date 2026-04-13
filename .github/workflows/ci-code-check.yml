@@ -45,21 +45,15 @@ jobs:
 
       - uses: ./.github/actions/restore-packages
 
-      - name: Restore TypeScript incremental cache
-        id: restore-typecheck
-        if: matrix.check == 'ts'
-        uses: actions/cache/restore@v5
+      - name: Cache TypeCheck
+        uses: actions/cache@v5
         with:
           path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
-          key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          key: typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
           restore-keys: |
-            typecheck-cache-${{ runner.os }}-
-
-      - name: Cache observability (typecheck)
-        if: matrix.check == 'ts'
-        run: |
-          echo "### TypeScript incremental cache" >> $GITHUB_STEP_SUMMARY
-          echo "- **exact hit**: \`${{ steps.restore-typecheck.outputs.cache-hit }}\`" >> $GITHUB_STEP_SUMMARY
+            typecheck-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}
+            typecheck-cache-${{ runner.OS }}
+            typecheck-cache
 
       - name: Install Meteor
         shell: bash
@@ -85,36 +79,17 @@ jobs:
         if: matrix.check == 'ts'
         run: yarn turbo run typecheck --concurrency=5
 
-      - name: Save TypeScript incremental cache
-        if: matrix.check == 'ts' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@v5
-        with:
-          path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
-          key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-
-      - name: Restore ESLint cache
-        id: restore-eslint
+      - name: Cache eslint
+        uses: actions/cache@v5
         if: matrix.check == 'lint'
-        uses: actions/cache/restore@v5
         with:
           path: ./apps/meteor/.eslintcache
-          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+          key: eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}-${{ github.event.issue.number }}
           restore-keys: |
-            eslintcache-${{ runner.os }}-
-
-      - name: Cache observability (eslint)
-        if: matrix.check == 'lint'
-        run: |
-          echo "### ESLint cache" >> $GITHUB_STEP_SUMMARY
-          echo "- **exact hit**: \`${{ steps.restore-eslint.outputs.cache-hit }}\`" >> $GITHUB_STEP_SUMMARY
+            eslintcache-cache-${{ runner.OS }}-${{ hashFiles('yarn.lock') }}
+            eslintcache-cache-${{ runner.OS }}
+            eslintcache-cache
 
       - name: Lint
         if: matrix.check == 'lint'
         run: yarn lint
-
-      - name: Save ESLint cache
-        if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@v5
-        with:
-          path: ./apps/meteor/.eslintcache
-          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}

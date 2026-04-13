@@ -2,8 +2,7 @@
 	"extends": "@rocket.chat/tsconfig/server.json",
 	"compilerOptions": {
 		"strictPropertyInitialization": false, // TODO: Remove this line
-		"outDir": "./dist",
-		"types": ["jest", "node"]
+		"outDir": "./dist"
 	},
 	"include": ["./src/**/*", "./definition"],
 	"exclude": ["./dist", "./ecosystem.config.js"]

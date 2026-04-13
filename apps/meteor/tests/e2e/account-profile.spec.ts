@@ -37,9 +37,9 @@ test.describe.serial('settings-account-profile', () => {
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
 
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
-			await poHomeChannel.userCard.openUserInfo();
+			await poHomeChannel.content.linkUserCard.click();
 
-			await expect(poHomeChannel.tabs.userInfo.username).toHaveText(newUsername);
+			await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
 		});
 
 		test.describe('Avatar', () => {
@@ -58,18 +58,12 @@ test.describe.serial('settings-account-profile', () => {
 				await expect(poAccountProfile.userAvatarEditor).toHaveAttribute('src');
 			});
 
-			test('should show inline error if the image url is not valid', async () => {
+			test('should display a skeleton if the image url is not valid', async () => {
 				await poAccountProfile.inputAvatarLink.fill('https://invalidUrl');
 				await poAccountProfile.btnSetAvatarLink.click();
 
-				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
-			});
-
-			test('should show inline error if url does not point to an image', async () => {
-				await poAccountProfile.inputAvatarLink.fill('https://google.com');
-				await poAccountProfile.btnSetAvatarLink.click();
-
-				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
+				await poAccountProfile.btnSubmit.click();
+				await expect(poAccountProfile.userAvatarEditor).not.toHaveAttribute('src');
 			});
 		});
 	});

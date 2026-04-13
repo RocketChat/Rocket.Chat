@@ -11,7 +11,7 @@ import type {
 import { MediaCalls } from '@rocket.chat/models';
 
 import { DEFAULT_CALL_FEATURES } from '../constants';
-import type { InternalCallParams, SignalProcessingOptions } from '../definition/common';
+import type { InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
@@ -32,7 +32,7 @@ export class GlobalSignalProcessor {
 		this.emitter = new Emitter();
 	}
 
-	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal, options: SignalProcessingOptions): Promise<void> {
+	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		switch (signal.type) {
 			case 'register':
 				return this.processRegisterSignal(uid, signal);
@@ -41,7 +41,7 @@ export class GlobalSignalProcessor {
 		}
 
 		if ('callId' in signal) {
-			return this.processCallSignal(uid, signal, options);
+			return this.processCallSignal(uid, signal);
 		}
 
 		logger.error({ msg: 'Unrecognized media signal', signal: stripSensitiveDataFromSignal(signal) });
@@ -58,7 +58,6 @@ export class GlobalSignalProcessor {
 	private async processCallSignal(
 		uid: IUser['_id'],
 		signal: Exclude<ClientMediaSignal, ClientMediaSignalRegister | ClientMediaSignalRequestCall>,
-		{ throwIfSkipped }: SignalProcessingOptions,
 	): Promise<void> {
 		try {
 			const call = await MediaCalls.findOneById(signal.callId);
@@ -94,9 +93,6 @@ export class GlobalSignalProcessor {
 
 			// Ignore signals from different sessions if the actor is already signed
 			if (!skipContractCheck && callActor.contractId && callActor.contractId !== signal.contractId) {
-				if (throwIfSkipped) {
-					throw new Error('invalid-contract');
-				}
 				return;
 			}
 
@@ -106,14 +102,7 @@ export class GlobalSignalProcessor {
 			const { [role]: agent } = agents;
 
 			if (!(agent instanceof UserActorAgent)) {
-				logger.error({
-					msg: 'Actor agent is not prepared to process signals',
-					method: 'processSignal',
-					signal: stripSensitiveDataFromSignal(signal),
-					isCaller,
-					isCallee,
-				});
-				throw new Error('internal-error');
+				throw new Error('Actor agent is not prepared to process signals');
 			}
 
 			await agent.processSignal(call, signal);

@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 
 import { Users } from './fixtures/userStates';
-import { AdminInfo, HomeChannel, HomeDiscussion, HomeTeam } from './page-objects';
+import { AdminInfo, HomeChannel } from './page-objects';
 import { CreateNewChannelModal } from './page-objects/fragments/modals';
 import {
 	createTargetChannel,
@@ -19,7 +19,6 @@ test.use({ storageState: Users.admin.state });
 
 test.describe.serial('feature preview', () => {
 	let poHomeChannel: HomeChannel;
-	let poHomeTeam: HomeTeam;
 	let targetChannel: string;
 	let targetDiscussion: Record<string, string>;
 	let sidepanelTeam: string;
@@ -56,7 +55,6 @@ test.describe.serial('feature preview', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		poHomeTeam = new HomeTeam(page);
 	});
 
 	test('should show "Navigation" feature section', async ({ page }) => {
@@ -107,17 +105,17 @@ test.describe.serial('feature preview', () => {
 			newChannelModal = new CreateNewChannelModal(page);
 
 			await page.goto(`/group/${sidepanelTeam}`);
-			await poHomeTeam.content.waitForChannel();
+			await poHomeChannel.content.waitForChannel();
 
-			await poHomeTeam.headerToolbar.openTeamChannels();
-			await poHomeTeam.tabs.channels.btnCreateNew.click();
+			await poHomeChannel.roomToolbar.openTeamChannels();
+			await poHomeChannel.tabs.channels.btnCreateNew.click();
 
 			await newChannelModal.inputName.fill(targetChannelNameInTeam);
 			await newChannelModal.checkboxPrivate.click();
 			await newChannelModal.btnCreate.click();
 
-			await expect(poHomeTeam.sidepanel.sidepanelList).toBeVisible();
-			await expect(poHomeTeam.sidepanel.getItemByName(targetChannelNameInTeam)).toBeVisible();
+			await expect(poHomeChannel.sidepanel.sidepanelList).toBeVisible();
+			await expect(poHomeChannel.sidepanel.getItemByName(targetChannelNameInTeam)).toBeVisible();
 
 			await deleteChannel(api, targetChannelNameInTeam);
 		});
@@ -146,10 +144,20 @@ test.describe.serial('feature preview', () => {
 		test('should show channel in sidepanel after adding existing one', async ({ page }) => {
 			await page.goto(`/group/${sidepanelTeam}`);
 
-			await poHomeTeam.headerToolbar.openTeamChannels();
-			await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
+			await poHomeChannel.roomToolbar.openTeamChannels();
+			await poHomeChannel.tabs.channels.btnAddExisting.click();
+			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
+			await expect(async () => {
+				await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
+				const option = poHomeChannel.tabs.channels.getListboxOption(targetChannel);
+				await option.click();
+				await expect(option).not.toBeVisible();
+			}).toPass();
 
-			await expect(poHomeTeam.sidepanel.getItemByName(targetChannel)).toBeVisible();
+			await poHomeChannel.tabs.channels.btnAdd.click();
+			await poHomeChannel.content.waitForChannel();
+
+			await expect(poHomeChannel.sidepanel.getItemByName(targetChannel)).toBeVisible();
 		});
 
 		test('should keep the main room on the top even if child has unread messages', async ({ page, browser }) => {
@@ -158,22 +166,30 @@ test.describe.serial('feature preview', () => {
 
 			await page.goto(`/group/${sidepanelTeam}`);
 
-			await poHomeTeam.headerToolbar.openTeamChannels();
-			await poHomeTeam.tabs.channels.addExistingChannel(targetChannel);
+			await poHomeChannel.roomToolbar.openTeamChannels();
+			await poHomeChannel.tabs.channels.btnAddExisting.click();
+			// flaky: workarround for when AutoComplete does not close the list box before trying to click `Add`
+			await expect(async () => {
+				await poHomeChannel.tabs.channels.inputChannels.fill(targetChannel);
+				const option = poHomeChannel.tabs.channels.getListboxOption(targetChannel);
+				await option.click();
+				await expect(option).not.toBeVisible();
+			}).toPass();
+			await poHomeChannel.tabs.channels.btnAdd.click();
 
-			const sidepanelTeamItem = poHomeTeam.sidepanel.getTeamItemByName(sidepanelTeam);
-			const targetChannelItem = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
+			const sidepanelTeamItem = poHomeChannel.sidepanel.getTeamItemByName(sidepanelTeam);
+			const targetChannelItem = poHomeChannel.sidepanel.getTeamItemByName(targetChannel);
 
 			await targetChannelItem.click();
 			expect(page.url()).toContain(`/channel/${targetChannel}`);
-			await poHomeTeam.content.sendMessage('hello channel');
+			await poHomeChannel.content.sendMessage('hello channel');
 
 			await expect(async () => {
 				await sidepanelTeamItem.focus();
 				await sidepanelTeamItem.click();
 				expect(page.url()).toContain(`/group/${sidepanelTeam}`);
 			}).toPass();
-			await poHomeTeam.content.sendMessage('hello team');
+			await poHomeChannel.content.sendMessage('hello team');
 
 			await user1Page.goto(`/channel/${targetChannel}`);
 			await user1Channel.content.waitForChannel();
@@ -181,7 +197,7 @@ test.describe.serial('feature preview', () => {
 			await user1Channel.content.toggleAlsoSendThreadToChannel(false);
 			await user1Channel.content.sendMessageInThread('hello thread');
 
-			const item = poHomeTeam.sidepanel.getTeamItemByName(targetChannel);
+			const item = poHomeChannel.sidepanel.getTeamItemByName(targetChannel);
 			await expect(item.locator('..')).toHaveAttribute('data-item-index', '1');
 
 			await user1Page.close();
@@ -238,7 +254,6 @@ test.describe.serial('feature preview', () => {
 		});
 
 		test('should show discussion in discussions and all sidepanel filter, should remove after deleting discussion', async ({ page }) => {
-			const poHomeDiscussion = new HomeDiscussion(page);
 			await page.goto(`/group/${sidepanelTeam}`);
 			await poHomeChannel.content.waitForChannel();
 
@@ -250,20 +265,22 @@ test.describe.serial('feature preview', () => {
 			await poHomeChannel.content.btnCreateDiscussionModal.click();
 			await expect(page.getByRole('heading', { name: discussionName })).toBeVisible();
 
-			await poHomeDiscussion.sidebar.discussionsTeamCollabFilter.click();
-			await expect(poHomeDiscussion.sidepanel.getItemByName(discussionName)).toBeVisible();
+			await poHomeChannel.sidebar.discussionsTeamCollabFilter.click();
+			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toBeVisible();
 
-			await poHomeDiscussion.sidebar.allTeamCollabFilter.click();
-			await expect(poHomeDiscussion.sidepanel.getItemByName(discussionName)).toBeVisible();
+			await poHomeChannel.sidebar.allTeamCollabFilter.click();
+			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toBeVisible();
 
-			await poHomeDiscussion.roomToolbar.openRoomInfo();
-			await poHomeDiscussion.tabs.room.deleteRoom();
+			await poHomeChannel.roomToolbar.openRoomInfo();
+			await poHomeChannel.tabs.room.btnMore.click();
+			await poHomeChannel.tabs.room.getMoreOption('Delete').click();
+			await poHomeChannel.tabs.room.confirmDeleteDiscussion();
 
-			await poHomeDiscussion.sidebar.discussionsTeamCollabFilter.click();
-			await expect(poHomeDiscussion.sidepanel.getItemByName(discussionName)).not.toBeVisible();
+			await poHomeChannel.sidebar.discussionsTeamCollabFilter.click();
+			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).not.toBeVisible();
 
-			await poHomeDiscussion.sidebar.allTeamCollabFilter.click();
-			await expect(poHomeDiscussion.sidepanel.getItemByName(discussionName)).not.toBeVisible();
+			await poHomeChannel.sidebar.allTeamCollabFilter.click();
+			await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).not.toBeVisible();
 		});
 
 		test('should persist sidepanel state after page reload', async ({ page }) => {

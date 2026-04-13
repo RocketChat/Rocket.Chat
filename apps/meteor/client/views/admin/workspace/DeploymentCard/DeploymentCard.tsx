@@ -68,7 +68,9 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('MongoDB')} />
-						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine}`}
+						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} ${
+							!statistics.msEnabled ? `(oplog ${statistics.oplogEnabled ? t('Enabled') : t('Disabled')})` : ''
+						}`}
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Commit_details')} />

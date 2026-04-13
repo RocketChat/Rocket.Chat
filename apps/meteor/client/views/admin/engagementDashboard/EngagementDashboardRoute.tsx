@@ -50,10 +50,8 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				/>,
 			);
 		}
-	}, [shouldShowUpsell, setModal, t, handleManageSubscription]);
 
-	useEffect(() => {
-		return router.subscribeToRouteChange(() => {
+		router.subscribeToRouteChange(() => {
 			if (!isValidTab(tab)) {
 				router.navigate(
 					{
@@ -64,7 +62,7 @@ const EngagementDashboardRoute = (): ReactElement | null => {
 				);
 			}
 		});
-	}, [router, tab]);
+	}, [shouldShowUpsell, router, tab, setModal, t, handleManageSubscription]);
 
 	if (isModalOpen || isPending) {
 		return <PageSkeleton />;

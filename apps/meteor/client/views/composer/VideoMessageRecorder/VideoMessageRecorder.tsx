@@ -41,7 +41,7 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const dispatchToastMessage = useToastMessageDispatch();
 
-	const [time, setTime] = useState<string | undefined>('00:00');
+	const [time, setTime] = useState<string | undefined>();
 	const [recordingState, setRecordingState] = useState<'idle' | 'loading' | 'recording'>('idle');
 	const [recordingInterval, setRecordingInterval] = useState<ReturnType<typeof setInterval> | null>(null);
 	const isRecording = recordingState === 'recording';
@@ -85,10 +85,10 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 			const fileName = `${t('Video_record')}.${getVideoRecordingExtension()}`;
 			const file = new File([blob], fileName, { type: VideoRecorder.getSupportedMimeTypes().split(';')[0] });
 			await chat?.flows.uploadFiles({ files: [file] });
+			chat?.composer?.setRecordingVideo(false);
 		};
 
 		VideoRecorder.stop(cb);
-		chat?.composer?.setRecordingVideo(false);
 		setTime(undefined);
 		stopVideoRecording(rid, tmid);
 	};
@@ -114,12 +114,12 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 
 	return (
 		<PositionAnimated visible='visible' anchor={reference} placement='top-end'>
-			<Box role='dialog' aria-label={t('Video_record')} bg='light' padding={4} borderRadius={4} elevation='2'>
+			<Box bg='light' padding={4} borderRadius={4} elevation='2'>
 				<Box className={videoContainerClass} overflow='hidden' height={240} borderRadius={4}>
 					<video muted autoPlay playsInline ref={videoRef} width={320} height={240} />
 				</Box>
 				<Box mbs={4} display='flex' justifyContent='space-between'>
-					<Button aria-label={isRecording ? t('Stop_Recording') : t('Record')} small onClick={handleRecord}>
+					<Button small onClick={handleRecord}>
 						<Box is='span' display='flex' alignItems='center'>
 							<Icon size='x16' mie={time ? 4 : undefined} name={isRecording ? 'stop-unfilled' : 'rec'} />
 							{time && <span>{time}</span>}

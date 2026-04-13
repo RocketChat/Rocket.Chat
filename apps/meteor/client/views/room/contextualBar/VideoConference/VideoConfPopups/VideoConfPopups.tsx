@@ -1,4 +1,3 @@
-import { FocusScope } from '@react-aria/focus';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
 import {
@@ -10,6 +9,7 @@ import {
 } from '@rocket.chat/ui-video-conf';
 import type { ReactElement } from 'react';
 import { lazy, Suspense, useEffect, useMemo } from 'react';
+import { FocusScope } from 'react-aria';
 
 import VideoConfPopupPortal from '../../../../../portals/VideoConfPopupPortal';
 

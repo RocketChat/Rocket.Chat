@@ -1,7 +1,7 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Flex, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { differenceInDays, addDays, format } from 'date-fns';
+import moment from 'moment';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -35,16 +35,12 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 			return [];
 		}
 
-		const startDate = new Date(data.start);
-		const endDate = new Date(data.end);
-		const daysCount = differenceInDays(endDate, startDate) + 1;
-		const values = Array.from({ length: daysCount }, (_, i) => ({
-			date: format(addDays(startDate, i), 'yyyy-MM-dd'),
+		const values = Array.from({ length: moment(data.end).diff(data.start, 'days') + 1 }, (_, i) => ({
+			date: moment(data.start).add(i, 'days').format('YYYY-MM-DD'),
 			newUsers: 0,
 		}));
 		for (const { day, users } of data.days) {
-			const dayDate = new Date(day);
-			const i = differenceInDays(dayDate, startDate);
+			const i = utc ? moment(day).utc().diff(data.start, 'days') : moment(day).diff(data.start, 'days');
 			if (i >= 0) {
 				values[i].newUsers += users;
 			}
@@ -116,7 +112,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps): ReactElement => {
 											tickPadding: 8,
 											tickRotation: values.length > 31 ? 90 : 0,
 											truncateTickAt: 0,
-											format: (date): string => format(new Date(date), 'dd/MM'),
+											format: (date): string => moment(date).format('DD/MM'),
 										}}
 										axisLeft={{
 											tickSize: 0,

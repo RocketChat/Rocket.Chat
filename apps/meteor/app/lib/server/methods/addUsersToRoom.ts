@@ -96,12 +96,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
-			if (subscription && isBannedSubscription(subscription)) {
-				throw new Meteor.Error('error-user-is-banned', 'User is banned from this room', {
-					method: 'addUsersToRoom',
-				});
-			}
-			if (!subscription) {
+			if (!subscription || isBannedSubscription(subscription)) {
 				return addUserToRoom(data.rid, newUser, user);
 			}
 			if (!newUser.username) {

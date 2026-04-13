@@ -3,19 +3,16 @@ import {
 	Button,
 	Box,
 	Icon,
-	Label,
-	CheckBox,
 	ModalHeader,
 	ModalHeaderText,
 	ModalTitle,
 	ModalClose,
 	ModalContent,
 	ModalFooter,
-	ModalFooterAnnotation,
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
+import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ComponentProps, ReactElement } from 'react';
-import { useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +20,7 @@ type AddMatrixUsersModalProps = {
 	matrixIdVerifiedStatus: Map<string, string>;
 	completeUserList: string[];
 	onClose: () => void;
-	onSave: (args_0: { users: string[]; unbanConfirmed?: boolean }) => Promise<void>;
+	onSave: (args_0: any) => Promise<void>;
 };
 
 type FormValues = {
@@ -42,13 +39,7 @@ const verificationStatusAsIcon = (verificationStatus: string): ComponentProps<ty
 };
 
 const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, completeUserList }: AddMatrixUsersModalProps): ReactElement => {
-	const { t } = useTranslation();
-	const checkboxId = useId();
-	const [bannedError, setBannedError] = useState(false);
-	const [unbanConfirmed, setUnbanConfirmed] = useState(false);
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string>();
-
+	const dispatchToastMessage = useToastMessageDispatch();
 	const usersToInvite = completeUserList.filter(
 		(user) => !(matrixIdVerifiedStatus.has(user) && matrixIdVerifiedStatus.get(user) === 'UNVERIFIED'),
 	);
@@ -60,23 +51,13 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 		},
 	});
 
-	const onSubmit = async (data: FormValues) => {
-		setLoading(true);
-		setError(undefined);
-		try {
-			await onSave({ users: data.usersToInvite, unbanConfirmed });
-			onClose();
-		} catch (err: any) {
-			if (err?.error === 'error-user-is-banned') {
-				setBannedError(true);
-				setUnbanConfirmed(false);
-			} else {
-				setError(err?.message || t('Something_went_wrong'));
-			}
-		} finally {
-			setLoading(false);
-		}
+	const onSubmit = (data: FormValues) => {
+		onSave({ users: data.usersToInvite })
+			.then(onClose)
+			.catch((error) => dispatchToastMessage({ type: 'error', message: error as Error }));
 	};
+
+	const { t } = useTranslation();
 
 	return (
 		<Modal>
@@ -99,36 +80,11 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 						</Box>
 					))}
 				</Box>
-				{bannedError && (
-					<Box color='danger' fontScale='c1' mbs={8}>
-						{t('User_is_banned_from_room_confirm_unban')}
-					</Box>
-				)}
-				{error && (
-					<Box color='danger' fontScale='c1' mbs={8}>
-						{error}
-					</Box>
-				)}
 			</ModalContent>
-			<ModalFooter justifyContent={bannedError ? 'space-between' : 'flex-end'}>
-				{bannedError && (
-					<ModalFooterAnnotation>
-						<Box display='flex' alignItems='center'>
-							<CheckBox checked={unbanConfirmed} onChange={() => setUnbanConfirmed((prev) => !prev)} id={checkboxId} />
-							<Label htmlFor={checkboxId} mis={8}>
-								{t('Yes_unban_user')}
-							</Label>
-						</Box>
-					</ModalFooterAnnotation>
-				)}
+			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button
-						primary
-						onClick={handleSubmit(onSubmit)}
-						disabled={!(usersToInvite.length > 0) || (bannedError && !unbanConfirmed)}
-						loading={loading}
-					>
+					<Button primary onClick={handleSubmit(onSubmit)} disabled={!(usersToInvite.length > 0)}>
 						{t('Yes_continue')}
 					</Button>
 				</ModalFooterControllers>

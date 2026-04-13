@@ -1,10 +1,9 @@
-import { transformSync } from '@babel/core';
-import presetEnv from '@babel/preset-env';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
+import { Babel } from 'meteor/babel-compiler';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
@@ -112,15 +111,10 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		integration.script.trim() !== ''
 	) {
 		try {
-			const result = transformSync(integration.script, {
-				presets: [presetEnv],
-				compact: true,
-				minified: true,
-				comments: false,
-			});
+			let babelOptions = Babel.getDefaultOptions({ runtime: false });
+			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
 
-			// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
-			integrationData.scriptCompiled = result?.code ?? undefined;
+			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
 			delete integrationData.scriptError;
 		} catch (e) {
 			integrationData.scriptCompiled = undefined;

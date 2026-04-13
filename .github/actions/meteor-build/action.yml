@@ -22,7 +22,7 @@ inputs:
     type: string
   source-hash:
     required: true
-    description: 'RC cache id (e.g. packages-build-cache-key + meteor apps/meteor archive hash from CI)'
+    description: 'Source code hash'
     type: string
 
 runs:
@@ -30,7 +30,7 @@ runs:
 
   steps:
     - name: Cache build
-      uses: actions/cache@v5
+      uses: actions/cache@v4
       id: cache-build
       with:
         path: /tmp/Rocket.Chat.tar.gz
@@ -69,7 +69,7 @@ runs:
     #     df -h
 
     - name: Cache vite
-      uses: actions/cache@v5
+      uses: actions/cache@v3
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./node_modules/.vite
@@ -78,7 +78,7 @@ runs:
           vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
     - name: Cache meteor local
-      uses: actions/cache@v5
+      uses: actions/cache@v3
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./apps/meteor/.meteor/local
@@ -87,7 +87,7 @@ runs:
           meteor-local-cache-${{ runner.arch }}-${{ runner.os }}-${{ inputs.type }}-
 
     - name: Cache meteor
-      uses: actions/cache@v5
+      uses: actions/cache@v3
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ~/.meteor
@@ -157,16 +157,7 @@ runs:
         # check if BABEL_ENV is set to coverage
         if [[ $BABEL_ENV == "coverage" ]]; then
           echo -e "rocketchat:coverage\n" >> ./apps/meteor/.meteor/packages
-          # Inject swc-plugin-coverage-instrument into .swcrc for istanbul-compatible coverage
-          node -e "
-            const fs = require('fs');
-            const swcrc = JSON.parse(fs.readFileSync('./apps/meteor/.swcrc', 'utf8'));
-            swcrc.jsc.experimental = swcrc.jsc.experimental || {};
-            swcrc.jsc.experimental.plugins = swcrc.jsc.experimental.plugins || [];
-            swcrc.jsc.experimental.plugins.push(['swc-plugin-coverage-instrument', {}]);
-            fs.writeFileSync('./apps/meteor/.swcrc', JSON.stringify(swcrc, null, 2) + '\n');
-          "
-          echo "Coverage enabled (SWC istanbul plugin injected)"
+          echo "Coverage enabled"
         fi
 
         # Restore original package.json so meteor should not copy devDependencies

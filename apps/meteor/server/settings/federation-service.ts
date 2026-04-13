@@ -10,6 +10,7 @@ export const createFederationServiceSettings = async (): Promise<void> => {
 			enterprise: true,
 			modules: ['federation'],
 			invalidValue: false,
+			alert: 'Federation_Service_Alert',
 		});
 
 		await this.add('Federation_Service_Domain', '', {

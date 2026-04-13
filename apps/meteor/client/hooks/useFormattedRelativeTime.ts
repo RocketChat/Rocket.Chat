@@ -1,5 +1,14 @@
+import moment from 'moment';
 import { useMemo } from 'react';
 
-import { formatDurationMs } from '../lib/utils/dateFormat';
+export const useFormattedRelativeTime = (timeMs: number): string =>
+	useMemo(() => {
+		moment.relativeTimeThreshold('s', 60);
+		moment.relativeTimeThreshold('ss', 0);
+		moment.relativeTimeThreshold('m', 60);
+		moment.relativeTimeThreshold('h', 24);
+		moment.relativeTimeThreshold('d', 31);
+		moment.relativeTimeThreshold('M', 12);
 
-export const useFormattedRelativeTime = (timeMs: number): string => useMemo(() => formatDurationMs(timeMs), [timeMs]);
+		return moment.duration(timeMs).humanize();
+	}, [timeMs]);

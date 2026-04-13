@@ -1,8 +1,8 @@
-import { format, addHours } from 'date-fns';
+import moment from 'moment-timezone';
 
 export const getMomentCurrentLabel = (timestamp = Date.now()) => {
-	const m = new Date(timestamp);
-	const n = addHours(m, 1);
+	const m = moment(timestamp);
+	const n = moment(m).add(1, 'hours');
 
-	return `${format(m, 'ha')}-${format(n, 'ha')}`;
+	return `${m.format('hA')}-${n.format('hA')}`;
 };

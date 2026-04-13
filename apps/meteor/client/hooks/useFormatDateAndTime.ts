@@ -1,7 +1,7 @@
 import { useUserPreference, useSetting } from '@rocket.chat/ui-contexts';
+import type { MomentInput } from 'moment';
+import moment from 'moment';
 import { useCallback } from 'react';
-
-import { formatDate } from '../lib/utils/dateFormat';
 
 type UseFormatDateAndTimeParams = {
 	withSeconds?: boolean;
@@ -12,15 +12,15 @@ export const useFormatDateAndTime = ({ withSeconds }: UseFormatDateAndTimeParams
 	const format = useSetting('Message_TimeAndDateFormat', 'LLL');
 
 	return useCallback(
-		(time: string | Date | number = new Date()) => {
+		(time: MomentInput) => {
 			switch (clockMode) {
 				case 1:
-					return formatDate(time, withSeconds ? 'MMMM D, YYYY h:mm:ss A' : 'MMMM D, YYYY h:mm A');
+					return moment(time).format(withSeconds ? 'MMMM D, Y h:mm:ss A' : 'MMMM D, Y h:mm A');
 				case 2:
-					return formatDate(time, withSeconds ? 'MMMM D, YYYY H:mm:ss' : 'MMMM D, YYYY H:mm');
+					return moment(time).format(withSeconds ? 'MMMM D, Y H:mm:ss' : 'MMMM D, Y H:mm');
 
 				default:
-					return formatDate(time, withSeconds ? 'L LTS' : format);
+					return moment(time).format(withSeconds ? 'L LTS' : format);
 			}
 		},
 		[clockMode, format, withSeconds],

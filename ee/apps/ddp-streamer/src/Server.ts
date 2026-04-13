@@ -68,7 +68,11 @@ export class Server extends EventEmitter {
 			// if method was not defined on DDP Streamer we fall back to Meteor
 			if (!this._methods.has(packet.method)) {
 				const result = await MeteorService.callMethodWithToken(client.userId, client.userToken, packet.method, packet.params);
-				return this.result(client, packet, result.result);
+				if (result?.result) {
+					return this.result(client, packet, result.result);
+				}
+
+				throw new MeteorError(404, `Method '${packet.method}' not found`);
 			}
 
 			const fn = this._methods.get(packet.method);

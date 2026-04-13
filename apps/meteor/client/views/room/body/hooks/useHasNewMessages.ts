@@ -71,10 +71,6 @@ export const useHasNewMessages = (
 		clientCallbacks.add(
 			'afterSaveMessage',
 			(msg: IMessage) => {
-				if (msg.tmid) {
-					return;
-				}
-
 				if (msg.u._id === uid) {
 					sendToBottom();
 					setHasNewMessages(false);

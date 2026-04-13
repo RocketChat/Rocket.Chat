@@ -1,7 +1,7 @@
 import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subWeeks, subMonths, parseISO } from 'date-fns';
+import moment from 'moment';
 import type { ReactElement, ComponentProps, SetStateAction, FormEvent } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +24,7 @@ const parseFromStartDateInput = (date: string) => {
 		return undefined;
 	}
 
-	return startOfDay(parseISO(date));
+	return moment(date, 'YYYY-MM-DD').startOf('day').toDate();
 };
 
 const parseFromEndDateInput = (date: string) => {
@@ -32,7 +32,7 @@ const parseFromEndDateInput = (date: string) => {
 		return undefined;
 	}
 
-	return endOfDay(parseISO(date));
+	return moment(date, 'YYYY-MM-DD').endOf('day').toDate();
 };
 
 type DateRangeAction =
@@ -47,51 +47,46 @@ type DateRangeAction =
 	| { newEnd: string };
 
 const dateRangeReducer = (state: DateRange, action: DateRangeAction): DateRange => {
-	const now = new Date();
-
 	switch (action) {
 		case 'today': {
 			return {
-				start: startOfDay(now),
-				end: endOfDay(now),
+				start: moment().startOf('day').toDate(),
+				end: moment().endOf('day').toDate(),
 			};
 		}
 
 		case 'yesterday': {
-			const yesterday = subDays(now, 1);
 			return {
-				start: startOfDay(yesterday),
-				end: endOfDay(yesterday),
+				start: moment().subtract(1, 'day').startOf('day').toDate(),
+				end: moment().subtract(1, 'day').endOf('day').toDate(),
 			};
 		}
 
 		case 'this-week': {
 			return {
-				start: startOfWeek(now),
-				end: endOfDay(now),
+				start: moment().startOf('week').toDate(),
+				end: moment().endOf('day').toDate(),
 			};
 		}
 
 		case 'last-week': {
-			const lastWeek = subWeeks(now, 1);
 			return {
-				start: startOfWeek(lastWeek),
-				end: endOfWeek(lastWeek),
+				start: moment().subtract(1, 'week').startOf('week').toDate(),
+				end: moment().subtract(1, 'week').endOf('week').toDate(),
 			};
 		}
 
 		case 'this-month': {
 			return {
-				start: startOfMonth(now),
-				end: endOfDay(now),
+				start: moment().startOf('month').toDate(),
+				end: moment().endOf('day').toDate(),
 			};
 		}
 
 		case 'last-month': {
-			const lastMonth = subMonths(now, 1);
 			return {
-				start: startOfMonth(lastMonth),
-				end: endOfMonth(lastMonth),
+				start: moment().subtract(1, 'month').startOf('month').toDate(),
+				end: moment().subtract(1, 'month').endOf('month').toDate(),
 			};
 		}
 
@@ -122,8 +117,6 @@ type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'value' | 'onChange
 	onChange?: (dateRange: DateRange) => void;
 };
 
-const minDate = (a: Date, b: Date) => (a.getTime() < b.getTime() ? a : b);
-
 const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): ReactElement => {
 	const dispatch = useEffectEvent((action: DateRangeAction): void => {
 		const newRange = dateRangeReducer(value ?? { start: undefined, end: undefined }, action);
@@ -141,7 +134,7 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps): R
 	const startDate = useMemo(() => formatToDateInput(value?.start), [value?.start]);
 	const endDate = useMemo(() => formatToDateInput(value?.end), [value?.end]);
 	const maxStartDate = useMemo(() => {
-		return formatToDateInput(value?.end ? minDate(value.end, new Date()) : new Date());
+		return formatToDateInput(value?.end ? moment.min(moment(value.end), moment()).toDate() : new Date());
 	}, [value?.end]);
 	const minEndDate = startDate;
 	const maxEndDate = useMemo(() => formatToDateInput(new Date()), []);

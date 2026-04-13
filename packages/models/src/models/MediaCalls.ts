@@ -5,7 +5,6 @@ import type {
 	MediaCallSignedContact,
 	MediaCallContact,
 	IUser,
-	MediaCallActor,
 } from '@rocket.chat/core-typings';
 import type { IMediaCallsModel } from '@rocket.chat/model-typings';
 import type {
@@ -36,22 +35,6 @@ export class MediaCallsRaw extends BaseRaw<IMediaCall> implements IMediaCallsMod
 				sparse: true,
 			},
 		];
-	}
-
-	public async findOneByIdAndCallee<T extends Document = IMediaCall>(
-		id: IMediaCall['_id'],
-		callee: MediaCallActor,
-		options?: FindOptions<IMediaCall>,
-	): Promise<T | null> {
-		return this.findOne<T>(
-			{
-				'_id': id,
-				'callee.type': callee.type,
-				'callee.id': callee.id,
-				...(callee.contractId && { 'callee.contractId': callee.contractId }),
-			},
-			options,
-		);
 	}
 
 	public async findOneByCallerRequestedId<T extends Document = IMediaCall>(

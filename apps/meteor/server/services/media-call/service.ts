@@ -9,13 +9,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
-import type {
-	CallFeature,
-	ClientMediaSignal,
-	ServerMediaSignal,
-	ServerMediaCallSignal,
-	ClientMediaSignalAnswer,
-} from '@rocket.chat/media-signaling';
+import type { CallFeature, ClientMediaSignal, ServerMediaSignal, ServerMediaCallSignal } from '@rocket.chat/media-signaling';
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
@@ -47,72 +41,21 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		this.configureMediaCallServer();
 	}
 
-	public async answerCall(uid: IUser['_id'], params: Omit<ClientMediaSignalAnswer, 'type'>): Promise<IMediaCall> {
-		const { callId, answer } = params;
-
-		const call = await MediaCalls.findOneByIdAndCallee<Pick<IMediaCall, '_id'>>(
-			callId,
-			{ type: 'user', id: uid },
-			{ projection: { _id: 1 } },
-		);
-		if (!call) {
-			throw new Error('not-found');
-		}
-
-		const signal: ClientMediaSignalAnswer = {
-			type: 'answer',
-			...params,
-		};
-
-		await callServer.receiveSignal(uid, signal, { throwIfSkipped: true });
-
-		const updatedCall = await MediaCalls.findOneById(callId);
-		if (!updatedCall) {
-			throw new Error('internal-error');
-		}
-
-		switch (answer) {
-			case 'ack':
-				if (updatedCall.acceptedAt || updatedCall.ended) {
-					throw new Error('invalid-call-state');
-				}
-				break;
-			case 'reject':
-				if (!updatedCall.ended || updatedCall.endedBy?.id !== uid) {
-					throw new Error('invalid-call-state');
-				}
-				break;
-			case 'accept':
-				if (updatedCall.callee.contractId !== signal.contractId) {
-					if (updatedCall.callee.contractId) {
-						throw new Error('invalid-call-state');
-					}
-					throw new Error('internal-error');
-				}
-				break;
-		}
-
-		return updatedCall;
-	}
-
 	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
 		try {
-			await callServer.receiveSignal(uid, signal);
+			callServer.receiveSignal(uid, signal);
 		} catch (err) {
 			logger.error({ msg: 'failed to process client signal', err, signal, uid });
 		}
 	}
 
 	public async processSerializedSignal(uid: IUser['_id'], signal: string): Promise<void> {
-		let signalType: string | null = null;
-
 		try {
 			const deserialized = await this.deserializeClientSignal(signal);
-			signalType = deserialized.type;
 
-			await callServer.receiveSignal(uid, deserialized);
+			callServer.receiveSignal(uid, deserialized);
 		} catch (err) {
-			logger.error({ msg: 'failed to process client signal', err, uid, type: signalType });
+			logger.error({ msg: 'failed to process client signal', err, uid });
 		}
 	}
 
