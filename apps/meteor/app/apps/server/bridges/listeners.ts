@@ -12,6 +12,7 @@ import type { UIKitIncomingInteraction } from '@rocket.chat/apps-engine/definiti
 import type { IUIKitLivechatIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat';
 import type { IUserContext, IUserUpdateContext } from '@rocket.chat/apps-engine/definition/users';
 import type { IMessage, IRoom, IUser, ILivechatDepartment, IUpload } from '@rocket.chat/core-typings';
+import { inspect } from 'util';
 
 type LivechatTransferData = {
 	type: LivechatTransferEventType;
@@ -185,69 +186,76 @@ type HandleEvent =
 export class AppListenerBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {}
 
-	// eslint-disable-next-line complexity
 	async handleEvent(args: HandleEvent): Promise<any> {
 		const listenerManager = this.orch.getManager().getListenerManager();
-		if (!listenerManager.hasListeners(args.event as AppInterface)) {
+
+		const execute = () => {
+			switch (args.event) {
+				case AppInterface.IPreFileUpload:
+					return this.uploadEvent(args);
+				case AppInterface.IPostMessageDeleted:
+				case AppInterface.IPostMessageReacted:
+				case AppInterface.IPostMessageFollowed:
+				case AppInterface.IPostMessagePinned:
+				case AppInterface.IPostMessageStarred:
+				case AppInterface.IPostMessageReported:
+				case AppInterface.IPostSystemMessageSent:
+				case AppInterface.IPreMessageSentPrevent:
+				case AppInterface.IPreMessageSentExtend:
+				case AppInterface.IPreMessageSentModify:
+				case AppInterface.IPostMessageSent:
+				case AppInterface.IPreMessageDeletePrevent:
+				case AppInterface.IPreMessageUpdatedPrevent:
+				case AppInterface.IPreMessageUpdatedExtend:
+				case AppInterface.IPreMessageUpdatedModify:
+				case AppInterface.IPostMessageUpdated:
+					return this.messageEvent(args);
+				case AppInterface.IPreRoomCreatePrevent:
+				case AppInterface.IPreRoomCreateExtend:
+				case AppInterface.IPreRoomCreateModify:
+				case AppInterface.IPostRoomCreate:
+				case AppInterface.IPreRoomDeletePrevent:
+				case AppInterface.IPostRoomDeleted:
+				case AppInterface.IPreRoomUserJoined:
+				case AppInterface.IPostRoomUserJoined:
+				case AppInterface.IPreRoomUserLeave:
+				case AppInterface.IPostRoomUserLeave:
+					return this.roomEvent(args);
+				/**
+				 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
+				 */
+				case AppInterface.ILivechatRoomClosedHandler:
+				case AppInterface.IPreLivechatRoomCreatePrevent:
+				case AppInterface.IPostLivechatRoomStarted:
+				case AppInterface.IPostLivechatRoomClosed:
+				case AppInterface.IPostLivechatAgentAssigned:
+				case AppInterface.IPostLivechatAgentUnassigned:
+				case AppInterface.IPostLivechatRoomTransferred:
+				case AppInterface.IPostLivechatGuestSaved:
+				case AppInterface.IPostLivechatRoomSaved:
+				case AppInterface.IPostLivechatDepartmentRemoved:
+				case AppInterface.IPostLivechatDepartmentDisabled:
+					return this.livechatEvent(args);
+				case AppInterface.IPostUserCreated:
+				case AppInterface.IPostUserUpdated:
+				case AppInterface.IPostUserDeleted:
+				case AppInterface.IPostUserLoggedIn:
+				case AppInterface.IPostUserLoggedOut:
+				case AppInterface.IPostUserStatusChanged:
+					return this.userEvent(args);
+				default:
+					return this.defaultEvent(args);
+			}
+		};
+
+		const result = await execute();
+
+		if (!listenerManager.hasListeners(args.event)) {
+			args.event.includes('Message') && console.debug(inspect({ args, result }, false, 10));
 			return undefined;
 		}
 
-		switch (args.event) {
-			case AppInterface.IPreFileUpload:
-				return this.uploadEvent(args);
-			case AppInterface.IPostMessageDeleted:
-			case AppInterface.IPostMessageReacted:
-			case AppInterface.IPostMessageFollowed:
-			case AppInterface.IPostMessagePinned:
-			case AppInterface.IPostMessageStarred:
-			case AppInterface.IPostMessageReported:
-			case AppInterface.IPostSystemMessageSent:
-			case AppInterface.IPreMessageSentPrevent:
-			case AppInterface.IPreMessageSentExtend:
-			case AppInterface.IPreMessageSentModify:
-			case AppInterface.IPostMessageSent:
-			case AppInterface.IPreMessageDeletePrevent:
-			case AppInterface.IPreMessageUpdatedPrevent:
-			case AppInterface.IPreMessageUpdatedExtend:
-			case AppInterface.IPreMessageUpdatedModify:
-			case AppInterface.IPostMessageUpdated:
-				return this.messageEvent(args);
-			case AppInterface.IPreRoomCreatePrevent:
-			case AppInterface.IPreRoomCreateExtend:
-			case AppInterface.IPreRoomCreateModify:
-			case AppInterface.IPostRoomCreate:
-			case AppInterface.IPreRoomDeletePrevent:
-			case AppInterface.IPostRoomDeleted:
-			case AppInterface.IPreRoomUserJoined:
-			case AppInterface.IPostRoomUserJoined:
-			case AppInterface.IPreRoomUserLeave:
-			case AppInterface.IPostRoomUserLeave:
-				return this.roomEvent(args);
-			/**
-			 * @deprecated please prefer the AppInterface.IPostLivechatRoomClosed event
-			 */
-			case AppInterface.ILivechatRoomClosedHandler:
-			case AppInterface.IPreLivechatRoomCreatePrevent:
-			case AppInterface.IPostLivechatRoomStarted:
-			case AppInterface.IPostLivechatRoomClosed:
-			case AppInterface.IPostLivechatAgentAssigned:
-			case AppInterface.IPostLivechatAgentUnassigned:
-			case AppInterface.IPostLivechatRoomTransferred:
-			case AppInterface.IPostLivechatGuestSaved:
-			case AppInterface.IPostLivechatRoomSaved:
-			case AppInterface.IPostLivechatDepartmentRemoved:
-			case AppInterface.IPostLivechatDepartmentDisabled:
-				return this.livechatEvent(args);
-			case AppInterface.IPostUserCreated:
-			case AppInterface.IPostUserUpdated:
-			case AppInterface.IPostUserDeleted:
-			case AppInterface.IPostUserLoggedIn:
-			case AppInterface.IPostUserLoggedOut:
-			case AppInterface.IPostUserStatusChanged:
-				return this.userEvent(args);
-			default:
-				return this.defaultEvent(args);
-		}
+		return result;
 	}
 
 	async defaultEvent(args: HandleDefaultEvent): Promise<unknown> {
