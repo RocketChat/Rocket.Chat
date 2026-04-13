@@ -17,7 +17,7 @@ import {
 	FieldHint,
 	Option,
 } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter, usePermission } from '@rocket.chat/ui-contexts';
@@ -32,6 +32,7 @@ import type { EditDepartmentFormData } from './definitions';
 import { formatAgentListPayload } from './utils/formatAgentListPayload';
 import { formatEditDepartmentPayload } from './utils/formatEditDepartmentPayload';
 import { getFormInitialValues } from './utils/getFormInititalValues';
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { useRoomsList } from '../../../hooks/useRoomsList';
 import { EeTextInput, EeTextAreaInput, EeNumberInput, DepartmentBusinessHours } from '../additionalForms';
@@ -68,8 +69,8 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 		register,
 		control,
 		handleSubmit,
-		formState: { errors, isValid, isDirty, isSubmitting },
-	} = useForm<EditDepartmentFormData>({ mode: 'onChange', defaultValues: initialValues });
+		formState: { errors, isDirty, isSubmitting },
+	} = useForm<EditDepartmentFormData>({ defaultValues: initialValues });
 
 	const [fallbackFilter, setFallbackFilter] = useState<string>('');
 	const [isUnitRequired, setUnitRequired] = useState(false);
@@ -82,42 +83,43 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 	const updateDepartmentInfo = useEndpoint('PUT', '/v1/livechat/department/:_id', { _id: id || '' });
 	const saveDepartmentAgentsInfoOnEdit = useEndpoint('POST', `/v1/livechat/department/:_id/agents`, { _id: id || '' });
 
-	const handleSave = useEffectEvent(async (data: EditDepartmentFormData) => {
-		try {
-			const { agentList } = data;
-			const payload = formatEditDepartmentPayload(data);
-			const departmentUnit = data.unit ? { _id: data.unit } : undefined;
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async (data: EditDepartmentFormData) => {
+			try {
+				const { agentList } = data;
+				const payload = formatEditDepartmentPayload(data);
+				const departmentUnit = data.unit ? { _id: data.unit } : undefined;
 
-			if (id) {
-				await updateDepartmentInfo({
-					department: payload,
-					agents: [],
-					departmentUnit,
-				});
+				if (id) {
+					await updateDepartmentInfo({
+						department: payload,
+						agents: [],
+						departmentUnit,
+					});
 
-				const { agentList: initialAgentList } = initialValues;
-				const agentListPayload = formatAgentListPayload(initialAgentList, agentList);
+					const { agentList: initialAgentList } = initialValues;
+					const agentListPayload = formatAgentListPayload(initialAgentList, agentList);
 
-				if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
-					await saveDepartmentAgentsInfoOnEdit(agentListPayload);
+					if (agentListPayload.upsert.length > 0 || agentListPayload.remove.length > 0) {
+						await saveDepartmentAgentsInfoOnEdit(agentListPayload);
+					}
+				} else {
+					await createDepartment({
+						department: payload,
+						agents: agentList.map(({ agentId, count, order }) => ({ agentId, count, order })),
+						departmentUnit,
+					});
 				}
-			} else {
-				await createDepartment({
-					department: payload,
-					agents: agentList.map(({ agentId, count, order }) => ({ agentId, count, order })),
-					departmentUnit,
-				});
+
+				queryClient.invalidateQueries({ queryKey: ['/v1/livechat/department/:_id', id] });
+				dispatchToastMessage({ type: 'success', message: t('Saved') });
+				router.navigate('/omnichannel/departments');
+			} catch (error) {
+				dispatchToastMessage({ type: 'error', message: error });
 			}
-
-			queryClient.invalidateQueries({ queryKey: ['/v1/livechat/department/:_id', id] });
-			dispatchToastMessage({ type: 'success', message: t('Saved') });
-			router.navigate('/omnichannel/departments');
-		} catch (error) {
-			dispatchToastMessage({ type: 'error', message: error });
-		}
-	});
-
-	const isFormValid = isValid && isDirty;
+		},
+		{ isDirty },
+	);
 
 	const formId = useId();
 	const enabledField = useId();
@@ -140,7 +142,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			<Page>
 				<PageHeader title={title} onClickBack={() => router.navigate('/omnichannel/departments')}>
 					<ButtonGroup>
-						<Button type='submit' form={formId} primary disabled={!isFormValid} loading={isSubmitting}>
+						<Button type='submit' form={formId} primary loading={isSubmitting}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>
