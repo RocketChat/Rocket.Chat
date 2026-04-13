@@ -82,6 +82,9 @@ export class MediaCallServer implements IMediaCallServer {
 	}
 
 	public sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {
+		if (!this.settings.mobileRinging) {
+			return;
+		}
 		logger.debug({ msg: 'MediaCallServer.sendPushNotification', params });
 
 		this.emitter.emit('pushNotificationRequest', params);

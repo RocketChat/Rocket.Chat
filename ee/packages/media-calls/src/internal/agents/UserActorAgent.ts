@@ -13,12 +13,6 @@ import { getNewCallSignal } from '../../server/signals/getNewCallSignal';
 import { getStateNotification } from '../../server/signals/getStateNotification';
 
 export class UserActorAgent extends BaseMediaCallAgent {
-	private pushNotificationsEnabled = true;
-
-	public disablePushNotifications(): void {
-		this.pushNotificationsEnabled = false;
-	}
-
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
 		const channel = await this.getOrCreateChannel(call, signal.contractId);
 
@@ -172,10 +166,6 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	private sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {
-		if (!this.pushNotificationsEnabled) {
-			return;
-		}
-
 		getMediaCallServer().sendPushNotification(params);
 	}
 }

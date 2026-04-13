@@ -33,6 +33,8 @@ export interface IMediaCallServerSettings {
 		};
 	};
 
+	mobileRinging: boolean;
+
 	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
 	isFeatureAvailableForUser: (uid: IUser['_id'], feature: CallFeature) => boolean;
 }

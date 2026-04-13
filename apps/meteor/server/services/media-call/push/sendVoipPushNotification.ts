@@ -9,6 +9,7 @@ import { Push } from '../../../../app/push/server/push';
 import PushNotification from '../../../../app/push-notifications/server/lib/PushNotification';
 import { settings } from '../../../../app/settings/server';
 import { getUserAvatarURL } from '../../../../app/utils/server/getUserAvatarURL';
+import { getUserPreference } from '../../../../app/utils/server/lib/getUserPreference';
 import { logger } from '../logger';
 
 async function getActorUser<T extends Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(
@@ -55,6 +56,10 @@ async function getActorUserData(
 }
 
 async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: VoipPushNotificationEventType): Promise<void> {
+	if (settings.get('Push_enable') !== true || settings.get('VoIP_TeamCollab_Mobile_Ringing_Enabled') !== true) {
+		return;
+	}
+
 	const call = await MediaCalls.findOneById(callId);
 	if (!call) {
 		logger.error({ msg: 'Failed to send push notification: Media Call not found', callId });
@@ -63,6 +68,15 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 
 	if (call.callee.type !== 'user') {
 		logger.error({ msg: 'Failed to send push notification: Invalid Callee Type', callId });
+		return;
+	}
+
+	const {
+		kind,
+		callee: { id: userId },
+	} = call;
+
+	if (!(await getUserPreference(userId, 'enableMobileRinging'))) {
 		return;
 	}
 
@@ -80,10 +94,6 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 		return;
 	}
 
-	const {
-		kind,
-		callee: { id: userId },
-	} = call;
 	const caller = await getActorUserData(call.caller);
 
 	metrics.notificationsSent.inc({ notification_type: 'mobile' });

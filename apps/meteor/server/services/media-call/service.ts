@@ -317,6 +317,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 
 	private getMediaServerSettings(): IMediaCallServerSettings {
 		const sipEnabled = settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_Enabled') ?? false;
+		const mobileRinging = settings.get<boolean>('VoIP_TeamCollab_Mobile_Ringing_Enabled') ?? false;
 		const forceSip = sipEnabled && (settings.get<boolean>('VoIP_TeamCollab_SIP_Integration_For_Internal_Calls') ?? false);
 
 		return {
@@ -336,6 +337,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5060,
 				},
 			},
+			mobileRinging,
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
 		};
