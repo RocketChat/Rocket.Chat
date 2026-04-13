@@ -1,22 +1,31 @@
 /**
  * Amazon DocumentDB only supports one index build at a time per collection.
- * This patch serializes all createIndex/createIndexes calls per collection
- * so concurrent index creation from Meteor packages (accounts-base,
- * accounts-password, accounts-oauth) and Rocket.Chat models (BaseRaw)
- * don't race against each other.
+ * This patch serializes createIndex/createIndexes calls at the native
+ * MongoDB driver level (app's node_modules/mongodb copy), covering calls
+ * from Rocket.Chat models (BaseRaw) and EE microservices.
  *
- * Patching at the native MongoDB driver level ensures every call path is covered.
+ * Meteor packages (accounts-base, accounts-password) use a separate bundled
+ * copy of the mongodb driver and are patched independently in the
+ * rocketchat:mongo-config Meteor package via MongoConnection.
+ *
+ * Both patches share the same queue via a globalThis-keyed Map so builds
+ * for the same collection are serialized across all code paths.
  *
  * Safe to import multiple times — the patch is applied only once.
  */
 import { Collection } from 'mongodb';
 
 const PATCHED = Symbol.for('rocketchat.documentdb.index.patch');
+const QUEUE_KEY = Symbol.for('rocketchat.documentdb.index.queues');
 
 if (process.env.DOCUMENTDB === 'true' && !(Collection as any)[PATCHED]) {
 	(Collection as any)[PATCHED] = true;
 
-	const queues = new Map<string, Promise<unknown>>();
+	const g = globalThis as any;
+	if (!g[QUEUE_KEY]) {
+		g[QUEUE_KEY] = new Map<string, Promise<unknown>>();
+	}
+	const queues: Map<string, Promise<unknown>> = g[QUEUE_KEY];
 
 	const enqueue = <T>(collectionName: string, fn: () => Promise<T>): Promise<T> => {
 		const prev = queues.get(collectionName) ?? Promise.resolve();

@@ -1,40 +1,43 @@
 import tls from 'tls';
 import { PassThrough } from 'stream';
-import { Collection } from 'mongodb';
 
 import { Email } from 'meteor/email';
 import { Mongo } from 'meteor/mongo';
+import { MongoInternals } from 'meteor/mongo';
 
 // DocumentDB only supports one index build at a time per collection.
-// Serialize all createIndex/createIndexes calls per collection at the native
-// driver level so Meteor packages (accounts-base, accounts-password, etc.)
-// and Rocket.Chat models (BaseRaw) don't race against each other.
-// This package loads before accounts-base (see .meteor/packages order).
+// Serialize createIndexAsync calls at the MongoConnection level so Meteor
+// packages (accounts-base, accounts-password, accounts-oauth) don't race.
+// This package loads before accounts-base (position 53 vs 56 in .meteor/packages).
+//
+// NOTE: Meteor bundles its own copy of the mongodb driver (npm-mongo/node_modules/mongodb)
+// separate from the app's node_modules/mongodb. Patching Collection.prototype from
+// `import { Collection } from 'mongodb'` only patches the app's copy and does NOT
+// affect Meteor's internal calls. That's why we patch MongoConnection here instead.
+// The shared queue (via globalThis) is also used by @rocket.chat/models patchIndex.ts
+// to serialize BaseRaw.createIndexes() calls through the app's mongodb driver copy.
 if (process.env.DOCUMENTDB === 'true') {
-	const PATCHED = Symbol.for('rocketchat.documentdb.index.patch');
-
-	if (!Collection[PATCHED]) {
-		Collection[PATCHED] = true;
-
-		const queues = new Map();
-
-		const enqueue = (collectionName, fn) => {
-			const prev = queues.get(collectionName) || Promise.resolve();
-			const next = prev.then(fn, fn);
-			queues.set(collectionName, next.catch(() => {}));
-			return next;
-		};
-
-		const originalCreateIndex = Collection.prototype.createIndex;
-		Collection.prototype.createIndex = function (...args) {
-			return enqueue(this.collectionName, () => originalCreateIndex.apply(this, args));
-		};
-
-		const originalCreateIndexes = Collection.prototype.createIndexes;
-		Collection.prototype.createIndexes = function (...args) {
-			return enqueue(this.collectionName, () => originalCreateIndexes.apply(this, args));
-		};
+	const QUEUE_KEY = Symbol.for('rocketchat.documentdb.index.queues');
+	if (!globalThis[QUEUE_KEY]) {
+		globalThis[QUEUE_KEY] = new Map();
 	}
+	const queues = globalThis[QUEUE_KEY];
+
+	const enqueue = (collectionName, fn) => {
+		const prev = queues.get(collectionName) || Promise.resolve();
+		const next = prev.then(fn, fn);
+		queues.set(collectionName, next.catch(() => {}));
+		return next;
+	};
+
+	const mongo = MongoInternals.defaultRemoteCollectionDriver().mongo;
+	const originalCreateIndex = mongo.createIndexAsync.bind(mongo);
+
+	mongo.createIndexAsync = async function (collectionName, index, options) {
+		return enqueue(collectionName, () => originalCreateIndex(collectionName, index, options));
+	};
+	mongo.ensureIndexAsync = mongo.createIndexAsync;
+	mongo.createIndex = mongo.createIndexAsync;
 }
 
 // we always want Meteor to disable oplog tailing
