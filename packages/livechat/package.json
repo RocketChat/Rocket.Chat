@@ -12,7 +12,7 @@
 		"/build"
 	],
 	"scripts": {
-		"build": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli --mode production",
+		"build": "yarn clean && cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli --mode production",
 		"build-storybook": "storybook build",
 		"clean": "rimraf dist",
 		"dev": "yarn build",
