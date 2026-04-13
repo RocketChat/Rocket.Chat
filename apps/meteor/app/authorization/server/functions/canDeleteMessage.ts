@@ -11,7 +11,7 @@ const elapsedTime = (ts: Date): number => {
 };
 
 export const canDeleteMessageAsync = async (
-	uid: string,
+	deletingUser: Pick<IUser, '_id' | 'username'>,
 	{ u, rid, ts }: { u: Pick<IUser, '_id' | 'username'>; rid: string; ts?: Date },
 ): Promise<boolean> => {
 	const room = await Rooms.findOneById<Pick<IRoom, '_id' | 'ro' | 'unmuted' | 't' | 'teamId' | 'prid'>>(rid, {
@@ -29,11 +29,11 @@ export const canDeleteMessageAsync = async (
 		return false;
 	}
 
-	if (!(await canAccessRoomAsync(room, { _id: uid }))) {
+	if (!(await canAccessRoomAsync(room, { _id: deletingUser._id }))) {
 		return false;
 	}
 
-	const forceDelete = await hasPermissionAsync(uid, 'force-delete-message', rid);
+	const forceDelete = await hasPermissionAsync(deletingUser._id, 'force-delete-message', rid);
 
 	if (forceDelete) {
 		return true;
@@ -48,13 +48,14 @@ export const canDeleteMessageAsync = async (
 		return false;
 	}
 
-	const allowedToDeleteAny = await hasPermissionAsync(uid, 'delete-message', rid);
+	const allowedToDeleteAny = await hasPermissionAsync(deletingUser._id, 'delete-message', rid);
 
-	const allowed = allowedToDeleteAny || (uid === u._id && (await hasPermissionAsync(uid, 'delete-own-message', rid)));
+	const allowed =
+		allowedToDeleteAny || (deletingUser._id === u._id && (await hasPermissionAsync(deletingUser._id, 'delete-own-message', rid)));
 	if (!allowed) {
 		return false;
 	}
-	const bypassBlockTimeLimit = await hasPermissionAsync(uid, 'bypass-time-limit-edit-and-delete', rid);
+	const bypassBlockTimeLimit = await hasPermissionAsync(deletingUser._id, 'bypass-time-limit-edit-and-delete', rid);
 
 	if (!bypassBlockTimeLimit) {
 		const blockDeleteInMinutes = await getValue('Message_AllowDeleting_BlockDeleteInMinutes');
@@ -65,9 +66,9 @@ export const canDeleteMessageAsync = async (
 		}
 	}
 
-	if (room.ro === true && !(await hasPermissionAsync(uid, 'post-readonly', rid))) {
+	if (room.ro === true && !(await hasPermissionAsync(deletingUser._id, 'post-readonly', rid))) {
 		// Unless the user was manually unmuted
-		if (u.username && !(room.unmuted || []).includes(u.username)) {
+		if (deletingUser.username && !(room.unmuted || []).includes(deletingUser.username)) {
 			throw new Error("You can't delete messages because the room is readonly.");
 		}
 	}

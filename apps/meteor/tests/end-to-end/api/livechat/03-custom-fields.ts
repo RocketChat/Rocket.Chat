@@ -92,6 +92,8 @@ describe('LIVECHAT - custom fields', () => {
 				.post(api('livechat/custom.field'))
 				.send({ token: visitor.token, key: 'invalid-key', value: 'invalid-value', overwrite: true })
 				.expect(400);
+
+			await deleteVisitor(visitor.token);
 		});
 		it('should save a custom field on visitor', async () => {
 			const visitor = await createVisitor();
@@ -114,6 +116,8 @@ describe('LIVECHAT - custom fields', () => {
 			expect(body).to.have.property('success', true);
 			expect(body).to.have.property('field');
 			expect(body.field).to.have.property('value', 'test_address');
+
+			await deleteVisitor(visitor.token);
 		});
 	});
 
@@ -174,6 +178,7 @@ describe('LIVECHAT - custom fields', () => {
 				deleteCustomField(customFieldName3),
 				deleteCustomField(roomCustomField),
 				closeOmnichannelRoom(visitorRoom._id),
+				deleteVisitor(visitor.token),
 				updateSetting('Livechat_accept_chats_with_no_agents', false),
 			]);
 		});
@@ -235,6 +240,8 @@ describe('LIVECHAT - custom fields', () => {
 			expect(body.fields).to.be.an('array');
 			expect(body.fields).to.have.lengthOf(1);
 			expect(body.fields[0]).to.have.property('value', 'test_address');
+
+			await deleteVisitor(visitor.token);
 		});
 		it('should save multiple custom fields on a visitor', async () => {
 			const visitor = await createVisitor();
@@ -258,6 +265,8 @@ describe('LIVECHAT - custom fields', () => {
 			expect(body.fields[0]).to.have.property('value', 'test_address');
 			expect(body.fields[1]).to.have.property('value', 'test_address2');
 			expect(body.fields[2]).to.have.property('value', 'test_address3');
+
+			await deleteVisitor(visitor.token);
 		});
 		it('should save multiple custom fields on contact when visitor already has custom fields and an update with multiple fields is issued', async () => {
 			const { body } = await request
@@ -361,8 +370,8 @@ describe('LIVECHAT - custom fields', () => {
 				room = await createLivechatRoom(visitor.token);
 			});
 			after(async () => {
-				await deleteVisitor(visitor._id);
 				await closeOmnichannelRoom(room._id);
+				await deleteVisitor(visitor.token);
 			});
 
 			it('should save both room & vistor custom fields on one call', async () => {
@@ -676,6 +685,7 @@ describe('LIVECHAT - custom fields', () => {
 			});
 			after(async () => {
 				await closeOmnichannelRoom(room._id);
+				await deleteVisitor(visitor.token);
 			});
 
 			it('should not save contact conflictingFields as nullish if not modified', async () => {

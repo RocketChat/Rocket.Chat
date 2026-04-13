@@ -4,6 +4,7 @@ import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
 
 import { cachedFunction } from './cachedFunction';
+import { convertMessageFiles } from './convertMessageFiles';
 import { transformMappedData } from './transformMappedData';
 
 export class AppMessagesConverter {
@@ -25,7 +26,7 @@ export class AppMessagesConverter {
 		}
 
 		const { attachments, ...message } = msgObj;
-		const getAttachments = async () => this._convertAttachmentsToApp(attachments);
+		const getAttachments = async () => this._convertAttachmentsToApp(attachments, msgObj.file);
 
 		const map = {
 			id: '_id',
@@ -40,6 +41,7 @@ export class AppMessagesConverter {
 			avatarUrl: 'avatar',
 			alias: 'alias',
 			file: 'file',
+			files: 'files',
 			customFields: 'customFields',
 			groupable: 'groupable',
 			token: 'token',
@@ -76,6 +78,8 @@ export class AppMessagesConverter {
 
 		this.mem.set(cacheObj, cache);
 
+		const { attachments, file: mainFile } = msgObj;
+
 		const map = {
 			id: '_id',
 			threadId: 'tmid',
@@ -94,6 +98,7 @@ export class AppMessagesConverter {
 			token: 'token',
 			blocks: 'blocks',
 			type: 't',
+			files: async (message) => convertMessageFiles(message.files, attachments),
 			room: async (message) => {
 				const result = await cache.get('room')(message.rid);
 				delete message.rid;
@@ -110,7 +115,7 @@ export class AppMessagesConverter {
 				return cache.get('user.convertById')(editedBy._id);
 			},
 			attachments: async (message) => {
-				const result = await this._convertAttachmentsToApp(message.attachments);
+				const result = await this._convertAttachmentsToApp(message.attachments, mainFile);
 				delete message.attachments;
 				return result;
 			},
@@ -271,7 +276,7 @@ export class AppMessagesConverter {
 		);
 	}
 
-	async _convertAttachmentsToApp(attachments) {
+	async _convertAttachmentsToApp(attachments, mainFile) {
 		if (typeof attachments === 'undefined' || !Array.isArray(attachments)) {
 			return undefined;
 		}
@@ -320,6 +325,14 @@ export class AppMessagesConverter {
 				const result = new Date(attachment.ts);
 				delete attachment.ts;
 				return result;
+			},
+			fileId: (attachment) => {
+				// If the attachment is missing the fileId, but there's only one file in the message, use that file's ID
+				if (!attachment.fileId && attachment.type === 'file' && mainFile?._id && attachments.length === 1) {
+					return mainFile._id;
+				}
+
+				return attachment.fileId;
 			},
 		};
 

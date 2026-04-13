@@ -4,6 +4,7 @@ import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
+import { setSettingValueById } from '../utils';
 import { createAgent, makeAgentAvailable } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createManager } from '../utils/omnichannel/managers';
@@ -94,6 +95,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 				departments: [{ departmentId: departmentB._id }],
 			}),
 		]);
+		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).status()).toBe(200);
 	});
 
 	// Create sessions
@@ -116,7 +118,7 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 		await Promise.all(sessions.map(({ page }) => page.close()));
 	});
 
-	test.afterAll(async () => {
+	test.afterAll(async ({ api }) => {
 		await Promise.all([
 			...conversations.map((conversation) => conversation.delete()),
 			...monitors.map((monitor) => monitor.delete()),
@@ -124,6 +126,33 @@ test.describe('OC - Chat transfers [Monitor role]', () => {
 			...units.map((unit) => unit.delete()),
 			...departments.map((department) => department.delete()),
 		]);
+		await setSettingValueById(api, 'Omnichannel_enable_department_removal', false);
+	});
+
+	test(`OC - Chat transfers [Monitor role] - Transfer to department with no online agents should fail`, async ({ api }) => {
+		const [roomA] = conversations.map(({ data }) => data.room);
+		const [, agentB] = sessions;
+
+		const emptyDepartment = await createDepartment(api);
+
+		await test.step('expect to open forward chat modal', async () => {
+			await poOmnichannel.chats.openChat(roomA.fname);
+			await poOmnichannel.quickActionsRoomToolbar.forwardChat();
+		});
+
+		await test.step('expect transfer to department with no online agents to fail', async () => {
+			await poOmnichannel.content.forwardChatModal.selectDepartment(emptyDepartment.data.name);
+			await poOmnichannel.content.forwardChatModal.inputComment.type('transfer_attempt');
+			await expect(poOmnichannel.content.forwardChatModal.btnForward).toBeEnabled();
+			await poOmnichannel.content.forwardChatModal.btnForward.click();
+			await poOmnichannel.toastMessage.waitForDisplay({ type: 'error' });
+		});
+
+		await test.step('expect conversation to remain with original agent', async () => {
+			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(roomA.fname)).not.toBeVisible();
+		});
+
+		await emptyDepartment.delete();
 	});
 
 	test(`OC - Chat transfers [Monitor role] - Transfer to another department`, async () => {

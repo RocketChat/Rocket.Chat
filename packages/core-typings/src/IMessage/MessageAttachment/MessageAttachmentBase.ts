@@ -6,7 +6,6 @@ export type MessageAttachmentBase = {
 	ts?: Date;
 	collapsed?: boolean;
 	description?: string;
-	descriptionMd?: Root;
 	text?: string;
 	md?: Root;
 	size?: number;

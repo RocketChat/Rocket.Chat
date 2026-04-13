@@ -5,7 +5,7 @@ import { lazy, Suspense } from 'react';
 import ModalBackdrop from './ModalBackdrop';
 import ModalPortal from './ModalPortal';
 
-const FocusScope = lazy(() => import('react-aria').then((module) => ({ default: module.FocusScope })));
+const FocusScope = lazy(() => import('@react-aria/focus').then((module) => ({ default: module.FocusScope })));
 
 const ModalRegion = () => {
 	const currentModal = useCurrentModal();

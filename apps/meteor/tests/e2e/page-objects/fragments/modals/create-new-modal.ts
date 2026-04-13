@@ -68,18 +68,15 @@ export class CreateNewDMModal extends CreateNewModal {
 		super(page.getByRole('dialog', { name: 'New direct message' }), page);
 	}
 
-	get dmListbox(): Locator {
-		return this.root.getByRole('listbox');
-	}
-
 	get autocompleteUser(): Locator {
-		return this.root.getByRole('listbox').getByRole('textbox');
+		return this.root.getByLabel('Select one or more people to message', { exact: true }).getByRole('textbox');
 	}
 
 	async inviteUserToDM(username: string) {
 		await this.autocompleteUser.click();
 		await this.autocompleteUser.fill(username);
-		await this.dmListbox.selectOption(username);
+		await this.listbox.selectOption(username);
+		await this.page?.keyboard.press('Tab');
 	}
 }
 

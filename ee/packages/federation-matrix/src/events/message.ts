@@ -44,9 +44,9 @@ async function handleMediaMessage(
 
 	const fileRefId = await MatrixMediaService.downloadAndStoreRemoteFile(url, matrixRoomId, {
 		name: messageBody,
-		size: fileInfo?.size,
-		type: mimeType,
-		roomId: room._id,
+		size: fileInfo?.size || 0,
+		type: mimeType || 'application/octet-stream',
+		rid: room._id,
 		userId: user._id,
 	});
 

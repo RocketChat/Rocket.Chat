@@ -1,30 +1,22 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-// import type { Key } from 'react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 
 import { useEndpoint } from './useEndpoint';
 import { useRouter } from './useRouter';
 
-export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((rid: IRoom['_id']) => void) => {
+export const useGoToRoom = (): ((roomId: IRoom['_id']) => Promise<void>) => {
 	const router = useRouter();
 	const getRoomById = useEndpoint('GET', '/v1/rooms.info');
 
-	return useEffectEvent(async (roomId: string) => {
+	return useStableCallback(async (roomId: IRoom['_id']) => {
 		const { room } = await getRoomById({ roomId });
 
-		if (!room) {
-			return;
-		}
+		if (!room) return;
 
 		const { t, name, _id: rid } = room;
 
 		const { path } = router.getRoomRoute(t, ['c', 'p'].includes(t) ? { name } : { rid });
 
-		router.navigate(
-			{
-				pathname: path,
-			},
-			{ replace },
-		);
+		router.navigate({ pathname: path });
 	});
 };
