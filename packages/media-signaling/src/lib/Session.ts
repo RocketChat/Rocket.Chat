@@ -698,10 +698,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	private onSessionStateChange(): void {
-		if (this.sessionEnded) {
-			return;
-		}
-
 		const hadCall = this.lastState.hasCall;
 		const hadVisibleCall = this.lastState.hasVisibleCall;
 		const hadBusyCall = this.lastState.hasBusyCall;

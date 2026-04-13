@@ -58,12 +58,11 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
-	public async onCallActive(callId: string, data: { signedContractId?: string } = {}): Promise<void> {
+	public async onCallActive(callId: string): Promise<void> {
 		return this.sendSignal({
 			callId,
 			type: 'notification',
 			notification: 'active',
-			...(data.signedContractId && { signedContractId: data.signedContractId }),
 		});
 	}
 
