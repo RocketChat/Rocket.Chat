@@ -1,5 +1,14 @@
 # @rocket.chat/rest-typings
 
+## 8.2.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.2
+  </details>
+
 ## 8.2.1
 
 ### Patch Changes

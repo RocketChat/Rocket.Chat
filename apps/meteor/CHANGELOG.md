@@ -1,5 +1,52 @@
 # @rocket.chat/meteor
 
+## 8.2.2
+
+### Patch Changes
+
+- Bump @rocket.chat/meteor version.
+
+- Bump @rocket.chat/meteor version.
+
+- ([#40132](https://github.com/RocketChat/Rocket.Chat/pull/40132) by [@dionisio-bot](https://github.com/dionisio-bot)) Security Hotfix (https://docs.rocket.chat/docs/security-fixes-and-updates)
+
+- <details><summary>Updated dependencies [cf5035781ad51be5046edcffbdcffa045cc28d2d]:</summary>
+
+  - @rocket.chat/apps-engine@1.60.1
+  - @rocket.chat/presence@0.2.53
+  - @rocket.chat/apps@0.6.6
+  - @rocket.chat/core-services@0.13.2
+  - @rocket.chat/core-typings@8.2.2
+  - @rocket.chat/fuselage-ui-kit@28.0.2
+  - @rocket.chat/rest-typings@8.2.2
+  - @rocket.chat/ui-voip@18.0.2
+  - @rocket.chat/abac@0.1.6
+  - @rocket.chat/federation-matrix@0.0.15
+  - @rocket.chat/license@1.1.13
+  - @rocket.chat/media-calls@0.2.6
+  - @rocket.chat/omnichannel-services@0.3.50
+  - @rocket.chat/pdf-worker@0.3.32
+  - @rocket.chat/api-client@0.2.53
+  - @rocket.chat/cron@0.1.53
+  - @rocket.chat/gazzodown@28.0.2
+  - @rocket.chat/http-router@7.9.20
+  - @rocket.chat/message-types@0.1.0
+  - @rocket.chat/model-typings@2.1.2
+  - @rocket.chat/ui-avatar@24.0.2
+  - @rocket.chat/ui-client@28.0.2
+  - @rocket.chat/ui-contexts@28.0.2
+  - @rocket.chat/web-ui-registration@28.0.2
+  - @rocket.chat/models@2.1.2
+  - @rocket.chat/server-cloud-communication@0.0.2
+  - @rocket.chat/network-broker@0.2.32
+  - @rocket.chat/omni-core-ee@0.0.18
+  - @rocket.chat/ui-theming@0.4.4
+  - @rocket.chat/ui-video-conf@28.0.2
+  - @rocket.chat/instance-status@0.1.53
+  - @rocket.chat/omni-core@0.0.18
+  - @rocket.chat/server-fetch@0.1.2
+  </details>
+
 ## 8.2.1
 
 ### Patch Changes
