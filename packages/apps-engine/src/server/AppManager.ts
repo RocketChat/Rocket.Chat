@@ -1238,3 +1238,6 @@ export const getPermissionsByAppId = (appId: string) => {
 	}
 	return AppManager.Instance.getPermissionsById(appId);
 };
+
+
+
