@@ -119,7 +119,7 @@ describe('federation member event: handleLeave', () => {
 	});
 
 	function emitLeaveEvent(userId: string, senderId: string, roomId: string): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, _reject) => {
 			testEmitter.emit('homeserver.matrix.membership', {
 				event: {
 					type: 'm.room.member',
