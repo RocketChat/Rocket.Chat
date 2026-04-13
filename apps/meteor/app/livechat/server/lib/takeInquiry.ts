@@ -55,9 +55,5 @@ export const takeInquiry = async (
 		username: user.username,
 	};
 
-	try {
-		await RoutingManager.takeInquiry(inquiry, agent, options ?? {}, room);
-	} catch (e: any) {
-		throw new Meteor.Error(e.message);
-	}
+	await RoutingManager.takeInquiry(inquiry, agent, options ?? {}, room);
 };

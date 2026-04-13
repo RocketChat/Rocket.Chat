@@ -8,11 +8,25 @@ const ajv = new Ajv({
 	discriminator: true,
 });
 
+/** AJV instance for query param validation; coerces types (e.g. string "50" → number) for URL query strings. */
+const ajvQuery = new Ajv({
+	coerceTypes: true,
+	allowUnionTypes: true,
+	code: { source: true },
+	discriminator: true,
+});
+
 // TODO: keep ajv extension here
 addFormats(ajv);
+addFormats(ajvQuery);
 
 ajv.addFormat('basic_email', /^[^@]+@[^@]+$/);
 ajv.addFormat(
+	'rfc_email',
+	/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+);
+ajvQuery.addFormat('basic_email', /^[^@]+@[^@]+$/);
+ajvQuery.addFormat(
 	'rfc_email',
 	/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
@@ -21,7 +35,12 @@ ajv.addKeyword({
 	type: 'string',
 	validate: (_schema: unknown, data: unknown): boolean => typeof data === 'string' && !!data.trim(),
 });
-export { ajv };
+ajvQuery.addKeyword({
+	keyword: 'isNotEmpty',
+	type: 'string',
+	validate: (_schema: unknown, data: unknown): boolean => typeof data === 'string' && !!data.trim(),
+});
+export { ajv, ajvQuery };
 
 type BadRequestErrorResponse = {
 	success: false;

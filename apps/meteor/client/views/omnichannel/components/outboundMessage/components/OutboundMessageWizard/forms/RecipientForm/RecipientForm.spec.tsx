@@ -253,7 +253,7 @@ describe('RecipientForm', () => {
 			wrapper: appRoot.build(),
 		});
 
-		await waitFor(() => expect(screen.getByLabelText('Channel*')).toHaveAccessibleDescription('Last contact a few seconds ago'));
+		await waitFor(() => expect(screen.getByLabelText('Channel*')).toHaveAccessibleDescription('Last contact less than a minute ago'));
 	});
 
 	it('should call onSubmit with correct values when form is submitted', async () => {

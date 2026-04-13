@@ -1,7 +1,7 @@
 import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
-import { HomeChannel, HomeDiscussion } from './page-objects';
-import { HomeFlextab } from './page-objects/fragments';
+import { HomeChannel } from './page-objects';
+import { CreateNewDiscussionModal } from './page-objects/fragments';
 import { createTargetChannel, createTargetTeam } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
@@ -9,7 +9,6 @@ import { expect, test } from './utils/test';
 test.use({ storageState: Users.admin.state });
 test.describe.serial('message-actions', () => {
 	let poHomeChannel: HomeChannel;
-	let poHomeDiscussion: HomeDiscussion;
 	let targetChannel: string;
 	let forwardChannel: string;
 	let forwardTeam: string;
@@ -20,7 +19,6 @@ test.describe.serial('message-actions', () => {
 	});
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		poHomeDiscussion = new HomeDiscussion(page);
 		await page.goto('/home');
 		await poHomeChannel.navbar.openChat(targetChannel);
 	});
@@ -129,10 +127,11 @@ test.describe.serial('message-actions', () => {
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Start a Discussion"]').click();
-		const createButton = poHomeDiscussion.btnCreate;
+		const createDiscussionModal = new CreateNewDiscussionModal(page);
+		const createButton = createDiscussionModal.btnCreate;
 		// Name should be prefilled thus making the create button enabled
 		await expect(createButton).not.toBeDisabled();
-		await poHomeDiscussion.inputName.fill(discussionName);
+		await createDiscussionModal.inputName.fill(discussionName);
 		await createButton.click();
 		await expect(page.locator('header h1')).toHaveText(discussionName);
 		await poHomeChannel.navbar.openChat(targetChannel);
@@ -141,13 +140,12 @@ test.describe.serial('message-actions', () => {
 	});
 
 	test('expect star the message', async ({ page }) => {
-		const flextab = new HomeFlextab(page);
 		await poHomeChannel.content.sendMessage('Message to star');
 		await poHomeChannel.content.openLastMessageMenu();
 		await page.locator('role=menuitem[name="Star"]').click();
 		await poHomeChannel.toastMessage.dismissToast();
-		await flextab.kebab.click();
-		await page.locator('[data-key="starred-messages"]').click();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemStarredMessages.click();
 		await expect(poHomeChannel.content.lastUserMessageBody).toHaveText('Message to star');
 	});
 

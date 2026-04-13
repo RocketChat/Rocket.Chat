@@ -338,5 +338,10 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findUserFederatedRoomIds(userId: IUser['_id']): AggregationCursor<{ _id: IRoom['_id']; externalRoomId: string }>;
 	findInvitedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null>;
 	acceptInvitationById(subscriptionId: ISubscription['_id']): Promise<UpdateResult>;
+	findOneBannedSubscription(roomId: ISubscription['rid'], userId: ISubscription['u']['_id']): Promise<ISubscription | null>;
+	findBannedByRoomId(roomId: ISubscription['rid']): FindCursor<ISubscription>;
+	banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
+	unbanByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult>;
+	findJoinedByUserId<T extends Document = ISubscription>(userId: ISubscription['u']['_id'], options?: FindOptions<T>): FindCursor<T>;
 }

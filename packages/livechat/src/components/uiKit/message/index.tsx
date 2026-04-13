@@ -15,7 +15,7 @@ import PlainText from './PlainText';
 import SectionBlock from './SectionBlock';
 import StaticSelectElement from './StaticSelectElement';
 
-class MessageParser extends UiKitParserMessage<ComponentChild> {
+export class MessageParser extends UiKitParserMessage<ComponentChild> {
 	divider = (element: any, context: any, index: any) => {
 		if (context !== BlockContext.BLOCK) {
 			return null;

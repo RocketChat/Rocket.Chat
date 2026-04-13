@@ -861,8 +861,6 @@
   "Entertainment": "Axaftin",
   "Error": "Şaşî",
   "Error_404": "Çewt: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Çewtiya: Rocket. Dema ku di gelek rewşan de diçin dema hewlkirina oplogê hewce dike",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Ji kerema xwe re bisekinin ku MongoDB di modela ReplicaSet de ye û mongo_OPLOG_URL pîvana hawirdora rasteqîn li ser serverê pirtûk hatiye diyarkirin.",
   "Error_changing_password": "هەڵە ڕوویدا لە گۆڕینی تێپەڕەوشە",
   "Error_loading_pages": "Error pages loading",
   "Esc_to": "Esc to",

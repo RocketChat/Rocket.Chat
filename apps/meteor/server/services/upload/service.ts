@@ -2,12 +2,12 @@ import fs from 'fs';
 import type Stream from 'stream';
 
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
-import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
-import type { IUpload, IUser, FilesAndAttachments, IMessage } from '@rocket.chat/core-typings';
+import type { IUpload, IUser, FilesAndAttachments, IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { isFileAttachment } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { Uploads } from '@rocket.chat/models';
+import { Uploads, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import sharp from 'sharp';
 
@@ -15,6 +15,7 @@ import { canAccessRoomIdAsync } from '../../../app/authorization/server/function
 import { canDeleteMessageAsync } from '../../../app/authorization/server/functions/canDeleteMessage';
 import { FileUpload } from '../../../app/file-upload/server';
 import { parseFileIntoMessageAttachments, sendFileMessage } from '../../../app/file-upload/server/methods/sendFileMessage';
+import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
 import { sendFileLivechatMessage } from '../../../app/livechat/server/methods/sendFileLivechatMessage';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
@@ -206,5 +207,19 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 		writeStream.on('error', cleanup);
 
 		return resolver.promise;
+	}
+
+	async setUserAvatar(user: Pick<IUser, '_id' | 'username'>, buffer: Buffer, contentType: string, service: 'rest'): Promise<void> {
+		return setUserAvatar(user, buffer, contentType, service);
+	}
+
+	async resetUserAvatar(user: AtLeast<IUser, '_id' | 'username'>): Promise<void> {
+		if (!user.username) {
+			throw new Error('Username is required to reset avatar');
+		}
+
+		await FileUpload.getStore('Avatars').deleteByName(user.username);
+		await Users.unsetAvatarData(user._id);
+		void api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: undefined });
 	}
 }

@@ -1150,8 +1150,6 @@
   "Entertainment": "Розваги",
   "Error": "Помилка",
   "Error_404": "Помилка: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Помилка: Rocket.Chat вимагає закриття при роботі в декількох випадках",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Будь ласка, переконайтеся, що ваш MongoDB знаходиться в режимі ReplicaSet, і змінна середовища MONGO_OPLOG_URL правильно визначена на сервері додатків",
   "Error_Site_URL": "Недійсний Site_Url",
   "Error_Site_URL_description": "Оновіть будь-ласка Ваші налаштування \"Site_Url\", знайдіть більше інформації [тут](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": "Пароль змінено",
