@@ -33,6 +33,8 @@ jobs:
       node-version: ${{ steps.var.outputs.node-version }}
       deno-version: ${{ steps.var.outputs.deno-version }}
       source-hash: ${{ steps.source.outputs.hash }}
+      packages-build-cache-key: ${{ steps.ci-cache-keys.outputs.packages-build-cache-key }}
+      meteor-rc-cache-key: ${{ steps.ci-cache-keys.outputs.meteor-rc-cache-key }}
       # this is 100% intentional, secrets are not available for forks, so ee-tests will always fail
       # to avoid this, we are using a dummy license, expiring at 2026-07-01
       enterprise-license: Uo7Jcr6WW0XYA8ydHd+Sk6pZ9/0V6dIASnyTwvUrNym/zJg2Ma3eYNKkC8osXLCc72y1ahohnWY7/+7IYkvono3GYXQR+IGvYbbrVgNR6OjMahd9P/odHZL1GFTm2qHrEL5Hh/XEOG+YluFeRdWPzCizQlp4zGGOi0+PkQo096TR9NVCLrsErVl2MW1WM6ZM1W5EUJG9pKly4BQnaOTUAlor1im6i8qPTDCKrISZfLiZEWuQKaPW/GE3mRKjQNjDh0CabX1N2S880pRRGoozBYAnp2NmFfrQW0+5ihKisBTIeMbMZ7K5NE5PkYU1nhQDcc+rpDHtwG9Ceg5X0J+oea3UfrPTmDON2aSI0iO22kvL6G7QI3fyrEIvJrMbxcNKxAFeQYgnjisw/b06+chWSG4jG686Fx58XrVS87dFhWL9WoGltsk1dJCntUQvI1sX6zOfpvyg1iWRnHfYDOrwoWlX57XMm29fWineEoqnOOTOVnA/uP+DKEhercQ9Xuo7Cr6zJxpQpwd03e7ODVjiEbTDqlkZE687rmxRCD4Wmu8L86WIl2xSEIajKLX301Ww5mz/FdLqk+Mg32lkW66W3azQKvJ1440NBrYxhpJ+dl9vSFMb3s1+xnz1cYUbjUcq9mARvORcgy5mLwKulmqT6Sq0Uvbv10YCO0TW0beXYW8=
@@ -90,6 +92,14 @@ jobs:
           DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
           echo "DENO_VERSION: ${DENO_VERSION}"
           echo "deno-version=${DENO_VERSION}" >> $GITHUB_OUTPUT
+
+      - id: ci-cache-keys
+        run: |
+          set -euo pipefail
+          PACKAGES_HASH=$(cat yarn.lock .yarnrc.yml package.json turbo.json | sha256sum | awk '{print $1}')
+          echo "packages-build-cache-key=${PACKAGES_HASH}" >> "$GITHUB_OUTPUT"
+          METEOR_HASH=$(git archive HEAD apps/meteor | sha256sum | awk '{print $1}')
+          echo "meteor-rc-cache-key=${METEOR_HASH}" >> "$GITHUB_OUTPUT"
 
       - id: by-tag
         run: |
@@ -177,8 +187,11 @@ jobs:
             /tmp/RocketChat-packages-build.tar.gz
           key: ${{ runner.arch }}-${{ runner.os }}-packages-build-${{ needs.release-versions.outputs.source-hash }}
 
-      - name: Debug cache-hit
-        run: echo "cache-hit=${{ steps.packages-cache-build.outputs.cache-hit }}"
+      - name: Cache observability (packages-build)
+        run: |
+          echo "### 📦 packages-build cache" >> $GITHUB_STEP_SUMMARY
+          echo "- **hit**: \`${{ steps.packages-cache-build.outputs.cache-hit }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **key**: \`${{ needs.release-versions.outputs.packages-build-cache-key }}\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
@@ -190,6 +203,7 @@ jobs:
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
 
       - name: Setup NodeJS
+        id: setup-node-packages
         uses: ./.github/actions/setup-node
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         with:
@@ -199,6 +213,13 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           HARDENED_MODE: '1'
+
+      - name: Cache observability (node_modules)
+        if: steps.packages-cache-build.outputs.cache-hit != 'true'
+        run: |
+          echo "### 🟢 node_modules cache" >> $GITHUB_STEP_SUMMARY
+          echo "- **deno cache hit**: \`${{ steps.setup-node-packages.outputs.cache-deno-hit }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- **node_modules size**: \`$(du -sh node_modules 2>/dev/null | cut -f1 || echo 'n/a')\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Cache vite
         uses: actions/cache@v5
@@ -253,14 +274,13 @@ jobs:
           - type: ${{ (github.event_name != 'release' && github.ref != 'refs/heads/develop') && 'production' || '' }}
 
     steps:
-
       - uses: actions/checkout@v6
 
       - uses: ./.github/actions/meteor-build
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
           deno-version: ${{ needs.release-versions.outputs.deno-version }}
-          source-hash: ${{ needs.release-versions.outputs.source-hash }}
+          source-hash: ${{ needs.release-versions.outputs.packages-build-cache-key }}-${{ needs.release-versions.outputs.meteor-rc-cache-key }}
           type: ${{ matrix.type }}
 
   build-gh-docker:
@@ -297,16 +317,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Restore packages build
-        uses: actions/download-artifact@v7
-        with:
-          name: packages-build
-          path: /tmp
-
-      - name: Unpack packages build
-        shell: bash
-        run: |
-          tar -xzf /tmp/RocketChat-packages-build.tar.gz -C .
+      - uses: ./.github/actions/restore-packages
 
       # we only build and publish the actual docker images if not a PR from a fork
       - name: Image ${{ matrix.service[0] }}
@@ -389,7 +400,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -397,7 +408,7 @@ jobs:
 
       - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: manifests-*
           path: /tmp/manifests
@@ -511,6 +522,22 @@ jobs:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
 
+  test-api-livechat:
+    name: 🔨 Test API Livechat (CE)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api-livechat
+      release: ce
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+
   test-ui:
     name: 🔨 Test UI (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
@@ -543,6 +570,26 @@ jobs:
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: api
+      release: ee
+      transporter: 'nats://nats:4222'
+      enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
+      mongodb-version: "['8.0']"
+      coverage: '8.0'
+      node-version: ${{ needs.release-versions.outputs.node-version }}
+      deno-version: ${{ needs.release-versions.outputs.deno-version }}
+      lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
+      gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
+    secrets:
+      CR_USER: ${{ secrets.CR_USER }}
+      CR_PAT: ${{ secrets.CR_PAT }}
+
+  test-api-livechat-ee:
+    name: 🔨 Test API Livechat (EE)
+    needs: [checks, build-gh-docker-publish, release-versions]
+
+    uses: ./.github/workflows/ci-test-e2e.yml
+    with:
+      type: api-livechat
       release: ee
       transporter: 'nats://nats:4222'
       enterprise-license: ${{ needs.release-versions.outputs.enterprise-license }}
@@ -603,7 +650,7 @@ jobs:
       - uses: rharkor/caching-for-turbo@v1.8
 
       - name: Restore turbo build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         continue-on-error: true
         with:
           name: turbo-build
@@ -614,7 +661,7 @@ jobs:
 
       - name: Login to GitHub Container Registry
         if: (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop') && github.actor != 'dependabot[bot]'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -627,7 +674,7 @@ jobs:
 
       # Download Docker images from build artifacts
       - name: Download Docker images
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         if: github.event.pull_request.head.repo.full_name != github.repository && github.event_name != 'release' && github.ref != 'refs/heads/develop'
         with:
           pattern: 'docker-image-rocketchat-amd64-coverage'
@@ -682,18 +729,18 @@ jobs:
   report-coverage:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
-    needs: [release-versions, test-api-ee, test-ui-ee]
+    needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
 
     steps:
       - uses: actions/checkout@v6
 
       - name: Use Node.js
-        uses: actions/setup-node@v6.1.0
+        uses: actions/setup-node@v6.3.0
         with:
           node-version: ${{ needs.release-versions.outputs.node-version }}
 
       - name: Restore coverage folder
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: coverage-*
           path: /tmp/coverage
@@ -714,7 +761,7 @@ jobs:
           include-hidden-files: true
 
       - name: Report API coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: /tmp/coverage_report/api/lcov.info
           working-directory: .
@@ -723,7 +770,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Report UI coverage
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: /tmp/coverage_report/ui/lcov.info
           working-directory: .
@@ -734,7 +781,7 @@ jobs:
   tests-done:
     name: ✅ Tests Done
     runs-on: ubuntu-24.04-arm
-    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-federation-matrix]
+    needs: [checks, test-unit, test-api, test-ui, test-api-ee, test-ui-ee, test-api-livechat, test-api-livechat-ee, test-federation-matrix]
     if: always()
     steps:
       - name: Test finish aggregation
@@ -763,6 +810,14 @@ jobs:
             exit 1
           fi
 
+          if [[ '${{ needs.test-api-livechat.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
+          if [[ '${{ needs.test-api-livechat-ee.result }}' != 'success' ]]; then
+            exit 1
+          fi
+
           if [[ '${{ needs.test-federation-matrix.result }}' != 'success' ]]; then
             exit 1
           fi
@@ -784,7 +839,7 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Restore build
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: build-production
           path: /tmp/build
@@ -841,13 +896,13 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Login to DockerHub
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ secrets.CR_USER }}
@@ -855,7 +910,7 @@ jobs:
 
       - name: Download manifests
         if: github.actor != 'dependabot[bot]' && (github.event.pull_request.head.repo.full_name == github.repository || github.event_name == 'release' || github.ref == 'refs/heads/develop')
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           pattern: manifests-*
           path: /tmp/manifests

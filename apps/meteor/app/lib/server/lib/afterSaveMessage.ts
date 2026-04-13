@@ -4,10 +4,28 @@ import type { Updater } from '@rocket.chat/models';
 import { Rooms } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
+import type { SendMessageOptions } from '../functions/sendMessage';
 
-export async function afterSaveMessage(message: IMessage, room: IRoom, user: IUser, roomUpdater?: Updater<IRoom>): Promise<IMessage> {
+export async function afterSaveMessage(
+	message: IMessage,
+	room: IRoom,
+	user: IUser,
+	{
+		roomUpdater,
+		options,
+	}: {
+		roomUpdater?: Updater<IRoom>;
+		options?: SendMessageOptions;
+	} = {},
+): Promise<IMessage> {
 	const updater = roomUpdater ?? Rooms.getUpdater();
-	const data: IMessage = (await callbacks.run('afterSaveMessage', message, { room, user, roomUpdater: updater })) as unknown as IMessage;
+
+	const data: IMessage = (await callbacks.run('afterSaveMessage', message, {
+		room,
+		user,
+		roomUpdater: updater,
+		options,
+	})) as unknown as IMessage;
 
 	if (!roomUpdater && updater.hasChanges()) {
 		await Rooms.updateFromUpdater({ _id: room._id }, updater);
@@ -19,8 +37,21 @@ export async function afterSaveMessage(message: IMessage, room: IRoom, user: IUs
 	return data;
 }
 
-export function afterSaveMessageAsync(message: IMessage, room: IRoom, user: IUser, roomUpdater: Updater<IRoom> = Rooms.getUpdater()): void {
-	callbacks.runAsync('afterSaveMessage', message, { room, user, roomUpdater });
+export function afterSaveMessageAsync(
+	message: IMessage,
+	room: IRoom,
+	user: IUser,
+	{
+		roomUpdater: updater,
+		options,
+	}: {
+		roomUpdater?: Updater<IRoom>;
+		options?: SendMessageOptions;
+	} = {},
+): void {
+	const roomUpdater = updater ?? Rooms.getUpdater();
+
+	callbacks.runAsync('afterSaveMessage', message, { room, user, roomUpdater, options });
 
 	if (roomUpdater.hasChanges()) {
 		void Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);

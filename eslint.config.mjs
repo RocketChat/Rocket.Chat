@@ -1,7 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
 import rocketChatConfig from '@rocket.chat/eslint-config';
-import reactRefreshPlugin from 'eslint-plugin-react-refresh';
 import youDontNeedLodashUnderscorePlugin from 'eslint-plugin-you-dont-need-lodash-underscore';
 import globals from 'globals';
 
@@ -242,7 +241,6 @@ export default [
 			'apps/meteor/ee/app/**/*.ts',
 			'apps/meteor/ee/client/**/*.@(ts|tsx)',
 			'apps/meteor/ee/server/**/*.ts',
-			'packages/ui-contexts/**/*.@(ts|tsx)',
 			'packages/i18n/src/scripts/common.mts',
 		],
 		rules: {
@@ -279,49 +277,6 @@ export default [
 				Npm: 'readonly',
 			},
 		},
-	},
-	{
-		files: ['apps/uikit-playground/**/*'],
-		languageOptions: {
-			globals: {
-				...globals.browser,
-				...globals.es2020,
-			},
-		},
-		plugins: {
-			'react-refresh': reactRefreshPlugin,
-		},
-		rules: {
-			'@typescript-eslint/consistent-type-imports': 'off',
-			'import/order': 'off',
-			'prettier/prettier': 'off',
-			'react-refresh/only-export-components': 'warn',
-			'spaced-comment': 'off',
-			'array-callback-return': 'off',
-			'@typescript-eslint/no-floating-promises': 'off',
-			'import/export': 'off',
-			'jsx-quotes': 'off',
-			'import/newline-after-import': 'off',
-			'react/jsx-curly-brace-presence': 'warn',
-			'prefer-destructuring': 'off',
-			'object-shorthand': 'off',
-			'import/no-duplicates': 'off',
-			'@typescript-eslint/naming-convention': 'off',
-			'react/jsx-key': 'warn',
-			'jsx-a11y/click-events-have-key-events': 'off',
-			'jsx-a11y/no-static-element-interactions': 'off',
-			'no-nested-ternary': 'off',
-			'new-cap': 'off',
-		},
-	},
-	{
-		ignores: [
-			'apps/uikit-playground/build',
-			'apps/uikit-playground/.storybook/jest-results.json',
-			'apps/uikit-playground/.DS_Store',
-			'apps/uikit-playground/.env*.local',
-			'apps/uikit-playground/@(npm-debug|yarn-debug|yarn-error).log*',
-		],
 	},
 	{
 		files: ['packages/apps-engine/**/*.ts'],
@@ -374,7 +329,6 @@ export default [
 			'@typescript-eslint/no-empty-function': 'off',
 			'@typescript-eslint/no-unused-vars': ['error', { args: 'none' }],
 			'new-cap': 'off',
-			'no-await-in-loop': 'off',
 		},
 	},
 	{
@@ -522,6 +476,9 @@ export default [
 		ignores: ['packages/node-poplib/**', 'packages/storybook-config/*.@(d.ts|js)', 'scripts/**', '.github/**', '.houston/**'],
 	},
 	{
+		ignores: ['scripts/**'],
+	},
+	{
 		files: [
 			'apps/meteor/client/**/*.@(ts|tsx)',
 			'apps/meteor/app/**/*.ts',
@@ -532,7 +489,6 @@ export default [
 			'packages/fuselage-ui-kit/**/*.@(ts|tsx)',
 			'packages/livechat/**/*.@(ts|tsx)',
 			'packages/ui-client/**/*.@(ts|tsx)',
-			'packages/ui-contexts/**/*.@(ts|tsx)',
 			'packages/ui-voip/**/*.@(ts|tsx)',
 			'packages/web-ui-registration/**/*.@(ts|tsx)',
 		],

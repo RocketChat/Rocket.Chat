@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "8.3.0-develop",
+	"version": "8.4.0-develop",
 	"private": true,
 	"description": "Rocket.Chat Monorepo",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
@@ -35,19 +35,6 @@
 		"testunit": "turbo run testunit"
 	},
 	"resolutions": {
-		"@react-pdf/fns": "2.0.1",
-		"@react-pdf/font": "2.3.7",
-		"@react-pdf/image": "2.2.2",
-		"@react-pdf/layout": "3.6.3",
-		"@react-pdf/pdfkit": "3.0.2",
-		"@react-pdf/png-js": "2.2.0",
-		"@react-pdf/primitives": "3.0.1",
-		"@react-pdf/render": "3.2.7",
-		"@react-pdf/renderer": "3.1.14",
-		"@react-pdf/stylesheet": "4.1.8",
-		"@react-pdf/textkit": "4.2.0",
-		"@react-pdf/types": "2.3.4",
-		"@react-pdf/yoga": "4.1.2",
 		"@sematext/gc-stats@npm:^1.5.9": "patch:@sematext/gc-stats@npm%3A1.5.9#~/.yarn/patches/@sematext-gc-stats-npm-1.5.9-01e77be4d0.patch",
 		"adm-zip": "0.5.9",
 		"cross-spawn": "7.0.6",
@@ -55,7 +42,15 @@
 		"lodash": "4.17.21",
 		"minimist": "1.2.6",
 		"mongodb": "6.10.0",
-		"underscore": "1.13.7"
+		"underscore": "1.13.7",
+		"yoga-layout@npm:^3.2.1": "patch:yoga-layout@npm%3A3.2.1#~/.yarn/patches/yoga-layout-npm-3.2.1-51ec934670.patch",
+		"@react-pdf/layout@npm:^4.4.2": "patch:@react-pdf/layout@npm%3A4.4.2#~/.yarn/patches/@react-pdf-layout-npm-4.4.2-6c2e3312fa.patch",
+		"react-aria@npm:~3.37.0": "patch:react-aria@npm%3A3.37.0#~/.yarn/patches/react-aria-npm-3.37.0-83959bd2fa.patch",
+		"react-stately@npm:~3.35.0": "patch:react-stately@npm%3A3.17.0#~/.yarn/patches/react-stately-npm-3.17.0-264cc7a43c.patch",
+		"zod@npm:^3.25.0 || ^4.0.0": "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch",
+		"zod@npm:~4.3.6": "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch",
+		"@react-aria/i18n@npm:^3.0.0-nightly-fb28ab3b4-241024": "patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch",
+		"@react-aria/i18n@npm:^3.12.5": "patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
@@ -68,10 +63,9 @@
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~22.16.5",
 		"eslint": "~9.39.3",
-		"eslint-plugin-react-refresh": "~0.5.2",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"ts-node": "^10.9.2",
-		"turbo": "~2.8.11",
+		"turbo": "2.8.12",
 		"typescript": "~5.9.3"
 	},
 	"packageManager": "yarn@4.12.0",

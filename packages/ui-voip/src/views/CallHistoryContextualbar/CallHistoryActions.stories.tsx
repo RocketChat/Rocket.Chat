@@ -4,8 +4,8 @@ import type { ReactElement } from 'react';
 
 import type { HistoryActionCallbacks } from './CallHistoryActions';
 import CallHistoryActions from './CallHistoryActions';
-import { MockedMediaCallProvider } from '../../context';
-import type { State } from '../../context/MediaCallContext';
+import type { State } from '../../context/definitions';
+import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const noop = () => undefined;
 

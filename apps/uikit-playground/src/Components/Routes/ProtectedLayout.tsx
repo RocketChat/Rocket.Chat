@@ -4,12 +4,12 @@ import routes from '../../Routes/Routes';
 import { useAuth } from '../../hooks/useAuth';
 
 export const ProtectedLayout = () => {
-  const { user } = useAuth();
-  const outlet = useOutlet();
+	const { user } = useAuth();
+	const outlet = useOutlet();
 
-  if (!user) {
-    return <Navigate to={`${routes.login}`} />;
-  }
+	if (!user) {
+		return <Navigate to={`${routes.login}`} />;
+	}
 
-  return <>{outlet}</>;
+	return <>{outlet}</>;
 };

@@ -15,7 +15,7 @@ type UserIdProp = {
 	username?: never;
 };
 type UserAvatarProps = Omit<BaseAvatarProps, 'url' | 'title'> & {
-	etag?: string;
+	etag?: string | null;
 	url?: string;
 	title?: string;
 } & (UsernameProp | UserIdProp);

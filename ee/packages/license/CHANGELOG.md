@@ -1,5 +1,112 @@
 # @rocket.chat/license
 
+## 1.1.13
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/core-typings@8.3.0
+  - @rocket.chat/logger@1.0.1
+  - @rocket.chat/jwt@0.2.1
+  </details>
+
+## 1.1.13-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.4
+  </details>
+
+## 1.1.13-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.3
+  </details>
+
+## 1.1.13-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.2
+  </details>
+
+## 1.1.13-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.1
+  </details>
+
+## 1.1.13-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.0
+  - @rocket.chat/logger@1.0.1-rc.0
+  - @rocket.chat/jwt@0.2.1-rc.0
+  </details>
+
+## 1.1.12
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.1
+  </details>
+
+## 1.1.11
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34]:</summary>
+
+  - @rocket.chat/core-typings@8.2.0
+  </details>
+
+## 1.1.11-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.2
+  </details>
+
+## 1.1.11-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.1
+  </details>
+
+## 1.1.11-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34]:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.0
+  </details>
+
 ## 1.1.10
 
 ### Patch Changes
