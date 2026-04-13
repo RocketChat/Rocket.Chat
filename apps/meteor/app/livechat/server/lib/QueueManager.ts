@@ -27,7 +27,7 @@ import { afterInquiryQueued, afterRoomQueued, beforeDelegateAgent, beforeRouteCh
 import { checkOnlineAgents, getOnlineAgents } from './service-status';
 import { getInquirySortMechanismSetting } from './settings';
 import { dispatchInquiryPosition } from '../../../../ee/app/livechat-enterprise/server/lib/Helper';
-import { client, shouldRetryTransaction } from '../../../../server/database/utils';
+import { client, shouldRetryTransaction, transactionOptions } from '../../../../server/database/utils';
 import { sendNotification } from '../../../lib/server';
 import { notifyOnLivechatInquiryChangedById, notifyOnLivechatInquiryChanged } from '../../../lib/server/lib/notifyListener';
 import { settings } from '../../../settings/server';
@@ -257,7 +257,7 @@ export class QueueManager {
 	): Promise<{ room: IOmnichannelRoom; inquiry: ILivechatInquiryRecord }> {
 		const session = client.startSession();
 		try {
-			session.startTransaction();
+			session.startTransaction(transactionOptions);
 			const room = await createLivechatRoom(insertionRoom, session);
 			logger.debug({ msg: 'Room created for visitor', visitorId: guest._id, roomId: room._id });
 			const inquiry = await createLivechatInquiry({

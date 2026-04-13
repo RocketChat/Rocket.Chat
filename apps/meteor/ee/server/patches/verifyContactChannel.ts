@@ -6,7 +6,7 @@ import { LivechatContacts, LivechatInquiry, LivechatRooms } from '@rocket.chat/m
 import { QueueManager } from '../../../app/livechat/server/lib/QueueManager';
 import { mergeContacts } from '../../../app/livechat/server/lib/contacts/mergeContacts';
 import { verifyContactChannel } from '../../../app/livechat/server/lib/contacts/verifyContactChannel';
-import { client, shouldRetryTransaction } from '../../../server/database/utils';
+import { client, shouldRetryTransaction, transactionOptions } from '../../../server/database/utils';
 import { contactLogger as logger } from '../../app/livechat-enterprise/server/lib/logger';
 
 type VerifyContactChannelParams = {
@@ -26,7 +26,7 @@ async function _verifyContactChannel(
 
 	const session = client.startSession();
 	try {
-		session.startTransaction();
+		session.startTransaction(transactionOptions);
 		logger.debug({ msg: 'Start verifying contact channel', contactId, visitorId, roomId });
 
 		const updater = LivechatContacts.getUpdater();

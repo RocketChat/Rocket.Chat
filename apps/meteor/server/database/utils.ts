@@ -1,11 +1,21 @@
 import type { OffCallbackHandler } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
 import { MongoInternals } from 'meteor/mongo';
-import type { ClientSession, MongoError } from 'mongodb';
+import { ReadPreference } from 'mongodb';
+import type { ClientSession, MongoError, TransactionOptions } from 'mongodb';
 
 import { SystemLogger } from '../lib/logger/system';
 
 export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+
+// MongoDB and DocumentDB require read preference `primary` inside transactions.
+// When the client is configured with e.g. `secondaryPreferred` (common in
+// read-heavy deployments and in the CI connection to DocumentDB), transactions
+// must explicitly override the read preference or they will fail with
+// "Read preference in a transaction must be primary".
+export const transactionOptions: TransactionOptions = {
+	readPreference: ReadPreference.primary,
+};
 
 /**
  * In MongoDB, errors like UnknownTransactionCommitResult and TransientTransactionError occur primarily in the context of distributed transactions
@@ -71,7 +81,7 @@ export const wrapInSessionTransaction =
 
 		const dispatch = (session: ClientSession) => ee.emit('success', session);
 		try {
-			extendedSession.startTransaction();
+			extendedSession.startTransaction(transactionOptions);
 			extendedSession.once('ended', dispatch);
 
 			const result = await curriedCallback(extendedSession).apply(this, args);
