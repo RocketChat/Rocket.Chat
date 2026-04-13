@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': minor
 ---
 
-Added alt text description field for image uploads to improve accessibility
+Adds alternative text field to image uploads to improve accessibility
