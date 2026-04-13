@@ -1,10 +1,10 @@
+import { FocusScope } from '@react-aria/focus';
 import { isInviteSubscription } from '@rocket.chat/core-typings';
 import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
 import { useSetting, useRoomToolbox, useUserId } from '@rocket.chat/ui-contexts';
 import { useMediaCallOpenRoomTracker } from '@rocket.chat/ui-voip';
 import type { ReactElement } from 'react';
 import { createElement, lazy, memo, Suspense } from 'react';
-import { FocusScope } from 'react-aria';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 

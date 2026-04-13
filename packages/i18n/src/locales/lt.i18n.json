@@ -912,8 +912,6 @@
   "Entertainment": "Pramogos",
   "Error": "Klaida",
   "Error_404": "Klaida: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Klaida: \"Rocket.Chat\" reikalauja \"oplog tailing\" paleidžiant kelis kartus",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Įsitikinkite, kad jūsų MongoDB yra \"ReplicaSet\" režime, o aplinkos kintamasis MONGO_OPLOG_URL yra tinkamai apibrėžtas programų serveryje",
   "Error_changing_password": "Klaida pakeičiant slaptažodį",
   "Error_loading_pages": "Įkeliant puslapius įvyko klaida",
   "Esc_to": "Esc į",

@@ -11,7 +11,7 @@ import { beforeAddUserToRoom } from '../../../../server/lib/callbacks/beforeAddU
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { settings } from '../../../settings/server';
 import { beforeAddUserToRoom as beforeAddUserToRoomPatch } from '../lib/beforeAddUserToRoom';
-import { notifyOnRoomChangedById } from '../lib/notifyListener';
+import { notifyOnRoomChangedById, notifyOnSubscriptionChanged } from '../lib/notifyListener';
 
 /**
  * This function adds user to the given room.
@@ -97,10 +97,12 @@ export const addUserToRoom = async (
 		if (!isBannedSubscription(subscription)) {
 			return true;
 		}
-		const deleteCount = await Subscriptions.removeByUserId(userToBeAdded._id);
-		if (!deleteCount) {
+
+		const deletedSub = await Subscriptions.removeByRoomIdAndUserId(rid, userToBeAdded._id);
+		if (!deletedSub) {
 			return true;
 		}
+		void notifyOnSubscriptionChanged(deletedSub, 'removed');
 
 		if (!skipSystemMessage && inviter) {
 			await Message.saveSystemMessage('user-unbanned', rid, userToBeAdded.username!, inviter, { ts: now });

@@ -1604,8 +1604,6 @@
   "Entertainment": "Unterhaltung",
   "Error": "Fehler",
   "Error_404": "Fehler: 404(nicht gefunden)",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Fehler: Rocket.Chat erfordert Oplog-Tailing, wenn es auf mehreren Instanzen läuft",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Bitte stellen Sie sicher, dass die MongoDB als Replicaset konfiguriert ist und die Umgebungsvariable  MONGO_OPLOG_URL korrekt auf Ihren Anwendungsservern gesetzt wurde.",
   "Error_Site_URL": "Ungültige URL",
   "Error_Site_URL_description": "Bitte aktualisieren Sie Ihre \"Site_Url\" -Einstellung. Weitere Informationen [finden Sie hier](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": "Fehler beim Ändern des Passwortes",

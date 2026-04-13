@@ -3378,6 +3378,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@date-fns/tz@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@date-fns/tz@npm:1.4.1"
+  checksum: 10/062097590005cce3da4c7d9880f9c77d386cff5b4dd58fa3dde3c346a8b2e4f4a8025a613306351a7cad8eb71178a0f67b4840d5884f73aa4c759085fac92063
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -7174,7 +7181,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/i18n@npm:^3.0.0-nightly-fb28ab3b4-241024, @react-aria/i18n@npm:^3.12.5":
+"@react-aria/i18n@npm:3.12.5":
   version: 3.12.5
   resolution: "@react-aria/i18n@npm:3.12.5"
   dependencies:
@@ -7190,6 +7197,25 @@ __metadata:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
   checksum: 10/bfbc3a63fd8a6aeda219b60fa447db17e27d05c7a6b24ee030171721cfe3da812880f5fd257552e174b6aea0a209f71807491704bb71ad45db8949718e3aeac0
+  languageName: node
+  linkType: hard
+
+"@react-aria/i18n@patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch":
+  version: 3.12.5
+  resolution: "@react-aria/i18n@patch:@react-aria/i18n@npm%3A3.12.5#~/.yarn/patches/@react-aria-i18n-npm-3.12.5-435edff786.patch::version=3.12.5&hash=6bfd1c"
+  dependencies:
+    "@internationalized/date": "npm:^3.7.0"
+    "@internationalized/message": "npm:^3.1.6"
+    "@internationalized/number": "npm:^3.6.0"
+    "@internationalized/string": "npm:^3.2.5"
+    "@react-aria/ssr": "npm:^3.9.7"
+    "@react-aria/utils": "npm:^3.27.0"
+    "@react-types/shared": "npm:^3.27.0"
+    "@swc/helpers": "npm:^0.5.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+  checksum: 10/84664c647b2b6372536e7896a0c679727f668c2ca4b9b98d8d6be4928ec6c584efddb0e85c7d97a46ddfd97eedbbcfdd760c5b67026a31a2335629bd65a7b2d5
   languageName: node
   linkType: hard
 
@@ -8218,7 +8244,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-stately/data@npm:^3.12.1, @react-stately/data@npm:^3.6.1":
+"@react-stately/data@npm:^3.6.1":
   version: 3.12.1
   resolution: "@react-stately/data@npm:3.12.1"
   dependencies:
@@ -9137,7 +9163,7 @@ __metadata:
   dependencies:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.6.0"
+    "@rocket.chat/federation-sdk": "npm:0.6.3"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/icons": "npm:~0.47.0"
     "@rocket.chat/jest-presets": "workspace:~"
@@ -9173,8 +9199,8 @@ __metadata:
     rimraf: "npm:^6.0.1"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
-    typia: "npm:~9.7.2"
-    zod: "npm:~4.3.6"
+    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
+    zod: "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch"
   languageName: unknown
   linkType: soft
 
@@ -9248,6 +9274,7 @@ __metadata:
     "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/emitter": "npm:^0.32.0"
     "@rocket.chat/instance-status": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:*"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -9256,6 +9283,7 @@ __metadata:
     "@rocket.chat/string-helpers": "npm:~0.32.0"
     "@rocket.chat/tracing": "workspace:^"
     "@types/ejson": "npm:^2.2.2"
+    "@types/jest": "npm:~30.0.0"
     "@types/node": "npm:~22.16.5"
     "@types/polka": "npm:^0.5.8"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
@@ -9267,6 +9295,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     eventemitter3: "npm:^5.0.4"
     jaeger-client: "npm:^3.19.0"
+    jest: "npm:~30.2.0"
     mem: "npm:^8.1.1"
     moleculer: "npm:^0.14.35"
     mongodb: "npm:6.16.0"
@@ -9347,7 +9376,7 @@ __metadata:
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/emitter": "npm:^0.32.0"
-    "@rocket.chat/federation-sdk": "npm:0.6.0"
+    "@rocket.chat/federation-sdk": "npm:0.6.3"
     "@rocket.chat/http-router": "workspace:^"
     "@rocket.chat/license": "workspace:^"
     "@rocket.chat/models": "workspace:^"
@@ -9376,9 +9405,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/federation-sdk@npm:0.6.0":
-  version: 0.6.0
-  resolution: "@rocket.chat/federation-sdk@npm:0.6.0"
+"@rocket.chat/federation-sdk@npm:0.6.3":
+  version: 0.6.3
+  resolution: "@rocket.chat/federation-sdk@npm:0.6.3"
   dependencies:
     "@datastructures-js/priority-queue": "npm:^6.3.5"
     "@noble/ed25519": "npm:^3.0.0"
@@ -9391,7 +9420,7 @@ __metadata:
     zod: "npm:~4.3.6"
   peerDependencies:
     typescript: ~5.9.2
-  checksum: 10/704e01164679b9945907b499e48923e20ab699212dd0f282080f805a95d616d2a4e4c6bb85c9473284c56d18ccdff05af599c75ddbba388d51b5f8a69751974d
+  checksum: 10/71c8667f3d63e0b4ef0d82ee2b7c7c707494c286cfadf0c6be7e0feed7abc8817b0dfd44bb249861f8411c7747fdcfcde996a1c63d9c2396bba19d7ecb5689ac
   languageName: node
   linkType: hard
 
@@ -9600,7 +9629,7 @@ __metadata:
     "@rocket.chat/css-in-js": "*"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-tokens": "*"
-    "@rocket.chat/message-parser": 0.31.35-rc.0
+    "@rocket.chat/message-parser": 0.31.35
     "@rocket.chat/styled": "*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
@@ -9671,7 +9700,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/jest-presets@workspace:^, @rocket.chat/jest-presets@workspace:packages/jest-presets, @rocket.chat/jest-presets@workspace:~":
+"@rocket.chat/jest-presets@workspace:*, @rocket.chat/jest-presets@workspace:^, @rocket.chat/jest-presets@workspace:packages/jest-presets, @rocket.chat/jest-presets@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/jest-presets@workspace:packages/jest-presets"
   dependencies:
@@ -9965,6 +9994,7 @@ __metadata:
     "@bugsnag/js": "npm:~7.20.2"
     "@bugsnag/plugin-react": "npm:~7.19.0"
     "@datastructures-js/priority-queue": "npm:^6.3.5"
+    "@date-fns/tz": "npm:^1.4.1"
     "@faker-js/faker": "npm:~8.0.2"
     "@google-cloud/storage": "npm:^7.15.0"
     "@kaciras/deasync": "npm:^1.1.0"
@@ -9998,7 +10028,7 @@ __metadata:
     "@rocket.chat/emitter": "npm:^0.32.0"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
-    "@rocket.chat/federation-sdk": "npm:0.6.0"
+    "@rocket.chat/federation-sdk": "npm:0.6.3"
     "@rocket.chat/fuselage": "npm:^0.75.0"
     "@rocket.chat/fuselage-forms": "npm:^1.1.1"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
@@ -10071,6 +10101,7 @@ __metadata:
     "@testing-library/user-event": "npm:~14.6.1"
     "@types/adm-zip": "npm:^0.5.7"
     "@types/archiver": "npm:~6.0.4"
+    "@types/babel__preset-env": "npm:^7.10.0"
     "@types/bad-words": "npm:^3.0.3"
     "@types/bcrypt": "npm:^5.0.2"
     "@types/body-parser": "npm:^1.19.6"
@@ -10311,6 +10342,7 @@ __metadata:
     supertest: "npm:~7.1.4"
     supports-color: "npm:~7.2.0"
     swagger-ui-express: "npm:^5.0.1"
+    swc-plugin-coverage-instrument: "npm:0.0.32"
     swiper: "patch:swiper@npm%3A11.1.14#~/.yarn/patches/swiper-npm-11.1.14-8126fa478a.patch"
     template-file: "npm:^6.0.1"
     textarea-caret: "npm:^3.1.0"
@@ -10322,7 +10354,7 @@ __metadata:
     twilio: "npm:^5.4.2"
     twit: "npm:^2.2.11"
     typescript: "npm:~5.9.3"
-    typia: "npm:~9.7.2"
+    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
     ua-parser-js: "npm:~1.0.41"
     underscore: "npm:^1.13.7"
     universal-perf-hooks: "npm:^1.0.1"
@@ -10333,7 +10365,7 @@ __metadata:
     xml2js: "npm:~0.6.2"
     yaqrcode: "npm:^0.2.1"
     yoga-layout: "patch:yoga-layout@npm%3A3.2.1#~/.yarn/patches/yoga-layout-npm-3.2.1-51ec934670.patch"
-    zod: "npm:~4.3.6"
+    zod: "patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch"
     zustand: "npm:~5.0.10"
   languageName: unknown
   linkType: soft
@@ -10944,7 +10976,6 @@ __metadata:
     "@types/jest": "npm:~30.0.0"
     eslint: "npm:~9.39.3"
     jest: "npm:~30.2.0"
-    moment-timezone: "npm:^0.5.48"
     typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
@@ -11149,7 +11180,7 @@ __metadata:
     ts-jest: "npm:~29.4.6"
     ts-patch: "npm:^3.3.0"
     typescript: "npm:~5.9.3"
-    typia: "npm:~9.7.2"
+    typia: "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
   peerDependencies:
     "@rocket.chat/icons": "*"
   languageName: unknown
@@ -11304,7 +11335,6 @@ __metadata:
     codemirror: "npm:^6.0.2"
     eslint: "npm:~9.39.3"
     eslint4b-prebuilt: "npm:^6.7.2"
-    moment: "npm:^2.30.1"
     prettier: "npm:~3.3.3"
     rc-scrollbars: "npm:^1.1.6"
     react: "npm:~18.3.1"
@@ -11362,8 +11392,8 @@ __metadata:
     typescript: "npm:~5.9.3"
   peerDependencies:
     "@rocket.chat/layout": "*"
-    "@rocket.chat/tools": 0.2.5-rc.0
-    "@rocket.chat/ui-contexts": 29.0.0-rc.1
+    "@rocket.chat/tools": 0.2.5
+    "@rocket.chat/ui-contexts": 29.0.0
     "@tanstack/react-query": "*"
     react: "*"
     react-hook-form: "*"
@@ -13700,6 +13730,13 @@ __metadata:
   dependencies:
     "@babel/types": "npm:^7.0.0"
   checksum: 10/34f361a0d54a0d85ea4c4b5122c4025a5738fe6795361c85f07a4f8f9add383de640e8611edeeb8339db8203c2d64bff30be266bdcfe3cf777c19e8d34f9cebc
+  languageName: node
+  linkType: hard
+
+"@types/babel__preset-env@npm:^7.10.0":
+  version: 7.10.0
+  resolution: "@types/babel__preset-env@npm:7.10.0"
+  checksum: 10/7d4d12758d89708afe327079d7d7580e8af3292295f087b8a9a48e12ac1d90aadc18ac3bc00f9b0cbc8778f3ce9fe778801d4d49b7691a75e3f13a901b69fd07
   languageName: node
   linkType: hard
 
@@ -32336,7 +32373,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-aria@npm:~3.37.0":
+"react-aria@npm:3.37.0":
   version: 3.37.0
   resolution: "react-aria@npm:3.37.0"
   dependencies:
@@ -32383,6 +32420,56 @@ __metadata:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
   checksum: 10/e510ce17009e6cad3e9198c5164c325dc06bf3bba6ae50bd41ce9cfdb53fa620bf7c1bc678089737d43607bc222ea1aa0e5ddb19614a0650e3fdf4eb25ac820c
+  languageName: node
+  linkType: hard
+
+"react-aria@patch:react-aria@npm%3A3.37.0#~/.yarn/patches/react-aria-npm-3.37.0-83959bd2fa.patch":
+  version: 3.37.0
+  resolution: "react-aria@patch:react-aria@npm%3A3.37.0#~/.yarn/patches/react-aria-npm-3.37.0-83959bd2fa.patch::version=3.37.0&hash=e69ffb"
+  dependencies:
+    "@internationalized/string": "npm:^3.2.5"
+    "@react-aria/breadcrumbs": "npm:^3.5.20"
+    "@react-aria/button": "npm:^3.11.1"
+    "@react-aria/calendar": "npm:^3.7.0"
+    "@react-aria/checkbox": "npm:^3.15.1"
+    "@react-aria/color": "npm:^3.0.3"
+    "@react-aria/combobox": "npm:^3.11.1"
+    "@react-aria/datepicker": "npm:^3.13.0"
+    "@react-aria/dialog": "npm:^3.5.21"
+    "@react-aria/disclosure": "npm:^3.0.1"
+    "@react-aria/dnd": "npm:^3.8.1"
+    "@react-aria/focus": "npm:^3.19.1"
+    "@react-aria/gridlist": "npm:^3.10.1"
+    "@react-aria/i18n": "npm:^3.12.5"
+    "@react-aria/interactions": "npm:^3.23.0"
+    "@react-aria/label": "npm:^3.7.14"
+    "@react-aria/link": "npm:^3.7.8"
+    "@react-aria/listbox": "npm:^3.14.0"
+    "@react-aria/menu": "npm:^3.17.0"
+    "@react-aria/meter": "npm:^3.4.19"
+    "@react-aria/numberfield": "npm:^3.11.10"
+    "@react-aria/overlays": "npm:^3.25.0"
+    "@react-aria/progress": "npm:^3.4.19"
+    "@react-aria/radio": "npm:^3.10.11"
+    "@react-aria/searchfield": "npm:^3.8.0"
+    "@react-aria/select": "npm:^3.15.1"
+    "@react-aria/selection": "npm:^3.22.0"
+    "@react-aria/separator": "npm:^3.4.5"
+    "@react-aria/slider": "npm:^3.7.15"
+    "@react-aria/ssr": "npm:^3.9.7"
+    "@react-aria/switch": "npm:^3.6.11"
+    "@react-aria/table": "npm:^3.16.1"
+    "@react-aria/tabs": "npm:^3.9.9"
+    "@react-aria/tag": "npm:^3.4.9"
+    "@react-aria/textfield": "npm:^3.16.0"
+    "@react-aria/tooltip": "npm:^3.7.11"
+    "@react-aria/utils": "npm:^3.27.0"
+    "@react-aria/visually-hidden": "npm:^3.8.19"
+    "@react-types/shared": "npm:^3.27.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+    react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
+  checksum: 10/cd2092e40b2f8f74cdd4c9d090755075559174d3a1fcbdab0ffb68ddaeb2a7f57c257e75c308314f1bb2ca143439eec6ecf1ec33b37d7abd25e673d465c1e411
   languageName: node
   linkType: hard
 
@@ -32646,7 +32733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-stately@npm:~3.17.0":
+"react-stately@npm:3.17.0, react-stately@npm:~3.17.0":
   version: 3.17.0
   resolution: "react-stately@npm:3.17.0"
   dependencies:
@@ -32677,38 +32764,34 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-stately@npm:~3.35.0":
-  version: 3.35.0
-  resolution: "react-stately@npm:3.35.0"
+"react-stately@patch:react-stately@npm%3A3.17.0#~/.yarn/patches/react-stately-npm-3.17.0-264cc7a43c.patch":
+  version: 3.17.0
+  resolution: "react-stately@patch:react-stately@npm%3A3.17.0#~/.yarn/patches/react-stately-npm-3.17.0-264cc7a43c.patch::version=3.17.0&hash=e13f63"
   dependencies:
-    "@react-stately/calendar": "npm:^3.7.0"
-    "@react-stately/checkbox": "npm:^3.6.11"
-    "@react-stately/collections": "npm:^3.12.1"
-    "@react-stately/color": "npm:^3.8.2"
-    "@react-stately/combobox": "npm:^3.10.2"
-    "@react-stately/data": "npm:^3.12.1"
-    "@react-stately/datepicker": "npm:^3.12.0"
-    "@react-stately/disclosure": "npm:^3.0.1"
-    "@react-stately/dnd": "npm:^3.5.1"
-    "@react-stately/form": "npm:^3.1.1"
-    "@react-stately/list": "npm:^3.11.2"
-    "@react-stately/menu": "npm:^3.9.1"
-    "@react-stately/numberfield": "npm:^3.9.9"
-    "@react-stately/overlays": "npm:^3.6.13"
-    "@react-stately/radio": "npm:^3.10.10"
-    "@react-stately/searchfield": "npm:^3.5.9"
-    "@react-stately/select": "npm:^3.6.10"
-    "@react-stately/selection": "npm:^3.19.0"
-    "@react-stately/slider": "npm:^3.6.1"
-    "@react-stately/table": "npm:^3.13.1"
-    "@react-stately/tabs": "npm:^3.7.1"
-    "@react-stately/toggle": "npm:^3.8.1"
-    "@react-stately/tooltip": "npm:^3.5.1"
-    "@react-stately/tree": "npm:^3.8.7"
-    "@react-types/shared": "npm:^3.27.0"
+    "@react-stately/calendar": "npm:^3.0.2"
+    "@react-stately/checkbox": "npm:^3.2.1"
+    "@react-stately/collections": "npm:^3.4.3"
+    "@react-stately/combobox": "npm:^3.2.1"
+    "@react-stately/data": "npm:^3.6.1"
+    "@react-stately/datepicker": "npm:^3.0.2"
+    "@react-stately/list": "npm:^3.5.3"
+    "@react-stately/menu": "npm:^3.4.1"
+    "@react-stately/numberfield": "npm:^3.2.1"
+    "@react-stately/overlays": "npm:^3.4.1"
+    "@react-stately/radio": "npm:^3.5.1"
+    "@react-stately/searchfield": "npm:^3.3.1"
+    "@react-stately/select": "npm:^3.3.1"
+    "@react-stately/selection": "npm:^3.10.3"
+    "@react-stately/slider": "npm:^3.2.1"
+    "@react-stately/table": "npm:^3.4.0"
+    "@react-stately/tabs": "npm:^3.2.1"
+    "@react-stately/toggle": "npm:^3.4.1"
+    "@react-stately/tooltip": "npm:^3.2.1"
+    "@react-stately/tree": "npm:^3.3.3"
+    "@react-types/shared": "npm:^3.14.1"
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
-  checksum: 10/5977fab93e55d110dc3d009137b97ac9281c2539239958be7743466c16d10da4c7d2a98c65295621be411bbc5f3941fdd15ac3546363d01829ecc430bf3d2604
+    react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0
+  checksum: 10/0c34b5ca78d7a6407518a78f6b526d261661ab47ca204aea867d4e84e5e3f501316b3b234c7a2ad91e98f193d1df2babf92ec5bfca3ef8f2a18a627f0708631d
   languageName: node
   linkType: hard
 
@@ -35672,6 +35755,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"swc-plugin-coverage-instrument@npm:0.0.32":
+  version: 0.0.32
+  resolution: "swc-plugin-coverage-instrument@npm:0.0.32"
+  checksum: 10/5e5929ca4dc5906d081ddc96be88059f5cbd5c65d40031847902631b2a0911e67435120fc9ba3bd8a2e657e44bd29ad31aa85282a0de4aa1cf106a4bfc579f9b
+  languageName: node
+  linkType: hard
+
 "swiper@npm:11.1.14":
   version: 11.1.14
   resolution: "swiper@npm:11.1.14"
@@ -36852,7 +36942,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typia@npm:~9.7.2":
+"typia@npm:9.7.2":
   version: 9.7.2
   resolution: "typia@npm:9.7.2"
   dependencies:
@@ -36868,6 +36958,25 @@ __metadata:
   bin:
     typia: lib/executable/typia.js
   checksum: 10/dffe50bd624793cc22d37ccd2bdc8bfe814ee32fd51b35fd988772e9fba9bb2391218a83883bad09c6e7c9bbae6b5c853f607b5c3c57c7ed7d40308c4f273c30
+  languageName: node
+  linkType: hard
+
+"typia@patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch":
+  version: 9.7.2
+  resolution: "typia@patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch::version=9.7.2&hash=cc0415"
+  dependencies:
+    "@samchon/openapi": "npm:^4.7.1"
+    "@standard-schema/spec": "npm:^1.0.0"
+    commander: "npm:^10.0.0"
+    comment-json: "npm:^4.2.3"
+    inquirer: "npm:^8.2.5"
+    package-manager-detector: "npm:^0.2.0"
+    randexp: "npm:^0.5.3"
+  peerDependencies:
+    typescript: ">=4.8.0 <5.10.0"
+  bin:
+    typia: lib/executable/typia.js
+  checksum: 10/db5a671719afedcafff4f48b684d7afb76803d32ccb98df64071fd02e32bd932496d5b1c348112a4deab97d65f53be554ae9fd391ce6f6a90a92a33a6e1086d8
   languageName: node
   linkType: hard
 
@@ -38631,10 +38740,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.25.0 || ^4.0.0, zod@npm:~4.3.6":
+"zod@npm:4.3.6":
   version: 4.3.6
   resolution: "zod@npm:4.3.6"
   checksum: 10/25fc0f62e01b557b4644bf0b393bbaf47542ab30877c37837ea8caf314a8713d220c7d7fe51f68ffa72f0e1018ddfa34d96f1973d23033f5a2a5a9b6b9d9da01
+  languageName: node
+  linkType: hard
+
+"zod@patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch":
+  version: 4.3.6
+  resolution: "zod@patch:zod@npm%3A4.3.6#~/.yarn/patches/zod-npm-4.3.6-a096e305e6.patch::version=4.3.6&hash=18f503"
+  checksum: 10/2b771f17a72ced59fa57b522693a352140eb193d7158ae75092683f568cf19015c53be5ae6b3fa52dad2335deaff0f7beccba677cc1890744d06776d90a4fc7c
   languageName: node
   linkType: hard
 
