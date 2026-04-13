@@ -871,8 +871,6 @@
   "Entertainment": "zábava",
   "Error": "Chyba",
   "Error_404": "Chyba: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Chyba: Rocket.Chat vyžaduje oplog tailing pri spustení vo viacerých inštanciách",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Uistite sa, že váš MongoDB je v režime ReplicaSet a že premenná prostredia MONGO_OPLOG_URL je správne definovaná na aplikačnom serveri",
   "Error_changing_password": "Chyba pri zmene hesla",
   "Error_loading_pages": "Chyba pri načítavaní stránok",
   "Esc_to": "Esc to",

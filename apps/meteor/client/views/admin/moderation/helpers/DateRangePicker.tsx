@@ -1,6 +1,6 @@
 import { Select, Box, type SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import moment, { type Moment } from 'moment';
+import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
 import type { Key } from 'react';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,17 +10,25 @@ type DateRangePickerProps = {
 	defaultSelectedKey?: 'today' | 'yesterday' | 'thisWeek' | 'previousWeek' | 'thisMonth' | 'alldates';
 };
 
-const formatToDateInput = (date: Moment) => date.locale('en').format('YYYY-MM-DD');
+const formatToDateInput = (date: Date) => format(date, 'yyyy-MM-dd');
 
-const getMonthRange = (monthsToSubtractFromToday: number) => ({
-	start: formatToDateInput(moment().subtract(monthsToSubtractFromToday, 'month').date(1)),
-	end: formatToDateInput(monthsToSubtractFromToday === 0 ? moment() : moment().subtract(monthsToSubtractFromToday).date(0)),
-});
+const getMonthRange = (monthsToSubtractFromToday: number) => {
+	const now = new Date();
+	const startDate = monthsToSubtractFromToday === 0 ? startOfMonth(now) : startOfMonth(subMonths(now, monthsToSubtractFromToday));
+	const endDate = monthsToSubtractFromToday === 0 ? now : endOfMonth(subMonths(now, monthsToSubtractFromToday));
+	return {
+		start: formatToDateInput(startDate),
+		end: formatToDateInput(endDate),
+	};
+};
 
-const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: number) => ({
-	start: formatToDateInput(moment().subtract(daysToSubtractFromStart, 'day')),
-	end: formatToDateInput(moment().subtract(daysToSubtractFromEnd, 'day')),
-});
+const getWeekRange = (daysToSubtractFromStart: number, daysToSubtractFromEnd: number) => {
+	const now = new Date();
+	return {
+		start: formatToDateInput(subDays(now, daysToSubtractFromStart)),
+		end: formatToDateInput(subDays(now, daysToSubtractFromEnd)),
+	};
+};
 
 const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRangePickerProps) => {
 	const { t } = useTranslation();
