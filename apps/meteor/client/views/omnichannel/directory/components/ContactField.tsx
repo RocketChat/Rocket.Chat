@@ -43,14 +43,14 @@ const ContactField = ({ contact, room }: ContactFieldProps) => {
 
 	const displayName = name || username;
 	const phoneNumber = phone?.[0]?.phoneNumber;
-	const shortName = username && phoneNumber && username !== phoneNumber ? `${username} · ${phoneNumber}` : username || phoneNumber;
+	const contactIdentifier = [...new Set([username, phoneNumber])].filter(Boolean).join(' · ');
 
 	return (
 		<Field>
 			<Label>{t('Contact')}</Label>
 			<Info style={{ display: 'flex' }}>
 				<Avatar size='x40' title={fname} url={avatarUrl} />
-				<AgentInfoDetails mis={10} name={displayName} shortName={shortName} status={<UserStatus status={status} />} />
+				<AgentInfoDetails mis={10} name={displayName} shortName={contactIdentifier} status={<UserStatus status={status} />} />
 			</Info>
 		</Field>
 	);
