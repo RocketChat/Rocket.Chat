@@ -5,6 +5,96 @@ import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
 import type { ChatAPI } from '../ChatAPI';
 
+export type ImageQualityOption = 'low' | 'medium' | 'high';
+
+const IMAGE_QUALITY_STORAGE_KEY = 'messagebox:image-upload-quality';
+const IMAGE_QUALITY_MAP: Record<ImageQualityOption, number> = {
+	low: 0.25,
+	medium: 0.7,
+	high: 0.95,
+};
+
+export const getImageQualityOption = (): ImageQualityOption => {
+	if (typeof window === 'undefined') {
+		return 'medium';
+	}
+
+	const value = window.localStorage.getItem(IMAGE_QUALITY_STORAGE_KEY);
+
+	if (value === 'low' || value === 'high' || value === 'medium') {
+		return value;
+	}
+
+	return 'medium';
+};
+
+export const setImageQualityOption = (value: ImageQualityOption): void => {
+	if (typeof window === 'undefined') {
+		return;
+	}
+
+	window.localStorage.setItem(IMAGE_QUALITY_STORAGE_KEY, value);
+};
+
+const replaceFileExtension = (fileName: string, extension: string): string => {
+	const nameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
+	return `${nameWithoutExtension}.${extension}`;
+};
+
+const compressImageFile = async (file: File): Promise<File> => {
+	if (typeof window === 'undefined' || typeof document === 'undefined') {
+		return file;
+	}
+
+	if (!file.type.startsWith('image/') || file.type === 'image/gif' || file.type === 'image/svg+xml') {
+		return file;
+	}
+
+	const quality = IMAGE_QUALITY_MAP[getImageQualityOption()];
+	const targetType = file.type === 'image/png' ? 'image/webp' : file.type;
+	const sourceUrl = URL.createObjectURL(file);
+
+	try {
+		const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+			const img = new Image();
+
+			img.onload = () => resolve(img);
+			img.onerror = () => reject(new Error('Invalid image file'));
+			img.src = sourceUrl;
+		});
+
+		const canvas = document.createElement('canvas');
+		canvas.width = image.naturalWidth || image.width;
+		canvas.height = image.naturalHeight || image.height;
+		const context = canvas.getContext('2d');
+
+		if (!context) {
+			return file;
+		}
+
+		context.drawImage(image, 0, 0);
+
+		const compressedBlob = await new Promise<Blob | null>((resolve) => {
+			canvas.toBlob(resolve, targetType, quality);
+		});
+
+		if (!compressedBlob || compressedBlob.size >= file.size) {
+			return file;
+		}
+
+		const nextFileName = targetType === file.type ? file.name : replaceFileExtension(file.name, 'webp');
+
+		return new File([compressedBlob], nextFileName, {
+			type: targetType,
+			lastModified: file.lastModified,
+		});
+	} catch {
+		return file;
+	} finally {
+		URL.revokeObjectURL(sourceUrl);
+	}
+};
+
 export const uploadFiles = async (
 	chat: ChatAPI,
 	{ files, resetFileInput }: { files: readonly File[]; resetFileInput?: () => void },
@@ -32,19 +122,21 @@ export const uploadFiles = async (
 	}
 
 	const uploadFile = async (file: File) => {
-		Object.defineProperty(file, 'name', {
+		const fileToUpload = await compressImageFile(file);
+
+		Object.defineProperty(fileToUpload, 'name', {
 			writable: true,
-			value: file.name,
+			value: fileToUpload.name,
 		});
 
 		const e2eRoom = await e2e.getInstanceByRoomId(room._id);
 
 		if (!e2eRoom || !settings.peek('E2E_Enable_Encrypt_Files')) {
-			await uploadsStore.send(file);
+			await uploadsStore.send(fileToUpload);
 			return;
 		}
 
-		const encryptedFile = await e2eRoom.encryptFile(file);
+		const encryptedFile = await e2eRoom.encryptFile(fileToUpload);
 
 		if (!e2eRoom.isReady() || !encryptedFile) {
 			dispatchToastMessage({
@@ -55,9 +147,9 @@ export const uploadFiles = async (
 		}
 
 		const fileContentData = {
-			type: file.type,
-			typeGroup: file.type.split('/')[0],
-			name: file.name,
+			type: fileToUpload.type,
+			typeGroup: fileToUpload.type.split('/')[0],
+			name: fileToUpload.name,
 			encryption: {
 				key: encryptedFile.key,
 				iv: encryptedFile.iv,
@@ -72,7 +164,7 @@ export const uploadFiles = async (
 			encrypted: await e2eRoom.encryptMessageContent(fileContentData),
 		};
 
-		await uploadsStore.send(encryptedFile.file, { rawFile: file, fileContent, encryptedFile });
+		await uploadsStore.send(encryptedFile.file, { rawFile: fileToUpload, fileContent, encryptedFile });
 	};
 
 	resetFileInput?.();
