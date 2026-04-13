@@ -31,8 +31,6 @@ import { useGetMore } from './hooks/useGetMore';
 import { useHasNewMessages } from './hooks/useHasNewMessages';
 import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
-import { useJumpToMessageImperative } from '../MessageList/hooks/useJumpToMessage';
-import { useLoadSurroundingMessages } from '../MessageList/hooks/useLoadSurroundingMessages';
 
 const RoomBody = (): ReactElement => {
 	const chat = useChat();
@@ -50,6 +48,7 @@ const RoomBody = (): ReactElement => {
 
 	const shouldJumpToBottom = useRef<boolean>(true);
 	const isAtBottom = useRef<boolean>(false);
+	const isJumpingToMessage = useRef<boolean>(false);
 
 	const retentionPolicy = useRetentionPolicy(room);
 
@@ -81,10 +80,6 @@ const RoomBody = (): ReactElement => {
 		return subscribed;
 	}, [allowAnonymousRead, canPreviewChannelRoom, room, subscribed]);
 
-	const { jumpToRef: jumpToRefGetMoreImperative, innerRef: jumpToRefGetMoreImperativeInnerRef } = useJumpToMessageImperative();
-
-	const { jumpToRef: surroundingMessagesJumpTpRef } = useLoadSurroundingMessages();
-
 	const {
 		wrapperRef,
 		innerRef: unreadBarInnerRef,
@@ -95,16 +90,9 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: dateScrollInnerRef, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
 
-	const { innerRef: getMoreInnerRef, jumpToRef: jumpToRefGetMore } = useGetMore(room._id);
+	const { innerRef: getMoreInnerRef } = useGetMore(room._id, isJumpingToMessage);
 
-	const { innerRef: restoreScrollPositionInnerRef, jumpToRef: jumpToRefRestoreScrollPosition } = useRestoreScrollPosition(room._id);
-
-	const jumpToRef = useMergedRefsV2(
-		jumpToRefGetMore,
-		jumpToRefRestoreScrollPosition,
-		jumpToRefGetMoreImperative,
-		surroundingMessagesJumpTpRef,
-	);
+	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id, isJumpingToMessage);
 
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 	const { uploads, isUploading } = useFileUpload();
@@ -123,7 +111,6 @@ const RoomBody = (): ReactElement => {
 		getMoreInnerRef,
 		selectAndScrollRef,
 		messageListRef,
-		jumpToRefGetMoreImperativeInnerRef,
 	);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
@@ -222,7 +209,7 @@ const RoomBody = (): ReactElement => {
 												rid={room._id}
 												shouldJumpToBottom={shouldJumpToBottom}
 												isAtBottom={isAtBottom}
-												messageListRef={jumpToRef}
+												isJumpingToMessage={isJumpingToMessage}
 												canPreview={canPreview}
 												hasMorePreviousMessages={hasMorePreviousMessages}
 												isLoadingMoreMessages={isLoadingMoreMessages}

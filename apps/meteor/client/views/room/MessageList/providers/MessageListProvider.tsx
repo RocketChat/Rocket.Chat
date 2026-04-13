@@ -17,14 +17,13 @@ import { useKatex } from '../hooks/useKatex';
 
 type MessageListProviderProps = {
 	children: ReactNode;
-	messageListRef?: RefCallback<HTMLElement | undefined>;
 	attachmentDimension?: {
 		width?: number;
 		height?: number;
 	};
 };
 
-const MessageListProvider = ({ children, messageListRef, attachmentDimension }: MessageListProviderProps) => {
+const MessageListProvider = ({ children, attachmentDimension }: MessageListProviderProps) => {
 	const room = useRoom();
 
 	if (!room) {
@@ -94,7 +93,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			showRoles,
 			showRealName,
 			showUsername,
-			messageListRef,
 			jumpToMessageParam: msgParameter,
 			...(katexEnabled && {
 				katex: {
@@ -143,7 +141,6 @@ const MessageListProvider = ({ children, messageListRef, attachmentDimension }: 
 			reactToMessage,
 			showColors,
 			msgParameter,
-			messageListRef,
 			chat?.emojiPicker,
 			readReceiptsEnabled,
 			readReceiptsStoreUsers,

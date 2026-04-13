@@ -1,5 +1,6 @@
 import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
 import { useSearchParameter } from '@rocket.chat/ui-contexts';
+import type { MutableRefObject } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
 
@@ -7,10 +8,9 @@ import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/li
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
-export const useGetMore = (rid: string) => {
+export const useGetMore = (rid: string, isJumpingToMessage: MutableRefObject<boolean>) => {
 	const msgId = useSearchParameter('msg');
 	const msgIdRef = useRef(msgId);
-	const jumpToRef = useRef<HTMLElement>(undefined);
 
 	useEffect(() => {
 		msgIdRef.current = msgId;
@@ -24,7 +24,7 @@ export const useGetMore = (rid: string) => {
 						return;
 					}
 
-					if (jumpToRef.current) {
+					if (isJumpingToMessage.current) {
 						return;
 					}
 
@@ -46,7 +46,7 @@ export const useGetMore = (rid: string) => {
 					if (hasMore === true && lastScrollTopRef <= height / 3) {
 						await RoomHistoryManager.getMore(rid);
 
-						if (jumpToRef.current) {
+						if (isJumpingToMessage.current) {
 							return;
 						}
 
@@ -91,12 +91,11 @@ export const useGetMore = (rid: string) => {
 					element.removeEventListener('scroll', handleScroll);
 				};
 			},
-			[rid],
+			[isJumpingToMessage, rid],
 		),
 	);
 
 	return {
 		innerRef: ref,
-		jumpToRef,
 	};
 };

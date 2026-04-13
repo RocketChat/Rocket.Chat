@@ -2,8 +2,8 @@ import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isThreadMessage } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MutableRefObject } from 'react';
-import { Fragment, useEffect, useLayoutEffect, useRef } from 'react';
+import type { MutableRefObject } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
@@ -13,16 +13,15 @@ import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
 import { useMessages } from './hooks/useMessages';
+import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
-import type { RetentionPolicy } from '../hooks/useRetentionPolicy';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
-	messageListRef: ComponentProps<typeof MessageListProvider>['messageListRef'];
 	canPreview: boolean;
 	hasMorePreviousMessages: boolean;
 	isLoadingMoreMessages: boolean;
@@ -32,13 +31,13 @@ type MessageListProps = {
 	hasMoreNextMessages: boolean;
 	shouldJumpToBottom: MutableRefObject<boolean>;
 	isAtBottom: MutableRefObject<boolean>;
+	isJumpingToMessage: MutableRefObject<boolean>;
 };
 
 const lastViewportSize = 0;
 
 export const MessageList = function MessageList({
 	rid,
-	messageListRef,
 	canPreview,
 	hasMorePreviousMessages,
 	isLoadingMoreMessages,
@@ -48,6 +47,7 @@ export const MessageList = function MessageList({
 	hasMoreNextMessages,
 	shouldJumpToBottom,
 	isAtBottom,
+	isJumpingToMessage,
 }: MessageListProps) {
 	// Prepend ref needed for adjusting the message list shift
 	// https://inokawa.github.io/virtua/?path=/story/advanced-chat--default
@@ -60,11 +60,33 @@ export const MessageList = function MessageList({
 
 	const messages = useMessages({ rid });
 
+	useTryToJumpToMessage({ rid, virtualizerRef, isJumpingToMessage, messages });
+
+	const handlePrepend = useCallback(
+		(offset: number) => {
+			// If the offset is less than 200, it means the user is reaching the top of the list,
+			// so the prepend need to be enabled for smooth scrolling,
+			// if the prepend is enabled when a new message is added, the list will misalign.
+			if (offset < 200) {
+				isPrepend.current = true;
+			}
+
+			isAtBottom.current = offset - (virtualizerRef.current?.scrollSize ?? 0) + (virtualizerRef.current?.viewportSize ?? 0) >= -20;
+
+			if (shouldJumpToBottom.current && isAtBottom.current) {
+				shouldJumpToBottom.current = false;
+			}
+		},
+		[isAtBottom, shouldJumpToBottom],
+	);
 	// Scroll to bottom
 	useEffect(() => {
+		if (isJumpingToMessage.current) {
+			return;
+		}
+
 		const handle = virtualizerRef.current;
 		const lastItemIndex = messages.length - 1;
-		console.log('Effect Called', shouldJumpToBottom.current);
 		if (shouldJumpToBottom.current === true) {
 			// When new messages arrive, this effect is triggered, but the latest message is not on the index, so it scrolls to the previous index
 			// TODO: Find if there is a better way to scroll to the latest message
@@ -78,9 +100,7 @@ export const MessageList = function MessageList({
 				align: 'end',
 			});
 		}
-	}, [isAtBottom, messages, shouldJumpToBottom]);
-
-	console.log('isAtBottom', isAtBottom.current, shouldJumpToBottom.current);
+	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage]);
 
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -88,7 +108,7 @@ export const MessageList = function MessageList({
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const { t } = useTranslation();
 	return (
-		<MessageListProvider messageListRef={messageListRef}>
+		<MessageListProvider>
 			<SelectedMessagesProvider>
 				<VList
 					ref={virtualizerRef}
@@ -97,26 +117,7 @@ export const MessageList = function MessageList({
 					aria-label={t('Message_list')}
 					aria-busy={isLoadingMoreMessages}
 					onScroll={(offset: number) => {
-						// If the offset is less than 200, it means the user is reaching the top of the list,
-						// so the prepend need to be enabled for smooth scrolling,
-						// if the prepend is enabled when a new message is added, the list will misalign.
-						if (offset < 200) {
-							isPrepend.current = true;
-						}
-
-						console.log(
-							'offset, scrollSize, viewportSize, total',
-							offset,
-							virtualizerRef.current?.scrollSize,
-							virtualizerRef.current?.viewportSize,
-							offset - (virtualizerRef.current?.scrollSize ?? 0) + (virtualizerRef.current?.viewportSize ?? 0),
-						);
-
-						isAtBottom.current = offset - (virtualizerRef.current?.scrollSize ?? 0) + (virtualizerRef.current?.viewportSize ?? 0) >= -20;
-
-						if (shouldJumpToBottom.current && isAtBottom.current) {
-							shouldJumpToBottom.current = false;
-						}
+						handlePrepend(offset);
 					}}
 				>
 					{canPreview ? (

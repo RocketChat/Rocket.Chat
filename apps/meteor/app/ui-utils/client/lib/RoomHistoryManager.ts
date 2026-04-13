@@ -321,6 +321,7 @@ class RoomHistoryManagerClass extends Emitter {
 		}
 
 		const room = this.getRoom(message.rid);
+		room.isLoading.set(true);
 
 		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
 		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit, showThreadMessages);

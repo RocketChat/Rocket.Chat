@@ -1,12 +1,12 @@
 import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useRef } from 'react';
+import type { MutableRefObject } from 'react';
+import { useCallback } from 'react';
 
 import { isAtBottom } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 import { RoomManager } from '../../../../lib/RoomManager';
 
-export function useRestoreScrollPosition(rid: string, wait = 100) {
-	const jumpToRef = useRef<HTMLElement>(undefined);
+export function useRestoreScrollPosition(rid: string, isJumpingToMessage: MutableRefObject<boolean>, wait = 100) {
 	const ref = useSafeRefCallback(
 		useCallback(
 			(node: HTMLElement) => {
@@ -15,7 +15,7 @@ export function useRestoreScrollPosition(rid: string, wait = 100) {
 					node.scrollTop = node.scrollHeight;
 					node.scrollLeft = 30;
 				}
-				if (!jumpToRef.current && store?.scroll !== undefined && !store.atBottom) {
+				if (!isJumpingToMessage.current && store?.scroll !== undefined && !store.atBottom) {
 					node.scrollTop = store.scroll;
 					node.scrollLeft = 30;
 				}
@@ -29,12 +29,11 @@ export function useRestoreScrollPosition(rid: string, wait = 100) {
 					node.removeEventListener('scroll', handleWrapperScroll);
 				};
 			},
-			[rid, wait],
+			[rid, wait, isJumpingToMessage],
 		),
 	);
 
 	return {
-		jumpToRef,
 		innerRef: ref,
 	};
 }
