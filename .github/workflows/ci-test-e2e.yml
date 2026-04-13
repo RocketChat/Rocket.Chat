@@ -185,14 +185,19 @@ jobs:
           BASE="${BASE%/}"
           QUERY="${CI_MONGO_URL#"$BASE"}"
           # Force readPreference=primary for tests to avoid read-after-write
-          # inconsistency from secondaries (last value wins per MongoDB connection
-          # string spec). DocumentDB compatibility for secondaryPreferred is an
-          # application concern, not something to assert via tests that rely on
-          # immediate read-your-writes semantics.
+          # inconsistency from secondaries (e.g. user authenticates, immediately
+          # reads via findOneById, secondary returns null). The Node.js driver
+          # rejects duplicate query options, so we strip any existing
+          # readPreference before adding our own. secondaryPreferred behavior
+          # is an application concern, not something to assert via tests that
+          # need read-your-writes semantics.
+          QUERY=$(printf '%s' "$QUERY" | sed -E 's/([?&])readPreference=[^&]*&?/\1/g; s/[?&]$//')
           if [ -z "$QUERY" ] || [ "$QUERY" = "/" ]; then
             QUERY="?readPreference=primary"
-          else
+          elif [[ "$QUERY" == \?* ]]; then
             QUERY="${QUERY}&readPreference=primary"
+          else
+            QUERY="?${QUERY}&readPreference=primary"
           fi
           FULL_URL="${BASE}/${DB_NAME}${QUERY}"
           echo "MONGO_URL=${FULL_URL}" >> $GITHUB_ENV
