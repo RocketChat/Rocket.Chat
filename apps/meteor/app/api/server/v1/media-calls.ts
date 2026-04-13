@@ -1,6 +1,6 @@
 import { MediaCall } from '@rocket.chat/core-services';
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { ServerMediaSignal } from '@rocket.chat/media-signaling';
+import type { ServerMediaCallSignal } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 import {
 	ajv,
@@ -77,7 +77,7 @@ const mediaCallsStateEndpoints = API.v1
 		{
 			response: {
 				200: ajv.compile<{
-					signals: ServerMediaSignal[];
+					signals: ServerMediaCallSignal[];
 				}>({
 					additionalProperties: false,
 					type: 'object',
