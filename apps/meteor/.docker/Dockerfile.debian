@@ -36,9 +36,9 @@ RUN aptMark="$(apt-mark showmanual)" \
 USER rocketchat
 
 RUN cd /app/bundle/programs/server \
-    && npm install \
+    && npm install --omit=dev \
     && cd npm/node_modules/isolated-vm \
-    && npm install \
+    && npm install --omit=dev \
     && npm cache clear --force
 
 USER root
