@@ -2,7 +2,7 @@ import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { CreateNewDiscussionModal } from './page-objects/fragments';
-import { createTargetChannel, createTargetTeam, sendTargetChannelMessage } from './utils';
+import { createTargetChannel, createTargetTeam, getPermissionRoles, sendTargetChannelMessage } from './utils';
 import { setUserPreferences } from './utils/setUserPreferences';
 import { expect, test } from './utils/test';
 
@@ -165,7 +165,11 @@ test.describe.serial('message-actions', () => {
 	test.describe.serial('expect reply in direct message', () => {
 		test.use({ storageState: Users.user2.state });
 
+		let originalCreateDRoles: string[];
+
 		test.beforeAll(async ({ api }) => {
+			originalCreateDRoles = await getPermissionRoles(api, 'create-d');
+
 			await sendTargetChannelMessage(api, targetChannel, { msg: 'message from admin for reply in DM' });
 		});
 
@@ -177,9 +181,9 @@ test.describe.serial('message-actions', () => {
 		});
 
 		test('expect option be visible and redirect to DM', async ({ page, api }) => {
-			expect(
-				(await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin', 'user', 'bot', 'app'] }] })).status(),
-			).toBe(200);
+			expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: originalCreateDRoles }] })).status()).toBe(
+				200,
+			);
 
 			await poHomeChannel.content.openLastMessageMenu();
 			await poHomeChannel.content.btnOptionReplyInDm.click();
@@ -188,9 +192,9 @@ test.describe.serial('message-actions', () => {
 		});
 
 		test.afterAll(async ({ api }) => {
-			expect(
-				(await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: ['admin', 'user', 'bot', 'app'] }] })).status(),
-			).toBe(200);
+			expect((await api.post('/permissions.update', { permissions: [{ _id: 'create-d', roles: originalCreateDRoles }] })).status()).toBe(
+				200,
+			);
 		});
 	});
 
