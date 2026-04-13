@@ -381,7 +381,7 @@
   "Accounts_TwoFactorAuthentication_Enforce_Password_Fallback_Description": "Users will be forced to enter their password, for important actions, if no other Two Factor Authentication method is enabled for that user and a password is set for him.",
   "Accounts_TwoFactorAuthentication_MaxDelta": "Maximum Delta",
   "Accounts_TwoFactorAuthentication_MaxDelta_Description": "The Maximum Delta determines how many tokens are valid at any given time. Tokens are generated every 30 seconds, and are valid for (30 * Maximum Delta) seconds.  \nExample: With a Maximum Delta set to 10, each token can be used up to 300 seconds before or after it's timestamp. This is useful when the client's clock is not properly synced with the server.",
-  "Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts": "Maximun Invalid Email OTP Codes Allowed",
+  "Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts": "Maximum Invalid Email OTP Codes Allowed",
   "Accounts_TwoFactorAuthentication_Max_Invalid_Email_Code_Attempts_Description": "The system allows a maximum number of invalid email OTP codes, after which a new code is automatically generated. We highly recommend using this setting along with 'Block failed login attempts by Username'.",
   "Accounts_TwoFactorAuthentication_RememberFor": "Remember Two Factor for (seconds)",
   "Accounts_TwoFactorAuthentication_RememberFor_Description": "Do not request two factor authorization code if it was already provided before in the given time.",
@@ -7113,7 +7113,7 @@
   "__count__replies": "{{count}} replies",
   "__count__replies__date__": "{{count}} replies, {{date}}",
   "__count__result_found": {
-     "one": "{{count}} result found",
+    "one": "{{count}} result found",
     "other": "{{count}} results found"
   },
   "__count__tags__and__count__conversations__period__": "{{count}} tags and {{conversations}} conversations, {{period}}",
