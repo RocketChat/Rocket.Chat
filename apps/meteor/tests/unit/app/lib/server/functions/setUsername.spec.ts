@@ -20,6 +20,7 @@ describe('setUsername', () => {
 		settings: {
 			get: sinon.stub(),
 		},
+		isFederationEnabled: sinon.stub(),
 		api: {
 			broadcast: sinon.stub(),
 		},
@@ -52,7 +53,7 @@ describe('setUsername', () => {
 			'@rocket.chat/models': { Users: stubs.Users, Invites: stubs.Invites, Subscriptions: stubs.Subscriptions },
 			'meteor/accounts-base': { Accounts: stubs.Accounts },
 			'underscore': stubs.underscore,
-			'../../../../server/services/federation/utils': { isFederationEnabled: () => stubs.settings.get('Federation_Service_Enabled') },
+			'../../../../server/services/federation/utils': { isFederationEnabled: stubs.isFederationEnabled },
 			'../../../settings/server': { settings: stubs.settings },
 			'../lib': { notifyOnUserChange: stubs.notifyOnUserChange },
 			'./addUserToRoom': { addUserToRoom: stubs.addUserToRoom },
@@ -67,6 +68,7 @@ describe('setUsername', () => {
 		});
 
 	beforeEach(() => {
+		stubs.isFederationEnabled.returns(false);
 		stubs.Subscriptions.findUserFederatedRoomIds.returns({
 			hasNext: sinon.stub().resolves(false),
 			close: sinon.stub().resolves(),
@@ -79,6 +81,7 @@ describe('setUsername', () => {
 		stubs.Subscriptions.findUserFederatedRoomIds.reset();
 		stubs.Accounts.sendEnrollmentEmail.reset();
 		stubs.settings.get.reset();
+		stubs.isFederationEnabled.reset();
 		stubs.api.broadcast.reset();
 		stubs.Invites.findOneById.reset();
 		stubs.callbacks.run.reset();
@@ -121,7 +124,7 @@ describe('setUsername', () => {
 			try {
 				await setUsernameWithValidation(userId, username);
 			} catch (error: any) {
-				expect(stubs.settings.get.calledOnce).to.be.true;
+				expect(stubs.settings.get.calledWith('Accounts_AllowUsernameChange')).to.be.true;
 				expect(error.message).to.equal('error-not-allowed');
 			}
 		});
@@ -153,7 +156,7 @@ describe('setUsername', () => {
 
 		it('should throw an error if local user is in federated rooms', async () => {
 			stubs.Users.findOneById.resolves({ _id: userId, username: null });
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(true);
+			stubs.isFederationEnabled.returns(true);
 			stubs.validateUsername.returns(true);
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.Subscriptions.findUserFederatedRoomIds.returns({
@@ -176,7 +179,7 @@ describe('setUsername', () => {
 				federated: true,
 				federation: { version: 1, mui: '@user:origin', origin: 'origin' },
 			});
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(true);
+			stubs.isFederationEnabled.returns(true);
 			stubs.validateUsername.returns(true);
 			stubs.checkUsernameAvailability.resolves(true);
 
@@ -190,7 +193,7 @@ describe('setUsername', () => {
 
 		it('should allow local user in federated rooms to change username when federation is disabled', async () => {
 			stubs.Users.findOneById.resolves({ _id: userId, username: null });
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
+			stubs.isFederationEnabled.returns(false);
 			stubs.validateUsername.returns(true);
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.saveUserIdentity.resolves(true);
@@ -207,7 +210,6 @@ describe('setUsername', () => {
 
 		it('should save the user identity when valid username is set', async () => {
 			stubs.Users.findOneById.resolves({ _id: userId, username: null });
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
 			stubs.settings.get.withArgs('Accounts_AllowUsernameChange').returns(true);
 			stubs.validateUsername.returns(true);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -243,7 +245,6 @@ describe('setUsername', () => {
 
 		it('should set username when user has no previous username', async () => {
 			const mockUser = { _id: userId, emails: [{ address: 'test@example.com' }] };
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -257,7 +258,6 @@ describe('setUsername', () => {
 
 		it('should set username when user has and old that is different from new', async () => {
 			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] };
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -271,7 +271,6 @@ describe('setUsername', () => {
 
 		it('should set username when user has and old that is different from new', async () => {
 			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] };
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -285,7 +284,6 @@ describe('setUsername', () => {
 
 		it('should set avatar if Accounts_SetDefaultAvatar is enabled', async () => {
 			const mockUser = { _id: userId, username: null };
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -299,7 +297,6 @@ describe('setUsername', () => {
 
 		it('should not set avatar if Accounts_SetDefaultAvatar is disabled', async () => {
 			const mockUser = { _id: userId, username: null };
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -312,7 +309,6 @@ describe('setUsername', () => {
 
 		it('should not set avatar if no avatar suggestions are available', async () => {
 			const mockUser = { _id: userId, username: null };
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -326,7 +322,6 @@ describe('setUsername', () => {
 
 		it('should add user to room if inviteToken is present', async () => {
 			const mockUser = { _id: userId, username: null, inviteToken: 'invite token' };
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
 			stubs.validateUsername.returns(true);
 			stubs.Users.findOneById.resolves(mockUser);
 			stubs.checkUsernameAvailability.resolves(true);
@@ -341,7 +336,7 @@ describe('setUsername', () => {
 
 		it('should allow _setUsername when user is in federated rooms but federation is disabled', async () => {
 			const mockUser = { _id: userId, username: 'oldUsername', emails: [{ address: 'test@example.com' }] };
-			stubs.settings.get.withArgs('Federation_Service_Enabled').returns(false);
+			stubs.isFederationEnabled.returns(false);
 			stubs.validateUsername.returns(true);
 			stubs.checkUsernameAvailability.resolves(true);
 			stubs.Subscriptions.findUserFederatedRoomIds.returns({
