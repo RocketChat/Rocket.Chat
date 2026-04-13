@@ -45,7 +45,10 @@ services:
       interval: 2s
       timeout: 5s
       retries: 5
-      start_period: 60s
+      # Startup against an external DocumentDB cluster is significantly slower
+      # than the local Mongo container due to network latency on every
+      # initial setup query (indexes, migrations, settings load).
+      start_period: 180s
       test: wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/livez || exit 1
 
   authorization-service:

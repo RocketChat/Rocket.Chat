@@ -184,6 +184,16 @@ jobs:
           BASE="${CI_MONGO_URL%%\?*}"
           BASE="${BASE%/}"
           QUERY="${CI_MONGO_URL#"$BASE"}"
+          # Force readPreference=primary for tests to avoid read-after-write
+          # inconsistency from secondaries (last value wins per MongoDB connection
+          # string spec). DocumentDB compatibility for secondaryPreferred is an
+          # application concern, not something to assert via tests that rely on
+          # immediate read-your-writes semantics.
+          if [ -z "$QUERY" ] || [ "$QUERY" = "/" ]; then
+            QUERY="?readPreference=primary"
+          else
+            QUERY="${QUERY}&readPreference=primary"
+          fi
           FULL_URL="${BASE}/${DB_NAME}${QUERY}"
           echo "MONGO_URL=${FULL_URL}" >> $GITHUB_ENV
           echo "DOCKER_MONGO_URL=${FULL_URL}" >> $GITHUB_ENV
