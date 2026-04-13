@@ -195,8 +195,6 @@ export const sendNotification = async ({
 		const firstAttachment = message.attachments?.length && message.attachments.shift();
 
 		if (firstAttachment) {
-			firstAttachment.description =
-				typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
 			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
 		}
 
@@ -417,7 +415,13 @@ settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 
 	callbacks.add(
 		'afterSaveMessage',
-		(message, { room }) => sendAllNotifications(message, room),
+		(message, { room, options }) => {
+			if (options?.skipNotifications) {
+				return message;
+			}
+
+			return sendAllNotifications(message, room);
+		},
 		callbacks.priority.LOW,
 		'sendNotificationsOnMessage',
 	);

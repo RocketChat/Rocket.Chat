@@ -144,7 +144,7 @@ export class NegotiationManager {
 	}
 
 	protected isPoliteClient(): boolean {
-		return this.call.role === 'callee';
+		return this.call.localParticipant.role === 'callee';
 	}
 
 	protected addToQueue(negotiation: Negotiation): void {

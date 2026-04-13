@@ -474,6 +474,17 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withRouter(overrides: Partial<ContextType<typeof RouterContext>>): this {
+		this.router = { ...this.router, ...overrides };
+		return this;
+	}
+
+	withRouteParameter(name: string, value: string): this {
+		const innerFn = this.router.getRouteParameters;
+		this.router.getRouteParameters = () => ({ ...innerFn(), [name]: value });
+		return this;
+	}
+
 	withRole(role: string): this {
 		if (!this.user.user) {
 			throw new Error('user is not defined');

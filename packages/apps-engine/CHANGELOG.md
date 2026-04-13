@@ -1,5 +1,15 @@
 # @rocket.chat/apps-engine
 
+## 1.61.0
+
+### Minor Changes
+
+- ([#39268](https://github.com/RocketChat/Rocket.Chat/pull/39268)) refactor(ui-kit): Remove UiKit deprecations
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
 ## 1.61.0-rc.0
 
 ### Minor Changes
