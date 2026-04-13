@@ -198,7 +198,17 @@ export class SettingsRegistry {
 
 		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
 
-		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
+		try {
+			await this.model.insertOne(setting); // no need to emit unless we remove the oplog
+		} catch (e: any) {
+			// Another process inserted the same setting first (e.g. main app + EE
+			// microservices booting in parallel). The check above is in-memory and
+			// not atomic, so concurrent boots race on the unique _id index.
+			// E11000 here is safe to ignore — the setting now exists.
+			if (e?.code !== 11000) {
+				throw e;
+			}
+		}
 
 		this.store.set(setting);
 	}
