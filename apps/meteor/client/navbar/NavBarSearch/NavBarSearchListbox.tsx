@@ -1,11 +1,11 @@
+import type { OverlayTriggerAria } from '@react-aria/overlays';
+import type { OverlayTriggerState } from '@react-stately/overlays';
 import { Box, Tile } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useEffectEvent, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
-import type { OverlayTriggerAria } from 'react-aria';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import type { OverlayTriggerState } from 'react-stately';
 
 import NavBarSearchNoResults from './NavBarSearchNoResults';
 import NavBarSearchRow from './NavBarSearchRow';
