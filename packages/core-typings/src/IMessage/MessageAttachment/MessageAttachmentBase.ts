@@ -5,6 +5,7 @@ export type MessageAttachmentBase = {
 	title?: string;
 	ts?: Date;
 	collapsed?: boolean;
+	/** description isn't being used on client for non-image attachments, we're keeping it for backward compatibility */
 	description?: string;
 	text?: string;
 	md?: Root;
