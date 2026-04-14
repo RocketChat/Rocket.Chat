@@ -1,7 +1,7 @@
 import type { IAbacAttributeDefinition, IRoom, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
-import { isTruthy } from '@rocket.chat/tools';
+
 import pLimit from 'p-limit';
 
 import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
@@ -300,29 +300,29 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		const users = await Users.findByUsernames(usernames, { projection: { _id: 1, emails: 1, username: 1 } }).toArray();
 
 		const fqns = this.buildAttributeFqns(attributes);
-		const decisionRequests = users
-			.map((user) => {
-				const entityKey = this.getUserEntityKey(user);
-				if (!entityKey) {
-					return null;
-				}
+		const decisionRequests: IGetDecisionBulkRequest[] = [];
 
-				return {
-					entityIdentifier: {
-						entityChain: {
-							entities: [this.buildEntityIdentifier(entityKey)],
-						},
+		for (const user of users) {
+			const entityKey = this.getUserEntityKey(user);
+			if (!entityKey) {
+				throw new OnlyCompliantCanBeAddedToRoomError();
+			}
+
+			decisionRequests.push({
+				entityIdentifier: {
+					entityChain: {
+						entities: [this.buildEntityIdentifier(entityKey)],
 					},
-					action: { name: 'read' },
-					resources: [
-						{
-							ephemeralId: object._id,
-							attributeValues: { fqns },
-						},
-					],
-				};
-			})
-			.filter(isTruthy);
+				},
+				action: { name: 'read' },
+				resources: [
+					{
+						ephemeralId: object._id,
+						attributeValues: { fqns },
+					},
+				],
+			});
+		}
 
 		if (!decisionRequests.length) {
 			throw new OnlyCompliantCanBeAddedToRoomError();
