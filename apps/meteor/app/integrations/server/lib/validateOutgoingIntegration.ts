@@ -3,8 +3,8 @@ import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
-import { compileIntegrationScript } from './compileIntegrationScript';
 import { isScriptEngineFrozen } from './validateScriptEngine';
+import { validateScriptSyntax } from './validateScriptSyntax';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
@@ -181,7 +181,9 @@ export const validateOutgoingIntegration = async function (
 		integration.script &&
 		integration.script.trim() !== ''
 	) {
-		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
+		// isolated-vm embeds modern V8 and runs the script natively, so no
+		// transpilation is needed. Syntax is still validated at save time.
+		const { script, error } = validateScriptSyntax(integration.script);
 		integrationData.scriptCompiled = script;
 		integrationData.scriptError = error;
 	}

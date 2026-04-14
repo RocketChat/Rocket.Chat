@@ -367,9 +367,8 @@ describe('[Incoming Integrations]', () => {
 		describe('Script integration tests', () => {
 			let withScript: IIntegration;
 			let withScriptDefaultContentType: IIntegration;
-			let withSkipTranspile: IIntegration;
 
-			const sloppyModeScript =
+			const strictModeScript =
 				'const buildMessage = (obj) => {\n' +
 				'  \n' +
 				'    const template = `[#VALUE](${ obj.test })`;\n' +
@@ -381,7 +380,7 @@ describe('[Incoming Integrations]', () => {
 				'  \n' +
 				'  class Script {\n' +
 				'    process_incoming_request({ request }) {\n' +
-				'      msg = buildMessage(request.content);\n' +
+				'      const msg = buildMessage(request.content);\n' +
 				'  \n' +
 				'      return {\n' +
 				'        content:{\n' +
@@ -434,38 +433,14 @@ describe('[Incoming Integrations]', () => {
 						scriptEnabled: true,
 						overrideDestinationChannelEnabled: false,
 						channel: '#general',
-						script: sloppyModeScript,
+						script: strictModeScript,
 					})
 					.expect(200);
 				withScriptDefaultContentType = res2.body.integration;
-
-				// Same script but with skipTranspile: true — no Babel, class methods
-				// run in strict mode so `msg = buildMessage(...)` throws ReferenceError.
-				const res3 = await request
-					.post(api('integrations.create'))
-					.set(credentials)
-					.send({
-						type: 'webhook-incoming',
-						name: 'Incoming test with skipTranspile',
-						enabled: true,
-						alias: 'test',
-						username: 'rocket.cat',
-						scriptEnabled: true,
-						skipTranspile: true,
-						overrideDestinationChannelEnabled: false,
-						channel: '#general',
-						script: sloppyModeScript,
-					})
-					.expect(200);
-				withSkipTranspile = res3.body.integration;
 			});
 
 			after(async () => {
-				await Promise.all([
-					removeIntegration(withScript._id, 'incoming'),
-					removeIntegration(withScriptDefaultContentType._id, 'incoming'),
-					removeIntegration(withSkipTranspile._id, 'incoming'),
-				]);
+				await Promise.all([removeIntegration(withScript._id, 'incoming'), removeIntegration(withScriptDefaultContentType._id, 'incoming')]);
 			});
 
 			it('should send a message if the payload is a application/x-www-form-urlencoded JSON AND the integration has a valid script', async () => {
@@ -512,22 +487,6 @@ describe('[Incoming Integrations]', () => {
 				expect(messagesResult.body).to.have.property('success', true);
 				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
 				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === '[#VALUE](test)')).to.be.true;
-			});
-
-			it('should create the skipTranspile integration with scriptCompiled and no scriptError', () => {
-				expect(withSkipTranspile).to.have.property('scriptCompiled');
-				expect(withSkipTranspile).to.not.have.property('scriptError');
-				expect(withSkipTranspile).to.have.property('skipTranspile', true);
-			});
-
-			it('should fail to execute the same sloppy-mode script when skipTranspile is true', async () => {
-				const payload = { test: 'test' };
-
-				await request
-					.post(`/hooks/${withSkipTranspile._id}/${withSkipTranspile.token}`)
-					.set('Content-Type', 'application/json')
-					.send(JSON.stringify(payload))
-					.expect(400);
 			});
 		});
 
