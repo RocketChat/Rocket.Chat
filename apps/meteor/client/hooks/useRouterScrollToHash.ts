@@ -19,13 +19,13 @@ export const availableHashes: Set<string> = new Set(Object.values(TARGET_ANCHORS
 export const useRouterScrollToHash = (router: RouterContextValue) => {
 	const hash = useSyncExternalStore(router.subscribeToRouteChange, router.getLocationHash);
 	const reducedMotion = usePrefersReducedMotion();
-	const id = hash.slice(1);
-	const hasValidHash = availableHashes.has(id);
 
 	const previousHash = useRef<string | null>(null);
 
 	useEffect(() => {
-		if (!hasValidHash) {
+		const id = hash.slice(1);
+
+		if (!availableHashes.has(id)) {
 			previousHash.current = hash;
 			return;
 		}
@@ -44,5 +44,5 @@ export const useRouterScrollToHash = (router: RouterContextValue) => {
 		});
 
 		return () => cancelAnimationFrame(frame);
-	}, [hash, id, hasValidHash, reducedMotion]);
+	}, [hash, reducedMotion]);
 };
