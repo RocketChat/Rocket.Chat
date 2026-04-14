@@ -7,20 +7,24 @@ export const createFederationSettings = () =>
 		await this.section('Rocket.Chat Federation', async function () {
 			await this.add('FEDERATION_Enabled', false, {
 				type: 'boolean',
+				readonly: true,
 				i18nLabel: 'Enabled',
 				i18nDescription: 'FEDERATION_Enabled',
-				alert: 'This_is_a_deprecated_feature_alert',
+				alert: 'Old_Federation_Alert',
 				public: true,
 			});
 
 			await this.add('FEDERATION_Status', 'Disabled', {
 				readonly: true,
+				hidden: true,
 				type: 'string',
 				i18nLabel: 'FEDERATION_Status',
 			});
 
 			await this.add('FEDERATION_Domain', '', {
 				type: 'string',
+				readonly: true,
+				hidden: true,
 				i18nLabel: 'FEDERATION_Domain',
 				i18nDescription: 'FEDERATION_Domain_Description',
 				alert: 'FEDERATION_Domain_Alert',
@@ -31,6 +35,7 @@ export const createFederationSettings = () =>
 
 			await this.add('FEDERATION_Public_Key', federationPublicKey || '', {
 				readonly: true,
+				hidden: true,
 				type: 'string',
 				multiline: true,
 				i18nLabel: 'FEDERATION_Public_Key',
@@ -39,6 +44,8 @@ export const createFederationSettings = () =>
 
 			await this.add('FEDERATION_Discovery_Method', 'dns', {
 				type: 'select',
+				readonly: true,
+				hidden: true,
 				values: [
 					{
 						key: 'dns',
@@ -56,6 +63,7 @@ export const createFederationSettings = () =>
 
 			await this.add('FEDERATION_Test_Setup', 'FEDERATION_Test_Setup', {
 				type: 'action',
+				hidden: true,
 				actionText: 'FEDERATION_Test_Setup',
 			});
 		});

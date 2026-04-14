@@ -1,10 +1,11 @@
-import type { IRole, IUser, AtLeast } from '@rocket.chat/core-typings';
+import type { IRole, IUser, AtLeast, ISubscription, Serialized } from '@rocket.chat/core-typings';
 import { useEndpoint, useSetting, useStream } from '@rocket.chat/ui-contexts';
 import type { InfiniteData, QueryClient } from '@tanstack/react-query';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
+import { roomsQueryKeys } from '../../lib/queryKeys';
 
 type MembersListOptions = {
 	rid: string;
@@ -20,9 +21,18 @@ const endpointsByRoomType = {
 	c: '/v1/rooms.membersOrderedByRole',
 } as const;
 
-export type RoomMember = Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] };
+export type RoomMember = Serialized<
+	Pick<IUser, 'username' | '_id' | 'name' | 'status' | 'federated' | 'freeSwitchExtension'> & { roles?: IRole['_id'][] } & {
+		subscription: Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>;
+	}
+>;
 
-type MembersListPage = { members: RoomMember[]; count: number; total: number; offset: number };
+type MembersListPage = {
+	members: RoomMember[];
+	count: number;
+	total: number;
+	offset: number;
+};
 
 const getSortedMembers = (members: RoomMember[], useRealName = false) => {
 	const membersWithRolePriority: (RoomMember & { rolePriority: number })[] = members.map((member) => ({
@@ -64,7 +74,7 @@ const updateMemberInCache = (
 	useRealName = false,
 ) => {
 	queryClient.setQueryData(
-		[options.roomType, 'members', options.rid, options.type, options.debouncedText],
+		roomsQueryKeys.members(options.rid, options.roomType, options.type, options.debouncedText),
 		(oldData: InfiniteData<MembersListPage>) => {
 			if (!oldData) {
 				return oldData;
@@ -127,7 +137,7 @@ export const useMembersList = (options: MembersListOptions) => {
 	}, [options, queryClient, subscribeToNotifyLoggedIn, useRealName]);
 
 	return useInfiniteQuery({
-		queryKey: [options.roomType, 'members', options.rid, options.type, options.debouncedText],
+		queryKey: roomsQueryKeys.members(options.rid, options.roomType, options.type, options.debouncedText),
 		queryFn: async ({ pageParam }) => {
 			const start = pageParam ?? 0;
 

@@ -1,8 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../../../components/GenericModal';
 
 type EnableE2EEModalProps = {
 	onConfirm: () => void;

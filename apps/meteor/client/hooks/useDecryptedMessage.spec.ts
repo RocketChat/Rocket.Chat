@@ -2,14 +2,14 @@ import { isE2EEMessage } from '@rocket.chat/core-typings';
 import { renderHook, waitFor } from '@testing-library/react';
 
 import { useDecryptedMessage } from './useDecryptedMessage';
-import { e2e } from '../../app/e2e/client/rocketchat.e2e';
+import { e2e } from '../lib/e2ee/rocketchat.e2e';
 
 // Mock the dependencies
 jest.mock('@rocket.chat/core-typings', () => ({
 	isE2EEMessage: jest.fn(),
 }));
 
-jest.mock('../../app/e2e/client/rocketchat.e2e', () => ({
+jest.mock('../lib/e2ee/rocketchat.e2e', () => ({
 	e2e: {
 		decryptMessage: jest.fn(),
 	},
@@ -53,7 +53,7 @@ describe('useDecryptedMessage', () => {
 	it('should handle E2EE messages with attachments', async () => {
 		(isE2EEMessage as jest.MockedFunction<typeof isE2EEMessage>).mockReturnValue(true);
 		(e2e.decryptMessage as jest.Mock).mockResolvedValue({
-			attachments: [{ description: 'Attachment description' }],
+			attachments: [{ title: 'Attachment title' }],
 		});
 		const message = { msg: 'Encrypted message with attachment' };
 
@@ -63,7 +63,6 @@ describe('useDecryptedMessage', () => {
 			expect(result.current).toBe('E2E_message_encrypted_placeholder');
 		});
 
-		expect(result.current).toBe('Attachment description');
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
 	});
 
@@ -80,7 +79,10 @@ describe('useDecryptedMessage', () => {
 			expect(result.current).toBe('E2E_message_encrypted_placeholder');
 		});
 
-		expect(result.current).toBe('Message_with_attachment');
+		await waitFor(() => {
+			expect(result.current).toBe('Message_with_attachment');
+		});
+
 		expect(e2e.decryptMessage).toHaveBeenCalledWith(message);
 	});
 });

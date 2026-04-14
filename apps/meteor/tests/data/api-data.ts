@@ -5,7 +5,7 @@ import supertest from 'supertest';
 
 import { adminUsername, adminPassword } from './user';
 
-const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
+export const apiUrl = process.env.TEST_API_URL || 'http://localhost:3000';
 
 export const request = supertest(apiUrl);
 const prefix = '/api/v1/';
@@ -63,6 +63,8 @@ export function log(res: Response) {
 	});
 }
 
+let instanceId: string | undefined;
+
 export function getCredentials(done?: CallbackHandler) {
 	void request
 		.post(api('login'))
@@ -75,6 +77,11 @@ export function getCredentials(done?: CallbackHandler) {
 		.expect((res) => {
 			credentials['X-Auth-Token'] = res.body.data.authToken;
 			credentials['X-User-Id'] = res.body.data.userId;
+			instanceId = res.headers['x-instance-id'];
 		})
 		.end(done);
+}
+
+export function getInstanceId() {
+	return instanceId;
 }

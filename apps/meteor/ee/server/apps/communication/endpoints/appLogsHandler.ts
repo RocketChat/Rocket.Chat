@@ -7,7 +7,7 @@ import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 	void api.addRoute(
 		':id/logs',
-		{ authRequired: true, permissionRequired: ['manage-apps'], validateParams: isAppLogsProps },
+		{ authRequired: true, permissionsRequired: ['manage-apps'], validateParams: isAppLogsProps },
 		{
 			async get() {
 				const proxiedApp = _manager.getOneById(this.urlParams.id);
@@ -37,7 +37,7 @@ export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 					return api.failure({ error: error instanceof Error ? error.message : 'Unknown error' });
 				}
 
-				const result = await _orch.getLogStorage().find(query, options);
+				const result = await _orch.getLogStorage().findPaginated(query, options);
 
 				return api.success({ offset, logs: result.logs, count: result.logs.length, total: result.total });
 			},

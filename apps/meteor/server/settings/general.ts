@@ -1,7 +1,7 @@
 import { settingsRegistry } from '../../app/settings/server';
 
-export const createGeneralSettings = () =>
-	settingsRegistry.addGroup('General', async function () {
+export const createGeneralSettings = async () => {
+	await settingsRegistry.addGroup('General', async function () {
 		await this.section('REST API', async function () {
 			await this.add('API_Upper_Count_Limit', 100, { type: 'int', public: false });
 			await this.add('API_Default_Count', 50, { type: 'int', public: false });
@@ -26,11 +26,6 @@ export const createGeneralSettings = () =>
 				type: 'string',
 				public: false,
 				enableQuery: { _id: 'API_Enable_CORS', value: true },
-			});
-
-			await this.add('API_Use_REST_For_DDP_Calls', true, {
-				type: 'boolean',
-				public: true,
 			});
 
 			// Should enforce the permission on next Major and remove this setting
@@ -265,10 +260,6 @@ export const createGeneralSettings = () =>
 			],
 			public: true,
 		});
-		await this.add('ECDH_Enabled', false, {
-			type: 'boolean',
-			alert: 'This_feature_is_currently_in_alpha',
-		});
 		await this.section('UTF8', async function () {
 			await this.add('UTF8_User_Names_Validation', '[0-9a-zA-Z-_.]+', {
 				type: 'string',
@@ -389,4 +380,15 @@ export const createGeneralSettings = () =>
 				i18nDescription: 'Update_EnableChecker_Description',
 			});
 		});
+
+		await this.section('SSRF_Protection', async function () {
+			await this.add('SSRF_Allowlist', '', {
+				type: 'string',
+				multiline: true,
+				public: false,
+				i18nLabel: 'SSRF_Allowlist',
+				i18nDescription: 'SSRF_Allowlist_Description',
+			});
+		});
 	});
+};

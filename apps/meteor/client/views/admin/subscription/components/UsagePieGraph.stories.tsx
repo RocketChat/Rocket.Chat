@@ -6,7 +6,6 @@ import UsagePieGraph from './UsagePieGraph';
 import { useAutoSequence } from '../../../../stories/hooks/useAutoSequence';
 
 export default {
-	title: 'Admin/Info/UsagePieGraph',
 	component: UsagePieGraph,
 	parameters: {
 		layout: 'centered',

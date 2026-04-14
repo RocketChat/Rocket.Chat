@@ -26,7 +26,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		super(db, 'livechat_visitor', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{ key: { token: 1 } },
 			{ key: { 'phone.phoneNumber': 1 }, sparse: true },
@@ -242,6 +242,10 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.findOne(query);
 	}
 
+	updateAllLivechatDataByToken(token: string, livechatDataToUpdate: Record<string, string>): Promise<UpdateResult> {
+		return this.updateOne({ token }, { $set: livechatDataToUpdate });
+	}
+
 	async updateLivechatDataByToken(
 		token: string,
 		key: string,
@@ -361,7 +365,7 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 		return this.updateOne({ _id }, { $unset: { department: 1 } });
 	}
 
-	removeById(_id: string): Promise<DeleteResult> {
+	override removeById(_id: string): Promise<DeleteResult> {
 		return this.deleteOne({ _id });
 	}
 
@@ -376,18 +380,20 @@ export class LivechatVisitorsRaw extends BaseRaw<ILivechatVisitor> implements IL
 			.filter((phone) => phone?.trim().replace(/[^\d]/g, ''))
 			.map((phone) => ({ phoneNumber: phone }));
 
-		const update: UpdateFilter<ILivechatVisitor> = {
-			$addToSet: {
-				...(saveEmail.length && { visitorEmails: { $each: saveEmail } }),
-				...(savePhone.length && { phone: { $each: savePhone } }),
-			},
-		};
-
-		if (!Object.keys(update.$addToSet as Record<string, any>).length) {
+		if (!saveEmail.length && !savePhone.length) {
 			return Promise.resolve();
 		}
 
-		return this.updateOne({ _id }, update);
+		// the only reason we're using $setUnion here instead of $addToSet is because
+		// old visitors might have `visitorEmails` or `phone` as `null` which would cause $addToSet to fail
+		return this.updateOne({ _id }, [
+			{
+				$set: {
+					...(saveEmail.length && { visitorEmails: { $setUnion: [{ $ifNull: ['$visitorEmails', []] }, saveEmail] } }),
+					...(savePhone.length && { phone: { $setUnion: [{ $ifNull: ['$phone', []] }, savePhone] } }),
+				},
+			},
+		]);
 	}
 
 	removeContactManagerByUsername(manager: string): Promise<Document | UpdateResult> {

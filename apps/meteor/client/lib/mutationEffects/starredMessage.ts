@@ -1,10 +1,10 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
-import { Messages } from '../../../app/models/client';
+import { Messages } from '../../stores';
+import { getUserId } from '../user';
 
 export const toggleStarredMessage = (message: IMessage, starred: boolean) => {
-	const uid = Meteor.userId()!;
+	const uid = getUserId()!;
 
 	if (starred) {
 		Messages.state.update(

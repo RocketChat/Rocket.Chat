@@ -31,11 +31,7 @@ export const useMessageBody = (message: IMessage | undefined): string | Root => 
 		}
 
 		if (message.attachments) {
-			const attachment = message.attachments.find((attachment) => attachment.title || attachment.description);
-
-			if (attachment?.description) {
-				return attachment.description;
-			}
+			const attachment = message.attachments.find((attachment) => attachment.title);
 
 			if (attachment?.title) {
 				return attachment.title;

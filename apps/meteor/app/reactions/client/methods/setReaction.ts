@@ -1,18 +1,19 @@
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
 import { roomCoordinator } from '../../../../client/lib/rooms/roomCoordinator';
+import { getUser, getUserId } from '../../../../client/lib/user';
+import { Rooms, Subscriptions, Messages } from '../../../../client/stores';
 import { emoji } from '../../../emoji/client';
-import { Messages, Rooms, Subscriptions } from '../../../models/client';
 
 Meteor.methods<ServerMethods>({
 	async setReaction(reaction, messageId) {
-		if (!Meteor.userId()) {
+		if (!getUserId()) {
 			throw new Meteor.Error(203, 'User_logged_out');
 		}
 
-		const user = Meteor.user();
+		const user = getUser();
 
 		if (!user?.username) {
 			return false;
@@ -23,7 +24,7 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		const room: IRoom | undefined = Rooms.findOne({ _id: message.rid });
+		const room = Rooms.state.get(message.rid);
 		if (!room) {
 			return false;
 		}
@@ -36,11 +37,11 @@ Meteor.methods<ServerMethods>({
 			return false;
 		}
 
-		if (roomCoordinator.readOnly(room._id, user)) {
+		if (roomCoordinator.readOnly(room, user)) {
 			return false;
 		}
 
-		if (!Subscriptions.findOne({ rid: message.rid })) {
+		if (!Subscriptions.state.find(({ rid }) => rid === message.rid)) {
 			return false;
 		}
 

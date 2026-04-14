@@ -1,6 +1,7 @@
 import type { ILivechatContact, ILivechatContactConflictingField } from '@rocket.chat/core-typings';
 import { LivechatContacts, Settings } from '@rocket.chat/models';
 
+import { patchContact } from './patchContact';
 import { validateContactManager } from './validateContactManager';
 import { notifyOnSettingChanged } from '../../../../lib/server/lib/notifyListener';
 
@@ -15,9 +16,12 @@ export type ResolveContactConflictsParams = {
 export async function resolveContactConflicts(params: ResolveContactConflictsParams): Promise<ILivechatContact> {
 	const { contactId, name, customFields, contactManager, wipeConflicts } = params;
 
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'customFields' | 'conflictingFields'>>(contactId, {
-		projection: { _id: 1, customFields: 1, conflictingFields: 1 },
-	});
+	const contact = await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'customFields' | 'conflictingFields'>>(
+		contactId,
+		{
+			projection: { _id: 1, customFields: 1, conflictingFields: 1 },
+		},
+	);
 
 	if (!contact) {
 		throw new Error('error-contact-not-found');
@@ -43,7 +47,7 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 		const fieldsToRemove = new Set<string>(
 			[
 				name && 'name',
-				contactManager && 'manager',
+				'contactManager' in params && 'manager',
 				...(customFields ? Object.keys(customFields).map((key) => `customFields.${key}`) : []),
 			].filter((field): field is string => !!field),
 		);
@@ -53,12 +57,21 @@ export async function resolveContactConflicts(params: ResolveContactConflictsPar
 		) as ILivechatContactConflictingField[];
 	}
 
-	const dataToUpdate = {
+	const set = {
 		...(name && { name }),
 		...(contactManager && { contactManager }),
 		...(customFields && { customFields: { ...contact.customFields, ...customFields } }),
 		conflictingFields: updatedConflictingFieldsArr,
 	};
 
-	return LivechatContacts.updateContact(contactId, dataToUpdate);
+	const unset: Partial<Record<keyof ILivechatContact, '' | 1>> =
+		'contactManager' in params && !contactManager ? { contactManager: '' } : {};
+
+	const updatedContact = await patchContact(contactId, { set, unset });
+
+	if (!updatedContact) {
+		throw new Error('error-contact-not-found');
+	}
+
+	return updatedContact;
 }

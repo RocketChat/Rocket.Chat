@@ -10,7 +10,6 @@ const fakeUser = {
 
 it('should return username if UI_Use_Real_Name setting is false', () => {
 	const { result } = renderHook(() => useUserDisplayName(fakeUser), {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withSetting('UI_Use_Real_Name', false).build(),
 	});
 
@@ -19,7 +18,6 @@ it('should return username if UI_Use_Real_Name setting is false', () => {
 
 it('should return name if UI_Use_Real_Name setting is true', () => {
 	const { result } = renderHook(() => useUserDisplayName(fakeUser), {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withSetting('UI_Use_Real_Name', true).build(),
 	});
 
@@ -28,7 +26,6 @@ it('should return name if UI_Use_Real_Name setting is true', () => {
 
 it('should return username if UI_Use_Real_Name setting is true and user has no name', () => {
 	const { result } = renderHook(() => useUserDisplayName({ ...fakeUser, name: undefined }), {
-		legacyRoot: true,
 		wrapper: mockAppRoot().withSetting('UI_Use_Real_Name', true).build(),
 	});
 

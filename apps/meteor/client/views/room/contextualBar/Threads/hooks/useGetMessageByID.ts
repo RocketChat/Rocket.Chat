@@ -2,9 +2,9 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 
-import { Messages } from '../../../../../../app/models/client';
 import { onClientMessageReceived } from '../../../../../lib/onClientMessageReceived';
 import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
+import { Messages } from '../../../../../stores';
 
 export const useGetMessageByID = () => {
 	const getMessage = useEndpoint('GET', '/v1/chat.getMessage');

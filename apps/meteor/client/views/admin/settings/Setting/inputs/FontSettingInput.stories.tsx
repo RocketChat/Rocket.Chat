@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import FontSettingInput from './FontSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/FontSettingInput',
 	component: FontSettingInput,
 	parameters: {
 		actions: {

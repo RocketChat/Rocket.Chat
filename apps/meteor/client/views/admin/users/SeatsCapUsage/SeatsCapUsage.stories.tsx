@@ -3,7 +3,6 @@ import type { ReactElement } from 'react';
 import SeatsCapUsage from './SeatsCapUsage';
 
 export default {
-	title: 'Enterprise/Admin/Users/SeatsCapUsage',
 	component: SeatsCapUsage,
 };
 

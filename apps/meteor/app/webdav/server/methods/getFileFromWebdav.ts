@@ -10,7 +10,7 @@ import { WebdavClientAdapter } from '../lib/webdavClientAdapter';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getFileFromWebdav(accountId: IWebdavAccount['_id'], file: IWebdavNode): Promise<{ success: boolean; data: Uint8Array }>;
+		getFileFromWebdav(accountId: IWebdavAccount['_id'], file: IWebdavNode): Promise<{ success: boolean; data: Uint8Array<ArrayBuffer> }>;
 	}
 }
 

@@ -13,7 +13,7 @@ import moment from 'moment';
 import type { RootFilterOperators } from 'mongodb';
 
 import { getMentions } from './notifyUsersOnMessage';
-import { callbacks } from '../../../../lib/callbacks';
+import { callbacks } from '../../../../server/lib/callbacks';
 import { roomCoordinator } from '../../../../server/lib/rooms/roomCoordinator';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { Notification } from '../../../notification-queue/server/NotificationQueue';
@@ -24,11 +24,19 @@ import { getEmailData, shouldNotifyEmail } from '../functions/notifications/emai
 import { messageContainsHighlight } from '../functions/notifications/messageContainsHighlight';
 import { getPushData, shouldNotifyMobile } from '../functions/notifications/mobile';
 
-export type SubscriptionAggregation = {
+type SubscriptionAggregation = {
 	receiver: [Pick<IUser, 'active' | 'emails' | 'language' | 'status' | 'statusConnection' | 'username' | 'settings'> | null];
 } & Pick<
 	ISubscription,
-	'desktopNotifications' | 'emailNotifications' | 'mobilePushNotifications' | 'muteGroupMentions' | 'name' | 'rid' | 'userHighlights' | 'u'
+	| 'desktopNotifications'
+	| 'emailNotifications'
+	| 'mobilePushNotifications'
+	| 'muteGroupMentions'
+	| 'name'
+	| 'rid'
+	| 'userHighlights'
+	| 'u'
+	| 'audioNotificationValue'
 >;
 
 type WithRequiredProperty<Type, Key extends keyof Type> = Type & {
@@ -134,7 +142,7 @@ export const sendNotification = async ({
 			user: sender,
 			message,
 			room,
-			receiver,
+			audioNotificationValue: subscription.audioNotificationValue,
 		});
 	}
 
@@ -187,13 +195,11 @@ export const sendNotification = async ({
 		const firstAttachment = message.attachments?.length && message.attachments.shift();
 
 		if (firstAttachment) {
-			firstAttachment.description =
-				typeof firstAttachment.description === 'string' ? emojione.shortnameToUnicode(firstAttachment.description) : undefined;
 			firstAttachment.text = typeof firstAttachment.text === 'string' ? emojione.shortnameToUnicode(firstAttachment.text) : undefined;
 		}
 
 		const attachments = firstAttachment ? [firstAttachment, ...(message.attachments ?? [])].filter(Boolean) : [];
-		for await (const email of receiver.emails) {
+		for (const email of receiver.emails) {
 			if (email.verified) {
 				queueItems.push({
 					type: 'email',
@@ -245,6 +251,7 @@ const project = {
 		'receiver.statusConnection': 1,
 		'receiver.username': 1,
 		'receiver.settings.preferences.enableMobileRinging': 1,
+		'audioNotificationValue': 1,
 	},
 } as const;
 
@@ -392,7 +399,7 @@ export async function sendAllNotifications(message: IMessage, room: IRoom) {
 		return message;
 	}
 
-	if (!room || room.t == null) {
+	if (room?.t == null) {
 		return message;
 	}
 
@@ -408,7 +415,13 @@ settings.watch('Troubleshoot_Disable_Notifications', (value) => {
 
 	callbacks.add(
 		'afterSaveMessage',
-		(message, { room }) => sendAllNotifications(message, room),
+		(message, { room, options }) => {
+			if (options?.skipNotifications) {
+				return message;
+			}
+
+			return sendAllNotifications(message, room);
+		},
 		callbacks.priority.LOW,
 		'sendNotificationsOnMessage',
 	);

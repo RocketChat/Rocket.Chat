@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Iframe Login</title>
+</head>
+<script>
+	function login() {
+		console.log('logging in');
+		window.parent.postMessage({
+			event: 'login-with-token',
+			loginToken: 'REPLACE_WITH_TOKEN',
+		}, '*');
+	}
+
+	window.addEventListener('message', (event) => {
+		if(event.data.event === 'login-error') {
+			document.getElementById('login-error').innerText = "Login failed";
+		}
+	});
+</script>
+<body>
+    <h1>Iframe Authentication Login Form</h1>
+    <form id="login-form">
+        <label for="username">Username:</label><br/>
+        <input type="text" id="username" name="username" placeholder="Enter username" /><br/><br/>
+
+        <label for="password">Password:</label><br/>
+        <input type="password" id="password" name="password" placeholder="Enter password" /><br/><br/>
+
+        <button id="submit" type="button"
+
+		onclick="login()">Login</button>
+    </form>
+	<div id="login-error"></div>
+</body>
+</html>

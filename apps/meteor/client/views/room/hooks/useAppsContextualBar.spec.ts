@@ -1,8 +1,8 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
+import { renderHook } from '@testing-library/react';
 
 import { useAppsContextualBar } from './useAppsContextualBar';
 import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
-import { useRoomToolbox } from '../contexts/RoomToolboxContext';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
 	useRouteParameter: jest.fn((param: string) => {
@@ -10,13 +10,11 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 		if (param === 'tab') return 'app';
 		return undefined;
 	}),
+	useRoomToolbox: jest.fn(),
 }));
 
 jest.mock('../../../uikit/hooks/useUiKitActionManager', () => ({
 	useUiKitActionManager: jest.fn(),
-}));
-jest.mock('../contexts/RoomToolboxContext', () => ({
-	useRoomToolbox: jest.fn(),
 }));
 
 const mockGetInteractionPayloadByViewId = jest.fn();

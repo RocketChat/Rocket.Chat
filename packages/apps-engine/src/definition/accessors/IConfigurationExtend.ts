@@ -1,6 +1,7 @@
 import type { IApiExtend } from './IApiExtend';
 import type { IExternalComponentsExtend } from './IExternalComponentsExtend';
 import type { IHttpExtend } from './IHttp';
+import type { IOutboundCommunicationProviderExtend } from './IOutboundCommunicationProviderExtend';
 import type { ISchedulerExtend } from './ISchedulerExtend';
 import type { ISettingsExtend } from './ISettingsExtend';
 import type { ISlashCommandsExtend } from './ISlashCommandsExtend';
@@ -33,4 +34,7 @@ export interface IConfigurationExtend {
 
 	/** Accessor for declaring the videoconf providers which your App provides. */
 	readonly videoConfProviders: IVideoConfProvidersExtend;
+
+	/** Accessor for declaring outbound communication providers */
+	readonly outboundCommunication: IOutboundCommunicationProviderExtend;
 }

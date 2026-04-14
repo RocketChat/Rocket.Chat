@@ -1,9 +1,9 @@
 import { memo } from 'preact/compat';
 
+import styles from './styles.scss';
 import { createClassName } from '../../../../helpers/createClassName';
 import shortnameToUnicode from '../../../../lib/emoji/shortnameToUnicode';
 import MarkdownBlock from '../../../MarkdownBlock';
-import styles from './styles.scss';
 
 const Mrkdwn = ({ text /* , verbatim = false */ }: { text: string }) => {
 	return (

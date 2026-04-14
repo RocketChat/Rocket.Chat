@@ -1,21 +1,21 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
-import { useTranslation } from 'react-i18next';
-
-import ReviewContactModal from './ReviewContactModal';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { usePermission, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
+
+import ReviewContactModal from './ReviewContactModal';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useContactRoute } from '../../hooks/useContactRoute';
 import { useValidCustomFields } from '../hooks/useValidCustomFields';
-import ContactInfoChannels from '../tabs/ContactInfoChannels/ContactInfoChannels';
+import ContactInfoChannels from '../tabs/ContactInfoChannels';
 import ContactInfoDetails from '../tabs/ContactInfoDetails';
 import ContactInfoHistory from '../tabs/ContactInfoHistory';
 
@@ -96,6 +96,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 			</Tabs>
 			{context === 'details' && (
 				<ContactInfoDetails
+					contact={contact}
 					createdAt={createdAt}
 					contactManager={contactManager}
 					phones={phones?.map(({ phoneNumber }) => phoneNumber)}
@@ -103,7 +104,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 					customFieldEntries={customFieldEntries}
 				/>
 			)}
-			{context === 'channels' && <ContactInfoChannels contactId={contact?._id} />}
+			{context === 'channels' && <ContactInfoChannels contact={contact} />}
 			{context === 'history' && <ContactInfoHistory contact={contact} />}
 		</ContextualbarDialog>
 	);

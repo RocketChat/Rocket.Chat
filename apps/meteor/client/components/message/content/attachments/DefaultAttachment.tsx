@@ -86,13 +86,19 @@ const DefaultAttachment = (attachment: DefaultAttachmentProps): ReactElement => 
 
 									return {
 										...rest,
-										title: <MarkdownText variant='inline' parseEmoji content={title.replace(/(.*)/g, (line: string) => `${line}  `)} />,
-										value: <MarkdownText variant='inline' parseEmoji content={value.replace(/(.*)/g, (line: string) => `${line}  `)} />,
+										title: title ? (
+											<MarkdownText variant='inline' parseEmoji content={title.replace(/(.*)/g, (line: string) => `${line}  `)} />
+										) : null,
+										value: value ? (
+											<MarkdownText variant='inline' parseEmoji content={value.replace(/(.*)/g, (line: string) => `${line}  `)} />
+										) : null,
 									};
 								})}
 							/>
 						)}
-						{attachment.image_url && <AttachmentImage {...(attachment.image_dimensions as any)} src={attachment.image_url} />}
+						{attachment.image_url && (
+							<AttachmentImage {...(attachment.image_dimensions as any)} src={attachment.image_url} alt={attachment.description || ''} />
+						)}
 						{/* DEPRECATED */}
 						{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}
 					</>

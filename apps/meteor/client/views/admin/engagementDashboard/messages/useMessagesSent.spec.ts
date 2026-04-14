@@ -56,7 +56,6 @@ it('should return utc time', async () => {
 		},
 	};
 	const { result } = renderHook(() => useMessagesSent({ period: 'this week', utc: true }), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/engagement-dashboard/messages/messages-sent', () => expectedResult)
 			.build(),
@@ -117,7 +116,6 @@ it.skip('should return local time', async () => {
 		},
 	};
 	const { result } = renderHook(() => useMessagesSent({ period: 'this week', utc: false }), {
-		legacyRoot: true,
 		wrapper: mockAppRoot()
 			.withEndpoint('GET', '/v1/engagement-dashboard/messages/messages-sent', () => expectedResult)
 			.build(),

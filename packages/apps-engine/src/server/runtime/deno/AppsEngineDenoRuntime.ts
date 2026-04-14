@@ -1,6 +1,8 @@
 import * as child_process from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
 import { type Readable, EventEmitter } from 'stream';
+import { inspect as utilInspect } from 'util';
 
 import debugFactory from 'debug';
 import * as jsonrpc from 'jsonrpc-lite';
@@ -10,15 +12,18 @@ import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
 import { newDecoder } from './codec';
 import { AppStatus, AppStatusUtils } from '../../../definition/AppStatus';
-import type { AppMethod } from '../../../definition/metadata';
+import { AppMethod } from '../../../definition/metadata';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
 import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
 import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
+import type { IRuntimeController } from '../IRuntimeController';
 
 const baseDebug = debugFactory('appsEngine:runtime:deno');
+
+const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
 
 export const ALLOWED_ACCESSOR_METHODS = [
 	'getConfigurationExtend',
@@ -71,21 +76,19 @@ export function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACC
 	return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
 
-export function getDenoWrapperPath(): string {
+export function getDenoConfigPath(): string {
 	try {
 		// This path is relative to the compiled version of the Apps-Engine source
-		return require.resolve('../../../deno-runtime/main.ts');
+		return require.resolve('../../../deno-runtime/deno.jsonc');
 	} catch {
-		// This path is relative to the original Apps-Engine files
-		return require.resolve('../../../../deno-runtime/main.ts');
+		// This path is relative to the original Apps-Engine files - used during tests
+		return require.resolve('../../../../deno-runtime/deno.jsonc');
 	}
 }
 
-export type DenoRuntimeOptions = {
-	timeout: number;
-};
+type AbortFunction = (reason?: any) => void;
 
-export class DenoRuntimeSubprocessController extends EventEmitter {
+export class DenoRuntimeSubprocessController extends EventEmitter implements IRuntimeController {
 	private deno: child_process.ChildProcess | undefined;
 
 	private state: 'uninitialized' | 'ready' | 'invalid' | 'restarting' | 'unknown' | 'stopped';
@@ -113,16 +116,42 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
 	private readonly livenessManager: LivenessManager;
 
-	// We need to keep the appSource around in case the Deno process needs to be restarted
+	private readonly tempFilePath: string;
+
+	private readonly denoRuntimePath: string;
+
+	private readonly denoConfigPath: string;
+
 	constructor(
 		manager: AppManager,
+		// We need to keep the appSource around in case the Deno process needs to be restarted
 		private readonly appPackage: IParseAppPackageResult,
 		private readonly storageItem: IAppStorageItem,
 	) {
 		super();
 
+		this.tempFilePath = manager.getTempFilePath();
+		this.denoRuntimePath = path.join(this.tempFilePath, 'deno-runtime', 'main.ts');
+		this.denoConfigPath = getDenoConfigPath();
+
+		/**
+		 * Deno 2.x refuses to run scripts inside the node_modules, so we create a symlink to the deno runtime files in the temp directory
+		 * The temp directory is the same we are given by the host to store temporary upload files
+		 */
+		try {
+			fs.symlinkSync(
+				path.dirname(this.denoConfigPath),
+				path.dirname(this.denoRuntimePath),
+				'dir'
+			);
+		} catch (reason: unknown) {
+			if ((reason as NodeJS.ErrnoException).code !== 'EEXIST') {
+				throw reason;
+			}
+		}
+
 		this.debug = baseDebug.extend(appPackage.info.id);
-		this.messenger = new ProcessMessenger(this.debug);
+		this.messenger = new ProcessMessenger();
 		this.livenessManager = new LivenessManager({
 			controller: this,
 			messenger: this.messenger,
@@ -141,17 +170,21 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 		try {
 			const denoExePath = 'deno';
 
-			const denoWrapperPath = getDenoWrapperPath();
+			const denoWrapperPath = this.denoRuntimePath;
 			// During development, the appsEngineDir is enough to run the deno process
-			const appsEngineDir = path.dirname(path.join(denoWrapperPath, '..'));
+			const appsEngineDir = path.dirname(path.join(this.denoConfigPath, '..'));
 			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
 			// When running in production, we're likely inside a node_modules which the Deno
 			// process must be able to read in order to include files that use NPM packages
 			const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
 
+			const allowedDirs = [appsEngineDir, parentNodeModulesDir, this.tempFilePath];
+
 			const options = [
 				'run',
-				`--allow-read=${appsEngineDir},${parentNodeModulesDir}`,
+				'--cached-only',
+				`--config=${this.denoConfigPath}`,
+				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
 				denoWrapperPath,
 				'--subprocess',
@@ -175,11 +208,12 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 				},
 			};
 
+			// SECURITY: We control the command, the arguments and the script that will be executed.
 			this.deno = child_process.spawn(denoExePath, options, environment);
 			this.messenger.setReceiver(this.deno);
 			this.livenessManager.attach(this.deno);
 
-			this.debug('Started subprocess %d with options %O and env %O', this.deno.pid, options, environment);
+			this.debug('Started subprocess %d with options %s and env %s', this.deno.pid, inspect(options), inspect(environment));
 
 			this.setupListeners();
 		} catch (e) {
@@ -258,6 +292,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 		await this.waitUntilReady();
 
 		await this.sendRequest({ method: 'app:construct', params: [this.appPackage] });
+
+		this.emit('constructed');
 	}
 
 	public async stopApp() {
@@ -272,7 +308,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 		this.debug('Restarting app subprocess');
 		const logger = new AppConsole('runtime:restart');
 
-		logger.info('Starting restart procedure for app subprocess...', this.livenessManager.getRuntimeData());
+		logger.info({ msg: 'Starting restart procedure for app subprocess...', runtimeData: this.livenessManager.getRuntimeData() });
 
 		this.state = 'restarting';
 
@@ -282,13 +318,13 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 			const hasKilled = await this.killProcess();
 
 			if (hasKilled) {
-				logger.debug('Process successfully terminated', { pid });
+				logger.debug({ msg: 'Process successfully terminated', pid });
 			} else {
-				logger.warn('Could not terminate process. Maybe it was already dead?', { pid });
+				logger.warn({ msg: 'Could not terminate process. Maybe it was already dead?', pid });
 			}
 
 			await this.setupApp();
-			logger.info('New subprocess successfully spawned', { pid: this.deno.pid });
+			logger.info({ msg: 'New subprocess successfully spawned', pid: this.deno.pid });
 
 			// setupApp() changes the state to 'ready' - we'll need to workaround that for now
 			this.state = 'restarting';
@@ -304,7 +340,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
 			logger.info('Successfully restarted app subprocess');
 		} catch (e) {
-			logger.error("Failed to restart app's subprocess", { error: e.message || e });
+			logger.error({ msg: "Failed to restart app's subprocess", err: e });
 			throw e;
 		} finally {
 			await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
@@ -322,13 +358,18 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 
 		const request = jsonrpc.request(id, message.method, message.params);
 
-		const promise = this.waitForResponse(request, options).finally(() => {
+		const { promise, abort } = this.waitForResponse(request, options);
+
+		try {
+			this.debug('Sending message to subprocess %s', inspect(message));
+			this.messenger.send(request);
+		} catch (e) {
+			abort(e);
+		}
+
+		return promise.finally(() => {
 			this.debug('Request %s for method %s took %dms', id, message.method, Date.now() - start);
 		});
-
-		this.messenger.send(request);
-
-		return promise;
 	}
 
 	private waitUntilReady(): Promise<void> {
@@ -353,27 +394,41 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 		});
 	}
 
-	private waitForResponse(req: jsonrpc.RequestObject, options = this.options): Promise<unknown> {
-		return new Promise((resolve, reject) => {
-			const responseCallback = (result: unknown, error: jsonrpc.IParsedObjectError['payload']['error']) => {
-				clearTimeout(timeoutId);
+	private waitForResponse(req: jsonrpc.RequestObject, options = this.options): { abort: AbortFunction; promise: Promise<unknown> } {
+		const controller = new AbortController();
+		const { abort, signal } = controller;
 
-				if (error) {
-					reject(error);
-				}
+		return {
+			abort: abort.bind(controller),
+			promise: new Promise((resolve, reject) => {
+				const eventName = `result:${req.id}`;
 
-				resolve(result);
-			};
+				const responseCallback = (result: unknown, error: jsonrpc.IParsedObjectError['payload']['error'] | Error) => {
+					this.off(eventName, responseCallback);
+					clearTimeout(timeoutId);
 
-			const eventName = `result:${req.id}`;
+					if (error) {
+						reject(error);
+					}
 
-			const timeoutId = setTimeout(() => {
-				this.off(eventName, responseCallback);
-				reject(new Error(`[${this.getAppId()}] Request "${req.id}" for method "${req.method}" timed out`));
-			}, options.timeout);
+					resolve(result);
+				};
 
-			this.once(eventName, responseCallback);
-		});
+				const timeoutId = setTimeout(
+					() =>
+						responseCallback(
+							undefined,
+							new Error(`[${this.getAppId()}] Request "${req.id}" for method "${req.method}" timed out after ${options.timeout}ms`),
+						),
+					options.timeout,
+				);
+
+				signal.onabort = () =>
+					responseCallback(undefined, signal.reason instanceof Error ? signal.reason : new Error(String(signal.reason)));
+
+				this.once(eventName, responseCallback);
+			}),
+		};
 	}
 
 	private onReady(): void {
@@ -407,7 +462,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 	private async handleAccessorMessage({ payload: { method, id, params } }: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject> {
 		const accessorMethods = method.substring(9).split(':'); // First 9 characters are always 'accessor:'
 
-		this.debug('Handling accessor message %o with params %o', accessorMethods, params);
+		this.debug('Handling accessor message %s with params %s', inspect(accessorMethods), inspect(params));
 
 		const managerOrigin = accessorMethods.shift();
 		const tailMethodName = accessorMethods.pop();
@@ -505,7 +560,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 	}: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
 		const [bridgeName, bridgeMethod] = method.substring(8).split(':');
 
-		this.debug('Handling bridge message %s().%s() with params %o', bridgeName, bridgeMethod, params);
+		this.debug('Handling bridge message %s().%s() with params %s', bridgeName, bridgeMethod, inspect(params));
 
 		const bridge = this.bridges[bridgeName as keyof typeof this.bridges];
 
@@ -530,7 +585,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 				params.map((value: unknown) => (value === 'APP_ID' ? this.appPackage.info.id : value)),
 			);
 		} catch (error) {
-			this.debug('Error executing bridge method %s().%s() %o', bridgeName, bridgeMethod, error.message);
+			this.debug('Error executing bridge method %s().%s() %s', bridgeName, bridgeMethod, inspect(error.message));
 			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, -32000, error);
 			return jsonrpc.error(id, jsonRpcError);
 		}
@@ -625,7 +680,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 	private async parseStdout(stream: Readable): Promise<void> {
 		try {
 			for await (const message of newDecoder().decodeStream(stream)) {
-				this.debug('Received message from subprocess %o', message);
+				this.debug('Received message from subprocess %s', inspect(message));
 				try {
 					// Process PONG resonse first as it is not JSON RPC
 					if (message === COMMAND_PONG) {
@@ -638,6 +693,8 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 					if (Array.isArray(JSONRPCMessage)) {
 						throw new Error('Invalid message format');
 					}
+
+					this.emit('heartbeat');
 
 					if (JSONRPCMessage.type === 'request' || JSONRPCMessage.type === 'notification') {
 						this.handleIncomingMessage(JSONRPCMessage).catch((reason) =>
@@ -674,7 +731,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter {
 		try {
 			const data = JSON.parse(chunk.toString());
 
-			this.debug('Metrics received from subprocess (via stderr): %o', data);
+			this.debug('Metrics received from subprocess (via stderr): %s', inspect(data));
 		} catch (e) {
 			console.error('Subprocess stderr', chunk.toString());
 		}

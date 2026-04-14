@@ -1,7 +1,19 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import { validateEmail } from '@rocket.chat/tools';
+import {
+	CustomFieldsForm,
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	ContextualbarClose,
+	ContextualbarDialog,
+	ContextualbarSkeleton,
+} from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { Fragment, useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -11,18 +23,9 @@ import AdvancedContactModal from './AdvancedContactModal';
 import { useCreateContact } from './hooks/useCreateContact';
 import { useEditContact } from './hooks/useEditContact';
 import { hasAtLeastOnePermission } from '../../../../app/authorization/client';
-import { validateEmail } from '../../../../lib/emailValidator';
-import {
-	ContextualbarScrollableContent,
-	ContextualbarFooter,
-	ContextualbarHeader,
-	ContextualbarIcon,
-	ContextualbarTitle,
-	ContextualbarClose,
-	ContextualbarDialog,
-	ContextualbarSkeleton,
-} from '../../../components/Contextualbar';
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { ContactManagerInput } from '../additionalForms';
 import { useCustomFieldsMetadata } from '../directory/hooks/useCustomFieldsMetadata';
 
@@ -70,13 +73,13 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 
-	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const { data: hasLicense = false } = useHasLicenseModule('contact-id-verification');
 	const canViewCustomFields = hasAtLeastOnePermission(['view-livechat-room-customfields', 'edit-livechat-room-customfields']);
 
 	const editContact = useEditContact(['current-contacts']);
 	const createContact = useCreateContact(['current-contacts']);
 	const checkExistenceEndpoint = useEndpoint('GET', '/v1/omnichannel/contacts.checkExistence');
-
+	const queryClient = useQueryClient();
 	const handleOpenUpSellModal = () => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />);
 
 	const { data: customFieldsMetadata = [], isLoading: isLoadingCustomFields } = useCustomFieldsMetadata({
@@ -87,12 +90,11 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 	const initialValue = getInitialValues(contactData);
 
 	const {
-		formState: { errors, isSubmitting },
+		formState: { errors, isSubmitting, isDirty },
 		control,
 		watch,
 		handleSubmit,
 	} = useForm<ContactFormData>({
-		mode: 'onBlur',
 		reValidateMode: 'onBlur',
 		defaultValues: initialValue,
 	});
@@ -163,23 +165,31 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 
 	const validateName = (v: string): string | boolean => (!v.trim() ? t('Required_field', { field: t('Name') }) : true);
 
-	const handleSave = async (data: ContactFormData): Promise<void> => {
-		const { name, phones, emails, customFields, contactManager } = data;
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async (data: ContactFormData): Promise<void> => {
+			const { name, phones, emails, customFields, contactManager } = data;
 
-		const payload = {
-			name,
-			phones: phones.map(({ phoneNumber }) => phoneNumber),
-			emails: emails.map(({ address }) => address),
-			customFields,
-			contactManager,
-		};
+			const payload = {
+				name,
+				phones: phones.map(({ phoneNumber }) => phoneNumber),
+				emails: emails.map(({ address }) => address),
+				customFields,
+				contactManager,
+			};
 
-		if (contactData) {
-			return editContact.mutate({ contactId: contactData?._id, ...payload });
-		}
+			if (contactData) {
+				await editContact.mutateAsync({ contactId: contactData?._id, ...payload });
+				await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
+				return;
+			}
 
-		return createContact.mutate(payload);
-	};
+			await createContact.mutateAsync(payload);
+			await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.contacts() });
+		},
+		{
+			isDirty,
+		},
+	);
 
 	const formId = useId();
 	const nameField = useId();

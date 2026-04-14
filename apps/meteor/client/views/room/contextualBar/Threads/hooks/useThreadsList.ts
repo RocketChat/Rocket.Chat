@@ -1,53 +1,100 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo } from 'react';
+import type { IThreadMainMessage, IMessage, ISubscription } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { useEndpoint, useUserId } from '@rocket.chat/ui-contexts';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-import { useScrollableMessageList } from '../../../../../hooks/lists/useScrollableMessageList';
-import { useStreamUpdatesForMessageList } from '../../../../../hooks/lists/useStreamUpdatesForMessageList';
-import type { ThreadsListOptions } from '../../../../../lib/lists/ThreadsList';
-import { ThreadsList } from '../../../../../lib/lists/ThreadsList';
+import { useInfiniteMessageQueryUpdates } from '../../../../../hooks/useInfiniteMessageQueryUpdates';
+import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { getConfig } from '../../../../../lib/utils/getConfig';
+import { mapMessageFromApi } from '../../../../../lib/utils/mapMessageFromApi';
 
-export const useThreadsList = (
-	options: ThreadsListOptions,
-	uid: IUser['_id'] | null,
-): {
-	threadsList: ThreadsList;
-	initialItemCount: number;
-	loadMoreItems: (start: number, end: number) => void;
-} => {
-	const threadsList = useMemo(() => new ThreadsList(options), [options]);
+type ThreadsListOptions =
+	| {
+			rid: IMessage['rid'];
+			text?: string;
+			type: 'unread';
+			tunread: ISubscription['tunread'];
+	  }
+	| {
+			rid: IMessage['rid'];
+			text?: string;
+			type: 'following';
+			tunread?: never;
+	  }
+	| {
+			rid: IMessage['rid'];
+			text?: string;
+			type?: undefined;
+			tunread?: never;
+	  };
 
+export const useThreadsList = ({ rid, text, type, tunread }: ThreadsListOptions) => {
 	const getThreadsList = useEndpoint('GET', '/v1/chat.getThreadsList');
 
-	const fetchMessages = useCallback(
-		async (start: number, end: number) => {
+	const count = parseInt(`${getConfig('threadsListSize', 10)}`, 10);
+
+	const userId = useUserId();
+
+	useInfiniteMessageQueryUpdates({
+		queryKey: roomsQueryKeys.threads(rid, { type, text }),
+		roomId: rid,
+		// Replicates the filtering done server-side
+		filter: (message): message is IThreadMainMessage => {
+			if (typeof message.tcount !== 'number') {
+				return false;
+			}
+
+			if (type === 'following') {
+				if (!userId || !message.replies?.includes(userId)) {
+					return false;
+				}
+			}
+
+			if (type === 'unread') {
+				if (!tunread?.includes(message._id)) {
+					return false;
+				}
+			}
+
+			if (text) {
+				const regex = new RegExp(escapeRegExp(text), 'i');
+				if (!regex.test(message.msg)) {
+					return false;
+				}
+			}
+
+			return true;
+		},
+		// Replicates the sorting done server-side
+		compare: (a, b) => (b.tlm ?? b.ts).getTime() - (a.tlm ?? a.ts).getTime(),
+	});
+
+	return useInfiniteQuery({
+		queryKey: roomsQueryKeys.threads(rid, { type, text }),
+		queryFn: async ({ pageParam: offset }) => {
 			const { threads, total } = await getThreadsList({
-				rid: options.rid,
-				type: options.type,
-				text: options.text,
-				offset: start,
-				count: end,
+				rid,
+				type,
+				text,
+				offset,
+				count,
 			});
 
 			return {
-				items: threads,
+				items: threads.map(mapMessageFromApi) as IThreadMainMessage[],
 				itemCount: total,
 			};
 		},
-		[getThreadsList, options.rid, options.text, options.type],
-	);
-
-	const { loadMoreItems, initialItemCount } = useScrollableMessageList(
-		threadsList,
-		fetchMessages,
-		useMemo(() => parseInt(`${getConfig('threadsListSize', 10)}`), []),
-	);
-	useStreamUpdatesForMessageList(threadsList, uid, options.rid);
-
-	return {
-		threadsList,
-		loadMoreItems,
-		initialItemCount,
-	};
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, allPages) => {
+			// FIXME: This is an estimation, as threads can be created or removed while paginating
+			// Ideally, the server should return the next offset to use or the pagination should be done using "createdAt" or "updatedAt"
+			const loadedItemsCount = allPages.reduce((acc, page) => acc + page.items.length, 0);
+			return loadedItemsCount < lastPage.itemCount ? loadedItemsCount : undefined;
+		},
+		select: ({ pages }) => ({
+			items: pages.flatMap((page) => page.items),
+			itemCount: pages.at(-1)?.itemCount ?? 0,
+		}),
+	});
 };

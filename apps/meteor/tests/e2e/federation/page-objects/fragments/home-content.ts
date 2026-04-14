@@ -15,20 +15,16 @@ export class FederationHomeContent {
 		return this.page.locator('role=menu[name="People"]');
 	}
 
+	get messageListItems(): Locator {
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]');
+	}
+
 	get lastUserMessage(): Locator {
-		return this.page.locator('[data-qa-type="message"]').last();
+		return this.messageListItems.last();
 	}
 
 	get lastUserMessageBody(): Locator {
-		return this.lastUserMessage.locator('[data-qa-type="message-body"]');
-	}
-
-	get lastUserMessageNotSequential(): Locator {
-		return this.page.locator('[data-qa-type="message"][data-sequential="false"]').last();
-	}
-
-	get typingIndicator(): Locator {
-		return this.page.locator('.rc-message-box__activity');
+		return this.lastUserMessage.locator('[role="document"][aria-roledescription="message body"]');
 	}
 
 	async sendMessage(text: string): Promise<void> {
@@ -45,13 +41,6 @@ export class FederationHomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionEditMessage.click();
 		await this.page.locator('[name="msg"]').fill(message);
-		await this.page.keyboard.press('Enter');
-	}
-
-	async editLastThreadMessage(message: string): Promise<void> {
-		await this.openLastThreadMessageMenu();
-		await this.page.locator('[data-qa-id="edit-message"]').click();
-		await this.page.locator('[name="msg"]').last().fill(message);
 		await this.page.keyboard.press('Enter');
 	}
 
@@ -106,65 +95,41 @@ export class FederationHomeContent {
 		await this.page.locator('button[aria-label="Send"]').click();
 	}
 
-	get btnModalCancel(): Locator {
-		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--secondary');
-	}
-
-	get modalFilePreview(): Locator {
-		return this.page.locator(
-			'//div[@id="modal-root"]//header//following-sibling::div[1]//div//div//img | //div[@id="modal-root"]//header//following-sibling::div[1]//div//div//div//i',
-		);
-	}
-
 	get btnModalConfirm(): Locator {
 		return this.page.locator('#modal-root .rcx-button-group--align-end .rcx-button--primary');
 	}
 
-	get descriptionInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[2]//span//input');
-	}
-
-	get getLastFileAttachmentContent(): Locator {
-		return this.page.locator('.rcx-attachment__content').last();
-	}
-
-	get getLastFileName(): Locator {
-		return this.page.locator('.rcx-message-attachment').last();
-	}
-
-	get fileNameInput(): Locator {
-		return this.page.locator('//div[@id="modal-root"]//fieldset//div[1]//span//input');
-	}
-
 	get lastMessageFileName(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child');
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]:last-child');
 	}
 
 	async getLastFileMessageByFileName(filename: string): Promise<Locator> {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-message-container').last().locator(`div[title="${filename}"]`);
-	}
-
-	async getLastFileThreadMessageByFileName(filename: string): Promise<Locator> {
 		return this.page
-			.locator('div.thread-list ul.thread [data-qa-type="message"]:last-child .rcx-message-container')
+			.locator('[role="listitem"][aria-roledescription="message"]:last-child .rcx-message-container')
 			.last()
 			.locator(`div[title="${filename}"]`);
 	}
 
-	async getLastVideoMessageFileName(filename: string): Promise<Locator> {
-		return this.getLastFileMessageByFileName(filename);
+	async getLastFileThreadMessageByFileName(filename: string): Promise<Locator> {
+		return this.page
+			.locator('div.thread-list ul.thread [role="listitem"][aria-roledescription="message"]:last-child .rcx-message-container')
+			.last()
+			.locator(`div[title="${filename}"]`);
 	}
 
 	get lastFileMessage(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-message-container').last();
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]:last-child .rcx-message-container').last();
 	}
 
 	get waitForLastMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('[data-qa-type="message"]:last-child .rcx-attachment__details .rcx-message-body');
+		return this.page.locator('[role="listitem"][aria-roledescription="message"]:last-child .rcx-attachment__details .rcx-message-body');
 	}
 
 	get waitForLastThreadMessageTextAttachmentEqualsText(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last().locator('.rcx-attachment__details');
+		return this.page
+			.locator('div.thread-list ul.thread [role="listitem"][aria-roledescription="message"]')
+			.last()
+			.locator('.rcx-attachment__details');
 	}
 
 	get btnOptionEditMessage(): Locator {
@@ -183,10 +148,6 @@ export class FederationHomeContent {
 		return this.page.locator('[data-qa-id="star-message"]');
 	}
 
-	get btnOptionFileUpload(): Locator {
-		return this.page.locator('[data-qa-id="file-upload"]');
-	}
-
 	get btnVideoMessage(): Locator {
 		return this.page.locator('[data-qa-id="video-message"]');
 	}
@@ -197,14 +158,6 @@ export class FederationHomeContent {
 
 	get btnMenuMoreActions() {
 		return this.page.locator('[data-qa-id="menu-more-actions"]');
-	}
-
-	get linkUserCard(): Locator {
-		return this.page.locator('[data-qa="UserCard"] a');
-	}
-
-	get btnContactInformation(): Locator {
-		return this.page.locator('[data-qa-id="ToolBoxAction-user"]');
 	}
 
 	get btnContactEdit(): Locator {
@@ -224,15 +177,7 @@ export class FederationHomeContent {
 	}
 
 	get lastThreadMessageText(): Locator {
-		return this.page.locator('div.thread-list ul.thread [data-qa-type="message"]').last();
-	}
-
-	get lastThreadMessagePreviewText(): Locator {
-		return this.page.locator('div.messages-box ul.messages-list [role=link]').last();
-	}
-
-	get threadInputMessage(): Locator {
-		return this.page.getByRole('dialog').locator('[name="msg"]').last();
+		return this.page.locator('div.thread-list ul.thread [role="listitem"][aria-roledescription="message"]').last();
 	}
 
 	async sendFileMessage(fileName: string): Promise<void> {
@@ -245,9 +190,9 @@ export class FederationHomeContent {
 	}
 
 	async openLastMessageMenu(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]').last().hover();
-		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]').click();
+		await this.lastUserMessage.hover();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastUserMessage.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	threadSendToChannelAlso(): Locator {
@@ -262,19 +207,9 @@ export class FederationHomeContent {
 	}
 
 	async openLastThreadMessageMenu(): Promise<void> {
-		await this.page.getByRole('dialog').locator('[data-qa-type="message"]').last().hover();
-		await this.page
-			.getByRole('dialog')
-			.locator('[data-qa-type="message"]')
-			.last()
-			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
-			.waitFor();
-		await this.page
-			.getByRole('dialog')
-			.locator('[data-qa-type="message"]')
-			.last()
-			.locator('[data-qa-type="message-action-menu"][data-qa-id="menu"]')
-			.click();
+		await this.lastThreadMessageText.hover();
+		await this.lastThreadMessageText.getByRole('button', { name: 'More', exact: true }).waitFor();
+		await this.lastThreadMessageText.getByRole('button', { name: 'More', exact: true }).click();
 	}
 
 	async quoteMessageInsideThread(message: string): Promise<void> {
@@ -291,19 +226,19 @@ export class FederationHomeContent {
 	}
 
 	async unreactLastMessage(): Promise<void> {
-		await this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction').nth(1).waitFor();
-		await this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction').nth(1).click();
+		await this.lastUserMessage.locator('.rcx-message-reactions__reaction').nth(1).waitFor();
+		await this.lastUserMessage.locator('.rcx-message-reactions__reaction').nth(1).click();
 	}
 
 	async getSystemMessageByText(text: string): Promise<Locator> {
-		return this.page.locator('div[data-qa="system-message"] div[data-qa-type="system-message-body"]', { hasText: text });
+		return this.page.locator('[role="document"][aria-roledescription="system message body"]', { hasText: text });
 	}
 
 	async getLastSystemMessageName(): Promise<Locator> {
-		return this.page.locator('div[data-qa="system-message"]:last-child span.rcx-message-system__name');
+		return this.page.locator('[role="listitem"][aria-roledescription="system message"]').last().getByRole('button');
 	}
 
 	async getAllReactions(): Promise<Locator> {
-		return this.page.locator('[data-qa-type="message"]').last().locator('.rcx-message-reactions__reaction');
+		return this.lastUserMessage.locator('.rcx-message-reactions__reaction');
 	}
 }

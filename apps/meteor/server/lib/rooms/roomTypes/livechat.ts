@@ -5,7 +5,6 @@ import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { getLivechatRoomType } from '../../../../lib/rooms/roomTypes/livechat';
-import { buildNotificationDetails } from '../buildNotificationDetails';
 import { roomCoordinator } from '../roomCoordinator';
 
 const LivechatRoomType = getLivechatRoomType(roomCoordinator);
@@ -32,15 +31,12 @@ roomCoordinator.add(LivechatRoomType, {
 		return token && rid && !!(await LivechatRooms.findOneByIdAndVisitorToken(rid, token));
 	},
 
-	async getNotificationDetails(room, sender, notificationMessage, userId, language) {
-		return buildNotificationDetails({
-			expectedNotificationMessage: notificationMessage,
-			sender,
-			room,
-			expectedTitle: `[Omnichannel] ${await this.roomName(room, userId)}`,
-			language,
-			senderNameExpectedInMessage: false,
-		});
+	async getNotificationDetails(room, _sender, notificationMessage, userId) {
+		const roomName = await this.roomName(room, userId);
+		const title = `[Omnichannel] ${roomName}`;
+		const text = notificationMessage;
+
+		return { title, text, name: roomName };
 	},
 
 	async getMsgSender(message) {

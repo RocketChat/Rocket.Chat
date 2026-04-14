@@ -4,20 +4,125 @@ import addFormats from 'ajv-formats';
 const ajv = new Ajv({
 	coerceTypes: true,
 	allowUnionTypes: true,
+	code: { source: true },
+	discriminator: true,
 });
 
+/** AJV instance for query param validation; coerces types (e.g. string "50" → number) for URL query strings. */
+const ajvQuery = new Ajv({
+	coerceTypes: true,
+	allowUnionTypes: true,
+	code: { source: true },
+	discriminator: true,
+});
+
+// TODO: keep ajv extension here
 addFormats(ajv);
+addFormats(ajvQuery);
 
 ajv.addFormat('basic_email', /^[^@]+@[^@]+$/);
 ajv.addFormat(
 	'rfc_email',
 	/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
 );
-
+ajvQuery.addFormat('basic_email', /^[^@]+@[^@]+$/);
+ajvQuery.addFormat(
+	'rfc_email',
+	/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+);
 ajv.addKeyword({
 	keyword: 'isNotEmpty',
 	type: 'string',
 	validate: (_schema: unknown, data: unknown): boolean => typeof data === 'string' && !!data.trim(),
 });
+ajvQuery.addKeyword({
+	keyword: 'isNotEmpty',
+	type: 'string',
+	validate: (_schema: unknown, data: unknown): boolean => typeof data === 'string' && !!data.trim(),
+});
+export { ajv, ajvQuery };
 
-export { ajv };
+type BadRequestErrorResponse = {
+	success: false;
+	error?: string;
+	errorType?: string;
+	stack?: string;
+	details?: string | object;
+};
+
+const BadRequestErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		stack: { type: 'string' },
+		error: { type: 'string' },
+		errorType: { type: 'string' },
+		details: { anyOf: [{ type: 'string' }, { type: 'object' }] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const validateBadRequestErrorResponse = ajv.compile<BadRequestErrorResponse>(BadRequestErrorResponseSchema);
+
+type UnauthorizedErrorResponse = {
+	success: false;
+	status?: string;
+	message?: string;
+	error?: string;
+	errorType?: string;
+};
+
+const UnauthorizedErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		status: { type: 'string' },
+		message: { type: 'string' },
+		error: { type: 'string' },
+		errorType: { type: 'string' },
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const validateUnauthorizedErrorResponse = ajv.compile<UnauthorizedErrorResponse>(UnauthorizedErrorResponseSchema);
+
+type ForbiddenErrorResponse = {
+	success: false;
+	status?: string;
+	message?: string;
+	error?: string;
+	errorType?: string;
+};
+
+const ForbiddenErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		status: { type: 'string' },
+		message: { type: 'string' },
+		error: { type: 'string' },
+		errorType: { type: 'string' },
+	},
+	required: ['success'],
+	additionalProperties: false,
+};
+
+export const validateForbiddenErrorResponse = ajv.compile<ForbiddenErrorResponse>(ForbiddenErrorResponseSchema);
+
+type NotFoundErrorResponse = {
+	success: false;
+	error: string;
+};
+
+const NotFoundErrorResponseSchema = {
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [false] },
+		error: { type: 'string' },
+	},
+	required: ['success', 'error'],
+};
+
+export const validateNotFoundErrorResponse = ajv.compile<NotFoundErrorResponse>(NotFoundErrorResponseSchema);

@@ -9,6 +9,7 @@ import { Random } from '@rocket.chat/random';
 import { checkUsernameAvailability } from '../../../lib/server/functions/checkUsernameAvailability';
 import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getUserCreatedByApp } from '../../../lib/server/functions/getUserCreatedByApp';
+import { setStatusText } from '../../../lib/server/functions/setStatusText';
 import { setUserActiveStatus } from '../../../lib/server/functions/setUserActiveStatus';
 import { setUserAvatar } from '../../../lib/server/functions/setUserAvatar';
 import { notifyOnUserChange, notifyOnUserChangeById } from '../../../lib/server/lib/notifyListener';
@@ -127,20 +128,31 @@ export class AppUserBridge extends UserBridge {
 			throw new Error('User not provided');
 		}
 
-		if (!Object.keys(fields).length) {
+		const { status, statusText, ...updateFields } = fields;
+
+		if (status) {
+			await Presence.setStatus(user.id, status as UserStatus, statusText);
+		} else if (typeof statusText === 'string') {
+			await setStatusText(
+				{
+					_id: user.id,
+					username: user.username,
+					name: user.name,
+					status: user.status as UserStatus,
+					roles: user.roles,
+					statusText: user.statusText,
+				},
+				statusText,
+			);
+		}
+
+		if (!Object.keys(updateFields).length) {
 			return true;
 		}
 
-		const { status } = fields;
-		delete fields.status;
+		await Users.updateOne({ _id: user.id }, { $set: updateFields as any });
 
-		if (status) {
-			await Presence.setStatus(user.id, status as UserStatus, fields.statusText);
-		}
-
-		await Users.updateOne({ _id: user.id }, { $set: fields as any });
-
-		void notifyOnUserChange({ clientAction: 'updated', id: user.id, diff: fields });
+		void notifyOnUserChange({ clientAction: 'updated', id: user.id, diff: updateFields });
 
 		return true;
 	}
@@ -167,5 +179,13 @@ export class AppUserBridge extends UserBridge {
 
 	protected async getUserUnreadMessageCount(uid: string): Promise<number> {
 		return Subscriptions.getBadgeCount(uid);
+	}
+
+	protected async getUserRoomIds(userId: string, appId: string): Promise<string[]> {
+		this.orch.debugLog(`The App ${appId} is getting the room ids for the user: "${userId}"`);
+
+		const subscriptions = await Subscriptions.findByUserId(userId, { projection: { rid: 1 } }).toArray();
+
+		return subscriptions.map((subscription) => subscription.rid);
 	}
 }

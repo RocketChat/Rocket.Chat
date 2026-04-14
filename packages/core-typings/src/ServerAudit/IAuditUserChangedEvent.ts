@@ -4,11 +4,7 @@ import type { IAuditServerEventType } from '../IServerEvent';
 import type { IUser } from '../IUser';
 import type { DeepPartial } from '../utils';
 
-export type IServerEventAuditedUser = IUser & {
-	password: string;
-};
-
-interface IServerEventUserChanged
+export interface IServerEventUserChanged
 	extends IAuditServerEventType<
 		| {
 				key: 'user';
@@ -27,10 +23,4 @@ interface IServerEventUserChanged
 		  }
 	> {
 	t: 'user.changed';
-}
-
-declare module '../IServerEvent' {
-	interface IServerEvents {
-		'user.changed': IServerEventUserChanged;
-	}
 }

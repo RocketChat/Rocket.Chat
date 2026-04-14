@@ -4,7 +4,7 @@ import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { e2e } from '../../app/e2e/client/rocketchat.e2e';
+import { e2e } from '../lib/e2ee/rocketchat.e2e';
 
 export const useDecryptedMessage = (message: IMessage): string => {
 	const { t } = useTranslation();
@@ -18,14 +18,11 @@ export const useDecryptedMessage = (message: IMessage): string => {
 		e2e.decryptMessage(message).then((decryptedMsg) => {
 			if (decryptedMsg.msg) {
 				setDecryptedMessage(decryptedMsg.msg);
+				return;
 			}
 
-			if (decryptedMsg.attachments && decryptedMsg.attachments?.length > 0) {
-				if (decryptedMsg.attachments[0].description) {
-					setDecryptedMessage(decryptedMsg.attachments[0].description);
-				} else {
-					setDecryptedMessage(t('Message_with_attachment'));
-				}
+			if (decryptedMsg.attachments && decryptedMsg.attachments.length > 0) {
+				setDecryptedMessage(t('Message_with_attachment'));
 			}
 		});
 	}, [message, t, setDecryptedMessage]);

@@ -22,7 +22,7 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		super(db, 'livechat_department_agents', trash);
 	}
 
-	protected modelIndexes(): Array<IndexDescription> {
+	protected override modelIndexes(): Array<IndexDescription> {
 		return [
 			{
 				key: {
@@ -193,7 +193,9 @@ export class LivechatDepartmentAgentsRaw extends BaseRaw<ILivechatDepartmentAgen
 		const onlineUsernames = onlineUsers.map((user) => user.username).filter(isStringValue);
 
 		// get fully booked agents, to ignore them from the query
-		const currentUnavailableAgents = (await Users.getUnavailableAgents(departmentId, extraQuery)).map((u) => u.username);
+		const currentUnavailableAgents = (await Users.getUnavailableAgents(departmentId, extraQuery, isLivechatEnabledWhenAgentIdle)).map(
+			(u) => u.username,
+		);
 
 		const query: Filter<ILivechatDepartmentAgents> = {
 			departmentId,

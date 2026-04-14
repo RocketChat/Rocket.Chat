@@ -29,7 +29,7 @@ const AuthenticationCheck = ({ children, guest }: { children: ReactNode; guest?:
 	}
 
 	if (!forceLogin && guest) {
-		return <RegistrationRoute defaultRoute='guest' children={children} />;
+		return <RegistrationRoute defaultRoute='guest'>{children}</RegistrationRoute>;
 	}
 
 	if (!forceLogin && allowAnonymousRead) {

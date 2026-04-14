@@ -1,28 +1,36 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { useMethod, useRouter } from '@rocket.chat/ui-contexts';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useMethod, useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 
-import { Subscriptions } from '../../../../app/models/client';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import { Subscriptions } from '../../../stores';
 
-export const useGoToRoom = ({ replace = false }: { replace?: boolean } = {}): ((rid: IRoom['_id']) => void) => {
-	const getRoomById = useMethod('getRoomById');
+type GoToRoomByIdOptions = {
+	replace?: boolean;
+	routeParamsOverrides?: Record<string, string>;
+};
+
+export const useGoToRoom = (): ((roomId: IRoom['_id'], options?: GoToRoomByIdOptions) => Promise<void>) => {
 	const router = useRouter();
+	const getRoomById = useMethod('getRoomById');
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	// TODO: remove params recycling
-	return useEffectEvent(async (rid: IRoom['_id']) => {
-		if (!rid) {
-			return;
-		}
+	return useStableCallback(async (roomId: IRoom['_id'], options?: GoToRoomByIdOptions) => {
+		if (!roomId) return;
 
-		const subscription: ISubscription | undefined = Subscriptions.state.find((record) => record.rid === rid);
+		const subscription: ISubscription | undefined = Subscriptions.state.find((record) => record.rid === roomId);
 
 		if (subscription) {
-			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters(), { replace });
+			roomCoordinator.openRouteLink(subscription.t, subscription, router.getSearchParameters(), options);
 			return;
 		}
 
-		const room = await getRoomById(rid);
-		roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, router.getSearchParameters(), { replace });
+		try {
+			const room = await getRoomById(roomId);
+			roomCoordinator.openRouteLink(room.t, { rid: room._id, ...room }, router.getSearchParameters(), options);
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
+		}
 	});
 };

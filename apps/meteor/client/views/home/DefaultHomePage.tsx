@@ -1,4 +1,5 @@
 import { Box, CardGroup } from '@rocket.chat/fuselage';
+import { PageScrollableContent, Page } from '@rocket.chat/ui-client';
 import { useAtLeastOnePermission, useSetting, useTranslation, useRole, usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 
@@ -10,8 +11,6 @@ import DesktopAppsCard from './cards/DesktopAppsCard';
 import DocumentationCard from './cards/DocumentationCard';
 import JoinRoomsCard from './cards/JoinRoomsCard';
 import MobileAppsCard from './cards/MobileAppsCard';
-import Page from '../../components/Page/Page';
-import PageScrollableContent from '../../components/Page/PageScrollableContent';
 
 const CREATE_CHANNEL_PERMISSIONS = ['create-c', 'create-p'];
 
@@ -25,10 +24,10 @@ const DefaultHomePage = (): ReactElement => {
 	const isCustomContentVisible = useSetting('Layout_Home_Custom_Block_Visible', false);
 
 	return (
-		<Page color='default' data-qa='page-home' data-qa-type='default' background='tint'>
+		<Page color='default' background='tint'>
 			<HomePageHeader />
 			<PageScrollableContent>
-				<Box is='h2' fontScale='h1' mb={20} data-qa-id='homepage-welcome-text'>
+				<Box is='h2' fontScale='h1' mb={20}>
 					{t('Welcome_to_workspace', { Site_Name: workspaceName || 'Rocket.Chat' })}
 				</Box>
 				<Box is='h3' fontScale='h3' mb={16}>

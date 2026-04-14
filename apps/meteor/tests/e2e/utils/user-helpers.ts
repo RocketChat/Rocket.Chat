@@ -11,6 +11,7 @@ export interface ICreateUserOptions {
 	name?: string;
 	password?: string;
 	roles?: string[];
+	data?: Record<string, any>;
 }
 
 export interface ITestUser {
@@ -31,6 +32,7 @@ export async function createTestUser(api: BaseTest['api'], options: ICreateUserO
 		password: options.password || DEFAULT_USER_CREDENTIALS.password,
 		username: options.username || `test-user-${faker.string.uuid()}`,
 		roles: options.roles || ['user'],
+		...options.data,
 	};
 
 	const response = await api.post('/users.create', userData);

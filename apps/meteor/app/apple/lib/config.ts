@@ -1,3 +1,5 @@
+import type { OauthConfig } from '@rocket.chat/core-typings';
+
 export const config = {
 	serverURL: 'https://appleid.apple.com',
 	authorizePath: '/auth/authorize?response_mode=form_post',
@@ -7,4 +9,4 @@ export const config = {
 	mergeUsers: true,
 	accessTokenParam: 'access_token',
 	loginStyle: 'popup',
-};
+} as const satisfies OauthConfig;

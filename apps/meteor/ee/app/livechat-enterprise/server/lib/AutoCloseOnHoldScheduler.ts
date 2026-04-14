@@ -46,7 +46,7 @@ export class AutoCloseOnHoldSchedulerClass {
 			throw new Error('AutoCloseOnHoldScheduler is not running');
 		}
 
-		this.logger.debug(`Scheduling room ${roomId} to be closed in ${timeout} seconds`);
+		this.logger.debug({ msg: 'Scheduling room to be closed', roomId, timeoutSeconds: timeout });
 		await this.unscheduleRoom(roomId);
 
 		const jobName = `${SCHEDULER_NAME}-${roomId}`;
@@ -60,13 +60,13 @@ export class AutoCloseOnHoldSchedulerClass {
 		if (!this.running) {
 			throw new Error('AutoCloseOnHoldScheduler is not running');
 		}
-		this.logger.debug(`Unscheduling room ${roomId}`);
+		this.logger.debug({ msg: 'Unscheduling room', roomId });
 		const jobName = `${SCHEDULER_NAME}-${roomId}`;
 		await this.scheduler.cancel({ name: jobName });
 	}
 
 	private async executeJob({ attrs: { data } }: any = {}): Promise<void> {
-		this.logger.debug(`Executing job for room ${data.roomId}`);
+		this.logger.debug({ msg: 'Executing job for room', roomId: data.roomId });
 		const { roomId, comment } = data;
 
 		const [room, user] = await Promise.all([LivechatRooms.findOneById(roomId), this.getSchedulerUser()]);

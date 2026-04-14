@@ -10,6 +10,12 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import { isRunningMs } from '../../lib/isRunningMs';
 import { SystemLogger } from '../../lib/logger/system';
 
+export class AppsEngineNoNodesFoundError extends Error {
+	constructor(message = 'Not enough Apps-Engine nodes in deployment') {
+		super(message);
+	}
+}
+
 export class AppsEngineService extends ServiceClassInternal implements IAppsEngineService {
 	protected name = 'apps-engine';
 
@@ -25,12 +31,18 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.added', async (appId: string): Promise<void> => {
-			Apps.self?.getRocketChatLogger().debug(`"apps.added" event received for app "${appId}"`);
+			Apps.self?.getRocketChatLogger().debug({
+				msg: '"apps.added" event received for app',
+				appId,
+			});
 			// if the app already exists in this instance, don't load it again
 			const app = Apps.self?.getManager()?.getOneById(appId);
 
 			if (app) {
-				Apps.self?.getRocketChatLogger().info(`"apps.added" event received for app "${appId}", but it already exists in this instance`);
+				Apps.self?.getRocketChatLogger().info({
+					msg: '"apps.added" event received for app, but it already exists in this instance',
+					appId,
+				});
 				return;
 			}
 
@@ -38,12 +50,16 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.removed', async (appId: string): Promise<void> => {
-			Apps.self?.getRocketChatLogger().debug(`"apps.removed" event received for app "${appId}"`);
+			Apps.self?.getRocketChatLogger().debug({
+				msg: '"apps.removed" event received for app',
+				appId,
+			});
 			const app = Apps.self?.getManager()?.getOneById(appId);
 			if (!app) {
-				Apps.self
-					?.getRocketChatLogger()
-					.info(`"apps.removed" event received for app "${appId}", but it couldn't be found in this instance`);
+				Apps.self?.getRocketChatLogger().info({
+					msg: '"apps.removed" event received for app, but it could not be found in this instance',
+					appId,
+				});
 				return;
 			}
 
@@ -51,10 +67,16 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.updated', async (appId: string): Promise<void> => {
-			Apps.self?.getRocketChatLogger().debug(`"apps.updated" event received for app "${appId}"`);
+			Apps.self?.getRocketChatLogger().debug({
+				msg: '"apps.updated" event received for app',
+				appId,
+			});
 			const storageItem = await Apps.self?.getStorage()?.retrieveOne(appId);
 			if (!storageItem) {
-				Apps.self?.getRocketChatLogger().info(`"apps.updated" event received for app "${appId}", but it couldn't be found in the storage`);
+				Apps.self?.getRocketChatLogger().info({
+					msg: '"apps.updated" event received for app, but it could not be found in the storage',
+					appId,
+				});
 				return;
 			}
 
@@ -72,17 +94,27 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.statusUpdate', async (appId: string, status: AppStatus): Promise<void> => {
-			Apps.self?.getRocketChatLogger().debug(`"apps.statusUpdate" event received for app "${appId}" with status "${status}"`);
+			Apps.self?.getRocketChatLogger().debug({
+				msg: '"apps.statusUpdate" event received for app with status',
+				appId,
+				status,
+			});
 			const app = Apps.self?.getManager()?.getOneById(appId);
 			if (!app) {
-				Apps.self
-					?.getRocketChatLogger()
-					.info(`"apps.statusUpdate" event received for app "${appId}", but it couldn't be found in this instance`);
+				Apps.self?.getRocketChatLogger().info({
+					msg: '"apps.statusUpdate" event received for app, but it could not be found in this instance',
+					appId,
+					status,
+				});
 				return;
 			}
 
 			if ((await app.getStatus()) === status) {
-				Apps.self?.getRocketChatLogger().info(`"apps.statusUpdate" event received for app "${appId}", but the status is the same`);
+				Apps.self?.getRocketChatLogger().info({
+					msg: '"apps.statusUpdate" event received for app, but the status is the same',
+					appId,
+					status,
+				});
 				return;
 			}
 
@@ -94,7 +126,11 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		});
 
 		this.onEvent('apps.settingUpdated', async (appId: string, setting): Promise<void> => {
-			Apps.self?.getRocketChatLogger().debug(`"apps.settingUpdated" event received for app "${appId}"`, { setting });
+			Apps.self?.getRocketChatLogger().debug({
+				msg: '"apps.settingUpdated" event received for app',
+				appId,
+				setting,
+			});
 			const app = Apps.self?.getManager()?.getOneById(appId);
 			const oldSetting = app?.getStorageItem().settings[setting.id].value;
 
@@ -104,9 +140,11 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			// so we need to convert it to JSON stringified to compare it
 
 			if (JSON.stringify(oldSetting) === JSON.stringify(setting.value)) {
-				Apps.self
-					?.getRocketChatLogger()
-					.info(`"apps.settingUpdated" event received for setting ${setting.id} of app "${appId}", but the setting value is the same`);
+				Apps.self?.getRocketChatLogger().info({
+					msg: '"apps.settingUpdated" event received for app, but the setting value is the same',
+					appId,
+					settingId: setting.id,
+				});
 				return;
 			}
 
@@ -166,10 +204,11 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		const services: { name: string; nodes: string[] }[] = await this.api?.call('$node.services', { onlyActive: true });
 
 		// We can filter out the local node because we already know its status
-		const availableNodes = services?.find((service) => service.name === 'apps-engine')?.nodes.filter((node) => node !== localNodeId);
+		const availableNodes = services?.find((service) => service.name === 'apps-engine')?.nodes;
 
-		if (!availableNodes || availableNodes.length < 1) {
-			throw new Error('Not enough Apps-Engine nodes in deployment');
+		// Subtract 1 for the local node
+		if (!availableNodes || availableNodes.length - 1 < 1) {
+			throw new AppsEngineNoNodesFoundError();
 		}
 
 		const statusByApp: AppStatusReport = {};
@@ -190,7 +229,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 					statusByApp[appId] = [];
 				}
 
-				statusByApp[appId].push({ instanceId: nodeID, status });
+				statusByApp[appId].push({ instanceId: nodeID, isLocal: nodeID === localNodeId, status });
 			});
 		});
 

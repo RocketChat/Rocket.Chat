@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import AssetSettingInput from './AssetSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/AssetSettingInput',
 	component: AssetSettingInput,
 	decorators: [
 		(fn) => (

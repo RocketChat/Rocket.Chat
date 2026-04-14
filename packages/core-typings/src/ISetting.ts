@@ -8,12 +8,14 @@ export enum SettingEditor {
 
 export type SettingValueMultiSelect = (string | number)[];
 export type SettingValueRoomPick = { _id: string; name?: string }[];
+export type SettingValueAction = { method: string; path: string };
 export type SettingValue =
 	| string
 	| boolean
 	| number
 	| SettingValueMultiSelect
 	| SettingValueRoomPick
+	| SettingValueAction
 	| Date
 	| { url?: string; defaultUrl?: string }
 	| undefined
@@ -24,7 +26,7 @@ export interface ISettingSelectOption {
 	i18nLabel: string;
 }
 
-export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset;
+export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISettingCode | ISettingAction | ISettingAsset | ISettingRange;
 
 type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
@@ -48,10 +50,12 @@ export interface ISettingBase extends IRocketChatRecord {
 		| 'group'
 		| 'date'
 		| 'lookup'
+		| 'range'
 		| 'timespan';
 	public: boolean;
 	env: boolean;
-	group?: string;
+	// TODO: migrate settings with group and section with null to undefined
+	group?: string | null;
 	section?: string;
 	tab?: string;
 	i18nLabel: string;
@@ -104,7 +108,7 @@ export interface ISettingGroup {
 	alert?: string; // todo: check if this is needed
 }
 
-export interface ISettingEnterprise extends ISettingBase {
+interface ISettingEnterprise extends ISettingBase {
 	enterprise: true;
 	invalidValue: SettingValue;
 }
@@ -114,16 +118,20 @@ export interface ISettingColor extends ISettingBase {
 	editor: SettingEditor;
 	packageEditor?: SettingEditor;
 }
-export interface ISettingCode extends ISettingBase {
+
+interface ISettingCode extends ISettingBase {
 	type: 'code';
 	code?: string;
 }
 
-export interface ISettingAction extends ISettingBase {
+type SettingActionEndpoint = { method: 'GET' | 'POST' | 'PUT' | 'DELETE'; path: string };
+
+interface ISettingAction extends ISettingBase {
 	type: 'action';
-	value: string;
+	value: string | SettingActionEndpoint;
 	actionText?: string;
 }
+
 export interface ISettingAsset extends ISettingBase {
 	type: 'asset';
 	value: { url?: string; defaultUrl?: string };
@@ -131,9 +139,10 @@ export interface ISettingAsset extends ISettingBase {
 	asset: string;
 }
 
-export interface ISettingDate extends ISettingBase {
-	type: 'date';
-	value: Date;
+interface ISettingRange extends ISettingBase {
+	type: 'range';
+	minValue: number;
+	maxValue: number;
 }
 
 // Checks if setting has at least the required properties
@@ -147,8 +156,6 @@ export const isSetting = (setting: any): setting is ISetting =>
 	'sorter' in setting &&
 	'i18nLabel' in setting;
 
-export const isDateSetting = (setting: ISetting): setting is ISettingDate => setting.type === 'date';
-
 export const isSettingEnterprise = (setting: ISettingBase): setting is ISettingEnterprise => setting.enterprise === true;
 
 export const isSettingColor = (setting: ISettingBase): setting is ISettingColor => setting.type === 'color';
@@ -157,7 +164,10 @@ export const isSettingCode = (setting: ISettingBase): setting is ISettingCode =>
 
 export const isSettingAction = (setting: ISettingBase): setting is ISettingAction => setting.type === 'action';
 
-export const isSettingAsset = (setting: ISettingBase): setting is ISettingAsset => setting.type === 'asset';
+export const isActionSettingWithEndpoint = (value: ISettingAction['value']): value is SettingActionEndpoint =>
+	typeof value === 'object' && value !== null && 'method' in value && 'path' in value;
+
+export const isSettingRange = (setting: ISettingBase): setting is ISettingRange => setting.type === 'range';
 
 export interface ISettingStatistics {
 	account2fa?: boolean;
@@ -181,7 +191,6 @@ export interface ISettingStatistics {
 	allowBadWordsFilter?: boolean;
 	readReceiptEnabled?: boolean;
 	readReceiptStoreUsers?: boolean;
-	otrEnable?: boolean;
 	pushEnable?: boolean;
 	globalSearchEnabled?: boolean;
 	threadsEnabled?: boolean;
@@ -235,9 +244,6 @@ export interface ISettingStatisticsObject {
 		allowBadWordsFilter?: boolean;
 		readReceiptEnabled?: boolean;
 		readReceiptStoreUsers?: boolean;
-	};
-	otr?: {
-		otrEnable?: boolean;
 	};
 	push?: {
 		pushEnable?: boolean;

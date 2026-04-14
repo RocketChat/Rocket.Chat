@@ -6,7 +6,7 @@ import { transformMappedData } from './transformMappedData';
 
 export class AppContactsConverter implements IAppContactsConverter {
 	async convertById(contactId: ILivechatContact['_id']): Promise<IAppsLivechatContact | undefined> {
-		const contact = await LivechatContacts.findOneById(contactId);
+		const contact = await LivechatContacts.findOneEnabledById(contactId);
 		if (!contact) {
 			return;
 		}

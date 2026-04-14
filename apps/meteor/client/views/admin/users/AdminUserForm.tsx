@@ -19,7 +19,8 @@ import {
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { UserCreateParamsPOST } from '@rocket.chat/rest-typings';
-import { CustomFieldsForm } from '@rocket.chat/ui-client';
+import { validateEmail } from '@rocket.chat/tools';
+import { CustomFieldsForm, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import {
 	useAccountsCustomFields,
 	useSetting,
@@ -29,19 +30,18 @@ import {
 	useTranslation,
 } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import DOMPurify from 'dompurify';
 import { useId, useMemo, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { Trans } from 'react-i18next';
 
 import AdminUserSetRandomPasswordContent from './AdminUserSetRandomPasswordContent';
 import AdminUserSetRandomPasswordRadios from './AdminUserSetRandomPasswordRadios';
 import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
-import { validateEmail } from '../../../../lib/emailValidator';
+import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '../../../components/Contextualbar';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
-import { useEndpointAction } from '../../../hooks/useEndpointAction';
+import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
 
@@ -54,7 +54,10 @@ type AdminUserFormProps = {
 	roleError: Error | null;
 };
 
-export type UserFormProps = Omit<UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string }, 'fields'>;
+export type UserFormProps = Omit<
+	UserCreateParamsPOST & { avatar: AvatarObject; passwordConfirmation: string; freeSwitchExtension?: string },
+	'fields'
+>;
 
 const getInitialValue = ({
 	data,
@@ -81,6 +84,7 @@ const getInitialValue = ({
 	requirePasswordChange: isNewUserPage && isSmtpEnabled && (data?.requirePasswordChange ?? true),
 	customFields: data?.customFields ?? {},
 	statusText: data?.statusText ?? '',
+	freeSwitchExtension: data?.freeSwitchExtension ?? '',
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -116,12 +120,13 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			isNewUserPage,
 			isVerificationNeeded: !!isVerificationNeeded,
 		}),
-		mode: 'onBlur',
 	});
+
+	const showVoipExtension = useShowVoipExtension();
 
 	const { avatar, username, setRandomPassword, password, name: userFullName } = watch();
 
-	const eventStats = useEndpointAction('POST', '/v1/statistics.telemetry');
+	const { mutateAsync: eventStats } = useEndpointMutation('POST', '/v1/statistics.telemetry');
 	const updateUserAction = useEndpoint('POST', '/v1/users.update');
 	const createUserAction = useEndpoint('POST', '/v1/users.create');
 
@@ -177,6 +182,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 
 	const nameId = useId();
 	const usernameId = useId();
+	const voiceExtensionId = useId();
 	const emailId = useId();
 	const verifiedId = useId();
 	const statusTextId = useId();
@@ -268,18 +274,26 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									/>
 								</FieldRow>
 								{isVerificationNeeded && !isSmtpEnabled && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Email' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 								{!isVerificationNeeded && (
-									<FieldHint
-										id={`${verifiedId}-hint`}
-										dangerouslySetInnerHTML={{
-											__html: DOMPurify.sanitize(t('Email_verification_isnt_required', { url: 'admin/settings/Accounts' })),
-										}}
-									/>
+									<FieldHint id={`${verifiedId}-hint`}>
+										<Trans
+											i18nKey='Email_verification_isnt_required'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Accounts' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}
@@ -334,6 +348,18 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							</FieldError>
 						)}
 					</Field>
+					{showVoipExtension && (
+						<Field>
+							<FieldLabel htmlFor={voiceExtensionId}>{t('Voice_call_extension')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='freeSwitchExtension'
+									render={({ field }) => <TextInput {...field} id={voiceExtensionId} flexGrow={1} />}
+								/>
+							</FieldRow>
+						</Field>
+					)}
 					<Field>
 						{isLoadingSmtpStatus ? (
 							<PasswordFieldSkeleton />
@@ -429,11 +455,15 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									</FieldRow>
 								</Box>
 								{!isSmtpEnabled && (
-									<FieldHint
-										id={`${sendWelcomeEmailId}-hint`}
-										dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t('Send_Email_SMTP_Warning', { url: 'admin/settings/Email' })) }}
-										mbs={0}
-									/>
+									<FieldHint id={`${sendWelcomeEmailId}-hint`} mbs={0}>
+										<Trans
+											i18nKey='Send_Email_SMTP_Warning'
+											components={{
+												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												a: <a href='/admin/settings/Email' />,
+											}}
+										/>
+									</FieldHint>
 								)}
 							</>
 						)}

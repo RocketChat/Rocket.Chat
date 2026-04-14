@@ -1,7 +1,7 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 
 import { settings } from '../../../../../app/settings/server';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 const handleOnAgentAssignmentFailed = async (
 	room: IOmnichannelRoom,
@@ -17,22 +17,22 @@ const handleOnAgentAssignmentFailed = async (
 	},
 ) => {
 	if (!inquiry || !room) {
-		return;
+		return false;
 	}
 
 	if (!settings.get('Livechat_waiting_queue')) {
-		return;
+		return false;
 	}
 
 	const { forwardingToDepartment: { oldDepartmentId } = {}, forwardingToDepartment } = options;
 	if (!forwardingToDepartment) {
-		return;
+		return false;
 	}
 
 	const { department: newDepartmentId } = inquiry;
 
 	if (!newDepartmentId || !oldDepartmentId || newDepartmentId === oldDepartmentId) {
-		return;
+		return false;
 	}
 
 	return { ...room, chatQueued: true } as IOmnichannelRoom & { chatQueued: boolean };

@@ -1,4 +1,6 @@
 declare module 'meteor/accounts-base' {
+	import type { Meteor } from 'meteor/meteor';
+
 	namespace Accounts {
 		const storageLocation: Window['localStorage'];
 		function createUser(
@@ -65,7 +67,6 @@ declare module 'meteor/accounts-base' {
 
 		export const _options: AccountsServerOptions;
 
-		// eslint-disable-next-line @typescript-eslint/no-namespace
 		namespace oauth {
 			function credentialRequestCompleteHandler(
 				callback?: (error?: globalThis.Error | Meteor.Error | Meteor.TypedError) => void,
@@ -76,5 +77,9 @@ declare module 'meteor/accounts-base' {
 
 			function serviceNames(): string[];
 		}
+
+		const connection: {
+			userId(): string | null;
+		};
 	}
 }

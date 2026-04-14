@@ -1,11 +1,10 @@
-import type { ILivechatContact } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const modelsMock = {
 	LivechatContacts: {
-		updateContactCustomFields: sinon.stub(),
+		updateById: sinon.stub(),
 	},
 };
 
@@ -15,47 +14,93 @@ const { updateContactsCustomFields } = proxyquire.noCallThru().load('../../../..
 
 describe('[Custom Fields] updateContactsCustomFields', () => {
 	beforeEach(() => {
-		modelsMock.LivechatContacts.updateContactCustomFields.reset();
+		modelsMock.LivechatContacts.updateById.reset();
 	});
 
-	it('should not add conflictingFields to the update data when its nullish', async () => {
-		const contact: Partial<ILivechatContact> = {
-			_id: 'contactId',
-			customFields: {
-				customField: 'value',
-			},
-		};
-
-		modelsMock.LivechatContacts.updateContactCustomFields.resolves({ ...contact, customFields: { customField: 'newValue' } });
-
-		await updateContactsCustomFields(contact, 'customField', 'newValue', true);
-
-		expect(modelsMock.LivechatContacts.updateContactCustomFields.calledOnce).to.be.true;
-		expect(modelsMock.LivechatContacts.updateContactCustomFields.getCall(0).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.updateContactCustomFields.getCall(0).args[1]).to.deep.equal({
-			customFields: { customField: 'newValue' },
+	it('should do nothing if validCustomFields param is empty', async () => {
+		const contact = { _id: 'contactId', customFields: {} } as any;
+		await updateContactsCustomFields(contact, []);
+		expect(modelsMock.LivechatContacts.updateById.called).to.be.false;
+	});
+	it('should add a custom field from the validCustomFields param', async () => {
+		const contact = { _id: 'contactId', customFields: {} } as any;
+		const validCustomFields = [{ key: 'field1', value: 'value1', overwrite: true }];
+		await updateContactsCustomFields(contact, validCustomFields);
+		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
+			$set: { 'customFields.field1': 'value1' },
 		});
 	});
-
-	it('should add conflictingFields to the update data only when it is modified', async () => {
-		const contact: Partial<ILivechatContact> = {
-			_id: 'contactId',
-			customFields: {
-				customField: 'value',
-			},
-		};
-
-		modelsMock.LivechatContacts.updateContactCustomFields.resolves({
-			...contact,
-			conflictingFields: [{ field: 'customFields.customField', value: 'newValue' }],
+	it('should add multiple custom fields from the validCustomFields param', async () => {
+		const contact = { _id: 'contactId', customFields: {} } as any;
+		const validCustomFields = [
+			{ key: 'field1', value: 'value1', overwrite: true },
+			{ key: 'field2', value: 'value2', overwrite: true },
+		];
+		await updateContactsCustomFields(contact, validCustomFields);
+		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
+			$set: { 'customFields.field1': 'value1', 'customFields.field2': 'value2' },
 		});
-
-		await updateContactsCustomFields(contact, 'customField', 'newValue', false);
-
-		expect(modelsMock.LivechatContacts.updateContactCustomFields.calledOnce).to.be.true;
-		expect(modelsMock.LivechatContacts.updateContactCustomFields.getCall(0).args[0]).to.be.equal('contactId');
-		expect(modelsMock.LivechatContacts.updateContactCustomFields.getCall(0).args[1]).to.deep.equal({
-			conflictingFields: [{ field: 'customFields.customField', value: 'newValue' }],
+	});
+	it('should add custom field to conflictingFields when the contact already has the field and overwrite is false', async () => {
+		const contact = { _id: 'contactId', customFields: { field1: 'existingValue' } } as any;
+		const validCustomFields = [{ key: 'field1', value: 'newValue', overwrite: false }];
+		await updateContactsCustomFields(contact, validCustomFields);
+		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
+			$set: { conflictingFields: [{ field: 'customFields.field1', value: 'newValue' }] },
+		});
+	});
+	it('should correctly add custom field and conflicting field from validCustomFields array', async () => {
+		const contact = { _id: 'contactId', customFields: { field1: 'existingValue' } } as any;
+		const validCustomFields = [
+			{ key: 'field1', value: 'newValue', overwrite: false },
+			{ key: 'field2', value: 'value2', overwrite: true },
+		];
+		await updateContactsCustomFields(contact, validCustomFields);
+		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
+			$set: { 'customFields.field2': 'value2', 'conflictingFields': [{ field: 'customFields.field1', value: 'newValue' }] },
+		});
+	});
+	it('should overwrite an existing field when field is on validCustomFields array & overwrite is true', async () => {
+		const contact = { _id: 'contactId', customFields: { field1: 'existingValue' } } as any;
+		const validCustomFields = [
+			{ key: 'field1', value: 'newValue', overwrite: true },
+			{ key: 'field2', value: 'value2', overwrite: true },
+		];
+		await updateContactsCustomFields(contact, validCustomFields);
+		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
+			$set: { 'customFields.field1': 'newValue', 'customFields.field2': 'value2' },
+		});
+	});
+	it('should update all custom fields from the validCustomFields array without issues', async () => {
+		const contact = { _id: 'contactId', customFields: { field1: 'existingValue' } } as any;
+		const validCustomFields = [
+			{ key: 'field1', value: 'newValue', overwrite: true },
+			{ key: 'field2', value: 'value2', overwrite: true },
+			{ key: 'field3', value: 'value3', overwrite: true },
+			{ key: 'field4', value: 'value4', overwrite: true },
+			{ key: 'field5', value: 'value5', overwrite: true },
+		];
+		await updateContactsCustomFields(contact, validCustomFields);
+		expect(modelsMock.LivechatContacts.updateById.calledOnce).to.be.true;
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[0]).to.equal('contactId');
+		expect(modelsMock.LivechatContacts.updateById.firstCall.args[1]).to.deep.equal({
+			$set: {
+				'customFields.field1': 'newValue',
+				'customFields.field2': 'value2',
+				'customFields.field3': 'value3',
+				'customFields.field4': 'value4',
+				'customFields.field5': 'value5',
+			},
 		});
 	});
 });

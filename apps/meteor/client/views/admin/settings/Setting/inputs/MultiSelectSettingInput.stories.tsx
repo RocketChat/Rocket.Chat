@@ -6,7 +6,6 @@ import type { valuesOption } from './MultiSelectSettingInput';
 import MultiSelectSettingInput from './MultiSelectSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/MultiSelectSettingInput',
 	component: MultiSelectSettingInput,
 	parameters: {
 		actions: {

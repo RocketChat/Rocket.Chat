@@ -107,7 +107,7 @@ describe('Email inbox', () => {
 		};
 		it('should fail if user doesnt have manage-email-inbox permission', async () => {
 			await updatePermission('manage-email-inbox', []);
-			await request.post(api('email-inbox')).set(credentials).send({}).expect(403);
+			await request.post(api('email-inbox')).set(credentials).send(mockedPayload).expect(403);
 		});
 		it('should fail if smtp config is not on body params', async () => {
 			await updatePermission('manage-email-inbox', ['admin']);

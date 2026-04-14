@@ -8,24 +8,24 @@ export const loggerMiddleware =
 	async (c, next) => {
 		const startTime = Date.now();
 
-		let payload = {};
-
-		try {
-			payload = await c.req.raw.clone().json();
-			// eslint-disable-next-line no-empty
-		} catch {}
-
-		const log = logger.logger.child({
-			method: c.req.method,
-			url: c.req.url,
-			userId: c.req.header('x-user-id'),
-			userAgent: c.req.header('user-agent'),
-			length: c.req.header('content-length'),
-			host: c.req.header('host'),
-			referer: c.req.header('referer'),
-			remoteIP: c.get('remoteAddress'),
-			...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method) && getRestPayload(payload)),
-		});
+		const log = logger.logger.child(
+			{
+				method: c.req.method,
+				url: c.req.url,
+				userId: c.req.header('x-user-id'),
+				userAgent: c.req.header('user-agent'),
+				length: c.req.header('content-length'),
+				host: c.req.header('host'),
+				referer: c.req.header('referer'),
+				remoteIP: c.get('remoteAddress'),
+				...(['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method) && (await getRestPayload(c.req))),
+			},
+			{
+				redact: [
+					'payload.password', // Potentially logged by v1/login
+				],
+			},
+		);
 
 		await next();
 

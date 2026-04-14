@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { PaletteStyleTag } from '@rocket.chat/fuselage';
 import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
 import type { Parameters, Decorator } from '@storybook/react';

@@ -1,13 +1,16 @@
+import { faker } from '@faker-js/faker';
+
 import { Users } from './fixtures/userStates';
-import { HomeChannel, Utils } from './page-objects';
-import { createTargetChannel } from './utils';
+import { HomeChannel } from './page-objects';
+import { createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
 
 test.use({ storageState: Users.admin.state });
 
-test.describe.serial('export-messages', () => {
+const uniqueMessage = (): string => `msg-${faker.string.uuid()}`;
+
+test.describe('export-messages', () => {
 	let poHomeChannel: HomeChannel;
-	let poUtils: Utils;
 	let targetChannel: string;
 
 	test.beforeAll(async ({ api }) => {
@@ -16,59 +19,153 @@ test.describe.serial('export-messages', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		poUtils = new Utils(page);
 
 		await page.goto('/home');
 	});
 
-	test('should all export methods be available in targetChannel', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
-		await expect(poHomeChannel.tabs.exportMessages.sendEmailMethod).not.toBeDisabled();
-
-		await poHomeChannel.tabs.exportMessages.sendEmailMethod.click();
-		await expect(poHomeChannel.tabs.exportMessages.getMethodByName('Send email')).toBeVisible();
-		await expect(poHomeChannel.tabs.exportMessages.getMethodByName('Send file via email')).toBeVisible();
-		await expect(poHomeChannel.tabs.exportMessages.getMethodByName('Download file')).toBeVisible();
+	test.afterAll(async ({ api }) => {
+		await Promise.all([
+			api.post('/users.setPreferences', { userId: 'rocketchat.internal.admin.test', data: { hideFlexTab: false } }),
+			deleteChannel(api, targetChannel),
+		]);
 	});
 
-	test('should display an error when trying to send email without filling to users or to additional emails', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.content.sendMessage('hello world');
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
+	test('should all export methods be available in targetChannel', async () => {
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
+
+		await poHomeChannel.tabs.exportMessages.exposeMethods();
+		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send email')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Send file via email')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getMethodOptionByName('Download file')).toBeVisible();
+	});
+
+	test('should display export output format correctly depending on the selected method', async () => {
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
+
+		// TODO: Fix the base component to have a disabled statement and not only a class attribute
+		// Here we are checking for a button because the internal select element is not accessible
+		// and the higher component that is a button doesn't appear as disabled.
+		await expect(poHomeChannel.tabs.exportMessages.outputFormat).toContainClass('disabled');
+
+		await poHomeChannel.tabs.exportMessages.setMethod('Send file via email');
+
+		await poHomeChannel.tabs.exportMessages.exposeOutputFormats();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('json')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).not.toBeVisible();
+
+		await poHomeChannel.tabs.exportMessages.setOutputFormat('html');
+
+		await poHomeChannel.tabs.exportMessages.setMethod('Download file');
+
+		await poHomeChannel.tabs.exportMessages.exposeOutputFormats();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('html')).not.toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('json')).toBeVisible();
+		await expect(poHomeChannel.tabs.exportMessages.getOutputFormatOptionByName('pdf')).toBeVisible();
+	});
+
+	test('when trying to send email without filling to users or to additional emails, should mark both fields as invalid', async () => {
+		const testMessage = uniqueMessage();
+
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage(testMessage);
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
 		await expect(poHomeChannel.btnContextualbarClose).toBeVisible();
 
-		await poHomeChannel.content.getMessageByText('hello world').click();
-		await poHomeChannel.tabs.exportMessages.btnSend.click();
+		await poHomeChannel.content.getMessageByText(testMessage).click();
+		await poHomeChannel.tabs.exportMessages.send();
+
+		const usersField = poHomeChannel.tabs.exportMessages.inputUsers;
+		const additionalEmailsField = poHomeChannel.tabs.exportMessages.inputAdditionalEmails;
+
+		await expect(usersField).toHaveAttribute('aria-invalid', 'true');
+		await expect(additionalEmailsField).toHaveAttribute('aria-invalid', 'true');
+
+		const errorMessages = poHomeChannel.tabs.exportMessages.errorMessage(
+			'You must select one or more users or provide one or more email addresses, separated by commas',
+		);
+		await expect(errorMessages).toHaveCount(2);
+	});
+
+	test('should display an error when trying to send email without selecting any message', async ({ page }) => {
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
+
+		await poHomeChannel.tabs.exportMessages.setAdditionalEmail('mail@mail.com');
+		await poHomeChannel.tabs.exportMessages.send();
 
 		await expect(
-			poUtils.getAlertByText('You must select one or more users or provide one or more email addresses, separated by commas'),
+			page.locator('[role="alert"]', {
+				hasText: `You haven't selected any messages`,
+			}),
 		).toBeVisible();
 	});
 
-	test('should display an error when trying to send email without selecting any message', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
+	test('should be able to send messages after closing export messages', async () => {
+		const message1 = uniqueMessage();
+		const message2 = uniqueMessage();
 
-		await poHomeChannel.tabs.exportMessages.textboxAdditionalEmails.fill('mail@mail.com');
-		await poHomeChannel.tabs.exportMessages.btnSend.click();
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage(message1);
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
-		await expect(poUtils.getAlertByText(`You haven't selected any messages`)).toBeVisible();
+		await poHomeChannel.content.getMessageByText(message1).click();
+		await poHomeChannel.btnContextualbarClose.click();
+		await poHomeChannel.content.sendMessage(message2);
+
+		await expect(poHomeChannel.content.getMessageByText(message2)).toBeVisible();
 	});
 
-	test('should be able to send messages after closing export messages', async () => {
-		await poHomeChannel.sidenav.openChat(targetChannel);
-		await poHomeChannel.tabs.kebab.click({ force: true });
-		await poHomeChannel.tabs.btnExportMessages.click();
+	test('should be able to select a single message to export', async () => {
+		const message1 = uniqueMessage();
+		const message2 = uniqueMessage();
 
-		await poHomeChannel.content.getMessageByText('hello world').click();
-		await poHomeChannel.btnContextualbarClose.click();
-		await poHomeChannel.content.sendMessage('hello export');
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage(message1);
+		await poHomeChannel.content.sendMessage(message2);
 
-		await expect(poHomeChannel.content.getMessageByText('hello export')).toBeVisible();
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
+		await poHomeChannel.tabs.exportMessages.waitForDisplay();
+
+		await poHomeChannel.content.getMessageByText(message1).click();
+
+		await expect(poHomeChannel.tabs.exportMessages.getMessageCheckbox(message1)).toBeChecked();
+		await expect(poHomeChannel.tabs.exportMessages.getMessageCheckbox(message2)).not.toBeChecked();
+		await expect(poHomeChannel.tabs.exportMessages.clearSelectionButton).toBeEnabled();
+
+		await expect(poHomeChannel.tabs.exportMessages.sendButton).toBeEnabled();
+	});
+
+	test('should be able to select a single message to export with hide contextual bar preference enabled', async ({ api }) => {
+		await api.post('/users.setPreferences', {
+			userId: 'rocketchat.internal.admin.test',
+			data: { hideFlexTab: true },
+		});
+		const message1 = uniqueMessage();
+		const message2 = uniqueMessage();
+
+		await poHomeChannel.navbar.openChat(targetChannel);
+		await poHomeChannel.content.sendMessage(message1);
+		await poHomeChannel.content.sendMessage(message2);
+
+		await poHomeChannel.roomToolbar.openMoreOptions();
+		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
+
+		await poHomeChannel.tabs.exportMessages.waitForDisplay();
+		await poHomeChannel.content.getMessageByText(message1).click();
+
+		await expect(poHomeChannel.tabs.exportMessages.getMessageCheckbox(message1)).toBeChecked();
+		await expect(poHomeChannel.tabs.exportMessages.clearSelectionButton).toBeEnabled();
+
+		await expect(poHomeChannel.tabs.exportMessages.sendButton).toBeEnabled();
 	});
 });

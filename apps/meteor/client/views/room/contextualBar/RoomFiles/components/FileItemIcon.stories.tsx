@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import FileItemIcon from './FileItemIcon';
 
 export default {
-	title: 'Room/Contextual Bar/RoomFiles/FileItemIcon',
 	component: FileItemIcon,
 	parameters: {
 		layout: 'centered',

@@ -1,2 +1,1 @@
-export * from './VoipSession';
-export * from './IceServer';
+export type * from './IceServer';

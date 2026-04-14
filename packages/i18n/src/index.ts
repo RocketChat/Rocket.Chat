@@ -1,8 +1,7 @@
 import { isObject } from '@rocket.chat/tools';
-import type i18next from 'i18next';
-import type { TOptions } from 'i18next';
+import type { i18n, TFunction, TOptions } from 'i18next';
 
-import type { RocketchatI18nKeys } from '../resources';
+import type { RocketchatI18nKeys } from './resources.ts';
 
 export type { RocketchatI18nKeys };
 
@@ -14,8 +13,8 @@ declare module 'i18next' {
 	}
 }
 
-export const addSprinfToI18n = function (t: any) {
-	return function (key: string, ...replaces: any): string {
+export const addSprinfToI18n = (t: TFunction) => {
+	return (key: string, ...replaces: any): string => {
 		if (replaces[0] === undefined) {
 			return t(key);
 		}
@@ -128,7 +127,7 @@ export const availableTranslationNamespaces = Object.keys(namespacesMap) as Tran
 export const defaultTranslationNamespace: TranslationNamespace = 'core';
 
 export const applyCustomTranslations = (
-	i18n: typeof i18next,
+	i18n: i18n,
 	parsedCustomTranslations: Record<string, Record<string, string>>,
 	{ namespaces, languages }: { namespaces?: string[]; languages?: string[] } = {},
 ) => {

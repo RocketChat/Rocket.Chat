@@ -2,7 +2,7 @@
 
 export class AppServerOrchestratorMock {
 	constructor() {
-		this._marketplaceUrl = 'https://marketplace.rocket.chat';
+		this._marketplaceClient = {};
 
 		this._model = {};
 		this._logModel = {};
@@ -24,6 +24,10 @@ export class AppServerOrchestratorMock {
 		this._communicators.set('methods', {});
 		this._communicators.set('notifier', {});
 		this._communicators.set('restapi', {});
+	}
+
+	getMarketplaceClient() {
+		return this._marketplaceClient;
 	}
 
 	getModel() {
@@ -74,10 +78,6 @@ export class AppServerOrchestratorMock {
 		if (this.isDebugging()) {
 			console.log(...args);
 		}
-	}
-
-	getMarketplaceUrl() {
-		return this._marketplaceUrl;
 	}
 
 	load() {

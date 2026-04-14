@@ -1,9 +1,21 @@
-import { Modal, AnimatedVisibility, Button, Box } from '@rocket.chat/fuselage';
+import { FocusScope } from '@react-aria/focus';
+import {
+	Modal,
+	AnimatedVisibility,
+	Button,
+	Box,
+	ModalHeader,
+	ModalThumb,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
+} from '@rocket.chat/fuselage';
 import { UiKitComponent, UiKitModal, modalParser } from '@rocket.chat/fuselage-ui-kit';
-import * as UiKit from '@rocket.chat/ui-kit';
+import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent, FormEventHandler, ReactElement } from 'react';
 import { useId, useCallback, useEffect, useMemo, useRef } from 'react';
-import { FocusScope } from 'react-aria';
 
 import { getButtonStyle } from './getButtonStyle';
 import { getURL } from '../../../../app/utils/client/getURL';
@@ -101,7 +113,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 					if (!ref.current) {
 						return;
 					}
-					const elements = Array.from(ref.current.querySelectorAll(focusableElementsString)) as HTMLElement[];
+					const elements = Array.from(ref.current.querySelectorAll<HTMLElement>(focusableElementsString));
 					const [first] = elements;
 					const last = elements.pop();
 
@@ -149,7 +161,7 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 			if (!container.contains(e.target as HTMLElement)) {
 				return;
 			}
-			return handleKeyDown(e as KeyboardEvent);
+			return handleKeyDown(e);
 		};
 
 		document.addEventListener('keydown', ignoreIfNotContains);
@@ -163,31 +175,31 @@ const ModalBlock = ({ view, errors, onSubmit, onClose, onCancel }: ModalBlockPar
 	return (
 		<AnimatedVisibility visibility={AnimatedVisibility.UNHIDING}>
 			<FocusScope contain restoreFocus autoFocus>
-				<Modal open id={id} ref={ref}>
-					<Modal.Header>
-						{view.showIcon ? <Modal.Thumb url={getURL(`/api/apps/${view.appId}/icon`)} /> : null}
-						<Modal.Title>{modalParser.text(view.title, UiKit.BlockContext.NONE, 0)}</Modal.Title>
-						<Modal.Close tabIndex={-1} onClick={onClose} />
-					</Modal.Header>
-					<Modal.Content>
+				<Modal aria-labelledby={`${id}-title`} open id={id} ref={ref}>
+					<ModalHeader>
+						{view.showIcon ? <ModalThumb url={getURL(`/api/apps/${view.appId}/icon`)} /> : null}
+						<ModalTitle id={`${id}-title`}>{modalParser.renderTextObject(view.title, 0)}</ModalTitle>
+						<ModalClose tabIndex={-1} onClick={onClose} />
+					</ModalHeader>
+					<ModalContent>
 						<Box ref={formRef} is='form' method='post' action='#' onSubmit={onSubmit}>
 							<UiKitComponent render={UiKitModal} blocks={view.blocks} />
 						</Box>
-					</Modal.Content>
-					<Modal.Footer>
-						<Modal.FooterControllers>
+					</ModalContent>
+					<ModalFooter>
+						<ModalFooterControllers>
 							{view.close && (
 								<Button danger={view.close.style === 'danger'} onClick={onCancel}>
-									{modalParser.text(view.close.text, UiKit.BlockContext.NONE, 0)}
+									{modalParser.renderTextObject(view.close.text, 0)}
 								</Button>
 							)}
 							{view.submit && (
 								<Button {...getButtonStyle(view.submit)} onClick={onSubmit}>
-									{modalParser.text(view.submit.text, UiKit.BlockContext.NONE, 1)}
+									{modalParser.renderTextObject(view.submit.text, 1)}
 								</Button>
 							)}
-						</Modal.FooterControllers>
-					</Modal.Footer>
+						</ModalFooterControllers>
+					</ModalFooter>
 				</Modal>
 			</FocusScope>
 		</AnimatedVisibility>

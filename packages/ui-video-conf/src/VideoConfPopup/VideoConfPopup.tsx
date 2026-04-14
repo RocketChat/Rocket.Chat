@@ -5,7 +5,7 @@ import type { ReactNode, ReactElement, HTMLAttributes } from 'react';
 
 export const VideoConfPopupContainer = styled('div', ({ position: _position, ...props }: { position?: number }) => props)`
 	width: 100%;
-	position: absolute;
+	position: relative;
 	box-shadow:
 		0px 0px 1px 0px ${Palette.shadow['shadow-elevation-2x'].toString()},
 		0px 0px 12px 0px ${Palette.shadow['shadow-elevation-2y'].toString()};

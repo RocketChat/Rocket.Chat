@@ -265,6 +265,7 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 	updateVisitorStatus(token: string, status: ILivechatVisitor['status']): Promise<UpdateResult | Document>;
 	removeAgentByRoomId(roomId: string): Promise<UpdateResult>;
 	removeByVisitorToken(token: string): Promise<DeleteResult>;
+	removeByVisitorId(_id: string): Promise<DeleteResult>;
 	removeById(_id: string): Promise<DeleteResult>;
 	getVisitorLastMessageTsUpdateQueryByRoomId(lastMessageTs: Date, updater?: Updater<IOmnichannelRoom>): Updater<IOmnichannelRoom>;
 	setVisitorInactivityInSecondsById(roomId: string, visitorInactivity: any): Promise<UpdateResult>;
@@ -293,4 +294,5 @@ export interface ILivechatRoomsModel extends IBaseModel<IOmnichannelRoom> {
 		contact: Partial<Pick<ILivechatContact, '_id' | 'name'>>,
 	): Promise<UpdateResult | Document>;
 	findOpenByContactId(contactId: ILivechatContact['_id'], options?: FindOptions<IOmnichannelRoom>): FindCursor<IOmnichannelRoom>;
+	checkContactOpenRooms(contactId: ILivechatContact['_id']): Promise<IOmnichannelRoom | null>;
 }

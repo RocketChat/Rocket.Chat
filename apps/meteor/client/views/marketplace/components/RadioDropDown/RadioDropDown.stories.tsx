@@ -6,7 +6,6 @@ import RadioButtonList from '../RadioButtonList';
 import RadioDropDown from './RadioDropDown';
 
 export default {
-	title: 'Admin/Apps/SortDropDown',
 	component: RadioDropDown,
 };
 

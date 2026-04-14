@@ -7,7 +7,7 @@ type ServerMethodFunction<MethodName extends ServerMethodName> = (
 	...args: ServerMethodParameters<MethodName>
 ) => Promise<ServerMethodReturn<MethodName>>;
 
-/* @deprecated prefer the use of api endpoints (useEndpoint) */
+/** @deprecated prefer the use of api endpoints (useEndpoint) */
 export const useMethod = <MethodName extends keyof ServerMethods>(methodName: MethodName): ServerMethodFunction<MethodName> => {
 	const { callMethod } = useContext(ServerContext);
 

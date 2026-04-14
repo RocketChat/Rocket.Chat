@@ -9,14 +9,10 @@ export const useNewMessageNotification = () => {
 		if (!sub || sub.audioNotificationValue === 'none') {
 			return;
 		}
-		// TODO: Fix this - Room Notifications Preferences > sound > desktop is not working.
-		// plays the user notificationSound preference
 
-		// if (sub.audioNotificationValue && sub.audioNotificationValue !== '0') {
-		// 	void CustomSounds.play(sub.audioNotificationValue, {
-		// 		volume: Number((notificationsSoundVolume / 100).toPrecision(2)),
-		// 	});
-		// }
+		if (sub?.audioNotificationValue) {
+			return notificationSounds.playNewMessageCustom(sub.audioNotificationValue);
+		}
 
 		notificationSounds.playNewMessage();
 	});

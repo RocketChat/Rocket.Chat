@@ -1,4 +1,4 @@
-import { api } from '@rocket.chat/core-services';
+import { Upload } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
@@ -6,7 +6,6 @@ import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import { FileUpload } from '../../app/file-upload/server';
 import { settings } from '../../app/settings/server';
 
 declare module '@rocket.chat/ddp-client' {
@@ -45,9 +44,7 @@ export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']
 		});
 	}
 
-	await FileUpload.getStore('Avatars').deleteByName(user.username);
-	await Users.unsetAvatarData(user._id);
-	void api.broadcast('user.avatarUpdate', { username: user.username, avatarETag: undefined });
+	await Upload.resetUserAvatar(user);
 };
 
 Meteor.methods<ServerMethods>({
