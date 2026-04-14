@@ -10,28 +10,28 @@ import { anomalyAggregator } from '../lib/LoginAnomalyAggregator';
 const ignoredErrorTypes = ['totp-required', 'error-login-blocked-for-user'];
 
 Accounts.onLoginFailure(async (login: ILoginAttempt) => {
-	// do not save specific failed login attempts
-	if (
-		settings.get('Block_Multiple_Failed_Logins_Enabled') &&
-		login.error?.error &&
-		!ignoredErrorTypes.includes(String(login.error.error))
-	) {
-		await saveFailedLoginAttempts(login);
-	}
-
-logFailedLoginAttempts(login);
     const ip = login.connection.clientAddress;
     const userId = login.user?._id;
 
-    if (ip) {
-        anomalyAggregator.logFailure(ip, userId);
+    if (
+        settings.get('Block_Multiple_Failed_Logins_Enabled') &&
+        login.error?.error &&
+        !ignoredErrorTypes.includes(String(login.error.error))
+    ) {
+        await saveFailedLoginAttempts(login);
+
+        if (ip) {
+            anomalyAggregator.logFailure(ip, userId);
+        }
     }
+
+    logFailedLoginAttempts(login); 
 });
 
 callbacks.add('afterValidateLogin', (login: ILoginAttempt) => {
-	if (!settings.get('Block_Multiple_Failed_Logins_Enabled')) {
-		return;
-	}
+    if (!settings.get('Block_Multiple_Failed_Logins_Enabled')) {
+        return;
+    }
 
-	return saveSuccessfulLogin(login);
+    return saveSuccessfulLogin(login);
 });
