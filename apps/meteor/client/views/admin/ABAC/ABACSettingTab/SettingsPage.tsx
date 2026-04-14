@@ -39,9 +39,7 @@ const SettingsPage = () => {
 							<SettingField settingId='LDAP_ABAC_AttributeMap' />
 						</FieldGroup>
 					</AccordionItem>
-				</Accordion>
 
-				<Accordion>
 					<AccordionItem title={t('ABAC_Virtru_PDP_Configuration')}>
 						<SettingField settingId='ABAC_Virtru_Base_URL' />
 						<SettingField settingId='ABAC_Virtru_Client_ID' />
