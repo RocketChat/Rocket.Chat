@@ -246,10 +246,10 @@ export abstract class BaseRaw<
 		if (options.sort) {
 			paginationPipeline.push({ $sort: options.sort });
 		}
-		if (options.skip) {
+		if (options.skip !== undefined) {
 			paginationPipeline.push({ $skip: options.skip });
 		}
-		if (options.limit) {
+		if (options.limit !== undefined) {
 			paginationPipeline.push({ $limit: options.limit });
 		}
 
