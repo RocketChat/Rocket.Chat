@@ -2317,17 +2317,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		before(async function () {
 			this.timeout(10000);
-			// Wait for background sync to run once before tests start
+			// ldap.syncNow now also syncs ABAC attributes for all users
 			await request.post(`${v1}/ldap.syncNow`).set(credentials);
 			await sleep(5000);
-
-			// Force abac attribute sync for user john.young, that way we test it too :p
-			await request
-				.post(`${v1}/abac/users/sync`)
-				.set(credentials)
-				.send({ emails: ['john.young@space.air'] });
-
-			await sleep(2000);
 		});
 
 		it('should sync LDAP user john.young with mapped ABAC attributes', async () => {
@@ -2347,55 +2339,6 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('should sync ABAC attributes for SOME users via /abac/users/sync', async () => {
-			// Users already imported from LDAP, but without ABAC attributes.
-			// We now sync only SOME users, identified by their emails.
-			const resAlan = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'alan.bean' }).expect(200);
-			const resBuzz = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'buzz.aldrin' }).expect(200);
-
-			const alanBefore = resAlan.body.user as IUser;
-			const buzzBefore = resBuzz.body.user as IUser;
-
-			// Ensure they start without ABAC attributes (or with an empty array)
-			expect(alanBefore).to.have.property('username', 'alan.bean');
-			const alanBeforeAttrs = alanBefore.abacAttributes || [];
-			expect(alanBeforeAttrs).to.be.an('array').that.has.lengthOf(0);
-
-			expect(buzzBefore).to.have.property('username', 'buzz.aldrin');
-			const buzzBeforeAttrs = buzzBefore.abacAttributes || [];
-			expect(buzzBeforeAttrs).to.be.an('array').that.has.lengthOf(0);
-
-			// Sync SOME users by email
-			await request
-				.post(`${v1}/abac/users/sync`)
-				.set(credentials)
-				.send({
-					emails: ['alan.bean@space.air', 'buzz.aldrin@space.air'],
-				})
-				.expect(200);
-
-			const resAlanAfter = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'alan.bean' }).expect(200);
-			const resBuzzAfter = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'buzz.aldrin' }).expect(200);
-
-			const alanAfter = resAlanAfter.body.user as IUser;
-			const buzzAfter = resBuzzAfter.body.user as IUser;
-
-			const alanAfterAttrs = alanAfter.abacAttributes || [];
-			const buzzAfterAttrs = buzzAfter.abacAttributes || [];
-
-			expect(alanAfterAttrs).to.be.an('array').that.is.not.empty;
-			expect(buzzAfterAttrs).to.be.an('array').that.is.not.empty;
-
-			const alanDept = alanAfterAttrs.find((attr: IAbacAttributeDefinition) => attr.key === 'department');
-			const buzzDept = buzzAfterAttrs.find((attr: IAbacAttributeDefinition) => attr.key === 'department');
-
-			expect(alanDept).to.exist;
-			expect(alanDept?.values || []).to.be.an('array').that.is.not.empty;
-
-			expect(buzzDept).to.exist;
-			expect(buzzDept?.values || []).to.be.an('array').that.is.not.empty;
-		});
-
-		it('should support /abac/users/sync with usernames as param', async () => {
 			await request
 				.post(`${v1}/abac/users/sync`)
 				.set(credentials)
