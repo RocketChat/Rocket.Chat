@@ -4,8 +4,7 @@ on:
   release:
     types: [published]
   pull_request:
-    # REMOVE BEFORE MERGING FOR CRYING OUT LOUD
-    branches: develop
+    branches: '**'
     paths-ignore:
       - '**.md'
   merge_group:
