@@ -8,8 +8,9 @@ import type {
 	IExternalMediaCallHistoryItem,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
-import { type CallFeature, isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
+import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
+import type { CallFeature, ClientMediaSignal, ServerMediaSignal, ServerMediaCallSignal } from '@rocket.chat/media-signaling';
+import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
 import { callStateToTranslationKey, getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
@@ -70,6 +71,18 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		} catch (err) {
 			logger.error({ msg: 'Media Call Server failed to check if there are expired calls', err });
 		}
+	}
+
+	public async getUserStateSignals(uid: IUser['_id'], contractId: string): Promise<ServerMediaCallSignal[]> {
+		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
+
+		const signals: ServerMediaCallSignal[] = [];
+		for (const call of calls) {
+			const callSignals = await getSignalsForExistingCall(call, uid, contractId);
+			signals.push(...callSignals);
+		}
+
+		return signals;
 	}
 
 	private async saveCallToHistory(callId: IMediaCall['_id']): Promise<void> {

@@ -8,10 +8,14 @@ import type {
 	MediaSignalTransport,
 	MediaStreamFactory,
 	RandomStringFactory,
+	ServerMediaCallSignal,
+	ServerMediaSessionSignal,
 	ServerMediaSignal,
+	ServerMediaSignalRegistered,
 } from '../definition';
 import type { IClientMediaCall, CallActorType, CallContact, CallFeature, AnyMediaCallData } from '../definition/call';
 import type { IMediaSignalLogger } from '../definition/logger';
+import { SessionRegistration } from './components/SessionRegistration';
 
 export type MediaSignalingEvents = {
 	sessionStateChange: void;
@@ -19,6 +23,8 @@ export type MediaSignalingEvents = {
 	acceptedCall: { call: IClientMediaCall };
 	endedCall: void;
 	hiddenCall: void;
+	registered: { activeCalls: IClientMediaCall['callId'][] };
+	outOfSync: { missingCalls: IClientMediaCall['callId'][] };
 };
 
 export type MediaSignalingSessionConfig = {
@@ -34,6 +40,7 @@ export type MediaSignalingSessionConfig = {
 	iceGatheringTimeout?: number;
 	iceServers?: RTCIceServer[];
 	features: CallFeature[];
+	autoSync?: boolean;
 };
 
 const STATE_REPORT_INTERVAL = 60000;
@@ -65,12 +72,18 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	private lastState: { hasCall: boolean; hasVisibleCall: boolean; hasBusyCall: boolean };
 
+	private registration: SessionRegistration;
+
 	public get sessionId(): string {
 		return this._sessionId;
 	}
 
 	public get userId(): string {
 		return this._userId;
+	}
+
+	public get registered(): boolean {
+		return this.registration.registered;
 	}
 
 	constructor(private config: MediaSignalingSessionConfig) {
@@ -88,8 +101,12 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		this.lastState = { hasCall: false, hasVisibleCall: false, hasBusyCall: false };
 
 		this.transporter = new MediaSignalTransportWrapper(this._sessionId, config.transport, config.logger);
+		this.registration = new SessionRegistration({
+			logger: config.logger,
+			registerFn: () => this.sendRegisterSignal(),
+		});
 
-		this.register();
+		this.registration.register();
 		this.enableStateReport(STATE_REPORT_INTERVAL);
 	}
 
@@ -113,6 +130,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 	}
 
 	public endSession(): void {
+		this.registration.endSession();
 		this.disableStateReport();
 
 		// best‑effort: stop capturing audio
@@ -126,6 +144,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 
 		this.knownCalls.clear();
+		this.emit('sessionStateChange');
 	}
 
 	public getCallData(callId: string): IClientMediaCall | null {
@@ -175,7 +194,21 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 
 	public async processSignal(signal: ServerMediaSignal): Promise<void> {
 		this.config.logger?.debug('MediaSignalingSession.processSignal', signal);
+		if ('callId' in signal) {
+			return this.processCallSignal(signal);
+		}
 
+		return this.processSessionSignal(signal);
+	}
+
+	private processSessionSignal(signal: ServerMediaSessionSignal): void {
+		switch (signal.type) {
+			case 'registered':
+				return this.confirmSessionRegistered(signal);
+		}
+	}
+
+	private async processCallSignal(signal: ServerMediaCallSignal): Promise<void> {
 		if (this.isCallIgnored(signal.callId)) {
 			return;
 		}
@@ -228,16 +261,6 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		await call.requestCall({ type: calleeType, id: calleeId }, this.config.features, contactInfo);
 	}
 
-	public register(): void {
-		this.lastRegisterTimestamp = new Date();
-
-		this.transporter.sendSignal({
-			type: 'register',
-			contractId: this._sessionId,
-			...(this.config.oldSessionId && { oldContractId: this.config.oldSessionId }),
-		});
-	}
-
 	public setIceGatheringTimeout(newTimeout: number): void {
 		this.config.iceGatheringTimeout = newTimeout;
 	}
@@ -266,7 +289,36 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		}
 	}
 
-	private getExistingCallBySignal(signal: ServerMediaSignal): ClientMediaCall | null {
+	private sendRegisterSignal(): void {
+		this.lastRegisterTimestamp = new Date();
+		this.transporter.sendSignal({
+			type: 'register',
+			contractId: this._sessionId,
+			requestSignals: Boolean(this.config.autoSync),
+			...(this.config.oldSessionId && { oldContractId: this.config.oldSessionId }),
+		});
+	}
+
+	private confirmSessionRegistered(signal: ServerMediaSignalRegistered): void {
+		this.config.logger?.debug('MediaSignalingSession.sessionRegistered', signal.calls);
+		const wasRegistered = this.registered;
+		this.registration.confirmRegistration();
+
+		this.emit('registered', { activeCalls: signal.activeCalls });
+
+		if (!wasRegistered) {
+			this.onSessionStateChange();
+		}
+
+		if (!this.config.autoSync) {
+			const missingCalls = signal.calls.filter((callId) => !this.knownCalls.has(callId) && !this.ignoredCalls.has(callId));
+			if (missingCalls.length) {
+				this.emit('outOfSync', { missingCalls });
+			}
+		}
+	}
+
+	private getExistingCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall | null {
 		const existingCall = this.knownCalls.get(signal.callId);
 		if (existingCall) {
 			return existingCall;
@@ -284,7 +336,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return null;
 	}
 
-	private getReplacedCallBySignal(signal: ServerMediaSignal): ClientMediaCall | null {
+	private getReplacedCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall | null {
 		if ('replacingCallId' in signal && signal.replacingCallId) {
 			return this.knownCalls.get(signal.replacingCallId) || null;
 		}
@@ -292,7 +344,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		return null;
 	}
 
-	private getOrCreateCallBySignal(signal: ServerMediaSignal): ClientMediaCall {
+	private getOrCreateCallBySignal(signal: ServerMediaCallSignal): ClientMediaCall {
 		this.config.logger?.debug('MediaSignalingSession.getOrCreateCallBySignal', signal);
 		const existingCall = this.getExistingCallBySignal(signal);
 		if (existingCall) {
@@ -342,7 +394,7 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 			}
 		}
 
-		this.register();
+		this.registration.reRegister();
 	}
 
 	private async setInputTrack(newInputTrack: MediaStreamTrack | null): Promise<void> {
@@ -643,6 +695,14 @@ export class MediaSignalingSession extends Emitter<MediaSignalingEvents> {
 		const hadCall = this.lastState.hasCall;
 		const hadVisibleCall = this.lastState.hasVisibleCall;
 		const hadBusyCall = this.lastState.hasBusyCall;
+
+		if (!this.registration.active) {
+			if (hadCall) {
+				this.emit('endedCall');
+			}
+			this.config.logger?.debug('skipping session events on inactive session');
+			return;
+		}
 
 		// Do not skip local calls if we transitioned from a different active call to it
 		const mainCall = this.getMainCall(!hadCall);
