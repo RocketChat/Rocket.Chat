@@ -98,3 +98,14 @@ export class PdpUnavailableError extends AbacError {
 		super(AbacErrorCode.PdpUnavailable, details);
 	}
 }
+
+export class PdpHealthCheckError extends Error {
+	public readonly errorCode: string;
+
+	constructor(errorCode: string) {
+		super(errorCode);
+		this.errorCode = errorCode;
+
+		Object.setPrototypeOf(this, new.target.prototype);
+	}
+}

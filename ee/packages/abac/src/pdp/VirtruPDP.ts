@@ -3,7 +3,7 @@ import { Rooms, Users } from '@rocket.chat/models';
 import { serverFetch } from '@rocket.chat/server-fetch';
 import pLimit from 'p-limit';
 
-import { OnlyCompliantCanBeAddedToRoomError } from '../errors';
+import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { logger } from '../logger';
 import type {
 	Decision,
@@ -20,7 +20,8 @@ import type {
 
 const pdpLogger = logger.section('VirtruPDP');
 
-const HEALTH_CHECK_TIMEOUT = 10000;
+const HEALTH_CHECK_TIMEOUT = 5000;
+const REQUEST_TIMEOUT = 10000;
 
 export class VirtruPDP implements IPolicyDecisionPoint {
 	private tokenCache: ITokenCache | null = null;
@@ -40,6 +41,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		try {
 			const response = await serverFetch(`${this.config.baseUrl}/healthz`, {
 				method: 'GET',
+				timeout: HEALTH_CHECK_TIMEOUT,
 				// SECURITY: This can only be configured by users with enough privileges. It's ok to disable this check here.
 				ignoreSsrfValidation: true,
 			});
@@ -69,7 +71,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			this.tokenCache = null;
 			return await this.getClientToken();
 		} catch {
-			throw new Error('ABAC_PDP_Health_IdP_Failed');
+			throw new PdpHealthCheckError('ABAC_PDP_Health_IdP_Failed');
 		}
 	}
 
@@ -91,7 +93,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				throw new Error();
 			}
 		} catch {
-			throw new Error('ABAC_PDP_Health_Platform_Failed');
+			throw new PdpHealthCheckError('ABAC_PDP_Health_Platform_Failed');
 		}
 	}
 
@@ -110,7 +112,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 				throw new Error();
 			}
 		} catch {
-			throw new Error('ABAC_PDP_Health_Authorization_Failed');
+			throw new PdpHealthCheckError('ABAC_PDP_Health_Authorization_Failed');
 		}
 	}
 
@@ -120,6 +122,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		}
 		const response = await serverFetch(`${this.config.oidcEndpoint}/protocol/openid-connect/token`, {
 			method: 'POST',
+			timeout: REQUEST_TIMEOUT,
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			body: new URLSearchParams({
 				grant_type: 'client_credentials',
@@ -151,6 +154,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const response = await serverFetch(`${this.config.baseUrl}${endpoint}`, {
 			method: 'POST',
+			timeout: REQUEST_TIMEOUT,
 			headers: {
 				'Content-Type': 'application/json',
 				'Authorization': `Bearer ${token}`,
@@ -329,7 +333,9 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 
 		const responses = await this.getDecisionBulk(decisionRequests);
 
-		const hasNonCompliant = responses.some((resp) => resp?.resourceDecisions?.some((rd) => rd.decision !== 'DECISION_PERMIT'));
+		const hasNonCompliant = responses.some(
+			(resp) => !resp?.resourceDecisions?.length || resp.resourceDecisions.some((rd) => rd.decision !== 'DECISION_PERMIT'),
+		);
 
 		if (hasNonCompliant) {
 			throw new OnlyCompliantCanBeAddedToRoomError();
@@ -356,7 +362,8 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		for await (const user of users) {
 			const entityKey = this.getUserEntityKey(user);
 			if (!entityKey) {
-				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, skipping', userId: user._id });
+				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: user._id });
+				nonCompliantUsers.push(user);
 				continue;
 			}
 
@@ -384,7 +391,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		const responses = await this.getDecisionBulk(decisionRequests);
 
 		responses.forEach((resp, index) => {
-			const permitted = resp?.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
+			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
 			if (!permitted && requestUserIndex[index]) {
 				nonCompliantUsers.push(requestUserIndex[index]);
 			}
@@ -402,10 +409,15 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		const requestIndex: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: AtLeast<IRoom, '_id' | 'abacAttributes'> }> = [];
 		const allRequests: IGetDecisionBulkRequest[] = [];
 
+		const nonCompliant: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }> = [];
+
 		for (const { user, rooms } of entries) {
 			const entityKey = this.getUserEntityKey(user);
 			if (!entityKey) {
-				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, skipping', userId: user._id });
+				pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant', userId: user._id });
+				for (const room of rooms) {
+					nonCompliant.push({ user, room: room as IRoom });
+				}
 				continue;
 			}
 
@@ -429,15 +441,13 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		}
 
 		if (!allRequests.length) {
-			return [];
+			return nonCompliant;
 		}
 
 		const responses = await this.getDecisionBulk(allRequests);
 
-		const nonCompliant: Array<{ user: Pick<IUser, '_id' | 'emails' | 'username'>; room: IRoom }> = [];
-
 		responses.forEach((resp, index) => {
-			const permitted = resp?.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
+			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
 			if (!permitted && requestIndex[index]) {
 				nonCompliant.push({ user: requestIndex[index].user, room: requestIndex[index].room as IRoom });
 			}
@@ -452,18 +462,21 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 			return [];
 		}
 
-		const entityKey = this.getUserEntityKey(user);
-		if (!entityKey) {
-			pdpLogger.warn({ msg: 'User has no entity key for Virtru PDP evaluation, skipping', userId: user._id });
-			return [];
-		}
-
 		const abacRooms = await Rooms.findPrivateRoomsByIdsWithAbacAttributes(roomIds, {
 			projection: { _id: 1, abacAttributes: 1 },
 		}).toArray();
 
 		if (!abacRooms.length) {
 			return [];
+		}
+
+		const entityKey = this.getUserEntityKey(user);
+		if (!entityKey) {
+			pdpLogger.warn({
+				msg: 'User has no entity key for Virtru PDP evaluation, treating as non-compliant for all ABAC rooms',
+				userId: user._id,
+			});
+			return abacRooms as IRoom[];
 		}
 
 		const decisionRequests = abacRooms.map((room) => ({
@@ -486,7 +499,7 @@ export class VirtruPDP implements IPolicyDecisionPoint {
 		const nonCompliantRooms: IRoom[] = [];
 
 		responses.forEach((resp, index) => {
-			const permitted = resp?.resourceDecisions?.every((rd) => rd.decision === 'DECISION_PERMIT');
+			const permitted = resp?.resourceDecisions?.length && resp.resourceDecisions.every((rd) => rd.decision === 'DECISION_PERMIT');
 			if (!permitted && abacRooms[index]) {
 				nonCompliantRooms.push(abacRooms[index]);
 			}

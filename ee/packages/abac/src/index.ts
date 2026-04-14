@@ -25,6 +25,7 @@ import {
 	AbacUnsupportedObjectTypeError,
 	AbacUnsupportedOperationError,
 	PdpUnavailableError,
+	PdpHealthCheckError,
 } from './errors';
 import {
 	getAbacRoom,
@@ -755,7 +756,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 	async getPDPHealth(): Promise<void> {
 		if (!this.pdp) {
-			throw new Error('ABAC_PDP_Health_No_PDP');
+			throw new PdpHealthCheckError('ABAC_PDP_Health_No_PDP');
 		}
 
 		await this.pdp.getHealthStatus();
@@ -807,5 +808,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 export { LocalPDP, VirtruPDP } from './pdp';
 export type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
+export { PdpHealthCheckError } from './errors';
 
 export default AbacService;

@@ -17,6 +17,7 @@
   "ABAC_PDP_Health_IdP_Failed": "Unable to connect to the Identity Provider (IdP) or generate a token",
   "ABAC_PDP_Health_Platform_Failed": "Unable to reach the Virtru platform health endpoint",
   "ABAC_PDP_Health_Authorization_Failed": "Unable to perform an authenticated request to the Virtru platform. OIDC Client may not have admin rights.",
+  "ABAC_PDP_Health_Not_OK": "PDP health check failed due to an unexpected error",
   "ABAC_Virtru_Test_Connection": "Test Connection",
   "ABAC_Virtru_Test_Connection_Action": "Test connection",
   "ABAC_Enabled": "Enable Attribute Based Access Control (ABAC)",
