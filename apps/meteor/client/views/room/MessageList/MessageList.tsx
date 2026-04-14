@@ -12,7 +12,8 @@ import { MessageListItem } from './MessageListItem';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import { useMessages } from './hooks/useMessages';import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
+import { useMessages } from './hooks/useMessages';
+import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
 import { RoomManager } from '../../../lib/RoomManager';
@@ -91,10 +92,16 @@ export const MessageList = function MessageList({
 
 		if (!isRoomInitialized.current) {
 			const store = RoomManager.getStore(rid);
-			if (!store?.atBottom && store?.scroll) {
+			if (!store?.atBottom && store?.scroll !== undefined) {
 				shouldJumpToBottom.current = false;
-				virtualizerRef.current?.scrollTo(store?.scroll);
-				console.log('room initialized');
+				const index = virtualizerRef.current?.findItemIndex(store?.scroll);
+				if (index !== undefined) {
+					virtualizerRef.current?.scrollToIndex(index, {
+						align: 'start',
+					});
+				} else {
+					virtualizerRef.current?.scrollTo(store?.scroll);
+				}
 				isRoomInitialized.current = true;
 				return;
 			}
@@ -108,7 +115,7 @@ export const MessageList = function MessageList({
 			// When new messages arrive, this effect is triggered, but the latest message is not on the index, so it scrolls to the previous index
 			// TODO: Find if there is a better way to scroll to the latest message
 			handle?.scrollToIndex(lastItemIndex + 1, {
-				align: 'end',
+				align: 'center',
 			});
 		}
 		// If new messages arrive and is at bottom, scroll to keep at bottom
