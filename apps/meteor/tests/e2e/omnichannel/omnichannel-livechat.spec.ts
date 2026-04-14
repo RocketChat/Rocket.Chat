@@ -1,6 +1,5 @@
 import type { Page } from 'playwright-core';
 
-import { ddpLogin } from '../../data/users.helper';
 import { createFakeVisitor } from '../../mocks/data';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
@@ -265,11 +264,9 @@ test.describe('OC - Livechat - Resume chat after closing', () => {
 test.describe('OC - Livechat - Close chat using widget', () => {
 	let poLiveChat: OmnichannelLiveChat;
 	let agent: Awaited<ReturnType<typeof createAgent>>;
-	let ws: WebSocket;
 
 	test.beforeAll(async ({ api }) => {
 		agent = await createAgent(api, 'user1');
-		ws = await ddpLogin(Users.user1.data.loginToken);
 	});
 
 	test.beforeEach(async ({ page, api }) => {
@@ -280,7 +277,6 @@ test.describe('OC - Livechat - Close chat using widget', () => {
 
 	test.afterAll(async () => {
 		await agent.delete();
-		ws.close();
 	});
 
 	test('OC - Livechat - Close Chat', async () => {
