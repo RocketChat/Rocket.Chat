@@ -1,5 +1,3 @@
-import { transformSync } from '@babel/core';
-import presetEnv from '@babel/preset-env';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
@@ -9,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
+import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
@@ -84,49 +83,28 @@ export const updateIncomingIntegration = async (
 
 	const isFrozen = isScriptEngineFrozen(scriptEngine);
 
-	if (!isFrozen) {
-		let scriptCompiled: string | undefined;
-		let scriptError: Pick<Error, 'name' | 'message' | 'stack'> | undefined;
+	// Default to transpiling with Babel for backwards compatibility; integrations
+	// can opt-out per-record by setting `scriptTranspile: false` (removed in 9.0.0).
+	const scriptTranspile = integration.scriptTranspile !== false;
 
-		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
-			try {
-				const result = transformSync(integration.script, {
-					presets: [presetEnv],
-					compact: true,
-					minified: true,
-					comments: false,
-				});
-
-				// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
-				scriptCompiled = result?.code ?? undefined;
-				scriptError = undefined;
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptCompiled,
-						},
-						$unset: { scriptError: 1 as const },
-					},
-				);
-			} catch (e) {
-				scriptCompiled = undefined;
-				if (e instanceof Error) {
-					const { name, message, stack } = e;
-					scriptError = { name, message, stack };
-				}
-				await Integrations.updateOne(
-					{ _id: integrationId },
-					{
-						$set: {
-							scriptError,
-						},
-						$unset: {
-							scriptCompiled: 1 as const,
-						},
-					},
-				);
-			}
+	if (!isFrozen && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
+		const { script, error } = compileIntegrationScript(integration.script, { transpile: scriptTranspile });
+		if (error) {
+			await Integrations.updateOne(
+				{ _id: integrationId },
+				{
+					$set: { scriptError: error, scriptTranspile },
+					$unset: { scriptCompiled: 1 as const },
+				},
+			);
+		} else {
+			await Integrations.updateOne(
+				{ _id: integrationId },
+				{
+					$set: { scriptCompiled: script, scriptTranspile },
+					$unset: { scriptError: 1 as const },
+				},
+			);
 		}
 	}
 
@@ -192,6 +170,7 @@ export const updateIncomingIntegration = async (
 							script: integration.script,
 							scriptEnabled: integration.scriptEnabled,
 							scriptEngine,
+							scriptTranspile,
 						}),
 				...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,

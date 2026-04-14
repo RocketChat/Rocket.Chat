@@ -1,5 +1,3 @@
-import { transformSync } from '@babel/core';
-import presetEnv from '@babel/preset-env';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
@@ -7,11 +5,11 @@ import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
 import { notifyOnIntegrationChanged } from '../../../../lib/server/lib/notifyListener';
+import { compileIntegrationScript } from '../../lib/compileIntegrationScript';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../lib/validateScriptEngine';
 
 const validChannelChars = ['@', '#'];
@@ -92,9 +90,14 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		});
 	}
 
+	// Default to transpiling with Babel for backwards compatibility; integrations
+	// can opt-out per-record by setting `scriptTranspile: false` (removed in 9.0.0).
+	const scriptTranspile = integration.scriptTranspile !== false;
+
 	const integrationData: IIncomingIntegration = {
 		...integration,
 		scriptEngine: integration.scriptEngine ?? 'isolated-vm',
+		scriptTranspile,
 		type: 'webhook-incoming',
 		channel: channels,
 		overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled ?? false,
@@ -104,27 +107,19 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		_createdBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
 	};
 
-	// Only compile the script if it is enabled and using a sandbox that is not frozen
 	if (
 		!isScriptEngineFrozen(integrationData.scriptEngine) &&
 		integration.scriptEnabled === true &&
 		integration.script &&
 		integration.script.trim() !== ''
 	) {
-		try {
-			const result = transformSync(integration.script, {
-				presets: [presetEnv],
-				compact: true,
-				minified: true,
-				comments: false,
-			});
-
-			// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
-			integrationData.scriptCompiled = result?.code ?? undefined;
-			delete integrationData.scriptError;
-		} catch (e) {
+		const { script, error } = compileIntegrationScript(integration.script, { transpile: scriptTranspile });
+		if (error) {
 			integrationData.scriptCompiled = undefined;
-			integrationData.scriptError = e instanceof Error ? _.pick(e, 'name', 'message', 'stack') : undefined;
+			integrationData.scriptError = error;
+		} else {
+			integrationData.scriptCompiled = script;
+			delete integrationData.scriptError;
 		}
 	}
 

@@ -87,6 +87,7 @@ export const updateOutgoingIntegration = async (
 							script: integration.script,
 							scriptEnabled: integration.scriptEnabled,
 							scriptEngine,
+							scriptTranspile: integration.scriptTranspile,
 							...(integration.scriptCompiled ? { scriptCompiled: integration.scriptCompiled } : { scriptError: integration.scriptError }),
 						}),
 				triggerWords: integration.triggerWords,

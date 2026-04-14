@@ -16,6 +16,13 @@ export interface IIncomingIntegration extends IRocketChatRecord {
 	script: string;
 	scriptCompiled?: string;
 	scriptError?: Pick<Error, 'name' | 'message' | 'stack'>;
+	/**
+	 * Whether to transpile the script with Babel before storing it in
+	 * `scriptCompiled`. Defaults to `true`. Set to `false` to run the script
+	 * as-is inside `isolated-vm` (the 9.0.0 default). Deprecated field —
+	 * removed in 9.0.0 together with the Babel transpilation path.
+	 */
+	scriptTranspile?: boolean;
 
 	name: string;
 	enabled: boolean;
@@ -56,6 +63,13 @@ export interface IOutgoingIntegration extends IRocketChatRecord {
 	script: string;
 	scriptCompiled?: string;
 	scriptError?: Pick<Error, 'name' | 'message' | 'stack'>;
+	/**
+	 * Whether to transpile the script with Babel before storing it in
+	 * `scriptCompiled`. Defaults to `true`. Set to `false` to run the script
+	 * as-is inside `isolated-vm` (the 9.0.0 default). Deprecated field —
+	 * removed in 9.0.0 together with the Babel transpilation path.
+	 */
+	scriptTranspile?: boolean;
 	runOnEdits?: boolean;
 
 	retryFailedCalls?: boolean;
