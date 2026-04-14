@@ -24,7 +24,7 @@ import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPrefer
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
 import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
-import { FIELD_ANCHORS, useScrollToHash } from '../../../hooks/useScrollToHash';
+import { TARGET_ANCHORS, useHasValidLocationHash } from '../../../hooks/useHasValidLocationHash';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { links } from '../../../lib/links';
 
@@ -35,7 +35,7 @@ const AccessibilityPage = () => {
 
 	const createFontStyleElement = useCreateFontStyleElement();
 	const displayRolesEnabled = useSetting('UI_DisplayRoles');
-	const { shouldExpand } = useScrollToHash();
+	const shouldExpand = useHasValidLocationHash();
 
 	const timeFormatOptions = useMemo(
 		(): SelectOption[] => [
@@ -154,7 +154,7 @@ const AccessibilityPage = () => {
 										{t('Mentions_with_@_symbol_description')}
 									</FieldDescription>
 								</Field>
-								<Field id={FIELD_ANCHORS.clockMode}>
+								<Field id={TARGET_ANCHORS.clockMode}>
 									<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
 									<FieldRow>
 										<Controller
@@ -164,7 +164,7 @@ const AccessibilityPage = () => {
 										/>
 									</FieldRow>
 								</Field>
-								<Field id={FIELD_ANCHORS.hideUsernames}>
+								<Field id={TARGET_ANCHORS.hideUsernames}>
 									<FieldRow>
 										<FieldLabel>{t('Show_usernames')}</FieldLabel>
 										<Controller
@@ -178,7 +178,7 @@ const AccessibilityPage = () => {
 									<FieldDescription>{t('Show_or_hide_the_username_of_message_authors')}</FieldDescription>
 								</Field>
 								{displayRolesEnabled && (
-									<Field id={FIELD_ANCHORS.hideRoles}>
+									<Field id={TARGET_ANCHORS.hideRoles}>
 										<FieldRow>
 											<FieldLabel>{t('Show_roles')}</FieldLabel>
 											<Controller
