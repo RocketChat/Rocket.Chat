@@ -3921,16 +3921,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@file-type/xml@npm:^0.4.3":
-  version: 0.4.4
-  resolution: "@file-type/xml@npm:0.4.4"
-  dependencies:
-    sax: "npm:^1.4.1"
-    strtok3: "npm:^10.3.4"
-  checksum: 10/a7c9bdbdb188fbc11bb08efdc699b49c5367952f732e3a9505396e905edfe47e2f924623861827be992a7899158b1864515770ec9252a43d6c0e37e404b4bd7a
-  languageName: node
-  linkType: hard
-
 "@formatjs/ecma402-abstract@npm:1.12.0":
   version: 1.12.0
   resolution: "@formatjs/ecma402-abstract@npm:1.12.0"
@@ -10046,7 +10036,7 @@ __metadata:
     image-size: "npm:^1.2.1"
     imap: "npm:^0.8.19"
     ip-range-check: "npm:^0.2.0"
-    is-svg: "npm:^6.1.0"
+    is-svg: "npm:^5.1.0"
     isolated-vm: "npm:5.0.4"
     jest: "npm:~30.2.0"
     jschardet: "npm:^3.1.4"
@@ -22357,6 +22347,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fast-xml-parser@npm:^4.4.1":
+  version: 4.5.6
+  resolution: "fast-xml-parser@npm:4.5.6"
+  dependencies:
+    strnum: "npm:^1.0.5"
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: 10/dd77cce4b1b322400339147b72b2d315bddc12c6ed3ca82bfc87543ced6dd8d81a6e0b429489e2f048f39258aa2023580654c8934881c633b9d58a6e79672349
+  languageName: node
+  linkType: hard
+
 "fast-xml-parser@npm:^5.3.4":
   version: 5.5.11
   resolution: "fast-xml-parser@npm:5.5.11"
@@ -25068,12 +25069,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"is-svg@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "is-svg@npm:6.1.0"
+"is-svg@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "is-svg@npm:5.1.0"
   dependencies:
-    "@file-type/xml": "npm:^0.4.3"
-  checksum: 10/16b106b83398ded673b4465773e30ee5857a444125fc2153c225f403016e341af39a10bfc1d0c1104c2cac3afcc3be446f786eb6184913c5f069ad85b94030e0
+    fast-xml-parser: "npm:^4.4.1"
+  checksum: 10/9ea9a076cce6c77fd4b2d7422be7e411f253f25c013eff8d6c21b324dfc31e27c1d31ed4dde993970e091f1317263a0470fcc02e8c0e876157fcc9efcce31389
   languageName: node
   linkType: hard
 
@@ -33706,13 +33707,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sax@npm:^1.4.1":
-  version: 1.6.0
-  resolution: "sax@npm:1.6.0"
-  checksum: 10/0909cedcd9f011ceeac80c0240a92d64ef712cf6c04e0f6ee236a8d812f86a59f61bee6bb5da28d75306db050b99e0593051ea77351795822253b984af6cf044
-  languageName: node
-  linkType: hard
-
 "saxes@npm:^6.0.0":
   version: 6.0.0
   resolution: "saxes@npm:6.0.0"
@@ -35207,15 +35201,6 @@ __metadata:
   version: 2.2.3
   resolution: "strnum@npm:2.2.3"
   checksum: 10/fb70206301858c319f59ed34fecedf90ac3b821692c2accd403d9d4a3384223a09df8fd92b130bbd4e885b67b7790715c003405ce5f959d9cabbf07d41d62aa8
-  languageName: node
-  linkType: hard
-
-"strtok3@npm:^10.3.4":
-  version: 10.3.5
-  resolution: "strtok3@npm:10.3.5"
-  dependencies:
-    "@tokenizer/token": "npm:^0.3.0"
-  checksum: 10/7279dc97a7207a5664ea07cf5304b94968db4f02d64d2732be8e7a3a31a876375126749cd36a00d0bd54c891875f3e47175f8194d40c64118f3265dbc241aaca
   languageName: node
   linkType: hard
 

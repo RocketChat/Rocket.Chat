@@ -223,7 +223,7 @@
 		"image-size": "^1.2.1",
 		"imap": "^0.8.19",
 		"ip-range-check": "^0.2.0",
-		"is-svg": "^6.1.0",
+		"is-svg": "^5.1.0",
 		"isolated-vm": "5.0.4",
 		"jschardet": "^3.1.4",
 		"jsdom": "^26.1.0",
