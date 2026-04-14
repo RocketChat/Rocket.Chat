@@ -66,9 +66,15 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.onSettingChanged('ABAC_PDP_Type', async ({ setting }): Promise<void> => {
 			const { value } = setting;
-			if (value === 'local' || value === 'virtru') {
-				this.setPdpStrategy(value);
+			if (value !== 'local' && value !== 'virtru') {
+				return;
 			}
+
+			if (value === 'virtru') {
+				await this.loadVirtruPdpConfig();
+			}
+
+			this.setPdpStrategy(value);
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -110,6 +116,26 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 	}
 
+	private async loadVirtruPdpConfig(): Promise<void> {
+		const [baseUrl, clientId, clientSecret, oidcEndpoint, defaultEntityKey, attributeNamespace] = await Promise.all([
+			Settings.get<string>('ABAC_Virtru_Base_URL'),
+			Settings.get<string>('ABAC_Virtru_Client_ID'),
+			Settings.get<string>('ABAC_Virtru_Client_Secret'),
+			Settings.get<string>('ABAC_Virtru_OIDC_Endpoint'),
+			Settings.get<string>('ABAC_Virtru_Default_Entity_Key'),
+			Settings.get<string>('ABAC_Virtru_Attribute_Namespace'),
+		]);
+
+		this.virtruPdpConfig = {
+			baseUrl: stripTrailingSlashes(baseUrl || ''),
+			clientId: clientId || '',
+			clientSecret: clientSecret || '',
+			oidcEndpoint: stripTrailingSlashes(oidcEndpoint || ''),
+			defaultEntityKey: (defaultEntityKey as VirtruPDPConfig['defaultEntityKey']) || 'emailAddress',
+			attributeNamespace: attributeNamespace || 'example.com',
+		};
+	}
+
 	private syncVirtruPdpConfig(): void {
 		if (this.pdp instanceof VirtruPDP) {
 			this.pdp.updateConfig({ ...this.virtruPdpConfig });
@@ -148,24 +174,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		const [baseUrl, clientId, clientSecret, oidcEndpoint, defaultEntityKey, attributeNamespace] = await Promise.all([
-			Settings.get<string>('ABAC_Virtru_Base_URL'),
-			Settings.get<string>('ABAC_Virtru_Client_ID'),
-			Settings.get<string>('ABAC_Virtru_Client_Secret'),
-			Settings.get<string>('ABAC_Virtru_OIDC_Endpoint'),
-			Settings.get<string>('ABAC_Virtru_Default_Entity_Key'),
-			Settings.get<string>('ABAC_Virtru_Attribute_Namespace'),
-		]);
-
-		this.virtruPdpConfig = {
-			baseUrl: stripTrailingSlashes(baseUrl || ''),
-			clientId: clientId || '',
-			clientSecret: clientSecret || '',
-			oidcEndpoint: stripTrailingSlashes(oidcEndpoint || ''),
-			defaultEntityKey: (defaultEntityKey as VirtruPDPConfig['defaultEntityKey']) || 'emailAddress',
-			attributeNamespace: attributeNamespace || 'example.com',
-		};
-
+		await this.loadVirtruPdpConfig();
 		this.setPdpStrategy('virtru');
 	}
 
@@ -493,6 +502,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	async removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor): Promise<void> {
+		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
