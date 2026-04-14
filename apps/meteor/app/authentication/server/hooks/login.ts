@@ -5,6 +5,7 @@ import { settings } from '../../../settings/server';
 import type { ILoginAttempt } from '../ILoginAttempt';
 import { logFailedLoginAttempts } from '../lib/logLoginAttempts';
 import { saveFailedLoginAttempts, saveSuccessfulLogin } from '../lib/restrictLoginAttempts';
+import { anomalyAggregator } from '../lib/LoginAnomalyAggregator';
 
 const ignoredErrorTypes = ['totp-required', 'error-login-blocked-for-user'];
 
@@ -18,7 +19,13 @@ Accounts.onLoginFailure(async (login: ILoginAttempt) => {
 		await saveFailedLoginAttempts(login);
 	}
 
-	logFailedLoginAttempts(login);
+logFailedLoginAttempts(login);
+    const ip = login.connection.clientAddress;
+    const userId = login.user?._id;
+
+    if (ip) {
+        anomalyAggregator.logFailure(ip, userId);
+    }
 });
 
 callbacks.add('afterValidateLogin', (login: ILoginAttempt) => {
