@@ -118,6 +118,7 @@ export const parseFileIntoMessageAttachments = async (
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
+			description: file.description,
 			title_link: fileUrl,
 			title_link_download: true,
 			audio_url: fileUrl,
@@ -130,6 +131,7 @@ export const parseFileIntoMessageAttachments = async (
 		const attachment: FileAttachmentProps = {
 			title: file.name,
 			type: 'file',
+			description: file.description,
 			title_link: fileUrl,
 			title_link_download: true,
 			video_url: fileUrl,
@@ -143,6 +145,7 @@ export const parseFileIntoMessageAttachments = async (
 			title: file.name,
 			type: 'file',
 			format: getFileExtension(file.name),
+			description: file.description,
 			title_link: fileUrl,
 			title_link_download: true,
 			size: file.size as number,
