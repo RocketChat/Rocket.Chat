@@ -22,11 +22,15 @@ export const useRouterScrollToHash = (router: RouterContextValue) => {
 	const id = hash.slice(1);
 	const hasValidHash = availableHashes.has(id);
 
-	const previousHash = useRef(hash);
+	const previousHash = useRef<string | null>(null);
 
 	useEffect(() => {
-		if (!hasValidHash || hash === previousHash.current) {
+		if (!hasValidHash) {
 			previousHash.current = hash;
+			return;
+		}
+
+		if (hash === previousHash.current) {
 			return;
 		}
 
