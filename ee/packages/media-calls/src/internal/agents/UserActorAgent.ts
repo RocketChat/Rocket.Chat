@@ -6,8 +6,10 @@ import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 import { UserActorSignalProcessor } from './CallSignalProcessor';
 import { BaseMediaCallAgent } from '../../base/BaseAgent';
 import { logger } from '../../logger';
-import { buildNewCallSignal } from '../../server/buildNewCallSignal';
 import { getMediaCallServer } from '../../server/injection';
+import { getInitialOfferSignal } from '../../server/signals/getInitialOfferSignal';
+import { getNewCallSignal } from '../../server/signals/getNewCallSignal';
+import { getStateNotification } from '../../server/signals/getStateNotification';
 
 export class UserActorAgent extends BaseMediaCallAgent {
 	public async processSignal(call: IMediaCall, signal: ClientMediaSignal): Promise<void> {
@@ -21,32 +23,24 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		getMediaCallServer().sendSignal(this.actorId, signal);
 	}
 
-	public async onCallAccepted(callId: string, data: { signedContractId: string; features: CallFeature[] }): Promise<void> {
-		await this.sendSignal({
-			callId,
-			type: 'notification',
-			notification: 'accepted',
-			...data,
-		});
+	public async onCallAccepted(call: IMediaCall): Promise<void> {
+		const stateSignal = getStateNotification(call, this.role);
+		if (stateSignal?.notification !== 'accepted') {
+			return;
+		}
+
+		await this.sendSignal(stateSignal);
 
 		if (this.role !== 'callee') {
 			return;
 		}
 
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(callId);
-		if (!negotiation?.offer) {
+		const initialOfferSignal = await getInitialOfferSignal(call, this.role);
+		if (!initialOfferSignal) {
 			logger.debug('The call was accepted but the webrtc offer is not yet available.');
 			return;
 		}
-
-		await this.sendSignal({
-			callId,
-			toContractId: data.signedContractId,
-			type: 'remote-sdp',
-			sdp: negotiation.offer,
-			negotiationId: negotiation._id,
-			streams: negotiation.offerStreams,
-		});
+		await this.sendSignal(initialOfferSignal);
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
@@ -71,7 +65,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 			await this.getOrCreateChannel(call, call.caller.contractId);
 		}
 
-		await this.sendSignal(buildNewCallSignal(call, this.role));
+		await this.sendSignal(getNewCallSignal(call, this.role));
 	}
 
 	public async onRemoteDescriptionChanged(callId: string, negotiationId: string): Promise<void> {
