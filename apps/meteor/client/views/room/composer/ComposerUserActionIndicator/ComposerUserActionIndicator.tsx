@@ -3,9 +3,16 @@ import type { ReactElement } from 'react';
 import { useCallback, Fragment, useSyncExternalStore, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { UserAction } from '../../../../../app/ui/client/lib/UserAction';
+import { UserAction, USER_ACTIVITIES } from '../../../../../app/ui/client/lib/UserAction';
 
 const maxUsernames = 5;
+
+const ACTION_PRIORITY: Record<string, number> = {
+	[USER_ACTIVITIES.USER_RECORDING]: 0,
+	[USER_ACTIVITIES.USER_UPLOADING]: 1,
+	[USER_ACTIVITIES.USER_TYPING]: 2,
+	[USER_ACTIVITIES.USER_PLAYING]: 3,
+};
 
 const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string }): ReactElement => {
 	const { t } = useTranslation();
@@ -13,28 +20,38 @@ const ComposerUserActionIndicator = ({ rid, tmid }: { rid: string; tmid?: string
 		UserAction.subscribe,
 		useCallback(() => UserAction.get(tmid || rid), [rid, tmid]),
 	);
-	const actions = useMemo(
-		() =>
-			Object.entries(roomAction ?? {})
-				.map(([key, _users]) => {
-					const action = key.split('-')[1];
+	const actions = useMemo(() => {
+		const usersRendered = new Set<string>();
+		return Object.entries(roomAction ?? {})
+			.sort(([a], [b]) => ACTION_PRIORITY[a] - ACTION_PRIORITY[b])
+			.map(([key, _users]) => {
+				const action = key.split('-')[1];
 
-					const users = Object.keys(_users);
-					if (users.length === 0) {
-						return;
-					}
+				const users = Object.keys(_users);
+				if (users.length === 0) {
+					return;
+				}
 
-					return {
-						action,
-						users,
-					};
-				})
-				.filter(Boolean) as {
-				action: 'typing' | 'recording' | 'uploading' | 'playing';
-				users: string[];
-			}[],
-		[roomAction],
-	);
+				const filteredUsers = users.filter((user) => !usersRendered.has(user));
+
+				if (filteredUsers.length === 0) {
+					return;
+				}
+
+				for (const user of filteredUsers) {
+					usersRendered.add(user);
+				}
+
+				return {
+					action,
+					users: filteredUsers,
+				};
+			})
+			.filter(Boolean) as {
+			action: 'typing' | 'recording' | 'uploading' | 'playing';
+			users: string[];
+		}[];
+	}, [roomAction]);
 
 	return (
 		<Box

@@ -1,7 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
 import { OmnichannelAdmin } from './omnichannel-admin';
-import { FlexTab } from '../fragments/flextab';
+import { FlexTab } from '../fragments/flextabs/flextab';
 import { Table } from '../fragments/table';
 
 class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
@@ -14,7 +14,7 @@ class OmnichannelManageSlaPolicyFlexTab extends FlexTab {
 	}
 
 	get inputEstimatedWaitTime(): Locator {
-		return this.root.locator('[name="dueTimeInMinutes"]');
+		return this.root.getByRole('spinbutton', { name: 'Estimated wait time (time in minutes)', exact: true });
 	}
 }
 

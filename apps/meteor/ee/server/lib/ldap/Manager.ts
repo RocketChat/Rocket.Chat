@@ -197,6 +197,43 @@ export class LDAPEEManager extends LDAPManager {
 		}
 	}
 
+	public static async syncAvatarAndAbacAttributes(): Promise<void> {
+		const syncAvatars = settings.get('LDAP_Background_Sync_Avatars');
+		const syncAbac = settings.get('LDAP_Background_Sync_ABAC_Attributes') && License.hasModule('abac') && settings.get('ABAC_Enabled');
+		const abacMapping = syncAbac && this.parseJson(settings.get('LDAP_ABAC_AttributeMap'));
+
+		if (!syncAvatars && !syncAbac) {
+			return;
+		}
+
+		try {
+			const ldap = new LDAPConnection();
+			await ldap.connect();
+
+			try {
+				const users = Users.findLDAPUsers();
+				for await (const user of users) {
+					const ldapUser = await this.findLDAPUser(ldap, user);
+					if (!ldapUser) {
+						continue;
+					}
+
+					if (syncAvatars) {
+						await LDAPManager.syncUserAvatar(user, ldapUser);
+					}
+
+					if (syncAbac && abacMapping) {
+						await Abac.addSubjectAttributes(user, ldapUser, abacMapping, undefined);
+					}
+				}
+			} finally {
+				ldap.disconnect();
+			}
+		} catch (err) {
+			logger.error({ err });
+		}
+	}
+
 	public static async syncLogout(): Promise<void> {
 		if (settings.get('LDAP_Enable') !== true || settings.get('LDAP_Sync_AutoLogout_Enabled') !== true) {
 			return;

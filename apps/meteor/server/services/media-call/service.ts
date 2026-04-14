@@ -8,14 +8,16 @@ import type {
 	IExternalMediaCallHistoryItem,
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
-import { callServer, type IMediaCallServerSettings } from '@rocket.chat/media-calls';
-import { isClientMediaSignal, type ClientMediaSignal, type ServerMediaSignal } from '@rocket.chat/media-signaling';
+import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
+import type { CallFeature, ClientMediaSignal, ServerMediaSignal, ServerMediaCallSignal } from '@rocket.chat/media-signaling';
+import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
-import { getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
+import { callStateToTranslationKey, getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
 import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
 import { settings } from '../../../app/settings/server';
+import { i18n } from '../../lib/i18n';
 import { createDirectMessage } from '../../methods/createDirectMessage';
 
 const logger = new Logger('media-call service');
@@ -69,6 +71,18 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		} catch (err) {
 			logger.error({ msg: 'Media Call Server failed to check if there are expired calls', err });
 		}
+	}
+
+	public async getUserStateSignals(uid: IUser['_id'], contractId: string): Promise<ServerMediaCallSignal[]> {
+		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
+
+		const signals: ServerMediaCallSignal[] = [];
+		for (const call of calls) {
+			const callSignals = await getSignalsForExistingCall(call, uid, contractId);
+			signals.push(...callSignals);
+		}
+
+		return signals;
 	}
 
 	private async saveCallToHistory(callId: IMediaCall['_id']): Promise<void> {
@@ -187,6 +201,10 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 	}
 
+	private getLanguageForUser(user: IUser): string {
+		return user.language || settings.get('Language') || 'en';
+	}
+
 	private async sendHistoryMessage(call: IMediaCall, room: IRoom): Promise<void> {
 		const userId = call.caller.id || call.createdBy?.id; // I think this should always be the caller, since during a transfer the createdBy contact is the one that transferred the call
 
@@ -196,12 +214,16 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 
 		const state = this.getCallHistoryItemState(call);
+		const skipNotifications = state !== 'not-answered' || call.hangupReason === 'rejected';
+		const i18nKey = callStateToTranslationKey(state).i18n?.key;
+
+		const msg = i18nKey ? i18n.t(i18nKey, { lng: this.getLanguageForUser(user) }) : '';
 		const duration = this.getCallDuration(call);
 
-		const record = getHistoryMessagePayload(state, duration, call._id);
+		const record = getHistoryMessagePayload(state, duration, call._id, msg);
 
 		try {
-			const message = await sendMessage(user, record, room);
+			const message = await sendMessage(user, record, room, { skipNotifications });
 
 			if ('_id' in message) {
 				await CallHistory.updateMany({ callId: call._id }, { $set: { messageId: message._id } });
@@ -315,7 +337,20 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				},
 			},
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
+			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
 		};
+	}
+
+	private userHasFeaturePermission(_uid: IUser['_id'], feature: CallFeature): boolean {
+		if (feature === 'audio') {
+			return true;
+		}
+
+		if (feature === 'screen-share') {
+			return settings.get<boolean>('VoIP_TeamCollab_Screen_Sharing_Enabled') ?? false;
+		}
+
+		return true;
 	}
 
 	private async userHasMediaCallPermission(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {

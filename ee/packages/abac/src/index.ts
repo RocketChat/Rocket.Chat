@@ -8,13 +8,11 @@ import type {
 	AtLeast,
 	IUser,
 	ILDAPEntry,
-	ISubscription,
 	AbacAuditReason,
 } from '@rocket.chat/core-typings';
-import { Logger } from '@rocket.chat/logger';
 import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
-import type { Document, FindCursor, UpdateFilter } from 'mongodb';
+import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
 import { Audit } from './audit';
@@ -25,20 +23,19 @@ import {
 	AbacInvalidAttributeValuesError,
 	AbacUnsupportedObjectTypeError,
 	AbacUnsupportedOperationError,
-	OnlyCompliantCanBeAddedToRoomError,
 } from './errors';
 import {
 	getAbacRoom,
 	diffAttributes,
 	extractAttribute,
 	diffAttributeSets,
-	buildCompliantConditions,
-	buildNonCompliantConditions,
 	validateAndNormalizeAttributes,
 	ensureAttributeDefinitionsExist,
-	buildRoomNonCompliantConditionsFromSubject,
 	MAX_ABAC_ATTRIBUTE_KEYS,
 } from './helper';
+import { logger } from './logger';
+import type { IPolicyDecisionPoint } from './pdp';
+import { LocalPDP, ExternalPDP } from './pdp';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
@@ -46,13 +43,13 @@ const limit = pLimit(20);
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
 
-	protected logger: Logger;
+	private pdp!: IPolicyDecisionPoint;
 
 	decisionCacheTimeout = 60; // seconds
 
 	constructor() {
 		super();
-		this.logger = new Logger('AbacService');
+		this.setPdpStrategy('local');
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
 			const { value } = setting;
@@ -61,6 +58,18 @@ export class AbacService extends ServiceClass implements IAbacService {
 			}
 			this.decisionCacheTimeout = value;
 		});
+	}
+
+	setPdpStrategy(strategy: 'local' | 'external'): void {
+		switch (strategy) {
+			case 'external':
+				this.pdp = new ExternalPDP();
+				break;
+			case 'local':
+			default:
+				this.pdp = new LocalPDP();
+				break;
+		}
 	}
 
 	override async started(): Promise<void> {
@@ -335,7 +344,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (diffAttributeSets(previous, normalized).added) {
-			await this.onRoomAttributesChanged(room, (updated?.abacAttributes as IAbacAttributeDefinition[] | undefined) ?? normalized);
+			await this.onRoomAttributesChanged(room, updated?.abacAttributes ?? normalized);
 		}
 	}
 
@@ -477,46 +486,6 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
 	}
 
-	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {
-		if (!usernames.length || !attributes.length) {
-			return;
-		}
-
-		const nonCompliantUsersFromList = await Users.find(
-			{
-				username: { $in: usernames },
-				$or: buildNonCompliantConditions(attributes),
-			},
-			{ projection: { username: 1 } },
-		)
-			.map((u) => u.username as string)
-			.toArray();
-
-		const nonCompliantSet = new Set<string>(nonCompliantUsersFromList);
-
-		if (nonCompliantSet.size) {
-			throw new OnlyCompliantCanBeAddedToRoomError();
-		}
-
-		usernames.forEach((username) => {
-			// TODO: Add room name
-			void Audit.actionPerformed({ username }, { _id: object._id, name: object.name }, 'system', 'granted-object-access');
-		});
-	}
-
-	private shouldUseCache(decisionCacheTimeout: number, userSub: ISubscription) {
-		// Cases:
-		// 1) Never checked before -> check now
-		// 2) Checked before, but cache expired -> check now
-		// 3) Checked before, and cache valid -> use cached decision (subsciprtion exists)
-		// 4) Cache disabled (0) -> always check
-		return (
-			decisionCacheTimeout > 0 &&
-			userSub.abacLastTimeChecked &&
-			Date.now() - userSub.abacLastTimeChecked.getTime() < decisionCacheTimeout * 1000
-		);
-	}
-
 	async canAccessObject(
 		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
 		user: Pick<IUser, '_id'>,
@@ -541,78 +510,26 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return false;
 		}
 
-		if (this.shouldUseCache(this.decisionCacheTimeout, userSub)) {
-			this.logger.debug({ msg: 'Using cached ABAC decision', userId: user._id, roomId: room._id });
-			return !!userSub;
-		}
+		const decision = await this.pdp.canAccessObject(room, user, userSub, this.decisionCacheTimeout);
 
-		const isUserCompliant = await Users.findOne(
-			{
-				_id: user._id,
-				$and: buildCompliantConditions(room.abacAttributes),
-			},
-			{ projection: { _id: 1 } },
-		);
-
-		if (!isUserCompliant) {
-			const fullUser = await Users.findOneById(user._id);
-			if (!fullUser) {
-				return false;
-			}
-
+		if (decision.userToRemove) {
 			// When a user is not compliant, remove them from the room automatically
-			await this.removeUserFromRoom(room, fullUser, 'realtime-policy-eval');
-
-			return false;
+			await this.removeUserFromRoom(room, decision.userToRemove, 'realtime-policy-eval');
 		}
 
-		// Set last time the decision was made
-		await Subscriptions.setAbacLastTimeCheckedByUserIdAndRoomId(user._id, room._id, new Date());
-		return true;
+		return decision.granted;
 	}
 
-	protected async onRoomAttributesChanged(
-		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
-		newAttributes: IAbacAttributeDefinition[],
-	): Promise<void> {
-		const rid = room._id;
-		if (!newAttributes?.length) {
-			// When a room has no ABAC attributes, it becomes a normal private group and no user removal is necessary
-			this.logger.warn({
-				msg: 'Room ABAC attributes removed. Room is not abac managed anymore',
-				rid,
-			});
-
+	async checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void> {
+		if (!usernames.length || !attributes.length) {
 			return;
 		}
 
-		try {
-			const query = {
-				__rooms: rid,
-				$or: buildNonCompliantConditions(newAttributes),
-			};
+		await this.pdp.checkUsernamesMatchAttributes(usernames, attributes, object);
 
-			const cursor = Users.find(query, { projection: { __rooms: 0 } });
-
-			const usersToRemove: string[] = [];
-			const userRemovalPromises = [];
-			for await (const doc of cursor) {
-				usersToRemove.push(doc._id);
-				userRemovalPromises.push(limit(() => this.removeUserFromRoom(room, doc, 'room-attributes-change')));
-			}
-
-			if (!usersToRemove.length) {
-				return;
-			}
-
-			await Promise.all(userRemovalPromises);
-		} catch (err) {
-			this.logger.error({
-				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',
-				rid,
-				err,
-			});
-		}
+		usernames.forEach((username) => {
+			void Audit.actionPerformed({ username }, { _id: object._id, name: object.name }, 'system', 'granted-object-access');
+		});
 	}
 
 	private async removeUserFromRoom(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
@@ -622,7 +539,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		})
 			.then(() => void Audit.actionPerformed({ _id: user._id, username: user.username }, { _id: room._id, name: room.name }, reason))
 			.catch((err) => {
-				this.logger.error({
+				logger.error({
 					msg: 'Failed to remove user from ABAC room',
 					rid: room._id,
 					err,
@@ -631,50 +548,61 @@ export class AbacService extends ServiceClass implements IAbacService {
 			});
 	}
 
-	private async removeUserFromRoomList(roomList: FindCursor<IRoom>, user: IUser, reason: AbacAuditReason): Promise<void> {
-		const removalPromises: Promise<void>[] = [];
-		for await (const room of roomList) {
-			removalPromises.push(limit(() => this.removeUserFromRoom(room, user, reason)));
+	protected async onRoomAttributesChanged(
+		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
+		newAttributes: IAbacAttributeDefinition[],
+	): Promise<void> {
+		const rid = room._id;
+		if (!newAttributes?.length) {
+			// When a room has no ABAC attributes, it becomes a normal private group and no user removal is necessary
+			logger.warn({
+				msg: 'Room ABAC attributes removed. Room is not abac managed anymore',
+				rid,
+			});
+
+			return;
 		}
 
-		await Promise.all(removalPromises);
+		try {
+			const nonCompliantUsers = await this.pdp.onRoomAttributesChanged(room, newAttributes);
+
+			if (!nonCompliantUsers.length) {
+				return;
+			}
+
+			await Promise.all(nonCompliantUsers.map((user) => limit(() => this.removeUserFromRoom(room, user, 'room-attributes-change'))));
+		} catch (err) {
+			logger.error({
+				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',
+				rid,
+				err,
+			});
+		}
 	}
 
 	protected async onSubjectAttributesChanged(user: IUser, _next: IAbacAttributeDefinition[]): Promise<void> {
 		if (!user?._id || !Array.isArray(user.__rooms) || !user.__rooms.length) {
 			return;
 		}
-		const roomIds = user.__rooms;
 
 		try {
-			// No attributes: no rooms :(
-			if (!_next.length) {
-				const cursor = Rooms.find(
-					{
-						_id: { $in: roomIds },
-						abacAttributes: { $exists: true, $ne: [] },
-					},
-					{ projection: { _id: 1 } },
-				);
+			const nonCompliantRooms = await this.pdp.onSubjectAttributesChanged(user, _next);
 
-				return await this.removeUserFromRoomList(cursor, user, 'ldap-sync');
+			if (!nonCompliantRooms.length) {
+				return;
 			}
 
-			const query = {
-				_id: { $in: roomIds },
-				$or: buildRoomNonCompliantConditionsFromSubject(_next),
-			};
-
-			const cursor = Rooms.find(query, { projection: { _id: 1 } });
-
-			return await this.removeUserFromRoomList(cursor, user, 'ldap-sync');
+			await Promise.all(nonCompliantRooms.map((room) => limit(() => this.removeUserFromRoom(room, user, 'ldap-sync'))));
 		} catch (err) {
-			this.logger.error({
+			logger.error({
 				msg: 'Failed to query and remove user from non-compliant ABAC rooms',
 				err,
 			});
 		}
 	}
 }
+
+export { LocalPDP, ExternalPDP } from './pdp';
+export type { IPolicyDecisionPoint } from './pdp';
 
 export default AbacService;

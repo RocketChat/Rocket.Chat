@@ -296,6 +296,14 @@ class RoomHistoryManagerClass extends Emitter {
 	}
 
 	public async getSurroundingMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		return this.loadSurroundingMessages(message, true);
+	}
+
+	public async getSurroundingChannelMessages(message?: Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) {
+		return this.loadSurroundingMessages(message, false);
+	}
+
+	private async loadSurroundingMessages(message: (Pick<IMessage, '_id' | 'rid'> & { ts?: Date }) | undefined, showThreadMessages: boolean) {
 		if (!message?.rid) {
 			return;
 		}
@@ -309,7 +317,7 @@ class RoomHistoryManagerClass extends Emitter {
 		const room = this.getRoom(message.rid);
 
 		const subscription = Subscriptions.state.find((record) => record.rid === message.rid);
-		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit);
+		const result = await callWithErrorHandling('loadSurroundingMessages', message, defaultLimit, showThreadMessages);
 
 		this.clear(message.rid);
 
