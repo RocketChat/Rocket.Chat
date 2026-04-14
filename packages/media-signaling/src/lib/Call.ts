@@ -893,8 +893,27 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._flags.includes(flag);
 	}
 
-	private changeState(newState: CallState): void {
+	private canChangeToState(newState: CallState): boolean {
 		if (newState === this._state) {
+			return false;
+		}
+
+		if (this._state === 'hangup') {
+			return false;
+		}
+
+		switch (newState) {
+			case 'accepted':
+				return this.isPendingAcceptance();
+			case 'active':
+				return this._state === 'accepted' || this.hidden;
+		}
+
+		return true;
+	}
+
+	private changeState(newState: CallState): void {
+		if (!this.canChangeToState(newState)) {
 			return;
 		}
 
