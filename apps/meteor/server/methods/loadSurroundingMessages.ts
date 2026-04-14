@@ -29,6 +29,11 @@ Meteor.methods<ServerMethods>({
 	async loadSurroundingMessages(message, limit = 50, showThreadMessages = true) {
 		check(message, Object);
 		check(limit, Number);
+		// Coerce string to boolean (common when parameters come from mobile/REST clients)
+		if (typeof showThreadMessages === 'string') {
+			showThreadMessages = showThreadMessages.trim().toLowerCase();
+			showThreadMessages = showThreadMessages === 'true' || showThreadMessages === '1';
+		}
 		check(showThreadMessages, Boolean);
 
 		if (!Meteor.userId()) {
