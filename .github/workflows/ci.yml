@@ -189,9 +189,11 @@ jobs:
 
       - name: Cache observability (packages-build)
         run: |
-          echo "### 📦 packages-build cache" >> $GITHUB_STEP_SUMMARY
-          echo "- **hit**: \`${{ steps.packages-cache-build.outputs.cache-hit }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **key**: \`${{ needs.release-versions.outputs.packages-build-cache-key }}\`" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "### 📦 packages-build cache"
+            echo "- **hit**: \`${{ steps.packages-cache-build.outputs.cache-hit }}\`"
+            echo "- **key**: \`${{ needs.release-versions.outputs.packages-build-cache-key }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
@@ -217,9 +219,11 @@ jobs:
       - name: Cache observability (node_modules)
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: |
-          echo "### 🟢 node_modules cache" >> $GITHUB_STEP_SUMMARY
-          echo "- **deno cache hit**: \`${{ steps.setup-node-packages.outputs.cache-deno-hit }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **node_modules size**: \`$(du -sh node_modules 2>/dev/null | cut -f1 || echo 'n/a')\`" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "### 🟢 node_modules cache"
+            echo "- **deno cache hit**: \`${{ steps.setup-node-packages.outputs.cache-deno-hit }}\`"
+            echo "- **node_modules size**: \`$(du -sh node_modules 2>/dev/null | cut -f1 || echo 'n/a')\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cache vite
         uses: actions/cache@v5
