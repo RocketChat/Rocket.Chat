@@ -16,7 +16,7 @@ import {
 import { ExternalLink, Page, PageHeader, PageScrollableContentWithShadow, PageFooter } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
-import { useEffect, useId, useMemo, useRef } from 'react';
+import { useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { fontSizes } from './fontSizes';
@@ -24,18 +24,18 @@ import type { AccessibilityPreferencesData } from './hooks/useAcessibilityPrefer
 import { useAccessiblityPreferencesValues } from './hooks/useAcessibilityPreferencesValues';
 import { useCreateFontStyleElement } from './hooks/useCreateFontStyleElement';
 import { themeItems as themes } from './themeItems';
+import { fieldAnchors, useScrollToHash } from '../../../hooks/useScrollToHash';
 import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { links } from '../../../lib/links';
 
 const AccessibilityPage = () => {
 	const t = useTranslation();
-	const layoutDefaultExpanded = !!location.hash;
-	const lastHash = useRef('');
 	const dispatchToastMessage = useToastMessageDispatch();
 	const preferencesValues = useAccessiblityPreferencesValues();
 
 	const createFontStyleElement = useCreateFontStyleElement();
 	const displayRolesEnabled = useSetting('UI_DisplayRoles');
+	const { shouldExpand } = useScrollToHash();
 
 	const timeFormatOptions = useMemo(
 		(): SelectOption[] => [
@@ -45,17 +45,6 @@ const AccessibilityPage = () => {
 		],
 		[t],
 	);
-
-	useEffect(() => {
-		if (location.hash) {
-			lastHash.current = location.hash.slice(1);
-		}
-
-		if (lastHash.current && document.getElementById(lastHash.current)) {
-			document.getElementById(lastHash.current)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-			lastHash.current = '';
-		}
-	}, []);
 
 	const pageFormId = useId();
 	const linkListId = useId();
@@ -135,7 +124,7 @@ const AccessibilityPage = () => {
 								);
 							})}
 						</AccordionItem>
-						<AccordionItem title={t('Adjustable_layout')} defaultExpanded={layoutDefaultExpanded}>
+						<AccordionItem defaultExpanded={shouldExpand} title={t('Adjustable_layout')}>
 							<FieldGroup>
 								<VisuallyHidden>
 									<legend>{t('Adjustable_layout')}</legend>
@@ -165,7 +154,7 @@ const AccessibilityPage = () => {
 										{t('Mentions_with_@_symbol_description')}
 									</FieldDescription>
 								</Field>
-								<Field>
+								<Field id={fieldAnchors.clockMode}>
 									<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
 									<FieldRow>
 										<Controller
@@ -175,7 +164,7 @@ const AccessibilityPage = () => {
 										/>
 									</FieldRow>
 								</Field>
-								<Field>
+								<Field id={fieldAnchors.hideUsernames}>
 									<FieldRow>
 										<FieldLabel>{t('Show_usernames')}</FieldLabel>
 										<Controller
@@ -189,7 +178,7 @@ const AccessibilityPage = () => {
 									<FieldDescription>{t('Show_or_hide_the_username_of_message_authors')}</FieldDescription>
 								</Field>
 								{displayRolesEnabled && (
-									<Field>
+									<Field id={fieldAnchors.hideRoles}>
 										<FieldRow>
 											<FieldLabel>{t('Show_roles')}</FieldLabel>
 											<Controller

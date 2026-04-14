@@ -5,6 +5,8 @@ import { useId, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
+import { fieldAnchors } from '../../../hooks/useScrollToHash';
+
 const PreferencesMessagesSection = () => {
 	const { t } = useTranslation();
 	const { control } = useFormContext();
@@ -68,7 +70,7 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldLabel id={messageTimeFormatLabelId}>{t('Message_TimeFormat')}</FieldLabel>
-					<FieldLink aria-describedby={messageTimeFormatLabelId} href='/account/accessibility-and-appearance'>
+					<FieldLink aria-describedby={messageTimeFormatLabelId} href={`/account/accessibility-and-appearance#${fieldAnchors.clockMode}`}>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
 				</Field>
@@ -124,13 +126,13 @@ const PreferencesMessagesSection = () => {
 				</Field>
 				<Field>
 					<FieldLabel id={hideUsernamesLabelId}>{t('Hide_usernames')}</FieldLabel>
-					<FieldLink aria-describedby={hideUsernamesLabelId} href='/account/accessibility-and-appearance'>
+					<FieldLink aria-describedby={hideUsernamesLabelId} href={`/account/accessibility-and-appearance#${fieldAnchors.hideUsernames}`}>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
 				</Field>
 				<Field>
 					<FieldLabel id={hideRolesLabelId}>{t('Hide_roles')}</FieldLabel>
-					<FieldLink aria-describedby={hideRolesLabelId} href='/account/accessibility-and-appearance'>
+					<FieldLink aria-describedby={hideRolesLabelId} href={`/account/accessibility-and-appearance#${fieldAnchors.hideRoles}`}>
 						{t('Go_to_accessibility_and_appearance')}
 					</FieldLink>
 				</Field>
