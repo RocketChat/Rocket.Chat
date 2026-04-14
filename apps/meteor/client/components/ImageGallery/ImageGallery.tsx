@@ -1,8 +1,8 @@
+import { FocusScope } from '@react-aria/focus';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, IconButton, Palette, PaletteStyleTag, Throbber, padding } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, IconButton, Palette, PaletteStyleTag, Throbber, spacing } from '@rocket.chat/fuselage';
 import { useRef, useState } from 'react';
-import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Navigation, Zoom, Keyboard, A11y } from 'swiper/modules/index.mjs';
@@ -33,7 +33,7 @@ const swiperStyle = css`
 	}
 
 	.swiper-slide {
-		padding: ${padding('x144')} ${padding('x60')} ${padding('x96')};
+		padding: ${spacing('x144')} ${spacing('x60')} ${spacing('x96')};
 	}
 
 	.rcx-swiper-prev-button,

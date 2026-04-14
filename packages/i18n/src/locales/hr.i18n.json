@@ -979,8 +979,6 @@
   "Entertainment": "Zabava",
   "Error": "Pogreška",
   "Error_404": "Pogreška: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Pogreška: Rocket.Chat zahtijeva oplog repanje kada se izvodi u više slučajeva",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Provjerite je li vaš MongoDB na načinu ReplicaSet i da je varijabla okruženja MONGO_OPLOG_URL pravilno definirana na aplikacijskom poslužitelju",
   "Error_changing_password": "Greška pri izmjeni lozinke",
   "Error_loading_pages": "Pogreška prilikom učitavanja stranica",
   "Esc_to": "Esc za",

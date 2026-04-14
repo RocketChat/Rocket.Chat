@@ -7,7 +7,7 @@ import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 export const registerAppGeneralLogsHandler = ({ api, _orch }: AppsRestApi) =>
 	void api.addRoute(
 		'logs',
-		{ authRequired: true, permissionRequired: ['manage-apps'], validateParams: isAppLogsProps },
+		{ authRequired: true, permissionsRequired: ['manage-apps'], validateParams: isAppLogsProps },
 		{
 			async get() {
 				const { offset, count } = await getPaginationItems(this.queryParams);

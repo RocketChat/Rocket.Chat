@@ -1,5 +1,5 @@
 import type { IMediaCall } from '@rocket.chat/core-typings';
-import type { CallFeature, ClientMediaSignalBody } from '@rocket.chat/media-signaling';
+import type { ClientMediaSignalBody } from '@rocket.chat/media-signaling';
 
 import { BaseMediaCallAgent } from '../base/BaseAgent';
 import { logger } from '../logger';
@@ -14,8 +14,8 @@ import type { BaseCallProvider } from '../base/BaseCallProvider';
 export class BroadcastActorAgent extends BaseMediaCallAgent {
 	public provider: BaseCallProvider | null = null;
 
-	public async onCallAccepted(callId: string, _data: { signedContractId: string; features: CallFeature[] }): Promise<void> {
-		this.reportCallUpdated({ callId });
+	public async onCallAccepted(call: IMediaCall): Promise<void> {
+		this.reportCallUpdated({ callId: call._id });
 	}
 
 	public async onCallEnded(callId: string): Promise<void> {
