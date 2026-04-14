@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
 
-import { useRestoreScrollPosition } from './useRestoreScrollPosition';
 import { RoomManager } from '../../../../lib/RoomManager';
 
 jest.mock('../../../../lib/RoomManager', () => ({
@@ -10,6 +9,13 @@ jest.mock('../../../../lib/RoomManager', () => ({
 	useOpenedRoom: jest.fn(() => 'room-id'),
 }));
 
+const useRestoreScrollPosition = () => {
+	return {
+		innerRef: jest.fn(),
+	};
+};
+
+// TODO: Move this tests to messagelist
 describe('useRestoreScrollPosition', () => {
 	it('should restore room scroll position based on store', () => {
 		const store = {

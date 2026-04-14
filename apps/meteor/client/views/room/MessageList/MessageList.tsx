@@ -12,13 +12,14 @@ import { MessageListItem } from './MessageListItem';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
-import { useMessages } from './hooks/useMessages';
-import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
+import { useMessages } from './hooks/useMessages';import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
 import { isMessageSequential } from './lib/isMessageSequential';
 import MessageListProvider from './providers/MessageListProvider';
+import { RoomManager } from '../../../lib/RoomManager';
 import LoadingMessagesIndicator from '../body/LoadingMessagesIndicator';
 import RetentionPolicyWarning from '../body/RetentionPolicyWarning';
 import RoomForeword from '../body/RoomForeword/RoomForeword';
+import { useStoreScrollPosition } from '../body/hooks/useStoreScrollPosition';
 
 type MessageListProps = {
 	rid: IRoom['_id'];
@@ -79,15 +80,31 @@ export const MessageList = function MessageList({
 		},
 		[isAtBottom, shouldJumpToBottom],
 	);
+
+	const isRoomInitialized = useRef<boolean>(false);
+
 	// Scroll to bottom
 	useEffect(() => {
 		if (isJumpingToMessage.current) {
 			return;
 		}
 
+		if (!isRoomInitialized.current) {
+			const store = RoomManager.getStore(rid);
+			if (!store?.atBottom && store?.scroll) {
+				shouldJumpToBottom.current = false;
+				virtualizerRef.current?.scrollTo(store?.scroll);
+				console.log('room initialized');
+				isRoomInitialized.current = true;
+				return;
+			}
+			isRoomInitialized.current = true;
+		}
+
 		const handle = virtualizerRef.current;
 		const lastItemIndex = messages.length - 1;
 		if (shouldJumpToBottom.current === true) {
+			console.log('scroll to bottom, 1');
 			// When new messages arrive, this effect is triggered, but the latest message is not on the index, so it scrolls to the previous index
 			// TODO: Find if there is a better way to scroll to the latest message
 			handle?.scrollToIndex(lastItemIndex + 1, {
@@ -96,11 +113,14 @@ export const MessageList = function MessageList({
 		}
 		// If new messages arrive and is at bottom, scroll to keep at bottom
 		if (isAtBottom.current && lastViewportSize !== handle?.viewportSize) {
+			console.log('scroll to bottom, 2');
 			handle?.scrollToIndex(lastItemIndex + 1, {
 				align: 'end',
 			});
 		}
-	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage]);
+	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage, rid]);
+
+	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
 
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
@@ -118,6 +138,7 @@ export const MessageList = function MessageList({
 					aria-busy={isLoadingMoreMessages}
 					onScroll={(offset: number) => {
 						handlePrepend(offset);
+						storeScrollPosition();
 					}}
 				>
 					{canPreview ? (

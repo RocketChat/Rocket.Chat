@@ -11,7 +11,6 @@ import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
 import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
-import { useRestoreScrollPosition } from './hooks/useRestoreScrollPosition';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
 import RoomAnnouncement from '../RoomAnnouncement';
 import UploadProgressIndicator from './UploadProgress';
@@ -46,6 +45,7 @@ const RoomBody = (): ReactElement => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
+	//MessageList refs
 	const shouldJumpToBottom = useRef<boolean>(true);
 	const isAtBottom = useRef<boolean>(false);
 	const isJumpingToMessage = useRef<boolean>(false);
@@ -92,8 +92,6 @@ const RoomBody = (): ReactElement => {
 
 	const { innerRef: getMoreInnerRef } = useGetMore(room._id, isJumpingToMessage);
 
-	const { innerRef: restoreScrollPositionInnerRef } = useRestoreScrollPosition(room._id, isJumpingToMessage);
-
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 	const { uploads, isUploading } = useFileUpload();
 
@@ -105,7 +103,6 @@ const RoomBody = (): ReactElement => {
 
 	const innerRef = useMergedRefsV2(
 		dateScrollInnerRef,
-		restoreScrollPositionInnerRef,
 		newMessagesScrollRef,
 		unreadBarInnerRef,
 		getMoreInnerRef,
