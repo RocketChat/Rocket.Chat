@@ -422,7 +422,7 @@ describe('[Incoming Integrations]', () => {
 							'  \n' +
 							'  class Script {\n' +
 							'    process_incoming_request({ request }) {\n' +
-							'      msg = buildMessage(request.content);\n' +
+							'      const msg = buildMessage(request.content);\n' +
 							'  \n' +
 							'      return {\n' +
 							'        content:{\n' +

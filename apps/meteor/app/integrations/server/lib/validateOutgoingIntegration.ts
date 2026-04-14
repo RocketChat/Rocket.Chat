@@ -1,12 +1,10 @@
-import { transformSync } from '@babel/core';
-import presetEnv from '@babel/preset-env';
 import type { IUser, INewOutgoingIntegration, IOutgoingIntegration, IUpdateOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { pick } from '@rocket.chat/tools';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { isScriptEngineFrozen } from './validateScriptEngine';
+import { validateScriptSyntax } from './validateScriptSyntax';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { outgoingEvents } from '../../lib/outgoingEvents';
@@ -179,21 +177,11 @@ export const validateOutgoingIntegration = async function (
 		integration.script &&
 		integration.script.trim() !== ''
 	) {
-		try {
-			const result = transformSync(integration.script, {
-				presets: [presetEnv],
-				compact: true,
-				minified: true,
-				comments: false,
-			});
-
-			// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
-			integrationData.scriptCompiled = result?.code ?? undefined;
-			integrationData.scriptError = undefined;
-		} catch (e) {
-			integrationData.scriptCompiled = undefined;
-			integrationData.scriptError = e instanceof Error ? pick(e, 'name', 'message', 'stack') : undefined;
-		}
+		// isolated-vm embeds modern V8 and runs the script natively, so no
+		// transpilation is needed. Syntax is still validated at save time.
+		const { script, error } = validateScriptSyntax(integration.script);
+		integrationData.scriptCompiled = script;
+		integrationData.scriptError = error;
 	}
 
 	if (typeof integration.runOnEdits !== 'undefined') {
