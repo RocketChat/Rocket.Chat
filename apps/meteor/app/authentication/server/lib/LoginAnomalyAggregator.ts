@@ -3,7 +3,7 @@ interface FailedAttemptInfo {
     count: number;
     firstAttempt: Date;
     lastAttempt: Date;
-    timeoutId?: any;
+    timeoutId?: ReturnType<typeof setTimeout>;
 }
 
 class LoginAnomalyAggregator {
