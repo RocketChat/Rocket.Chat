@@ -1,5 +1,6 @@
 import type { IOmnichannelBusinessUnit, ILivechatUnitMonitor } from '@rocket.chat/core-typings';
 import { LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
+import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 import { escapeRegExp } from '@rocket.chat/string-helpers';
 import type { FindOptions } from 'mongodb';
 
@@ -85,6 +86,7 @@ export async function findUnitMonitors({ unitId }: { unitId: string }): Promise<
 	return LivechatUnitMonitors.find({ unitId }).toArray();
 }
 
-export async function findUnitById({ unitId }: { unitId: string }): Promise<IOmnichannelBusinessUnit | null> {
-	return LivechatUnit.findOneById<IOmnichannelBusinessUnit>(unitId);
+export async function findUnitById({ unitId, userId }: { unitId: string; userId: string }): Promise<IOmnichannelBusinessUnit | null> {
+	const unitsFromUser = await getUnitsFromUser(userId);
+	return LivechatUnit.findOneById(unitId, {}, { unitsFromUser });
 }

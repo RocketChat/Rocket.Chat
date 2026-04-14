@@ -1,3 +1,4 @@
+import type { IOutgoingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
@@ -14,7 +15,7 @@ declare module '@rocket.chat/ddp-client' {
 
 Meteor.methods<ServerMethods>({
 	async replayOutgoingIntegration({ integrationId, historyId }) {
-		let integration;
+		let integration: IOutgoingIntegration | null = null;
 
 		if (!this.userId) {
 			throw new Meteor.Error('not_authorized', 'Unauthorized', {
@@ -23,12 +24,16 @@ Meteor.methods<ServerMethods>({
 		}
 
 		if (await hasPermissionAsync(this.userId, 'manage-outgoing-integrations')) {
-			integration = await Integrations.findOneById(integrationId);
+			integration = await Integrations.findOneById<IOutgoingIntegration>(integrationId);
 		} else if (await hasPermissionAsync(this.userId, 'manage-own-outgoing-integrations')) {
-			integration = await Integrations.findOne({
+			const foundIntegration = await Integrations.findOne<IOutgoingIntegration>({
 				'_id': integrationId,
 				'_createdBy._id': this.userId,
 			});
+
+			if (foundIntegration && 'event' in foundIntegration) {
+				integration = foundIntegration;
+			}
 		}
 
 		if (!integration) {

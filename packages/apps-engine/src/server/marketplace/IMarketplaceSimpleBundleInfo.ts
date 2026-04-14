@@ -1,4 +1,4 @@
 export interface IMarketplaceSimpleBundleInfo {
-    bundleId: string;
-    bundleName: string;
+	bundleId: string;
+	bundleName: string;
 }

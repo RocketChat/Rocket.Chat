@@ -2,7 +2,7 @@ import type { Route } from '@playwright/test';
 
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
-import { OmnichannelReports } from '../page-objects/omnichannel-reports';
+import { OmnichannelReports } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 const ENDPOINTS = {
@@ -34,7 +34,7 @@ test.describe.serial('Omnichannel Reports', () => {
 
 	test.beforeEach(async ({ page }) => {
 		await page.goto('/omnichannel/reports');
-		await page.locator('.main-content').waitFor();
+		await page.locator('#main-content').waitFor();
 	});
 
 	test.afterAll(async ({ api }) => {

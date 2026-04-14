@@ -1,15 +1,12 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Rooms, AuditLog } from '@rocket.chat/models';
+import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
+import { isServerEventsAuditSettingsProps, ajv, ajvQuery } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
-import Ajv from 'ajv';
+import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
 import { API } from '../../../app/api/server/api';
 import { getPaginationItems } from '../../../app/api/server/helpers/getPaginationItems';
 import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 type AuditRoomMembersParams = PaginatedRequest<{
 	roomId: string;
@@ -29,7 +26,7 @@ const auditRoomMembersSchema = {
 	additionalProperties: false,
 };
 
-export const isAuditRoomMembersProps = ajv.compile<AuditRoomMembersParams>(auditRoomMembersSchema);
+export const isAuditRoomMembersProps = ajvQuery.compile<AuditRoomMembersParams>(auditRoomMembersSchema);
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -96,5 +93,104 @@ API.v1.addRoute(
 				total,
 			});
 		},
+	},
+);
+
+API.v1.get(
+	'audit.settings',
+	{
+		response: {
+			200: ajv.compile({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					events: {
+						type: 'array',
+						items: {
+							type: 'object',
+						},
+					},
+					count: {
+						type: 'number',
+						description: 'The number of events returned in this response.',
+					},
+					offset: {
+						type: 'number',
+						description: 'The number of events that were skipped in this response.',
+					},
+					total: {
+						type: 'number',
+						description: 'The total number of events that match the query.',
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['events', 'count', 'offset', 'total', 'success'],
+			}),
+			400: ajv.compile({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [false],
+					},
+					error: {
+						type: 'string',
+					},
+					errorType: {
+						type: 'string',
+					},
+				},
+				required: ['success', 'error'],
+			}),
+		},
+		query: isServerEventsAuditSettingsProps,
+		authRequired: true,
+		permissionsRequired: ['can-audit'],
+		license: ['auditing'],
+	},
+	async function action() {
+		const { start, end, settingId, actor } = this.queryParams;
+
+		if (start && isNaN(Date.parse(start))) {
+			return API.v1.failure('The "start" query parameter must be a valid date.');
+		}
+
+		if (end && isNaN(Date.parse(end))) {
+			return API.v1.failure('The "end" query parameter must be a valid date.');
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+		const { sort } = await this.parseJsonQuery();
+		const _sort = { ts: sort?.ts ? sort?.ts : -1 };
+
+		const { cursor, totalCount } = ServerEvents.findPaginated(
+			{
+				...(settingId && { 'data.key': 'id', 'data.value': settingId }),
+				...(actor && convertSubObjectsIntoPaths({ actor })),
+				ts: {
+					$gte: start ? new Date(start) : new Date(0),
+					$lte: end ? new Date(end) : new Date(),
+				},
+				t: 'settings.changed',
+			},
+			{
+				sort: _sort,
+				skip: offset,
+				limit: count,
+				allowDiskUse: true,
+			},
+		);
+
+		const [events, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		return API.v1.success({
+			events,
+			count: events.length,
+			offset,
+			total,
+		});
 	},
 );

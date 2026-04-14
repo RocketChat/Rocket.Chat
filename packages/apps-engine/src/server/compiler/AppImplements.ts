@@ -2,26 +2,31 @@ import { AppInterface } from '../../definition/metadata/AppInterface';
 import { Utilities } from '../misc/Utilities';
 
 export class AppImplements {
-    private implemented: { [key: string]: boolean };
+	private implemented: Record<AppInterface, boolean>;
 
-    constructor() {
-        this.implemented = {};
-        Object.keys(AppInterface).forEach((int) => {
-            this.implemented[int] = false;
-        });
-    }
+	constructor() {
+		this.implemented = {} as Record<AppInterface, boolean>;
 
-    public doesImplement(int: string): void {
-        if (int in AppInterface) {
-            this.implemented[int] = true;
-        }
-    }
+		Object.keys(AppInterface).forEach((int: AppInterface) => {
+			this.implemented[int] = false;
+		});
+	}
 
-    public getValues(): { [int: string]: boolean } {
-        return Utilities.deepCloneAndFreeze(this.implemented);
-    }
+	public setImplements(int: AppInterface): void {
+		if (int in AppInterface) {
+			this.implemented[int] = true;
+		}
+	}
 
-    public toJSON(): { [int: string]: boolean } {
-        return this.getValues();
-    }
+	public doesImplement(int: AppInterface): boolean {
+		return this.implemented[int];
+	}
+
+	public getValues(): Record<AppInterface, boolean> {
+		return Utilities.deepCloneAndFreeze(this.implemented);
+	}
+
+	public toJSON(): Record<AppInterface, boolean> {
+		return this.getValues();
+	}
 }

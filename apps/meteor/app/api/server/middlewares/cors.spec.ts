@@ -1,13 +1,13 @@
+import { Router } from '@rocket.chat/http-router';
 import Ajv from 'ajv';
 import express from 'express';
 import request from 'supertest';
 
 import { cors } from './cors';
 import { CachedSettings } from '../../../settings/server/CachedSettings';
-import { Router } from '../router';
 
 describe('Cors middleware', () => {
-	it('should not enforce CORS headers for GET', async () => {
+	it('should return allow-origin header for GET if CORS enabled', async () => {
 		const ajv = new Ajv();
 		const app = express();
 		const api = new Router('/api');
@@ -50,15 +50,12 @@ describe('Cors middleware', () => {
 
 		expect(response.statusCode).toBe(200);
 		expect(response.body).toHaveProperty('message', 'CORS test successful');
-		expect(response.headers).not.toHaveProperty('access-control-allow-origin', '*');
-		expect(response.headers).toHaveProperty('access-control-allow-methods', 'GET, POST, PUT, DELETE, HEAD, PATCH');
-		expect(response.headers).toHaveProperty(
-			'access-control-allow-headers',
-			'Origin, X-Requested-With, Content-Type, Accept, X-User-Id, X-Auth-Token, x-visitor-token, Authorization',
-		);
+		expect(response.headers).toHaveProperty('access-control-allow-origin', '*');
+		expect(response.headers).not.toHaveProperty('access-control-allow-methods');
+		expect(response.headers).toHaveProperty('access-control-allow-headers');
 	});
 
-	it('should not return CORS headers for GET if CORS disabled', async () => {
+	it('should return allow-origin header for GET if CORS disabled', async () => {
 		const ajv = new Ajv();
 		const app = express();
 		const api = new Router('/api');
@@ -97,9 +94,9 @@ describe('Cors middleware', () => {
 
 		expect(response.statusCode).toBe(200);
 		expect(response.body).toHaveProperty('message', 'CORS test successful');
-		expect(response.headers).not.toHaveProperty('access-control-allow-origin');
+		expect(response.headers).toHaveProperty('access-control-allow-origin', '*');
 		expect(response.headers).not.toHaveProperty('access-control-allow-methods');
-		expect(response.headers).not.toHaveProperty('access-control-allow-headers');
+		expect(response.headers).toHaveProperty('access-control-allow-headers');
 	});
 
 	it('should handle CORS if enabled to *', async () => {

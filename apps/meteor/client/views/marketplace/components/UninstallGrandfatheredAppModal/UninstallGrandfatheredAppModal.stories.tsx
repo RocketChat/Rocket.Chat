@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import UninstallGrandfatheredAppModal from './UninstallGrandfatheredAppModal';
 
 export default {
-	title: 'Marketplace/components/UninstallGrandfatheredAppModal',
 	component: UninstallGrandfatheredAppModal,
 	parameters: {
 		layout: 'centered',

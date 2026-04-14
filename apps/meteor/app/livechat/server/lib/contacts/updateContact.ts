@@ -2,6 +2,7 @@ import type { ILivechatContact, ILivechatContactChannel } from '@rocket.chat/cor
 import { LivechatContacts, LivechatInquiry, LivechatRooms, Settings, Subscriptions } from '@rocket.chat/models';
 
 import { getAllowedCustomFields } from './getAllowedCustomFields';
+import { patchContact } from './patchContact';
 import { validateContactManager } from './validateContactManager';
 import { validateCustomFields } from './validateCustomFields';
 import {
@@ -25,7 +26,7 @@ export type UpdateContactParams = {
 export async function updateContact(params: UpdateContactParams): Promise<ILivechatContact> {
 	const { contactId, name, emails, phones, customFields: receivedCustomFields, contactManager, channels, wipeConflicts } = params;
 
-	const contact = await LivechatContacts.findOneById<Pick<ILivechatContact, '_id' | 'name' | 'customFields' | 'conflictingFields'>>(
+	const contact = await LivechatContacts.findOneEnabledById<Pick<ILivechatContact, '_id' | 'name' | 'customFields' | 'conflictingFields'>>(
 		contactId,
 		{
 			projection: { _id: 1, name: 1, customFields: 1, conflictingFields: 1 },
@@ -71,15 +72,23 @@ export async function updateContact(params: UpdateContactParams): Promise<ILivec
 		});
 	}
 
-	const updatedContact = await LivechatContacts.updateContact(contactId, {
-		name,
+	const set = {
+		...(name !== undefined && { name }),
 		...(emails && { emails: emails?.map((address) => ({ address })) }),
 		...(phones && { phones: phones?.map((phoneNumber) => ({ phoneNumber })) }),
 		...(contactManager && { contactManager }),
 		...(channels && { channels }),
 		...(customFieldsToUpdate && { customFields: customFieldsToUpdate }),
 		...(wipeConflicts && { conflictingFields: [] }),
-	});
+	};
+	const unset: Partial<Record<keyof ILivechatContact, '' | 1>> =
+		'contactManager' in params && !contactManager ? { contactManager: '' } : {};
+
+	const updatedContact = await patchContact(contactId, { set, unset });
+
+	if (!updatedContact) {
+		throw new Error('error-contact-not-found');
+	}
 
 	// If the contact name changed, update the name of its existing rooms and subscriptions
 	if (name !== undefined && name !== contact.name) {

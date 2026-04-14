@@ -1,9 +1,9 @@
-import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { getRoomRoles } from '../../../../server/lib/roles/getRoomRoles';
 import { canAccessRoomAsync } from '../../../authorization/server';
 import { settings } from '../../../settings/server';
@@ -11,14 +11,14 @@ import { settings } from '../../../settings/server';
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
-		getRoomRoles(rid: IRoom['_id']): ISubscription[];
+		getRoomRoles(rid: IRoom['_id']): RoomRoles[];
 	}
 }
 
-export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUserId?: string | null) => {
+export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUser?: IUser | null) => {
 	check(rid, String);
 
-	if (!fromUserId && settings.get('Accounts_AllowAnonymousRead') === false) {
+	if (!fromUser && settings.get('Accounts_AllowAnonymousRead') === false) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
 	}
 
@@ -27,17 +27,9 @@ export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUserId?: string
 		throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'getRoomRoles' });
 	}
 
-	if (fromUserId && !(await canAccessRoomAsync(room, { _id: fromUserId }))) {
+	if (fromUser && !(await canAccessRoomAsync(room, fromUser))) {
 		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
 	}
 
 	return getRoomRoles(rid);
 };
-
-Meteor.methods<ServerMethods>({
-	async getRoomRoles(rid) {
-		const fromUserId = Meteor.userId();
-
-		return executeGetRoomRoles(rid, fromUserId);
-	},
-});

@@ -1,0 +1,108 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders _MessageFooterCalloutAction without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1v0y3un"
+    >
+      Feedback text 
+      <hr
+        class="rcx-box rcx-box--full rcx-css-vi5s2c"
+      />
+      <button
+        class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button rcx-css-1dy74d9"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          Button
+        </span>
+      </button>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders MessageComposerBlocked without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1v0y3un"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-burger rcx-icon rcx-css-1c32rho"
+      >
+        
+      </i>
+      Feedback text
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders MessageComposerBlockedLargeText without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1v0y3un"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-burger rcx-icon rcx-css-1c32rho"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-css-7o25pi"
+      >
+        Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text
+      </div>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button rcx-css-1dy74d9"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          Button
+        </span>
+      </button>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders MessageComposerBlockedLargeTextDashed without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-1r3svr2"
+    >
+      <i
+        aria-hidden="true"
+        class="rcx-box rcx-box--full rcx-icon--name-burger rcx-icon rcx-css-1c32rho"
+      >
+        
+      </i>
+      <div
+        class="rcx-box rcx-box--full rcx-css-7o25pi"
+      >
+        Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text text Feedback text Feedback text Feedback text Feedback text Feedback text
+      </div>
+      <button
+        class="rcx-box rcx-box--full rcx-button--small rcx-button--primary rcx-button rcx-css-1dy74d9"
+        type="button"
+      >
+        <span
+          class="rcx-button--content"
+        >
+          Button
+        </span>
+      </button>
+    </div>
+  </div>
+</body>
+`;

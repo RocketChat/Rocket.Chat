@@ -1,13 +1,23 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import { Accounts } from 'meteor/accounts-base';
+import { Tracker } from 'meteor/tracker';
+import type { RefObject } from 'react';
 
+import { limitQuoteChain } from './limitQuoteChain';
 import type { FormattingButton } from './messageBoxFormatting';
 import { formattingButtons } from './messageBoxFormatting';
 import type { ComposerAPI } from '../../../../client/lib/chats/ChatAPI';
+import { createUploadsAPI } from '../../../../client/lib/chats/uploads';
 import { withDebouncing } from '../../../../lib/utils/highOrderFunctions';
 
-export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string): ComposerAPI => {
+export const createComposerAPI = (
+	input: HTMLTextAreaElement,
+	storageID: string,
+	quoteChainLimit: number,
+	composerRef: RefObject<HTMLElement>,
+	{ rid, tmid }: { rid: string; tmid?: string },
+): ComposerAPI => {
 	const triggerEvent = (input: HTMLTextAreaElement, evt: string): void => {
 		const event = new Event(evt, { bubbles: true });
 		// TODO: Remove this hack for react to trigger onChange
@@ -108,7 +118,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	const quoteMessage = async (message: IMessage): Promise<void> => {
-		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), message];
+		_quotedMessages = [..._quotedMessages.filter((_message) => _message._id !== message._id), limitQuoteChain(message, quoteChainLimit)];
 		notifyQuotedMessagesUpdate();
 		input.focus();
 	};
@@ -214,7 +224,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		stopFormatterTracker.stop();
 	};
 
-	const wrapSelection = (pattern: string): void => {
+	const wrapSelection = (pattern: string): { selectionStart: number; selectionEnd: number; value: string } => {
 		const { selectionEnd = input.value.length, selectionStart = 0 } = input;
 		const initText = input.value.slice(0, selectionStart);
 		const selectedText = input.value.slice(selectionStart, selectionEnd);
@@ -223,11 +233,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		focus();
 
 		const startPattern = pattern.slice(0, pattern.indexOf('{{text}}'));
-		const startPatternFound = [...startPattern].reverse().every((char, index) => input.value.slice(selectionStart - index - 1, 1) === char);
+		const startPatternFound = input.value.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
 
 		if (startPatternFound) {
 			const endPattern = pattern.slice(pattern.indexOf('{{text}}') + '{{text}}'.length);
-			const endPatternFound = [...endPattern].every((char, index) => input.value.slice(selectionEnd + index, 1) === char);
+			const endPatternFound = input.value.slice(selectionEnd, selectionEnd + endPattern.length) === endPattern;
 
 			if (endPatternFound) {
 				insertText(selectedText);
@@ -244,7 +254,11 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 				triggerEvent(input, 'change');
 
 				focus();
-				return;
+				return {
+					selectionStart: input.selectionStart,
+					selectionEnd: input.selectionEnd,
+					value: input.value,
+				};
 			}
 		}
 
@@ -258,6 +272,12 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		triggerEvent(input, 'change');
 
 		focus();
+
+		return {
+			selectionStart: input.selectionStart,
+			selectionEnd: input.selectionEnd,
+			value: input.value,
+		};
 	};
 
 	const insertNewLine = (): void => insertText('\n');
@@ -291,6 +311,7 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 	};
 
 	return {
+		composerRef,
 		replaceText,
 		insertNewLine,
 		blur: () => input.blur(),
@@ -342,5 +363,6 @@ export const createComposerAPI = (input: HTMLTextAreaElement, storageID: string)
 		formatters,
 		isMicrophoneDenied,
 		setIsMicrophoneDenied,
+		uploads: createUploadsAPI({ rid, tmid }),
 	};
 };

@@ -5,7 +5,6 @@ import PositiveGrowthSymbol from './PositiveGrowthSymbol';
 import { useAutoSequence } from '../../stories/hooks/useAutoSequence';
 
 export default {
-	title: 'Components/Data/PositiveGrowthSymbol',
 	component: PositiveGrowthSymbol,
 	parameters: {
 		layout: 'centered',

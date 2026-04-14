@@ -8,15 +8,12 @@ import {
 	isQuoteAttachment,
 } from '@rocket.chat/core-typings';
 import type { Options } from '@rocket.chat/message-parser';
-import { useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
-import { useSubscriptionFromMessageQuery } from './useSubscriptionFromMessageQuery';
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
 import { parseMessageTextToAstMarkdown } from '../../../lib/parseMessageTextToAstMarkdown';
 import { useAutoLinkDomains } from '../../../views/room/MessageList/hooks/useAutoLinkDomains';
-import { useAutoTranslate } from '../../../views/room/MessageList/hooks/useAutoTranslate';
-import { useKatex } from '../../../views/room/MessageList/hooks/useKatex';
+import { useMessageListAutoTranslate, useMessageListKatex, useMessageListShowColors } from '../list/MessageListContext';
 
 const normalizeAttachments = (attachments: MessageAttachment[], name?: string, type?: string): MessageAttachment[] => {
 	if (name) {
@@ -43,16 +40,16 @@ const normalizeAttachments = (attachments: MessageAttachment[], name?: string, t
 
 		if (isFileAttachment(attachment)) {
 			if (attachment.title_link && !attachment.title_link.startsWith('/file-decrypt/')) {
-				attachment.title_link = `/file-decrypt${attachment.title_link}?key=${key}`;
+				attachment.title_link = `/file-decrypt${attachment.title_link}?key=${encodeURIComponent(key)}`;
 			}
 			if (isFileImageAttachment(attachment) && !attachment.image_url.startsWith('/file-decrypt/')) {
-				attachment.image_url = `/file-decrypt${attachment.image_url}?key=${key}`;
+				attachment.image_url = `/file-decrypt${attachment.image_url}?key=${encodeURIComponent(key)}`;
 			}
 			if (isFileAudioAttachment(attachment) && !attachment.audio_url.startsWith('/file-decrypt/')) {
-				attachment.audio_url = `/file-decrypt${attachment.audio_url}?key=${key}`;
+				attachment.audio_url = `/file-decrypt${attachment.audio_url}?key=${encodeURIComponent(key)}`;
 			}
 			if (isFileVideoAttachment(attachment) && !attachment.video_url.startsWith('/file-decrypt/')) {
-				attachment.video_url = `/file-decrypt${attachment.video_url}?key=${key}`;
+				attachment.video_url = `/file-decrypt${attachment.video_url}?key=${encodeURIComponent(key)}`;
 			}
 		}
 
@@ -61,11 +58,11 @@ const normalizeAttachments = (attachments: MessageAttachment[], name?: string, t
 };
 
 export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessage): MessageWithMdEnforced => {
-	const { katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled } = useKatex();
+	const katex = useMessageListKatex();
+	const katexEnabled = !!katex;
 	const customDomains = useAutoLinkDomains();
-	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
-	const autoTranslateOptions = useAutoTranslate(subscription);
-	const showColors = useSetting('HexColorPreview_Enabled', true);
+	const autoTranslateOptions = useMessageListAutoTranslate();
+	const showColors = useMessageListShowColors();
 
 	return useMemo(() => {
 		const parseOptions: Options = {
@@ -74,8 +71,8 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 			customDomains,
 			...(katexEnabled && {
 				katex: {
-					dollarSyntax: katexDollarSyntaxEnabled,
-					parenthesisSyntax: katexParenthesisSyntaxEnabled,
+					dollarSyntax: katex.dollarSyntaxEnabled,
+					parenthesisSyntax: katex.parenthesisSyntaxEnabled,
 				},
 			}),
 		};
@@ -91,5 +88,5 @@ export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessag
 		}
 
 		return normalizedMessage;
-	}, [showColors, customDomains, katexEnabled, katexDollarSyntaxEnabled, katexParenthesisSyntaxEnabled, message, autoTranslateOptions]);
+	}, [showColors, customDomains, katexEnabled, katex?.dollarSyntaxEnabled, katex?.parenthesisSyntaxEnabled, message, autoTranslateOptions]);
 };

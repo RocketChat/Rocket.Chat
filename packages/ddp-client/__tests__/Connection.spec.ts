@@ -53,9 +53,9 @@ it('should trigger a disconnect callback', async () => {
 
 	expect(disconnectCallback).toHaveBeenNthCalledWith(1, 'connecting');
 	expect(disconnectCallback).toHaveBeenNthCalledWith(2, 'connected');
-	expect(disconnectCallback).toBeCalledTimes(2);
+	expect(disconnectCallback).toHaveBeenCalledTimes(2);
 	server.close();
-	expect(disconnectCallback).toBeCalledTimes(3);
+	expect(disconnectCallback).toHaveBeenCalledTimes(3);
 	expect(disconnectCallback).toHaveBeenNthCalledWith(3, 'disconnected');
 	expect(connection.status).toBe('disconnected');
 });

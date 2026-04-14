@@ -1,14 +1,14 @@
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
+import { GenericTableHeaderCell, usePagination, useSort } from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import DeviceManagementAccountRow from './DeviceManagementAccountRow';
-import { GenericTableHeaderCell } from '../../../../components/GenericTable';
-import { usePagination } from '../../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../../components/GenericTable/hooks/useSort';
 import DeviceManagementTable from '../../../../components/deviceManagement/DeviceManagementTable';
-import { useEndpointData } from '../../../../hooks/useEndpointData';
+import { deviceManagementQueryKeys } from '../../../../lib/queryKeys';
 
 const sortMapping = {
 	client: 'device.name',
@@ -30,7 +30,11 @@ const DeviceManagementAccountTable = (): ReactElement => {
 		[itemsPerPage, current, sortBy, sortDirection],
 	);
 
-	const { value: data, phase, error, reload } = useEndpointData('/v1/sessions/list', { params: query });
+	const listSessions = useEndpoint('GET', '/v1/sessions/list');
+	const queryResult = useQuery({
+		queryKey: deviceManagementQueryKeys.userSessions(query),
+		queryFn: () => listSessions(query),
+	});
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -53,10 +57,7 @@ const DeviceManagementAccountTable = (): ReactElement => {
 
 	return (
 		<DeviceManagementTable
-			data={data}
-			phase={phase}
-			error={error}
-			reload={reload}
+			{...queryResult}
 			headers={headers}
 			renderRow={(session): ReactElement => (
 				<DeviceManagementAccountRow
@@ -66,7 +67,6 @@ const DeviceManagementAccountTable = (): ReactElement => {
 					deviceType={session.device?.type}
 					deviceOSName={session.device?.os.name}
 					loginAt={session.loginAt}
-					onReload={reload}
 				/>
 			)}
 			current={current}

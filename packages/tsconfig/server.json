@@ -1,0 +1,14 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"extends": "./base.json",
+	"compilerOptions": {
+		"target": "es2020",
+		"lib": ["es2020"],
+		"module": "commonjs",
+		"sourceMap": true,
+	},
+	"exclude": ["node_modules", "${configDir}/**/*.spec.ts"],
+	"ts-node": {
+		"transpileOnly": true
+	}
+}

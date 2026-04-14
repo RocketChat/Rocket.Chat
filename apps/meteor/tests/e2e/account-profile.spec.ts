@@ -31,15 +31,15 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.inputUsername.fill(newUsername);
 			await poAccountProfile.btnSubmit.click();
 			await poAccountProfile.btnClose.click();
-			await poHomeChannel.sidenav.openChat('general');
+			await poHomeChannel.navbar.openChat('general');
 			await poHomeChannel.content.sendMessage('any_message');
 
 			await expect(poHomeChannel.content.lastUserMessageNotSequential).toContainText(newUsername);
 
 			await poHomeChannel.content.lastUserMessageNotSequential.locator('figure').click();
-			await poHomeChannel.content.linkUserCard.click();
+			await poHomeChannel.userCard.openUserInfo();
 
-			await expect(poHomeChannel.tabs.userInfoUsername).toHaveText(newUsername);
+			await expect(poHomeChannel.tabs.userInfo.username).toHaveText(newUsername);
 		});
 
 		test.describe('Avatar', () => {
@@ -58,45 +58,19 @@ test.describe.serial('settings-account-profile', () => {
 				await expect(poAccountProfile.userAvatarEditor).toHaveAttribute('src');
 			});
 
-			test('should display a skeleton if the image url is not valid', async () => {
+			test('should show inline error if the image url is not valid', async () => {
 				await poAccountProfile.inputAvatarLink.fill('https://invalidUrl');
 				await poAccountProfile.btnSetAvatarLink.click();
 
-				await poAccountProfile.btnSubmit.click();
-				await expect(poAccountProfile.userAvatarEditor).not.toHaveAttribute('src');
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
 			});
-		});
-	});
 
-	test.describe('Security', () => {
-		test.beforeEach(async ({ page }) => {
-			await page.goto('account/security');
-			await page.waitForSelector('.main-content');
-		});
+			test('should show inline error if url does not point to an image', async () => {
+				await poAccountProfile.inputAvatarLink.fill('https://google.com');
+				await poAccountProfile.btnSetAvatarLink.click();
 
-		test('should not have any accessibility violations', async ({ page, makeAxeBuilder }) => {
-			await page.goto('/account/security');
-
-			const results = await makeAxeBuilder().analyze();
-			expect(results.violations).toEqual([]);
-		});
-
-		test('expect to disable email 2FA', async () => {
-			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
-			await poAccountProfile.disableEmail2FAButton.click();
-
-			await expect(poHomeChannel.toastSuccess).toBeVisible();
-			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
-		});
-
-		test('expect to enable email 2FA', async () => {
-			await poAccountProfile.security2FASection.click();
-			await expect(poAccountProfile.enableEmail2FAButton).toBeVisible();
-			await poAccountProfile.enableEmail2FAButton.click();
-
-			await expect(poHomeChannel.toastSuccess).toBeVisible();
-			await expect(poAccountProfile.disableEmail2FAButton).toBeVisible();
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
+			});
 		});
 	});
 
@@ -115,6 +89,11 @@ test.describe.serial('settings-account-profile', () => {
 			await poAccountProfile.btnTokensAdd.click();
 			await expect(poAccountProfile.tokenAddedModal).toBeVisible();
 			await poAccountProfile.btnTokenAddedOk.click();
+		});
+
+		await test.step('should not allow add new personal with no name', async () => {
+			await poAccountProfile.btnTokensAdd.click();
+			await expect(page.getByRole('alert').filter({ hasText: 'Please provide a name for your token' })).toBeVisible();
 		});
 
 		await test.step('should not allow add new personal token with same name', async () => {

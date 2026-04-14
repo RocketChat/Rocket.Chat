@@ -1,17 +1,13 @@
-import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { useUserId } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent, ReactElement } from 'react';
+import { useUserId, useRoomToolbox } from '@rocket.chat/ui-contexts';
+import type { ChangeEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
 import DiscussionsList from './DiscussionsList';
 import { useDiscussionsList } from './useDiscussionsList';
-import { useRecordList } from '../../../../hooks/lists/useRecordList';
-import { AsyncStatePhase } from '../../../../hooks/useAsyncState';
 import { useRoom } from '../../contexts/RoomContext';
-import { useRoomToolbox } from '../../contexts/RoomToolboxContext';
 
-const DiscussionListContextBar = (): ReactElement | null => {
+const DiscussionListContextBar = () => {
 	const userId = useUserId();
 	const room = useRoom();
 	const { closeTab } = useRoomToolbox();
@@ -27,8 +23,10 @@ const DiscussionListContextBar = (): ReactElement | null => {
 		[room._id, debouncedText],
 	);
 
-	const { discussionsList, loadMoreItems } = useDiscussionsList(options, userId);
-	const { phase, error, items: discussions, itemCount: totalItemCount } = useRecordList<IDiscussionMessage>(discussionsList);
+	const { isPending, isSuccess, error, data, fetchNextPage } = useDiscussionsList(options);
+
+	const discussions = data?.items || [];
+	const itemCount = data?.itemCount ?? 0;
 
 	const handleTextChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
 		setText(e.currentTarget.value);
@@ -43,9 +41,10 @@ const DiscussionListContextBar = (): ReactElement | null => {
 			onClose={closeTab}
 			error={error}
 			discussions={discussions}
-			total={totalItemCount}
-			loading={phase === AsyncStatePhase.LOADING}
-			loadMoreItems={loadMoreItems}
+			itemCount={itemCount}
+			isPending={isPending}
+			isSuccess={isSuccess}
+			loadMoreItems={() => fetchNextPage()}
 			text={text}
 			onChangeFilter={handleTextChange}
 		/>

@@ -1,0 +1,204 @@
+version: 1
+
+dn: dc=space,dc=air
+objectClass: dcObject
+objectClass: organization
+objectClass: top
+dc: space
+o: spaceair
+
+dn: ou=users,dc=space,dc=air
+objectClass: organizationalUnit
+objectClass: top
+ou: users
+
+dn: ou=others,dc=space,dc=air
+objectClass: organizationalUnit
+objectClass: top
+ou: others
+
+dn: cn=astronauts,dc=space,dc=air
+objectClass: groupOfNames
+objectClass: top
+cn: astronauts
+member: uid=alan.bean,ou=users,dc=space,dc=air
+member: uid=buzz.aldrin,ou=users,dc=space,dc=air
+member: uid=david.scott,ou=users,dc=space,dc=air
+member: uid=gene.cernan,ou=users,dc=space,dc=air
+member: uid=john.young,ou=users,dc=space,dc=air
+
+dn: cn=cosmonauts,dc=space,dc=air
+objectClass: groupOfNames
+objectClass: top
+cn: cosmonauts
+member: uid=sergei.krikalev,ou=users,dc=space,dc=air
+member: uid=yuri.romanenko,ou=users,dc=space,dc=air
+
+dn: uid=alan.bean,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Alan Bean
+sn: Alan
+mail: alan.bean@space.air
+uid: alan.bean
+destinationIndicator: Canada
+employeeType: fulltime
+departmentNumber: navControl
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=john.young,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: John Young
+sn: John
+mail: john.young@space.air
+uid: john.young
+destinationIndicator: Brazil
+employeeType: parttime
+departmentNumber: flightOps
+departmentNumber: flightOps2
+telephoneNumber: +1-555-0102
+telephoneNumber: +1-555-0103
+telephoneNumber: +1-555-0104
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=buzz.aldrin,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Buzz Aldrin
+sn: Buzz
+mail: buzz.aldrin@space.air
+uid: buzz.aldrin
+destinationIndicator: Japan
+employeeType: contractor
+departmentNumber: propulsion
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=david.scott,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: David Scott
+sn: David
+mail: david.scott@space.air
+uid: david.scott
+destinationIndicator: Germany
+employeeType: intern
+departmentNumber: lifeSupport
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=gene.cernan,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Gene Cernan
+sn: Gene
+mail: gene.cernan@space.air
+uid: gene.cernan
+destinationIndicator: Kenya
+employeeType: consultant
+departmentNumber: geoScience
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=james.irwin,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: James Irwin
+sn: James
+mail: james.irwin@space.air
+uid: james.irwin
+destinationIndicator: Norway
+employeeType: seasonal
+departmentNumber: dataSystems
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+
+
+
+
+
+
+
+dn: uid=neil.armstrong,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Neil Armstrong
+sn: Neil
+mail: neil.armstrong@space.air
+uid: neil.armstrong
+destinationIndicator: Finland
+employeeType: parttime
+departmentNumber: flightOps2
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=yuri.romanenko,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Yuri Romanenko
+sn: Yuri
+mail: yuri.romanenko@space.air
+uid: yuri.romanenko
+destinationIndicator: Mexico
+employeeType: contractor
+departmentNumber: propulsion2
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=sergei.krikalev,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: Sergei Krikalev
+sn: Sergei
+mail: sergei.krikalev@space.air
+uid: sergei.krikalev
+destinationIndicator: Italy
+employeeType: intern
+departmentNumber: lifeSupport2
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==
+
+
+dn: uid=userwithnoemail,ou=users,dc=space,dc=air
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: User With No Email
+sn: NoEmail
+uid: userwithnoemail
+destinationIndicator: Portugal
+employeeType: consultant
+departmentNumber: geoScience2
+userPassword:: e1NIQTI1Nn1sMzlna05QRUU1U29aaGhyRHo1VmVqVGpXMVJ6MHNNOTdjSGpsN
+ 1RaVHZJPQ==

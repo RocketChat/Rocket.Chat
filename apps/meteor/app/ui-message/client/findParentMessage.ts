@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 
 import { callWithErrorHandling } from '../../../client/lib/utils/callWithErrorHandling';
+import { Messages } from '../../../client/stores';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
-import { Messages } from '../../models/client';
 
 export const findParentMessage = (() => {
 	const waiting: string[] = [];
@@ -27,7 +27,7 @@ export const findParentMessage = (() => {
 	};
 
 	return async (tmid: IMessage['_id']) => {
-		const message = Messages.findOne({ _id: tmid });
+		const message = Messages.state.get(tmid);
 
 		if (message) {
 			return message;

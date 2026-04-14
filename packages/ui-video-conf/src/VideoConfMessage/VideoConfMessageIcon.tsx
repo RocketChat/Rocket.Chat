@@ -1,4 +1,4 @@
-import { Box, Icon, Palette } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 
 type VideoConfMessageIconProps = {
@@ -8,18 +8,18 @@ type VideoConfMessageIconProps = {
 const styles = {
 	ended: {
 		icon: 'phone-off',
-		color: Palette.text['font-hint'].toString(),
-		backgroundColor: Palette.surface['surface-neutral'].toString(),
+		color: 'hint',
+		backgroundColor: 'surface-neutral',
 	},
 	incoming: {
 		icon: 'phone-in',
-		color: Palette.statusColor['status-font-on-info'].toString(),
-		backgroundColor: Palette.status['status-background-info'].toString(),
+		color: 'status-font-on-info',
+		backgroundColor: 'status-background-info',
 	},
 	outgoing: {
 		icon: 'phone',
-		color: Palette.statusColor['status-font-on-success'].toString(),
-		backgroundColor: Palette.status['status-background-success'].toString(),
+		color: 'status-font-on-success',
+		backgroundColor: 'status-background-success',
 	},
 } as const;
 

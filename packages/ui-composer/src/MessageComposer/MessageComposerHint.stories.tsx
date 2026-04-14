@@ -4,7 +4,7 @@ import { MessageComposerHint } from '.';
 import '@rocket.chat/icons/dist/rocketchat.css';
 
 export default {
-	title: 'Components/MessageComposer/Hint',
+	title: 'Components/MessageComposerHint',
 	component: MessageComposerHint,
 } as Meta<typeof MessageComposerHint>;
 

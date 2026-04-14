@@ -23,10 +23,6 @@ export class Marketplace {
 		return this.page.locator('[data-qa-type="app-status-tag"]');
 	}
 
-	get confirmAppUploadModalTitle(): Locator {
-		return this.page.locator('[data-qa-id="confirm-app-upload-modal-title"]');
-	}
-
 	get btnConfirmAppUploadModal(): Locator {
 		return this.page.locator('role=button[name="Upload anyway"]');
 	}

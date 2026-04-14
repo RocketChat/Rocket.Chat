@@ -16,7 +16,17 @@ export const initDatabaseTracing = (tracer: Tracer, client: MongoClient) => {
 					'db.mongodb.collection': collection,
 					'db.name': event.databaseName,
 					'db.operation': event.commandName,
-					'db.statement': JSON.stringify(event.command, null, 2),
+					'db.statement': JSON.stringify(
+						event.command,
+						(_key, value) => {
+							// Support for tracing MongoDB commands with RegExp
+							if (value instanceof RegExp) {
+								return value.toString();
+							}
+							return value;
+						},
+						2,
+					),
 					'db.system': 'mongodb',
 					// net.peer.name
 					// net.peer.port

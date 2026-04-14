@@ -1,15 +1,16 @@
 import { Callout, FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import type { ReactElement, ChangeEvent } from 'react';
-import { useTranslation } from 'react-i18next';
-
 import {
 	ContextualbarClose,
 	ContextualbarTitle,
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarContent,
-} from '../../../../components/Contextualbar';
+	ContextualbarDialog,
+} from '@rocket.chat/ui-client';
+import type { ReactElement, ChangeEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+
 import { useRoom } from '../../contexts/RoomContext';
 
 type AutoTranslateProps = {
@@ -33,7 +34,7 @@ const AutoTranslate = ({
 	const room = useRoom();
 
 	return (
-		<>
+		<ContextualbarDialog>
 			<ContextualbarHeader>
 				<ContextualbarIcon name='language' />
 				<ContextualbarTitle>{t('Auto_Translate')}</ContextualbarTitle>
@@ -71,7 +72,7 @@ const AutoTranslate = ({
 					</Field>
 				</FieldGroup>
 			</ContextualbarContent>
-		</>
+		</ContextualbarDialog>
 	);
 };
 

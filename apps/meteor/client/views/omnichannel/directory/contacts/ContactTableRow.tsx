@@ -1,22 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
-import { useRoute } from '@rocket.chat/ui-contexts';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 
-import { GenericTableCell, GenericTableRow } from '../../../../components/GenericTable';
+import ContactItemMenu from './ContactItemMenu';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
-import { useIsCallReady } from '../../../../contexts/CallContext';
 import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
-import { CallDialpadButton } from '../components/CallDialpadButton';
+import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
-const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
+const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
-	const directoryRoute = useRoute('omnichannel-directory');
-	const isCallReady = useIsCallReady();
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
-	const phoneNumber = phones?.length ? phones[0].phoneNumber : undefined;
 	const latestChannel = channels?.sort((a, b) => {
 		if (a.lastChat && b.lastChat) {
 			return a.lastChat.ts > b.lastChat.ts ? -1 : 1;
@@ -25,26 +22,16 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 		return 0;
 	})[0];
 
-	const onRowClick = useEffectEvent(
-		(id: string) => (): void =>
-			directoryRoute.push({
-				id,
-				tab: 'contacts',
-				context: 'details',
-			}),
+	const onRowClick = useEffectEvent((id: string) =>
+		omnichannelDirectoryRouter.navigate({
+			id,
+			tab: 'contacts',
+			context: 'details',
+		}),
 	);
 
 	return (
-		<GenericTableRow
-			action
-			key={_id}
-			tabIndex={0}
-			role='link'
-			height='40px'
-			qa-user-id={_id}
-			rcx-show-call-button-on-hover
-			onClick={onRowClick(_id)}
-		>
+		<GenericTableRow action key={_id} tabIndex={0} height='40px' rcx-show-call-button-on-hover onClick={() => onRowClick(_id)}>
 			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
 			<GenericTableCell withTruncatedText>
 				{latestChannel?.details && (
@@ -58,11 +45,9 @@ const ContactTableRow = ({ _id, name, phones, contactManager, lastChat, channels
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
 			<GenericTableCell withTruncatedText>{lastChat && getTimeFromNow(lastChat.ts)}</GenericTableCell>
-			{isCallReady && (
-				<GenericTableCell>
-					<CallDialpadButton phoneNumber={phoneNumber} />
-				</GenericTableCell>
-			)}
+			<GenericTableCell>
+				<ContactItemMenu _id={_id} name={name} channels={channels} />
+			</GenericTableCell>
 		</GenericTableRow>
 	);
 };

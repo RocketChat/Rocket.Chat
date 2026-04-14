@@ -6,18 +6,6 @@ import { Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
-import { callbacks } from '../../../../../lib/callbacks';
-import { wrapInSessionTransaction, onceTransactionCommitedSuccessfully } from '../../../../../server/database/utils';
-import type { UserChangedAuditStore } from '../../../../../server/lib/auditServerEvents/userChanged';
-import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
-import { safeGetMeteorUser } from '../../../../utils/server/functions/safeGetMeteorUser';
-import { generatePassword } from '../../lib/generatePassword';
-import { notifyOnUserChange } from '../../lib/notifyListener';
-import { passwordPolicy } from '../../lib/passwordPolicy';
-import { saveCustomFields } from '../saveCustomFields';
-import { saveUserIdentity } from '../saveUserIdentity';
-import { setEmail } from '../setEmail';
-import { setStatusText } from '../setStatusText';
 import { handleBio } from './handleBio';
 import { handleNickname } from './handleNickname';
 import { saveNewUser } from './saveNewUser';
@@ -25,7 +13,18 @@ import { sendPasswordEmail } from './sendUserEmail';
 import { setPasswordUpdater } from './setPasswordUpdater';
 import { validateUserData } from './validateUserData';
 import { validateUserEditing } from './validateUserEditing';
+import { wrapInSessionTransaction, onceTransactionCommitedSuccessfully } from '../../../../../server/database/utils';
+import type { UserChangedAuditStore } from '../../../../../server/lib/auditServerEvents/userChanged';
+import { callbacks } from '../../../../../server/lib/callbacks';
 import { shouldBreakInVersion } from '../../../../../server/lib/shouldBreakInVersion';
+import { hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
+import { generatePassword } from '../../lib/generatePassword';
+import { notifyOnUserChange } from '../../lib/notifyListener';
+import { passwordPolicy } from '../../lib/passwordPolicy';
+import { saveCustomFields } from '../saveCustomFields';
+import { saveUserIdentity } from '../saveUserIdentity';
+import { setEmail } from '../setEmail';
+import { setStatusText } from '../setStatusText';
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -53,6 +52,8 @@ export type SaveUserData = {
 
 	customFields?: Record<string, any>;
 	active?: boolean;
+
+	freeSwitchExtension?: string;
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
@@ -61,8 +62,19 @@ type SaveUserOptions = {
 	auditStore?: UserChangedAuditStore;
 };
 
+const findUserById = async (uid: IUser['_id']): Promise<IUser> => {
+	const user = await Users.findOneById(uid);
+	if (!user) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+	}
+
+	return user;
+};
+
 const _saveUser = (session?: ClientSession) =>
 	async function (userId: IUser['_id'], userData: SaveUserData, options?: SaveUserOptions) {
+		const performedBy = await findUserById(userId);
+
 		const oldUserData = userData._id && (await Users.findOneById(userData._id));
 		if (oldUserData && isUserFederated(oldUserData)) {
 			throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
@@ -89,7 +101,7 @@ const _saveUser = (session?: ClientSession) =>
 
 		if (!isUpdateUserData(userData)) {
 			// TODO audit new users
-			return saveNewUser(userData, sendPassword);
+			return saveNewUser(userData, sendPassword, performedBy);
 		}
 
 		if (!oldUserData) {
@@ -123,7 +135,7 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (typeof userData.statusText === 'string') {
-			await setStatusText(userData._id, userData.statusText, updater, session);
+			await setStatusText(oldUserData, userData.statusText, { updater, session });
 		}
 
 		if (userData.email) {
@@ -159,6 +171,14 @@ const _saveUser = (session?: ClientSession) =>
 			updater.set('requirePasswordChange', userData.requirePasswordChange);
 			if (!userData.requirePasswordChange) {
 				updater.unset('requirePasswordChangeReason');
+			}
+		}
+
+		if (typeof userData.freeSwitchExtension === 'string' && userData.freeSwitchExtension !== (oldUserData?.freeSwitchExtension ?? '')) {
+			if (userData.freeSwitchExtension.trim() === '') {
+				updater.unset('freeSwitchExtension');
+			} else {
+				updater.set('freeSwitchExtension', userData.freeSwitchExtension);
 			}
 		}
 
@@ -202,7 +222,7 @@ const _saveUser = (session?: ClientSession) =>
 			await Apps.self?.triggerEvent(AppEvents.IPostUserUpdated, {
 				user: userUpdated,
 				previousUser: oldUserData,
-				performedBy: await safeGetMeteorUser(),
+				performedBy,
 			});
 
 			if (sendPassword) {
@@ -225,16 +245,15 @@ const _saveUser = (session?: ClientSession) =>
 		return true;
 	};
 
-const isBroken = shouldBreakInVersion('8.0.0');
+const isBroken = shouldBreakInVersion('9.0.0');
 export const saveUser = (() => {
-	if (isBroken) {
-		throw new Error('DEBUG_DISABLE_USER_AUDIT flag is deprecated and should be removed');
-	}
-
 	if (!process.env.DEBUG_DISABLE_USER_AUDIT) {
 		return wrapInSessionTransaction(_saveUser);
 	}
 
+	if (isBroken) {
+		throw new Error('DEBUG_DISABLE_USER_AUDIT flag is deprecated and should be removed');
+	}
 	const saveUserNoSession = _saveUser();
 	return function saveUser(userId: IUser['_id'], userData: SaveUserData, _options?: any) {
 		return saveUserNoSession(userId, userData);

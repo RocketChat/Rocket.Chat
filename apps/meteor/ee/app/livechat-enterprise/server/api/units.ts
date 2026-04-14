@@ -1,4 +1,4 @@
-import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
+import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit, OmnichannelBusinessUnitPayload } from '@rocket.chat/core-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { API } from '../../../../../app/api/server';
@@ -16,11 +16,11 @@ declare module '@rocket.chat/rest-typings' {
 		};
 		'/v1/livechat/units': {
 			GET: (params: PaginatedRequest<{ text?: string }>) => PaginatedResult & { units: IOmnichannelBusinessUnit[] };
-			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
+			POST: (params: OmnichannelBusinessUnitPayload) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 		};
 		'/v1/livechat/units/:id': {
 			GET: () => IOmnichannelBusinessUnit;
-			POST: (params: { unitData: string; unitMonitors: string; unitDepartments: string }) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
+			POST: (params: OmnichannelBusinessUnitPayload) => Omit<IOmnichannelBusinessUnit, '_updatedAt'>;
 			DELETE: () => number;
 		};
 	}
@@ -72,7 +72,7 @@ API.v1.addRoute(
 		},
 		async post() {
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
-			return API.v1.success(await LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments));
+			return API.v1.success(await LivechatEnterprise.saveUnit(null, unitData, unitMonitors, unitDepartments, this.userId));
 		},
 	},
 );
@@ -85,6 +85,7 @@ API.v1.addRoute(
 			const { id } = this.urlParams;
 			const unit = await findUnitById({
 				unitId: id,
+				userId: this.userId,
 			});
 
 			return API.v1.success(unit);
@@ -93,12 +94,12 @@ API.v1.addRoute(
 			const { unitData, unitMonitors, unitDepartments } = this.bodyParams;
 			const { id } = this.urlParams;
 
-			return API.v1.success(await LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments));
+			return API.v1.success(await LivechatEnterprise.saveUnit(id, unitData, unitMonitors, unitDepartments, this.userId));
 		},
 		async delete() {
 			const { id } = this.urlParams;
 
-			return API.v1.success((await LivechatEnterprise.removeUnit(id)).deletedCount);
+			return API.v1.success((await LivechatEnterprise.removeUnit(id, this.userId)).deletedCount);
 		},
 	},
 );

@@ -9,17 +9,17 @@ import type { IRoom } from '../rooms';
  * be able to successfully save the room object.
  */
 export interface IDiscussionBuilder extends IRoomBuilder {
-    kind: RocketChatAssociationModel.DISCUSSION;
+	kind: RocketChatAssociationModel.DISCUSSION;
 
-    setParentRoom(parentRoom: IRoom): IDiscussionBuilder;
+	setParentRoom(parentRoom: IRoom): IDiscussionBuilder;
 
-    getParentRoom(): IRoom;
+	getParentRoom(): IRoom;
 
-    setParentMessage(parentMessage: IMessage): IDiscussionBuilder;
+	setParentMessage(parentMessage: IMessage): IDiscussionBuilder;
 
-    getParentMessage(): IMessage;
+	getParentMessage(): IMessage;
 
-    setReply(reply: string): IDiscussionBuilder;
+	setReply(reply: string): IDiscussionBuilder;
 
-    getReply(): string;
+	getReply(): string;
 }

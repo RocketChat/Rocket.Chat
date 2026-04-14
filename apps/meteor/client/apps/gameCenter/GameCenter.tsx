@@ -1,5 +1,6 @@
 import type { IExternalComponent } from '@rocket.chat/apps-engine/definition/externalComponent';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useState } from 'react';
 import type { MouseEvent, ReactElement } from 'react';
 
@@ -7,7 +8,6 @@ import GameCenterContainer from './GameCenterContainer';
 import GameCenterList from './GameCenterList';
 import { useExternalComponentsQuery } from './hooks/useExternalComponentsQuery';
 import { preventSyntheticEvent } from '../../lib/utils/preventSyntheticEvent';
-import { useRoomToolbox } from '../../views/room/contexts/RoomToolboxContext';
 
 export type IGame = IExternalComponent;
 
@@ -18,33 +18,26 @@ const GameCenter = (): ReactElement => {
 
 	const result = useExternalComponentsQuery();
 
-	const handleClose = useEffectEvent((e: MouseEvent) => {
-		preventSyntheticEvent(e);
-		closeTab();
-	});
+	const handleClose = useEffectEvent(() => closeTab());
 
 	const handleBack = useEffectEvent((e: MouseEvent) => {
 		setOpenedGame(undefined);
 		preventSyntheticEvent(e);
 	});
 
-	return (
-		<>
-			{!openedGame && (
-				<GameCenterList
-					data-testid='game-center-list'
-					handleClose={handleClose}
-					handleOpenGame={setOpenedGame}
-					games={result.data}
-					isLoading={result.isPending}
-				/>
-			)}
+	if (!openedGame) {
+		return (
+			<GameCenterList
+				data-testid='game-center-list'
+				handleClose={handleClose}
+				handleOpenGame={setOpenedGame}
+				games={result.data}
+				isLoading={result.isPending}
+			/>
+		);
+	}
 
-			{openedGame && (
-				<GameCenterContainer data-testid='game-center-container' handleBack={handleBack} handleClose={handleClose} game={openedGame} />
-			)}
-		</>
-	);
+	return <GameCenterContainer data-testid='game-center-container' handleBack={handleBack} handleClose={handleClose} game={openedGame} />;
 };
 
 export default GameCenter;

@@ -2,6 +2,7 @@ import type {
 	AtLeast,
 	ILivechatContact,
 	ILivechatContactChannel,
+	ILivechatContactConflictingField,
 	ILivechatContactVisitorAssociation,
 	ILivechatVisitor,
 	RocketChatRecordDeleted,
@@ -32,7 +33,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		super(db, 'livechat_contact', trash);
 	}
 
-	protected modelIndexes(): IndexDescription[] {
+	protected override modelIndexes(): IndexDescription[] {
 		return [
 			{
 				key: { name: 1 },
@@ -113,17 +114,52 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return result.insertedId;
 	}
 
-	async updateContact(contactId: string, data: Partial<ILivechatContact>, options?: FindOneAndUpdateOptions): Promise<ILivechatContact> {
-		const updatedValue = await this.findOneAndUpdate(
-			{ _id: contactId },
-			{ $set: { ...data, unknown: false, ...(data.channels && { preRegistration: !data.channels.length }) } },
+	async patchContact(
+		contactId: string,
+		changes: {
+			set?: Partial<ILivechatContact>;
+			unset?: Partial<Record<keyof ILivechatContact, '' | 1>>;
+		},
+		options?: FindOneAndUpdateOptions,
+	) {
+		const { set = {}, unset = {} } = changes;
+
+		const $set = {
+			...set,
+			unknown: false,
+			...(set.channels && { preRegistration: !set.channels.length }),
+		};
+
+		return this.findOneAndUpdate(
+			{ _id: contactId, enabled: { $ne: false } },
+			{
+				$set,
+				...(Object.keys(unset).length > 0 && { $unset: unset }),
+			},
 			{ returnDocument: 'after', ...options },
 		);
-		return updatedValue as ILivechatContact;
 	}
 
 	updateById(contactId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<Document | UpdateResult> {
-		return this.updateOne({ _id: contactId }, update, options);
+		return this.updateOne({ _id: contactId, enabled: { $ne: false } }, update, options);
+	}
+
+	async updateContactCustomFields(
+		contactId: string,
+		dataToUpdate: { customFields: Record<string, unknown>; conflictingFields: ILivechatContactConflictingField[] },
+		options?: FindOneAndUpdateOptions,
+	): Promise<ILivechatContact | null> {
+		if (!dataToUpdate.customFields && !dataToUpdate.conflictingFields) {
+			throw new Error('At least one of customFields or conflictingFields must be provided');
+		}
+
+		return this.findOneAndUpdate(
+			{ _id: contactId, enabled: { $ne: false } },
+			{
+				$set: { ...dataToUpdate },
+			},
+			{ returnDocument: 'after', ...options },
+		);
 	}
 
 	findPaginatedContacts(
@@ -139,6 +175,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 				{ 'phones.phoneNumber': { $regex: searchRegex, $options: 'i' } },
 			],
 			unknown,
+			enabled: { $ne: false },
 		};
 
 		return this.findPaginated(
@@ -206,7 +243,7 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 	}
 
 	async addChannel(contactId: string, channel: ILivechatContactChannel): Promise<void> {
-		await this.updateOne({ _id: contactId }, { $push: { channels: channel }, $set: { preRegistration: false } });
+		await this.updateOne({ _id: contactId, enabled: { $ne: false } }, { $push: { channels: channel }, $set: { preRegistration: false } });
 	}
 
 	async updateLastChatById(
@@ -284,6 +321,49 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 		return this.find({
 			'channels.visitor.visitorId': visitorId,
 		});
+	}
+
+	async findOneEnabledById(_id: ILivechatContact['_id'], options?: FindOptions<ILivechatContact>): Promise<ILivechatContact | null>;
+
+	async findOneEnabledById<P extends Document = ILivechatContact>(_id: P['_id'], options?: FindOptions<P>): Promise<P | null>;
+
+	async findOneEnabledById(_id: ILivechatContact['_id'], options?: any): Promise<ILivechatContact | null> {
+		return this.findOne({ _id, enabled: { $ne: false } }, options);
+	}
+
+	disableByVisitorId(visitorId: string): Promise<UpdateResult | Document> {
+		return this.updateOne(
+			{ 'channels.visitor.visitorId': visitorId },
+			{
+				$set: { enabled: false },
+				$unset: {
+					emails: 1,
+					customFields: 1,
+					lastChat: 1,
+					channels: 1,
+					name: 1,
+					phones: 1,
+				},
+			},
+		);
+	}
+
+	disableByContactId(contactId: string): Promise<UpdateResult> {
+		return this.updateOne(
+			{ _id: contactId },
+			{
+				$set: { enabled: false },
+				$unset: {
+					emails: 1,
+					customFields: 1,
+					lastChat: 1,
+					channels: 1,
+					name: 1,
+					phones: 1,
+					conflictingFields: 1,
+				},
+			},
+		);
 	}
 
 	async addEmail(contactId: string, email: string): Promise<ILivechatContact | null> {
@@ -373,5 +453,9 @@ export class LivechatContactsRaw extends BaseRaw<ILivechatContact> implements IL
 			],
 			{ allowDiskUse: true, readPreference: readSecondaryPreferred() },
 		);
+	}
+
+	updateByVisitorId(visitorId: string, update: UpdateFilter<ILivechatContact>, options?: UpdateOptions): Promise<UpdateResult> {
+		return this.updateOne({ 'channels.visitor.visitorId': visitorId }, update, options);
 	}
 }

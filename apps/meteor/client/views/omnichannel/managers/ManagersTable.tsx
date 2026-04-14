@@ -1,14 +1,6 @@
 import { Box, Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import { hashKey, useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
-
-import AddManager from './AddManager';
-import RemoveManagerButton from './RemoveManagerButton';
-import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import {
 	GenericTable,
 	GenericTableBody,
@@ -17,11 +9,21 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
 	GenericTableRow,
-} from '../../../components/GenericTable';
-import { usePagination } from '../../../components/GenericTable/hooks/usePagination';
-import { useSort } from '../../../components/GenericTable/hooks/useSort';
+	usePagination,
+	useSort,
+} from '@rocket.chat/ui-client';
+import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { hashKey, useQuery } from '@tanstack/react-query';
+import { useMemo, useState } from 'react';
 
-// TODO: Missing error state
+import AddManager from './AddManager';
+import RemoveManagerButton from './RemoveManagerButton';
+import FilterByText from '../../../components/FilterByText';
+import GenericError from '../../../components/GenericError';
+import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
+import { links } from '../../../lib/links';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
+
 const ManagersTable = () => {
 	const t = useTranslation();
 
@@ -45,9 +47,8 @@ const ManagersTable = () => {
 	);
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
-	const { data, isLoading, isSuccess, refetch } = useQuery({
-		queryKey: ['omnichannel', 'managers', 'livechat-manager', query],
-
+	const { data, isLoading, isSuccess, isError, refetch } = useQuery({
+		queryKey: omnichannelQueryKeys.managers(query),
 		queryFn: async () => getManagers(query),
 	});
 
@@ -79,15 +80,15 @@ const ManagersTable = () => {
 
 	return (
 		<>
-			<AddManager reload={refetch} />
+			<AddManager />
 			{((isSuccess && data?.users.length > 0) || queryHasChanged) && (
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable aria-busy>
+				<GenericTable aria-busy={isLoading} aria-label={t('Managers')}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
-						<GenericTableLoadingTable headerCells={2} />
+						<GenericTableLoadingTable headerCells={4} />
 					</GenericTableBody>
 				</GenericTable>
 			)}
@@ -96,7 +97,7 @@ const ManagersTable = () => {
 					icon='shield'
 					title={t('No_managers_yet')}
 					description={t('No_managers_yet_description')}
-					linkHref='https://go.rocket.chat/i/omnichannel-docs'
+					linkHref={links.go.omnichannelDocs}
 					linkText={t('Learn_more_about_managers')}
 				/>
 			)}
@@ -106,7 +107,7 @@ const ManagersTable = () => {
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (
-								<GenericTableRow key={user._id} tabIndex={0} qa-user-id={user._id}>
+								<GenericTableRow key={user._id} tabIndex={0}>
 									<GenericTableCell withTruncatedText>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
@@ -126,7 +127,7 @@ const ManagersTable = () => {
 										<Box mi={4} />
 									</GenericTableCell>
 									<GenericTableCell withTruncatedText>{user.emails?.length && user.emails[0].address}</GenericTableCell>
-									<RemoveManagerButton _id={user._id} reload={refetch} />
+									<RemoveManagerButton _id={user._id} />
 								</GenericTableRow>
 							))}
 						</GenericTableBody>
@@ -142,6 +143,7 @@ const ManagersTable = () => {
 					/>
 				</>
 			)}
+			{isError && <GenericError buttonAction={refetch} />}
 		</>
 	);
 };

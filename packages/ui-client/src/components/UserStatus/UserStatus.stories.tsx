@@ -1,5 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/react';
-import { ComponentType } from 'react';
+import type { ComponentType } from 'react';
 
 import * as UserStatus from '.';
 import { useAutoSequence } from '../../hooks/useAutoSequence';

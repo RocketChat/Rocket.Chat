@@ -57,12 +57,16 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		const userId = Meteor.userId();
+		const user = await Meteor.userAsync();
+		const isAnonymous = !user?._id;
 
-		if (!userId && settings.get('Accounts_AllowAnonymousRead') === false) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'getRoomByTypeAndName',
-			});
+		if (isAnonymous) {
+			const allowAnon = settings.get('Accounts_AllowAnonymousRead');
+			if (!allowAnon || type !== 'c') {
+				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+					method: 'getRoomByTypeAndName',
+				});
+			}
 		}
 
 		const roomFind = roomCoordinator.getRoomFind(type);
@@ -75,13 +79,18 @@ Meteor.methods<ServerMethods>({
 			});
 		}
 
-		if (userId && !(await canAccessRoomAsync(room, { _id: userId }))) {
+		if (
+			user &&
+			!(await canAccessRoomAsync(room, user, {
+				includeInvitations: true,
+			}))
+		) {
 			throw new Meteor.Error('error-no-permission', 'No permission', {
 				method: 'getRoomByTypeAndName',
 			});
 		}
 
-		if (settings.get('Store_Last_Message') && userId && !(await hasPermissionAsync(userId, 'preview-c-room'))) {
+		if (settings.get('Store_Last_Message') && user && !(await hasPermissionAsync(user._id, 'preview-c-room'))) {
 			delete room.lastMessage;
 		}
 

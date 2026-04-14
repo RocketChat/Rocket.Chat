@@ -11,6 +11,7 @@ export const useInviteTokenMutation = () => {
 	const getInviteRoom = useEndpoint('POST', '/v1/useInviteToken');
 
 	return useMutation({
+		mutationKey: ['inviteToken'],
 		mutationFn: (token: string) => getInviteRoom({ token }),
 		onSuccess: (result) => {
 			if (!result.room.name) {

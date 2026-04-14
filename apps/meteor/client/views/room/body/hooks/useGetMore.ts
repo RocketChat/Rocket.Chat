@@ -1,44 +1,104 @@
+import { useSafeRefCallback } from '@rocket.chat/fuselage-hooks';
+import { useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { MutableRefObject } from 'react';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { flushSync } from 'react-dom';
 
+import { getBoundingClientRect } from '../../../../../app/ui/client/views/app/lib/scrolling';
 import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
 import { withThrottling } from '../../../../../lib/utils/highOrderFunctions';
 
 export const useGetMore = (rid: string, atBottomRef: MutableRefObject<boolean>) => {
-	const ref = useRef<HTMLElement>(null);
+	const msgId = useSearchParameter('msg');
+	const msgIdRef = useRef(msgId);
+	const jumpToRef = useRef<HTMLElement>(undefined);
 
 	useEffect(() => {
-		if (!ref.current) {
-			return;
-		}
+		msgIdRef.current = msgId;
+	}, [msgId]);
 
-		const refValue = ref.current;
+	const ref = useSafeRefCallback(
+		useCallback(
+			(element: HTMLElement) => {
+				const checkPositionAndGetMore = withThrottling({ wait: 100 })(async () => {
+					if (!element.isConnected) {
+						return;
+					}
 
-		const handleScroll = withThrottling({ wait: 100 })((event) => {
-			const lastScrollTopRef = event.target.scrollTop;
-			const height = event.target.clientHeight;
-			const isLoading = RoomHistoryManager.isLoading(rid);
-			const hasMore = RoomHistoryManager.hasMore(rid);
-			const hasMoreNext = RoomHistoryManager.hasMoreNext(rid);
+					if (jumpToRef.current) {
+						return;
+					}
 
-			if ((isLoading === false && hasMore === true) || hasMoreNext === true) {
-				if (hasMore === true && lastScrollTopRef <= height / 3) {
-					RoomHistoryManager.getMore(rid);
-				} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= event.target.scrollHeight - height) {
-					RoomHistoryManager.getMoreNext(rid, atBottomRef);
-					atBottomRef.current = false;
-				}
-			}
-		});
+					if (RoomHistoryManager.isLoading(rid)) {
+						return;
+					}
 
-		refValue.addEventListener('scroll', handleScroll);
+					if (msgIdRef.current && !RoomHistoryManager.isLoaded(rid)) {
+						return;
+					}
 
-		return () => {
-			refValue.removeEventListener('scroll', handleScroll);
-		};
-	}, [rid, atBottomRef]);
+					const { scrollTop, clientHeight, scrollHeight } = getBoundingClientRect(element);
+
+					const lastScrollTopRef = scrollTop;
+					const height = clientHeight;
+					const hasMore = RoomHistoryManager.hasMore(rid);
+					const hasMoreNext = RoomHistoryManager.hasMoreNext(rid);
+
+					if (hasMore === true && lastScrollTopRef <= height / 3) {
+						await RoomHistoryManager.getMore(rid);
+
+						if (jumpToRef.current) {
+							return;
+						}
+
+						if (!element.isConnected) {
+							return;
+						}
+
+						flushSync(() => {
+							RoomHistoryManager.restoreScroll(rid);
+						});
+					} else if (hasMoreNext === true && Math.ceil(lastScrollTopRef) >= scrollHeight - height) {
+						await RoomHistoryManager.getMoreNext(rid, atBottomRef);
+						atBottomRef.current = false;
+					}
+				});
+
+				const mutationObserver = new MutationObserver((mutations) => {
+					mutations.forEach(() => {
+						checkPositionAndGetMore();
+					});
+				});
+
+				mutationObserver.observe(element, { childList: true, subtree: true });
+
+				const observer = new ResizeObserver(() => {
+					checkPositionAndGetMore();
+				});
+
+				observer.observe(element);
+
+				const handleScroll = function () {
+					checkPositionAndGetMore();
+				};
+
+				element.addEventListener('scroll', handleScroll, {
+					passive: true,
+				});
+
+				return () => {
+					observer.disconnect();
+					mutationObserver.disconnect();
+					checkPositionAndGetMore.cancel();
+					element.removeEventListener('scroll', handleScroll);
+				};
+			},
+			[rid, atBottomRef],
+		),
+	);
 
 	return {
 		innerRef: ref,
+		jumpToRef,
 	};
 };

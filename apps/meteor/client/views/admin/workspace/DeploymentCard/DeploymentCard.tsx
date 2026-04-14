@@ -30,7 +30,7 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 	});
 
 	return (
-		<Card data-qa-id='deployment-card' height='full'>
+		<Card height='full'>
 			<CardBody flexDirection='column'>
 				<WorkspaceCardSection>
 					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />
@@ -68,9 +68,7 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('MongoDB')} />
-						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine} ${
-							!statistics.msEnabled ? `(oplog ${statistics.oplogEnabled ? t('Enabled') : t('Disabled')})` : ''
-						}`}
+						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine}`}
 					</WorkspaceCardSection>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Commit_details')} />

@@ -6,7 +6,7 @@ import { injectCurrentContext, tracerActiveSpan } from '@rocket.chat/tracing';
 
 import { asyncLocalStorage } from '.';
 import type { EventSignatures } from './events/Events';
-import type { IBroker, IBrokerNode } from './types/IBroker';
+import type { CallingOptions, IBroker, IBrokerNode } from './types/IBroker';
 import type { ServiceClass, IServiceClass } from './types/ServiceClass';
 
 type ExtendedServiceClass = { instance: IServiceClass; dependencies: string[]; isStarted: boolean };
@@ -29,7 +29,11 @@ export class LocalBroker implements IBroker {
 
 	private defaultDependencies = ['settings'];
 
-	async call(method: string, data: any): Promise<any> {
+	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
+		if (options) {
+			logger.warn('Options are not supported in LocalBroker');
+		}
+
 		return tracerActiveSpan(
 			`action ${method}`,
 			{},
@@ -67,6 +71,8 @@ export class LocalBroker implements IBroker {
 		}
 		instance.removeAllListeners();
 		await instance.stopped();
+
+		this.services.delete(namespace);
 	}
 
 	/**
@@ -88,7 +94,7 @@ export class LocalBroker implements IBroker {
 			(dependency) => dependency !== serviceName,
 		);
 
-		instance.created();
+		void instance.created();
 
 		instance.getEvents().forEach((event) => event.listeners.forEach((listener) => this.events.on(event.eventName, listener)));
 
@@ -118,7 +124,7 @@ export class LocalBroker implements IBroker {
 	}
 
 	async broadcast<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): Promise<void> {
-		this.broadcastLocal(event, ...args);
+		void this.broadcastLocal(event, ...args);
 
 		this.events.emit('broadcast', event, args);
 	}
@@ -146,9 +152,9 @@ export class LocalBroker implements IBroker {
 	 * Registers services to be started. We're assuming that each service will only have one level of dependencies.
 	 */
 	private registerPendingServices(services: string[] = []): void {
-		for (const service of services) {
-			this.pendingServices.add(service);
-		}
+		services
+			.filter((e) => !this.services.has(e) || !this.services.get(e)?.isStarted)
+			.forEach((service) => this.pendingServices.add(service));
 	}
 
 	/**
@@ -162,20 +168,22 @@ export class LocalBroker implements IBroker {
 		const serviceName = service.instance.getName();
 
 		if (typeof service === 'string') {
-			logger.debug(`Service ${serviceName} is not in the services map. Bringing it back to queue`);
+			logger.debug({ msg: 'Service is not in the services map. Bringing it back to queue', serviceName });
 			return;
 		}
 
 		if (service?.isStarted) {
-			logger.debug(`Service ${serviceName} already started`);
+			logger.debug({ msg: 'Service already started', serviceName });
 			return;
 		}
 
 		const pendingDependencies = service.dependencies.filter((e) => !this.services.has(e) || !this.services.get(e)?.isStarted);
 		if (pendingDependencies.length > 0) {
-			logger.debug(
-				`Service ${serviceName} has dependencies that are not started yet, bringing it back to queue: ${pendingDependencies.join(', ')}`,
-			);
+			logger.debug({
+				msg: 'Service has dependencies that are not started yet, bringing it back to queue',
+				serviceName,
+				pendingDependencies,
+			});
 			return;
 		}
 
@@ -183,7 +191,7 @@ export class LocalBroker implements IBroker {
 		this.services.set(serviceName, { ...service, isStarted: true });
 		this.removePendingService(serviceName);
 
-		logger.debug(`Service ${serviceName} successfully started`);
+		logger.debug({ msg: 'Service successfully started', serviceName });
 	}
 
 	async start(): Promise<void> {
@@ -196,7 +204,7 @@ export class LocalBroker implements IBroker {
 				if (this.pendingServices.size === 0) {
 					const availableServices = Array.from(this.services.values()).filter((service) => service.isStarted);
 
-					logger.info(`All ${availableServices.length} services available`);
+					logger.info({ msg: 'All services available', count: availableServices.length });
 					clearInterval(intervalId);
 					return resolve();
 				}
@@ -204,19 +212,19 @@ export class LocalBroker implements IBroker {
 				if (elapsed > TIMEOUT) {
 					clearInterval(intervalId);
 					const pendingServices = Array.from(this.pendingServices).join(', ');
-					const error = new Error(`Timeout while waiting for LocalBroker services: ${pendingServices}`);
-					logger.error(error);
-					return reject(error);
+					const err = new Error(`Timeout while waiting for LocalBroker services: ${pendingServices}`);
+					logger.error({ msg: 'Timeout while waiting for LocalBroker services', err, pendingServices });
+					return reject(err);
 				}
 
-				for await (const service of Array.from(this.pendingServices)) {
+				for (const service of Array.from(this.pendingServices)) {
 					const serviceInstance = this.services.get(service);
 					if (serviceInstance) {
 						await this.startService(serviceInstance);
 					}
 				}
 
-				logger.debug(`Waiting for ${this.pendingServices.size} pending services`);
+				logger.debug({ msg: 'Waiting for pending services', count: this.pendingServices.size });
 			}, INTERVAL);
 		});
 	}

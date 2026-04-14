@@ -3,10 +3,10 @@ import type { IDepartment } from './IDepartment';
 import type { ILivechatRoom } from './ILivechatRoom';
 
 export interface ILivechatEventContext {
-    agent: IUser;
-    room: ILivechatRoom;
+	agent: IUser;
+	room: ILivechatRoom;
 }
 
 export interface ILivechatDepartmentEventContext {
-    department: IDepartment;
+	department: IDepartment;
 }

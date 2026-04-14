@@ -1,0 +1,51 @@
+import type { Page } from '@playwright/test';
+
+import { EncryptedRoomToolbar, HomeContent } from './fragments';
+import { Message } from './fragments/message';
+import { DisableRoomEncryptionModal, EnableRoomEncryptionModal } from './fragments/modals';
+
+export class EncryptedRoomPage extends HomeContent {
+	readonly toolbar: EncryptedRoomToolbar;
+
+	constructor(page: Page) {
+		super(page);
+		this.toolbar = new EncryptedRoomToolbar(page);
+	}
+
+	get encryptedTitle() {
+		return this.page.getByRole('button', { name: '- encrypted' });
+	}
+
+	get encryptionNotReadyIndicator() {
+		return this.page.getByText("You're sending an unencrypted message");
+	}
+
+	get lastMessage() {
+		return new Message(this.lastUserMessage);
+	}
+
+	lastNthMessage(index: number) {
+		return new Message(this.nthMessage(-index - 1));
+	}
+
+	async enableEncryption() {
+		const enableRoomEncryptionModal = new EnableRoomEncryptionModal(this.page);
+
+		await this.toolbar.openMoreOptions();
+		await this.toolbar.menuItemEnableE2EEncryption.click();
+		await enableRoomEncryptionModal.enable();
+	}
+
+	async disableEncryption() {
+		const disableRoomEncryptionModal = new DisableRoomEncryptionModal(this.page);
+
+		await this.toolbar.openMoreOptions();
+		await this.toolbar.menuItemDisableE2EEncryption.click();
+		await disableRoomEncryptionModal.disable();
+	}
+
+	async showExportMessagesTab() {
+		await this.toolbar.openMoreOptions();
+		await this.toolbar.menuItemExportMessages.click();
+	}
+}

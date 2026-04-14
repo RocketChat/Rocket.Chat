@@ -44,7 +44,7 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	findEnabledWithAgentsAndBusinessUnit<T extends Document = ILivechatDepartment>(
 		_: any,
 		projection: FindOptions<T>['projection'],
-	): Promise<FindCursor<T>>;
+	): FindCursor<T>;
 	findOneByIdOrName(_idOrName: string, options?: FindOptions<ILivechatDepartment>): Promise<ILivechatDepartment | null>;
 	findByUnitIds(unitIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
 	countDepartmentsInUnit(unitId: string): Promise<number>;
@@ -60,8 +60,12 @@ export interface ILivechatDepartmentModel extends IBaseModel<ILivechatDepartment
 	checkIfMonitorIsMonitoringDepartmentById(monitorId: string, departmentId: string): Promise<boolean>;
 	countArchived(): Promise<number>;
 	findEnabledInIds(departmentsIds: string[], options?: FindOptions<ILivechatDepartment>): FindCursor<ILivechatDepartment>;
-	archiveDepartment(_id: string): Promise<Document | UpdateResult>;
-	unarchiveDepartment(_id: string): Promise<Document | UpdateResult>;
+	archiveDepartment(_id: string): Promise<UpdateResult>;
+	unarchiveDepartment(_id: string): Promise<UpdateResult>;
 	addDepartmentToUnit(_id: string, unitId: string, ancestors: string[]): Promise<Document | UpdateResult>;
 	removeDepartmentFromUnit(_id: string): Promise<Document | UpdateResult>;
+	findEnabledWithAgentsAndRegistration<T extends Document = ILivechatDepartment>(projection?: FindOptions<T>['projection']): FindCursor<T>;
+	findOneEnabledWithAgentsAndRegistration<T extends Document = ILivechatDepartment>(
+		projection?: FindOptions<T>['projection'],
+	): Promise<T | null>;
 }

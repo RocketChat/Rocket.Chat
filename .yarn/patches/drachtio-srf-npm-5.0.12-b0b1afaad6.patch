@@ -1,0 +1,56 @@
+diff --git a/lib/@types/index.d.ts b/lib/@types/index.d.ts
+index f71a82f458c1432202be8d4585fc70ba94bee4a4..b874ee9e1fa8a051f06d4824fc12161acfadb78a 100644
+--- a/lib/@types/index.d.ts
++++ b/lib/@types/index.d.ts
+@@ -119,12 +119,12 @@ declare namespace Srf {
+     on(messageType: "modify", callback: (req: SrfRequest, res: SrfResponse) => void): void;
+     once(messageType: string, callback: (msg: SrfResponse) => void): void;
+     listeners(messageType: string): any[];
+-    request(opts?: SrfRequest): Promise<SrfResponse>;
+-    request(opts: SrfRequest, callback?: (err: any, msg: SrfResponse) => void): void;
++    request(opts?: Partial<SrfRequest>): Promise<SrfResponse>;
++    request(opts: Partial<SrfRequest>, callback?: (err: any, msg: SrfResponse) => void): void;
+   }
+ 
+   export interface CreateUASOptions {
+-    localSdp: string;
++    localSdp: string | (() => string | Promise<string>);
+     headers?: SipMessageHeaders;
+   }
+ 
+@@ -135,6 +135,8 @@ declare namespace Srf {
+     localSdp?: string;
+     proxy?: string;
+     auth?: { username: string; password: string; };
++    callingName?: string;
++    callingNumber?: string;
+   }
+ 
+   export interface CreateB2BUAOptions {
+@@ -155,7 +157,7 @@ declare class Srf extends EventEmitter {
+   constructor();
+   constructor(tags: string | string[]);
+   connect(config?: Srf.SrfConfig): Promise<void>;
+-  disconnect(): void;
++  disconnect(socket?: Socket): void;
+   use(callback: (req: Srf.SrfRequest, res: Srf.SrfResponse, next: Function) => void): void;
+   use(messageType: string, callback: (req: Srf.SrfRequest, res: Srf.SrfResponse, next: Function) => void): void;
+   invite(callback: (req: Srf.SrfRequest, res: Srf.SrfResponse) => void): void;
+@@ -164,12 +166,12 @@ declare class Srf extends EventEmitter {
+   proxyRequest(req: Srf.SrfRequest, destination: string | string[], opts?: Srf.ProxyRequestOptions, callback?: (err: any, results: string) => void): void;
+   createUAS(req: Srf.SrfRequest, res: Srf.SrfResponse, opts: Srf.CreateUASOptions): Promise<Srf.Dialog>;
+   createUAS(req: Srf.SrfRequest, res: Srf.SrfResponse, opts: Srf.CreateUASOptions, callback?: (err: any, dialog: Srf.Dialog) => void): this;
+-  createUAC(uri: string | Srf.CreateUACOptions, opts?: Srf.CreateUACOptions, progressCallbacks?: { cbRequest?: (req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Srf.SrfResponse) => void; }): Promise<Srf.Dialog>;
+-  createUAC(uri: string | Srf.CreateUACOptions, opts?: Srf.CreateUACOptions, progressCallbacks?: { cbRequest?: (req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Srf.SrfResponse) => void; }, callback?: (err: any, dialog: Srf.Dialog) => void): this;
+-  createB2BUA(req: Srf.SrfRequest, res: Srf.SrfResponse, uri: string, opts: Srf.CreateB2BUAOptions, progressCallbacks?: { cbRequest?: (req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Response) => void; cbFinalizedUac?: (uac: Srf.Dialog) => void; }): Promise<{ uas: Srf.Dialog; uac: Srf.Dialog }>;
+-  createB2BUA(req: Srf.SrfRequest, res: Srf.SrfResponse, uri: string, opts: Srf.CreateB2BUAOptions, progressCallbacks?: { cbRequest?: (req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Response) => void; cbFinalizedUac?: (uac: Srf.Dialog) => void; }, callback?: (err: any, dialog: Srf.Dialog) => void): this;
++  createUAC(uri: string | Srf.CreateUACOptions, opts?: Srf.CreateUACOptions, progressCallbacks?: { cbRequest?: (error: unknown, req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Srf.SrfResponse) => void; }): Promise<Srf.Dialog>;
++  createUAC(uri: string | Srf.CreateUACOptions, opts?: Srf.CreateUACOptions, progressCallbacks?: { cbRequest?: (error: unknown, req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Srf.SrfResponse) => void; }, callback?: (err: any, dialog: Srf.Dialog) => void): this;
++  createB2BUA(req: Srf.SrfRequest, res: Srf.SrfResponse, uri: string, opts: Srf.CreateB2BUAOptions, progressCallbacks?: { cbRequest?: (error: unknown, req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Response) => void; cbFinalizedUac?: (uac: Srf.Dialog) => void; }): Promise<{ uas: Srf.Dialog; uac: Srf.Dialog }>;
++  createB2BUA(req: Srf.SrfRequest, res: Srf.SrfResponse, uri: string, opts: Srf.CreateB2BUAOptions, progressCallbacks?: { cbRequest?: (error: unknown, req: Srf.SrfRequest) => void; cbProvisional?: (provisionalRes: Response) => void; cbFinalizedUac?: (uac: Srf.Dialog) => void; }, callback?: (err: any, dialog: Srf.Dialog) => void): this;
+   on(event: 'connect', listener: (err: Error, hostPort: string) => void): this;
+-  on(event: 'error', listener: (err: Error) => void): this;
++  on(event: 'error', listener: (err: Error, socket?: Socket) => void): this;
+   on(event: 'disconnect', listener: () => void): this;
+   on(event: 'message', listener: (req: Srf.SrfRequest, res: Srf.SrfResponse) => void): this;
+   on(event: 'request', listener: (req: Srf.SrfRequest, res: Srf.SrfResponse) => void): this;

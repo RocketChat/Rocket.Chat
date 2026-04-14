@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import ImportHistoryPage from './ImportHistoryPage';
 
 export default {
-	title: 'Admin/Import/ImportHistoryPage',
 	component: ImportHistoryPage,
 	parameters: {
 		layout: 'fullscreen',

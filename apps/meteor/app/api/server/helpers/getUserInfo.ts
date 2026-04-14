@@ -1,6 +1,8 @@
-import { isOAuthUser, type IUser, type IUserEmail } from '@rocket.chat/core-typings';
+import { isOAuthUser, type IUser, type IUserEmail, type IUserCalendar } from '@rocket.chat/core-typings';
+import semver from 'semver';
 
 import { settings } from '../../../settings/server';
+import { Info } from '../../../utils/rocketchat.info';
 import { getURL } from '../../../utils/server/getURL';
 import { getUserPreference } from '../../../utils/server/lib/getUserPreference';
 
@@ -17,7 +19,7 @@ const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> =
 	const allDefaultUserSettings = settings.getByRegexp(new RegExp(`^${defaultUserSettingPrefix}.*$`));
 
 	const accumulator: Record<string, any> = {};
-	for await (const [key] of allDefaultUserSettings) {
+	for (const [key] of allDefaultUserSettings) {
 		const settingWithoutPrefix = key.replace(defaultUserSettingPrefix, ' ').trim();
 		accumulator[settingWithoutPrefix] = await getUserPreference(me, settingWithoutPrefix);
 	}
@@ -25,13 +27,69 @@ const getUserPreferences = async (me: IUser): Promise<Record<string, unknown>> =
 	return accumulator;
 };
 
-export async function getUserInfo(me: IUser): Promise<
+const filterOutdatedVersionUpdateBanners = (banners: NonNullable<IUser['banners']>): IUser['banners'] => {
+	return Object.fromEntries(
+		Object.entries(banners).filter(([id]) => {
+			if (!id.startsWith('versionUpdate-')) {
+				return true;
+			}
+
+			const version = id.replace('versionUpdate-', '').replace(/_/g, '.');
+			if (!semver.valid(version) || semver.lte(version, Info.version)) {
+				return false;
+			}
+
+			return true;
+		}),
+	);
+};
+
+/**
+ * Returns the user's calendar settings based on their email domain and the configured mapping.
+ * If the email is not provided or the domain is not found in the mapping,
+ * it returns the default Outlook calendar settings.
+ * @param email - The user's email object, which may contain the address and verification status.
+ * @returns The calendar settings for the user, including Outlook calendar settings if enabled.
+ */
+const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar => {
+	const calendarSettings: IUserCalendar = {};
+
+	const outlook = {
+		Enabled: settings.get<boolean>('Outlook_Calendar_Enabled'),
+		Exchange_Url: settings.get<string>('Outlook_Calendar_Exchange_Url'),
+		Outlook_Url: settings.get<string>('Outlook_Calendar_Outlook_Url'),
+	};
+
+	const domain = email ? email.address.split('@').pop() : undefined;
+	const outlookCalendarUrlMapping = settings.get<string>('Outlook_Calendar_Url_Mapping');
+
+	if (domain && outlookCalendarUrlMapping && outlookCalendarUrlMapping.includes(domain)) {
+		try {
+			const mappingObject = JSON.parse(outlookCalendarUrlMapping);
+			const mappedSettings = mappingObject[domain];
+			if (mappedSettings) {
+				outlook.Enabled = mappedSettings.Enabled ?? outlook.Enabled;
+				outlook.Exchange_Url = mappedSettings.Exchange_Url ?? outlook.Exchange_Url;
+				outlook.Outlook_Url = mappedSettings.Outlook_Url ?? outlook.Outlook_Url;
+			}
+		} catch (error) {
+			console.error('Invalid Outlook Calendar URL Mapping JSON:', error);
+		}
+	}
+
+	if (outlook.Enabled) {
+		calendarSettings.outlook = outlook;
+	}
+
+	return calendarSettings;
+};
+
+export async function getUserInfo(
+	me: IUser,
+	pullPreferences = true,
+): Promise<
 	IUser & {
 		email?: string;
-		settings?: {
-			profile: Record<string, unknown>;
-			preferences: unknown;
-		};
 		avatarUrl: string;
 	}
 > {
@@ -41,13 +99,12 @@ export async function getUserInfo(me: IUser): Promise<
 
 	return {
 		...me,
+		...(me.banners && { banners: filterOutdatedVersionUpdateBanners(me.banners) }),
 		email: verifiedEmail ? verifiedEmail.address : undefined,
 		settings: {
 			profile: {},
-			preferences: {
-				...(await getUserPreferences(me)),
-				...userPreferences,
-			},
+			...(pullPreferences && { preferences: { ...(await getUserPreferences(me)), ...userPreferences } }),
+			calendar: getUserCalendar(verifiedEmail),
 		},
 		avatarUrl: getURL(`/avatar/${me.username}`, { cdn: false, full: true }),
 		isOAuthUser: isOAuthUser(me),

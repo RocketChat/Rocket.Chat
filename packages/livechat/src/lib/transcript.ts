@@ -35,6 +35,8 @@ const promptTranscript = async () => {
 		if (typeof result.success === 'boolean' && result.success) {
 			return Livechat.requestTranscript(email, { rid: _id });
 		}
+
+		return undefined;
 	});
 };
 
@@ -57,6 +59,6 @@ export const handleTranscript = async () => {
 
 	// TODO: Check why the api results are not returning the correct type
 	if ((result as { message: string; success: boolean })?.success) {
-		transcriptSentAlert(i18next.t('transcript_success'));
+		void transcriptSentAlert(i18next.t('transcript_success'));
 	}
 };

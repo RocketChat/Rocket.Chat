@@ -1,9 +1,9 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 
-import GenericModal from '../../../../../../components/GenericModal';
 import { useCanEditRoom } from '../useCanEditRoom';
 
 export const useRoomConvertToTeam = (room: IRoom) => {

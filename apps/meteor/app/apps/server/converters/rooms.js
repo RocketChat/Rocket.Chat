@@ -20,6 +20,106 @@ export class AppRoomsConverter {
 		return this.convertRoom(room);
 	}
 
+	convertRoomRaw(room) {
+		if (!room) {
+			return undefined;
+		}
+
+		const mapUserLookup = (user) =>
+			user && {
+				_id: user._id ?? user.id,
+				...(user.username && { username: user.username }),
+				...(user.name && { name: user.name }),
+			};
+
+		const map = {
+			id: '_id',
+			displayName: 'fname',
+			slugifiedName: 'name',
+			members: 'members',
+			userIds: 'uids',
+			usernames: 'usernames',
+			messageCount: 'msgs',
+			createdAt: 'ts',
+			updatedAt: '_updatedAt',
+			closedAt: 'closedAt',
+			lastModifiedAt: 'lm',
+			customFields: 'customFields',
+			livechatData: 'livechatData',
+			isWaitingResponse: 'waitingResponse',
+			isOpen: 'open',
+			description: 'description',
+			source: 'source',
+			closer: 'closer',
+			teamId: 'teamId',
+			isTeamMain: 'teamMain',
+			isDefault: 'default',
+			isReadOnly: 'ro',
+			contactId: 'contactId',
+			departmentId: 'departmentId',
+			parentRoomId: 'prid',
+			visitor: (data) => {
+				const { v } = data;
+				if (!v) {
+					return undefined;
+				}
+
+				delete data.v;
+
+				const { _id: id, ...rest } = v;
+
+				return {
+					id,
+					...rest,
+				};
+			},
+			displaySystemMessages: (data) => {
+				const { sysMes } = data;
+				delete data.sysMes;
+				return typeof sysMes === 'undefined' ? true : sysMes;
+			},
+			type: (data) => {
+				const result = this._convertTypeToApp(data.t);
+				delete data.t;
+				return result;
+			},
+			creator: (data) => {
+				if (!data.u) {
+					return undefined;
+				}
+				const creator = mapUserLookup(data.u);
+				delete data.u;
+				return creator;
+			},
+			closedBy: (data) => {
+				if (!data.closedBy) {
+					return undefined;
+				}
+				const { closedBy } = data;
+				delete data.closedBy;
+				return mapUserLookup(closedBy);
+			},
+			servedBy: (data) => {
+				if (!data.servedBy) {
+					return undefined;
+				}
+				const { servedBy } = data;
+				delete data.servedBy;
+				return mapUserLookup(servedBy);
+			},
+			responseBy: (data) => {
+				if (!data.responseBy) {
+					return undefined;
+				}
+				const { responseBy } = data;
+				delete data.responseBy;
+				return mapUserLookup(responseBy);
+			},
+		};
+
+		return transformMappedData(room, map);
+	}
+
 	async __getCreator(user) {
 		if (!user) {
 			return;
@@ -54,17 +154,18 @@ export class AppRoomsConverter {
 			username: visitor.username,
 			token: visitor.token,
 			status: visitor.status || 'online',
+			activity: visitor.activity,
 			...(lastMessageTs && { lastMessageTs }),
 			...(phone && { phone }),
 		};
 	}
 
-	async __getUserIdAndUsername(uid) {
-		if (!uid) {
+	async __getUserIdAndUsername(userObj) {
+		if (!userObj?.id) {
 			return;
 		}
 
-		const user = await Users.findOneById(uid, { projection: { _id: 1, username: 1 } });
+		const user = await Users.findOneById(userObj.id, { projection: { _id: 1, username: 1 } });
 		if (!user) {
 			return;
 		}
@@ -105,7 +206,7 @@ export class AppRoomsConverter {
 		if (!contact?._id) {
 			return;
 		}
-		const contactFromDb = await LivechatContacts.findOneById(contact._id, { projection: { _id: 1 } });
+		const contactFromDb = await LivechatContacts.findOneEnabledById(contact._id, { projection: { _id: 1 } });
 		return contactFromDb?._id;
 	}
 
@@ -137,12 +238,12 @@ export class AppRoomsConverter {
 
 		const newRoom = {
 			...(room.id && { _id: room.id }),
-			t: room.type,
-			ts: room.createdAt,
-			msgs: room.messageCount || 0,
-			_updatedAt: room.updatedAt,
+			...(typeof room.type !== 'undefined' && { t: room.type }),
+			...(typeof room.createdAt !== 'undefined' && { ts: room.createdAt }),
+			...(typeof room.messageCount !== 'undefined' && { msgs: room.messageCount || 0 }),
+			...(typeof room.updatedAt !== 'undefined' && { _updatedAt: room.updatedAt }),
 			...(room.displayName && { fname: room.displayName }),
-			...(room.type !== 'd' && { name: room.slugifiedName }),
+			...(room.type !== 'd' && room.slugifiedName && { name: room.slugifiedName }),
 			...(room.members && { members: room.members }),
 			...(typeof room.isDefault !== 'undefined' && { default: room.isDefault }),
 			...(typeof room.isReadOnly !== 'undefined' && { ro: room.isReadOnly }),
@@ -200,6 +301,8 @@ export class AppRoomsConverter {
 			description: 'description',
 			source: 'source',
 			closer: 'closer',
+			teamId: 'teamId',
+			isTeamMain: 'teamMain',
 			isDefault: (room) => {
 				const result = !!room.default;
 				delete room.default;

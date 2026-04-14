@@ -1,49 +1,52 @@
-import { Defined, JsonRpcError } from 'jsonrpc-lite';
 import type { IVideoConfProvider } from '@rocket.chat/apps-engine/definition/videoConfProviders/IVideoConfProvider.ts';
+import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../AppObjectRegistry.ts';
 import { AppAccessorsInstance } from '../lib/accessors/mod.ts';
-import { Logger } from '../lib/logger.ts';
+import { RequestContext } from '../lib/requestContext.ts';
+import { wrapComposedApp } from '../lib/wrapAppForRequest.ts';
 
-export default async function videoConferenceHandler(call: string, params: unknown): Promise<JsonRpcError | Defined> {
-    const [, providerName, methodName] = call.split(':');
+export default async function videoConferenceHandler(request: RequestContext): Promise<JsonRpcError | Defined> {
+	const { method: call, params } = request;
+	const { logger } = request.context;
 
-    const provider = AppObjectRegistry.get<IVideoConfProvider>(`videoConfProvider:${providerName}`);
-    const logger = AppObjectRegistry.get<Logger>('logger');
+	const [, providerName, methodName] = call.split(':');
 
-    if (!provider) {
-        return new JsonRpcError(`Provider ${providerName} not found`, -32000);
-    }
+	const provider = AppObjectRegistry.get<IVideoConfProvider>(`videoConfProvider:${providerName}`);
 
-    const method = provider[methodName as keyof IVideoConfProvider];
+	if (!provider) {
+		return new JsonRpcError(`Provider ${providerName} not found`, -32000);
+	}
 
-    if (typeof method !== 'function') {
-        return JsonRpcError.methodNotFound({
-            message: `Method ${methodName} not found on provider ${providerName}`,
-        });
-    }
+	const method = provider[methodName as keyof IVideoConfProvider];
 
-    const [videoconf, user, options] = params as Array<unknown>;
+	if (typeof method !== 'function') {
+		return JsonRpcError.methodNotFound({
+			message: `Method ${methodName} not found on provider ${providerName}`,
+		});
+	}
 
-    logger?.debug(`Executing ${methodName} on video conference provider...`);
+	const [videoconf, user, options] = params as Array<unknown>;
 
-    const args = [...(videoconf ? [videoconf] : []), ...(user ? [user] : []), ...(options ? [options] : [])];
+	logger.debug(`Executing ${methodName} on video conference provider...`);
 
-    try {
-        // deno-lint-ignore ban-types
-        const result = await (method as Function).apply(provider, [
-            ...args,
-            AppAccessorsInstance.getReader(),
-            AppAccessorsInstance.getModifier(),
-            AppAccessorsInstance.getHttp(),
-            AppAccessorsInstance.getPersistence(),
-        ]);
+	const args = [...(videoconf ? [videoconf] : []), ...(user ? [user] : []), ...(options ? [options] : [])];
 
-        logger?.debug(`Video Conference Provider's ${methodName} was successfully executed.`);
+	try {
+		// deno-lint-ignore ban-types
+		const result = await (method as Function).apply(wrapComposedApp(provider, request), [
+			...args,
+			AppAccessorsInstance.getReader(),
+			AppAccessorsInstance.getModifier(),
+			AppAccessorsInstance.getHttp(),
+			AppAccessorsInstance.getPersistence(),
+		]);
 
-        return result;
-    } catch (e) {
-        logger?.debug(`Video Conference Provider's ${methodName} was unsuccessful.`);
-        return new JsonRpcError(e.message, -32000);
-    }
+		logger.debug(`Video Conference Provider's ${methodName} was successfully executed.`);
+
+		return result;
+	} catch (e) {
+		logger.debug(`Video Conference Provider's ${methodName} was unsuccessful.`);
+		return new JsonRpcError(e.message, -32000);
+	}
 }

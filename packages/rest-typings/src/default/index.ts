@@ -1,8 +1,4 @@
-import Ajv from 'ajv';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
+import { ajv } from '../v1/Ajv';
 
 type OpenAPIJSONEndpoint = { withUndocumented?: boolean };
 
@@ -54,9 +50,6 @@ export interface DefaultEndpoints {
 					version: string | undefined;
 			  };
 	};
-	'/ecdh_proxy/initEncryptedSession': {
-		POST: () => void;
-	};
 	'/docs/json': {
 		GET: (params: OpenAPIJSONEndpoint) => {
 			openapi: string;
@@ -81,7 +74,7 @@ export interface DefaultEndpoints {
 						name: string;
 					};
 				};
-				schemas: {};
+				schemas: unknown;
 			};
 			paths: Record<string, Record<string, unknown>>;
 		};

@@ -7,21 +7,19 @@ import { Suspense } from 'react';
 import { useAppTranslation } from '../hooks/useAppTranslation';
 
 const MarkdownTextElement = ({ textObject }: { textObject: TextObject }) => {
-  const { t } = useAppTranslation();
+	const { t } = useAppTranslation();
 
-  const text = textObject.i18n
-    ? t(textObject.i18n.key, { ...textObject.i18n.args })
-    : textObject.text;
+	const text = textObject.i18n ? t(textObject.i18n.key, { ...textObject.i18n.args }) : textObject.text;
 
-  if (!text) {
-    return null;
-  }
+	if (!text) {
+		return null;
+	}
 
-  return (
-    <Suspense fallback={<Skeleton />}>
-      <Markup tokens={parse(text, { emoticons: false })} />
-    </Suspense>
-  );
+	return (
+		<Suspense fallback={<Skeleton />}>
+			<Markup tokens={parse(text, { emoticons: false })} />
+		</Suspense>
+	);
 };
 
 export default MarkdownTextElement;

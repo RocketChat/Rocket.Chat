@@ -1,11 +1,10 @@
 import { Box, Input } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, FormEvent, ReactElement } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import GenericModal from '../../../../components/GenericModal';
 
 type RemoveDepartmentModalProps = {
 	_id: string;
@@ -42,13 +41,13 @@ const RemoveDepartmentModal = ({ _id = '', name, reset, onClose }: RemoveDepartm
 			title={t('Delete_Department?')}
 			onClose={onClose}
 			variant='danger'
-			data-qa-id='delete-department-modal'
 			confirmDisabled={text !== name}
 		>
 			<Box mbe={16}>{t('Are_you_sure_delete_department')}</Box>
 			<Box mbe={16} display='flex' justifyContent='stretch'>
 				<Input
 					value={text}
+					aria-label={t('Department_name')}
 					name='confirmDepartmentName'
 					onChange={(event: ChangeEvent<HTMLInputElement>) => setText(event.currentTarget.value)}
 				/>

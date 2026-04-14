@@ -1,4 +1,6 @@
-export const serviceProviderOptions = {
+import type { IServiceProviderOptions } from '../../../../app/meteor-accounts-saml/server/definition/IServiceProviderOptions';
+
+export const serviceProviderOptions: IServiceProviderOptions = {
 	provider: '[test-provider]',
 	entryPoint: '[entry-point]',
 	idpSLORedirectURL: '[idpSLORedirectURL]',
@@ -6,6 +8,7 @@ export const serviceProviderOptions = {
 	cert: '',
 	privateCert: '',
 	privateKey: '',
+	signatureAlgorithm: 'SHA256',
 	customAuthnContext: 'Password',
 	authnContextComparison: 'Whatever',
 	defaultUserRole: 'user',

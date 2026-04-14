@@ -26,26 +26,21 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 				control={control}
 				name='turnOn'
 				render={({ field: { value, onChange } }) => (
-					<NotificationToggle label={t('Turn_ON')} description={t('Receive_alerts')} onChange={onChange} defaultChecked={value} />
+					<NotificationToggle label={t('Turn_ON')} description={t('Receive_alerts')} onChange={onChange} checked={value} />
 				)}
 			/>
 			<Controller
 				control={control}
 				name='muteGroupMentions'
 				render={({ field: { value, onChange } }) => (
-					<NotificationToggle label={t('Mute_Group_Mentions')} onChange={onChange} defaultChecked={value} />
+					<NotificationToggle label={t('Mute_Group_Mentions')} onChange={onChange} checked={value} />
 				)}
 			/>
 			<Controller
 				control={control}
 				name='showCounter'
 				render={({ field: { value, onChange } }) => (
-					<NotificationToggle
-						label={t('Show_counter')}
-						description={t('Display_unread_counter')}
-						onChange={onChange}
-						defaultChecked={value}
-					/>
+					<NotificationToggle label={t('Show_counter')} description={t('Display_unread_counter')} onChange={onChange} checked={value} />
 				)}
 			/>
 			{!showCounter && (
@@ -57,7 +52,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 							label={t('Show_mentions')}
 							description={t('Display_mentions_counter')}
 							onChange={onChange}
-							defaultChecked={value}
+							checked={value}
 						/>
 					)}
 				/>

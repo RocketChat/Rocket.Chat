@@ -4,7 +4,7 @@ import sinon from 'sinon';
 
 const modelsMock = {
 	LivechatContacts: {
-		findOneById: sinon.stub(),
+		findOneEnabledById: sinon.stub(),
 	},
 };
 
@@ -23,7 +23,7 @@ const { runIsAgentAvailableToTakeContactInquiry } = proxyquire
 
 describe('isAgentAvailableToTakeContactInquiry', () => {
 	beforeEach(() => {
-		modelsMock.LivechatContacts.findOneById.reset();
+		modelsMock.LivechatContacts.findOneEnabledById.reset();
 		settingsMock.get.reset();
 	});
 
@@ -32,16 +32,18 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	});
 
 	it('should return false if the contact is not found', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves(undefined);
+		modelsMock.LivechatContacts.findOneEnabledById.resolves(undefined);
 		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
 
 		expect(value).to.be.false;
 		expect(error).to.eq('error-invalid-contact');
-		expect(modelsMock.LivechatContacts.findOneById.calledOnceWith('contactId', sinon.match({ projection: { unknown: 1, channels: 1 } })));
+		expect(
+			modelsMock.LivechatContacts.findOneEnabledById.calledOnceWith('contactId', sinon.match({ projection: { unknown: 1, channels: 1 } })),
+		);
 	});
 
 	it('should return false if the contact is unknown and Livechat_Block_Unknown_Contacts is true', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({ unknown: true });
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({ unknown: true });
 		settingsMock.get.withArgs('Livechat_Block_Unknown_Contacts').returns(true);
 		const { value, error } = await runIsAgentAvailableToTakeContactInquiry(() => undefined, 'visitorId', {}, 'rid');
 		expect(value).to.be.false;
@@ -49,7 +51,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	});
 
 	it('should return false if the contact is not verified and Livechat_Block_Unverified_Contacts is true', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({
 			unknown: false,
 			channels: [
 				{ verified: false, visitor: { source: { type: 'channelName' }, visitorId: 'visitorId' } },
@@ -64,7 +66,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	});
 
 	it('should return true if the contact has the verified channel', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({
 			unknown: false,
 			channels: [
 				{ verified: true, visitor: { source: { type: 'channelName' }, visitorId: 'visitorId' } },
@@ -78,7 +80,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	});
 
 	it('should not look at the unknown field if the setting Livechat_Block_Unknown_Contacts is false', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({
 			unknown: true,
 			channels: [
 				{ verified: true, visitor: { source: { type: 'channelName' }, visitorId: 'visitorId' } },
@@ -92,7 +94,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	});
 
 	it('should not look at the verified channels if Livechat_Block_Unverified_Contacts is false', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({
 			unknown: false,
 			channels: [
 				{ verified: false, visitor: { source: { type: 'channelName' }, visitorId: 'visitorId' } },
@@ -106,7 +108,7 @@ describe('isAgentAvailableToTakeContactInquiry', () => {
 	});
 
 	it('should return true if there is a contact and the settings are false', async () => {
-		modelsMock.LivechatContacts.findOneById.resolves({
+		modelsMock.LivechatContacts.findOneEnabledById.resolves({
 			unknown: false,
 			channels: [],
 		});

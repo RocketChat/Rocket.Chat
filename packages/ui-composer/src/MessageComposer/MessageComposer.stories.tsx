@@ -1,4 +1,5 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Button, IconButton } from '@rocket.chat/fuselage';
+import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import '@rocket.chat/icons/dist/rocketchat.css';
@@ -12,6 +13,10 @@ import {
 	MessageComposerToolbarSubmit,
 	MessageComposerSkeleton,
 	MessageComposerHint,
+	MessageComposerInputExpandable,
+	MessageComposerFile,
+	MessageComposerFileGroup,
+	MessageComposerFileError,
 } from '.';
 
 export default {
@@ -21,28 +26,25 @@ export default {
 
 const MessageToolbarActions = () => (
 	<MessageComposerToolbarActions>
-		<MessageComposerAction icon='emoji' />
+		<MessageComposerAction title='emoji' icon='emoji' />
 		<MessageComposerActionsDivider />
-		<MessageComposerAction icon='bold' />
-		<MessageComposerAction icon='italic' />
-		<MessageComposerAction icon='underline' />
-		<MessageComposerAction icon='strike' />
-		<MessageComposerAction icon='code' />
-		<MessageComposerAction icon='multiline' />
-		<MessageComposerAction icon='link' />
-		<MessageComposerAction icon='katex' />
-		<MessageComposerAction icon='arrow-return' />
+		<MessageComposerAction title='bold' icon='bold' />
+		<MessageComposerAction title='italic' icon='italic' />
+		<MessageComposerAction title='underline' icon='underline' />
+		<MessageComposerAction title='strike' icon='strike' />
+		<MessageComposerAction title='code' icon='code' />
+		<MessageComposerAction title='multiline' icon='multiline' />
+		<MessageComposerAction title='link' icon='link' />
+		<MessageComposerAction title='katex' icon='katex' />
 		<MessageComposerActionsDivider />
-		<MessageComposerAction icon='mic' />
-		<MessageComposerAction icon='video' />
-		<MessageComposerAction icon='clip' />
-		<MessageComposerAction icon='plus' />
+		<MessageComposerAction title='mic' icon='mic' />
+		<MessageComposerAction title='video' icon='video' />
+		<MessageComposerAction title='attachment' icon='clip' />
+		<MessageComposerAction title='more' icon='plus' />
 	</MessageComposerToolbarActions>
 );
 
-export const MessageToolberActions: StoryFn<typeof MessageComposerToolbarActions> = () => <MessageToolbarActions />;
-
-export const _MessageComposer: StoryFn<typeof MessageComposer> = () => (
+export const Default: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
@@ -51,7 +53,24 @@ export const _MessageComposer: StoryFn<typeof MessageComposer> = () => (
 	</MessageComposer>
 );
 
-export const MessageComposerWithHints: StoryFn<typeof MessageComposer> = () => (
+export const Expandable: StoryFn<typeof MessageComposer> = () => (
+	<MessageComposer>
+		<MessageComposerInputExpandable
+			dimensions={{
+				inlineSize: 400,
+				blockSize: 120,
+			}}
+			placeholder='Type a message...'
+		/>
+		<MessageComposerToolbar>
+			<MessageToolbarActions />
+		</MessageComposerToolbar>
+	</MessageComposer>
+);
+
+export const ToolbarActions: StoryFn<typeof MessageComposerToolbarActions> = () => <MessageToolbarActions />;
+
+export const WithHints: StoryFn<typeof MessageComposer> = () => (
 	<>
 		<MessageComposerHint
 			icon='pencil'
@@ -64,7 +83,7 @@ export const MessageComposerWithHints: StoryFn<typeof MessageComposer> = () => (
 			Editing message
 		</MessageComposerHint>
 		<MessageComposer>
-			<MessageComposerInput placeholder='Text' value='Lorem ipsum dolor' />
+			<MessageComposerInput placeholder='Text' />
 			<MessageComposerToolbar>
 				<MessageToolbarActions />
 				<MessageComposerToolbarSubmit>
@@ -75,7 +94,7 @@ export const MessageComposerWithHints: StoryFn<typeof MessageComposer> = () => (
 	</>
 );
 
-export const MessageComposerWithSubmitActions: StoryFn<typeof MessageComposer> = () => (
+export const WithSubmit: StoryFn<typeof MessageComposer> = () => (
 	<MessageComposer>
 		<MessageComposerInput placeholder='Text' />
 		<MessageComposerToolbar>
@@ -90,4 +109,40 @@ export const MessageComposerWithSubmitActions: StoryFn<typeof MessageComposer> =
 	</MessageComposer>
 );
 
-export const MessageComposerLoading: StoryFn<typeof MessageComposer> = () => <MessageComposerSkeleton />;
+export const WithFiles: StoryFn<typeof MessageComposer> = () => (
+	<MessageComposer>
+		<MessageComposerInput placeholder='Text' />
+		<MessageComposerFileGroup>
+			<MessageComposerFile
+				fileTitle='file.png'
+				fileSubtitle='2 MB'
+				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+				onClick={action('click')}
+			/>
+			<MessageComposerFile
+				disabled
+				fileTitle='file.png'
+				fileSubtitle='2 MB'
+				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+				onClick={action('click')}
+			/>
+			<MessageComposerFileError
+				fileTitle='file.png'
+				error={new Error('Something went wrong')}
+				actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+				onClick={action('click')}
+			/>
+		</MessageComposerFileGroup>
+		<MessageComposerToolbar>
+			<MessageToolbarActions />
+			<MessageComposerToolbarSubmit>
+				<Button small>Preview</Button>
+				<Button primary small>
+					Send
+				</Button>
+			</MessageComposerToolbarSubmit>
+		</MessageComposerToolbar>
+	</MessageComposer>
+);
+
+export const Loading: StoryFn<typeof MessageComposer> = () => <MessageComposerSkeleton />;

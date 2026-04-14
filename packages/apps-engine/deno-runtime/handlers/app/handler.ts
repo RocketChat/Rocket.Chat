@@ -1,4 +1,3 @@
-import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
 import { Defined, JsonRpcError } from 'jsonrpc-lite';
 
 import handleConstructApp from './construct.ts';
@@ -11,102 +10,106 @@ import handleOnDisable from './handleOnDisable.ts';
 import handleOnUninstall from './handleOnUninstall.ts';
 import handleOnPreSettingUpdate from './handleOnPreSettingUpdate.ts';
 import handleOnSettingUpdated from './handleOnSettingUpdated.ts';
+import handleOnUpdate from './handleOnUpdate.ts';
+import handleUploadEvents, { uploadEvents } from './handleUploadEvents.ts';
+import { isOneOf } from '../lib/assertions.ts';
 import handleListener from '../listener/handler.ts';
 import handleUIKitInteraction, { uikitInteractions } from '../uikit/handler.ts';
-import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
-import handleOnUpdate from './handleOnUpdate.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
 
-export default async function handleApp(method: string, params: unknown): Promise<Defined | JsonRpcError> {
-    const [, appMethod] = method.split(':');
+export default async function handleApp(request: RequestContext): Promise<Defined | JsonRpcError> {
+	const { method } = request;
+	const { logger } = request.context;
+	const [, appMethod] = method.split(':');
 
-    try {
-        // We don't want the getStatus method to generate logs, so we handle it separately
-        if (appMethod === 'getStatus') {
-            return await handleGetStatus();
-        }
+	try {
+		// We don't want the getStatus method to generate logs, so we handle it separately
+		if (appMethod === 'getStatus') {
+			return await handleGetStatus();
+		}
 
-        // `app` will be undefined if the method here is "app:construct"
-        const app = AppObjectRegistry.get<App>('app');
+		logger.debug({ msg: `A method is being called...`, appMethod });
 
-        app?.getLogger().debug(`'${appMethod}' is being called...`);
+		const formatResult = (result: Defined | JsonRpcError): Defined | JsonRpcError => {
+			if (result instanceof JsonRpcError) {
+				logger.debug({
+					msg: `'${appMethod}' was unsuccessful.`,
+					appMethod,
+					err: result,
+					errorMessage: result.message,
+				});
+			} else {
+				logger.debug({
+					msg: `'${appMethod}' was successfully called! The result is:`,
+					appMethod,
+					result,
+				});
+			}
 
-        if (uikitInteractions.includes(appMethod)) {
-            return handleUIKitInteraction(appMethod, params).then((result) => {
-                if (result instanceof JsonRpcError) {
-                    app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
-                } else {
-                    app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
-                }
+			return result;
+		};
 
-                return result;
-            });
-        }
+		let result: Promise<Defined | JsonRpcError> | undefined = undefined;
 
-        if (appMethod.startsWith('check') || appMethod.startsWith('execute')) {
-            return handleListener(appMethod, params).then((result) => {
-                if (result instanceof JsonRpcError) {
-                    app?.getLogger().debug(`'${appMethod}' was unsuccessful.`, result.message);
-                } else {
-                    app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
-                }
+		if (isOneOf(appMethod, uploadEvents)) {
+			result = handleUploadEvents(request);
+		} else if (isOneOf(appMethod, uikitInteractions)) {
+			result = handleUIKitInteraction(request);
+		} else if (appMethod.startsWith('check') || appMethod.startsWith('execute')) {
+			result = handleListener(request);
+		}
 
-                return result;
-            });
-        }
+		switch (appMethod) {
+			case 'construct':
+				result = handleConstructApp(request);
+				break;
+			case 'initialize':
+				result = handleInitialize(request);
+				break;
+			case 'setStatus':
+				result = handleSetStatus(request);
+				break;
+			case 'onEnable':
+				result = handleOnEnable(request);
+				break;
+			case 'onDisable':
+				result = handleOnDisable(request);
+				break;
+			case 'onInstall':
+				result = handleOnInstall(request);
+				break;
+			case 'onUninstall':
+				result = handleOnUninstall(request);
+				break;
+			case 'onPreSettingUpdate':
+				result = handleOnPreSettingUpdate(request);
+				break;
+			case 'onSettingUpdated':
+				result = handleOnSettingUpdated(request);
+				break;
+			case 'onUpdate':
+				result = handleOnUpdate(request);
+				break;
+		}
 
-        let result: Defined | JsonRpcError;
+		if (typeof result === 'undefined') {
+			throw new JsonRpcError(`Unknown method "${appMethod}"`, -32601);
+		}
 
-        switch (appMethod) {
-            case 'construct':
-                result = await handleConstructApp(params);
-                break;
-            case 'initialize':
-                result = await handleInitialize();
-                break;
-            case 'setStatus':
-                result = await handleSetStatus(params);
-                break;
-            case 'onEnable':
-                result = await handleOnEnable();
-                break;
-            case 'onDisable':
-                result = await handleOnDisable();
-                break;
-            case 'onInstall':
-                result = await handleOnInstall(params);
-                break;
-            case 'onUninstall':
-                result = await handleOnUninstall(params);
-                break;
-            case 'onPreSettingUpdate':
-                result = await handleOnPreSettingUpdate(params);
-                break;
-            case 'onSettingUpdated':
-                result = await handleOnSettingUpdated(params);
-                break;
-            case 'onUpdate':
-                result = await handleOnUpdate(params);
-                break;
-            default:
-                throw new JsonRpcError('Method not found', -32601);
-        }
+		return await result.then(formatResult);
+	} catch (e: unknown) {
+		if (!(e instanceof Error)) {
+			return new JsonRpcError('Unknown error', -32000, e);
+		}
 
-        app?.getLogger().debug(`'${appMethod}' was successfully called! The result is:`, result);
+		if ((e.cause as string)?.includes('invalid_param_type')) {
+			return JsonRpcError.invalidParams(null);
+		}
 
-        return result;
-    } catch (e: unknown) {
-        if (!(e instanceof Error)) {
-            return new JsonRpcError('Unknown error', -32000, e);
-        }
+		if ((e.cause as string)?.includes('invalid_app')) {
+			return JsonRpcError.internalError({ message: 'App unavailable' });
+		}
 
-        if ((e.cause as string)?.includes('invalid_param_type')) {
-            return JsonRpcError.invalidParams(null);
-        }
-
-        if ((e.cause as string)?.includes('invalid_app')) {
-            return JsonRpcError.internalError({ message: 'App unavailable' });
-        }
-
-        return new JsonRpcError(e.message, -32000, e);
-    }
+		return new JsonRpcError(e.message, -32000, e);
+	}
 }

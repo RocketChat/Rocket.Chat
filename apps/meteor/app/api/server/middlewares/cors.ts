@@ -12,11 +12,8 @@ export const cors =
 	async (c, next) => {
 		const { req, res } = c;
 		if (req.method !== 'OPTIONS') {
-			if (settings.get('API_Enable_CORS')) {
-				res.headers.set('Vary', 'Origin');
-				res.headers.set('Access-Control-Allow-Methods', defaultHeaders['Access-Control-Allow-Methods']);
-				res.headers.set('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
-			}
+			res.headers.set('Access-Control-Allow-Origin', '*');
+			res.headers.set('Access-Control-Allow-Headers', defaultHeaders['Access-Control-Allow-Headers']);
 
 			await next();
 			return;

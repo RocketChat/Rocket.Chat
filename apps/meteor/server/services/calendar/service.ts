@@ -177,7 +177,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 
 	private async getMeetingUrl(eventData: Partial<ICalendarEvent>): Promise<string | undefined> {
 		if (eventData.meetingUrl !== undefined) {
-			return eventData.meetingUrl;
+			return eventData.meetingUrl || undefined;
 		}
 
 		if (eventData.description !== undefined) {
@@ -285,13 +285,18 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const user = await Users.findOneById(event.uid, { projection: { status: 1 } });
-		if (!user || user.status === UserStatus.OFFLINE) {
+		const user = await Users.findOneById(event.uid, { projection: { statusDefault: 1 } });
+		if (!user || user.statusDefault === UserStatus.OFFLINE) {
 			return;
 		}
 
-		if (user.status) {
-			await CalendarEvent.updateEvent(event._id, { previousStatus: user.status });
+		const overlappingEvents = await CalendarEvent.findOverlappingEvents(event._id, event.uid, event.startTime, event.endTime)
+			.sort({ startTime: -1 })
+			.toArray();
+		const previousStatus = overlappingEvents.at(0)?.previousStatus ?? user.statusDefault;
+
+		if (previousStatus) {
+			await CalendarEvent.updateEvent(event._id, { previousStatus });
 		}
 
 		await applyStatusChange({
@@ -308,16 +313,16 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			return;
 		}
 
-		const user = await Users.findOneById(event.uid, { projection: { status: 1 } });
+		const user = await Users.findOneById(event.uid, { projection: { statusDefault: 1 } });
 		if (!user) {
 			return;
 		}
 
 		// Only restore status if:
-		// 1. The current status is BUSY (meaning it was set by our system, not manually changed by user)
+		// 1. The current statusDefault is BUSY (meaning it was set by our system, not manually changed by user)
 		// 2. We have a previousStatus stored from before the event started
 
-		if (user.status === UserStatus.BUSY && event.previousStatus && event.previousStatus !== user.status) {
+		if (user.statusDefault === UserStatus.BUSY && event.previousStatus && event.previousStatus !== user.statusDefault) {
 			await applyStatusChange({
 				eventId: event._id,
 				uid: event.uid,
@@ -326,7 +331,12 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 				status: event.previousStatus,
 			});
 		} else {
-			logger.debug(`Not restoring status for user ${event.uid}: current=${user.status}, stored=${event.previousStatus}`);
+			logger.debug({
+				msg: 'Not restoring status for user',
+				userId: event.uid,
+				currentStatusDefault: user.statusDefault,
+				previousStatus: event.previousStatus,
+			});
 		}
 	}
 
@@ -350,6 +360,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 			text: event.startTime.toLocaleTimeString(undefined, { hour: 'numeric', minute: 'numeric', dayPeriod: 'narrow' }),
 			payload: {
 				_id: event._id,
+				startTimeUtc: event.startTime.toISOString(),
 			},
 		});
 	}

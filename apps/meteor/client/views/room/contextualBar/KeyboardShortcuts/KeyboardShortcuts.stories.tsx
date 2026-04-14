@@ -1,10 +1,9 @@
+import { Contextualbar } from '@rocket.chat/ui-client';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import KeyboardShortcutsWithData from './KeyboardShortcutsWithData';
-import { Contextualbar } from '../../../../components/Contextualbar';
 
 export default {
-	title: 'Room/Contextual Bar/KeyboardShortcut',
 	component: KeyboardShortcutsWithData,
 	parameters: {
 		layout: 'fullscreen',

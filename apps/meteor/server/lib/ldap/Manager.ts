@@ -12,11 +12,14 @@ import { LDAPConnection } from './Connection';
 import { logger, authLogger, connLogger } from './Logger';
 import { LDAPUserConverter } from './UserConverter';
 import { getLDAPConditionalSetting } from './getLDAPConditionalSetting';
+import { getLdapDynamicValue } from './getLdapDynamicValue';
+import { getLdapString } from './getLdapString';
+import { ldapKeyExists } from './ldapKeyExists';
 import type { UserConverterOptions } from '../../../app/importer/server/classes/converters/UserConverter';
 import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
 import { settings } from '../../../app/settings/server';
-import { callbacks } from '../../../lib/callbacks';
 import { omit } from '../../../lib/utils/omit';
+import { callbacks } from '../callbacks';
 
 export class LDAPManager {
 	public static async login(username: string, password: string): Promise<LDAPLoginResult> {
@@ -33,8 +36,8 @@ export class LDAPManager {
 			try {
 				await ldap.connect();
 				ldapUser = await this.findUser(ldap, username, password);
-			} catch (error) {
-				logger.error(error);
+			} catch (err) {
+				logger.error({ err });
 			}
 
 			if (ldapUser === undefined) {
@@ -75,8 +78,8 @@ export class LDAPManager {
 			try {
 				await ldap.connect();
 				ldapUser = await this.findAuthenticatedUser(ldap, username);
-			} catch (error) {
-				logger.error(error);
+			} catch (err) {
+				logger.error({ err });
 			}
 
 			if (ldapUser === undefined) {
@@ -105,9 +108,9 @@ export class LDAPManager {
 		try {
 			const ldap = new LDAPConnection();
 			await ldap.testConnection();
-		} catch (error) {
-			connLogger.error(error);
-			throw error;
+		} catch (err) {
+			connLogger.error({ err });
+			throw err;
 		}
 	}
 
@@ -120,12 +123,12 @@ export class LDAPManager {
 
 			const users = await ldap.searchByUsername(escapedUsername);
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				throw new Error('User not found');
 			}
-		} catch (error) {
-			logger.error(error);
-			throw error;
+		} catch (err) {
+			logger.error({ err });
+			throw err;
 		}
 	}
 
@@ -164,6 +167,7 @@ export class LDAPManager {
 			flagEmailsAsVerified: settings.get<boolean>('Accounts_Verify_Email_For_External_Accounts') ?? false,
 			skipExistingUsers: false,
 			skipUserCallbacks: false,
+			syncVoipExtension: Boolean(settings.get<string>('LDAP_Extension_Field')),
 		};
 	}
 
@@ -176,7 +180,7 @@ export class LDAPManager {
 		const { attribute: idAttribute, value: id } = uniqueId;
 		const username = this.slugifyUsername(ldapUser, usedUsername || id || '') || undefined;
 		const homeServer = this.getFederationHomeServer(ldapUser);
-		const emails = this.getLdapEmails(ldapUser, username).map((email) => email.trim());
+		const emails = homeServer ? [] : this.getLdapEmails(ldapUser, username).map((email) => email.trim());
 		const name = this.getLdapName(ldapUser) || undefined;
 		const voipExtension = this.getLdapExtension(ldapUser);
 
@@ -194,8 +198,13 @@ export class LDAPManager {
 				},
 			},
 			...(homeServer && {
-				username: `${username}:${homeServer}`,
+				username: `@${username}:${homeServer}`,
 				federated: true,
+				federation: {
+					version: 1,
+					mui: `@${username}:${homeServer}`,
+					origin: homeServer,
+				},
 			}),
 		};
 
@@ -214,7 +223,7 @@ export class LDAPManager {
 			const users = await ldap.searchByUsername(escapedUsername);
 
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				throw new Error('User not found');
 			}
 
@@ -224,7 +233,7 @@ export class LDAPManager {
 			}
 
 			if (!(await ldap.authenticate(ldapUser.dn, password))) {
-				logger.debug(`Wrong password for ${escapedUsername}`);
+				logger.debug({ msg: 'Wrong password', username: escapedUsername });
 				throw new Error('Invalid user or wrong password');
 			}
 
@@ -232,12 +241,12 @@ export class LDAPManager {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
 				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
-					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
 			}
 			return ldapUser;
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -248,7 +257,7 @@ export class LDAPManager {
 			const users = await ldap.searchByUsername(escapedUsername);
 
 			if (users.length !== 1) {
-				logger.debug(`Search returned ${users.length} records for ${escapedUsername}`);
+				logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 				return;
 			}
 
@@ -258,7 +267,7 @@ export class LDAPManager {
 				// Do a search as the user and check if they have any result
 				authLogger.debug('User authenticated successfully, performing additional search.');
 				if ((await ldap.searchAndCount(ldapUser.dn, {})) === 0) {
-					authLogger.debug(`Bind successful but user ${ldapUser.dn} was not found via search`);
+					authLogger.debug({ msg: 'Bind successful but user was not found via search', dn: ldapUser.dn });
 				}
 			}
 
@@ -267,8 +276,8 @@ export class LDAPManager {
 			}
 
 			return ldapUser;
-		} catch (error) {
-			logger.error(error);
+		} catch (err) {
+			logger.error({ err });
 		}
 	}
 
@@ -416,43 +425,9 @@ export class LDAPManager {
 		connLogger.debug(ldapUser);
 	}
 
-	private static ldapKeyExists(ldapUser: ILDAPEntry, key: string): boolean {
-		return !_.isEmpty(ldapUser[key.trim()]);
-	}
-
-	private static getLdapString(ldapUser: ILDAPEntry, key: string): string {
-		return ldapUser[key.trim()];
-	}
-
-	private static getLdapDynamicValue(ldapUser: ILDAPEntry, attributeSetting: string | undefined): string | undefined {
-		if (!attributeSetting) {
-			return;
-		}
-
-		// If the attribute setting is a template, then convert the variables in it
-		if (attributeSetting.includes('#{')) {
-			return attributeSetting.replace(/#{(.+?)}/g, (_match, field) => {
-				const key = field.trim();
-
-				if (this.ldapKeyExists(ldapUser, key)) {
-					return this.getLdapString(ldapUser, key);
-				}
-
-				return '';
-			});
-		}
-
-		// If it's not a template, then treat the setting as a CSV list of possible attribute names and return the first valid one.
-		const attributeList: string[] = attributeSetting.replace(/\s/g, '').split(',');
-		const key = attributeList.find((field) => this.ldapKeyExists(ldapUser, field));
-		if (key) {
-			return this.getLdapString(ldapUser, key);
-		}
-	}
-
 	private static getLdapName(ldapUser: ILDAPEntry): string | undefined {
 		const nameAttributes = getLDAPConditionalSetting<string | undefined>('LDAP_Name_Field');
-		return this.getLdapDynamicValue(ldapUser, nameAttributes);
+		return getLdapDynamicValue(ldapUser, nameAttributes);
 	}
 
 	private static getLdapExtension(ldapUser: ILDAPEntry): string | undefined {
@@ -461,14 +436,14 @@ export class LDAPManager {
 			return;
 		}
 
-		return this.getLdapString(ldapUser, extensionAttribute);
+		return getLdapString(ldapUser, extensionAttribute);
 	}
 
 	private static getLdapEmails(ldapUser: ILDAPEntry, username?: string): string[] {
 		const emailAttributes = getLDAPConditionalSetting<string>('LDAP_Email_Field');
 		if (emailAttributes) {
 			const attributeList: string[] = emailAttributes.replace(/\s/g, '').split(',');
-			const key = attributeList.find((field) => this.ldapKeyExists(ldapUser, field));
+			const key = attributeList.find((field) => ldapKeyExists(ldapUser, field));
 
 			const emails: string[] = [].concat(key ? ldapUser[key.trim()] : []);
 			const filteredEmails = emails.filter((email) => email.includes('@'));
@@ -512,16 +487,16 @@ export class LDAPManager {
 
 	protected static getLdapUsername(ldapUser: ILDAPEntry): string | undefined {
 		const usernameField = getLDAPConditionalSetting('LDAP_Username_Field') as string;
-		return this.getLdapDynamicValue(ldapUser, usernameField);
+		return getLdapDynamicValue(ldapUser, usernameField);
 	}
 
 	protected static getFederationHomeServer(ldapUser: ILDAPEntry): string | undefined {
-		if (!settings.get<boolean>('Federation_Matrix_enabled')) {
+		if (!settings.get<boolean>('Federation_Service_Enabled')) {
 			return;
 		}
 
 		const homeServerField = settings.get<string>('LDAP_FederationHomeServer_Field');
-		const homeServer = this.getLdapDynamicValue(ldapUser, homeServerField);
+		const homeServer = getLdapDynamicValue(ldapUser, homeServerField);
 
 		if (!homeServer) {
 			return;
@@ -529,23 +504,12 @@ export class LDAPManager {
 
 		logger.debug({ msg: 'User has a federation home server', homeServer });
 
-		const localServer = settings.get<string>('Federation_Matrix_homeserver_domain');
+		const localServer = settings.get<string>('Federation_Service_Domain');
 		if (localServer === homeServer) {
 			return;
 		}
 
 		return homeServer;
-	}
-
-	protected static getFederatedUsername(ldapUser: ILDAPEntry, requestUsername: string): string {
-		const username = this.slugifyUsername(ldapUser, requestUsername);
-		const homeServer = this.getFederationHomeServer(ldapUser);
-
-		if (homeServer) {
-			return `${username}:${homeServer}`;
-		}
-
-		return username;
 	}
 
 	// This method will find existing users by LDAP id or by username.

@@ -5,21 +5,21 @@ import {
 	StatesActions,
 	StatesIcon,
 	StatesTitle,
-	ContextualbarFooter,
 	FieldGroup,
 	Field,
 	FieldLabel,
 	FieldRow,
-	ContextualbarSkeleton,
 } from '@rocket.chat/fuselage';
+import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserContextFooter from './UserContextFooter';
-import { ContextualbarScrollableContent } from '../../../../components/Contextualbar';
+import { normalizeUsername } from '../../../../../lib/utils/normalizeUsername';
 import GenericNoResults from '../../../../components/GenericNoResults';
+import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import ReportReason from '../helpers/ReportReason';
@@ -48,7 +48,8 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		}
 
 		const { username, name } = report.user;
-		return <UserColumn key={dataUpdatedAt} username={username} name={name} fontSize='p2' size='x48' />;
+		const normalizedUsername = username ? normalizeUsername(username) : undefined;
+		return <UserColumn key={dataUpdatedAt} username={normalizedUsername} name={name} fontSize='p2' size='x48' />;
 	}, [report?.user, dataUpdatedAt]);
 
 	const userEmails = useMemo(() => {
@@ -70,10 +71,13 @@ const UserReportInfo = ({ userId }: { userId: string }) => {
 		);
 	}
 
+	if (isLoading) {
+		return <FormSkeleton />;
+	}
+
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				{isLoading && <ContextualbarSkeleton />}
 				{isSuccess && report.reports.length > 0 && (
 					<>
 						{report.user ? (

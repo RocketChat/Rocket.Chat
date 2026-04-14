@@ -1,7 +1,7 @@
+import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import { MemberListRouter } from '../../views/room';
-import type { RoomToolboxActionConfig } from '../../views/room/contexts/RoomToolboxContext';
 
 export const useUserInfoGroupRoomAction = () => {
 	return useMemo(

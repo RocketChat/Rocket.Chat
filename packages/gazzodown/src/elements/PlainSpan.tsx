@@ -1,4 +1,5 @@
-import { Fragment, memo, ReactElement, useContext, useMemo } from 'react';
+import type { ReactElement } from 'react';
+import { Fragment, memo, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';

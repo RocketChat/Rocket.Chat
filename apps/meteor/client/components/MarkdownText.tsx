@@ -32,8 +32,9 @@ const walkTokens = (token: marked.Token) => {
 
 marked.use({ walkTokens });
 
-const linkMarked = (href: string | null, _title: string | null, text: string): string =>
-	`<a href="${href}" rel="nofollow noopener noreferrer">${text}</a> `;
+const linkMarked = (href: string | null, _title: string | null, text: string): string => {
+	return `<a href="${href || ''}">${text}</a>`;
+};
 const paragraphMarked = (text: string): string => text;
 const brMarked = (): string => ' ';
 const listItemMarked = (text: string): string => {
@@ -41,9 +42,20 @@ const listItemMarked = (text: string): string => {
 	return `<li>${cleanText}</li>`;
 };
 const horizontalRuleMarked = (): string => '';
+const codeMarked = (code: string, language: string | undefined, _isEscaped: boolean): string => {
+	if (language) {
+		return `<pre><code class="language-${language}">${code} </code></pre>`;
+	}
+	return `<pre><code>${code} </code></pre>`;
+};
+const codespanMarked = (code: string): string => {
+	return `<code>${code.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')}</code>`;
+};
 
 documentRenderer.link = linkMarked;
 documentRenderer.listitem = listItemMarked;
+documentRenderer.code = codeMarked;
+documentRenderer.codespan = codespanMarked;
 
 inlineRenderer.link = linkMarked;
 inlineRenderer.paragraph = paragraphMarked;
@@ -66,6 +78,7 @@ const defaultOptions = {
 
 const options = {
 	...defaultOptions,
+	breaks: true,
 	renderer: documentRenderer,
 };
 
@@ -79,12 +92,58 @@ const inlineWithoutBreaksOptions = {
 	renderer: inlineWithoutBreaks,
 };
 
-const getRegexp = (schemeSetting: string): RegExp => {
-	const schemes = schemeSetting ? schemeSetting.split(',').join('|') : '';
-	return new RegExp(`^(${schemes}):`, 'gim');
+const getRegexp = (supportedURISchemes: string[]): RegExp => {
+	const schemes = supportedURISchemes.join('|');
+
+	return new RegExp(`^(${schemes}):`, 'im');
 };
 
 type MarkdownTextProps = Partial<MarkdownTextParams>;
+
+export const supportedURISchemes = ['http', 'https', 'notes', 'ftp', 'ftps', 'tel', 'mailto', 'sms', 'cid'];
+
+const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
+const isLinkElement = (node: Node): node is HTMLAnchorElement => isElement(node) && node.tagName.toLowerCase() === 'a';
+
+// Generate a unique token at runtime to prevent enumeration attacks
+// This token marks internal links that need translation
+const INTERNAL_LINK_TOKEN = `__INTERNAL_LINK_TITLE_${Math.random().toString(36).substring(2, 15)}__`;
+
+// Register the DOMPurify hook once at module level to prevent memory leaks
+// This hook will be shared by all MarkdownText component instances
+dompurify.addHook('afterSanitizeAttributes', (node) => {
+	if (!isLinkElement(node)) {
+		return;
+	}
+
+	const href = node.getAttribute('href') || '';
+	const isExternalLink = isExternal(href);
+	const isMailto = href.startsWith('mailto:');
+
+	// Set appropriate attributes based on link type
+	if (isExternalLink || isMailto) {
+		node.setAttribute('rel', 'nofollow noopener noreferrer');
+		// Enforcing external links to open in new tabs is critical to assure users never navigate away from the chat
+		// This attribute must be preserved to guarantee users maintain their chat context
+		node.setAttribute('target', '_blank');
+	}
+
+	// Set appropriate title based on link type
+	if (isMailto) {
+		// For mailto links, use the email address as the title for better user experience
+		// Example: for href "mailto:user@example.com" the title would be "mailto:user@example.com"
+		node.setAttribute('title', href);
+	} else if (isExternalLink) {
+		// For external links, set an empty title to prevent tooltips
+		// This reduces visual clutter and lets users see the URL in the browser's status bar instead
+		node.setAttribute('title', '');
+	} else {
+		// For internal links, use a token that will be replaced with translated text in the component
+		// This allows us to use the contextualized translation function
+		const relativePath = href.replace(getBaseURI(), '');
+		node.setAttribute('title', `${INTERNAL_LINK_TOKEN}${relativePath}`);
+	}
+});
 
 const MarkdownText = ({
 	content,
@@ -97,8 +156,6 @@ const MarkdownText = ({
 	const sanitizer = dompurify.sanitize;
 	const { t } = useTranslation();
 	let markedOptions: marked.MarkedOptions;
-
-	const schemes = 'http,https,notes,ftp,ftps,tel,mailto,sms,cid';
 
 	switch (variant) {
 		case 'inline':
@@ -130,21 +187,16 @@ const MarkdownText = ({
 			}
 		})();
 
-		// Add a hook to make all external links open a new window
-		dompurify.addHook('afterSanitizeAttributes', (node) => {
-			if (isElement(node) && 'target' in node) {
-				const href = node.getAttribute('href') || '';
+		const sanitizedHtml = preserveHtml
+			? html
+			: html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(supportedURISchemes) });
 
-				node.setAttribute('title', `${t('Go_to_href', { href: href.replace(getBaseURI(), '') })}`);
-				node.setAttribute('rel', 'nofollow noopener noreferrer');
-				if (isExternal(node.getAttribute('href') || '')) {
-					node.setAttribute('target', '_blank');
-					node.setAttribute('title', href);
-				}
-			}
-		});
+		// Replace internal link tokens with contextualized translations
+		if (sanitizedHtml && typeof sanitizedHtml === 'string') {
+			return sanitizedHtml.replace(new RegExp(`${INTERNAL_LINK_TOKEN}([^"]*)`, 'g'), (_, href) => t('Go_to_href', { href }));
+		}
 
-		return preserveHtml ? html : html && sanitizer(html, { ADD_ATTR: ['target'], ALLOWED_URI_REGEXP: getRegexp(schemes) });
+		return sanitizedHtml;
 	}, [preserveHtml, sanitizer, content, variant, markedOptions, parseEmoji, t]);
 
 	return __html ? (
@@ -156,7 +208,5 @@ const MarkdownText = ({
 		/>
 	) : null;
 };
-
-const isElement = (node: Node): node is Element => node.nodeType === Node.ELEMENT_NODE;
 
 export default MarkdownText;

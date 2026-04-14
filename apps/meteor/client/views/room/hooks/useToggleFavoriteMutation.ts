@@ -1,5 +1,5 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useUserId } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
@@ -9,6 +9,7 @@ import { subscriptionsQueryKeys } from '../../../lib/queryKeys';
 export const useToggleFavoriteMutation = () => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const uid = useUserId();
 
 	const toggleFavorite = useEndpoint('POST', '/v1/rooms.favorite');
 	const queryClient = useQueryClient();
@@ -28,7 +29,7 @@ export const useToggleFavoriteMutation = () => {
 			);
 		},
 		onSuccess: (_data, { roomId, favorite, roomName }) => {
-			toggleFavoriteRoom(roomId, favorite);
+			toggleFavoriteRoom(roomId, favorite, uid);
 			dispatchToastMessage({
 				type: 'success',
 				message: favorite

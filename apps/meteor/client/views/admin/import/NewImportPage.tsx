@@ -1,5 +1,21 @@
-import { Box, Button, ButtonGroup, Callout, Chip, Field, Margins, Select, InputBox, TextInput, UrlInput } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Button,
+	ButtonGroup,
+	Callout,
+	Chip,
+	Field,
+	Margins,
+	Select,
+	InputBox,
+	TextInput,
+	UrlInput,
+	FieldLabel,
+	FieldRow,
+	FieldHint,
+} from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
+import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRouter, useRouteParameter, useSetting, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -8,7 +24,6 @@ import { useState, useMemo, useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useErrorHandler } from './useErrorHandler';
-import { Page, PageHeader, PageScrollableContentWithShadow } from '../../../components/Page';
 import { useFormatMemorySize } from '../../../hooks/useFormatMemorySize';
 
 // TODO: review inner logic
@@ -191,7 +206,13 @@ function NewImportPage() {
 			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
 					{importer && (
-						<Button primary minHeight='x40' loading={isLoading} onClick={handleImportButtonClick}>
+						<Button
+							primary
+							minHeight='x40'
+							loading={isLoading}
+							disabled={fileType === 'upload' && files.length === 0}
+							onClick={handleImportButtonClick}
+						>
 							{t('Import')}
 						</Button>
 					)}
@@ -201,10 +222,10 @@ function NewImportPage() {
 				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 					<Margins block='x24'>
 						<Field>
-							<Field.Label alignSelf='stretch' htmlFor={importerKeySelectId}>
+							<FieldLabel alignSelf='stretch' htmlFor={importerKeySelectId}>
 								{t('Import_Type')}
-							</Field.Label>
-							<Field.Row>
+							</FieldLabel>
+							<FieldRow>
 								<Select
 									id={importerKeySelectId}
 									value={importerKey}
@@ -213,21 +234,21 @@ function NewImportPage() {
 									onChange={handleImporterKeyChange}
 									options={options}
 								/>
-							</Field.Row>
+							</FieldRow>
 							{importer && (
-								<Field.Hint>
+								<FieldHint>
 									{importer.key === 'csv'
 										? t('Importer_From_Description_CSV')
 										: t('Importer_From_Description', { from: t(importer.name as TranslationKey) })}
-								</Field.Hint>
+								</FieldHint>
 							)}
 						</Field>
 						{importer && (
 							<Field>
-								<Field.Label alignSelf='stretch' htmlFor={fileTypeSelectId}>
+								<FieldLabel alignSelf='stretch' htmlFor={fileTypeSelectId}>
 									{t('File_Type')}
-								</Field.Label>
-								<Field.Row>
+								</FieldLabel>
+								<FieldRow>
 									<Select
 										id={fileTypeSelectId}
 										value={fileType}
@@ -240,7 +261,7 @@ function NewImportPage() {
 											['path', t('Server_File_Path')],
 										]}
 									/>
-								</Field.Row>
+								</FieldRow>
 							</Field>
 						)}
 						{importer && (
@@ -259,42 +280,42 @@ function NewImportPage() {
 											</Callout>
 										)}
 										<Field>
-											<Field.Label alignSelf='stretch' htmlFor={fileSourceInputId}>
+											<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
 												{t('Importer_Source_File')}
-											</Field.Label>
-											<Field.Row>
+											</FieldLabel>
+											<FieldRow>
 												<InputBox type='file' id={fileSourceInputId} onChange={handleImportFileChange} />
-											</Field.Row>
+											</FieldRow>
 											{files?.length > 0 && (
-												<Field.Row>
+												<FieldRow>
 													{files.map((file, i) => (
 														<Chip key={i} onClick={handleFileUploadChipClick(file)}>
 															{file.name}
 														</Chip>
 													))}
-												</Field.Row>
+												</FieldRow>
 											)}
 										</Field>
 									</>
 								)}
 								{fileType === 'url' && (
 									<Field>
-										<Field.Label alignSelf='stretch' htmlFor={fileSourceInputId}>
+										<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
 											{t('File_URL')}
-										</Field.Label>
-										<Field.Row>
+										</FieldLabel>
+										<FieldRow>
 											<UrlInput id={fileSourceInputId} value={fileUrl} onChange={handleFileUrlChange} />
-										</Field.Row>
+										</FieldRow>
 									</Field>
 								)}
 								{fileType === 'path' && (
 									<Field>
-										<Field.Label alignSelf='stretch' htmlFor={fileSourceInputId}>
+										<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
 											{t('File_Path')}
-										</Field.Label>
-										<Field.Row>
+										</FieldLabel>
+										<FieldRow>
 											<TextInput id={fileSourceInputId} value={filePath} onChange={handleFilePathChange} />
-										</Field.Row>
+										</FieldRow>
 									</Field>
 								)}
 							</>

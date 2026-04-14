@@ -3,6 +3,8 @@ import { Users } from '@rocket.chat/models';
 import { RoutingManager } from '../../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../../app/settings/server';
 import type { IRoutingManagerConfig } from '../../../../../../definition/IRoutingManagerConfig';
+import { getChatLimitsQuery } from '../../hooks/applySimultaneousChatsRestrictions';
+import { logger } from '../logger';
 
 /* Load Balancing Queuing method:
  *
@@ -29,10 +31,16 @@ class LoadBalancing {
 	}
 
 	async getNextAgent(department?: string, ignoreAgentId?: string) {
+		const enabledWhenIdle = settings.get<boolean>('Livechat_enabled_when_agent_idle');
+		const extraQuery = await getChatLimitsQuery(department);
+		const unavailableUsers = await Users.getUnavailableAgents(department, extraQuery, enabledWhenIdle);
+		logger.debug({ msg: 'Ignoring unavailable agents from assignment', unavailableUsers, department, enabledWhenIdle });
+
 		const nextAgent = await Users.getNextLeastBusyAgent(
 			department,
 			ignoreAgentId,
-			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			enabledWhenIdle,
+			unavailableUsers.map((u) => u.username),
 		);
 		if (!nextAgent) {
 			return;

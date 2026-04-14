@@ -1,4 +1,4 @@
 export interface IWorkspaceToken {
-    token: string;
-    expiresAt: Date;
+	token: string;
+	expiresAt: Date;
 }

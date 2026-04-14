@@ -173,6 +173,14 @@ export abstract class BaseRaw<
 
 	public findOneAndUpdate(query: Filter<T>, update: UpdateFilter<T> | T, options?: FindOneAndUpdateOptions): Promise<WithId<T> | null> {
 		this.setUpdatedAt(update);
+
+		if (options?.upsert && !('_id' in update || (update.$set && '_id' in update.$set)) && !('_id' in query)) {
+			update.$setOnInsert = {
+				...(update.$setOnInsert || {}),
+				_id: new ObjectId().toHexString(),
+			} as Partial<T> & { _id: string };
+		}
+
 		return this.col.findOneAndUpdate(query, update, options || {});
 	}
 
@@ -240,9 +248,15 @@ export abstract class BaseRaw<
 		return this[operation](filter, update, options);
 	}
 
-	updateOne(filter: Filter<T>, update: UpdateFilter<T> | Partial<T>, options?: UpdateOptions): Promise<UpdateResult> {
+	updateOne(filter: Filter<T>, update: UpdateFilter<T>, options?: UpdateOptions): Promise<UpdateResult> {
 		this.setUpdatedAt(update);
 		if (options) {
+			if (options.upsert && !('_id' in update || (update.$set && '_id' in update.$set)) && !('_id' in filter)) {
+				update.$setOnInsert = {
+					...(update.$setOnInsert || {}),
+					_id: new ObjectId().toHexString(),
+				} as Partial<T> & { _id: string };
+			}
 			return this.col.updateOne(filter, update, options);
 		}
 		return this.col.updateOne(filter, update);
@@ -260,7 +274,7 @@ export abstract class BaseRaw<
 		docs = docs.map((doc) => {
 			if (!doc._id || typeof doc._id !== 'string') {
 				const oid = new ObjectId();
-				return { _id: oid.toHexString(), ...doc };
+				doc = { ...doc, _id: oid.toHexString() } as InsertionModel<T>;
 			}
 			this.setUpdatedAt(doc);
 			return doc;

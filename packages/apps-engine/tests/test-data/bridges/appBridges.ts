@@ -7,12 +7,14 @@ import { TestsCommandBridge } from './commandBridge';
 import { TestContactBridge } from './contactBridge';
 import { TestsEmailBridge } from './emailBridge';
 import { TestsEnvironmentalVariableBridge } from './environmentalVariableBridge';
+import { TestExperimentalBridge } from './experimentalBridge';
 import { TestsHttpBridge } from './httpBridge';
 import { TestsInternalBridge } from './internalBridge';
 import { TestsInternalFederationBridge } from './internalFederationBridge';
 import { TestLivechatBridge } from './livechatBridge';
 import { TestsMessageBridge } from './messageBridge';
 import { TestsModerationBridge } from './moderationBridge';
+import { TestOutboundCommunicationBridge } from './outboundComms';
 import { TestsPersisBridge } from './persisBridge';
 import { TestsRoleBridge } from './roleBridge';
 import { TestsRoomBridge } from './roomBridge';
@@ -25,25 +27,27 @@ import { TestsUserBridge } from './userBridge';
 import { TestsVideoConferenceBridge } from './videoConferenceBridge';
 import { AppBridges } from '../../../src/server/bridges';
 import type {
-    AppActivationBridge,
-    AppDetailChangesBridge,
-    ContactBridge,
-    EnvironmentalVariableBridge,
-    HttpBridge,
-    IInternalBridge,
-    IListenerBridge,
-    LivechatBridge,
-    MessageBridge,
-    ModerationBridge,
-    PersistenceBridge,
-    RoleBridge,
-    RoomBridge,
-    SchedulerBridge,
-    ServerSettingBridge,
-    UiInteractionBridge,
-    UploadBridge,
-    UserBridge,
-    VideoConferenceBridge,
+	AppActivationBridge,
+	AppDetailChangesBridge,
+	ContactBridge,
+	EnvironmentalVariableBridge,
+	ExperimentalBridge,
+	HttpBridge,
+	IInternalBridge,
+	IListenerBridge,
+	LivechatBridge,
+	MessageBridge,
+	ModerationBridge,
+	OutboundMessageBridge,
+	PersistenceBridge,
+	RoleBridge,
+	RoomBridge,
+	SchedulerBridge,
+	ServerSettingBridge,
+	UiInteractionBridge,
+	UploadBridge,
+	UserBridge,
+	VideoConferenceBridge,
 } from '../../../src/server/bridges';
 import type { CloudWorkspaceBridge } from '../../../src/server/bridges/CloudWorkspaceBridge';
 import type { EmailBridge } from '../../../src/server/bridges/EmailBridge';
@@ -52,186 +56,200 @@ import type { OAuthAppsBridge } from '../../../src/server/bridges/OAuthAppsBridg
 import type { ThreadBridge } from '../../../src/server/bridges/ThreadBridge';
 
 export class TestsAppBridges extends AppBridges {
-    private readonly appDetails: TestsAppDetailChangesBridge;
+	private readonly appDetails: TestsAppDetailChangesBridge;
 
-    private readonly cmdBridge: TestsCommandBridge;
+	private readonly cmdBridge: TestsCommandBridge;
 
-    private readonly apiBridge: TestsApiBridge;
+	private readonly apiBridge: TestsApiBridge;
 
-    private readonly setsBridge: TestsServerSettingBridge;
+	private readonly setsBridge: TestsServerSettingBridge;
 
-    private readonly envBridge: TestsEnvironmentalVariableBridge;
+	private readonly envBridge: TestsEnvironmentalVariableBridge;
 
-    private readonly rlActBridge: TestsActivationBridge;
+	private readonly rlActBridge: TestsActivationBridge;
 
-    private readonly msgBridge: TestsMessageBridge;
+	private readonly msgBridge: TestsMessageBridge;
 
-    private readonly moderationBridge: TestsModerationBridge;
+	private readonly moderationBridge: TestsModerationBridge;
 
-    private readonly persisBridge: TestsPersisBridge;
+	private readonly persisBridge: TestsPersisBridge;
 
-    private readonly roleBridge: TestsRoleBridge;
+	private readonly roleBridge: TestsRoleBridge;
 
-    private readonly roomBridge: TestsRoomBridge;
+	private readonly roomBridge: TestsRoomBridge;
 
-    private readonly internalBridge: TestsInternalBridge;
+	private readonly internalBridge: TestsInternalBridge;
 
-    private readonly userBridge: TestsUserBridge;
+	private readonly userBridge: TestsUserBridge;
 
-    private readonly httpBridge: TestsHttpBridge;
+	private readonly httpBridge: TestsHttpBridge;
 
-    private readonly livechatBridge: TestLivechatBridge;
+	private readonly livechatBridge: TestLivechatBridge;
 
-    private readonly uploadBridge: TestUploadBridge;
+	private readonly uploadBridge: TestUploadBridge;
 
-    private readonly emailBridge: EmailBridge;
+	private readonly emailBridge: EmailBridge;
 
-    private readonly contactBridge: ContactBridge;
+	private readonly contactBridge: ContactBridge;
 
-    private readonly uiIntegrationBridge: TestsUiIntegrationBridge;
+	private readonly uiIntegrationBridge: TestsUiIntegrationBridge;
 
-    private readonly schedulerBridge: TestSchedulerBridge;
+	private readonly schedulerBridge: TestSchedulerBridge;
 
-    private readonly cloudWorkspaceBridge: TestAppCloudWorkspaceBridge;
+	private readonly cloudWorkspaceBridge: TestAppCloudWorkspaceBridge;
 
-    private readonly videoConfBridge: TestsVideoConferenceBridge;
+	private readonly videoConfBridge: TestsVideoConferenceBridge;
 
-    private readonly oauthBridge: OAuthAppsBridge;
+	private readonly oauthBridge: OAuthAppsBridge;
 
-    private readonly internalFederationBridge: IInternalFederationBridge;
+	private readonly internalFederationBridge: IInternalFederationBridge;
 
-    private readonly threadBridge: ThreadBridge;
+	private readonly threadBridge: ThreadBridge;
 
-    constructor() {
-        super();
-        this.appDetails = new TestsAppDetailChangesBridge();
-        this.cmdBridge = new TestsCommandBridge();
-        this.apiBridge = new TestsApiBridge();
-        this.setsBridge = new TestsServerSettingBridge();
-        this.envBridge = new TestsEnvironmentalVariableBridge();
-        this.rlActBridge = new TestsActivationBridge();
-        this.msgBridge = new TestsMessageBridge();
-        this.moderationBridge = new TestsModerationBridge();
-        this.persisBridge = new TestsPersisBridge();
-        this.roleBridge = new TestsRoleBridge();
-        this.roomBridge = new TestsRoomBridge();
-        this.internalBridge = new TestsInternalBridge();
-        this.userBridge = new TestsUserBridge();
-        this.httpBridge = new TestsHttpBridge();
-        this.livechatBridge = new TestLivechatBridge();
-        this.uploadBridge = new TestUploadBridge();
-        this.uiIntegrationBridge = new TestsUiIntegrationBridge();
-        this.schedulerBridge = new TestSchedulerBridge();
-        this.cloudWorkspaceBridge = new TestAppCloudWorkspaceBridge();
-        this.videoConfBridge = new TestsVideoConferenceBridge();
-        this.oauthBridge = new TestOAuthAppsBridge();
-        this.internalFederationBridge = new TestsInternalFederationBridge();
-        this.threadBridge = new TestsThreadBridge();
-        this.emailBridge = new TestsEmailBridge();
-        this.contactBridge = new TestContactBridge();
-    }
+	private readonly outboundCommsBridge: TestOutboundCommunicationBridge;
 
-    public getCommandBridge(): TestsCommandBridge {
-        return this.cmdBridge;
-    }
+	private readonly experimentalBridge: TestExperimentalBridge;
 
-    public getApiBridge(): TestsApiBridge {
-        return this.apiBridge;
-    }
+	constructor() {
+		super();
+		this.appDetails = new TestsAppDetailChangesBridge();
+		this.cmdBridge = new TestsCommandBridge();
+		this.apiBridge = new TestsApiBridge();
+		this.setsBridge = new TestsServerSettingBridge();
+		this.envBridge = new TestsEnvironmentalVariableBridge();
+		this.rlActBridge = new TestsActivationBridge();
+		this.msgBridge = new TestsMessageBridge();
+		this.moderationBridge = new TestsModerationBridge();
+		this.persisBridge = new TestsPersisBridge();
+		this.roleBridge = new TestsRoleBridge();
+		this.roomBridge = new TestsRoomBridge();
+		this.internalBridge = new TestsInternalBridge();
+		this.userBridge = new TestsUserBridge();
+		this.httpBridge = new TestsHttpBridge();
+		this.livechatBridge = new TestLivechatBridge();
+		this.uploadBridge = new TestUploadBridge();
+		this.uiIntegrationBridge = new TestsUiIntegrationBridge();
+		this.schedulerBridge = new TestSchedulerBridge();
+		this.cloudWorkspaceBridge = new TestAppCloudWorkspaceBridge();
+		this.videoConfBridge = new TestsVideoConferenceBridge();
+		this.oauthBridge = new TestOAuthAppsBridge();
+		this.internalFederationBridge = new TestsInternalFederationBridge();
+		this.threadBridge = new TestsThreadBridge();
+		this.emailBridge = new TestsEmailBridge();
+		this.contactBridge = new TestContactBridge();
+		this.outboundCommsBridge = new TestOutboundCommunicationBridge();
+		this.experimentalBridge = new TestExperimentalBridge();
+	}
 
-    public getServerSettingBridge(): ServerSettingBridge {
-        return this.setsBridge;
-    }
+	public getCommandBridge(): TestsCommandBridge {
+		return this.cmdBridge;
+	}
 
-    public getEnvironmentalVariableBridge(): EnvironmentalVariableBridge {
-        return this.envBridge;
-    }
+	public getApiBridge(): TestsApiBridge {
+		return this.apiBridge;
+	}
 
-    public getAppDetailChangesBridge(): AppDetailChangesBridge {
-        return this.appDetails;
-    }
+	public getServerSettingBridge(): ServerSettingBridge {
+		return this.setsBridge;
+	}
 
-    public getHttpBridge(): HttpBridge {
-        return this.httpBridge;
-    }
+	public getEnvironmentalVariableBridge(): EnvironmentalVariableBridge {
+		return this.envBridge;
+	}
 
-    public getListenerBridge(): IListenerBridge {
-        throw new Error('Method not implemented.');
-    }
+	public getAppDetailChangesBridge(): AppDetailChangesBridge {
+		return this.appDetails;
+	}
 
-    public getMessageBridge(): MessageBridge {
-        return this.msgBridge;
-    }
+	public getHttpBridge(): HttpBridge {
+		return this.httpBridge;
+	}
 
-    public getModerationBridge(): ModerationBridge {
-        return this.moderationBridge;
-    }
+	public getListenerBridge(): IListenerBridge {
+		throw new Error('Method not implemented.');
+	}
 
-    public getPersistenceBridge(): PersistenceBridge {
-        return this.persisBridge;
-    }
+	public getMessageBridge(): MessageBridge {
+		return this.msgBridge;
+	}
 
-    public getAppActivationBridge(): AppActivationBridge {
-        return this.rlActBridge;
-    }
+	public getModerationBridge(): ModerationBridge {
+		return this.moderationBridge;
+	}
 
-    public getThreadBridge(): ThreadBridge {
-        return this.threadBridge;
-    }
+	public getPersistenceBridge(): PersistenceBridge {
+		return this.persisBridge;
+	}
 
-    public getRoleBridge(): RoleBridge {
-        return this.roleBridge;
-    }
+	public getAppActivationBridge(): AppActivationBridge {
+		return this.rlActBridge;
+	}
 
-    public getRoomBridge(): RoomBridge {
-        return this.roomBridge;
-    }
+	public getThreadBridge(): ThreadBridge {
+		return this.threadBridge;
+	}
 
-    public getInternalBridge(): IInternalBridge {
-        return this.internalBridge;
-    }
+	public getRoleBridge(): RoleBridge {
+		return this.roleBridge;
+	}
 
-    public getUserBridge(): UserBridge {
-        return this.userBridge;
-    }
+	public getRoomBridge(): RoomBridge {
+		return this.roomBridge;
+	}
 
-    public getLivechatBridge(): LivechatBridge {
-        return this.livechatBridge;
-    }
+	public getInternalBridge(): IInternalBridge {
+		return this.internalBridge;
+	}
 
-    public getEmailBridge(): EmailBridge {
-        return this.emailBridge;
-    }
+	public getUserBridge(): UserBridge {
+		return this.userBridge;
+	}
 
-    public getUploadBridge(): UploadBridge {
-        return this.uploadBridge;
-    }
+	public getLivechatBridge(): LivechatBridge {
+		return this.livechatBridge;
+	}
 
-    public getUiInteractionBridge(): UiInteractionBridge {
-        return this.uiIntegrationBridge;
-    }
+	public getEmailBridge(): EmailBridge {
+		return this.emailBridge;
+	}
 
-    public getSchedulerBridge(): SchedulerBridge {
-        return this.schedulerBridge;
-    }
+	public getUploadBridge(): UploadBridge {
+		return this.uploadBridge;
+	}
 
-    public getCloudWorkspaceBridge(): CloudWorkspaceBridge {
-        return this.cloudWorkspaceBridge;
-    }
+	public getUiInteractionBridge(): UiInteractionBridge {
+		return this.uiIntegrationBridge;
+	}
 
-    public getVideoConferenceBridge(): VideoConferenceBridge {
-        return this.videoConfBridge;
-    }
+	public getSchedulerBridge(): SchedulerBridge {
+		return this.schedulerBridge;
+	}
 
-    public getOAuthAppsBridge(): OAuthAppsBridge {
-        return this.oauthBridge;
-    }
+	public getCloudWorkspaceBridge(): CloudWorkspaceBridge {
+		return this.cloudWorkspaceBridge;
+	}
 
-    public getInternalFederationBridge(): IInternalFederationBridge {
-        return this.internalFederationBridge;
-    }
+	public getVideoConferenceBridge(): VideoConferenceBridge {
+		return this.videoConfBridge;
+	}
 
-    public getContactBridge(): ContactBridge {
-        return this.contactBridge;
-    }
+	public getOAuthAppsBridge(): OAuthAppsBridge {
+		return this.oauthBridge;
+	}
+
+	public getInternalFederationBridge(): IInternalFederationBridge {
+		return this.internalFederationBridge;
+	}
+
+	public getContactBridge(): ContactBridge {
+		return this.contactBridge;
+	}
+
+	public getOutboundMessageBridge(): OutboundMessageBridge {
+		return this.outboundCommsBridge;
+	}
+
+	public getExperimentalBridge(): ExperimentalBridge {
+		return this.experimentalBridge;
+	}
 }

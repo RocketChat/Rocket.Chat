@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import BusinessHoursForm from './BusinessHoursForm';
 
 export default {
-	title: 'Omnichannel/BusinessHoursForm',
 	component: BusinessHoursForm,
 	decorators: [
 		(fn) => (

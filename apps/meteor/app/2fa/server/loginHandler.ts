@@ -4,7 +4,7 @@ import { Meteor } from 'meteor/meteor';
 import { OAuth } from 'meteor/oauth';
 
 import { checkCodeForUser } from './code/index';
-import { callbacks } from '../../../lib/callbacks';
+import { callbacks } from '../../../server/lib/callbacks';
 
 const isMeteorError = (error: any): error is Meteor.Error => {
 	return error?.meteorError !== undefined;
@@ -85,7 +85,7 @@ OAuth._retrievePendingCredential = async function (key, ...args): Promise<string
 	}
 
 	if (isCredentialWithError(pendingCredential.credential)) {
-		OAuth._pendingCredentials.remove({
+		await OAuth._pendingCredentials.removeAsync({
 			_id: pendingCredential._id,
 		});
 		return recreateError(pendingCredential.credential.error);

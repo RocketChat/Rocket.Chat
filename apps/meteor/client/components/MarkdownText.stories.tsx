@@ -1,10 +1,9 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import outdent from 'outdent';
 
 import MarkdownText from './MarkdownText';
 
-export default {
-	title: 'Components/MarkdownText',
+const meta = {
 	component: MarkdownText,
 	parameters: {
 		layout: 'padded',
@@ -12,9 +11,12 @@ export default {
 	},
 } satisfies Meta<typeof MarkdownText>;
 
-export const Example: StoryFn<typeof MarkdownText> = () => (
-	<MarkdownText
-		content={outdent`
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+	args: {
+		content: outdent`
 			# h1 Heading
 			## h2 Heading
 			### h3 Heading
@@ -41,31 +43,13 @@ export const Example: StoryFn<typeof MarkdownText> = () => (
 			\`rocket.chat();\`
 
 			https://rocket.chat
-		`}
-	/>
-);
-
-const Template: StoryFn<typeof MarkdownText> = (args) => <MarkdownText {...args} />;
-
-export const Document = Template.bind({});
-Document.args = {
-	content: outdent`
-		# Title
-
-		Paragraph text.
-
-		## Subtitle
-
-		- List item 1
-		- List item 2
-		- List item 3
-	`,
-	variant: 'document',
+		`,
+	},
 };
 
-export const Inline = Template.bind({});
-Inline.args = {
-	content: outdent`
+export const Document: Story = {
+	args: {
+		content: outdent`
 		# Title
 
 		Paragraph text.
@@ -75,13 +59,29 @@ Inline.args = {
 		- List item 1
 		- List item 2
 		- List item 3
-	`,
-	variant: 'inline',
+
+		\`2 < 3 > 1 & 4 "Test"\`
+
+		\`< = &lt; > = &gt; & = &amp;\`
+
+		\`\`\`
+		Two < Three > One & Four "Test"
+		\`\`\`
+
+		\`\`\`
+		< : &lt;
+		> : &gt;
+		& : &amp;
+		\`\`\`
+
+		`,
+		variant: 'document',
+	},
 };
 
-export const InlineWithoutBreaks = Template.bind({});
-InlineWithoutBreaks.args = {
-	content: outdent`
+export const Inline: Story = {
+	args: {
+		content: outdent`
 		# Title
 
 		Paragraph text.
@@ -92,5 +92,23 @@ InlineWithoutBreaks.args = {
 		- List item 2
 		- List item 3
 	`,
-	variant: 'inlineWithoutBreaks',
+		variant: 'inline',
+	},
+};
+
+export const InlineWithoutBreaks: Story = {
+	args: {
+		content: outdent`
+		# Title
+
+		Paragraph text.
+
+		## Subtitle
+
+		- List item 1
+		- List item 2
+		- List item 3
+		`,
+		variant: 'inlineWithoutBreaks',
+	},
 };

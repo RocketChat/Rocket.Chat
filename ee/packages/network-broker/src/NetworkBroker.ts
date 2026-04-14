@@ -1,5 +1,7 @@
+import Stream from 'stream';
+
 import { asyncLocalStorage } from '@rocket.chat/core-services';
-import type { IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
+import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
 import { injectCurrentContext, tracerSpan } from '@rocket.chat/tracing';
 import type { ServiceBroker, Context, ServiceSchema } from 'moleculer';
 
@@ -32,27 +34,36 @@ export class NetworkBroker implements IBroker {
 		this.metrics = broker.metrics;
 	}
 
-	async call(method: string, data: any): Promise<any> {
+	async call(method: string, data: any, options?: CallingOptions): Promise<any> {
 		if (!(await this.started)) {
 			return;
 		}
 
 		const context = asyncLocalStorage.getStore();
 
+		const stream = data?.[0]?.streamParam;
+		const isStreamingCall = !!stream;
+
 		if (context?.ctx?.call) {
-			return context.ctx.call(method, data);
+			return context.ctx.call(method, isStreamingCall ? stream : data, {
+				...options,
+				...(isStreamingCall && { meta: { ...((options as any)?.meta || {}), details: data[0].details } }),
+			});
 		}
 
 		const services: { name: string }[] = await this.broker.call('$node.services', {
 			onlyAvailable: true,
 		});
+
 		if (!services.find((service) => service.name === method.split('.')[0])) {
 			return new Error('method-not-available');
 		}
 
-		return this.broker.call(method, data, {
+		return this.broker.call(method, isStreamingCall ? stream : data, {
+			...options,
 			meta: {
 				optl: injectCurrentContext(),
+				...(isStreamingCall && { details: data?.[0]?.details }),
 			},
 		});
 	}
@@ -132,9 +143,12 @@ export class NetworkBroker implements IBroker {
 				continue;
 			}
 
-			service.actions[method] = async (ctx: Context<[], { optl?: unknown }>): Promise<any> => {
+			service.actions[method] = async (ctx: Context<[], { optl?: unknown; details?: unknown }>): Promise<any> => {
+				const isStreamingCall = Stream.isReadable(ctx.params as any);
+				const params = isStreamingCall ? [{ streamParam: ctx.params, details: ctx.meta?.details }] : ctx.params;
+
 				return tracerSpan(
-					`action ${name}:${method}`,
+					`action ${name}:${method}${isStreamingCall ? ' (streaming)' : ''}`,
 					{},
 					() => {
 						return asyncLocalStorage.run(
@@ -145,7 +159,7 @@ export class NetworkBroker implements IBroker {
 								broker: this,
 								ctx,
 							},
-							() => serviceInstance[method](...ctx.params),
+							() => serviceInstance[method](...params),
 						);
 					},
 					ctx.meta?.optl,

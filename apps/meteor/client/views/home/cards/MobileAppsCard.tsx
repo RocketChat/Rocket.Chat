@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 
 import { GenericCard, GenericCardButton } from '../../../components/GenericCard';
 import { useExternalLink } from '../../../hooks/useExternalLink';
+import { links } from '../../../lib/links';
 
-const GOOGLE_PLAY_URL = 'https://go.rocket.chat/i/hp-mobile-app-google';
-const APP_STORE_URL = 'https://go.rocket.chat/i/hp-mobile-app-apple';
+const GOOGLE_PLAY_URL = links.go.mobileAppGoogle;
+const APP_STORE_URL = links.go.mobileAppApple;
 
 const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): ReactElement => {
 	const { t } = useTranslation();
@@ -17,10 +18,13 @@ const MobileAppsCard = (props: Omit<ComponentProps<typeof Card>, 'type'>): React
 			title={t('Mobile_apps')}
 			body={t('Take_rocket_chat_with_you_with_mobile_applications')}
 			buttons={[
-				<GenericCardButton key={1} onClick={() => handleOpenLink(GOOGLE_PLAY_URL)} children={t('Google_Play')} role='link' />,
-				<GenericCardButton key={2} onClick={() => handleOpenLink(APP_STORE_URL)} children={t('App_Store')} role='link' />,
+				<GenericCardButton key={1} onClick={() => handleOpenLink(GOOGLE_PLAY_URL)} role='link'>
+					{t('Google_Play')}
+				</GenericCardButton>,
+				<GenericCardButton key={2} onClick={() => handleOpenLink(APP_STORE_URL)} role='link'>
+					{t('App_Store')}
+				</GenericCardButton>,
 			]}
-			data-qa-id='homepage-mobile-apps-card'
 			width='x340'
 			{...props}
 		/>

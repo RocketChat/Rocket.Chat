@@ -1,21 +1,21 @@
-import { type ILivechatTrigger, type ILivechatTriggerAction, type Serialized } from '@rocket.chat/core-typings';
+import type { ILivechatTrigger, ILivechatTriggerAction, Serialized } from '@rocket.chat/core-typings';
 import { FieldGroup, Button, ButtonGroup, Field, FieldLabel, FieldRow, FieldError, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
+import {
+	ContextualbarScrollableContent,
+	ContextualbarTitle,
+	ContextualbarFooter,
+	ContextualbarHeader,
+	ContextualbarClose,
+} from '@rocket.chat/ui-client';
+import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo } from 'react';
+import { useId } from 'react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { ConditionForm } from './ConditionForm';
 import { ActionForm } from './actions/ActionForm';
-import {
-	ContextualbarScrollableContent,
-	ContextualbarTitle,
-	ContextualbarFooter,
-	Contextualbar,
-	ContextualbarHeader,
-	ContextualbarClose,
-} from '../../../components/Contextualbar';
+import { useFormSubmitWithDirtyCheck } from '../../../hooks/useFormSubmitWithDirtyCheck';
 
 export type TriggersPayload = {
 	name: string;
@@ -73,9 +73,8 @@ const getInitialValues = (triggerData: Serialized<ILivechatTrigger> | undefined)
 	actions: triggerData?.actions.map((action) => getDefaultAction(action)) ?? [DEFAULT_SEND_MESSAGE_ACTION],
 });
 
-const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigger> }) => {
+const EditTrigger = ({ triggerData, onClose }: { triggerData?: Serialized<ILivechatTrigger>; onClose: () => void }) => {
 	const { t } = useTranslation();
-	const router = useRouter();
 	const queryClient = useQueryClient();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -92,12 +91,8 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 		control,
 		handleSubmit,
 		trigger,
-		formState: { isDirty, isSubmitting, errors },
-	} = useForm<TriggersPayload>({ mode: 'onBlur', reValidateMode: 'onBlur', values: initValues });
-
-	// Alternative way of checking isValid in order to not trigger validation on every render
-	// https://github.com/react-hook-form/documentation/issues/944
-	const isValid = useMemo(() => Object.keys(errors).length === 0, [errors]);
+		formState: { isSubmitting, errors, isDirty },
+	} = useForm<TriggersPayload>({ values: initValues });
 
 	const { fields: conditionsFields } = useFieldArray({
 		control,
@@ -119,26 +114,29 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 			queryClient.invalidateQueries({
 				queryKey: ['livechat-triggers'],
 			});
-			router.navigate('/omnichannel/triggers');
+			onClose();
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
 		},
 	});
 
-	const handleSave = async (data: TriggersPayload) => {
-		return saveTriggerMutation.mutateAsync({
-			...data,
-			_id: triggerData?._id,
-			actions: data.actions.map(getDefaultAction),
-		});
-	};
+	const handleSave = useFormSubmitWithDirtyCheck(
+		async (data: TriggersPayload) => {
+			await saveTriggerMutation.mutateAsync({
+				...data,
+				_id: triggerData?._id,
+				actions: data.actions.map(getDefaultAction),
+			});
+		},
+		{ isDirty },
+	);
 
 	return (
-		<Contextualbar>
+		<>
 			<ContextualbarHeader>
 				<ContextualbarTitle>{triggerData?._id ? t('Edit_Trigger') : t('New_Trigger')}</ContextualbarTitle>
-				<ContextualbarClose onClick={() => router.navigate('/omnichannel/triggers')} />
+				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent>
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
@@ -212,13 +210,13 @@ const EditTrigger = ({ triggerData }: { triggerData?: Serialized<ILivechatTrigge
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button onClick={() => router.navigate('/omnichannel/triggers')}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary disabled={!isDirty || !isValid} loading={isSubmitting}>
+					<Button onClick={onClose}>{t('Cancel')}</Button>
+					<Button form={formId} type='submit' primary loading={isSubmitting}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 			</ContextualbarFooter>
-		</Contextualbar>
+		</>
 	);
 };
 

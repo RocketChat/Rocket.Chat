@@ -1,4 +1,18 @@
-import { Modal, Box, Field, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import {
+	Modal,
+	Box,
+	Field,
+	FieldLabel,
+	FieldRow,
+	TextInput,
+	ModalHeader,
+	ModalHeaderText,
+	ModalTagline,
+	ModalTitle,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+} from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
@@ -59,17 +73,17 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 
 	return (
 		<Modal {...props}>
-			<Modal.Header>
-				<Modal.HeaderText>
-					<Modal.Tagline>{t('RegisterWorkspace_Setup_Steps', { step, numberOfSteps: 2 })}</Modal.Tagline>
-					<Modal.Title>{t('Awaiting_confirmation')}</Modal.Title>
-				</Modal.HeaderText>
-				<Modal.Close onClick={onClose} />
-			</Modal.Header>
-			<Modal.Content>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTagline>{t('RegisterWorkspace_Setup_Steps', { step, numberOfSteps: 2 })}</ModalTagline>
+					<ModalTitle>{t('Awaiting_confirmation')}</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose onClick={onClose} />
+			</ModalHeader>
+			<ModalContent>
 				<Box fontSize='p2'>
 					<Box>
-						<Trans i18nKey='RegisterWorkspace_Setup_Email_Confirmation'>
+						<Trans i18nKey='cloud.RegisterWorkspace_Setup_Email_Confirmation'>
 							<Box is='p'>
 								Email sent to{' '}
 								<Box is='span' fontScale='p2b'>
@@ -87,20 +101,21 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 						</FieldRow>
 					</Field>
 				</Box>
-			</Modal.Content>
-			<Modal.Footer>
-				{/* FIXME: missing translation */}
+			</ModalContent>
+			<ModalFooter>
 				<Box is='div' display='flex' justifyContent='start' fontSize='c1' w='full'>
-					Didn’t receive email?{' '}
-					<Box is='a' pi={4} onClick={handleResendRegistrationEmail}>
-						Resend
-					</Box>{' '}
-					or{' '}
-					<Box is='a' pi={4} onClick={handleBackFromConfirmation}>
-						change email
-					</Box>
+					<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
+						Didn't receive email?{' '}
+						<Box is='a' pi={4} onClick={handleResendRegistrationEmail}>
+							Resend
+						</Box>{' '}
+						or{' '}
+						<Box is='a' pi={4} onClick={handleBackFromConfirmation}>
+							change email
+						</Box>
+					</Trans>
 				</Box>
-			</Modal.Footer>
+			</ModalFooter>
 		</Modal>
 	);
 };

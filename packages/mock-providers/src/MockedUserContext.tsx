@@ -22,6 +22,7 @@ const userContextValue: ContextType<typeof UserContext> = {
 	queryRoom: () => [() => () => undefined, () => undefined],
 
 	logout: () => Promise.resolve(),
+	onLogout: () => () => undefined,
 };
 
 const createUserContextValue = ({ userPreferences }: { userPreferences?: Record<string, unknown> }): ContextType<typeof UserContext> => {

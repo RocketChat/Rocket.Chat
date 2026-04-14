@@ -1,9 +1,15 @@
-import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload, Subscribable } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IE2EEMessage, IUpload } from '@rocket.chat/core-typings';
 import type { IActionManager } from '@rocket.chat/ui-contexts';
+import type { RefObject } from 'react';
 
-import type { Upload } from './Upload';
+import type { Upload, EncryptedFile } from './Upload';
 import type { ReadStateManager } from './readStateManager';
 import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
+
+type Subscribable<T> = {
+	get(): T;
+	subscribe(callback: () => void): () => void;
+};
 
 export type ComposerAPI = {
 	release(): void;
@@ -17,7 +23,11 @@ export type ComposerAPI = {
 				| ((previous: { readonly start: number; readonly end: number }) => { readonly start?: number; readonly end?: number });
 		},
 	): void;
-	wrapSelection(pattern: string): void;
+	wrapSelection(pattern: string): {
+		selectionStart: number;
+		selectionEnd: number;
+		value: string;
+	};
 	insertText(text: string): void;
 	insertNewLine(): void;
 	clear(): void;
@@ -57,6 +67,10 @@ export type ComposerAPI = {
 	readonly isMicrophoneDenied: Subscribable<boolean>;
 
 	readonly formatters: Subscribable<FormattingButton[]>;
+
+	readonly composerRef: RefObject<HTMLElement>;
+
+	readonly uploads: UploadsAPI;
 };
 
 export type DataAPI = {
@@ -68,9 +82,7 @@ export type DataAPI = {
 	getMessageByID(mid: IMessage['_id']): Promise<IMessage>;
 	findLastMessage(): Promise<IMessage | undefined>;
 	getLastMessage(): Promise<IMessage>;
-	findLastOwnMessage(): Promise<IMessage | undefined>;
-	getLastOwnMessage(): Promise<IMessage>;
-	findPreviousOwnMessage(message: IMessage): Promise<IMessage | undefined>;
+	findPreviousOwnMessage(message?: IMessage): Promise<IMessage | undefined>;
 	getPreviousOwnMessage(message: IMessage): Promise<IMessage>;
 	findNextOwnMessage(message: IMessage): Promise<IMessage | undefined>;
 	getNextOwnMessage(message: IMessage): Promise<IMessage>;
@@ -94,25 +106,32 @@ export type DataAPI = {
 	getSubscriptionFromMessage(message: IMessage): Promise<ISubscription>;
 };
 
+export type EncryptedFileUploadContent = {
+	rawFile: File;
+	fileContent: { raw: Partial<IUpload>; encrypted?: IE2EEMessage['content'] };
+	encryptedFile: EncryptedFile;
+};
+
 export type UploadsAPI = {
 	get(): readonly Upload[];
 	subscribe(callback: () => void): () => void;
 	wipeFailedOnes(): void;
+	clear(): void;
+	getProcessingUploads(): boolean;
+	setProcessingUploads(processing: boolean): void;
 	cancel(id: Upload['id']): void;
-	send(
-		file: File,
-		{ description, msg, t, e2e }: { description?: string; msg?: string; t?: IMessage['t']; e2e?: IMessage['e2e'] },
-		getContent?: (fileId: string, fileUrl: string) => Promise<IE2EEMessage['content']>,
-		fileContent?: { raw: Partial<IUpload>; encrypted: IE2EEMessage['content'] },
-	): Promise<void>;
+	removeUpload(id: Upload['id']): void;
+	editUploadFileName: (id: Upload['id'], fileName: string) => void;
+	editUploadDescription: (id: Upload['id'], description: string) => void;
+	send(file: File, encrypted?: never): Promise<void>;
+	send(file: File, encrypted: EncryptedFileUploadContent): Promise<void>;
 };
 
 export type ChatAPI = {
-	readonly uid: string | null;
+	readonly uid: string | undefined;
 	readonly composer?: ComposerAPI;
 	readonly setComposerAPI: (composer?: ComposerAPI) => void;
 	readonly data: DataAPI;
-	readonly uploads: UploadsAPI;
 	readonly readStateManager: ReadStateManager;
 	readonly messageEditing: {
 		toPreviousMessage(): Promise<void>;
@@ -120,14 +139,13 @@ export type ChatAPI = {
 		editMessage(message: IMessage, options?: { cursorAtStart?: boolean }): Promise<void>;
 	};
 
-	readonly currentEditing:
-		| {
-				readonly mid: IMessage['_id'];
-				reset(): Promise<boolean>;
-				stop(): Promise<void>;
-				cancel(): Promise<void>;
-		  }
-		| undefined;
+	readonly currentEditingMessage: {
+		setMID(mid: IMessage['_id']): void;
+		getMID(): string | undefined;
+		reset(): Promise<boolean>;
+		stop(): Promise<void>;
+		cancel(): Promise<void>;
+	};
 
 	readonly emojiPicker: {
 		open(el: Element, cb: (emoji: string) => void): void;
@@ -143,7 +161,7 @@ export type ChatAPI = {
 	ActionManager: IActionManager;
 
 	readonly flows: {
-		readonly uploadFiles: (files: readonly File[], resetFileInput?: () => void) => Promise<void>;
+		readonly uploadFiles: ({ files, resetFileInput }: { files: readonly File[]; resetFileInput?: () => void }) => Promise<void>;
 		readonly sendMessage: ({
 			text,
 			tshow,
@@ -152,6 +170,7 @@ export type ChatAPI = {
 			tshow?: boolean;
 			previewUrls?: string[];
 			isSlashCommandAllowed?: boolean;
+			tmid?: IMessage['tmid'];
 		}) => Promise<boolean>;
 		readonly processSlashCommand: (message: IMessage, userId: string | null) => Promise<boolean>;
 		readonly processTooLongMessage: (message: IMessage) => Promise<boolean>;
@@ -159,6 +178,7 @@ export type ChatAPI = {
 			message: Pick<IMessage, '_id' | 't'> & Partial<Omit<IMessage, '_id' | 't'>>,
 			previewUrls?: string[],
 		) => Promise<boolean>;
+		readonly processMessageUploads: (message: IMessage) => Promise<boolean>;
 		readonly processSetReaction: (message: Pick<IMessage, 'msg'>) => Promise<boolean>;
 		readonly requestMessageDeletion: (message: IMessage) => Promise<void>;
 		readonly replyBroadcast: (message: IMessage) => Promise<void>;

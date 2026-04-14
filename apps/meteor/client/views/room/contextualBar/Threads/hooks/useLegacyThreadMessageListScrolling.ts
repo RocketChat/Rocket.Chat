@@ -1,70 +1,37 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
-import { useUser } from '@rocket.chat/ui-contexts';
-import { useCallback, useEffect, useRef } from 'react';
+import { clientCallbacks } from '@rocket.chat/ui-client';
+import { useUserId } from '@rocket.chat/ui-contexts';
+import { useEffect } from 'react';
 
-import { callbacks } from '../../../../../../lib/callbacks';
-import type { OverlayScrollbars } from '../../../../../components/CustomScrollbars';
+import { useListIsAtBottom } from '../../../body/hooks/useListIsAtBottom';
 import { useRoom } from '../../../contexts/RoomContext';
 
 export const useLegacyThreadMessageListScrolling = (mainMessage: IMessage) => {
-	const listWrapperRef = useRef<HTMLDivElement>(null);
-	const listRef = useRef<HTMLElement>(null);
-
-	const atBottomRef = useRef(true);
-
-	const onScroll = useCallback(({ elements }: OverlayScrollbars) => {
-		const {
-			viewport: { scrollTop, scrollHeight, clientHeight },
-		} = elements();
-		atBottomRef.current = scrollTop >= scrollHeight - clientHeight;
-	}, []);
-
-	const sendToBottomIfNecessary = useCallback(() => {
-		if (atBottomRef.current === true) {
-			const listWrapper = listWrapperRef.current;
-
-			listWrapper?.scrollTo(30, listWrapper.scrollHeight);
-		}
-	}, []);
-
+	const { atBottomRef, innerRef, sendToBottom, sendToBottomIfNecessary, isAtBottom, jumpToRef } = useListIsAtBottom();
 	const room = useRoom();
-	const user = useUser();
-
+	const uid = useUserId();
 	useEffect(() => {
-		callbacks.add(
-			'streamNewMessage',
+		clientCallbacks.add(
+			'afterSaveMessage',
 			(msg: IMessage) => {
 				if (room._id !== msg.rid || isEditedMessage(msg) || msg.tmid !== mainMessage._id) {
 					return;
 				}
 
-				if (msg.u._id === user?._id) {
+				if (msg.u._id === uid) {
 					atBottomRef.current = true;
 					sendToBottomIfNecessary();
 				}
 			},
-			callbacks.priority.MEDIUM,
+			clientCallbacks.priority.MEDIUM,
 			`thread-scroll-${room._id}`,
 		);
 
 		return () => {
-			callbacks.remove('streamNewMessage', `thread-scroll-${room._id}`);
+			clientCallbacks.remove('afterSaveMessage', `thread-scroll-${room._id}`);
 		};
-	}, [room._id, sendToBottomIfNecessary, user?._id, mainMessage._id]);
+	}, [room._id, atBottomRef, sendToBottomIfNecessary, uid, mainMessage._id]);
 
-	useEffect(() => {
-		const observer = new ResizeObserver(() => {
-			sendToBottomIfNecessary();
-		});
-
-		if (listWrapperRef.current) observer.observe(listWrapperRef.current);
-		if (listRef.current) observer.observe(listRef.current);
-
-		return () => {
-			observer.disconnect();
-		};
-	}, [sendToBottomIfNecessary]);
-
-	return { listWrapperRef, listRef, requestScrollToBottom: sendToBottomIfNecessary, onScroll };
+	return { atBottomRef, innerRef, sendToBottom, sendToBottomIfNecessary, isAtBottom, jumpToRef };
 };

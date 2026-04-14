@@ -1,15 +1,6 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
-import type { IEmitter } from '@rocket.chat/emitter';
 import type { ObjectId } from 'mongodb';
 import { createContext } from 'react';
-
-export type IRoles = { [_id: string]: IRole };
-
-export type RoleStore = IEmitter<{
-	change: IRoles;
-}> & {
-	roles: IRoles;
-};
 
 export type AuthorizationContextValue = {
 	queryPermission(
@@ -30,23 +21,18 @@ export type AuthorizationContextValue = {
 	queryRole(
 		role: string | ObjectId,
 		scope?: IRoom['_id'],
-		ignoreSubscriptions?: boolean,
 	): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean];
-	roleStore: RoleStore;
+	getRoles(): ReadonlyMap<IRole['_id'], IRole>;
+	subscribeToRoles(callback: () => void): () => void;
 };
+
+const dummyRolesMap: ReadonlyMap<IRole['_id'], IRole> = new Map();
 
 export const AuthorizationContext = createContext<AuthorizationContextValue>({
 	queryPermission: () => [() => (): void => undefined, (): boolean => false],
 	queryAtLeastOnePermission: () => [() => (): void => undefined, (): boolean => false],
 	queryAllPermissions: () => [() => (): void => undefined, (): boolean => false],
 	queryRole: () => [() => (): void => undefined, (): boolean => false],
-	roleStore: {
-		roles: {},
-		emit: (): void => undefined,
-		on: () => (): void => undefined,
-		off: (): void => undefined,
-		events: (): 'change'[] => ['change'],
-		has: (): boolean => false,
-		once: () => (): void => undefined,
-	},
+	getRoles: (): ReadonlyMap<IRole['_id'], IRole> => dummyRolesMap,
+	subscribeToRoles: (): (() => void) => (): void => undefined,
 });

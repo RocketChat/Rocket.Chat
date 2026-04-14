@@ -2,9 +2,10 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { isDiscussionMessage, isThreadMainMessage, isE2EEMessage, isQuoteAttachment } from '@rocket.chat/core-typings';
 import { MessageBody } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
+import { useUserId, useUserPresence } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useChat } from '../../../../views/room/contexts/ChatContext';
 import MessageContentBody from '../../MessageContentBody';
@@ -20,6 +21,7 @@ import UrlPreviews from '../../content/UrlPreviews';
 import { useNormalizedMessage } from '../../hooks/useNormalizedMessage';
 import { useOembedLayout } from '../../hooks/useOembedLayout';
 import { useSubscriptionFromMessageQuery } from '../../hooks/useSubscriptionFromMessageQuery';
+import { useMessageListReadReceipts } from '../../list/MessageListContext';
 import UiKitMessageBlock from '../../uikit/UiKitMessageBlock';
 
 type RoomMessageContentProps = {
@@ -36,10 +38,10 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 	const subscription = useSubscriptionFromMessageQuery(message).data ?? undefined;
 	const broadcast = subscription?.broadcast ?? false;
 	const uid = useUserId();
+	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 	const messageUser = { ...message.u, roles: [], ...useUserPresence(message.u._id) };
-	const readReceiptEnabled = useSetting('Message_Read_Receipt_Enabled', false);
 	const chat = useChat();
-	const t = useTranslation();
+	const { t } = useTranslation();
 
 	const normalizedMessage = useNormalizedMessage(message);
 	const isMessageEncrypted = encrypted && normalizedMessage?.e2e === 'pending';
@@ -50,7 +52,11 @@ const RoomMessageContent = ({ message, unread, all, mention, searchText }: RoomM
 
 	return (
 		<>
-			{isMessageEncrypted && <MessageBody>{t('E2E_message_encrypted_placeholder')}</MessageBody>}
+			{isMessageEncrypted && (
+				<MessageBody role='document' aria-roledescription={t('message_body')}>
+					{t('E2E_message_encrypted_placeholder')}
+				</MessageBody>
+			)}
 
 			{!!quotes?.length && <Attachments attachments={quotes} />}
 

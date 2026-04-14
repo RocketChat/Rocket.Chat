@@ -47,7 +47,7 @@ API.v1.addRoute(
 
 			checkDates(startDate, endDate);
 
-			const extraQuery = await restrictQuery();
+			const extraQuery = await restrictQuery({ userId: this.userId });
 			const result = await findAllConversationsBySourceCached({ start: startDate.toDate(), end: endDate.toDate(), extraQuery });
 
 			return API.v1.success(result);
@@ -71,7 +71,7 @@ API.v1.addRoute(
 			const endDate = moment(end);
 
 			checkDates(startDate, endDate);
-			const extraQuery = await restrictQuery();
+			const extraQuery = await restrictQuery({ userId: this.userId });
 			const result = await findAllConversationsByStatusCached({ start: startDate.toDate(), end: endDate.toDate(), extraQuery });
 
 			return API.v1.success(result);
@@ -96,7 +96,7 @@ API.v1.addRoute(
 			const endDate = moment(end);
 
 			checkDates(startDate, endDate);
-			const extraQuery = await restrictQuery();
+			const extraQuery = await restrictQuery({ userId: this.userId });
 			const result = await findAllConversationsByDepartmentCached({ start: startDate.toDate(), end: endDate.toDate(), sort, extraQuery });
 
 			return API.v1.success(result);
@@ -121,7 +121,7 @@ API.v1.addRoute(
 			const endDate = moment(end);
 
 			checkDates(startDate, endDate);
-			const extraQuery = await restrictQuery();
+			const extraQuery = await restrictQuery({ userId: this.userId });
 			const result = await findAllConversationsByTagsCached({ start: startDate.toDate(), end: endDate.toDate(), sort, extraQuery });
 
 			return API.v1.success(result);
@@ -146,7 +146,7 @@ API.v1.addRoute(
 			const endDate = moment(end);
 
 			checkDates(startDate, endDate);
-			const extraQuery = await restrictQuery();
+			const extraQuery = await restrictQuery({ userId: this.userId });
 			const result = await findAllConversationsByAgentsCached({ start: startDate.toDate(), end: endDate.toDate(), sort, extraQuery });
 
 			return API.v1.success(result);

@@ -4,6 +4,8 @@ import { Users } from '@rocket.chat/models';
 import { RoutingManager } from '../../../../../../app/livechat/server/lib/RoutingManager';
 import { settings } from '../../../../../../app/settings/server';
 import type { IRoutingManagerConfig } from '../../../../../../definition/IRoutingManagerConfig';
+import { getChatLimitsQuery } from '../../hooks/applySimultaneousChatsRestrictions';
+import { logger } from '../logger';
 
 /* Load Rotation Queuing method:
  * Routing method where the agent with the oldest routing time is the next agent to serve incoming chats
@@ -28,10 +30,17 @@ class LoadRotation {
 	}
 
 	public async getNextAgent(department?: string, ignoreAgentId?: string): Promise<IOmnichannelCustomAgent | undefined> {
+		const enabledWhenIdle = settings.get<boolean>('Livechat_enabled_when_agent_idle');
+
+		const extraQuery = await getChatLimitsQuery(department);
+		const unavailableUsers = await Users.getUnavailableAgents(department, extraQuery, enabledWhenIdle);
+		logger.debug({ msg: 'Ignoring unavailable agents from assignment', unavailableUsers, department, enabledWhenIdle });
+
 		const nextAgent = await Users.getLastAvailableAgentRouted(
 			department,
 			ignoreAgentId,
-			settings.get<boolean>('Livechat_enabled_when_agent_idle'),
+			enabledWhenIdle,
+			unavailableUsers.map((user) => user.username),
 		);
 		if (!nextAgent?.username) {
 			return;

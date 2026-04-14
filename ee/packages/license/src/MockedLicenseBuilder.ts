@@ -7,7 +7,6 @@ import type {
 	LicenseLimit,
 	LicenseModule,
 	LicensePeriod,
-	Timestamp,
 } from '@rocket.chat/core-typings';
 
 import { encrypt, encryptStatsToken } from './token';
@@ -16,12 +15,12 @@ export class MockedLicenseBuilder {
 	information: {
 		id?: string;
 		autoRenew: boolean;
-		visualExpiration?: Timestamp;
-		notifyAdminsAt?: Timestamp;
-		notifyUsersAt?: Timestamp;
+		visualExpiration?: string;
+		notifyAdminsAt?: string;
+		notifyUsersAt?: string;
 		trial: boolean;
 		offline: boolean;
-		createdAt: Timestamp;
+		createdAt: string;
 		grantedBy: {
 			method: 'manual' | 'self-service' | 'sales' | 'support' | 'reseller';
 			seller?: string;
@@ -198,7 +197,7 @@ export class MockedLicenseBuilder {
 		return this;
 	}
 
-	public withGratedModules(modules: LicenseModule[]): this {
+	public withGrantedModules(modules: LicenseModule[]): this {
 		this.grantedModules = this.grantedModules ?? [];
 		this.grantedModules.push(
 			...(modules.map((module) => ({ module, external: !CoreModules.includes(module as InternalModuleName) })) as GrantedModules),
@@ -206,7 +205,7 @@ export class MockedLicenseBuilder {
 		return this;
 	}
 
-	withNoGratedModules(modules: LicenseModule[]): this {
+	withNoGrantedModules(modules: LicenseModule[]): this {
 		this.grantedModules = this.grantedModules ?? [];
 		this.grantedModules = this.grantedModules.filter(({ module }) => !modules.includes(module));
 		return this;

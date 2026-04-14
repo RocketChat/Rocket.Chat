@@ -12,13 +12,13 @@ import type { IWorkspaceToken } from '../cloud/IWorkspaceToken';
  * usually received as a parameter wherever it's available.
  */
 export interface ICloudWorkspaceRead {
-    /**
-     * Returns an access token that can be used to access
-     * Cloud Services on the workspace's behalf.
-     *
-     * @param scope The scope that the token should be authorized with
-     *
-     * @RequiresPermission cloud.workspace-token; scopes: Array<string>
-     */
-    getWorkspaceToken(scope: string): Promise<IWorkspaceToken>;
+	/**
+	 * Returns an access token that can be used to access
+	 * Cloud Services on the workspace's behalf.
+	 *
+	 * @param scope The scope that the token should be authorized with
+	 *
+	 * @RequiresPermission cloud.workspace-token; scopes: Array<string>
+	 */
+	getWorkspaceToken(scope: string): Promise<IWorkspaceToken>;
 }

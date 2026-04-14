@@ -27,6 +27,8 @@ export const emoji: EmojiPackages & { dispatchUpdate: () => void } = {
 	},
 	list: {},
 	dispatchUpdate() {
-		emojiEmitter.emit('updated');
+		queueMicrotask(() => {
+			emojiEmitter.emit('updated');
+		});
 	},
 };

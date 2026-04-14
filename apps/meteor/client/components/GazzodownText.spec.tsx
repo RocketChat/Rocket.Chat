@@ -13,6 +13,7 @@ jest.mock('@rocket.chat/fuselage-hooks', () => ({
 }));
 jest.mock('./message/list/MessageListContext', () => ({
 	useMessageListHighlights: jest.fn(),
+	useMessageListShowRealName: jest.fn(() => false),
 }));
 jest.mock('../lib/utils/fireGlobalEvent', () => ({
 	fireGlobalEvent: jest.fn(),
@@ -22,7 +23,6 @@ jest.mock('../views/room/hooks/useGoToRoom', () => ({
 }));
 
 const mockUseMessageListHighlights = useMessageListHighlights as jest.MockedFunction<typeof useMessageListHighlights>;
-
 const wrapper = mockAppRoot().withUserPreference('useEmojis', true).withSetting('UI_Use_Real_Name', false).withJohnDoe();
 
 const HighlightTester = ({ text }: { text: string }) => {
@@ -50,7 +50,7 @@ describe('GazzodownText highlights', () => {
 			<GazzodownText>
 				<HighlightTester text='Это тест сообщения' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		// Expect that the highlighted element wraps exactly "тест"
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^тест$/i);
@@ -63,7 +63,7 @@ describe('GazzodownText highlights', () => {
 			<GazzodownText>
 				<HighlightTester text='Тест сообщения' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^тест$/i);
 	});
@@ -75,7 +75,7 @@ describe('GazzodownText highlights', () => {
 			<GazzodownText>
 				<HighlightTester text='Тестирование сообщения' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		expect(screen.queryByTitle('Highlighted_chosen_word')).not.toBeInTheDocument();
 	});
@@ -87,7 +87,7 @@ describe('GazzodownText highlights', () => {
 			<GazzodownText>
 				<HighlightTester text='Сообщение тест' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^тест$/i);
 	});
@@ -99,7 +99,7 @@ describe('GazzodownText highlights', () => {
 			<GazzodownText>
 				<HighlightTester text='This is a test message' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^test$/i);
 	});
@@ -111,7 +111,7 @@ describe('GazzodownText highlights', () => {
 			<GazzodownText>
 				<HighlightTester text='test is at the beginning, in the middle test, and at the end test' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		const highlightedElements = screen.getAllByTitle('Highlighted_chosen_word');
 		// Expect three separate highlights.
@@ -133,7 +133,7 @@ in it.`;
 			<GazzodownText>
 				<HighlightTester text={multilineText} />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		const highlightedElements = screen.getAllByTitle('Highlighted_chosen_word');
 		// At least two occurrences are expected: one for "Test" (capitalized) and one for "test"
@@ -151,7 +151,7 @@ in it.`;
 			<GazzodownText>
 				<HighlightTester text='This is :test: inside colons' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		// The highlighted element should contain only "test"
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^test$/i);
@@ -164,7 +164,7 @@ in it.`;
 			<GazzodownText>
 				<HighlightTester text='This is :test with colon at the start' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		// The highlighted element should contain only "test"
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^test$/i);
@@ -177,7 +177,7 @@ in it.`;
 			<GazzodownText>
 				<HighlightTester text='This is test: with colon at end' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		// The highlighted element should contain only "test"
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^test$/i);
@@ -190,7 +190,7 @@ in it.`;
 			<GazzodownText>
 				<HighlightTester text='This test message should highlight the word highlight in multiple places: test and highlight.' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		const highlightedElements = screen.getAllByTitle('Highlighted_chosen_word');
@@ -209,7 +209,7 @@ in it.`;
 			<GazzodownText>
 				<HighlightTester text={testText} />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^te-st_te\.st\/te=te!st:$/i);
@@ -222,7 +222,7 @@ in it.`;
 			<GazzodownText>
 				<HighlightTester text='This is a test message' />
 			</GazzodownText>,
-			{ legacyRoot: true, wrapper: wrapper.build() },
+			{ wrapper: wrapper.build() },
 		);
 		expect(screen.getByTitle('Highlighted_chosen_word')).toHaveTextContent(/^test$/i);
 	});

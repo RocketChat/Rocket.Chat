@@ -1,6 +1,7 @@
 import MarketplaceRequestBadge from './components/MarketplaceRequestBadge';
 import { hasAtLeastOnePermission, hasPermission } from '../../../app/authorization/client';
 import { createSidebarItems } from '../../lib/createSidebarItems';
+import { links } from '../../lib/links';
 
 export const {
 	registerSidebarItem: registerMarketplaceSidebarItem,
@@ -41,7 +42,7 @@ export const {
 	},
 	{ divider: true, i18nLabel: 'marketplace/private', permissionGranted: (): boolean => hasPermission('access-marketplace') },
 	{
-		href: 'https://go.rocket.chat/i/developing-an-app',
+		href: links.go.appsDocumentation,
 		icon: 'new-window',
 		i18nLabel: 'Documentation',
 		externalUrl: true,

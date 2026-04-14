@@ -11,15 +11,23 @@ type AppDetailsPageTabsProps = {
 	isSecurityVisible: boolean;
 	settings: ISettings | undefined;
 	tab: string | undefined;
+	hasCluster: boolean;
 };
 
-const AppDetailsPageTabs = ({ context, installed, isSecurityVisible, settings, tab }: AppDetailsPageTabsProps): ReactElement => {
+const AppDetailsPageTabs = ({
+	context,
+	installed = false,
+	isSecurityVisible,
+	settings,
+	tab,
+	hasCluster = false,
+}: AppDetailsPageTabsProps): ReactElement => {
 	const { t } = useTranslation();
 	const isAdminUser = usePermission('manage-apps');
 
 	const router = useRouter();
 
-	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs' | 'requests') => {
+	const handleTabClick = (tab: 'details' | 'security' | 'releases' | 'settings' | 'logs' | 'requests' | 'instances') => {
 		router.navigate(
 			{
 				name: 'marketplace',
@@ -49,14 +57,19 @@ const AppDetailsPageTabs = ({ context, installed, isSecurityVisible, settings, t
 					{t('Releases')}
 				</Tabs.Item>
 			)}
-			{Boolean(installed && settings && Object.values(settings).length) && isAdminUser && (
+			{installed && Boolean(settings && Object.values(settings).length) && isAdminUser && (
 				<Tabs.Item onClick={() => handleTabClick('settings')} selected={tab === 'settings'}>
 					{t('Settings')}
 				</Tabs.Item>
 			)}
-			{Boolean(installed) && isAdminUser && isAdminUser && (
+			{installed && isAdminUser && (
 				<Tabs.Item onClick={() => handleTabClick('logs')} selected={tab === 'logs'}>
 					{t('Logs')}
+				</Tabs.Item>
+			)}
+			{hasCluster && installed && isAdminUser && (
+				<Tabs.Item onClick={() => handleTabClick('instances')} selected={tab === 'instances'}>
+					{t('Instances')}
 				</Tabs.Item>
 			)}
 		</Tabs>

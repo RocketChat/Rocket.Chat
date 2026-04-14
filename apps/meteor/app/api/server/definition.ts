@@ -1,9 +1,12 @@
-import type { IUser, LicenseModule } from '@rocket.chat/core-typings';
+import type { IncomingMessage } from 'http';
+
+import type { IUser, LicenseModule, RequiredField } from '@rocket.chat/core-typings';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
 
 import type { ITwoFactorOptions } from '../../2fa/server/code';
+import type { DeprecationLoggerNextPlannedVersion } from '../../lib/server/lib/deprecationWarningLogger';
 
 export type SuccessStatusCodes = Exclude<Range<208>, Range<200>>;
 
@@ -15,7 +18,7 @@ export type ErrorStatusCodes = Exclude<Exclude<Range<511>, Range<500>>, 509>;
 
 export type SuccessResult<T, TStatusCode extends SuccessStatusCodes = 200> = {
 	statusCode: TStatusCode;
-	body: T extends object ? { success: true } & T : T;
+	body: T extends Record<string, unknown> ? { success: true } & T : T;
 };
 
 export type FailureResult<T, TStack = undefined, TErrorType = undefined, TErrorDetails = undefined> = {
@@ -55,10 +58,26 @@ export type ForbiddenResult<T> = {
 	};
 };
 
-export type InternalError<T, StatusCode = 500> = {
+export type TooManyRequestsResult<T> = {
+	statusCode: 429;
+	body: {
+		success: false;
+		error: T | 'Too many requests';
+	};
+};
+
+export type InternalError<T, StatusCode extends ErrorStatusCodes = 500, D = 'Internal server error'> = {
 	statusCode: StatusCode;
 	body: {
-		error: T | 'Internal server error';
+		error: T | D;
+		success: false;
+	};
+};
+
+export type UnavailableResult<T, StatusCode = 503> = {
+	statusCode: StatusCode;
+	body: {
+		error: T | 'Service Unavailable';
 		success: false;
 	};
 };
@@ -80,15 +99,18 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
-export type Options = (
+export type Options = SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
+
+export type SharedOptions<TMethod extends string> = (
 	| {
 			permissionsRequired?:
 				| string[]
-				| ({ [key in Method]?: string[] } & { '*'?: string[] })
-				| ({ [key in Method]?: { operation: TOperation; permissions: string[] } } & {
+				| ({ [key in TMethod]?: string[] } & { '*'?: string[] })
+				| ({ [key in TMethod]?: { operation: TOperation; permissions: string[] } } & {
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired?: boolean;
+			userWithoutUsername?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
 			rateLimiterOptions?:
 				| {
@@ -102,11 +124,12 @@ export type Options = (
 	| {
 			permissionsRequired?:
 				| string[]
-				| ({ [key in Method]?: string[] } & { '*'?: string[] })
-				| ({ [key in Method]?: { operation: TOperation; permissions: string[] } } & {
+				| ({ [key in TMethod]?: string[] } & { '*'?: string[] })
+				| ({ [key in TMethod]?: { operation: TOperation; permissions: string[] } } & {
 						'*'?: { operation: TOperation; permissions: string[] };
 				  });
 			authRequired: true;
+			userWithoutUsername?: boolean;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
 			rateLimiterOptions?:
@@ -123,27 +146,26 @@ export type Options = (
 	/**
 	 * @deprecated The `validateParams` option is deprecated. Use `query` and/OR `body` instead.
 	 */
-	validateParams?: ValidateFunction | { [key in Method]?: ValidateFunction };
+	validateParams?: ValidateFunction | { [key in TMethod]?: ValidateFunction };
 	authOrAnonRequired?: true;
 	deprecation?: {
-		version: string;
-		alternatives?: string[];
+		version: DeprecationLoggerNextPlannedVersion;
+		alternatives?: PathPattern[];
 	};
+	applyMeteorContext?: boolean;
 };
 
-export type PartialThis = {
-	readonly request: Request & { query: Record<string, string> };
-	readonly response: Response;
-	readonly userId: string;
-	readonly bodyParams: Record<string, unknown>;
-	readonly path: string;
-	readonly queryParams: Record<string, string>;
-	readonly queryOperations?: string[];
-	readonly queryFields?: string[];
+export type GenericRouteExecutionContext = ActionThis<any, any, any>;
+
+export type RouteExecutionContext<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = ActionThis<
+	TMethod,
+	TPathPattern,
+	TOptions
+>;
+
+export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
 	readonly logger: Logger;
-};
-
-type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptions> = {
+	route: string;
 	readonly requestIp: string;
 	urlParams: UrlParams<TPathPattern>;
 	readonly response: Response;
@@ -167,8 +189,13 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 				: // TODO remove the extra (optionals) params when all the endpoints that use these are typed correctly
 					Partial<OperationParams<TMethod, TPathPattern>>;
 	readonly request: Request;
+	readonly incoming: IncomingMessage;
 
 	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
+	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
+
+	readonly twoFactorChecked: boolean;
+
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
 		/**
@@ -190,23 +217,23 @@ type ActionThis<TMethod extends Method, TPathPattern extends PathPattern, TOptio
 	};
 } & (TOptions extends { authRequired: true }
 	? {
-			user: IUser;
+			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 			userId: string;
 			readonly token: string;
 		}
 	: TOptions extends { authOrAnonRequired: true }
 		? {
-				user?: IUser;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
 				userId?: string;
 				readonly token?: string;
 			}
 		: {
-				user?: IUser | null;
-				userId?: string | undefined;
+				user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
+				userId?: string;
 				readonly token?: string;
 			});
 
-export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> =
+export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> = (
 	| SuccessResult<OperationResult<TMethod, TPathPattern>>
 	| FailureResult<unknown, unknown, unknown, unknown>
 	| UnauthorizedResult<unknown>
@@ -214,7 +241,10 @@ export type ResultFor<TMethod extends Method, TPathPattern extends PathPattern> 
 	| {
 			statusCode: number;
 			body: unknown;
-	  };
+	  }
+) & {
+	headers?: Record<string, string>;
+};
 
 export type Action<TMethod extends Method, TPathPattern extends PathPattern, TOptions> =
 	| ((this: ActionThis<TMethod, TPathPattern, TOptions>) => Promise<ResultFor<TMethod, TPathPattern>>)
@@ -254,6 +284,7 @@ type Range<N extends number, Result extends number[] = []> = Result['length'] ex
 	: Range<N, [...Result, Result['length']]>;
 
 type HTTPStatusCodes = SuccessStatusCodes | RedirectStatusCodes | AuthorizationStatusCodes | ErrorStatusCodes;
+
 export type TypedOptions = {
 	response: {
 		[K in HTTPStatusCodes]?: ValidateFunction;
@@ -263,11 +294,11 @@ export type TypedOptions = {
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];
-} & Options;
+} & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
+	readonly logger: Logger;
 	userId: TOptions['authRequired'] extends true ? string : string | undefined;
-	user: TOptions['authRequired'] extends true ? IUser : IUser | null;
 	token: TOptions['authRequired'] extends true ? string : string | undefined;
 	queryParams: TOptions['query'] extends ValidateFunction<infer Query> ? Query : never;
 	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
@@ -283,27 +314,43 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 		query: Record<string, unknown>;
 	}>;
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
-
+	request: Request;
 	requestIp?: string;
-};
+	route: string;
+	response: Response;
+} & (TOptions['authRequired'] extends true
+	? {
+			user: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
+		}
+	: {
+			user?: TOptions extends { userWithoutUsername: true } ? IUser : RequiredField<IUser, 'username'>;
+		});
 
 type PromiseOrValue<T> = T | Promise<T>;
 
 type InferResult<TResult> = TResult extends ValidateFunction<infer T> ? T : TResult;
 
+type InferNon200Result<T> =
+	InferResult<T> extends {
+		success: false;
+		error?: infer TError;
+	}
+		? TError
+		: never;
+
 type Results<TResponse extends TypedOptions['response']> = {
 	[K in keyof TResponse]: K extends SuccessStatusCodes
 		? SuccessResult<InferResult<TResponse[200]>, K>
 		: K extends RedirectStatusCodes
-			? RedirectResult<InferResult<TResponse[300]>, K>
+			? RedirectResult<InferNon200Result<TResponse[300]>, K>
 			: K extends 400
 				? FailureResult<InferResult<TResponse[400]>>
 				: K extends 401
-					? UnauthorizedResult<InferResult<TResponse[401]>>
+					? UnauthorizedResult<InferNon200Result<TResponse[401]>>
 					: K extends 403
-						? ForbiddenResult<InferResult<TResponse[403]>>
+						? ForbiddenResult<InferNon200Result<TResponse[403]>>
 						: K extends 404
-							? NotFoundResult<InferResult<TResponse[404]>>
+							? NotFoundResult<InferNon200Result<TResponse[404]>>
 							: K extends ErrorStatusCodes
 								? InternalError<InferResult<TResponse[500]>, K>
 								: never;
@@ -311,7 +358,8 @@ type Results<TResponse extends TypedOptions['response']> = {
 	headers?: Record<string, string>;
 };
 
-export type TypedAction<TOptions extends TypedOptions, TPath extends string = ''> = (
-	this: TypedThis<TOptions, TPath>,
-	request: Request,
-) => PromiseOrValue<Results<TOptions['response']>>;
+export type TypedAction<
+	TOptions extends TypedOptions,
+	TPath extends string = '',
+	TThis extends TypedThis<TOptions, TPath> = TypedThis<TOptions, TPath>,
+> = (this: TThis, request: Request) => PromiseOrValue<Results<TOptions['response']>>;
