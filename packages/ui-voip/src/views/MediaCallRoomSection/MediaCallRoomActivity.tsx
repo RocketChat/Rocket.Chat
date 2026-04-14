@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 
 import MediaCallRoomSection from './MediaCallRoomSection';
 import MediaCallViewProvider from '../../providers/MediaCallViewProvider';
+import MediaCallPopoutWindow from '../MediaCallPopoutWindow';
 
 type MediaCallRoomActivityProps = {
 	children: ReactNode;
@@ -14,8 +15,9 @@ type MediaCallRoomActivityProps = {
 
 const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 	const [showChat, setShowChat] = useState(true);
-	const user = useUser();
+	const [isPopout, setIsPopout] = useState(false);
 
+	const user = useUser();
 	const displayName = useUserDisplayName({ name: user?.name, username: user?.username });
 	const getUserAvatarPath = useUserAvatarPath();
 
@@ -28,20 +30,37 @@ const MediaCallRoomActivity = ({ children }: MediaCallRoomActivityProps) => {
 		};
 	}, [displayName, getUserAvatarPath, user?._id]);
 
-	const onClickToggleChat = () => {
-		setShowChat((prev) => !prev);
-	};
+	const mediaCallRoomSection = (
+		<MediaCallViewProvider>
+			<MediaCallRoomSection
+				showChat={showChat}
+				onToggleChat={() => setShowChat((prev) => !prev)}
+				user={ownUser}
+				containerHeight={borderBoxSize?.blockSize || 0}
+				onPopout={() => setIsPopout((prev) => !prev)}
+				isPopout={isPopout}
+				key={isPopout ? 'popout' : 'normal'}
+			/>
+		</MediaCallViewProvider>
+	);
+
+	// TODO: this shouldn't be inside here, since the popout has to be always rendered.
+	if (isPopout) {
+		return (
+			<>
+				<MediaCallPopoutWindow onClose={() => setIsPopout(false)}>
+					<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
+						{mediaCallRoomSection}
+					</Box>
+				</MediaCallPopoutWindow>
+				{children}
+			</>
+		);
+	}
+
 	return (
 		<Box w='full' h='full' display='flex' flexDirection='column' justifyContent='space-between' ref={ref}>
-			<MediaCallViewProvider>
-				<MediaCallRoomSection
-					showChat={showChat}
-					onToggleChat={onClickToggleChat}
-					user={ownUser}
-					containerHeight={borderBoxSize?.blockSize || 0}
-				/>
-			</MediaCallViewProvider>
-
+			{mediaCallRoomSection}
 			{showChat && (
 				<Box w='full' flexGrow={2} flexShrink={0}>
 					{children}
