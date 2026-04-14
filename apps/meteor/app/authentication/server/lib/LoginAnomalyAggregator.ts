@@ -17,7 +17,10 @@ class LoginAnomalyAggregator {
         const now = new Date();
 
         if (this.buffer.size >= this.MAX_BUFFER_SIZE && !this.buffer.has(key)) {
-            return;
+            const oldestKey = this.buffer.keys().next().value;
+            if (oldestKey) {
+                this.buffer.delete(oldestKey);
+            }
         }
 
         if (this.buffer.has(key)) {
