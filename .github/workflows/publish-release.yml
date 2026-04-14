@@ -21,20 +21,9 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.CI_PAT }}
 
-      - name: Read tool versions
-        id: versions
-        run: |
-          NODE_VERSION=$(node -p "require('./package.json').engines.node")
-          echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
-
-          DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
-          echo "deno-version=${DENO_VERSION}" >> $GITHUB_OUTPUT
-
       - name: Setup NodeJS
         uses: ./.github/actions/setup-node
         with:
-          node-version: ${{ steps.versions.outputs.node-version }}
-          deno-version: ${{ steps.versions.outputs.deno-version }}
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
