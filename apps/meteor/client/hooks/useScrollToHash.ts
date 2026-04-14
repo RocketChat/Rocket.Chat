@@ -1,3 +1,4 @@
+import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import { useEffect } from 'react';
 
 export const FIELD_ANCHORS = {
@@ -18,16 +19,19 @@ const availableHashes: Set<string> = new Set(Object.values(FIELD_ANCHORS));
 export const useScrollToHash = () => {
 	const hash = window.location.hash.slice(1);
 	const shouldExpand = availableHashes.has(hash);
+	const reducedMotion = usePrefersReducedMotion();
 
 	useEffect(() => {
 		if (!hash) {
 			return;
 		}
 
-		requestAnimationFrame(() => {
-			document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		const frame = requestAnimationFrame(() => {
+			document.getElementById(hash)?.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'start' });
 		});
-	}, [hash]);
+
+		return () => cancelAnimationFrame(frame);
+	}, [hash, reducedMotion]);
 
 	return { shouldExpand };
 };
