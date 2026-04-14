@@ -28,10 +28,12 @@ type MediaCallRoomSectionProps = {
 		avatarUrl: string;
 	};
 	containerHeight: number;
+	onPopout: () => void;
+	isPopout?: boolean;
 };
 
-const getSplitStyles = (showChat?: boolean) => {
-	if (showChat) {
+const getSplitStyles = (showChat?: boolean, isPopout?: boolean) => {
+	if (showChat && !isPopout) {
 		return {
 			maxHeight: `${CARD_LIST_SECTION_MAX_HEIGHT}vh`,
 		};
@@ -44,7 +46,7 @@ const getSplitStyles = (showChat?: boolean) => {
 	};
 };
 
-const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }: MediaCallRoomSectionProps) => {
+const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight, onPopout, isPopout }: MediaCallRoomSectionProps) => {
 	const { t } = useTranslation();
 
 	const [focusedCard, setFocusedCard] = useState<'remote' | 'local' | null>('remote');
@@ -114,7 +116,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			overflow='hidden'
 			display='flex'
 			flexDirection='column'
-			{...getSplitStyles(showChat)}
+			{...getSplitStyles(showChat, isPopout)}
 		>
 			<CardListSection>
 				<CardListContainer focusedCard={focusedCard ? focusedCardElement : undefined} shouldWrapCards={shouldWrapCards}>
@@ -152,6 +154,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 					pressed={localScreen?.active ?? false}
 					onToggle={onToggleScreenSharing}
 				/>
+				<ActionButton label={t('Popout')} icon='arrow-expand' onClick={onPopout} />
 				<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
 				<ActionButton label={t('Voice_call__user__hangup', { user: peerInfo.displayName })} icon='phone-off' danger onClick={onEndCall} />
 			</ActionStrip>
