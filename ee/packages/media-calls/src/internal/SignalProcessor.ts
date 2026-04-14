@@ -116,7 +116,7 @@ export class GlobalSignalProcessor {
 				throw new Error('internal-error');
 			}
 
-			await agent.processSignal(call, signal);
+			await agent.processSignal(call, signal, { throwIfSkipped });
 		} catch (e) {
 			logger.error({ err: e });
 			throw e;
