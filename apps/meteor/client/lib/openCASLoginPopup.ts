@@ -2,6 +2,8 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from './settings';
 
+const POPUP_CLOSE_TIMEOUT_MS = 5 * 60 * 1000;
+
 const openCenteredPopup = (url: string, width: number, height: number) => {
 	const screenX = window.screenX ?? window.screenLeft;
 	const screenY = window.screenY ?? window.screenTop;
@@ -41,13 +43,19 @@ const getPopupUrl = (credentialToken: string): string => {
 };
 
 const waitForPopupClose = (popup: Window) => {
-	return new Promise<void>((resolve) => {
+	return new Promise<void>((resolve, reject) => {
 		const checkPopupOpen = setInterval(() => {
 			if (popup.closed || popup.closed === undefined) {
 				clearInterval(checkPopupOpen);
+				clearTimeout(timeoutId);
 				resolve();
 			}
 		}, 100);
+
+		const timeoutId = setTimeout(() => {
+			clearInterval(checkPopupOpen);
+			reject(new Error('CAS login popup did not close in time'));
+		}, POPUP_CLOSE_TIMEOUT_MS);
 	});
 };
 
