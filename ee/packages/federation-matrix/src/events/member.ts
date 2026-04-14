@@ -395,6 +395,36 @@ async function handleBan({
 	await Room.performUserBan(room, bannedUser, senderUser);
 }
 
+async function handleMembershipRejected({
+	event,
+	reason,
+}: HomeserverEventSignatures['homeserver.matrix.membership.rejected']): Promise<void> {
+	const room = await Rooms.findOne({ 'federation.mrid': event.room_id });
+	if (!room) {
+		logger.debug({ msg: 'No local room found for rejected membership event', roomId: event.room_id, reason });
+		return;
+	}
+
+	const serverName = federationSDK.getConfig('serverName');
+	const [username] = getUsernameServername(event.state_key, serverName);
+
+	const user = await Users.findOneByUsername(username);
+	if (!user) {
+		logger.debug({ msg: 'User not found for rejected membership event', userId: event.state_key, reason });
+		return;
+	}
+
+	await Room.revokeInvite(room, user);
+
+	logger.info({
+		msg: 'Revoked invite due to rejected membership event',
+		userId: user._id,
+		roomId: room._id,
+		membership: event.content.membership,
+		reason,
+	});
+}
+
 export function member() {
 	federationSDK.eventEmitterService.on('homeserver.matrix.membership', async ({ event }) => {
 		try {
@@ -420,6 +450,14 @@ export function member() {
 			}
 		} catch (err) {
 			logger.error({ msg: 'Failed to process Matrix membership event', err });
+		}
+	});
+
+	federationSDK.eventEmitterService.on('homeserver.matrix.membership.rejected', async (payload) => {
+		try {
+			await handleMembershipRejected(payload);
+		} catch (err) {
+			logger.error({ msg: 'Failed to process rejected membership event', err });
 		}
 	});
 }

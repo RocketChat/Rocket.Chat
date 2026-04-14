@@ -1,8 +1,8 @@
+import { FocusScope } from '@react-aria/focus';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, ButtonGroup, IconButton, Palette, PaletteStyleTag, Throbber, spacing } from '@rocket.chat/fuselage';
 import { useRef, useState } from 'react';
-import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Navigation, Zoom, Keyboard, A11y } from 'swiper/modules/index.mjs';

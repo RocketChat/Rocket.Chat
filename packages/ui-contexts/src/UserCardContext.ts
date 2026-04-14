@@ -1,7 +1,7 @@
+import type { AriaButtonProps } from '@react-aria/button';
+import type { OverlayTriggerState } from '@react-stately/overlays';
 import type { MutableRefObject, UIEvent } from 'react';
 import { createContext } from 'react';
-import type { AriaButtonProps } from 'react-aria';
-import type { OverlayTriggerState } from 'react-stately';
 
 export type UserCardContextValue = {
 	openUserCard: (e: UIEvent, username: string) => void;

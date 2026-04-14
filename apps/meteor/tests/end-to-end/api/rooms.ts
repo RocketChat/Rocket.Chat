@@ -4382,8 +4382,49 @@ describe('[Rooms]', () => {
 		});
 
 		describe('unban via re-invite', () => {
-			it('should unban the user when re-invited', () => {
+			it('should fail to invite a banned user', () => {
 				return request
+					.post(api('channels.invite'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						userId: bannableUser._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-user-is-banned');
+					});
+			});
+
+			it('should list the banned user in rooms.bannedUsers', async () => {
+				const res = await request
+					.get(api('rooms.bannedUsers'))
+					.set(credentials)
+					.query({
+						roomId: testChannel._id,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				const usernames = res.body.bannedUsers.map((u: { username: string }) => u.username);
+				expect(usernames).to.include(bannableUser.username);
+			});
+
+			it('should unban the user and then re-invite successfully', async () => {
+				await request
+					.post(api('rooms.unbanUser'))
+					.set(credentials)
+					.send({
+						roomId: testChannel._id,
+						username: bannableUser.username,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				await request
 					.post(api('channels.invite'))
 					.set(credentials)
 					.send({
