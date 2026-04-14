@@ -1,16 +1,16 @@
 import { useEffect } from 'react';
 
-export const fieldAnchors = {
+export const FIELD_ANCHORS = {
 	clockMode: 'clockMode',
 	hideUsernames: 'hideUsernames',
 	hideRoles: 'hideRoles',
 } as const;
 
-const availableHashes = new Set(Object.values(fieldAnchors));
+const availableHashes: Set<string> = new Set(Object.values(FIELD_ANCHORS));
 
 export const useScrollToHash = () => {
 	const hash = window.location.hash.slice(1);
-	const shouldExpand = availableHashes.has(hash as keyof typeof fieldAnchors);
+	const shouldExpand = availableHashes.has(hash);
 
 	useEffect(() => {
 		if (!hash) {
