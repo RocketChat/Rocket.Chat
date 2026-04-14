@@ -1,6 +1,5 @@
 interface FailedAttemptInfo {
-    ip: string;
-    userId?: string;
+    key: string;
     count: number;
     firstAttempt: Date;
     lastAttempt: Date;
@@ -9,19 +8,27 @@ interface FailedAttemptInfo {
 
 class LoginAnomalyAggregator {
     private buffer: Map<string, FailedAttemptInfo> = new Map();
-
     private readonly FLUSH_WINDOW_MS = 45 * 1000;
-
     private readonly MAX_BUFFER_SIZE = 1000;
 
     public logFailure(ip: string, userId?: string): void {
-        const key = `${ip}_${userId || 'unknown'}`;
         const now = new Date();
+        
+        const keys = [`ip:${ip}`];
+        if (userId) {
+            keys.push(`user:${userId}`);
+        }
 
+        for (const key of keys) {
+            this.processFailureForKey(key, now);
+        }
+    }
+
+    private processFailureForKey(key: string, now: Date): void {
         if (this.buffer.size >= this.MAX_BUFFER_SIZE && !this.buffer.has(key)) {
             const oldestKey = this.buffer.keys().next().value;
             if (oldestKey) {
-                void this.flushEvent(oldestKey); 
+                void this.flushEvent(oldestKey);
             }
         }
 
@@ -31,8 +38,7 @@ class LoginAnomalyAggregator {
             entry.lastAttempt = now;
         } else {
             const entry: FailedAttemptInfo = {
-                ip,
-                userId,
+                key,
                 count: 1,
                 firstAttempt: now,
                 lastAttempt: now,
@@ -47,9 +53,7 @@ class LoginAnomalyAggregator {
 
     private async flushEvent(key: string): Promise<void> {
         const entry = this.buffer.get(key);
-        if (!entry) {
-            return;
-        }
+        if (!entry) return;
 
         if (entry.timeoutId) {
             clearTimeout(entry.timeoutId);
@@ -63,16 +67,15 @@ class LoginAnomalyAggregator {
     }
 
     private async recordAnomaly(entry: Omit<FailedAttemptInfo, 'timeoutId'>): Promise<void> {
-        const severity = entry.count > 10 ? 'high' : 'medium';
+        const severity = entry.count >= 10 ? 'high' : 'medium';
         const durationInSeconds = Math.round((entry.lastAttempt.getTime() - entry.firstAttempt.getTime()) / 1000);
 
         console.error(
             `🔥 [Auth Anomaly Aggregator] ` +
-            `IP: ${entry.ip} | ` +
-            `User: ${entry.userId || 'N/A'} | ` +
+            `Target: ${entry.key} | ` +
             `Attempts: ${entry.count} | ` +
             `Window: ${durationInSeconds}s | ` +
-            `Severity: ${severity}`,
+            `Severity: ${severity}`
         );
     }
 }
