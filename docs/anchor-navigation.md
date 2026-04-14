@@ -18,14 +18,14 @@ The `useScrollToHash` hook reads the URL hash on mount, scrolls to the matching 
 2. The **target page** renders elements with matching `id` attributes
 3. `useScrollToHash` reads `window.location.hash`, scrolls to the element via `scrollIntoView`, and reports whether the hash matched a known anchor
 
-```
+```text
 PreferencesMessagesSection                      AccessibilityPage
 ┌──────────────────────────┐                   ┌──────────────────────────┐
 │ Message TimeFormat        │                   │ Adjustable layout        │
 │ [Go to accessibility] ────┼── #clockMode ───> │  <Field id="clockMode">  │
 │                           │                   │                          │
-│ Hide usernames            │                   │  <Field id="hideUsers">  │
-│ [Go to accessibility] ────┼── #hideUsers ───> │                          │
+│ Hide usernames            │                   │  <Field id="hideUsernames">  │
+│ [Go to accessibility] ────┼── #hideUsernames ───> │                          │
 └──────────────────────────┘                   └──────────────────────────┘
 ```
 
