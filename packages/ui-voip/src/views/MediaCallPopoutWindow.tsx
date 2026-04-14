@@ -10,55 +10,68 @@ type MediaCallPopoutWindowProps = {
 	onClose: () => void;
 };
 
+const createRootElement = (externalWindow: Window) => {
+	const newRoot = externalWindow.document.createElement('div');
+	newRoot.style.width = '100%';
+	newRoot.style.height = '100%';
+	externalWindow.document.body.appendChild(newRoot);
+	return newRoot;
+};
+
+const copyStylesheets = (externalWindow: Window) => {
+	Array.from(document.styleSheets).forEach((stylesheet) => {
+		if (stylesheet.href) {
+			const link = document.createElement('link');
+			link.rel = 'stylesheet';
+			link.href = stylesheet.href;
+			externalWindow.document.head.appendChild(link);
+		} else if (stylesheet?.cssRules?.length > 0) {
+			const style = document.createElement('style');
+			Array.from(stylesheet.cssRules).forEach((rule) => {
+				style.appendChild(document.createTextNode(rule.cssText));
+			});
+			externalWindow.document.head.appendChild(style);
+		}
+	});
+};
+
+const openExternalWindow = (title: string) => {
+	try {
+		const externalWindow = window.open('', title, 'width=800,height=500,popup');
+		if (!externalWindow) {
+			throw new Error('No window was opened');
+		}
+		copyStylesheets(externalWindow);
+		return externalWindow;
+	} catch (error) {
+		console.error('Failed to open external window', error);
+		return null;
+	}
+};
+
 const MediaCallPopoutWindow = ({ children, onClose }: MediaCallPopoutWindowProps) => {
 	const [container, setContainer] = useState<{ root: HTMLDivElement; externalWindow: Window } | null>(null);
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const triggerClose = useStableCallback(onClose);
 
 	useEffect(() => {
-		if (container?.externalWindow.closed === false) {
-			return;
-		}
-
-		let externalWindow: Window | null;
-		try {
-			// TODO: use peer name instead of 'Call with Peer X'
-			externalWindow = window.open('', 'Call with Peer X', 'width=800,height=500,popup');
-		} catch (error) {
-			console.error('Failed to open external window', error);
-			triggerClose();
-			return;
-		}
-
-		if (!externalWindow) {
-			triggerClose();
-			return;
-		}
-
-		const win = externalWindow;
-
-		const root = win.document.createElement('div');
-		win.document.body.appendChild(root);
-		root.style.width = '100%';
-		root.style.height = '100%';
-
-		Array.from(document.styleSheets).forEach((stylesheet) => {
-			if (stylesheet.href) {
-				const link = document.createElement('link');
-				link.rel = 'stylesheet';
-				link.href = stylesheet.href;
-				win.document.head.appendChild(link);
-			} else if (stylesheet?.cssRules?.length > 0) {
-				const style = document.createElement('style');
-				Array.from(stylesheet.cssRules).forEach((rule) => {
-					style.appendChild(document.createTextNode(rule.cssText));
-				});
-				win.document.head.appendChild(style);
+		setContainer((prev) => {
+			if (prev?.externalWindow && prev?.root) {
+				return prev;
 			}
-		});
 
-		setContainer({ root, externalWindow: win });
-	}, [triggerClose, container?.externalWindow.closed]);
+			const externalWindow = !prev?.externalWindow ? openExternalWindow('Call with Peer X') : prev?.externalWindow;
+
+			if (!externalWindow) {
+				triggerClose();
+				return null;
+			}
+
+			const root = createRootElement(externalWindow);
+
+			return { root, externalWindow };
+		});
+	}, [triggerClose]);
 
 	useEffect(() => {
 		if (timeoutRef.current) {
