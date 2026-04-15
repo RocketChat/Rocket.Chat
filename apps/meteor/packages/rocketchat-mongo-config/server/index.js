@@ -6,18 +6,29 @@ import { Mongo } from 'meteor/mongo';
 import { MongoInternals } from 'meteor/mongo';
 
 // DocumentDB only supports one index build at a time per collection.
-// Serialize createIndexAsync calls at the MongoConnection level so Meteor
-// packages (accounts-base, accounts-password, accounts-oauth) don't race.
-// This package loads before accounts-base (position 53 vs 56 in .meteor/packages).
+// Serialize every index-creating call path so Meteor packages (accounts-base,
+// accounts-password, accounts-oauth) and Rocket.Chat models (BaseRaw) don't
+// race against each other on the same collection. This package loads before
+// accounts-base (position 53 vs 56 in .meteor/packages).
 //
-// NOTE: Meteor bundles its own copy of the mongodb driver (npm-mongo/node_modules/mongodb)
-// separate from the app's node_modules/mongodb. Patching Collection.prototype from
-// `import { Collection } from 'mongodb'` only patches the app's copy and does NOT
-// affect Meteor's internal calls. That's why we patch MongoConnection here instead.
-// The shared queue (via globalThis) is also used by @rocket.chat/models patchIndex.ts
-// to serialize BaseRaw.createIndexes() calls through the app's mongodb driver copy.
+// Three distinct entry points must be covered:
+//   1. MongoConnection.createIndexAsync — used by Mongo.Collection.createIndex*
+//      on the server. This is the entry for Meteor packages that call
+//      `users.createIndexAsync({ ... })` through the official API.
+//   2. Collection.prototype.createIndex / createIndexes on Meteor's bundled
+//      mongodb driver — used by BaseRaw.createIndexes() via
+//      `MongoInternals.defaultRemoteCollectionDriver().mongo.db.collection(n)`.
+//      Meteor bundles its own copy of `mongodb` separate from the app's
+//      node_modules/mongodb, so patching one does not affect the other.
+//   3. Collection.prototype.createIndex / createIndexes on the app's mongodb
+//      driver — patched by @rocket.chat/models/src/patchIndex.ts when any
+//      model is imported.
+//
+// All three patches share the same queue via a globalThis-keyed Map, so
+// sequential awaits collapse across code paths for the same collection name.
 if (process.env.DOCUMENTDB === 'true') {
 	const QUEUE_KEY = Symbol.for('rocketchat.documentdb.index.queues');
+	const PATCHED_KEY = Symbol.for('rocketchat.documentdb.index.patched');
 	if (!globalThis[QUEUE_KEY]) {
 		globalThis[QUEUE_KEY] = new Map();
 	}
@@ -38,6 +49,26 @@ if (process.env.DOCUMENTDB === 'true') {
 	};
 	mongo.ensureIndexAsync = mongo.createIndexAsync;
 	mongo.createIndex = mongo.createIndexAsync;
+
+	// Patch Collection.prototype on Meteor's bundled mongodb driver. A probe
+	// collection is the simplest way to reach the right prototype — Meteor
+	// does not expose it directly. Guard with a symbol on the prototype so we
+	// only patch once even if this module is re-evaluated for any reason.
+	const probeCollection = mongo.rawCollection('___documentdb_index_patch_probe___');
+	const CollectionProto = Object.getPrototypeOf(probeCollection);
+	if (CollectionProto && !CollectionProto[PATCHED_KEY]) {
+		CollectionProto[PATCHED_KEY] = true;
+
+		const originalProtoCreateIndex = CollectionProto.createIndex;
+		CollectionProto.createIndex = function (...args) {
+			return enqueue(this.collectionName, () => originalProtoCreateIndex.apply(this, args));
+		};
+
+		const originalProtoCreateIndexes = CollectionProto.createIndexes;
+		CollectionProto.createIndexes = function (...args) {
+			return enqueue(this.collectionName, () => originalProtoCreateIndexes.apply(this, args));
+		};
+	}
 }
 
 // we always want Meteor to disable oplog tailing
