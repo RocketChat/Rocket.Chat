@@ -134,7 +134,7 @@ export class LivechatAgentActivityRaw extends BaseRaw<ILivechatAgentActivity> im
 		const project = {
 			$project: {
 				averageAvailableServiceTimeInSeconds: {
-					$trunc: {
+					$floor: {
 						$cond: [{ $eq: ['$rooms', 0] }, 0, { $divide: ['$allAvailableTimeInSeconds', '$rooms'] }],
 					},
 				},

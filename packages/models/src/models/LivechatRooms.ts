@@ -962,7 +962,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const project = {
 			$project: {
 				avg: {
-					$trunc: {
+					$floor: {
 						$cond: [{ $eq: ['$roomsWithResponseTime', 0] }, 0, { $divide: ['$sumResponseAvg', '$roomsWithResponseTime'] }],
 					},
 				},
@@ -1005,7 +1005,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const project = {
 			$project: {
 				avg: {
-					$trunc: {
+					$floor: {
 						$cond: [{ $eq: ['$roomsWithFirstReaction', 0] }, 0, { $divide: ['$sumReactionFirstResponse', '$roomsWithFirstReaction'] }],
 					},
 				},
@@ -1049,7 +1049,7 @@ export class LivechatRoomsRaw extends BaseRaw<IOmnichannelRoom> implements ILive
 		const project = {
 			$project: {
 				avg: {
-					$trunc: {
+					$floor: {
 						$cond: [{ $eq: ['$roomsWithChatDuration', 0] }, 0, { $divide: ['$sumChatDuration', '$roomsWithChatDuration'] }],
 					},
 				},

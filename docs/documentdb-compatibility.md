@@ -91,37 +91,38 @@ Alternatively, restructured the pipeline to avoid the conditional field removal 
 **Affected files:**
 - `packages/models/src/models/LivechatDepartment.ts`
 
+### 6. `$trunc` aggregation operator replacement
+
+**Problem:** `$trunc` is unsupported on DocumentDB 5.0. Rocket.Chat used it to truncate averages
+and duration values (all non-negative) in livechat and session analytics aggregations.
+
+**Solution:** Replaced every call with `$floor`, which is supported and equivalent for the
+non-negative inputs present at each call site (counters, divisions of durations, time deltas later
+filtered by `time > 0`).
+
+**Affected files:**
+- `packages/models/src/models/LivechatRooms.ts` — response-time, reaction and chat-duration averages
+- `packages/models/src/models/LivechatAgentActivity.ts` — `averageAvailableServiceTimeInSeconds`
+- `packages/models/src/models/Sessions.ts` — `dailySessions` duration in seconds
+
+### 7. Aggregation merge stage replaced in migration 332
+
+**Problem:** Migration 332 backfills `contactName` / `contactUsername` on older `CallHistory` rows
+by running an aggregation that joins `Users` and writes results back via the aggregation merge
+stage. That stage is unsupported on DocumentDB 5.0 and would abort the migration.
+
+**Solution:** The pipeline now drops its terminal merge stage and returns a projected cursor. The
+migration iterates the cursor in batches of 500 and issues `bulkWrite` `updateOne` operations with
+`{ ordered: false }` to apply the backfill. Idempotency is preserved: the `$match` still filters on
+`contactName: { $exists: false }`, so re-runs skip rows that were already populated.
+
+**Affected files:**
+- `apps/meteor/server/startup/migrations/v332.ts`
+
 ## Known Issues (not yet fixed)
 
-The following issues were detected by the AWS `awslabs/amazon-documentdb-tools/compat-tool` against
-DocumentDB 5.0 and have not yet been addressed. They will fail or behave incorrectly on DocumentDB
-but continue to work on MongoDB.
-
-### `$trunc` aggregation operator (5 sites)
-
-**Problem:** `$trunc` is listed as unsupported on DocumentDB 5.0. It is used inside aggregation
-pipelines to truncate averages/seconds for livechat and session dashboards.
-
-**Occurrences:**
-- `packages/models/src/models/LivechatRooms.ts:965,1008,1052` — average response-time calculations
-- `packages/models/src/models/LivechatAgentActivity.ts:137` — `averageAvailableServiceTimeInSeconds`
-- `packages/models/src/models/Sessions.ts:213` — session duration in seconds
-
-**Possible replacements:**
-- `$floor` — equivalent for non-negative inputs (all call sites here).
-- `{ $subtract: [x, { $mod: [x, 1] }] }` — generic polyfill, works for negatives too.
-
-### `$merge` aggregation stage (migration only)
-
-**Problem:** `$merge` is unsupported on DocumentDB 5.0. It is used once, inside migration 332, to
-backfill `contactName` / `contactUsername` on older `CallHistory` entries.
-
-**Occurrence:**
-- `apps/meteor/server/startup/migrations/v332.ts:40`
-
-**Impact:** Only runs during version upgrade, not at runtime. On DocumentDB the migration will fail
-and subsequent migrations will not run. Workaround: rewrite with `find` + `bulkWrite`, or use `$out`
-(supported) to a staging collection followed by an application-side merge.
+The following issues are present in the codebase and have not yet been addressed. They will fail
+or behave incorrectly on DocumentDB but continue to work on MongoDB.
 
 ### Collation-indexed case-insensitive lookups
 

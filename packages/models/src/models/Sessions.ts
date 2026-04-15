@@ -210,7 +210,7 @@ export const aggregates = {
 					month: 1,
 					year: 1,
 					mostImportantRole: 1,
-					time: { $trunc: { $divide: [{ $subtract: ['$lastActivityAt', '$loginAt'] }, 1000] } },
+					time: { $floor: { $divide: [{ $subtract: ['$lastActivityAt', '$loginAt'] }, 1000] } },
 				},
 			},
 			{
