@@ -1,4 +1,3 @@
-import { ddpLogin } from '../../data/users.helper';
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
@@ -27,7 +26,6 @@ test.describe('OC - Tags Visibility', () => {
 	let tagB: Awaited<ReturnType<typeof createTag>>;
 	let globalTag: Awaited<ReturnType<typeof createTag>>;
 	let sharedTag: Awaited<ReturnType<typeof createTag>>;
-	let ws: WebSocket;
 
 	test.beforeAll('Create departments', async ({ api }) => {
 		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).status()).toBe(200);
@@ -37,7 +35,6 @@ test.describe('OC - Tags Visibility', () => {
 
 	test.beforeAll('Create agent', async ({ api }) => {
 		agent = await createAgent(api, 'user1');
-		ws = await ddpLogin(Users.user1.data.loginToken);
 	});
 
 	test.beforeAll('Add agents to departments', async ({ api }) => {
@@ -56,16 +53,25 @@ test.describe('OC - Tags Visibility', () => {
 		});
 	});
 
-	test.beforeAll('Create conversations', async ({ api }) => {
-		conversations = await Promise.all([
-			createConversation(api, { visitorName: visitorA.name, agentId: 'user1', departmentId: departmentA.data._id }),
-			createConversation(api, { visitorName: visitorB.name, agentId: 'user1', departmentId: departmentB.data._id }),
-		]);
-	});
-
-	test.beforeEach(async ({ page }) => {
+	test.beforeEach(async ({ page, api }) => {
 		poOmnichannel = new HomeOmnichannel(page);
 		await page.goto('/');
+		await poOmnichannel.waitForHome();
+
+		if (conversations.length === 0) {
+			conversations = await Promise.all([
+				createConversation(api, {
+					visitorName: visitorA.name,
+					agentId: 'user1',
+					departmentId: departmentA.data._id,
+				}),
+				createConversation(api, {
+					visitorName: visitorB.name,
+					agentId: 'user1',
+					departmentId: departmentB.data._id,
+				}),
+			]);
+		}
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -74,7 +80,6 @@ test.describe('OC - Tags Visibility', () => {
 		await agent.delete();
 		await departmentA.delete();
 		await departmentB.delete();
-		ws.close();
 		expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', false)).status()).toBe(200);
 	});
 

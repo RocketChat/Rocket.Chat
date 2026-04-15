@@ -175,9 +175,8 @@ export const createDepartmentWithAnAwayAgent = async ({
 		credentials: Credentials;
 		user: WithRequiredProperty<IUser, 'username'>;
 	};
-	ws: WebSocket;
 }> => {
-	const { user, credentials, ws } = await createAnAwayAgent();
+	const { user, credentials } = await createAnAwayAgent();
 
 	const department = (await createDepartment({
 		allowReceiveForwardOffline,
@@ -193,7 +192,6 @@ export const createDepartmentWithAnAwayAgent = async ({
 			credentials,
 			user,
 		},
-		ws,
 	};
 };
 

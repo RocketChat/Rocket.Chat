@@ -1,5 +1,11 @@
 # @rocket.chat/favicon
 
+## 0.0.5-rc.0
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
 ## 0.0.4
 
 ### Patch Changes

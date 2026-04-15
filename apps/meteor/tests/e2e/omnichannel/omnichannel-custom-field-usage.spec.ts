@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 
-import { ddpLogin } from '../../data/users.helper';
 import { createFakeVisitor } from '../../mocks/data';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
@@ -31,16 +30,11 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 	let conversation: Awaited<ReturnType<typeof createConversation>>;
 	let roomCustomField: Awaited<ReturnType<typeof createCustomField>>;
 	let visitorCustomField: Awaited<ReturnType<typeof createCustomField>>;
-	let ws: WebSocket;
 
 	test.beforeAll('Set up agent, manager and custom fields', async ({ api }) => {
-		[agent, manager, ws] = await Promise.all([
-			createAgent(api, 'user1'),
-			createManager(api, 'user1'),
-			ddpLogin(Users.user1.data.loginToken),
-		]);
+		[agent, manager] = await Promise.all([createAgent(api, 'user1'), createManager(api, 'user1')]);
 
-		[roomCustomField, visitorCustomField, conversation] = await Promise.all([
+		[roomCustomField, visitorCustomField] = await Promise.all([
 			createCustomField(api, {
 				field: roomCustomFieldLabel,
 				label: roomCustomFieldName,
@@ -51,12 +45,19 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 				label: visitorCustomFieldName,
 				scope: 'visitor',
 			}),
-			createConversation(api, {
-				visitorName: visitor.name,
-				agentId: 'user1',
-				visitorToken,
-			}),
 		]);
+	});
+
+	test.beforeEach(async ({ page, api }) => {
+		poHomeChannel = new HomeOmnichannel(page);
+		await page.goto('/');
+		await poHomeChannel.waitForHome();
+
+		conversation = await createConversation(api, {
+			visitorName: visitor.name,
+			agentId: 'user1',
+			visitorToken,
+		});
 
 		await setVisitorCustomFieldValue(api, {
 			token: visitorToken,
@@ -65,15 +66,8 @@ test.describe.serial('OC - Custom fields usage, scope : room and visitor', () =>
 		});
 	});
 
-	test.beforeEach(async ({ page }) => {
-		poHomeChannel = new HomeOmnichannel(page);
-		await page.goto('/');
-		await poHomeChannel.waitForHome();
-	});
-
 	test.afterAll('Remove agent, manager, custom fields and conversation', async () => {
 		await Promise.all([agent.delete(), manager.delete(), roomCustomField.delete(), visitorCustomField.delete(), conversation.delete()]);
-		ws?.close();
 	});
 
 	test('Should be allowed to set room custom field for a conversation', async () => {

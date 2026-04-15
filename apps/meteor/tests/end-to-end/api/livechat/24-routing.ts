@@ -19,20 +19,14 @@ import {
 import { getAgent } from '../../../data/livechat/users';
 import { getSettingValueById, updateSetting } from '../../../data/permissions.helper';
 import { password } from '../../../data/user';
-import { createUser, deleteUser, login, ddpLogin, setUserAwayWS, setUserActiveStatus, setUserStatus } from '../../../data/users.helper';
+import { createUser, deleteUser, login, setUserActiveStatus, setUserStatus } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Omnichannel - Routing', () => {
-	const sockets: WebSocket[] = [];
 	before((done) => getCredentials(done));
 
 	after(async () => {
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
-		for (const ws of sockets) {
-			if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
-				ws.close();
-			}
-		}
 	});
 
 	// Basically: if there's a bot in the department, it should be assigned to the conversation
@@ -324,24 +318,28 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token }).expect(400);
 			expect(body.error).to.be.equal('Sorry, no online agents [no-agent-online]');
 		});
-		it('should not allow users to take more than Livechat_maximum_chats_per_agent chats', async () => {
-			await updateSetting('Livechat_maximum_chats_per_agent', 2);
-			await makeAgentAvailable(testUser.credentials);
+		it('should accept a conversation but not route to anyone when Livechat_accept_chats_with_no_agents is true', async () => {
+			await updateSetting('Livechat_accept_chats_with_no_agents', true);
+
 			const visitor = await createVisitor(testDepartment._id);
 			const room = await createLivechatRoom(visitor.token);
 
 			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.an('object');
-			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 
-			// at this point, testUser reached the limit of chats (2)
-			const visitor2 = await createVisitor(testDepartment._id);
-			const room2 = await createLivechatRoom(visitor2.token);
+			expect(roomInfo.servedBy).to.be.undefined;
+		});
+		it('should not allow users to take more than Livechat_maximum_chats_per_agent chats', async () => {
+			await updateSetting('Livechat_maximum_chats_per_agent', 2);
 
-			const roomInfo2 = await getLivechatRoomInfo(room2._id);
-			expect(roomInfo2.servedBy).to.be.undefined;
+			const visitor = await createVisitor(testDepartment._id);
+			const room = await createLivechatRoom(visitor.token);
+
+			const roomInfo = await getLivechatRoomInfo(room._id);
+
+			expect(roomInfo.servedBy).to.be.undefined;
 		});
 		it('should ignore disabled users', async () => {
+			await updateSetting('Livechat_maximum_chats_per_agent', 0);
 			await setUserActiveStatus(testUser2.user._id, false);
 
 			const visitor = await createVisitor(testDepartment._id);
@@ -350,33 +348,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 			const roomInfo = await getLivechatRoomInfo(room._id);
 			expect(roomInfo.servedBy).to.be.undefined;
 		});
-		it('should not route to an idle user', async () => {
-			// we set Livechat_maximum_chats_per_agent to 0, meaning testUser can take chats in following tests
-			await updateSetting('Livechat_maximum_chats_per_agent', 0);
-			await updateSetting('Livechat_accept_chats_with_no_agents', true);
-			await updateSetting('Livechat_enabled_when_agent_idle', false);
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-		});
-		it('should route to an idle user', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', true);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.an('object');
-			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
-		});
 		it('should route to another available agent if contact manager is unavailable and Omnichannel_contact_manager_routing is enabled', async () => {
+			await makeAgentAvailable(testUser.credentials);
 			const visitor = await createVisitor(testDepartment._id, faker.person.fullName(), visitorEmail);
 			const room = await createLivechatRoom(visitor.token);
 
@@ -550,35 +523,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.an('object');
 			expect(roomInfo.servedBy?._id).to.be.equal(testUser2.user._id);
 		});
-		it('should not route to an idle user', async () => {
-			await makeAgentUnavailable(testUser2.credentials);
-			await updateSetting('Livechat_enabled_when_agent_idle', false);
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-		});
-		it('should route to agents even if theyre idle when setting is enabled', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', true);
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			// Not checking who, just checking it's served
-			expect(roomInfo.servedBy).to.be.an('object');
-			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
-		});
 		describe('Load_Balancing - Livechat_accept_chats_with_no_agents', async () => {
 			let initialSettingValue: any;
 			let testUserInitialState: ILivechatAgent;
@@ -707,36 +651,6 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(roomInfo.servedBy).to.be.an('object');
 			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
 		});
-		it('should not route to an idle user', async () => {
-			await makeAgentUnavailable(testUser2.credentials);
-			await updateSetting('Livechat_enabled_when_agent_idle', false);
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			expect(roomInfo.servedBy).to.be.undefined;
-		});
-		it('should route to agents even if theyre idle when setting is enabled', async () => {
-			await updateSetting('Livechat_enabled_when_agent_idle', true);
-			await setUserStatus(testUser.credentials, UserStatus.AWAY);
-			const ws1 = await ddpLogin(testUser.credentials['X-Auth-Token']);
-			sockets.push(ws1);
-			await setUserAwayWS(ws1);
-
-			const visitor = await createVisitor(testDepartment._id);
-			const room = await createLivechatRoom(visitor.token);
-
-			const roomInfo = await getLivechatRoomInfo(room._id);
-			// Not checking who, just checking it's served
-			expect(roomInfo.servedBy).to.be.an('object');
-			expect(roomInfo.servedBy?._id).to.be.equal(testUser.user._id);
-		});
-
 		describe('Load_Rotation - Livechat_accept_chats_with_no_agents', async () => {
 			let initialSettingValue: any;
 			let testUserInitialState: ILivechatAgent;
