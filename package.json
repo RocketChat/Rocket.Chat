@@ -70,6 +70,7 @@
 		"minimist": "1.2.6",
 		"mongodb": "6.10.0",
 		"protobufjs": "7.5.5",
+		"underscore": "1.13.8",
 		"webdav/axios": "0.31.1",
 		"webpack": "~5.106.0",
 		"yaml@npm:^1.10.0": "^1.10.3",

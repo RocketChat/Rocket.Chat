@@ -113,7 +113,7 @@
 		"stylelint": "^16.10.0",
 		"stylelint-order": "^6.0.4",
 		"svg-loader": "^0.0.2",
-		"terser-webpack-plugin": "~4.2.3",
+		"terser-webpack-plugin": "~5.3.17",
 		"typescript": "~5.9.3",
 		"url-loader": "^4.1.1",
 		"webpack": "~5.104.1",
