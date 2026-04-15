@@ -1,5 +1,30 @@
 # @rocket.chat/i18n
 
+## 2.2.0
+
+### Minor Changes
+
+- ([#37922](https://github.com/RocketChat/Rocket.Chat/pull/37922)) Introduces native screen sharing for internal voice calls. This feature is currently in beta and can be disabled through admin settings.
+
+- ([#39425](https://github.com/RocketChat/Rocket.Chat/pull/39425)) Adds support for multiple files in message composer, improving file upload experience
+
+- ([#40006](https://github.com/RocketChat/Rocket.Chat/pull/40006)) Removes the Federation beta callout as the feature leaves beta
+
+### Patch Changes
+
+- ([#39670](https://github.com/RocketChat/Rocket.Chat/pull/39670)) Fixes mismatched translations for Voice calling UI
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- ([#38955](https://github.com/RocketChat/Rocket.Chat/pull/38955) by [@mossae](https://github.com/mossae)) Fixes invalid email domain error not being displayed on the registration form.
+
+- ([#39461](https://github.com/RocketChat/Rocket.Chat/pull/39461)) Deprecates `Anonymous write`. Feature will be removed in version 9.0.0.
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c]:</summary>
+
+  - @rocket.chat/tools@0.2.5
+  </details>
+
 ## 2.2.0-rc.0
 
 ### Minor Changes
