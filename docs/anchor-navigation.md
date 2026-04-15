@@ -8,24 +8,23 @@ Rocket.Chat uses a custom SPA router that intercepts link clicks via `e.preventD
 
 ## Solution
 
-Scrolling to hash targets is handled automatically by `RouterProvider` via `useRouterScrollToHash`. It only scrolls to elements whose `id` matches a registered anchor in `TARGET_ANCHORS` — unregistered hashes are ignored.
+Scrolling to hash targets is handled automatically by `RouterProvider` via `useRouterScrollToHash`. Any element with an `id` matching the URL hash will be scrolled into view on navigation.
 
-For pages that need to adjust layout based on the hash (e.g., expanding an accordion section), `useHasValidLocationHash` returns whether the current hash matches a registered anchor.
+For pages that need to adjust layout based on the hash (e.g., expanding an accordion section), `useLocationHash()` from `@rocket.chat/ui-contexts` provides the current hash value.
 
 ### Key files
 
 | File | Purpose |
 |------|---------|
-| `apps/meteor/client/hooks/useRouterScrollToHash.ts` | Scroll logic + `TARGET_ANCHORS` definition (called by `RouterProvider`) |
-| `apps/meteor/client/hooks/useHasValidLocationHash.ts` | Context-based hook for pages to check hash validity |
+| `apps/meteor/client/hooks/useRouterScrollToHash.ts` | Scroll logic, called by `RouterProvider` |
 | `packages/ui-contexts/src/hooks/useLocationHash.ts` | Generic `useLocationHash()` hook from `@rocket.chat/ui-contexts` |
 
 ## How it works
 
 1. A **source page** links to a target page with a hash fragment in the `href`
 2. The **target page** renders elements with matching `id` attributes
-3. `useRouterScrollToHash` (in `RouterProvider`) checks if the hash matches a `TARGET_ANCHORS` entry and scrolls to the element via `scrollIntoView`
-4. If the target page needs to adjust layout (e.g., expand a collapsed section), it calls `useHasValidLocationHash()` to check if the hash is valid
+3. `useRouterScrollToHash` (in `RouterProvider`) scrolls to the element matching the hash via `scrollIntoView`
+4. If the target page needs to adjust layout (e.g., expand a collapsed section), it reads `useLocationHash()` to check if a hash is present
 
 ```text
 PreferencesMessagesSection                      AccessibilityPage
@@ -40,49 +39,31 @@ PreferencesMessagesSection                      AccessibilityPage
 
 ## Usage
 
-### 1. Register the anchor in `TARGET_ANCHORS`
-
-Add your field key to `TARGET_ANCHORS` in `useRouterScrollToHash.ts`. This registers it for both scrolling and hash validation.
-
-```ts
-// apps/meteor/client/hooks/useRouterScrollToHash.ts
-
-export const TARGET_ANCHORS = {
-  clockMode: 'clockMode',
-  hideUsernames: 'hideUsernames',
-  hideRoles: 'hideRoles',
-  // Add new anchors here
-  myNewField: 'myNewField',
-} as const;
-```
-
-### 2. Add the `id` to the target element
+### 1. Add the `id` to the target element
 
 On the destination page, set the `id` on the element you want to scroll to:
 
 ```tsx
-import { TARGET_ANCHORS } from '../../../hooks/useHasValidLocationHash';
-
-<Field id={TARGET_ANCHORS.myNewField}>
+<Field id='myNewField'>
   <FieldLabel>{t('My_New_Field')}</FieldLabel>
   {/* ... */}
 </Field>
 ```
 
-### 3. Call the hook in the target page (if layout adjustment is needed)
+### 2. Expand collapsed sections (if needed)
 
-If the target field is inside a collapsed section, you can call `useHasValidLocationHash()` and control the section's visibility:
+If the target field is inside a collapsed section, use `useLocationHash()` to expand it:
 
 ```tsx
-import { TARGET_ANCHORS, useHasValidLocationHash } from '../../../hooks/useHasValidLocationHash';
+import { useLocationHash } from '@rocket.chat/ui-contexts';
 
 const MyPage = () => {
-  const shouldExpand = useHasValidLocationHash();
+  const shouldExpand = useLocationHash().length > 1;
 
   return (
     <Accordion>
       <AccordionItem defaultExpanded={shouldExpand} title={t('Section')}>
-        <Field id={TARGET_ANCHORS.myNewField}>
+        <Field id='myNewField'>
           {/* ... */}
         </Field>
       </AccordionItem>
@@ -91,26 +72,15 @@ const MyPage = () => {
 };
 ```
 
-### 4. Link from the source page
+### 3. Link from the source page
 
-Use the anchor in the `href` hash fragment:
+Use the hash fragment in the `href`:
 
 ```tsx
-import { TARGET_ANCHORS } from '../../../hooks/useHasValidLocationHash';
-
-<FieldLink href={`/account/accessibility-and-appearance#${TARGET_ANCHORS.myNewField}`}>
+<FieldLink href='/account/accessibility-and-appearance#myNewField'>
   {t('Go_to_accessibility_and_appearance')}
 </FieldLink>
 ```
-
-## Extending to other pages
-
-To add anchor navigation to a different page:
-
-1. Add the field key to `TARGET_ANCHORS` in `useRouterScrollToHash.ts`
-2. Set `id={TARGET_ANCHORS.key}` on the target element
-3. Add source links with `#key` in the `href`
-4. If the target is inside a collapsed section, call `useHasValidLocationHash()` to control expansion
 
 ## Why `scrollIntoView` is needed
 
@@ -122,7 +92,6 @@ Same-page hash navigation (clicking `#anchor` when already on that page) still w
 
 When adding a new anchor:
 
-- [ ] Key added to `TARGET_ANCHORS` in `useRouterScrollToHash.ts`
-- [ ] `id` attribute set on the target element using the constant
-- [ ] Source `href` includes the `#anchor` fragment using the constant
-- [ ] If layout adjustment is needed: `useHasValidLocationHash()` called in target page to control `defaultExpanded`
+- [ ] `id` attribute set on the target element
+- [ ] Source `href` includes the `#anchor` fragment
+- [ ] `useLocationHash()` can be called in target page to identify if theres hash and control collapsed content, if layout adjustment is needed
