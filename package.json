@@ -42,6 +42,7 @@
 		"lodash": "4.17.21",
 		"minimist": "1.2.6",
 		"mongodb": "6.10.0",
+		"serialize-javascript": "^7.0.5",
 		"underscore": "1.13.8",
 		"webpack": "~5.104.0",
 		"yauzl": "^3.2.1",
