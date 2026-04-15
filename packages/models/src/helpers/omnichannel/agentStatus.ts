@@ -7,7 +7,7 @@ import type { Filter } from 'mongodb';
  * * According to product rules, the primary conditions for auto-assignment are:
  * - User must have the 'livechat-agent' role.
  * - Livechat service status (`statusLivechat`) must be 'available'.
- * - User's global status must NOT be 'offline' (Bots are exempt from this rule).
+ * - User's global status must NOT be 'offline' Exceptions: Bots are exempt from this rule, and this check is skipped entirely if the `acceptChatsWithNoAgents` setting is enabled (allowing offline human agents to be assigned).
  * - If the "Accept new omnichannel requests when the agent is idle" (aka `Livechat_enabled_when_agent_idle`) setting is OFF,
  * then the statusConnection must NOT be 'away'.
  */
