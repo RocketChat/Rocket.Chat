@@ -84,6 +84,8 @@
   "ABAC_Room_Attributes": "Room Attributes",
   "ABAC_Logs": "Logs",
   "ABAC_Invalid_attribute": "Invalid characters in attribute name or values",
+  "Alternative_text": "Alternative text",
+  "Alt_text_description": "Describe the image to give context, including for blind and low-vision users and when it fails to load.",
   "Enable_ABAC_and_LDAP_to_sync": "Enable ABAC and LDAP to be able to sync",
   "AI_Actions": "AI actions",
   "API": "API",

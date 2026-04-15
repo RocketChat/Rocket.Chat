@@ -39,7 +39,7 @@ jobs:
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - uses: rharkor/caching-for-turbo@v1.8
+      - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
 
       - uses: ./.github/actions/restore-packages
 
