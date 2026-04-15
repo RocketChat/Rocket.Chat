@@ -90,3 +90,87 @@ Alternatively, restructured the pipeline to avoid the conditional field removal 
 
 **Affected files:**
 - `packages/models/src/models/LivechatDepartment.ts`
+
+## Known Issues (not yet fixed)
+
+The following issues were detected by the AWS `awslabs/amazon-documentdb-tools/compat-tool` against
+DocumentDB 5.0 and have not yet been addressed. They will fail or behave incorrectly on DocumentDB
+but continue to work on MongoDB.
+
+### `$trunc` aggregation operator (5 sites)
+
+**Problem:** `$trunc` is listed as unsupported on DocumentDB 5.0. It is used inside aggregation
+pipelines to truncate averages/seconds for livechat and session dashboards.
+
+**Occurrences:**
+- `packages/models/src/models/LivechatRooms.ts:965,1008,1052` — average response-time calculations
+- `packages/models/src/models/LivechatAgentActivity.ts:137` — `averageAvailableServiceTimeInSeconds`
+- `packages/models/src/models/Sessions.ts:213` — session duration in seconds
+
+**Possible replacements:**
+- `$floor` — equivalent for non-negative inputs (all call sites here).
+- `{ $subtract: [x, { $mod: [x, 1] }] }` — generic polyfill, works for negatives too.
+
+### `$merge` aggregation stage (migration only)
+
+**Problem:** `$merge` is unsupported on DocumentDB 5.0. It is used once, inside migration 332, to
+backfill `contactName` / `contactUsername` on older `CallHistory` entries.
+
+**Occurrence:**
+- `apps/meteor/server/startup/migrations/v332.ts:40`
+
+**Impact:** Only runs during version upgrade, not at runtime. On DocumentDB the migration will fail
+and subsequent migrations will not run. Workaround: rewrite with `find` + `bulkWrite`, or use `$out`
+(supported) to a staging collection followed by an application-side merge.
+
+### Collation-indexed case-insensitive lookups
+
+**Problem:** DocumentDB 5.0 does not support the `collation` index option. Seven indexes declaring
+`{ locale: 'en', strength: 2 }` for case-insensitive username/email lookups are skipped at index
+creation time by `filterIndexesForDocumentDB`. The indexes are not created; queries still run but
+fall back to collection scans, and the collation semantics are lost — callers that depend on
+case-insensitive matching must handle case at query time.
+
+**Affected models:**
+- `packages/models/src/models/Users.ts` — 5 indexes on `username` / `emails.address`
+- `packages/models/src/models/LivechatContacts.ts` — 2 indexes on `name` / `emails.address`
+
+### Wildcard indexes
+
+**Problem:** DocumentDB 5.0 does not support wildcard indexes (`{ 'path.$**': 1 }`). Two are
+defined in livechat models over custom-fields subdocuments and are skipped at index creation time
+by `filterIndexesForDocumentDB`. Ad-hoc queries over `livechatData.*` fall back to collection scans.
+
+**Affected models:**
+- `packages/models/src/models/LivechatVisitors.ts:37`
+- `packages/models/src/models/LivechatRooms.ts:71`
+
+### Text indexes
+
+**Problem:** Text indexes are skipped at index creation time by `filterIndexesForDocumentDB`.
+`$text` / `$search` queries fall back to whatever alternative path the callers use (e.g. regex).
+
+**Affected models:**
+- `packages/models/src/models/Messages.ts:56` — `{ msg: 'text' }`
+
+## Compatibility scan
+
+To re-run the compat scan against this codebase:
+
+```bash
+git ls-files | grep -E '\.(ts|tsx|js|jsx|mjs|cjs)$' \
+  | grep -v -E '(^|/)(node_modules|uikit-playground|_build|dist|\.meteor)/' > /tmp/files.txt
+
+mkdir -p /tmp/docdb-src && cd /tmp/docdb-src \
+  && while IFS= read -r f; do mkdir -p "$(dirname "$f")" \
+       && ln -sf "$(git rev-parse --show-toplevel)/$f" "$f"; done < /tmp/files.txt
+
+git clone --depth 1 https://github.com/awslabs/amazon-documentdb-tools.git /tmp/aws-docdb-tools
+python3 /tmp/aws-docdb-tools/compat-tool/compat.py \
+  --directory /tmp/docdb-src --version 5.0 \
+  --included-extensions ts,tsx,js,jsx,mjs,cjs
+```
+
+Note: the compat-tool matches string literals as well as real operators, so expect false positives
+when a field happens to be named after an aggregation operator (e.g. `'$score'` as a field path,
+or `$where` in the client-side minimongo emulator at `packages/mongo-adapter/`).
