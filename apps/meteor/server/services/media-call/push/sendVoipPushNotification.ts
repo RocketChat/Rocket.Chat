@@ -12,16 +12,14 @@ import { getUserAvatarURL } from '../../../../app/utils/server/getUserAvatarURL'
 import { getUserPreference } from '../../../../app/utils/server/lib/getUserPreference';
 import { logger } from '../logger';
 
-async function getActorUser<T extends Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'>>(
-	actor: MediaCallContact,
-): Promise<T | null> {
+async function getActorUser(actor: MediaCallContact): Promise<Pick<IUser, '_id' | 'name' | 'username' | 'freeSwitchExtension'> | null> {
 	const options = { projection: { name: 1, username: 1, freeSwitchExtension: 1 } };
 
 	switch (actor.type) {
 		case 'user':
-			return Users.findOneById<T>(actor.id, options);
+			return Users.findOneById(actor.id, options);
 		case 'sip':
-			return Users.findOneByFreeSwitchExtension<T>(actor.id, options);
+			return Users.findOneByFreeSwitchExtension(actor.id, options);
 	}
 }
 
@@ -76,10 +74,6 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 		callee: { id: userId },
 	} = call;
 
-	if (!(await getUserPreference(userId, 'enableMobileRinging'))) {
-		return;
-	}
-
 	// If the call was accepted, we don't need to notify when it ends
 	if (call.acceptedAt && event !== 'answer') {
 		return;
@@ -91,6 +85,10 @@ async function sendVoipPushNotificationAsync(callId: IMediaCall['_id'], event: V
 		return;
 	}
 	if (type === 'incoming_call' && event !== 'new') {
+		return;
+	}
+
+	if (!(await getUserPreference(userId, 'enableMobileRinging'))) {
 		return;
 	}
 
