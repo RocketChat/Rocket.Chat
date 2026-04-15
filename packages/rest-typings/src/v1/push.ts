@@ -1,4 +1,4 @@
-import type { IPushTokenTypes } from '@rocket.chat/core-typings';
+import type { IMessage, IPushNotificationConfig, IPushTokenTypes } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 
@@ -52,8 +52,10 @@ export const isPushGetProps = ajvQuery.compile<PushGetProps>(PushGetPropsSchema)
 export type PushEndpoints = {
 	'/v1/push.get': {
 		GET: (params: PushGetProps) => {
-			data: Record<string, unknown>;
-			success: true;
+			data: {
+				message: IMessage;
+				notification: IPushNotificationConfig;
+			};
 		};
 	};
 	'/v1/push.info': {
