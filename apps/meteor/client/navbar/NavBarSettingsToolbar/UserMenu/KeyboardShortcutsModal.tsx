@@ -17,6 +17,11 @@ type ShortcutDefinition = {
 
 const SHORTCUTS: readonly ShortcutDefinition[] = [
 	{
+		id: 'openKeyboardShortcuts',
+		descriptionKey: 'Keyboard_Shortcuts_Show_Keyboard_Shortcuts',
+		combos: [{ mac: ['Shift', '?'], other: ['Shift', '?'] }],
+	},
+	{
 		id: 'openSearch',
 		descriptionKey: 'Keyboard_Shortcuts_Open_Channel_Slash_User_Search',
 		combos: [
