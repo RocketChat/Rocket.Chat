@@ -62,10 +62,18 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 
 		oAuthRouter.get(
 			`/oauth/${config.provider}`,
+			(req, _res, next) => {
+				console.log('authenticate', req.session, req.session.id);
+				next();
+			},
 			passport.authenticate(config.provider, { scope: config.scope, prompt: 'consent', failureRedirect: '/login' }),
 		);
 		oAuthRouter.get(
 			`/oauth/${config.provider}/callback`,
+			(req, _res, next) => {
+				console.log('callback', req.session, req.session.id);
+				next();
+			},
 			passport.authenticate(config.provider, { failureRedirect: '/login' }),
 			async (req, res) => {
 				const oAuthUser = req.user as IUser;
@@ -76,7 +84,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 				}
 
 				const stampedToken = Accounts._generateStampedLoginToken();
-				Accounts._insertLoginToken(oAuthUser._id, stampedToken);
+				await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
 
 				res.redirect(`/home?resumeToken=${stampedToken.token}`);
 
