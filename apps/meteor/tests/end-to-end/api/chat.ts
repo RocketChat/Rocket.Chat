@@ -2522,6 +2522,15 @@ describe('[Chat]', () => {
 	});
 
 	describe('/chat.search', () => {
+		// chat.search relies on a MongoDB text index on `messages.msg`. DocumentDB does not
+		// support text indexes on instance-based clusters, so `filterIndexesForDocumentDB`
+		// strips that index at startup and the endpoint fails with "text index required for
+		// $text query". Skip the suite when running against DocumentDB — the functional
+		// degradation is documented in docs/documentdb-compatibility.md.
+		const isDocumentDB = process.env.DOCUMENTDB === 'true';
+		before(function () {
+			if (isDocumentDB) this.skip();
+		});
 		before(async () => {
 			const sendMessage = (text: string) =>
 				request

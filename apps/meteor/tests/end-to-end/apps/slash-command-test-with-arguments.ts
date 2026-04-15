@@ -32,7 +32,13 @@ import { IS_EE } from '../../e2e/config/constants';
 				})
 				.end(done);
 		});
-		it('should have sent the message correctly', (done) => {
+		it('should have sent the message correctly', function (done) {
+			// Depends on chat.search which requires a MongoDB text index on `messages.msg`;
+			// DocumentDB filters that index out at startup. See docs/documentdb-compatibility.md.
+			if (process.env.DOCUMENTDB === 'true') {
+				this.skip();
+				return;
+			}
 			const searchText = `Slashcommand \'test-with-arguments\' successfully executed with arguments: "${params}"`;
 			void request
 				.get(api('chat.search'))
