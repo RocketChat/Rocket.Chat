@@ -173,7 +173,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					...(data.systemMessages &&
 						!hideSysMes && {
 							systemMessages: data.systemMessages,
-					}),
+						}),
 					retentionEnabled,
 					retentionOverrideGlobal,
 					...(retentionEnabled &&
