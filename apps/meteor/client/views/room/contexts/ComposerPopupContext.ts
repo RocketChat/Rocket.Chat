@@ -20,6 +20,7 @@ export type ComposerPopupOption<T extends { _id: string; sort?: number } = { _id
 	preview?: boolean;
 
 	getValue: (item: T) => string;
+	onSelect?: (item: T) => void
 
 	renderItem?: ({ item }: { item: T }) => ReactElement;
 	disabled?: boolean;

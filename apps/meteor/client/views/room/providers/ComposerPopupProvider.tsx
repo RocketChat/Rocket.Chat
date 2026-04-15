@@ -28,6 +28,7 @@ import { ComposerPopupContext, createMessageBoxPopupConfig } from '../contexts/C
 import useCannedResponsesQuery from './hooks/useCannedResponsesQuery';
 import { normalizeUsername } from '../../../../lib/utils/normalizeUsername';
 import { pipe } from '../../../lib/cachedStores/pipe';
+import {useEmojiPickerData} from '../../../contexts/EmojiPickerContext';
 
 export type CannedResponse = { _id: string; shortcut: string; text: string };
 
@@ -84,6 +85,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 	const queryClient = useQueryClient();
 	const uid = useUserId();
 	const call = useMethod('getSlashCommandPreviews');
+	const { addRecentEmoji } = useEmojiPickerData(); 
 
 	const value: ComposerPopupContextValue = useMemo(() => {
 		return [
@@ -182,7 +184,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					return rooms as unknown as ComposerBoxPopupRoomProps[];
 				},
 				getValue: (item) => `${item.name || item.fname}`,
-				renderItem: ({ item }) => <ComposerBoxPopupRoom {...item} />,
+				renderItem: ({ item }) => <ComposerBoxPopupRoom {...item} />,  
 			}) as any,
 			useEmoji &&
 				createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
@@ -242,6 +244,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 					},
 					getValue: (item) => `${item._id.substring(1)}`,
 					renderItem: ({ item }) => <ComposerBoxPopupEmoji {...item} />,
+					onSelect: (item) => addRecentEmoji(item._id.slice(1, -1)),
 				}),
 			createMessageBoxPopupConfig<ComposerBoxPopupEmojiProps>({
 				title: t('Emoji'),
@@ -256,7 +259,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 
 					const emojiSort = (recents: string[]) => (a: { _id: string }, b: { _id: string }) => {
 						let idA = a._id;
-						let idB = a._id;
+						let idB = b._id;
 
 						if (recents.includes(a._id)) {
 							idA = recents.indexOf(a._id) + idA;
@@ -299,6 +302,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 				},
 				getValue: (item) => `${item._id}`,
 				renderItem: ({ item }) => <ComposerBoxPopupEmoji {...item} />,
+				onSelect: (item) => addRecentEmoji(item._id.slice(1, -1)),
 			}),
 
 			createMessageBoxPopupConfig<ComposerBoxPopupSlashCommandProps>({
@@ -387,6 +391,7 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 			}),
 		].filter(Boolean);
 	}, [
+		addRecentEmoji,
 		call,
 		cannedResponseEnabled,
 		encrypted,
