@@ -60,8 +60,12 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 	});
 
 	test.afterEach(async ({ api }) => {
-		if (livechatPage) await livechatPage.context().close();
-		if (omnichannelPage) await omnichannelPage.context().close();
+		if (livechatPage) {
+			await livechatPage.context().close();
+		}
+		if (omnichannelPage) {
+			await omnichannelPage.context().close();
+		}
 
 		await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 300);
 	});

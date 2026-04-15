@@ -49,7 +49,9 @@ test.describe('OC - Routing to Idle Agents', () => {
 	});
 
 	test.afterEach(async ({ api }) => {
-		if (livechatPage) await livechatPage.context().close();
+		if (livechatPage) {
+			await livechatPage.context().close();
+		}
 
 		await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 300);
 	});
