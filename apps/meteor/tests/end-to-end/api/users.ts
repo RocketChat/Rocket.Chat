@@ -1669,6 +1669,16 @@ describe('[Users]', () => {
 				});
 			});
 		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request
+				.get(api('users.list'))
+				.expect('Content-Type', 'application/json')
+				.expect(401)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('status', 'error');
+				});
+		});
 	});
 
 	describe('Avatars', () => {
