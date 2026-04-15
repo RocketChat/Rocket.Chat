@@ -1,12 +1,11 @@
 # API Endpoint Migration Guide
 
-Migration from the legacy `API.v1.addRoute()` pattern to the new `API.v1.get()` / `.post()` / `.put()` / `.delete()` pattern with request/response validation.
-
+Migration from the legacy `API.v1.addRoute()` pattern to the new `API.v1.get()`, `.post()`, `.put()`, and `.delete()` pattern with request/response validation.
 ## Why
 
 - **Response validation** in test mode catches mismatches between code and types
 - **Type safety** with AJV-compiled schemas for request and response
-- **OpenAPI docs** generated automatically from schemas
+- **OpenAPI docs** are generated automatically from schemas
 - **Consistent error format** across all endpoints
 
 ## Legacy Pattern (BEFORE)
