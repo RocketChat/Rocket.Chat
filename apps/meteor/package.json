@@ -206,7 +206,7 @@
 		"express-rate-limit": "^5.5.1",
 		"fastq": "^1.17.1",
 		"fflate": "^0.8.2",
-		"file-type": "^16.5.4",
+		"file-type": "^21.3.1",
 		"filenamify": "^4.3.0",
 		"filesize": "9.0.11",
 		"generate-password": "^1.7.1",
