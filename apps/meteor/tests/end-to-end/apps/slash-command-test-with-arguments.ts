@@ -37,7 +37,6 @@ import { IS_EE } from '../../e2e/config/constants';
 			// DocumentDB filters that index out at startup. See docs/documentdb-compatibility.md.
 			if (process.env.DOCUMENTDB === 'true') {
 				this.skip();
-				return;
 			}
 			const searchText = `Slashcommand \'test-with-arguments\' successfully executed with arguments: "${params}"`;
 			void request
