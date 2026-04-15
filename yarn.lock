@@ -9909,6 +9909,7 @@ __metadata:
     "@types/cssom": "npm:^0.4.3"
     "@types/ejson": "npm:^2.2.2"
     "@types/express": "npm:^4.17.25"
+    "@types/express-flash": "npm:^0"
     "@types/express-rate-limit": "npm:^5.1.3"
     "@types/express-session": "npm:^1"
     "@types/google-libphonenumber": "npm:^7.4.30"
@@ -10018,6 +10019,7 @@ __metadata:
     exif-be-gone: "npm:^1.5.1"
     expiry-map: "npm:^2.0.0"
     express: "npm:^4.21.2"
+    express-flash: "npm:^0.0.2"
     express-rate-limit: "npm:^5.5.1"
     express-session: "npm:^1.19.0"
     fast-glob: "npm:^3.3.3"
@@ -14113,6 +14115,15 @@ __metadata:
   version: 3.0.3
   resolution: "@types/events@npm:3.0.3"
   checksum: 10/50af9312fab001fd6bd4bb3ff65830f940877e6778de140a92481a0d9bf5f4853d44ec758a8800ef60e0598ac43ed1b5688116a3c65906ae54e989278d6c7c82
+  languageName: node
+  linkType: hard
+
+"@types/express-flash@npm:^0":
+  version: 0.0.5
+  resolution: "@types/express-flash@npm:0.0.5"
+  dependencies:
+    "@types/express": "npm:*"
+  checksum: 10/0985a1c73f6ad0fd95902495f5a8cad757476c64cce3b75109c4a0875f569e97b1184cc358ffb646da335145c9a4ebaa993739c68f7ead8457ffd1269ee2a9da
   languageName: node
   linkType: hard
 
@@ -18920,6 +18931,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"connect-flash@npm:0.1.x":
+  version: 0.1.1
+  resolution: "connect-flash@npm:0.1.1"
+  checksum: 10/243e103ec1fdf056e33eccdb3ccad20abe50b3c6e9b8a2a6391708cb0fcc550d116cdc2208fedd04be338ac0a45f8e7af2300042d8190c4342658f738b4d4e3a
+  languageName: node
+  linkType: hard
+
 "connect-history-api-fallback@npm:^2.0.0":
   version: 2.0.0
   resolution: "connect-history-api-fallback@npm:2.0.0"
@@ -22189,6 +22207,15 @@ __metadata:
   version: 3.1.1
   resolution: "exponential-backoff@npm:3.1.1"
   checksum: 10/2d9bbb6473de7051f96790d5f9a678f32e60ed0aa70741dc7fdc96fec8d631124ec3374ac144387604f05afff9500f31a1d45bd9eee4cdc2e4f9ad2d9b9d5dbd
+  languageName: node
+  linkType: hard
+
+"express-flash@npm:^0.0.2":
+  version: 0.0.2
+  resolution: "express-flash@npm:0.0.2"
+  dependencies:
+    connect-flash: "npm:0.1.x"
+  checksum: 10/2979158276da72fa5b68d6b370183ae756dcd7ffd038885ca099706c147cf0b4b1e25387ae36691eab2ed7211c07fad3450a3c31dc2c8b15c0f057043ed33bb5
   languageName: node
   linkType: hard
 

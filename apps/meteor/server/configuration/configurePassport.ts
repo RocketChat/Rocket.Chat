@@ -1,6 +1,7 @@
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import express from 'express';
+import flash from 'express-flash';
 import session from 'express-session';
 import { WebApp } from 'meteor/webapp';
 import passport from 'passport';
@@ -28,6 +29,7 @@ oAuthRouter.use(
 
 oAuthRouter.use(passport.initialize());
 oAuthRouter.use(passport.session());
+oAuthRouter.use(flash());
 
 export const configurePassport = (settings: ICachedSettings) => {
 	passport.serializeUser((user: any, done) => {
