@@ -1,6 +1,6 @@
-import type { IMessage, IPushNotificationConfig, IPushTokenTypes } from '@rocket.chat/core-typings';
+import type { IPushTokenTypes } from '@rocket.chat/core-typings';
 
-import { ajv } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
 
 type PushTokenProps = {
 	id?: string;
@@ -47,21 +47,20 @@ const PushGetPropsSchema = {
 	additionalProperties: false,
 };
 
-export const isPushGetProps = ajv.compile<PushGetProps>(PushGetPropsSchema);
+export const isPushGetProps = ajvQuery.compile<PushGetProps>(PushGetPropsSchema);
 
 export type PushEndpoints = {
 	'/v1/push.get': {
 		GET: (params: PushGetProps) => {
-			data: {
-				message: IMessage;
-				notification: IPushNotificationConfig;
-			};
+			data: Record<string, unknown>;
+			success: true;
 		};
 	};
 	'/v1/push.info': {
 		GET: () => {
 			pushGatewayEnabled: boolean;
 			defaultPushGateway: boolean;
+			success: true;
 		};
 	};
 };

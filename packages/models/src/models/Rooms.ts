@@ -314,7 +314,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.find(query, options);
 	}
 
-	findRoomsByNameOrFnameStarting(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
+	findRoomsByNameOrFnameStarting(name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): FindCursor<IRoom> {
 		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query: Filter<IRoom> = {
@@ -408,11 +408,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(
-		name: NonNullable<IRoom['name']>,
+		name: IRoom['name'],
 		groupsToAccept: Array<IRoom['_id']>,
 		options: FindOptions<IRoom> = {},
 	): FindCursor<IRoom> {
-		const nameRegex = new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
+		const nameRegex = name && new RegExp(`^${escapeRegExp(name).trim()}`, 'i');
 
 		const query: Filter<IRoom> = {
 			teamId: {
@@ -424,7 +424,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			_id: {
 				$in: groupsToAccept,
 			},
-			name: nameRegex,
+			...(name && { name: nameRegex }),
 			$and: [{ $or: [{ federated: { $exists: false } }, { federated: false }] }],
 		};
 		return this.find(query, options);
@@ -610,7 +610,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		});
 	}
 
-	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
+	findOneByNameOrFname(name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}): Promise<IRoom | null> {
 		const query = {
 			$or: [
 				{
@@ -634,7 +634,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne(query, options);
 	}
 
-	async findOneByNonValidatedName(name: NonNullable<IRoom['name'] | IRoom['fname']>, options: FindOptions<IRoom> = {}) {
+	async findOneByNonValidatedName(name: NonNullable<IRoom['name']>, options: FindOptions<IRoom> = {}) {
 		const room = await this.findOneByNameOrFname(name, options);
 		if (room) {
 			return room;
