@@ -1,4 +1,5 @@
 import { Accordion, AccordionItem, Box, Callout, FieldGroup } from '@rocket.chat/fuselage';
+import { ExternalLink } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation, Trans } from 'react-i18next';
 
@@ -24,9 +25,7 @@ const SettingsPage = () => {
 					<Callout>
 						<Trans i18nKey='ABAC_Enabled_callout'>
 							User attributes are synchronized via LDAP
-							<a href={links.go.abacLDAPDocs} rel='noopener noreferrer' target='_blank'>
-								Learn more
-							</a>
+							<ExternalLink to={links.go.abacLDAPDocs}>Learn more</ExternalLink>
 						</Trans>
 					</Callout>
 				)}
