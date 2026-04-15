@@ -1,5 +1,6 @@
 import { Margins } from '@rocket.chat/fuselage';
 import { PageContent } from '@rocket.chat/ui-client';
+import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
 import { useRef } from 'react';
 
@@ -23,5 +24,5 @@ const Template: StoryFn<typeof CustomSoundsTable> = (args) => {
 
 export const Default = Template.bind({});
 Default.args = {
-	onClick: (soundId: string) => () => console.log('Clicked sound', soundId),
+	onClick: () => action('clicked'),
 };

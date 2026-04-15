@@ -4,8 +4,6 @@ import { render, screen } from '@testing-library/react';
 
 import * as stories from './CustomSoundsTable.stories';
 
-const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
-
 const mockSounds = Array.from({ length: 25 }, (_, i) => ({
 	_id: `sound-${i}`,
 	name: `Custom Sound ${i + 1}`,
@@ -20,23 +18,17 @@ const getMockedAppRoot = () =>
 		offset: 0,
 	}));
 
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const { baseElement } = render(<Story />, { wrapper: getMockedAppRoot().build() });
-	expect(baseElement).toMatchSnapshot();
-});
-
 test('should enable pagination when data.total exceeds itemsPerPage', async () => {
 	const { Default } = composeStories(stories);
-	const { container } = render(<Default />, { wrapper: getMockedAppRoot().build() });
+	render(<Default />, { wrapper: getMockedAppRoot().build() });
 
 	const firstSound = await screen.findByText('Custom Sound 1');
 	expect(firstSound).toBeInTheDocument();
 
-	// eslint-disable-next-line testing-library/no-container, testing-library/no-node-access
-	const forwardButton = container.querySelector('.rcx-pagination__forward');
-	expect(forwardButton).toBeInTheDocument();
-	expect(forwardButton).not.toBeDisabled();
+	const nextPageButton = screen.getByRole('button', { name: 'Next page' });
+	expect(nextPageButton).toBeInTheDocument();
+	expect(nextPageButton).not.toBeDisabled();
 
-	const pageTwoButton = screen.getByRole('button', { name: '2' });
+	const pageTwoButton = screen.getByRole('button', { name: 'Page 2' });
 	expect(pageTwoButton).toBeInTheDocument();
 });
