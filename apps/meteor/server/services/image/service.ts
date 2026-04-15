@@ -5,7 +5,7 @@ import { ServiceClassInternal } from '@rocket.chat/core-services';
 import type { IMediaService, ResizeResult } from '@rocket.chat/core-services';
 import { streamToBuffer } from '@rocket.chat/tools';
 import ExifTransformer from 'exif-be-gone';
-import { fileTypeFromBuffer } from 'file-type';
+import ft from 'file-type';
 import isSvg from 'is-svg';
 import sharp from 'sharp';
 
@@ -80,7 +80,7 @@ export class MediaService extends ServiceClassInternal implements IMediaService 
 	}
 
 	async isImage(buff: Buffer): Promise<boolean> {
-		const data = await fileTypeFromBuffer(buff);
+		const data = await ft.fromBuffer(buff);
 		if (!data?.ext) {
 			return false || this.isSvgImage(buff);
 		}
