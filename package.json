@@ -46,7 +46,7 @@
 		"fast-xml-parser@npm:5.3.6": "^5.5.7",
 		"follow-redirects": "^1.16.0",
 		"handlebars": "^4.7.9",
-		"lodash": "4.17.21",
+		"lodash": "^4.18.0",
 		"markdown-it": "^14.1.1",
 		"minimist": "1.2.6",
 		"mongodb": "6.10.0",
