@@ -175,3 +175,69 @@ python3 /tmp/aws-docdb-tools/compat-tool/compat.py \
 Note: the compat-tool matches string literals as well as real operators, so expect false positives
 when a field happens to be named after an aggregation operator (e.g. `'$score'` as a field path,
 or `$where` in the client-side minimongo emulator at `packages/mongo-adapter/`).
+
+### Version compatibility matrix
+
+The compat scan was re-run against DocumentDB 4.0, 5.0 and 8.0 on the post-fix codebase. Only
+real findings are listed — the `$where` (minimongo emulator) and `$score` (field path in
+`Subscriptions.ts`) false positives are omitted.
+
+| Target version | Real unsupported operators | Notes |
+|---|---|---|
+| **4.0** | `$meta` (15×), `$text` (12×), `$search` (12×) | Full-text search paths break. Would require reworking message search and all `textScore` projections. |
+| **5.0** (current target) | none | All fixes in sections 1-7 land on this version. |
+| **8.0** | none | Every operator filtered by `filterIndexesForDocumentDB` (text, wildcard, collation) is natively supported; `$trunc` and the migration-332 `$merge` would also work. Sections 6-7 and parts of the runtime index filter could be reverted if the deployment ever moves to 8.0. |
+
+Scanning test fixtures (`*.spec.ts`, `**/__tests__/**`, `*.json`) separately produced zero
+additional findings — no unsupported operators live in static test data.
+
+## Concerns not covered by the compat-tool
+
+`compat.py` only pattern-matches operator strings inside source files. The following runtime
+concerns must be verified separately; none of them are covered by sections 1-7 above.
+
+### Transactions
+
+- Centralised wrapper: `apps/meteor/server/database/utils.ts` (`wrapInSessionTransaction`,
+  `transactionOptions`).
+- Already sets `readPreference: primary` inside every transaction, which DocumentDB requires
+  (transactions fail with "Read preference in a transaction must be primary" under a
+  `secondaryPreferred` client). Direct `client.startSession()` call sites
+  (`app/livechat/server/lib/closeRoom.ts`, `app/livechat/server/lib/QueueManager.ts`,
+  `ee/server/patches/verifyContactChannel.ts`) reuse this `transactionOptions` object.
+- `shouldRetryTransaction` already inspects `TransientTransactionError` /
+  `UnknownTransactionCommitResult` labels, which DocumentDB also emits — no change needed.
+
+### Change streams
+
+- Two call sites: `BaseRaw.watch(pipeline)` (generic helper) and
+  `InstanceStatusRaw.watchActiveInstances()` (only used by the EE TCP transporter in
+  `ee/server/local-services/instance/service.ts:122`). Both use the basic `.watch()` form with no
+  `fullDocumentBeforeChange` or `changeStreamPreAndPostImages` options — both of which are
+  unsupported on DocumentDB 5.0.
+- **DocumentDB caveat**: change-stream log retention defaults to **3 hours** (compared with
+  MongoDB's oplog sizing). If an EE instance is offline longer than that and tries to resume with
+  a stored token, the resume will fail and the consumer must re-establish from the current tip.
+  This default can be raised via the `change_stream_log_retention_duration` cluster parameter.
+
+### Connection-string requirements
+
+- DocumentDB requires `retryWrites=false`. The E2E test harness already pins this
+  (`apps/meteor/tests/e2e/config/constants.ts:11`); production `MONGO_URL` strings must do the
+  same. No source-level sweep is possible here — enforce in the deployment layer.
+
+### Low-cardinality indexes
+
+- AWS explicitly flags this as a DocumentDB performance footgun (see
+  `awslabs/amazon-documentdb-tools/performance/index-cardinality-detection`): fields whose distinct
+  values are less than ~1% of the collection (boolean-ish fields like `rooms.open`, `rooms.t`,
+  `subscriptions.open`, `sessions.year`) expand the B-tree disproportionately on DocumentDB.
+  There is no static-analysis fix; run the cardinality detection tool against a representative
+  dataset to decide which indexes to drop or rewrite.
+
+### Document size
+
+- MongoDB's BSON hard limit is 16MB. AWS's `large-doc-finder` defaults its warning threshold to
+  **8MB**, indicating that DocumentDB performance degrades well before the hard cap. The hot
+  collections to watch in Rocket.Chat are `messages` (attachments, translations, reactions) and
+  `users` (custom fields, OAuth service blobs). Run `large-doc-finder` against real data to confirm.
