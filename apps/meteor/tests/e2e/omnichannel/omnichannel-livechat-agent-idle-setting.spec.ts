@@ -32,7 +32,7 @@ test.describe('OC - Routing to Idle Agents', () => {
 			createAgent(api, 'user1'),
 			createDepartment(api, { name: 'Idle Routing Dept' }),
 			setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 300),
-			expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).status()).toBe(200),
+			expect(await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).toBeOK(),
 		]);
 
 		await Promise.all([addAgentToDepartment(api, { department: testDepartment.data, agentId: 'user1' })]);
@@ -62,7 +62,7 @@ test.describe('OC - Routing to Idle Agents', () => {
 			agent.delete(),
 			setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection'),
 			setSettingValueById(api, 'Livechat_enabled_when_agent_idle', false),
-			expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', false)).status()).toBe(200),
+			expect(await setSettingValueById(api, 'Omnichannel_enable_department_removal', false)).toBeOK(),
 		]);
 	});
 

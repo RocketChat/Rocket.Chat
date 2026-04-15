@@ -40,7 +40,7 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 			createDepartment(api, { name: 'Initial Dept' }),
 			createDepartment(api, { name: 'Forward Dept', allowReceiveForwardOffline: true }),
 			setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 300),
-			expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).status()).toBe(200),
+			expect(await setSettingValueById(api, 'Omnichannel_enable_department_removal', true)).toBeOK(),
 		]);
 
 		await Promise.all([
@@ -79,7 +79,7 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 			awayAgent.delete(),
 			setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection'),
 			setSettingValueById(api, 'Livechat_enabled_when_agent_idle', false),
-			expect((await setSettingValueById(api, 'Omnichannel_enable_department_removal', false)).status()).toBe(200),
+			expect(await setSettingValueById(api, 'Omnichannel_enable_department_removal', false)).toBeOK(),
 		]);
 	});
 
