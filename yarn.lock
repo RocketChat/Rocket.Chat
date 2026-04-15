@@ -5680,6 +5680,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@nodable/entities@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@nodable/entities@npm:1.1.0"
+  checksum: 10/708e656b1e5d4e9e1b962c16cee4d05a3aed8f3e7e855214f81475f026abb3491fc6a7b4b37f0136ae31ddc7fce43ff4d69b14e1369f14ac1c51a0c2f010411d
+  languageName: node
+  linkType: hard
+
 "@node-oauth/formats@npm:1.0.0":
   version: 1.0.0
   resolution: "@node-oauth/formats@npm:1.0.0"
@@ -22326,29 +22333,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:5.3.6":
-  version: 5.3.6
-  resolution: "fast-xml-parser@npm:5.3.6"
-  dependencies:
-    strnum: "npm:^2.1.2"
-  bin:
-    fxparser: src/cli/cli.js
-  checksum: 10/03527ab0bdf49d960fdc8f6088cd0715c052e06b68b39459da87b1a1fbb3439a855b2d83cbf3c400e983b8e668b396296b072a4dd5c63403cf1e618c9326b6df
-  languageName: node
-  linkType: hard
-
-"fast-xml-parser@npm:^4.2.4":
-  version: 4.5.1
-  resolution: "fast-xml-parser@npm:4.5.1"
-  dependencies:
-    strnum: "npm:^1.0.5"
-  bin:
-    fxparser: src/cli/cli.js
-  checksum: 10/17ce5908e798de1b6d12a39d26f04ac3b582ea9ce28f3a6e3b9c401edcb74790f28df84d75377608af53308ff8caad2b244ba1283cc4b5b4cf4cc7bd532a9983
-  languageName: node
-  linkType: hard
-
-"fast-xml-parser@npm:^4.4.1":
+"fast-xml-parser@npm:^4.5.5":
   version: 4.5.6
   resolution: "fast-xml-parser@npm:4.5.6"
   dependencies:
@@ -22369,6 +22354,20 @@ __metadata:
   bin:
     fxparser: src/cli/cli.js
   checksum: 10/a43d188b2b9cadafb216af28b3eb31987dc5089fe05785f109b5df95bacace9fadf9e211df393ea04c316652a0ed2489fd2c168406860ff387cc091d8f5e43f6
+  languageName: node
+  linkType: hard
+
+"fast-xml-parser@npm:^5.5.7":
+  version: 5.6.0
+  resolution: "fast-xml-parser@npm:5.6.0"
+  dependencies:
+    "@nodable/entities": "npm:^1.1.0"
+    fast-xml-builder: "npm:^1.1.4"
+    path-expression-matcher: "npm:^1.5.0"
+    strnum: "npm:^2.2.3"
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: 10/8ac171a569f997772b21a9cfdf0d94e3b376d211d914582afcf777a40919e8cb724e676f09e2959b2a5fe24c829fd59fc499ff7252d8c6722b8d8228d9015c0f
   languageName: node
   linkType: hard
 
@@ -30254,7 +30253,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-expression-matcher@npm:^1.1.3, path-expression-matcher@npm:^1.4.0":
+"path-expression-matcher@npm:^1.1.3, path-expression-matcher@npm:^1.4.0, path-expression-matcher@npm:^1.5.0":
   version: 1.5.0
   resolution: "path-expression-matcher@npm:1.5.0"
   checksum: 10/28303bb9ee6831e6df14c10cd3f3f7b2d7c8d7f788d8bdb7440136fd696064c82a3e264999a0764d28e39f698275fc03a5493bec93c57ef4a22566280367dd64
@@ -35170,13 +35169,6 @@ __metadata:
   version: 1.0.5
   resolution: "strnum@npm:1.0.5"
   checksum: 10/d3117975db8372d4d7b2c07601ed2f65bf21cc48d741f37a8617b76370d228f2ec26336e53791ebc3638264d23ca54e6c241f57f8c69bd4941c63c79440525ca
-  languageName: node
-  linkType: hard
-
-"strnum@npm:^2.1.2":
-  version: 2.2.0
-  resolution: "strnum@npm:2.2.0"
-  checksum: 10/2969dbc8441f5af1b55db1d2fcea64a8f912de18515b57f85574e66bdb8f30ae76c419cf1390b343d72d687e2aea5aca82390f18b9e0de45d6bcc6d605eb9385
   languageName: node
   linkType: hard
 
