@@ -1,10 +1,10 @@
 import type { Page } from '@playwright/test';
 
-import { sleep } from '../../../lib/utils/sleep';
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
+import { HomeOmnichannel } from '../page-objects';
 import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
@@ -16,14 +16,14 @@ test.use({ storageState: Users.user1.state });
 test.describe('OC - Routing to Idle Agents', () => {
 	test.skip(!IS_EE, 'Enterprise Edition Only');
 
+	let poHomeOmnichannel: HomeOmnichannel;
 	let poLivechat: OmnichannelLiveChat;
+
 	let livechatPage: Page;
 
 	let agent: Awaited<ReturnType<typeof createAgent>>;
-
-	let visitor: { name: string; email: string };
-
 	let testDepartment: Awaited<ReturnType<typeof createDepartment>>;
+	let visitor: { name: string; email: string };
 
 	const routingMethods = ['Auto_Selection', 'Load_Balancing', 'Load_Rotation'];
 
@@ -40,12 +40,12 @@ test.describe('OC - Routing to Idle Agents', () => {
 
 	test.beforeEach(async ({ page, browser, api }) => {
 		visitor = createFakeVisitor();
+		poHomeOmnichannel = new HomeOmnichannel(page);
+		await page.goto('/');
+		await page.locator('#main-content').waitFor();
 
 		({ page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false));
 		poLivechat = new OmnichannelLiveChat(livechatPage, api);
-
-		await page.goto('/');
-		await page.locator('#main-content').waitFor();
 	});
 
 	test.afterEach(async ({ api }) => {
@@ -66,7 +66,7 @@ test.describe('OC - Routing to Idle Agents', () => {
 
 	routingMethods.forEach((routingMethod) => {
 		test.describe(`Routing method: ${routingMethod}`, () => {
-			test(`should not route to idle agents`, async ({ api, page }) => {
+			test(`should not route to idle agents`, async ({ api }) => {
 				await test.step(`Setup routing method to ${routingMethod} and ignore idle agents`, async () => {
 					await setSettingValueById(api, 'Livechat_Routing_Method', routingMethod);
 					await setSettingValueById(api, 'Livechat_enabled_when_agent_idle', false);
@@ -80,10 +80,9 @@ test.describe('OC - Routing to Idle Agents', () => {
 
 					// Force Agent to become away by idle timeout
 					await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 1);
-					await page.reload();
-					await page.locator('#main-content').waitFor();
+					await poHomeOmnichannel.page.reload();
+					await expect(poHomeOmnichannel.navbar.getUserStatusBadge('away')).toBeVisible();
 
-					await sleep(2000); // we give the agent time to go statusConnection: away
 					await poLivechat.btnSendMessageToOnlineAgent.click();
 				});
 
@@ -94,7 +93,7 @@ test.describe('OC - Routing to Idle Agents', () => {
 				});
 			});
 
-			test(`should route to agents even if they are idle when setting is enabled`, async ({ api, page }) => {
+			test(`should route to agents even if they are idle when setting is enabled`, async ({ api }) => {
 				await test.step(`Setup routing method to ${routingMethod} and allow idle agents`, async () => {
 					await setSettingValueById(api, 'Livechat_Routing_Method', routingMethod);
 					await setSettingValueById(api, 'Livechat_enabled_when_agent_idle', true);
@@ -102,10 +101,8 @@ test.describe('OC - Routing to Idle Agents', () => {
 
 				await test.step('Force agent to become away by idle timeout', async () => {
 					await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 1);
-					await page.reload();
-					await page.locator('#main-content').waitFor();
-
-					await sleep(2000); // we give the agent time to go statusConnection: away
+					await poHomeOmnichannel.page.reload();
+					await expect(poHomeOmnichannel.navbar.getUserStatusBadge('away')).toBeVisible();
 				});
 
 				await test.step('Visitor initiates chat', async () => {

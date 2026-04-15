@@ -1,7 +1,6 @@
 import type { Page } from '@playwright/test';
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { sleep } from '../../../lib/utils/sleep';
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
@@ -19,7 +18,8 @@ test.use({ storageState: Users.user1.state });
 test.describe('OC - Forwarding to away agents (EE)', () => {
 	test.skip(!IS_EE, 'Enterprise Edition Only');
 
-	let poHomeOmnichannel: HomeOmnichannel;
+	let poHomeOmnichannelOnlineAgent: HomeOmnichannel;
+	let poHomeOmnichannelAwayAgent: HomeOmnichannel;
 	let poLivechat: OmnichannelLiveChat;
 
 	let livechatPage: Page;
@@ -28,10 +28,9 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 	let manager: Awaited<ReturnType<typeof createManager>>;
 	let onlineAgent: Awaited<ReturnType<typeof createAgent>>;
 	let awayAgent: Awaited<ReturnType<typeof createAgent>>;
-	let visitor: { name: string; email: string };
-
 	let initialDepartment: Awaited<ReturnType<typeof createDepartment>>;
 	let forwardToOfflineDepartment: Awaited<ReturnType<typeof createDepartment>>;
+	let visitor: { name: string; email: string };
 
 	test.beforeAll(async ({ api }) => {
 		[manager, onlineAgent, awayAgent, initialDepartment, forwardToOfflineDepartment] = await Promise.all([
@@ -52,13 +51,12 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 
 	test.beforeEach(async ({ page, browser, api }) => {
 		visitor = createFakeVisitor();
-		poHomeOmnichannel = new HomeOmnichannel(page);
+		poHomeOmnichannelOnlineAgent = new HomeOmnichannel(page);
+		await page.goto('/');
+		await page.locator('#main-content').waitFor();
 
 		({ page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false));
 		poLivechat = new OmnichannelLiveChat(livechatPage, api);
-
-		await page.goto('/');
-		await page.locator('#main-content').waitFor();
 	});
 
 	test.afterEach(async ({ api }) => {
@@ -99,18 +97,19 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 			await poLivechat.btnSendMessageToOnlineAgent.click();
 		});
 
-		await test.step('Set user2 away by idle timeout', async () => {
+		await test.step('Set user2 agent away by idle timeout', async () => {
 			await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 1);
 			({ page: omnichannelPage } = await createAuxContext(browser, Users.user2, '/', false));
-			await sleep(2000); // we give the agent time to go statusConnection: away
+			poHomeOmnichannelAwayAgent = new HomeOmnichannel(omnichannelPage);
+			await expect(poHomeOmnichannelAwayAgent.navbar.getUserStatusBadge('away')).toBeVisible();
 		});
 
 		await test.step('Manager forwards chat', async () => {
-			await poHomeOmnichannel.sidebar.getSidebarItemByName(visitor.name).click();
-			await poHomeOmnichannel.quickActionsRoomToolbar.forwardChat();
-			await poHomeOmnichannel.content.forwardChatModal.selectDepartment('Forward Dept');
-			await poHomeOmnichannel.content.forwardChatModal.btnForward.click();
-			await expect(poHomeOmnichannel.content.forwardChatModal.btnForward).not.toBeVisible();
+			await poHomeOmnichannelOnlineAgent.sidebar.getSidebarItemByName(visitor.name).click();
+			await poHomeOmnichannelOnlineAgent.quickActionsRoomToolbar.forwardChat();
+			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.selectDepartment('Forward Dept');
+			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.btnForward.click();
+			await expect(poHomeOmnichannelOnlineAgent.content.forwardChatModal.btnForward).not.toBeVisible();
 		});
 
 		await test.step('Check inquiry status via API is queued', async () => {
@@ -142,20 +141,21 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 			await poLivechat.btnSendMessageToOnlineAgent.click();
 		});
 
-		await test.step('Set user2 away by idle timeout', async () => {
+		await test.step('Set user2 agent away by idle timeout', async () => {
 			await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 1);
 			({ page: omnichannelPage } = await createAuxContext(browser, Users.user2, '/', false));
-			await sleep(2000); // we give the agent time to go statusConnection: away
+			poHomeOmnichannelAwayAgent = new HomeOmnichannel(omnichannelPage);
+			await expect(poHomeOmnichannelAwayAgent.navbar.getUserStatusBadge('away')).toBeVisible();
 		});
 
 		await test.step('Manager enables queue and forwards chat', async () => {
-			await poHomeOmnichannel.sidebar.getSidebarItemByName(visitor.name).click();
+			await poHomeOmnichannelOnlineAgent.sidebar.getSidebarItemByName(visitor.name).click();
 			await setSettingValueById(api, 'Livechat_waiting_queue', true);
 
-			await poHomeOmnichannel.quickActionsRoomToolbar.forwardChat();
-			await poHomeOmnichannel.content.forwardChatModal.selectDepartment('Forward Dept');
-			await poHomeOmnichannel.content.forwardChatModal.btnForward.click();
-			await expect(poHomeOmnichannel.content.forwardChatModal.btnForward).not.toBeVisible();
+			await poHomeOmnichannelOnlineAgent.quickActionsRoomToolbar.forwardChat();
+			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.selectDepartment('Forward Dept');
+			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.btnForward.click();
+			await expect(poHomeOmnichannelOnlineAgent.content.forwardChatModal.btnForward).not.toBeVisible();
 		});
 
 		await test.step('Check inquiry status via API is queued', async () => {
@@ -172,7 +172,6 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 	});
 
 	test('when manager forward to a department while waiting_queue is active and allowReceiveForwardOffline is false, transfer should fail', async ({
-		page,
 		api,
 		browser,
 	}) => {
@@ -191,21 +190,23 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 			await poLivechat.btnSendMessageToOnlineAgent.click();
 		});
 
-		await test.step('Set user2 away by idle timeout', async () => {
+		await test.step('Set user2 agent away by idle timeout', async () => {
 			await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 1);
 			({ page: omnichannelPage } = await createAuxContext(browser, Users.user2, '/', false));
-			await sleep(2000); // we give the agent time to go statusConnection: away
+			poHomeOmnichannelAwayAgent = new HomeOmnichannel(omnichannelPage);
+			await expect(poHomeOmnichannelAwayAgent.navbar.getUserStatusBadge('away')).toBeVisible();
 		});
 
 		await test.step('Manager attempts to forward and sees error', async () => {
-			await poHomeOmnichannel.sidebar.getSidebarItemByName(visitor.name).click();
+			await poHomeOmnichannelOnlineAgent.sidebar.getSidebarItemByName(visitor.name).click();
 			await setSettingValueById(api, 'Livechat_waiting_queue', true);
 
-			await poHomeOmnichannel.quickActionsRoomToolbar.forwardChat();
-			await poHomeOmnichannel.content.forwardChatModal.selectDepartment('Forward Dept');
-			await poHomeOmnichannel.content.forwardChatModal.btnForward.click();
-
-			await expect(page.locator('.rcx-toastbar')).toContainText('No agents are available for service on this department.');
+			await poHomeOmnichannelOnlineAgent.quickActionsRoomToolbar.forwardChat();
+			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.selectDepartment('Forward Dept');
+			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.btnForward.click();
+			await expect(poHomeOmnichannelOnlineAgent.page.locator('role=alert')).toContainText(
+				'No agents are available for service on this department.',
+			);
 		});
 
 		await test.step('Restore department setting', async () => {
@@ -232,21 +233,22 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 			await poLivechat.btnSendMessageToOnlineAgent.click();
 		});
 
-		await test.step('Set user2 away by idle timeout', async () => {
+		await test.step('Set user2 agent away by idle timeout', async () => {
 			await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 1);
 			({ page: omnichannelPage } = await createAuxContext(browser, Users.user2, '/', false));
-			await sleep(2000); // we give the agent time to go statusConnection: away
+			poHomeOmnichannelAwayAgent = new HomeOmnichannel(omnichannelPage);
+			await expect(poHomeOmnichannelAwayAgent.navbar.getUserStatusBadge('away')).toBeVisible();
 		});
 
 		await test.step('Manager forwards chat successfully', async () => {
-			await poHomeOmnichannel.sidebar.getSidebarItemByName(visitor.name).click();
-			await poHomeOmnichannel.quickActionsRoomToolbar.forwardChat();
-			await poHomeOmnichannel.content.forwardChatModal.selectDepartment('Forward Dept');
-			await poHomeOmnichannel.content.forwardChatModal.btnForward.click();
-			await expect(poHomeOmnichannel.content.forwardChatModal.btnForward).not.toBeVisible();
+			await poHomeOmnichannelOnlineAgent.sidebar.getSidebarItemByName(visitor.name).click();
+			await poHomeOmnichannelOnlineAgent.quickActionsRoomToolbar.forwardChat();
+			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.selectDepartment('Forward Dept');
+			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.btnForward.click();
+			await expect(poHomeOmnichannelOnlineAgent.content.forwardChatModal.btnForward).not.toBeVisible();
 		});
 
-		await test.step('Check room routing via API serves to agent 2', async () => {
+		await test.step('Check room routing via API serves to away agent', async () => {
 			const roomInfoResp = await api.get(`/livechat/rooms`);
 			const roomBody = await roomInfoResp.json();
 			const room = roomBody.rooms.find((room: IRoom) => room.fname === visitor.name);
