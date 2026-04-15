@@ -500,7 +500,7 @@ class PushClass {
 		this._validateDocument(notification);
 
 		try {
-			await this.sendNotification(notification, pick(options, 'skipTokenId'));
+			await this.sendNotification(notification, { skipTokenId: options.skipTokenId });
 		} catch (error: any) {
 			logger.debug({
 				msg: 'Could not send notification to user',
