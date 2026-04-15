@@ -77,13 +77,8 @@ export async function getEmailContent({ message, user, room }) {
 	}
 
 	if (hasFiles) {
-		const attachments = message.attachments || [];
-		const fileParts = files.map((file, index) => {
-			let part = escapeHTML(file.name);
-			if (attachments[index]?.description) {
-				part += `<br/><br/>${escapeHTML(attachments[index].description)}`;
-			}
-			return part;
+		const fileParts = files.map((file) => {
+			return escapeHTML(file.name);
 		});
 		contentParts.push(fileParts.join('<br/><br/>'));
 	}

@@ -1,6 +1,6 @@
 import { ajvQuery } from '../Ajv';
 
-export type UsersInfoParamsGet = ({ userId: string } | { username: string } | { importId: string }) & {
+export type UsersInfoParamsGet = ({ userId: string } | { username: string } | { importId: string } | { email: string }) & {
 	fields?: string;
 	includeUserRooms?: string;
 };
@@ -56,6 +56,23 @@ const UsersInfoParamsGetSchema = {
 				},
 			},
 			required: ['importId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				email: {
+					type: 'string',
+				},
+				includeUserRooms: {
+					type: 'string',
+				},
+				fields: {
+					type: 'string',
+					nullable: true,
+				},
+			},
+			required: ['email'],
 			additionalProperties: false,
 		},
 	],

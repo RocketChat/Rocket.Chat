@@ -73,6 +73,8 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 
 				const { users } = await sdk.rest.get('/v1/users.presence', params);
 
+				const fallbackStatus = status === 'disabled' ? UserStatus.DISABLED : UserStatus.OFFLINE;
+
 				users.forEach((user) => {
 					if (!store.has(user._id)) {
 						notify(user);
@@ -81,7 +83,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 				});
 
 				currentUids.forEach((uid) => {
-					notify({ _id: uid, status: UserStatus.OFFLINE });
+					notify({ _id: uid, status: fallbackStatus });
 				});
 
 				currentUids.clear();

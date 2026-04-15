@@ -1,3 +1,4 @@
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import type { IUser } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Icon } from '@rocket.chat/fuselage';
@@ -15,7 +16,6 @@ import {
 import { useMutation } from '@tanstack/react-query';
 import type { AllHTMLAttributes, ReactElement } from 'react';
 import { useCallback } from 'react';
-import { VisuallyHidden } from 'react-aria';
 import { Controller, useFormContext } from 'react-hook-form';
 
 import type { AccountProfileFormValues } from './getProfileInitialValues';

@@ -1,0 +1,144 @@
+diff --git a/dist/import.mjs b/dist/import.mjs
+index 668b87f9fbf77162f4baa4b02fe3586c3a2c0b26..6b6dc85b39196597504df1a287495a24ce3c0831 100644
+--- a/dist/import.mjs
++++ b/dist/import.mjs
+@@ -1,31 +1,7 @@
+-import {I18nProvider as $18f2051aff69b9bf$export$a54013f0d02a8f82, useLocale as $18f2051aff69b9bf$export$43bb16f9c6d9e3f7} from "./context.mjs";
+-import {useMessageFormatter as $321bc95feeb923dd$export$ec23bf898b1eed85} from "./useMessageFormatter.mjs";
+-import {useLocalizedStringDictionary as $fca6afa0e843324b$export$87b761675e8eaa10, useLocalizedStringFormatter as $fca6afa0e843324b$export$f12b703ca79dfbb1} from "./useLocalizedStringFormatter.mjs";
+-import {useListFormatter as $33bf17300c498528$export$a2f47a3d2973640} from "./useListFormatter.mjs";
+-import {useDateFormatter as $896ba0a80a8f4d36$export$85fd5fdf27bacc79} from "./useDateFormatter.mjs";
+-import {useNumberFormatter as $a916eb452884faea$export$b7a616150fdb9f44} from "./useNumberFormatter.mjs";
+-import {useCollator as $325a3faab7a68acd$export$a16aca283550c30d} from "./useCollator.mjs";
+-import {useFilter as $bb77f239b46e8c72$export$3274cf84b703fff} from "./useFilter.mjs";
+-
+-/*
+- * Copyright 2020 Adobe. All rights reserved.
+- * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License. You may obtain a copy
+- * of the License at http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software distributed under
+- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+- * OF ANY KIND, either express or implied. See the License for the specific language
+- * governing permissions and limitations under the License.
+- */
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-export {$18f2051aff69b9bf$export$a54013f0d02a8f82 as I18nProvider, $18f2051aff69b9bf$export$43bb16f9c6d9e3f7 as useLocale, $321bc95feeb923dd$export$ec23bf898b1eed85 as useMessageFormatter, $fca6afa0e843324b$export$f12b703ca79dfbb1 as useLocalizedStringFormatter, $fca6afa0e843324b$export$87b761675e8eaa10 as useLocalizedStringDictionary, $33bf17300c498528$export$a2f47a3d2973640 as useListFormatter, $896ba0a80a8f4d36$export$85fd5fdf27bacc79 as useDateFormatter, $a916eb452884faea$export$b7a616150fdb9f44 as useNumberFormatter, $325a3faab7a68acd$export$a16aca283550c30d as useCollator, $bb77f239b46e8c72$export$3274cf84b703fff as useFilter};
+-//# sourceMappingURL=module.js.map
++import {I18nProvider as $18f2051aff69b9bf$export$a54013f0d02a8f82, useLocale as $18f2051aff69b9bf$export$43bb16f9c6d9e3f7} from "./context.module.js";
++import {useLocalizedStringDictionary as $fca6afa0e843324b$export$87b761675e8eaa10, useLocalizedStringFormatter as $fca6afa0e843324b$export$f12b703ca79dfbb1} from "./useLocalizedStringFormatter.module.js";
++import {useNumberFormatter as $a916eb452884faea$export$b7a616150fdb9f44} from "./useNumberFormatter.module.js";
++import {useCollator as $325a3faab7a68acd$export$a16aca283550c30d} from "./useCollator.module.js";
++import {useFilter as $bb77f239b46e8c72$export$3274cf84b703fff} from "./useFilter.module.js";
++// Slim barrel: removed useDateFormatter (@internationalized/date ~40KB) and useMessageFormatter (@formatjs ~62KB)
++export {$18f2051aff69b9bf$export$a54013f0d02a8f82 as I18nProvider, $18f2051aff69b9bf$export$43bb16f9c6d9e3f7 as useLocale, $fca6afa0e843324b$export$f12b703ca79dfbb1 as useLocalizedStringFormatter, $fca6afa0e843324b$export$87b761675e8eaa10 as useLocalizedStringDictionary, $a916eb452884faea$export$b7a616150fdb9f44 as useNumberFormatter, $325a3faab7a68acd$export$a16aca283550c30d as useCollator, $bb77f239b46e8c72$export$3274cf84b703fff as useFilter};
+diff --git a/dist/main.js b/dist/main.js
+index 62b1f5e2054df93a1f3e851f191c42441cf33699..820e10e6bf275b396a46e26a8e80f46b59bffb5c 100644
+--- a/dist/main.js
++++ b/dist/main.js
+@@ -1,45 +1,13 @@
+ var $47fa5ec5ff482271$exports = require("./context.main.js");
+-var $c376aa482226bf60$exports = require("./useMessageFormatter.main.js");
+-var $fc53663969a3d00a$exports = require("./useLocalizedStringFormatter.main.js");
+-var $cb6a3e7d490e97a4$exports = require("./useListFormatter.main.js");
+-var $b80c530ff2e20243$exports = require("./useDateFormatter.main.js");
+-var $fea93c5b7c90d9f4$exports = require("./useNumberFormatter.main.js");
+-var $27a5ce66022270ad$exports = require("./useCollator.main.js");
+-var $832d079b867c7223$exports = require("./useFilter.main.js");
+-
+-
+-function $parcel$export(e, n, v, s) {
+-  Object.defineProperty(e, n, {get: v, set: s, enumerable: true, configurable: true});
+-}
+-
+-$parcel$export(module.exports, "I18nProvider", () => $47fa5ec5ff482271$exports.I18nProvider);
+-$parcel$export(module.exports, "useLocale", () => $47fa5ec5ff482271$exports.useLocale);
+-$parcel$export(module.exports, "useMessageFormatter", () => $c376aa482226bf60$exports.useMessageFormatter);
+-$parcel$export(module.exports, "useLocalizedStringFormatter", () => $fc53663969a3d00a$exports.useLocalizedStringFormatter);
+-$parcel$export(module.exports, "useLocalizedStringDictionary", () => $fc53663969a3d00a$exports.useLocalizedStringDictionary);
+-$parcel$export(module.exports, "useListFormatter", () => $cb6a3e7d490e97a4$exports.useListFormatter);
+-$parcel$export(module.exports, "useDateFormatter", () => $b80c530ff2e20243$exports.useDateFormatter);
+-$parcel$export(module.exports, "useNumberFormatter", () => $fea93c5b7c90d9f4$exports.useNumberFormatter);
+-$parcel$export(module.exports, "useCollator", () => $27a5ce66022270ad$exports.useCollator);
+-$parcel$export(module.exports, "useFilter", () => $832d079b867c7223$exports.useFilter);
+-/*
+- * Copyright 2020 Adobe. All rights reserved.
+- * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License. You may obtain a copy
+- * of the License at http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software distributed under
+- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+- * OF ANY KIND, either express or implied. See the License for the specific language
+- * governing permissions and limitations under the License.
+- */
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-//# sourceMappingURL=main.js.map
++var $fc53663969a3d00a$exports = require("./useLocalizedStringFormatter.main.js");
++var $8c5e0e4c6ca34e89$exports = require("./useNumberFormatter.main.js");
++var $22f23e74d8a5e30d$exports = require("./useCollator.main.js");
++var $7d0e351af20babe4$exports = require("./useFilter.main.js");
++// Slim barrel: removed useDateFormatter, useMessageFormatter, useListFormatter
++exports.I18nProvider = $47fa5ec5ff482271$exports.I18nProvider;
++exports.useLocale = $47fa5ec5ff482271$exports.useLocale;
++exports.useLocalizedStringFormatter = $fc53663969a3d00a$exports.useLocalizedStringFormatter;
++exports.useLocalizedStringDictionary = $fc53663969a3d00a$exports.useLocalizedStringDictionary;
++exports.useNumberFormatter = $8c5e0e4c6ca34e89$exports.useNumberFormatter;
++exports.useCollator = $22f23e74d8a5e30d$exports.useCollator;
++exports.useFilter = $7d0e351af20babe4$exports.useFilter;
+diff --git a/dist/module.js b/dist/module.js
+index fb8c9b0ce2c72d49866c95c3fd6e73cd26149775..6b6dc85b39196597504df1a287495a24ce3c0831 100644
+--- a/dist/module.js
++++ b/dist/module.js
+@@ -1,31 +1,7 @@
+ import {I18nProvider as $18f2051aff69b9bf$export$a54013f0d02a8f82, useLocale as $18f2051aff69b9bf$export$43bb16f9c6d9e3f7} from "./context.module.js";
+-import {useMessageFormatter as $321bc95feeb923dd$export$ec23bf898b1eed85} from "./useMessageFormatter.module.js";
+-import {useLocalizedStringDictionary as $fca6afa0e843324b$export$87b761675e8eaa10, useLocalizedStringFormatter as $fca6afa0e843324b$export$f12b703ca79dfbb1} from "./useLocalizedStringFormatter.module.js";
+-import {useListFormatter as $33bf17300c498528$export$a2f47a3d2973640} from "./useListFormatter.module.js";
+-import {useDateFormatter as $896ba0a80a8f4d36$export$85fd5fdf27bacc79} from "./useDateFormatter.module.js";
++import {useLocalizedStringDictionary as $fca6afa0e843324b$export$87b761675e8eaa10, useLocalizedStringFormatter as $fca6afa0e843324b$export$f12b703ca79dfbb1} from "./useLocalizedStringFormatter.module.js";
+ import {useNumberFormatter as $a916eb452884faea$export$b7a616150fdb9f44} from "./useNumberFormatter.module.js";
+ import {useCollator as $325a3faab7a68acd$export$a16aca283550c30d} from "./useCollator.module.js";
+ import {useFilter as $bb77f239b46e8c72$export$3274cf84b703fff} from "./useFilter.module.js";
+-
+-/*
+- * Copyright 2020 Adobe. All rights reserved.
+- * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+- * you may not use this file except in compliance with the License. You may obtain a copy
+- * of the License at http://www.apache.org/licenses/LICENSE-2.0
+- *
+- * Unless required by applicable law or agreed to in writing, software distributed under
+- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+- * OF ANY KIND, either express or implied. See the License for the specific language
+- * governing permissions and limitations under the License.
+- */
+-
+-
+-
+-
+-
+-
+-
+-
+-
+-export {$18f2051aff69b9bf$export$a54013f0d02a8f82 as I18nProvider, $18f2051aff69b9bf$export$43bb16f9c6d9e3f7 as useLocale, $321bc95feeb923dd$export$ec23bf898b1eed85 as useMessageFormatter, $fca6afa0e843324b$export$f12b703ca79dfbb1 as useLocalizedStringFormatter, $fca6afa0e843324b$export$87b761675e8eaa10 as useLocalizedStringDictionary, $33bf17300c498528$export$a2f47a3d2973640 as useListFormatter, $896ba0a80a8f4d36$export$85fd5fdf27bacc79 as useDateFormatter, $a916eb452884faea$export$b7a616150fdb9f44 as useNumberFormatter, $325a3faab7a68acd$export$a16aca283550c30d as useCollator, $bb77f239b46e8c72$export$3274cf84b703fff as useFilter};
+-//# sourceMappingURL=module.js.map
++// Slim barrel: removed useDateFormatter (@internationalized/date ~40KB) and useMessageFormatter (@formatjs ~62KB)
++export {$18f2051aff69b9bf$export$a54013f0d02a8f82 as I18nProvider, $18f2051aff69b9bf$export$43bb16f9c6d9e3f7 as useLocale, $fca6afa0e843324b$export$f12b703ca79dfbb1 as useLocalizedStringFormatter, $fca6afa0e843324b$export$87b761675e8eaa10 as useLocalizedStringDictionary, $a916eb452884faea$export$b7a616150fdb9f44 as useNumberFormatter, $325a3faab7a68acd$export$a16aca283550c30d as useCollator, $bb77f239b46e8c72$export$3274cf84b703fff as useFilter};
