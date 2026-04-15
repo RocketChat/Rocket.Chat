@@ -59,6 +59,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 	get users() {
 		const self = this;
 		return {
+			/*
 			all(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>> {
 				return self.rest.get('/v1/users.list', { fields: JSON.stringify(fields) });
 			},
@@ -83,6 +84,7 @@ export class RocketchatSdkLegacyImpl extends DDPSDK implements RocketchatSDKLega
 					query: JSON.stringify({ status: { $ne: 'offline' } }),
 				});
 			},
+			*/
 			info(username: string): Promise<Serialized<OperationResult<'GET', '/v1/users.info'>>> {
 				return self.rest.get('/v1/users.info', { username });
 			},

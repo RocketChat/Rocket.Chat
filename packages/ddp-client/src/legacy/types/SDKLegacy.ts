@@ -5,12 +5,12 @@ import type { StreamerCallbackArgs } from '../../types/streams';
 
 export interface APILegacy {
 	users: {
-		all(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
-		allNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
-		allIDs(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
-		online(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
-		onlineNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
-		onlineIds(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		// all(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		// allNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		// allIDs(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		// online(fields?: { name: 1; username: 1; status: 1; type: 1 }): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		// onlineNames(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
+		// onlineIds(): Promise<Serialized<OperationResult<'GET', '/v1/users.list'>>>;
 		info(username: string): Promise<Serialized<OperationResult<'GET', '/v1/users.info'>>>;
 	};
 
