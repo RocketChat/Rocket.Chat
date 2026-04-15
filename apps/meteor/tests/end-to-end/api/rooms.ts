@@ -1548,7 +1548,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter "prid" is required.');
+					expect(res.body).to.have.property('error').that.includes("must have required property 'prid'");
 				})
 				.end(done);
 		});
@@ -1562,7 +1562,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter "t_name" is required.');
+					expect(res.body).to.have.property('error').that.includes("must have required property 't_name'");
 				})
 				.end(done);
 		});
@@ -1578,7 +1578,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Body parameter "users" must be an array.');
+					expect(res.body).to.have.property('error').that.includes('must be array');
 				})
 				.end(done);
 		});
@@ -1832,7 +1832,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The 'selector' param is required");
+					expect(res.body.error).to.include("must have required property 'selector'");
 				})
 				.end(done);
 		});
@@ -1876,7 +1876,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("The 'selector' param is required");
+					expect(res.body.error).to.include("must have required property 'selector'");
 				})
 				.end(done);
 		});
@@ -1972,7 +1972,7 @@ describe('[Rooms]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal("The 'selector' param is required");
+						expect(res.body.error).to.include("must have required property 'selector'");
 					})
 					.end(done);
 			});
@@ -2364,30 +2364,39 @@ describe('[Rooms]', () => {
 				});
 		});
 
-		it('should update group name if user changes name', async () => {
-			await updateSetting('UI_Use_Real_Name', true);
-			await request
-				.post(api('users.update'))
-				.set(credentials)
-				.send({
-					userId: testUser._id,
-					data: {
-						name: `changed.name.${testUser.username}`,
-					},
-				});
+		describe('use real name', () => {
+			before(async () => {
+				await updateSetting('UI_Use_Real_Name', true);
+			});
 
-			// need to wait for the name update finish
-			await sleep(300);
+			after(async () => {
+				await updateSetting('UI_Use_Real_Name', false);
+			});
 
-			await request
-				.get(api('subscriptions.getOne'))
-				.set(credentials)
-				.query({ roomId })
-				.send()
-				.expect((res) => {
-					const { subscription } = res.body;
-					expect(subscription.fname).to.equal(`changed.name.${testUser.username}, ${testUser2.name}`);
-				});
+			it('should update group name if user changes name', async () => {
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({
+						userId: testUser._id,
+						data: {
+							name: `changed.name.${testUser.username}`,
+						},
+					});
+
+				// need to wait for the name update finish
+				await sleep(300);
+
+				await request
+					.get(api('subscriptions.getOne'))
+					.set(credentials)
+					.query({ roomId })
+					.send()
+					.expect((res) => {
+						const { subscription } = res.body;
+						expect(subscription.fname).to.equal(`changed.name.${testUser.username}, ${testUser2.name}`);
+					});
+			});
 		});
 	});
 
