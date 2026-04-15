@@ -2,8 +2,13 @@ import type { IUser } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
 
 import { callbacks } from '../../../../server/lib/callbacks';
+import { unarchiveUserSubscriptions } from '../functions/unarchiveUserSubscriptions';
 import { notifyOnSubscriptionChangedByUserId } from '../lib/notifyListener';
 
+/**
+ * When a user is deactivated, archive all their subscriptions so they
+ * no longer appear in read-receipt counts and active member lists.
+ */
 const handleDeactivateUser = async (user: IUser): Promise<void> => {
 	const { modifiedCount } = await Subscriptions.setArchivedByUserId(user._id, true);
 	if (modifiedCount) {
@@ -11,9 +16,13 @@ const handleDeactivateUser = async (user: IUser): Promise<void> => {
 	}
 };
 
+/**
+ * When a user is reactivated, restore their subscriptions — except for
+ * rooms that are themselves archived (those should stay archived).
+ */
 const handleActivateUser = async (user: IUser): Promise<void> => {
-	if (await Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId(user._id)) {
-		await Subscriptions.unarchiveByUserIdExceptForArchivedRooms(user._id);
+	const unarchived = await unarchiveUserSubscriptions(user._id);
+	if (unarchived) {
 		void notifyOnSubscriptionChangedByUserId(user._id);
 	}
 };

@@ -242,10 +242,9 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	findUnreadByUserId(userId: string): FindCursor<ISubscription>;
 
 	archiveByRoomId(roomId: string): Promise<UpdateResult | Document>;
-	hasArchivedSubscriptionsByRoomId(roomId: string): Promise<ISubscription | null>;
-	unarchiveByRoomId(roomId: string): Promise<void>;
-	hasArchivedSubscriptionsInNonArchivedRoomsByUserId(userId: string): Promise<boolean>;
-	unarchiveByUserIdExceptForArchivedRooms(userId: string): Promise<void>;
+	findArchivedByRoomId(roomId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	findArchivedByUserId(userId: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
+	unarchiveByIds(ids: string[]): Promise<UpdateResult | Document>;
 	updateNameAndAlertByRoomId(roomId: string, name: string, fname: string): Promise<UpdateResult | Document>;
 	findByRoomIdWhenUsernameExists(rid: string, options?: FindOptions<ISubscription>): FindCursor<ISubscription>;
 	setCustomFieldsDirectMessagesByUserId(userId: string, fields: Record<string, any>): Promise<UpdateResult | Document>;

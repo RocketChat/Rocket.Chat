@@ -44,6 +44,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
+	findManyArchivedByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+
 	findPaginatedByIds(
 		roomIds: Array<IRoom['_id']>,
 		options?: FindOptions<IRoom>,
