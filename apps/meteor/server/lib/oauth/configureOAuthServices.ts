@@ -1,5 +1,6 @@
 import { type IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
+import type { Request, Response, NextFunction } from 'express';
 import { Accounts } from 'meteor/accounts-base';
 import passport from 'passport';
 import type { Profile, DoneCallback } from 'passport';
@@ -70,12 +71,12 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 		);
 		oAuthRouter.get(
 			`/oauth/${config.provider}/callback`,
-			(req, _res, next) => {
+			(req: Request, _res: Response, next: NextFunction) => {
 				console.log('callback', req.session, req.session.id);
 				next();
 			},
-			passport.authenticate(config.provider, { failureRedirect: '/login' }),
-			async (req, res) => {
+			passport.authenticate(config.provider, { failureRedirect: '/login', failureFlash: true, failWithError: true }),
+			async (req: Request, res: Response) => {
 				console.log('req -> user', req.user);
 				const oAuthUser = req.user as IUser;
 
@@ -94,6 +95,18 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 						console.error('Error destroying session', err);
 					}
 				});
+			},
+			(err: any, req: Request, res: Response, _next: NextFunction) => {
+				res.send(
+					JSON.stringify(
+						{
+							error: err.message,
+							req: req.user,
+						},
+						null,
+						2,
+					),
+				);
 			},
 		);
 	});
