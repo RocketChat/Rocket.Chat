@@ -13,7 +13,7 @@ import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe.only('OC - Routing to Idle Agents', () => {
+test.describe('OC - Routing to Idle Agents', () => {
 	test.skip(!IS_EE, 'Enterprise Edition Only');
 
 	let poLivechat: OmnichannelLiveChat;
