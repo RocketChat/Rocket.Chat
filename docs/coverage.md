@@ -4,7 +4,7 @@ This document explains how code coverage instrumentation works in Rocket.Chat's 
 
 ## Overview
 
-Coverage is collected during E2E test runs (API, UI, Livechat) to measure how much of the server-side code is exercised by tests. The instrumentation uses [Istanbul](https://istanbul.js.org/)-compatible tooling, which injects counters (`__coverage__`) into the compiled code at build time.
+Coverage is collected during E2E test runs (API, UI, LiveChat) to measure how much of the server-side code is exercised by tests. The instrumentation uses [Istanbul](https://istanbul.js.org/)-compatible tooling, which injects counters (`__coverage__`) into the compiled code at build time.
 
 ## Architecture
 
