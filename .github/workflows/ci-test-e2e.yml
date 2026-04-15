@@ -65,7 +65,6 @@ env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}
   LOWERCASE_REPOSITORY: ${{ inputs.lowercase-repo }}
   DOCKER_TAG: ${{ inputs.gh-docker-tag }}-amd64
-  DDP_LOGIN_PORT: 3000
 
 jobs:
   test:
