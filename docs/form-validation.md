@@ -6,7 +6,7 @@ This document outlines the standardized form validation patterns and guidelines 
 
 The form validation standardization aims to:
 - **Improve accessibility** by keeping submit buttons enabled and letting validation run on submit
-- **Provide consistent UX** with validation triggered on form submission and re-validation on field changes
+- **Provide consistent UX** with validation triggered on form submission and re-validation on field changes.
 - **Prevent unnecessary API calls** by using dirty-checks and appropriate revalidation modes
 - **Enhance user feedback** with clear error messages and proper ARIA attributes
 
