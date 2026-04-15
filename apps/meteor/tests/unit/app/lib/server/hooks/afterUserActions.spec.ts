@@ -8,9 +8,8 @@ describe('afterUserActions hooks', () => {
 	const stubs = {
 		Subscriptions: {
 			setArchivedByUserId: sinon.stub(),
-			hasArchivedSubscriptionsInNonArchivedRoomsByUserId: sinon.stub(),
-			unarchiveByUserIdExceptForArchivedRooms: sinon.stub(),
 		},
+		unarchiveUserSubscriptions: sinon.stub(),
 		callbacks: {
 			add: sinon.stub(),
 			priority: { LOW: 1 },
@@ -33,13 +32,13 @@ describe('afterUserActions hooks', () => {
 	proxyquire.noCallThru().load('../../../../../../app/lib/server/hooks/afterUserActions', {
 		'@rocket.chat/models': { Subscriptions: stubs.Subscriptions },
 		'../../../../server/lib/callbacks': { callbacks: stubs.callbacks },
+		'../functions/unarchiveUserSubscriptions': { unarchiveUserSubscriptions: stubs.unarchiveUserSubscriptions },
 		'../lib/notifyListener': { notifyOnSubscriptionChangedByUserId: stubs.notifyOnSubscriptionChangedByUserId },
 	});
 
 	afterEach(() => {
 		stubs.Subscriptions.setArchivedByUserId.reset();
-		stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.reset();
-		stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.reset();
+		stubs.unarchiveUserSubscriptions.reset();
 		stubs.notifyOnSubscriptionChangedByUserId.reset();
 	});
 
@@ -65,23 +64,20 @@ describe('afterUserActions hooks', () => {
 
 	describe('afterActivateUser — subscription unarchiving', () => {
 		it('should unarchive subscriptions excluding archived rooms when user is reactivated', async () => {
-			stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.resolves(true);
-			stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.resolves();
+			stubs.unarchiveUserSubscriptions.resolves(true);
 
 			await handleActivateUser({ _id: userId });
 
-			expect(stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.calledOnceWith(userId)).to.be.true;
-			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.calledOnceWith(userId)).to.be.true;
+			expect(stubs.unarchiveUserSubscriptions.calledOnceWith(userId)).to.be.true;
 			expect(stubs.notifyOnSubscriptionChangedByUserId.calledWith(userId)).to.be.true;
 		});
 
 		it('should not unarchive or notify if no archived subscriptions in non-archived rooms', async () => {
-			stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.resolves(false);
+			stubs.unarchiveUserSubscriptions.resolves(false);
 
 			await handleActivateUser({ _id: userId });
 
-			expect(stubs.Subscriptions.hasArchivedSubscriptionsInNonArchivedRoomsByUserId.calledOnceWith(userId)).to.be.true;
-			expect(stubs.Subscriptions.unarchiveByUserIdExceptForArchivedRooms.called).to.be.false;
+			expect(stubs.unarchiveUserSubscriptions.calledOnceWith(userId)).to.be.true;
 			expect(stubs.notifyOnSubscriptionChangedByUserId.called).to.be.false;
 		});
 	});
