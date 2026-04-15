@@ -168,13 +168,14 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	const { insertedId } = await Integrations.insertOne(strippedIntegrationData);
 
-	if (insertedId) {
-		void notifyOnIntegrationChanged({ ...integrationData, _id: insertedId }, 'inserted');
+	const integrationStored = await Integrations.findOne({ _id: insertedId });
+
+	if (!integrationStored) {
+		throw new Error('Error inserting integration');
 	}
+	void notifyOnIntegrationChanged({ ...integrationStored, _id: insertedId }, 'inserted');
 
-	integrationData._id = insertedId;
-
-	return integrationData;
+	return integrationStored as IIncomingIntegration;
 };
 
 Meteor.methods<ServerMethods>({
