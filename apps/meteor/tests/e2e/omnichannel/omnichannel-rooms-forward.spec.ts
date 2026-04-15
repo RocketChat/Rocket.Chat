@@ -63,7 +63,6 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 		if (livechatPage) await livechatPage.context().close();
 		if (omnichannelPage) await omnichannelPage.context().close();
 
-		await setSettingValueById(api, 'Livechat_waiting_queue', false);
 		await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 300);
 	});
 
@@ -169,6 +168,10 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 			expect(inquiryBody.inquiry.status).toBe('queued');
 			expect(inquiryBody.inquiry.department).toBe(forwardToOfflineDepartment.data._id);
 		});
+
+		await test.step('Disable waiting queue', async () => {
+			await setSettingValueById(api, 'Livechat_waiting_queue', false);
+		});
 	});
 
 	test('when manager forward to a department while waiting_queue is active and allowReceiveForwardOffline is false, transfer should fail', async ({
@@ -213,6 +216,10 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 			await api.put(`/livechat/department/${forwardToOfflineDepartment.data._id}`, {
 				department: { ...forwardToOfflineDepartment.data, allowReceiveForwardOffline: true },
 			});
+		});
+
+		await test.step('Disable waiting queue', async () => {
+			await setSettingValueById(api, 'Livechat_waiting_queue', false);
 		});
 	});
 
