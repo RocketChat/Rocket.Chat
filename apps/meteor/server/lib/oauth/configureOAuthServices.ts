@@ -21,7 +21,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 				{
 					clientID: config.clientId,
 					clientSecret: config.clientSecret,
-					callbackURL: `${siteUrl}oauth/${config.provider}/callback`,
+					callbackURL: `${siteUrl}/oauth/${config.provider}/callback`,
 					state: true,
 					pkce: true,
 					scope: config.scope,
@@ -76,6 +76,7 @@ export const configureOAuthServices = (oauthServiceConfig: OAuthServiceConfig[],
 			},
 			passport.authenticate(config.provider, { failureRedirect: '/login' }),
 			async (req, res) => {
+				console.log('req -> user', req.user);
 				const oAuthUser = req.user as IUser;
 
 				if (!oAuthUser) {
