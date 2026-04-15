@@ -2,17 +2,8 @@ import { usePrefersReducedMotion } from '@rocket.chat/fuselage-hooks';
 import type { RouterContextValue } from '@rocket.chat/ui-contexts';
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 
-export const TARGET_ANCHORS = {
-	clockMode: 'clockMode',
-	hideUsernames: 'hideUsernames',
-	hideRoles: 'hideRoles',
-} as const;
-
-export const availableHashes: Set<string> = new Set(Object.values(TARGET_ANCHORS));
-
 /**
- * Scrolls to the element matching the current URL hash on route changes,
- * only if the hash matches a registered anchor in `TARGET_ANCHORS`.
+ * Scrolls to the element matching the current URL hash on route changes.
  *
  * @see docs/anchor-navigation.md
  */
@@ -25,7 +16,7 @@ export const useRouterScrollToHash = (router: RouterContextValue) => {
 	useEffect(() => {
 		const id = hash.slice(1);
 
-		if (!availableHashes.has(id)) {
+		if (!id) {
 			previousHash.current = hash;
 			return;
 		}
