@@ -108,6 +108,7 @@ const SidebarItemTemplateWithData = ({
 			data-unread={highlighted}
 			unread={highlighted}
 			selected={selected}
+			aria-current={selected ? 'page' : undefined}
 			href={href}
 			onClick={(): void => {
 				!selected && sidebar.toggle();

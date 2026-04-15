@@ -43,6 +43,14 @@ export default {
 			type: 'json',
 		});
 
+		// Strip the `env` option that addon-webpack5-compiler-swc injects on swc-loader;
+		// it conflicts with `jsc.target` from `.swcrc` (Meteor's Modern Build Stack).
+		for (const rule of (config.module?.rules ?? []) as any[]) {
+			for (const use of Array.isArray(rule?.use) ? rule.use : []) {
+				if (use?.loader?.includes?.('swc-loader') && use.options) delete use.options.env;
+			}
+		}
+
 		config.plugins?.push(
 			new webpack.NormalModuleReplacementPlugin(/^meteor/, require.resolve('./mocks/meteor.js')),
 			new webpack.NormalModuleReplacementPlugin(/(app)\/*.*\/(server)\/*/, require.resolve('./mocks/empty.ts')),

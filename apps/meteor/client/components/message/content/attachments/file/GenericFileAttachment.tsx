@@ -13,9 +13,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getFileExtension } from '../../../../../../lib/utils/getFileExtension';
 import { forAttachmentDownload, registerDownloadForUid } from '../../../../../hooks/useDownloadFromServiceWorker';
-import MarkdownText from '../../../../MarkdownText';
 import MessageCollapsible from '../../../MessageCollapsible';
-import MessageContentBody from '../../../MessageContentBody';
 import AttachmentSize from '../structure/AttachmentSize';
 
 const openDocumentViewer = window.RocketChatDesktop?.openDocumentViewer;
@@ -24,8 +22,6 @@ type GenericFileAttachmentProps = MessageAttachmentBase;
 
 const GenericFileAttachment = ({
 	title,
-	description,
-	descriptionMd,
 	title_link: link,
 	title_link_download: hasDownload,
 	size,
@@ -72,7 +68,6 @@ const GenericFileAttachment = ({
 
 	return (
 		<>
-			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
 				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
 					<MessageGenericPreviewContent

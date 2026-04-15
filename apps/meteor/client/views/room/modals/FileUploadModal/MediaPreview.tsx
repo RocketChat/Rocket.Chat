@@ -34,9 +34,10 @@ const useFileAsDataURL = (file: File): [loaded: boolean, url: null | FileReader[
 type MediaPreviewProps = {
 	file: File;
 	fileType: FilePreviewType;
+	description?: string;
 };
 
-const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
+const MediaPreview = ({ file, fileType, description }: MediaPreviewProps): ReactElement => {
 	const [loaded, url] = useFileAsDataURL(file);
 	const { t } = useTranslation();
 
@@ -54,7 +55,7 @@ const MediaPreview = ({ file, fileType }: MediaPreviewProps): ReactElement => {
 	}
 
 	if (fileType === FilePreviewType.IMAGE) {
-		return <ImagePreview url={url} file={file} />;
+		return <ImagePreview url={url} file={file} alt={description} />;
 	}
 
 	if (fileType === FilePreviewType.VIDEO) {

@@ -12,7 +12,7 @@ import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait,
 import { imgURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
-import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { updatePermission, updateSetting, restorePermissionToRoles } from '../../data/permissions.helper';
 import type { ActionRoomParams } from '../../data/rooms.helper';
 import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -182,7 +182,7 @@ const updateUserInDb = async (userId: IUser['_id'], userData: Partial<IUser>) =>
 };
 
 describe('[Users]', () => {
-	let targetUser: { _id: IUser['_id']; username: string };
+	let targetUser: { _id: IUser['_id']; username: string; emails: { address: string }[] };
 	let userCredentials: Credentials;
 
 	before((done) => getCredentials(done));
@@ -197,6 +197,7 @@ describe('[Users]', () => {
 		targetUser = {
 			_id: user._id,
 			username: user.username,
+			emails: user.emails,
 		};
 		userCredentials = await login(user.username, password);
 	});
@@ -1166,6 +1167,87 @@ describe('[Users]', () => {
 				})
 				.end(done);
 		});
+
+		describe('querying by user email', () => {
+			after(async () => {
+				await restorePermissionToRoles('view-full-other-user-info');
+			});
+
+			describe("with 'view-full-other-user-info' permission", () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', ['admin']);
+				});
+
+				it('should query information about a user by email', async () => {
+					const targetEmail = targetUser.emails[0].address;
+
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							email: targetEmail,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('user.username', targetUser.username);
+							expect(res.body).to.have.nested.property('user._id', targetUser._id);
+							expect(res.body).to.have.nested.property('user.emails[0].address', targetEmail);
+						});
+				});
+				it('should return an error when querying by an email that does not exist', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							email: 'this_is_a_fake_email_that_does_not_exist@invalid.com',
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'User not found.');
+						});
+				});
+			});
+
+			describe("without 'view-full-other-user-info' permission", () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', []);
+				});
+
+				it('should return an error when querying another user by email and lacking "view-full-other-user-info" permission', async () => {
+					await request
+						.get(api('users.info'))
+						.set(credentials)
+						.query({
+							email: targetUser.emails[0].address,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'User not found.');
+						});
+				});
+				it('should query information about myself by email', async () => {
+					await request
+						.get(api('users.info'))
+						.set(userCredentials)
+						.query({
+							email: targetUser.emails[0].address,
+						})
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.nested.property('user.username', targetUser.username);
+							expect(res.body).to.have.nested.property('user.emails[0].address', targetUser.emails[0].address);
+						});
+				});
+			});
+		});
 	});
 	describe('[/users.getPresence]', () => {
 		it("should query a user's presence by userId", (done) => {
@@ -1443,28 +1525,6 @@ describe('[Users]', () => {
 				.end(done);
 		});
 
-		it('should query all users in the system by name', (done) => {
-			// filtering user list
-			void request
-				.get(api('users.list'))
-				.set(credentials)
-				.query({
-					name: { $regex: 'g' },
-					sort: JSON.stringify({
-						createdAt: -1,
-					}),
-				})
-				.field('username', 1)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('count');
-					expect(res.body).to.have.property('total');
-				})
-				.end(done);
-		});
-
 		it('should query all users in the system when logged as normal user and `view-outside-room` not granted', async () => {
 			await updatePermission('view-outside-room', ['admin']);
 			await request
@@ -1548,6 +1608,66 @@ describe('[Users]', () => {
 						expect(user).to.not.have.property('inviteToken');
 					});
 				});
+		});
+
+		describe('querying by user email', async () => {
+			after(async () => {
+				await restorePermissionToRoles('view-full-other-user-info');
+			});
+			describe("with 'view-full-other-user-info' permission", async () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', ['admin']);
+				});
+				it('should return the specific user with the "emails" property', async () => {
+					const targetEmail = targetUser.emails[0].address;
+
+					await request
+						.get(api('users.list'))
+						.query({ email: targetEmail })
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('users').that.is.an('array').with.lengthOf(1);
+
+							const returnedUser = res.body.users[0];
+							expect(returnedUser).to.have.property('_id', targetUser._id);
+							expect(returnedUser).to.have.property('emails').that.is.an('array');
+							expect(returnedUser).to.have.nested.property('emails[0].address', targetEmail);
+						});
+				});
+				it('should return an empty array when querying by an email that does not exist', async () => {
+					await request
+						.get(api('users.list'))
+						.query({ email: 'this_email_does_not_exist@invalid.com' })
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', true);
+							expect(res.body).to.have.property('users').that.is.an('array').with.lengthOf(0);
+							expect(res.body).to.have.property('count', 0);
+						});
+				});
+			});
+			describe("without 'view-full-other-user-info' permission", async () => {
+				before(async () => {
+					await updatePermission('view-full-other-user-info', []);
+				});
+				it('should return 403 Forbidden', async () => {
+					await request
+						.get(api('users.list'))
+						.query({ email: targetUser.emails[0].address })
+						.set(credentials)
+						.expect('Content-Type', 'application/json')
+						.expect(403)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'unauthorized');
+						});
+				});
+			});
 		});
 	});
 

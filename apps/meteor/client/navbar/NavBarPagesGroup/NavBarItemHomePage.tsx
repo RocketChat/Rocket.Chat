@@ -15,7 +15,11 @@ const NavBarItemHomePage = (props: NavBarItemHomePageProps) => {
 	});
 	const currentRoute = useCurrentRoutePath();
 
-	return showHome ? <NavBarItem {...props} icon='home' onClick={handleHome} pressed={currentRoute?.includes('/home')} /> : null;
+	const homeRoute = currentRoute?.includes('/home');
+
+	return showHome ? (
+		<NavBarItem {...props} icon='home' onClick={handleHome} aria-current={homeRoute ? 'page' : undefined} pressed={homeRoute} />
+	) : null;
 };
 
 export default NavBarItemHomePage;
