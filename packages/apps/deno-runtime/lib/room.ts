@@ -1,7 +1,15 @@
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom.ts';
 import type { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.ts';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser.ts';
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager.ts';
+
+/** Minimal interface covering the only AppManager capability used by Room */
+interface IRoomManager {
+	getBridges(): {
+		getInternalBridge(): {
+			doGetUsernamesOfRoomById(id: string | undefined): Promise<Array<string>>;
+		};
+	};
+}
 
 const PrivateManager = Symbol('RoomPrivateManager');
 
@@ -36,7 +44,7 @@ export class Room {
 
 	private _USERNAMES: Promise<Array<string>> | undefined;
 
-	private [PrivateManager]: AppManager | undefined;
+	private [PrivateManager]: IRoomManager | undefined;
 
 	/**
 	 * @deprecated
@@ -51,7 +59,7 @@ export class Room {
 
 	public set usernames(usernames) {}
 
-	public constructor(room: IRoom, manager: AppManager) {
+	public constructor(room: IRoom, manager: IRoomManager) {
 		Object.assign(this, room);
 
 		Object.defineProperty(this, PrivateManager, {
