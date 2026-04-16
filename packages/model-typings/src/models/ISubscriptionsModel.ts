@@ -287,6 +287,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	removeRoleById(_id: string, role: string): Promise<UpdateResult>;
 	updateDirectFNameByName(name: string, fname: string): Promise<UpdateResult | Document>;
 	setArchivedByUserId(userId: string, archived: boolean): Promise<UpdateResult | Document>;
+	setArchivedForDMsWithUsername(username: string, archived: boolean): Promise<UpdateResult | Document>;
 	updateUserHighlights(userId: string, userHighlights: any): Promise<UpdateResult | Document>;
 	updateNotificationUserPreferences(
 		userId: string,

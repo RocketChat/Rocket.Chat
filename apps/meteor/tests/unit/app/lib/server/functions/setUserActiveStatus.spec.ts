@@ -22,6 +22,9 @@ describe('setUserActiveStatus', () => {
 			setDmReadOnlyByUserId: sandbox.stub(),
 			getDirectConversationsByUserId: sandbox.stub(),
 		},
+		Subscriptions: {
+			setArchivedForDMsWithUsername: sandbox.stub(),
+		},
 		check: sandbox.stub(),
 		callbacks: {
 			run: sandbox.stub(),
@@ -32,6 +35,7 @@ describe('setUserActiveStatus', () => {
 		notifyOnUserChange: sandbox.stub(),
 		notifyOnRoomChangedByUserDM: sandbox.stub(),
 		notifyOnRoomChangedById: sandbox.stub(),
+		notifyOnSubscriptionChangedByNameAndRoomType: sandbox.stub(),
 		getSubscribedRoomsForUserWithDetails: sandbox.stub(),
 		shouldRemoveOrChangeOwner: sandbox.stub(),
 		getUserSingleOwnedRooms: sandbox.stub(),
@@ -56,7 +60,7 @@ describe('setUserActiveStatus', () => {
 		'meteor/meteor': { Meteor: { Error } },
 		'meteor/accounts-base': { Accounts: stubs.Accounts },
 		'@rocket.chat/core-typings': { isUserFederated: stubs.isUserFederated, isDirectMessageRoom: sinon.stub() },
-		'@rocket.chat/models': { Users: stubs.Users, Rooms: stubs.Rooms },
+		'@rocket.chat/models': { Users: stubs.Users, Rooms: stubs.Rooms, Subscriptions: stubs.Subscriptions },
 		'./closeOmnichannelConversations': { closeOmnichannelConversations: stubs.closeOmnichannelConversations },
 		'./getRoomsWithSingleOwner': {
 			shouldRemoveOrChangeOwner: stubs.shouldRemoveOrChangeOwner,
@@ -71,6 +75,7 @@ describe('setUserActiveStatus', () => {
 			notifyOnRoomChangedById: stubs.notifyOnRoomChangedById,
 			notifyOnRoomChangedByUserDM: stubs.notifyOnRoomChangedByUserDM,
 			notifyOnUserChange: stubs.notifyOnUserChange,
+			notifyOnSubscriptionChangedByNameAndRoomType: stubs.notifyOnSubscriptionChangedByNameAndRoomType,
 		},
 	});
 
@@ -91,9 +96,11 @@ describe('setUserActiveStatus', () => {
 		stubs.settings.get.returns(false);
 		stubs.Rooms.setDmReadOnlyByUserId.resolves({ modifiedCount: 0 });
 		stubs.Rooms.getDirectConversationsByUserId.returns({ toArray: sinon.stub().resolves([]) });
+		stubs.Subscriptions.setArchivedForDMsWithUsername.resolves({ modifiedCount: 0 });
 		stubs.notifyOnRoomChangedById.returns(undefined);
 		stubs.notifyOnUserChange.returns(undefined);
 		stubs.notifyOnRoomChangedByUserDM.returns(undefined);
+		stubs.notifyOnSubscriptionChangedByNameAndRoomType.returns(undefined);
 	});
 
 	afterEach(() => {
@@ -102,12 +109,16 @@ describe('setUserActiveStatus', () => {
 
 	describe('Successful status changes', () => {
 		it('should deactivate a user successfully', async () => {
+			stubs.Subscriptions.setArchivedForDMsWithUsername.resolves({ modifiedCount: 1 });
+
 			const result = await setUserActiveStatus(userId, false);
 
 			expect(result).to.be.true;
 			expect(stubs.Users.setUserActive.calledWith(userId, false)).to.be.true;
 			expect(stubs.Users.unsetLoginTokens.calledWith(userId)).to.be.true;
 			expect(stubs.Rooms.setDmReadOnlyByUserId.calledWith(userId, undefined, true, false)).to.be.true;
+			expect(stubs.Subscriptions.setArchivedForDMsWithUsername.calledWith(username, true)).to.be.true;
+			expect(stubs.notifyOnSubscriptionChangedByNameAndRoomType.calledWith({ t: 'd', name: username })).to.be.true;
 			expect(stubs.callbacks.run.calledWith('afterDeactivateUser', sinon.match({ _id: userId }))).to.be.true;
 			expect(
 				stubs.notifyOnUserChange.calledWith(
@@ -125,6 +136,7 @@ describe('setUserActiveStatus', () => {
 			expect(result).to.be.true;
 			expect(stubs.callbacks.run.calledWith('beforeActivateUser', sinon.match({ _id: userId }))).to.be.true;
 			expect(stubs.Users.setUserActive.calledWith(userId, true)).to.be.true;
+			expect(stubs.Subscriptions.setArchivedForDMsWithUsername.calledWith(username, false)).to.be.true;
 			expect(stubs.callbacks.run.calledWith('afterActivateUser', sinon.match({ _id: userId }))).to.be.true;
 			expect(stubs.Users.unsetReason.calledWith(userId)).to.be.true;
 			expect(stubs.notifyOnUserChange.calledWith(sinon.match({ clientAction: 'updated', id: userId, diff: { active: true } }))).to.be.true;
