@@ -31,7 +31,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		daysAndMaxUses: { days: '1', maxUses: '0' },
 	});
 
-	// 🔥 NEW: guard to prevent duplicate toast
+
 	const [toastShown, setToastShown] = useState(false);
 
 	const { closeTab } = useRoomToolbox();
@@ -85,7 +85,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		queryFn: async () => findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) }),
 	});
 
-	// ✅ FIXED: prevent duplicate toast
+	
 	useEffect(() => {
 		if (isSuccess && !toastShown) {
 			dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
@@ -99,7 +99,7 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 			daysAndMaxUses,
 			isEditing: false,
 		}));
-		setToastShown(false); // 🔥 reset for new generation
+		setToastShown(false);
 	});
 
 	if (isError) {
