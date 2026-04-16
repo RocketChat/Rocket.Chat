@@ -10,6 +10,7 @@ type MessageComposerFileProps = {
 	fileFormat: string;
 	showPreview?: boolean;
 	previewUrl?: string;
+	alt?: string;
 	actionIcon: ReactElement;
 	error?: boolean;
 	disabled?: boolean;
@@ -22,6 +23,7 @@ const MessageComposerFile = ({
 	fileFormat,
 	showPreview,
 	previewUrl,
+	alt = '',
 	actionIcon,
 	error,
 	disabled,
@@ -82,7 +84,7 @@ const MessageComposerFile = ({
 			{...props}
 		>
 			{showPreview ? (
-				<Box minWidth='x48'>{previewUrl ? <Avatar url={previewUrl} size='x48' /> : <Skeleton variant='rect' size={48} />}</Box>
+				<Box minWidth='x48'>{previewUrl ? <Avatar url={previewUrl} size='x48' alt={alt} /> : <Skeleton variant='rect' size={48} />}</Box>
 			) : (
 				<FilePreviewIcon format={fileFormat} />
 			)}

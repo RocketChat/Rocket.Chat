@@ -86,6 +86,7 @@ const MessageComposerGenericFile = ({
 			fileTitle={upload.file.name}
 			fileSubtitle={`${fileSize} - ${fileExtension}`}
 			previewUrl={shouldPreview ? previewUrl : undefined}
+			alt={upload.description}
 			fileFormat={getFileExtension(upload.file.name)}
 			showPreview={shouldPreview}
 			actionIcon={actionIcon}
