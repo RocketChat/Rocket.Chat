@@ -27,7 +27,11 @@ import { MongoInternals } from 'meteor/mongo';
 // outer promise, producing a deadlock and an unhealthy container on startup.
 if (process.env.DOCUMENTDB === 'true') {
 	const QUEUE_KEY = Symbol.for('rocketchat.documentdb.index.queues');
-	const PATCHED_KEY = Symbol.for('rocketchat.documentdb.index.patched');
+	// Must match the symbol used by @rocket.chat/models/src/patchIndex.ts so
+	// that if both modules resolve to the same Collection class (possible inside
+	// the Meteor bundle) only the first patch wraps createIndex; the second is
+	// a no-op. A mismatch causes double-wrapping → double-enqueue → deadlock.
+	const PATCHED_KEY = Symbol.for('rocketchat.documentdb.index.patch');
 	if (!globalThis[QUEUE_KEY]) {
 		globalThis[QUEUE_KEY] = new Map();
 	}
