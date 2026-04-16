@@ -1,15 +1,15 @@
 import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
-import moment from 'moment';
+import { format } from 'date-fns';
 import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { useChannelsList } from './useChannelsList';
 import DownloadDataButton from '../../../../components/dashboards/DownloadDataButton';
 import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import Growth from '../../../../components/dataView/Growth';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
-import { useChannelsList } from './useChannelsList';
 
 const ChannelsOverview = (): ReactElement => {
 	const [period, periodSelectorProps] = usePeriodSelectorState('last 7 days', 'last 30 days', 'last 90 days');
@@ -86,8 +86,8 @@ const ChannelsOverview = (): ReactElement => {
 										</Margins>
 										{name}
 									</TableCell>
-									<TableCell>{moment(createdAt).format('L')}</TableCell>
-									<TableCell>{moment(updatedAt).format('L')}</TableCell>
+									<TableCell>{format(new Date(createdAt ?? new Date()), 'P')}</TableCell>
+									<TableCell>{format(new Date(updatedAt ?? new Date()), 'P')}</TableCell>
 									<TableCell>
 										{messagesCount} <Growth>{messagesVariation}</Growth>
 									</TableCell>

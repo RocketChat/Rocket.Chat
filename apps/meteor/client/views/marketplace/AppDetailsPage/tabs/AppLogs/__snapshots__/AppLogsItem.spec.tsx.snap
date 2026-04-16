@@ -81,7 +81,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
             >
               Time
             </div>
-            June 2, 2025 1:06 PM
+            June 2nd, 2025 1:06 PM
           </div>
           <div
             class="rcx-box rcx-box--full rcx-css-s4z8zc"

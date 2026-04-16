@@ -8,6 +8,7 @@ export const MockedRouterContext = ({ children, router }: { children: ReactNode;
 				subscribeToRouteChange: () => () => undefined,
 				getLocationPathname: () => '/',
 				getLocationSearch: () => '',
+				getLocationHash: () => '',
 				getRouteParameters: () => ({}),
 				getSearchParameters: () => ({}),
 				getRouteName: () => undefined,

@@ -135,6 +135,153 @@ export class TestEndpoint extends ApiEndpoint {
 
 </details>
 
+#### External ID Test (resolveVisitor API)
+
+File name: `external-id-test_0.0.1.zip`
+
+An app that tests the `ILivechatCreator.resolveVisitor()` and `ILivechatUpdater.updateVisitorExternalId()` APIs for resolving and updating livechat visitors by external identifiers. This is used to test the WhatsApp BSUID (Business Scoped User ID) support and progressive visitor enrichment.
+
+**Endpoints:**
+
+1. `POST /api/apps/public/:appId/resolve-visitor` - Resolve visitor by externalId with phone/email fallback
+2. `POST /api/apps/public/:appId/update-external-id` - Update visitor's externalId for this app
+
+**Request body (resolve-visitor):**
+```json
+{
+  "externalId": { "entityId": "bsuid-123", "metadata": { "username": "@johndoe" } },
+  "phone": "+1234567890"
+}
+```
+
+**Request body (update-external-id):**
+```json
+{
+  "visitorId": "visitor-123",
+  "externalId": { "entityId": "bsuid-123", "metadata": { "username": "@johndoe" } }
+}
+```
+
+**Response:**
+- Returns the visitor if found/updated
+- Returns `{ visitor: null }` if not found
+
+<details>
+<summary>App source code</summary>
+
+**ExternalIdTestApp.ts**
+```typescript
+import {
+	IAppAccessors,
+	IConfigurationExtend,
+	ILogger,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { App } from '@rocket.chat/apps-engine/definition/App';
+import { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
+import { ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
+import { ResolveVisitorEndpoint } from './ResolveVisitorEndpoint';
+import { UpdateExternalIdEndpoint } from './UpdateExternalIdEndpoint';
+
+export class ExternalIdTestApp extends App {
+	constructor(info: IAppInfo, logger: ILogger, accessors: IAppAccessors) {
+		super(info, logger, accessors);
+	}
+
+	public override async extendConfiguration(configuration: IConfigurationExtend): Promise<void> {
+		await configuration.api.provideApi({
+			visibility: ApiVisibility.PUBLIC,
+			security: ApiSecurity.UNSECURE,
+			endpoints: [new ResolveVisitorEndpoint(this), new UpdateExternalIdEndpoint(this)],
+		});
+	}
+}
+```
+
+**ResolveVisitorEndpoint.ts**
+```typescript
+import {
+	HttpStatusCode,
+	IHttp,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+
+export class ResolveVisitorEndpoint extends ApiEndpoint {
+	public override path = 'resolve-visitor';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		_read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { externalId, phone, email } = request.content;
+
+		let contactData: { phone: string } | { email: string } | undefined;
+
+		if (phone) {
+			contactData = { phone };
+		} else if (email) {
+			contactData = { email };
+		}
+
+		const visitor = await modify.getCreator().getLivechatCreator().resolveVisitor(externalId, contactData);
+
+		return {
+			status: HttpStatusCode.OK,
+			content: { visitor: visitor || null },
+		};
+	}
+}
+```
+
+**UpdateExternalIdEndpoint.ts**
+```typescript
+import {
+	HttpStatusCode,
+	IHttp,
+	IModify,
+	IPersistence,
+	IRead,
+} from '@rocket.chat/apps-engine/definition/accessors';
+import { ApiEndpoint, IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/apps-engine/definition/api';
+
+export class UpdateExternalIdEndpoint extends ApiEndpoint {
+	public override path = 'update-external-id';
+
+	public async post(
+		request: IApiRequest,
+		_endpoint: IApiEndpointInfo,
+		_read: IRead,
+		modify: IModify,
+		_http: IHttp,
+		_persistence: IPersistence,
+	): Promise<IApiResponse> {
+		const { visitorId, externalId } = request.content;
+
+		if (!visitorId || !externalId) {
+			return {
+				status: HttpStatusCode.BAD_REQUEST,
+				content: { error: 'visitorId and externalId are required' },
+			};
+		}
+
+		const visitor = await modify.getUpdater().getLivechatUpdater().updateVisitorExternalId(visitorId, externalId);
+
+		return {
+			status: HttpStatusCode.OK,
+			content: { visitor: visitor || null },
+		};
+	}
+}
+```
+
+</details>
+
 #### Nested Requests simulation
 
 File name: `nested-requests_0.0.1.zip`
