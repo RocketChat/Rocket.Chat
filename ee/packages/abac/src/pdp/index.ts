@@ -1,3 +1,3 @@
 export { LocalPDP } from './LocalPDP';
-export { ExternalPDP } from './ExternalPDP';
-export type { IPolicyDecisionPoint } from './types';
+export { VirtruPDP } from './VirtruPDP';
+export type { IVirtruPDPConfig as VirtruPDPConfig, IPolicyDecisionPoint } from './types';

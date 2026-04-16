@@ -184,6 +184,7 @@ jobs:
         env:
           ENTERPRISE_LICENSE: ${{ inputs.enterprise-license }}
           TRANSPORTER: ${{ inputs.transporter }}
+          COMPOSE_PROFILES: ${{ inputs.type == 'api' && 'api' || '' }}
         run: |
           DEBUG_LOG_LEVEL=${DEBUG_LOG_LEVEL:-0} docker compose -f docker-compose-ci.yml up -d --wait
 
