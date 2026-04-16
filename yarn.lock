@@ -8939,12 +8939,33 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/apps@workspace:packages/apps"
   dependencies:
+    "@msgpack/msgpack": "npm:3.0.0-beta2"
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
+    "@seald-io/nedb": "npm:^4.1.2"
+    "@types/adm-zip": "npm:^0.5.7"
+    "@types/debug": "npm:^4.1.12"
+    "@types/lodash.clonedeep": "npm:^4.5.9"
+    "@types/node": "npm:~22.16.5"
+    "@types/semver": "npm:^7.5.8"
+    "@types/stack-trace": "npm:0.0.33"
+    "@types/uuid": "npm:~10.0.0"
+    adm-zip: "npm:^0.5.16"
+    debug: "npm:^4.3.7"
+    esbuild: "npm:~0.27.3"
     eslint: "npm:~9.39.4"
+    jose: "npm:^4.15.9"
+    jsonrpc-lite: "npm:^2.2.0"
+    lodash.clonedeep: "npm:^4.5.0"
+    npm-run-all: "npm:^4.1.5"
+    rimraf: "npm:^6.0.1"
+    semver: "npm:^7.6.3"
+    stack-trace: "npm:0.0.10"
+    ts-node: "npm:^6.2.0"
     typescript: "npm:~5.9.3"
+    uuid: "npm:~11.0.5"
   languageName: unknown
   linkType: soft
 
