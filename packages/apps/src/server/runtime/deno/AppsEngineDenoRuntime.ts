@@ -86,6 +86,42 @@ export function getDenoConfigPath(): string {
 	}
 }
 
+/**
+ * Resolves the absolute path to @rocket.chat/apps-engine's src/ directory.
+ * Uses require.resolve so it works regardless of the runtime environment
+ * (monorepo dev, Meteor bundle, standalone node_modules).
+ */
+export function getAppsEngineSourceDir(): string {
+	const pkgJsonPath = require.resolve('@rocket.chat/apps-engine/package.json');
+	return path.join(path.dirname(pkgJsonPath), 'src');
+}
+
+/**
+ * Generates a runtime deno.jsonc at `<tempDir>/deno_runtime.jsonc` by reading
+ * the static config and injecting the resolved absolute path for
+ * `@rocket.chat/apps-engine/`. This makes deno-runtime location-independent:
+ * the path is always correct regardless of where this package is installed.
+ *
+ * Returns the path to the generated config file.
+ */
+export function generateRuntimeDenoConfig(staticConfigPath: string, tempDir: string): string {
+	const staticConfig = JSON.parse(fs.readFileSync(staticConfigPath, 'utf8'));
+	const appsEngineSrcUrl = `file://${getAppsEngineSourceDir()}/`;
+
+	const runtimeConfig = {
+		...staticConfig,
+		imports: {
+			...staticConfig.imports,
+			'@rocket.chat/apps-engine/': appsEngineSrcUrl,
+		},
+	};
+
+	const runtimeConfigPath = path.join(tempDir, 'deno_runtime.jsonc');
+	fs.writeFileSync(runtimeConfigPath, JSON.stringify(runtimeConfig, null, '\t'));
+
+	return runtimeConfigPath;
+}
+
 type AbortFunction = (reason?: any) => void;
 
 export class DenoRuntimeSubprocessController extends EventEmitter implements IRuntimeController {
@@ -171,19 +207,24 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			const denoExePath = 'deno';
 
 			const denoWrapperPath = this.denoRuntimePath;
-			// During development, the appsEngineDir is enough to run the deno process
+			// The apps package dir (where deno-runtime/ and .deno-cache/ live)
 			const appsEngineDir = path.dirname(path.join(this.denoConfigPath, '..'));
 			const DENO_DIR = process.env.DENO_DIR ?? path.join(appsEngineDir, '.deno-cache');
 			// When running in production, we're likely inside a node_modules which the Deno
 			// process must be able to read in order to include files that use NPM packages
 			const parentNodeModulesDir = path.dirname(path.join(appsEngineDir, '..'));
+			// The definition/ source files from @rocket.chat/apps-engine that deno-runtime imports
+			const appsEngineSrcDir = getAppsEngineSourceDir();
 
-			const allowedDirs = [appsEngineDir, parentNodeModulesDir, this.tempFilePath];
+			const allowedDirs = [appsEngineDir, parentNodeModulesDir, appsEngineSrcDir, this.tempFilePath];
+
+			// Generate a runtime config with the resolved absolute path for @rocket.chat/apps-engine/
+			const runtimeConfigPath = generateRuntimeDenoConfig(this.denoConfigPath, this.tempFilePath);
 
 			const options = [
 				'run',
 				'--cached-only',
-				`--config=${this.denoConfigPath}`,
+				`--config=${runtimeConfigPath}`,
 				`--allow-read=${allowedDirs.join(',')}`,
 				`--allow-env=${ALLOWED_ENVIRONMENT_VARIABLES.join(',')}`,
 				denoWrapperPath,
