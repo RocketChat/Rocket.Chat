@@ -1,11 +1,15 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Palette } from '@rocket.chat/fuselage';
+import { Avatar, Box, Palette, Skeleton } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { FilePreviewIcon } from '@rocket.chat/ui-client';
 import { useMemo, type KeyboardEvent, type MouseEvent, type AllHTMLAttributes, type ReactElement } from 'react';
 
 type MessageComposerFileProps = {
 	fileTitle: string;
 	fileSubtitle: string;
+	fileFormat: string;
+	showPreview?: boolean;
+	previewUrl?: string;
 	actionIcon: ReactElement;
 	error?: boolean;
 	disabled?: boolean;
@@ -15,6 +19,9 @@ type MessageComposerFileProps = {
 const MessageComposerFile = ({
 	fileTitle,
 	fileSubtitle,
+	fileFormat,
+	showPreview,
+	previewUrl,
 	actionIcon,
 	error,
 	disabled,
@@ -22,12 +29,6 @@ const MessageComposerFile = ({
 	className,
 	...props
 }: MessageComposerFileProps) => {
-	const closeWrapperStyle = css`
-		position: absolute;
-		right: 0.5rem;
-		top: 0.5rem;
-	`;
-
 	const previewWrapperStyle = css`
 		background-color: ${Palette.surface['surface-tint']};
 		cursor: ${error || disabled ? 'not-allowed' : 'pointer'};
@@ -74,13 +75,18 @@ const MessageComposerFile = ({
 			borderColor={error ? 'error' : 'extra-light'}
 			alignItems='center'
 			position='relative'
-			height='x56'
-			width='x200'
+			height='x58'
+			width='x234'
 			mie={8}
 			onClick={handleClick}
 			{...props}
 		>
-			<Box width='x160' mis={4} display='flex' flexDirection='column'>
+			{showPreview ? (
+				<Box minWidth='x48'>{previewUrl ? <Avatar url={previewUrl} size='x48' /> : <Skeleton variant='rect' size={48} />}</Box>
+			) : (
+				<FilePreviewIcon format={fileFormat} />
+			)}
+			<Box flexGrow={1} withTruncatedText mis={4} display='flex' flexDirection='column'>
 				<Box {...buttonProps} fontScale='p2' color={disabled ? 'disabled' : 'info'} withTruncatedText>
 					{fileTitle}
 				</Box>
@@ -88,7 +94,7 @@ const MessageComposerFile = ({
 					{fileSubtitle}
 				</Box>
 			</Box>
-			{!disabled && <Box className={closeWrapperStyle}>{actionIcon}</Box>}
+			{!disabled && <Box alignSelf='start'>{actionIcon}</Box>}
 		</Box>
 	);
 };
