@@ -1,6 +1,6 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
-import type { IMarketplaceInfo } from '@rocket.chat/apps-engine/server/marketplace';
-import { AppInstallationSource, type IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IMarketplaceInfo } from '@rocket.chat/apps/server/marketplace';
+import { AppInstallationSource, type IAppStorageItem } from '@rocket.chat/apps/server/storage';
 import type { Apps } from '@rocket.chat/core-services';
 import type { LicenseImp } from '@rocket.chat/license';
 import { expect } from 'chai';

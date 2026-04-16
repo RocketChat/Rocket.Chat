@@ -1,6 +1,6 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IWorkspaceToken } from '@rocket.chat/apps-engine/definition/cloud/IWorkspaceToken';
-import { CloudWorkspaceBridge } from '@rocket.chat/apps-engine/server/bridges/CloudWorkspaceBridge';
+import { CloudWorkspaceBridge } from '@rocket.chat/apps/server/bridges/CloudWorkspaceBridge';
 
 import { getWorkspaceAccessTokenWithScope } from '../../../cloud/server';
 
