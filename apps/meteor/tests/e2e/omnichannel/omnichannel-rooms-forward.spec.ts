@@ -1,28 +1,25 @@
 import type { Page } from '@playwright/test';
-import type { IRoom } from '@rocket.chat/core-typings';
 
 import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
 import { HomeOmnichannel } from '../page-objects';
-import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { setSettingValueById } from '../utils';
 import { createAgent } from '../utils/omnichannel/agents';
 import { addAgentToDepartment, createDepartment } from '../utils/omnichannel/departments';
 import { createManager } from '../utils/omnichannel/managers';
+import { createConversation } from '../utils/omnichannel/rooms';
 import { test, expect } from '../utils/test';
 
 test.use({ storageState: Users.user1.state });
 
-test.describe('OC - Forwarding to away agents (EE)', () => {
+test.describe('OC - Forwarding to away departments (EE)', () => {
 	test.skip(!IS_EE, 'Enterprise Edition Only');
 
 	let poHomeOmnichannelOnlineAgent: HomeOmnichannel;
 	let poHomeOmnichannelAwayAgent: HomeOmnichannel;
-	let poLivechat: OmnichannelLiveChat;
 
-	let livechatPage: Page | undefined;
 	let omnichannelPage: Page | undefined;
 
 	let manager: Awaited<ReturnType<typeof createManager>>;
@@ -30,6 +27,7 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 	let awayAgent: Awaited<ReturnType<typeof createAgent>>;
 	let initialDepartment: Awaited<ReturnType<typeof createDepartment>>;
 	let forwardToOfflineDepartment: Awaited<ReturnType<typeof createDepartment>>;
+	let conversation: Awaited<ReturnType<typeof createConversation>>;
 	let visitor: { name: string; email: string };
 
 	test.beforeAll(async ({ api }) => {
@@ -66,10 +64,7 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 		await poHomeOmnichannelOnlineAgent.page.goto('/');
 		await poHomeOmnichannelOnlineAgent.waitForHome();
 
-		({ page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false));
-		poLivechat = new OmnichannelLiveChat(livechatPage, api);
-
-		await expect(setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 1)).resolves.toBeOK();
+		await expect(await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 1)).toBeOK();
 
 		// Away Agent window opens with idleTimeLimit of 1, therefore after a second it will turn away
 		({ page: omnichannelPage } = await createAuxContext(browser, Users.user2, '/', false));
@@ -78,14 +73,12 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 	});
 
 	test.afterEach(async ({ api }) => {
-		if (livechatPage) {
-			await livechatPage.context().close();
-		}
 		if (omnichannelPage) {
 			await omnichannelPage.context().close();
 		}
 
-		await expect(setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 300)).resolves.toBeOK();
+		await expect(await setSettingValueById(api, 'Livechat_waiting_queue', false)).toBeOK();
+		await expect(await setSettingValueById(api, 'Accounts_Default_User_Preferences_idleTimeLimit', 300)).toBeOK();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -108,16 +101,11 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 		api,
 	}) => {
 		await test.step('Setup routing settings', async () => {
-			await expect(setSettingValueById(api, 'Livechat_Routing_Method', 'Manual_Selection')).resolves.toBeOK();
+			await expect(await setSettingValueById(api, 'Livechat_Routing_Method', 'Manual_Selection')).toBeOK();
 		});
 
 		await test.step('Visitor initiates chat', async () => {
-			await poLivechat.page.reload();
-			await poLivechat.openAnyLiveChatAndSendMessage({
-				liveChatUser: visitor,
-				message: 'test message',
-				isOffline: false,
-			});
+			conversation = await createConversation(api, { visitorName: visitor.name, agentId: onlineAgent.data._id });
 		});
 
 		await test.step('Manager forwards chat', async () => {
@@ -129,12 +117,7 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 		});
 
 		await test.step('Check inquiry status via API is queued', async () => {
-			const roomInfoResp = await api.get(`/livechat/rooms`);
-			await expect(roomInfoResp).toBeOK();
-			const roomBody = await roomInfoResp.json();
-			const roomId = roomBody.rooms.find((room: IRoom) => room.fname === visitor.name)._id;
-
-			const inquiryResp = await api.get(`/livechat/inquiries.getOne?roomId=${roomId}`);
+			const inquiryResp = await api.get(`/livechat/inquiries.getOne?roomId=${conversation.data.room._id}`);
 			await expect(inquiryResp).toBeOK();
 			const inquiryBody = await inquiryResp.json();
 
@@ -147,21 +130,16 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 		api,
 	}) => {
 		await test.step('Setup routing settings', async () => {
-			await expect(setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')).resolves.toBeOK();
+			await expect(await setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')).toBeOK();
 		});
 
 		await test.step('Visitor initiates chat', async () => {
-			await poLivechat.page.reload();
-			await poLivechat.openAnyLiveChatAndSendMessage({
-				liveChatUser: visitor,
-				message: 'test message',
-				isOffline: false,
-			});
+			conversation = await createConversation(api, { visitorName: visitor.name, agentId: onlineAgent.data._id });
 		});
 
 		await test.step('Manager enables queue and forwards chat', async () => {
 			await poHomeOmnichannelOnlineAgent.sidebar.getSidebarItemByName(visitor.name).click();
-			await expect(setSettingValueById(api, 'Livechat_waiting_queue', true)).resolves.toBeOK();
+			await expect(await setSettingValueById(api, 'Livechat_waiting_queue', true)).toBeOK();
 
 			await poHomeOmnichannelOnlineAgent.quickActionsRoomToolbar.forwardChat();
 			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.selectDepartment('Forward Dept');
@@ -170,21 +148,12 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 		});
 
 		await test.step('Check inquiry status via API is queued', async () => {
-			const roomInfoResp = await api.get(`/livechat/rooms`);
-			await expect(roomInfoResp).toBeOK();
-			const roomBody = await roomInfoResp.json();
-			const roomId = roomBody.rooms.find((room: IRoom) => room.fname === visitor.name)._id;
-
-			const inquiryResp = await api.get(`/livechat/inquiries.getOne?roomId=${roomId}`);
+			const inquiryResp = await api.get(`/livechat/inquiries.getOne?roomId=${conversation.data.room._id}`);
 			await expect(inquiryResp).toBeOK();
 			const inquiryBody = await inquiryResp.json();
 
 			expect(inquiryBody.inquiry.status).toBe('queued');
 			expect(inquiryBody.inquiry.department).toBe(forwardToOfflineDepartment.data._id);
-		});
-
-		await test.step('Disable waiting queue', async () => {
-			await expect(setSettingValueById(api, 'Livechat_waiting_queue', false)).resolves.toBeOK();
 		});
 	});
 
@@ -192,26 +161,21 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 		api,
 	}) => {
 		await test.step('Setup routing and department settings', async () => {
-			await expect(setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')).resolves.toBeOK();
+			await expect(await setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')).toBeOK();
 			await expect(
-				api.put(`/livechat/department/${forwardToOfflineDepartment.data._id}`, {
+				await api.put(`/livechat/department/${forwardToOfflineDepartment.data._id}`, {
 					department: { ...forwardToOfflineDepartment.data, allowReceiveForwardOffline: false },
 				}),
-			).resolves.toBeOK();
+			).toBeOK();
 		});
 
 		await test.step('Visitor initiates chat', async () => {
-			await poLivechat.page.reload();
-			await poLivechat.openAnyLiveChatAndSendMessage({
-				liveChatUser: visitor,
-				message: 'test message',
-				isOffline: false,
-			});
+			conversation = await createConversation(api, { visitorName: visitor.name, agentId: onlineAgent.data._id });
 		});
 
 		await test.step('Manager attempts to forward and sees error', async () => {
 			await poHomeOmnichannelOnlineAgent.sidebar.getSidebarItemByName(visitor.name).click();
-			await expect(setSettingValueById(api, 'Livechat_waiting_queue', true)).resolves.toBeOK();
+			await expect(await setSettingValueById(api, 'Livechat_waiting_queue', true)).toBeOK();
 
 			await poHomeOmnichannelOnlineAgent.quickActionsRoomToolbar.forwardChat();
 			await poHomeOmnichannelOnlineAgent.content.forwardChatModal.selectDepartment('Forward Dept');
@@ -223,14 +187,10 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 
 		await test.step('Restore department setting', async () => {
 			await expect(
-				api.put(`/livechat/department/${forwardToOfflineDepartment.data._id}`, {
+				await api.put(`/livechat/department/${forwardToOfflineDepartment.data._id}`, {
 					department: { ...forwardToOfflineDepartment.data, allowReceiveForwardOffline: true },
 				}),
-			).resolves.toBeOK();
-		});
-
-		await test.step('Disable waiting queue', async () => {
-			await expect(setSettingValueById(api, 'Livechat_waiting_queue', false)).resolves.toBeOK();
+			).toBeOK();
 		});
 	});
 
@@ -238,22 +198,16 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 		api,
 	}) => {
 		await test.step('Setup routing settings', async () => {
-			await expect(setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')).resolves.toBeOK();
+			await expect(await setSettingValueById(api, 'Livechat_Routing_Method', 'Auto_Selection')).toBeOK();
 		});
 
 		await test.step('Visitor initiates chat', async () => {
-			await poLivechat.page.reload();
-			await poLivechat.openAnyLiveChatAndSendMessage({
-				liveChatUser: visitor,
-				message: 'test message',
-				isOffline: false,
-			});
-			await expect(poLivechat.headerTitle).toHaveText(onlineAgent.data.username);
+			conversation = await createConversation(api, { visitorName: visitor.name, agentId: onlineAgent.data._id });
 		});
 
 		await test.step('Set Livechat_enabled_when_agent_idle to true', async () => {
 			// We set Livechat_enabled_when_agent_idle to true here in order to not assign the away agent in the previous step
-			await expect(setSettingValueById(api, 'Livechat_enabled_when_agent_idle', true)).resolves.toBeOK();
+			await expect(await setSettingValueById(api, 'Livechat_enabled_when_agent_idle', true)).toBeOK();
 		});
 
 		await test.step('Manager forwards chat successfully', async () => {
@@ -265,13 +219,11 @@ test.describe('OC - Forwarding to away agents (EE)', () => {
 		});
 
 		await test.step('Check room routing via API serves to away agent', async () => {
-			const roomInfoResp = await api.get(`/livechat/rooms`);
-			await expect(roomInfoResp).toBeOK();
-			const roomBody = await roomInfoResp.json();
-			const room = roomBody.rooms.find((room: IRoom) => room.fname === visitor.name);
-
-			expect(room.servedBy._id).toBe(awayAgent.data._id);
-			expect(room.departmentId).toBe(forwardToOfflineDepartment.data._id);
+			const inquiryResp = await api.get(`/livechat/inquiries.getOne?roomId=${conversation.data.room._id}`);
+			await expect(inquiryResp).toBeOK();
+			const inquiryBody = await inquiryResp.json();
+			expect(inquiryBody.inquiry.status).toBe('taken');
+			expect(inquiryBody.inquiry.department).toBe(forwardToOfflineDepartment.data._id);
 		});
 	});
 });
