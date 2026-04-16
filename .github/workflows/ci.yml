@@ -4,7 +4,8 @@ on:
   release:
     types: [published]
   pull_request:
-    branches: '**'
+    branches:
+      - '**'
     paths-ignore:
       - '**.md'
   merge_group:
@@ -47,7 +48,7 @@ jobs:
           echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
           echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
           echo "github.event_name: ${{ github.event_name }}"
-          cat $GITHUB_EVENT_PATH
+          cat "$GITHUB_EVENT_PATH"
 
       - uses: actions/checkout@v6
         # with:
@@ -74,24 +75,24 @@ jobs:
           # Uncomment the following line to include the run ID in the hash and disable caching between runs
           # SOURCE_HASH=$(sha256sum /tmp/RocketChat-source.tar | awk '{ print $1 }')-${{ github.run_id }}
 
-          echo hash=${SOURCE_HASH}
+          echo "hash=${SOURCE_HASH}"
 
-          echo hash=${SOURCE_HASH} >> $GITHUB_OUTPUT
+          echo "hash=${SOURCE_HASH}" >> "$GITHUB_OUTPUT"
 
       - id: var
         run: |
           LOWERCASE_REPOSITORY=$(echo "${{ github.repository_owner }}" | tr "[:upper:]" "[:lower:]")
 
           echo "LOWERCASE_REPOSITORY: ${LOWERCASE_REPOSITORY}"
-          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> $GITHUB_OUTPUT
+          echo "lowercase-repo=${LOWERCASE_REPOSITORY}" >> "$GITHUB_OUTPUT"
 
           NODE_VERSION=$(node -p "require('./package.json').engines.node")
           echo "NODE_VERSION: ${NODE_VERSION}"
-          echo "node-version=${NODE_VERSION}" >> $GITHUB_OUTPUT
+          echo "node-version=${NODE_VERSION}" >> "$GITHUB_OUTPUT"
 
           DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
           echo "DENO_VERSION: ${DENO_VERSION}"
-          echo "deno-version=${DENO_VERSION}" >> $GITHUB_OUTPUT
+          echo "deno-version=${DENO_VERSION}" >> "$GITHUB_OUTPUT"
 
       - id: ci-cache-keys
         run: |
@@ -109,7 +110,7 @@ jobs:
             RELEASE="release-candidate"
           fi
           echo "RELEASE: ${RELEASE}"
-          echo "release=${RELEASE}" >> $GITHUB_OUTPUT
+          echo "release=${RELEASE}" >> "$GITHUB_OUTPUT"
 
       - id: latest
         run: |
@@ -118,7 +119,7 @@ jobs:
               awk -F/ '$NF !~ /rc|beta/ { print $NF; exit }'
           )"
           echo "LATEST_RELEASE: ${LATEST_RELEASE}"
-          echo "latest-release=${LATEST_RELEASE}" >> $GITHUB_OUTPUT
+          echo "latest-release=${LATEST_RELEASE}" >> "$GITHUB_OUTPUT"
 
       - id: docker
         run: |
@@ -130,7 +131,7 @@ jobs:
           # Docker tags cannot contain '/'; merge queue refs do (e.g. gh-readonly-queue/develop/pr-123-sha)
           DOCKER_TAG="${DOCKER_TAG//\//-}"
           echo "DOCKER_TAG: ${DOCKER_TAG}"
-          echo "gh-docker-tag=${DOCKER_TAG}" >> $GITHUB_OUTPUT
+          echo "gh-docker-tag=${DOCKER_TAG}" >> "$GITHUB_OUTPUT"
 
   notify-draft-services:
     name: 🚀 Notify external services - draft
@@ -189,9 +190,11 @@ jobs:
 
       - name: Cache observability (packages-build)
         run: |
-          echo "### 📦 packages-build cache" >> $GITHUB_STEP_SUMMARY
-          echo "- **hit**: \`${{ steps.packages-cache-build.outputs.cache-hit }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **key**: \`${{ needs.release-versions.outputs.packages-build-cache-key }}\`" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "### 📦 packages-build cache"
+            echo "- **hit**: \`${{ steps.packages-cache-build.outputs.cache-hit }}\`"
+            echo "- **key**: \`${{ needs.release-versions.outputs.packages-build-cache-key }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Set Swap Space
         uses: pierotofy/set-swap-space@master
@@ -217,9 +220,11 @@ jobs:
       - name: Cache observability (node_modules)
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: |
-          echo "### 🟢 node_modules cache" >> $GITHUB_STEP_SUMMARY
-          echo "- **deno cache hit**: \`${{ steps.setup-node-packages.outputs.cache-deno-hit }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "- **node_modules size**: \`$(du -sh node_modules 2>/dev/null | cut -f1 || echo 'n/a')\`" >> $GITHUB_STEP_SUMMARY
+          {
+            echo "### 🟢 node_modules cache"
+            echo "- **deno cache hit**: \`${{ steps.setup-node-packages.outputs.cache-deno-hit }}\`"
+            echo "- **node_modules size**: \`$(du -sh node_modules 2>/dev/null | cut -f1 || echo 'n/a')\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Cache vite
         uses: actions/cache@v5
@@ -240,8 +245,7 @@ jobs:
       - name: Archive packages build output
         if: steps.packages-cache-build.outputs.cache-hit != 'true'
         run: |
-          tar -czf /tmp/RocketChat-packages-build.tar.gz \
-            $(git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*')
+          git ls-files -oi --exclude-standard -- ':(exclude)node_modules/*' ':(exclude)**/node_modules/*' ':(exclude)**/.meteor/*' ':(exclude)**/.turbo/*' ':(exclude).turbo/*' ':(exclude)**/.yarn/*' ':(exclude).yarn/*' ':(exclude).git/*' | tar -czf /tmp/RocketChat-packages-build.tar.gz -T -
 
       - name: Upload packages build artifact
         uses: actions/upload-artifact@v7
@@ -426,12 +430,13 @@ jobs:
             echo "Creating manifest for $service"
 
             # Extract digests from manifest.json files
+            # shellcheck disable=SC2016
             mapfile -t refs < <(
               find "$service_dir" -type f -name 'manifest.json' -print0 \
                 | xargs -0 -I{} jq -r '.Descriptor.digest as $digest | .Ref | split("@")[0] + "@" + $digest' {}
             )
 
-            echo "Digest for ${service}: ${refs[@]}"
+            echo "Digest for ${service}: ${refs[*]}"
 
             # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
             if [ "$service" == "rocketchat-cov" ]; then
@@ -440,14 +445,14 @@ jobs:
               IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$service" '.services[$s].image')
             fi
 
-            echo $IMAGE
+            echo "$IMAGE"
 
             docker buildx imagetools create \
               --debug \
               --annotation "manifest-descriptor:org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
               --tag "${IMAGE}" \
               --tag "${IMAGE}-gha-run-${{ github.run_id }}" \
-              ${refs[@]}
+              "${refs[@]}"
           done
 
   track-image-sizes:
@@ -521,6 +526,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-api-livechat:
     name: 🔨 Test API Livechat (CE)
@@ -537,6 +543,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-ui:
     name: 🔨 Test UI (CE)
@@ -558,6 +565,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
@@ -582,6 +590,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-api-livechat-ee:
     name: 🔨 Test API Livechat (EE)
@@ -602,6 +611,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
@@ -625,6 +635,7 @@ jobs:
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       QASE_API_TOKEN: ${{ secrets.QASE_API_TOKEN }}
       REPORTER_ROCKETCHAT_API_KEY: ${{ secrets.REPORTER_ROCKETCHAT_API_KEY }}
       REPORTER_ROCKETCHAT_URL: ${{ secrets.REPORTER_ROCKETCHAT_URL }}
@@ -853,30 +864,28 @@ jobs:
         run: |
           REPO_VERSION=$(node -p "require('./package.json').version")
 
-          if [[ '${{ github.event_name }}' = 'release' ]]; then
-            GIT_TAG="${GITHUB_REF#*tags/}"
+          if [[ "${{ github.event_name }}" = 'release' ]]; then
             ARTIFACT_NAME="${REPO_VERSION}"
           else
-            GIT_TAG=""
             ARTIFACT_NAME="${REPO_VERSION}.$GITHUB_SHA"
           fi;
 
           ROCKET_DEPLOY_DIR="/tmp/deploy"
-          FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz";
+          FILENAME="$ROCKET_DEPLOY_DIR/rocket.chat-$ARTIFACT_NAME.tgz"
 
           aws s3 cp s3://rocketchat/sign.key.gpg .github/sign.key.gpg
 
-          mkdir -p $ROCKET_DEPLOY_DIR
+          mkdir -p "$ROCKET_DEPLOY_DIR"
 
           cp .github/sign.key.gpg /tmp
-          gpg --yes --batch --passphrase=$GPG_PASSWORD /tmp/sign.key.gpg
+          gpg --yes --batch --passphrase="$GPG_PASSWORD" /tmp/sign.key.gpg
           gpg --allow-secret-key-import --import /tmp/sign.key
           rm /tmp/sign.key
 
           ln -s /tmp/build/Rocket.Chat.tar.gz "$FILENAME"
           gpg --armor --detach-sign "$FILENAME"
 
-          aws s3 cp $ROCKET_DEPLOY_DIR/ s3://download.rocket.chat/build/ --recursive
+          aws s3 cp "$ROCKET_DEPLOY_DIR/" s3://download.rocket.chat/build/ --recursive
 
   docker-image-publish:
     name: 🚀 Publish Docker Images (DockerHub)
@@ -939,8 +948,8 @@ jobs:
 
             echo "RELEASE: $RELEASE"
 
-            if [[ $RELEASE == 'latest' ]]; then
-              if [[ '${{ needs.release-versions.outputs.latest-release }}' == $GITHUB_REF_NAME ]]; then
+            if [[ "$RELEASE" == 'latest' ]]; then
+              if [[ '${{ needs.release-versions.outputs.latest-release }}' == "$GITHUB_REF_NAME" ]]; then
                 TAGS+=("$RELEASE")
               fi
             else
@@ -1039,7 +1048,7 @@ jobs:
               https://releases.rocket.chat/update
 
           # Makes build fail if the release isn't there
-          curl --fail https://releases.rocket.chat/$RC_VERSION/info
+          curl --fail "https://releases.rocket.chat/$RC_VERSION/info"
 
   docs-update:
     name: Update Version Durability

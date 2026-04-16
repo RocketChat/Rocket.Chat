@@ -13,6 +13,8 @@ on:
     secrets:
       CODECOV_TOKEN:
         required: true
+      NPM_TOKEN:
+        required: false
 
 env:
   TOOL_NODE_FLAGS: ${{ vars.TOOL_NODE_FLAGS }}

@@ -59,6 +59,8 @@ on:
         required: false
       REPORTER_JIRA_ROCKETCHAT_API_KEY:
         required: false
+      NPM_TOKEN:
+        required: false
 
 env:
   MONGO_URL: mongodb://localhost:27017/rocketchat?replicaSet=rs0&directConnection=true
@@ -157,7 +159,7 @@ jobs:
 
       - name: Set DEBUG_LOG_LEVEL (debug enabled)
         if: runner.debug == '1'
-        run: echo "DEBUG_LOG_LEVEL=2" >> $GITHUB_ENV
+        run: echo "DEBUG_LOG_LEVEL=2" >> "$GITHUB_ENV"
 
       - name: Start httpbin container and wait for it to be ready
         if: inputs.type == 'api' || inputs.type == 'api-livechat'
@@ -168,8 +170,8 @@ jobs:
         run: |
           set -o xtrace
 
-          mkdir -p $COVERAGE_DIR
-          chmod 777 $COVERAGE_DIR
+          mkdir -p "$COVERAGE_DIR"
+          chmod 777 "$COVERAGE_DIR"
 
       - name: Start containers for CE
         if: inputs.release == 'ce'
@@ -193,7 +195,7 @@ jobs:
         run: |
           docker ps
 
-          until echo "$(docker compose -f docker-compose-ci.yml logs ddp-streamer-service)" | grep -q "NetworkBroker started successfully"; do
+          until docker compose -f docker-compose-ci.yml logs ddp-streamer-service | grep -q "NetworkBroker started successfully"; do
             echo "Waiting 'ddp-streamer' to start up"
             ((c++)) && ((c==10)) && docker compose -f docker-compose-ci.yml logs ddp-streamer-service && exit 1
             sleep 10
@@ -211,12 +213,12 @@ jobs:
         run: |
           set -o xtrace
 
-          npm run testapi
+          npm run testapi || s=$?
 
           docker compose -f ../../docker-compose-ci.yml stop
 
-          ls -la $COVERAGE_DIR
-          exit $s
+          ls -la "$COVERAGE_DIR"
+          exit "${s:-0}"
 
       - name: E2E Test API (Livechat)
         if: inputs.type == 'api-livechat'
@@ -227,12 +229,12 @@ jobs:
         run: |
           set -o xtrace
 
-          npm run testapi:livechat
+          npm run testapi:livechat || s=$?
 
           docker compose -f ../../docker-compose-ci.yml stop
 
-          ls -la $COVERAGE_DIR
-          exit $s
+          ls -la "$COVERAGE_DIR"
+          exit "${s:-0}"
 
       - name: E2E Test UI (${{ matrix.shard }}/${{ inputs.total-shard }})
         if: inputs.type == 'ui'
@@ -267,8 +269,8 @@ jobs:
         if: inputs.type == 'ui' && inputs.coverage == matrix.mongodb-version
         working-directory: ./apps/meteor
         run: |
-          npx nyc merge .nyc_output ${COVERAGE_DIR}/${COVERAGE_FILE_NAME}
-          ls -la $COVERAGE_DIR || true
+          npx nyc merge .nyc_output "${COVERAGE_DIR}/${COVERAGE_FILE_NAME}"
+          ls -la "$COVERAGE_DIR" || true
 
       - name: Store playwright test trace
         if: inputs.type == 'ui' && always()

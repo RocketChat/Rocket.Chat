@@ -40,8 +40,8 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-avatar": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:~",
-		"@storybook/react": "^8.6.17",
-		"@storybook/react-webpack5": "^8.6.17",
+		"@storybook/react": "^8.6.18",
+		"@storybook/react-webpack5": "^8.6.18",
 		"@testing-library/dom": "~10.4.1",
 		"@testing-library/react": "~16.3.2",
 		"@types/jest": "~30.0.0",
@@ -58,7 +58,7 @@
 		"react-hook-form": "~7.45.4",
 		"react-i18next": "~13.2.2",
 		"react-virtuoso": "^4.12.0",
-		"storybook": "^8.6.17",
+		"storybook": "^8.6.18",
 		"typescript": "~5.9.3"
 	},
 	"peerDependencies": {
