@@ -1,5 +1,5 @@
-import { AppsEngineUIHost } from '@rocket.chat/apps-engine/client/AppsEngineUIHost';
-import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
+import { AppsEngineUIHost } from '@rocket.chat/apps/client/AppsEngineUIHost';
+import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps/client/definition';
 
 import { getUserAvatarURL } from '../../app/utils/client/getUserAvatarURL';
 import { sdk } from '../../app/utils/client/lib/SDKClient';
