@@ -1,16 +1,18 @@
 import { isPublicRoom, type IRoom, type RoomType } from '@rocket.chat/core-typings';
 import { getObjectKeys } from '@rocket.chat/tools';
-import { useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useMethod, usePermission, useRoute, useSetting, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
 import { useOpenRoomMutation } from './useOpenRoomMutation';
 import { roomFields } from '../../../../lib/publishFields';
+import { SubscriptionsCachedStore } from '../../../cachedStores';
 import { NotAuthorizedError } from '../../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../../lib/errors/RoomNotFoundError';
 import { roomsQueryKeys } from '../../../lib/queryKeys';
+import { mapSubscriptionFromApi } from '../../../lib/utils/mapSubscriptionFromApi';
 import { Rooms } from '../../../stores';
 
 export function useOpenRoom({ type, reference }: { type: RoomType; reference: string }) {
@@ -19,6 +21,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', true);
 	const getRoomByTypeAndName = useMethod('getRoomByTypeAndName');
 	const createDirectMessage = useMethod('createDirectMessage');
+	const getSubscription = useEndpoint('GET', '/v1/subscriptions.getOne');
 	const directRoute = useRoute('direct');
 	const openRoom = useOpenRoomMutation();
 
@@ -73,6 +76,19 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 			}
 
 			const { LegacyRoomManager } = await import('../../../../app/ui-utils/client');
+
+			// The subscription may not be in the store yet — mainly in embedded mode, which skips
+			// the full subscription list preload. Fetch it on demand if missing.
+			if (user && !Subscriptions.state.find((record) => record.rid === reference || record.name === reference)) {
+				try {
+					const { subscription } = await getSubscription({ roomId: room._id });
+					if (subscription) {
+						await SubscriptionsCachedStore.upsertSubscription(mapSubscriptionFromApi(subscription));
+					}
+				} catch {
+					// Fall through to existing not-subscribed handling.
+				}
+			}
 
 			const sub = Subscriptions.state.find((record) => record.rid === reference || record.name === reference);
 

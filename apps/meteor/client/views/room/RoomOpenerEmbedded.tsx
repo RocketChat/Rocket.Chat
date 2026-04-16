@@ -8,13 +8,13 @@ import { useTranslation } from 'react-i18next';
 
 import NotSubscribedRoom from './NotSubscribedRoom';
 import RoomSkeleton from './RoomSkeleton';
-import { useOpenRoom } from './hooks/useOpenRoom';
 import { SubscriptionsCachedStore } from '../../cachedStores';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { NotAuthorizedError } from '../../lib/errors/NotAuthorizedError';
 import { NotSubscribedToRoomError } from '../../lib/errors/NotSubscribedToRoomError';
 import { OldUrlRoomError } from '../../lib/errors/OldUrlRoomError';
 import { RoomNotFoundError } from '../../lib/errors/RoomNotFoundError';
+import { useEmbeddedRoomState } from '../root/MainLayout/EmbeddedPreload';
 
 const RoomProvider = lazy(() => import('./providers/RoomProvider'));
 const RoomNotFound = lazy(() => import('./RoomNotFound'));
@@ -28,7 +28,7 @@ type RoomOpenerProps = {
 };
 
 const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement => {
-	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
+	const { data, error, isSuccess, isError } = useEmbeddedRoomState();
 	const uid = useUserId();
 	const subscribeToNotifyUser = useStream('notify-user');
 
@@ -53,7 +53,6 @@ const RoomOpenerEmbedded = ({ type, reference }: RoomOpenerProps): ReactElement 
 	return (
 		<Box display='flex' w='full' h='full'>
 			<Suspense fallback={<RoomSkeleton />}>
-				{isLoading && <RoomSkeleton />}
 				{isSuccess && (
 					<RoomProvider rid={data.rid}>
 						<Room />
