@@ -134,6 +134,7 @@ export class MockedAppRootBuilder {
 		defineRoutes: () => () => undefined,
 		getLocationPathname: () => '/',
 		getLocationSearch: () => '',
+		getLocationHash: () => '',
 		getRouteName: () => undefined,
 		getPreviousRouteName: () => undefined,
 		getRouteParameters: () => ({}),

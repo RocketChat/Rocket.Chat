@@ -36,10 +36,18 @@ RUN aptMark="$(apt-mark showmanual)" \
 USER rocketchat
 
 RUN cd /app/bundle/programs/server \
-    && npm install \
+    && npm install --omit=dev \
     && cd npm/node_modules/isolated-vm \
-    && npm install \
-    && npm cache clear --force
+    && npm install --omit=dev \
+    && npm cache clear --force \
+    # Drop sourcemaps from third-party prod deps and the client bundle:
+    #   - server/npm/node_modules: .map files shipped inside packages
+    #     (openpgp, date-fns, etc.). Node does not read them at runtime.
+    #   - web.browser: client-side bundle, maps have no runtime value in the image.
+    # Maps under /app/bundle/programs/server/{app,packages,node_modules/meteor}
+    # are loaded by Meteor's source-map-support at boot, so they are kept.
+    && find /app/bundle/programs/server/npm/node_modules -type f -name '*.map' -delete \
+    && find /app/bundle/programs/web.browser -type f -name '*.map' -delete
 
 USER root
 

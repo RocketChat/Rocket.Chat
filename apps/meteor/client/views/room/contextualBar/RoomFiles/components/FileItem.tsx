@@ -16,7 +16,7 @@ type FileItemProps = {
 
 const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	const format = useFormatDateAndTime();
-	const { _id, path, name, uploadedAt, type, typeGroup, user } = fileData;
+	const { _id, path, name, uploadedAt, type, typeGroup, user, description } = fileData;
 
 	const encryptedAnchorProps = useDownloadFromServiceWorker(path || '', name);
 	const normalizedUsername = user?.username ? normalizeUsername(user.username) : undefined;
@@ -24,7 +24,7 @@ const FileItem = ({ rid, fileData, onClickDelete }: FileItemProps) => {
 	return (
 		<>
 			{typeGroup === 'image' ? (
-				<ImageItem id={_id} url={path} name={name} username={normalizedUsername} timestamp={format(uploadedAt)} />
+				<ImageItem id={_id} url={path} name={name} username={normalizedUsername} timestamp={format(uploadedAt)} alt={description} />
 			) : (
 				<Box
 					is='a'

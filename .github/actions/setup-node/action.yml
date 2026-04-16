@@ -11,16 +11,13 @@ inputs:
   install:
     required: false
     description: 'Install dependencies'
-    type: boolean
   type:
     required: false
     description: 'development or production'
-    type: string
     default: 'development'
   deno-version:
     required: true
     description: 'Deno version'
-    type: string
   NPM_TOKEN:
     required: false
     description: 'NPM token'
@@ -60,7 +57,7 @@ runs:
         cache: ${{ inputs.cache-modules && 'yarn' || '' }}
 
     - name: Use Deno ${{ inputs.deno-version }}
-      uses: denoland/setup-deno@v1
+      uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # v2.0.4
       with:
         deno-version: ${{ inputs.deno-version }}
 
