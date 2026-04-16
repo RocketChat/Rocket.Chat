@@ -1,5 +1,5 @@
-import type { AppManager } from '@rocket.chat/apps-engine/server/AppManager';
-import type { AppSourceStorage } from '@rocket.chat/apps-engine/server/storage';
+import type { AppManager } from './server/AppManager';
+import type { AppSourceStorage } from './server/storage';
 import type { Logger } from '@rocket.chat/logger';
 import type { IAppsPersistenceModel } from '@rocket.chat/model-typings';
 
