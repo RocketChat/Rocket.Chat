@@ -1,4 +1,4 @@
-import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '../../server/bridges/RoomBridge';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '../rooms/IGetMessagesOptions';
 import type { IMessageRaw } from '../messages/index';
 import type { IRoom, IRoomRaw } from '../rooms/index';
 import type { IUser } from '../users/index';
