@@ -2,8 +2,8 @@ import { Apps, AppEvents } from '@rocket.chat/apps';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
+import type { IGetAppsFilter } from '@rocket.chat/apps/server/IGetAppsFilter';
+import type { IAppStorageItem } from '@rocket.chat/apps/server/storage';
 import type { AppStatusReport, IAppsEngineService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
 

@@ -3,7 +3,7 @@ import { Agenda } from '@rocket.chat/agenda';
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IProcessor, IOnetimeSchedule, IRecurringSchedule, IJobContext } from '@rocket.chat/apps-engine/definition/scheduler';
 import { StartupType } from '@rocket.chat/apps-engine/definition/scheduler';
-import { SchedulerBridge } from '@rocket.chat/apps-engine/server/bridges/SchedulerBridge';
+import { SchedulerBridge } from '@rocket.chat/apps/server/bridges/SchedulerBridge';
 import { ObjectId } from 'bson';
 import { MongoInternals } from 'meteor/mongo';
 
