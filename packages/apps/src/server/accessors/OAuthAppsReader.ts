@@ -9,10 +9,10 @@ export class OAuthAppsReader implements IOAuthAppsReader {
 	) {}
 
 	public async getOAuthAppById(id: string): Promise<IOAuthApp> {
-		return this.oauthAppsBridge.doGetByid(id, this.appId);
+		return this.oauthAppsBridge.doGetByid(id, this.appId) as Promise<IOAuthApp>;
 	}
 
 	public async getOAuthAppByName(name: string): Promise<Array<IOAuthApp>> {
-		return this.oauthAppsBridge.doGetByName(name, this.appId);
+		return this.oauthAppsBridge.doGetByName(name, this.appId) as Promise<Array<IOAuthApp>>;
 	}
 }

@@ -29,7 +29,7 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getDisplayName(): string {
-		return this.room.displayName;
+		return this.room.displayName as string;
 	}
 
 	public setSlugifiedName(name: string): IRoomBuilder {
@@ -38,7 +38,7 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getSlugifiedName(): string {
-		return this.room.slugifiedName;
+		return this.room.slugifiedName as string;
 	}
 
 	public setType(type: RoomType): IRoomBuilder {
@@ -106,7 +106,7 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getIsDefault(): boolean {
-		return this.room.isDefault;
+		return this.room.isDefault as boolean;
 	}
 
 	public setReadOnly(isReadOnly: boolean): IRoomBuilder {
@@ -115,7 +115,7 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getIsReadOnly(): boolean {
-		return this.room.isReadOnly;
+		return this.room.isReadOnly as boolean;
 	}
 
 	public setDisplayingOfSystemMessages(displaySystemMessages: boolean): IRoomBuilder {
@@ -124,7 +124,7 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getDisplayingOfSystemMessages(): boolean {
-		return this.room.displaySystemMessages;
+		return this.room.displaySystemMessages as boolean;
 	}
 
 	public addCustomField(key: string, value: object): IRoomBuilder {
@@ -142,11 +142,11 @@ export class RoomBuilder implements IRoomBuilder {
 	}
 
 	public getCustomFields(): { [key: string]: object } {
-		return this.room.customFields;
+		return this.room.customFields as { [key: string]: object };
 	}
 
 	public getUserIds(): Array<string> {
-		return this.room.userIds;
+		return this.room.userIds as Array<string>;
 	}
 
 	public getRoom(): IRoom {

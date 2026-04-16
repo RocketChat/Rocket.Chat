@@ -33,14 +33,14 @@ export class Persistence implements IPersistence {
 	}
 
 	public remove(id: string): Promise<object> {
-		return this.persistBridge.doRemove(id, this.appId);
+		return this.persistBridge.doRemove(id, this.appId) as Promise<object>;
 	}
 
 	public removeByAssociation(association: RocketChatAssociationRecord): Promise<Array<object>> {
-		return this.persistBridge.doRemoveByAssociations(new Array(association), this.appId);
+		return this.persistBridge.doRemoveByAssociations(new Array(association), this.appId) as Promise<Array<object>>;
 	}
 
 	public removeByAssociations(associations: Array<RocketChatAssociationRecord>): Promise<Array<object>> {
-		return this.persistBridge.doRemoveByAssociations(associations, this.appId);
+		return this.persistBridge.doRemoveByAssociations(associations, this.appId) as Promise<Array<object>>;
 	}
 }

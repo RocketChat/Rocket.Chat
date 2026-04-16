@@ -9,12 +9,16 @@ export abstract class UserBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getById(id, appId);
 		}
+
+		return undefined as unknown as IUser;
 	}
 
 	public async doGetByUsername(username: string, appId: string): Promise<IUser> {
 		if (this.hasReadPermission(appId)) {
 			return this.getByUsername(username, appId);
 		}
+
+		return undefined as unknown as IUser;
 	}
 
 	public async doGetAppUser(appId?: string): Promise<IUser | undefined> {
@@ -25,42 +29,56 @@ export abstract class UserBridge extends BaseBridge {
 		if (this.hasWritePermission(appId)) {
 			return this.create(data, appId, options || {});
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doRemove(user: IUser, appId: string): Promise<boolean> {
 		if (this.hasWritePermission(appId)) {
 			return this.remove(user, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doUpdate(user: IUser, updates: Partial<IUser>, appId: string): Promise<boolean> {
 		if (this.hasWritePermission(appId)) {
 			return this.update(user, updates, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doGetUserUnreadMessageCount(uid: string, appId: string): Promise<number> {
 		if (this.hasReadPermission(appId)) {
 			return this.getUserUnreadMessageCount(uid, appId);
 		}
+
+		return undefined as unknown as number;
 	}
 
 	public async doGetUserRoomIds(userId: string, appId: string): Promise<string[]> {
 		if (this.hasReadPermission(appId)) {
 			return this.getUserRoomIds(userId, appId);
 		}
+
+		return undefined as unknown as string[];
 	}
 
 	public async doDeleteUsersCreatedByApp(appId: string, type: UserType.BOT | UserType.APP): Promise<boolean> {
 		if (this.hasWritePermission(appId)) {
 			return this.deleteUsersCreatedByApp(appId, type);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doDeactivate(userId: IUser['id'], confirmRelinquish: boolean, appId: string): Promise<boolean> {
 		if (this.hasWritePermission(appId)) {
 			return this.deactivate(userId, confirmRelinquish, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	protected abstract getById(id: string, appId: string): Promise<IUser>;

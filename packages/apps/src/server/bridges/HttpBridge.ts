@@ -16,6 +16,8 @@ export abstract class HttpBridge extends BaseBridge {
 		if (this.hasDefaultPermission(info.appId)) {
 			return this.call(info);
 		}
+
+		return undefined as unknown as IHttpResponse;
 	}
 
 	protected abstract call(info: IHttpBridgeRequestInfo): Promise<IHttpResponse>;

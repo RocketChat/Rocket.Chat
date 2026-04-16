@@ -1,6 +1,6 @@
 import * as path from 'path';
 
-import * as AdmZip from 'adm-zip';
+import AdmZip from 'adm-zip';
 import * as semver from 'semver';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -53,8 +53,8 @@ export class AppPackageParser {
 
 		zip
 			.getEntries()
-			.filter((entry) => !entry.isDirectory && entry.entryName.endsWith('.js'))
-			.forEach((entry) => {
+			.filter((entry: AdmZip.IZipEntry) => !entry.isDirectory && entry.entryName.endsWith('.js'))
+			.forEach((entry: AdmZip.IZipEntry) => {
 				const norm = path.normalize(entry.entryName);
 
 				// Files which start with `.` are supposed to be hidden
@@ -117,22 +117,22 @@ export class AppPackageParser {
 
 	private getIconFile(zip: AdmZip, filePath: string): string {
 		if (!filePath) {
-			return undefined;
+			return undefined as unknown as string;
 		}
 
 		const ext = path.extname(filePath);
 		if (!this.allowedIconExts.includes(ext)) {
-			return undefined;
+			return undefined as unknown as string;
 		}
 
 		const entry = zip.getEntry(filePath);
 
 		if (!entry) {
-			return undefined;
+			return undefined as unknown as string;
 		}
 
 		if (entry.isDirectory) {
-			return undefined;
+			return undefined as unknown as string;
 		}
 
 		const base64 = entry.getData().toString('base64');

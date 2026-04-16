@@ -12,15 +12,15 @@ export class ModifyExtender implements IModifyExtender {
 		private readonly appId: string,
 	) {}
 
-	public async extendMessage(messageId: string, updater: IUser): Promise<IMessageExtender> {
+	public async extendMessage(messageId: string, _updater: IUser): Promise<IMessageExtender> {
 		const msg = await this.bridges.getMessageBridge().doGetById(messageId, this.appId);
-		msg.editor = updater;
+		msg.editor = _updater;
 		msg.editedAt = new Date();
 
 		return new MessageExtender(msg);
 	}
 
-	public async extendRoom(roomId: string, updater: IUser): Promise<IRoomExtender> {
+	public async extendRoom(roomId: string, _updater: IUser): Promise<IRoomExtender> {
 		const room = await this.bridges.getRoomBridge().doGetById(roomId, this.appId);
 		room.updatedAt = new Date();
 

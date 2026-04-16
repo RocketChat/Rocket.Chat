@@ -32,7 +32,7 @@ export class LivechatRead implements ILivechatRead {
 	}
 
 	public getLivechatRooms(visitor: IVisitor, departmentId?: string): Promise<Array<ILivechatRoom>> {
-		return this.livechatBridge.doFindRooms(visitor, departmentId, this.appId);
+		return this.livechatBridge.doFindRooms(visitor, departmentId ?? null, this.appId);
 	}
 
 	public getLivechatTotalOpenRoomsByAgentId(agentId: string): Promise<number> {

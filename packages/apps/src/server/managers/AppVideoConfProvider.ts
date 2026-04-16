@@ -97,7 +97,8 @@ export class AppVideoConfProvider {
 
 			return result as string | boolean | Array<IBlock> | undefined;
 		} catch (e) {
-			if (e?.code === JSONRPC_METHOD_NOT_FOUND) {
+			const err = e as { code?: number };
+			if (err.code === JSONRPC_METHOD_NOT_FOUND) {
 				if (method === AppMethod._VIDEOCONF_IS_CONFIGURED) {
 					return true;
 				}
@@ -109,5 +110,7 @@ export class AppVideoConfProvider {
 			// @TODO add error handling
 			console.log(e);
 		}
+
+		return undefined;
 	}
 }

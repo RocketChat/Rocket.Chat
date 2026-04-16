@@ -5,7 +5,7 @@ export class AppLicenseValidationResult {
 
 	private validated = false;
 
-	private appId: string;
+	private appId!: string;
 
 	public addError(field: string, message: string): void {
 		this.errors[field] = message;

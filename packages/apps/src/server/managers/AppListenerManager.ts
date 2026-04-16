@@ -278,7 +278,7 @@ export class AppListenerManager {
 				return;
 			}
 
-			this.listeners.get(event).push(app.getID());
+			this.listeners.get(event)!.push(app.getID());
 		});
 	}
 
@@ -286,7 +286,7 @@ export class AppListenerManager {
 		this.listeners.forEach((apps, int) => {
 			if (apps.includes(app.getID())) {
 				const where = apps.indexOf(app.getID());
-				this.listeners.get(int).splice(where, 1);
+				this.listeners.get(int)!.splice(where, 1);
 			}
 		});
 	}
@@ -296,7 +296,7 @@ export class AppListenerManager {
 			return;
 		}
 
-		app.getEssentials().forEach((event) => {
+		app.getEssentials()!.forEach((event) => {
 			const lockedEvent = this.lockedEvents.get(event);
 
 			if (!lockedEvent) {
@@ -312,7 +312,7 @@ export class AppListenerManager {
 			return;
 		}
 
-		app.getEssentials().forEach((event) => {
+		app.getEssentials()!.forEach((event) => {
 			const lockedEvent = this.lockedEvents.get(event);
 
 			if (!lockedEvent) {
@@ -326,8 +326,8 @@ export class AppListenerManager {
 	public getListeners(int: AppInterface): Array<ProxiedApp> {
 		const results: Array<ProxiedApp> = [];
 
-		for (const appId of this.listeners.get(int)) {
-			results.push(this.manager.getOneById(appId));
+		for (const appId of this.listeners.get(int)!) {
+			results.push(this.manager.getOneById(appId)!);
 		}
 
 		return results;
@@ -467,6 +467,7 @@ export class AppListenerManager {
 				return this.executePostUserStatusChanged(data as IUserStatusContext);
 			default:
 				console.warn('An invalid listener was called');
+				return undefined as unknown as Promise<IListenerExecutor[I]['result']>;
 		}
 	}
 
@@ -474,8 +475,8 @@ export class AppListenerManager {
 	private async executePreMessageSentPrevent(data: IMessage): Promise<boolean> {
 		let prevented = false;
 
-		for (const appId of this.listeners.get(AppInterface.IPreMessageSentPrevent)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreMessageSentPrevent)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGESENTPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -503,8 +504,8 @@ export class AppListenerManager {
 	private async executePreMessageSentExtend(data: IMessage): Promise<IMessage> {
 		let msg = data;
 
-		for (const appId of this.listeners.get(AppInterface.IPreMessageSentExtend)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreMessageSentExtend)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGESENTEXTEND, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -526,8 +527,8 @@ export class AppListenerManager {
 	private async executePreMessageSentModify(data: IMessage): Promise<IMessage> {
 		let msg = data;
 
-		for (const appId of this.listeners.get(AppInterface.IPreMessageSentModify)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreMessageSentModify)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGESENTMODIFY, msg).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -548,9 +549,9 @@ export class AppListenerManager {
 
 	private async executePostMessageSent(data: IMessage): Promise<void> {
 		// First check if the app implements Bot DM handlers and check if the dm contains more than one user
-		if (data.room.type === RoomType.DIRECT_MESSAGE && data.room.userIds.length > 1) {
-			for (const appId of this.listeners.get(AppInterface.IPostMessageSentToBot)) {
-				const app = this.manager.getOneById(appId);
+		if (data.room.type === RoomType.DIRECT_MESSAGE && data.room.userIds!.length > 1) {
+			for (const appId of this.listeners.get(AppInterface.IPostMessageSentToBot)!) {
+				const app = this.manager.getOneById(appId)!;
 
 				const reader = this.am.getReader(appId);
 				const bot = await reader.getUserReader().getAppUser();
@@ -564,7 +565,7 @@ export class AppListenerManager {
 					continue;
 				}
 				// if the user doesnt belong to the room ignore it
-				if (!data.room.userIds.includes(bot.id)) {
+				if (!data.room.userIds!.includes(bot.id)) {
 					continue;
 				}
 
@@ -572,8 +573,8 @@ export class AppListenerManager {
 			}
 		}
 
-		for (const appId of this.listeners.get(AppInterface.IPostMessageSent)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostMessageSent)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPOSTMESSAGESENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -591,8 +592,8 @@ export class AppListenerManager {
 	}
 
 	private async executePostSystemMessageSent(data: IMessage): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostSystemMessageSent)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostSystemMessageSent)!) {
+			const app = this.manager.getOneById(appId)!;
 			await app.call(AppMethod.EXECUTEPOSTSYSTEMMESSAGESENT, data);
 		}
 	}
@@ -600,8 +601,8 @@ export class AppListenerManager {
 	private async executePreMessageDeletePrevent(data: IMessage): Promise<boolean> {
 		let prevented = false;
 
-		for (const appId of this.listeners.get(AppInterface.IPreMessageDeletePrevent)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreMessageDeletePrevent)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGEDELETEPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -628,8 +629,8 @@ export class AppListenerManager {
 		const context = Utilities.deepCloneAndFreeze(data);
 		const { message } = context;
 
-		for (const appId of this.listeners.get(AppInterface.IPostMessageDeleted)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostMessageDeleted)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app
 				.call(
@@ -657,8 +658,8 @@ export class AppListenerManager {
 	private async executePreMessageUpdatedPrevent(data: IMessage): Promise<boolean> {
 		let prevented = false;
 
-		for (const appId of this.listeners.get(AppInterface.IPreMessageUpdatedPrevent)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreMessageUpdatedPrevent)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGEUPDATEDPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -684,8 +685,8 @@ export class AppListenerManager {
 	private async executePreMessageUpdatedExtend(data: IMessage): Promise<IMessage> {
 		let msg = data;
 
-		for (const appId of this.listeners.get(AppInterface.IPreMessageUpdatedExtend)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreMessageUpdatedExtend)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGEUPDATEDEXTEND, msg).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -707,8 +708,8 @@ export class AppListenerManager {
 	private async executePreMessageUpdatedModify(data: IMessage): Promise<IMessage> {
 		let msg = data;
 
-		for (const appId of this.listeners.get(AppInterface.IPreMessageUpdatedModify)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreMessageUpdatedModify)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREMESSAGEUPDATEDMODIFY, msg).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -728,8 +729,8 @@ export class AppListenerManager {
 	}
 
 	private async executePostMessageUpdated(data: IMessage): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostMessageUpdated)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostMessageUpdated)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPOSTMESSAGEUPDATED, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -750,8 +751,8 @@ export class AppListenerManager {
 	private async executePreRoomCreatePrevent(data: IRoom): Promise<boolean> {
 		let prevented = false;
 
-		for (const appId of this.listeners.get(AppInterface.IPreRoomCreatePrevent)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreRoomCreatePrevent)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREROOMCREATEPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -777,8 +778,8 @@ export class AppListenerManager {
 	private async executePreRoomCreateExtend(data: IRoom): Promise<IRoom> {
 		let room = data;
 
-		for (const appId of this.listeners.get(AppInterface.IPreRoomCreateExtend)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreRoomCreateExtend)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREROOMCREATEEXTEND, room).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -800,8 +801,8 @@ export class AppListenerManager {
 	private async executePreRoomCreateModify(data: IRoom): Promise<IRoom> {
 		let room = data;
 
-		for (const appId of this.listeners.get(AppInterface.IPreRoomCreateModify)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreRoomCreateModify)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREROOMCREATEMODIFY, room).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -821,8 +822,8 @@ export class AppListenerManager {
 	}
 
 	private async executePostRoomCreate(data: IRoom): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostRoomCreate)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostRoomCreate)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPOSTROOMCREATE, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -842,8 +843,8 @@ export class AppListenerManager {
 	private async executePreRoomDeletePrevent(data: IRoom): Promise<boolean> {
 		let prevented = false;
 
-		for (const appId of this.listeners.get(AppInterface.IPreRoomDeletePrevent)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreRoomDeletePrevent)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPREROOMDELETEPREVENT, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -867,8 +868,8 @@ export class AppListenerManager {
 	}
 
 	private async executePostRoomDeleted(data: IRoom): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostRoomDeleted)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostRoomDeleted)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			const continueOn = (await app.call(AppMethod.CHECKPOSTROOMDELETED, data).catch((error) => {
 				// This method is optional, so if it doesn't exist, we should continue
@@ -886,32 +887,32 @@ export class AppListenerManager {
 	}
 
 	private async executePreRoomUserJoined(externalData: IRoomUserJoinedContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPreRoomUserJoined)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreRoomUserJoined)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_PRE_ROOM_USER_JOINED, externalData);
 		}
 	}
 
 	private async executePostRoomUserJoined(externalData: IRoomUserJoinedContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostRoomUserJoined)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostRoomUserJoined)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_ROOM_USER_JOINED, externalData);
 		}
 	}
 
 	private async executePreRoomUserLeave(externalData: IRoomUserLeaveContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPreRoomUserLeave)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreRoomUserLeave)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_PRE_ROOM_USER_LEAVE, externalData);
 		}
 	}
 
 	private async executePostRoomUserLeave(externalData: IRoomUserLeaveContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostRoomUserLeave)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostRoomUserLeave)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_ROOM_USER_LEAVE, externalData);
 		}
@@ -919,16 +920,16 @@ export class AppListenerManager {
 
 	// External Components
 	private async executePostExternalComponentOpened(data: IExternalComponent): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostExternalComponentOpened)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostExternalComponentOpened)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTEPOSTEXTERNALCOMPONENTOPENED, data);
 		}
 	}
 
 	private async executePostExternalComponentClosed(data: IExternalComponent): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostExternalComponentClosed)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostExternalComponentClosed)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTEPOSTEXTERNALCOMPONENTCLOSED, data);
 		}
@@ -937,7 +938,7 @@ export class AppListenerManager {
 	private async executeUIKitInteraction(data: UIKitIncomingInteraction): Promise<IUIKitResponse> {
 		const { appId } = data;
 
-		const app = this.manager.getOneById(appId);
+		const app = this.manager.getOneById(appId)!;
 		const handleError = (method: string) => (error: unknown) => {
 			if ((error as Record<string, number>)?.code === JSONRPC_METHOD_NOT_FOUND) {
 				if (this.defaultHandlers.has(method)) {
@@ -1037,20 +1038,24 @@ export class AppListenerManager {
 					})
 					.catch(handleError(method));
 			}
+			default:
+				return undefined as unknown as Promise<IUIKitResponse>;
 		}
 	}
 
 	private async executeUIKitLivechatInteraction(data: IUIKitLivechatIncomingInteraction): Promise<IUIKitResponse> {
 		const { appId, type } = data;
 
-		const method = ((interactionType: string) => {
+		const method = ((interactionType: string): AppMethod => {
 			switch (interactionType) {
 				case UIKitIncomingInteractionType.BLOCK:
 					return AppMethod.UIKIT_LIVECHAT_BLOCK_ACTION;
+				default:
+					throw new Error(`Unknown UIKit livechat interaction type: ${interactionType}`);
 			}
 		})(type);
 
-		const app = this.manager.getOneById(appId);
+		const app = this.manager.getOneById(appId)!;
 
 		const interactionData = ((
 			interactionType: UIKitIncomingInteractionType,
@@ -1064,106 +1069,108 @@ export class AppListenerManager {
 
 					return {
 						appId,
-						actionId,
+						actionId: actionId!,
 						blockId,
 						visitor,
 						room,
-						triggerId,
+						triggerId: triggerId!,
 						value,
 						message,
 						container: container as IUIKitIncomingInteractionModalContainer | IUIKitIncomingInteractionMessageContainer,
 					};
 				}
+				default:
+					return undefined as unknown as IUIKitLivechatBlockIncomingInteraction;
 			}
 		})(type, data);
 
-		return app.call(method, interactionData);
+		return app!.call(method, interactionData);
 	}
 
 	// Livechat
 	private async executePreLivechatRoomCreatePrevent(data: ILivechatRoom): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPreLivechatRoomCreatePrevent)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreLivechatRoomCreatePrevent)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_PRE_LIVECHAT_ROOM_CREATE_PREVENT, data);
 		}
 	}
 
 	private async executePostLivechatRoomStarted(data: ILivechatRoom): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostLivechatRoomStarted)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostLivechatRoomStarted)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_LIVECHAT_ROOM_STARTED, data);
 		}
 	}
 
 	private async executeLivechatRoomClosedHandler(data: ILivechatRoom): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.ILivechatRoomClosedHandler)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.ILivechatRoomClosedHandler)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_LIVECHAT_ROOM_CLOSED_HANDLER, data);
 		}
 	}
 
 	private async executePostLivechatRoomClosed(data: ILivechatRoom): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostLivechatRoomClosed)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostLivechatRoomClosed)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_LIVECHAT_ROOM_CLOSED, data);
 		}
 	}
 
 	private async executePostLivechatAgentAssigned(data: ILivechatEventContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostLivechatAgentAssigned)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostLivechatAgentAssigned)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_LIVECHAT_AGENT_ASSIGNED, data);
 		}
 	}
 
 	private async executePostLivechatAgentUnassigned(data: ILivechatEventContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostLivechatAgentUnassigned)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostLivechatAgentUnassigned)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_LIVECHAT_AGENT_UNASSIGNED, data);
 		}
 	}
 
 	private async executePostLivechatRoomTransferred(data: ILivechatTransferEventContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostLivechatRoomTransferred)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostLivechatRoomTransferred)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_LIVECHAT_ROOM_TRANSFERRED, data);
 		}
 	}
 
 	private async executePostLivechatGuestSaved(data: IVisitor): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostLivechatGuestSaved)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostLivechatGuestSaved)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_LIVECHAT_GUEST_SAVED, data);
 		}
 	}
 
 	private async executePostLivechatRoomSaved(data: ILivechatRoom): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostLivechatRoomSaved)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostLivechatRoomSaved)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_LIVECHAT_ROOM_SAVED, data);
 		}
 	}
 
 	private async executePostLivechatDepartmentRemoved(data: ILivechatDepartmentEventContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostLivechatDepartmentRemoved)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostLivechatDepartmentRemoved)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_LIVECHAT_DEPARTMENT_REMOVED, data);
 		}
 	}
 
 	private async executePostLivechatDepartmentDisabled(data: ILivechatDepartmentEventContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostLivechatDepartmentDisabled)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostLivechatDepartmentDisabled)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_LIVECHAT_DEPARTMENT_DISABLED, data);
 		}
@@ -1171,8 +1178,8 @@ export class AppListenerManager {
 
 	// FileUpload
 	private async executePreFileUpload(data: IFileUploadInternalContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPreFileUpload)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreFileUpload)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_PRE_FILE_UPLOAD, data);
 		}
@@ -1181,8 +1188,8 @@ export class AppListenerManager {
 	private async executePreEmailSent(data: IPreEmailSentContext): Promise<IEmailDescriptor> {
 		let descriptor = data.email;
 
-		for (const appId of this.listeners.get(AppInterface.IPreEmailSent)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPreEmailSent)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			descriptor = await app.call(AppMethod.EXECUTE_PRE_EMAIL_SENT, {
 				context: data.context,
@@ -1194,88 +1201,88 @@ export class AppListenerManager {
 	}
 
 	private async executePostMessageReacted(data: IMessageReactionContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostMessageReacted)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostMessageReacted)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_MESSAGE_REACTED, data);
 		}
 	}
 
 	private async executePostMessageFollowed(data: IMessageFollowContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostMessageFollowed)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostMessageFollowed)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_MESSAGE_FOLLOWED, data);
 		}
 	}
 
 	private async executePostMessagePinned(data: IMessagePinContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostMessagePinned)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostMessagePinned)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_MESSAGE_PINNED, data);
 		}
 	}
 
 	private async executePostMessageStarred(data: IMessageStarContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostMessageStarred)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostMessageStarred)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_MESSAGE_STARRED, data);
 		}
 	}
 
 	private async executePostMessageReported(data: IMessageReportContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostMessageReported)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostMessageReported)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_MESSAGE_REPORTED, data);
 		}
 	}
 
 	private async executePostUserCreated(data: IUserContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostUserCreated)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostUserCreated)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_USER_CREATED, data);
 		}
 	}
 
 	private async executePostUserUpdated(data: IUserUpdateContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostUserUpdated)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostUserUpdated)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_USER_UPDATED, data);
 		}
 	}
 
 	private async executePostUserDeleted(data: IUserContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostUserDeleted)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostUserDeleted)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_USER_DELETED, data);
 		}
 	}
 
 	private async executePostUserLoggedIn(data: IUser): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostUserLoggedIn)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostUserLoggedIn)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_USER_LOGGED_IN, data);
 		}
 	}
 
 	private async executePostUserLoggedOut(data: IUser): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostUserLoggedOut)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostUserLoggedOut)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_USER_LOGGED_OUT, data);
 		}
 	}
 
 	private async executePostUserStatusChanged(data: IUserStatusContext): Promise<void> {
-		for (const appId of this.listeners.get(AppInterface.IPostUserStatusChanged)) {
-			const app = this.manager.getOneById(appId);
+		for (const appId of this.listeners.get(AppInterface.IPostUserStatusChanged)!) {
+			const app = this.manager.getOneById(appId)!;
 
 			await app.call(AppMethod.EXECUTE_POST_USER_STATUS_CHANGED, data);
 		}

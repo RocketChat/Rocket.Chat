@@ -15,48 +15,64 @@ export abstract class RoomBridge extends BaseBridge {
 		if (this.hasWritePermission(appId)) {
 			return this.create(room, members, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doGetById(roomId: string, appId: string): Promise<IRoom> {
 		if (this.hasReadPermission(appId)) {
 			return this.getById(roomId, appId);
 		}
+
+		return undefined as unknown as IRoom;
 	}
 
 	public async doGetByName(roomName: string, appId: string): Promise<IRoom> {
 		if (this.hasReadPermission(appId)) {
 			return this.getByName(roomName, appId);
 		}
+
+		return undefined as unknown as IRoom;
 	}
 
 	public async doGetCreatorById(roomId: string, appId: string): Promise<IUser | undefined> {
 		if (this.hasReadPermission(appId)) {
 			return this.getCreatorById(roomId, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doGetCreatorByName(roomName: string, appId: string): Promise<IUser | undefined> {
 		if (this.hasReadPermission(appId)) {
 			return this.getCreatorByName(roomName, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doGetDirectByUsernames(usernames: Array<string>, appId: string): Promise<IRoom | undefined> {
 		if (this.hasReadPermission(appId)) {
 			return this.getDirectByUsernames(usernames, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doGetMembers(roomId: string, appId: string): Promise<Array<IUser>> {
 		if (this.hasReadPermission(appId)) {
 			return this.getMembers(roomId, appId);
 		}
+
+		return undefined as unknown as Array<IUser>;
 	}
 
 	public async doGetAllRooms(filters: GetRoomsFilters = {}, options: GetRoomsOptions = {}, appId: string): Promise<Array<IRoomRaw> | undefined> {
 		if (this.hasViewAllRoomsPermission(appId)) {
 			return this.getAllRooms(filters, options, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doUpdate(room: IRoom, members: Array<string>, appId: string): Promise<void> {
@@ -75,6 +91,8 @@ export abstract class RoomBridge extends BaseBridge {
 		if (this.hasWritePermission(appId)) {
 			return this.createDiscussion(room, parentMessage, reply, members, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doDelete(room: string, appId: string): Promise<void> {
@@ -87,24 +105,32 @@ export abstract class RoomBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getModerators(roomId, appId);
 		}
+
+		return undefined as unknown as Array<IUser>;
 	}
 
 	public async doGetOwners(roomId: string, appId: string): Promise<Array<IUser>> {
 		if (this.hasReadPermission(appId)) {
 			return this.getOwners(roomId, appId);
 		}
+
+		return undefined as unknown as Array<IUser>;
 	}
 
 	public async doGetLeaders(roomId: string, appId: string): Promise<Array<IUser>> {
 		if (this.hasReadPermission(appId)) {
 			return this.getLeaders(roomId, appId);
 		}
+
+		return undefined as unknown as Array<IUser>;
 	}
 
 	public async doGetMessages(roomId: string, options: GetMessagesOptions, appId: string): Promise<IMessageRaw[]> {
 		if (this.hasReadPermission(appId)) {
 			return this.getMessages(roomId, options, appId);
 		}
+
+		return undefined as unknown as IMessageRaw[];
 	}
 
 	public async doRemoveUsers(roomId: string, usernames: Array<string>, appId: string): Promise<void> {
@@ -117,12 +143,16 @@ export abstract class RoomBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getUnreadByUser(roomId, uid, options, appId);
 		}
+
+		return undefined as unknown as IMessageRaw[];
 	}
 
 	public async doGetUserUnreadMessageCount(roomId: string, uid: string, appId: string): Promise<number> {
 		if (this.hasReadPermission(appId)) {
 			return this.getUserUnreadMessageCount(roomId, uid, appId);
 		}
+
+		return undefined as unknown as number;
 	}
 
 	protected abstract create(room: IRoom, members: Array<string>, appId: string): Promise<string>;

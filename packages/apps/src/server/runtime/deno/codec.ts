@@ -4,11 +4,12 @@ const extensionCodec = new ExtensionCodec();
 
 extensionCodec.register({
 	type: 0,
-	encode: (object: unknown) => {
+	encode: (object: unknown): Uint8Array | null => {
 		// We don't care about functions, but also don't want to throw an error
 		if (typeof object === 'function') {
 			return new Uint8Array([0]);
 		}
+		return null;
 	},
 
 	decode: (_data: Uint8Array) => undefined,
@@ -17,10 +18,11 @@ extensionCodec.register({
 // We need to handle Buffers because Deno needs its own decoding
 extensionCodec.register({
 	type: 1,
-	encode: (object: unknown) => {
+	encode: (object: unknown): Uint8Array | null => {
 		if (object instanceof Buffer) {
 			return new Uint8Array(object.buffer, object.byteOffset, object.byteLength);
 		}
+		return null;
 	},
 
 	// msgpack will reuse the Uint8Array instance, so WE NEED to copy it instead of simply creating a view

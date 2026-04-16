@@ -9,7 +9,7 @@ export class OAuthAppsModify implements IOAuthAppsModify {
 	) {}
 
 	public async createOAuthApp(oAuthApp: IOAuthAppParams): Promise<string> {
-		return this.oauthAppsBridge.doCreate(oAuthApp, this.appId);
+		return this.oauthAppsBridge.doCreate(oAuthApp, this.appId) as Promise<string>;
 	}
 
 	public async updateOAuthApp(oAuthApp: IOAuthAppParams, id: string): Promise<void> {

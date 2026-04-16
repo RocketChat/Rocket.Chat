@@ -13,9 +13,9 @@ export class AppSignatureManager {
 
 	private readonly signingAlgorithm = 'RS512';
 
-	private privateKey: string;
+	private privateKey!: string;
 
-	private publicKey: string;
+	private publicKey!: string;
 
 	constructor(private readonly manager: AppManager) {
 		this.federationBridge = this.manager.getBridges().getInternalFederationBridge();
@@ -23,7 +23,7 @@ export class AppSignatureManager {
 
 	public async verifySignedApp(app: IAppStorageItem): Promise<void> {
 		const publicKey = await jose.importSPKI(await this.getPublicKey(), 'pem');
-		const { payload } = await jose.jwtVerify(app.signature, publicKey);
+		const { payload } = await jose.jwtVerify(app.signature as string, publicKey);
 
 		const checksum = this.calculateChecksumForApp(app);
 
@@ -45,14 +45,14 @@ export class AppSignatureManager {
 
 	private async getPrivateKey(): Promise<string> {
 		if (!this.privateKey) {
-			this.privateKey = await this.federationBridge.getPrivateKey();
+			this.privateKey = (await this.federationBridge.getPrivateKey()) as string;
 		}
 		return this.privateKey;
 	}
 
 	private async getPublicKey(): Promise<string> {
 		if (!this.publicKey) {
-			this.publicKey = await this.federationBridge.getPublicKey();
+			this.publicKey = (await this.federationBridge.getPublicKey()) as string;
 		}
 		return this.publicKey;
 	}

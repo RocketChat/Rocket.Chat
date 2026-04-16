@@ -8,18 +8,24 @@ export abstract class EnvironmentalVariableBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getValueByName(envVarName, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doIsReadable(envVarName: string, appId: string): Promise<boolean> {
 		if (this.hasReadPermission(appId)) {
 			return this.isReadable(envVarName, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doIsSet(envVarName: string, appId: string): Promise<boolean> {
 		if (this.hasReadPermission(appId)) {
 			return this.isSet(envVarName, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	protected abstract getValueByName(envVarName: string, appId: string): Promise<string | undefined>;

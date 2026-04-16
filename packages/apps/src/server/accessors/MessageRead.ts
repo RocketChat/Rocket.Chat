@@ -18,17 +18,17 @@ export class MessageRead implements IMessageRead {
 		const msg = await this.messageBridge.doGetById(messageId, this.appId);
 
 		if (!msg) {
-			return undefined;
+			return undefined as unknown as IUser;
 		}
 
-		return msg.sender;
+		return msg.sender as IUser;
 	}
 
 	public async getRoom(messageId: string): Promise<IRoom> {
 		const msg = await this.messageBridge.doGetById(messageId, this.appId);
 
 		if (!msg) {
-			return undefined;
+			return undefined as unknown as IRoom;
 		}
 
 		return msg.room;

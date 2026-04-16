@@ -27,7 +27,7 @@ export class AppSchedulerManager {
 			processors.map((processor) => {
 				const processorId = createProcessorId(processor.id, appId);
 
-				this.registeredProcessors.get(appId)[processorId] = processor;
+				this.registeredProcessors.get(appId)![processorId] = processor;
 
 				return {
 					id: processorId,
@@ -41,13 +41,13 @@ export class AppSchedulerManager {
 
 	public wrapProcessor(appId: string, processorId: string): IProcessor['processor'] {
 		return async (jobContext: IJobContext) => {
-			const processor = this.registeredProcessors.get(appId)[processorId];
+			const processor = this.registeredProcessors.get(appId)![processorId];
 
 			if (!processor) {
 				throw new Error(`Processor ${processorId} not available`);
 			}
 
-			const app = this.manager.getOneById(appId);
+			const app = this.manager.getOneById(appId)!;
 			const status = await app.getStatus();
 			const previousStatus = app.getPreviousStatus();
 

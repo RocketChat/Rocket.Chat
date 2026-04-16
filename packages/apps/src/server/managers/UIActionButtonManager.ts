@@ -27,7 +27,7 @@ export class UIActionButtonManager {
 			this.registeredActionButtons.set(appId, new Map());
 		}
 
-		this.registeredActionButtons.get(appId).set(button.actionId, button);
+		this.registeredActionButtons.get(appId)!.set(button.actionId, button);
 
 		this.activationBridge.doActionsChanged();
 

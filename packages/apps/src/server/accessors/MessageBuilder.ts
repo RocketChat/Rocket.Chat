@@ -22,7 +22,7 @@ export class MessageBuilder implements IMessageBuilder {
 		delete data.id;
 		this.msg = data;
 
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public setUpdateData(data: IMessage, editor: IUser): IMessageBuilder {
@@ -30,22 +30,22 @@ export class MessageBuilder implements IMessageBuilder {
 		this.msg.editor = editor;
 		this.msg.editedAt = new Date();
 
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public setThreadId(threadId: string): IMessageBuilder {
 		this.msg.threadId = threadId;
 
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getThreadId(): string {
-		return this.msg.threadId;
+		return this.msg.threadId as string;
 	}
 
 	public setRoom(room: IRoom): IMessageBuilder {
 		this.msg.room = room;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getRoom(): IRoom {
@@ -54,47 +54,47 @@ export class MessageBuilder implements IMessageBuilder {
 
 	public setSender(sender: IUser): IMessageBuilder {
 		this.msg.sender = sender;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getSender(): IUser {
-		return this.msg.sender;
+		return this.msg.sender as IUser;
 	}
 
 	public setText(text: string): IMessageBuilder {
 		this.msg.text = text;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getText(): string {
-		return this.msg.text;
+		return this.msg.text as string;
 	}
 
 	public setEmojiAvatar(emoji: string): IMessageBuilder {
 		this.msg.emoji = emoji;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getEmojiAvatar(): string {
-		return this.msg.emoji;
+		return this.msg.emoji as string;
 	}
 
 	public setAvatarUrl(avatarUrl: string): IMessageBuilder {
 		this.msg.avatarUrl = avatarUrl;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getAvatarUrl(): string {
-		return this.msg.avatarUrl;
+		return this.msg.avatarUrl as string;
 	}
 
 	public setUsernameAlias(alias: string): IMessageBuilder {
 		this.msg.alias = alias;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getUsernameAlias(): string {
-		return this.msg.alias;
+		return this.msg.alias as string;
 	}
 
 	public addAttachment(attachment: IMessageAttachment): IMessageBuilder {
@@ -103,16 +103,16 @@ export class MessageBuilder implements IMessageBuilder {
 		}
 
 		this.msg.attachments.push(attachment);
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public setAttachments(attachments: Array<IMessageAttachment>): IMessageBuilder {
 		this.msg.attachments = attachments;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getAttachments(): Array<IMessageAttachment> {
-		return this.msg.attachments;
+		return this.msg.attachments as Array<IMessageAttachment>;
 	}
 
 	public replaceAttachment(position: number, attachment: IMessageAttachment): IMessageBuilder {
@@ -125,7 +125,7 @@ export class MessageBuilder implements IMessageBuilder {
 		}
 
 		this.msg.attachments[position] = attachment;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public removeAttachment(position: number): IMessageBuilder {
@@ -139,34 +139,34 @@ export class MessageBuilder implements IMessageBuilder {
 
 		this.msg.attachments.splice(position, 1);
 
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public setEditor(user: IUser): IMessageBuilder {
 		this.msg.editor = user;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getEditor(): IUser {
-		return this.msg.editor;
+		return this.msg.editor as IUser;
 	}
 
 	public setGroupable(groupable: boolean): IMessageBuilder {
 		this.msg.groupable = groupable;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getGroupable(): boolean {
-		return this.msg.groupable;
+		return this.msg.groupable as boolean;
 	}
 
 	public setParseUrls(parseUrls: boolean): IMessageBuilder {
 		this.msg.parseUrls = parseUrls;
-		return this;
+		return this as IMessageBuilder;
 	}
 
 	public getParseUrls(): boolean {
-		return this.msg.parseUrls;
+		return this.msg.parseUrls as boolean;
 	}
 
 	public getMessage(): IMessage {
@@ -177,7 +177,7 @@ export class MessageBuilder implements IMessageBuilder {
 		return this.msg;
 	}
 
-	public addBlocks(blocks: BlockBuilder | Array<IBlock | LayoutBlock>) {
+	public addBlocks(blocks: BlockBuilder | Array<IBlock | LayoutBlock>): IMessageBuilder {
 		if (!Array.isArray(this.msg.blocks)) {
 			this.msg.blocks = [];
 		}
@@ -188,21 +188,21 @@ export class MessageBuilder implements IMessageBuilder {
 			this.msg.blocks.push(...blocks);
 		}
 
-		return this;
+		return this as IMessageBuilder;
 	}
 
-	public setBlocks(blocks: BlockBuilder | Array<IBlock | LayoutBlock>) {
+	public setBlocks(blocks: BlockBuilder | Array<IBlock | LayoutBlock>): IMessageBuilder {
 		if (blocks instanceof BlockBuilder) {
 			this.msg.blocks = blocks.getBlocks();
 		} else {
 			this.msg.blocks = blocks;
 		}
 
-		return this;
+		return this as IMessageBuilder;
 	}
 
-	public getBlocks() {
-		return this.msg.blocks;
+	public getBlocks(): Array<IBlock | LayoutBlock> {
+		return this.msg.blocks as Array<IBlock | LayoutBlock>;
 	}
 
 	public addCustomField(key: string, value: any): IMessageBuilder {
@@ -219,6 +219,6 @@ export class MessageBuilder implements IMessageBuilder {
 		}
 
 		this.msg.customFields[key] = value;
-		return this;
+		return this as IMessageBuilder;
 	}
 }

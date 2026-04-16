@@ -8,7 +8,7 @@ export class ContactRead implements IContactRead {
 		private readonly appId: string,
 	) {}
 
-	public getById(contactId: ILivechatContact['_id']): Promise<ILivechatContact | undefined> {
-		return this.bridges.getContactBridge().doGetById(contactId, this.appId);
+	public getById(contactId: ILivechatContact['_id']): Promise<ILivechatContact | null> {
+		return this.bridges.getContactBridge().doGetById(contactId, this.appId) as Promise<ILivechatContact | null>;
 	}
 }

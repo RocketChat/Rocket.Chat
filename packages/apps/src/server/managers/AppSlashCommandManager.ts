@@ -72,7 +72,7 @@ export class AppSlashCommandManager {
 	 */
 	public canCommandBeTouchedBy(appId: string, command: string): boolean {
 		const cmd = command.toLowerCase().trim();
-		return cmd && (!this.touchedCommandsToApps.has(cmd) || this.touchedCommandsToApps.get(cmd) === appId);
+		return !!cmd && (!this.touchedCommandsToApps.has(cmd) || this.touchedCommandsToApps.get(cmd) === appId);
 	}
 
 	/**
@@ -128,7 +128,7 @@ export class AppSlashCommandManager {
 			this.providedCommands.set(appId, new Map<string, AppSlashCommand>());
 		}
 
-		this.providedCommands.get(appId).set(command.command, new AppSlashCommand(app, command));
+		this.providedCommands.get(appId)!.set(command.command, new AppSlashCommand(app, command));
 
 		// The app has now touched the command, so let's set it
 		this.setAsTouched(appId, command.command);
@@ -157,7 +157,7 @@ export class AppSlashCommandManager {
 			throw new Error('App must exist in order to modify a command.');
 		}
 
-		const hasNotProvidedIt = !this.providedCommands.has(appId) || !this.providedCommands.get(appId).has(command.command);
+		const hasNotProvidedIt = !this.providedCommands.has(appId) || !this.providedCommands.get(appId)!.has(command.command);
 
 		// They haven't provided (added) it and the bridged system doesn't have it, error out
 		if (hasNotProvidedIt && !(await this.bridge.doDoesCommandExist(command.command, appId))) {
@@ -172,7 +172,7 @@ export class AppSlashCommandManager {
 			regInfo.isRegistered = true;
 			this.modifiedCommands.set(command.command, regInfo);
 		} else {
-			this.providedCommands.get(appId).get(command.command).slashCommand = command;
+			this.providedCommands.get(appId)!.get(command.command)!.slashCommand = command;
 		}
 
 		this.setAsTouched(appId, command.command);
@@ -195,8 +195,8 @@ export class AppSlashCommandManager {
 		}
 
 		// Handle if the App provided the command fist
-		if (this.providedCommands.has(appId) && this.providedCommands.get(appId).has(cmd)) {
-			const cmdInfo = this.providedCommands.get(appId).get(cmd);
+		if (this.providedCommands.has(appId) && this.providedCommands.get(appId)!.has(cmd)) {
+			const cmdInfo = this.providedCommands.get(appId)!.get(cmd)!;
 
 			// A command marked as disabled can then be "enabled" but not be registered.
 			// This happens when an App is not enabled and they change the status of
@@ -235,8 +235,8 @@ export class AppSlashCommandManager {
 		}
 
 		// Handle if the App provided the command fist
-		if (this.providedCommands.has(appId) && this.providedCommands.get(appId).has(cmd)) {
-			const cmdInfo = this.providedCommands.get(appId).get(cmd);
+		if (this.providedCommands.has(appId) && this.providedCommands.get(appId)!.has(cmd)) {
+			const cmdInfo = this.providedCommands.get(appId)!.get(cmd)!;
 
 			// A command marked as enabled can then be "disabled" but not yet be registered.
 			// This happens when an App is not enabled and they change the status of
@@ -268,7 +268,7 @@ export class AppSlashCommandManager {
 			return;
 		}
 
-		const commands = this.providedCommands.get(appId);
+		const commands = this.providedCommands.get(appId)!;
 		for await (const [, appSlashCommand] of commands) {
 			if (appSlashCommand.isDisabled) {
 				continue;
@@ -285,7 +285,7 @@ export class AppSlashCommandManager {
 	 */
 	public async unregisterCommands(appId: string): Promise<void> {
 		if (this.providedCommands.has(appId)) {
-			const commands = this.providedCommands.get(appId);
+			const commands = this.providedCommands.get(appId)!;
 			for await (const [, appSlashCommand] of commands) {
 				const cmd = appSlashCommand.slashCommand.command;
 				await this.bridge.doUnregisterCommand(cmd, appId);
@@ -293,8 +293,8 @@ export class AppSlashCommandManager {
 				if (!this.appsTouchedCommands.has(appId)) {
 					continue;
 				}
-				const ind = this.appsTouchedCommands.get(appId).indexOf(cmd);
-				this.appsTouchedCommands.get(appId).splice(ind, 1);
+				const ind = this.appsTouchedCommands.get(appId)!.indexOf(cmd);
+				this.appsTouchedCommands.get(appId)!.splice(ind, 1);
 				appSlashCommand.isRegistered = true;
 			}
 
@@ -306,10 +306,10 @@ export class AppSlashCommandManager {
 			// only be the ones which the App has enabled, disabled, or modified.
 			// We call restore to enable the commands provided by the bridged system
 			// or unmodify the commands modified by the App
-			this.appsTouchedCommands.get(appId).forEach((cmd) => {
+			this.appsTouchedCommands.get(appId)!.forEach((cmd) => {
 				// @NOTE this "restore" method isn't present in the bridge
 				// this.bridge.doRestoreCommand(cmd, appId);
-				this.modifiedCommands.get(cmd).isRegistered = false;
+				this.modifiedCommands.get(cmd)!.isRegistered = false;
 				this.modifiedCommands.delete(cmd);
 				this.touchedCommandsToApps.delete(cmd);
 			});
@@ -331,7 +331,7 @@ export class AppSlashCommandManager {
 			return;
 		}
 
-		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd));
+		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd)!);
 
 		if (!app) {
 			throw new Error('App not found');
@@ -341,7 +341,7 @@ export class AppSlashCommandManager {
 			throw new Error('App not enabled');
 		}
 
-		const appCmd = this.retrieveCommandInfo(cmd, app.getID());
+		const appCmd = this.retrieveCommandInfo(cmd, app.getID())!;
 		await appCmd.runExecutorOrPreviewer(
 			AppMethod._COMMAND_EXECUTOR,
 			this.ensureContext(context),
@@ -350,22 +350,22 @@ export class AppSlashCommandManager {
 		);
 	}
 
-	public async getPreviews(command: string, context: SlashCommandContext): Promise<ISlashCommandPreview> {
+	public async getPreviews(command: string, context: SlashCommandContext): Promise<ISlashCommandPreview | undefined> {
 		const cmd = command.toLowerCase().trim();
 
 		if (!this.shouldCommandFunctionsRun(cmd)) {
-			return;
+			return undefined;
 		}
 
-		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd));
+		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd)!);
 
 		if (!app || AppStatusUtils.isDisabled(await app.getStatus())) {
 			// Just in case someone decides to do something they shouldn't
 			// let's ensure the app actually exists
-			return;
+			return undefined;
 		}
 
-		const appCmd = this.retrieveCommandInfo(cmd, app.getID());
+		const appCmd = this.retrieveCommandInfo(cmd, app.getID())!;
 
 		const result = await appCmd.runExecutorOrPreviewer(
 			AppMethod._COMMAND_PREVIEWER,
@@ -376,7 +376,7 @@ export class AppSlashCommandManager {
 
 		if (!result) {
 			// Failed to get the preview, thus returning is fine
-			return;
+			return undefined;
 		}
 
 		return result;
@@ -389,7 +389,7 @@ export class AppSlashCommandManager {
 			return;
 		}
 
-		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd));
+		const app = this.manager.getOneById(this.touchedCommandsToApps.get(cmd)!);
 
 		if (!app || AppStatusUtils.isDisabled(await app.getStatus())) {
 			// Just in case someone decides to do something they shouldn't
@@ -397,7 +397,7 @@ export class AppSlashCommandManager {
 			return;
 		}
 
-		const appCmd = this.retrieveCommandInfo(cmd, app.getID());
+		const appCmd = this.retrieveCommandInfo(cmd, app.getID())!;
 		await appCmd.runPreviewExecutor(previewItem, this.ensureContext(context), this.manager.getLogStorage(), this.accessors);
 	}
 
@@ -428,7 +428,7 @@ export class AppSlashCommandManager {
 			return false;
 		}
 
-		const appId = this.touchedCommandsToApps.get(command);
+		const appId = this.touchedCommandsToApps.get(command)!;
 		const cmdInfo = this.retrieveCommandInfo(command, appId);
 
 		// Should the command information really not exist
@@ -442,8 +442,8 @@ export class AppSlashCommandManager {
 		return true;
 	}
 
-	private retrieveCommandInfo(command: string, appId: string): AppSlashCommand {
-		return this.modifiedCommands.get(command) || this.providedCommands.get(appId).get(command);
+	private retrieveCommandInfo(command: string, appId: string): AppSlashCommand | undefined {
+		return this.modifiedCommands.get(command) || this.providedCommands.get(appId)?.get(command);
 	}
 
 	/**
@@ -457,8 +457,8 @@ export class AppSlashCommandManager {
 			this.appsTouchedCommands.set(appId, []);
 		}
 
-		if (!this.appsTouchedCommands.get(appId).includes(command)) {
-			this.appsTouchedCommands.get(appId).push(command);
+		if (!this.appsTouchedCommands.get(appId)!.includes(command)) {
+			this.appsTouchedCommands.get(appId)!.push(command);
 		}
 
 		this.touchedCommandsToApps.set(command, appId);

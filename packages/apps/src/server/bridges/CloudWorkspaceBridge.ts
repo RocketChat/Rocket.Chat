@@ -9,6 +9,8 @@ export abstract class CloudWorkspaceBridge extends BaseBridge {
 		if (this.hasCloudTokenPermission(appId)) {
 			return this.getWorkspaceToken(scope, appId);
 		}
+
+		return undefined as unknown as Promise<IWorkspaceToken>;
 	}
 
 	protected abstract getWorkspaceToken(scope: string, appId: string): Promise<IWorkspaceToken>;

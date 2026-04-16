@@ -285,7 +285,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		// What else should we do?
 		if (this.deno.kill('SIGKILL')) {
 			// Let's wait until we get confirmation the process exited
-			await new Promise<void>((r) => this.deno.on('exit', r));
+			await new Promise<void>((r) => this.deno!.on('exit', r));
 			killed = true;
 		} else {
 			this.debug('Tried killing the process but failed. Was it already dead?');
@@ -298,7 +298,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 	}
 
 	// Debug purposes, could be deleted later
-	emit(eventName: string | symbol, ...args: any[]): boolean {
+	override emit(eventName: string | symbol, ...args: any[]): boolean {
 		const hadListeners = super.emit(eventName, ...args);
 
 		if (!hadListeners) {
@@ -365,7 +365,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			}
 
 			await this.setupApp();
-			logger.info({ msg: 'New subprocess successfully spawned', pid: this.deno.pid });
+			logger.info({ msg: 'New subprocess successfully spawned', pid: this.deno!.pid });
 
 			// setupApp() changes the state to 'ready' - we'll need to workaround that for now
 			this.state = 'restarting';
@@ -415,7 +415,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 	private waitUntilReady(): Promise<void> {
 		if (this.state === 'ready') {
-			return;
+			return Promise.resolve();
 		}
 
 		return new Promise((resolve, reject) => {
@@ -486,7 +486,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			return;
 		}
 
-		this.deno.stderr.on('data', this.parseError.bind(this));
+		this.deno.stderr!.on('data', this.parseError.bind(this));
 		this.deno.on('error', (err) => {
 			this.state = 'invalid';
 			console.error(`Failed to startup Deno subprocess for app ${this.getAppId()}`, err);
@@ -496,7 +496,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 		this.once('ready', this.onReady.bind(this));
 
-		this.parseStdout(this.deno.stdout);
+		this.parseStdout(this.deno.stdout!);
 	}
 
 	// Probable should extract this to a separate file
@@ -547,7 +547,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 		 **/
 		// Prevent app from trying to get properties from the manager that
 		// are not intended for public access
-		if (!isValidOrigin(managerOrigin)) {
+		if (!managerOrigin || !isValidOrigin(managerOrigin)) {
 			throw new Error(`Invalid accessor namespace "${managerOrigin}"`);
 		}
 
@@ -626,8 +626,9 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 				params.map((value: unknown) => (value === 'APP_ID' ? this.appPackage.info.id : value)),
 			);
 		} catch (error) {
-			this.debug('Error executing bridge method %s().%s() %s', bridgeName, bridgeMethod, inspect(error.message));
-			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, -32000, error);
+			const err = error as Error;
+			this.debug('Error executing bridge method %s().%s() %s', bridgeName, bridgeMethod, inspect(err.message));
+			const jsonRpcError = new jsonrpc.JsonRpcError(err.message, -32000, err);
 			return jsonrpc.error(id, jsonRpcError);
 		}
 
@@ -643,7 +644,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			try {
 				result = await this.handleAccessorMessage(message as jsonrpc.IParsedObjectRequest);
 			} catch (e) {
-				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
+				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError((e as Error).message, 1000));
 			}
 
 			this.messenger.send(result);
@@ -657,7 +658,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 			try {
 				result = await this.handleBridgeMessage(message as jsonrpc.IParsedObjectRequest);
 			} catch (e) {
-				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
+				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError((e as Error).message, 1000));
 			}
 
 			this.messenger.send(result);
@@ -699,7 +700,7 @@ export class DenoRuntimeSubprocessController extends EventEmitter implements IRu
 
 		let result: unknown;
 		let error: jsonrpc.IParsedObjectError['payload']['error'] | undefined;
-		let logs: ILoggerStorageEntry;
+		let logs: ILoggerStorageEntry | undefined;
 
 		if (message.type === 'success') {
 			const params = message.payload.result as { value: unknown; logs?: ILoggerStorageEntry };

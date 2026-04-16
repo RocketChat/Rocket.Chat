@@ -14,6 +14,8 @@ export abstract class ThreadBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getById(messageId, appId);
 		}
+
+		return undefined as unknown as Array<IMessage>;
 	}
 
 	protected abstract getById(messageId: string, appId: string): Promise<Array<IMessage>>;

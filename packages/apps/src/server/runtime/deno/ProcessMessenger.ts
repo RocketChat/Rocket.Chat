@@ -52,6 +52,6 @@ export class ProcessMessenger {
 	}
 
 	private strategySend(message: Message) {
-		this.deno.stdin.write(this.encoder.encode(message));
+		this.deno!.stdin!.write(this.encoder!.encode(message));
 	}
 }

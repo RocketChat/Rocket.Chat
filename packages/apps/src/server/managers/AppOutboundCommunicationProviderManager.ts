@@ -55,7 +55,7 @@ export class AppOutboundCommunicationProviderManager {
 			this.outboundMessageProviders.set(appId, new Map<ValidOutboundProvider, OutboundMessageProvider>());
 		}
 
-		this.outboundMessageProviders.get(appId).set(provider.type, new OutboundMessageProvider(app, provider));
+		this.outboundMessageProviders.get(appId)!.set(provider.type, new OutboundMessageProvider(app, provider));
 	}
 
 	public async registerProviders(appId: string): Promise<void> {
@@ -89,7 +89,7 @@ export class AppOutboundCommunicationProviderManager {
 		}
 
 		const appProviders = this.outboundMessageProviders.get(appId);
-		for await (const [, providerInfo] of appProviders) {
+		for await (const [, providerInfo] of appProviders!) {
 			await this.unregisterProvider(appId, providerInfo, opts);
 		}
 

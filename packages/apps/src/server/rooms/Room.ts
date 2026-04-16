@@ -5,15 +5,15 @@ import type { AppManager } from '../AppManager';
 const PrivateManager = Symbol('RoomPrivateManager');
 
 export class Room implements IRoom {
-	public id: string;
+	public id!: string;
 
 	public displayName?: string;
 
-	public slugifiedName: string;
+	public slugifiedName!: string;
 
-	public type: RoomType;
+	public type!: RoomType;
 
-	public creator: IUser;
+	public creator!: IUser;
 
 	public isDefault?: boolean;
 
@@ -33,9 +33,9 @@ export class Room implements IRoom {
 
 	public userIds?: Array<string>;
 
-	private _USERNAMES: Array<string>;
+	private _USERNAMES!: Array<string>;
 
-	private [PrivateManager]: AppManager;
+	private [PrivateManager]!: AppManager;
 
 	/**
 	 * @deprecated
@@ -49,7 +49,7 @@ export class Room implements IRoom {
 		return this._USERNAMES;
 	}
 
-	public set usernames(usernames) {}
+	public set usernames(_usernames: Array<string>) {}
 
 	public constructor(room: IRoom, manager: AppManager) {
 		Object.assign(this, room);

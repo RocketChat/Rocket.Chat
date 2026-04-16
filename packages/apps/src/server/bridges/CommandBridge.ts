@@ -9,6 +9,8 @@ export abstract class CommandBridge extends BaseBridge {
 		if (this.hasDefaultPermission(appId)) {
 			return this.doesCommandExist(command, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doEnableCommand(command: string, appId: string): Promise<void> {

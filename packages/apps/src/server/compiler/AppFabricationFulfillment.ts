@@ -3,17 +3,17 @@ import type { ProxiedApp } from '../ProxiedApp';
 import { AppLicenseValidationResult } from '../marketplace/license';
 
 export class AppFabricationFulfillment {
-	public info: IAppInfo;
+	public info!: IAppInfo;
 
-	public app: ProxiedApp;
+	public app!: ProxiedApp;
 
-	public implemented: { [int: string]: boolean };
+	public implemented!: { [int: string]: boolean };
 
 	public licenseValidationResult: AppLicenseValidationResult;
 
-	public storageError: string;
+	public storageError!: string;
 
-	public appUserError: object;
+	public appUserError!: object;
 
 	constructor() {
 		this.licenseValidationResult = new AppLicenseValidationResult();

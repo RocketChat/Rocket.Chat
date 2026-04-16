@@ -9,12 +9,16 @@ export abstract class RoleBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getOneByIdOrName(idOrName, appId);
 		}
+
+		return undefined as unknown as IRole | null;
 	}
 
 	public async doGetCustomRoles(appId: string): Promise<Array<IRole>> {
 		if (this.hasReadPermission(appId)) {
 			return this.getCustomRoles(appId);
 		}
+
+		return undefined as unknown as Array<IRole>;
 	}
 
 	protected abstract getOneByIdOrName(idOrName: IRole['id'] | IRole['name'], appId: string): Promise<IRole | null>;

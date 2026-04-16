@@ -16,7 +16,7 @@ export class RoomRead implements IRoomRead {
 	}
 
 	public getCreatorUserById(id: string): Promise<IUser> {
-		return this.roomBridge.doGetCreatorById(id, this.appId);
+		return this.roomBridge.doGetCreatorById(id, this.appId) as Promise<IUser>;
 	}
 
 	public getByName(name: string): Promise<IRoom> {
@@ -24,7 +24,7 @@ export class RoomRead implements IRoomRead {
 	}
 
 	public getCreatorUserByName(name: string): Promise<IUser> {
-		return this.roomBridge.doGetCreatorByName(name, this.appId);
+		return this.roomBridge.doGetCreatorByName(name, this.appId) as Promise<IUser>;
 	}
 
 	public getMessages(roomId: string, options: Partial<GetMessagesOptions> = {}): Promise<IMessageRaw[]> {
@@ -63,7 +63,7 @@ export class RoomRead implements IRoomRead {
 	}
 
 	public getDirectByUsernames(usernames: Array<string>): Promise<IRoom> {
-		return this.roomBridge.doGetDirectByUsernames(usernames, this.appId);
+		return this.roomBridge.doGetDirectByUsernames(usernames, this.appId) as Promise<IRoom>;
 	}
 
 	public getModerators(roomId: string): Promise<Array<IUser>> {

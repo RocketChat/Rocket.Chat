@@ -11,15 +11,16 @@ export class UIHelper {
 	 * @returns the array of block with the ids properties assigned
 	 */
 	public static assignIds(blocks: Array<IBlock | LayoutBlock>, appId: string): Array<IBlock | LayoutBlock> {
-		blocks.forEach((block: (IBlock | LayoutBlock) & { appId?: string; blockId?: string; elements?: Array<any> }) => {
-			if (!block.appId) {
-				block.appId = appId;
+		blocks.forEach((block) => {
+			const b = block as (IBlock | LayoutBlock) & { appId?: string; blockId?: string; elements?: Array<any> };
+			if (!b.appId) {
+				b.appId = appId;
 			}
-			if (!block.blockId) {
-				block.blockId = uuid();
+			if (!b.blockId) {
+				b.blockId = uuid();
 			}
-			if (block.elements) {
-				block.elements.forEach((element) => {
+			if (b.elements) {
+				b.elements.forEach((element) => {
 					if (!element.actionId) {
 						element.actionId = uuid();
 					}

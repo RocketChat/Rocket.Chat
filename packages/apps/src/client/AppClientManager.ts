@@ -21,7 +21,7 @@ export class AppClientManager {
 	}
 
 	public async load(): Promise<void> {
-		this.apps = await this.communicator.getEnabledApps();
+		this.apps = await this.communicator!.getEnabledApps();
 		console.log('Enabled apps:', this.apps);
 	}
 

@@ -72,7 +72,7 @@ export class AppVideoConfProviderManager {
 			this.videoConfProviders.set(appId, new Map<string, AppVideoConfProvider>());
 		}
 
-		this.videoConfProviders.get(appId).set(providerName, new AppVideoConfProvider(app, provider));
+		this.videoConfProviders.get(appId)!.set(providerName, new AppVideoConfProvider(app, provider));
 		this.linkAppProvider(appId, providerName);
 	}
 
@@ -97,7 +97,7 @@ export class AppVideoConfProviderManager {
 		}
 
 		const appProviders = this.videoConfProviders.get(appId);
-		for (const [, providerInfo] of appProviders) {
+		for (const [, providerInfo] of appProviders!) {
 			this.unregisterProvider(appId, providerInfo);
 		}
 
@@ -184,11 +184,13 @@ export class AppVideoConfProviderManager {
 				continue;
 			}
 
-			const provider = providers.get(key);
+			const provider = providers.get(key)!;
 			if (provider.isRegistered) {
 				return provider;
 			}
 		}
+
+		return undefined;
 	}
 
 	private linkAppProvider(appId: string, providerName: string): void {

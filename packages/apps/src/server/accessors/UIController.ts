@@ -49,7 +49,7 @@ export class UIController implements IUIController {
 		return this.openContextualBar(view, context, user, true);
 	}
 
-	public openSurfaceView(view: IUIKitSurfaceViewParam, context: IUIKitInteractionParam, user: IUser) {
+	public openSurfaceView(view: IUIKitSurfaceViewParam, context: IUIKitInteractionParam, user: IUser): Promise<void> {
 		const blocks = UIHelper.assignIds(view.blocks, this.appId);
 		const viewWithIds = { ...view, blocks };
 
@@ -58,10 +58,12 @@ export class UIController implements IUIController {
 				return this.openContextualBar(viewWithIds, context, user);
 			case UIKitSurfaceType.MODAL:
 				return this.openModal(viewWithIds, context, user);
+			default:
+				return Promise.resolve();
 		}
 	}
 
-	public updateSurfaceView(view: IUIKitSurfaceViewParam, context: IUIKitInteractionParam, user: IUser) {
+	public updateSurfaceView(view: IUIKitSurfaceViewParam, context: IUIKitInteractionParam, user: IUser): Promise<void> {
 		const blocks = UIHelper.assignIds(view.blocks, this.appId);
 		const viewWithIds = { ...view, blocks };
 
@@ -70,6 +72,8 @@ export class UIController implements IUIController {
 				return this.openContextualBar(viewWithIds, context, user, true);
 			case UIKitSurfaceType.MODAL:
 				return this.openModal(viewWithIds, context, user, true);
+			default:
+				return Promise.resolve();
 		}
 	}
 

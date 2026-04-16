@@ -17,6 +17,8 @@ export abstract class ContactBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getById(contactId, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doVerifyContact(verifyContactChannelParams: VerifyContactChannelParams, appId: string): Promise<void> {
@@ -29,6 +31,8 @@ export abstract class ContactBridge extends BaseBridge {
 		if (this.hasWritePermission(appId)) {
 			return this.addContactEmail(contactId, email, appId);
 		}
+
+		return undefined as unknown as ILivechatContact;
 	}
 
 	protected abstract getById(contactId: ILivechatContact['_id'], appId: string): Promise<ILivechatContact | undefined>;

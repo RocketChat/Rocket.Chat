@@ -11,12 +11,16 @@ export abstract class VideoConferenceBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getById(callId, appId);
 		}
+
+		return undefined as unknown as VideoConference;
 	}
 
 	public async doCreate(call: AppVideoConference, appId: string): Promise<string> {
 		if (this.hasWritePermission(appId)) {
 			return this.create(call, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doUpdate(call: VideoConference, appId: string): Promise<void> {

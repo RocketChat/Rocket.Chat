@@ -121,7 +121,7 @@ export class AppAccessorManager {
 			this.configExtenders.set(appId, new ConfigurationExtend(htt, sets, cmds, apis, excs, scheduler, ui, videoConf, outboundComms));
 		}
 
-		return this.configExtenders.get(appId);
+		return this.configExtenders.get(appId)!;
 	}
 
 	public getEnvironmentRead(appId: string): IEnvironmentRead {
@@ -139,7 +139,7 @@ export class AppAccessorManager {
 			this.envReaders.set(appId, new EnvironmentRead(sets, servsets, env));
 		}
 
-		return this.envReaders.get(appId);
+		return this.envReaders.get(appId)!;
 	}
 
 	public getEnvironmentWrite(appId: string): IEnvironmentWrite {
@@ -156,7 +156,7 @@ export class AppAccessorManager {
 			this.envWriters.set(appId, new EnvironmentWrite(sets, serverSetting));
 		}
 
-		return this.envWriters.get(appId);
+		return this.envWriters.get(appId)!;
 	}
 
 	public getConfigurationModify(appId: string): IConfigurationModify {
@@ -171,7 +171,7 @@ export class AppAccessorManager {
 			);
 		}
 
-		return this.configModifiers.get(appId);
+		return this.configModifiers.get(appId)!;
 	}
 
 	public getReader(appId: string): IRead {
@@ -214,7 +214,7 @@ export class AppAccessorManager {
 			);
 		}
 
-		return this.readers.get(appId);
+		return this.readers.get(appId)!;
 	}
 
 	public getModifier(appId: string): IModify {
@@ -222,7 +222,7 @@ export class AppAccessorManager {
 			this.modifiers.set(appId, new Modify(this.bridges, appId));
 		}
 
-		return this.modifiers.get(appId);
+		return this.modifiers.get(appId)!;
 	}
 
 	public getPersistence(appId: string): IPersistence {
@@ -230,14 +230,14 @@ export class AppAccessorManager {
 			this.persists.set(appId, new Persistence(this.bridges.getPersistenceBridge(), appId));
 		}
 
-		return this.persists.get(appId);
+		return this.persists.get(appId)!;
 	}
 
 	public getHttp(appId: string): IHttp {
 		if (!this.https.has(appId)) {
 			let ext: IHttpExtend;
 			if (this.configExtenders.has(appId)) {
-				ext = this.configExtenders.get(appId).http;
+				ext = this.configExtenders.get(appId)!.http;
 			} else {
 				const cf = this.getConfigurationExtend(appId);
 				ext = cf.http;
@@ -246,6 +246,6 @@ export class AppAccessorManager {
 			this.https.set(appId, new Http(this, this.bridges, ext, appId));
 		}
 
-		return this.https.get(appId);
+		return this.https.get(appId)!;
 	}
 }

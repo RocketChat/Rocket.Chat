@@ -50,9 +50,9 @@ export class AppExternalComponentManager {
 	 *
 	 * @param appId the id of the app
 	 */
-	public getExternalComponents(appId: string): Map<string, IExternalComponent> {
+	public getExternalComponents(appId: string): Map<string, IExternalComponent> | null {
 		if (this.appTouchedExternalComponents.has(appId)) {
-			return this.appTouchedExternalComponents.get(appId);
+			return this.appTouchedExternalComponents.get(appId)!;
 		}
 
 		return null;
@@ -89,7 +89,7 @@ export class AppExternalComponentManager {
 		if (!this.appTouchedExternalComponents.get(appId)) {
 			this.appTouchedExternalComponents.set(appId, new Map(Object.entries({ [externalComponent.name]: externalComponent })));
 		} else {
-			const appExternalComponents = this.appTouchedExternalComponents.get(appId);
+			const appExternalComponents = this.appTouchedExternalComponents.get(appId)!;
 
 			appExternalComponents.set(externalComponent.name, externalComponent);
 		}
@@ -105,7 +105,7 @@ export class AppExternalComponentManager {
 		if (!this.appTouchedExternalComponents.has(appId)) {
 			return;
 		}
-		const externalComponents = this.appTouchedExternalComponents.get(appId);
+		const externalComponents = this.appTouchedExternalComponents.get(appId)!;
 
 		if (externalComponents.size > 0) {
 			this.registeredExternalComponents.set(appId, externalComponents);

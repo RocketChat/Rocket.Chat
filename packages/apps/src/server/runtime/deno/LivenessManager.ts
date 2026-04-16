@@ -42,14 +42,14 @@ export class LivenessManager {
 		restartAttemptDelayInMS: number;
 	};
 
-	private subprocess: ChildProcess;
+	private subprocess!: ChildProcess;
 
 	private watchdogTimeout: NodeJS.Timeout | null = null;
 
 	private lastHeartbeatTimestamp = NaN;
 
 	// A promise tracking the current ping process - used mostly for testing
-	private pendingPing: Promise<boolean> | null;
+	private pendingPing: Promise<boolean> | null = null;
 
 	// This is the perfect use-case for an AbortController, but it's experimental in Node 14.x
 	private pingAbortController: EventEmitter;
@@ -132,7 +132,7 @@ export class LivenessManager {
 
 	public stop() {
 		this.pingAbortController.emit('abort');
-		clearInterval(this.watchdogTimeout);
+		clearInterval(this.watchdogTimeout ?? undefined);
 		this.watchdogTimeout = null;
 		this.pendingPing = null;
 	}

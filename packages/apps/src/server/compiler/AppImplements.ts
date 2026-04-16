@@ -7,8 +7,8 @@ export class AppImplements {
 	constructor() {
 		this.implemented = {} as Record<AppInterface, boolean>;
 
-		Object.keys(AppInterface).forEach((int: AppInterface) => {
-			this.implemented[int] = false;
+		Object.keys(AppInterface).forEach((int: string) => {
+			this.implemented[int as AppInterface] = false;
 		});
 	}
 

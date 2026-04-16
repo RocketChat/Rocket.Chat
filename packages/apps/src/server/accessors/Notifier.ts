@@ -18,7 +18,7 @@ export class Notifier implements INotifier {
 		if (!message.sender?.id) {
 			const appUser = await this.userBridge.doGetAppUser(this.appId);
 
-			message.sender = appUser;
+			message.sender = appUser as IUser;
 		}
 
 		await this.msgBridge.doNotifyUser(user, message, this.appId);
@@ -28,7 +28,7 @@ export class Notifier implements INotifier {
 		if (!message.sender?.id) {
 			const appUser = await this.userBridge.doGetAppUser(this.appId);
 
-			message.sender = appUser;
+			message.sender = appUser as IUser;
 		}
 
 		await this.msgBridge.doNotifyRoom(room, message, this.appId);

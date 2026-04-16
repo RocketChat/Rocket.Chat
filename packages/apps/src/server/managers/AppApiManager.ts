@@ -51,7 +51,7 @@ export class AppApiManager {
 		// Verify the api's path doesn't exist already
 		if (this.providedApis.get(appId)) {
 			api.endpoints.forEach((endpoint) => {
-				if (this.providedApis.get(appId).has(endpoint.path)) {
+				if (this.providedApis.get(appId)!.has(endpoint.path)) {
 					throw new PathAlreadyExistsError(endpoint.path);
 				}
 			});
@@ -62,7 +62,7 @@ export class AppApiManager {
 		}
 
 		api.endpoints.forEach((endpoint) => {
-			this.providedApis.get(appId).set(endpoint.path, new AppApi(app, api, endpoint));
+			this.providedApis.get(appId)!.set(endpoint.path, new AppApi(app, api, endpoint));
 		});
 	}
 
@@ -78,7 +78,7 @@ export class AppApiManager {
 		}
 
 		await this.bridge.doUnregisterApis(appId);
-		for await (const [, apiApp] of this.providedApis.get(appId).entries()) {
+		for await (const [, apiApp] of this.providedApis.get(appId)!.entries()) {
 			await this.registerApi(appId, apiApp);
 		}
 	}
@@ -104,7 +104,7 @@ export class AppApiManager {
 	 * @param request the request data to be evaluated byt the app
 	 */
 	public async executeApi(appId: string, path: string, request: IApiRequest): Promise<IApiResponse> {
-		const api = this.providedApis.get(appId).get(path);
+		const api = this.providedApis.get(appId)!.get(path);
 
 		if (!api) {
 			return {

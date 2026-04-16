@@ -5,22 +5,28 @@ import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
 
 export abstract class OAuthAppsBridge extends BaseBridge {
-	public async doCreate(oAuthApp: IOAuthAppParams, appId: string) {
+	public async doCreate(oAuthApp: IOAuthAppParams, appId: string): Promise<string | null | undefined> {
 		if (this.hasWritePermission(appId)) {
 			return this.create(oAuthApp, appId);
 		}
+
+		return undefined;
 	}
 
-	public async doGetByid(id: string, appId: string) {
+	public async doGetByid(id: string, appId: string): Promise<IOAuthApp | null | undefined> {
 		if (this.hasReadPermission(appId)) {
 			return this.getById(id, appId);
 		}
+
+		return undefined;
 	}
 
-	public async doGetByName(name: string, appId: string) {
+	public async doGetByName(name: string, appId: string): Promise<Array<IOAuthApp | null> | undefined> {
 		if (this.hasReadPermission(appId)) {
 			return this.getByName(name, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doUpdate(oAuthApp: IOAuthAppParams, id: string, appId: string) {

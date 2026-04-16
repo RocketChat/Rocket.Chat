@@ -16,6 +16,8 @@ export abstract class MessageBridge extends BaseBridge {
 		if (this.hasWritePermission(appId)) {
 			return this.create(message, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doUpdate(message: IMessage, appId: string): Promise<void> {
@@ -46,6 +48,8 @@ export abstract class MessageBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getById(messageId, appId);
 		}
+
+		return undefined as unknown as IMessage;
 	}
 
 	public async doDelete(message: IMessage, user: IUser, appId: string): Promise<void> {

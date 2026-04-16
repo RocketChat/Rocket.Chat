@@ -43,7 +43,7 @@ export class VideoConferenceExtender implements IVideoConferenceExtender {
 	public addUser(userId: VideoConferenceMember['_id'], ts?: VideoConferenceMember['ts']): IVideoConferenceExtender {
 		this.videoConference.users.push({
 			_id: userId,
-			ts,
+			ts: ts as Date,
 			// Name and username will be loaded automatically by the bridge
 			username: '',
 			name: '',

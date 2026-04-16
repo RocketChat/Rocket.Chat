@@ -18,7 +18,7 @@ export class AppsEngineNodeRuntime extends AppsEngineRuntime {
 		exports: {},
 	};
 
-	public static async runCode(code: string, sandbox?: Record<string, any>, options?: IAppsEngineRuntimeOptions): Promise<any> {
+	public static override async runCode(code: string, sandbox?: Record<string, any>, options?: IAppsEngineRuntimeOptions): Promise<any> {
 		return new Promise((resolve, reject) => {
 			process.nextTick(() => {
 				try {
@@ -30,7 +30,7 @@ export class AppsEngineNodeRuntime extends AppsEngineRuntime {
 		});
 	}
 
-	public static runCodeSync(code: string, sandbox?: Record<string, any>, options?: IAppsEngineRuntimeOptions): any {
+	public static override runCodeSync(code: string, sandbox?: Record<string, any>, options?: IAppsEngineRuntimeOptions): any {
 		return vm.runInNewContext(
 			code,
 			{ ...AppsEngineNodeRuntime.defaultContext, ...sandbox },

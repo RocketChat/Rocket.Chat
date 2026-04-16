@@ -47,7 +47,7 @@ export class AppSettingsManager {
 		decoratedSetting.updatedAt = new Date();
 		storageItem.settings[decoratedSetting.id] = decoratedSetting;
 
-		await this.manager.getStorage().updateSetting(storageItem._id, decoratedSetting);
+		await this.manager.getStorage().updateSetting(storageItem._id!, decoratedSetting);
 
 		this.manager.getBridges().getAppDetailChangesBridge().doOnAppSettingsChange(appId, decoratedSetting);
 

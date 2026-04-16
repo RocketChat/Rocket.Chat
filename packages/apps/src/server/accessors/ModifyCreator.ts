@@ -93,7 +93,7 @@ export class ModifyCreator implements IModifyCreator {
 
 	public startRoom(data?: IRoom): IRoomBuilder {
 		if (data) {
-			delete data.id;
+			(data as Partial<IRoom>).id = undefined;
 		}
 
 		return new RoomBuilder(data);
@@ -101,7 +101,7 @@ export class ModifyCreator implements IModifyCreator {
 
 	public startDiscussion(data?: Partial<IRoom>): IDiscussionBuilder {
 		if (data) {
-			delete data.id;
+			data.id = undefined;
 		}
 
 		return new DiscussionBuilder(data);
@@ -196,7 +196,7 @@ export class ModifyCreator implements IModifyCreator {
 
 	private _finishRoom(builder: IRoomBuilder): Promise<string> {
 		const result = builder.getRoom();
-		delete result.id;
+		(result as Partial<IRoom>).id = undefined;
 
 		if (!result.type) {
 			throw new Error('Invalid type assigned to the room.');
@@ -225,7 +225,7 @@ export class ModifyCreator implements IModifyCreator {
 
 	private _finishDiscussion(builder: IDiscussionBuilder): Promise<string> {
 		const room = builder.getRoom();
-		delete room.id;
+		(room as Partial<IRoom>).id = undefined;
 
 		if (!room.creator?.id) {
 			throw new Error('Invalid creator assigned to the discussion.');

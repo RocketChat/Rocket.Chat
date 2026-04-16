@@ -32,7 +32,7 @@ export class AppPermissionManager {
 	}
 
 	private static getCallStack(): string {
-		const stack = new Error().stack.toString().split('\n');
+		const stack = (new Error().stack ?? '').split('\n');
 		const appStackIndex = stack.findIndex((position) => position.includes(APPS_ENGINE_RUNTIME_FILE_PREFIX));
 
 		return stack.slice(4, appStackIndex).join('\n');

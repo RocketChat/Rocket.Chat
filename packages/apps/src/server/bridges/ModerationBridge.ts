@@ -8,13 +8,13 @@ import { AppPermissions } from '../permissions/AppPermissions';
 export abstract class ModerationBridge extends BaseBridge {
 	public async doReport(messageId: IMessage['id'], description: string, userId: string, appId: string): Promise<void> {
 		if (this.hasWritePermission(appId)) {
-			return this.report(messageId, description, userId, appId);
+			return this.report(messageId!, description, userId, appId);
 		}
 	}
 
 	public async doDismissReportsByMessageId(messageId: IMessage['id'], reason: string, action: string, appId: string): Promise<void> {
 		if (this.hasWritePermission(appId)) {
-			return this.dismissReportsByMessageId(messageId, reason, action, appId);
+			return this.dismissReportsByMessageId(messageId!, reason, action, appId);
 		}
 	}
 

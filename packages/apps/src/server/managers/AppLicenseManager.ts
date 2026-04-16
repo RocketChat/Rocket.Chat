@@ -29,7 +29,7 @@ export class AppLicenseManager {
 
 		validationResult.setValidated(true);
 
-		const encryptedLicense = marketplaceInfo.subscriptionInfo.license.license;
+		const encryptedLicense = marketplaceInfo.subscriptionInfo!.license.license;
 
 		if (!encryptedLicense) {
 			validationResult.addError('license', 'License for app is invalid');
@@ -41,7 +41,7 @@ export class AppLicenseManager {
 		try {
 			license = (await this.crypto.decryptLicense(encryptedLicense)) as any;
 		} catch (err) {
-			validationResult.addError('publicKey', err.message);
+			validationResult.addError('publicKey', (err as Error).message);
 
 			throw new InvalidLicenseError(validationResult);
 		}

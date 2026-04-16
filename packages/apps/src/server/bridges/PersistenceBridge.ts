@@ -15,42 +15,56 @@ export abstract class PersistenceBridge extends BaseBridge {
 		if (this.hasDefaultPermission(appId)) {
 			return this.create(data, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doCreateWithAssociations(data: object, associations: Array<RocketChatAssociationRecord>, appId: string): Promise<string> {
 		if (this.hasDefaultPermission(appId)) {
 			return this.createWithAssociations(data, associations, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doReadById(id: string, appId: string): Promise<object> {
 		if (this.hasDefaultPermission(appId)) {
 			return this.readById(id, appId);
 		}
+
+		return undefined as unknown as object;
 	}
 
 	public async doReadByAssociations(associations: Array<RocketChatAssociationRecord>, appId: string): Promise<Array<object>> {
 		if (this.hasDefaultPermission(appId)) {
 			return this.readByAssociations(associations, appId);
 		}
+
+		return undefined as unknown as Array<object>;
 	}
 
 	public async doRemove(id: string, appId: string): Promise<object | undefined> {
 		if (this.hasDefaultPermission(appId)) {
 			return this.remove(id, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doRemoveByAssociations(associations: Array<RocketChatAssociationRecord>, appId: string): Promise<Array<object> | undefined> {
 		if (this.hasDefaultPermission(appId)) {
 			return this.removeByAssociations(associations, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doUpdate(id: string, data: object, upsert: boolean, appId: string): Promise<string> {
 		if (this.hasDefaultPermission(appId)) {
 			return this.update(id, data, upsert, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doUpdateByAssociations(
@@ -62,6 +76,8 @@ export abstract class PersistenceBridge extends BaseBridge {
 		if (this.hasDefaultPermission(appId)) {
 			return this.updateByAssociations(associations, data, upsert, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	/**

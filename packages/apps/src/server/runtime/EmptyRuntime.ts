@@ -21,7 +21,7 @@ export class EmptyRuntime extends EventEmitter implements IRuntimeController {
 	/**
 	 * Stub implementation that throws an error since this runtime cannot handle requests
 	 */
-	public async sendRequest(message: { method: string; params: any[] }, options?: RuntimeRequestOptions): Promise<unknown> {
+	public async sendRequest(message: { method: string; params: any[] }, _options?: RuntimeRequestOptions): Promise<unknown> {
 		throw new Error(`EmptyRuntime cannot handle requests. Method: ${message.method}`);
 	}
 

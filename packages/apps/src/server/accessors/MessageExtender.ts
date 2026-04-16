@@ -33,13 +33,13 @@ export class MessageExtender implements IMessageExtender {
 	}
 
 	public addAttachment(attachment: IMessageAttachment): IMessageExtender {
-		this.msg.attachments.push(attachment);
+		this.msg.attachments!.push(attachment);
 
 		return this;
 	}
 
 	public addAttachments(attachments: Array<IMessageAttachment>): IMessageExtender {
-		this.msg.attachments = this.msg.attachments.concat(attachments);
+		this.msg.attachments = this.msg.attachments!.concat(attachments);
 
 		return this;
 	}

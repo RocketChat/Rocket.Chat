@@ -26,7 +26,7 @@ export class UserBuilder implements IUserBuilder {
 	}
 
 	public getEmails(): Array<IUserEmail> {
-		return this.user.emails;
+		return this.user.emails as Array<IUserEmail>;
 	}
 
 	public setDisplayName(name: string): IUserBuilder {
@@ -35,7 +35,7 @@ export class UserBuilder implements IUserBuilder {
 	}
 
 	public getDisplayName(): string {
-		return this.user.name;
+		return this.user.name as string;
 	}
 
 	public setUsername(username: string): IUserBuilder {
@@ -44,7 +44,7 @@ export class UserBuilder implements IUserBuilder {
 	}
 
 	public getUsername(): string {
-		return this.user.username;
+		return this.user.username as string;
 	}
 
 	public setRoles(roles: Array<string>): IUserBuilder {
@@ -53,11 +53,11 @@ export class UserBuilder implements IUserBuilder {
 	}
 
 	public getRoles(): Array<string> {
-		return this.user.roles;
+		return this.user.roles as Array<string>;
 	}
 
 	public getSettings(): Partial<IUserSettings> {
-		return this.user.settings;
+		return this.user.settings as Partial<IUserSettings>;
 	}
 
 	public getUser(): Partial<IUser> {

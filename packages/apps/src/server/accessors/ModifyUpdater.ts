@@ -15,7 +15,7 @@ export class ModifyUpdater implements IModifyUpdater {
 
 	private userUpdater: IUserUpdater;
 
-	private messageUpdater: IMessageUpdater;
+	private messageUpdater!: IMessageUpdater;
 
 	constructor(
 		private readonly bridges: AppBridges,
@@ -37,13 +37,13 @@ export class ModifyUpdater implements IModifyUpdater {
 		return this.messageUpdater;
 	}
 
-	public async message(messageId: string, updater: IUser): Promise<IMessageBuilder> {
+	public async message(messageId: string, _updater: IUser): Promise<IMessageBuilder> {
 		const msg = await this.bridges.getMessageBridge().doGetById(messageId, this.appId);
 
 		return new MessageBuilder(msg);
 	}
 
-	public async room(roomId: string, updater: IUser): Promise<IRoomBuilder> {
+	public async room(roomId: string, _updater: IUser): Promise<IRoomBuilder> {
 		const room = await this.bridges.getRoomBridge().doGetById(roomId, this.appId);
 
 		return new RoomBuilder(room);

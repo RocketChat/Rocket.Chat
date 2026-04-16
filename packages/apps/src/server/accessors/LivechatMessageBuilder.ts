@@ -42,7 +42,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getSender(): IUser {
-		return this.msg.sender;
+		return this.msg.sender as IUser;
 	}
 
 	public setText(text: string): ILivechatMessageBuilder {
@@ -51,7 +51,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getText(): string {
-		return this.msg.text;
+		return this.msg.text as string;
 	}
 
 	public setEmojiAvatar(emoji: string): ILivechatMessageBuilder {
@@ -60,7 +60,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getEmojiAvatar(): string {
-		return this.msg.emoji;
+		return this.msg.emoji as string;
 	}
 
 	public setAvatarUrl(avatarUrl: string): ILivechatMessageBuilder {
@@ -69,7 +69,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getAvatarUrl(): string {
-		return this.msg.avatarUrl;
+		return this.msg.avatarUrl as string;
 	}
 
 	public setUsernameAlias(alias: string): ILivechatMessageBuilder {
@@ -78,7 +78,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getUsernameAlias(): string {
-		return this.msg.alias;
+		return this.msg.alias as string;
 	}
 
 	public addAttachment(attachment: IMessageAttachment): ILivechatMessageBuilder {
@@ -96,7 +96,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getAttachments(): Array<IMessageAttachment> {
-		return this.msg.attachments;
+		return this.msg.attachments as Array<IMessageAttachment>;
 	}
 
 	public replaceAttachment(position: number, attachment: IMessageAttachment): ILivechatMessageBuilder {
@@ -132,7 +132,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getEditor(): IUser {
-		return this.msg.editor;
+		return this.msg.editor as IUser;
 	}
 
 	public setGroupable(groupable: boolean): ILivechatMessageBuilder {
@@ -141,7 +141,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getGroupable(): boolean {
-		return this.msg.groupable;
+		return this.msg.groupable as boolean;
 	}
 
 	public setParseUrls(parseUrls: boolean): ILivechatMessageBuilder {
@@ -150,7 +150,7 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getParseUrls(): boolean {
-		return this.msg.parseUrls;
+		return this.msg.parseUrls as boolean;
 	}
 
 	public setToken(token: string): ILivechatMessageBuilder {
@@ -159,18 +159,18 @@ export class LivechatMessageBuilder implements ILivechatMessageBuilder {
 	}
 
 	public getToken(): string {
-		return this.msg.token;
+		return this.msg.token as string;
 	}
 
 	public setVisitor(visitor: IVisitor): ILivechatMessageBuilder {
 		this.msg.visitor = visitor;
-		delete this.msg.sender;
+		this.msg.sender = undefined as unknown as IUser;
 
 		return this;
 	}
 
 	public getVisitor(): IVisitor {
-		return this.msg.visitor;
+		return this.msg.visitor as IVisitor;
 	}
 
 	public getMessage(): ILivechatMessage {

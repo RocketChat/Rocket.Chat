@@ -8,7 +8,7 @@ export class EnvironmentalVariableRead implements IEnvironmentalVariableRead {
 	) {}
 
 	public getValueByName(envVarName: string): Promise<string> {
-		return this.bridge.doGetValueByName(envVarName, this.appId);
+		return this.bridge.doGetValueByName(envVarName, this.appId) as Promise<string>;
 	}
 
 	public isReadable(envVarName: string): Promise<boolean> {

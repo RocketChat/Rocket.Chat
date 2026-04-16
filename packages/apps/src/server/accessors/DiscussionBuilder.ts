@@ -6,11 +6,11 @@ import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 
 export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder {
-	public kind: RocketChatAssociationModel.DISCUSSION;
+	public override kind: RocketChatAssociationModel.DISCUSSION;
 
-	private reply: string;
+	private reply!: string;
 
-	private parentMessage: IMessage;
+	private parentMessage!: IMessage;
 
 	constructor(data?: Partial<IRoom>) {
 		super(data);
@@ -24,7 +24,7 @@ export class DiscussionBuilder extends RoomBuilder implements IDiscussionBuilder
 	}
 
 	public getParentRoom(): IRoom {
-		return this.room.parentRoom;
+		return this.room.parentRoom as IRoom;
 	}
 
 	public setReply(reply: string): IDiscussionBuilder {

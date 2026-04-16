@@ -10,18 +10,24 @@ export abstract class UploadBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getById(id, appId);
 		}
+
+		return undefined as unknown as IUpload;
 	}
 
 	public async doGetBuffer(upload: IUpload, appId: string): Promise<Buffer> {
 		if (this.hasReadPermission(appId)) {
 			return this.getBuffer(upload, appId);
 		}
+
+		return undefined as unknown as Buffer;
 	}
 
 	public async doCreateUpload(details: IUploadDetails, buffer: Buffer, appId: string): Promise<IUpload> {
 		if (this.hasWritePermission(appId)) {
 			return this.createUpload(details, buffer, appId);
 		}
+
+		return undefined as unknown as IUpload;
 	}
 
 	protected abstract getById(id: string, appId: string): Promise<IUpload>;

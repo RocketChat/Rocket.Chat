@@ -421,7 +421,7 @@ export class AppManager {
 		}
 
 		if (typeof filter.ids !== 'undefined') {
-			rls = rls.filter((rl) => filter.ids.includes(rl.getID()));
+			rls = rls.filter((rl) => filter.ids!.includes(rl.getID()));
 		}
 
 		if (typeof filter.installationSource !== 'undefined') {
@@ -438,7 +438,7 @@ export class AppManager {
 	}
 
 	/** Gets a single App by the id passed in. */
-	public getOneById(appId: string): ProxiedApp {
+	public getOneById(appId: string): ProxiedApp | undefined {
 		return this.apps.get(appId);
 	}
 
@@ -504,7 +504,7 @@ export class AppManager {
 
 		await app.setStatus(status, silent);
 
-		const storageItem = await this.appMetadataStorage.retrieveOne(id);
+		const storageItem = (await this.appMetadataStorage.retrieveOne(id))!;
 
 		app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
 		await app.validateLicense().catch(() => {});
@@ -523,7 +523,7 @@ export class AppManager {
 
 		await this.purgeAppConfig(app, { keepScheduledJobs: true });
 
-		const storageItem = await this.appMetadataStorage.retrieveOne(id);
+		const storageItem = (await this.appMetadataStorage.retrieveOne(id))!;
 
 		app.getStorageItem().marketplaceInfo = storageItem.marketplaceInfo;
 		await app.validateLicense().catch(() => {});
@@ -674,6 +674,9 @@ export class AppManager {
 	 */
 	public async remove(id: string, uninstallationParameters: IAppUninstallParameters): Promise<ProxiedApp> {
 		const app = this.apps.get(id);
+		if (!app) {
+			throw new Error(`No App by the id "${id}" exists.`);
+		}
 		const { user } = uninstallationParameters;
 
 		// First remove the app
@@ -692,6 +695,10 @@ export class AppManager {
 	 */
 	public async removeLocal(id: string): Promise<void> {
 		const app = this.apps.get(id);
+
+		if (!app) {
+			return;
+		}
 
 		if (AppStatusUtils.isEnabled(await app.getStatus())) {
 			await this.disable(id);
@@ -761,7 +768,7 @@ export class AppManager {
 
 		// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 		await this.getRuntime()
-			.stopRuntime(this.apps.get(old.id).getRuntimeController())
+			.stopRuntime(this.apps.get(old.id)!.getRuntimeController())
 			.catch(() => {});
 
 		const app = await this.getCompiler().toSandBox(this, descriptor, result);
@@ -794,7 +801,7 @@ export class AppManager {
 				.catch(() => {});
 		}
 
-		await this.updateApp(app, updateOptions.user, old.info.version);
+		await this.updateApp(app, updateOptions.user ?? null, old.info.version);
 
 		return aff;
 	}
@@ -815,7 +822,7 @@ export class AppManager {
 
 				// Errors here don't really prevent the process from dying, so we don't really need to do anything on the catch
 				await this.getRuntime()
-					.stopRuntime(this.apps.get(stored.id).getRuntimeController())
+					.stopRuntime(this.apps.get(stored.id)!.getRuntimeController())
 					.catch(() => {});
 
 				return this.getCompiler().toSandBox(this, stored, parseResult);
@@ -824,6 +831,8 @@ export class AppManager {
 			if (appPackageOrInstance instanceof ProxiedApp) {
 				return appPackageOrInstance;
 			}
+
+			throw new Error('Invalid app package or instance provided to updateLocal');
 		})();
 
 		// We don't keep slashcommands here as the update could potentially not provide the same list
@@ -883,7 +892,7 @@ export class AppManager {
 			await this.enable(rl.getID());
 
 			storageItem.status = AppStatus.MANUALLY_ENABLED;
-			await this.appMetadataStorage.updateStatus(storageItem._id, AppStatus.MANUALLY_ENABLED);
+			await this.appMetadataStorage.updateStatus(storageItem._id!, AppStatus.MANUALLY_ENABLED);
 		} else {
 			if (!AppStatusUtils.isEnabled(await rl.getStatus())) {
 				throw new Error('Can not disable an App which is not enabled.');
@@ -892,7 +901,7 @@ export class AppManager {
 			await this.disable(rl.getID(), AppStatus.MANUALLY_DISABLED);
 
 			storageItem.status = AppStatus.MANUALLY_DISABLED;
-			await this.appMetadataStorage.updateStatus(storageItem._id, AppStatus.MANUALLY_DISABLED);
+			await this.appMetadataStorage.updateStatus(storageItem._id!, AppStatus.MANUALLY_DISABLED);
 		}
 
 		return rl;
@@ -918,7 +927,7 @@ export class AppManager {
 					return;
 				}
 
-				appStorageItem.marketplaceInfo[0].subscriptionInfo = appInfo.subscriptionInfo;
+				appStorageItem.marketplaceInfo![0].subscriptionInfo = appInfo.subscriptionInfo;
 				appStorageItem.signature = await this.getSignatureManager().signApp(appStorageItem);
 
 				return this.appMetadataStorage.updatePartialAndReturnDocument({
@@ -961,7 +970,7 @@ export class AppManager {
 						const storageItem = app.getStorageItem();
 						storageItem.status = status;
 
-						return this.appMetadataStorage.updateStatus(storageItem._id, storageItem.status).catch(console.error) as Promise<void>;
+						return this.appMetadataStorage.updateStatus(storageItem._id!, storageItem.status).catch(console.error) as Promise<void>;
 					}),
 			),
 		);
@@ -993,7 +1002,7 @@ export class AppManager {
 			await this.enableApp(rl, silenceStatus);
 		}
 
-		return this.apps.get(item.id);
+		return this.apps.get(item.id)!;
 	}
 
 	private async runStartUpProcess(storageItem: IAppStorageItem, app: ProxiedApp, silenceStatus: boolean): Promise<boolean> {
@@ -1099,7 +1108,7 @@ export class AppManager {
 		this.uiActionButtonManager.clearAppActionButtons(app.getID());
 		this.videoConfProviderManager.unregisterProviders(app.getID());
 		await this.outboundCommunicationProviderManager.unregisterProviders(app.getID(), {
-			keepReferences: opts.keepOutboundCommunicationProviders,
+			keepReferences: opts.keepOutboundCommunicationProviders ?? false,
 		});
 	}
 

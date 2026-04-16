@@ -13,19 +13,19 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
 
 	public setData(data: Partial<AppVideoConference>): IVideoConferenceBuilder {
 		this.call = {
-			rid: data.rid,
-			createdBy: data.createdBy,
-			providerName: data.providerName,
-			title: data.title,
+			rid: data.rid as string,
+			createdBy: data.createdBy as string,
+			providerName: data.providerName as string,
+			title: data.title as string,
 			discussionRid: data.discussionRid,
 		};
 
-		return this;
+		return this as IVideoConferenceBuilder;
 	}
 
 	public setRoomId(rid: string): IVideoConferenceBuilder {
 		this.call.rid = rid;
-		return this;
+		return this as IVideoConferenceBuilder;
 	}
 
 	public getRoomId(): string {
@@ -34,7 +34,7 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
 
 	public setCreatedBy(userId: string): IVideoConferenceBuilder {
 		this.call.createdBy = userId;
-		return this;
+		return this as IVideoConferenceBuilder;
 	}
 
 	public getCreatedBy(): string {
@@ -43,25 +43,25 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
 
 	public setProviderName(userId: string): IVideoConferenceBuilder {
 		this.call.providerName = userId;
-		return this;
+		return this as IVideoConferenceBuilder;
 	}
 
 	public getProviderName(): string {
 		return this.call.providerName;
 	}
 
-	public setProviderData(data: Record<string, any> | undefined): IVideoConferenceBuilder {
+	public setProviderData(data: Record<string, any>): IVideoConferenceBuilder {
 		this.call.providerData = data;
-		return this;
+		return this as IVideoConferenceBuilder;
 	}
 
-	public getProviderData(): Record<string, any> | undefined {
-		return this.call.providerData;
+	public getProviderData(): Record<string, any> {
+		return this.call.providerData as Record<string, any>;
 	}
 
 	public setTitle(userId: string): IVideoConferenceBuilder {
 		this.call.title = userId;
-		return this;
+		return this as IVideoConferenceBuilder;
 	}
 
 	public getTitle(): string {
@@ -70,7 +70,7 @@ export class VideoConferenceBuilder implements IVideoConferenceBuilder {
 
 	public setDiscussionRid(rid: AppVideoConference['discussionRid']): IVideoConferenceBuilder {
 		this.call.discussionRid = rid;
-		return this;
+		return this as IVideoConferenceBuilder;
 	}
 
 	public getDiscussionRid(): AppVideoConference['discussionRid'] {

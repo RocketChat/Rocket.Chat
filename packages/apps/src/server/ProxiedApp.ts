@@ -1,6 +1,6 @@
 import { inspect } from 'util';
 
-import * as mem from 'mem';
+import mem = require('mem');
 
 import type { AppManager } from './AppManager';
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
@@ -18,7 +18,7 @@ import type { AppInstallationSource, IAppStorageItem } from './storage';
 export class ProxiedApp {
 	private previousStatus: AppStatus;
 
-	private latestLicenseValidationResult: AppLicenseValidationResult;
+	private latestLicenseValidationResult!: AppLicenseValidationResult;
 
 	constructor(
 		private readonly manager: AppManager,
@@ -67,18 +67,19 @@ export class ProxiedApp {
 		try {
 			return await this.appRuntime.sendRequest({ method: `app:${method}`, params: args }, options);
 		} catch (e) {
-			if (e.code === AppsEngineException.JSONRPC_ERROR_CODE) {
-				throw new AppsEngineException(e.message);
+			const err = e as { code: number; message: string };
+			if (err.code === AppsEngineException.JSONRPC_ERROR_CODE) {
+				throw new AppsEngineException(err.message);
 			}
 
-			if (e.code === JSONRPC_METHOD_NOT_FOUND) {
+			if (err.code === JSONRPC_METHOD_NOT_FOUND) {
 				throw e;
 			}
 
 			// We cannot throw this error as the previous implementation swallowed those
 			// and since the server is not prepared to handle those we might crash it if we throw
 			// Range of JSON-RPC error codes: https://www.jsonrpc.org/specification#error_object
-			if (e.code >= -32999 || e.code <= -32000) {
+			if (err.code >= -32999 || err.code <= -32000) {
 				// we really need to receive a logger from rocket.chat
 				console.error('JSON-RPC error received: ', inspect(e, { depth: 10 }));
 			}
@@ -148,7 +149,7 @@ export class ProxiedApp {
 		try {
 			await this.manager.getSignatureManager().verifySignedApp(this.getStorageItem());
 		} catch (e) {
-			throw new InvalidInstallationError(e.message);
+			throw new InvalidInstallationError((e as Error).message);
 		}
 	}
 

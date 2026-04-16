@@ -9,12 +9,16 @@ export abstract class ServerSettingBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.getAll(appId);
 		}
+
+		return undefined as unknown as Array<ISetting>;
 	}
 
 	public async doGetOneById(id: string, appId: string): Promise<ISetting> {
 		if (this.hasReadPermission(appId)) {
 			return this.getOneById(id, appId);
 		}
+
+		return undefined as unknown as ISetting;
 	}
 
 	public async doHideGroup(name: string, appId: string): Promise<void> {
@@ -33,6 +37,8 @@ export abstract class ServerSettingBridge extends BaseBridge {
 		if (this.hasReadPermission(appId)) {
 			return this.isReadableById(id, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doUpdateOne(setting: ISetting, appId: string): Promise<void> {

@@ -37,10 +37,10 @@ export class AppApi {
 
 		this.computedPath = `${this.basePath}/${endpoint.path}`;
 
-		this.implementedMethods = endpoint._availableMethods;
+		this.implementedMethods = endpoint._availableMethods ?? [];
 	}
 
-	public async runExecutor(request: IApiRequest, logStorage: AppLogStorage, accessors: AppAccessorManager): Promise<IApiResponse> {
+	public async runExecutor(request: IApiRequest, _logStorage: AppLogStorage, _accessors: AppAccessorManager): Promise<IApiResponse> {
 		const { path } = this.endpoint;
 
 		const { method } = request;
@@ -89,7 +89,7 @@ export class AppApi {
 		return false;
 	}
 
-	private validateSecurity(request: IApiRequest): boolean {
+	private validateSecurity(_request: IApiRequest): boolean {
 		if (this.api.security === ApiSecurity.UNSECURE) {
 			return true;
 		}

@@ -54,7 +54,7 @@ export class AppRuntimeManager {
 		return this.subprocesses[appId];
 	}
 
-	public async runInSandbox(appId: string, execRequest: ExecRequestContext, options?: ExecRequestOptions): Promise<unknown> {
+	public async runInSandbox(appId: string, execRequest: ExecRequestContext, _options?: ExecRequestOptions): Promise<unknown> {
 		const subprocess = this.subprocesses[appId];
 
 		if (!subprocess) {

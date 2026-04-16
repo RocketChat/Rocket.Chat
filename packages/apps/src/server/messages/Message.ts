@@ -8,7 +8,7 @@ import { Room } from '../rooms/Room';
 export class Message implements IMessage {
 	public id?: string;
 
-	public sender: IUser;
+	public sender!: IUser;
 
 	public text?: string;
 
@@ -50,7 +50,7 @@ export class Message implements IMessage {
 
 	public pinnedBy?: IUserLookup;
 
-	private _ROOM: Room;
+	private _ROOM!: Room;
 
 	public get room(): Room {
 		return this._ROOM;

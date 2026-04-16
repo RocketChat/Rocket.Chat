@@ -29,27 +29,35 @@ type LivechatMultiplePermissions = keyof Pick<typeof AppPermissions, 'livechat-d
 
 export abstract class LivechatBridge extends BaseBridge {
 	public doIsOnline(departmentId?: string, appId?: string): boolean {
-		if (this.hasReadPermission(appId, 'livechat-status')) {
+		if (this.hasReadPermission(appId!, 'livechat-status')) {
 			return this.isOnline(departmentId, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doIsOnlineAsync(departmentId?: string, appId?: string): Promise<boolean> {
-		if (this.hasReadPermission(appId, 'livechat-status')) {
+		if (this.hasReadPermission(appId!, 'livechat-status')) {
 			return this.isOnlineAsync(departmentId, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doCreateMessage(message: ILivechatMessage, appId: string): Promise<string> {
 		if (this.hasWritePermission(appId, 'livechat-message')) {
 			return this.createMessage(message, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doGetMessageById(messageId: string, appId: string): Promise<ILivechatMessage> {
 		if (this.hasReadPermission(appId, 'livechat-message')) {
 			return this.getMessageById(messageId, appId);
 		}
+
+		return undefined as unknown as ILivechatMessage;
 	}
 
 	public async doUpdateMessage(message: ILivechatMessage, appId: string): Promise<void> {
@@ -65,42 +73,56 @@ export abstract class LivechatBridge extends BaseBridge {
 		if (this.hasWritePermission(appId, 'livechat-visitor')) {
 			return this.createVisitor(visitor, appId);
 		}
+
+		return undefined as unknown as string;
 	}
 
 	public async doCreateAndReturnVisitor(visitor: IVisitor, appId: string): Promise<IVisitor | undefined> {
 		if (this.hasWritePermission(appId, 'livechat-visitor')) {
 			return this.createAndReturnVisitor(visitor, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doFindVisitors(query: object, appId: string): Promise<Array<IVisitor>> {
 		if (this.hasReadPermission(appId, 'livechat-visitor')) {
 			return this.findVisitors(query, appId);
 		}
+
+		return undefined as unknown as Array<IVisitor>;
 	}
 
 	public async doFindVisitorById(id: string, appId: string): Promise<IVisitor | undefined> {
 		if (this.hasReadPermission(appId, 'livechat-visitor')) {
 			return this.findVisitorById(id, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doFindVisitorByEmail(email: string, appId: string): Promise<IVisitor | undefined> {
 		if (this.hasReadPermission(appId, 'livechat-visitor')) {
 			return this.findVisitorByEmail(email, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doFindVisitorByToken(token: string, appId: string): Promise<IVisitor | undefined> {
 		if (this.hasReadPermission(appId, 'livechat-visitor')) {
 			return this.findVisitorByToken(token, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doFindVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined> {
 		if (this.hasReadPermission(appId, 'livechat-visitor')) {
 			return this.findVisitorByPhoneNumber(phoneNumber, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doResolveVisitor(
@@ -111,12 +133,16 @@ export abstract class LivechatBridge extends BaseBridge {
 		if (this.hasWritePermission(appId, 'livechat-visitor')) {
 			return this.resolveVisitor(externalId, contactData, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doTransferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {
 		if (this.hasWritePermission(appId, 'livechat-visitor')) {
 			return this.transferVisitor(visitor, transferData, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doUpdateVisitorExternalId(
@@ -127,54 +153,72 @@ export abstract class LivechatBridge extends BaseBridge {
 		if (this.hasWritePermission(appId, 'livechat-visitor')) {
 			return this.updateVisitorExternalId(visitorId, externalId, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doCreateRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom> {
 		if (this.hasWritePermission(appId, 'livechat-room')) {
 			return this.createRoom(visitor, agent, appId, extraParams);
 		}
+
+		return undefined as unknown as ILivechatRoom;
 	}
 
 	public async doCloseRoom(room: ILivechatRoom, comment: string, closer: IUser | undefined, appId: string): Promise<boolean> {
 		if (this.hasWritePermission(appId, 'livechat-room')) {
 			return this.closeRoom(room, comment, closer, appId);
 		}
+
+		return undefined as unknown as boolean;
 	}
 
 	public async doCountOpenRoomsByAgentId(agentId: string, appId: string): Promise<number> {
 		if (this.hasReadPermission(appId, 'livechat-room')) {
 			return this.countOpenRoomsByAgentId(agentId, appId);
 		}
+
+		return undefined as unknown as number;
 	}
 
 	public async doFindOpenRoomsByAgentId(agentId: string, appId: string): Promise<Array<ILivechatRoom>> {
 		if (this.hasReadPermission(appId, 'livechat-room')) {
 			return this.findOpenRoomsByAgentId(agentId, appId);
 		}
+
+		return undefined as unknown as Array<ILivechatRoom>;
 	}
 
 	public async doFindRooms(visitor: IVisitor, departmentId: string | null, appId: string): Promise<Array<ILivechatRoom>> {
 		if (this.hasReadPermission(appId, 'livechat-room')) {
 			return this.findRooms(visitor, departmentId, appId);
 		}
+
+		return undefined as unknown as Array<ILivechatRoom>;
 	}
 
 	public async doFindDepartmentByIdOrName(value: string, appId: string): Promise<IDepartment | undefined> {
 		if (this.hasReadPermission(appId, 'livechat-department') || this.hasMultiplePermission(appId, 'livechat-department')) {
 			return this.findDepartmentByIdOrName(value, appId);
 		}
+
+		return undefined;
 	}
 
 	public async doFindDepartmentsEnabledWithAgents(appId: string): Promise<Array<IDepartment>> {
 		if (this.hasMultiplePermission(appId, 'livechat-department')) {
 			return this.findDepartmentsEnabledWithAgents(appId);
 		}
+
+		return undefined as unknown as Array<IDepartment>;
 	}
 
 	public async do_fetchLivechatRoomMessages(appId: string, roomId: string): Promise<Array<IMessage>> {
 		if (this.hasMultiplePermission(appId, 'livechat-message')) {
 			return this._fetchLivechatRoomMessages(appId, roomId);
 		}
+
+		return undefined as unknown as Array<IMessage>;
 	}
 
 	public async doSetCustomFields(
@@ -184,6 +228,8 @@ export abstract class LivechatBridge extends BaseBridge {
 		if (this.hasWritePermission(appId, 'livechat-custom-fields')) {
 			return this.setCustomFields(data, appId);
 		}
+
+		return undefined as unknown as number;
 	}
 
 	/**
