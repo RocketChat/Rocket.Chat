@@ -1,52 +1,14 @@
 import { BaseBridge } from './BaseBridge';
 import type { IMessage, IMessageRaw } from '@rocket.chat/apps-engine/definition/messages';
-import type { IRoom, IRoomRaw, RoomType } from '@rocket.chat/apps-engine/definition/rooms';
+import type { IRoom, IRoomRaw } from '@rocket.chat/apps-engine/definition/rooms';
+import { GetMessagesSortableFields } from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions';
+import type { GetMessagesOptions, GetRoomsFilters, GetRoomsOptions } from '@rocket.chat/apps-engine/definition/rooms/IGetMessagesOptions';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
 import { AppPermissionManager } from '../managers/AppPermissionManager';
 import { AppPermissions } from '../permissions/AppPermissions';
 
-export const GetMessagesSortableFields = ['createdAt'] as const;
-
-export type GetMessagesOptions = {
-	limit: number;
-	skip: number;
-	sort: Record<(typeof GetMessagesSortableFields)[number], 'asc' | 'desc'>;
-	showThreadMessages: boolean;
-};
-
-/**
- * Filters for querying rooms in the system.
- */
-export type GetRoomsFilters = {
-	/**
-	 * When specified, only rooms matching the provided types will be returned.
-	 */
-	types?: Array<RoomType>;
-	/**
-	 * Filter to include or exclude discussion rooms. 
-	 * 
-	 * When undefined (default), discussions are included in the result set.
-	 *
-	 * When true, ONLY discussions are included in the result set (remove non-discussions).
-	 * When false, discussion rooms are excluded from the result set.
-	 */
-	discussions?: boolean;
-	/**
-	 * Filter to include or exclude team main rooms.
-	 *
-	 * When undefined (default), team main rooms are included in the result set.
-	 * 
-	 * When true, ONLY team main rooms are included in the result set (remove non-teams).
-	 * When false, team main rooms are excluded from the result set.
-	 */
-	teams?: boolean;
-};
-
-export type GetRoomsOptions = {
-	limit?: number;
-	skip?: number;
-};
+export { GetMessagesSortableFields, GetMessagesOptions, GetRoomsFilters, GetRoomsOptions };
 
 export abstract class RoomBridge extends BaseBridge {
 	public async doCreate(room: IRoom, members: Array<string>, appId: string): Promise<string> {
