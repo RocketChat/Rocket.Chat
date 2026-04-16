@@ -19,6 +19,7 @@ type InviteUsersWithDataProps = {
 const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): ReactElement => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+
 	const [
 		{
 			isEditing,
@@ -29,6 +30,9 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		isEditing: false,
 		daysAndMaxUses: { days: '1', maxUses: '0' },
 	});
+
+	// 🔥 NEW: guard to prevent duplicate toast
+	const [toastShown, setToastShown] = useState(false);
 
 	const { closeTab } = useRoomToolbox();
 	const format = useFormatDateAndTime();
@@ -81,14 +85,21 @@ const InviteUsersWithData = ({ rid, onClickBack }: InviteUsersWithDataProps): Re
 		queryFn: async () => findOrCreateInvite({ rid, days: Number(days), maxUses: Number(maxUses) }),
 	});
 
+	// ✅ FIXED: prevent duplicate toast
 	useEffect(() => {
-		if (isSuccess) {
+		if (isSuccess && !toastShown) {
 			dispatchToastMessage({ type: 'success', message: t('Invite_link_generated') });
+			setToastShown(true);
 		}
-	}, [dispatchToastMessage, isSuccess, t]);
+	}, [dispatchToastMessage, isSuccess, t, toastShown]);
 
 	const handleGenerateLink = useEffectEvent((daysAndMaxUses: { days: string; maxUses: string }) => {
-		setInviteState((prevState) => ({ ...prevState, daysAndMaxUses, isEditing: false }));
+		setInviteState((prevState) => ({
+			...prevState,
+			daysAndMaxUses,
+			isEditing: false,
+		}));
+		setToastShown(false); // 🔥 reset for new generation
 	});
 
 	if (isError) {
