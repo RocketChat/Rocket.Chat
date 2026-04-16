@@ -376,11 +376,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		});
 	}
 
-	async inviteUserAfterBan(subscription: ISubscription, inviterUser: Pick<IUser, '_id' | 'username' | 'name'>): Promise<void> {
-		await Subscriptions.updateOne(
-			{ _id: subscription._id },
-			{ $set: { status: 'INVITED', open: true, unread: 1, userMentions: 1, groupMentions: 0, alert: true, inviter: inviterUser } },
-		);
+	async unbanAndInviteUser(
+		subscription: ISubscription,
+		inviterUser: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>,
+	): Promise<void> {
+		await Subscriptions.unbanToInvitedById(subscription._id, inviterUser);
 
 		void notifyOnSubscriptionChangedById(subscription._id, 'updated');
 	}
