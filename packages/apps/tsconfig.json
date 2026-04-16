@@ -3,7 +3,9 @@
 	"compilerOptions": {
 		"declaration": true,
 		"rootDir": "./src",
-		"outDir": "./dist"
+		"outDir": "./dist",
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true
 	},
 	"include": ["./src/**/*"]
 }
