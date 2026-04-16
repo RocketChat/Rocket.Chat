@@ -7557,7 +7557,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-aria/toolbar@npm:^3.0.0-nightly-ffb1a9d0d-260323":
+"@react-aria/toolbar@npm:^3.0.0-nightly.5042":
   version: 3.0.0-nightly-ffb1a9d0d-260323
   resolution: "@react-aria/toolbar@npm:3.0.0-nightly-ffb1a9d0d-260323"
   dependencies:
@@ -7957,7 +7957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-spectrum/test-utils@npm:~1.0.0-beta.4":
+"@react-spectrum/test-utils@npm:~1.0.0-alpha.8":
   version: 1.0.0-beta.4
   resolution: "@react-spectrum/test-utils@npm:1.0.0-beta.4"
   dependencies:
@@ -9889,7 +9889,7 @@ __metadata:
     "@opentelemetry/sdk-node": "npm:^0.54.2"
     "@parse/node-apn": "npm:^7.0.1"
     "@playwright/test": "npm:^1.52.0"
-    "@react-aria/toolbar": "npm:^3.0.0-nightly-ffb1a9d0d-260323"
+    "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@react-pdf/renderer": "npm:^4.3.2"
     "@rocket.chat/abac": "workspace:^"
     "@rocket.chat/account-utils": "workspace:^"
@@ -10912,7 +10912,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
-    "@react-aria/toolbar": "npm:^3.0.0-nightly-ffb1a9d0d-260323"
+    "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/emitter": "npm:^0.32.0"
@@ -10972,7 +10972,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-composer@workspace:packages/ui-composer"
   dependencies:
-    "@react-aria/toolbar": "npm:^3.0.0-nightly-ffb1a9d0d-260323"
+    "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/emitter": "npm:^0.32.0"
     "@rocket.chat/fuselage": "npm:^0.76.0"
     "@rocket.chat/fuselage-hooks": "npm:^0.41.0"
@@ -11124,7 +11124,7 @@ __metadata:
   resolution: "@rocket.chat/ui-voip@workspace:packages/ui-voip"
   dependencies:
     "@playwright/test": "npm:^1.52.0"
-    "@react-spectrum/test-utils": "npm:~1.0.0-beta.4"
+    "@react-spectrum/test-utils": "npm:~1.0.0-alpha.8"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "npm:~0.31.25"
     "@rocket.chat/desktop-api": "workspace:^"

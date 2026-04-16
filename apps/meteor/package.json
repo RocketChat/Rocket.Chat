@@ -88,7 +88,7 @@
 		"@opentelemetry/exporter-trace-otlp-grpc": "^0.54.2",
 		"@opentelemetry/sdk-node": "^0.54.2",
 		"@parse/node-apn": "^7.0.1",
-		"@react-aria/toolbar": "^3.0.0-nightly-ffb1a9d0d-260323",
+		"@react-aria/toolbar": "^3.0.0-nightly.5042",
 		"@react-pdf/renderer": "^4.3.2",
 		"@rocket.chat/abac": "workspace:^",
 		"@rocket.chat/account-utils": "workspace:^",
