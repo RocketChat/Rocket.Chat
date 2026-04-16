@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
+import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps/client/definition';
 import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 import {
 	AppSubscriptionStatus,
