@@ -1,6 +1,6 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IMessage } from '@rocket.chat/apps-engine/definition/messages';
-import { ThreadBridge } from '@rocket.chat/apps-engine/server/bridges/ThreadBridge';
+import { ThreadBridge } from '@rocket.chat/apps/server/bridges/ThreadBridge';
 
 export class AppThreadBridge extends ThreadBridge {
 	constructor(private readonly orch: IAppServerOrchestrator) {

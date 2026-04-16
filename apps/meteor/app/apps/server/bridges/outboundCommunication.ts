@@ -4,7 +4,7 @@ import type {
 	IOutboundMessageProviders,
 	IOutboundPhoneMessageProvider,
 } from '@rocket.chat/apps-engine/definition/outboundCommunication';
-import { OutboundMessageBridge } from '@rocket.chat/apps-engine/server/bridges';
+import { OutboundMessageBridge } from '@rocket.chat/apps/server/bridges';
 
 import { getOutboundService } from '../../../livechat/server/lib/outboundcommunication';
 
