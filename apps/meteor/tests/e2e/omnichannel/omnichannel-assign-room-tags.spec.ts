@@ -53,11 +53,13 @@ test.describe('OC - Tags Visibility', () => {
 		});
 	});
 
-	test.beforeEach(async ({ page, api }) => {
+	test.beforeEach(async ({ page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
 		await page.goto('/');
 		await poOmnichannel.waitForHome();
+	});
 
+	test.beforeEach(async ({ api }) => {
 		if (conversations.length === 0) {
 			conversations = await Promise.all([
 				createConversation(api, {
