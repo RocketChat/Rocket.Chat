@@ -21,6 +21,7 @@ import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
+import ImportantMessageReadButton from './ImportantMessageReadButton';
 import RoomMessageContent from './room/RoomMessageContent';
 
 type RoomMessageProps = {
@@ -110,7 +111,10 @@ const RoomMessage = ({
 				{ignored ? (
 					<IgnoredContent onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+					<>
+						<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+						{message.isImportant && <ImportantMessageReadButton message={message} />}
+					</>
 				)}
 			</MessageContainer>
 			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}

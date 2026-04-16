@@ -50,6 +50,7 @@ import './setAvatarFromService';
 import './setUserActiveStatus';
 import './setUserPassword';
 import './toggleFavorite';
+import './toggleImportantMessageRead';
 import './unmuteUserInRoom';
 import './userPresence';
 import './userSetUtcOffset';
