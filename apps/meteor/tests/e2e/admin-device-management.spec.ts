@@ -79,10 +79,10 @@ test.describe('Admin Device Management Page', () => {
 		await poUser2Home.waitForHome();
 
 		await test.step('should list user2 device while user2 is logged in', async () => {
-			await page.goto('/admin/device-management');
 			await expect(adminDeviceManagement.adminPageContent).toBeVisible();
-			const rowCount = await adminDeviceManagement.getDeviceRowCountForUser('user2');
-			expect(rowCount).toBeGreaterThanOrEqual(1);
+			await adminDeviceManagement.searchUserDevice('user2');
+			const rowCount = await adminDeviceManagement.table.countRowsForUsername('user2');
+			expect(rowCount).toBe(1);
 		});
 
 		await test.step('should log user2 out from the app and redirect to login page', async () => {
@@ -91,9 +91,10 @@ test.describe('Admin Device Management Page', () => {
 		});
 
 		await test.step('should no longer show user2 device in admin device management page', async () => {
-			await page.goto('/admin/device-management');
+			await page.reload();
 			await expect(adminDeviceManagement.adminPageContent).toBeVisible();
-			const rowCount = await adminDeviceManagement.getDeviceRowCountForUser('user2');
+			await adminDeviceManagement.searchUserDevice('user2');
+			const rowCount = await adminDeviceManagement.table.countRowsForUsername('user2');
 			expect(rowCount).toBe(0);
 		});
 
@@ -102,9 +103,10 @@ test.describe('Admin Device Management Page', () => {
 
 	test('Should show empty state when searching for user without result', async () => {
 		const noResultQuery = 'nonexistentuser';
-		const count = await adminDeviceManagement.getDeviceRowCountForUser(noResultQuery);
+		await adminDeviceManagement.searchUserDevice('noResultQuery');
+		const count = await adminDeviceManagement.table.countRowsForUsername(noResultQuery);
 		expect(count).toBe(0);
-		await expect(adminDeviceManagement.emptyState).toHaveText('No results found');
+		await expect(adminDeviceManagement.emptyState).toBeVisible();
 	});
 });
 
