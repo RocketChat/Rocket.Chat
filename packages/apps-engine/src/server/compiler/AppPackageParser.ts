@@ -1,4 +1,3 @@
-import * as fs from 'fs';
 import * as path from 'path';
 
 import * as AdmZip from 'adm-zip';
@@ -8,18 +7,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { AppImplements } from '.';
 import type { IParseAppPackageResult } from './IParseAppPackageResult';
 import type { IAppInfo } from '../../definition/metadata/IAppInfo';
+import { ENGINE_VERSION } from '../../definition/version';
 import { RequiredApiVersionError } from '../errors';
 
 export class AppPackageParser {
-	public static uuid4Regex = /^[0-9a-fA-f]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
+	public static uuid4Regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
 
 	private allowedIconExts: Array<string> = ['.png', '.jpg', '.jpeg', '.gif'];
 
-	private appsEngineVersion: string;
-
-	constructor() {
-		this.appsEngineVersion = this.getEngineVersion();
-	}
+	private appsEngineVersion: string = ENGINE_VERSION;
 
 	public async unpackageApp(appPackage: Buffer): Promise<IParseAppPackageResult> {
 		const zip = new AdmZip(appPackage);
@@ -142,22 +138,5 @@ export class AppPackageParser {
 		const base64 = entry.getData().toString('base64');
 
 		return `data:image/${ext.replace('.', '')};base64,${base64}`;
-	}
-
-	private getEngineVersion(): string {
-		const devLocation = path.join(__dirname, '../../../package.json');
-		const prodLocation = path.join(__dirname, '../../package.json');
-
-		let info: { version: string };
-
-		if (fs.existsSync(devLocation)) {
-			info = JSON.parse(fs.readFileSync(devLocation, 'utf8'));
-		} else if (fs.existsSync(prodLocation)) {
-			info = JSON.parse(fs.readFileSync(prodLocation, 'utf8'));
-		} else {
-			throw new Error('Could not find the Apps TypeScript Definition Package Version!');
-		}
-
-		return info.version.replace(/^[^0-9]/, '').split('-')[0];
 	}
 }
