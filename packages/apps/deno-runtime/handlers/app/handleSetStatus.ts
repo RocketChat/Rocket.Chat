@@ -1,0 +1,33 @@
+import type { App } from '@rocket.chat/apps-engine/definition/App.ts';
+import type { AppStatus as _AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus.ts';
+
+import { AppObjectRegistry } from '../../AppObjectRegistry.ts';
+import { require } from '../../lib/require.ts';
+import { RequestContext } from '../../lib/requestContext.ts';
+import { wrapAppForRequest } from '../../lib/wrapAppForRequest.ts';
+
+const { AppStatus } = require('@rocket.chat/apps-engine/definition/AppStatus.js') as {
+	AppStatus: typeof _AppStatus;
+};
+
+export default async function handleSetStatus(request: RequestContext): Promise<null> {
+	const { params } = request;
+
+	if (!Array.isArray(params) || !Object.values(AppStatus).includes(params[0])) {
+		throw new Error('Invalid params', { cause: 'invalid_param_type' });
+	}
+
+	const [status] = params as [typeof AppStatus];
+
+	const app = AppObjectRegistry.get<App>('app');
+
+	if (!app || typeof app['setStatus'] !== 'function') {
+		throw new Error('App must contain a setStatus function', {
+			cause: 'invalid_app',
+		});
+	}
+
+	await app['setStatus'].call(wrapAppForRequest(app, request), status);
+
+	return null;
+}
