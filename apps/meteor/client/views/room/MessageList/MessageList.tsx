@@ -84,6 +84,8 @@ export const MessageList = function MessageList({
 
 	const isRoomInitialized = useRef<boolean>(false);
 
+	const firstUnreadMessageId = useFirstUnreadMessageId();
+
 	// Scroll to bottom
 	useEffect(() => {
 		if (isJumpingToMessage.current) {
@@ -92,6 +94,13 @@ export const MessageList = function MessageList({
 
 		if (!isRoomInitialized.current) {
 			const store = RoomManager.getStore(rid);
+
+			if (!firstUnreadMessageId) {
+				isRoomInitialized.current = true;
+				shouldJumpToBottom.current = true;
+				return;
+			}
+
 			if (!store?.atBottom && store?.scroll !== undefined) {
 				shouldJumpToBottom.current = false;
 				const index = virtualizerRef.current?.findItemIndex(store?.scroll);
@@ -125,14 +134,13 @@ export const MessageList = function MessageList({
 				align: 'end',
 			});
 		}
-	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage, rid]);
+	}, [isAtBottom, messages, shouldJumpToBottom, isJumpingToMessage, rid, firstUnreadMessageId]);
 
 	const storeScrollPosition = useStoreScrollPosition({ rid, isAtBottom, virtualizerRef });
 
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 	const messageGroupingPeriod = useSetting('Message_GroupingPeriod', 300);
-	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const { t } = useTranslation();
 	return (
 		<MessageListProvider>
