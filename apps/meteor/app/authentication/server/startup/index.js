@@ -24,7 +24,6 @@ import { notifyOnSettingChangedById } from '../../../lib/server/lib/notifyListen
 import * as Mailer from '../../../mailer/server/api';
 import { settings } from '../../../settings/server';
 import { getBaseUserFields } from '../../../utils/server/functions/getBaseUserFields';
-import { safeGetMeteorUser } from '../../../utils/server/functions/safeGetMeteorUser';
 import { isValidAttemptByUser, isValidLoginAttemptByIp } from '../lib/restrictLoginAttempts';
 
 Accounts.config({
@@ -41,6 +40,19 @@ Accounts.config({
  * we are removing the status here because meteor send 'offline'
  */
 Object.assign(Accounts._defaultPublishFields.projection, (({ status, ...rest }) => rest)(getBaseUserFields(true)));
+
+// Override Meteor's _expireTokens to ensure the correct login expiration is used.
+// If loginExpirationInDays is not set (e.g., startup was disrupted before settings watcher fired),
+// read the setting directly from MongoDB before proceeding with token cleanup.
+// This prevents tokens from being incorrectly deleted using Meteor's 90-day default.
+const { _expireTokens } = Accounts;
+Accounts._expireTokens = async function (oldestValidDate, userId) {
+	if (!Accounts._options.loginExpirationInDays) {
+		const loginExpiration = await Settings.getValueById('Accounts_LoginExpiration');
+		Accounts._options.loginExpirationInDays = getLoginExpirationInDays(loginExpiration);
+	}
+	return _expireTokens.call(Accounts, oldestValidDate, userId);
+};
 
 Meteor.startup(() => {
 	settings.watchMultiple(['Accounts_LoginExpiration', 'Site_Name', 'From_Email'], () => {
@@ -294,6 +306,11 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	delete user.globalRoles;
 
+	// for some reason, the name is not being set in the user object but is being set in the options object
+	if (options.name && typeof options.name === 'string') {
+		user.name = options.name;
+	}
+
 	if (user.services && !user.services.password && !options.skipAuthServiceDefaultRoles) {
 		const defaultAuthServiceRoles = parseCSV(settings.get('Accounts_Registration_AuthenticationServices_Default_Roles') || '');
 
@@ -368,7 +385,7 @@ Accounts.insertUserDoc = async function (options, user) {
 		}
 		if (!options.skipDefaultAvatar && settings.get('Accounts_SetDefaultAvatar') === true) {
 			const avatarSuggestions = await getAvatarSuggestionForUser(user);
-			for await (const service of Object.keys(avatarSuggestions)) {
+			for (const service of Object.keys(avatarSuggestions)) {
 				const avatarData = avatarSuggestions[service];
 				if (service !== 'gravatar') {
 					await setAvatarFromServiceWithValidation(_id, avatarData.blob, '', service);
@@ -380,7 +397,7 @@ Accounts.insertUserDoc = async function (options, user) {
 
 	if (!options.skipAppsEngineEvent) {
 		// `post` triggered events don't need to wait for the promise to resolve
-		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: await safeGetMeteorUser() }).catch((e) => {
+		Apps.self?.triggerEvent(AppEvents.IPostUserCreated, { user, performedBy: options.performedBy }).catch((e) => {
 			Apps.self?.getRocketChatLogger().error({ msg: 'Error while executing post user created event', err: e });
 		});
 	}

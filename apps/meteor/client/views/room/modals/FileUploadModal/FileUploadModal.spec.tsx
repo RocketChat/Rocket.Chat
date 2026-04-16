@@ -1,35 +1,49 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { composeStories } from '@storybook/react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
 
 import FileUploadModal from './FileUploadModal';
+import * as stories from './FileUploadModal.stories';
+
+const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
 const defaultProps = {
 	onClose: () => undefined,
-	file: new File([], 'testing.png'),
-	fileName: 'Testing',
-	fileDescription: '',
+	file: new File([], 'testing.png', { type: 'image/png' }),
+	fileName: 'testing.png',
 	onSubmit: () => undefined,
-	invalidContentType: false,
-	showDescription: true,
 };
 
-it('should show Undo request button when roomOpen is true and transcriptRequest exist', async () => {
+const defaultWrapper = mockAppRoot().withTranslations('en', 'core', {
+	Update: 'Update',
+	Upload_file_name: 'File name',
+	FileUpload_MediaType_NotAccepted__type__: 'Media type not accepted: {{type}}',
+});
+
+test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
+	const { baseElement } = render(<Story />);
+	expect(baseElement).toMatchSnapshot();
+});
+
+test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
+	const { container } = render(<Story />);
+
+	const results = await axe(container);
+	expect(results).toHaveNoViolations();
+});
+
+it('should not send a renamed file with not allowed mime-type', async () => {
 	render(<FileUploadModal {...defaultProps} />, {
-		wrapper: mockAppRoot()
-			.withTranslations('en', 'core', {
-				Cannot_upload_file_character_limit: 'Cannot upload file, description is over the {{count}} character limit',
-				Send: 'Send',
-				Upload_file_description: 'File description',
-			})
-			.withSetting('Message_MaxAllowedSize', 10)
-			.build(),
+		wrapper: defaultWrapper.withSetting('FileUpload_MediaTypeBlackList', 'image/svg+xml').build(),
 	});
 
-	const input = await screen.findByRole('textbox', { name: 'File description' });
-	expect(input).toBeInTheDocument();
-	await userEvent.type(input, '12345678910');
-	await userEvent.tab();
+	const input = await screen.findByRole('textbox', { name: 'File name' });
+	await userEvent.type(input, 'testing.svg');
 
-	expect(screen.getByText('Cannot upload file, description is over the 10 character limit')).toBeInTheDocument();
+	const button = await screen.findByRole('button', { name: 'Update' });
+	await userEvent.click(button);
+
+	expect(screen.getByText('Media type not accepted: image/svg+xml')).toBeInTheDocument();
 });

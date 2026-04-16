@@ -4,7 +4,11 @@ import { searchProviderService } from '../service';
 export class EventService {
 	_pushError(name: string, value: string, _payload?: unknown) {
 		// TODO implement a (performant) cache
-		SearchLogger.debug(`Error on event '${name}' with id '${value}'`);
+		SearchLogger.debug({
+			msg: 'Error on event',
+			eventName: name,
+			eventId: value,
+		});
 	}
 
 	promoteEvent(name: string, value: string, payload?: unknown) {

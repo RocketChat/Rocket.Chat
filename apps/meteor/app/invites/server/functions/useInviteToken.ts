@@ -1,3 +1,4 @@
+import { isBannedSubscription } from '@rocket.chat/core-typings';
 import { Invites, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
@@ -37,11 +38,15 @@ export const useInviteToken = async (userId: string, token: string) => {
 			field: 'userId',
 		});
 	}
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
+	if (subscription && isBannedSubscription(subscription)) {
+		throw new Meteor.Error('error-user-is-banned', 'User is banned from this room', {
+			method: 'useInviteToken',
+		});
+	}
+
 	await Users.updateInviteToken(user._id, token);
 
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, {
-		projection: { _id: 1 },
-	});
 	if (!subscription) {
 		await Invites.increaseUsageById(inviteData._id, 1);
 	}

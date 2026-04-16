@@ -133,6 +133,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			acceptedAt: new Date(),
 			activatedAt: new Date(),
 			uids: [uid, extraUid],
+			features: ['audio'],
 		},
 		{
 			_id: callId2,
@@ -165,6 +166,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			acceptedAt: new Date(),
 			activatedAt: new Date(),
 			uids: [uid, extraUid],
+			features: ['audio'],
 		},
 		{
 			_id: callId3,
@@ -197,6 +199,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			acceptedAt: new Date(),
 			activatedAt: new Date(),
 			uids: [uid],
+			features: ['audio'],
 		},
 		{
 			_id: callId4,
@@ -229,6 +232,7 @@ export async function addCallHistoryTestData(uid: string, extraUid: string): Pro
 			acceptedAt: new Date(),
 			activatedAt: new Date(),
 			uids: [uid],
+			features: ['audio'],
 		},
 	]);
 }

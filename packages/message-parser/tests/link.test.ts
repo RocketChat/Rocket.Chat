@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { link, paragraph, plain, bold, strike, italic, quote, lineBreak, unorderedList, listItem, orderedList } from '../src/utils';
+import { link, paragraph, plain, bold, strike, italic, quote, lineBreak, unorderedList, listItem, orderedList } from './helpers';
 
 test.each([
 	['<https://domain.com|Test>', [paragraph([link('https://domain.com', [plain('Test')])])]],
@@ -385,6 +385,33 @@ Text after line break`,
 		'[test **bold with __italic__**](https://rocket.chat)',
 		[paragraph([link('https://rocket.chat', [plain('test '), bold([plain('bold with '), italic([plain('italic')])])])])],
 	],
+	// Test case for issue #31418 - text in brackets between two links should not break markdown
+	[
+		'[Rocket.Chat] [New release](https://www.rocket.chat/blog/new-starter-pro-plans)',
+		[paragraph([plain('[Rocket.Chat] '), link('https://www.rocket.chat/blog/new-starter-pro-plans', [plain('New release')])])],
+	],
+	// Test case for issue #31766 - multiple links with bracketed text between them
+	[
+		'[BUG #11111](https://github.com/) - [BACK] changelog description',
+		[paragraph([link('https://github.com/', [plain('BUG #11111')]), plain(' - [BACK] changelog description')])],
+	],
+	[
+		'[BUG #11111](https://github.com/) - [BACK] [Another link](https://github.com/)',
+		[
+			paragraph([
+				link('https://github.com/', [plain('BUG #11111')]),
+				plain(' - [BACK] '),
+				link('https://github.com/', [plain('Another link')]),
+			]),
+		],
+	],
+	// Test case for brackets/parentheses in URL parameters
+	[
+		'[link](https://example.com/query?this=(is)&a=problem)',
+		[paragraph([link('https://example.com/query?this=(is)&a=problem', [plain('link')])])],
+	],
+	['[link](https://example.com/path/to/func(param))', [paragraph([link('https://example.com/path/to/func(param)', [plain('link')])])]],
+	['[link](https://example.com/path/(section)/page)', [paragraph([link('https://example.com/path/(section)/page', [plain('link')])])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toMatchObject(output);
 });

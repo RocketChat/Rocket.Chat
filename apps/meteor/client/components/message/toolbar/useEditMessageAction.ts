@@ -1,7 +1,7 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom, IMessage, ISubscription } from '@rocket.chat/core-typings';
 import { usePermission, useSetting, useUser } from '@rocket.chat/ui-contexts';
-import moment from 'moment';
+import { differenceInMinutes } from 'date-fns';
 
 import type { MessageActionConfig } from '../../../../app/ui-utils/client/lib/MessageAction';
 import { useChat } from '../../../views/room/contexts/ChatContext';
@@ -32,8 +32,7 @@ export const useEditMessageAction = (
 		}
 
 		if (!canBypassBlockTimeLimit && blockEditInMinutes) {
-			const msgTs = message.ts ? moment(message.ts) : undefined;
-			const currentTsDiff = msgTs ? moment().diff(msgTs, 'minutes') : undefined;
+			const currentTsDiff = message.ts ? differenceInMinutes(new Date(), message.ts) : undefined;
 			return typeof currentTsDiff === 'number' && currentTsDiff < blockEditInMinutes;
 		}
 

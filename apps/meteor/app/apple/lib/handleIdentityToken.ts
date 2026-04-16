@@ -3,7 +3,11 @@ import { KJUR } from 'jsrsasign';
 import NodeRSA from 'node-rsa';
 
 async function isValidAppleJWT(identityToken: string, header: any): Promise<boolean> {
-	const request = await fetch('https://appleid.apple.com/auth/keys', { method: 'GET' });
+	const request = await fetch('https://appleid.apple.com/auth/keys', {
+		method: 'GET',
+		// SECURITY: Hardcoded URL, no SSRF protection needed
+		ignoreSsrfValidation: true,
+	});
 	const applePublicKeys = ((await request.json()) as { keys: { kid: string; e: string; n: string }[] }).keys;
 	const { kid } = header;
 

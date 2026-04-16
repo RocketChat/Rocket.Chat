@@ -51,8 +51,8 @@ export async function sendMessagesToAdmins({
 				await Promise.all(
 					(await getData<Partial<IMessage>>(msgs, adminUser)).map((msg) => executeSendMessage(fromId, Object.assign({ rid }, msg))),
 				);
-			} catch (error) {
-				SystemLogger.error(error);
+			} catch (err) {
+				SystemLogger.error({ err });
 			}
 		}
 

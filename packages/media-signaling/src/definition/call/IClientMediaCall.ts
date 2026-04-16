@@ -1,22 +1,18 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
 import type { CallEvents } from './CallEvents';
-
-export type CallActorType = 'user' | 'sip';
-
-export type CallContact = {
-	type?: CallActorType;
-	id?: string;
-	contractId?: string;
-
-	displayName?: string;
-	username?: string;
-	sipExtension?: string;
-};
-
-export type CallRole = 'caller' | 'callee';
+import type {
+	AnyClientMediaCallParticipant,
+	IClientMediaCallLocalParticipant,
+	IClientMediaCallRemoteParticipant,
+} from './IClientMediaCallParticipant';
+import type { CallActorType } from './common';
 
 export type CallService = 'webrtc';
+
+export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold'] as const;
+
+export type CallFeature = (typeof callFeatureList)[number];
 
 export type CallState =
 	| 'none' // trying to call with no idea if it'll reach anyone
@@ -46,11 +42,14 @@ export type CallHangupReason =
 	| 'unknown' // One of the call's signed users reported they don't know this call
 	| 'another-client'; // One of the call's users requested a hangup from a different client session than the one where the call is happening
 
-export type CallAnswer =
-	| 'accept' // actor accepts the call
-	| 'reject' // actor rejects the call
-	| 'ack' // agent confirms the actor is reachable
-	| 'unavailable'; // agent reports the actor is unavailable
+export const callAnswerList = [
+	'accept', // actor accepts the call
+	'reject', // actor rejects the call
+	'ack', // agent confirms the actor is reachable
+	'unavailable', // agent reports the actor is unavailable
+] as const;
+
+export type CallAnswer = (typeof callAnswerList)[number];
 
 export type CallNotification =
 	| 'accepted' // notify that the call has been accepted by both actors
@@ -72,27 +71,16 @@ export type CallFlag = 'internal' | 'create-data-channel';
 
 export interface IClientMediaCall {
 	callId: string;
-	role: CallRole;
-	service: CallService | null;
-	flags: readonly CallFlag[];
 
 	state: CallState;
 	ignored: boolean;
 	signed: boolean;
 	hidden: boolean;
-	muted: boolean;
-	/* if the call was put on hold */
-	held: boolean;
 	/* busy = state >= 'accepted' && state < 'hangup' */
 	busy: boolean;
-	/* if the other side has put the call on hold */
-	remoteHeld: boolean;
-	remoteMute: boolean;
 
-	contact: CallContact;
-	transferredBy: CallContact | null;
-	audioLevel: number;
-	localAudioLevel: number;
+	/** The timestamp of the moment the call was marked as active for the first time */
+	activeTimestamp?: Date;
 
 	/** if the call was requested by this session, then this will have the ID used to request the call, otherwise it will be the same as callId */
 	readonly tempCallId: string;
@@ -101,16 +89,22 @@ export interface IClientMediaCall {
 
 	emitter: Emitter<CallEvents>;
 
-	getRemoteMediaStream(): MediaStream | null;
-
 	accept(): void;
 	reject(): void;
 	hangup(): void;
-	setMuted(muted: boolean): void;
-	setHeld(onHold: boolean): void;
+	requestScreenShare(requested: boolean): void;
+	setScreenVideoTrack(videoTrack: MediaStreamTrack | null): Promise<void>;
+	hasScreenVideoTrack(): boolean;
+	canHaveScreenVideoTrack(): boolean;
 	transfer(callee: { type: CallActorType; id: string }): void;
 
 	sendDTMF(dtmf: string, duration?: number): void;
 
 	getStats(selector?: MediaStreamTrack | null): Promise<RTCStatsReport | null>;
+	isFeatureAvailable(feature: CallFeature): boolean;
+	hasFlag(flag: CallFlag): boolean;
+
+	readonly localParticipant: IClientMediaCallLocalParticipant;
+	readonly remoteParticipants: IClientMediaCallRemoteParticipant[];
+	readonly participants: AnyClientMediaCallParticipant[];
 }

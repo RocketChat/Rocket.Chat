@@ -21,6 +21,7 @@ import type {
 	IOmnichannelBusinessUnit,
 	ILivechatDepartment,
 	ILivechatMonitor,
+	IOmnichannelRoom,
 } from '@rocket.chat/core-typings';
 import { parse } from '@rocket.chat/message-parser';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
@@ -59,6 +60,39 @@ export const createFakeRoom = <T extends IRoom = IRoom>(overrides?: Partial<T & 
 		autoTranslateLanguage: faker.helpers.arrayElement(['en', 'es', 'pt', 'ar', 'it', 'ru', 'fr']),
 		...overrides,
 	}) as T;
+
+export const createFakeOmnichannelRoom = (overrides?: Partial<IOmnichannelRoom>): IOmnichannelRoom => ({
+	_id: faker.database.mongodbObjectId(),
+	_updatedAt: faker.date.recent(),
+	t: 'l',
+	msgs: faker.number.int({ min: 0 }),
+	ts: faker.date.recent(),
+	u: {
+		_id: faker.database.mongodbObjectId(),
+		username: faker.internet.userName(),
+		name: faker.person.fullName(),
+		...overrides?.u,
+	},
+	v: {
+		_id: faker.database.mongodbObjectId(),
+		username: faker.internet.userName(),
+		name: faker.person.fullName(),
+		status: UserStatus.ONLINE,
+		token: faker.string.uuid(),
+		activity: [],
+		...overrides?.v,
+	},
+	source: {
+		type: OmnichannelSourceType.WIDGET,
+		...overrides?.source,
+	},
+	usersCount: faker.number.int({ min: 0 }),
+	priorityWeight: LivechatPriorityWeight.NOT_SPECIFIED,
+	estimatedWaitingTimeQueue: faker.number.int({ min: 0, max: 100 }),
+	waitingResponse: faker.datatype.boolean(),
+	livechatData: {},
+	...overrides,
+});
 
 export const createFakeSubscription = (overrides?: Partial<SubscriptionWithRoom>): SubscriptionWithRoom => ({
 	_id: faker.database.mongodbObjectId(),

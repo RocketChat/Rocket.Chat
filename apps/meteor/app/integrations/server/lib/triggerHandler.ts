@@ -92,7 +92,6 @@ class RocketChatIntegrationHandler {
 		}
 	}
 
-	// eslint-disable-next-line no-unused-vars
 	getEngine(_integration: any): IsolatedVMScriptEngine<false> {
 		return this.ivmEngine;
 	}
@@ -158,9 +157,10 @@ class RocketChatIntegrationHandler {
 
 		// If no room could be found, we won't be sending any messages but we'll warn in the logs
 		if (!tmpRoom) {
-			outgoingLogger.warn(
-				`The Integration "${trigger.name}" doesn't have a room configured nor did it provide a room to send the message to.`,
-			);
+			outgoingLogger.warn({
+				msg: 'The Integration doesnt have a room configured nor did it provide a room to send the message to.',
+				integrationName: trigger.name,
+			});
 			return;
 		}
 
@@ -180,7 +180,7 @@ class RocketChatIntegrationHandler {
 			channel: tmpRoom.t === 'd' ? `@${tmpRoom._id}` : `#${tmpRoom._id}`,
 		};
 
-		return processWebhookMessage(message, user as IUser & { username: RequiredField<IUser, 'username'> }, defaultValues);
+		return processWebhookMessage(message, user as RequiredField<IUser, 'username'>, defaultValues);
 	}
 
 	eventNameArgumentsToObject(...args: unknown[]) {
@@ -464,7 +464,7 @@ class RocketChatIntegrationHandler {
 
 		outgoingLogger.debug({ msg: 'Found triggers to iterate over', triggerCount: triggersToExecute.length, event });
 
-		for await (const triggerToExecute of triggersToExecute) {
+		for (const triggerToExecute of triggersToExecute) {
 			outgoingLogger.debug({
 				msg: 'Checking trigger execution eligibility',
 				triggerName: triggerToExecute.name,
@@ -481,7 +481,7 @@ class RocketChatIntegrationHandler {
 		if (!trigger.urls) {
 			return;
 		}
-		for await (const url of trigger.urls) {
+		for (const url of trigger.urls) {
 			await this.executeTriggerUrl(url, trigger, argObject, 0);
 		}
 	}
@@ -618,6 +618,9 @@ class RocketChatIntegrationHandler {
 				headers: opts.headers,
 				...(opts.timeout && { timeout: opts.timeout }),
 				...(opts.data && { body: opts.data }),
+				// SECURITY: Integrations can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
+				size: 10 * 1024 * 1024,
 			},
 			settings.get('Allow_Invalid_SelfSigned_Certs'),
 		)
@@ -781,23 +784,23 @@ class RocketChatIntegrationHandler {
 					}
 				}
 			})
-			.catch(async (error) => {
-				outgoingLogger.error(error);
+			.catch(async (err) => {
+				outgoingLogger.error({ err });
 				await updateHistory({
 					historyId,
 					step: 'after-http-call',
-					httpError: error,
+					httpError: err,
 					httpResult: null,
 				});
 			});
 	}
 
 	async replay(integration: IOutgoingIntegration, history: IIntegrationHistory) {
-		if (!integration || integration.type !== 'webhook-outgoing') {
+		if (integration?.type !== 'webhook-outgoing') {
 			throw new Meteor.Error('integration-type-must-be-outgoing', 'The integration type to replay must be an outgoing webhook.');
 		}
 
-		if (!history || !history.data) {
+		if (!history?.data) {
 			throw new Meteor.Error('history-data-must-be-defined', 'The history data must be defined to replay an integration.');
 		}
 
@@ -807,7 +810,7 @@ class RocketChatIntegrationHandler {
 		let room;
 		let user;
 
-		if (history.data.owner && history.data.owner._id) {
+		if (history.data.owner?._id) {
 			owner = await Users.findOneById(history.data.owner._id);
 		}
 		if (history.data.message_id) {

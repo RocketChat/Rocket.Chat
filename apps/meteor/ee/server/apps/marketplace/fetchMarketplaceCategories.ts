@@ -4,6 +4,7 @@ import * as z from 'zod';
 import { getMarketplaceHeaders } from './getMarketplaceHeaders';
 import { MarketplaceAppsError, MarketplaceConnectionError, MarketplaceUnsupportedVersionError } from './marketplaceErrors';
 import { getWorkspaceAccessToken } from '../../../../app/cloud/server';
+import { settings } from '../../../../app/settings/server';
 import { Apps } from '../orchestrator';
 
 const fetchMarketplaceCategoriesSchema = z.array(
@@ -34,7 +35,11 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 
 	let request;
 	try {
-		request = await Apps.getMarketplaceClient().fetch(`v1/categories`, { headers });
+		request = await Apps.getMarketplaceClient().fetch(`v1/categories`, {
+			headers,
+			ignoreSsrfValidation: false,
+			allowList: settings.get<string>('SSRF_Allowlist'),
+		});
 	} catch (error) {
 		throw new MarketplaceConnectionError('Marketplace_Bad_Marketplace_Connection');
 	}
@@ -47,7 +52,7 @@ export async function fetchMarketplaceCategories(): Promise<AppCategory[]> {
 
 	const response = await request.json();
 
-	Apps.getRocketChatLogger().error('Failed to fetch marketplace categories', response);
+	Apps.getRocketChatLogger().error({ msg: 'Error fetching marketplace categories', status: request.status, response });
 
 	// TODO: Refactor cloud to return a proper error code on unsupported version
 	if (request.status === 426 && 'errorMsg' in response && response.errorMsg === 'unsupported version') {

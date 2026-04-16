@@ -7,7 +7,7 @@ import { makeAppLogsQuery } from './lib/makeAppLogsQuery';
 export const registerAppLogsHandler = ({ api, _manager, _orch }: AppsRestApi) =>
 	void api.addRoute(
 		':id/logs',
-		{ authRequired: true, permissionRequired: ['manage-apps'], validateParams: isAppLogsProps },
+		{ authRequired: true, permissionsRequired: ['manage-apps'], validateParams: isAppLogsProps },
 		{
 			async get() {
 				const proxiedApp = _manager.getOneById(this.urlParams.id);

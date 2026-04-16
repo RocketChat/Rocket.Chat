@@ -38,7 +38,10 @@ const convertRoleNamesToIds = async (roleNamesOrIds: string[]): Promise<IRole['_
 	const roles = (await Roles.findInIdsOrNames(normalizedRoleNamesOrIds).toArray()).map((role) => role._id);
 
 	if (roles.length !== normalizedRoleNamesOrIds.length) {
-		SystemLogger.warn(`Failed to convert some role names to ids: ${normalizedRoleNamesOrIds.join(', ')}`);
+		SystemLogger.warn({
+			msg: 'Failed to convert some role names to ids',
+			roles: normalizedRoleNamesOrIds,
+		});
 	}
 
 	if (!roles.length) {
@@ -71,7 +74,7 @@ export class SAML {
 			case 'logout':
 				return this.processLogoutAction(req, res, service);
 			case 'sloRedirect':
-				return this.processSLORedirectAction(req, res);
+				return this.processSLORedirectAction(req, res, service);
 			case 'authorize':
 				return this.processAuthorizeAction(res, service, samlObject);
 			case 'validate':
@@ -273,7 +276,7 @@ export class SAML {
 	}
 
 	private static async _logoutRemoveTokens(userId: string): Promise<void> {
-		SAMLUtils.log(`Found user ${userId}`);
+		SAMLUtils.log({ msg: 'Found user', userId });
 
 		await Users.unsetLoginTokens(userId);
 		await Users.removeSamlServiceSession(userId);
@@ -292,7 +295,7 @@ export class SAML {
 			}
 
 			let timeoutHandler: NodeJS.Timeout | undefined = undefined;
-			const redirect = (url?: string | undefined): void => {
+			const redirect = (url?: string): void => {
 				if (!timeoutHandler) {
 					// If the handler is null, then we already ended the response;
 					return;
@@ -339,8 +342,8 @@ export class SAML {
 
 					redirect(url);
 				});
-			} catch (e: any) {
-				SystemLogger.error(e);
+			} catch (err: any) {
+				SystemLogger.error({ err });
 				redirect();
 			}
 		});
@@ -348,7 +351,7 @@ export class SAML {
 
 	private static async processLogoutResponse(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): Promise<void> {
 		if (!req.query.SAMLResponse) {
-			SAMLUtils.error('Invalid LogoutResponse, missing SAMLResponse', req.query);
+			SAMLUtils.error({ msg: 'Invalid LogoutResponse received: missing SAMLResponse parameter.', query: req.query });
 			throw new Error('Invalid LogoutResponse received.');
 		}
 
@@ -363,7 +366,7 @@ export class SAML {
 			}
 
 			const logOutUser = async (inResponseTo: string): Promise<void> => {
-				SAMLUtils.log(`Logging Out user via inResponseTo ${inResponseTo}`);
+				SAMLUtils.log({ msg: 'Processing logout for inResponseTo', inResponseTo });
 
 				const loggedOutUsers = await Users.findBySAMLInResponseTo(inResponseTo).toArray();
 				if (loggedOutUsers.length > 1) {
@@ -381,18 +384,58 @@ export class SAML {
 				await logOutUser(inResponseTo);
 			} finally {
 				res.writeHead(302, {
-					Location: req.query.RelayState,
+					Location: Meteor.absoluteUrl(),
 				});
 				res.end();
 			}
 		});
 	}
 
-	private static processSLORedirectAction(req: IIncomingMessage, res: ServerResponse): void {
+	private static processSLORedirectAction(req: IIncomingMessage, res: ServerResponse, service: IServiceProviderOptions): void {
+		const { idpSLORedirectURL } = service;
+		const userRedirect = req.query.redirect as string;
+
+		if (!idpSLORedirectURL) {
+			res.writeHead(500);
+			res.end('SLO redirect not configured');
+			return;
+		}
+
+		if (!userRedirect || typeof userRedirect !== 'string') {
+			res.writeHead(400);
+			res.end('Missing redirect parameter');
+			return;
+		}
+
+		let configuredURL: URL;
+		let requestURL: URL;
+
+		try {
+			configuredURL = new URL(idpSLORedirectURL);
+			requestURL = new URL(userRedirect);
+		} catch {
+			res.writeHead(400);
+			res.end('Invalid URL format');
+			return;
+		}
+
+		if (configuredURL.origin !== requestURL.origin) {
+			res.writeHead(403);
+			res.end('Unauthorized redirect origin');
+			return;
+		}
+
+		const normalizePath = (p: string): string => p.replace(/\/+$/, '') || '/';
+		if (normalizePath(configuredURL.pathname) !== normalizePath(requestURL.pathname)) {
+			res.writeHead(403);
+			res.end('Unauthorized redirect path');
+			return;
+		}
+
 		res.writeHead(302, {
-			// credentialToken here is the SAML LogOut Request that we'll send back to IDP
-			Location: req.query.redirect,
+			Location: requestURL.toString(),
 		});
+
 		res.end();
 	}
 
@@ -407,8 +450,7 @@ export class SAML {
 		try {
 			url = await serviceProvider.getAuthorizeUrl(samlObject.credentialToken);
 		} catch (err: any) {
-			SAMLUtils.error('Unable to generate authorize url');
-			SAMLUtils.error(err);
+			SAMLUtils.error({ err, msg: 'Unable to generate authorize url' });
 			url = Meteor.absoluteUrl();
 		}
 
@@ -452,8 +494,8 @@ export class SAML {
 					Location: url,
 				});
 				res.end();
-			} catch (error) {
-				SAMLUtils.error(error);
+			} catch (err) {
+				SAMLUtils.error({ err });
 				res.writeHead(302, {
 					Location: Meteor.absoluteUrl(),
 				});
@@ -491,7 +533,7 @@ export class SAML {
 	private static async subscribeToSAMLChannels(channels: Array<string>, user: IUser): Promise<void> {
 		const { includePrivateChannelsInUpdate } = SAMLUtils.globalSettings;
 		try {
-			for await (let roomName of channels) {
+			for (let roomName of channels) {
 				roomName = roomName.trim();
 				if (!roomName) {
 					continue;
@@ -518,7 +560,7 @@ export class SAML {
 				}
 			}
 		} catch (err: any) {
-			SystemLogger.error(err);
+			SystemLogger.error({ err });
 		}
 	}
 }

@@ -78,7 +78,7 @@ async function saveRegistrationDataBase({
 	// Answer: we use cache that requires a 'roundtrip' through the db and the application
 	// we need to make sure that the cache is updated before we continue the procedures
 	// we don't actually need to wait a whole second for this, but look this is just a retry mechanism it doesn't mean that actually takes all this time
-	for await (const retry of Array.from({ length: 10 })) {
+	for (const retry of Array.from({ length: 10 })) {
 		const isSettingsUpdated =
 			settings.get('Register_Server') === true &&
 			settings.get('Cloud_Workspace_Id') === workspaceId &&

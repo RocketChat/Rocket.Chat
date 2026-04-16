@@ -1,8 +1,10 @@
+import { transformSync } from '@babel/core';
+import presetEnv from '@babel/preset-env';
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Babel } from 'meteor/babel-compiler';
+import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
@@ -110,18 +112,23 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		integration.script.trim() !== ''
 	) {
 		try {
-			let babelOptions = Babel.getDefaultOptions({ runtime: false });
-			babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
+			const result = transformSync(integration.script, {
+				presets: [presetEnv],
+				compact: true,
+				minified: true,
+				comments: false,
+			});
 
-			integrationData.scriptCompiled = Babel.compile(integration.script, babelOptions).code;
-			integrationData.scriptError = undefined;
+			// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
+			integrationData.scriptCompiled = result?.code ?? undefined;
+			delete integrationData.scriptError;
 		} catch (e) {
 			integrationData.scriptCompiled = undefined;
 			integrationData.scriptError = e instanceof Error ? _.pick(e, 'name', 'message', 'stack') : undefined;
 		}
 	}
 
-	for await (let channel of channels) {
+	for (let channel of channels) {
 		let record;
 		const channelType = channel[0];
 		channel = channel.substr(1);
@@ -157,7 +164,9 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	await addUserRolesAsync(user._id, ['bot']);
 
-	const { insertedId } = await Integrations.insertOne(integrationData);
+	const strippedIntegrationData = removeEmpty(integrationData);
+
+	const { insertedId } = await Integrations.insertOne(strippedIntegrationData);
 
 	if (insertedId) {
 		void notifyOnIntegrationChanged({ ...integrationData, _id: insertedId }, 'inserted');

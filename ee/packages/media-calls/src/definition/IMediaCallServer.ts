@@ -1,8 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Emitter } from '@rocket.chat/emitter';
-import type { ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
+import type { CallFeature, ClientMediaSignal, ClientMediaSignalBody, ServerMediaSignal } from '@rocket.chat/media-signaling';
 
-import type { InternalCallParams } from './common';
+import type { InternalCallParams, SignalProcessingOptions } from './common';
 
 export type MediaCallServerEvents = {
 	callUpdated: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> };
@@ -30,6 +30,7 @@ export interface IMediaCallServerSettings {
 	};
 
 	permissionCheck: (uid: IUser['_id'], callType: 'internal' | 'external' | 'any') => Promise<boolean>;
+	isFeatureAvailableForUser: (uid: IUser['_id'], feature: CallFeature) => boolean;
 }
 
 export interface IMediaCallServer {
@@ -41,7 +42,7 @@ export interface IMediaCallServer {
 	updateCallHistory(params: { callId: string }): void;
 
 	// functions that are run on events
-	receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal): void;
+	receiveSignal(fromUid: IUser['_id'], signal: ClientMediaSignal, options?: SignalProcessingOptions): Promise<void>;
 	receiveCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void;
 
 	// extra functions available to the service
@@ -52,4 +53,5 @@ export interface IMediaCallServer {
 	requestCall(params: InternalCallParams): Promise<void>;
 
 	permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean>;
+	isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean;
 }

@@ -1,8 +1,9 @@
+import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
 import { Upload } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { federationSDK } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
-import { Uploads } from '@rocket.chat/models';
+import { Avatars, Uploads } from '@rocket.chat/models';
 
 const logger = new Logger('federation-matrix:media-service');
 
@@ -62,6 +63,12 @@ export class MatrixMediaService {
 
 	static async getLocalFileForMatrixNode(mediaId: string, serverName: string): Promise<IUpload | null> {
 		try {
+			// try to find an avatar with the given mediaId as etag first, the index tends to be smaller
+			const avatarFile = await Avatars.findOneByETag(mediaId);
+			if (avatarFile) {
+				return avatarFile;
+			}
+
 			let file = await Uploads.findByFederationMediaIdAndServerName(mediaId, serverName);
 
 			if (!file) {
@@ -79,18 +86,7 @@ export class MatrixMediaService {
 		}
 	}
 
-	static async downloadAndStoreRemoteFile(
-		mxcUri: string,
-		matrixRoomId: string,
-		metadata: {
-			name: string;
-			size?: number;
-			type?: string;
-			messageId?: string;
-			roomId?: string;
-			userId?: string;
-		},
-	): Promise<string> {
+	static async downloadAndStoreRemoteFile(mxcUri: string, matrixRoomId: string, metadata: IUploadDetails): Promise<string> {
 		try {
 			const parts = this.parseMXCUri(mxcUri);
 			if (!parts) {
@@ -113,11 +109,8 @@ export class MatrixMediaService {
 				userId: metadata.userId || 'federation',
 				buffer,
 				details: {
-					name: metadata.name || 'unnamed',
+					...metadata,
 					size: buffer.length,
-					type: metadata.type || 'application/octet-stream',
-					rid: metadata.roomId,
-					userId: metadata.userId || 'federation',
 				},
 			});
 
