@@ -43,7 +43,7 @@ const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, faile
 		],
 	};
 
-	await sendMessage(rocketCat, message, room, false);
+	await sendMessage(rocketCat, message, room);
 };
 
 export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {

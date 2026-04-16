@@ -1,6 +1,5 @@
 import './ajv';
 import './helpers/composeRoomWithLastMessage';
-import './helpers/getLoggedInUser';
 import './helpers/getPaginationItems';
 import './helpers/getUserFromParams';
 import './helpers/getUserInfo';
@@ -22,6 +21,7 @@ import './v1/integrations';
 import './v1/invites';
 import './v1/import';
 import './v1/ldap';
+import './v1/media-calls';
 import './v1/misc';
 import './v1/permissions';
 import './v1/presence';

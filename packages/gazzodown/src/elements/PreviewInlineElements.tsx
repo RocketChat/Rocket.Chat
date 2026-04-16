@@ -30,6 +30,9 @@ const PreviewInlineElements = ({ children }: PreviewInlineElementsProps): ReactE
 				case 'ITALIC':
 					return <ItalicSpan key={index}>{child.value}</ItalicSpan>;
 
+				case 'SPOILER':
+					return <PreviewInlineElements key={index}>{child.value}</PreviewInlineElements>;
+
 				case 'LINK':
 					return (
 						<PreviewInlineElements key={index}>

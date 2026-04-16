@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders FullWidget without crashing 1`] = `
+<body>
+  <div>
+    <span
+      data-focus-scope-start="true"
+      hidden=""
+    />
+    <article
+      aria-labelledby="rcx-media-call-widget-title rcx-media-call-widget-caller-info"
+      class="rcx-css-155a7q5"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-1aw4sw4 rcx-css-11m6c1h"
+        style="user-select: none; webkit-user-select: none;"
+      >
+        <i
+          aria-hidden="true"
+          class="rcx-box rcx-box--full rcx-icon--name-stacked-meatballs rcx-icon rcx-css-4pvxx3"
+        >
+          
+        </i>
+      </div>
+      <header
+        class="rcx-box rcx-box--full rcx-css-4vvilp"
+      >
+        <h3
+          class="rcx-box rcx-box--full rcx-css-u3j01s"
+          id="rcx-media-call-widget-title"
+        >
+          Incoming Call...
+        </h3>
+        <div
+          class="rcx-box rcx-box--full rcx-css-qwfmt5"
+        >
+          <button
+            aria-label="Close"
+            class="rcx-box rcx-box--full rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
+            name="close"
+            type="button"
+          >
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-cross rcx-icon rcx-css-1tg7yd0"
+            >
+              
+            </i>
+          </button>
+        </div>
+      </header>
+      <span
+        class="rcx-box rcx-box--full rcx-css-1k2ffyh"
+      >
+        <span
+          class="rcx-box rcx-box--full rcx-css-1gd28qh"
+        >
+           
+          On hold
+        </span>
+        <span
+          class="rcx-box rcx-box--full rcx-css-1fn7tui"
+        >
+           
+          Muted
+        </span>
+      </span>
+      <section
+        class="rcx-box rcx-box--full rcx-css-8j42zp"
+      >
+        The content of the widget
+      </section>
+      <footer
+        class="rcx-box rcx-box--full rcx-css-itk7e7"
+      >
+        <div
+          class="rcx-button-group rcx-button-group--stretch rcx-button-group--align-start"
+          role="group"
+        >
+          <button
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--danger rcx-button"
+            name="phone-off"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-phone-off rcx-icon rcx-css-1hdf9ok"
+              >
+                
+              </i>
+              Reject
+            </span>
+          </button>
+          <button
+            class="rcx-box rcx-box--full rcx-button--medium rcx-button--success rcx-button"
+            name="phone"
+            type="button"
+          >
+            <span
+              class="rcx-button--content"
+            >
+              <i
+                aria-hidden="true"
+                class="rcx-box rcx-box--full rcx-icon--name-phone rcx-icon rcx-css-1hdf9ok"
+              >
+                
+              </i>
+              Accept
+            </span>
+          </button>
+        </div>
+      </footer>
+    </article>
+    <span
+      data-focus-scope-end="true"
+      hidden=""
+    />
+  </div>
+</body>
+`;

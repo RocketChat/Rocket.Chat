@@ -3,6 +3,7 @@ import { CallHistory, MediaCalls } from '@rocket.chat/models';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import {
 	ajv,
+	ajvQuery,
 	validateNotFoundErrorResponse,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -61,7 +62,7 @@ const CallHistoryListSchema = {
 	additionalProperties: false,
 };
 
-export const isCallHistoryListProps = ajv.compile<CallHistoryList>(CallHistoryListSchema);
+export const isCallHistoryListProps = ajvQuery.compile<CallHistoryList>(CallHistoryListSchema);
 
 const callHistoryListEndpoints = API.v1.get(
 	'call-history.list',
@@ -185,7 +186,7 @@ const CallHistoryInfoSchema = {
 	],
 };
 
-export const isCallHistoryInfoProps = ajv.compile<CallHistoryInfo>(CallHistoryInfoSchema);
+export const isCallHistoryInfoProps = ajvQuery.compile<CallHistoryInfo>(CallHistoryInfoSchema);
 
 const callHistoryInfoEndpoints = API.v1.get(
 	'call-history.info',

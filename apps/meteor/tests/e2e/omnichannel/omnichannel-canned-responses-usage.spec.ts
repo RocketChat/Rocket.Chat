@@ -104,7 +104,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect to use the canned response in the chat', async () => {
-			await agent.poHomeChannel.content.useCannedResponse(cannedResponseName);
+			await agent.poHomeChannel.content.selectCannedResponse(cannedResponseName);
 		});
 
 		await test.step('expect canned response text to appear in message composer', async () => {
@@ -134,7 +134,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect to use the canned response with placeholder', async () => {
-			await agent.poHomeChannel.content.useCannedResponse(placeholderResponseName);
+			await agent.poHomeChannel.content.selectCannedResponse(placeholderResponseName);
 		});
 
 		await test.step('expect placeholder to be replaced with actual visitor name', async () => {
@@ -159,7 +159,7 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect to use existing canned response and modify it', async () => {
-			await agent.poHomeChannel.content.useCannedResponse(cannedResponseName);
+			await agent.poHomeChannel.content.selectCannedResponse(cannedResponseName);
 		});
 
 		await test.step('expect to modify the canned response text before sending', async () => {
@@ -193,13 +193,13 @@ test.describe('OC - Canned Responses Usage', () => {
 		});
 
 		await test.step('expect to use first canned response', async () => {
-			await agent.poHomeChannel.content.useCannedResponse(cannedResponseName);
+			await agent.poHomeChannel.content.selectCannedResponse(cannedResponseName);
 			await expect(agent.poHomeChannel.composer.inputMessage).toHaveValue(`${cannedResponseText} `);
 			await agent.page.keyboard.press('Enter');
 		});
 
 		await test.step('expect to use second canned response', async () => {
-			await agent.poHomeChannel.content.useCannedResponse(secondResponseName);
+			await agent.poHomeChannel.content.selectCannedResponse(secondResponseName);
 			await expect(agent.poHomeChannel.composer.inputMessage).toHaveValue(`${secondResponseText} `);
 			await agent.page.keyboard.press('Enter');
 		});

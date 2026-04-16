@@ -28,14 +28,14 @@ const SidebarNavigationItem = ({
 	badge: Badge,
 }: SidebarNavigationItemProps) => {
 	const path = pathSection;
-	const isActive = !!path && currentPath?.includes(path as string);
+	const isActive = !!path && currentPath?.includes(path);
 
 	if (permissionGranted === false || (typeof permissionGranted === 'function' && !permissionGranted())) {
 		return null;
 	}
 
 	return (
-		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl}>
+		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl} aria-current={isActive ? 'page' : undefined}>
 			{icon && <Icon name={icon} size='x20' mi={4} />}
 			<Box
 				withTruncatedText

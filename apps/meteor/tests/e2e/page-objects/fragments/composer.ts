@@ -1,8 +1,38 @@
 import type { Locator, Page } from 'playwright-core';
 
+import { Popup } from './popup';
+
+class VideoRecorderPopup extends Popup {
+	constructor(root: Locator) {
+		super(root);
+	}
+
+	get btnRecord(): Locator {
+		return this.root.getByRole('button', { name: 'Record' });
+	}
+
+	get btnStopRecording(): Locator {
+		return this.root.getByRole('button', { name: 'Stop Recording' });
+	}
+
+	get btnSend(): Locator {
+		return this.root.getByRole('button', { name: 'Send' });
+	}
+
+	async record() {
+		await this.btnRecord.click();
+		await this.btnStopRecording.waitFor({ state: 'visible' }).then(() => this.btnStopRecording.click());
+		await this.btnSend.click();
+		await this.waitForDismissal();
+	}
+}
+
 export abstract class Composer {
+	readonly videoRecorderPopup: VideoRecorderPopup;
+
 	constructor(protected root: Locator) {
 		this.root = root;
+		this.videoRecorderPopup = new VideoRecorderPopup(this.root.page().getByRole('dialog', { name: 'Video record' }));
 	}
 
 	get inputMessage(): Locator {
@@ -29,8 +59,28 @@ export abstract class Composer {
 		return this.toolbarPrimaryActions.getByRole('button', { name: 'Audio message' });
 	}
 
+	getFileByName(fileName: string): Locator {
+		return this.root.getByRole('group', { name: fileName, exact: true });
+	}
+
+	get groupUploads() {
+		return this.root.getByRole('group', { name: 'Uploads', exact: true });
+	}
+
+	getFilesInComposer(): Locator {
+		return this.groupUploads.getByRole('group', { name: /^(?!Close$)/ });
+	}
+
+	async removeFileByName(fileName: string): Promise<void> {
+		return this.getFileByName(fileName).getByRole('button', { name: 'Remove', exact: true }).click();
+	}
+
 	get btnSend(): Locator {
 		return this.root.getByRole('button', { name: 'Send' });
+	}
+
+	get btnCancel(): Locator {
+		return this.root.getByRole('button', { name: 'Cancel', exact: true });
 	}
 
 	get btnOptionFileUpload(): Locator {

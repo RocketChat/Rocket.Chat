@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { FlexTab } from '../fragments/flextab';
+import { FlexTab } from '../fragments/flextabs/flextab';
 import { OmnichannelContactReviewModal } from '../fragments/modals';
 
 export class OmnichannelContactInfo extends FlexTab {
@@ -37,6 +37,18 @@ export class OmnichannelContactInfo extends FlexTab {
 
 	get btnSeeConflicts(): Locator {
 		return this.root.getByRole('button', { name: 'See conflicts' });
+	}
+
+	private get customFieldsGroup() {
+		return this.root.getByRole('group', { name: 'Custom Fields' });
+	}
+
+	getInfoByValue(value: string): Locator {
+		return this.root.getByText(value, { exact: true });
+	}
+
+	getVisitorCustomField(label: string): Locator {
+		return this.customFieldsGroup.getByLabel(label);
 	}
 
 	async solveConflict(field: string, value: string) {

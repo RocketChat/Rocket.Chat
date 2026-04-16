@@ -1,5 +1,145 @@
 # @rocket.chat/model-typings
 
+## 2.1.2
+
+### Patch Changes
+
+- ([#39010](https://github.com/RocketChat/Rocket.Chat/pull/39010)) Fixes an authorization issue that allowed users to confirm uploads from other users
+
+- ([#39092](https://github.com/RocketChat/Rocket.Chat/pull/39092)) Fixes main channel scroll position changing when jumping to a thread message from search
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/core-typings@8.3.0
+  </details>
+
+## 2.1.2-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.4
+  </details>
+
+## 2.1.2-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.3
+  </details>
+
+## 2.1.2-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.2
+  </details>
+
+## 2.1.2-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.1
+  </details>
+
+## 2.1.2-rc.0
+
+### Patch Changes
+
+- ([#39010](https://github.com/RocketChat/Rocket.Chat/pull/39010)) Fixes an authorization issue that allowed users to confirm uploads from other users
+
+- ([#39092](https://github.com/RocketChat/Rocket.Chat/pull/39092)) Fixes main channel scroll position changing when jumping to a thread message from search
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [539659af22bc19880eda047dfc0b152472ccb65c, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.0
+  </details>
+
+## 2.1.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.1
+  </details>
+
+## 2.1.0
+
+### Minor Changes
+
+- ([#38173](https://github.com/RocketChat/Rocket.Chat/pull/38173)) Adds a new endpoint to delete uploaded files individually
+
+### Patch Changes
+
+- ([#37776](https://github.com/RocketChat/Rocket.Chat/pull/37776)) Prevents over-assignment of omnichannel agents beyond their max chats limit in microservices deployments by serializing agent assignment with explicit user-level locking.
+
+- ([#38376](https://github.com/RocketChat/Rocket.Chat/pull/38376)) Fix a validation issue in the `livechat/custom-fields.save` endpoint
+
+- ([#38265](https://github.com/RocketChat/Rocket.Chat/pull/38265)) Fixes endpoints `omnichannel/contacts.update` and `omnichannel/contacts.conflicts` where the contact manager field could not be cleared.
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34]:</summary>
+
+  - @rocket.chat/core-typings@8.2.0
+  </details>
+
+## 2.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.2
+  </details>
+
+## 2.1.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.1
+  </details>
+
+## 2.1.0-rc.0
+
+### Minor Changes
+
+- ([#38173](https://github.com/RocketChat/Rocket.Chat/pull/38173)) Adds a new endpoint to delete uploaded files individually
+
+### Patch Changes
+
+- ([#37776](https://github.com/RocketChat/Rocket.Chat/pull/37776)) Prevents over-assignment of omnichannel agents beyond their max chats limit in microservices deployments by serializing agent assignment with explicit user-level locking.
+
+- ([#38376](https://github.com/RocketChat/Rocket.Chat/pull/38376)) Fix a validation issue in the `livechat/custom-fields.save` endpoint
+
+- ([#38265](https://github.com/RocketChat/Rocket.Chat/pull/38265)) Fixes endpoints `omnichannel/contacts.update` and `omnichannel/contacts.conflicts` where the contact manager field could not be cleared.
+
+- <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34]:</summary>
+
+  - @rocket.chat/core-typings@8.2.0-rc.0
+  </details>
+
+## 2.0.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.1.1
+  </details>
+
 ## 2.0.2
 
 ### Patch Changes
