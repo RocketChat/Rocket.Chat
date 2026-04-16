@@ -7,8 +7,6 @@
         "noImplicitAny": true,
         "noUnusedLocals": true,
         "removeComments": false,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
         "moduleResolution": "node",
         "resolveJsonModule": true,
         "types": ["node"],
@@ -17,6 +15,6 @@
         "outDir": ".",
         "skipLibCheck": true
     },
-    "exclude": ["deno-runtime"],
+    "exclude": ["node_modules"],
     "include": ["./src/**/*"]
 }
