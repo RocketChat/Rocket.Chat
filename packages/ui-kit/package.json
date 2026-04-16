@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-kit",
-	"version": "1.0.0-rc.0",
+	"version": "1.0.0",
 	"description": "Interactive UI elements for Rocket.Chat Apps",
 	"homepage": "https://rocket.chat",
 	"bugs": {
@@ -31,7 +31,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"typia": "~9.7.2"
+		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch"
 	},
 	"devDependencies": {
 		"@rocket.chat/icons": "~0.47.0",

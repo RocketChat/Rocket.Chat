@@ -1,4 +1,4 @@
-import { type ILivechatVisitor, UserStatus } from '@rocket.chat/core-typings';
+import { type ILivechatVisitor, type IVisitorExternalIdentifier, UserStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatContacts, LivechatDepartment, LivechatVisitors, Users } from '@rocket.chat/models';
 import { makeFunction } from '@rocket.chat/patch-injection';
@@ -11,11 +11,12 @@ type RegisterGuestType = Partial<Pick<ILivechatVisitor, 'token' | 'name' | 'depa
 	connectionData?: any;
 	email?: string;
 	phone?: { number: string };
+	externalIds?: IVisitorExternalIdentifier[];
 };
 
 export const registerGuest = makeFunction(
 	async (
-		{ id, token, name, phone, email, department, username, connectionData, status = UserStatus.ONLINE }: RegisterGuestType,
+		{ id, token, name, phone, email, department, username, connectionData, status = UserStatus.ONLINE, externalIds }: RegisterGuestType,
 		{ shouldConsiderIdleAgent }: { shouldConsiderIdleAgent: boolean },
 	): Promise<ILivechatVisitor | null> => {
 		if (!token) {
@@ -29,6 +30,7 @@ export const registerGuest = makeFunction(
 			status,
 			...(phone?.number && { phone: [{ phoneNumber: phone.number }] }),
 			...(name && { name }),
+			...(externalIds?.length && { externalIds }),
 		};
 
 		if (email) {
