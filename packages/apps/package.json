@@ -4,6 +4,26 @@
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"require": "./dist/index.js",
+			"types": "./dist/index.d.ts"
+		},
+		"./server/*": {
+			"require": "./dist/server/*.js",
+			"types": "./dist/server/*.d.ts"
+		},
+		"./client/*": {
+			"require": "./dist/client/*.js",
+			"types": "./dist/client/*.d.ts"
+		}
+	},
+	"typesVersions": {
+		"*": {
+			"server/*": ["./dist/server/*"],
+			"client/*": ["./dist/client/*"]
+		}
+	},
 	"files": [
 		"/dist",
 		"/deno-runtime",
