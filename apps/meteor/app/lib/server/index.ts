@@ -42,6 +42,5 @@ import './methods/unarchiveRoom';
 import './methods/unblockUser';
 import './methods/updateMessage';
 import './methods/checkFederationConfiguration';
-import './hooks/afterUserActions';
 
 export * from './lib';
