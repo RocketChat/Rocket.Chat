@@ -50,7 +50,13 @@ export const isIpInCidrRange = (ip: string, cidr: string): boolean => {
 					groups.push(part);
 				}
 			}
-			return groups.reduce((value, hexGroup) => (value << 16n) + BigInt(parseInt(hexGroup, 16)), 0n);
+			return groups.reduce((value, hexGroup) => {
+				const parsed = parseInt(hexGroup, 16);
+				if (isNaN(parsed)) {
+					return value << 16n;
+				}
+				return (value << 16n) + BigInt(parsed);
+			}, 0n);
 		};
 		const mask = prefix === 0 ? 0n : ((1n << BigInt(prefix)) - 1n) << (128n - BigInt(prefix));
 		return (toBigInt(ip) & mask) === (toBigInt(network) & mask);

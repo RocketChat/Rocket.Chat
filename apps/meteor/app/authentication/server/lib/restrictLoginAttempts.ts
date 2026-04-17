@@ -53,7 +53,15 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	if (
 		!settings.get('Block_Multiple_Failed_Logins_Enabled') ||
 		!settings.get('Block_Multiple_Failed_Logins_By_Ip') ||
-		whitelist.some((entry) => entry.trim() === ip || isIpInCidrRange(ip, entry.trim()))
+		whitelist.some((entry) => {
+			const trimmed = entry.trim();
+			try {
+				return trimmed === ip || isIpInCidrRange(ip, trimmed);
+			} catch (error) {
+				logger.error({ msg: 'Invalid CIDR entry in whitelist', entry: trimmed, error });
+				return false;
+			}
+		})
 	) {
 		return true;
 	}
@@ -102,7 +110,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 	}
 
 	const { username, email } = (login.methodArguments[0].user || {}) as { username?: string; email?: string };
-	const loginUsername = username || email;
+	const loginUsername = login.user?.username || username || email;
 
 	if (!loginUsername) {
 		return true;
