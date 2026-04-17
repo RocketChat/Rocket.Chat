@@ -116,14 +116,16 @@ async function continueSendingMessage(store: UploadsAPI, message: IMessage) {
 		 * The first message will keep the composedMessage,
 		 * subsequent messages will have a empty text
 		 * */
-		const currentMsg = upload === validFiles[0] ? msg : '';
+		const isFirst = upload === validFiles[0];
+		const currentMsg = isFirst ? msg : '';
+		const groupable = !isFirst;
 
 		let content;
 		if (!e2eRoom || !isEncryptedUpload(upload)) {
 			confirmFilesQueue.push({
 				_id: upload.id,
 				name: upload.file.name,
-				composedMessage: { tmid, msg: currentMsg, fileName: upload.file.name, description: upload.description },
+				composedMessage: { tmid, msg: currentMsg, groupable, fileName: upload.file.name, description: upload.description },
 			});
 			continue;
 		}
@@ -139,6 +141,7 @@ async function continueSendingMessage(store: UploadsAPI, message: IMessage) {
 			content,
 			t: 'e2e',
 			msg: '',
+			groupable,
 			fileContent,
 		} as const;
 
