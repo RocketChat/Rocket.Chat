@@ -73,7 +73,7 @@ export class AppHttpBridge extends HttpBridge {
 
 		// end comptability with old HTTP.call API
 
-		this.orch.debugLog({ msg: `The App ${info.appId} is requesting from the outter webs:`, ...info, url: censorUrl(info.url) });
+		this.orch.debugLog({ msg: `The App ${info.appId} is requesting from the outter webs:`, info: { ...info, url: censorUrl(info.url) } });
 
 		const shouldIgnoreSsrf = request.ssrfValidation !== true;
 		const fetchOptions: ExtendedFetchOptions = {
