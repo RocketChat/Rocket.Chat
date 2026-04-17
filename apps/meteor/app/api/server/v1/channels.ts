@@ -304,8 +304,11 @@ API.v1.addRoute(
 			const parseIds = (ids: string | undefined, field: string) =>
 				typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
+			const userQuery = { ...query };
+			delete userQuery.rid;
+
 			const ourQuery = {
-				...query,
+				...userQuery,
 				rid: findResult._id,
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
@@ -1451,7 +1454,10 @@ API.v1.addRoute(
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
 
-			const ourQuery = Object.assign({}, query, { rid: findResult._id });
+			const userQuery = { ...query };
+			delete userQuery.rid;
+
+			const ourQuery = Object.assign({}, userQuery, { rid: findResult._id });
 
 			if (!settings.get<boolean>('Accounts_AllowAnonymousRead')) {
 				throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
