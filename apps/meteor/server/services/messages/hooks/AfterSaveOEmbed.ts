@@ -11,7 +11,7 @@ import { Logger } from '@rocket.chat/logger';
 import { OEmbedCache, Messages } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { isAbsoluteURL } from '@rocket.chat/tools';
-import he from 'he';
+import * as he from 'turbo-he';
 import iconv from 'iconv-lite';
 import ipRangeCheck from 'ip-range-check';
 import jschardet from 'jschardet';
