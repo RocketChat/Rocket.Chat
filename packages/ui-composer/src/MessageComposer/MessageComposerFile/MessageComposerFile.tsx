@@ -84,7 +84,9 @@ const MessageComposerFile = ({
 			{...props}
 		>
 			{showPreview ? (
-				<Box minWidth='x48'>{previewUrl ? <Avatar url={previewUrl} size='x48' alt={alt} /> : <Skeleton variant='rect' size={48} />}</Box>
+				<Box minWidth='x48'>
+					{previewUrl ? <Avatar url={previewUrl} size='x48' alt={alt} /> : <Skeleton variant='rect' width='x48' height='x48' />}
+				</Box>
 			) : (
 				<FilePreviewIcon format={fileFormat} />
 			)}
