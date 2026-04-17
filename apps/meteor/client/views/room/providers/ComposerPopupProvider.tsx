@@ -203,15 +203,8 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						const aPartial = a._id.startsWith(key) ? 1 : 0;
 						const bPartial = b._id.startsWith(key) ? 1 : 0;
 
-						let aScore = aExact + aPartial;
-						let bScore = bExact + bPartial;
-
-						if (recents.includes(a._id)) {
-							aScore += recents.indexOf(a._id) + 1;
-						}
-						if (recents.includes(b._id)) {
-							bScore += recents.indexOf(b._id) + 1;
-						}
+						const aScore = aExact + aPartial;
+						const bScore = bExact + bPartial;
 
 						if (aScore > bScore) {
 							return -1;
@@ -219,7 +212,20 @@ const ComposerPopupProvider = ({ children, room }: ComposerPopupProviderProps) =
 						if (aScore < bScore) {
 							return 1;
 						}
-						return 0;
+
+						const aRecent = recents.indexOf(a._id);
+						const bRecent = recents.indexOf(b._id);
+
+						if (aRecent === bRecent) {
+							return 0;
+						}
+						if (aRecent === -1) {
+							return 1;
+						}
+						if (bRecent === -1) {
+							return -1;
+						}
+						return aRecent - bRecent;
 					};
 					const filterRegex = new RegExp(escapeRegExp(filter), 'i');
 					const key = `:${filter}`;
