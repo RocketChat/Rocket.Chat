@@ -34,7 +34,7 @@ runs:
         key: ${{ runner.arch }}-${{ runner.os }}-${{ inputs.type }}-rc-build-${{ inputs.source-hash }}
 
     - name: Set Swap Space
-      uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0.0  
+      uses: pierotofy/set-swap-space@49819abfb41bd9b44fb781159c033dba90353a7c # v1.0
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         swap-size-gb: 4
