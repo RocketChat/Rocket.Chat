@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps-engine",
-	"version": "1.60.0",
+	"version": "1.61.0",
 	"description": "The engine code for the Rocket.Chat Apps which manages, runs, translates, coordinates and all of that.",
 	"keywords": [
 		"rocket.chat",
@@ -80,7 +80,7 @@
 		"@msgpack/msgpack": "3.0.0-beta2",
 		"adm-zip": "^0.5.16",
 		"debug": "^4.3.7",
-		"esbuild": "~0.25.12",
+		"esbuild": "~0.27.3",
 		"jose": "^4.15.9",
 		"jsonrpc-lite": "^2.2.0",
 		"lodash.clonedeep": "^4.5.0",

@@ -128,6 +128,15 @@ describe('ModifyUpdater', () => {
 		});
 	});
 
+	it('correctly formats requests to MessageUpdater methods', async () => {
+		const result = (await modifyUpdater.getMessageUpdater().addReaction('message-id', 'user-id', ':smile:')) as any;
+
+		assertEquals(result, {
+			method: 'accessor:getModifier:getUpdater:getMessageUpdater:addReaction',
+			params: ['message-id', 'user-id', ':smile:'],
+		});
+	});
+
 	describe('Error Handling', () => {
 		describe('message', () => {
 			it('throws an instance of Error when senderFn throws an error', async () => {

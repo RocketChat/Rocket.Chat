@@ -865,8 +865,6 @@
   "Entertainment": "Unterhaltung",
   "Error": "Fehler",
   "Error_404": "Fehler 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Fehler: Rocket.Chat erfordert einen oplog-Tailing, wenn er in mehreren Instanzen ausgeführt wird",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Stellen Sie sicher, dass sich Ihre MongoDB im ReplicaSet-Modus befindet und die Umgebungsvariable MONGO_OPLOG_URL auf dem Anwendungsserver korrekt definiert ist",
   "Error_changing_password": "Fehler beim Ändern des Passwortes",
   "Error_loading_pages": "Fehler beim Laden der Seiten",
   "Esc_to": "Esc: ",
