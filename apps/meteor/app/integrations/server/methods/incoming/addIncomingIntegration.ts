@@ -91,13 +91,13 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 	}
 
 	// Default to transpiling with Babel for backwards compatibility; integrations
-	// can opt-out per-record by setting `scriptTranspile: false` (removed in 9.0.0).
-	const scriptTranspile = integration.scriptTranspile !== false;
+	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
+	const skipTranspile = integration.skipTranspile === true;
 
 	const integrationData: IIncomingIntegration = {
 		...integration,
 		scriptEngine: integration.scriptEngine ?? 'isolated-vm',
-		scriptTranspile,
+		skipTranspile,
 		type: 'webhook-incoming',
 		channel: channels,
 		overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled ?? false,
@@ -113,7 +113,7 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		integration.script &&
 		integration.script.trim() !== ''
 	) {
-		const { script, error } = compileIntegrationScript(integration.script, { transpile: scriptTranspile });
+		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
 		if (error) {
 			integrationData.scriptCompiled = undefined;
 			integrationData.scriptError = error;

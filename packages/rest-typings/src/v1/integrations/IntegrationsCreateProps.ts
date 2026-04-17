@@ -9,7 +9,7 @@ export type IntegrationsCreateProps =
 			channel: string;
 			overrideDestinationChannelEnabled?: boolean;
 			scriptEnabled: boolean;
-			scriptTranspile?: boolean;
+			skipTranspile?: boolean;
 			script?: string;
 			name: string;
 			enabled: boolean;
@@ -31,7 +31,7 @@ export type IntegrationsCreateProps =
 			token?: string;
 
 			scriptEnabled: boolean;
-			scriptTranspile?: boolean;
+			skipTranspile?: boolean;
 			script?: string;
 			runOnEdits?: boolean;
 
@@ -71,7 +71,7 @@ const integrationsCreateSchema = {
 					type: 'boolean',
 					nullable: false,
 				},
-				scriptTranspile: {
+				skipTranspile: {
 					type: 'boolean',
 					nullable: true,
 				},
@@ -163,7 +163,7 @@ const integrationsCreateSchema = {
 					type: 'boolean',
 					nullable: false,
 				},
-				scriptTranspile: {
+				skipTranspile: {
 					type: 'boolean',
 					nullable: true,
 				},

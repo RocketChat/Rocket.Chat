@@ -488,6 +488,68 @@ describe('[Incoming Integrations]', () => {
 			});
 		});
 
+		describe('skipTranspile flag', () => {
+			let withoutTranspile: IIntegration;
+
+			before(async () => {
+				await updatePermission('manage-incoming-integrations', ['admin']);
+
+				// This script uses an implicit global assignment (`msg = buildMessage(...)`)
+				// which works when Babel transpiles classes to functions (sloppy mode) but
+				// fails in native ES6 class methods (strict mode) when transpilation is off.
+				const res = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test without transpile (sloppy-mode script)',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: true,
+						skipTranspile: true,
+						overrideDestinationChannelEnabled: false,
+						channel: '#general',
+						script:
+							'const buildMessage = (obj) => {\n' +
+							'    const template = `[#VALUE](${ obj.test })`;\n' +
+							'    return { text: template };\n' +
+							'};\n' +
+							'\n' +
+							'class Script {\n' +
+							'    process_incoming_request({ request }) {\n' +
+							'        msg = buildMessage(request.content);\n' +
+							'        return { content: { text: msg.text } };\n' +
+							'    }\n' +
+							'}\n',
+					})
+					.expect(200);
+				withoutTranspile = res.body.integration;
+			});
+
+			after(async () => {
+				if (withoutTranspile) {
+					await removeIntegration(withoutTranspile._id, 'incoming');
+				}
+			});
+
+			it('should create the integration with scriptCompiled and skipTranspile true', () => {
+				expect(withoutTranspile).to.have.property('scriptCompiled');
+				expect(withoutTranspile).to.not.have.property('scriptError');
+				expect(withoutTranspile).to.have.property('skipTranspile', true);
+			});
+
+			it('should fail to execute a sloppy-mode script when skipTranspile is true', async () => {
+				const payload = { test: 'test' };
+
+				await request
+					.post(`/hooks/${withoutTranspile._id}/${withoutTranspile.token}`)
+					.set('Content-Type', 'application/json')
+					.send(JSON.stringify(payload))
+					.expect(500);
+			});
+		});
+
 		describe('With manage-own-incoming-integrations permission', () => {
 			let integrationId: string;
 

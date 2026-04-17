@@ -171,9 +171,9 @@ export const validateOutgoingIntegration = async function (
 	}
 
 	// Default to transpiling with Babel for backwards compatibility; integrations
-	// can opt-out per-record by setting `scriptTranspile: false` (removed in 9.0.0).
-	const scriptTranspile = integration.scriptTranspile !== false;
-	integrationData.scriptTranspile = scriptTranspile;
+	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
+	const skipTranspile = integration.skipTranspile === true;
+	integrationData.skipTranspile = skipTranspile;
 
 	if (
 		!isScriptEngineFrozen(integrationData.scriptEngine) &&
@@ -181,7 +181,7 @@ export const validateOutgoingIntegration = async function (
 		integration.script &&
 		integration.script.trim() !== ''
 	) {
-		const { script, error } = compileIntegrationScript(integration.script, { transpile: scriptTranspile });
+		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
 		integrationData.scriptCompiled = script;
 		integrationData.scriptError = error;
 	}

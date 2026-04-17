@@ -8,7 +8,7 @@ import presetEnv from '@babel/preset-env';
  * `scriptCompiled`.
  *
  * When `transpile` is `true` (the default, controlled by each integration's
- * `scriptTranspile` flag), the script is transpiled with `@babel/core +
+ * `skipTranspile` flag), the script is transpiled with `@babel/core +
  * @babel/preset-env` — the historical behavior. When `false`, the script is
  * validated with Node's built-in `vm.Script` and stored as-is, matching the
  * 9.0.0 default where Babel transpilation is removed entirely.
@@ -17,7 +17,7 @@ import presetEnv from '@babel/preset-env';
  * handles ES2023+ natively. The transpilation only exists to preserve the
  * sloppy-mode semantics (implicit globals in class methods, `this` in nested
  * functions, etc.) that early scripts relied on. Admins can flip
- * `scriptTranspile: false` per integration to test strict-mode compatibility
+ * `skipTranspile: true` per integration to test strict-mode compatibility
  * before the 9.0.0 upgrade.
  *
  * Returns `{ script }` on success or `{ error }` with the same
