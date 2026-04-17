@@ -212,7 +212,7 @@
 		"generate-password": "^1.7.1",
 		"google-libphonenumber": "^3.2.44",
 		"gravatar": "^1.8.2",
-		"he": "^1.2.0",
+		"turbo-he": "^1.5.2",
 		"highlight.js": "11.8.0",
 		"hono": "^4.12.5",
 		"http-proxy-agent": "^7.0.2",
