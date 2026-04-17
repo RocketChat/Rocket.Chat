@@ -87,7 +87,9 @@ const waitForPopupClose = (popup: Window, credentialToken: string) => {
 
 			settled = true;
 			cleanup();
-			closePopup(popup);
+			if (!popup.closed && popup.closed !== undefined) {
+				closePopup(popup);
+			}
 			resolve();
 		};
 
@@ -112,8 +114,7 @@ const waitForPopupClose = (popup: Window, credentialToken: string) => {
 
 		const checkPopupOpen = setInterval(() => {
 			if (popup.closed || popup.closed === undefined) {
-				cleanup();
-				resolve();
+				resolveLogin();
 			}
 		}, CAS_LOGIN_POPUP_POLL_INTERVAL_MS);
 
