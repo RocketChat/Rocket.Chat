@@ -18,4 +18,12 @@ runs:
       shell: bash
       if: steps.cache-playwright.outputs.cache-hit != 'true'
       working-directory: .
-      run: npx playwright install --with-deps
+      run: |
+        npx playwright install --with-deps
+
+        # Storybook test-runner bundles its own playwright-core version.
+        # Install its browser binary too, when present, to avoid missing
+        # chromium_headless_shell in CI storybook runs.
+        if [[ -f node_modules/@storybook/test-runner/node_modules/playwright-core/cli.js ]]; then
+          node node_modules/@storybook/test-runner/node_modules/playwright-core/cli.js install chromium-headless-shell
+        fi
