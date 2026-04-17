@@ -21,40 +21,43 @@ export const overrideLoginMethod = <TArgs extends any[]>(
 
 		const { process2faReturn } = await import('./process2faReturn');
 
-		await process2faReturn({
-			error,
-			result,
-			emailOrUsername: typeof loginArgs[0] === 'string' ? loginArgs[0] : undefined,
-			originalCallback: callback,
-			onCode: (code: string) => {
-				return new Promise<void>((resolve, reject) => {
-					loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined, result?: unknown) => {
-						if (!error) {
-							callback?.(undefined, result);
-							resolve();
-							return;
-						}
-
-						if (isTotpInvalidError(error)) {
-							reject(error);
-							return;
-						}
-
-						Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
-							if (isTotpMaxAttemptsError(error)) {
-								dispatchToastMessage({ type: 'error', message: t('totp-max-attempts') });
+		try {
+			await process2faReturn({
+				error,
+				result,
+				emailOrUsername: typeof loginArgs[0] === 'string' ? loginArgs[0] : undefined,
+				originalCallback: callback,
+				onCode: (code: string) => {
+					return new Promise<void>((resolve, reject) => {
+						loginMethodTOTP(...loginArgs, code, (error: LoginError | undefined, result?: unknown) => {
+							if (!error) {
+								callback?.(undefined, result);
 								resolve();
 								return;
 							}
 
-							dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
-							reject();
+							if (isTotpInvalidError(error)) {
+								reject(error);
+								return;
+							}
+
+							Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+								if (isTotpMaxAttemptsError(error)) {
+									dispatchToastMessage({ type: 'error', message: t('totp-max-attempts') });
+									reject(error);
+									return;
+								}
+
+								dispatchToastMessage({ type: 'error', message: t('Invalid_two_factor_code') });
+								reject(error);
+							});
 						});
 					});
-				});
-			}
-
-		});
+				},
+			});
+		} catch (error) {
+			callback?.(error as LoginError);
+		}
 	});
 };
 

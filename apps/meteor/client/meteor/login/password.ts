@@ -15,46 +15,45 @@ declare module 'meteor/meteor' {
 }
 
 export const loginWithPasswordAndTOTP = (
-  userDescriptor: { username: string } | { email: string } | { id: string } | string,
-  password: string,
-  code: string,
-  callback?: LoginCallback,
+	userDescriptor: { username: string } | { email: string } | { id: string } | string,
+	password: string,
+	code: string,
+	callback?: LoginCallback,
 ): Promise<void> => {
-  if (typeof userDescriptor === 'string') {
-    if (userDescriptor.indexOf('@') === -1) {
-      userDescriptor = { username: userDescriptor };
-    } else {
-      userDescriptor = { email: userDescriptor };
-    }
-  }
+	if (typeof userDescriptor === 'string') {
+		if (userDescriptor.indexOf('@') === -1) {
+			userDescriptor = { username: userDescriptor };
+		} else {
+			userDescriptor = { email: userDescriptor };
+		}
+	}
 
-  return new Promise<void>((resolve, reject) => {
-    Accounts.callLoginMethod({
-      methodArguments: [
-        {
-          totp: {
-            login: {
-              user: userDescriptor,
-              password: Accounts._hashPassword(password),
-            },
-            code,
-          },
-        },
-      ],
-      userCallback(error) {
-        if (!error) {
-          callback?.(undefined);
-          resolve();
-          return;
-        }
+	return new Promise<void>((resolve, reject) => {
+		Accounts.callLoginMethod({
+			methodArguments: [
+				{
+					totp: {
+						login: {
+							user: userDescriptor,
+							password: Accounts._hashPassword(password),
+						},
+						code,
+					},
+				},
+			],
+			userCallback(error) {
+				if (!error) {
+					callback?.(undefined);
+					resolve();
+					return;
+				}
 
-        callback?.(error);
-        resolve();
-      },
-    });
-  });
+				callback?.(error);
+				reject(error as Error);
+			},
+		});
+	});
 };
-
 
 const { loginWithPassword } = Meteor;
 
