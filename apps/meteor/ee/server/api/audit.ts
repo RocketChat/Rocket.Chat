@@ -1,6 +1,13 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
-import { isServerEventsAuditSettingsProps, ajv, ajvQuery } from '@rocket.chat/rest-typings';
+import {
+	isServerEventsAuditSettingsProps,
+	ajv,
+	ajvQuery,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
+} from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
@@ -96,55 +103,81 @@ API.v1.addRoute(
 	},
 );
 
+const auditSettingsResponseSchema = ajv.compile({
+	additionalProperties: false,
+	type: 'object',
+	properties: {
+		events: {
+			type: 'array',
+			items: {
+				type: 'object',
+				description: 'A setting-change audit event: who changed which setting, when, and the previous/current values.',
+				properties: {
+					_id: { type: 'string' },
+					t: {
+						type: 'string',
+						enum: ['settings.changed'],
+						description: 'Event type. Always `settings.changed` for this endpoint.',
+					},
+					ts: { type: 'string', format: 'date-time' },
+					actor: {
+						type: 'object',
+						description: 'Who performed the change. May be a user, an app, or the system.',
+						properties: {
+							type: { type: 'string', enum: ['user', 'app', 'system'] },
+							_id: { type: 'string' },
+							username: { type: 'string' },
+							ip: { type: 'string' },
+							useragent: { type: 'string' },
+							reason: { type: 'string' },
+						},
+						required: ['type'],
+					},
+					data: {
+						type: 'array',
+						description:
+							'Key/value pairs describing the change. For `settings.changed` events the keys are `id` (setting id), `previous` (prior value) and `current` (new value).',
+						items: {
+							type: 'object',
+							properties: {
+								key: { type: 'string', enum: ['id', 'previous', 'current'] },
+								value: {},
+							},
+							required: ['key'],
+						},
+					},
+				},
+				required: ['_id', 't', 'ts'],
+			},
+		},
+		count: {
+			type: 'number',
+			description: 'The number of events returned in this response.',
+		},
+		offset: {
+			type: 'number',
+			description: 'The number of events that were skipped in this response.',
+		},
+		total: {
+			type: 'number',
+			description: 'The total number of events that match the query.',
+		},
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
+	},
+	required: ['events', 'count', 'offset', 'total', 'success'],
+});
+
 API.v1.get(
 	'audit.settings',
 	{
 		response: {
-			200: ajv.compile({
-				additionalProperties: false,
-				type: 'object',
-				properties: {
-					events: {
-						type: 'array',
-						items: {
-							type: 'object',
-						},
-					},
-					count: {
-						type: 'number',
-						description: 'The number of events returned in this response.',
-					},
-					offset: {
-						type: 'number',
-						description: 'The number of events that were skipped in this response.',
-					},
-					total: {
-						type: 'number',
-						description: 'The total number of events that match the query.',
-					},
-					success: {
-						type: 'boolean',
-						description: 'Indicates if the request was successful.',
-					},
-				},
-				required: ['events', 'count', 'offset', 'total', 'success'],
-			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: {
-					success: {
-						type: 'boolean',
-						enum: [false],
-					},
-					error: {
-						type: 'string',
-					},
-					errorType: {
-						type: 'string',
-					},
-				},
-				required: ['success', 'error'],
-			}),
+			200: auditSettingsResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 		query: isServerEventsAuditSettingsProps,
 		authRequired: true,
