@@ -1,6 +1,7 @@
+import { useLongPress, usePress } from '@react-aria/interactions';
+import { mergeProps } from '@react-aria/utils';
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Button } from '@rocket.chat/fuselage';
-import { mergeProps, useLongPress, usePress } from 'react-aria';
 import { useTranslation } from 'react-i18next';
 
 type KeyProps = {

@@ -38,9 +38,9 @@ describe('usePruneWarningMessage hook', () => {
 					TTLChannels: 60000,
 				}),
 			});
-			expect(result.current).toEqual('a minute June 1, 2024 at 12:30 AM');
+			expect(result.current).toEqual('1 minute June 1, 2024 at 12:30 AM');
 			await jest.advanceTimersByTimeAsync(31 * 60 * 1000);
-			await waitFor(() => expect(result.current).toEqual('a minute June 1, 2024 at 1:00 AM'));
+			await waitFor(() => expect(result.current).toEqual('1 minute June 1, 2024 at 1:00 AM'));
 		});
 
 		it('Should return the default warning with precision set to every_hour', () => {
@@ -52,7 +52,7 @@ describe('usePruneWarningMessage hook', () => {
 					precision: '1',
 				}),
 			});
-			expect(result.current).toEqual('a minute June 1, 2024 at 1:00 AM');
+			expect(result.current).toEqual('1 minute June 1, 2024 at 1:00 AM');
 		});
 
 		it('Should return the default warning with precision set to every_six_hours', () => {
@@ -64,7 +64,7 @@ describe('usePruneWarningMessage hook', () => {
 					precision: '2',
 				}),
 			});
-			expect(result.current).toEqual('a minute June 1, 2024 at 6:00 AM');
+			expect(result.current).toEqual('1 minute June 1, 2024 at 6:00 AM');
 		});
 
 		it('Should return the default warning with precision set to every_day', () => {
@@ -76,7 +76,7 @@ describe('usePruneWarningMessage hook', () => {
 					precision: '3',
 				}),
 			});
-			expect(result.current).toEqual('a minute June 2, 2024 at 12:00 AM');
+			expect(result.current).toEqual('1 minute June 2, 2024 at 12:00 AM');
 		});
 
 		it('Should return the default warning with advanced precision', () => {
@@ -89,7 +89,7 @@ describe('usePruneWarningMessage hook', () => {
 					advancedPrecisionCron: '0 0 1 */1 *',
 				}),
 			});
-			expect(result.current).toEqual('a minute July 1, 2024 at 12:00 AM');
+			expect(result.current).toEqual('1 minute July 1, 2024 at 12:00 AM');
 		});
 	});
 
@@ -102,7 +102,7 @@ describe('usePruneWarningMessage hook', () => {
 					TTLChannels: 60000,
 				}),
 			});
-			expect(result.current).toEqual('a minute June 1, 2024 at 12:30 AM');
+			expect(result.current).toEqual('1 minute June 1, 2024 at 12:30 AM');
 		});
 
 		it('Should return the unpinned messages warning', () => {
@@ -114,7 +114,7 @@ describe('usePruneWarningMessage hook', () => {
 					doNotPrunePinned: true,
 				}),
 			});
-			expect(result.current).toEqual('Unpinned a minute June 1, 2024 at 12:30 AM');
+			expect(result.current).toEqual('Unpinned 1 minute June 1, 2024 at 12:30 AM');
 		});
 
 		it('Should return the files only warning', () => {
@@ -127,7 +127,7 @@ describe('usePruneWarningMessage hook', () => {
 					filesOnly: true,
 				}),
 			});
-			expect(result.current).toEqual('FilesOnly a minute June 1, 2024 at 12:30 AM');
+			expect(result.current).toEqual('FilesOnly 1 minute June 1, 2024 at 12:30 AM');
 		});
 
 		it('Should return the unpinned files only warning', () => {
@@ -141,7 +141,7 @@ describe('usePruneWarningMessage hook', () => {
 					doNotPrunePinned: true,
 				}),
 			});
-			expect(result.current).toEqual('UnpinnedFilesOnly a minute June 1, 2024 at 12:30 AM');
+			expect(result.current).toEqual('UnpinnedFilesOnly 1 minute June 1, 2024 at 12:30 AM');
 		});
 	});
 

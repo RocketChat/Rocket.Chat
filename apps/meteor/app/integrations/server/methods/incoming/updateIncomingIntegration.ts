@@ -1,10 +1,10 @@
+import { transformSync } from '@babel/core';
+import presetEnv from '@babel/preset-env';
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
-import { Babel } from 'meteor/babel-compiler';
 import { Meteor } from 'meteor/meteor';
-import _ from 'underscore';
 
 import { addUserRolesAsync } from '../../../../../server/lib/roles/addUserRoles';
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../../authorization/server/functions/hasPermission';
@@ -90,10 +90,15 @@ export const updateIncomingIntegration = async (
 
 		if (integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
 			try {
-				let babelOptions = Babel.getDefaultOptions({ runtime: false });
-				babelOptions = _.extend(babelOptions, { compact: true, minified: true, comments: false });
+				const result = transformSync(integration.script, {
+					presets: [presetEnv],
+					compact: true,
+					minified: true,
+					comments: false,
+				});
 
-				scriptCompiled = Babel.compile(integration.script, babelOptions).code;
+				// TODO: Webhook Integration Editor should inform the user if the script is compiled successfully
+				scriptCompiled = result?.code ?? undefined;
 				scriptError = undefined;
 				await Integrations.updateOne(
 					{ _id: integrationId },
