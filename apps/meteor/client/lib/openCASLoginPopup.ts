@@ -2,6 +2,15 @@ import { Meteor } from 'meteor/meteor';
 
 import { settings } from './settings';
 
+const CAS_LOGIN_POPUP_TIMEOUT_MS = 120_000;
+const CAS_LOGIN_POPUP_POLL_INTERVAL_MS = 100;
+const CAS_LOGIN_POPUP_MESSAGE = 'cas-login-complete';
+
+type CASPopupMessage = {
+	type: typeof CAS_LOGIN_POPUP_MESSAGE;
+	credentialToken: string;
+};
+
 const openCenteredPopup = (url: string, width: number, height: number) => {
 	const screenX = window.screenX ?? window.screenLeft;
 	const screenY = window.screenY ?? window.screenTop;
@@ -40,14 +49,77 @@ const getPopupUrl = (credentialToken: string): string => {
 	return url.href;
 };
 
-const waitForPopupClose = (popup: Window) => {
-	return new Promise<void>((resolve) => {
+const closePopup = (popup: Window): void => {
+	if (!popup.closed) {
+		popup.close();
+	}
+};
+
+const isCASPopupMessage = (message: unknown, credentialToken: string): message is CASPopupMessage => {
+	if (!message || typeof message !== 'object') {
+		return false;
+	}
+
+	return (
+		'type' in message &&
+		'credentialToken' in message &&
+		message.type === CAS_LOGIN_POPUP_MESSAGE &&
+		message.credentialToken === credentialToken
+	);
+};
+
+const waitForPopupClose = (popup: Window, credentialToken: string) => {
+	const appOrigin = window.location.origin;
+
+	return new Promise<void>((resolve, reject) => {
+		let settled = false;
+
+		const cleanup = () => {
+			clearInterval(checkPopupOpen);
+			clearTimeout(timeoutId);
+			window.removeEventListener('message', handleMessage);
+		};
+
+		const resolveLogin = () => {
+			if (settled) {
+				return;
+			}
+
+			settled = true;
+			cleanup();
+			closePopup(popup);
+			resolve();
+		};
+
+		const rejectLogin = () => {
+			if (settled) {
+				return;
+			}
+
+			settled = true;
+			cleanup();
+			closePopup(popup);
+			reject(new Error('CAS login popup timed out before completing authentication'));
+		};
+
+		const handleMessage = (event: MessageEvent) => {
+			if (event.origin !== appOrigin || !isCASPopupMessage(event.data, credentialToken)) {
+				return;
+			}
+
+			resolveLogin();
+		};
+
 		const checkPopupOpen = setInterval(() => {
 			if (popup.closed || popup.closed === undefined) {
-				clearInterval(checkPopupOpen);
+				cleanup();
 				resolve();
 			}
-		}, 100);
+		}, CAS_LOGIN_POPUP_POLL_INTERVAL_MS);
+
+		const timeoutId = setTimeout(rejectLogin, CAS_LOGIN_POPUP_TIMEOUT_MS);
+
+		window.addEventListener('message', handleMessage);
 	});
 };
 
@@ -58,5 +130,5 @@ export const openCASLoginPopup = async (credentialToken: string) => {
 	const popupUrl = getPopupUrl(credentialToken);
 	const popup = openCenteredPopup(popupUrl, popupWidth, popupHeight);
 
-	await waitForPopupClose(popup);
+	await waitForPopupClose(popup, credentialToken);
 };

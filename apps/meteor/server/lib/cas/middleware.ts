@@ -12,7 +12,12 @@ import { settings } from '../../../app/settings/server';
 
 const closePopup = function (res: ServerResponse): void {
 	res.writeHead(200, { 'Content-Type': 'text/html' });
-	const content = '<html><head><script>window.close()</script></head></html>';
+	const content =
+		'<html><head><script>' +
+		'if(window.opener){var token=window.location.pathname.split("/").slice(-1)[0];' +
+		'window.opener.postMessage({type:"cas-login-complete",credentialToken:token},window.location.origin);}' +
+		'window.close();' +
+		'</script></head></html>';
 	res.end(content, 'utf-8');
 };
 
