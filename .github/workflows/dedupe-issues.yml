@@ -1,5 +1,5 @@
 name: Rocket.Chat Issue Dedupe
-description: Automatically dedupe GitHub issues using AI
+
 on:
   issues:
     types: [opened]
@@ -27,7 +27,7 @@ jobs:
         with:
           prompt: '/dedupe ${{ github.repository }}/issues/${{ github.event.issue.number || inputs.issue_number }}'
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          claude_args: '--model claude-sonnet-4-5-20250929'
+          model: 'claude-sonnet-4-5-20250929'
           claude_env: |
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

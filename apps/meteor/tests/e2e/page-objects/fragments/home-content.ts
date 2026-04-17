@@ -321,6 +321,10 @@ export class HomeContent {
 		return this.menuMore.getByRole('menuitem', { name: 'Star', exact: true });
 	}
 
+	get btnOptionReplyInDm(): Locator {
+		return this.menuMore.getByRole('menuitem', { name: 'Reply in direct message', exact: true });
+	}
+
 	get btnVoiceCall(): Locator {
 		return this.primaryRoomActionsToolbar.getByRole('button', { name: 'Voice call' });
 	}
