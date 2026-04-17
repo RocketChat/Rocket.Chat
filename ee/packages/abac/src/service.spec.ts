@@ -1215,6 +1215,7 @@ describe('AbacService (unit)', () => {
 			mockFindAllPrivateRoomsWithAbacAttributes.mockReset();
 			mockUsersFindActiveByRoomIds.mockReset();
 			mockQueueWork.mockReset();
+			mockRoomRemoveUserFromRoom.mockReset();
 		});
 
 		it('queues one persistent removal job per non-compliant user-room pair', async () => {
@@ -1246,6 +1247,43 @@ describe('AbacService (unit)', () => {
 				uid: 'u1',
 				reason: 'virtru-pdp-sync',
 			});
+		});
+
+		it('falls back to immediate removal when enqueue fails', async () => {
+			(service as any).pdp = {
+				isAvailable: jest.fn().mockResolvedValue(true),
+				evaluateUserRooms: jest.fn().mockResolvedValue([
+					{
+						user: { _id: 'u1', username: 'u1', emails: [{ address: 'u1@example.com' }] },
+						room: { _id: 'r1', t: 'p', abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+					},
+				]),
+			};
+
+			mockFindAllPrivateRoomsWithAbacAttributes.mockReturnValue({
+				toArray: async () => [{ _id: 'r1', t: 'p', abacAttributes: [{ key: 'dept', values: ['eng'] }] }],
+			});
+
+			mockUsersFindActiveByRoomIds.mockReturnValue({
+				map: () => ({
+					toArray: async () => [{ _id: 'u1', username: 'u1', emails: [{ address: 'u1@example.com' }], __rooms: ['r1'] }],
+				}),
+			});
+
+			mockQueueWork.mockRejectedValueOnce(new Error('queue down'));
+			mockRoomRemoveUserFromRoom.mockResolvedValue(undefined);
+
+			await service.evaluateRoomMembership();
+
+			expect(mockQueueWork).toHaveBeenCalledTimes(1);
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledWith(
+				'r1',
+				{ _id: 'u1', username: 'u1', emails: [{ address: 'u1@example.com' }] },
+				{
+					skipAppPreEvents: true,
+					customSystemMessage: 'abac-removed-user-from-room',
+				},
+			);
 		});
 	});
 

@@ -862,6 +862,8 @@ export class AbacService extends ServiceClass implements IAbacService {
 						uid: user._id,
 						err,
 					});
+
+					await this.removeUserFromRoom(room, user, 'virtru-pdp-sync');
 				}
 			}
 		} catch (err) {
