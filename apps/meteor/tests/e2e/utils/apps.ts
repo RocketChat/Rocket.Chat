@@ -13,7 +13,7 @@ export async function insertDefaultTestApp(): Promise<void> {
 
 	const headers = {
 		'X-Auth-Token': Users.admin.data.loginToken,
-		'X-User-Id': Users.admin.data.username,
+		'X-User-Id': Users.admin.data._id,
 	};
 
 	await api.post(`${BASE_URL}/api/apps`, { data: { url: APP_URL }, headers });
@@ -25,7 +25,7 @@ export async function installLocalTestPackage(packagePath: string): Promise<{ ap
 
 	const headers = {
 		'X-Auth-Token': Users.admin.data.loginToken,
-		'X-User-Id': Users.admin.data.username,
+		'X-User-Id': Users.admin.data._id,
 	};
 
 	const response = await api.post(`${BASE_URL}/api/apps`, { multipart: { app: fs.createReadStream(packagePath) }, headers });
@@ -40,7 +40,7 @@ export async function uninstallApp(appId: string): Promise<void> {
 
 	const headers = {
 		'X-Auth-Token': Users.admin.data.loginToken,
-		'X-User-Id': Users.admin.data.username,
+		'X-User-Id': Users.admin.data._id,
 	};
 
 	const response = await api.delete(`${BASE_URL}/api/apps/${appId}`, { headers });
