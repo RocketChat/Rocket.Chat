@@ -23,6 +23,40 @@ import { API } from '../api';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUploadFormData } from '../lib/getUploadFormData';
 
+const createCustomSoundsResponse = ajv.compile<{ sound: Pick<ICustomSound, '_id'>; success: boolean }>({
+	additionalProperties: false,
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
+		sound: {
+			type: 'object',
+			properties: {
+				_id: {
+					type: 'string',
+					description: 'The ID of the sound.',
+				},
+			},
+			required: ['_id'],
+		},
+	},
+	required: ['success', 'sound'],
+});
+
+const updateCustomSoundsResponse = ajv.compile<{ success: boolean }>({
+	additionalProperties: false,
+	type: 'object',
+	properties: {
+		success: {
+			type: 'boolean',
+			description: 'Indicates if the request was successful.',
+		},
+	},
+	required: ['success'],
+});
+
 const customSoundsEndpoints = API.v1
 	.get(
 		'custom-sounds.list',
@@ -136,27 +170,7 @@ const customSoundsEndpoints = API.v1
 		'custom-sounds.create',
 		{
 			response: {
-				200: ajv.compile<{ sound: Pick<ICustomSound, '_id'>; success: boolean }>({
-					additionalProperties: false,
-					type: 'object',
-					properties: {
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-						sound: {
-							type: 'object',
-							properties: {
-								_id: {
-									type: 'string',
-									description: 'The ID of the sound.',
-								},
-							},
-							required: ['_id'],
-						},
-					},
-					required: ['success', 'sound'],
-				}),
+				200: createCustomSoundsResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
@@ -197,17 +211,7 @@ const customSoundsEndpoints = API.v1
 		'custom-sounds.update',
 		{
 			response: {
-				200: ajv.compile<{ success: boolean }>({
-					additionalProperties: false,
-					type: 'object',
-					properties: {
-						success: {
-							type: 'boolean',
-							description: 'Indicates if the request was successful.',
-						},
-					},
-					required: ['success'],
-				}),
+				200: updateCustomSoundsResponse,
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
 				403: validateForbiddenErrorResponse,
@@ -232,7 +236,9 @@ const customSoundsEndpoints = API.v1
 				return API.v1.failure('MIME type not allowed');
 			}
 
-			if (fileBuffer && !fields.extension) return API.v1.failure('Extension required');
+			if (fileBuffer && !fields.extension) {
+				return API.v1.failure('Extension required');
+			}
 
 			const soundToUpdate = await CustomSounds.findOneById<Pick<ICustomSound, '_id' | 'name' | 'extension'>>(fields._id, {
 				projection: { _id: 1, name: 1, extension: 1 },
@@ -259,11 +265,11 @@ const customSoundsEndpoints = API.v1
 					previousName: soundToUpdate.name,
 					previousExtension: soundToUpdate.extension,
 				});
+				return API.v1.success({});
 			} catch (error) {
 				SystemLogger.error({ error });
 				return API.v1.failure(error instanceof Error ? error.message : 'Unknown error');
 			}
-			return API.v1.success({});
 		},
 	);
 
