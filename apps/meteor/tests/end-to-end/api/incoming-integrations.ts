@@ -367,6 +367,30 @@ describe('[Incoming Integrations]', () => {
 		describe('Script integration tests', () => {
 			let withScript: IIntegration;
 			let withScriptDefaultContentType: IIntegration;
+			let withSkipTranspile: IIntegration;
+
+			const sloppyModeScript =
+				'const buildMessage = (obj) => {\n' +
+				'  \n' +
+				'    const template = `[#VALUE](${ obj.test })`;\n' +
+				'  \n' +
+				'    return {\n' +
+				'      text: template\n' +
+				'    };\n' +
+				'  };\n' +
+				'  \n' +
+				'  class Script {\n' +
+				'    process_incoming_request({ request }) {\n' +
+				'      msg = buildMessage(request.content);\n' +
+				'  \n' +
+				'      return {\n' +
+				'        content:{\n' +
+				'              text: msg.text\n' +
+				'        }\n' +
+				'      };\n' +
+				'    }\n' +
+				'  }\n' +
+				'					\n';
 
 			before(async () => {
 				await updatePermission('manage-incoming-integrations', ['admin']);
@@ -410,35 +434,38 @@ describe('[Incoming Integrations]', () => {
 						scriptEnabled: true,
 						overrideDestinationChannelEnabled: false,
 						channel: '#general',
-						script:
-							'const buildMessage = (obj) => {\n' +
-							'  \n' +
-							'    const template = `[#VALUE](${ obj.test })`;\n' +
-							'  \n' +
-							'    return {\n' +
-							'      text: template\n' +
-							'    };\n' +
-							'  };\n' +
-							'  \n' +
-							'  class Script {\n' +
-							'    process_incoming_request({ request }) {\n' +
-							'      msg = buildMessage(request.content);\n' +
-							'  \n' +
-							'      return {\n' +
-							'        content:{\n' +
-							'              text: msg.text\n' +
-							'        }\n' +
-							'      };\n' +
-							'    }\n' +
-							'  }\n' +
-							'					\n',
+						script: sloppyModeScript,
 					})
 					.expect(200);
 				withScriptDefaultContentType = res2.body.integration;
+
+				// Same script but with skipTranspile: true — no Babel, class methods
+				// run in strict mode so `msg = buildMessage(...)` throws ReferenceError.
+				const res3 = await request
+					.post(api('integrations.create'))
+					.set(credentials)
+					.send({
+						type: 'webhook-incoming',
+						name: 'Incoming test with skipTranspile',
+						enabled: true,
+						alias: 'test',
+						username: 'rocket.cat',
+						scriptEnabled: true,
+						skipTranspile: true,
+						overrideDestinationChannelEnabled: false,
+						channel: '#general',
+						script: sloppyModeScript,
+					})
+					.expect(200);
+				withSkipTranspile = res3.body.integration;
 			});
 
 			after(async () => {
-				await Promise.all([removeIntegration(withScript._id, 'incoming'), removeIntegration(withScriptDefaultContentType._id, 'incoming')]);
+				await Promise.all([
+					removeIntegration(withScript._id, 'incoming'),
+					removeIntegration(withScriptDefaultContentType._id, 'incoming'),
+					removeIntegration(withSkipTranspile._id, 'incoming'),
+				]);
 			});
 
 			it('should send a message if the payload is a application/x-www-form-urlencoded JSON AND the integration has a valid script', async () => {
@@ -486,64 +513,18 @@ describe('[Incoming Integrations]', () => {
 				expect(messagesResult.body).to.have.property('messages').and.to.be.an('array');
 				expect(!!(messagesResult.body.messages as IMessage[]).find((m) => m.msg === '[#VALUE](test)')).to.be.true;
 			});
-		});
 
-		describe('skipTranspile flag', () => {
-			let withoutTranspile: IIntegration;
-
-			before(async () => {
-				await updatePermission('manage-incoming-integrations', ['admin']);
-
-				// This script uses an implicit global assignment (`msg = buildMessage(...)`)
-				// which works when Babel transpiles classes to functions (sloppy mode) but
-				// fails in native ES6 class methods (strict mode) when transpilation is off.
-				const res = await request
-					.post(api('integrations.create'))
-					.set(credentials)
-					.send({
-						type: 'webhook-incoming',
-						name: 'Incoming test without transpile (sloppy-mode script)',
-						enabled: true,
-						alias: 'test',
-						username: 'rocket.cat',
-						scriptEnabled: true,
-						skipTranspile: true,
-						overrideDestinationChannelEnabled: false,
-						channel: '#general',
-						script:
-							'const buildMessage = (obj) => {\n' +
-							'    const template = `[#VALUE](${ obj.test })`;\n' +
-							'    return { text: template };\n' +
-							'};\n' +
-							'\n' +
-							'class Script {\n' +
-							'    process_incoming_request({ request }) {\n' +
-							'        msg = buildMessage(request.content);\n' +
-							'        return { content: { text: msg.text } };\n' +
-							'    }\n' +
-							'}\n',
-					})
-					.expect(200);
-				withoutTranspile = res.body.integration;
+			it('should create the skipTranspile integration with scriptCompiled and no scriptError', () => {
+				expect(withSkipTranspile).to.have.property('scriptCompiled');
+				expect(withSkipTranspile).to.not.have.property('scriptError');
+				expect(withSkipTranspile).to.have.property('skipTranspile', true);
 			});
 
-			after(async () => {
-				if (withoutTranspile) {
-					await removeIntegration(withoutTranspile._id, 'incoming');
-				}
-			});
-
-			it('should create the integration with scriptCompiled and skipTranspile true', () => {
-				expect(withoutTranspile).to.have.property('scriptCompiled');
-				expect(withoutTranspile).to.not.have.property('scriptError');
-				expect(withoutTranspile).to.have.property('skipTranspile', true);
-			});
-
-			it('should fail to execute a sloppy-mode script when skipTranspile is true', async () => {
+			it('should fail to execute the same sloppy-mode script when skipTranspile is true', async () => {
 				const payload = { test: 'test' };
 
 				await request
-					.post(`/hooks/${withoutTranspile._id}/${withoutTranspile.token}`)
+					.post(`/hooks/${withSkipTranspile._id}/${withSkipTranspile.token}`)
 					.set('Content-Type', 'application/json')
 					.send(JSON.stringify(payload))
 					.expect(500);
