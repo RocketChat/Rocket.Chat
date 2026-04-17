@@ -1,6 +1,5 @@
-import type { Page } from '@playwright/test';
-
 import { faker } from '@faker-js/faker';
+import type { Page } from '@playwright/test';
 
 import { ADMIN_CREDENTIALS } from './config/constants';
 import { Users } from './fixtures/userStates';

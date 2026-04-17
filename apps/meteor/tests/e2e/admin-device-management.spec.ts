@@ -36,7 +36,11 @@ test.describe('Admin Device Management Page', () => {
 				await confirmDialog.waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => undefined);
 			}
 
-			await page.locator('#modal-root .rcx-modal__backdrop:visible').first().waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => undefined);
+			await page
+				.locator('#modal-root .rcx-modal__backdrop:visible')
+				.first()
+				.waitFor({ state: 'hidden', timeout: 5_000 })
+				.catch(() => undefined);
 
 			if (!uniqueIdDialogVisible && !confirmDialogVisible) {
 				return;
