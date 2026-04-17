@@ -332,8 +332,10 @@ API.v1.addRoute(
 			}
 
 			const filter = {
-				...query,
 				rid: room._id,
+				...Object.fromEntries(
+					Object.entries(query).filter(([key]) => key !== 'rid'),
+				),
 				...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 				...(typeGroup ? { typeGroup } : {}),
 				...(onlyConfirmed && { expiresAt: { $exists: false } }),
@@ -504,7 +506,9 @@ API.v1.addRoute(
 
 			const ourQuery = {
 				rid: room._id,
-				...query,
+				...Object.fromEntries(
+					Object.entries(query).filter(([key]) => key !== 'rid'),
+				),
 				...parseIds(mentionIds, 'mentions._id'),
 				...parseIds(starredIds, 'starred._id'),
 				...(pinned && pinned.toLowerCase() === 'true' ? { pinned: true } : {}),
@@ -554,7 +558,7 @@ API.v1.addRoute(
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
-			const ourQuery = Object.assign({}, query, { rid: room._id });
+			const ourQuery = { rid: room._id, ...Object.fromEntries(Object.entries(query).filter(([key]) => key !== 'rid')) };
 
 			const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
 				sort: sort || { ts: -1 },
