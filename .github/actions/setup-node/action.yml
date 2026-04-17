@@ -3,8 +3,8 @@ description: 'Setup NodeJS'
 
 inputs:
   node-version:
-    required: true
-    description: 'Node version'
+    required: false
+    description: 'Node version. If not provided, read from package.json engines.node'
   cache-modules:
     required: false
     description: 'Cache node_modules'
@@ -16,8 +16,8 @@ inputs:
     description: 'development or production'
     default: 'development'
   deno-version:
-    required: true
-    description: 'Deno version'
+    required: false
+    description: 'Deno version. If not provided, read from .tool-versions'
   NPM_TOKEN:
     required: false
     description: 'NPM token'
@@ -38,6 +38,23 @@ runs:
   using: composite
 
   steps:
+    - name: Resolve tool versions
+      shell: bash
+      run: |
+        NODE_VERSION="${{ inputs.node-version }}"
+        if [ -z "$NODE_VERSION" ]; then
+          NODE_VERSION=$(node -p "require('./package.json').engines.node")
+        fi
+        echo "NODE_VERSION: ${NODE_VERSION}"
+        echo "NODE_VERSION=${NODE_VERSION}" >> $GITHUB_ENV
+
+        DENO_VERSION="${{ inputs.deno-version }}"
+        if [ -z "$DENO_VERSION" ]; then
+          DENO_VERSION=$(awk '$1=="deno"{ print $2 }' .tool-versions)
+        fi
+        echo "DENO_VERSION: ${DENO_VERSION}"
+        echo "DENO_VERSION=${DENO_VERSION}" >> $GITHUB_ENV
+
     # Turbo local cache: use rharkor/caching-for-turbo in workflows — not stored here to avoid huge redundant keys.
     - name: Cache Deno (apps-engine)
       if: inputs.cache-modules
@@ -45,21 +62,21 @@ runs:
       uses: actions/cache@v5
       with:
         path: packages/apps-engine/.deno-cache
-        key: deno-${{ runner.os }}-${{ runner.arch }}-v${{ inputs.deno-version }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
+        key: deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-${{ hashFiles('packages/apps-engine/deno-runtime/deno.lock') }}
         restore-keys: |
-          deno-${{ runner.os }}-${{ runner.arch }}-v${{ inputs.deno-version }}-
+          deno-${{ runner.os }}-${{ runner.arch }}-v${{ env.DENO_VERSION }}-
 
-    - name: Use Node.js ${{ inputs.node-version }}
+    - name: Use Node.js ${{ env.NODE_VERSION }}
       id: node-version
       uses: actions/setup-node@v6.0.0
       with:
-        node-version: ${{ inputs.node-version }}
+        node-version: ${{ env.NODE_VERSION }}
         cache: ${{ inputs.cache-modules && 'yarn' || '' }}
 
-    - name: Use Deno ${{ inputs.deno-version }}
+    - name: Use Deno ${{ env.DENO_VERSION }}
       uses: denoland/setup-deno@667a34cdef165d8d2b2e98dde39547c9daac7282 # v2.0.4
       with:
-        deno-version: ${{ inputs.deno-version }}
+        deno-version: ${{ env.DENO_VERSION }}
 
     - name: Cache mongodb-memory-server binary
       if: inputs.cache-modules
