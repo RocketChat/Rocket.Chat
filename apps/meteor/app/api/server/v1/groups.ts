@@ -1,7 +1,7 @@
 import { Team, isMeteorError } from '@rocket.chat/core-services';
 import type { IIntegration, IUser, IRoom, RoomType, UserStatus } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
-import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps } from '@rocket.chat/rest-typings';
+import { isGroupsOnlineProps, isGroupsMessagesProps, isGroupsFilesProps, isGroupsListProps } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -81,12 +81,12 @@ async function findPrivateGroupByIdOrName({
 	userId,
 }: {
 	params:
-		| {
-				roomId?: string;
-		  }
-		| {
-				roomName?: string;
-		  };
+	| {
+		roomId?: string;
+	}
+	| {
+		roomName?: string;
+	};
 	userId: string;
 	checkedArchived?: boolean;
 }): Promise<{
@@ -653,7 +653,7 @@ API.v1.addRoute(
 // List Private Groups a user has access to
 API.v1.addRoute(
 	'groups.list',
-	{ authRequired: true },
+	{ authRequired: true, validateParams: isGroupsListProps },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
@@ -692,7 +692,7 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'groups.listAll',
-	{ authRequired: true, permissionsRequired: ['view-room-administration'] },
+	{ authRequired: true, permissionsRequired: ['view-room-administration'], validateParams: isGroupsListProps },
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
