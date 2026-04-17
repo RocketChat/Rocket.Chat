@@ -119,4 +119,12 @@ export class AccountProfile extends Account {
 	get btnDeleteMyAccount(): Locator {
 		return this.page.getByRole('button', { name: 'Delete my account' });
 	}
+
+	private getErrorAlertByText(text: string): Locator {
+		return this.page.getByRole('alert').filter({ hasText: text });
+	}
+
+	get errorInvalidUrl(): Locator {
+		return this.getErrorAlertByText('Invalid image URL');
+	}
 }

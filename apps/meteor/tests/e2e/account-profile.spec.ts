@@ -58,12 +58,18 @@ test.describe.serial('settings-account-profile', () => {
 				await expect(poAccountProfile.userAvatarEditor).toHaveAttribute('src');
 			});
 
-			test('should display a skeleton if the image url is not valid', async () => {
+			test('should show inline error if the image url is not valid', async () => {
 				await poAccountProfile.inputAvatarLink.fill('https://invalidUrl');
 				await poAccountProfile.btnSetAvatarLink.click();
 
-				await poAccountProfile.btnSubmit.click();
-				await expect(poAccountProfile.userAvatarEditor).not.toHaveAttribute('src');
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
+			});
+
+			test('should show inline error if url does not point to an image', async () => {
+				await poAccountProfile.inputAvatarLink.fill('https://google.com');
+				await poAccountProfile.btnSetAvatarLink.click();
+
+				await expect(poAccountProfile.errorInvalidUrl).toBeVisible();
 			});
 		});
 	});

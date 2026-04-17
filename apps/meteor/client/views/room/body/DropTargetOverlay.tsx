@@ -75,11 +75,11 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 			justifyContent='center'
 			fontScale='hero'
 			textAlign='center'
-			backgroundColor='rgba(255, 255, 255, 0.8)'
+			backgroundColor='surface-overlay'
 			borderWidth={4}
 			borderStyle='dashed'
 			borderColor='currentColor'
-			color={enabled ? 'primary' : 'danger'}
+			color={enabled ? 'default' : 'danger'}
 			className={css`
 				animation-name: zoom-in;
 				animation-duration: 0.1s;

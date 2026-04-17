@@ -22,7 +22,13 @@ import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { sendSimpleMessage, deleteMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
-import { getSettingValueById, updateEEPermission, updatePermission, updateSetting } from '../../data/permissions.helper';
+import {
+	getSettingValueById,
+	restorePermissionToRoles,
+	updateEEPermission,
+	updatePermission,
+	updateSetting,
+} from '../../data/permissions.helper';
 import { assignRoleToUser, createCustomRole, deleteCustomRole } from '../../data/roles.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -3939,7 +3945,11 @@ describe('[Rooms]', () => {
 					deleteRoom({ type: 'c', roomId: publicChannelInPrivateTeam._id }),
 				]);
 
-				await Promise.all([deleteTeam(credentials, publicTeam.name), deleteTeam(credentials, privateTeam.name)]);
+				await Promise.all([
+					deleteTeam(credentials, publicTeam.name),
+					deleteTeam(credentials, privateTeam.name),
+					restorePermissionToRoles('view-c-room'),
+				]);
 
 				await Promise.all([deleteUser(outsiderUser), deleteUser(insideUser), deleteUser(nonTeamUser)]);
 			});
