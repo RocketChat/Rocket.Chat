@@ -30375,7 +30375,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth2@npm:1.x.x":
+"passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.8.0":
   version: 1.8.0
   resolution: "passport-oauth2@npm:1.8.0"
   dependencies:
@@ -33614,6 +33614,7 @@ __metadata:
     eslint: "npm:~9.39.3"
     eslint-plugin-you-dont-need-lodash-underscore: "npm:~6.14.0"
     node-gyp: "npm:^10.2.0"
+    passport-oauth2: "npm:^1.8.0"
     ts-node: "npm:^10.9.2"
     turbo: "npm:2.8.12"
     typescript: "npm:~5.9.3"

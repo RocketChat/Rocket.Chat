@@ -4,16 +4,23 @@ import type {
 	LinkedinOAuthConfiguration,
 	OAuthConfiguration,
 	TwitterOAuthConfiguration,
+	IUser,
 } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
+import { Accounts } from 'meteor/accounts-base';
+import passport from 'passport';
+import type { DoneCallback, Profile } from 'passport';
 
 import { logger } from './logger';
+import { verifyFunction } from './verifyFunction';
+import { CustomOAuthStrategy } from '../../../app/custom-oauth/server/customOAuth';
 import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
 import {
 	notifyOnLoginServiceConfigurationChanged,
 	notifyOnLoginServiceConfigurationChangedByService,
 } from '../../../app/lib/server/lib/notifyListener';
 import { settings } from '../../../app/settings/server/cached';
+import { oAuthRouter } from '../../configuration/configurePassport';
 
 export async function updateOAuthServices(): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
@@ -68,7 +75,7 @@ export async function updateOAuthServices(): Promise<void> {
 				data.rolesToSync = settings.get(`${key}-roles_to_sync`);
 				data.showButton = settings.get(`${key}-show_button`);
 
-				new CustomOAuth(serviceKey, {
+				const config = {
 					serverURL: data.serverURL,
 					tokenPath: data.tokenPath,
 					identityPath: data.identityPath,
@@ -93,7 +100,54 @@ export async function updateOAuthServices(): Promise<void> {
 					rolesToSync: data.rolesToSync,
 					accessTokenParam: data.accessTokenParam,
 					showButton: data.showButton,
-				});
+					clientSecret: data.secret,
+					clientId: data.clientId,
+				};
+
+				new CustomOAuth(serviceKey, config);
+
+				passport.unuse(serviceKey);
+
+				passport.use(
+					serviceKey,
+					new CustomOAuthStrategy(
+						serviceKey,
+						config as OAuthConfiguration & { clientSecret: string },
+						(accessToken: string, refreshToken: string, profile: Profile, done: DoneCallback) =>
+							verifyFunction(accessToken, refreshToken, profile, done, serviceKey),
+					),
+				);
+
+				oAuthRouter.get(
+					`/oauth/${serviceKey}`,
+					passport.authenticate(serviceKey, { scope: config.scope, prompt: 'consent', failureRedirect: '/login' }),
+				);
+
+				oAuthRouter.get(
+					`/oauth/${serviceKey}/callback`,
+					passport.authenticate(serviceKey, { failureRedirect: '/login', failureFlash: true, failWithError: true }),
+					async (req, res) => {
+						console.log('req -> user', req.user);
+						console.log('YAY!!!');
+						const oAuthUser = req.user as IUser;
+
+						if (!oAuthUser) {
+							// return res.redirect('/login');
+							return res.redirect('/noOauthUser');
+						}
+
+						const stampedToken = Accounts._generateStampedLoginToken();
+						await Accounts._insertLoginToken(oAuthUser._id, stampedToken);
+
+						res.redirect(`/home?resumeToken=${stampedToken.token}`);
+
+						req.session.destroy((err) => {
+							if (err) {
+								console.error('Error destroying session', err);
+							}
+						});
+					},
+				);
 			}
 			if (serviceName === 'Facebook') {
 				(data as FacebookOAuthConfiguration).appId = data.clientId as string;
