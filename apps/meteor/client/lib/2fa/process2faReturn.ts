@@ -131,6 +131,7 @@ export const invokeTwoFactorModal = async (
 
 	return new Promise<string>((resolve, reject) => {
 		let isResolved = false;
+		let isClosed = false;
 
 		imperativeModal.open({
 			component: TwoFactorModal,
@@ -145,6 +146,10 @@ export const invokeTwoFactorModal = async (
 					resolve(method === 'password' ? SHA256(code) : code);
 				},
 				onClose: (): void => {
+					if (isClosed) {
+						return;
+					}
+					isClosed = true;
 					imperativeModal.close();
 					if (!isResolved) {
 						Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
