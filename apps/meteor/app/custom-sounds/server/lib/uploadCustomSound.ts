@@ -11,7 +11,10 @@ export const uploadCustomSound = async (
 	soundData: RequiredField<ICustomSoundData, '_id'>,
 ): Promise<void> => {
 	const rs = RocketChatFile.bufferToStream(buffer);
-	await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
+
+	if (soundData.previousExtension) {
+		await RocketChatFileCustomSoundsInstance.deleteFile(`${soundData._id}.${soundData.previousExtension}`);
+	}
 
 	return new Promise((resolve, reject) => {
 		const ws = RocketChatFileCustomSoundsInstance.createWriteStream(`${soundData._id}.${soundData.extension}`, contentType);
