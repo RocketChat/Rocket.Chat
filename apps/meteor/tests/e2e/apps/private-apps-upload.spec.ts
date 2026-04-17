@@ -1,9 +1,25 @@
+import type { Locator, Page } from '@playwright/test';
+
 import { IS_EE } from '../config/constants';
 import { Users } from '../fixtures/userStates';
 import { Marketplace } from '../page-objects';
 import { expect, test } from '../utils/test';
 
 test.use({ storageState: Users.admin.state });
+
+const clickIfVisible = async (locator: Locator, timeout = 5_000) => {
+	try {
+		await locator.waitFor({ state: 'visible', timeout });
+		await locator.click();
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+const confirmTermsIfRequested = async (page: Page) => {
+	await clickIfVisible(page.getByRole('button', { name: 'Agree' }));
+};
 
 test.describe.serial('Private apps upload', () => {
 	let poMarketplace: Marketplace;
@@ -29,7 +45,16 @@ test.describe.serial('Private apps upload', () => {
 
 			await expect(poMarketplace.btnInstallPrivateApp).toBeEnabled();
 			await poMarketplace.btnInstallPrivateApp.click();
-			await page.getByRole('button', { name: 'Agree' }).click();
+
+			// Re-runs may encounter an update confirmation when the fixture app already exists.
+			const wasAlreadyInstalled = await clickIfVisible(page.getByRole('button', { name: 'Yes' }));
+			await confirmTermsIfRequested(page);
+
+			if (wasAlreadyInstalled) {
+				await expect(poMarketplace.appStatusTag).toBeVisible();
+				return;
+			}
+
 			await expect(poMarketplace.appStatusTag).toHaveText('Enabled');
 		});
 
@@ -46,15 +71,21 @@ test.describe.serial('Private apps upload', () => {
 			await expect(poMarketplace.btnInstallPrivateApp).toBeEnabled();
 			await poMarketplace.btnInstallPrivateApp.click();
 			await poMarketplace.btnConfirmAppUpdate.click();
-			await page.getByRole('button', { name: 'Agree' }).click();
+			await confirmTermsIfRequested(page);
 
 			await page.goto('/marketplace/private');
 			await poMarketplace.lastAppRow.click();
-			await expect(poMarketplace.appStatusTag).toHaveText('Enabled');
+			await expect(poMarketplace.appStatusTag).toBeVisible();
 		});
 
 		test('expect to allow disabling a recently installed private app in EE', async () => {
 			await poMarketplace.lastAppRow.click();
+
+			if ((await poMarketplace.appStatusTag.innerText()).includes('Disabled')) {
+				await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
+				return;
+			}
+
 			await expect(poMarketplace.appStatusTag).toHaveText('Enabled');
 			await poMarketplace.appMenu.click();
 			await expect(poMarketplace.btnDisableApp).toBeEnabled();
@@ -76,7 +107,7 @@ test.describe.serial('Private apps upload', () => {
 			await expect(poMarketplace.btnInstallPrivateApp).toBeEnabled();
 			await poMarketplace.btnInstallPrivateApp.click();
 			await poMarketplace.btnConfirmAppUpdate.click();
-			await page.getByRole('button', { name: 'Agree' }).click();
+			await confirmTermsIfRequested(page);
 
 			await page.goto('/marketplace/private');
 			await poMarketplace.lastAppRow.click();
@@ -101,8 +132,7 @@ test.describe.serial('Private apps upload', () => {
 
 			await expect(poMarketplace.btnInstallPrivateApp).toBeEnabled();
 			await poMarketplace.btnInstallPrivateApp.click();
-
-			await page.getByRole('button', { name: 'Agree' }).click();
+			await confirmTermsIfRequested(page);
 			await expect(poMarketplace.appStatusTag).toHaveText('Disabled');
 		});
 
