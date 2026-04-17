@@ -86,6 +86,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, emailOrUsername }: TwoFactorE
 									autoComplete='one-time-code'
 									inputMode='numeric'
 									disabled={isSubmitting}
+									error={errors.code?.message}
 								/>
 							)}
 						/>

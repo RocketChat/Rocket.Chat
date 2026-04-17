@@ -60,7 +60,9 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose }: TwoFactorPasswordModalPr
 							name='password'
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Password') }) }}
-							render={({ field }) => <PasswordInput {...field} placeholder={t('Password')} disabled={isSubmitting} />}
+							render={({ field }) => (
+								<PasswordInput {...field} placeholder={t('Password')} disabled={isSubmitting} error={errors.password?.message} />
+							)}
 						/>
 					</FieldRow>
 					{errors.password && <FieldError>{errors.password.message}</FieldError>}

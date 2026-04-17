@@ -71,6 +71,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss }: TwoFactorTotpModa
 									autoComplete='one-time-code'
 									inputMode='numeric'
 									disabled={isSubmitting}
+									error={errors.code?.message}
 								/>
 							)}
 						/>
