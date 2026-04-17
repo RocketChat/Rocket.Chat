@@ -148,7 +148,14 @@ export class Navbar {
 	}
 
 	async typeSearch(name: string): Promise<void> {
-		return this.searchInput.fill(name);
+		const openSidebarButton = this.btnSidebarToggler();
+		if (await openSidebarButton.isVisible().catch(() => false)) {
+			await openSidebarButton.click();
+		}
+
+		await expect(this.searchInput).toBeVisible({ timeout: 15_000 });
+		await this.searchInput.fill('');
+		await this.searchInput.fill(name);
 	}
 
 	async waitForChannel(): Promise<void> {
