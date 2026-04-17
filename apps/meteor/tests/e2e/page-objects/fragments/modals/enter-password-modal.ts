@@ -19,9 +19,21 @@ export class EnterPasswordModal extends Modal {
 		return this.root.getByRole('button', { name: 'Verify' });
 	}
 
-	async enterPassword(password: string): Promise<void> {
+	async enterPassword(password: string, options?: { optional?: boolean; timeout?: number }): Promise<boolean> {
+		const { optional = false, timeout = 15_000 } = options ?? {};
+
+		if (optional) {
+			try {
+				await this.root.waitFor({ state: 'visible', timeout });
+			} catch {
+				return false;
+			}
+		}
+
 		await this.inputPassword.fill(password);
 		await this.btnVerify.click();
 		await this.waitForDismissal();
+
+		return true;
 	}
 }
