@@ -8,6 +8,9 @@ import { getExternalWaiter, type PromiseWaiterData } from '../../utils/getExtern
 
 const DATA_CHANNEL_LABEL = 'rocket.chat';
 type P2PCommand = 'mute' | 'unmute' | 'end' | 'screen-share.start' | 'screen-share.stop';
+type P2PCommandWithData =
+	| { command: 'screen-share.start'; params?: { streams: MediaStreamIdentification[] } }
+	| { command: Omit<P2PCommand, 'screen-share.start'>; params?: undefined };
 
 export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 	public readonly emitter: Emitter<WebRTCProcessorEvents>;
@@ -500,7 +503,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 
 		channel.onopen = (_event) => {
 			this.config.logger?.debug('Data Channel Open', channel.label);
-			if (!this._dataChannel || this._dataChannel.readyState !== 'open') {
+			if (this._dataChannel?.readyState !== 'open') {
 				this._dataChannel = channel;
 			}
 
@@ -535,7 +538,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		}
 	}
 
-	private sendP2PCommand(command: P2PCommand): boolean {
+	private sendP2PCommand(command: P2PCommand, params?: Record<string, any>): boolean {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.sendP2PCommand', command);
 		if (!this._dataChannel) {
 			return false;
@@ -545,7 +548,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 			return false;
 		}
 
-		const jsonCommand = JSON.stringify({ command });
+		const jsonCommand = JSON.stringify({ command, ...(params && { params }) });
 		this._dataChannel.send(jsonCommand);
 		return true;
 	}
@@ -554,11 +557,14 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return ['mute', 'unmute', 'end', 'screen-share.start', 'screen-share.stop'].includes(command);
 	}
 
-	private getCommandFromDataChannelMessage(message: string): P2PCommand | null {
+	private getCommandFromDataChannelMessage(message: string): P2PCommandWithData | null {
 		try {
 			const obj = JSON.parse(message);
 			if (obj.command && this.isValidCommand(obj.command)) {
-				return obj.command;
+				if (obj.command === 'screen-share.start' && obj.params) {
+					return { command: 'screen-share.start', params: this.parseScreenShareStartParams(obj.params) };
+				}
+				return { command: obj.command };
 			}
 		} catch {
 			this.config.logger?.debug('Failed to parse Data Channel Command');
@@ -567,9 +573,40 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		return null;
 	}
 
-	private onP2PCommand(command: P2PCommand): void {
+	private parseScreenShareStartParams(params: unknown): { streams: MediaStreamIdentification[] } | undefined {
+		if (!params || typeof params !== 'object') {
+			return undefined;
+		}
+		if (!('streams' in params)) {
+			return undefined;
+		}
+
+		const { streams } = params;
+		if (!streams || typeof streams !== 'object' || !Array.isArray(streams) || !streams.length) {
+			return undefined;
+		}
+
+		const parsedStreams = streams.map((obj): MediaStreamIdentification | null => {
+			if (!obj || typeof obj !== 'object') {
+				return null;
+			}
+
+			if (!('tag' in obj) || !obj.tag || typeof obj.tag !== 'string') {
+				return null;
+			}
+			if (!('id' in obj) || !obj.id || typeof obj.id !== 'string') {
+				return null;
+			}
+
+			return { tag: obj.tag, id: obj.id };
+		});
+
+		return { streams: parsedStreams.filter((item) => item) as MediaStreamIdentification[] };
+	}
+
+	private onP2PCommand(command: P2PCommandWithData): void {
 		this.config.logger?.debug('MediaCallWebRTCProcessor.onP2PCommand', command);
-		switch (command) {
+		switch (command.command) {
 			case 'mute':
 				this.setRemoteMute(true);
 				break;
@@ -581,6 +618,9 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 				break;
 			case 'screen-share.start':
 				this.streams.screenShareRemote.setActive(true);
+				if (command.params?.streams.length) {
+					this.setRemoteIds(command.params.streams);
+				}
 				break;
 			case 'screen-share.stop':
 				this.streams.screenShareRemote.setActive(false);
@@ -735,7 +775,7 @@ export class MediaCallWebRTCProcessor implements IWebRTCProcessor {
 		this.streams.screenShareLocal.setActive(Boolean(this.screenVideoTrack));
 
 		if (this.screenVideoTrack) {
-			this.sendP2PCommand('screen-share.start');
+			this.sendP2PCommand('screen-share.start', { streams: this.getLocalStreamIds() });
 		} else {
 			this.sendP2PCommand('screen-share.stop');
 		}
