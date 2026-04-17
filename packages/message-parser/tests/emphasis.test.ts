@@ -128,3 +128,40 @@ test.each([
 ])('parses %p', (input, output) => {
 	expect(parse(input, { emoticons: false })).toMatchObject(output);
 });
+
+it('should not leak emphasis skip flags across repeated parse calls', () => {
+	const cases = [
+		['__italic__', [paragraph([italic([plain('italic')])])]],
+		[
+			'**bold ~~and strike~~** **not bold ~~but strike** ~~ not strike~~',
+			[
+				paragraph([
+					bold([plain('bold '), strike([plain('and strike')])]),
+					plain(' **not bold '),
+					strike([plain('but strike** ')]),
+					plain(' not strike~~'),
+				]),
+			],
+		],
+		[
+			'**reference link inside [emphasis with more [references](https://rocket.chat)](https://rocket.chat)**',
+			[
+				paragraph([
+					bold([
+						plain('reference link inside '),
+						link('https://rocket.chat', [plain('emphasis with more [references')]),
+						plain('](https://rocket.chat)'),
+					]),
+				]),
+			],
+		],
+	] as const;
+
+	for (const [input, output] of cases) {
+		expect(parse(input, { emoticons: false })).toMatchObject(output);
+	}
+
+	for (const [input, output] of cases) {
+		expect(parse(input, { emoticons: false })).toMatchObject(output);
+	}
+});

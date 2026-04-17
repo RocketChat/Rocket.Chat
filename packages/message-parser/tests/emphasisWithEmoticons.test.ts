@@ -56,3 +56,25 @@ test.each([
 ])('parses emphasisWithEmoticons %p', (input, output) => {
 	expect(parse(input, { emoticons: true })).toMatchObject(output);
 });
+
+it('should not leak emoji skip flags across repeated parse calls', () => {
+	const cases = [
+		[
+			'*bold with a kissing emoji :* *',
+			[paragraph([bold([plain('bold with a kissing emoji '), emoticon(':*', 'kissing_heart'), plain(' ')])])],
+		],
+		['_test -_- _', [paragraph([italic([plain('test '), emoticon('-_-', 'expressionless'), plain(' ')])])]],
+		[
+			'*two bolds*:**separated by kissing emoji*',
+			[paragraph([bold([plain('two bolds')]), emoticon(':*', 'kissing_heart'), bold([plain('separated by kissing emoji')])])],
+		],
+	] as const;
+
+	for (const [input, output] of cases) {
+		expect(parse(input, { emoticons: true })).toMatchObject(output);
+	}
+
+	for (const [input, output] of cases) {
+		expect(parse(input, { emoticons: true })).toMatchObject(output);
+	}
+});

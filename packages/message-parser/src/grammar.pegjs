@@ -38,15 +38,18 @@
     timestampFromHours,
     timestampFromIsoTime,
   } = require('./utils');
-
-let skipBold = false;
-let skipItalic = false;
-let skipStrikethrough = false;
-let skipReferences = false;
-let skipBoldEmoji = false;
-let skipItalicEmoji = false;
-let skipInlineEmoji = false;
 }}
+{
+  const state = {
+    skipBold: false,
+    skipItalic: false,
+    skipStrikethrough: false,
+    skipReferences: false,
+    skipBoldEmoji: false,
+    skipItalicEmoji: false,
+    skipInlineEmoji: false,
+  };
+}
 
 Start
   = @BigEmoji !.
@@ -196,7 +199,10 @@ UnorderedListAsteriskItem = "*" [ \t]+ text:UnorderedListItemContent { return li
 
 UnorderedListItemContent = value:UnorderedListItemContentItem+ !"*" EndOfLine? { return reducePlainTexts(value); }
 
-UnorderedListItemContentItem = & {skipInlineEmoji = false; return true} item:(InlineItemPattern / !"*" @Any) { skipInlineEmoji = false; return item }
+UnorderedListItemContentItem = & { state.skipInlineEmoji = false; return true } item:(InlineItemPattern / !"*" @Any) {
+  state.skipInlineEmoji = false;
+  return item;
+}
 
 /**
  *
@@ -251,17 +257,23 @@ Paragraph = value:Inline { return paragraph(value); }
  * Inline
  *
 */
-Inline = & {skipInlineEmoji = false; return true; } value:InlinePattern+ EndOfLine? { skipInlineEmoji = false; return reducePlainTexts(value); }
+Inline = & { state.skipInlineEmoji = false; return true; } value:InlinePattern+ EndOfLine? {
+  state.skipInlineEmoji = false;
+  return reducePlainTexts(value);
+}
 
 InlinePattern = InlineItem / InlineItemFallback
 
-InlineItem = item:InlineItemPattern { skipInlineEmoji = false; return item; }
+InlineItem = item:InlineItemPattern { state.skipInlineEmoji = false; return item; }
 
-InlineItemFallback = item:Any { skipInlineEmoji = true; return item; }
+InlineItemFallback = item:Any { state.skipInlineEmoji = true; return item; }
 
-InlineEmoji = & { return !skipInlineEmoji; } emo:Emoji { return emo; }
+InlineEmoji = & { return !state.skipInlineEmoji; } emo:Emoji { return emo; }
 
-InlineEmoticon = & { return !skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { skipInlineEmoji = false; return emo; }
+InlineEmoticon = & { return !state.skipInlineEmoji; } emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) {
+  state.skipInlineEmoji = false;
+  return emo;
+}
 
 InlineItemPattern = Whitespace
   / TimestampRules
@@ -288,16 +300,16 @@ InlineItemPattern = Whitespace
  * e.g: ||spoiler||, ||spoiler **bold**||
  *
  */
-Spoiler = "||" &{ skipInlineEmoji = false; return true; } text:SpoilerContentItems "||" { return spoiler(text); }
+Spoiler = "||" &{ state.skipInlineEmoji = false; return true; } text:SpoilerContentItems "||" { return spoiler(text); }
 
 SpoilerContentItems = text:SpoilerContentItem+ { return reducePlainTexts(text); }
 
 // Ensure we consume at least one character and do not accidentally match the closing "||"
 SpoilerContentItem = !"||" item:SpoilerInlineItem { return item; } / !"||" item:SpoilerInlineItemFallback { return item; }
 
-SpoilerInlineItem = &{ skipInlineEmoji = false; return true; } item:InlineItemPattern { return item; }
+SpoilerInlineItem = &{ state.skipInlineEmoji = false; return true; } item:InlineItemPattern { return item; }
 
-SpoilerInlineItemFallback = &{ skipInlineEmoji = true; return true; } item:Any { return item; }
+SpoilerInlineItemFallback = &{ state.skipInlineEmoji = true; return true; } item:Any { return item; }
 
 /**
  *
@@ -459,52 +471,52 @@ BlockedByJavascript = 'unreachable'
 MaybeBold
   = result:(
     & {
-      if (skipBold) { return false; }
-      skipBold = true;
+      if (state.skipBold) { return false; }
+      state.skipBold = true;
       return true;
     }
     (
-      (text:Bold { skipBold = false; return text; })
-      / (& { skipBold = false; return false; } BlockedByJavascript)
+      (text:Bold { state.skipBold = false; return text; })
+      / (& { state.skipBold = false; return false; } BlockedByJavascript)
     )
   ) { return extractFirstResult(result); }
 
 MaybeStrikethrough
   = result:(
     & {
-      if (skipStrikethrough) { return false; }
-      skipStrikethrough = true;
+      if (state.skipStrikethrough) { return false; }
+      state.skipStrikethrough = true;
       return true;
     }
     (
-      (text:Strikethrough { skipStrikethrough = false; return text; })
-      / (& { skipStrikethrough = false; return false; } BlockedByJavascript)
+      (text:Strikethrough { state.skipStrikethrough = false; return text; })
+      / (& { state.skipStrikethrough = false; return false; } BlockedByJavascript)
     )
   ) { return extractFirstResult(result); }
 
 MaybeItalic
   = result:(
     & {
-      if (skipItalic) { return false; }
-      skipItalic = true;
+      if (state.skipItalic) { return false; }
+      state.skipItalic = true;
       return true;
     }
     (
-      (text:Italic { skipItalic = false; return text; })
-      / (& { skipItalic = false; return false; } BlockedByJavascript)
+      (text:Italic { state.skipItalic = false; return text; })
+      / (& { state.skipItalic = false; return false; } BlockedByJavascript)
     )
   ) { return extractFirstResult(result); }
 
 MaybeReferences
   = result:(
     & {
-      if (skipReferences) { return false; }
-      skipReferences = true;
+      if (state.skipReferences) { return false; }
+      state.skipReferences = true;
       return true;
     }
     (
-      (text:References { skipReferences = false; return text; })
-      / (& { skipReferences = false; return false; } BlockedByJavascript)
+      (text:References { state.skipReferences = false; return text; })
+      / (& { state.skipReferences = false; return false; } BlockedByJavascript)
     )
   ) { return extractFirstResult(result); }
 
@@ -520,13 +532,16 @@ Italic
   / [\x5F] [\x5F] @ItalicContent [\x5F] [\x5F]
   / [\x5F] @ItalicContent [\x5F]
 
-ItalicContent = & { skipItalicEmoji = false; return true; } text:ItalicContentItems { skipItalicEmoji = false; return italic(text); }
+ItalicContent = & { state.skipItalicEmoji = false; return true; } text:ItalicContentItems {
+  state.skipItalicEmoji = false;
+  return italic(text);
+}
 
 ItalicContentItems = text:ItalicContentItem+ { return reducePlainTexts(text); }
 
 ItalicContentItem = ItalicContentPreferentialItem / ItalicContentFallbackItem
 
-ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { skipItalicEmoji = false; return item; }
+ItalicContentPreferentialItem = item:ItalicContentPreferentialItemPattern { state.skipItalicEmoji = false; return item; }
 
 ItalicContentPreferentialItemPattern = Whitespace
   / InlineCode
@@ -538,32 +553,41 @@ ItalicContentPreferentialItemPattern = Whitespace
   / ItalicEmoji
   / ItalicEmoticon
 
-ItalicContentFallbackItem = item:ItalicContentFallbackItemPattern { skipItalicEmoji = true; return item; }
+ItalicContentFallbackItem = item:ItalicContentFallbackItemPattern { state.skipItalicEmoji = true; return item; }
 
 ItalicContentFallbackItemPattern = AnyItalic / Line
 
-ItalicEmoji = & { return !skipItalicEmoji; } emo:Emoji { return emo; }
+ItalicEmoji = & { return !state.skipItalicEmoji; } emo:Emoji { return emo; }
 
-ItalicEmoticon = & { return !skipItalicEmoji; } emo:Emoticon & (EmoticonNeighbor / ItalicContentPreferentialItem / [\x5F]) { skipItalicEmoji = false; return emo; }
+ItalicEmoticon = & { return !state.skipItalicEmoji; } emo:Emoticon & (EmoticonNeighbor / ItalicContentPreferentialItem / [\x5F]) {
+  state.skipItalicEmoji = false;
+  return emo;
+}
 
 /* Bold */
 Bold = [\x2A] [\x2A] @BoldContent [\x2A] [\x2A] / [\x2A] @BoldContent [\x2A]
 
-BoldContent = & { skipBoldEmoji = false; return true; } text:BoldContentItem+ { skipBoldEmoji = false; return bold(reducePlainTexts(text)); }
+BoldContent = & { state.skipBoldEmoji = false; return true; } text:BoldContentItem+ {
+  state.skipBoldEmoji = false;
+  return bold(reducePlainTexts(text));
+}
 
-BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { skipBoldEmoji = false; return item; }
+BoldContentPreferentialItem = item:BoldContentPreferentialItemPattern { state.skipBoldEmoji = false; return item; }
 
 BoldContentPreferentialItemPattern = Whitespace / InlineCode / MaybeReferences / UserMention / ChannelMention / MaybeItalic / MaybeStrikethrough / BoldEmoji / BoldEmoticon
 
-BoldContentFallbackItem = item:BoldContentFallbackItemPattern { skipBoldEmoji = true; return item; }
+BoldContentFallbackItem = item:BoldContentFallbackItemPattern { state.skipBoldEmoji = true; return item; }
 
 BoldContentFallbackItemPattern = AnyBold / Line
 
 BoldContentItem = BoldContentPreferentialItem / BoldContentFallbackItem
 
-BoldEmoji = & { return !skipBoldEmoji; } emo:Emoji { return emo; }
+BoldEmoji = & { return !state.skipBoldEmoji; } emo:Emoji { return emo; }
 
-BoldEmoticon = & { return !skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / BoldContentPreferentialItem) { skipBoldEmoji = false; return emo; }
+BoldEmoticon = & { return !state.skipBoldEmoji; } emo:Emoticon & (EmoticonNeighbor / BoldContentPreferentialItem) {
+  state.skipBoldEmoji = false;
+  return emo;
+}
 
 /* Strike */
 Strikethrough = [\x7E] [\x7E] @StrikethroughContent [\x7E] [\x7E] / [\x7E] @StrikethroughContent [\x7E]
