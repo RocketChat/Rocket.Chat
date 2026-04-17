@@ -87,6 +87,7 @@ const NavBarSearch = () => {
 					ref={mergedRefs}
 					role='combobox'
 					aria-autocomplete='list'
+					aria-keyshortcuts='Control+K Meta+K Control+P Meta+P'
 					small
 					addon={
 						isDirty ? (
