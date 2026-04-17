@@ -7,6 +7,7 @@ import { addMinutesToADate } from '../../../../lib/utils/addMinutesToADate';
 import { getClientAddress } from '../../../../server/lib/getClientAddress';
 import { sendMessage } from '../../../lib/server/functions/sendMessage';
 import { settings } from '../../../settings/server';
+import ipRangeCheck from 'ip-range-check';
 import type { ILoginAttempt } from '../ILoginAttempt';
 
 const logger = new Logger('LoginProtection');
@@ -46,6 +47,9 @@ const notifyFailedLogin = async (ipOrUsername: string, blockedUntil: Date, faile
 	await sendMessage(rocketCat, message, room);
 };
 
+const getLoginIdentifier = (login: ILoginAttempt): string | undefined =>
+	login.user?.username || login.methodArguments[0]?.user?.username || login.methodArguments[0]?.user?.email;
+
 export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	const whitelist = String(settings.get('Block_Multiple_Failed_Logins_Ip_Whitelist'))
 		.split(',')
@@ -55,7 +59,7 @@ export const isValidLoginAttemptByIp = async (ip: string): Promise<boolean> => {
 	if (
 		!settings.get('Block_Multiple_Failed_Logins_Enabled') ||
 		!settings.get('Block_Multiple_Failed_Logins_By_Ip') ||
-		whitelist.includes(ip)
+		whitelist.some((entry) => (entry.includes('/') ? ipRangeCheck(ip, entry) : entry === ip))
 	) {
 		return true;
 	}
@@ -103,7 +107,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 		return true;
 	}
 
-	const loginUsername = login.methodArguments[0].user?.username;
+	const loginUsername = getLoginIdentifier(login);
 	if (!loginUsername) {
 		return true;
 	}
@@ -150,7 +154,7 @@ export const isValidAttemptByUser = async (login: ILoginAttempt): Promise<boolea
 export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<void> => {
 	const user: IServerEvent['u'] = {
 		_id: login.user?._id,
-		username: login.user?.username || login.methodArguments[0].user?.username,
+		username: getLoginIdentifier(login),
 	};
 
 	await ServerEvents.insertOne({
@@ -164,7 +168,7 @@ export const saveFailedLoginAttempts = async (login: ILoginAttempt): Promise<voi
 export const saveSuccessfulLogin = async (login: ILoginAttempt): Promise<void> => {
 	const user: IServerEvent['u'] = {
 		_id: login.user?._id,
-		username: login.user?.username || login.methodArguments[0].user?.username,
+		username: getLoginIdentifier(login),
 	};
 
 	await ServerEvents.insertOne({
