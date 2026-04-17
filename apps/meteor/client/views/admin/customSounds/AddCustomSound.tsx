@@ -66,7 +66,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 		if (sound) {
 			formData.append('sound', sound);
 		}
-		formData.append('name', name);
+		formData.append('name', soundData.name);
 		formData.append('extension', soundData.extension);
 		await saveAction(formData);
 	}, [sound, name, saveAction, t, dispatchToastMessage]);
