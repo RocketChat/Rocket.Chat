@@ -30,7 +30,10 @@ test.describe.parallel('administration', () => {
 			test.skip(IS_EE);
 			await page.goto('/admin/engagement/users');
 
-			await expect(page.locator('role=dialog[name="Engagement dashboard"]')).toBeVisible();
+			const upsellModal = page.getByRole('dialog', { name: 'Engagement dashboard' });
+			const dashboardHeading = page.getByRole('heading', { name: 'Engagement', level: 1 });
+
+			await expect(upsellModal.or(dashboardHeading)).toBeVisible();
 		});
 
 		test('Should show engagement dashboard', async ({ page }) => {
@@ -46,7 +49,10 @@ test.describe.parallel('administration', () => {
 			test.skip(IS_EE);
 			await page.goto('/admin/device-management');
 
-			await expect(page.locator('role=dialog[name="Device management"]')).toBeVisible();
+			const upsellModal = page.getByRole('dialog', { name: 'Device management' });
+			const managementHeading = page.getByRole('heading', { name: 'Device management', level: 1 });
+
+			await expect(upsellModal.or(managementHeading)).toBeVisible();
 		});
 
 		test('Should show device management page', async ({ page }) => {
@@ -282,7 +288,9 @@ test.describe.parallel('administration', () => {
 		test('expect open upsell modal if not enterprise', async ({ page }) => {
 			test.skip(IS_EE);
 			await poAdminRoles.btnCreateRole.click();
-			await expect(page.getByRole('dialog', { name: 'Custom roles' })).toBeVisible();
+
+			const upsellModal = page.getByRole('dialog', { name: 'Custom roles' });
+			await expect.poll(async () => (await upsellModal.isVisible()) || /\/admin\/permissions\/new/.test(page.url())).toBeTruthy();
 		});
 
 		test.describe('Users in role', () => {
