@@ -1,6 +1,6 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
-import { isServerEventsAuditSettingsProps, ajv } from '@rocket.chat/rest-typings';
+import { isServerEventsAuditSettingsProps, ajv, ajvQuery } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 
@@ -26,7 +26,7 @@ const auditRoomMembersSchema = {
 	additionalProperties: false,
 };
 
-export const isAuditRoomMembersProps = ajv.compile<AuditRoomMembersParams>(auditRoomMembersSchema);
+export const isAuditRoomMembersProps = ajvQuery.compile<AuditRoomMembersParams>(auditRoomMembersSchema);
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -154,11 +154,11 @@ API.v1.get(
 	async function action() {
 		const { start, end, settingId, actor } = this.queryParams;
 
-		if (start && isNaN(Date.parse(start as string))) {
+		if (start && isNaN(Date.parse(start))) {
 			return API.v1.failure('The "start" query parameter must be a valid date.');
 		}
 
-		if (end && isNaN(Date.parse(end as string))) {
+		if (end && isNaN(Date.parse(end))) {
 			return API.v1.failure('The "end" query parameter must be a valid date.');
 		}
 
@@ -171,8 +171,8 @@ API.v1.get(
 				...(settingId && { 'data.key': 'id', 'data.value': settingId }),
 				...(actor && convertSubObjectsIntoPaths({ actor })),
 				ts: {
-					$gte: start ? new Date(start as string) : new Date(0),
-					$lte: end ? new Date(end as string) : new Date(),
+					$gte: start ? new Date(start) : new Date(0),
+					$lte: end ? new Date(end) : new Date(),
 				},
 				t: 'settings.changed',
 			},

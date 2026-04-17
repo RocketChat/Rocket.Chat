@@ -1,4 +1,5 @@
 name: 'Meteor Build'
+description: 'Build Meteor bundle for production or coverage'
 
 inputs:
   type:
@@ -8,29 +9,25 @@ inputs:
   reset-meteor:
     required: false
     description: 'Reset Meteor'
-    type: boolean
   node-version:
     required: true
     description: 'Node version'
-    type: string
   NPM_TOKEN:
     required: false
     description: 'NPM token'
   deno-version:
     required: true
     description: 'Deno version'
-    type: string
   source-hash:
     required: true
-    description: 'Source code hash'
-    type: string
+    description: 'RC cache id (e.g. packages-build-cache-key + meteor apps/meteor archive hash from CI)'
 
 runs:
   using: composite
 
   steps:
     - name: Cache build
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       id: cache-build
       with:
         path: /tmp/Rocket.Chat.tar.gz
@@ -69,7 +66,7 @@ runs:
     #     df -h
 
     - name: Cache vite
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./node_modules/.vite
@@ -78,7 +75,7 @@ runs:
           vite-local-cache-${{ runner.arch }}-${{ runner.os }}-
 
     - name: Cache meteor local
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ./apps/meteor/.meteor/local
@@ -87,7 +84,7 @@ runs:
           meteor-local-cache-${{ runner.arch }}-${{ runner.os }}-${{ inputs.type }}-
 
     - name: Cache meteor
-      uses: actions/cache@v3
+      uses: actions/cache@v5
       if: steps.cache-build.outputs.cache-hit != 'true'
       with:
         path: ~/.meteor
@@ -128,7 +125,7 @@ runs:
         meteor node -v
         git version
 
-    - uses: rharkor/caching-for-turbo@v1.8
+    - uses: rharkor/caching-for-turbo@00a0515f175df9fd2e15c4560144ad5fdbebb0c7 # v2.3.13
 
     - name: Reset Meteor
       shell: bash
@@ -157,7 +154,16 @@ runs:
         # check if BABEL_ENV is set to coverage
         if [[ $BABEL_ENV == "coverage" ]]; then
           echo -e "rocketchat:coverage\n" >> ./apps/meteor/.meteor/packages
-          echo "Coverage enabled"
+          # Inject swc-plugin-coverage-instrument into .swcrc for istanbul-compatible coverage
+          node -e "
+            const fs = require('fs');
+            const swcrc = JSON.parse(fs.readFileSync('./apps/meteor/.swcrc', 'utf8'));
+            swcrc.jsc.experimental = swcrc.jsc.experimental || {};
+            swcrc.jsc.experimental.plugins = swcrc.jsc.experimental.plugins || [];
+            swcrc.jsc.experimental.plugins.push(['swc-plugin-coverage-instrument', {}]);
+            fs.writeFileSync('./apps/meteor/.swcrc', JSON.stringify(swcrc, null, 2) + '\n');
+          "
+          echo "Coverage enabled (SWC istanbul plugin injected)"
         fi
 
         # Restore original package.json so meteor should not copy devDependencies

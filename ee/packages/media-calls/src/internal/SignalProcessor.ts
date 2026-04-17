@@ -10,11 +10,14 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCalls } from '@rocket.chat/models';
 
-import type { InternalCallParams } from '../definition/common';
+import { DEFAULT_CALL_FEATURES } from '../constants';
+import type { InternalCallParams, SignalProcessingOptions } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
 import { UserActorAgent } from './agents/UserActorAgent';
-import { buildNewCallSignal } from '../server/buildNewCallSignal';
+import { getCallRoleForUser } from '../server/getCallRoleForUser';
+import { getNewCallSignal } from '../server/signals/getNewCallSignal';
+import { getSignalsForExistingCall } from '../server/signals/getSignalsForExistingCall';
 import { stripSensitiveDataFromSignal } from '../server/stripSensitiveData';
 
 export type SignalProcessorEvents = {
@@ -29,7 +32,7 @@ export class GlobalSignalProcessor {
 		this.emitter = new Emitter();
 	}
 
-	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal): Promise<void> {
+	public async processSignal(uid: IUser['_id'], signal: ClientMediaSignal, options: SignalProcessingOptions): Promise<void> {
 		switch (signal.type) {
 			case 'register':
 				return this.processRegisterSignal(uid, signal);
@@ -38,7 +41,7 @@ export class GlobalSignalProcessor {
 		}
 
 		if ('callId' in signal) {
-			return this.processCallSignal(uid, signal);
+			return this.processCallSignal(uid, signal, options);
 		}
 
 		logger.error({ msg: 'Unrecognized media signal', signal: stripSensitiveDataFromSignal(signal) });
@@ -55,6 +58,7 @@ export class GlobalSignalProcessor {
 	private async processCallSignal(
 		uid: IUser['_id'],
 		signal: Exclude<ClientMediaSignal, ClientMediaSignalRegister | ClientMediaSignalRequestCall>,
+		{ throwIfSkipped }: SignalProcessingOptions,
 	): Promise<void> {
 		try {
 			const call = await MediaCalls.findOneById(signal.callId);
@@ -90,6 +94,9 @@ export class GlobalSignalProcessor {
 
 			// Ignore signals from different sessions if the actor is already signed
 			if (!skipContractCheck && callActor.contractId && callActor.contractId !== signal.contractId) {
+				if (throwIfSkipped) {
+					throw new Error('invalid-contract');
+				}
 				return;
 			}
 
@@ -99,10 +106,17 @@ export class GlobalSignalProcessor {
 			const { [role]: agent } = agents;
 
 			if (!(agent instanceof UserActorAgent)) {
-				throw new Error('Actor agent is not prepared to process signals');
+				logger.error({
+					msg: 'Actor agent is not prepared to process signals',
+					method: 'processSignal',
+					signal: stripSensitiveDataFromSignal(signal),
+					isCaller,
+					isCallee,
+				});
+				throw new Error('internal-error');
 			}
 
-			await agent.processSignal(call, signal);
+			await agent.processSignal(call, signal, { throwIfSkipped });
 		} catch (e) {
 			logger.error({ err: e });
 			throw e;
@@ -113,6 +127,19 @@ export class GlobalSignalProcessor {
 		logger.debug({ msg: 'GlobalSignalProcessor.processRegisterSignal', signal: stripSensitiveDataFromSignal(signal), uid });
 
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
+		const activeCalls = calls.filter(
+			({ callee, caller }) =>
+				(callee.type === 'user' && callee.id === uid && callee.contractId === signal.contractId) ||
+				(caller.type === 'user' && caller.id === uid && caller.contractId === signal.contractId),
+		);
+
+		this.sendSignal(uid, {
+			type: 'registered',
+			toContractId: signal.contractId,
+			calls: calls.map(({ _id }) => _id),
+			activeCalls: activeCalls.map(({ _id }) => _id),
+		});
+
 		if (!calls.length) {
 			return;
 		}
@@ -125,21 +152,15 @@ export class GlobalSignalProcessor {
 			return;
 		}
 
-		const isCaller = call.caller.type === 'user' && call.caller.id === uid;
-		const isCallee = call.callee.type === 'user' && call.callee.id === uid;
-
-		if (!isCaller && !isCallee) {
+		const role = getCallRoleForUser(call, uid);
+		if (!role) {
 			return;
 		}
-
-		const role = isCaller ? 'caller' : 'callee';
 		const actor = call[role];
-
 		// If this user's side of the call has already been signed
 		if (actor.contractId) {
-			// If it's signed to the same session that is now registering
-			// Or it was signed by a session that the current session is replacing (as in a browser refresh)
-			if (actor.contractId === signal.contractId || actor.contractId === signal.oldContractId) {
+			// If it was signed by a session that the current session is replacing (as in a browser refresh)
+			if (actor.contractId === signal.oldContractId) {
 				logger.info({ msg: 'Server detected a client refresh for a session with an active call.', callId: call._id });
 				await mediaCallDirector.hangupDetachedCall(call, { endedBy: { ...actor, contractId: signal.contractId }, reason: 'unknown' });
 				return;
@@ -148,22 +169,14 @@ export class GlobalSignalProcessor {
 			await mediaCallDirector.renewCallId(call._id);
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, role));
+		if (!signal.requestSignals) {
+			return;
+		}
 
-		if (call.state === 'active') {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'notification',
-				notification: 'active',
-				...(actor.contractId && { signedContractId: actor.contractId }),
-			});
-		} else if (actor.contractId && !isPendingState(call.state)) {
-			this.sendSignal(uid, {
-				callId: call._id,
-				type: 'notification',
-				notification: 'accepted',
-				signedContractId: actor.contractId,
-			});
+		const signals = await getSignalsForExistingCall(call, uid, signal.contractId);
+
+		for (const signal of signals) {
+			this.sendSignal(uid, signal);
 		}
 	}
 
@@ -181,7 +194,7 @@ export class GlobalSignalProcessor {
 
 		const services = signal.supportedServices ?? [];
 		const requestedService = services.includes('webrtc') ? 'webrtc' : services[0];
-		const features = signal.supportedFeatures ?? ['audio'];
+		const features = signal.supportedFeatures ?? DEFAULT_CALL_FEATURES;
 
 		const params: InternalCallParams = {
 			caller: {
@@ -242,7 +255,7 @@ export class GlobalSignalProcessor {
 			this.rejectCallRequest(uid, { ...rejection, reason: 'already-requested' });
 		}
 
-		this.sendSignal(uid, buildNewCallSignal(call, 'caller'));
+		this.sendSignal(uid, getNewCallSignal(call, 'caller'));
 
 		return call;
 	}

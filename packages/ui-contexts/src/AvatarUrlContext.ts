@@ -4,9 +4,9 @@ const dummy = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcS
 
 export type AvatarUrlContextValue = {
 	getUserPathAvatar: {
-		(username: string, etag?: string): string;
-		(params: { userId: string; etag?: string }): string;
-		(params: { username: string; etag?: string }): string;
+		(username: string, etag?: string | null): string;
+		(params: { userId: string; etag?: string | null }): string;
+		(params: { username: string; etag?: string | null }): string;
 	};
 	getRoomPathAvatar: (...args: any) => string;
 };

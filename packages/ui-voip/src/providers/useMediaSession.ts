@@ -17,8 +17,9 @@ const defaultSessionInfo: SessionState = {
 	held: false,
 	remoteMuted: false,
 	remoteHeld: false,
-	startedAt: new Date(),
+	startedAt: undefined,
 	hidden: false,
+	supportedFeatures: ['audio', 'transfer', 'hold'],
 };
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
@@ -117,25 +118,16 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 		}
 
 		const updateSessionState = () => {
-			const mainCall = instance.getMainCall();
-
-			if (!mainCall) {
+			const instanceState = instance.getState();
+			if (!instanceState) {
 				dispatch({ type: 'reset' });
 				return;
 			}
 
 			const {
-				contact,
-				transferredBy: callTransferredBy,
 				state: callState,
-				role,
-				muted,
-				held,
-				hidden,
-				remoteHeld,
-				remoteMute,
-				callId,
-			} = mainCall;
+				localParticipant: { role, muted, held },
+			} = instanceState;
 			const state = deriveWidgetStateFromCallState(callState, role);
 
 			if (!state) {
@@ -144,6 +136,41 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 			}
 
 			const connectionState = deriveConnectionStateFromCallState(callState);
+
+			if (!instanceState.confirmed) {
+				dispatch({
+					type: 'instance_updated',
+					payload: {
+						peerInfo: {
+							displayName: instanceState.title,
+							userId: 'unknown',
+							username: undefined,
+							callerId: undefined,
+						},
+						transferredBy: undefined,
+						state,
+						muted,
+						held,
+						connectionState,
+						hidden: false,
+						remoteHeld: false,
+						remoteMuted: false,
+						callId: instanceState.tempCallId,
+						startedAt: undefined,
+						supportedFeatures: [],
+					},
+				});
+				return;
+			}
+
+			const {
+				hidden,
+				callId,
+				activeTimestamp: startedAt,
+				features: supportedFeatures,
+				transferredBy: callTransferredBy,
+				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
+			} = instanceState;
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
 
@@ -159,8 +186,10 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 						connectionState,
 						hidden,
 						remoteHeld,
-						remoteMuted: remoteMute,
+						remoteMuted,
 						callId,
+						startedAt,
+						supportedFeatures,
 					},
 				});
 				return;
@@ -182,7 +211,20 @@ export const useMediaSession = (instance?: MediaSignalingSession): MediaSessionS
 
 			dispatch({
 				type: 'instance_updated',
-				payload: { state, peerInfo, transferredBy, muted, held, connectionState, hidden, remoteHeld, remoteMuted: remoteMute, callId },
+				payload: {
+					state,
+					peerInfo,
+					transferredBy,
+					muted,
+					held,
+					connectionState,
+					hidden,
+					remoteHeld,
+					remoteMuted,
+					callId,
+					startedAt,
+					supportedFeatures,
+				},
 			});
 		};
 
