@@ -1,4 +1,4 @@
-import { Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import { QueueWorker, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
 import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
 import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
 import type {
@@ -44,6 +44,12 @@ import { LocalPDP, VirtruPDP } from './pdp';
 const limit = pLimit(20);
 
 const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');
+
+type AbacRoomMembershipRemovalJob = {
+	rid: string;
+	uid: string;
+	reason: AbacAuditReason;
+};
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -679,28 +685,62 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private async removeUserFromRoom(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
-		return Room.removeUserFromRoom(room._id, user, {
+		return this.removeUserFromRoomOrThrow(room, user, reason).catch((err) => {
+			logger.error({
+				msg: 'Failed to remove user from ABAC room',
+				rid: room._id,
+				err,
+				reason,
+			});
+		});
+	}
+
+	private async removeUserFromRoomOrThrow(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
+		await Room.removeUserFromRoom(room._id, user, {
 			skipAppPreEvents: true,
 			customSystemMessage: 'abac-removed-user-from-room' as const,
-		})
-			.then(
-				() =>
-					void Audit.actionPerformed(
-						{ _id: user._id, username: user.username },
-						{ _id: room._id, name: room.name },
-						reason,
-						'revoked-object-access',
-						this.pdpType,
-					),
-			)
-			.catch((err) => {
-				logger.error({
-					msg: 'Failed to remove user from ABAC room',
-					rid: room._id,
-					err,
-					reason,
-				});
+		});
+
+		void Audit.actionPerformed(
+			{ _id: user._id, username: user.username },
+			{ _id: room._id, name: room.name },
+			reason,
+			'revoked-object-access',
+			this.pdpType,
+		);
+	}
+
+	async processRoomMembershipRemovalJob(job: AbacRoomMembershipRemovalJob): Promise<void> {
+		const { rid, uid, reason } = job;
+
+		const [room, user] = await Promise.all([
+			Rooms.findOneById(rid, { projection: { _id: 1, t: 1, name: 1 } }),
+			Users.findOneById(uid, { projection: { _id: 1, username: 1, emails: 1 } }),
+		]);
+
+		if (!room || !user) {
+			logger.warn({
+				msg: 'Skipping ABAC membership removal job because user or room was not found',
+				rid,
+				uid,
+				reason,
 			});
+			return;
+		}
+
+		try {
+			await this.removeUserFromRoomOrThrow(room, user, reason);
+		} catch (err) {
+			logger.error({
+				msg: 'Failed to process queued ABAC room membership removal job',
+				rid,
+				uid,
+				reason,
+				err,
+			});
+
+			throw new Error(`retry: failed to remove user ${uid} from room ${rid}`);
+		}
 	}
 
 	protected async onRoomAttributesChanged(
@@ -808,8 +848,22 @@ export class AbacService extends ServiceClass implements IAbacService {
 		try {
 			const nonCompliant = await this.pdp.evaluateUserRooms(entries);
 
-			// TODO: this should be in a persistent queue
-			await Promise.all(nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'virtru-pdp-sync'))));
+			for (const { user, room } of nonCompliant) {
+				try {
+					await QueueWorker.queueWork('work', 'abac.processRoomMembershipRemovalJob', {
+						rid: room._id,
+						uid: user._id,
+						reason: 'virtru-pdp-sync',
+					});
+				} catch (err) {
+					logger.error({
+						msg: 'Failed to enqueue ABAC room membership removal job',
+						rid: room._id,
+						uid: user._id,
+						err,
+					});
+				}
+			}
 		} catch (err) {
 			logger.error({ msg: 'Failed to evaluate room membership', err });
 		}

@@ -16,61 +16,134 @@ const mockUpdateSingleAbacAttributeValuesById = jest.fn();
 const mockUpdateAbacAttributeValuesArrayFilteredById = jest.fn();
 const mockRemoveAbacAttributeByRoomIdAndKey = jest.fn();
 const mockInsertAbacAttributeIfNotExistsById = jest.fn();
+const mockFindAllPrivateRoomsWithAbacAttributes = jest.fn();
 const mockUsersFind = jest.fn();
+const mockUsersFindActiveByRoomIds = jest.fn();
+const mockUsersFindOneById = jest.fn();
 const mockUsersUpdateOne = jest.fn();
 const mockUsersSetAbacAttributesById = jest.fn();
 const mockUsersUnsetAbacAttributesById = jest.fn();
 const mockAbacFindOneAndUpdate = jest.fn();
 const mockCreateAuditServerEvent = jest.fn();
+const mockQueueWork = jest.fn();
+const mockRoomRemoveUserFromRoom = jest.fn();
 
-jest.mock('@rocket.chat/models', () => ({
-	Rooms: {
-		findOneByIdAndType: (...args: any[]) => mockFindOneByIdAndType(...args),
-		updateAbacConfigurationById: (...args: any[]) => mockUpdateAbacConfigurationById(...args),
-		isAbacAttributeInUse: (...args: any[]) => mockRoomsIsAbacAttributeInUse(...args),
-		setAbacAttributesById: (...args: any[]) => mockSetAbacAttributesById(...args),
-		updateSingleAbacAttributeValuesById: (...args: any[]) => mockUpdateSingleAbacAttributeValuesById(...args),
-		updateAbacAttributeValuesArrayFilteredById: (...args: any[]) => mockUpdateAbacAttributeValuesArrayFilteredById(...args),
-		removeAbacAttributeByRoomIdAndKey: (...args: any[]) => mockRemoveAbacAttributeByRoomIdAndKey(...args),
-		insertAbacAttributeIfNotExistsById: (...args: any[]) => mockInsertAbacAttributeIfNotExistsById(...args),
-	},
-	AbacAttributes: {
-		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
-		findPaginated: (...args: any[]) => mockAbacFindPaginated(...args),
-		findOne: (...args: any[]) => mockAbacFindOne(...args),
-		findOneById: (...args: any[]) => mockAbacFindOne(...args), // map findOneById calls to same mock
-		findOneByKey: (...args: any[]) => mockAbacFindOne(...args), // map findOneByKey to same mock
-		updateOne: (...args: any[]) => mockAbacUpdateOne(...args),
-		findOneAndUpdate: (...args: any[]) => mockAbacFindOneAndUpdate(...args),
-		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
-		removeById: (...args: any[]) => mockAbacDeleteOne(...args),
-		find: (...args: any[]) => mockAbacFind(...args),
-	},
-	Users: {
-		find: (...args: any[]) => mockUsersFind(...args),
-		setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
-		unsetAbacAttributesById: (...args: any[]) => mockUsersUnsetAbacAttributesById(...args),
-		findOneAndUpdate: (...args: any[]) => mockUsersUpdateOne(...args),
-		updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
-	},
-	ServerEvents: {
-		createAuditServerEvent: (...args: any[]) => mockCreateAuditServerEvent(...args),
-	},
-}));
+jest.mock(
+	'@rocket.chat/models',
+	() => ({
+		Rooms: {
+			findOneByIdAndType: (...args: any[]) => mockFindOneByIdAndType(...args),
+			findOneById: (...args: any[]) => mockFindOneByIdAndType(...args),
+			findAllPrivateRoomsWithAbacAttributes: (...args: any[]) => mockFindAllPrivateRoomsWithAbacAttributes(...args),
+			updateAbacConfigurationById: (...args: any[]) => mockUpdateAbacConfigurationById(...args),
+			isAbacAttributeInUse: (...args: any[]) => mockRoomsIsAbacAttributeInUse(...args),
+			setAbacAttributesById: (...args: any[]) => mockSetAbacAttributesById(...args),
+			updateSingleAbacAttributeValuesById: (...args: any[]) => mockUpdateSingleAbacAttributeValuesById(...args),
+			updateAbacAttributeValuesArrayFilteredById: (...args: any[]) => mockUpdateAbacAttributeValuesArrayFilteredById(...args),
+			removeAbacAttributeByRoomIdAndKey: (...args: any[]) => mockRemoveAbacAttributeByRoomIdAndKey(...args),
+			insertAbacAttributeIfNotExistsById: (...args: any[]) => mockInsertAbacAttributeIfNotExistsById(...args),
+		},
+		AbacAttributes: {
+			insertOne: (...args: any[]) => mockAbacInsertOne(...args),
+			findPaginated: (...args: any[]) => mockAbacFindPaginated(...args),
+			findOne: (...args: any[]) => mockAbacFindOne(...args),
+			findOneById: (...args: any[]) => mockAbacFindOne(...args), // map findOneById calls to same mock
+			findOneByKey: (...args: any[]) => mockAbacFindOne(...args), // map findOneByKey to same mock
+			updateOne: (...args: any[]) => mockAbacUpdateOne(...args),
+			findOneAndUpdate: (...args: any[]) => mockAbacFindOneAndUpdate(...args),
+			deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
+			removeById: (...args: any[]) => mockAbacDeleteOne(...args),
+			find: (...args: any[]) => mockAbacFind(...args),
+		},
+		Users: {
+			find: (...args: any[]) => mockUsersFind(...args),
+			findOneById: (...args: any[]) => mockUsersFindOneById(...args),
+			findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
+			setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
+			unsetAbacAttributesById: (...args: any[]) => mockUsersUnsetAbacAttributesById(...args),
+			findOneAndUpdate: (...args: any[]) => mockUsersUpdateOne(...args),
+			updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
+		},
+		ServerEvents: {
+			createAuditServerEvent: (...args: any[]) => mockCreateAuditServerEvent(...args),
+		},
+	}),
+	{ virtual: true },
+);
 
-// Partial mock for @rocket.chat/core-services: keep real MeteorError, override ServiceClass and Room
-jest.mock('@rocket.chat/core-services', () => {
-	const actual = jest.requireActual('@rocket.chat/core-services');
-	return {
-		...actual,
-		ServiceClass: class {
-			onSettingChanged = jest.fn();
+jest.mock(
+	'@rocket.chat/core-services',
+	() => {
+		return {
+			ServiceClass: class {
+				onSettingChanged = jest.fn();
+			},
+			QueueWorker: {
+				queueWork: (...args: any[]) => mockQueueWork(...args),
+			},
+			Room: {
+				removeUserFromRoom: (...args: any[]) => mockRoomRemoveUserFromRoom(...args),
+			},
+			Settings: {
+				get: jest.fn(),
+			},
+		};
+	},
+	{ virtual: true },
+);
+
+jest.mock(
+	'@rocket.chat/tools',
+	() => ({
+		isTruthy: (value: unknown) => Boolean(value),
+	}),
+	{ virtual: true },
+);
+
+jest.mock(
+	'@rocket.chat/core-typings',
+	() => ({
+		AbacAccessOperation: {
+			READ: 'read',
 		},
-		Room: {
-			removeUserFromRoom: jest.fn(),
+		AbacObjectType: {
+			ROOM: 'room',
 		},
-	};
-});
+	}),
+	{ virtual: true },
+);
+
+jest.mock(
+	'@rocket.chat/logger',
+	() => ({
+		Logger: class {
+			constructor(_name: string) {
+				void _name;
+			}
+
+			section() {
+				return this;
+			}
+
+			info = jest.fn();
+
+			warn = jest.fn();
+
+			error = jest.fn();
+
+			debug = jest.fn();
+		},
+	}),
+	{ virtual: true },
+);
+
+jest.mock(
+	'@rocket.chat/server-fetch',
+	() => ({
+		fetch: jest.fn(),
+	}),
+	{ virtual: true },
+);
 
 jest.mock('mem', () => {
 	return jest.fn((fn: any) => fn);
@@ -1134,6 +1207,82 @@ describe('AbacService (unit)', () => {
 			});
 
 			expect(mockCreateAuditServerEvent).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('evaluateRoomMembership with persistent queue', () => {
+		beforeEach(() => {
+			mockFindAllPrivateRoomsWithAbacAttributes.mockReset();
+			mockUsersFindActiveByRoomIds.mockReset();
+			mockQueueWork.mockReset();
+		});
+
+		it('queues one persistent removal job per non-compliant user-room pair', async () => {
+			(service as any).pdp = {
+				isAvailable: jest.fn().mockResolvedValue(true),
+				evaluateUserRooms: jest.fn().mockResolvedValue([
+					{
+						user: { _id: 'u1', username: 'u1', emails: [{ address: 'u1@example.com' }] },
+						room: { _id: 'r1', t: 'p', abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+					},
+				]),
+			};
+
+			mockFindAllPrivateRoomsWithAbacAttributes.mockReturnValue({
+				toArray: async () => [{ _id: 'r1', t: 'p', abacAttributes: [{ key: 'dept', values: ['eng'] }] }],
+			});
+
+			mockUsersFindActiveByRoomIds.mockReturnValue({
+				map: () => ({
+					toArray: async () => [{ _id: 'u1', username: 'u1', emails: [{ address: 'u1@example.com' }], __rooms: ['r1'] }],
+				}),
+			});
+
+			await service.evaluateRoomMembership();
+
+			expect(mockQueueWork).toHaveBeenCalledTimes(1);
+			expect(mockQueueWork).toHaveBeenCalledWith('work', 'abac.processRoomMembershipRemovalJob', {
+				rid: 'r1',
+				uid: 'u1',
+				reason: 'virtru-pdp-sync',
+			});
+		});
+	});
+
+	describe('processRoomMembershipRemovalJob', () => {
+		beforeEach(() => {
+			mockFindOneByIdAndType.mockReset();
+			mockUsersFindOneById.mockReset();
+			mockRoomRemoveUserFromRoom.mockReset();
+		});
+
+		it('removes the user when room and user exist', async () => {
+			mockFindOneByIdAndType.mockResolvedValue({ _id: 'r1', t: 'p', name: 'room-1' });
+			mockUsersFindOneById.mockResolvedValue({ _id: 'u1', username: 'user-1' });
+			mockRoomRemoveUserFromRoom.mockResolvedValue(undefined);
+
+			await expect(
+				service.processRoomMembershipRemovalJob({ rid: 'r1', uid: 'u1', reason: 'virtru-pdp-sync' } as any),
+			).resolves.toBeUndefined();
+
+			expect(mockRoomRemoveUserFromRoom).toHaveBeenCalledWith(
+				'r1',
+				{ _id: 'u1', username: 'user-1' },
+				{
+					skipAppPreEvents: true,
+					customSystemMessage: 'abac-removed-user-from-room',
+				},
+			);
+		});
+
+		it('throws retry errors so queue-worker retries when removal fails', async () => {
+			mockFindOneByIdAndType.mockResolvedValue({ _id: 'r1', t: 'p', name: 'room-1' });
+			mockUsersFindOneById.mockResolvedValue({ _id: 'u1', username: 'user-1' });
+			mockRoomRemoveUserFromRoom.mockRejectedValue(new Error('boom'));
+
+			await expect(service.processRoomMembershipRemovalJob({ rid: 'r1', uid: 'u1', reason: 'virtru-pdp-sync' } as any)).rejects.toThrow(
+				'retry:',
+			);
 		});
 	});
 });

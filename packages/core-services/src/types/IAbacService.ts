@@ -10,6 +10,12 @@ import type {
 
 export type AbacActor = Pick<IUser, '_id' | 'username' | 'name'>;
 
+type AbacRoomMembershipRemovalJob = {
+	rid: string;
+	uid: string;
+	reason: 'realtime-policy-eval' | 'room-attributes-change' | 'ldap-sync' | 'virtru-pdp-sync';
+};
+
 export interface IAbacService {
 	addAbacAttribute(attribute: IAbacAttributeDefinition, actor: AbacActor | undefined): Promise<void>;
 	listAbacAttributes(
@@ -47,5 +53,6 @@ export interface IAbacService {
 	): Promise<boolean>;
 	addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>, actor: AbacActor | undefined): Promise<void>;
 	evaluateRoomMembership(): Promise<void>;
+	processRoomMembershipRemovalJob(job: AbacRoomMembershipRemovalJob): Promise<void>;
 	getPDPHealth(): Promise<void>;
 }
