@@ -440,3 +440,47 @@ export class UpdateStatusTextEndpoint extends ApiEndpoint {
 ```
 
 </details>
+
+#### Message Reaction Test
+
+File name: `message-updater-test_0.0.1.zip`
+
+An app used to test the message reaction updates. Provides a `/msg-update` slashcommand that takes an action of `'add' | 'remove'` and a message id, then adds or removes a reaction in the target message accordingly using the App's bot user.
+
+<details>
+<summary>App source code</summary>
+
+```typescript
+export class MessageUpdaterTestApp extends App {
+    protected async extendConfiguration(configuration: IConfigurationExtend, _environmentRead: IEnvironmentRead): Promise<void> {
+        await configuration.slashCommands.provideSlashCommand(new class UpdateCommand implements ISlashCommand {
+            command = 'msg-update';
+            i18nDescription = 'msg-update';
+            i18nParamsExample = 'msg-update';
+            providesPreview = false;
+
+            constructor(private readonly app: App) { }
+
+            public async executor(context: SlashCommandContext, read: IRead, modify: IModify, _http: IHttp, _persis: IPersistence) {
+                const [action, msgId] = context.getArguments() as ['add' | 'remove', string];
+
+                const user = await read.getUserReader().getAppUser();
+
+                if (!user) {
+                    this.app.getLogger().error(`Couldn't find app user`);
+                    return;
+                }
+
+                if (action === 'add') {
+                    await modify.getUpdater().getMessageUpdater().addReaction(msgId, user.id, ':+1:');
+                    this.app.getLogger().debug(`Added reaction 👍 to message ${msgId}`);
+                } else {
+                    await modify.getUpdater().getMessageUpdater().removeReaction(msgId, user.id, ':+1:');
+                    this.app.getLogger().debug(`Removed reaction 👍 from message ${msgId}`);
+                }
+            }
+        }(this));
+    }
+}
+```
+</details>
