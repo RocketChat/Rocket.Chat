@@ -45,12 +45,44 @@ export class AdminUsers extends Admin {
 	}
 
 	private async openUserActionMenu(username: string): Promise<void> {
-		await this.getUserRowByUsername(username).getByRole('button', { name: 'More actions' }).click();
+		for (let attempt = 0; attempt < 2; attempt++) {
+			const userRow = this.getUserRowByUsername(username);
+			const moreActionsButton = userRow.getByRole('button', { name: 'More actions' });
+
+			try {
+				await expect(userRow).toBeVisible();
+				await moreActionsButton.click();
+				return;
+			} catch (error) {
+				if (attempt === 1) {
+					throw error;
+				}
+
+				await this.searchUser(username);
+			}
+		}
 	}
 
 	async dispatchUserAction(username: string, action: UserActions) {
-		await this.openUserActionMenu(username);
-		await this.userRowMenu.root.getByRole('menuitem', { name: action }).click();
+		await this.searchUser(username);
+
+		for (let attempt = 0; attempt < 3; attempt++) {
+			await this.openUserActionMenu(username);
+			const menuItem = this.page.getByRole('menuitem', { name: action, exact: true }).first();
+
+			try {
+				await expect(menuItem).toBeVisible();
+				await menuItem.click();
+				await expect(menuItem).not.toBeVisible();
+				return;
+			} catch (error) {
+				if (attempt === 2) {
+					throw error;
+				}
+
+				await this.page.keyboard.press('Escape').catch(() => undefined);
+			}
+		}
 	}
 
 	async deleteUser(username: string): Promise<void> {
