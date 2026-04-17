@@ -9,9 +9,11 @@ import {
 	isDirectoryProps,
 	isFingerprintProps,
 	isMeteorCall,
+	meSuccessResponseSchema,
 	validateUnauthorizedErrorResponse,
 	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
+import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/string-helpers';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
@@ -170,18 +172,13 @@ import { getUserInfo } from '../helpers/getUserInfo';
  *              schema:
  *                $ref: '#/components/schemas/ApiFailureV1'
  */
-const meResponseSchema = ajv.compile<Record<string, unknown>>({
-	type: 'object',
-	additionalProperties: true,
-});
-
 API.v1.get(
 	'me',
 	{
 		authRequired: true,
 		userWithoutUsername: true,
 		response: {
-			200: meResponseSchema,
+			200: ajv.compile<MeApiSuccessResponse>(meSuccessResponseSchema),
 			401: validateUnauthorizedErrorResponse,
 		},
 	},
@@ -189,7 +186,7 @@ API.v1.get(
 		const userFields = { ...getBaseUserFields(), services: 1 };
 		const user = (await Users.findOneById(this.userId, { projection: userFields })) as IUser;
 
-		return API.v1.success((await getUserInfo(user)) as unknown as Record<string, unknown>);
+		return API.v1.success(await getUserInfo(user));
 	},
 );
 
@@ -197,7 +194,12 @@ let onlineCache = 0;
 let onlineCacheDate = 0;
 const cacheInvalid = 60000; // 1 minute
 
-API.v1.addRoute(
+const shieldSvgResponseSchema = ajv.compile<string>({
+	type: 'string',
+	description: 'SVG image markup',
+});
+
+API.v1.get(
 	'shield.svg',
 	{
 		authRequired: false,
@@ -205,98 +207,99 @@ API.v1.addRoute(
 			numRequestsAllowed: 60,
 			intervalTimeInMS: 60000,
 		},
-		validateParams: isShieldSvgProps,
+		query: isShieldSvgProps,
+		response: {
+			200: shieldSvgResponseSchema,
+			400: validateBadRequestErrorResponse,
+		},
 	},
-	{
-		async get() {
-			const { type, icon } = this.queryParams;
-			let { channel, name } = this.queryParams;
-			if (!settings.get('API_Enable_Shields')) {
-				throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
-					route: '/api/v1/shield.svg',
-				});
-			}
+	async function action() {
+		const { type, icon } = this.queryParams;
+		let { channel, name } = this.queryParams;
+		if (!settings.get('API_Enable_Shields')) {
+			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
+				route: '/api/v1/shield.svg',
+			});
+		}
 
-			const types = settings.get<string>('API_Shield_Types');
-			if (
-				type &&
-				types !== '*' &&
-				!types
-					.split(',')
-					.map((t: string) => t.trim())
-					.includes(type)
-			) {
-				throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', {
-					route: '/api/v1/shield.svg',
-				});
-			}
-			const hideIcon = icon === 'false';
-			if (hideIcon && !name?.trim()) {
-				return API.v1.failure('Name cannot be empty when icon is hidden');
-			}
+		const types = settings.get<string>('API_Shield_Types');
+		if (
+			type &&
+			types !== '*' &&
+			!types
+				.split(',')
+				.map((t: string) => t.trim())
+				.includes(type)
+		) {
+			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', {
+				route: '/api/v1/shield.svg',
+			});
+		}
+		const hideIcon = icon === 'false';
+		if (hideIcon && !name?.trim()) {
+			return API.v1.failure('Name cannot be empty when icon is hidden');
+		}
 
-			let text;
-			let backgroundColor = '#4c1';
-			switch (type) {
-				case 'online':
-					if (Date.now() - onlineCacheDate > cacheInvalid) {
-						onlineCache = await Users.countUsersNotOffline();
-						onlineCacheDate = Date.now();
-					}
+		let text;
+		let backgroundColor = '#4c1';
+		switch (type) {
+			case 'online':
+				if (Date.now() - onlineCacheDate > cacheInvalid) {
+					onlineCache = await Users.countUsersNotOffline();
+					onlineCacheDate = Date.now();
+				}
 
-					text = `${onlineCache} ${i18n.t('Online')}`;
-					break;
-				case 'channel':
-					if (!channel) {
-						return API.v1.failure('Shield channel is required for type "channel"');
-					}
+				text = `${onlineCache} ${i18n.t('Online')}`;
+				break;
+			case 'channel':
+				if (!channel) {
+					return API.v1.failure('Shield channel is required for type "channel"');
+				}
 
-					text = `#${channel}`;
-					break;
-				case 'user':
-					if (settings.get('API_Shield_user_require_auth') && !this.user) {
-						return API.v1.failure('You must be logged in to do this.');
-					}
-					const user = await getUserFromParams(this.queryParams);
+				text = `#${channel}`;
+				break;
+			case 'user':
+				if (settings.get('API_Shield_user_require_auth') && !this.user) {
+					return API.v1.failure('You must be logged in to do this.');
+				}
+				const user = await getUserFromParams(this.queryParams);
 
-					// Respect the server's choice for using their real names or not
-					if (user.name && settings.get('UI_Use_Real_Name')) {
-						text = `${user.name}`;
-					} else {
-						text = `@${user.username}`;
-					}
+				// Respect the server's choice for using their real names or not
+				if (user.name && settings.get('UI_Use_Real_Name')) {
+					text = `${user.name}`;
+				} else {
+					text = `@${user.username}`;
+				}
 
-					switch (user.status) {
-						case 'online':
-							backgroundColor = '#1fb31f';
-							break;
-						case 'away':
-							backgroundColor = '#dc9b01';
-							break;
-						case 'busy':
-							backgroundColor = '#bc2031';
-							break;
-						case 'offline':
-							backgroundColor = '#a5a1a1';
-					}
-					break;
-				default:
-					text = i18n.t('Join_Chat').toUpperCase();
-			}
+				switch (user.status) {
+					case 'online':
+						backgroundColor = '#1fb31f';
+						break;
+					case 'away':
+						backgroundColor = '#dc9b01';
+						break;
+					case 'busy':
+						backgroundColor = '#bc2031';
+						break;
+					case 'offline':
+						backgroundColor = '#a5a1a1';
+				}
+				break;
+			default:
+				text = i18n.t('Join_Chat').toUpperCase();
+		}
 
-			const iconSize = hideIcon ? 7 : 24;
-			const leftSize = name ? name.length * 6 + 7 + iconSize : iconSize;
-			const rightSize = text.length * 6 + 20;
-			const width = leftSize + rightSize;
-			const height = 20;
+		const iconSize = hideIcon ? 7 : 24;
+		const leftSize = name ? name.length * 6 + 7 + iconSize : iconSize;
+		const rightSize = text.length * 6 + 20;
+		const width = leftSize + rightSize;
+		const height = 20;
 
-			channel = escapeHTML(channel);
-			text = escapeHTML(text);
-			name = escapeHTML(name);
+		channel = escapeHTML(channel);
+		text = escapeHTML(text);
+		name = escapeHTML(name);
 
-			return {
-				headers: { 'Content-Type': 'image/svg+xml;charset=utf-8' },
-				body: `
+		const svgBody = `
 				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}">
 					<linearGradient id="b" x2="0" y2="100%">
 						<stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
@@ -323,10 +326,14 @@ API.v1.addRoute(
 					</g>
 				</svg>
 			`
-					.trim()
-					.replace(/\>[\s]+\</gm, '><'),
-			} as any;
-		},
+			.trim()
+			.replace(/\>[\s]+\</gm, '><');
+
+		return {
+			statusCode: 200 as const,
+			body: svgBody,
+			headers: { 'Content-Type': 'image/svg+xml;charset=utf-8' },
+		};
 	},
 );
 
@@ -360,7 +367,7 @@ const spotlightResponseSchema = ajv.compile<{
 					_id: { type: 'string' },
 					t: { type: 'string' },
 					name: { type: 'string' },
-					lastMessage: { type: 'object' },
+					lastMessage: { $ref: '#/components/schemas/IMessage' },
 				},
 				required: ['_id', 't', 'name'],
 				additionalProperties: true,

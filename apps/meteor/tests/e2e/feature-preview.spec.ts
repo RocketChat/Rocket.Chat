@@ -195,7 +195,7 @@ test.describe.serial('feature preview', () => {
 
 			await expect(page).toHaveURL(`/group/${sidepanelTeam}`);
 			await expect(poHomeChannel.sidepanel.getSidepanelHeader(sidepanelTeam)).toBeVisible();
-			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toHaveAttribute('aria-selected', 'true');
+			await expect(poHomeChannel.sidepanel.getItemByName(sidepanelTeam)).toHaveAttribute('aria-current', 'page');
 		});
 
 		test('sidepanel should not open the respective parent room filter if its not a room filter', async ({ page }) => {
@@ -600,18 +600,18 @@ test.describe.serial('feature preview', () => {
 
 				await expect(poHomeChannel.content.channelHeader).toContainText(Users.user1.data.username);
 				await expect(page).toHaveURL(/direct/);
-				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toHaveAttribute('aria-selected', 'true');
+				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toHaveAttribute('aria-current', 'page');
 				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toContainText('hello DM');
-				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toHaveAttribute('aria-selected', 'false');
+				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).not.toHaveAttribute('aria-current');
 				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
 
 				await poHomeChannel.sidepanel.getItemByName(discussionName).click();
 				await poHomeChannel.content.waitForChannel();
 
 				await expect(page).toHaveURL(/group/);
-				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toHaveAttribute('aria-selected', 'false');
+				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).not.toHaveAttribute('aria-current');
 				await expect(poHomeChannel.sidepanel.getMainRoomByName(Users.user1.data.username)).toContainText('hello DM');
-				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toHaveAttribute('aria-selected', 'true');
+				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toHaveAttribute('aria-current', 'page');
 				await expect(poHomeChannel.sidepanel.getItemByName(discussionName)).toContainText('hello');
 				await expect(poHomeChannel.sidepanel.getSidepanelHeader(Users.user1.data.username)).toBeVisible();
 			});

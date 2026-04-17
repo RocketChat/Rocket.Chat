@@ -143,6 +143,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOneAndUpdate({ _id }, { $unset: { abacAttributes: 1 } }, { returnDocument: 'after' });
 	}
 
+	findActiveByRoomIds(roomIds: IRoom['_id'][], options?: FindOptions<IUser>) {
+		return this.find({ active: true, __rooms: { $in: roomIds } }, options);
+	}
+
 	/**
 	 * @param {string} uid
 	 * @param {IRole['_id'][]} roles list of role ids

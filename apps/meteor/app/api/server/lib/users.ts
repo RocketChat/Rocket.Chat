@@ -126,11 +126,11 @@ type FindPaginatedUsersByStatusProps = {
 	offset: number;
 	count: number;
 	sort: Record<string, 1 | -1>;
-	status: 'active' | 'deactivated';
-	roles: string[] | null;
-	searchTerm: string;
-	hasLoggedIn: boolean;
-	type: string;
+	status?: 'active' | 'deactivated';
+	roles?: string[] | null;
+	searchTerm?: string;
+	hasLoggedIn?: boolean;
+	type?: string;
 	inactiveReason?: ('deactivated' | 'pending_approval' | 'idle_too_long')[];
 };
 

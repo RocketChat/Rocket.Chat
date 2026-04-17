@@ -88,7 +88,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 						divider
 						current={current}
 						itemsPerPage={itemsPerPage}
-						count={data.sounds.length || 0}
+						count={data?.total || 0}
 						onSetItemsPerPage={onSetItemsPerPage}
 						onSetCurrent={onSetCurrent}
 						{...paginationProps}

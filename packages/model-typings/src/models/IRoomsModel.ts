@@ -26,7 +26,7 @@ import type { FindPaginated, IBaseModel } from './IBaseModel';
 export interface IChannelsWithNumberOfMessagesBetweenDate {
 	room: {
 		_id: IRoom['_id'];
-		name: IRoom['name'] | IRoom['fname'];
+		name: IRoom['name'];
 		ts: IRoom['ts'];
 		t: IRoom['t'];
 		_updatedAt: IRoom['_updatedAt'];
@@ -52,6 +52,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	findOneByRoomIdAndUserId(rid: IRoom['_id'], uid: IUser['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findManyByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+
+	findManyArchivedByRoomIds(roomIds: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	findPaginatedByIds(
 		roomIds: Array<IRoom['_id']>,
@@ -84,7 +86,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	findByTeamIdAndRoomsId(teamId: ITeam['_id'], rids: Array<IRoom['_id']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
-	findRoomsByNameOrFnameStarting(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
+	findRoomsByNameOrFnameStarting(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): FindCursor<IRoom>;
 
 	findRoomsWithoutDiscussionsByRoomIds(
 		name: NonNullable<IRoom['name']>,
@@ -99,7 +101,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	): FindPaginated<FindCursor<IRoom>>;
 
 	findChannelAndGroupListWithoutTeamsByNameStartingByOwner(
-		name: NonNullable<IRoom['name']>,
+		name: IRoom['name'],
 		groupsToAccept: Array<IRoom['_id']>,
 		options?: FindOptions<IRoom>,
 	): FindCursor<IRoom>;
@@ -136,11 +138,11 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 
 	incUsersCountByIds(ids: Array<IRoom['_id']>, inc: number, options?: UpdateOptions): Promise<Document | UpdateResult>;
 
-	findOneByNameOrFname(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByNameOrFname(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	findOneByJoinCodeAndId(joinCode: string, rid: IRoom['_id'], options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
-	findOneByNonValidatedName(name: NonNullable<IRoom['name'] | IRoom['fname']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
+	findOneByNonValidatedName(name: NonNullable<IRoom['name']>, options?: FindOptions<IRoom>): Promise<IRoom | null>;
 
 	allRoomSourcesCount(): AggregationCursor<{ _id: Required<IOmnichannelGenericRoom['source']>; count: number }>;
 
@@ -286,7 +288,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	replaceUsernameOfUserByUserId(userId: string, newUsername: string): Promise<UpdateResult | Document>;
 	setJoinCodeById(rid: string, joinCode: string): Promise<UpdateResult>;
 	setTypeById(rid: string, type: IRoom['t']): Promise<UpdateResult>;
-	setTopicById(rid: string, topic?: string | undefined): Promise<UpdateResult>;
+	setTopicById(rid: string, topic?: string): Promise<UpdateResult>;
 	setAnnouncementById(
 		rid: string,
 		announcement: IRoom['announcement'],

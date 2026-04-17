@@ -22,5 +22,5 @@ test.each([
 	['+123-4', [paragraph([plain('+123-4')])]],
 	['5+51231', [paragraph([plain('5+51231')])]],
 ])('parses %p', (input, output) => {
-	expect(parse(input)).toMatchObject(output);
+	expect(parse(input)).toEqual(output);
 });

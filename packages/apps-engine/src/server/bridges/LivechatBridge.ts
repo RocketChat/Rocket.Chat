@@ -1,6 +1,14 @@
 import { BaseBridge } from './BaseBridge';
 import type { IExtraRoomParams } from '../../definition/accessors/ILivechatCreator';
-import type { IDepartment, ILivechatMessage, ILivechatRoom, ILivechatTransferData, IVisitor } from '../../definition/livechat';
+import type {
+	IDepartment,
+	IVisitorExternalIdentifier,
+	ILivechatMessage,
+	ILivechatRoom,
+	ILivechatTransferData,
+	IVisitor,
+	ResolveVisitorContactData,
+} from '../../definition/livechat';
 import type { IMessage } from '../../definition/messages';
 import type { IUser } from '../../definition/users';
 import { PermissionDeniedError } from '../errors/PermissionDeniedError';
@@ -95,9 +103,29 @@ export abstract class LivechatBridge extends BaseBridge {
 		}
 	}
 
+	public async doResolveVisitor(
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+		contactData: ResolveVisitorContactData | undefined,
+		appId: string,
+	): Promise<IVisitor | undefined> {
+		if (this.hasWritePermission(appId, 'livechat-visitor')) {
+			return this.resolveVisitor(externalId, contactData, appId);
+		}
+	}
+
 	public async doTransferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean> {
 		if (this.hasWritePermission(appId, 'livechat-visitor')) {
 			return this.transferVisitor(visitor, transferData, appId);
+		}
+	}
+
+	public async doUpdateVisitorExternalId(
+		visitorId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+		appId: string,
+	): Promise<IVisitor | undefined> {
+		if (this.hasWritePermission(appId, 'livechat-visitor')) {
+			return this.updateVisitorExternalId(visitorId, externalId, appId);
 		}
 	}
 
@@ -195,7 +223,19 @@ export abstract class LivechatBridge extends BaseBridge {
 
 	protected abstract findVisitorByPhoneNumber(phoneNumber: string, appId: string): Promise<IVisitor | undefined>;
 
+	protected abstract resolveVisitor(
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+		contactData: ResolveVisitorContactData | undefined,
+		appId: string,
+	): Promise<IVisitor | undefined>;
+
 	protected abstract transferVisitor(visitor: IVisitor, transferData: ILivechatTransferData, appId: string): Promise<boolean>;
+
+	protected abstract updateVisitorExternalId(
+		visitorId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+		appId: string,
+	): Promise<IVisitor | undefined>;
 
 	protected abstract createRoom(visitor: IVisitor, agent: IUser, appId: string, extraParams?: IExtraRoomParams): Promise<ILivechatRoom>;
 

@@ -1,4 +1,4 @@
-import Ajv from 'ajv';
+import Ajv from 'ajv/dist/2020';
 import addFormats from 'ajv-formats';
 
 const ajv = new Ajv({
@@ -8,9 +8,9 @@ const ajv = new Ajv({
 	discriminator: true,
 });
 
-/** AJV instance for query param validation; coerces types (e.g. string "50" → number) for URL query strings. */
+/** AJV instance for query param validation; coerces types (e.g. string "50" → number, "c" → ["c"]) for URL query strings. */
 const ajvQuery = new Ajv({
-	coerceTypes: true,
+	coerceTypes: 'array',
 	allowUnionTypes: true,
 	code: { source: true },
 	discriminator: true,
@@ -44,10 +44,10 @@ export { ajv, ajvQuery };
 
 type BadRequestErrorResponse = {
 	success: false;
-	error?: string;
+	error?: unknown;
 	errorType?: string;
 	stack?: string;
-	details?: string | object;
+	details?: string | object | object[];
 };
 
 const BadRequestErrorResponseSchema = {
@@ -57,7 +57,7 @@ const BadRequestErrorResponseSchema = {
 		stack: { type: 'string' },
 		error: { type: 'string' },
 		errorType: { type: 'string' },
-		details: { anyOf: [{ type: 'string' }, { type: 'object' }] },
+		details: { anyOf: [{ type: 'string' }, { type: 'object' }, { type: 'array' }] },
 	},
 	required: ['success'],
 	additionalProperties: false,
