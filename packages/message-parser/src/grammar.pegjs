@@ -794,7 +794,20 @@ Space = " " / "\t"
 
 Escaped = "\\" t:[*_~`#.] { return plain(t); }
 
-Any = !EndOfLine t:. p:$AutolinkedPhone? u:$URL? { return plain(t + p + u); }
+Any = !EndOfLine t:. p:$AnyPhone? u:$AnyURL? { return plain(t + p + u); }
+
+AnyPhone = &"+" AutolinkedPhone
+
+AnyURL = &AnyURLPrefix URL
+
+AnyURLPrefix = AnyURLSchemePrefix / AnyURLHostPrefix
+
+AnyURLSchemePrefix = [A-Za-z0-9+-] |1..32| "://"
+
+AnyURLHostPrefix
+  = "localhost"
+  / Digits |1..3| "." Digits |1..3| "."
+  / DomainNameLabel "."
 
 AnyText = [\x20-\x27\x2B-\x40\x41-\x5A\x61-\x7A] / NonASCII
 
