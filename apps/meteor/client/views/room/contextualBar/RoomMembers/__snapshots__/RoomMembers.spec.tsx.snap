@@ -147,7 +147,7 @@ exports[`renders Default without crashing 1`] = `
                   tabindex="-1"
                 >
                   <div
-                    style="width: 100%; position: -webkit-sticky; top: 0px; z-index: 1; margin-top: 0px;"
+                    style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
                       data-testid="virtuoso-top-item-list"
@@ -729,7 +729,7 @@ exports[`renders WithABACRoom without crashing 1`] = `
                   tabindex="-1"
                 >
                   <div
-                    style="width: 100%; position: -webkit-sticky; top: 0px; z-index: 1; margin-top: 0px;"
+                    style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
                       data-testid="virtuoso-top-item-list"
@@ -941,7 +941,7 @@ exports[`renders WithInvitedMember without crashing 1`] = `
                   tabindex="-1"
                 >
                   <div
-                    style="width: 100%; position: -webkit-sticky; top: 0px; z-index: 1; margin-top: 0px;"
+                    style="position: -webkit-sticky; top: 0px; width: 100%; z-index: 1; margin-top: 0px;"
                   >
                     <div
                       data-testid="virtuoso-top-item-list"
