@@ -193,5 +193,6 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 }
 
 export { Response };
+export { isIpInCidrRange } from './helpers';
 export type { ExtendedFetchOptions };
 export { parseSsrfAllowlist };
