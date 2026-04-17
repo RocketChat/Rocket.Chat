@@ -150,7 +150,7 @@ const EditOutgoingWebhook = ({ webhookData }: EditOutgoingWebhookProps) => {
 			)}
 			<PageScrollableContentWithShadow is='form' id={formId} onSubmit={handleSubmit(handleSave)}>
 				<FormProvider {...methods}>
-					<OutgoingWebhookForm />
+					<OutgoingWebhookForm webhookData={webhookData} />
 				</FormProvider>
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>

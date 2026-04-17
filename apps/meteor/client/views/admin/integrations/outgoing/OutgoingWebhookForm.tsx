@@ -1,4 +1,4 @@
-import type { IOutgoingIntegration } from '@rocket.chat/core-typings';
+import type { IOutgoingIntegration, Serialized } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	FieldError,
@@ -52,7 +52,7 @@ type EditOutgoingWebhookPayload = Pick<
 	| 'runOnEdits'
 >;
 
-const OutgoingWebhookForm = () => {
+const OutgoingWebhookForm = ({ webhookData }: { webhookData?: Serialized<IOutgoingIntegration> }) => {
 	const { t } = useTranslation();
 
 	const {
@@ -418,6 +418,16 @@ const OutgoingWebhookForm = () => {
 									)}
 								/>
 							</FieldRow>
+							{webhookData?.scriptEnabled && webhookData?.scriptError && (
+								<FieldError aria-live='assertive' id={`${scriptField}-error`}>
+									{webhookData.scriptError.name}: {webhookData.scriptError.message}
+								</FieldError>
+							)}
+							{webhookData?.scriptEnabled && webhookData?.scriptCompiled && !webhookData?.scriptError && (
+								<FieldHint id={`${scriptField}-success`}>
+									{t('Integration_script_compiled_successfully')}
+								</FieldHint>
+							)}
 						</Field>
 						<Field>
 							<FieldLabel>{t('Responding')}</FieldLabel>
