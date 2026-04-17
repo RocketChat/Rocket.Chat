@@ -6,7 +6,6 @@ import LeaveTeamModalChannels from './LeaveTeamModalChannels';
 import LeaveTeamModalConfirmation from './LeaveTeamModalConfirmation';
 
 export default {
-	title: 'Teams/Contextual Bar/LeaveTeamModal',
 	component: LeaveTeamModal,
 	parameters: {
 		layout: 'fullscreen',

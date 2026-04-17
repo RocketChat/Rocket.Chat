@@ -5,27 +5,29 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
+import { usePreventPropagation } from '../../../hooks/usePreventPropagation';
 import OutlookCalendarEventModal from '../OutlookCalendarEventModal';
 import { useOutlookOpenCall } from '../hooks/useOutlookOpenCall';
 
 type OutlookEventItemProps = Serialized<ICalendarEvent>;
+
+const hovered = css`
+	&:hover {
+		cursor: pointer;
+	}
+
+	&:hover,
+	&:focus {
+		background: ${Palette.surface['surface-hover']};
+	}
+`;
 
 const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: OutlookEventItemProps) => {
 	const { t } = useTranslation();
 	const setModal = useSetModal();
 	const formatDateAndTime = useFormatDateAndTime();
 	const openCall = useOutlookOpenCall(meetingUrl);
-
-	const hovered = css`
-		&:hover {
-			cursor: pointer;
-		}
-
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-hover']};
-		}
-	`;
+	const handleMeetingClick = usePreventPropagation(openCall);
 
 	const handleOpenEvent = () => {
 		setModal(
@@ -57,7 +59,7 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 			</Box>
 			<Box>
 				{meetingUrl && (
-					<Button onClick={openCall} small>
+					<Button onClick={handleMeetingClick} small>
 						{t('Join')}
 					</Button>
 				)}

@@ -13,16 +13,19 @@ export class LoginPage {
 		return this.page.getByRole('button', { name: 'Login', exact: true });
 	}
 
-	/** @deprecated ideally the previous action should ensure the user is logged out and we should just assume to be at the login page */
+	/**
+	 * Ideally the previous action should ensure the user is logged out and we should just assume to be at the login page
+	 * */
 	async waitForIt() {
 		await this.loginButton.waitFor();
 	}
 
 	protected async waitForLogin() {
 		await expect(this.loginButton).not.toBeVisible();
+		await expect(this.page.getByRole('main')).toBeVisible();
 	}
 
-	async loginByUserState(userState: IUserState) {
+	async loginByUserState(userState: IUserState, options: { except: string[] } = { except: [] }) {
 		// Creates a login token for the user
 		const connection = await MongoClient.connect(constants.URL_MONGODB);
 
@@ -36,6 +39,8 @@ export class LoginPage {
 
 		await connection.close();
 
+		const localStorageItems = userState.state.origins[0].localStorage.filter((item) => options.except.indexOf(item.name) === -1);
+
 		// Injects the login token to the local storage
 		await this.page.evaluate((items) => {
 			items.forEach(({ name, value }) => {
@@ -43,7 +48,7 @@ export class LoginPage {
 			});
 			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			require('meteor/accounts-base').Accounts._pollStoredLoginToken();
-		}, userState.state.origins[0].localStorage);
+		}, localStorageItems);
 
 		await this.waitForLogin();
 	}

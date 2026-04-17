@@ -3,7 +3,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import CounterContainer from './CounterContainer';
 
 export default {
-	title: 'Omnichannel/Realtime Monitoring/CounterContainer',
 	component: CounterContainer,
 } satisfies Meta<typeof CounterContainer>;
 

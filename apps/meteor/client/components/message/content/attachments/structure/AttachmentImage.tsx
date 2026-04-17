@@ -1,4 +1,3 @@
-import type { Dimensions } from '@rocket.chat/core-typings';
 import { Box } from '@rocket.chat/fuselage';
 import { useAttachmentDimensions } from '@rocket.chat/ui-contexts';
 import { memo, useState, useMemo } from 'react';
@@ -14,12 +13,14 @@ type AttachmentImageProps = {
 	loadImage?: boolean;
 	setLoadImage: () => void;
 	id: string | undefined;
-} & Dimensions &
-	({ loadImage: true } | { loadImage: false; setLoadImage: () => void });
+	width: number;
+	height: number;
+	alt?: string;
+} & ({ loadImage: true } | { loadImage: false; setLoadImage: () => void });
 
 const getDimensions = (
-	originalWidth: Dimensions['width'],
-	originalHeight: Dimensions['height'],
+	originalWidth: number,
+	originalHeight: number,
 	limits: { width: number; height: number },
 ): { width: number; height: number; ratio: number } => {
 	const widthRatio = originalWidth / limits.width;
@@ -36,7 +37,7 @@ const getDimensions = (
 	return { width, height, ratio: (height / width) * 100 };
 };
 
-const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadImage, src, ...size }: AttachmentImageProps) => {
+const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadImage, src, alt = '', ...size }: AttachmentImageProps) => {
 	const limits = useAttachmentDimensions();
 
 	const [error, setError] = useState(false);
@@ -82,7 +83,7 @@ const AttachmentImage = ({ id, previewUrl, dataSrc, loadImage = true, setLoadIma
 						className='gallery-item'
 						data-src={dataSrc || src}
 						src={src}
-						alt=''
+						alt={alt}
 						width={dimensions.width}
 						height={dimensions.height}
 						loading='lazy'

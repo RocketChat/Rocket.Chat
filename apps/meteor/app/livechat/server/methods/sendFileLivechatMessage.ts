@@ -5,11 +5,9 @@ import type {
 	VideoAttachmentProps,
 	IUpload,
 } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { sendMessageLivechat } from './sendMessageLivechat';
 import { FileUpload } from '../../../file-upload/server';
@@ -19,18 +17,6 @@ interface ISendFileLivechatMessage {
 	visitorToken: string;
 	file: IUpload;
 	msgData?: { avatar?: string; emoji?: string; alias?: string; groupable?: boolean; msg?: string };
-}
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		sendFileLivechatMessage(
-			roomId: string,
-			visitorToken: string,
-			file: IUpload,
-			msgData?: { avatar?: string; emoji?: string; alias?: string; groupable?: boolean; msg?: string },
-		): boolean;
-	}
 }
 
 export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgData = {} }: ISendFileLivechatMessage): Promise<boolean> => {
@@ -109,9 +95,3 @@ export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgD
 
 	return sendMessageLivechat({ message: msg });
 };
-
-Meteor.methods<ServerMethods>({
-	async sendFileLivechatMessage(roomId, visitorToken, file, msgData = {}) {
-		return sendFileLivechatMessage({ roomId, visitorToken, file, msgData });
-	},
-});

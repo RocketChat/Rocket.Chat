@@ -1,28 +1,31 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { Tag, Box } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { usePermission, useRoute } from '@rocket.chat/ui-contexts';
+import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
+import { usePermission } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { GenericTableCell, GenericTableRow } from '../../../../../components/GenericTable';
+import RemoveChatButton from './RemoveChatButton';
 import { OmnichannelRoomIcon } from '../../../../../components/RoomIcon/OmnichannelRoomIcon';
+import { useFormatDate } from '../../../../../hooks/useFormatDate';
 import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
-import { RoomActivityIcon } from '../../../../../omnichannel/components/RoomActivityIcon';
-import { useOmnichannelPriorities } from '../../../../../omnichannel/hooks/useOmnichannelPriorities';
-import { PriorityIcon } from '../../../../../omnichannel/priorities/PriorityIcon';
 import OmnichannelVerificationTag from '../../../components/OmnichannelVerificationTag';
-import RemoveChatButton from '../../../currentChats/RemoveChatButton';
+import RoomActivityIcon from '../../../components/RoomActivityIcon';
+import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
+import { PriorityIcon } from '../../../priorities/PriorityIcon';
+import { useOmnichannelDirectoryRouter } from '../../hooks/useOmnichannelDirectoryRouter';
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const { t } = useTranslation();
 	const { _id, fname, tags, servedBy, ts, department, open, priorityWeight, lm, onHold, source, verified } = room;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 	const getTimeFromNow = useTimeFromNow(true);
+	const formatDate = useFormatDate();
 	const { getSourceLabel } = useOmnichannelSource();
 
 	const canRemoveClosedChats = usePermission('remove-closed-livechat-room');
-	const directoryRoute = useRoute('omnichannel-directory');
+	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const getStatusText = (open = false, onHold = false): string => {
 		if (!open) {
@@ -37,7 +40,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	};
 
 	const onRowClick = useEffectEvent((id: string) =>
-		directoryRoute.push({
+		omnichannelDirectoryRouter.navigate({
 			tab: 'chats',
 			context: 'info',
 			id,
@@ -45,7 +48,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	);
 
 	return (
-		<GenericTableRow key={_id} tabIndex={0} role='link' onClick={() => onRowClick(_id)} action qa-user-id={_id}>
+		<GenericTableRow key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
 			<GenericTableCell withTruncatedText>
 				<Box display='flex' flexDirection='column'>
 					<Box withTruncatedText>{fname}</Box>
@@ -80,8 +83,12 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>{department?.name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{getTimeFromNow(ts)}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{getTimeFromNow(lm)}</GenericTableCell>
+			<GenericTableCell withTruncatedText title={getTimeFromNow(ts)}>
+				{formatDate(ts)}
+			</GenericTableCell>
+			<GenericTableCell withTruncatedText title={lm ? getTimeFromNow(lm) : undefined}>
+				{lm ? formatDate(lm) : undefined}
+			</GenericTableCell>
 			<GenericTableCell withTruncatedText>
 				<RoomActivityIcon room={room} />
 				{getStatusText(open, onHold)}

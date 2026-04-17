@@ -2,7 +2,8 @@ import { createFakeVisitor } from '../../mocks/data';
 import { IS_EE } from '../config/constants';
 import { createAuxContext } from '../fixtures/createAuxContext';
 import { Users } from '../fixtures/userStates';
-import { HomeOmnichannel, OmnichannelLiveChat } from '../page-objects';
+import { HomeOmnichannel } from '../page-objects';
+import { OmnichannelLiveChat } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
 
 const firstVisitor = createFakeVisitor();
@@ -32,7 +33,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 		poHomeOmnichannel = new HomeOmnichannel(omniPage);
 
 		// Agent will be offline for these tests
-		await poHomeOmnichannel.sidenav.switchOmnichannelStatus('offline');
+		await poHomeOmnichannel.navbar.switchOmnichannelStatus('offline');
 	});
 
 	test.beforeEach(async ({ browser, api }) => {
@@ -100,7 +101,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('should start the queue by making the agent available again', async () => {
-				await poHomeOmnichannel.sidenav.switchOmnichannelStatus('online');
+				await poHomeOmnichannel.navbar.switchOmnichannelStatus('online');
 			});
 
 			await test.step('user1 should get assigned to the first chat', async () => {

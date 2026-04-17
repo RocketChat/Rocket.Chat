@@ -15,8 +15,24 @@ export const useNotificationUserCalendar = (user: IUser) => {
 			return;
 		}
 
+		let body = notification.text;
+		if (notification.payload?.startTimeUtc) {
+			try {
+				const time = new Date(notification.payload.startTimeUtc);
+				const formattedTime = time.toLocaleTimeString(undefined, {
+					hour: 'numeric',
+					minute: 'numeric',
+					dayPeriod: 'narrow',
+				});
+				body = formattedTime;
+			} catch (error) {
+				console.error('Failed to format calendar notification time:', error);
+				body = notification.text;
+			}
+		}
+
 		const n = new Notification(notification.title, {
-			body: notification.text,
+			body,
 			tag: notification.payload._id,
 			silent: true,
 			requireInteraction,

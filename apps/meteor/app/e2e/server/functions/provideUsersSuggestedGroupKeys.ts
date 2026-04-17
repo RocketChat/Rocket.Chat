@@ -15,13 +15,13 @@ export const provideUsersSuggestedGroupKeys = async (
 	}
 
 	// Process should try to process all rooms i have access instead of dying if one is not
-	for await (const roomId of roomIds) {
+	for (const roomId of roomIds) {
 		if (!(await canAccessRoomIdAsync(roomId, userId))) {
 			continue;
 		}
 
 		const usersWithSuggestedKeys = [];
-		for await (const user of usersSuggestedGroupKeys[roomId]) {
+		for (const user of usersSuggestedGroupKeys[roomId]) {
 			const value = await Subscriptions.setGroupE2ESuggestedKeyAndOldRoomKeys(user._id, roomId, user.key, parseOldKeysDates(user.oldKeys));
 			if (!value) {
 				continue;

@@ -6,7 +6,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import ConnectionStatusBar from './ConnectionStatusBar';
 
 export default {
-	title: 'Components/ConnectionStatusBar',
 	component: ConnectionStatusBar,
 	parameters: {
 		layout: 'fullscreen',

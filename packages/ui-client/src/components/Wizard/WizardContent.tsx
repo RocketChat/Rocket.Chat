@@ -14,7 +14,7 @@ const WizardContent = ({ id, children }: WizardContentProps) => {
 		return null;
 	}
 
-	return <div>{children}</div>;
+	return children;
 };
 
 export default memo(WizardContent);

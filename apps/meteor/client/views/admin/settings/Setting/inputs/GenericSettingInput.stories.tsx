@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import GenericSettingInput from './GenericSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/GenericSettingInput',
 	component: GenericSettingInput,
 	parameters: {
 		actions: {

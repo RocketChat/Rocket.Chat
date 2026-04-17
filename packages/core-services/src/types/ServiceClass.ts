@@ -1,8 +1,10 @@
 import { EventEmitter } from 'events';
 
+import type { ISetting } from '@rocket.chat/core-typings';
+
 import type { IApiService } from './IApiService';
 import type { IBroker, IBrokerNode } from './IBroker';
-import type { EventSignatures } from '../events/Events';
+import type { ClientAction, EventSignatures } from '../events/Events';
 import { asyncLocalStorage } from '../lib/asyncLocalStorage';
 
 export interface IServiceContext {
@@ -37,6 +39,11 @@ export interface IServiceClass {
 
 	onEvent<T extends keyof EventSignatures>(event: T, handler: EventSignatures[T]): void;
 	emit<T extends keyof EventSignatures>(event: T, ...args: Parameters<EventSignatures[T]>): void;
+	onSettingChanged(
+		settingId: ISetting['_id'],
+		cb: (data: { clientAction: ClientAction; setting: ISetting }) => Promise<void>,
+		ignoreActions?: ClientAction[],
+	): void;
 
 	isInternal(): boolean;
 
@@ -50,9 +57,13 @@ export abstract class ServiceClass implements IServiceClass {
 
 	protected events = new EventEmitter();
 
+	protected settings = new EventEmitter();
+
 	protected internal = false;
 
 	protected api?: IApiService;
+
+	protected settingListenerActive = false;
 
 	constructor() {
 		this.emit = this.emit.bind(this);
@@ -71,6 +82,7 @@ export abstract class ServiceClass implements IServiceClass {
 
 	removeAllListeners(): void {
 		this.events.removeAllListeners();
+		this.settings.removeAllListeners();
 	}
 
 	getName(): string {
@@ -93,6 +105,40 @@ export abstract class ServiceClass implements IServiceClass {
 		this.events.emit(event, ...args);
 	}
 
+	private registerEventListener() {
+		if (this.settingListenerActive) {
+			return;
+		}
+
+		this.settingListenerActive = true;
+
+		this.onEvent('watch.settings', async ({ clientAction, setting }): Promise<void> => {
+			const { _id } = setting;
+
+			this.settings.emit(_id, { clientAction, setting });
+		});
+	}
+
+	public onSettingChanged(
+		settingId: ISetting['_id'],
+		cb: (data: { clientAction: ClientAction; setting: ISetting }) => Promise<void>,
+		ignoreActions: ClientAction[] = ['removed'],
+	): void {
+		this.registerEventListener();
+
+		this.settings.on(settingId, async ({ clientAction, setting }: { clientAction: ClientAction; setting: ISetting }): Promise<void> => {
+			if (ignoreActions?.includes(clientAction)) {
+				return;
+			}
+
+			try {
+				await cb({ clientAction, setting });
+			} catch {
+				// noop
+			}
+		});
+	}
+
 	async created(): Promise<void> {
 		// noop
 	}
@@ -111,5 +157,5 @@ export abstract class ServiceClass implements IServiceClass {
  * Services that run on their own node should use @ServiceClass instead.
  */
 export abstract class ServiceClassInternal extends ServiceClass {
-	protected internal = true;
+	protected override internal = true;
 }

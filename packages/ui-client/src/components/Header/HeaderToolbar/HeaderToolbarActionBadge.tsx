@@ -1,8 +1,10 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box, Badge } from '@rocket.chat/fuselage';
-import type { ComponentProps, FC } from 'react';
+import type { ComponentPropsWithoutRef } from 'react';
 
-const HeaderToolbarActionActionBadge: FC<ComponentProps<typeof Badge>> = (props) => (
+type HeaderToolbarActionBadgeProps = ComponentPropsWithoutRef<typeof Badge>;
+
+const HeaderToolbarActionBadge = (props: HeaderToolbarActionBadgeProps) => (
 	<Box
 		position='absolute'
 		role='status'
@@ -17,4 +19,4 @@ const HeaderToolbarActionActionBadge: FC<ComponentProps<typeof Badge>> = (props)
 	</Box>
 );
 
-export default HeaderToolbarActionActionBadge;
+export default HeaderToolbarActionBadge;

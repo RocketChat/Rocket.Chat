@@ -1,9 +1,9 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { CheckBox, Icon, Margins } from '@rocket.chat/fuselage';
 import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { ReactElement } from 'react';
 
-import { GenericTableRow, GenericTableCell } from '../../../components/GenericTable';
 import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 type ChannelDesertionTableRowProps = {

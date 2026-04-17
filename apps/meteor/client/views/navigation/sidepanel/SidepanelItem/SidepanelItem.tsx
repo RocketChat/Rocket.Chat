@@ -59,14 +59,15 @@ const SidePanelItem = ({
 			onFocus={handleFocus}
 			onPointerEnter={handlePointerEnter}
 			aria-label={title}
-			aria-selected={selected}
+			aria-current={selected ? 'page' : undefined}
+			level={2}
 		>
 			<SidebarV2ItemCol>
 				<SidebarV2ItemRow>
 					{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
 					{icon}
 					<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
-					{time && <SidebarV2ItemTimestamp>{formatDate(time)}</SidebarV2ItemTimestamp>}
+					{time && <SidebarV2ItemTimestamp unread={unread}>{formatDate(time)}</SidebarV2ItemTimestamp>}
 				</SidebarV2ItemRow>
 				<SidebarV2ItemRow>
 					<SidebarV2ItemContent unread={unread}>{subtitle}</SidebarV2ItemContent>

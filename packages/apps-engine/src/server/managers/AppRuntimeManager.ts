@@ -1,5 +1,6 @@
 import type { AppManager } from '../AppManager';
 import type { IParseAppPackageResult } from '../compiler';
+import type { IRuntimeController } from '../runtime/IRuntimeController';
 import { DenoRuntimeSubprocessController } from '../runtime/deno/AppsEngineDenoRuntime';
 import type { IAppStorageItem } from '../storage';
 
@@ -21,7 +22,7 @@ const defaultRuntimeFactory = (manager: AppManager, appPackage: IParseAppPackage
 	new DenoRuntimeSubprocessController(manager, appPackage, storageItem);
 
 export class AppRuntimeManager {
-	private readonly subprocesses: Record<string, DenoRuntimeSubprocessController> = {};
+	private readonly subprocesses: Record<string, IRuntimeController> = {};
 
 	constructor(
 		private readonly manager: AppManager,
@@ -32,7 +33,7 @@ export class AppRuntimeManager {
 		appPackage: IParseAppPackageResult,
 		storageItem: IAppStorageItem,
 		options = { force: false },
-	): Promise<DenoRuntimeSubprocessController> {
+	): Promise<IRuntimeController> {
 		const { id: appId } = appPackage.info;
 
 		if (appId in this.subprocesses && !options.force) {
@@ -63,7 +64,7 @@ export class AppRuntimeManager {
 		return subprocess.sendRequest(execRequest);
 	}
 
-	public async stopRuntime(controller: DenoRuntimeSubprocessController): Promise<void> {
+	public async stopRuntime(controller: IRuntimeController): Promise<void> {
 		await controller.stopApp();
 
 		const appId = controller.getAppId();

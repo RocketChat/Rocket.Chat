@@ -1,11 +1,7 @@
 import type { IOutboundMessage, IOutboundProvider, IOutboundProviderMetadata, ValidOutboundProvider } from '@rocket.chat/core-typings';
-import Ajv from 'ajv';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import type { OutboundCommsEndpoints } from '../api/outbound';
-
-const ajv = new Ajv({
-	coerceTypes: true,
-});
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
@@ -164,6 +160,7 @@ const POSTOutboundMessageSchema = {
 											properties: {
 												type: { const: 'media' },
 												link: { type: 'string' },
+												format: { type: 'string', enum: ['image', 'video', 'document'] },
 											},
 											additionalProperties: false,
 										},
@@ -178,30 +175,19 @@ const POSTOutboundMessageSchema = {
 			},
 			additionalProperties: false,
 		},
+		agentId: { type: 'string' },
+		departmentId: { type: 'string' },
 	},
 	additionalProperties: false,
 };
 
 export const POSTOutboundMessageParams = ajv.compile<POSTOutboundMessageParamsType>(POSTOutboundMessageSchema);
 
-const POSTOutboundMessageError = {
-	type: 'object',
-	properties: {
-		success: {
-			type: 'boolean',
-		},
-		message: {
-			type: 'string',
-		},
-	},
-	additionalProperties: false,
-};
-
-export const POSTOutboundMessageErrorSchema = ajv.compile<GenericErrorResponse>(POSTOutboundMessageError);
-
 const POSTOutboundMessageSuccess = {
 	type: 'object',
-	properties: {},
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
 	additionalProperties: false,
 };
 

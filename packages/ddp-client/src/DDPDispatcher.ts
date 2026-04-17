@@ -15,7 +15,7 @@ type Queue = Blocks[];
 export class DDPDispatcher extends MinimalDDPClient {
 	queue: Queue = [];
 
-	dispatch(msg: MethodPayload, options?: { wait?: boolean }) {
+	override dispatch(msg: MethodPayload, options?: { wait?: boolean }) {
 		if (options?.wait) {
 			this.wait(msg);
 			return;

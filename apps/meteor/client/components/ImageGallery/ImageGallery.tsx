@@ -1,8 +1,8 @@
+import { FocusScope } from '@react-aria/focus';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, IconButton, Palette, PaletteStyleTag, Throbber, padding } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, IconButton, Palette, PaletteStyleTag, Throbber, spacing } from '@rocket.chat/fuselage';
 import { useRef, useState } from 'react';
-import { FocusScope } from 'react-aria';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Navigation, Zoom, Keyboard, A11y } from 'swiper/modules/index.mjs';
@@ -33,7 +33,7 @@ const swiperStyle = css`
 	}
 
 	.swiper-slide {
-		padding: ${padding('x144')} ${padding('x60')} ${padding('x96')};
+		padding: ${spacing('x144')} ${spacing('x60')} ${spacing('x96')};
 	}
 
 	.rcx-swiper-prev-button,
@@ -192,14 +192,20 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 							onReachBeginning={loadMore}
 							initialSlide={images.length - 1}
 						>
-							{[...images].reverse().map(({ _id, path, url }) => (
+							{[...images].reverse().map(({ _id, path, url, description }) => (
 								<SwiperSlide key={_id}>
 									<div className='swiper-zoom-container'>
 										{/* eslint-disable-next-line
 											jsx-a11y/no-noninteractive-element-interactions,
 											jsx-a11y/click-events-have-key-events
 										*/}
-										<img src={path || url} loading='lazy' alt='' data-qa-zoom-scale={zoomScale} onClick={preventPropagation} />
+										<img
+											src={path || url}
+											loading='lazy'
+											alt={description || ''}
+											data-qa-zoom-scale={zoomScale}
+											onClick={preventPropagation}
+										/>
 										<div className='rcx-lazy-preloader'>
 											<Throbber inheritColor />
 										</div>

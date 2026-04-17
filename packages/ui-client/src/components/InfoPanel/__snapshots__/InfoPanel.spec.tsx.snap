@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full rcx-css-19lqiwa"
+    >
+      <div
+        class="rcx-box rcx-box--full rcx-css-13kmycs"
+      />
+      <div
+        class="rcx-box rcx-box--full rcx-css-6jv9ad"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-902tla"
+        >
+          <i
+            aria-hidden="true"
+            class="rcx-box rcx-box--full rcx-icon--name-hashtag rcx-icon rcx-css-tqjil4"
+          >
+            
+          </i>
+          <div
+            class="rcx-box rcx-box--full rcx-css-dredvr"
+            title="rocketchat-frontend-team"
+          >
+            rocketchat-frontend-team
+          </div>
+        </div>
+      </div>
+      <div
+        class="rcx-box rcx-box--full rcx-css-6jv9ad"
+      >
+        <div
+          class="rcx-box rcx-box--full rcx-css-1jagyun"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+          >
+            Description
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+          >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1jagyun"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+          >
+            Announcement
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+          >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero
+          </div>
+        </div>
+        <div
+          class="rcx-box rcx-box--full rcx-css-1jagyun"
+        >
+          <div
+            class="rcx-box rcx-box--full rcx-css-1n8o8rn"
+          >
+            Topic
+            <i
+              aria-hidden="true"
+              class="rcx-box rcx-box--full rcx-icon--name-info rcx-icon rcx-css-ffrv0l"
+              title="This is helpful information about the label"
+            >
+              
+            </i>
+          </div>
+          <div
+            class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-faoni4"
+          >
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam mollis nisi vel arcu bibendum vehicula. Integer vitae suscipit libero
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

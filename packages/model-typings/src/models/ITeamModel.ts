@@ -1,4 +1,4 @@
-import type { ITeam, TEAM_TYPE } from '@rocket.chat/core-typings';
+import type { ITeam, TeamType } from '@rocket.chat/core-typings';
 import type { FindOptions, FindCursor, UpdateResult, DeleteResult, Filter, Document } from 'mongodb';
 
 import type { FindPaginated, IBaseModel } from './IBaseModel';
@@ -33,19 +33,19 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 
 	findByIdsPaginated(ids: Array<string>, options?: undefined | FindOptions<ITeam>, query?: Filter<ITeam>): FindPaginated<FindCursor<ITeam>>;
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE): FindCursor<ITeam>;
+	findByIdsAndType(ids: Array<string>, type: TeamType): FindCursor<ITeam>;
 
-	findByIdsAndType(ids: Array<string>, type: TEAM_TYPE, options: FindOptions<ITeam>): FindCursor<ITeam>;
+	findByIdsAndType(ids: Array<string>, type: TeamType, options: FindOptions<ITeam>): FindCursor<ITeam>;
 
 	findByIdsAndType<P extends Document>(
 		ids: Array<string>,
-		type: TEAM_TYPE,
+		type: TeamType,
 		options: FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P>;
 
 	findByIdsAndType<P extends Document>(
 		ids: Array<string>,
-		type: TEAM_TYPE,
+		type: TeamType,
 		options?: undefined | FindOptions<ITeam> | FindOptions<P extends ITeam ? ITeam : P>,
 	): FindCursor<P> | FindCursor<ITeam>;
 
@@ -104,5 +104,5 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 
 	deleteOneByName(name: string): Promise<DeleteResult>;
 
-	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TEAM_TYPE }): Promise<UpdateResult>;
+	updateNameAndType(teamId: string, nameAndType: { name?: string; type?: TeamType }): Promise<UpdateResult>;
 }

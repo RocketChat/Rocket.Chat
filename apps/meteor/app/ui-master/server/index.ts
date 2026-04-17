@@ -160,5 +160,3 @@ injectIntoBody(
 </div>
 `,
 );
-
-injectIntoBody('icons', (await Assets.getTextAsync('public/icons.svg')) ?? '');

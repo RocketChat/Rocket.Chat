@@ -1,3 +1,5 @@
+import { inspect } from 'util';
+
 import * as mem from 'mem';
 
 import type { AppManager } from './AppManager';
@@ -9,7 +11,8 @@ import { InvalidInstallationError } from './errors/InvalidInstallationError';
 import { AppConsole } from './logging';
 import { AppLicenseValidationResult } from './marketplace/license';
 import type { AppsEngineRuntime } from './runtime/AppsEngineRuntime';
-import { JSONRPC_METHOD_NOT_FOUND, type DenoRuntimeSubprocessController } from './runtime/deno/AppsEngineDenoRuntime';
+import type { IRuntimeController } from './runtime/IRuntimeController';
+import { JSONRPC_METHOD_NOT_FOUND } from './runtime/deno/AppsEngineDenoRuntime';
 import type { AppInstallationSource, IAppStorageItem } from './storage';
 
 export class ProxiedApp {
@@ -20,7 +23,7 @@ export class ProxiedApp {
 	constructor(
 		private readonly manager: AppManager,
 		private storageItem: IAppStorageItem,
-		private readonly appRuntime: DenoRuntimeSubprocessController,
+		private readonly appRuntime: IRuntimeController,
 	) {
 		this.previousStatus = storageItem.status;
 
@@ -31,7 +34,7 @@ export class ProxiedApp {
 		return this.manager.getRuntime();
 	}
 
-	public getDenoRuntime(): DenoRuntimeSubprocessController {
+	public getRuntimeController(): IRuntimeController {
 		return this.appRuntime;
 	}
 
@@ -77,7 +80,7 @@ export class ProxiedApp {
 			// Range of JSON-RPC error codes: https://www.jsonrpc.org/specification#error_object
 			if (e.code >= -32999 || e.code <= -32000) {
 				// we really need to receive a logger from rocket.chat
-				console.error('JSON-RPC error received: ', e);
+				console.error('JSON-RPC error received: ', inspect(e, { depth: 10 }));
 			}
 		}
 	}

@@ -1,3 +1,4 @@
+import { MeteorError } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
@@ -16,13 +17,15 @@ Meteor.methods<ServerMethods>({
 		const userId = Meteor.userId();
 
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new MeteorError('error-invalid-user', 'Invalid user', {
 				method: 'resetOwnE2EKey',
 			});
 		}
 
 		if (!(await resetUserE2EEncriptionKey(userId, false))) {
-			return false;
+			throw new MeteorError('failed-reset-e2e-password', 'Failed to reset E2E password', {
+				method: 'resetOwnE2EKey',
+			});
 		}
 		return true;
 	}),

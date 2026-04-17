@@ -84,6 +84,7 @@ export const requestDataDownload = async ({
 		generatedFile: undefined,
 		fullExport,
 		userData: currentUserData,
+		userNameTable: {},
 	} as unknown as IExportOperation; // @todo yikes!
 
 	const id = await ExportOperations.create(exportOperation);

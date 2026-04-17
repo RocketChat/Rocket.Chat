@@ -4,12 +4,10 @@ import { createContext } from 'react';
 export type CustomSoundContextValue = {
 	play: (
 		soundId: string,
-		options?:
-			| {
-					volume?: number | undefined;
-					loop?: boolean | undefined;
-			  }
-			| undefined,
+		options?: {
+			volume?: number | undefined;
+			loop?: boolean | undefined;
+		},
 	) => void;
 	pause: (sound: ICustomSound['_id']) => void;
 	stop: (sound: ICustomSound['_id']) => void;
@@ -30,8 +28,8 @@ export type CustomSoundContextValue = {
 	};
 	notificationSounds: {
 		playNewRoom: () => void;
+		playNewRoomLoop: () => void;
 		playNewMessage: () => void;
-		playNewMessageLoop: () => void;
 		stopNewRoom: () => void;
 		stopNewMessage: () => void;
 		playNewMessageCustom: (soundId: ICustomSound['_id']) => void;
@@ -40,7 +38,7 @@ export type CustomSoundContextValue = {
 };
 
 export const CustomSoundContext = createContext<CustomSoundContextValue>({
-	play: () => new Promise(() => undefined),
+	play: () => undefined,
 	pause: () => undefined,
 	stop: () => undefined,
 	callSounds: {
@@ -60,8 +58,8 @@ export const CustomSoundContext = createContext<CustomSoundContextValue>({
 	},
 	notificationSounds: {
 		playNewRoom: () => undefined,
+		playNewRoomLoop: () => undefined,
 		playNewMessage: () => undefined,
-		playNewMessageLoop: () => undefined,
 		stopNewRoom: () => undefined,
 		stopNewMessage: () => undefined,
 		playNewMessageCustom: () => undefined,

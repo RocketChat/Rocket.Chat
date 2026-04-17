@@ -18,7 +18,10 @@ export type RequiredModalProps = {
 	dontAskAgain?: ReactElement;
 };
 
-function withDoNotAskAgain<T extends RequiredModalProps>(Component: ComponentType<any>) {
+function withDoNotAskAgain<T extends RequiredModalProps>(
+	// eslint-disable-next-line @typescript-eslint/naming-convention
+	Component: ComponentType<any>,
+) {
 	type WrappedComponentProps = DoNotAskAgainProps & Omit<T, keyof RequiredModalProps>;
 	const WrappedComponent = function ({ onConfirm, dontAskAgain, ...props }: WrappedComponentProps) {
 		const t = useTranslation();

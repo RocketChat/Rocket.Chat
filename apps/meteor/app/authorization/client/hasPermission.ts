@@ -1,9 +1,9 @@
 import type { IUser, IPermission } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { hasRole } from './hasRole';
 import { PermissionsCachedStore } from '../../../client/cachedStores';
-import { watch } from '../../../client/lib/cachedStores';
+import { watchUserId } from '../../../client/meteor/user';
+import { watch } from '../../../client/meteor/watch';
 import { Permissions, Users } from '../../../client/stores';
 import { AuthorizationUtils } from '../lib/AuthorizationUtils';
 
@@ -47,16 +47,16 @@ const validatePermissions = (
 		userId: IUser['_id'],
 		scopedRoles?: IPermission['_id'][],
 	) => boolean,
-	userId?: IUser['_id'] | null,
+	userId?: IUser['_id'],
 	scopedRoles?: IPermission['_id'][],
 ): boolean => {
-	userId = userId ?? Meteor.userId();
+	userId = userId ?? watchUserId() ?? undefined;
 
 	if (!userId) {
 		return false;
 	}
 
-	if (!PermissionsCachedStore.watchReady()) {
+	if (!watch(PermissionsCachedStore.useReady, (state) => state)) {
 		return false;
 	}
 
@@ -75,7 +75,7 @@ export const hasAtLeastOnePermission = (permissions: IPermission['_id'] | IPermi
 export const userHasAllPermission = (
 	permissions: IPermission['_id'] | IPermission['_id'][],
 	scope?: string,
-	userId?: IUser['_id'] | null,
+	userId?: IUser['_id'],
 ): boolean => validatePermissions(permissions, scope, all, userId);
 
 export const hasPermission = hasAllPermission;

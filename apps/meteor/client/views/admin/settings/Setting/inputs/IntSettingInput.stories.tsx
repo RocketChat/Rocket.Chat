@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import IntSettingInput from './IntSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/IntSettingInput',
 	component: IntSettingInput,
 	parameters: {
 		actions: {

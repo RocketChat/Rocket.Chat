@@ -1,6 +1,7 @@
 import type { RoomType, RoomRouteData } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type {
+	LocationHash,
 	LocationPathname,
 	LocationSearch,
 	RouteName,
@@ -222,12 +223,16 @@ export class Router implements RouterContextValue {
 
 	readonly getLocationSearch = () => location.search as LocationSearch;
 
+	readonly getLocationHash = () => location.hash as LocationHash;
+
 	readonly getRouteParameters = () => (this.current?.params ? (Object.fromEntries(this.current.params.entries()) as RouteParameters) : {});
 
 	readonly getSearchParameters = () =>
 		this.current?.queryParams ? (Object.fromEntries(this.current.queryParams.entries()) as SearchParameters) : {};
 
 	readonly getRouteName = () => this.current?.route?.id as RouteName | undefined;
+
+	readonly getPreviousRouteName = () => this.current?.oldRoute?.id as RouteName | undefined;
 
 	private encodeSearchParameters(searchParameters: SearchParameters) {
 		const search = new URLSearchParams();

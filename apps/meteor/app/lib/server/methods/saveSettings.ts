@@ -11,6 +11,7 @@ import { getSettingPermissionId } from '../../../authorization/lib';
 import { hasPermissionAsync } from '../../../authorization/server/functions/hasPermission';
 import { settings } from '../../../settings/server';
 import { disableCustomScripts } from '../functions/disableCustomScripts';
+import { checkSettingValueBounds } from '../lib/checkSettingValueBonds';
 import { notifyOnSettingChangedById } from '../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -33,6 +34,14 @@ const validJSON = Match.Where((value: string) => {
 		throw new Meteor.Error('Invalid JSON provided');
 	}
 });
+
+const checkInteger = (value: ISetting['value']) => {
+	if (!Number.isInteger(value)) {
+		throw new Meteor.Error('error-invalid-setting-value', `Invalid setting value ${value}`, {
+			method: 'saveSettings',
+		});
+	}
+};
 
 Meteor.methods<ServerMethods>({
 	saveSettings: twoFactorRequired(async function (
@@ -90,13 +99,10 @@ Meteor.methods<ServerMethods>({
 						break;
 					case 'timespan':
 					case 'int':
+					case 'range':
 						check(value, Number);
-						if (!Number.isInteger(value)) {
-							throw new Meteor.Error(`Invalid setting value ${value}`, 'Invalid setting value', {
-								method: 'saveSettings',
-							});
-						}
-
+						checkInteger(value);
+						checkSettingValueBounds(setting, value);
 						break;
 					case 'multiSelect':
 						check(value, Array);

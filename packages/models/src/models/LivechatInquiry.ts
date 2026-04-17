@@ -33,7 +33,7 @@ export class LivechatInquiryRaw extends BaseRaw<ILivechatInquiryRecord> implemen
 		super(db, 'livechat_inquiry', trash);
 	}
 
-	protected modelIndexes(): Array<IndexDescription> {
+	protected override modelIndexes(): Array<IndexDescription> {
 		return [
 			{
 				key: {

@@ -2,6 +2,7 @@ import { LDAP } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
+import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -10,8 +11,9 @@ import { ServiceConfiguration } from 'meteor/service-configuration';
 import _ from 'underscore';
 
 import { normalizers, fromTemplate, renameInvalidProperties } from './transform_helpers';
-import { callbacks } from '../../../lib/callbacks';
-import { isURL } from '../../../lib/utils/isURL';
+import { client } from '../../../server/database/utils';
+import { callbacks } from '../../../server/lib/callbacks';
+import { saveUserIdentity } from '../../lib/server/functions/saveUserIdentity';
 import { notifyOnUserChange } from '../../lib/server/lib/notifyListener';
 import { registerAccessTokenService } from '../../lib/server/oauth/oauth';
 import { settings } from '../../settings/server';
@@ -23,7 +25,7 @@ const BeforeUpdateOrCreateUserFromExternalService = [];
 
 export class CustomOAuth {
 	constructor(name, options) {
-		logger.debug('Init CustomOAuth', name, options);
+		logger.debug({ msg: 'Init CustomOAuth', name, options });
 
 		this.name = name;
 		if (!Match.test(this.name, String)) {
@@ -74,6 +76,7 @@ export class CustomOAuth {
 		this.serverURL = options.serverURL;
 		this.tokenPath = options.tokenPath;
 		this.identityPath = options.identityPath;
+		this.emailPath = options.emailPath;
 		this.tokenSentVia = options.tokenSentVia;
 		this.identityTokenSentVia = options.identityTokenSentVia;
 		this.keyField = options.keyField;
@@ -91,12 +94,16 @@ export class CustomOAuth {
 			this.identityTokenSentVia = this.tokenSentVia;
 		}
 
-		if (!isURL(this.tokenPath)) {
+		if (!isAbsoluteURL(this.tokenPath)) {
 			this.tokenPath = this.serverURL + this.tokenPath;
 		}
 
-		if (!isURL(this.identityPath)) {
+		if (!isAbsoluteURL(this.identityPath)) {
 			this.identityPath = this.serverURL + this.identityPath;
+		}
+
+		if (this.emailPath && !isAbsoluteURL(this.emailPath)) {
+			this.emailPath = this.serverURL + this.emailPath;
 		}
 
 		if (Match.test(options.addAutopublishFields, Object)) {
@@ -135,6 +142,8 @@ export class CustomOAuth {
 
 		try {
 			const request = await fetch(`${this.tokenPath}`, {
+				// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
+				ignoreSsrfValidation: true,
 				method: 'POST',
 				headers,
 				body: params,
@@ -172,7 +181,8 @@ export class CustomOAuth {
 		}
 
 		try {
-			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params });
+			// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
+			const request = await fetch(`${this.identityPath}`, { method: 'GET', headers, params, ignoreSsrfValidation: true });
 
 			if (!request.ok) {
 				throw new Error(request.statusText);
@@ -182,7 +192,7 @@ export class CustomOAuth {
 
 			logger.debug({ msg: 'Identity response', response });
 
-			return this.normalizeIdentity(response);
+			return this.normalizeIdentity(response, accessToken);
 		} catch (err) {
 			const error = new Error(`Failed to fetch identity from ${this.name} at ${this.identityPath}. ${err.message}`);
 			throw _.extend(error, { response: err.response });
@@ -225,7 +235,7 @@ export class CustomOAuth {
 		});
 	}
 
-	normalizeIdentity(identity) {
+	async normalizeIdentity(identity, accessToken) {
 		if (identity) {
 			for (const normalizer of Object.values(normalizers)) {
 				const result = normalizer(identity);
@@ -243,6 +253,10 @@ export class CustomOAuth {
 			identity.email = this.getEmail(identity);
 		}
 
+		if (!identity.email && this.emailPath) {
+			identity.email = await this.getEmailFromPath(accessToken);
+		}
+
 		if (this.avatarField) {
 			identity.avatarUrl = this.getAvatarUrl(identity);
 		}
@@ -254,6 +268,40 @@ export class CustomOAuth {
 		}
 
 		return renameInvalidProperties(identity);
+	}
+
+	async getEmailFromPath(accessToken) {
+		if (!this.emailPath) {
+			throw new Meteor.Error('CustomOAuth: emailPath is required');
+		}
+
+		const params = {};
+		const headers = {
+			'User-Agent': this.userAgent,
+			'Accept': 'application/json',
+		};
+
+		if (this.identityTokenSentVia === 'header') {
+			headers.Authorization = `Bearer ${accessToken}`;
+		} else {
+			params[this.accessTokenParam] = accessToken;
+		}
+
+		try {
+			// SECURITY: URL can only be configured by users with enough privileges. It's ok to disable this check here.
+			const request = await fetch(`${this.emailPath}`, { method: 'GET', headers, params, ignoreSsrfValidation: true });
+
+			if (!request.ok) {
+				throw new Error(request.statusText);
+			}
+
+			const response = await request.json();
+
+			return response.find((email) => email.primary === true)?.email;
+		} catch (err) {
+			const error = new Error(`Failed to fetch emails from ${this.name} at ${this.emailPath}. ${err.message}`);
+			throw _.extend(error, { response: err.response });
+		}
 	}
 
 	retrieveCredential(credentialToken, credentialSecret) {
@@ -305,7 +353,7 @@ export class CustomOAuth {
 			const value = fromTemplate(this.avatarField, data);
 
 			if (!value) {
-				logger.debug(`Avatar field "${this.avatarField}" not found in data`, data);
+				logger.debug({ msg: 'Avatar field not found in data', avatarField: this.avatarField, data });
 			}
 			return value;
 		} catch (error) {
@@ -366,17 +414,55 @@ export class CustomOAuth {
 				}
 
 				const serviceIdKey = `services.${serviceName}.id`;
-				const update = {
-					$set: {
-						name: serviceData.name,
-						...(this.keyField === 'username' && serviceData.email && { emails: [{ address: serviceData.email, verified: true }] }),
-						[serviceIdKey]: serviceData.id,
+				const successCallbacks = [
+					async () => {
+						const updatedUser = await Users.findOneById(user._id, { projection: { name: 1, emails: 1, [serviceIdKey]: 1 } });
+						if (updatedUser) {
+							const { _id, ...diff } = updatedUser;
+							void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff });
+						}
 					},
-				};
+				];
 
-				await Users.update({ _id: user._id }, update);
+				const session = client.startSession();
+				try {
+					// Extend the session to match the ExtendedSession type expected by saveUserIdentity
+					Object.assign(session, {
+						onceSuccesfulCommit: (cb) => {
+							successCallbacks.push(cb);
+						},
+					});
 
-				void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff: update });
+					session.startTransaction();
+
+					const updater = Users.getUpdater();
+
+					if (this.keyField === 'username' && serviceData.email) {
+						updater.set('emails', [{ address: serviceData.email, verified: true }]);
+					}
+
+					updater.set(serviceIdKey, serviceData.id);
+
+					await saveUserIdentity({
+						_id: user._id,
+						name: serviceData.name,
+						updater,
+						session,
+						updateUsernameInBackground: true,
+						// Username needs to be included otherwise the name won't be updated in some collections
+						username: user.username,
+					});
+					await Users.updateFromUpdater({ _id: user._id }, updater, { session });
+
+					await session.commitTransaction();
+				} catch (e) {
+					await session.abortTransaction();
+					throw e;
+				} finally {
+					await session.endSession();
+				}
+
+				void Promise.allSettled(successCallbacks.map((cb) => cb()));
 			}
 		});
 
@@ -439,7 +525,7 @@ export class CustomOAuth {
 const { updateOrCreateUserFromExternalService } = Accounts;
 
 Accounts.updateOrCreateUserFromExternalService = async function (...args /* serviceName, serviceData, options*/) {
-	for await (const hook of BeforeUpdateOrCreateUserFromExternalService) {
+	for (const hook of BeforeUpdateOrCreateUserFromExternalService) {
 		await hook.apply(this, args);
 	}
 

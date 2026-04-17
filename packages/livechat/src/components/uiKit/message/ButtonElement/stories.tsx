@@ -29,12 +29,13 @@ export default {
 	decorators: [
 		(storyFn) => (
 			<Surface
-				children={storyFn()}
 				dispatchAction={async (payload: unknown) => {
 					await new Promise((resolve) => setTimeout(resolve, 1000));
 					action('dispatchAction')(payload);
 				}}
-			/>
+			>
+				{storyFn()}
+			</Surface>
 		),
 	],
 	parameters: {

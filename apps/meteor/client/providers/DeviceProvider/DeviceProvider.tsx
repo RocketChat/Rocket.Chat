@@ -70,9 +70,12 @@ export const DeviceProvider = ({ children }: DeviceProviderProps): ReactElement 
 				type: device.kind,
 			}));
 
-			const audioInput = mappedDevices.filter((device) => device.type === 'audioinput');
+			const filteredInput = mappedDevices.filter((device) => device.type === 'audioinput');
 
-			const audioOutput = mappedDevices.filter((device) => device.type === 'audiooutput');
+			const filteredOutput = mappedDevices.filter((device) => device.type === 'audiooutput');
+
+			const audioInput = filteredInput.length > 0 ? filteredInput : [defaultDevices.defaultAudioInputDevice];
+			const audioOutput = filteredOutput.length > 0 ? filteredOutput : [defaultDevices.defaultAudioOutputDevice];
 
 			return {
 				audioInput,

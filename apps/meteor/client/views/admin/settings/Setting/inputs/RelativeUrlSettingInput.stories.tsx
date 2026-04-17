@@ -4,7 +4,6 @@ import type { Meta, StoryFn } from '@storybook/react';
 import RelativeUrlSettingInput from './RelativeUrlSettingInput';
 
 export default {
-	title: 'Admin/Settings/Inputs/RelativeUrlSettingInput',
 	component: RelativeUrlSettingInput,
 	parameters: {
 		actions: {

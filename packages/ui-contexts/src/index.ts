@@ -1,21 +1,28 @@
-export { AttachmentContext, AttachmentContextValue } from './AttachmentContext';
-export { AuthenticationContextValue, AuthenticationContext, LoginService } from './AuthenticationContext';
-export { AuthorizationContext, AuthorizationContextValue } from './AuthorizationContext';
-export { AvatarUrlContext, AvatarUrlContextValue } from './AvatarUrlContext';
-export { CustomSoundContext, CustomSoundContextValue } from './CustomSoundContext';
-export { LayoutContext, LayoutContextValue } from './LayoutContext';
-export { ModalContext, ModalContextValue } from './ModalContext';
+export { AttachmentContext, type AttachmentContextValue } from './AttachmentContext';
+export { type AuthenticationContextValue, AuthenticationContext, type LoginService } from './AuthenticationContext';
+export { AuthorizationContext, type AuthorizationContextValue } from './AuthorizationContext';
+export { AvatarUrlContext, type AvatarUrlContextValue } from './AvatarUrlContext';
+export { CustomSoundContext, type CustomSoundContextValue } from './CustomSoundContext';
+export { LayoutContext, type LayoutContextValue } from './LayoutContext';
+export { ModalContext, type ModalContextValue } from './ModalContext';
 export * from './RouterContext';
-export { ServerContext, ServerContextValue } from './ServerContext';
-export { SessionContext, SessionContextValue } from './SessionContext';
-export { SettingsContext, SettingsContextValue, SettingsContextQuery } from './SettingsContext';
-export { ToastMessagesContext, ToastMessagesContextValue } from './ToastMessagesContext';
-export { TooltipContext, TooltipContextValue } from './TooltipContext';
-export { TranslationContext, TranslationContextValue } from './TranslationContext';
-export { UserContext, UserContextValue } from './UserContext';
-export { UserPresenceContext, UserPresenceContextValue } from './UserPresenceContext';
-export { DeviceContext, Device, DeviceContextValue } from './DeviceContext';
-export { ActionManagerContext, IActionManager } from './ActionManagerContext';
+export {
+	RoomToolboxContext,
+	type RoomToolboxContextValue,
+	type RoomToolboxActionConfig,
+	type RenderToolboxItemParams,
+} from './RoomToolboxContext';
+export { ServerContext, type ServerContextValue, type UploadResult } from './ServerContext';
+export { SessionContext, type SessionContextValue } from './SessionContext';
+export { SettingsContext, type SettingsContextValue, type SettingsContextQuery } from './SettingsContext';
+export { ToastMessagesContext, type ToastMessagesContextValue } from './ToastMessagesContext';
+export { TooltipContext, type TooltipContextValue } from './TooltipContext';
+export { TranslationContext, type TranslationContextValue, type TranslationKey, type TranslationLanguage } from './TranslationContext';
+export { UserContext, type UserContextValue, type Fields, type FindOptions } from './UserContext';
+export { UserCardContext, type UserCardContextValue } from './UserCardContext';
+export { UserPresenceContext, type UserPresenceContextValue } from './UserPresenceContext';
+export { DeviceContext, type Device, type DeviceContextValue } from './DeviceContext';
+export { ActionManagerContext, type IActionManager } from './ActionManagerContext';
 
 export { useAbsoluteUrl } from './hooks/useAbsoluteUrl';
 export { useAllPermissions } from './hooks/useAllPermissions';
@@ -41,6 +48,7 @@ export { useLayoutContextualBarExpanded } from './hooks/useLayoutContextualBarEx
 export { useLayoutContextualBarPosition } from './hooks/useLayoutContextualBarPosition';
 export { useLayoutSizes } from './hooks/useLayoutSizes';
 export { useLayoutHiddenActions } from './hooks/useLayoutHiddenActions';
+export { useLocationHash } from './hooks/useLocationHash';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
 export { useLoginServices } from './hooks/useLoginServices';
@@ -57,6 +65,7 @@ export { usePermissionWithScopedRoles } from './hooks/usePermissionWithScopedRol
 export { useRole } from './hooks/useRole';
 export { useRolesDescription } from './hooks/useRolesDescription';
 export { useRoomAvatarPath } from './hooks/useRoomAvatarPath';
+export { useRoomToolbox } from './hooks/useRoomToolbox';
 export { useRouter } from './hooks/useRouter';
 export { useRoute } from './hooks/useRoute';
 export { useRouteParameter } from './hooks/useRouteParameter';
@@ -85,6 +94,8 @@ export { useUserRoom } from './hooks/useUserRoom';
 export { useUserSubscription } from './hooks/useUserSubscription';
 export { useUserSubscriptionByName } from './hooks/useUserSubscriptionByName';
 export { useUserSubscriptions } from './hooks/useUserSubscriptions';
+export { usePasswordPolicyOptions } from './hooks/usePasswordPolicyOptions';
+export { usePasswordPolicy, type PasswordPolicyValidation } from './hooks/usePasswordPolicy';
 export { useVerifyPassword } from './hooks/useVerifyPassword';
 export { useSelectedDevices } from './hooks/useSelectedDevices';
 export { useDeviceConstraints } from './hooks/useDeviceConstraints';
@@ -96,11 +107,7 @@ export { useAccountsCustomFields } from './hooks/useAccountsCustomFields';
 export { useUserPresence } from './hooks/useUserPresence';
 export { useUnstoreLoginToken } from './hooks/useUnstoreLoginToken';
 export { useOnLogout } from './hooks/useOnLogout';
-export { useMediaDeviceMicrophonePermission, type requestDevice } from './hooks/useMediaDevicePermission';
+export { useMediaDeviceMicrophonePermission } from './hooks/useMediaDevicePermission';
 export { useWriteStream } from './hooks/useWriteStream';
-
-export { UploadResult } from './ServerContext';
-export { TranslationKey, TranslationLanguage } from './TranslationContext';
-export { Fields, FindOptions } from './UserContext';
-
-export { SubscriptionWithRoom } from './types/SubscriptionWithRoom';
+export { useUserCard } from './hooks/useUserCard';
+export type { SubscriptionWithRoom } from './types/SubscriptionWithRoom';

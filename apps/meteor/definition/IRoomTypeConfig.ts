@@ -3,7 +3,7 @@ import type {
 	RoomType,
 	IUser,
 	IMessage,
-	ReadReceipt,
+	IReadReceipt,
 	ValueOf,
 	AtLeast,
 	ISubscription,
@@ -40,6 +40,7 @@ export const RoomMemberActions = {
 	IGNORE: 'ignore',
 	BLOCK: 'block',
 	MUTE: 'mute',
+	BAN: 'ban',
 	SET_AS_OWNER: 'setAsOwner',
 	SET_AS_LEADER: 'setAsLeader',
 	SET_AS_MODERATOR: 'setAsModerator',
@@ -106,7 +107,7 @@ export interface IRoomTypeServerDirectives {
 	) => Promise<{ title: string | undefined; text: string; name: string | undefined }>;
 	getMsgSender: (message: IMessage) => Promise<IUser | null>;
 	includeInRoomSearch: () => boolean;
-	getReadReceiptsExtraData: (message: IMessage) => Partial<ReadReceipt>;
+	getReadReceiptsExtraData: (message: IMessage) => Partial<IReadReceipt>;
 	includeInDashboard: () => boolean;
 	roomFind?: (rid: string) => Promise<IRoom | undefined> | Promise<IOmnichannelRoom | null> | IRoom | undefined;
 }

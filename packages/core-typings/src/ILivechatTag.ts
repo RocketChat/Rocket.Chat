@@ -5,3 +5,10 @@ export interface ILivechatTag {
 	numDepartments: number;
 	departments: Array<string>;
 }
+
+export type FindTagsResult = {
+	tags: ILivechatTag[];
+	count: number;
+	offset: number;
+	total: number;
+};

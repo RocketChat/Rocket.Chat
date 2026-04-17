@@ -1,10 +1,83 @@
-import type { Locator, Page } from '@playwright/test';
+import type { FrameLocator, Locator, Page } from '@playwright/test';
 
-export class Registration {
-	private readonly page: Page;
+import { expect } from '../utils/test';
 
-	constructor(page: Page) {
-		this.page = page;
+abstract class Main {
+	constructor(protected root: Locator) {}
+
+	waitForDisplay() {
+		return expect(this.root).toBeVisible();
+	}
+
+	waitForDismissal() {
+		return expect(this.root).not.toBeVisible();
+	}
+}
+
+export class Authenticated extends Main {
+	constructor(protected page: Page) {
+		super(page.locator('#main-content'));
+	}
+}
+
+class LoginForm {
+	readonly root: Locator;
+
+	constructor(protected page: Page) {
+		this.root = page?.getByRole('form', { name: 'Login' });
+	}
+
+	get username(): Locator {
+		return this.root.locator('role=textbox[name=/username/i]');
+	}
+
+	get inputPassword(): Locator {
+		return this.root.getByRole('textbox', { name: 'Password', exact: true });
+	}
+
+	get btnLogin(): Locator {
+		return this.root.getByRole('button', { name: 'Login', exact: true });
+	}
+
+	async fillForm(username: string, password: string) {
+		await this.username.fill(username);
+		await this.inputPassword.fill(password);
+	}
+}
+
+export class Login extends Main {
+	readonly form: LoginForm;
+
+	constructor(protected page: Page) {
+		super(page.getByRole('main', { name: 'Login', exact: true }));
+		this.form = new LoginForm(page);
+	}
+
+	async login(username: string, password: string) {
+		await this.form.fillForm(username, password);
+		await this.form.btnLogin.click();
+	}
+
+	get loginIframe(): FrameLocator {
+		return this.page.frameLocator('iframe[title="Login"]');
+	}
+
+	get loginIframeForm(): Locator {
+		return this.loginIframe.locator('#login-form');
+	}
+
+	get loginIframeSubmitButton(): Locator {
+		return this.loginIframe.locator('#submit');
+	}
+
+	get loginIframeError(): Locator {
+		return this.loginIframe.locator('#login-error', { hasText: 'Login failed' });
+	}
+}
+
+export class Registration extends Main {
+	constructor(protected page: Page) {
+		super(page.getByRole('main'));
 	}
 
 	get btnSendInstructions(): Locator {
@@ -13,10 +86,6 @@ export class Registration {
 
 	get btnReset(): Locator {
 		return this.page.locator('role=button[name="Reset"]');
-	}
-
-	get btnLogin(): Locator {
-		return this.page.locator('role=button[name="Login"]');
 	}
 
 	get btnLoginWithSaml(): Locator {

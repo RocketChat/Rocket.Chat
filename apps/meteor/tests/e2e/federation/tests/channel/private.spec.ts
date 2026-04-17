@@ -52,7 +52,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 	});
 
 	test.afterEach(async ({ page }) => {
-		await poFederationChannelServer1.sidenav.logout();
+		await poFederationChannelServer1.navbar.logout();
 		await page.close();
 	});
 
@@ -95,12 +95,12 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await poFederationChannelServer2.navbar.openChat(groupName);
+				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -142,12 +142,12 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await poFederationChannelServer2.navbar.openChat(groupName);
+				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -205,12 +205,12 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdGroup);
-					await poFederationChannelServer1.tabs.btnTabMembers.click();
+					await poFederationChannelServer1.navbar.openChat(createdGroup);
+					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
-					await poFederationChannelServer2.sidenav.openChat(createdGroup);
-					await poFederationChannelServer2.tabs.btnTabMembers.click();
+					await poFederationChannelServer2.navbar.openChat(createdGroup);
+					await poFederationChannelServer2.roomToolbar.openMembersTab();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -239,9 +239,9 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
+					await poFederationChannel1ForUser2.navbar.openChat(createdGroup);
 
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
+					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 						createdUsernameFromServer2,
@@ -297,12 +297,12 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdGroup);
-					await poFederationChannelServer1.tabs.btnTabMembers.click();
+					await poFederationChannelServer1.navbar.openChat(createdGroup);
+					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
-					await poFederationChannelServer2.sidenav.openChat(createdGroup);
-					await poFederationChannelServer2.tabs.btnTabMembers.click();
+					await poFederationChannelServer2.navbar.openChat(createdGroup);
+					await poFederationChannelServer2.roomToolbar.openMembersTab();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -331,9 +331,9 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
+					await poFederationChannel1ForUser2.navbar.openChat(createdGroup);
 
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
+					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 						userFromServer2UsernameOnly,
@@ -357,8 +357,8 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdGroup);
-					await poFederationChannelServer1.tabs.btnTabMembers.click();
+					await poFederationChannelServer1.navbar.openChat(createdGroup);
+					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
@@ -381,9 +381,9 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
+					await poFederationChannel1ForUser2.navbar.openChat(createdGroup);
 
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
+					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
@@ -431,14 +431,14 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 				await poFederationChannelServer1.tabs.members.addMultipleUsers([fullUsernameFromServer2]);
-				await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+				await poFederationChannelServer1.toastMessage.waitForDisplay();
 
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await poFederationChannelServer2.navbar.openChat(groupName);
+				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -483,14 +483,14 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 				await poFederationChannelServer1.tabs.members.addMultipleUsers([userFromServer2UsernameOnly]);
-				await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+				await poFederationChannelServer1.toastMessage.waitForDisplay();
 
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await poFederationChannelServer2.navbar.openChat(groupName);
+				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -545,14 +545,14 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdGroup);
-					await poFederationChannelServer1.tabs.btnTabMembers.click();
+					await poFederationChannelServer1.navbar.openChat(createdGroup);
+					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 					await poFederationChannelServer1.tabs.members.addMultipleUsers([fullUsernameFromServer2, userFromServer1UsernameOnly]);
-					await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+					await poFederationChannelServer1.toastMessage.waitForDisplay();
 
-					await poFederationChannelServer2.sidenav.openChat(createdGroup);
-					await poFederationChannelServer2.tabs.btnTabMembers.click();
+					await poFederationChannelServer2.navbar.openChat(createdGroup);
+					await poFederationChannelServer2.roomToolbar.openMembersTab();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -581,9 +581,9 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
+					await poFederationChannel1ForUser2.navbar.openChat(createdGroup);
 
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
+					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 						createdUsernameFromServer2,
@@ -637,14 +637,14 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdGroup);
-					await poFederationChannelServer1.tabs.btnTabMembers.click();
+					await poFederationChannelServer1.navbar.openChat(createdGroup);
+					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 					await poFederationChannelServer1.tabs.members.addMultipleUsers([userFromServer1UsernameOnly, userFromServer2UsernameOnly]);
-					await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+					await poFederationChannelServer1.toastMessage.waitForDisplay();
 
-					await poFederationChannelServer2.sidenav.openChat(createdGroup);
-					await poFederationChannelServer2.tabs.btnTabMembers.click();
+					await poFederationChannelServer2.navbar.openChat(createdGroup);
+					await poFederationChannelServer2.roomToolbar.openMembersTab();
 					await poFederationChannelServer2.tabs.members.showAllUsers();
 
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -673,9 +673,9 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
+					await poFederationChannel1ForUser2.navbar.openChat(createdGroup);
 
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
+					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 					const usernameWithDomainFromServer2 = formatUsernameAndDomainIntoMatrixFormat(
 						userFromServer2UsernameOnly,
@@ -699,12 +699,12 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroup}`);
 
-					await poFederationChannelServer1.sidenav.openChat(createdGroup);
-					await poFederationChannelServer1.tabs.btnTabMembers.click();
+					await poFederationChannelServer1.navbar.openChat(createdGroup);
+					await poFederationChannelServer1.roomToolbar.openMembersTab();
 					await poFederationChannelServer1.tabs.members.showAllUsers();
 					await poFederationChannelServer1.tabs.members.addMultipleUsers([userFromServer1UsernameOnly]);
 
-					await expect(poFederationChannelServer1.toastSuccess).toBeVisible();
+					await poFederationChannelServer1.toastMessage.waitForDisplay();
 
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
 					await expect(poFederationChannelServer1.tabs.members.getUserInList(constants.RC_SERVER_1.username)).toBeVisible();
@@ -726,9 +726,9 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 					await page2.goto(`${constants.RC_SERVER_1.url}/home`);
 
-					await poFederationChannel1ForUser2.sidenav.openChat(createdGroup);
+					await poFederationChannel1ForUser2.navbar.openChat(createdGroup);
 
-					await poFederationChannel1ForUser2.tabs.btnTabMembers.click();
+					await poFederationChannel1ForUser2.roomToolbar.openMembersTab();
 					await poFederationChannel1ForUser2.tabs.members.showAllUsers();
 
 					await expect(poFederationChannel1ForUser2.tabs.members.getUserInList(userFromServer1UsernameOnly)).toBeVisible();
@@ -779,12 +779,12 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await poFederationChannelServer2.navbar.openChat(groupName);
+				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -845,8 +845,8 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
 
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await poFederationChannelServer2.navbar.openChat(groupName);
+				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -876,15 +876,15 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
 
-				await expect(poFederationChannelServer1.tabs.btnCall).toBeDisabled();
-				await expect(poFederationChannelServer2.tabs.btnCall).toBeDisabled();
-				await expect(poFederationChannelServer1.tabs.btnVideoCall).toBeDisabled();
-				await expect(poFederationChannelServer2.tabs.btnVideoCall).toBeDisabled();
+				await expect(poFederationChannelServer1.roomToolbar.btnVoiceCall).toBeDisabled();
+				await expect(poFederationChannelServer2.roomToolbar.btnVoiceCall).toBeDisabled();
+				await expect(poFederationChannelServer1.roomToolbar.btnVideoCall).toBeDisabled();
+				await expect(poFederationChannelServer2.roomToolbar.btnVideoCall).toBeDisabled();
 
 				await pageForServer2.close();
 			});
@@ -906,13 +906,13 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
 
-				await expect(poFederationChannelServer1.tabs.btnDiscussion).toBeDisabled();
-				await expect(poFederationChannelServer2.tabs.btnDiscussion).toBeDisabled();
+				await expect(poFederationChannelServer1.roomToolbar.btnDiscussion).toBeDisabled();
+				await expect(poFederationChannelServer2.roomToolbar.btnDiscussion).toBeDisabled();
 
 				await pageForServer2.close();
 			});
@@ -936,17 +936,17 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
 
-				await expect(poFederationChannelServer1.tabs.btnTabMembers).toBeVisible();
-				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await expect(poFederationChannelServer1.roomToolbar.btnMembers).toBeVisible();
+				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await expect(poFederationChannelServer1.tabs.members.addUsersButton).toBeVisible();
 
-				await expect(poFederationChannelServer2.tabs.btnTabMembers).toBeVisible();
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await expect(poFederationChannelServer2.roomToolbar.btnMembers).toBeVisible();
+				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await expect(poFederationChannelServer2.tabs.members.addUsersButton).not.toBeVisible();
 
 				await pageForServer2.close();
@@ -977,19 +977,19 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
 
-				await expect(poFederationChannelServer1.tabs.btnTabMembers).toBeVisible();
-				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await expect(poFederationChannelServer1.roomToolbar.btnMembers).toBeVisible();
+				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await (await poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).click();
 				await poFederationChannelServer1.tabs.members.btnMenuUserInfo.click();
 				await expect(poFederationChannelServer1.tabs.members.btnRemoveUserFromRoom).toBeVisible();
 
-				await expect(poFederationChannelServer2.tabs.btnTabMembers).toBeVisible();
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await expect(poFederationChannelServer2.roomToolbar.btnMembers).toBeVisible();
+				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await (await poFederationChannelServer2.tabs.members.getUserInList(usernameWithDomainFromServer1)).click();
 				await expect(poFederationChannelServer2.tabs.members.btnMenuUserInfo).not.toBeVisible();
 				await expect(poFederationChannelServer2.tabs.members.btnRemoveUserFromRoom).not.toBeVisible();
@@ -1014,23 +1014,23 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await page.goto(`${constants.RC_SERVER_1.url}/home`);
 				await pageForServer2.goto(`${constants.RC_SERVER_2.url}/home`);
 
-				await poFederationChannelServer1.sidenav.openChat(createdGroupName);
-				await poFederationChannelServer2.sidenav.openChat(createdGroupName);
+				await poFederationChannelServer1.navbar.openChat(createdGroupName);
+				await poFederationChannelServer2.navbar.openChat(createdGroupName);
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${createdGroupName}`);
 
-				await expect(poFederationChannelServer1.tabs.btnRoomInfo).toBeVisible();
-				await poFederationChannelServer1.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer1.roomToolbar.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer1.roomToolbar.openRoomInfo();
 				await expect(poFederationChannelServer1.tabs.room.btnEdit).toBeVisible();
 
-				await expect(poFederationChannelServer2.tabs.btnRoomInfo).toBeVisible();
-				await poFederationChannelServer2.tabs.btnRoomInfo.click();
+				await expect(poFederationChannelServer2.roomToolbar.btnRoomInfo).toBeVisible();
+				await poFederationChannelServer2.roomToolbar.openRoomInfo();
 				await expect(poFederationChannelServer2.tabs.room.btnEdit).not.toBeVisible();
 
 				await poFederationChannelServer1.tabs.room.btnEdit.click();
 				await poFederationChannelServer1.tabs.room.inputName.fill(`NAME-EDITED-${createdGroupName}`);
 				await poFederationChannelServer1.tabs.room.btnSave.click();
-				await poFederationChannelServer1.tabs.btnRoomInfo.click();
+				await poFederationChannelServer1.roomToolbar.openRoomInfo();
 				// waiting for the toast dismiss
 				await page.waitForTimeout(3000);
 
@@ -1043,7 +1043,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				);
 				await expect(nameChangedSystemMessageServer2).toBeVisible();
 
-				await poFederationChannelServer1.tabs.btnRoomInfo.click();
+				await poFederationChannelServer1.roomToolbar.openRoomInfo();
 				await poFederationChannelServer1.tabs.room.btnEdit.click();
 				await poFederationChannelServer1.tabs.room.inputTopic.fill('hello-topic-edited');
 				await poFederationChannelServer1.tabs.room.btnSave.click();
@@ -1095,12 +1095,12 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
-				await poFederationChannelServer1.tabs.btnTabMembers.click();
+				await poFederationChannelServer1.navbar.openChat(groupName);
+				await poFederationChannelServer1.roomToolbar.openMembersTab();
 				await poFederationChannelServer1.tabs.members.showAllUsers();
 
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-				await poFederationChannelServer2.tabs.btnTabMembers.click();
+				await poFederationChannelServer2.navbar.openChat(groupName);
+				await poFederationChannelServer2.roomToolbar.openMembersTab();
 				await poFederationChannelServer2.tabs.members.showAllUsers();
 
 				await expect(poFederationChannelServer1.tabs.members.getUserInList(usernameWithDomainFromServer2)).toBeVisible();
@@ -1151,10 +1151,10 @@ test.describe.parallel('Federation - Group Creation', () => {
 
 				await expect(page).toHaveURL(`${constants.RC_SERVER_1.url}/group/${groupName}`);
 
-				await poFederationChannelServer1.sidenav.openChat(groupName);
+				await poFederationChannelServer1.navbar.openChat(groupName);
 
-				await poFederationChannelServer2.sidenav.openChat(groupName);
-				await poFederationChannelServer2.tabs.btnRoomInfo.click();
+				await poFederationChannelServer2.navbar.openChat(groupName);
+				await poFederationChannelServer2.roomToolbar.openRoomInfo();
 				await expect(poFederationChannelServer2.tabs.room.btnLeave).toBeVisible();
 
 				await poFederationChannelServer2.tabs.room.btnLeave.click();
@@ -1209,7 +1209,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
 
 				await poFederationChannelServer1.createTeam(teamName);
-				await poFederationChannelServer1.tabs.btnTeam.click();
+				await poFederationChannelServer1.roomToolbar.openTeamChannels();
 				await poFederationChannelServer1.tabs.btnAddExistingChannelToTeam.click();
 				await poFederationChannelServer1.tabs.searchForChannelOnAddChannelToTeam(channelName);
 				await expect(page.locator('div.rcx-option__content', { hasText: 'Empty' })).toBeVisible();
@@ -1240,7 +1240,7 @@ test.describe.parallel('Federation - Group Creation', () => {
 				await poFederationChannelServer1.createPrivateGroupAndInviteUsersUsingCreationModal(channelName, [fullUsernameFromServer2]);
 
 				await poFederationChannelServer2.createTeam(teamName);
-				await poFederationChannelServer2.tabs.btnTeam.click();
+				await poFederationChannelServer2.roomToolbar.openTeamChannels();
 				await poFederationChannelServer2.tabs.btnAddExistingChannelToTeam.click();
 				await poFederationChannelServer2.tabs.searchForChannelOnAddChannelToTeam(channelName);
 				await expect(pageForServer2.locator('div.rcx-option__content', { hasText: 'Empty' })).toBeVisible();

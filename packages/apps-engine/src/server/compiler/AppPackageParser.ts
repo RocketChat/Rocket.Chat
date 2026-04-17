@@ -85,7 +85,7 @@ export class AppPackageParser {
 		const implemented = new AppImplements();
 
 		if (Array.isArray(info.implements)) {
-			info.implements.forEach((interfaceName) => implemented.doesImplement(interfaceName));
+			info.implements.forEach((interfaceName) => implemented.setImplements(interfaceName));
 		}
 
 		return {

@@ -1,10 +1,10 @@
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import { useEndpoint, useMethod, useToastMessageDispatch, useTranslation, useUser } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useToastMessageDispatch, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
-import { useOmnichannelAgentAvailable } from '../../../../hooks/omnichannel/useOmnichannelAgentAvailable';
+import { useOmnichannelAgentAvailable } from '../../../omnichannel/hooks/useOmnichannelAgentAvailable';
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
 export const ComposerOmnichannelInquiry = (): ReactElement => {
@@ -23,7 +23,7 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 			}),
 	});
 
-	const takeInquiry = useMethod('livechat:takeInquiry');
+	const takeInquiry = useEndpoint('POST', '/v1/livechat/inquiries.take');
 
 	const handleTakeInquiry = async (): Promise<void> => {
 		if (!result.isSuccess) {
@@ -33,7 +33,7 @@ export const ComposerOmnichannelInquiry = (): ReactElement => {
 			return;
 		}
 		try {
-			await takeInquiry(result.data.inquiry._id, { clientAction: true });
+			await takeInquiry({ inquiryId: result.data.inquiry._id, options: { clientAction: true } });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}

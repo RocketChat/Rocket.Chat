@@ -1,7 +1,7 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useShallow } from 'zustand/shallow';
 
-import { pipe } from '../../../../lib/cachedStores';
+import { pipe } from '../../../../lib/cachedStores/pipe';
 import { Subscriptions } from '../../../../stores';
 import { isUnreadSubscription } from '../../contexts/RoomsNavigationContext';
 
@@ -11,8 +11,8 @@ const sortByLmPipe = pipe<SubscriptionWithRoom>().sortByField('lm', -1);
  * This helper function is used to ensure that the main room (main team room or parent's discussion room)
  * is always at the top of the list.
  */
-const getMainRoomAndSort = (records: SubscriptionWithRoom[], unreadOnly: boolean) => {
-	const mainRoom = records.find((record) => record.teamMain || (!record.prid && !record.teamId));
+const getMainRoomAndSort = (records: SubscriptionWithRoom[], unreadOnly: boolean, teamId?: string) => {
+	const mainRoom = records.find((record) => (teamId ? record.teamMain : !record.prid));
 	const filteredRecords = records.filter((record) => mainRoom?.rid !== record.rid);
 	const sortedRecords = sortByLmPipe.apply(filteredRecords);
 	const rest = !unreadOnly
@@ -51,7 +51,7 @@ export const useChannelsChildrenList = (parentRid: string, unreadOnly: boolean, 
 				return false;
 			});
 
-			return getMainRoomAndSort(records, unreadOnly);
+			return getMainRoomAndSort(records, unreadOnly, teamId);
 		}),
 	);
 };

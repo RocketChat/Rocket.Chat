@@ -10,7 +10,7 @@ type OmnichannelVerificationTagProps = {
 
 const OmnichannelVerificationTag = ({ verified, onClick }: OmnichannelVerificationTagProps) => {
 	const { t } = useTranslation();
-	const hasLicense = useHasLicenseModule('contact-id-verification') as boolean;
+	const { data: hasLicense = false } = useHasLicenseModule('contact-id-verification');
 	const isVerified = hasLicense && verified;
 
 	return (

@@ -1,13 +1,5 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
 import { Callout } from '@rocket.chat/fuselage';
-import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-
-import UserInfoActions from './UserInfoActions';
-import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import {
 	ContextualbarHeader,
 	ContextualbarBack,
@@ -16,7 +8,15 @@ import {
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
-} from '../../../../components/Contextualbar';
+} from '@rocket.chat/ui-client';
+import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
+import type { ReactElement } from 'react';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+
+import UserInfoActions from './UserInfoActions';
+import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import { UserCardRole } from '../../../../components/UserCard';
 import { UserInfo } from '../../../../components/UserInfo';
@@ -28,11 +28,12 @@ type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
 	username?: IUser['username'];
 	rid: IRoom['_id'];
+	invitationDate?: string;
 	onClose: () => void;
 	onClickBack?: () => void;
 };
 
-const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
 	const { t } = useTranslation();
 	const getRoles = useRolesDescription();
 
@@ -65,6 +66,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			nickname,
 			createdAt,
 			canViewAllInfo,
+			freeSwitchExtension,
 		} = data.user;
 
 		return {
@@ -72,6 +74,9 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			name,
 			username,
 			lastLogin,
+			/**
+			 * TODO: We shouldn't use UserCard components outside UserCard
+			 */
 			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
@@ -84,6 +89,7 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 			status: <ReactiveUserStatus uid={_id} />,
 			statusText,
 			nickname,
+			freeSwitchExtension,
 		};
 	}, [data, getRoles]);
 
@@ -108,7 +114,13 @@ const UserInfoWithData = ({ uid, username, rid, onClose, onClickBack }: UserInfo
 				</ContextualbarContent>
 			)}
 
-			{!isPending && user && <UserInfo {...user} actions={<UserInfoActions user={user} rid={rid} backToList={onClickBack} />} />}
+			{!isPending && user && (
+				<UserInfo
+					{...user}
+					invitationDate={invitationDate}
+					actions={<UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} />}
+				/>
+			)}
 		</ContextualbarDialog>
 	);
 };

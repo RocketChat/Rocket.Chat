@@ -1,13 +1,16 @@
-import { Media, Team } from '@rocket.chat/core-services';
-import type { IRoom, IUpload } from '@rocket.chat/core-typings';
-import { isPrivateRoom, isPublicRoom } from '@rocket.chat/core-typings';
+import { FederationMatrix, MeteorError, Team } from '@rocket.chat/core-services';
+import { type IRoom, type IUpload, type RequiredField, isPrivateRoom, isPublicRoom, type IUser } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
 import type { Notifications } from '@rocket.chat/rest-typings';
 import {
 	ajv,
+	ajvQuery,
 	isGETRoomsNameExists,
 	isRoomsImagesProps,
 	isRoomsMuteUnmuteUserProps,
+	isRoomsBanUserProps,
+	isRoomsUnbanUserProps,
+	isRoomsBannedUsersProps,
 	isRoomsExportProps,
 	isRoomsIsMemberProps,
 	isRoomsCleanHistoryProps,
@@ -15,16 +18,23 @@ import {
 	isRoomsMembersOrderedByRoleProps,
 	isRoomsChangeArchivationStateProps,
 	isRoomsHideProps,
+	isRoomsInviteProps,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
-import { isTruthy } from '../../../../lib/isTruthy';
+import { adminFields } from '../../../../lib/rooms/adminFields';
 import { omit } from '../../../../lib/utils/omit';
+import { banUserFromRoomMethod } from '../../../../server/lib/banUserFromRoom';
 import * as dataExport from '../../../../server/lib/dataExport';
 import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
 import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
+import { unbanUserFromRoom } from '../../../../server/lib/unbanUserFromRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
@@ -51,7 +61,7 @@ import { API } from '../api';
 import { composeRoomWithLastMessage } from '../helpers/composeRoomWithLastMessage';
 import { getPaginationItems } from '../helpers/getPaginationItems';
 import { getUserFromParams } from '../helpers/getUserFromParams';
-import { getUploadFormData } from '../lib/getUploadFormData';
+import { MultipartUploadHandler } from '../lib/MultipartUploadHandler';
 import {
 	findAdminRoom,
 	findAdminRooms,
@@ -117,23 +127,58 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
+const roomDeleteEndpoint = API.v1.post(
 	'rooms.delete',
 	{
 		authRequired: true,
-	},
-	{
-		async post() {
-			const { roomId } = this.bodyParams;
-
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
-
-			await eraseRoom(roomId, this.userId);
-
-			return API.v1.success();
+		body: ajv.compile<{ roomId: string }>({
+			type: 'object',
+			properties: {
+				roomId: {
+					type: 'string',
+					description: 'The ID of the room to delete.',
+				},
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						enum: [true],
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId } = this.bodyParams;
+
+		const room = await Rooms.findOneById(roomId);
+
+		if (!room) {
+			throw new MeteorError('error-invalid-room', 'Invalid room', {
+				method: 'eraseRoom',
+			});
+		}
+
+		if (room.teamMain) {
+			throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
+				method: 'eraseRoom',
+			});
+		}
+
+		await eraseRoom(room, this.user);
+
+		return API.v1.success();
 	},
 );
 
@@ -171,74 +216,6 @@ API.v1.addRoute(
 );
 
 API.v1.addRoute(
-	'rooms.upload/:rid',
-	{
-		authRequired: true,
-		deprecation: {
-			version: '8.0.0',
-			alternatives: ['/v1/rooms.media/:rid'],
-		},
-	},
-	{
-		async post() {
-			if (!(await canAccessRoomIdAsync(this.urlParams.rid, this.userId))) {
-				return API.v1.forbidden();
-			}
-
-			const file = await getUploadFormData(
-				{
-					request: this.request,
-				},
-				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
-			);
-
-			if (!file) {
-				throw new Meteor.Error('invalid-field');
-			}
-
-			const { fields } = file;
-			let { fileBuffer } = file;
-
-			const details = {
-				name: file.filename,
-				size: fileBuffer.length,
-				type: file.mimetype,
-				rid: this.urlParams.rid,
-				userId: this.userId,
-			};
-
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
-				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-				details.size = fileBuffer.length;
-			}
-
-			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, fileBuffer);
-
-			if ((fields.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
-				throw new Meteor.Error('error-message-size-exceeded');
-			}
-
-			uploadedFile.description = fields.description;
-
-			delete fields.description;
-
-			await applyAirGappedRestrictionsValidation(() =>
-				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file: uploadedFile, msgData: fields }),
-			);
-
-			const message = await Messages.getMessageByFileIdAndUsername(uploadedFile._id, this.userId);
-
-			return API.v1.success({
-				message,
-			});
-		},
-	},
-);
-
-API.v1.addRoute(
 	'rooms.media/:rid',
 	{ authRequired: true },
 	{
@@ -247,23 +224,17 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const file = await getUploadFormData(
-				{
-					request: this.request,
-				},
-				{ field: 'file', sizeLimit: settings.get<number>('FileUpload_MaxFileSize') },
-			);
+			const { file, fields } = await MultipartUploadHandler.parseRequest(this.incoming, {
+				field: 'file',
+				maxSize: settings.get<number>('FileUpload_MaxFileSize'),
+			});
 
 			if (!file) {
-				throw new Meteor.Error('invalid-field');
+				throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
 			}
-
-			let { fileBuffer } = file;
 
 			const expiresAt = new Date();
 			expiresAt.setHours(expiresAt.getHours() + 24);
-
-			const { fields } = file;
 
 			let content;
 
@@ -278,7 +249,7 @@ API.v1.addRoute(
 
 			const details = {
 				name: file.filename,
-				size: fileBuffer.length,
+				size: file.size,
 				type: file.mimetype,
 				rid: this.urlParams.rid,
 				userId: this.userId,
@@ -286,15 +257,9 @@ API.v1.addRoute(
 				expiresAt,
 			};
 
-			const stripExif = settings.get('Message_Attachments_Strip_Exif');
-			if (stripExif) {
-				// No need to check mime. Library will ignore any files without exif/xmp tags (like BMP, ico, PDF, etc)
-				fileBuffer = await Media.stripExifFromBuffer(fileBuffer);
-				details.size = fileBuffer.length;
-			}
-
+			// TODO: In the future, we should isolate file receival from storage and post-processing.
 			const fileStore = FileUpload.getStore('Uploads');
-			const uploadedFile = await fileStore.insert(details, fileBuffer);
+			const uploadedFile = await fileStore.insert(details, file.tempFilePath);
 
 			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
 
@@ -319,7 +284,7 @@ API.v1.addRoute(
 				return API.v1.forbidden();
 			}
 
-			const file = await Uploads.findOneById(this.urlParams.fileId);
+			const file = await Uploads.findOneByIdAndUserIdAndRoomId(this.urlParams.fileId, this.userId, this.urlParams.rid);
 
 			if (!file) {
 				throw new Meteor.Error('invalid-file');
@@ -332,8 +297,18 @@ API.v1.addRoute(
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
 
+			if (this.bodyParams.fileName) {
+				file.name = this.bodyParams.fileName;
+				delete this.bodyParams.fileName;
+			}
+
+			if (this.bodyParams.fileContent) {
+				file.content = this.bodyParams.fileContent;
+				delete this.bodyParams.fileContent;
+			}
+
 			await applyAirGappedRestrictionsValidation(() =>
-				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }, { parseAttachmentsForE2EE: false }),
+				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
 			);
 
 			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
@@ -347,49 +322,53 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.saveNotification',
-	{ authRequired: true },
-	{
-		async post() {
-			const { roomId, notifications } = this.bodyParams;
-
-			if (!roomId) {
-				return API.v1.failure("The 'roomId' param is required");
-			}
-
-			if (!notifications || Object.keys(notifications).length === 0) {
-				return API.v1.failure("The 'notifications' param is required");
-			}
-
-			await Promise.all(
-				Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
-					saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
-				),
-			);
-
-			return API.v1.success();
+const saveNotificationBodySchema = ajv.compile<{
+	roomId: string;
+	notifications: Record<string, string>;
+}>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string', minLength: 1 },
+		notifications: {
+			type: 'object',
+			minProperties: 1,
+			additionalProperties: { type: 'string' },
 		},
 	},
-);
+	required: ['roomId', 'notifications'],
+	additionalProperties: false,
+});
 
-API.v1.addRoute(
-	'rooms.favorite',
-	{ authRequired: true },
+const saveNotificationResponseSchema = ajv.compile({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+const roomsSaveNotificationEndpoint = API.v1.post(
+	'rooms.saveNotification',
 	{
-		async post() {
-			const { favorite } = this.bodyParams;
-
-			if (!this.bodyParams.hasOwnProperty('favorite')) {
-				return API.v1.failure("The 'favorite' param is required");
-			}
-
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-
-			await toggleFavoriteMethod(this.userId, room._id, favorite);
-
-			return API.v1.success();
+		authRequired: true,
+		body: saveNotificationBodySchema,
+		response: {
+			200: saveNotificationResponseSchema,
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
 		},
+	},
+	async function action() {
+		const { roomId, notifications } = this.bodyParams;
+
+		await Promise.all(
+			Object.entries(notifications as Notifications).map(async ([notificationKey, notificationValue]) =>
+				saveNotificationSettingsMethod(this.userId, roomId, notificationKey as NotificationFieldType, notificationValue),
+			),
+		);
+
+		return API.v1.success({ success: true });
 	},
 );
 
@@ -472,23 +451,6 @@ API.v1.addRoute(
 	},
 );
 
-API.v1.addRoute(
-	'rooms.leave',
-	{ authRequired: true },
-	{
-		async post() {
-			const room = await findRoomByIdOrName({ params: this.bodyParams });
-			const user = await Users.findOneById(this.userId);
-			if (!user) {
-				return API.v1.failure('Invalid user');
-			}
-			await leaveRoomMethod(user, room._id);
-
-			return API.v1.success();
-		},
-	},
-);
-
 /*
 TO-DO: 8.0.0 should use the ajv validation
 which will change this endpoint's
@@ -499,7 +461,6 @@ API.v1.addRoute(
 	{ authRequired: true /* , validateParams: isRoomsCreateDiscussionProps */ },
 	{
 		async post() {
-			// eslint-disable-next-line @typescript-eslint/naming-convention
 			const { prid, pmid, reply, t_name, users, encrypted, topic } = this.bodyParams;
 			if (!prid) {
 				return API.v1.failure('Body parameter "prid" is required.');
@@ -594,7 +555,7 @@ API.v1.addRoute(
 			const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 			// If the initial image was not returned in the query, insert it as the first element of the list
-			if (initialImage && !files.find(({ _id }) => _id === (initialImage as IUpload)._id)) {
+			if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
 				files.splice(0, 0, initialImage);
 			}
 
@@ -811,7 +772,7 @@ API.v1.addRoute(
 				void dataExport.sendFile(
 					{
 						rid,
-						format: format as 'html' | 'json',
+						format,
 						dateFrom: convertedDateFrom,
 						dateTo: convertedDateTo,
 					},
@@ -859,7 +820,7 @@ API.v1.addRoute(
 			const [room, user] = await Promise.all([
 				findRoomByIdOrName({
 					params: { roomId },
-				}) as Promise<IRoom>,
+				}),
 				Users.findOneByIdOrUsername(userId || username),
 			]);
 
@@ -1007,6 +968,24 @@ API.v1.addRoute(
 	},
 );
 
+type RoomsFavorite =
+	| {
+			roomId: string;
+			favorite: boolean;
+	  }
+	| {
+			roomName: string;
+			favorite: boolean;
+	  };
+
+type RoomsLeave =
+	| {
+			roomId: string;
+	  }
+	| {
+			roomName: string;
+	  };
+
 const isRoomGetRolesPropsSchema = {
 	type: 'object',
 	properties: {
@@ -1015,51 +994,390 @@ const isRoomGetRolesPropsSchema = {
 	additionalProperties: false,
 	required: ['rid'],
 };
-export const roomEndpoints = API.v1.get(
-	'rooms.roles',
-	{
-		authRequired: true,
-		query: ajv.compile<{
-			rid: string;
-		}>(isRoomGetRolesPropsSchema),
-		response: {
-			200: ajv.compile<{
-				roles: RoomRoles[];
+
+const RoomsFavoriteSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomName: { type: 'string' },
+			},
+			required: ['roomName', 'favorite'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				favorite: { type: 'boolean' },
+				roomId: { type: 'string' },
+			},
+			required: ['roomId', 'favorite'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isRoomsLeavePropsSchema = {
+	anyOf: [
+		{
+			type: 'object',
+			properties: {
+				roomId: { type: 'string' },
+			},
+			required: ['roomId'],
+			additionalProperties: false,
+		},
+		{
+			type: 'object',
+			properties: {
+				roomName: { type: 'string' },
+			},
+			required: ['roomName'],
+			additionalProperties: false,
+		},
+	],
+};
+
+const isRoomsFavoriteProps = ajv.compile<RoomsFavorite>(RoomsFavoriteSchema);
+const isRoomsLeaveProps = ajv.compile<RoomsLeave>(isRoomsLeavePropsSchema);
+const roomsBannedUsersResponseSchema = ajv.compile<{
+	success: true;
+	bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>[];
+	count: number;
+	offset: number;
+	total: number;
+}>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+		bannedUsers: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string' },
+					username: { type: 'string' },
+					name: { type: 'string' },
+				},
+				required: ['_id', 'username'],
+				additionalProperties: false,
+			},
+		},
+		count: { type: 'number' },
+		offset: { type: 'number' },
+		total: { type: 'number' },
+	},
+	required: ['success', 'bannedUsers', 'count', 'offset', 'total'],
+	additionalProperties: false,
+});
+
+export const roomEndpoints = API.v1
+	.get(
+		'rooms.roles',
+		{
+			authRequired: true,
+			query: ajvQuery.compile<{
+				rid: string;
+			}>(isRoomGetRolesPropsSchema),
+			response: {
+				200: ajv.compile<{
+					roles: RoomRoles[];
+				}>({
+					type: 'object',
+					properties: {
+						roles: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									rid: { type: 'string' },
+									u: {
+										type: 'object',
+										properties: { _id: { type: 'string' }, username: { type: 'string' } },
+										required: ['_id', 'username'],
+									},
+									roles: { type: 'array', items: { type: 'string' } },
+								},
+								required: ['rid', 'u', 'roles'],
+							},
+						},
+					},
+					required: ['roles'],
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
+			},
+		},
+		async function () {
+			const { rid } = this.queryParams;
+			const roles = await executeGetRoomRoles(rid, this.user);
+
+			return API.v1.success({
+				roles,
+			});
+		},
+	)
+	.get(
+		'rooms.adminRooms.privateRooms',
+		{
+			authRequired: true,
+			permissionsRequired: ['view-room-administration'],
+			query: ajvQuery.compile<{
+				filter?: string;
+				offset?: number;
+				count?: number;
+				sort?: string;
 			}>({
 				type: 'object',
 				properties: {
-					roles: {
-						type: 'array',
-						items: {
-							type: 'object',
-							properties: {
-								rid: { type: 'string' },
-								u: {
-									type: 'object',
-									properties: { _id: { type: 'string' }, username: { type: 'string' } },
-									required: ['_id', 'username'],
-								},
-								roles: { type: 'array', items: { type: 'string' } },
-							},
-							required: ['rid', 'u', 'roles'],
+					filter: { type: 'string' },
+					offset: { type: 'number' },
+					count: { type: 'number' },
+					sort: { type: 'string' },
+				},
+				additionalProperties: true,
+			}),
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{
+					rooms: IRoom[];
+					count: number;
+					offset: number;
+					total: number;
+				}>({
+					type: 'object',
+					properties: {
+						rooms: {
+							type: 'array',
+							items: { type: 'object' },
+						},
+						count: { type: 'number' },
+						offset: { type: 'number' },
+						total: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['rooms', 'count', 'offset', 'total', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { filter } = this.queryParams;
+
+			const name = (filter || '').trim();
+
+			const { cursor, totalCount } = Rooms.findPrivateRoomsAndTeamsPaginated(name, {
+				skip: offset,
+				limit: count,
+				sort: sort || { default: -1, name: 1 },
+				projection: adminFields,
+			});
+
+			const [rooms, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			return API.v1.success({
+				rooms,
+				count: rooms.length,
+				offset,
+				total,
+			});
+		},
+	)
+	.post(
+		'rooms.invite',
+		{
+			authRequired: true,
+			body: isRoomsInviteProps,
+			response: {
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const { roomId, action } = this.bodyParams;
+
+			try {
+				await FederationMatrix.handleInvite(roomId, this.userId, action);
+				return API.v1.success();
+			} catch (error) {
+				return API.v1.failure({ error: `Failed to handle invite: ${error instanceof Error ? error.message : String(error)}` });
+			}
+		},
+	)
+	.post(
+		'rooms.favorite',
+		{
+			authRequired: true,
+			body: isRoomsFavoriteProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+							description: 'Indicates if the request was successful.',
 						},
 					},
-				},
-				required: ['roles'],
-			}),
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
 		},
-	},
-	async function () {
-		const { rid } = this.queryParams;
-		const roles = await executeGetRoomRoles(rid, this.userId);
+		async function action() {
+			const { favorite } = this.bodyParams;
 
-		return API.v1.success({
-			roles,
-		});
-	},
-);
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
 
-type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints>;
+			await toggleFavoriteMethod(this.userId, room._id, favorite);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.leave',
+		{
+			authRequired: true,
+			body: isRoomsLeaveProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const room = await findRoomByIdOrName({ params: this.bodyParams });
+
+			const user = await Users.findOneById(this.userId);
+
+			if (!user) {
+				return API.v1.failure('error-invalid-user');
+			}
+
+			await leaveRoomMethod(user, room._id);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.banUser',
+		{
+			authRequired: true,
+			body: isRoomsBanUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await banUserFromRoomMethod(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'rooms.unbanUser',
+		{
+			authRequired: true,
+			body: isRoomsUnbanUserProps,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const user = await getUserFromParams(this.bodyParams, true);
+
+			if (!user.username) {
+				return API.v1.failure('Invalid user');
+			}
+
+			await unbanUserFromRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
+
+			return API.v1.success();
+		},
+	)
+	.get(
+		'rooms.bannedUsers',
+		{
+			authRequired: true,
+			query: isRoomsBannedUsersProps,
+			response: {
+				200: roomsBannedUsersResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { roomId } = this.queryParams;
+
+			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
+				return API.v1.unauthorized();
+			}
+
+			const { offset, count } = await getPaginationItems(this.queryParams);
+
+			const { cursor, totalCount } = Subscriptions.findPaginated({ rid: roomId, status: 'BANNED' as const }, { offset, count });
+
+			const [bannedSubs, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+			const userIds = bannedSubs.map((sub) => sub.u._id);
+			const users = await Users.find<RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>>(
+				{ _id: { $in: userIds } },
+				{ projection: { username: 1, name: 1 } },
+			).toArray();
+
+			return API.v1.success({
+				bannedUsers: users,
+				count: users.length,
+				offset,
+				total,
+			});
+		},
+	);
+type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
+	ExtractRoutesFromAPI<typeof roomDeleteEndpoint> &
+	ExtractRoutesFromAPI<typeof roomsSaveNotificationEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface

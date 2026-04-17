@@ -1,3 +1,4 @@
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import type { ReactElement, ReactNode } from 'react';
 import { Suspense } from 'react';
 
@@ -5,7 +6,6 @@ import AuthenticationCheck from './AuthenticationCheck';
 import EmbeddedPreload from './EmbeddedPreload';
 import Preload from './Preload';
 import { useCustomScript } from './useCustomScript';
-import { useEmbeddedLayout } from '../../../hooks/useEmbeddedLayout';
 
 type MainLayoutProps = {
 	children?: ReactNode;

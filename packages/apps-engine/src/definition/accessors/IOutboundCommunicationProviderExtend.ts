@@ -1,4 +1,4 @@
-import type { IOutboundEmailMessageProvider, IOutboundPhoneMessageProvider } from '../outboundComunication';
+import type { IOutboundEmailMessageProvider, IOutboundPhoneMessageProvider } from '../outboundCommunication';
 
 export interface IOutboundCommunicationProviderExtend {
 	registerPhoneProvider(provider: IOutboundPhoneMessageProvider): Promise<void>;

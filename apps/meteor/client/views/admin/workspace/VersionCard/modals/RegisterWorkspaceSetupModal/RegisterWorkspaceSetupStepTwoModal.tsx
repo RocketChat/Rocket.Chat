@@ -83,7 +83,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 			<ModalContent>
 				<Box fontSize='p2'>
 					<Box>
-						<Trans i18nKey='RegisterWorkspace_Setup_Email_Confirmation'>
+						<Trans i18nKey='cloud.RegisterWorkspace_Setup_Email_Confirmation'>
 							<Box is='p'>
 								Email sent to{' '}
 								<Box is='span' fontScale='p2b'>
@@ -103,16 +103,17 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 				</Box>
 			</ModalContent>
 			<ModalFooter>
-				{/* FIXME: missing translation */}
 				<Box is='div' display='flex' justifyContent='start' fontSize='c1' w='full'>
-					Didn’t receive email?{' '}
-					<Box is='a' pi={4} onClick={handleResendRegistrationEmail}>
-						Resend
-					</Box>{' '}
-					or{' '}
-					<Box is='a' pi={4} onClick={handleBackFromConfirmation}>
-						change email
-					</Box>
+					<Trans i18nKey='RegisterWorkspace_Didnt_Receive_Email'>
+						Didn't receive email?{' '}
+						<Box is='a' pi={4} onClick={handleResendRegistrationEmail}>
+							Resend
+						</Box>{' '}
+						or{' '}
+						<Box is='a' pi={4} onClick={handleBackFromConfirmation}>
+							change email
+						</Box>
+					</Trans>
 				</Box>
 			</ModalFooter>
 		</Modal>

@@ -1,7 +1,7 @@
 import { CannedResponse } from '@rocket.chat/models';
 
 import notifications from '../../../../../app/notifications/server/lib/Notifications';
-import { callbacks } from '../../../../../lib/callbacks';
+import { callbacks } from '../../../../../server/lib/callbacks';
 
 callbacks.add(
 	'livechat.removeAgentDepartment',

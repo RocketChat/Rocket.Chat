@@ -1,29 +1,23 @@
 import type { AtLeast } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../../app/settings/server';
 import type { IRoomTypeServerDirectives } from '../../../../definition/IRoomTypeConfig';
 import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
-import { Federation } from '../../../services/federation/Federation';
+import { isFederationEnabled } from '../../../services/federation/utils';
 import { roomCoordinator } from '../roomCoordinator';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
 
-const getCurrentUserId = (): string | undefined => {
-	try {
-		return Meteor.userId() || undefined;
-	} catch (_e) {
-		//
-	}
-};
-
 roomCoordinator.add(DirectMessageRoomType, {
 	allowRoomSettingChange(_room, setting) {
 		if (isRoomFederated(_room)) {
-			return Federation.isRoomSettingAllowed(_room, setting);
+			if (isRoomNativeFederated(_room) && isFederationEnabled()) {
+				return true;
+			}
+			return false;
 		}
 		switch (setting) {
 			case RoomSettingsEnum.TYPE:
@@ -42,9 +36,12 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	async allowMemberAction(room, action, userId) {
+	async allowMemberAction(room, action, _userId) {
 		if (isRoomFederated(room)) {
-			return Federation.actionAllowed(room, action, userId);
+			if (isRoomNativeFederated(room) && isFederationEnabled()) {
+				return true;
+			}
+			return false;
 		}
 		switch (action) {
 			case RoomMemberActions.BLOCK:
@@ -54,7 +51,7 @@ roomCoordinator.add(DirectMessageRoomType, {
 		}
 	},
 
-	async roomName(room, userId?) {
+	async roomName(room, uid) {
 		const subscription = await (async (): Promise<{ fname?: string; name?: string } | null> => {
 			if (room.fname || room.name) {
 				return {
@@ -67,7 +64,6 @@ roomCoordinator.add(DirectMessageRoomType, {
 				return null;
 			}
 
-			const uid = userId || getCurrentUserId();
 			if (uid) {
 				return Subscriptions.findOneByRoomIdAndUserId(room._id, uid, { projection: { name: 1, fname: 1 } });
 			}

@@ -1,4 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { FormSkeleton } from './FormSkeleton';
@@ -14,6 +15,7 @@ type SlaFieldProps = {
 const SlaField = ({ id }: SlaFieldProps) => {
 	const { t } = useTranslation();
 	const { data, isLoading, isError } = useSlaInfo(id);
+	const slaFieldId = useId();
 
 	if (isLoading) {
 		return <FormSkeleton />;
@@ -26,8 +28,8 @@ const SlaField = ({ id }: SlaFieldProps) => {
 	const { name } = data;
 	return (
 		<Field>
-			<Label>{t('SLA_Policy')}</Label>
-			<Info>{name}</Info>
+			<Label id={slaFieldId}>{t('SLA_Policy')}</Label>
+			<Info aria-labelledby={slaFieldId}>{name}</Info>
 		</Field>
 	);
 };

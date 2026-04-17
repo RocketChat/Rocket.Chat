@@ -3,6 +3,7 @@ import { usePermission } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { links } from '../../../lib/links';
 import UpdateRocketChatButton from '../components/UpdateRocketChatButton';
 
 const UnsupportedEmptyState = (): ReactElement => {
@@ -19,7 +20,7 @@ const UnsupportedEmptyState = (): ReactElement => {
 				<StatesTitle>{title}</StatesTitle>
 				<StatesSubtitle>{description}</StatesSubtitle>
 				<StatesActions>
-					<Button secondary is='a' href='https://go.rocket.chat/i/support-prerequisites ' external>
+					<Button secondary is='a' href={links.go.supportPrerequisites} external>
 						{t('Learn_more')}
 					</Button>
 					{isAdmin && <UpdateRocketChatButton />}
