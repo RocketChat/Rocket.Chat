@@ -1,4 +1,5 @@
 name: Setup Playwright
+description: 'Setup Playwright binaries and dependencies'
 
 runs:
   using: 'composite'
