@@ -527,7 +527,7 @@ describe('[Incoming Integrations]', () => {
 					.post(`/hooks/${withSkipTranspile._id}/${withSkipTranspile.token}`)
 					.set('Content-Type', 'application/json')
 					.send(JSON.stringify(payload))
-					.expect(500);
+					.expect(400);
 			});
 		});
 
