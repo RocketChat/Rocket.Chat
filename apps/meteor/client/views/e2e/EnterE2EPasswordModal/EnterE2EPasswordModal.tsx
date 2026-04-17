@@ -38,7 +38,7 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 			await onConfirm(password);
 		} catch (error) {
 			if (isInvalidE2EEPasswordError(error)) {
-				setError('password', { message: t('Your_E2EE_password_is_incorrect') });
+				setError('password', { message: t('Incorrect_encryption_password') });
 				return;
 			}
 			dispatchToastMessage({ type: 'error', message: error });
