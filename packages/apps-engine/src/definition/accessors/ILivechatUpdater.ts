@@ -1,4 +1,4 @@
-import type { ILivechatTransferData, IVisitor } from '../livechat';
+import type { ILivechatTransferData, IVisitor, IVisitorExternalIdentifier } from '../livechat';
 import type { IRoom } from '../rooms';
 import type { IUser } from '../users';
 
@@ -30,4 +30,19 @@ export interface ILivechatUpdater {
 	 * @returns Promise to whether success or not
 	 */
 	setCustomFields(token: IVisitor['token'], key: string, value: string, overwrite: boolean): Promise<boolean>;
+
+	/**
+	 * Updates or adds an external identifier for a visitor.
+	 * The appId is automatically set to the calling app's ID.
+	 * If an externalId with the same appId already exists, it will be replaced.
+	 *
+	 * @param visitorId The visitor's ID
+	 * @param externalId The external identifier containing entityId and optional metadata
+	 *
+	 * @returns Promise resolving to the updated visitor, or undefined if not found
+	 */
+	updateVisitorExternalId(
+		visitorId: string,
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+	): Promise<IVisitor | undefined>;
 }

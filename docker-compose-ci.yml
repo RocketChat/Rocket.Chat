@@ -200,6 +200,18 @@ services:
   httpbin:
     image: kong/httpbin
 
+  mock-server:
+    image: kaleman14/mockserver:latest
+    profiles:
+      - api
+    ports:
+      - 4000:8080
+    healthcheck:
+      test: ["CMD", "/mock-server", "-healthcheck"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+
   traefik:
     image: traefik:v3.6.6
     command:

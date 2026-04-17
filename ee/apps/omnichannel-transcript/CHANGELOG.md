@@ -1,5 +1,71 @@
 # @rocket.chat/omnichannel-transcript
 
+## 0.4.53
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [602b20a8c570b895eb296ecfe39c9b7fcb12fabd, e2068892bf1ffc88b15ab71ad743cf84e5d31ed5, cd2fc208d351032c0b729755af4886665dca08b6, 652ff8cfe26b9068a776c39132c0eb5440702894, 539659af22bc19880eda047dfc0b152472ccb65c, 1741a20dd86c353755becfc706cd9ad63df09cfa, 85c0ac7d8c7a5b7b89ef58f4a42b18467a8e2dd4, c217b0bde182e5f76dbe1892d9b37d61ffab71db, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, eae3fb3136bd0b48294c050a71b0a36d05ca02b0, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, 788c161bb6c9544bec37034c93e2f60de1a6c316, c117492ad90d291a361eedc929506f557495caf7]:</summary>
+
+  - @rocket.chat/model-typings@2.1.2
+  - @rocket.chat/models@2.1.2
+  - @rocket.chat/i18n@2.2.0
+  - @rocket.chat/omnichannel-services@0.3.50
+  - @rocket.chat/network-broker@0.2.32
+  - @rocket.chat/pdf-worker@0.3.32
+  - @rocket.chat/core-services@0.13.2
+  - @rocket.chat/core-typings@8.3.0
+  - @rocket.chat/tracing@0.0.2
+  - @rocket.chat/logger@1.0.1
+  - @rocket.chat/tools@0.2.5
+  </details>
+
+## 0.4.53-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.4
+  - @rocket.chat/omnichannel-services@0.3.50-rc.4
+  - @rocket.chat/pdf-worker@0.3.32-rc.4
+  - @rocket.chat/core-services@0.13.2-rc.4
+  - @rocket.chat/model-typings@2.1.2-rc.4
+  - @rocket.chat/models@2.1.2-rc.4
+  - @rocket.chat/network-broker@0.2.32-rc.4
+  </details>
+
+## 0.4.53-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.3
+  - @rocket.chat/omnichannel-services@0.3.50-rc.3
+  - @rocket.chat/pdf-worker@0.3.32-rc.3
+  - @rocket.chat/core-services@0.13.2-rc.3
+  - @rocket.chat/model-typings@2.1.2-rc.3
+  - @rocket.chat/models@2.1.2-rc.3
+  - @rocket.chat/network-broker@0.2.32-rc.3
+  </details>
+
+## 0.4.53-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/core-typings@8.3.0-rc.2
+  - @rocket.chat/omnichannel-services@0.3.50-rc.2
+  - @rocket.chat/pdf-worker@0.3.32-rc.2
+  - @rocket.chat/core-services@0.13.2-rc.2
+  - @rocket.chat/model-typings@2.1.2-rc.2
+  - @rocket.chat/models@2.1.2-rc.2
+  - @rocket.chat/network-broker@0.2.32-rc.2
+  </details>
+
 ## 0.4.53-rc.1
 
 ### Patch Changes

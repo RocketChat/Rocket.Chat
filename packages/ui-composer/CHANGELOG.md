@@ -1,5 +1,15 @@
 # @rocket.chat/ui-composer
 
+## 0.6.0
+
+### Minor Changes
+
+- ([#39425](https://github.com/RocketChat/Rocket.Chat/pull/39425)) Adds support for multiple files in message composer, improving file upload experience
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
 ## 0.6.0-rc.0
 
 ### Minor Changes
