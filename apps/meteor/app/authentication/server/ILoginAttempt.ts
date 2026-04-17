@@ -2,7 +2,7 @@ import type { MeteorError } from '@rocket.chat/core-services';
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
 
 interface IMethodArgument {
-	user?: { username: string };
+	user?: { username?: string; email?: string };
 	password?: {
 		digest: string;
 		algorithm: string;
