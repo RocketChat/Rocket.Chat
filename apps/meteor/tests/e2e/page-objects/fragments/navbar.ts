@@ -128,7 +128,15 @@ export class Navbar {
 	}
 
 	async openCreate(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team'): Promise<void> {
+		const openSidebarButton = this.btnSidebarToggler();
+		if (await openSidebarButton.isVisible().catch(() => false)) {
+			await openSidebarButton.click();
+		}
+
+		await expect(this.pagesGroup).toBeVisible({ timeout: 15_000 });
+		await expect(this.btnCreateNew).toBeVisible({ timeout: 15_000 });
 		await this.btnCreateNew.click();
+		await expect(this.createNewMenu).toBeVisible({ timeout: 10_000 });
 		await this.createNewMenuItem(name).click();
 	}
 
