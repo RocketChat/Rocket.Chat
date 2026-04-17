@@ -1,3 +1,5 @@
+import type { Page } from '@playwright/test';
+
 import { faker } from '@faker-js/faker';
 
 import { ADMIN_CREDENTIALS } from './config/constants';
@@ -18,6 +20,16 @@ const RANDOM_PASSWORD = faker.helpers
 	])
 	.join('');
 
+const dismissBlockingModal = async (page: Page): Promise<void> => {
+	const modalBackdrop = page.locator('#modal-root .rcx-modal__backdrop:visible').first();
+	if (!(await modalBackdrop.isVisible().catch(() => false))) {
+		return;
+	}
+
+	await page.keyboard.press('Escape').catch(() => undefined);
+	await modalBackdrop.waitFor({ state: 'hidden', timeout: 3_000 }).catch(() => undefined);
+};
+
 test.describe.serial('account-security', () => {
 	let poAccountSecurity: AccountSecurity;
 
@@ -25,6 +37,7 @@ test.describe.serial('account-security', () => {
 		poAccountSecurity = new AccountSecurity(page);
 		await page.goto('/account/security');
 		await page.waitForSelector('#main-content');
+		await dismissBlockingModal(page);
 		await setSettingValueById(api, 'Accounts_Password_Policy_Enabled', false);
 	});
 
@@ -37,7 +50,8 @@ test.describe.serial('account-security', () => {
 		]),
 	);
 
-	test('should disable and enable email 2FA', async () => {
+	test('should disable and enable email 2FA', async ({ page }) => {
+		await dismissBlockingModal(page);
 		await poAccountSecurity.security2FASection.click();
 		await expect(poAccountSecurity.email2FASwitch).toBeVisible();
 		await poAccountSecurity.email2FASwitch.click();

@@ -5,8 +5,26 @@ import { expect } from '../../utils/test';
 abstract class E2EEBanner {
 	constructor(protected root: Locator) {}
 
-	click() {
-		return this.root.click();
+	private async dismissBlockingModal(): Promise<void> {
+		const modalBackdrop = this.root.page().locator('#modal-root .rcx-modal__backdrop:visible').first();
+		if (!(await modalBackdrop.isVisible().catch(() => false))) {
+			return;
+		}
+
+		await this.root.page().keyboard.press('Escape').catch(() => undefined);
+		await modalBackdrop.waitFor({ state: 'hidden', timeout: 3_000 }).catch(() => undefined);
+	}
+
+	async click() {
+		await this.dismissBlockingModal();
+		await expect(this.root).toBeVisible({ timeout: 15_000 });
+
+		try {
+			await this.root.click({ timeout: 3_000 });
+		} catch {
+			await this.dismissBlockingModal();
+			await this.root.click({ force: true });
+		}
 	}
 
 	async waitForDisappearance() {

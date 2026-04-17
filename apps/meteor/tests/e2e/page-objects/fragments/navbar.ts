@@ -127,15 +127,34 @@ export class Navbar {
 		return this.createNewMenu.getByRole('menuitem', { name });
 	}
 
+	private async dismissBlockingModal(): Promise<void> {
+		const modalBackdrop = this.root.locator('#modal-root .rcx-modal__backdrop:visible').first();
+		if (!(await modalBackdrop.isVisible().catch(() => false))) {
+			return;
+		}
+
+		await this.root.keyboard.press('Escape').catch(() => undefined);
+		await modalBackdrop.waitFor({ state: 'hidden', timeout: 3_000 }).catch(() => undefined);
+	}
+
 	async openCreate(name: 'Direct message' | 'Discussion' | 'Channel' | 'Team'): Promise<void> {
 		const openSidebarButton = this.btnSidebarToggler();
 		if (await openSidebarButton.isVisible().catch(() => false)) {
 			await openSidebarButton.click();
 		}
 
+		await this.dismissBlockingModal();
+
 		await expect(this.pagesGroup).toBeVisible({ timeout: 15_000 });
 		await expect(this.btnCreateNew).toBeVisible({ timeout: 15_000 });
-		await this.btnCreateNew.click();
+
+		try {
+			await this.btnCreateNew.click({ timeout: 3_000 });
+		} catch {
+			await this.dismissBlockingModal();
+			await this.btnCreateNew.click({ force: true });
+		}
+
 		await expect(this.createNewMenu).toBeVisible({ timeout: 10_000 });
 		await this.createNewMenuItem(name).click();
 	}
@@ -185,8 +204,17 @@ export class Navbar {
 
 	async openChat(name: string): Promise<void> {
 		await this.typeSearch(name);
-		await this.getSearchRoomByName(name).waitFor();
-		await this.getSearchRoomByName(name).click();
+		await this.dismissBlockingModal();
+		const room = this.getSearchRoomByName(name);
+		await room.waitFor();
+
+		try {
+			await room.click({ timeout: 3_000 });
+		} catch {
+			await this.dismissBlockingModal();
+			await room.click({ force: true });
+		}
+
 		await this.waitForChannel();
 	}
 
