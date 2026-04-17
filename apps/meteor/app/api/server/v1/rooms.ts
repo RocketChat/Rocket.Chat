@@ -505,16 +505,6 @@ API.v1.get(
 	},
 );
 
-/*
-TO-DO: 8.0.0 should use the ajv validation
-which will change this endpoint's
-response errors.
-*/
-/*
-TO-DO: 8.0.0 should use the ajv validation
-which will change this endpoint's
-response errors.
-*/
 API.v1.post(
 	'rooms.createDiscussion',
 	{
