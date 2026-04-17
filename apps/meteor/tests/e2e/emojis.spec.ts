@@ -27,11 +27,11 @@ test.describe.serial('emoji', () => {
 			await expect(poHomeChannel.scrollerEmojiPicker).toBeVisible();
 		});
 
-		await test.step('should focus the active emoji tab category', async () => {
+		await test.step('should activate the selected emoji tab category', async () => {
 			const activityEmojiTab = poHomeChannel.getEmojiPickerTabByName('Activity');
 			await activityEmojiTab.click();
 
-			await expect(activityEmojiTab).toBeFocused();
+			await expect(activityEmojiTab).toHaveClass(/rcx-button--icon-pressed/);
 			await poHomeChannel.composer.inputMessage.click(); // To close the emoji picker
 		});
 
