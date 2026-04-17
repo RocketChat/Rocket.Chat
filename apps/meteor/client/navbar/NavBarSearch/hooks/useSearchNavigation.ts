@@ -1,7 +1,7 @@
+import { useFocusManager } from '@react-aria/focus';
+import type { OverlayTriggerState } from '@react-stately/overlays';
 import type { KeyboardEvent } from 'react';
 import { useCallback } from 'react';
-import { useFocusManager } from 'react-aria';
-import type { OverlayTriggerState } from 'react-stately';
 
 export const isOption = (node: Element) => node.getAttribute('role') === 'option';
 

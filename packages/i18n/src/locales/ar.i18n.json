@@ -1454,8 +1454,6 @@
   "Entertainment": "الترفيه",
   "Error": "خطأ",
   "Error_404": "خطأ: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "خطأ: يتطلب Rocket.Chat تتبع سجل العمليات عند التشغيل في حالات متعددة",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "يرجى التأكد من أن قاعدة البيانات MongoDB الخاصة بك في وضع ReplicaSet وأن متغير البيئة MONGO_OPLOG_URL محدد بشكل صحيح على خادم التطبيق",
   "Error_Site_URL": "Site_Url غير صالح",
   "Error_Site_URL_description": "يُرجى تحديث إعداد \"Site_Url\" الخاص بك، اعثر على مزيد من المعلومات [هنا](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": "خطأ في تغيير كلمة المرور",

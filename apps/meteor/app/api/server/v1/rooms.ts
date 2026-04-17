@@ -34,6 +34,7 @@ import { eraseRoom } from '../../../../server/lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../../../server/lib/findUsersOfRoomOrderedByRole';
 import { openRoom } from '../../../../server/lib/openRoom';
 import type { RoomRoles } from '../../../../server/lib/roles/getRoomRoles';
+import { unbanUserFromRoom } from '../../../../server/lib/unbanUserFromRoom';
 import { hideRoomMethod } from '../../../../server/methods/hideRoom';
 import { muteUserInRoom } from '../../../../server/methods/muteUserInRoom';
 import { toggleFavoriteMethod } from '../../../../server/methods/toggleFavorite';
@@ -45,7 +46,6 @@ import { saveRoomSettings } from '../../../channel-settings/server/methods/saveR
 import { createDiscussion } from '../../../discussion/server/methods/createDiscussion';
 import { FileUpload } from '../../../file-upload/server';
 import { sendFileMessage } from '../../../file-upload/server/methods/sendFileMessage';
-import { executeUnbanUserFromRoom } from '../../../lib/server/functions/executeUnbanUserFromRoom';
 import { syncRolePrioritiesForRoomIfRequired } from '../../../lib/server/functions/syncRolePrioritiesForRoomIfRequired';
 import { executeArchiveRoom } from '../../../lib/server/methods/archiveRoom';
 import { cleanRoomHistoryMethod } from '../../../lib/server/methods/cleanRoomHistory';
@@ -1333,7 +1333,7 @@ export const roomEndpoints = API.v1
 				return API.v1.failure('Invalid user');
 			}
 
-			await executeUnbanUserFromRoom(this.bodyParams.roomId, user, this.user);
+			await unbanUserFromRoom(this.userId, { rid: this.bodyParams.roomId, username: user.username });
 
 			return API.v1.success();
 		},

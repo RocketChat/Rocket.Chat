@@ -1646,8 +1646,6 @@
   "Entertainment": "Viihde",
   "Error": "Virhe",
   "Error_404": "Virhe: 404",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances": "Virhe: Rocket.Chat edellyttää oplog tailing -toimintoa käytettäessä useita esiintymiä",
-  "Error_RocketChat_requires_oplog_tailing_when_running_in_multiple_instances_details": "Varmista, että MongoDB on ReplicaSet-tilassa ja että MONGO_OPLOG_URL-ympäristömuuttuja on määritetty oikein sovelluspalvelimessa",
   "Error_Site_URL": "Virheellinen Site_Url",
   "Error_Site_URL_description": "Päivitä \"Site_Url\"-asetus. Lisätietoja on [täällä](https://go.rocket.chat/i/invalid-site-url)",
   "Error_changing_password": "Virhe vaihdettaessa salasanaa",

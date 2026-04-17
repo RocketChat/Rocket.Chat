@@ -1,5 +1,50 @@
 # @rocket.chat/livechat Change Log
 
+## 2.1.0
+
+### Minor Changes
+
+- ([#39268](https://github.com/RocketChat/Rocket.Chat/pull/39268)) refactor(ui-kit): Remove UiKit deprecations
+
+### Patch Changes
+
+- ([#38989](https://github.com/RocketChat/Rocket.Chat/pull/38989)) chore(eslint): Upgrades ESLint and its configuration
+
+- <details><summary>Updated dependencies [d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, 87f9262af4a543d52642a54e1ef546d509a79e23, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae]:</summary>
+
+  - @rocket.chat/message-parser@0.31.35
+  - @rocket.chat/ui-kit@1.0.0
+  - @rocket.chat/gazzodown@29.0.0
+  - @rocket.chat/random@1.2.3
+  </details>
+
+## 2.1.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@29.0.0-rc.4
+  </details>
+
+## 2.1.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@29.0.0-rc.3
+  </details>
+
+## 2.1.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+
+  - @rocket.chat/gazzodown@29.0.0-rc.2
+  </details>
+
 ## 2.1.0-rc.1
 
 ### Patch Changes

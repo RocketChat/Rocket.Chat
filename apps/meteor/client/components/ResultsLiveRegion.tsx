@@ -1,4 +1,4 @@
-import { VisuallyHidden } from 'react-aria';
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { useTranslation } from 'react-i18next';
 
 const ResultsLiveRegion = ({ shouldAnnounce, itemCount }: { shouldAnnounce: boolean; itemCount: number }) => {

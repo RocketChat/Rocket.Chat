@@ -18,10 +18,12 @@ import {
 	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
 	isUsersSendConfirmationEmailParamsPOST,
+	isUsersListParamsGET,
 	ajv,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/string-helpers';
 import { getLoginExpirationInMs, wrapExceptions } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
@@ -52,7 +54,7 @@ import {
 } from '../../../lib/server/functions/checkUsernameAvailability';
 import { deleteUser } from '../../../lib/server/functions/deleteUser';
 import { getAvatarSuggestionForUser } from '../../../lib/server/functions/getAvatarSuggestionForUser';
-import { getFullUserDataByIdOrUsernameOrImportId, defaultFields, fullFields } from '../../../lib/server/functions/getFullUserData';
+import { getFullUserDataByIdOrUsernameOrImportIdOrEmail, defaultFields, fullFields } from '../../../lib/server/functions/getFullUserData';
 import { generateUsernameSuggestion } from '../../../lib/server/functions/getUsernameSuggestion';
 import { saveCustomFields } from '../../../lib/server/functions/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../../lib/server/functions/saveCustomFieldsWithoutValidation';
@@ -432,16 +434,17 @@ API.v1.addRoute(
 	{ authRequired: true, validateParams: isUsersInfoParamsGetProps },
 	{
 		async get() {
-			const searchTerms: [string, 'id' | 'username' | 'importId'] | false =
+			const searchTerms: [string, 'id' | 'username' | 'importId' | 'email'] | false =
 				('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 				('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
-				('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']);
+				('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']) ||
+				('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']);
 
 			if (!searchTerms) {
 				return API.v1.failure('Invalid search query.');
 			}
 
-			const user = await getFullUserDataByIdOrUsernameOrImportId(this.userId, ...searchTerms);
+			const user = await getFullUserDataByIdOrUsernameOrImportIdOrEmail(this.userId, ...searchTerms);
 
 			if (!user) {
 				return API.v1.failure('User not found.');
@@ -482,6 +485,7 @@ API.v1.addRoute(
 		authRequired: true,
 		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
+		query: isUsersListParamsGET,
 	},
 	{
 		async get() {
@@ -491,6 +495,7 @@ API.v1.addRoute(
 			) {
 				return API.v1.forbidden();
 			}
+			const canViewFullOtherUserInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort, fields, query } = await this.parseJsonQuery();
@@ -501,7 +506,18 @@ API.v1.addRoute(
 
 			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
 
-			const nonEmptyQuery = getNonEmptyQuery(query, await hasPermissionAsync(this.userId, 'view-full-other-user-info'));
+			const nonEmptyQuery = getNonEmptyQuery(query, canViewFullOtherUserInfo);
+
+			if ('email' in this.queryParams && this.queryParams.email) {
+				if (!canViewFullOtherUserInfo) {
+					return API.v1.forbidden();
+				}
+				const escapedEmail = escapeRegExp(this.queryParams.email as string);
+				nonEmptyQuery['emails.address'] = {
+					$regex: `^${escapedEmail}$`,
+					$options: 'i',
+				};
+			}
 
 			// if user provided a query, validate it with their allowed operators
 			// otherwise we use the default query (with $regex and $options)
