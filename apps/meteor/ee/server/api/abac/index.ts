@@ -1,3 +1,4 @@
+import { PdpHealthCheckError } from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IServerEvents, IUser } from '@rocket.chat/core-typings';
@@ -22,6 +23,8 @@ import {
 	GETAbacRoomsResponseValidator,
 	GETAbacAuditEventsQuerySchema,
 	GETAbacAuditEventsResponseSchema,
+	GETAbacPdpHealthResponseSchema,
+	GETAbacPdpHealthErrorResponseSchema,
 } from './schemas';
 import { API } from '../../../../app/api/server';
 import type { ExtractRoutesFromAPI } from '../../../../app/api/server/ApiClass';
@@ -355,6 +358,32 @@ const abacEndpoints = API.v1
 			);
 
 			return API.v1.success(result);
+		},
+	)
+	.get(
+		'abac/pdp/health',
+		{
+			authRequired: true,
+			permissionsRequired: ['abac-management'],
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			response: {
+				200: GETAbacPdpHealthResponseSchema,
+				400: GETAbacPdpHealthErrorResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+				403: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			try {
+				await Abac.getPDPHealth();
+				return API.v1.success({ available: true, message: 'ABAC_PDP_Health_OK' });
+			} catch (err) {
+				const message = err instanceof PdpHealthCheckError ? err.errorCode : 'ABAC_PDP_Health_Not_OK';
+				return API.v1.failure({ available: false, message });
+			}
 		},
 	)
 	.get(

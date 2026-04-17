@@ -1,14 +1,16 @@
 name: 'Build Docker'
+description: 'Build Docker images for Rocket.Chat and related services'
 
 inputs:
   CR_USER:
     required: true
+    description: 'GitHub Container Registry username'
   CR_PAT:
     required: true
+    description: 'GitHub Container Registry Personal Access Token'
   deno-version:
     required: true
     description: 'Deno version'
-    type: string
   arch:
     required: false
     description: 'Architecture'
@@ -16,7 +18,6 @@ inputs:
   service:
     required: false
     description: 'Container to build'
-    type: string
   publish-image:
     required: false
     description: 'Publish image'
@@ -24,7 +25,7 @@ inputs:
   setup-docker:
     required: false
     description: 'Setup Docker'
-    default: true
+    default: 'true'
   type:
     required: false
     description: 'production or coverage'
@@ -58,7 +59,7 @@ runs:
         rm Rocket.Chat.tar.gz
 
     - name: Set up Docker
-      if: inputs.setup-docker == true
+      if: inputs.setup-docker == 'true'
       uses: docker/setup-docker-action@v4
       with:
         daemon-config: |
@@ -71,14 +72,24 @@ runs:
 
     - name: Build Docker images
       shell: bash
+      env:
+        DENO_VERSION: ${{ inputs.deno-version }}
+        INPUT_ARCH: ${{ inputs.arch }}
+        INPUT_SERVICE: ${{ inputs.service }}
+        INPUT_PUBLISH_IMAGE: ${{ inputs.publish-image }}
+        INPUT_TYPE: ${{ inputs.type }}
+        GITHUB_RUN_ID: ${{ github.run_id }}
+        GITHUB_SERVER_URL: ${{ github.server_url }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_EVENT_NAME: ${{ github.event_name }}
+        GITHUB_REF: ${{ github.ref }}
       run: |
         set -o xtrace
-        export DENO_VERSION="${{ inputs.deno-version }}"
 
         # Removes unnecessary swc cores and sharp binaries to reduce image size
         swc_arch='x64'
-        if [[ "${{ inputs.service }}" == 'rocketchat' ]]; then
-          if [[ "${{ inputs.arch }}" == 'arm64' ]]; then
+        if [[ "$INPUT_SERVICE" == 'rocketchat' ]]; then
+          if [[ "$INPUT_ARCH" == 'arm64' ]]; then
             swc_arch='arm64'
           fi
 
@@ -91,68 +102,75 @@ runs:
           find /tmp/build/bundle/programs/server/npm/node_modules/@rocket.chat/apps-engine/node_modules/@esbuild -type d -name 'linux-*' -not -name "*-${swc_arch}" -exec rm -rf {} +
         fi
 
-        if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
+        if [[ "$INPUT_PUBLISH_IMAGE" == 'true' ]]; then
           LOAD_OR_PUSH="--push"
         else
           LOAD_OR_PUSH="--load"
         fi
 
         # Get image name from docker-compose-ci.yml since rocketchat image is different from service name (rocket.chat)
-        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
+        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$INPUT_SERVICE" '.services[$s].image')
 
         docker buildx bake \
           -f docker-compose-ci.yml \
           ${LOAD_OR_PUSH} \
           --allow=fs.read=/tmp/build \
-          --set "*.tags+=${IMAGE}-gha-run-${{ github.run_id }}" \
-          --set "*.labels.org.opencontainers.image.description=Build run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-          --set "*.labels.org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" \
-          --set *.platform=linux/${{ inputs.arch }} \
+          --set "*.tags+=${IMAGE}-gha-run-${GITHUB_RUN_ID}" \
+          --set "*.labels.org.opencontainers.image.description=Build run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+          --set "*.labels.org.opencontainers.image.source=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}" \
+          --set "*.platform=linux/${INPUT_ARCH}" \
           --set *.cache-from=type=gha \
           --set *.cache-to=type=gha,mode=max \
           --provenance=false \
           --sbom=false \
           --metadata-file "/tmp/meta.json" \
-          "${{ inputs.service }}"
+          "$INPUT_SERVICE"
 
         echo "Contents of /tmp/meta.json:"
         cat /tmp/meta.json
 
-        if [[ "${{ inputs.publish-image }}" == 'true' ]]; then
-          SERVICE_SUFFIX=${{ inputs.service == 'rocketchat' && inputs.type == 'coverage' && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
+        if [[ "$INPUT_PUBLISH_IMAGE" == 'true' ]]; then
+          SERVICE_SUFFIX=''
+          if [[ "$INPUT_SERVICE" == 'rocketchat' && "$INPUT_TYPE" == 'coverage' ]] && [[ "$GITHUB_EVENT_NAME" == 'release' || "$GITHUB_REF" == 'refs/heads/develop' ]]; then
+            SERVICE_SUFFIX='-cov'
+          fi
 
-          mkdir -p /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}
+          mkdir -p "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}"
 
           # Get digest and image info
-          DIGEST=$(jq -r '.["${{ inputs.service }}"].["containerimage.digest"]' "/tmp/meta.json")
+          DIGEST=$(jq -r --arg service "$INPUT_SERVICE" '.[$service].["containerimage.digest"]' "/tmp/meta.json")
           IMAGE_NO_TAG=$(echo "$IMAGE" | sed 's/:.*$//')
           FULL_IMAGE="${IMAGE_NO_TAG}@${DIGEST}"
 
           echo "Inspecting image: $FULL_IMAGE"
 
           # Inspect the image and save complete manifest with sizes (using -v for verbose)
-          docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
+          docker manifest inspect -v "$FULL_IMAGE" > "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}/manifest.json"
 
-          echo "Saved manifest to /tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json"
-          cat "/tmp/manifests/${{ inputs.service }}${SERVICE_SUFFIX}/${{ inputs.arch }}/manifest.json" | jq '.'
+          echo "Saved manifest to /tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}/manifest.json"
+          cat "/tmp/manifests/${INPUT_SERVICE}${SERVICE_SUFFIX}/${INPUT_ARCH}/manifest.json" | jq '.'
         fi
 
     - name: Save Docker image as artifact
       if: inputs.publish-image == 'false' && inputs.arch == 'amd64'
       shell: bash
+      env:
+        SERVICE: ${{ inputs.service }}
+        ARCH: ${{ inputs.arch }}
+        TYPE: ${{ inputs.type }}
       run: |
         set -o xtrace
 
         # Get image name from docker-compose-ci.yml
-        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "${{ inputs.service }}" '.services[$s].image')
+        IMAGE=$(docker compose -f docker-compose-ci.yml config --format json 2>/dev/null | jq -r --arg s "$SERVICE" '.services[$s].image')
 
         # Create directory for image archives
         mkdir -p /tmp/docker-images
 
         # Save the image to a tar file
-        docker save "${IMAGE}" -o "/tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar"
+        docker save "${IMAGE}" -o "/tmp/docker-images/${SERVICE}-${ARCH}-${TYPE}.tar"
 
-        echo "Saved image to /tmp/docker-images/${{ inputs.service }}-${{ inputs.arch }}-${{ inputs.type }}.tar"
+        echo "Saved image to /tmp/docker-images/${SERVICE}-${ARCH}-${TYPE}.tar"
         ls -lh /tmp/docker-images/
 
     - name: Upload Docker image artifact
