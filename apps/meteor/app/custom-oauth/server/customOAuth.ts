@@ -49,8 +49,6 @@ export class CustomOAuthStrategy extends Strategy {
 
 	accessTokenParam: string;
 
-	channelsAdmin: string;
-
 	serverURL: string;
 
 	tokenPath: string;
@@ -89,7 +87,6 @@ export class CustomOAuthStrategy extends Strategy {
 		this.mergeUsersDistinctServices = !!config.mergeUsersDistinctServices;
 		this.rolesClaim = config.rolesClaim || 'roles';
 		this.accessTokenParam = config.accessTokenParam || 'access_token';
-		this.channelsAdmin = config.channelsAdmin || 'rocket.cat';
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
