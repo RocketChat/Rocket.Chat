@@ -24,7 +24,7 @@ export const useEndpointUploadMutation = <TPathPattern extends PathPattern, TDat
 			const result = await promise;
 
 			if (!result.success) {
-				throw new Error(String(result.status));
+				throw new Error(result.status || (typeof result.error === 'string' ? result.error : 'Unknown upload error'));
 			}
 			return result as TData;
 		},
