@@ -9,7 +9,7 @@ export interface ISubscriptionExtraData {
 
 export interface ICreateRoomOptions extends Partial<Record<string, boolean | string | ISubscriptionExtraData>> {
 	forceNew?: boolean;
-	creator: string;
+	creator?: string;
 	subscriptionExtra?: ISubscriptionExtraData;
 }
 

@@ -15,13 +15,13 @@ import type { Document, Filter, FindOptions } from 'mongodb';
 
 import type { ICreateRoomParams } from './IRoomService';
 
-export interface ITeamCreateRoom extends Omit<ICreateRoomParams, 'type'> {
+export interface ITeamCreateRoom extends Partial<Omit<ICreateRoomParams, 'type'>> {
 	id?: string;
 }
 
 export interface ITeamCreateParams {
 	team: Pick<ITeam, 'name' | 'type'>;
-	room: ITeamCreateRoom;
+	room?: ITeamCreateRoom;
 	members?: Array<string> | null; // list of user _ids
 	owner?: string | null; // the team owner. If not present, owner = requester
 }
