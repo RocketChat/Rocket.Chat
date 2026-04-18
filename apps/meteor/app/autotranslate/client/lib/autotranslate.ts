@@ -70,7 +70,6 @@ export const AutoTranslate = {
 					}
 				}
 
-				// @ts-expect-error - not sure what to do with this
 				if (attachment.attachments && attachment.attachments.length > 0) {
 					// @ts-expect-error - not sure what to do with this
 					attachment.attachments = this.translateAttachments(attachment.attachments, language);

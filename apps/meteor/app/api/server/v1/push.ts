@@ -1,9 +1,10 @@
 import { Push } from '@rocket.chat/core-services';
 import { pushTokenTypes } from '@rocket.chat/core-typings';
-import type { IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
+import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
 	ajv,
+	isPushGetProps,
 	validateNotFoundErrorResponse,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -11,7 +12,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { executePushTest } from '../../../../server/lib/pushConfig';
@@ -224,25 +224,89 @@ const pushTokenEndpoints = API.v1
 		},
 	);
 
-API.v1.addRoute(
-	'push.get',
-	{ authRequired: true },
-	{
-		async get() {
-			const params = this.queryParams;
-			check(
-				params,
-				Match.ObjectIncluding({
-					id: String,
-				}),
-			);
+const pushGetResponseSchema = ajv.compile<{
+	data: { message: IMessage; notification: IPushNotificationConfig };
+}>({
+	type: 'object',
+	properties: {
+		data: {
+			type: 'object',
+			properties: {
+				message: { type: 'object' },
+				notification: {
+					type: 'object',
+					properties: {
+						from: { type: 'string' },
+						title: { type: 'string' },
+						text: { type: 'string' },
+						userId: { type: 'string' },
+						badge: { type: 'number', nullable: true },
+						sound: { type: 'string', nullable: true },
+						priority: { type: 'number', nullable: true },
+						payload: { type: 'object', nullable: true },
+						notId: { type: 'number', nullable: true },
+						gcm: {
+							type: 'object',
+							properties: {
+								style: { type: 'string' },
+								image: { type: 'string' },
+							},
+							required: ['style', 'image'],
+							nullable: true,
+						},
+						apn: {
+							type: 'object',
+							properties: {
+								category: { type: 'string' },
+								topicSuffix: { type: 'string', nullable: true },
+							},
+							required: ['category'],
+							nullable: true,
+						},
+					},
+					required: ['from', 'title', 'text', 'userId'],
+				},
+			},
+			required: ['message', 'notification'],
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['data', 'success'],
+	additionalProperties: false,
+});
+
+const pushInfoResponseSchema = ajv.compile<{ pushGatewayEnabled: boolean; defaultPushGateway: boolean }>({
+	type: 'object',
+	properties: {
+		pushGatewayEnabled: { type: 'boolean' },
+		defaultPushGateway: { type: 'boolean' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['pushGatewayEnabled', 'defaultPushGateway', 'success'],
+	additionalProperties: false,
+});
+
+const pushGetInfoEndpoints = API.v1
+	.get(
+		'push.get',
+		{
+			authRequired: true,
+			query: isPushGetProps,
+			response: {
+				200: pushGetResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { id } = this.queryParams;
 
 			const receiver = await Users.findOneById(this.userId);
 			if (!receiver) {
 				throw new Error('error-user-not-found');
 			}
 
-			const message = await Messages.findOneById(params.id);
+			const message = await Messages.findOneById(id);
 			if (!message) {
 				throw new Error('error-message-not-found');
 			}
@@ -260,23 +324,25 @@ API.v1.addRoute(
 
 			return API.v1.success({ data });
 		},
-	},
-);
-
-API.v1.addRoute(
-	'push.info',
-	{ authRequired: true },
-	{
-		async get() {
+	)
+	.get(
+		'push.info',
+		{
+			authRequired: true,
+			response: {
+				200: pushInfoResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
 			const defaultGateway = (await Settings.findOneById('Push_gateway', { projection: { packageValue: 1 } }))?.packageValue;
 			const defaultPushGateway = settings.get('Push_gateway') === defaultGateway;
 			return API.v1.success({
-				pushGatewayEnabled: settings.get('Push_enable'),
+				pushGatewayEnabled: Boolean(settings.get('Push_enable')),
 				defaultPushGateway,
 			});
 		},
-	},
-);
+	);
 
 const pushTestEndpoints = API.v1.post(
 	'push.test',
@@ -322,7 +388,9 @@ type PushTestEndpoints = ExtractRoutesFromAPI<typeof pushTestEndpoints>;
 
 type PushTokenEndpoints = ExtractRoutesFromAPI<typeof pushTokenEndpoints>;
 
-type PushEndpoints = PushTestEndpoints & PushTokenEndpoints;
+type PushGetInfoEndpoints = ExtractRoutesFromAPI<typeof pushGetInfoEndpoints>;
+
+type PushEndpoints = PushTestEndpoints & PushTokenEndpoints & PushGetInfoEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
