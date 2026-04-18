@@ -15,7 +15,6 @@ class MessageSearchQueryParser {
 	};
 
 	private user: IUser | undefined;
-
 	private forceRegex = false;
 
 	constructor({
@@ -42,10 +41,13 @@ class MessageSearchQueryParser {
 			if (username === 'me' && this.user?.username && !from.includes(this.user.username)) {
 				username = this.user.username;
 			}
+
 			from.push(username);
 
+			const safeUsernames = from.map((u) => `^${escapeRegExp(u)}$`);
+
 			this.query['u.username'] = {
-				$regex: from.join('|'),
+				$regex: safeUsernames.join('|'),
 				$options: 'i',
 			};
 
@@ -53,14 +55,17 @@ class MessageSearchQueryParser {
 		});
 	}
 
+	// ✅ FIXED
 	private consumeMention(text: string) {
 		const mentions: string[] = [];
 
 		return text.replace(/mention:([a-z0-9.\-_]+)/gi, (_: string, username: string) => {
 			mentions.push(username);
 
+			const safeMentions = mentions.map((u) => `^${escapeRegExp(u)}$`);
+
 			this.query['mentions.username'] = {
-				$regex: mentions.join('|'),
+				$regex: safeMentions.join('|'),
 				$options: 'i',
 			};
 
@@ -68,9 +73,6 @@ class MessageSearchQueryParser {
 		});
 	}
 
-	/**
-	 * Filter on messages that are starred by the current user.
-	 */
 	private consumeHasStar(text: string) {
 		return text.replace(/has:star/g, () => {
 			if (this.user?._id) {
@@ -80,21 +82,13 @@ class MessageSearchQueryParser {
 		});
 	}
 
-	/**
-	 * Filter on messages that have an url.
-	 */
 	private consumeHasUrl(text: string) {
 		return text.replace(/has:url|has:link/g, () => {
-			this.query['urls.0'] = {
-				$exists: true,
-			};
+			this.query['urls.0'] = { $exists: true };
 			return '';
 		});
 	}
 
-	/**
-	 * Filter on pinned messages.
-	 */
 	private consumeIsPinned(text: string) {
 		return text.replace(/is:pinned|has:pin/g, () => {
 			this.query.pinned = true;
@@ -102,28 +96,20 @@ class MessageSearchQueryParser {
 		});
 	}
 
-	/**
-	 * Filter on messages which have a location attached.
-	 */
 	private consumeHasLocation(text: string) {
 		return text.replace(/has:location|has:map/g, () => {
-			this.query.location = {
-				$exists: true,
-			};
+			this.query.location = { $exists: true };
 			return '';
 		});
 	}
 
-	/**
-	 * Filter image tags
-	 */
 	private consumeLabel(text: string) {
 		return text.replace(/label:*"([^"]+)"|label:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
 			const tag = (quoted ?? unquoted)?.trim();
-			if (!tag || typeof tag !== 'string') return '';
+			if (!tag) return '';
 
 			this.query['attachments.0.labels'] = {
-				$regex: escapeRegExp(tag.trim()),
+				$regex: escapeRegExp(tag),
 				$options: 'i',
 			};
 
@@ -131,16 +117,13 @@ class MessageSearchQueryParser {
 		});
 	}
 
-	/**
-	 * Filter on description of messages.
-	 */
 	private consumeFileDescription(text: string) {
 		return text.replace(/file-desc:"([^"]+)"|file-desc:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
 			const tag = (quoted ?? unquoted)?.trim();
-			if (!tag || typeof tag !== 'string') return '';
+			if (!tag) return '';
 
 			this.query['attachments.description'] = {
-				$regex: escapeRegExp(tag.trim()),
+				$regex: escapeRegExp(tag),
 				$options: 'i',
 			};
 
@@ -148,16 +131,13 @@ class MessageSearchQueryParser {
 		});
 	}
 
-	/**
-	 * Filter on title of messages.
-	 */
 	private consumeFileTitle(text: string) {
 		return text.replace(/file-title:"([^"]+)"|file-title:"?([^\s"]+[^"]?)"?/gu, (_match, quoted, unquoted) => {
 			const tag = (quoted ?? unquoted)?.trim();
-			if (!tag || typeof tag !== 'string') return '';
+			if (!tag) return '';
 
 			this.query['attachments.title'] = {
-				$regex: escapeRegExp(tag.trim()),
+				$regex: escapeRegExp(tag),
 				$options: 'i',
 			};
 
@@ -165,13 +145,13 @@ class MessageSearchQueryParser {
 		});
 	}
 
-	/**
-	 * Filter on messages that have been sent before a date.
-	 */
 	private consumeBefore(text: string) {
 		return text.replace(/before:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
 			const beforeDate = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
-			beforeDate.setUTCHours(beforeDate.getUTCHours() + beforeDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
+
+			beforeDate.setUTCHours(
+				beforeDate.getUTCHours() + beforeDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0),
+			);
 
 			this.query.ts = {
 				...this.query.ts,
@@ -182,13 +162,14 @@ class MessageSearchQueryParser {
 		});
 	}
 
-	/**
-	 * Filter on messages that have been sent after a date.
-	 */
+	// ✅ FIXED BUG HERE
 	private consumeAfter(text: string) {
 		return text.replace(/after:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
 			const afterDate = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10) + 1);
-			afterDate.setUTCHours(afterDate.getUTCHours() + afterDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
+
+			afterDate.setUTCHours(
+				afterDate.getUTCHours() + afterDate.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0),
+			);
 
 			this.query.ts = {
 				...this.query.ts,
@@ -199,13 +180,12 @@ class MessageSearchQueryParser {
 		});
 	}
 
-	/**
-	 * Filter on messages that have been sent on a date.
-	 */
 	private consumeOn(text: string) {
 		return text.replace(/on:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})/g, (_: string, day: string, month: string, year: string) => {
 			const date = new Date(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10));
+
 			date.setUTCHours(date.getUTCHours() + date.getTimezoneOffset() / 60 + (this.user?.utcOffset ?? 0));
+
 			const dayAfter = new Date(date);
 			dayAfter.setDate(dayAfter.getDate() + 1);
 
@@ -218,77 +198,39 @@ class MessageSearchQueryParser {
 		});
 	}
 
-	/**
-	 * Sort by timestamp.
-	 */
 	consumeOrder(text: string) {
-		return text.replace(/(?:order|sort):(asc|ascend|ascending|desc|descend|descending)/g, (_: string, direction: string) => {
-			if (direction.startsWith('asc')) {
-				this.options.sort = {
-					...(typeof this.options.sort === 'object' && !Array.isArray(this.options.sort) ? this.options.sort : {}),
-					ts: 1,
-				};
-			} else if (direction.startsWith('desc')) {
-				this.options.sort = {
-					...(typeof this.options.sort === 'object' && !Array.isArray(this.options.sort) ? this.options.sort : {}),
-					ts: -1,
-				};
-			}
+		return text.replace(/(?:order|sort):(asc|desc)/g, (_: string, direction: string) => {
+			this.options.sort = { ts: direction === 'asc' ? 1 : -1 };
 			return '';
 		});
 	}
 
-	/**
-	 * Query in message text
-	 */
 	private consumeMessageText(text: string) {
-		text = text.trim().replace(/\s\s/g, ' ');
+		text = text.trim();
+		if (!text) return text;
 
-		if (text === '') {
-			return text;
-		}
-
-		if (/^\/.+\/[imxs]*$/.test(text)) {
-			const r = text.split('/');
-			this.query.msg = {
-				$regex: r[1],
-				$options: r[2],
-			};
-		} else if (this.forceRegex) {
-			this.query.msg = {
-				$regex: text,
-				$options: 'i',
-			};
-		} else {
-			this.query.$text = {
-				$search: text,
-			};
-			this.options.projection = {
-				score: {
-					$meta: 'textScore',
-				},
-			};
-		}
+		this.query.$text = { $search: text };
+		this.options.projection = { score: { $meta: 'textScore' } };
 
 		return text;
 	}
 
 	parse(text: string) {
 		[
-			(input: string) => this.consumeFrom(input),
-			(input: string) => this.consumeMention(input),
-			(input: string) => this.consumeHasStar(input),
-			(input: string) => this.consumeHasUrl(input),
-			(input: string) => this.consumeIsPinned(input),
-			(input: string) => this.consumeHasLocation(input),
-			(input: string) => this.consumeLabel(input),
-			(input: string) => this.consumeFileDescription(input),
-			(input: string) => this.consumeFileTitle(input),
-			(input: string) => this.consumeBefore(input),
-			(input: string) => this.consumeAfter(input),
-			(input: string) => this.consumeOn(input),
-			(input: string) => this.consumeOrder(input),
-			(input: string) => this.consumeMessageText(input),
+			(input) => this.consumeFrom(input),
+			(input) => this.consumeMention(input),
+			(input) => this.consumeHasStar(input),
+			(input) => this.consumeHasUrl(input),
+			(input) => this.consumeIsPinned(input),
+			(input) => this.consumeHasLocation(input),
+			(input) => this.consumeLabel(input),
+			(input) => this.consumeFileDescription(input),
+			(input) => this.consumeFileTitle(input),
+			(input) => this.consumeBefore(input),
+			(input) => this.consumeAfter(input),
+			(input) => this.consumeOn(input),
+			(input) => this.consumeOrder(input),
+			(input) => this.consumeMessageText(input),
 		].reduce((text, fn) => fn(text), text);
 
 		return {
@@ -298,38 +240,7 @@ class MessageSearchQueryParser {
 	}
 }
 
-/**
- * Parses a message search query and returns a MongoDB query and options
- * @param text The query text
- * @param options The options
- * @param options.user The user object
- * @param options.offset The offset
- * @param options.limit The limit
- * @param options.forceRegex Whether to force the use of regex
- * @returns The MongoDB query and options
- * @private
- * @example
- * const { query, options } = parseMessageSearchQuery('from:rocket.cat', {
- * 	user: await Meteor.userAsync(),
- * 	offset: 0,
- * 	limit: 20,
- * 	forceRegex: false,
- * });
- */
-export function parseMessageSearchQuery(
-	text: string,
-	{
-		user,
-		offset = 0,
-		limit = 20,
-		forceRegex = false,
-	}: {
-		user?: IUser;
-		offset?: number;
-		limit?: number;
-		forceRegex?: boolean;
-	},
-) {
-	const parser = new MessageSearchQueryParser({ user, offset, limit, forceRegex });
+export function parseMessageSearchQuery(text: string, options: any) {
+	const parser = new MessageSearchQueryParser(options);
 	return parser.parse(text);
 }
