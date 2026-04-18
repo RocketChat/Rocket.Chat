@@ -276,6 +276,31 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 	}
 
 	const sender = await roomCoordinator.getRoomDirectives(room.t).getMsgSender(message);
+
+	const reasons: any[] = [];
+
+	if (message.msg && message.msg.length > 200) {
+		reasons.push({
+			type: 'long_message',
+			message: 'Message unusually long (possible spam)',
+		});
+	}
+
+	if (/(.)\1{5,}/.test(message.msg || '')) {
+		reasons.push({
+			type: 'repetition',
+			message: 'Repeated characters detected',
+		});
+	}
+
+	if (reasons.length > 0) {
+		(message as any).moderationReasons = reasons;
+
+		console.log('Moderation reasoning:', {
+			userId: message.u?._id ?? 'unknown',
+			reasons,
+		});
+	}
 	if (!sender) {
 		return message;
 	}
