@@ -9,8 +9,9 @@ import {
     CH_0, CH_9, CH_COLON, CH_SEMICOLON,
     CH_LT, CH_EQ, CH_GT, CH_AT,
     CH_B_UP, CH_D_UP, CH_O_UP, CH_X_UP,
+    CH_A_UP, CH_Z_UP,
     CH_LBRACKET, CH_BACKSLASH, CH_RBRACKET, CH_UNDERSCORE, CH_BACKTICK,
-    CH_C_LO, CH_Y_LO,
+    CH_A_LO, CH_C_LO, CH_Z_LO, CH_Y_LO,
     CH_PIPE, CH_TILDE, CH_OUT_QUOTE,
 } from '../constants/charCodes';
 
@@ -23,7 +24,7 @@ import {
     scanCloseBracket, scanBracketOpen, scanParenClose,
 } from './links';
 import { scanHash, scanDash, scanDigit, scanPipe } from './blocks';
-import { scanColon, scanAt, scanPlus, scanC, scanEmoticonStarter } from './inline';
+import { scanColon, scanAt, scanPlus, scanC, scanEmoticonStarter, scanWordStart } from './inline';
 
 const SCANNER_TABLE: (ScanFn | undefined)[] = [];
 
@@ -66,6 +67,10 @@ register(CH_PIPE, scanPipe);
 register(CH_COLON, scanColon);
 register(CH_AT, scanAt);
 register(CH_PLUS, scanPlus);
+register(CH_C_LO, scanC);
+
+for (let c = CH_A_UP; c <= CH_Z_UP; c++) register(c, scanWordStart);
+for (let c = CH_A_LO; c <= CH_Z_LO; c++) register(c, scanWordStart);
 register(CH_C_LO, scanC);
 
 // digits: ordered list, emoticon, URL starters
